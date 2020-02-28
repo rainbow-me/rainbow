@@ -8,4 +8,6 @@ export { default as useMagicFocus } from './useMagicFocus';
 export { default as usePrevious } from './usePrevious';
 export { default as useSavingsAccount } from './useSavingsAccount';
 export { default as useTransformOrigin } from './useTransformOrigin';
+export { default as useUniswapAssets } from './useUniswapAssets';
+export { default as useUniswapAssetsInWallet } from './useUniswapAssetsInWallet';
 export { default as useWalletSectionsData } from './useWalletSectionsData';

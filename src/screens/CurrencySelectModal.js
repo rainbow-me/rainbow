@@ -5,8 +5,11 @@ import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import { compose, mapProps, shouldUpdate } from 'recompact';
-import { withUniswapAssets } from '../hoc';
-import { usePrevious } from '../hooks';
+import {
+  usePrevious,
+  useUniswapAssets,
+  useUniswapAssetsInWallet,
+} from '../hooks';
 import { position } from '../styles';
 import { filterList } from '../utils/search';
 import { interpolate } from '../components/animations';
@@ -21,14 +24,6 @@ import { Modal } from '../components/modal';
 import { isNewValueForObjectPaths } from '../utils';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 
-const appendAssetWithUniqueId = asset => ({
-  ...asset,
-  uniqueId: `${asset.address}`,
-});
-
-const normalizeAssetItems = assetsArray =>
-  map(assetsArray, appendAssetWithUniqueId);
-
 const headerlessSection = data => [{ data, title: '' }];
 
 export const CurrencySelectionTypes = {
@@ -37,18 +32,20 @@ export const CurrencySelectionTypes = {
 };
 
 const CurrencySelectModal = ({
-  curatedAssets,
-  favorites,
-  globalHighLiquidityAssets,
-  globalLowLiquidityAssets,
   headerTitle,
   navigation,
   transitionPosition,
   type,
-  uniswapAssetsInWallet,
-  uniswapGetAllExchanges,
-  uniswapUpdateFavorites,
 }) => {
+  const {
+    curatedAssets,
+    favorites,
+    globalHighLiquidityAssets,
+    globalLowLiquidityAssets,
+    uniswapGetAllExchanges,
+    uniswapUpdateFavorites,
+  } = useUniswapAssets();
+  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
@@ -244,41 +241,20 @@ const CurrencySelectModal = ({
 };
 
 CurrencySelectModal.propTypes = {
-  curatedAssets: PropTypes.array,
-  favorites: PropTypes.array,
-  globalHighLiquidityAssets: PropTypes.array,
-  globalLowLiquidityAssets: PropTypes.array,
   headerTitle: PropTypes.string,
   navigation: PropTypes.object,
   transitionPosition: PropTypes.object,
   type: PropTypes.oneOf(Object.keys(CurrencySelectionTypes)),
-  uniswapAssetsInWallet: PropTypes.arrayOf(PropTypes.object),
-  uniswapGetAllExchanges: PropTypes.func,
-  uniswapUpdateFavorites: PropTypes.func,
 };
 
 export default compose(
   withNavigationFocus,
-  withUniswapAssets,
-  mapProps(
-    ({
-      curatedAssets,
-      favorites,
-      globalHighLiquidityAssets,
-      globalLowLiquidityAssets,
-      navigation,
-      ...props
-    }) => ({
-      ...props,
-      curatedAssets: normalizeAssetItems(curatedAssets),
-      favorites: normalizeAssetItems(favorites),
-      globalHighLiquidityAssets: normalizeAssetItems(globalHighLiquidityAssets),
-      globalLowLiquidityAssets: normalizeAssetItems(globalLowLiquidityAssets),
-      navigation,
-      transitionPosition: get(navigation, 'state.params.position'),
-      type: get(navigation, 'state.params.type', null),
-    })
-  ),
+  mapProps(({ navigation, ...props }) => ({
+    ...props,
+    navigation,
+    transitionPosition: get(navigation, 'state.params.position'),
+    type: get(navigation, 'state.params.type', null),
+  })),
   shouldUpdate((props, nextProps) => {
     const isFocused = props.navigation.getParam('focused', false);
     const willBeFocused = nextProps.navigation.getParam('focused', false);

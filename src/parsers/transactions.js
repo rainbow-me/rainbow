@@ -128,7 +128,6 @@ const parseTransaction = (
   transaction.to = txn.address_to;
   const changes = get(txn, 'changes', []);
   let internalTransactions = changes;
-  // TODO JIN match the transaction.to with the right asset
   if (isEmpty(changes) && txn.status === 'failed' && txn.type === 'deposit') {
     const asset = savingsAssetsList[network][toLower(transaction.to)];
 

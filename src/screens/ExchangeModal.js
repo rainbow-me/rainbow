@@ -45,7 +45,7 @@ import {
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
 import { sortAssetsByNativeAmountSelector } from '../hoc/assetSelectors';
-import { useMagicFocus, usePrevious } from '../hooks';
+import { useMagicFocus, usePrevious, useUniswapAssetsInWallet } from '../hooks';
 import { loadWallet } from '../model/wallet';
 import { executeRap } from '../raps/common';
 import ethUnits from '../references/ethereum-units.json';
@@ -92,8 +92,7 @@ const ExchangeModal = ({
   web3ListenerStop,
 }) => {
   const { allAssets } = useSelector(sortAssetsByNativeAmountSelector);
-  // TODO JIN
-  // const { uniswapAssetsInWallet } = useSelector(withUniswapAssetsInWalletSelector);
+  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
 
   const { accountAddress, chainId, nativeCurrency } = useSelector(
     ({ settings: { accountAddress, chainId, nativeCurrency } }) => ({
@@ -787,8 +786,7 @@ const ExchangeModal = ({
       previousOutputCurrency
     );
     const existsInWallet = find(
-      allAssets,
-      // uniswapAssetsInWallet,
+      uniswapAssetsInWallet,
       asset => get(asset, 'address') === get(previousOutputCurrency, 'address')
     );
     if (userSelected && isSameAsset(inputCurrency, newOutputCurrency)) {

@@ -1,9 +1,6 @@
 import {
   concat,
-  filter,
-  get,
   includes,
-  keys,
   map,
   mapValues,
   partition,
@@ -11,48 +8,29 @@ import {
   toLower,
   values,
 } from 'lodash';
-import { connect } from 'react-redux';
-import { compose, withProps } from 'recompact';
+import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import {
   uniswapGetAllExchanges,
   uniswapUpdateFavorites,
 } from '../redux/uniswap';
-import withAccountData from './withAccountData';
 
-const allAssetsSelector = state => state.allAssets;
-const uniswapFavoritesSelector = state => state.favorites;
-const uniswapPairsSelector = state => state.pairs;
-const uniswapAllPairsSelector = state => state.allPairs;
-
-const filterUniswapAssetsByAvailability = uniswapAssetAddresses => ({
-  address,
-}) => uniswapAssetAddresses.includes(address);
-
-const includeExchangeAddress = uniswapPairs => asset => ({
-  ...asset,
-  exchangeAddress: get(
-    uniswapPairs,
-    `[${toLower(asset.address)}].exchangeAddress`
-  ),
-});
+const uniswapFavoritesSelector = state => state.uniswap.favorites;
+const uniswapPairsSelector = state => state.uniswap.pairs;
+const uniswapAllPairsSelector = state => state.uniswap.allPairs;
 
 const appendFavoriteKey = asset => ({
   ...asset,
   favorite: true,
 });
 
-const withUniswapAssetsInWallet = (allAssets, uniswapPairs) => {
-  const availableAssets = filter(
-    allAssets,
-    filterUniswapAssetsByAvailability(keys(uniswapPairs))
-  );
-  const uniswapAssetsInWallet = map(
-    availableAssets,
-    includeExchangeAddress(uniswapPairs)
-  );
-  return { uniswapAssetsInWallet };
-};
+const appendAssetWithUniqueId = asset => ({
+  ...asset,
+  uniqueId: `${asset.address}`,
+});
+
+const normalizeAssetItems = assetsArray =>
+  map(assetsArray, appendAssetWithUniqueId);
 
 const withUniswapAssets = (
   curatedUniswapAssets,
@@ -75,10 +53,10 @@ const withUniswapAssets = (
   );
 
   return {
-    curatedAssets,
-    favorites: sortedFavorites,
-    globalHighLiquidityAssets,
-    globalLowLiquidityAssets,
+    curatedAssets: normalizeAssetItems(curatedAssets),
+    favorites: normalizeAssetItems(sortedFavorites),
+    globalHighLiquidityAssets: normalizeAssetItems(globalHighLiquidityAssets),
+    globalLowLiquidityAssets: normalizeAssetItems(globalLowLiquidityAssets),
   };
 };
 
@@ -119,25 +97,16 @@ const getCuratedUniswapAssets = (assets, favorites) => {
   };
 };
 
-const withUniswapAssetsInWalletSelector = createSelector(
-  [allAssetsSelector, uniswapPairsSelector],
-  withUniswapAssetsInWallet
-);
-
 const withUniswapAssetsSelector = createSelector(
   [uniswapPairsSelector, uniswapAllPairsSelector, uniswapFavoritesSelector],
   withUniswapAssets
 );
 
-const mapStateToProps = ({ uniswap: { allPairs, favorites, pairs } }) => ({
-  allPairs,
-  favorites,
-  pairs,
-});
-
-export default compose(
-  connect(mapStateToProps, { uniswapGetAllExchanges, uniswapUpdateFavorites }),
-  withAccountData,
-  withProps(withUniswapAssetsSelector),
-  withProps(withUniswapAssetsInWalletSelector)
-);
+export default function useUnsiwapAssets() {
+  const uniswapAssets = useSelector(withUniswapAssetsSelector);
+  return {
+    uniswapGetAllExchanges,
+    uniswapUpdateFavorites,
+    ...uniswapAssets,
+  };
+}
