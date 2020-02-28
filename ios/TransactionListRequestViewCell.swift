@@ -5,7 +5,6 @@
 //  Created by Alexey Kureev on 23/01/2020.
 //
 
-import Kingfisher
 
 class TransactionListRequestViewCell: TransactionListBaseCell {
   @IBOutlet weak var openButton: UIButton!
