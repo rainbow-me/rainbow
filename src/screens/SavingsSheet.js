@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 import { get, toLower } from 'lodash';
->>>>>>> Link to savings sheet (#383)
 import React, { Fragment } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import { Column } from '../components/layout';
