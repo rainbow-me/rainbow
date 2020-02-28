@@ -12,7 +12,6 @@ import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
 // const pollInterval = 15000;
 
 export default function useSavingsAccount(pollInterval = 0) {
-  console.log('[USE SAVINGS ACCT]');
   const { accountAddress, tokenOverrides } = useSelector(
     ({ data, settings }) => ({
       accountAddress: settings.accountAddress,
@@ -32,7 +31,6 @@ export default function useSavingsAccount(pollInterval = 0) {
     variables: { id: toLower(accountAddress) },
   });
 
-  console.log('[USE SAVINGS] token query', tokenQuery);
   const tokens = useMemo(() => {
     console.log('[SAVINGS MEMO]');
     const markets = keyBy(
@@ -53,7 +51,6 @@ export default function useSavingsAccount(pollInterval = 0) {
       };
     });
   }, [marketsQuery, tokenOverrides, tokenQuery]);
-  console.log('[SAVINGS]', tokens);
 
   return tokens;
 }
