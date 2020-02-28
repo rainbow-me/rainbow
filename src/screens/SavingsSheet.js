@@ -1,4 +1,3 @@
-import { get, toLower } from 'lodash';
 import React, { Fragment } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import { Column } from '../components/layout';
