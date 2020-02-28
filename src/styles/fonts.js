@@ -7,7 +7,6 @@ font.family = {
   SFProDisplay: 'SF Pro Display',
   SFProRounded: 'SF Pro Rounded',
   SFProText: 'SF Pro Text',
-  SFProRounded: 'SF Pro Rounded',
 };
 
 font.letterSpacing = {
