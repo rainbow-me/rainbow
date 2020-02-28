@@ -1,7 +1,6 @@
 import { get } from 'lodash';
 import { compose, defaultProps, withHandlers, withProps } from 'recompact';
 import { createSelector } from 'reselect';
-import { withAccountData, withUniqueTokens } from '../hoc';
 import { deviceUtils } from '../utils';
 import ExpandedAssetScreen from './ExpandedAssetScreen';
 
@@ -19,8 +18,6 @@ const buildExpandedAssetsSelector = createSelector(
 );
 
 export default compose(
-  withAccountData,
-  withUniqueTokens,
   defaultProps(ExpandedAssetScreen.defaultProps),
   withProps(buildExpandedAssetsSelector),
   withHandlers({

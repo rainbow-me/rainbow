@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { compose, onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
-import { withAccountData, withAccountSettings, withContacts } from '../../hoc';
+import { withContacts } from '../../hoc';
 import { colors, margin, padding } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -221,8 +221,6 @@ class AddContactState extends PureComponent {
 }
 
 export default compose(
-  withAccountData,
-  withAccountSettings,
   withContacts,
   onlyUpdateForKeys(['price', 'subtitle'])
 )(AddContactState);

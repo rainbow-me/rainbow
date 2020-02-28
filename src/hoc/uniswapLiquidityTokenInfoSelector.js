@@ -8,8 +8,6 @@ import {
   sumBy,
   values,
 } from 'lodash';
-import { connect } from 'react-redux';
-import { compose, withProps } from 'recompose';
 import { createSelector } from 'reselect';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -18,17 +16,11 @@ import {
   multiply,
 } from '../helpers/utilities';
 import { ethereumUtils } from '../utils';
-import withAccountSettings from './withAccountSettings';
 
-const mapStateToProps = ({ uniswap: { uniswapLiquidityTokenInfo } }) => ({
-  uniswapLiquidityTokenInfo,
-});
-
-const assetsSelector = state => state.assets;
-const nativeCurrencySelector = state => state.nativeCurrency;
-const nativeCurrencySymbolSelector = state => state.nativeCurrencySymbol;
+const assetsSelector = state => state.data.assets;
+const nativeCurrencySelector = state => state.settings.nativeCurrency;
 const uniswapLiquidityTokenInfoSelector = state =>
-  state.uniswapLiquidityTokenInfo;
+  state.uniswap.uniswapLiquidityTokenInfo;
 
 export const transformPool = (liquidityPool, ethPrice, nativeCurrency) => {
   if (isEmpty(liquidityPool)) {
@@ -73,7 +65,6 @@ export const transformPool = (liquidityPool, ethPrice, nativeCurrency) => {
 
 const buildUniswapCards = (
   nativeCurrency,
-  nativeCurrencySymbol,
   assets,
   uniswapLiquidityTokenInfo
 ) => {
@@ -105,18 +96,6 @@ const buildUniswapCards = (
 };
 
 export const readableUniswapSelector = createSelector(
-  [
-    nativeCurrencySelector,
-    nativeCurrencySymbolSelector,
-    assetsSelector,
-    uniswapLiquidityTokenInfoSelector,
-  ],
+  [nativeCurrencySelector, assetsSelector, uniswapLiquidityTokenInfoSelector],
   buildUniswapCards
 );
-
-export default Component =>
-  compose(
-    withAccountSettings,
-    connect(mapStateToProps),
-    withProps(readableUniswapSelector)
-  )(Component);

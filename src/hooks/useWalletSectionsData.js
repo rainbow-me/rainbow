@@ -1,33 +1,53 @@
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import useAccountAssets from './useAccountAssets';
-import useAccountSettings from './useAccountSettings';
-import useSavingsAccount from './useSavingsAccount';
-import useUniqueTokens from './useUniqueTokens';
-import useUniswapLiquidityTokenInfo from './useUniswapLiquidityTokenInfo';
 import { buildWalletSectionsSelector } from '../helpers/buildWalletSections';
-import { setIsWalletEmpty } from '../redux/isWalletEmpty';
+import { sortAssetsByNativeAmountSelector } from '../hoc/assetSelectors';
+import {
+  createLanguageSelector,
+  createNativeCurrencySelector,
+} from '../hoc/accountSettingsSelectors';
+import { sendableUniqueTokensSelector } from '../hoc/uniqueTokenSelectors';
+import { readableUniswapSelector } from '../hoc/uniswapLiquidityTokenInfoSelector';
+import useSavingsAccount from './useSavingsAccount';
 
 export default function useWalletSectionsData() {
-  const empties = useSelector(({ isWalletEmpty, isWalletEthZero }) => ({
-    isWalletEmpty,
-    isWalletEthZero,
-  }));
+  const isWalletEthZero = useSelector(
+    ({ isWalletEthZero: { isWalletEthZero } }) => ({
+      isWalletEthZero,
+    })
+  );
 
-  const accountData = useAccountAssets();
+  const accountData = useSelector(sortAssetsByNativeAmountSelector);
+  const language = useSelector(createLanguageSelector);
+  const nativeCurrency = useSelector(createNativeCurrencySelector);
+  const uniqueTokens = useSelector(sendableUniqueTokensSelector);
+  const uniswap = useSelector(readableUniswapSelector);
+
   const accountSavings = useSavingsAccount();
-  const accountSettings = useAccountSettings();
-  const uniqueTokens = useUniqueTokens();
-  const uniswap = useUniswapLiquidityTokenInfo();
-  console.log('GOT SAVINGS', accountSavings);
 
-  const accountInfo = {
-    ...accountData,
-    ...accountSettings,
-    ...uniqueTokens,
-    ...uniswap,
-    ...empties,
-    savings: accountSavings,
-    setIsWalletEmpty,
-  };
-  return Object.assign(accountInfo, buildWalletSectionsSelector(accountInfo));
+  const walletSections = useMemo(() => {
+    const accountInfo = {
+      ...accountData,
+      ...language,
+      ...nativeCurrency,
+      ...uniqueTokens,
+      ...uniswap,
+      ...isWalletEthZero,
+      savings: accountSavings,
+    };
+    const creation = buildWalletSectionsSelector(accountInfo);
+    return {
+      ...accountInfo,
+      ...creation,
+    };
+  }, [
+    accountData,
+    accountSavings,
+    isWalletEthZero,
+    language,
+    nativeCurrency,
+    uniqueTokens,
+    uniswap,
+  ]);
+  return walletSections;
 }

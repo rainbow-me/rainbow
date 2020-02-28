@@ -32,13 +32,8 @@ export { default as withSendFeedback } from './withSendFeedback';
 export { default as withStatusBarStyle } from './withStatusBarStyle';
 export { default as withTransactionConfirmationScreen } from './withTransactionConfirmationScreen';
 export { default as withTransitionProps } from './withTransitionProps';
-export { default as withUniqueTokens } from './withUniqueTokens';
 export { default as withUniswapAllowances } from './withUniswapAllowances';
 export { default as withUniswapAssets } from './withUniswapAssets';
-export {
-  default as withUniswapLiquidityTokenInfo,
-  readableUniswapSelector,
-} from './withUniswapLiquidityTokenInfo';
 export { default as withWalletConnectConfirmationModal } from './withWalletConnectConfirmationModal';
 export { default as withWalletConnectConnections } from './withWalletConnectConnections';
 export { default as withWalletConnectOnSessionRequest } from './withWalletConnectOnSessionRequest';

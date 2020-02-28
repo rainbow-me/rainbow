@@ -20,7 +20,6 @@ const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
 const isWalletEthZeroSelector = state => state.isWalletEthZero;
 const languageSelector = state => state.language;
 const nativeCurrencySelector = state => state.nativeCurrency;
-const setIsWalletEmptySelector = state => state.setIsWalletEmpty;
 const uniqueTokensSelector = state => state.uniqueTokens;
 const uniswapSelector = state => state.uniswap;
 const uniswapTotalSelector = state => state.uniswapTotal;
@@ -66,7 +65,6 @@ const filterWalletSections = sections =>
 
 const buildWalletSections = (
   balanceSection,
-  setIsWalletEmpty,
   uniqueTokenFamiliesSection,
   uniswapSection
 ) => {
@@ -74,7 +72,6 @@ const buildWalletSections = (
 
   const filteredSections = filterWalletSections(sections);
   const isEmpty = !filteredSections.length;
-  setIsWalletEmpty(isEmpty);
 
   return {
     isEmpty,
@@ -133,14 +130,7 @@ const withBalanceSection = (
     };
   });
   // TODO JIN get the DAI APY, currency, set to 0 if it does not exist already
-  console.log('ASSETS', assets);
-  /*
-  const assets = [
-    { APY: 7.5, currency: 'Dai', value: 320.3241253452 },
-    { APY: 6.5, currency: 'Eth', value: 20.45 },
-    { APY: 2.5 },
-  ];
-  */
+  // console.log('ASSETS', assets);
   const savingsSection = {
     assets,
     savingsContainer: true,
@@ -281,11 +271,6 @@ const uniqueTokenFamiliesSelector = createSelector(
 );
 
 export const buildWalletSectionsSelector = createSelector(
-  [
-    balanceSectionSelector,
-    setIsWalletEmptySelector,
-    uniqueTokenFamiliesSelector,
-    uniswapSectionSelector,
-  ],
+  [balanceSectionSelector, uniqueTokenFamiliesSelector, uniswapSectionSelector],
   buildWalletSections
 );

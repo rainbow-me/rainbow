@@ -6,7 +6,6 @@ import Button from '../components/buttons/Button';
 import { Centered, Page } from '../components/layout';
 import {
   withDataInit,
-  withAccountData,
   withUniswapAssets,
   withGas,
   withUniswapAllowances,
@@ -94,7 +93,6 @@ class ExampleScreen extends PureComponent {
 }
 
 export default compose(
-  withAccountData,
   withDataInit,
   withUniswapAssets,
   withUniswapAllowances,

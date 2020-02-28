@@ -158,7 +158,7 @@ const SavingsListRow = ({
 
 SavingsListRow.propTypes = {
   onPress: PropTypes.func,
-  supplyBalanceUnderlying: PropTypes.number,
+  supplyBalanceUnderlying: PropTypes.string,
   supplyRate: PropTypes.string,
   underlying: PropTypes.object,
 };

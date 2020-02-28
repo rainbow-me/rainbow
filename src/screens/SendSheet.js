@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
 import {
@@ -21,16 +22,19 @@ import {
   SendTransactionSpeed,
 } from '../components/send';
 import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
+import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   formatInputDecimals,
 } from '../helpers/utilities';
 import { checkIsValidAddress } from '../helpers/validators';
+import { sortAssetsByNativeAmountSelector } from '../hoc/assetSelectors';
+import { sendableUniqueTokensSelector } from '../hoc/uniqueTokenSelectors';
+import { createNativeCurrencySelector } from '../hoc/accountSettingsSelectors';
 import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
 import { deviceUtils, ethereumUtils, gasUtils } from '../utils';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 
 const sheetHeight = deviceUtils.dimensions.height - 10;
 
@@ -54,8 +58,6 @@ const SheetContainer = isNativeStackAvailable
     `;
 
 const SendSheet = ({
-  accountAddress,
-  allAssets,
   contacts,
   dataAddNewTransaction,
   fetchData,
@@ -67,16 +69,24 @@ const SendSheet = ({
   gasUpdateGasPriceOption,
   gasUpdateTxFee,
   isSufficientGas,
-  nativeCurrency,
-  nativeCurrencySymbol,
   removeContact,
   selectedGasPrice,
-  sendableUniqueTokens,
   setAppearListener,
   sortedContacts,
   txFees,
   ...props
 }) => {
+  const { allAssets } = useSelector(sortAssetsByNativeAmountSelector);
+  const { sendableUniqueTokens } = useSelector(sendableUniqueTokensSelector);
+  const { nativeCurrency, nativeCurrencySymbol } = useSelector(
+    createNativeCurrencySelector
+  );
+  const { accountAddress } = useSelector(
+    ({ settings: { accountAddress } }) => ({
+      accountAddress,
+    })
+  );
+
   const { navigate } = useNavigation();
   const [amountDetails, setAmountDetails] = useState({
     assetAmount: '',
@@ -444,8 +454,6 @@ const SendSheet = ({
 };
 
 SendSheet.propTypes = {
-  accountAddress: PropTypes.string.isRequired,
-  allAssets: PropTypes.array,
   dataAddNewTransaction: PropTypes.func.isRequired,
   fetchData: PropTypes.func.isRequired,
   gasLimit: PropTypes.number,
@@ -454,11 +462,8 @@ SendSheet.propTypes = {
   gasUpdateGasPriceOption: PropTypes.func.isRequired,
   gasUpdateTxFee: PropTypes.func.isRequired,
   isSufficientGas: PropTypes.bool.isRequired,
-  nativeCurrency: PropTypes.string.isRequired,
-  nativeCurrencySymbol: PropTypes.string.isRequired,
   removeContact: PropTypes.func.isRequired,
   selectedGasPrice: PropTypes.object,
-  sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
   setAppearListener: PropTypes.func,
   sortedContacts: PropTypes.array,
   txFees: PropTypes.object.isRequired,

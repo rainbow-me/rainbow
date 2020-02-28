@@ -11,6 +11,7 @@ import React, {
 } from 'react';
 import { TextInput, InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { useSelector } from 'react-redux';
 import { toClass } from 'recompact';
 import { interpolate } from '../components/animations';
 import {
@@ -43,7 +44,8 @@ import {
   isZero,
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
-import { useAccountData, useMagicFocus, usePrevious } from '../hooks';
+import { sortAssetsByNativeAmountSelector } from '../hoc/assetSelectors';
+import { useMagicFocus, usePrevious } from '../hooks';
 import { loadWallet } from '../model/wallet';
 import { executeRap } from '../raps/common';
 import ethUnits from '../references/ethereum-units.json';
@@ -83,19 +85,23 @@ const ExchangeModal = ({
   selectedGasPrice,
   showOutputField,
   tabPosition,
-  uniswapAssetsInWallet,
   uniswapClearCurrenciesAndReserves,
   uniswapUpdateInputCurrency,
   uniswapUpdateOutputCurrency,
   web3ListenerInit,
   web3ListenerStop,
 }) => {
-  const {
-    accountAddress,
-    allAssets,
-    chainId,
-    nativeCurrency,
-  } = useAccountData();
+  const { allAssets } = useSelector(sortAssetsByNativeAmountSelector);
+  // TODO JIN
+  // const { uniswapAssetsInWallet } = useSelector(withUniswapAssetsInWalletSelector);
+
+  const { accountAddress, chainId, nativeCurrency } = useSelector(
+    ({ settings: { accountAddress, chainId, nativeCurrency } }) => ({
+      accountAddress,
+      chainId,
+      nativeCurrency,
+    })
+  );
 
   const [inputAmount, setInputAmount] = useState(null);
   const [inputAmountDisplay, setInputAmountDisplay] = useState(null);
@@ -781,7 +787,8 @@ const ExchangeModal = ({
       previousOutputCurrency
     );
     const existsInWallet = find(
-      uniswapAssetsInWallet,
+      allAssets,
+      // uniswapAssetsInWallet,
       asset => get(asset, 'address') === get(previousOutputCurrency, 'address')
     );
     if (userSelected && isSameAsset(inputCurrency, newOutputCurrency)) {

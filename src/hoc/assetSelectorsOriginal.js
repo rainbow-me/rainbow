@@ -11,10 +11,9 @@ import { isLowerCaseMatch } from '../utils';
 
 const EMPTY_ARRAY = [];
 
-const assetPricesFromUniswapSelector = state =>
-  state.data.assetPricesFromUniswap;
-const assetsSelector = state => state.data.assets;
-const nativeCurrencySelector = state => state.settings.nativeCurrency;
+const assetPricesFromUniswapSelector = state => state.assetPricesFromUniswap;
+const assetsSelector = state => state.assets;
+const nativeCurrencySelector = state => state.nativeCurrency;
 
 const sortAssetsByNativeAmount = (
   originalAssets,
@@ -71,12 +70,10 @@ const sortAssetsByNativeAmount = (
   return {
     allAssets,
     allAssetsCount: allAssets.length,
-    assetPricesFromUniswap,
     assets: sortedAssets,
     assetsCount: sortedAssets.length,
     assetsTotal: total,
     isBalancesSectionEmpty: isEmpty(allAssets),
-    nativeCurrency,
     shitcoins: sortedShitcoins,
     shitcoinsCount: sortedShitcoins.length,
   };
