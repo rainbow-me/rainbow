@@ -28,6 +28,8 @@ const SwapInfo = ({ asset, amount }) => {
 
   const prevAmountRef = useRef();
   useEffect(() => {
+    // Need to remember the amount so
+    // it doesn't show NULL while fading out!
     if (amount !== null) {
       prevAmountRef.current = amount;
     }
