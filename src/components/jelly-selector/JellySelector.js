@@ -4,25 +4,28 @@ import React, { createElement, Fragment, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
+import { useDimensions } from '../../hooks';
 import { colors } from '../../styles';
-import { deviceUtils, isNewValueForObjectPaths } from '../../utils';
+import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { RowWithMargins } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 
 const AnimatedShadowStack = Animated.createAnimatedComponent(ShadowStack);
 
-const springConfig = {
-  damping: 38,
-  mass: 1,
-  overshootClamping: false,
-  restDisplacementThreshold: 0.001,
-  restSpeedThreshold: 0.001,
-  stiffness: 600,
-};
-
 const horizontalMargin = 8;
 const maxWidth = 300;
+
+const springTo = (node, toValue) =>
+  Animated.spring(node, {
+    damping: 38,
+    mass: 1,
+    overshootClamping: false,
+    restDisplacementThreshold: 0.001,
+    restSpeedThreshold: 0.001,
+    stiffness: 600,
+    toValue,
+  }).start();
 
 let calculatedItemWidths = 0;
 let itemPositions = [];
@@ -38,12 +41,6 @@ const calculatePosition = () => {
   }
 };
 
-const JellySelectorShadow = [
-  [0, 0, 9, colors.shadowGrey, 0.1],
-  [0, 5, 15, colors.shadowGrey, 0.12],
-  [0, 10, 30, colors.shadowGrey, 0.06],
-];
-
 const JellySelector = ({
   height,
   initialCurrencyIndex,
@@ -51,6 +48,7 @@ const JellySelector = ({
   onSelect,
   renderItem,
 }) => {
+  const { width: deviceWidth } = useDimensions();
   const [selected, setSelected] = useState(initialCurrencyIndex);
   const [translateX, width] = useValues([0, 0], []);
 
@@ -63,15 +61,18 @@ const JellySelector = ({
     };
   }, []);
 
-  const animateTransition = index => {
-    Animated.spring(translateX, {
-      toValue: itemPositions[index] + horizontalMargin * (index ? 0.5 : -0.5),
-      ...springConfig,
-    }).start();
-    Animated.spring(width, {
-      toValue: itemWidths[index],
-      ...springConfig,
-    }).start();
+  const animateTransition = (index, skipAnimation) => {
+    const nextTranslateX =
+      itemPositions[index] + horizontalMargin * (index ? 0.5 : -0.5);
+    const nextWidth = itemWidths[index];
+
+    if (skipAnimation) {
+      translateX.setValue(nextTranslateX);
+      width.setValue(nextWidth);
+    } else {
+      springTo(translateX, nextTranslateX);
+      springTo(width, nextWidth);
+    }
   };
 
   return (
@@ -80,7 +81,11 @@ const JellySelector = ({
         borderRadius={height / 2}
         height={height}
         marginBottom={height * -1}
-        shadows={JellySelectorShadow}
+        shadows={[
+          [0, 0, 9, colors.shadowGrey, 0.1],
+          [0, 5, 15, colors.shadowGrey, 0.12],
+          [0, 10, 30, colors.shadowGrey, 0.06],
+        ]}
         style={{ transform: [{ translateX }], width }}
         zIndex={10}
       />
@@ -88,7 +93,7 @@ const JellySelector = ({
         justify="center"
         margin={horizontalMargin}
         maxWidth={maxWidth}
-        width={deviceUtils.dimensions.width}
+        width={deviceWidth}
         zIndex={11}
       >
         {items.map((item, index) => (
@@ -99,7 +104,7 @@ const JellySelector = ({
               calculatedItemWidths++;
               if (items.length === calculatedItemWidths) {
                 calculatePosition();
-                animateTransition(initialCurrencyIndex);
+                animateTransition(initialCurrencyIndex, true);
               }
             }}
           >
@@ -134,11 +139,8 @@ JellySelector.propTypes = {
   renderItem: PropTypes.func,
 };
 
-const arePropsEqual = (...props) =>
-  !isNewValueForObjectPaths(...props, [
-    'height',
-    'initialCurrencyIndex',
-    'items',
-  ]);
-
-export default React.memo(JellySelector, arePropsEqual);
+export default magicMemo(JellySelector, [
+  'height',
+  'initialCurrencyIndex',
+  'items',
+]);
