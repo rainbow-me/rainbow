@@ -348,7 +348,6 @@ function ButtonPressAnimationJS({
 
   return (
     <AnimatedRawButton
-      {...props}
       enabled={!disabled}
       onHandlerStateChange={onGestureEvent}
     >
@@ -366,6 +365,7 @@ function ButtonPressAnimationJS({
             transform: withTransformOrigin({ scale }),
           },
         ]}
+        {...props}
       >
         {children}
       </Animated.View>
