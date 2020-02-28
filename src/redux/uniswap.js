@@ -26,7 +26,9 @@ import {
   getLiquidityInfo,
   getReserve,
   getUniswapPairs,
+  getTestnetUniswapPairs,
 } from '../handlers/uniswap';
+import networkTypes from '../helpers/networkTypes';
 import {
   cleanUniswapAssetsFallback,
   DefaultUniswapFavorites,
@@ -77,7 +79,7 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
       type: UNISWAP_LOAD_LIQUIDITY_TOKEN_INFO_SUCCESS,
     });
     const allowances = await getAllowances(accountAddress, network);
-    const favorites = await getUniswapFavorites();
+    const favorites = await getUniswapFavorites(network);
     const liquidityTokens = await getLiquidity(accountAddress, network);
     dispatch({
       payload: {
@@ -109,7 +111,11 @@ export const uniswapGetAllExchanges = () => async (dispatch, getState) => {
 export const uniswapPairsInit = () => async (dispatch, getState) => {
   try {
     const { tokenOverrides } = getState().data;
-    const pairs = await getUniswapPairs(tokenOverrides);
+    const { network } = getState().settings;
+    const pairs =
+      network === networkTypes.mainnet
+        ? await getUniswapPairs(tokenOverrides)
+        : await getTestnetUniswapPairs(network);
     dispatch({
       payload: pairs,
       type: UNISWAP_UPDATE_PAIRS,

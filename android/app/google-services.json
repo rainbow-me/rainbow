@@ -1,42 +1,44 @@
 {
   "project_info": {
-    "project_number": "401822667691",
-    "firebase_url": "https://rainbow-a485e.firebaseio.com",
-    "project_id": "rainbow-a485e",
-    "storage_bucket": "rainbow-a485e.appspot.com"
+    "project_number": "498863290995",
+    "firebase_url": "https://rainbow-me.firebaseio.com",
+    "project_id": "rainbow-me",
+    "storage_bucket": "rainbow-me.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:401822667691:android:c03bb0d490f8efd3",
+        "mobilesdk_app_id": "1:498863290995:android:88d6b458fe86322e770806",
         "android_client_info": {
           "package_name": "me.rainbow"
         }
       },
       "oauth_client": [
         {
-          "client_id": "401822667691-0lh31s28po2q1jevo849lhcm57pl1oa8.apps.googleusercontent.com",
+          "client_id": "498863290995-q6rjonkrm1s3njp6h63ro40qkdooi74o.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCtAokiK5mb_KJwdRbR6RP6-vuWIHvKcfo"
+          "current_key": "AIzaSyAmXQy_Kzz02g9xjmE1c8zI87I1quMKU64"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 2,
-          "analytics_property": {
-            "tracking_id": "UA-78554584-1"
-          }
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "498863290995-q6rjonkrm1s3njp6h63ro40qkdooi74o.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "498863290995-9p1q0khft2ducvla1hmjgc7j083s662i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "me.rainbow"
+              }
+            }
+          ]
         }
       }
     }

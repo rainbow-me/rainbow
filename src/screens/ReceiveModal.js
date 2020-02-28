@@ -1,6 +1,8 @@
+import { toLower } from 'lodash';
 import React from 'react';
-import { Share } from 'react-native';
+import { Share, Platform } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components/primitives';
 import Divider from '../components/Divider';
 import { Column } from '../components/layout';
@@ -13,11 +15,11 @@ import {
 import QRCodeDisplay from '../components/QRCodeDisplay';
 import { FloatingEmojis } from '../components/floating-emojis';
 import { Br, Monospace, Text } from '../components/text';
-import { useAccountSettings, useClipboard } from '../hooks';
+import { useClipboard } from '../hooks';
 import { colors } from '../styles';
 import { haptics } from '../utils';
 
-const QRCodeSize = 180;
+const QRCodeSize = Platform.OS === 'ios' ? 180 : 190;
 
 const AddressText = styled(Monospace).attrs({
   color: colors.blueGreyLightest,
@@ -28,10 +30,12 @@ const AddressText = styled(Monospace).attrs({
   width: 100%;
 `;
 
-const ReceiveScreen = () => {
+const ReceiveModal = () => {
   const { setClipboard } = useClipboard();
   const { goBack } = useNavigation();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useSelector(({ settings: { accountAddress } }) =>
+    toLower(accountAddress)
+  );
 
   return (
     <Modal height={472} onCloseModal={goBack}>
@@ -86,4 +90,4 @@ const ReceiveScreen = () => {
   );
 };
 
-export default React.memo(ReceiveScreen);
+export default React.memo(ReceiveModal);

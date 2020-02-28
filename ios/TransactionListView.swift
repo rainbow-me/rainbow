@@ -7,16 +7,13 @@
 
 import Foundation
 
-fileprivate struct TransactionSection {
-  var header: Date
-  var transactions: [Transaction]
-}
-
-class TransactionListView: UIView {
-  @objc lazy var onItemPress: RCTBubblingEventBlock = { _ in }
-  @objc lazy var onReceivePress: RCTBubblingEventBlock = { _ in }
-  @objc lazy var onAvatarPress: RCTBubblingEventBlock = { _ in }
-  @objc lazy var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
+class TransactionListView: UIView, UITableViewDelegate {
+  @objc var onTransactionPress: RCTBubblingEventBlock = { _ in }
+  @objc var onRequestPress: RCTBubblingEventBlock = { _ in }
+  @objc var onRequestExpire: RCTBubblingEventBlock = { _ in }
+  @objc var onReceivePress: RCTBubblingEventBlock = { _ in }
+  @objc var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
+  @objc var onAvatarPress: RCTBubblingEventBlock = { _ in }
   @objc var duration: TimeInterval = 0.15
   @objc var isAvatarPickerAvailable: Bool = true {
     didSet {
@@ -42,35 +39,13 @@ class TransactionListView: UIView {
       header.accountName.text = accountName
     }
   }
-  @objc var transactions: [Transaction] = [] {
-    /// Every time we receive a new set of transactions, regroup by minedAt in the format "MMMM yyyy"
-    /// Then, re-render tableView with the new data
+  @objc var data: TransactionData = TransactionData() {
     didSet {
-      var groups: [Date: [Transaction]] = [:]
-      let calendar = Calendar.current
-      
-      for transaction in transactions {
-        var date = groupByDate(transaction.minedAt)
-        
-        if calendar.isDateInToday(date) || calendar.isDateInYesterday(date) {
-          if groups[date] == nil {
-            groups[date] = []
-          }
-          groups[date]!.append(transaction)
-        } else {
-          let dateComponents = calendar.dateComponents([.year, .month], from: date)
-          date = calendar.date(from: dateComponents)!
-          
-          if groups[date] == nil {
-            groups[date] = []
-          }
-          
-          groups[date]!.append(transaction)
-        }
-      }
-      
-      sections = groups.map(TransactionSection.init(header:transactions:))
-      sections.sort { (lhs, rhs) in lhs.header > rhs.header }
+      viewModel = TransactionViewModel(data: data)
+      viewModel!.onRequestPress = onRequestPress
+      viewModel!.onTransactionPress = onTransactionPress
+      viewModel!.onRequestExpire = onRequestExpire
+      tableView.dataSource = viewModel
       tableView.reloadData()
     }
   }
@@ -99,7 +74,7 @@ class TransactionListView: UIView {
     ])
   }
   
-  fileprivate var sections = [TransactionSection]()
+  var viewModel: TransactionViewModel?
   
   let tableView = UITableView()
   let header: TransactionListViewHeader = TransactionListViewHeader.fromNib()
@@ -108,12 +83,13 @@ class TransactionListView: UIView {
   override init(frame: CGRect) {
     super.init(frame: frame)
     
-    tableView.dataSource = self
+    tableView.dataSource = viewModel
     tableView.delegate = self
     tableView.rowHeight = 60
     tableView.delaysContentTouches = false
     tableView.separatorStyle = .none
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
+    tableView.register(UINib(nibName: "TransactionListRequestViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListRequestViewCell")
     
     header.addSubview(headerSeparator)
     
@@ -144,23 +120,6 @@ class TransactionListView: UIView {
     headerSeparator.frame = CGRect(x: 20, y: header.frame.size.height - 2, width: tableView.bounds.width - 20, height: 2)
   }
   
-  private func groupByDate(_ date: Date) -> Date {
-    let calendar = Calendar.current
-    let components = calendar.dateComponents([.year, .month, .day], from: date)
-    return calendar.date(from: components)!
-  }
-}
-
-extension TransactionListView: UITableViewDataSource, UITableViewDelegate {
-  func numberOfSections(in tableView: UITableView) -> Int {
-    return sections.count
-  }
-  
-  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    let section = self.sections[section]
-    return section.transactions.count
-  }
-  
   func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
     return 60
   }
@@ -168,60 +127,18 @@ extension TransactionListView: UITableViewDataSource, UITableViewDelegate {
   func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     let view = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: 40))
     let label = UILabel(frame: CGRect(x: 20, y: 20, width: view.frame.width, height: view.frame.height))
-    let calendar = Calendar.current
     
-    if calendar.isDateInToday(sections[section].header) {
-      label.text = "Today"
-    } else if calendar.isDateInYesterday(sections[section].header) {
-      label.text = "Yesterday"
-    } else if calendar.isDate(sections[section].header, equalTo: Date(), toGranularity: .month) {
-      label.text = "This month"
-    } else if calendar.isDate(sections[section].header, equalTo: Date(), toGranularity: .year) {
-      let dateFormatter = DateFormatter()
-      dateFormatter.dateFormat = "MMMM"
-      label.text = dateFormatter.string(from: sections[section].header)
-    } else {
-      let dateFormatter = DateFormatter()
-      dateFormatter.dateFormat = "MMMM yyyy"
-      label.text = dateFormatter.string(from: sections[section].header)
+    if viewModel?.sections.count == 0 {
+      return nil
     }
     
+    let section = viewModel!.sections[section]
+    
+    label.text = section.title
     label.font = .systemFont(ofSize: 18.0, weight: .semibold)
     view.backgroundColor = .white
     view.addSubview(label)
     
     return view
-  }
-  
-  /// Sets a cell for a row at indexPath based on the active section
-  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let identifier = "TransactionListViewCell"
-    let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! TransactionListViewCell
-    
-    let section = sections[indexPath.section]
-    let transaction = section.transactions[indexPath.row]
-    
-    cell.set(transaction: transaction)
-    cell.selectionStyle = .none
-    
-    return cell;
-  }
-  
-  /// Play the select animation and propogate the event to JS runtime (so onItemPress property can receive a nativeEvent with rowIndex in it)
-  func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-    onItemPress(["index": indexPath.row])
-    return indexPath
-  }
-  
-  func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
-    if let cell = tableView.cellForRow(at: indexPath) {
-      cell.animateTapStart()
-    }
-  }
-  
-  func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
-    if let cell = tableView.cellForRow(at: indexPath) {
-      cell.animateTapEnd(duration: duration, options: [], scale: scaleTo)
-    }
   }
 }

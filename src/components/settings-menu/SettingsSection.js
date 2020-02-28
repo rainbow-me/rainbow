@@ -1,9 +1,10 @@
-import { upperFirst } from 'lodash';
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { InteractionManager, Linking, ScrollView } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import * as StoreReview from 'react-native-store-review';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
@@ -16,6 +17,7 @@ import {
   getAppStoreReviewCount,
   saveAppStoreReviewCount,
 } from '../../handlers/localstorage/globalSettings';
+import networkInfo from '../../helpers/networkInfo';
 import { withAccountSettings, withSendFeedback } from '../../hoc';
 import { supportedLanguages } from '../../languages';
 import { position } from '../../styles';
@@ -44,109 +46,132 @@ const SettingIcon = styled(FastImage)`
   margin-top: 6.5;
 `;
 
+let versionPressInterval = null;
+let versionNumberOfTaps = 0;
+
 const SettingsSection = ({
   language,
   nativeCurrency,
   network,
   onPressBackup,
   onPressCurrency,
+  onPressHiddenFeature,
   onPressImportSeedPhrase,
   onPressLanguage,
   onPressNetwork,
   onPressReview,
   onPressTwitter,
   onSendFeedback,
-}) => (
-  <ScrollView
-    contentContainerStyle={position.sizeAsObject('100%')}
-    scrollEventThrottle={32}
-    style={position.coverAsObject}
-  >
-    <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={8}>
-      <ListItem
-        icon={<SettingIcon source={BackupIcon} />}
-        onPress={onPressBackup}
-        label="Backup"
-      >
-        <ListItemArrowGroup>
-          {/*
+}) => {
+  const handleVersionPress = () => {
+    versionPressInterval && clearTimeout(versionPressInterval);
+    versionNumberOfTaps++;
 
+    if (versionNumberOfTaps === 5) {
+      onPressHiddenFeature();
+    }
 
-            XXX TODO: show this icon after a user has completed the "backup" user flow
+    versionPressInterval = setTimeout(() => {
+      versionNumberOfTaps = 0;
+    }, 3000);
+  };
 
-            <Centered>
-              <Icon
-                color={colors.blueGreyDark}
-                css={position.size(20)}
-                name="checkmarkCircled"
-              />
-            </Centered>
-          */}
-        </ListItemArrowGroup>
-      </ListItem>
-      <ListItem
-        icon={<SettingIcon source={NetworkIcon} />}
-        onPress={onPressNetwork}
-        label="Network"
-      >
-        <ListItemArrowGroup>{upperFirst(network) || ''}</ListItemArrowGroup>
-      </ListItem>
-      <ListItem
-        icon={<SettingIcon source={CurrencyIcon} />}
-        onPress={onPressCurrency}
-        label="Currency"
-      >
-        <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
-      </ListItem>
-      <ListItem
-        icon={<SettingIcon source={LanguageIcon} />}
-        onPress={onPressLanguage}
-        label="Language"
-      >
-        <ListItemArrowGroup>
-          {supportedLanguages[language] || ''}
-        </ListItemArrowGroup>
-      </ListItem>
-      {/*
-        <ListItemDivider />
+  return (
+    <ScrollView
+      contentContainerStyle={position.sizeAsObject('100%')}
+      scrollEventThrottle={32}
+      style={position.coverAsObject}
+    >
+      <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={8}>
         <ListItem
-          icon={<SettingIcon source={SecurityIcon} />}
-          onPress={onPressSecurity}
-          label="Security"
+          icon={<SettingIcon source={BackupIcon} />}
+          onPress={onPressBackup}
+          label="Backup"
         >
-          <ListItemArrowGroup />
+          <ListItemArrowGroup>
+            {/*
+
+
+              XXX TODO: show this icon after a user has completed the "backup" user flow
+
+              <Centered>
+                <Icon
+                  color={colors.blueGreyDark}
+                  css={position.size(20)}
+                  name="checkmarkCircled"
+                />
+              </Centered>
+            */}
+          </ListItemArrowGroup>
         </ListItem>
-      */}
-    </ColumnWithDividers>
-    <ListFooter />
-    <ColumnWithDividers dividerRenderer={ListItemDivider}>
-      <ListItem
-        icon={<Emoji name="seedling" />}
-        label="Replace Wallet"
-        onPress={onPressImportSeedPhrase}
-      />
-      <ListItem
-        icon={<Emoji name="rainbow" />}
-        label="Follow Us"
-        onPress={onPressTwitter}
-        value={SettingsExternalURLs.twitter}
-      />
-      <ListItem
-        icon={<Emoji name="speech_balloon" />}
-        label="Leave Feedback️"
-        onPress={onSendFeedback}
-      />
-      <ListItem
-        icon={<Emoji name="heart" />}
-        label="Review Rainbow"
-        onPress={onPressReview}
-      />
-    </ColumnWithDividers>
-    <Column align="center" flex={1} justify="end" paddingBottom={24}>
-      <AppVersionStamp />
-    </Column>
-  </ScrollView>
-);
+        <ListItem
+          icon={<SettingIcon source={NetworkIcon} />}
+          onPress={onPressNetwork}
+          label="Network"
+        >
+          <ListItemArrowGroup>
+            {get(networkInfo, `[${network}].name`)}
+          </ListItemArrowGroup>
+        </ListItem>
+        <ListItem
+          icon={<SettingIcon source={CurrencyIcon} />}
+          onPress={onPressCurrency}
+          label="Currency"
+        >
+          <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
+        </ListItem>
+        <ListItem
+          icon={<SettingIcon source={LanguageIcon} />}
+          onPress={onPressLanguage}
+          label="Language"
+        >
+          <ListItemArrowGroup>
+            {supportedLanguages[language] || ''}
+          </ListItemArrowGroup>
+        </ListItem>
+        {/*
+          <ListItemDivider />
+          <ListItem
+            icon={<SettingIcon source={SecurityIcon} />}
+            onPress={onPressSecurity}
+            label="Security"
+          >
+            <ListItemArrowGroup />
+          </ListItem>
+        */}
+      </ColumnWithDividers>
+      <ListFooter />
+      <ColumnWithDividers dividerRenderer={ListItemDivider}>
+        <ListItem
+          icon={<Emoji name="seedling" />}
+          label="Replace Wallet"
+          onPress={onPressImportSeedPhrase}
+        />
+        <ListItem
+          icon={<Emoji name="rainbow" />}
+          label="Follow Us"
+          onPress={onPressTwitter}
+          value={SettingsExternalURLs.twitter}
+        />
+        <ListItem
+          icon={<Emoji name="speech_balloon" />}
+          label="Leave Feedback️"
+          onPress={onSendFeedback}
+        />
+        <ListItem
+          icon={<Emoji name="heart" />}
+          label="Review Rainbow"
+          onPress={onPressReview}
+        />
+      </ColumnWithDividers>
+      <Column align="center" flex={1} justify="end" paddingBottom={24}>
+        <TouchableWithoutFeedback onPress={handleVersionPress}>
+          <AppVersionStamp />
+        </TouchableWithoutFeedback>
+      </Column>
+    </ScrollView>
+  );
+};
 
 SettingsSection.propTypes = {
   language: PropTypes.string.isRequired,
@@ -154,6 +179,7 @@ SettingsSection.propTypes = {
   network: PropTypes.string.isRequired,
   onPressBackup: PropTypes.func.isRequired,
   onPressCurrency: PropTypes.func.isRequired,
+  onPressHiddenFeature: PropTypes.func.isRequired,
   onPressImportSeedPhrase: PropTypes.func.isRequired,
   onPressLanguage: PropTypes.func.isRequired,
   onPressNetwork: PropTypes.func,
@@ -161,11 +187,6 @@ SettingsSection.propTypes = {
   // onPressSecurity: PropTypes.func.isRequired,
   onPressTwitter: PropTypes.func,
   onSendFeedback: PropTypes.func.isRequired,
-};
-
-SettingsSection.defaultProps = {
-  // XXX TODO: Delete this default once testnet support exists
-  network: 'Mainnet',
 };
 
 export default compose(
@@ -195,5 +216,5 @@ export default compose(
       );
     },
   }),
-  onlyUpdateForKeys(['language', 'nativeCurrency'])
+  onlyUpdateForKeys(['language', 'nativeCurrency', 'network'])
 )(SettingsSection);

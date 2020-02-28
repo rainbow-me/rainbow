@@ -1,23 +1,23 @@
+import GraphemeSplitter from 'grapheme-splitter';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { View, Text } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useNavigation } from 'react-navigation-hooks';
+import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
+import { isAvatarPickerAvailable } from '../../config/experimental';
 import { useClipboard } from '../../hooks';
-import { abbreviations } from '../../utils';
-import { View, Text } from 'react-native';
-import { compose, withHandlers, withState } from 'recompact';
-import GraphemeSplitter from 'grapheme-splitter';
 import { margin, colors, borders } from '../../styles';
+import { abbreviations } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import Divider from '../Divider';
-import { RowWithMargins, Centered } from '../layout';
+import CopyTooltip from '../copy-tooltip';
 import { FloatingEmojis } from '../floating-emojis';
+import Divider from '../Divider';
+import { Centered, RowWithMargins } from '../layout';
 import { TruncatedAddress } from '../text';
 import ProfileAction from './ProfileAction';
-import { isAvatarPickerAvailable } from '../../config/experimental';
-import CopyTooltip from '../copy-tooltip';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
@@ -130,7 +130,6 @@ ProfileMasthead.defaultProps = {
 };
 
 export default compose(
-  withState('emojiCount', 'setEmojiCount', 0),
   withHandlers({
     onPressAvatar: ({ navigation, accountColor, accountName }) => () =>
       navigation.navigate('AvatarBuilder', {

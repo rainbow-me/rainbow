@@ -1,0 +1,25 @@
+diff --git a/node_modules/react-native-tcp/android/src/main/java/com/peel/react/TcpSocketManager.java b/node_modules/react-native-tcp/android/src/main/java/com/peel/react/TcpSocketManager.java
+index df2007f..8353cd1 100644
+--- a/node_modules/react-native-tcp/android/src/main/java/com/peel/react/TcpSocketManager.java
++++ b/node_modules/react-native-tcp/android/src/main/java/com/peel/react/TcpSocketManager.java
+@@ -1,6 +1,6 @@
+ package com.peel.react;
+ 
+-import android.support.annotation.Nullable;
++import androidx.annotation.Nullable;
+ import android.util.SparseArray;
+ 
+ import com.koushikdutta.async.AsyncNetworkSocket;
+diff --git a/node_modules/react-native-tcp/android/src/main/java/com/peel/react/TcpSockets.java b/node_modules/react-native-tcp/android/src/main/java/com/peel/react/TcpSockets.java
+index 1bc07d2..8e6d5d5 100644
+--- a/node_modules/react-native-tcp/android/src/main/java/com/peel/react/TcpSockets.java
++++ b/node_modules/react-native-tcp/android/src/main/java/com/peel/react/TcpSockets.java
+@@ -5,7 +5,7 @@
+ 
+ package com.peel.react;
+ 
+-import android.support.annotation.Nullable;
++import androidx.annotation.Nullable;
+ import android.util.Base64;
+ 
+ import com.facebook.common.logging.FLog;

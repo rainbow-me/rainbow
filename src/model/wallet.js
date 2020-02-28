@@ -208,7 +208,6 @@ const saveWalletDetails = async (seedPhrase, privateKey, address) => {
   let isSimulator = false;
 
   if (canAuthenticate) {
-    // eslint-disable-next-line no-undef
     isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
   }
 

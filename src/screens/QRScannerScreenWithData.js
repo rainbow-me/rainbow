@@ -1,11 +1,12 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
+import { isEmulatorSync } from 'react-native-device-info';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Vibration } from 'react-native';
-import Permissions from 'react-native-permissions';
+import { Platform, Vibration } from 'react-native';
+import { request, PERMISSIONS } from 'react-native-permissions';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
 import { Alert, Prompt } from '../components/alerts';
@@ -37,9 +38,9 @@ class QRScannerScreenWithData extends Component {
     const wasFocused = prevProps.navigation.getParam('focused', false);
     const isFocused = this.props.navigation.getParam('focused', false);
 
-    if (isFocused && !wasFocused) {
-      Permissions.request('camera').then(permission => {
-        const isCameraAuthorized = permission === 'authorized';
+    if (isFocused && !wasFocused && Platform.OS === 'ios') {
+      request(PERMISSIONS.IOS.CAMERA).then(permission => {
+        const isCameraAuthorized = permission === 'granted';
         if (prevState.isCameraAuthorized !== isCameraAuthorized) {
           this.setState({ isCameraAuthorized });
         }
@@ -78,7 +79,9 @@ class QRScannerScreenWithData extends Component {
 
     if (!data) return null;
     this.setState({ enableScanning: false });
-    Vibration.vibrate();
+    if (!isEmulatorSync()) {
+      Vibration.vibrate();
+    }
 
     const address = await addressUtils.getEthereumAddressFromQRCodeData(data);
 

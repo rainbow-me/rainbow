@@ -1,0 +1,22 @@
+diff --git a/node_modules/react-native-gesture-handler/GestureComponents.js b/node_modules/react-native-gesture-handler/GestureComponents.js
+index b7f2207..26c9fda 100644
+--- a/node_modules/react-native-gesture-handler/GestureComponents.js
++++ b/node_modules/react-native-gesture-handler/GestureComponents.js
+@@ -55,4 +55,17 @@ module.exports = {
+     }
+     return MEMOIZED.FlatList;
+   },
++  get SectionList() {
++    if (!MEMOIZED.SectionList) {
++      const ScrollView = this.ScrollView;
++      MEMOIZED.SectionList = React.forwardRef((props, ref) => (
++        <ReactNative.SectionList
++          ref={ref}
++          {...props}
++          renderScrollComponent={scrollProps => <ScrollView {...scrollProps} />}
++        />
++      ));
++    }
++    return MEMOIZED.SectionList;
++  },
+ };

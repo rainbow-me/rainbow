@@ -8,12 +8,13 @@ export default function useAccountSettings() {
   const { language } = useSelector(createLanguageSelector);
   const { nativeCurrencySymbol } = useSelector(createNativeCurrencySelector);
   return useSelector(
-    ({ settings: { accountAddress, chainId, nativeCurrency } }) => ({
+    ({ settings: { accountAddress, chainId, nativeCurrency, network } }) => ({
       accountAddress,
       chainId,
       language,
       nativeCurrency,
       nativeCurrencySymbol,
+      network,
     })
   );
 }

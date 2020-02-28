@@ -6,6 +6,7 @@ import supportedNativeCurrencies from '../references/native-currencies.json';
 import {
   settingsChangeLanguage,
   settingsChangeNativeCurrency,
+  settingsUpdateNetwork,
 } from '../redux/settings';
 
 const mapStateToProps = ({
@@ -39,6 +40,7 @@ export default Component =>
     connect(mapStateToProps, {
       settingsChangeLanguage,
       settingsChangeNativeCurrency,
+      settingsUpdateNetwork,
     }),
     withProps(withLanguageSelector),
     withProps(withNativeCurrencySelector)

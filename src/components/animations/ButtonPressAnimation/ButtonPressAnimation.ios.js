@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useMemo } from 'react';
 import {
   createNativeWrapper,
   PureNativeButton,

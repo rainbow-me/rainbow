@@ -24,8 +24,6 @@
 		23320186D7F747FEB02451C6 /* SF-Pro-Text-HeavyItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1DEDF110038147A598C9B152 /* SF-Pro-Text-HeavyItalic.otf */; };
 		24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 24979E7720F84004007EB0DA /* GoogleService-Info.plist */; };
 		26095B12C30047F89592D463 /* SF-Pro-Text-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 944CF612F0304DF281E33B66 /* SF-Pro-Text-Regular.otf */; };
-		26ECB74E0DE3400BB3F825D4 /* SF-Pro-Rounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6EC72920E3F74A0DB9512E48 /* SF-Pro-Rounded-Medium.otf */; };
-		2861FE6DB5D84461BDB1CFEE /* SF-Pro-Rounded-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3C525A1A3D7041E9B151273A /* SF-Pro-Rounded-Bold.otf */; };
 		2D7BB74FB1A44EE2A2426373 /* SF-Pro-Text-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = E672AB1C5404435897615660 /* SF-Pro-Text-Light.otf */; };
 		3049BEF5B7E0435F905556DD /* Graphik-ThinItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3EA8003C5E2D46E38184714B /* Graphik-ThinItalic.otf */; };
 		3310F0AEC95F47189C2B19DD /* Graphik-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 7CEEDA7A68C24426BBAA8D77 /* Graphik-BoldItalic.otf */; };
@@ -35,14 +33,12 @@
 		3C363E14D5DE4A028E43EA38 /* SF-Pro-Display-UltralightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = DCA738BE00E04734AEDA2F07 /* SF-Pro-Display-UltralightItalic.otf */; };
 		3C41C1415A994234A0FF2589 /* SF-Pro-Text-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 233322FCDC624F6FA60C4B52 /* SF-Pro-Text-Heavy.otf */; };
 		3CBE29CD2381E43900BE05AC /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBE29CC2381E43900BE05AC /* Dummy.swift */; };
-		3F7494BC3E28457D946B815A /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 85D9548686364F04BCD3CA0E /* SF-Pro-Rounded-Regular.otf */; };
 		4013198EBD3D4D6F8052D25E /* SF-Pro-Display-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9DF45B9EB38D4E8FA18A04C6 /* SF-Pro-Display-Light.otf */; };
 		41804DE52CE94296995264E0 /* SF-Pro-Text-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 35A24AFF4AB449C287EE66A8 /* SF-Pro-Text-Medium.otf */; };
 		424410A1E84845328C5A0CAB /* Graphik-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 182DC054E3584C83822F2A82 /* Graphik-RegularItalic.otf */; };
 		431D3F0FC92B45A7A0B2476B /* Graphik-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 88A5866DBF924C149CA0C6F4 /* Graphik-Semibold.otf */; };
 		45537F942F2B45A2AE0F6E97 /* SF-Pro-Rounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = C71A958627CB4BF6B7085E7B /* SF-Pro-Rounded-Medium.otf */; };
 		549287401A7648CCB32F36E0 /* SF-Pro-Display-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 5842861A013B4B379705CC5A /* SF-Pro-Display-Semibold.otf */; };
-		5910AD85BEF64AF9B4B9ED0F /* SF-Pro-Rounded-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9132DFD459E24884961D4D6E /* SF-Pro-Rounded-Heavy.otf */; };
 		5D1949044DCB413FBE7AE82E /* SFMono-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2C4A4A4FB3D84F14A48989D8 /* SFMono-Light.otf */; };
 		5F1FC886FDBF4E50875905D8 /* SF-Pro-Rounded-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6B6183D1BB01462A8EC6971D /* SF-Pro-Rounded-Heavy.otf */; };
 		5F34DEED060F41878C4C5A59 /* SFMono-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0A8698C728414E56A3FD89A6 /* SFMono-Heavy.otf */; };
@@ -53,12 +49,12 @@
 		788C192F52404F80BC99C83E /* SF-Pro-Rounded-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = CC103294F38D49DEBB00C234 /* SF-Pro-Rounded-Light.otf */; };
 		7DE5483C7F3043379686F961 /* SF-Pro-Rounded-Ultralight.otf in Resources */ = {isa = PBXBuildFile; fileRef = E10B4784EF2A4C569A43746A /* SF-Pro-Rounded-Ultralight.otf */; };
 		7E04FF8B32EC4F2BB6BF1403 /* Graphik-ExtralightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 273D2D617F3F43E99F8F404B /* Graphik-ExtralightItalic.otf */; };
-		83DB669A1C3B4CABBCCD9AB3 /* SF-Pro-Rounded-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 566C33D6583F4A2AB2A260D6 /* SF-Pro-Rounded-Semibold.otf */; };
 		830AB06937A24F36A5A233E4 /* SF-Pro-Rounded-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 12778C645D644BCC8744A30F /* SF-Pro-Rounded-Bold.otf */; };
 		872630C5E4CA448D8DDC783E /* Graphik-Extralight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 93D62D49D9CA46F292BD9869 /* Graphik-Extralight.otf */; };
 		888BD587381C4F859E34255C /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6F593D06488648D6B4082A13 /* SF-Pro-Rounded-Regular.otf */; };
 		8B7F7FDAB33B4D119E087D57 /* Graphik-SemiboldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = A7F0978B24BA4EC283C580D9 /* Graphik-SemiboldItalic.otf */; };
 		8FB4C0E7FE3240F2B2D23CE2 /* SFMono-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8789D635428240B5ABF282EE /* SFMono-Bold.otf */; };
+		90FC6B24164C6F1720EEB0BF /* libPods-Rainbow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13E5CE549E13349A65C71B53 /* libPods-Rainbow.a */; };
 		9274E6415DE5403A855B59A4 /* Graphik-SuperItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 51E41940863B4B88BDEF48D7 /* Graphik-SuperItalic.otf */; };
 		92D7BFC8AFDA4E649EA6FF08 /* SFMono-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B1089F835D6A4F578009B47F /* SFMono-Semibold.otf */; };
 		96E52368EDC94B9B80D1F29C /* SF-Pro-Text-LightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = D1641F1A96C841C085169B2E /* SF-Pro-Text-LightItalic.otf */; };
@@ -66,18 +62,28 @@
 		9E8553031AD44F52A814F2AB /* SF-Pro-Display-SemiboldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 86B30DBBDA594167BFE4747E /* SF-Pro-Display-SemiboldItalic.otf */; };
 		A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277D9E23CBD1910042BAF4 /* Extensions.swift */; };
 		A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277DA223CFE85F0042BAF4 /* Theme.swift */; };
+		A44A4EEE23EC928900B543F1 /* CoinIconWithProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44A4EED23EC928900B543F1 /* CoinIconWithProgressBar.swift */; };
 		A4704B4823C546DA00E50E4B /* TransactionListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4704B4023C546D900E50E4B /* TransactionListViewCell.swift */; };
 		A4704B4923C546DA00E50E4B /* TransactionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4704B4123C546D900E50E4B /* TransactionListView.swift */; };
-		A4704B4A23C546DA00E50E4B /* Transaction.m in Sources */ = {isa = PBXBuildFile; fileRef = A4704B4323C546D900E50E4B /* Transaction.m */; };
-		A4704B4B23C546DA00E50E4B /* TransactionListViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4704B4423C546D900E50E4B /* TransactionListViewManager.swift */; };
-		A4704B4C23C546DA00E50E4B /* TransactionListViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A4704B4523C546D900E50E4B /* TransactionListViewManager.m */; };
 		A4704B4D23C546DA00E50E4B /* TransactionListViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4704B4623C546D900E50E4B /* TransactionListViewCell.xib */; };
+		A477567C23DB2FAA005AE8FD /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A477567B23DB2FAA005AE8FD /* Transaction.swift */; };
+		A477567E23DB3A85005AE8FD /* TransactionListViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A477567D23DB3A85005AE8FD /* TransactionListViewManager.m */; };
 		A485E61423C8ED6000E5C3D4 /* TransactionListViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A485E61323C8ED6000E5C3D4 /* TransactionListViewHeader.swift */; };
 		A485E61623C8F4A400E5C3D4 /* TransactionListViewHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = A485E61223C8EC4400E5C3D4 /* TransactionListViewHeader.xib */; };
+		A49B52AF23DB411900A00918 /* TransactionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52AE23DB411900A00918 /* TransactionRequest.swift */; };
+		A49B52B423DB5D1100A00918 /* TransactionViewModelTransactionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52B323DB5D1100A00918 /* TransactionViewModelTransactionItem.swift */; };
+		A49B52B623DB5D5600A00918 /* TransactionViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52B523DB5D5600A00918 /* TransactionViewModelProtocol.swift */; };
+		A49B52B823DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52B723DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift */; };
+		A49B52BA23DB61E600A00918 /* TransactionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52B923DB61E600A00918 /* TransactionViewModel.swift */; };
+		A49B52BC23DBA61200A00918 /* TransactionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52BB23DBA61100A00918 /* TransactionData.swift */; };
+		A49B52C023DCCDA800A00918 /* TransactionRequestSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52BF23DCCDA800A00918 /* TransactionRequestSection.swift */; };
+		A49B52C223DCD11D00A00918 /* TransactionSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52C123DCD11D00A00918 /* TransactionSection.swift */; };
+		A4AF3CCE23DA37F700F230F3 /* TransactionListRequestViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4AF3CCD23DA37F700F230F3 /* TransactionListRequestViewCell.xib */; };
+		A4AF3CD023DA3A0F00F230F3 /* TransactionListRequestViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4AF3CCF23DA3A0F00F230F3 /* TransactionListRequestViewCell.swift */; };
 		A4D04BA923D12F99008C1DEC /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BA823D12F99008C1DEC /* Button.swift */; };
 		A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */; };
-		A4D04BAE23D13299008C1DEC /* ButtonManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BAD23D13299008C1DEC /* ButtonManager.swift */; };
-		ADBDB9381DFEBF1600ED6528 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		A4F8DACB23DF85DF00560E47 /* TransactionListBaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F8DACA23DF85DF00560E47 /* TransactionListBaseCell.swift */; };
+		ADBDB9381DFEBF1600ED6528 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		AE47B46652EA48AFB68E7832 /* SF-Pro-Text-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6B0A8BE2484F46980BE9AC /* SF-Pro-Text-Semibold.otf */; };
 		AFCABA638327463693E67FD4 /* SF-Pro-Text-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 715DAAA3174542BAB93807A6 /* SF-Pro-Text-RegularItalic.otf */; };
 		AFD75D0B6EC9465C92C493A7 /* SF-Pro-Display-BlackItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = A8AE8DE50B9544B6BC186E6C /* SF-Pro-Display-BlackItalic.otf */; };
@@ -95,7 +101,6 @@
 		E98BBF45029948B38545996F /* Graphik-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E6F010E529544E518E1792C7 /* Graphik-Bold.otf */; };
 		ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2971642150620600B7C4FE /* JavaScriptCore.framework */; };
 		EEDAF090F37B4DD9905C3AA1 /* SF-Pro-Rounded-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2508987EAA5746B799931646 /* SF-Pro-Rounded-Thin.otf */; };
-		F504FABC04ED3FF96616663B /* libPods-Rainbow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 505C396DBC90ABA5C8F58327 /* libPods-Rainbow.a */; };
 		F9EB9219ED9A4C72826A5908 /* Graphik-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = A6EEFE6EA9354456B0DB4520 /* Graphik-Regular.otf */; };
 		F9EF1D44351840B8A380BD3E /* SF-Pro-Display-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = BA31E8CEDBCC417CA50BC57B /* SF-Pro-Display-Bold.otf */; };
 		FBDF4EF177284CF4826D7BF9 /* SF-Pro-Display-HeavyItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = D7BFD847B72D414D9BE734A0 /* SF-Pro-Display-HeavyItalic.otf */; };
@@ -107,6 +112,7 @@
 		00E356F21AD99517003FC87E /* RainbowTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RainbowTests.m; sourceTree = "<group>"; };
 		0642ECCC7CB044FDB5A3CC32 /* libRNTextInputMask.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNTextInputMask.a; sourceTree = "<group>"; };
 		0A8698C728414E56A3FD89A6 /* SFMono-Heavy.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Heavy.otf"; path = "../src/assets/fonts/SFMono-Heavy.otf"; sourceTree = "<group>"; };
+		11CCA3399B351ABE3E5296FE /* Pods-Rainbow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.release.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.release.xcconfig"; sourceTree = "<group>"; };
 		12778C645D644BCC8744A30F /* SF-Pro-Rounded-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Bold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Bold.otf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Rainbow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rainbow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Rainbow/AppDelegate.h; sourceTree = "<group>"; };
@@ -115,9 +121,9 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Rainbow/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Rainbow/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Rainbow/main.m; sourceTree = "<group>"; };
+		13E5CE549E13349A65C71B53 /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1736F851327A41C3815212E7 /* SF-Pro-Text-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-BoldItalic.otf"; path = "../src/assets/fonts/SF-Pro-Text-BoldItalic.otf"; sourceTree = "<group>"; };
 		182DC054E3584C83822F2A82 /* Graphik-RegularItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-RegularItalic.otf"; path = "../src/assets/fonts/Graphik-RegularItalic.otf"; sourceTree = "<group>"; };
-		19E9E15CE284C848F124D513 /* Pods-Rainbow.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.staging.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.staging.xcconfig"; sourceTree = "<group>"; };
 		1DEDF110038147A598C9B152 /* SF-Pro-Text-HeavyItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-HeavyItalic.otf"; path = "../src/assets/fonts/SF-Pro-Text-HeavyItalic.otf"; sourceTree = "<group>"; };
 		233322FCDC624F6FA60C4B52 /* SF-Pro-Text-Heavy.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-Heavy.otf"; path = "../src/assets/fonts/SF-Pro-Text-Heavy.otf"; sourceTree = "<group>"; };
 		24979E3620F84003007EB0DA /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Protobuf.framework; path = Frameworks/Protobuf.framework; sourceTree = "<group>"; };
@@ -135,6 +141,7 @@
 		24A867FF226181F9005DCF78 /* libFirebaseInstanceID.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseInstanceID.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2508987EAA5746B799931646 /* SF-Pro-Rounded-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Thin.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Thin.otf"; sourceTree = "<group>"; };
 		273D2D617F3F43E99F8F404B /* Graphik-ExtralightItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-ExtralightItalic.otf"; path = "../src/assets/fonts/Graphik-ExtralightItalic.otf"; sourceTree = "<group>"; };
+		2837FCCEA7D33A4F128B7574 /* Pods-Rainbow.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.localrelease.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.localrelease.xcconfig"; sourceTree = "<group>"; };
 		2AEF0207B9724FE5A27519FF /* SF-Pro-Display-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Medium.otf"; path = "../src/assets/fonts/SF-Pro-Display-Medium.otf"; sourceTree = "<group>"; };
 		2C4A4A4FB3D84F14A48989D8 /* SFMono-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Light.otf"; path = "../src/assets/fonts/SFMono-Light.otf"; sourceTree = "<group>"; };
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -143,18 +150,14 @@
 		35833023DB594F1AA6A72866 /* SF-Pro-Display-Ultralight.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Ultralight.otf"; path = "../src/assets/fonts/SF-Pro-Display-Ultralight.otf"; sourceTree = "<group>"; };
 		35A24AFF4AB449C287EE66A8 /* SF-Pro-Text-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-Medium.otf"; path = "../src/assets/fonts/SF-Pro-Text-Medium.otf"; sourceTree = "<group>"; };
 		3C379D5D20FD1F92009AF81F /* Rainbow.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Rainbow.entitlements; path = Rainbow/Rainbow.entitlements; sourceTree = "<group>"; };
-		3C525A1A3D7041E9B151273A /* SF-Pro-Rounded-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Bold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Bold.otf"; sourceTree = "<group>"; };
 		3CBE29CB2381E43800BE05AC /* Rainbow-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Rainbow-Bridging-Header.h"; sourceTree = "<group>"; };
 		3CBE29CC2381E43900BE05AC /* Dummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dummy.swift; sourceTree = "<group>"; };
 		3CC4B790228B298400D827EB /* libSDWebImage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libSDWebImage.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3CE850D5210FEA8F00672599 /* libGoogleToolboxForMac.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libGoogleToolboxForMac.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3CE850D7210FEACE00672599 /* libnanopb.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libnanopb.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3EA8003C5E2D46E38184714B /* Graphik-ThinItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-ThinItalic.otf"; path = "../src/assets/fonts/Graphik-ThinItalic.otf"; sourceTree = "<group>"; };
-		4ABE78989066EA78E640934A /* Pods-Rainbow.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.debug.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.debug.xcconfig"; sourceTree = "<group>"; };
-		505C396DBC90ABA5C8F58327 /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		466CDCBFE61F83D2AE1C7410 /* Pods-Rainbow.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.debug.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.debug.xcconfig"; sourceTree = "<group>"; };
 		51E41940863B4B88BDEF48D7 /* Graphik-SuperItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-SuperItalic.otf"; path = "../src/assets/fonts/Graphik-SuperItalic.otf"; sourceTree = "<group>"; };
-		566C33D6583F4A2AB2A260D6 /* SF-Pro-Rounded-Semibold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Semibold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Semibold.otf"; sourceTree = "<group>"; };
-		5837E559F5A2A3BB2C7BD75E /* Pods-Rainbow.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.localrelease.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.localrelease.xcconfig"; sourceTree = "<group>"; };
 		5842861A013B4B379705CC5A /* SF-Pro-Display-Semibold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Semibold.otf"; path = "../src/assets/fonts/SF-Pro-Display-Semibold.otf"; sourceTree = "<group>"; };
 		6613987F23689A430097D1D5 /* libReact-Core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-Core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6613988123689A430097D1D5 /* libReact-CoreModules.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-CoreModules.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -164,8 +167,6 @@
 		662C7FD632C1481AB5AB1DB7 /* SF-Pro-Display-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Thin.otf"; path = "../src/assets/fonts/SF-Pro-Display-Thin.otf"; sourceTree = "<group>"; };
 		668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Medium.otf"; path = "../src/assets/fonts/SFMono-Medium.otf"; sourceTree = "<group>"; };
 		66CA6CFD237C27E200C8E3D6 /* InputMask.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = InputMask.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		6C1814FA03B309E79858CD16 /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6EC72920E3F74A0DB9512E48 /* SF-Pro-Rounded-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Medium.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Medium.otf"; sourceTree = "<group>"; };
 		66FEC91523EDA13F00A0F367 /* RoundedCornerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedCornerView.swift; sourceTree = "<group>"; };
 		6B6183D1BB01462A8EC6971D /* SF-Pro-Rounded-Heavy.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Heavy.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Heavy.otf"; sourceTree = "<group>"; };
 		6F593D06488648D6B4082A13 /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Regular.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; };
@@ -174,14 +175,11 @@
 		7A9AF25703474604964D6EC1 /* Graphik-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Light.otf"; path = "../src/assets/fonts/Graphik-Light.otf"; sourceTree = "<group>"; };
 		7CD46377E5FC4E5EBFD57D71 /* Graphik-Super.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Super.otf"; path = "../src/assets/fonts/Graphik-Super.otf"; sourceTree = "<group>"; };
 		7CEEDA7A68C24426BBAA8D77 /* Graphik-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-BoldItalic.otf"; path = "../src/assets/fonts/Graphik-BoldItalic.otf"; sourceTree = "<group>"; };
-		7D0A643847F2CCA674E39E65 /* Pods-Rainbow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.release.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.release.xcconfig"; sourceTree = "<group>"; };
 		84DB92DCDF5D4374B26FFCC6 /* SF-Pro-Display-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-BoldItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-BoldItalic.otf"; sourceTree = "<group>"; };
-		85D9548686364F04BCD3CA0E /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Regular.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; };
 		86B30DBBDA594167BFE4747E /* SF-Pro-Display-SemiboldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-SemiboldItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-SemiboldItalic.otf"; sourceTree = "<group>"; };
 		8789D635428240B5ABF282EE /* SFMono-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Bold.otf"; path = "../src/assets/fonts/SFMono-Bold.otf"; sourceTree = "<group>"; };
 		88A5866DBF924C149CA0C6F4 /* Graphik-Semibold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Semibold.otf"; path = "../src/assets/fonts/Graphik-Semibold.otf"; sourceTree = "<group>"; };
 		8D37634EBB294EC79081DFD2 /* SF-Pro-Display-Heavy.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Heavy.otf"; path = "../src/assets/fonts/SF-Pro-Display-Heavy.otf"; sourceTree = "<group>"; };
-		9132DFD459E24884961D4D6E /* SF-Pro-Rounded-Heavy.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Heavy.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Heavy.otf"; sourceTree = "<group>"; };
 		9165B952731E4502857CC0B4 /* SF-Pro-Display-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Regular.otf"; path = "../src/assets/fonts/SF-Pro-Display-Regular.otf"; sourceTree = "<group>"; };
 		93D62D49D9CA46F292BD9869 /* Graphik-Extralight.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Extralight.otf"; path = "../src/assets/fonts/Graphik-Extralight.otf"; sourceTree = "<group>"; };
 		944CF612F0304DF281E33B66 /* SF-Pro-Text-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-Regular.otf"; path = "../src/assets/fonts/SF-Pro-Text-Regular.otf"; sourceTree = "<group>"; };
@@ -191,21 +189,31 @@
 		9DF45B9EB38D4E8FA18A04C6 /* SF-Pro-Display-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Light.otf"; path = "../src/assets/fonts/SF-Pro-Display-Light.otf"; sourceTree = "<group>"; };
 		A4277D9E23CBD1910042BAF4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		A4277DA223CFE85F0042BAF4 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		A44A4EED23EC928900B543F1 /* CoinIconWithProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinIconWithProgressBar.swift; sourceTree = "<group>"; };
 		A4704B4023C546D900E50E4B /* TransactionListViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionListViewCell.swift; sourceTree = "<group>"; };
 		A4704B4123C546D900E50E4B /* TransactionListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionListView.swift; sourceTree = "<group>"; };
-		A4704B4223C546D900E50E4B /* Transaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Transaction.h; sourceTree = "<group>"; };
-		A4704B4323C546D900E50E4B /* Transaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Transaction.m; sourceTree = "<group>"; };
-		A4704B4423C546D900E50E4B /* TransactionListViewManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionListViewManager.swift; sourceTree = "<group>"; };
-		A4704B4523C546D900E50E4B /* TransactionListViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TransactionListViewManager.m; sourceTree = "<group>"; };
 		A4704B4623C546D900E50E4B /* TransactionListViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TransactionListViewCell.xib; sourceTree = "<group>"; };
 		A4704B4723C546DA00E50E4B /* RCTConvert+TransactionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+TransactionList.h"; sourceTree = "<group>"; };
+		A477567B23DB2FAA005AE8FD /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
+		A477567D23DB3A85005AE8FD /* TransactionListViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TransactionListViewManager.m; sourceTree = "<group>"; };
 		A485E61223C8EC4400E5C3D4 /* TransactionListViewHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionListViewHeader.xib; sourceTree = "<group>"; };
 		A485E61323C8ED6000E5C3D4 /* TransactionListViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListViewHeader.swift; sourceTree = "<group>"; };
+		A49B52AE23DB411900A00918 /* TransactionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRequest.swift; sourceTree = "<group>"; };
+		A49B52B323DB5D1100A00918 /* TransactionViewModelTransactionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModelTransactionItem.swift; sourceTree = "<group>"; };
+		A49B52B523DB5D5600A00918 /* TransactionViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModelProtocol.swift; sourceTree = "<group>"; };
+		A49B52B723DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModelTransactionRequestItem.swift; sourceTree = "<group>"; };
+		A49B52B923DB61E600A00918 /* TransactionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModel.swift; sourceTree = "<group>"; };
+		A49B52BB23DBA61100A00918 /* TransactionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionData.swift; sourceTree = "<group>"; };
+		A49B52BF23DCCDA800A00918 /* TransactionRequestSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRequestSection.swift; sourceTree = "<group>"; };
+		A49B52C123DCD11D00A00918 /* TransactionSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSection.swift; sourceTree = "<group>"; };
+		A4AF3CCD23DA37F700F230F3 /* TransactionListRequestViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionListRequestViewCell.xib; sourceTree = "<group>"; };
+		A4AF3CCF23DA3A0F00F230F3 /* TransactionListRequestViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListRequestViewCell.swift; sourceTree = "<group>"; };
 		A4D04BA823D12F99008C1DEC /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ButtonManager.m; sourceTree = "<group>"; };
-		A4D04BAD23D13299008C1DEC /* ButtonManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonManager.swift; sourceTree = "<group>"; };
+		A4F8DACA23DF85DF00560E47 /* TransactionListBaseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListBaseCell.swift; sourceTree = "<group>"; };
 		A6EEFE6EA9354456B0DB4520 /* Graphik-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Regular.otf"; path = "../src/assets/fonts/Graphik-Regular.otf"; sourceTree = "<group>"; };
 		A7F0978B24BA4EC283C580D9 /* Graphik-SemiboldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-SemiboldItalic.otf"; path = "../src/assets/fonts/Graphik-SemiboldItalic.otf"; sourceTree = "<group>"; };
+		A8846B6B5BC96732D5A4A107 /* Pods-Rainbow.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.staging.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.staging.xcconfig"; sourceTree = "<group>"; };
 		A8AE8DE50B9544B6BC186E6C /* SF-Pro-Display-BlackItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-BlackItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-BlackItalic.otf"; sourceTree = "<group>"; };
 		AA6B0A8BE2484F46980BE9AC /* SF-Pro-Text-Semibold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-Semibold.otf"; path = "../src/assets/fonts/SF-Pro-Text-Semibold.otf"; sourceTree = "<group>"; };
 		B0C692B061D7430D8194DC98 /* ToolTipMenuTests.xctest */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ToolTipMenuTests.xctest; sourceTree = "<group>"; };
@@ -244,9 +252,7 @@
 			files = (
 				ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */,
 				C72F456C99A646399192517D /* libz.tbd in Frameworks */,
-				ADBDB9381DFEBF1600ED6528 /* BuildFile in Frameworks */,
-				F504FABC04ED3FF96616663B /* libPods-Rainbow.a in Frameworks */,
-				ADBDB9381DFEBF1600ED6528 /* (null) in Frameworks */,
+				90FC6B24164C6F1720EEB0BF /* libPods-Rainbow.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -331,7 +337,7 @@
 				24979E3620F84003007EB0DA /* Protobuf.framework */,
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
 				98AED33BAB4247CEBEF8464D /* libz.tbd */,
-				505C396DBC90ABA5C8F58327 /* libPods-Rainbow.a */,
+				13E5CE549E13349A65C71B53 /* libPods-Rainbow.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -371,19 +377,53 @@
 		A4277DA023CBD3590042BAF4 /* Transactions */ = {
 			isa = PBXGroup;
 			children = (
+				A49B52B223DB5CE600A00918 /* ViewModels */,
+				A49B52B123DB41DD00A00918 /* Bridging */,
+				A49B52B023DB41B900A00918 /* Models */,
+				A44A4EED23EC928900B543F1 /* CoinIconWithProgressBar.swift */,
 				66FEC91523EDA13F00A0F367 /* RoundedCornerView.swift */,
 				A4704B4723C546DA00E50E4B /* RCTConvert+TransactionList.h */,
-				A4704B4223C546D900E50E4B /* Transaction.h */,
-				A4704B4323C546D900E50E4B /* Transaction.m */,
 				A4704B4023C546D900E50E4B /* TransactionListViewCell.swift */,
 				A4704B4623C546D900E50E4B /* TransactionListViewCell.xib */,
-				A485E61223C8EC4400E5C3D4 /* TransactionListViewHeader.xib */,
+				A4AF3CCF23DA3A0F00F230F3 /* TransactionListRequestViewCell.swift */,
+				A4AF3CCD23DA37F700F230F3 /* TransactionListRequestViewCell.xib */,
 				A485E61323C8ED6000E5C3D4 /* TransactionListViewHeader.swift */,
+				A485E61223C8EC4400E5C3D4 /* TransactionListViewHeader.xib */,
 				A4704B4123C546D900E50E4B /* TransactionListView.swift */,
-				A4704B4523C546D900E50E4B /* TransactionListViewManager.m */,
-				A4704B4423C546D900E50E4B /* TransactionListViewManager.swift */,
+				A4F8DACA23DF85DF00560E47 /* TransactionListBaseCell.swift */,
 			);
 			name = Transactions;
+			sourceTree = "<group>";
+		};
+		A49B52B023DB41B900A00918 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A477567B23DB2FAA005AE8FD /* Transaction.swift */,
+				A49B52AE23DB411900A00918 /* TransactionRequest.swift */,
+				A49B52BB23DBA61100A00918 /* TransactionData.swift */,
+				A49B52BF23DCCDA800A00918 /* TransactionRequestSection.swift */,
+				A49B52C123DCD11D00A00918 /* TransactionSection.swift */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		A49B52B123DB41DD00A00918 /* Bridging */ = {
+			isa = PBXGroup;
+			children = (
+				A477567D23DB3A85005AE8FD /* TransactionListViewManager.m */,
+			);
+			name = Bridging;
+			sourceTree = "<group>";
+		};
+		A49B52B223DB5CE600A00918 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				A49B52B323DB5D1100A00918 /* TransactionViewModelTransactionItem.swift */,
+				A49B52B723DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift */,
+				A49B52B923DB61E600A00918 /* TransactionViewModel.swift */,
+				A49B52B523DB5D5600A00918 /* TransactionViewModelProtocol.swift */,
+			);
+			name = ViewModels;
 			sourceTree = "<group>";
 		};
 		A4D04BA723D12F27008C1DEC /* Button */ = {
@@ -391,7 +431,6 @@
 			children = (
 				A4D04BA823D12F99008C1DEC /* Button.swift */,
 				A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */,
-				A4D04BAD23D13299008C1DEC /* ButtonManager.swift */,
 			);
 			name = Button;
 			sourceTree = "<group>";
@@ -399,10 +438,10 @@
 		C640359C0E6575CE0A7ECD73 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				4ABE78989066EA78E640934A /* Pods-Rainbow.debug.xcconfig */,
-				7D0A643847F2CCA674E39E65 /* Pods-Rainbow.release.xcconfig */,
-				5837E559F5A2A3BB2C7BD75E /* Pods-Rainbow.localrelease.xcconfig */,
-				19E9E15CE284C848F124D513 /* Pods-Rainbow.staging.xcconfig */,
+				466CDCBFE61F83D2AE1C7410 /* Pods-Rainbow.debug.xcconfig */,
+				11CCA3399B351ABE3E5296FE /* Pods-Rainbow.release.xcconfig */,
+				2837FCCEA7D33A4F128B7574 /* Pods-Rainbow.localrelease.xcconfig */,
+				A8846B6B5BC96732D5A4A107 /* Pods-Rainbow.staging.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -464,11 +503,6 @@
 				668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */,
 				95F2888C850F40C8A26E083B /* SFMono-Regular.otf */,
 				B1089F835D6A4F578009B47F /* SFMono-Semibold.otf */,
-				3C525A1A3D7041E9B151273A /* SF-Pro-Rounded-Bold.otf */,
-				6EC72920E3F74A0DB9512E48 /* SF-Pro-Rounded-Medium.otf */,
-				85D9548686364F04BCD3CA0E /* SF-Pro-Rounded-Regular.otf */,
-				566C33D6583F4A2AB2A260D6 /* SF-Pro-Rounded-Semibold.otf */,
-				9132DFD459E24884961D4D6E /* SF-Pro-Rounded-Heavy.otf */,
 				B809485D25CC4982B166E287 /* SF-Pro-Rounded-Black.otf */,
 				12778C645D644BCC8744A30F /* SF-Pro-Rounded-Bold.otf */,
 				6B6183D1BB01462A8EC6971D /* SF-Pro-Rounded-Heavy.otf */,
@@ -489,20 +523,22 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Rainbow" */;
 			buildPhases = (
-				A0E02F7D98DEA0A875313618 /* [CP] Check Pods Manifest.lock */,
+				B2BF48CC79AEFAAAA7A76369 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				3CF823D3218F310D0024B77B /* ShellScript */,
-				45328AAEE53DABB0EEF4E068 /* [CP-User] [RNFB] Core Configuration */,
-				A60DB963902D74FE3CD4681A /* [CP-User] [RNFB] Crashlytics Configuration */,
+				403CCB5719CD1603C37F2220 /* [CP-User] [RNFB] Core Configuration */,
+				A4451ED5032E4036E311CE0C /* [CP-User] [RNFB] Crashlytics Configuration */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = Rainbow;
+			packageProductDependencies = (
+			);
 			productName = "Hello World";
 			productReference = 13B07F961A680F5B00A75B9A /* Rainbow.app */;
 			productType = "com.apple.product-type.application";
@@ -541,6 +577,8 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
+			packageReferences = (
+			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -568,6 +606,7 @@
 				06B78001D9F2456D9C2D4A86 /* Graphik-Medium.otf in Resources */,
 				24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */,
 				66620AB752074CB6938E956A /* Graphik-MediumItalic.otf in Resources */,
+				A4AF3CCE23DA37F700F230F3 /* TransactionListRequestViewCell.xib in Resources */,
 				F9EB9219ED9A4C72826A5908 /* Graphik-Regular.otf in Resources */,
 				424410A1E84845328C5A0CAB /* Graphik-RegularItalic.otf in Resources */,
 				431D3F0FC92B45A7A0B2476B /* Graphik-Semibold.otf in Resources */,
@@ -614,11 +653,6 @@
 				7287CE1EC33B4913AEE1F4B6 /* SFMono-Medium.otf in Resources */,
 				B7A3E82A4C4449F4A18EB5C2 /* SFMono-Regular.otf in Resources */,
 				92D7BFC8AFDA4E649EA6FF08 /* SFMono-Semibold.otf in Resources */,
-				2861FE6DB5D84461BDB1CFEE /* SF-Pro-Rounded-Bold.otf in Resources */,
-				26ECB74E0DE3400BB3F825D4 /* SF-Pro-Rounded-Medium.otf in Resources */,
-				3F7494BC3E28457D946B815A /* SF-Pro-Rounded-Regular.otf in Resources */,
-				83DB669A1C3B4CABBCCD9AB3 /* SF-Pro-Rounded-Semibold.otf in Resources */,
-				5910AD85BEF64AF9B4B9ED0F /* SF-Pro-Rounded-Heavy.otf in Resources */,
 				041ED9A91C634D62B70DD2A0 /* SF-Pro-Rounded-Black.otf in Resources */,
 				830AB06937A24F36A5A233E4 /* SF-Pro-Rounded-Bold.otf in Resources */,
 				5F1FC886FDBF4E50875905D8 /* SF-Pro-Rounded-Heavy.otf in Resources */,
@@ -636,7 +670,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputPaths = (
@@ -644,7 +678,7 @@
 			name = "Bundle React Native code and images";
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "export SENTRY_PROPERTIES=sentry.properties\nexport NODE_ARGS=--max-old-space-size=2048\nif [[ ! \"$CONFIGURATION\" = *Debug* ]]; then\n    DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\n    export EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DEST/main.jsbundle.map\"\nfi\n\n../node_modules/@sentry/cli/bin/sentry-cli react-native xcode  ../node_modules/react-native/scripts/react-native-xcode.sh\n\nif [[ ! \"$CONFIGURATION\" = *Debug* ]]; then\n    cp $DEST/main.jsbundle* ../ios/\nfi\n";
 		};
@@ -662,7 +696,7 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Fabric/run\"\n";
 		};
-		45328AAEE53DABB0EEF4E068 /* [CP-User] [RNFB] Core Configuration */ = {
+		403CCB5719CD1603C37F2220 /* [CP-User] [RNFB] Core Configuration */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -672,7 +706,7 @@
 			shellPath = /bin/sh;
 			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\n_MAX_LOOKUPS=2;\n_SEARCH_RESULT=''\n_RN_ROOT_EXISTS=''\n_CURRENT_LOOKUPS=1\n_JSON_ROOT=\"'react-native'\"\n_JSON_FILE_NAME='firebase.json'\n_JSON_OUTPUT_BASE64='e30=' # { }\n_CURRENT_SEARCH_DIR=${PROJECT_DIR}\n_PLIST_BUDDY=/usr/libexec/PlistBuddy\n_TARGET_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n_DSYM_PLIST=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist\"\n\n# plist arrays\n_PLIST_ENTRY_KEYS=()\n_PLIST_ENTRY_TYPES=()\n_PLIST_ENTRY_VALUES=()\n\nfunction setPlistValue {\n  echo \"info:      setting plist entry '$1' of type '$2' in file '$4'\"\n  ${_PLIST_BUDDY} -c \"Add :$1 $2 '$3'\" $4 || echo \"info:      '$1' already exists\"\n}\n\nfunction getFirebaseJsonKeyValue () {\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    ruby -e \"require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']\"\n  else\n    echo \"\"\n  fi;\n}\n\nfunction jsonBoolToYesNo () {\n  if [[ $1 == \"false\" ]]; then\n    echo \"NO\"\n  elif [[ $1 == \"true\" ]]; then\n    echo \"YES\"\n  else echo \"NO\"\n  fi\n}\n\necho \"info: -> RNFB build script started\"\necho \"info: 1) Locating ${_JSON_FILE_NAME} file:\"\n\nif [[ -z ${_CURRENT_SEARCH_DIR} ]]; then\n  _CURRENT_SEARCH_DIR=$(pwd)\nfi;\n\nwhile true; do\n  _CURRENT_SEARCH_DIR=$(dirname \"$_CURRENT_SEARCH_DIR\")\n  if [[ \"$_CURRENT_SEARCH_DIR\" == \"/\" ]] || [[ ${_CURRENT_LOOKUPS} -gt ${_MAX_LOOKUPS} ]]; then break; fi;\n  echo \"info:      ($_CURRENT_LOOKUPS of $_MAX_LOOKUPS) Searching in '$_CURRENT_SEARCH_DIR' for a ${_JSON_FILE_NAME} file.\"\n  _SEARCH_RESULT=$(find \"$_CURRENT_SEARCH_DIR\" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | head -n 1)\n  if [[ ${_SEARCH_RESULT} ]]; then\n    echo \"info:      ${_JSON_FILE_NAME} found at $_SEARCH_RESULT\"\n    break;\n  fi;\n  _CURRENT_LOOKUPS=$((_CURRENT_LOOKUPS+1))\ndone\n\nif [[ ${_SEARCH_RESULT} ]]; then\n  _JSON_OUTPUT_RAW=$(cat \"${_SEARCH_RESULT}\")\n  _RN_ROOT_EXISTS=$(ruby -e \"require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]\" || echo '')\n\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    _JSON_OUTPUT_BASE64=$(python -c 'import json,sys,base64;print(base64.b64encode(json.dumps(json.loads(open('\"'${_SEARCH_RESULT}'\"').read())['${_JSON_ROOT}'])))' || echo \"e30=\")\n  fi\n\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n\n  # config.messaging_auto_init_enabled\n  _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"messaging_auto_init_enabled\")\n  if [[ $_MESSAGING_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseMessagingAutoInitEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_MESSAGING_AUTO_INIT\")\")\n  fi\n\n  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes usful\n  _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"crashlytics_disable_auto_disabler\")\n  if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == \"true\" ]]; then\n    echo \"Disabled Crashlytics auto disabler.\" # do nothing\n  else\n    _PLIST_ENTRY_KEYS+=(\"firebase_crashlytics_collection_enabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"NO\")\n  fi\n\n  # config.admob_delay_app_measurement_init\n  _ADMOB_DELAY_APP_MEASUREMENT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"admob_delay_app_measurement_init\")\n  if [[ $_ADMOB_DELAY_APP_MEASUREMENT == \"true\" ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GADDelayAppMeasurementInit\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"YES\")\n  fi\n\n  # config.admob_ios_app_id\n  _ADMOB_IOS_APP_ID=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"admob_ios_app_id\")\n  if [[ $_ADMOB_IOS_APP_ID ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GADApplicationIdentifier\")\n    _PLIST_ENTRY_TYPES+=(\"string\")\n    _PLIST_ENTRY_VALUES+=(\"$_ADMOB_IOS_APP_ID\")\n  fi\nelse\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n  echo \"warning:   A firebase.json file was not found, whilst this file is optional it is recommended to include it to configure firebase services in React Native Firebase.\"\nfi;\n\necho \"info: 2) Injecting Info.plist entries: \"\n\n# Log out the keys we're adding\nfor i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n  echo \"    ->  $i) ${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\"\ndone\n\nfor plist in \"${_TARGET_PLIST}\" \"${_DSYM_PLIST}\" ; do\n  if [[ -f \"${plist}\" ]]; then\n\n    # paths with spaces break the call to setPlistValue. temporarily modify\n    # the shell internal field separator variable (IFS), which normally \n    # includes spaces, to consist only of line breaks\n    oldifs=$IFS\n    IFS=\"\n\"\n\n    for i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n      setPlistValue \"${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\" \"${plist}\"\n    done\n\n    # restore the original internal field separator value\n    IFS=$oldifs\n  else\n    echo \"warning:   A Info.plist build output file was not found (${plist})\"\n  fi\ndone\n\necho \"info: <- RNFB build script finished\"\n\n";
 		};
-		8C1D9934C43085FED5C8B69C /* [CP-User] [RNFB] Crashlytics Configuration */ = {
+		A4451ED5032E4036E311CE0C /* [CP-User] [RNFB] Crashlytics Configuration */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -682,7 +716,7 @@
 			shellPath = /bin/sh;
 			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\nif [[ ${PODS_ROOT} ]]; then\n  echo \"info: Exec Fabric Run from Pods\"\n  \"${PODS_ROOT}/Fabric/run\"\nelse\n  echo \"info: Exec Fabric Run from framework\"\n  \"${PROJECT_DIR}/Fabric.framework/run\"\nfi\n";
 		};
-		A0E02F7D98DEA0A875313618 /* [CP] Check Pods Manifest.lock */ = {
+		B2BF48CC79AEFAAAA7A76369 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -704,16 +738,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A60DB963902D74FE3CD4681A /* [CP-User] [RNFB] Crashlytics Configuration */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			name = "[CP-User] [RNFB] Crashlytics Configuration";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\nif [[ ${PODS_ROOT} ]]; then\n  echo \"info: Exec Fabric Run from Pods\"\n  \"${PODS_ROOT}/Fabric/run\"\nelse\n  echo \"info: Exec Fabric Run from framework\"\n  \"${PROJECT_DIR}/Fabric.framework/run\"\nfi\n";
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -721,22 +745,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A4704B4A23C546DA00E50E4B /* Transaction.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				3CBE29CD2381E43900BE05AC /* Dummy.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				A4704B4C23C546DA00E50E4B /* TransactionListViewManager.m in Sources */,
+				A49B52B623DB5D5600A00918 /* TransactionViewModelProtocol.swift in Sources */,
+				A4F8DACB23DF85DF00560E47 /* TransactionListBaseCell.swift in Sources */,
+				A49B52C023DCCDA800A00918 /* TransactionRequestSection.swift in Sources */,
 				A4704B4823C546DA00E50E4B /* TransactionListViewCell.swift in Sources */,
 				A485E61423C8ED6000E5C3D4 /* TransactionListViewHeader.swift in Sources */,
+				A49B52B423DB5D1100A00918 /* TransactionViewModelTransactionItem.swift in Sources */,
 				66FEC91623EDA14000A0F367 /* RoundedCornerView.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				A4704B4B23C546DA00E50E4B /* TransactionListViewManager.swift in Sources */,
+				A477567E23DB3A85005AE8FD /* TransactionListViewManager.m in Sources */,
+				A477567C23DB2FAA005AE8FD /* Transaction.swift in Sources */,
 				A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */,
 				A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */,
-				A4D04BAE23D13299008C1DEC /* ButtonManager.swift in Sources */,
 				A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */,
+				A49B52B823DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift in Sources */,
+				A44A4EEE23EC928900B543F1 /* CoinIconWithProgressBar.swift in Sources */,
+				A4AF3CD023DA3A0F00F230F3 /* TransactionListRequestViewCell.swift in Sources */,
 				A4D04BA923D12F99008C1DEC /* Button.swift in Sources */,
 				A4704B4923C546DA00E50E4B /* TransactionListView.swift in Sources */,
+				A49B52BC23DBA61200A00918 /* TransactionData.swift in Sources */,
+				A49B52AF23DB411900A00918 /* TransactionRequest.swift in Sources */,
+				A49B52BA23DB61E600A00918 /* TransactionViewModel.swift in Sources */,
+				A49B52C223DCD11D00A00918 /* TransactionSection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -757,7 +790,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4ABE78989066EA78E640934A /* Pods-Rainbow.debug.xcconfig */;
+			baseConfigurationReference = 466CDCBFE61F83D2AE1C7410 /* Pods-Rainbow.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_OPTIMIZATION = time;
@@ -814,7 +847,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7D0A643847F2CCA674E39E65 /* Pods-Rainbow.release.xcconfig */;
+			baseConfigurationReference = 11CCA3399B351ABE3E5296FE /* Pods-Rainbow.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_OPTIMIZATION = "";
@@ -906,7 +939,7 @@
 		};
 		2C6A799821127ED9003AFB37 /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 19E9E15CE284C848F124D513 /* Pods-Rainbow.staging.xcconfig */;
+			baseConfigurationReference = A8846B6B5BC96732D5A4A107 /* Pods-Rainbow.staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_OPTIMIZATION = "";
@@ -998,7 +1031,7 @@
 		};
 		2C87B79A2197FA1900682EC4 /* LocalRelease */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5837E559F5A2A3BB2C7BD75E /* Pods-Rainbow.localrelease.xcconfig */;
+			baseConfigurationReference = 2837FCCEA7D33A4F128B7574 /* Pods-Rainbow.localrelease.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_OPTIMIZATION = time;
@@ -1157,3 +1190,4 @@
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }
+

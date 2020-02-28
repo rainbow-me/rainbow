@@ -1,5 +1,6 @@
 import { find, get, isEmpty, replace, toLower } from 'lodash';
 import chains from '../references/chains.json';
+import networkTypes from '../helpers/networkTypes';
 import {
   add,
   convertNumberToString,
@@ -69,7 +70,7 @@ const getDataString = (func, arrVals) => {
  */
 const getNetworkFromChainId = chainId => {
   const networkData = find(chains, ['chain_id', chainId]);
-  return get(networkData, 'network', 'mainnet');
+  return get(networkData, 'network', networkTypes.mainnet);
 };
 
 /**
@@ -79,6 +80,19 @@ const getNetworkFromChainId = chainId => {
 const getChainIdFromNetwork = network => {
   const chainData = find(chains, ['network', network]);
   return get(chainData, 'chain_id', 1);
+};
+
+/**
+ * @desc get etherscan host from network string
+ * @param  {String} network
+ */
+const getEtherscanHostFromNetwork = network => {
+  const base_host = 'etherscan.io';
+  if (network === networkTypes.mainnet) {
+    return base_host;
+  } else {
+    return `${network}.${base_host}`;
+  }
 };
 
 /**
@@ -109,6 +123,7 @@ export default {
   getBalanceAmount,
   getChainIdFromNetwork,
   getDataString,
+  getEtherscanHostFromNetwork,
   getEthPriceUnit,
   getNetworkFromChainId,
   removeHexPrefix,

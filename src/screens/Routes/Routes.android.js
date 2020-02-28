@@ -274,7 +274,7 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
       }
 
       if (routeName !== prevRouteName) {
-        let paramsToTrack = null;
+        let paramsToTrack = {};
 
         if (
           prevRouteName === 'MainExchangeScreen' &&

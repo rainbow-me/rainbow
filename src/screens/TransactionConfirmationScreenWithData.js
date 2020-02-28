@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import { isEmulatorSync } from 'react-native-device-info';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get, isNil, omit } from 'lodash';
@@ -42,7 +43,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
       this.props,
       'navigation.state.params.openAutomatically'
     );
-    if (openAutomatically) {
+    if (openAutomatically && !isEmulatorSync()) {
       Vibration.vibrate();
     }
 

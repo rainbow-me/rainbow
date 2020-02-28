@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
+import { Platform, View } from 'react-native';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
@@ -36,8 +37,25 @@ const transition = (
 const SendEmptyState = () => {
   const ref = useRef();
 
-  if (ref.current) {
+  if (ref.current && Platform.OS === 'ios') {
     ref.current.animateNextTransition();
+  }
+
+  const icon = (
+    <Icon
+      color={colors.alpha(colors.blueGreyDark, 0.06)}
+      name="send"
+      style={{
+        height: 88,
+        marginBottom: Platform.OS === 'ios' ? 0 : 150,
+        marginTop: Platform.OS === 'ios' ? 0 : 150,
+        width: 91,
+      }}
+    />
+  );
+
+  if (Platform.OS === 'android') {
+    return <View style={{ alignItems: 'center', flex: 1 }}>{icon}</View>;
   }
 
   return (
@@ -48,14 +66,7 @@ const SendEmptyState = () => {
       paddingBottom={sheetVerticalOffset + 19}
     >
       <Transitioning.View ref={ref} transition={transition}>
-        <Icon
-          color={colors.alpha(colors.blueGreyDark, 0.06)}
-          name="send"
-          style={{
-            height: 88,
-            width: 91,
-          }}
-        />
+        {icon}
       </Transitioning.View>
     </Centered>
   );

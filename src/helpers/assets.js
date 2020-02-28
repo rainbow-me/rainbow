@@ -1,5 +1,7 @@
 import { compact, get, groupBy, sortBy } from 'lodash';
 
+const amountOfShowedCoins = 5;
+
 export const buildAssetHeaderUniqueIdentifier = ({
   title,
   totalItems,
@@ -30,6 +32,12 @@ export const buildCoinsList = assets => {
     } else {
       smallBalances.assets.push(assets[i]);
     }
+  }
+
+  if (newAssets.length > amountOfShowedCoins) {
+    smallBalances.assets = newAssets
+      .splice(amountOfShowedCoins)
+      .concat(smallBalances.assets);
   }
 
   if (smallBalances.assets.length > 0) {

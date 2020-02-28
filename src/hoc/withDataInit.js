@@ -9,6 +9,7 @@ import {
   getAccountInfo,
 } from '../handlers/localstorage/accountLocal';
 import { hasEthBalance } from '../handlers/web3';
+import networkTypes from '../helpers/networkTypes';
 import { walletInit } from '../model/wallet';
 import {
   dataClearState,
@@ -27,6 +28,7 @@ import {
 } from '../redux/openStateSettings';
 import { requestsLoadState, requestsClearState } from '../redux/requests';
 import {
+  settingsLoadNetwork,
   settingsLoadState,
   settingsUpdateAccountAddress,
   settingsUpdateAccountName,
@@ -69,6 +71,7 @@ export default Component =>
       requestsClearState,
       requestsLoadState,
       setIsWalletEthZero,
+      settingsLoadNetwork,
       settingsLoadState,
       settingsUpdateAccountAddress,
       uniqueTokensClearState,
@@ -117,6 +120,7 @@ export default Component =>
         try {
           // await ownProps.dataTokenOverridesInit();
           sentryUtils.addInfoBreadcrumb('Initialize account data');
+          console.log('Initialize account data for ', ownProps.network);
           ownProps.explorerInit();
           ownProps.uniswapPairsInit();
           await ownProps.uniqueTokensRefreshState();
@@ -129,16 +133,33 @@ export default Component =>
       loadAccountData: ownProps => async () => {
         sentryUtils.addInfoBreadcrumb('Load wallet data');
         await ownProps.openStateSettingsLoadState();
+        const promises = [];
         const p1 = ownProps.settingsLoadState();
-        const p2 = ownProps.dataLoadState();
-        const p3 = ownProps.uniqueTokensLoadState();
-        const p4 = ownProps.walletConnectLoadState();
-        const p5 = ownProps.uniswapLoadState();
-        const p6 = ownProps.requestsLoadState();
+        promises.push(p1);
+        if (ownProps.network === networkTypes.mainnet) {
+          const p2 = ownProps.dataLoadState();
+          promises.push(p2);
+          const p3 = ownProps.uniqueTokensLoadState();
+          promises.push(p3);
+          const p4 = ownProps.walletConnectLoadState();
+          promises.push(p4);
+          const p5 = ownProps.requestsLoadState();
+          promises.push(p5);
+        }
+
+        const p6 = ownProps.uniswapLoadState();
+        promises.push(p6);
         const p7 = ownProps.contactsLoadState();
-        return promiseUtils.PromiseAllWithFails([p1, p2, p3, p4, p5, p6, p7]);
+        promises.push(p7);
+
+        return promiseUtils.PromiseAllWithFails(promises);
       },
       refreshAccountData: ownProps => async () => {
+        // Nothing to refresh for testnets
+        if (ownProps.network !== networkTypes.mainnet) {
+          return Promise.all([delay(1250)]);
+        }
+
         try {
           const getUniswap = ownProps.uniswapUpdateState();
           const getUniqueTokens = ownProps.uniqueTokensRefreshState();
@@ -159,6 +180,9 @@ export default Component =>
       initializeWallet: ownProps => async seedPhrase => {
         try {
           sentryUtils.addInfoBreadcrumb('Start wallet setup');
+          // Load the network first
+          await ownProps.settingsLoadNetwork();
+
           const { isImported, isNew, walletAddress } = await walletInit(
             seedPhrase
           );
@@ -187,7 +211,7 @@ export default Component =>
           } else {
             const isWalletEmpty = await getIsWalletEmpty(
               walletAddress,
-              'mainnet'
+              ownProps.network
             );
             if (isNil(isWalletEmpty)) {
               ownProps.checkEthBalance(walletAddress);

@@ -94,6 +94,35 @@ const exchangeDetailsStyleInterpolator = ({
 
   return {
     cardStyle: {
+      // Translation for the animation of the current card
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
+      opacity: backgroundOpacity,
+      shadowColor: colors.black,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.4,
+      shadowRadius: 25,
+    },
+  };
+};
+
+const expandStyleInterpolator = targetOpacity => ({
+  current: { progress: current },
+  layouts: { screen },
+}) => {
+  const backgroundOpacity = current.interpolate({
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, targetOpacity, targetOpacity],
+  });
+
+  const translateY = current.interpolate({
+    inputRange: [0, 1, 2],
+    outputRange: [screen.height, 0, -screen.height / 3],
+  });
+
+  return {
+    cardStyle: {
       transform: [{ translateY }],
     },
     overlayStyle: {
@@ -132,35 +161,6 @@ const savingsStyleInterpolator = ({
       shadowColor: colors.black,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.4,
-      shadowRadius: 25,
-    },
-  };
-};
-
-const expandStyleInterpolator = targetOpacity => ({
-  current: { progress: current },
-  layouts: { screen },
-}) => {
-  const backgroundOpacity = current.interpolate({
-    inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, targetOpacity, targetOpacity],
-  });
-
-  const translateY = current.interpolate({
-    inputRange: [0, 1, 2],
-    outputRange: [screen.height, 0, -screen.height / 3],
-  });
-
-  return {
-    cardStyle: {
-      transform: [{ translateY }],
-    },
-    overlayStyle: {
-      backgroundColor: 'rgb(37, 41, 46)',
-      opacity: backgroundOpacity,
-      shadowColor: colors.dark,
-      shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.6,
       shadowRadius: 25,
     },
   };
@@ -324,17 +324,6 @@ export const exchangeDetailsPreset = {
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
-export const overlayExpandedPreset = {
-  cardOverlayEnabled: true,
-  cardShadowEnabled: true,
-  cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: expandStyleInterpolator(0.4),
-  cardTransparent: true,
-  gestureDirection: 'vertical',
-  gestureResponseDistance,
-  transitionSpec: { close: closeSpec, open: openSpec },
-};
-
 export const savingsPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
@@ -344,6 +333,17 @@ export const savingsPreset = {
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+};
+
+export const overlayExpandedPreset = {
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
+  cardStyleInterpolator: expandStyleInterpolator(0.7),
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
+  transitionSpec: { close: closeSpec, open: openSpec },
 };
 
 export const sheetPreset = {

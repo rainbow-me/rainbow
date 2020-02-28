@@ -25,7 +25,10 @@ import { colors, padding, shadow, borders } from '../styles';
 import { isValidSeed as validateSeed } from '../helpers/validators';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 
-const keyboardVerticalOffset = sheetVerticalOffset + 10;
+const keyboardVerticalOffset =
+  Platform.OS === 'android'
+    ? sheetVerticalOffset - 240
+    : sheetVerticalOffset + 10;
 
 const statusBarHeight = getStatusBarHeight(true);
 
@@ -64,6 +67,10 @@ const StyledImportButton = styled(
     disabled ? '#D2D3D7' : colors.appleBlue};
   border-radius: 15px;
   margin-bottom: 19px;
+`;
+
+const StyledInput = styled(Input)`
+  min-height: 50;
 `;
 
 const ConfirmImportAlert = onSuccess =>
@@ -199,13 +206,18 @@ const ImportSeedPhraseSheet = ({
         keyboardVerticalOffset={keyboardVerticalOffset}
       >
         <Centered css={padding(0, 50)} flex={1}>
-          <Input
-            lineHeight="loosest"
-            multiline
-            ref={isNativeStackAvailable ? inputRef : inputRefListener}
+          <StyledInput
             align="center"
             autoFocus
+            autoCapitalize="none"
+            autoCorrect={false}
             enablesReturnKeyAutomatically
+            keyboardType={
+              Platform.OS === 'android' ? 'visible-password' : 'default'
+            }
+            multiline
+            numberOfLines={7}
+            ref={isNativeStackAvailable ? inputRef : inputRefListener}
             onChangeText={handleSetSeedPhrase}
             onSubmitEditing={onPressImportButton}
             placeholder="Seed phrase or private key"

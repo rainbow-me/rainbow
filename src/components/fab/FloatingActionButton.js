@@ -4,7 +4,7 @@ import { View } from 'react-primitives';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { borders, colors, position } from '../../styles';
 import { isNewValueForObjectPaths } from '../../utils';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { InnerBorder } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 

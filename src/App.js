@@ -28,6 +28,7 @@ import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { FlexItem } from './components/layout';
 import OfflineBadge from './components/OfflineBadge';
+import TestnetBadge from './components/TestnetBadge';
 import {
   reactNativeDisableYellowBox,
   reactNativeEnableLogbox,
@@ -35,7 +36,11 @@ import {
   showNetworkResponses,
 } from './config/debug';
 import monitorNetwork from './debugging/network';
-import { withDeepLink, withWalletConnectOnSessionRequest } from './hoc';
+import {
+  withDeepLink,
+  withWalletConnectOnSessionRequest,
+  withAccountSettings,
+} from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { Navigation } from './navigation';
@@ -44,7 +49,6 @@ import { requestsForTopic } from './redux/requests';
 import Routes from './screens/Routes';
 import { parseQueryParams } from './utils';
 
-// eslint-disable-next-line no-undef
 if (__DEV__) {
   console.disableYellowBox = reactNativeDisableYellowBox;
   reactNativeEnableLogbox && unstable_enableLogBox();
@@ -180,6 +184,7 @@ class App extends Component {
         <FlexItem>
           <OfflineBadge />
           <Routes ref={this.handleNavigatorRef} />
+          <TestnetBadge network={this.props.network} />
         </FlexItem>
       </Provider>
     </SafeAreaProvider>
@@ -189,6 +194,7 @@ class App extends Component {
 const AppWithRedux = compose(
   withProps({ store }),
   withDeepLink,
+  withAccountSettings,
   withWalletConnectOnSessionRequest,
   connect(null, {
     requestsForTopic,

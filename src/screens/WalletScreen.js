@@ -1,4 +1,5 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import Animated from 'react-native-reanimated';
@@ -13,9 +14,12 @@ import {
 } from '../components/header';
 import { Page } from '../components/layout';
 import { withDataInit, withStatusBarStyle, withKeyboardHeight } from '../hoc';
-import { useWalletSectionsData } from '../hooks';
+import { useAccountSettings, useWalletSectionsData } from '../hooks';
+import ExchangeFab from '../components/fab/ExchangeFab';
+import SendFab from '../components/fab/SendFab';
 import { position } from '../styles';
 import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
+import networkInfo from '../helpers/networkInfo';
 
 const WalletScreen = ({
   initializeWallet,
@@ -37,6 +41,7 @@ const WalletScreen = ({
       })
       .catch(() => {});
   }, [initializeWallet, setKeyboardHeight]);
+  const { network } = useAccountSettings();
   const { isEmpty, isWalletEthZero, sections } = useWalletSectionsData();
 
   /*
@@ -53,6 +58,12 @@ const WalletScreen = ({
     ]);
   */
 
+  // Show the exchange fab only for supported networks
+  // (mainnet & rinkeby)
+  const fabs = get(networkInfo[network], 'exchange_enabled')
+    ? [ExchangeFab, SendFab]
+    : [SendFab];
+
   return (
     <Page {...position.sizeAsObject('100%')} flex={1}>
       {/* Line below appears to be needed for having scrollViewTracker persistent while
@@ -60,6 +71,7 @@ const WalletScreen = ({
       <Animated.Code exec={scrollViewTracker} />
       <FabWrapper
         disabled={isWalletEthZero}
+        fabs={fabs}
         scrollViewTracker={scrollViewTracker}
         sections={sections}
       >
@@ -72,6 +84,7 @@ const WalletScreen = ({
           fetchData={refreshAccountData}
           isEmpty={isEmpty}
           isWalletEthZero={isWalletEthZero}
+          network={network}
           scrollViewTracker={scrollViewTracker}
           sections={sections}
         />
