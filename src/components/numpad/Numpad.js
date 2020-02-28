@@ -29,7 +29,7 @@ const KeyboardRow = withProps({
   width: '100%',
 })(Row);
 
-const VirtualKeyboard = ({ decimal, onPress, ...props }) => {
+const Numpad = ({ decimal, onPress, width }) => {
   const renderCell = symbol => (
     <KeyboardButton key={symbol} onPress={() => onPress(symbol.toString())}>
       <Rounded align="center" color={KeyColor} size={44} weight="bold">
@@ -41,7 +41,7 @@ const VirtualKeyboard = ({ decimal, onPress, ...props }) => {
   const renderRow = cells => <KeyboardRow>{cells.map(renderCell)}</KeyboardRow>;
 
   return (
-    <Centered direction="column" {...props}>
+    <Centered direction="column" width={width}>
       {renderRow([1, 2, 3])}
       {renderRow([4, 5, 6])}
       {renderRow([7, 8, 9])}
@@ -56,13 +56,16 @@ const VirtualKeyboard = ({ decimal, onPress, ...props }) => {
   );
 };
 
-VirtualKeyboard.propTypes = {
+Numpad.propTypes = {
   decimal: PropTypes.bool,
   onPress: PropTypes.func.isRequired,
+  width: PropTypes.number,
 };
 
-VirtualKeyboard.defaultProps = {
+Numpad.defaultProps = {
   decimal: true,
 };
 
-export default React.memo(VirtualKeyboard);
+const neverRerender = () => true;
+
+export default React.memo(Numpad, neverRerender);
