@@ -11,7 +11,6 @@ import React, {
 } from 'react';
 import { TextInput, InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { useSelector } from 'react-redux';
 import { toClass } from 'recompact';
 import { interpolate } from '../components/animations';
 import {
@@ -44,8 +43,13 @@ import {
   isZero,
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
-import { sortAssetsByNativeAmountSelector } from '../hoc/assetSelectors';
-import { useMagicFocus, usePrevious, useUniswapAssetsInWallet } from '../hooks';
+import {
+  useAccountAssets,
+  useAccountSettings,
+  useMagicFocus,
+  usePrevious,
+  useUniswapAssetsInWallet,
+} from '../hooks';
 import { loadWallet } from '../model/wallet';
 import { executeRap } from '../raps/common';
 import ethUnits from '../references/ethereum-units.json';
@@ -91,16 +95,9 @@ const ExchangeModal = ({
   web3ListenerInit,
   web3ListenerStop,
 }) => {
-  const { allAssets } = useSelector(sortAssetsByNativeAmountSelector);
+  const { allAssets } = useAccountAssets();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
-
-  const { accountAddress, chainId, nativeCurrency } = useSelector(
-    ({ settings: { accountAddress, chainId, nativeCurrency } }) => ({
-      accountAddress,
-      chainId,
-      nativeCurrency,
-    })
-  );
+  const { accountAddress, chainId, nativeCurrency } = useAccountSettings();
 
   const [inputAmount, setInputAmount] = useState(null);
   const [inputAmountDisplay, setInputAmountDisplay] = useState(null);

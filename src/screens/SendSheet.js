@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
 import {
@@ -29,9 +28,11 @@ import {
   formatInputDecimals,
 } from '../helpers/utilities';
 import { checkIsValidAddress } from '../helpers/validators';
-import { sortAssetsByNativeAmountSelector } from '../hoc/assetSelectors';
-import { sendableUniqueTokensSelector } from '../hoc/uniqueTokenSelectors';
-import { createNativeCurrencySelector } from '../hoc/accountSettingsSelectors';
+import {
+  useAccountAssets,
+  useAccountSettings,
+  useSendableUniqueTokens,
+} from '../hooks';
 import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
 import { deviceUtils, ethereumUtils, gasUtils } from '../utils';
@@ -76,16 +77,13 @@ const SendSheet = ({
   txFees,
   ...props
 }) => {
-  const { allAssets } = useSelector(sortAssetsByNativeAmountSelector);
-  const { sendableUniqueTokens } = useSelector(sendableUniqueTokensSelector);
-  const { nativeCurrency, nativeCurrencySymbol } = useSelector(
-    createNativeCurrencySelector
-  );
-  const { accountAddress } = useSelector(
-    ({ settings: { accountAddress } }) => ({
-      accountAddress,
-    })
-  );
+  const { allAssets } = useAccountAssets();
+  const { sendableUniqueTokens } = useSendableUniqueTokens();
+  const {
+    accountAddress,
+    nativeCurrency,
+    nativeCurrencySymbol,
+  } = useAccountSettings();
 
   const { navigate } = useNavigation();
   const [amountDetails, setAmountDetails] = useState({

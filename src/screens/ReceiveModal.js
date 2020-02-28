@@ -1,8 +1,6 @@
-import { toLower } from 'lodash';
 import React from 'react';
 import { Share } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components/primitives';
 import Divider from '../components/Divider';
 import { Column } from '../components/layout';
@@ -15,7 +13,7 @@ import {
 import QRCodeDisplay from '../components/QRCodeDisplay';
 import { FloatingEmojis } from '../components/floating-emojis';
 import { Br, Monospace, Text } from '../components/text';
-import { useClipboard } from '../hooks';
+import { useAccountSettings, useClipboard } from '../hooks';
 import { colors } from '../styles';
 import { haptics } from '../utils';
 
@@ -33,9 +31,7 @@ const AddressText = styled(Monospace).attrs({
 const ReceiveScreen = () => {
   const { setClipboard } = useClipboard();
   const { goBack } = useNavigation();
-  const accountAddress = useSelector(({ settings: { accountAddress } }) =>
-    toLower(accountAddress)
-  );
+  const { accountAddress } = useAccountSettings();
 
   return (
     <Modal height={472} onCloseModal={goBack}>
