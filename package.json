@@ -27,7 +27,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,json}": [
-      "eslint --ext '.js,.jsx,.json'",
+      "eslint --ext '.js,.jsx,.json' -c .eslintrc.json",
       "git add"
     ]
   },

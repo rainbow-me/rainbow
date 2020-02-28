@@ -44,7 +44,6 @@ import { requestsForTopic } from './redux/requests';
 import Routes from './screens/Routes';
 import { parseQueryParams } from './utils';
 
-// eslint-disable-next-line no-undef
 if (__DEV__) {
   console.disableYellowBox = reactNativeDisableYellowBox;
   reactNativeEnableLogbox && unstable_enableLogBox();
