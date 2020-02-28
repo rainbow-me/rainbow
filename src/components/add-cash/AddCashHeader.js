@@ -25,23 +25,25 @@ const Title = withProps({
   weight: 'bold',
 })(Rounded);
 
-const AddCashHeader = ({ limitDaily, limitYearly }) => (
+const AddCashHeader = ({ subtitles }) => (
   <Column align="center" paddingVertical={isNativeStackAvailable ? 6 : 8}>
     <SheetHandle />
     <ColumnWithMargins margin={4} paddingTop={7}>
       <Title>Add Cash</Title>
-      <TextCycler
-        height={17}
-        items={[`Up to $${limitDaily} daily`, `Up to $${limitYearly} yearly`]}
-        renderer={SubTitle}
-      />
+      {subtitles && (
+        <TextCycler
+          height={17}
+          items={subtitles}
+          paddingVertical={14}
+          renderer={SubTitle}
+        />
+      )}
     </ColumnWithMargins>
   </Column>
 );
 
 AddCashHeader.propTypes = {
-  limitDaily: PropTypes.number,
-  limitYearly: PropTypes.number,
+  subtitles: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default React.memo(AddCashHeader);

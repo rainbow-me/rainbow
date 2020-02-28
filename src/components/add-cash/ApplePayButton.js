@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { colors } from '../../styles';
+import { magicMemo } from '../../utils';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Icon } from '../icons';
 
@@ -31,4 +32,4 @@ ApplePayButton.propTypes = {
   onSubmit: PropTypes.func,
 };
 
-export default ApplePayButton;
+export default magicMemo(ApplePayButton, 'disabled');

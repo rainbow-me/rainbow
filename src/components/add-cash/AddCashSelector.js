@@ -48,4 +48,5 @@ AddCashSelector.propTypes = {
   onSelect: PropTypes.func,
 };
 
-export default React.memo(AddCashSelector);
+const neverRerender = () => true;
+export default React.memo(AddCashSelector, neverRerender);
