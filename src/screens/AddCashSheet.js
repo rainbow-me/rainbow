@@ -1,17 +1,16 @@
 import { isNil } from 'lodash';
-import React, { useState } from 'react';
+import React from 'react';
 import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { withNavigation } from 'react-navigation';
-import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
+import { useSafeArea } from 'react-native-safe-area-context';
 import {
   AddCashForm,
   AddCashHeader,
   AddCashStatus,
 } from '../components/add-cash';
-import { Column } from '../components/layout';
-import { withTransitionProps } from '../hoc';
+import { Column, FlexItem } from '../components/layout';
+import { useDimensions, useWyreApplePay } from '../hooks';
 import { borders, colors } from '../styles';
 import { deviceUtils } from '../utils';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
@@ -29,12 +28,28 @@ const SheetContainer = styled(Column)`
   background-color: ${colors.white};
   height: ${isNativeStackAvailable ? deviceHeight : sheetHeight};
   top: ${isNativeStackAvailable ? 0 : statusBarHeight};
+  width: 100%;
 `;
 
+const headerSubtitles = [
+  `Up to $${cashLimitDaily} daily`,
+  `Up to $${cashLimitYearly} yearly`,
+];
+
 const AddCashSheet = () => {
-  const [orderStatus, setOrderStatus] = useState(null);
-  const [transferHash, setTransferHash] = useState(null);
-  const [transferStatus, setTransferStatus] = useState(null);
+  const { isNarrowPhone } = useDimensions();
+  const insets = useSafeArea();
+
+  const {
+    onPurchase,
+    orderStatus,
+    transferHash,
+    transferStatus,
+  } = useWyreApplePay();
+
+  const showOrderStatus = true || !isNil(orderStatus);
+
+  console.log('insets', insets);
 
   return (
     <SheetContainer>
@@ -42,37 +57,28 @@ const AddCashSheet = () => {
       <Column
         align="center"
         height={isNativeStackAvailable ? sheetHeight : '100%'}
-        justify="space-between"
+        justify="end"
+        paddingBottom={isNarrowPhone ? 15 : insets.bottom + 21}
       >
-        <AddCashHeader
-          limitDaily={cashLimitDaily}
-          limitYearly={cashLimitYearly}
-        />
-        {!isNil(orderStatus) ? (
-          <AddCashStatus
-            orderStatus={orderStatus}
-            transferHash={transferHash}
-            transferStatus={transferStatus}
-          />
-        ) : (
-          <AddCashForm
-            limitDaily={cashLimitDaily}
-            limitYearly={cashLimitYearly}
-            transferHash={transferHash}
-            setOrderStatus={setOrderStatus}
-            setTransferHash={setTransferHash}
-            setTransferStatus={setTransferStatus}
-          />
-        )}
+        <AddCashHeader subtitles={showOrderStatus ? null : headerSubtitles} />
+        <FlexItem>
+          {showOrderStatus ? (
+            <AddCashStatus
+              orderStatus={orderStatus}
+              transferHash={transferHash}
+              transferStatus={transferStatus}
+            />
+          ) : (
+            <AddCashForm
+              limitDaily={cashLimitDaily}
+              limitYearly={cashLimitYearly}
+              onPurchase={onPurchase}
+            />
+          )}
+        </FlexItem>
       </Column>
     </SheetContainer>
   );
 };
 
-export default compose(
-  withNavigation,
-  withTransitionProps,
-  withProps(({ transitionProps: { isTransitioning } }) => ({
-    isTransitioning,
-  }))
-)(AddCashSheet);
+export default AddCashSheet;

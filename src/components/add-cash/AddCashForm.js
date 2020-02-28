@@ -1,35 +1,14 @@
-import MaskedView from '@react-native-community/masked-view';
-import { isEmpty, toLower } from 'lodash';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import { View } from 'react-native';
-import RadialGradient from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
-import { withNavigation } from 'react-navigation';
-import { compose, withProps } from 'recompact';
-import { ApplePayButton, VirtualKeyboard } from '../../components/add-cash';
-import { Centered, ColumnWithMargins } from '../../components/layout';
-import {
-  requestWyreApplePay,
-  trackWyreOrder,
-  trackWyreTransfer,
-} from '../../handlers/wyre';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import TransactionTypes from '../../helpers/transactionTypes';
-import {
-  WYRE_ORDER_STATUS_TYPES,
-  WYRE_TRANSFER_STATUS_TYPES,
-} from '../../helpers/wyreStatusTypes';
-import {
-  withAccountAddress,
-  withAccountData,
-  withTransitionProps,
-} from '../../hoc';
-import { AddCashCurrencies, AddCashCurrencyInfo } from '../../references';
-import { colors, padding } from '../../styles';
-import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../../utils';
-import AddCashSelector from '../../components/add-cash/AddCashSelector';
-import { Text } from '../text';
+import { useDimensions } from '../../hooks';
+import { padding } from '../../styles';
+import { Centered, ColumnWithMargins } from '../layout';
+import { Numpad, NumpadValue } from '../numpad';
+import AddCashFooter from './AddCashFooter';
+import AddCashSelector from './AddCashSelector';
 
 const {
   set,
@@ -76,131 +55,30 @@ function runSpring(clock, value, dest, velocity, stiffness, damping) {
   ]);
 }
 
-const cashFontSize = deviceUtils.dimensions.width * 0.24;
-const isTinyIphone = deviceUtils.dimensions.width < 375 ? true : false;
-const keyboardWidth = isTinyIphone ? 275 : '100%';
-
-const gradientXPoint = deviceUtils.dimensions.width - 48;
-const gradientPoints = [gradientXPoint, 53.5];
-
 const shakeAnimation = () => runSpring(new Clock(), -10, 0, -1000, 5500, 35);
 
 const currencies = ['DAI', 'ETH'];
 const initialCurrencyIndex = 0;
 
-const AddCashForm = ({
-  accountAddress,
-  assets,
-  dataAddNewPurchaseTransaction,
-  limitDaily,
-  transferHash,
-  setOrderStatus,
-  setTransferHash,
-  setTransferStatus,
-}) => {
+const AddCashForm = ({ limitDaily, limitYearly, onPurchase }) => {
+  const { isNarrowPhone } = useDimensions();
+
+  console.log('limitYearly', limitYearly);
+
   const [scaleAnim, setScaleAnim] = useState(1);
   const [shakeAnim, setShakeAnim] = useState(0);
-  const [text, setText] = useState(null);
-  const [completedPaymentResponse, setCompletedPaymentResponse] = useState(
-    false
-  );
-  const [destCurrency, setDestCurrency] = useState(
-    currencies[initialCurrencyIndex]
-  );
 
-  const wyreOrderStatus = async (orderId, paymentResponse) => {
-    try {
-      if (!completedPaymentResponse && isEmpty(orderId)) {
-        paymentResponse.complete('failure');
-        setCompletedPaymentResponse(true);
-      }
-      const { orderStatus, transferId } = await trackWyreOrder(orderId);
-      setOrderStatus(orderStatus);
-      if (
-        !completedPaymentResponse &&
-        orderStatus === WYRE_ORDER_STATUS_TYPES.failed
-      ) {
-        paymentResponse.complete('failed');
-        setCompletedPaymentResponse(true);
-      }
-      if (
-        !completedPaymentResponse &&
-        (orderStatus === WYRE_ORDER_STATUS_TYPES.pending ||
-          orderStatus === WYRE_ORDER_STATUS_TYPES.success)
-      ) {
-        paymentResponse.complete('success');
-        setCompletedPaymentResponse(true);
-      }
-      if (transferId) {
-        wyreTransferHash(transferId);
-      } else {
-        if (orderStatus !== WYRE_ORDER_STATUS_TYPES.failed) {
-          setTimeout(() => wyreOrderStatus(orderId, paymentResponse), 1000);
-        }
-      }
-    } catch (error) {
-      setTimeout(() => wyreOrderStatus(orderId, paymentResponse), 1000);
-    }
-  };
+  const [currency, setCurrency] = useState(currencies[initialCurrencyIndex]);
+  const [value, setValue] = useState(null);
 
-  const wyreTransferHash = async transferId => {
-    try {
-      const {
-        destAmount,
-        destCurrency,
-        transferHash,
-        transferStatus,
-      } = await trackWyreTransfer(transferId);
-      setTransferStatus(transferStatus);
-      const destAssetAddress = toLower(AddCashCurrencies[destCurrency]);
-      if (!transferHash) {
-        setTimeout(() => wyreTransferHash(transferId), 1000);
-      } else {
-        setTransferHash(transferHash);
-        let asset = ethereumUtils.getAsset(assets, destAssetAddress);
-        if (!asset) {
-          asset = AddCashCurrencyInfo[destAssetAddress];
-          // TODO JIN fetch the price
-        }
-        const txDetails = {
-          amount: destAmount,
-          asset,
-          from: null,
-          hash: transferHash,
-          nonce: null,
-          status: TransactionStatusTypes.purchasing,
-          to: accountAddress,
-          type: TransactionTypes.purchase,
-        };
-        dataAddNewPurchaseTransaction(txDetails);
-        wyreTransferStatus(transferId);
-      }
-    } catch (error) {
-      setTimeout(() => wyreTransferHash(transferId), 1000);
-    }
-  };
+  const handlePurchase = useCallback(() => onPurchase({ currency, value }), [
+    currency,
+    onPurchase,
+    value,
+  ]);
 
-  // TODO JIN kill set timeouts if unmounted
-  const wyreTransferStatus = async transferId => {
-    try {
-      const { transferStatus } = await trackWyreTransfer(transferId);
-      setTransferStatus(transferStatus);
-      if (
-        transferStatus === WYRE_TRANSFER_STATUS_TYPES.success ||
-        transferStatus === WYRE_TRANSFER_STATUS_TYPES.failed
-      ) {
-        setTransferHash(transferHash);
-        setTransferStatus(transferStatus);
-      } else {
-        setTimeout(() => wyreTransferStatus(transferId), 10000);
-      }
-    } catch (error) {
-      setTimeout(() => wyreTransferStatus(transferId), 1000);
-    }
-  };
-
-  const onPress = val =>
-    setText(prevText => {
+  const handleNumpadPress = val =>
+    setValue(prevText => {
       let curText = prevText;
       if (!curText) {
         if (val === '0' || isNaN(val)) {
@@ -240,97 +118,44 @@ const AddCashForm = ({
       return curText;
     });
 
-  const onSubmit = () =>
-    requestWyreApplePay(accountAddress, destCurrency, text, wyreOrderStatus);
-
-  const disabled = isEmpty(text) || parseFloat(text) === 0;
-
   return (
     <Fragment>
-      <ColumnWithMargins
-        align="center"
-        css={padding(0, 24, isTinyIphone ? 0 : 24)}
-        margin={8}
-        width="100%"
-      >
-        <MaskedView
+      <Centered flex={1}>
+        <ColumnWithMargins
+          align="center"
+          css={padding(0, 24, isNarrowPhone ? 0 : 24)}
+          justify="center"
+          margin={8}
           width="100%"
-          maskElement={
-            <Animated.View
-              style={{
-                left: '-50%',
-                transform: [{ translateX: shakeAnim }],
-                width: '200%',
-              }}
-            >
-              <Animated.Text
-                style={{
-                  color: colors.white,
-                  fontFamily: 'SF Pro Rounded',
-                  fontSize: cashFontSize,
-                  fontWeight: 'bold',
-                  lineHeight: 108,
-                  textAlign: 'center',
-                  transform: [
-                    {
-                      scale: scaleAnim,
-                      translateX: shakeAnim,
-                    },
-                  ],
-                }}
-              >
-                {'$' + (text ? text : '0')}
-              </Animated.Text>
-            </Animated.View>
-          }
         >
-          <RadialGradient
-            center={gradientPoints}
-            colors={['#FFB114', '#FF54BB', '#00F0FF', '#34F3FF']}
-            radius={gradientXPoint}
-            style={{ height: 108, width: '100%' }}
-            stops={[0.2049, 0.6354, 0.8318, 0.9541]}
+          <NumpadValue scale={scaleAnim} translateX={shakeAnim} value={value} />
+          <AddCashSelector
+            currencies={currencies}
+            initialCurrencyIndex={initialCurrencyIndex}
+            onSelect={setCurrency}
           />
-        </MaskedView>
-        <AddCashSelector
-          currencies={currencies}
-          initialCurrencyIndex={initialCurrencyIndex}
-          onSelect={setDestCurrency}
-        />
-      </ColumnWithMargins>
+        </ColumnWithMargins>
+      </Centered>
       <ColumnWithMargins align="center" margin={15}>
         <View style={{ maxWidth: 313 }}>
-          <VirtualKeyboard onPress={onPress} width={keyboardWidth} />
+          <Numpad
+            onPress={handleNumpadPress}
+            width={isNarrowPhone ? 275 : '100%'}
+          />
         </View>
-        <Centered
-          css={padding(
-            isTinyIphone ? 4 : 24,
-            15,
-            isTinyIphone ? 15 : safeAreaInsetValues.bottom + 21
-          )}
-          width="100%"
-        >
-          <ApplePayButton disabled={disabled} onSubmit={onSubmit} />
-          <Text>🇺🇸 US debit cards only</Text>
-        </Centered>
+        <AddCashFooter
+          disabled={isEmpty(value) || parseFloat(value) === 0}
+          onSubmit={handlePurchase}
+        />
       </ColumnWithMargins>
     </Fragment>
   );
 };
 
 AddCashForm.propTypes = {
-  accountAddress: PropTypes.string,
-  assets: PropTypes.array,
-  dataAddNewPurchaseTransaction: PropTypes.func,
   limitDaily: PropTypes.number,
+  limitYearly: PropTypes.number,
+  onPurchase: PropTypes.func,
 };
 
-export default compose(
-  withAccountData,
-  withAccountAddress,
-  withNavigation,
-  withTransitionProps,
-  withProps(({ transitionProps: { isTransitioning } }) => ({
-    isTransitioning,
-  }))
-)(AddCashForm);
+export default React.memo(AddCashForm);
