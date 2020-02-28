@@ -23,6 +23,8 @@ const SMALL_BALANCE_TOGGLE = 'smallBalanceToggle';
 const TRANSACTIONS = 'transactions';
 const UNIQUE_TOKENS = 'uniquetokens';
 const WALLET_EMPTY = 'iswalletempty';
+const PINNED_COINS = 'pinnedCoins';
+const HIDDEN_COINS = 'hiddenCoins';
 
 /**
  * @desc get assets
@@ -368,3 +370,57 @@ export const saveAccountInfo = (profileInfo, accountAddress, network) =>
  */
 export const removeAccountInfo = (accountAddress, network) =>
   removeAccountLocal(ACCOUNT_INFO, accountAddress, network);
+
+/**
+ * @desc get pinned coins
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getPinnedCoins = (accountAddress, network) =>
+  getAccountLocal(PINNED_COINS, accountAddress, network, false);
+
+/**
+ * @desc save pinned coins
+ * @param  {Array}    [pinned coins]
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const savePinnedCoins = (pinnedCoins, accountAddress, network) =>
+  saveAccountLocal(PINNED_COINS, pinnedCoins, accountAddress, network);
+
+/**
+ * @desc remove pinned coins
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const removePinnedCoins = (accountAddress, network) =>
+  removeAccountLocal(PINNED_COINS, accountAddress, network);
+
+/**
+ * @desc get hidden coins
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getHiddenCoins = (accountAddress, network) =>
+  getAccountLocal(HIDDEN_COINS, accountAddress, network, false);
+
+/**
+ * @desc save hidden coins
+ * @param  {Array}    [hidden coins]
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const saveHiddenCoins = (hiddenCoins, accountAddress, network) =>
+  saveAccountLocal(HIDDEN_COINS, hiddenCoins, accountAddress, network);
+
+/**
+ * @desc remove hidden coins
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const removeHiddenCoins = (accountAddress, network) =>
+  removeAccountLocal(HIDDEN_COINS, accountAddress, network);

@@ -21,6 +21,7 @@ import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import { nonceClearState } from '../redux/nonce';
 import { contactsLoadState } from '../redux/contacts';
+import { coinListLoadState } from '../redux/editOptions';
 import {
   clearOpenStateSettings,
   openStateSettingsLoadState,
@@ -58,6 +59,7 @@ export default Component =>
     connect(null, {
       clearIsWalletEmpty,
       clearOpenStateSettings,
+      coinListLoadState,
       contactsLoadState,
       dataClearState,
       dataLoadState,
@@ -132,6 +134,7 @@ export default Component =>
       loadAccountData: ownProps => async () => {
         sentryUtils.addInfoBreadcrumb('Load wallet data');
         await ownProps.openStateSettingsLoadState();
+        await ownProps.coinListLoadState();
         const promises = [];
         const p1 = ownProps.settingsLoadState();
         promises.push(p1);

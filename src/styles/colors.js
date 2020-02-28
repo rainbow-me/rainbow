@@ -17,6 +17,7 @@ const base = {
   brightRed: '#FF4B19', // '255, 75, 25'
   chartGreen: '#66d28f', // '102, 210, 143'
   dark: '#25292E', // '37, 41, 46'
+  darkerGrey: '#9DA0A8', //	157, 160, 168
   darkGrey: '#71778a', // '113, 119, 138'
   dodgerBlue: '#575CFF', // '87, 92, 255'
   green: '#00994d', // '0, 153, 77'

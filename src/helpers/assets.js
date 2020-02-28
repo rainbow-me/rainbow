@@ -1,4 +1,5 @@
 import { compact, get, groupBy, sortBy } from 'lodash';
+import store from '../redux/store';
 
 const amountOfShowedCoins = 5;
 
@@ -18,12 +19,16 @@ export const buildAssetUniqueIdentifier = item => {
 
 export const buildCoinsList = assets => {
   const newAssets = [];
+  const pinnedAssets = [];
+  const { pinnedCoins } = store.getState().editOptions;
   const smallBalances = {
     assets: [],
     smallBalancesContainer: true,
   };
   for (let i = 0; i < assets.length; i++) {
-    if (
+    if (pinnedCoins.includes(assets[i].uniqueId)) {
+      pinnedAssets.push({ isCoin: true, isSmall: false, ...assets[i] });
+    } else if (
       (assets[i].native && assets[i].native.balance.amount > 1) ||
       assets[i].address === 'eth' ||
       assets.length < 4
@@ -42,9 +47,10 @@ export const buildCoinsList = assets => {
 
   if (smallBalances.assets.length > 0) {
     newAssets.push(smallBalances);
-    return newAssets;
   }
-  return newAssets;
+
+  const allAssets = pinnedAssets.concat(newAssets);
+  return allAssets;
 };
 
 export const buildUniqueTokenList = uniqueTokens => {

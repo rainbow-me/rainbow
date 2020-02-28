@@ -767,7 +767,6 @@ class RecyclerAssetList extends Component {
             })
           );
           checkList.push(<CoinCheckButton {...item.assets[i]} />);
-          console.log(item.assets[i]);
         }
         this.renderList = renderList;
         this.checkList = checkList;

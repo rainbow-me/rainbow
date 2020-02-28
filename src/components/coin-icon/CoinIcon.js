@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
+import { View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { css } from 'styled-components/primitives';
 import ReactCoinIcon, { FallbackIcon } from 'react-coin-icon';
@@ -63,24 +64,38 @@ const enhance = onlyUpdateForKeys(['bgColor', 'symbol', 'address']);
 const CoinIcon = enhance(
   ({ bgColor, showShadow, size, symbol, address, ...props }) =>
     showShadow ? (
-      <ShadowStack
-        {...props}
-        {...borders.buildCircleAsObject(size)}
-        backgroundColor={bgColor}
-        shadows={[
-          [0, 4, 6, colors.dark, 0.04],
-          [0, 1, 3, colors.dark, 0.08],
-        ]}
-        shouldRasterizeIOS
-      >
-        <ReactCoinIcon
-          bgColor={bgColor}
-          fallbackRenderer={CoinIconFallback}
-          size={size}
-          symbol={symbol || ''}
-          address={address || ''}
+      <>
+        <View
+          style={{
+            backgroundColor: colors.darkerGrey,
+            borderRadius: 10,
+            bottom: 3,
+            height: 20,
+            left: 14,
+            position: 'absolute',
+            width: 20,
+            zIndex: 10,
+          }}
         />
-      </ShadowStack>
+        <ShadowStack
+          {...props}
+          {...borders.buildCircleAsObject(size)}
+          backgroundColor={bgColor}
+          shadows={[
+            [0, 4, 6, colors.dark, 0.04],
+            [0, 1, 3, colors.dark, 0.08],
+          ]}
+          shouldRasterizeIOS
+        >
+          <ReactCoinIcon
+            bgColor={bgColor}
+            fallbackRenderer={CoinIconFallback}
+            size={size}
+            symbol={symbol || ''}
+            address={address || ''}
+          />
+        </ShadowStack>
+      </>
     ) : (
       <ReactCoinIcon
         {...props}
