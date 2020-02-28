@@ -21,8 +21,13 @@ platform :ios do
     sentry_upload_dsym(
       dsym_path: './Rainbow.app.dSYM.zip'
     )
+
     version_from_plist = get_version_number
+
     release_version = "me.rainbow-#{version_from_plist}"
+
+    dist = "#{latest_testflight_build_number}"
+
     sentry_create_release(
       finalize: true, # Whether to finalize the release. If not provided or false, the release can be finalized using the sentry_finalize_release action
       version: release_version
@@ -30,13 +35,13 @@ platform :ios do
     sentry_upload_file(
       file: './main.jsbundle', # file to upload
       version: release_version,
-      dist: latest_testflight_build_number
+      dist: dist
     )
     sentry_upload_sourcemap(
       sourcemap: './main.jsbundle.map', # sourcemap to upload
       rewrite: true,
       version: release_version,
-      dist: latest_testflight_build_number
+      dist: dist
     )
     clean_build_artifacts
   end
