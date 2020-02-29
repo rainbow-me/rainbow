@@ -11,6 +11,7 @@ import { UniswapInvestmentCard } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import { buildUniqueTokenList, buildCoinsList } from './assets';
 import { chartExpandedAvailable } from '../config/experimental';
+import networkTypes from './networkTypes';
 
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
@@ -19,6 +20,7 @@ const savingsSelector = state => state.savings;
 const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
 const isWalletEthZeroSelector = state => state.isWalletEthZero;
 const languageSelector = state => state.language;
+const networkSelector = state => state.network;
 const nativeCurrencySelector = state => state.nativeCurrency;
 const uniqueTokensSelector = state => state.uniqueTokens;
 const uniswapSelector = state => state.uniswap;
@@ -105,9 +107,9 @@ const withBalanceSection = (
   isWalletEthZero,
   language,
   nativeCurrency,
+  network,
   showShitcoins
 ) => {
-  console.log('[BUILD WALLET SECTIONS]', savings);
   let totalValue = Number(get(assetsTotal, 'amount', 0));
   const assets = map(savings, cToken => {
     const {
@@ -135,7 +137,11 @@ const withBalanceSection = (
     assets,
     savingsContainer: true,
   };
-  let balanceSectionData = [...buildCoinsList(allAssets), savingsSection];
+  let balanceSectionData = [...buildCoinsList(allAssets)];
+
+  if (networkTypes.mainnet === network) {
+    balanceSectionData.push(savingsSection);
+  }
   /*
   assets.forEach(saving => {
     if (saving.value) {
@@ -251,6 +257,7 @@ const balanceSectionSelector = createSelector(
     isWalletEthZeroSelector,
     languageSelector,
     nativeCurrencySelector,
+    networkSelector,
   ],
   withBalanceSection
 );

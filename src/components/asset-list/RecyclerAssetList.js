@@ -89,7 +89,6 @@ const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
 const SavingsListRowRenderer = pure(data => <SavingsListRow {...data} />);
 
 const hasRowChanged = (r1, r2) => {
-  const isNewShowShitcoinsValue = isNewValueForPath(r1, r2, 'showShitcoins');
   const isNewTitle = isNewValueForPath(r1, r2, 'title');
   const isNewTotalItems = isNewValueForPath(r1, r2, 'totalItems');
   const isNewTotalValue = isNewValueForPath(r1, r2, 'totalValue');
@@ -142,7 +141,6 @@ const hasRowChanged = (r1, r2) => {
   return (
     isNewAsset ||
     isNewAssetBalance ||
-    isNewShowShitcoinsValue ||
     isNewTitle ||
     isNewTokenFamilyId ||
     isNewTokenFamilyName ||
