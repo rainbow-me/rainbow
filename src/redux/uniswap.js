@@ -34,6 +34,7 @@ import {
   getUniswapPairs,
   getTestnetUniswapPairs,
 } from '../handlers/uniswap';
+import networkTypes from '../helpers/networkTypes';
 import {
   cleanUniswapAssetsFallback,
   DefaultUniswapFavorites,
@@ -127,7 +128,7 @@ export const uniswapPairsInit = () => async (dispatch, getState) => {
     const { tokenOverrides } = getState().data;
     const { network } = getState().settings;
     const pairs =
-      network === 'mainnet'
+      network === networkTypes.mainnet
         ? await getUniswapPairs(tokenOverrides)
         : await getTestnetUniswapPairs(network);
     dispatch({

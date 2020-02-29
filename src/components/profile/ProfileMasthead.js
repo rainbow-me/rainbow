@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View, Text } from 'react-native';
-import { compose, withHandlers, withState } from 'recompact';
+import { compose, withHandlers } from 'recompact';
 import FastImage from 'react-native-fast-image';
 import GraphemeSplitter from 'grapheme-splitter';
 import styled from 'styled-components/primitives';
@@ -130,7 +130,6 @@ ProfileMasthead.defaultProps = {
 };
 
 export default compose(
-  withState('emojiCount', 'setEmojiCount', 0),
   withHandlers({
     onPressAvatar: ({ navigation, accountColor, accountName }) => () =>
       navigation.navigate('AvatarBuilder', {

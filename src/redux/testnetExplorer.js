@@ -1,12 +1,12 @@
 import { ethers } from 'ethers';
-import { toLower } from 'lodash';
+import { toLower, get } from 'lodash';
 import { web3Provider } from '../handlers/web3';
+import networkInfo from '../helpers/networkInfo';
 import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
 import testnetAssets from '../references/testnet-assets.json';
 import { addressAssetsReceived } from './data';
+import { setIsWalletEthZero } from './isWalletEthZero';
 
-const BALANCE_CHECKER_CONTRACT_ADDRESS =
-  '0xc55386617db7b4021d87750daaed485eb3ab0154';
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 let tesnetExplorerHandler = null;
@@ -24,9 +24,9 @@ const fetchAssetPrices = async (coingecko_ids, nativeCurrency) => {
   }
 };
 
-const fetchAssetBalances = async (tokens, address) => {
+const fetchAssetBalances = async (tokens, address, network) => {
   const balanceCheckerContract = new ethers.Contract(
-    BALANCE_CHECKER_CONTRACT_ADDRESS,
+    get(networkInfo[network], 'balance_checker_contract_address'),
     balanceCheckerContractAbi,
     web3Provider
   );
@@ -43,15 +43,24 @@ const fetchAssetBalances = async (tokens, address) => {
     });
     return balances[address];
   } catch (e) {
-    console.log('Error fetching balances from balanceCheckerContract', e);
+    console.log(
+      'Error fetching balances from balanceCheckerContract',
+      network,
+      e
+    );
     return null;
   }
 };
 
 export const testnetExplorerInit = () => async (dispatch, getState) => {
-  const { accountAddress, nativeCurrency, network } = getState().settings;
+  const {
+    accountAddress,
+    nativeCurrency,
+    isWalletEthZero,
+  } = getState().settings;
   const formattedNativeCurrency = toLower(nativeCurrency);
   const fetchAssetsBalancesAndPrices = async () => {
+    const { network } = getState().settings;
     const assets = testnetAssets[network];
 
     const prices = await fetchAssetPrices(
@@ -74,13 +83,15 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
         }
       });
     }
-
     const balances = await fetchAssetBalances(
       assets.map(({ asset: { asset_code } }) =>
         asset_code === 'eth' ? ETH_ADDRESS : asset_code
       ),
-      accountAddress
+      accountAddress,
+      network
     );
+
+    let total = ethers.utils.bigNumberify(0);
 
     if (balances) {
       Object.keys(balances).forEach(key => {
@@ -93,7 +104,13 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
             break;
           }
         }
+        total = total.add(balances[key]);
       });
+
+      const isNowZero = total.isZero();
+      if (isWalletEthZero !== isNowZero) {
+        dispatch(setIsWalletEthZero(isNowZero));
+      }
     }
 
     dispatch(
@@ -106,13 +123,11 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
         payload: { assets },
       })
     );
-
     tesnetExplorerHandler = setTimeout(fetchAssetsBalancesAndPrices, 5000);
   };
-
   fetchAssetsBalancesAndPrices();
 };
 
-export const testnetExplorerClearState = () => () => {
+export const testnetExplorerClearState = () => {
   clearTimeout(tesnetExplorerHandler);
 };

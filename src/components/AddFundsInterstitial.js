@@ -1,8 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { get } from 'lodash';
+import { Linking } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { compose, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
+import networkTypes from '../helpers/networkTypes';
+import networkInfo from '../helpers/networkInfo';
 import { colors, margin } from '../styles';
 import { Button } from './buttons';
 import Divider from './Divider';
@@ -45,7 +49,13 @@ const buildInterstitialTransform = offsetY => ({
   ],
 });
 
+const onAddFromFaucet = network => {
+  const faucet_url = get(networkInfo[network], 'faucet_url');
+  Linking.openURL(faucet_url);
+};
+
 const AddFundsInterstitial = ({
+  network,
   offsetY,
   onPressAddFunds,
   onPressImportWallet,
@@ -58,13 +68,30 @@ const AddFundsInterstitial = ({
       <DividerContainer>
         <Divider inset={false} />
       </DividerContainer>
-      <Button backgroundColor="#5D9DF6" onPress={onPressImportWallet}>
-        Import Wallet
-      </Button>
-      <Paragraph>
-        Use your private key or 12 to 24 word seed phrase from an existing
-        wallet.
-      </Paragraph>
+      {network === networkTypes.mainnet ? (
+        <React.Fragment>
+          <Button backgroundColor="#5D9DF6" onPress={onPressImportWallet}>
+            Import Wallet
+          </Button>
+          <Paragraph>
+            Use your private key or 12 to 24 word seed phrase from an existing
+            wallet.
+          </Paragraph>
+        </React.Fragment>
+      ) : (
+        <React.Fragment>
+          <Button
+            backgroundColor="#5D9DF6"
+            onPress={() => onAddFromFaucet(network)}
+          >
+            Add from Faucet
+          </Button>
+          <Paragraph>
+            You can request ETH through the {get(networkInfo[network], 'name')}{' '}
+            faucet.
+          </Paragraph>
+        </React.Fragment>
+      )}
     </ButtonContainer>
   </Container>
 );

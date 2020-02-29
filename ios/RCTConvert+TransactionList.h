@@ -5,19 +5,26 @@
 //  Created by Alexey Kureev on 04/01/2020.
 //
 
-#ifndef RCTConvert_TransactionList_h
-#define RCTConvert_TransactionList_h
-
 #import <React/RCTConvert.h>
-#import "Transaction.h"
+#import "Rainbow-Swift.h"
 
 @interface RCTConvert (TransactionList)
 
 + (NSArray<Transaction *> *)Transactions:(id)json;
++ (NSArray<TransactionRequest *> *)TransactionRequests:(id)json;
 
 @end
 
 @implementation RCTConvert (TransactionList)
+
++ (TransactionData *)TransactionData:(id)json
+{
+  json = [self NSDictionary:json];
+  TransactionData *data = [[TransactionData alloc] init];
+  data.requests = [RCTConvert TransactionRequests:[json valueForKey:@"requests"]];
+  data.transactions = [RCTConvert Transactions:[json valueForKey:@"transactions"]];
+  return data;
+}
 
 + (NSArray<Transaction*> *)Transactions:(id)json
 {
@@ -37,16 +44,36 @@
     transaction.coinName = data[@"name"];
     transaction.nativeDisplay = data[@"native"][@"display"];
     transaction.balanceDisplay = data[@"balance"][@"display"];
-    transaction.tHash = data[@"hash"];
     transaction.type = data[@"type"];
     transaction.pending = [[data valueForKey:@"pending"] boolValue];
-    transaction.minedAt = [NSDate dateWithTimeIntervalSince1970: [data[@"minedAt"] doubleValue]];
+    if (data[@"minedAt"] != [NSNull null]) {
+      transaction.minedAt = [NSDate dateWithTimeIntervalSince1970: [data[@"minedAt"] doubleValue]];
+    } else {
+      transaction.minedAt = [[NSDate alloc] init];
+    }
     
     [result addObject:transaction];
   }
   return result;
 }
 
-@end
++ (NSArray<TransactionRequest*> *)TransactionRequests:(id)json
+{
+  json = [self NSArray:json];
+  NSMutableArray *result = [[NSMutableArray alloc] init];
+  
+  for (id t in json) {
+    NSDictionary *data = [self NSDictionary:t];
+    TransactionRequest *request = [[TransactionRequest alloc] init];
+    request.payloadId = data[@"payload"][@"id"];
+    request.clientId = data[@"clientId"];
+    request.dappName = data[@"dappName"];
+    request.imageUrl = data[@"imageUrl"];
+    request.requestedAt = [NSDate dateWithTimeIntervalSince1970: [data[@"displayDetails"][@"timestampInMs"] doubleValue] / 1000.0];
+    
+    [result addObject:request];
+  }
+  return result;
+}
 
-#endif /* RCTConvert_TransactionList_h */
+@end

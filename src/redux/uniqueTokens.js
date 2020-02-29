@@ -6,6 +6,7 @@ import {
   saveUniqueTokens,
   removeUniqueTokens,
 } from '../handlers/localstorage/accountLocal';
+import networkTypes from '../helpers/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '../parsers/uniqueTokens';
 import { dataUpdateAssets } from './data';
 
@@ -54,7 +55,7 @@ export const uniqueTokensRefreshState = () => (dispatch, getState) =>
   new Promise((resolve, reject) => {
     const { network } = getState().settings;
     // Currently not supported in testnets
-    if (network !== 'mainnet') return;
+    if (network !== networkTypes.mainnet) return;
     const fetchUniqueTokens = () =>
       new Promise((fetchResolve, fetchReject) => {
         dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST });

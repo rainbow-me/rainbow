@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SectionList } from 'react-native-gesture-handler';
+import { usePrevious } from '../../hooks';
 import { exchangeModalBorderRadius } from '../../screens/ExchangeModal';
+import { isNewValueForObjectPaths } from '../../utils';
 import { CoinRow, ExchangeCoinRow } from '../coin-row';
 import { Text } from '../text';
 import { colors } from '../../styles';
@@ -22,14 +24,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const getItemLayout = (_, index) => ({
-  index,
-  length: CoinRow.height,
-  offset: CoinRow.height * index,
-});
-
-const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;
-
 const contentContainerStyle = {
   paddingBottom: exchangeModalBorderRadius,
 };
@@ -38,16 +32,25 @@ const scrollIndicatorInsets = {
   bottom: exchangeModalBorderRadius,
 };
 
+const getItemLayout = ({ showBalance }, index) => {
+  const height = showBalance ? CoinRow.height + 1 : CoinRow.height;
+
+  return {
+    index,
+    length: height,
+    offset: height * index,
+  };
+};
+
+const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;
+
 const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
+  const sectionListRef = useRef();
+  const prevQuery = usePrevious(query);
+
   // Scroll to top once the query is cleared
-  const scrollView = useRef();
-  const prevQueryRef = useRef();
-  useEffect(() => {
-    prevQueryRef.current = query;
-  });
-  const prevQuery = prevQueryRef.current;
   if (prevQuery && prevQuery.length && !query.length) {
-    scrollView.current.scrollToLocation({
+    sectionListRef.current.scrollToLocation({
       animated: true,
       itemIndex: 0,
       sectionIndex: 0,
@@ -55,6 +58,10 @@ const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
       viewPosition: 0,
     });
   }
+
+  const createItem = useCallback(item => Object.assign(item, itemProps), [
+    itemProps,
+  ]);
 
   const renderItemCallback = useCallback(
     ({ item }) => <ExchangeCoinRow {...itemProps} item={item} />,
@@ -74,10 +81,8 @@ const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
 
   return (
     <SectionList
-      ref={scrollView}
       alwaysBounceVertical
       contentContainerStyle={contentContainerStyle}
-      sections={items}
       directionalLockEnabled
       getItemLayout={getItemLayout}
       height="100%"
@@ -86,10 +91,12 @@ const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
       keyboardShouldPersistTaps="always"
       keyExtractor={keyExtractor}
       onLayout={onLayout}
+      ref={sectionListRef}
       renderItem={renderItemCallback}
       renderSectionHeader={renderSectionHeaderCallback}
       scrollEventThrottle={32}
       scrollIndicatorInsets={scrollIndicatorInsets}
+      sections={items.map(createItem)}
       windowSize={11}
     />
   );
@@ -102,8 +109,7 @@ ExchangeAssetList.propTypes = {
   query: PropTypes.string,
 };
 
-const propsAreEqual = (prev, next) => {
-  return prev.items.length === next.items.length && prev.query === next.query;
-};
+const propsAreEqual = (...props) =>
+  !isNewValueForObjectPaths(...props, ['items', 'query']);
 
 export default React.memo(ExchangeAssetList, propsAreEqual);

@@ -1,5 +1,5 @@
 PODS:
-  - Analytics (3.7.0)
+  - Analytics (3.7.1)
   - Base64 (1.1.2)
   - boost-for-react-native (1.63.0)
   - BVLinearGradient (2.5.6):
@@ -44,7 +44,7 @@ PODS:
     - FirebaseCoreDiagnosticsInterop (~> 1.0)
     - GoogleUtilities/Environment (~> 6.2)
     - GoogleUtilities/Logger (~> 6.2)
-  - FirebaseCoreDiagnostics (1.2.0):
+  - FirebaseCoreDiagnostics (1.2.1):
     - FirebaseCoreDiagnosticsInterop (~> 1.2)
     - GoogleDataTransportCCTSupport (~> 1.3)
     - GoogleUtilities/Environment (~> 6.5)
@@ -81,9 +81,9 @@ PODS:
     - GoogleUtilities/Network (~> 6.0)
     - "GoogleUtilities/NSData+zlib (~> 6.0)"
     - nanopb (= 0.3.9011)
-  - GoogleDataTransport (3.3.1)
-  - GoogleDataTransportCCTSupport (1.3.1):
-    - GoogleDataTransport (~> 3.3)
+  - GoogleDataTransport (4.0.1)
+  - GoogleDataTransportCCTSupport (1.4.1):
+    - GoogleDataTransport (~> 4.0)
     - nanopb (~> 0.3.901)
   - GoogleUtilities/AppDelegateSwizzler (6.5.1):
     - GoogleUtilities/Environment
@@ -123,7 +123,7 @@ PODS:
     - RNPermissions
   - Permission-FaceID (2.0.9):
     - RNPermissions
-  - Protobuf (3.11.3)
+  - Protobuf (3.11.4)
   - RCTRequired (0.62.0-rc.1)
   - RCTTypeSafety (0.62.0-rc.1):
     - FBLazyVector (= 0.62.0-rc.1)
@@ -289,17 +289,17 @@ PODS:
   - React-jsinspector (0.62.0-rc.1)
   - react-native-blur (0.8.0):
     - React
-  - react-native-camera (3.17.0):
+  - react-native-camera (3.18.0):
     - React
-    - react-native-camera/RCT (= 3.17.0)
-    - react-native-camera/RN (= 3.17.0)
-  - react-native-camera/RCT (3.17.0):
+    - react-native-camera/RCT (= 3.18.0)
+    - react-native-camera/RN (= 3.18.0)
+  - react-native-camera/RCT (3.18.0):
     - React
-  - react-native-camera/RN (3.17.0):
+  - react-native-camera/RN (3.18.0):
     - React
   - react-native-mail (4.1.0):
     - React
-  - react-native-netinfo (5.5.0):
+  - react-native-netinfo (5.5.1):
     - React
   - react-native-randombytes (3.5.3):
     - React
@@ -392,16 +392,16 @@ PODS:
     - React
     - SDWebImage (~> 5.0)
     - SDWebImageWebPCoder (~> 0.2.3)
-  - RNFBApp (6.3.3):
+  - RNFBApp (6.3.4):
     - Firebase/Core (~> 6.13.0)
     - React
-  - RNFBCrashlytics (6.3.3):
+  - RNFBCrashlytics (6.3.4):
     - Crashlytics (~> 3.14.0)
     - Fabric (~> 1.10.2)
     - Firebase/Core (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBMessaging (6.3.3):
+  - RNFBMessaging (6.3.4):
     - Firebase/Messaging (~> 6.13.0)
     - React
     - RNFBApp
@@ -422,7 +422,7 @@ PODS:
     - React
   - RNScreens (2.0.0-beta.13):
     - React
-  - RNSentry (1.3.0):
+  - RNSentry (1.3.2):
     - React
     - Sentry (~> 4.4.0)
   - RNStoreReview (0.1.5):
@@ -681,7 +681,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Analytics: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
+  Analytics: f82f3cd6d3c8fbfd76ce25773199576656981a4a
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
@@ -695,7 +695,7 @@ SPEC CHECKSUMS:
   FirebaseAnalytics: 45f36d9c429fc91d206283900ab75390cd05ee8a
   FirebaseAnalyticsInterop: 3f86269c38ae41f47afeb43ebf32a001f58fcdae
   FirebaseCore: 307ea2508df730c5865334e41965bd9ea344b0e5
-  FirebaseCoreDiagnostics: 5e78803ab276bc5b50340e3c539c06c3de35c649
+  FirebaseCoreDiagnostics: 2109d10c35e8289b1ee6cabf44d9ffb055620194
   FirebaseCoreDiagnosticsInterop: 296e2c5f5314500a850ad0b83e9e7c10b011a850
   FirebaseInstanceID: ebd2ea79ee38db0cb5f5167b17a0d387e1cc7b6e
   FirebaseMessaging: 089b7a4991425783384acc8bcefcd78c0af913bd
@@ -703,15 +703,15 @@ SPEC CHECKSUMS:
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   GoogleAppMeasurement: dfe55efa543e899d906309eaaac6ca26d249862f
-  GoogleDataTransport: 0048df6388dab1c254799f2a30365b1dffe20422
-  GoogleDataTransportCCTSupport: f880d70972efa2ed1be4e9173a0f4c5f3dc2d176
+  GoogleDataTransport: 653963cf5be60fb59cf051e070f0836fdc305f81
+  GoogleDataTransportCCTSupport: 84e4d4bbab642f2e9d83ee65d78aca2b5527d314
   GoogleUtilities: 06eb53bb579efe7099152735900dd04bf09e7275
   JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   Permission-Camera: 8fe4753b02396489b11c5089e4f57bab7fe1ef42
   Permission-FaceID: 29c3f213a033c24330a554a5dad7681d6e3698f8
-  Protobuf: 0e94afe3b47cb11876eb6aee296638711a24bf75
+  Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
   RCTRequired: 418abaf045a635a391e68ee0573035553c1c4d7b
   RCTTypeSafety: ea8dd81f61436a394b943dac4435a304c59906ff
   React: f591e8a044a8ee4a4b20ab632b2906461a241370
@@ -722,9 +722,9 @@ SPEC CHECKSUMS:
   React-jsiexecutor: ccf2361cd90f691e04ff73585f099aa179ae8b52
   React-jsinspector: fabb3a8cad7bce396f2d4c29cbf83e87022b07ec
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: c549d50495c989688ef1819dab49441c7dc7c17d
+  react-native-camera: 3308898e1b09bf6211647c6e3e42d5f7aa02259e
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
-  react-native-netinfo: b84ff0cae1147315b5dc1daf0f65c0cc6ee71fb3
+  react-native-netinfo: 3bf235d94cc291cf0673ad9fd9eaae82f84ed8a9
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
@@ -749,9 +749,9 @@ SPEC CHECKSUMS:
   RNCPushNotificationIOS: 05262c52fcfb861a2b79aa8e51cad66263c9ea52
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNFastImage: 9b0c22643872bb7494c8d87bbbb66cc4c0d9e7a2
-  RNFBApp: 887ccc5840f93abad3202ff23eb0faf7bee4ac12
-  RNFBCrashlytics: 22dada190d23a867127a541d7175d6160640f089
-  RNFBMessaging: 591a196b643d913bfad6492fab292b7da037bf78
+  RNFBApp: 7d4006751de8bb5cafa2e8d2e7d94ee250df81db
+  RNFBCrashlytics: 93e1cc09a93aa4bb1e9b5a07af0efb2702db5a39
+  RNFBMessaging: 51cc7f6beaf4c4feac6f18ea941bba5854e3d9c6
   RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
@@ -761,7 +761,7 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNScreens: ba539a5086136eb356e43699cb588a80369763ca
-  RNSentry: ba3ec79ffc91a1d808ec689bf615ffc5f960baa4
+  RNSentry: 2ec85f3e314c6a650b1c51b30ff764b6103ed7e2
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: 67f1f12dae2cef6ed59a42cae74a6b8f5a9e7b46
   SDWebImage: 4d5c027c935438f341ed33dbac53ff9f479922ca
@@ -775,4 +775,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 5b3b67c31489543be6a567cd5513d6e295e3c505
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.0

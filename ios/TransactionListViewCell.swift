@@ -13,7 +13,7 @@ class MyBoundedLabel: UILabel {
   }
 }
 
-class TransactionListViewCell: UITableViewCell {
+class TransactionListViewCell: TransactionListBaseCell {
   
   @IBOutlet weak var transactionType: UILabel!
   @IBOutlet weak var transactionIcon: UIImageView!
@@ -22,14 +22,21 @@ class TransactionListViewCell: UITableViewCell {
   @IBOutlet weak var nativeDisplay: UILabel!
   @IBOutlet weak var coinImage: UIImageView!
   
+  override func awakeFromNib() {
+    super.awakeFromNib()
+    addShadowLayer(coinImage)
+  }
+  
   func set(transaction: Transaction) {
     transactionType.text = transaction.status
     coinName.text = transaction.coinName
     nativeDisplay.text = transaction.nativeDisplay
     balanceDisplay.text = transaction.balanceDisplay
     
-    transactionIcon.image = UIImage.init(named: transaction.status.lowercased())
-    transactionIcon.tintAdjustmentMode = .normal
+    if let image = UIImage.init(named: transaction.status.lowercased()) {
+      transactionIcon.image = image
+      transactionIcon.tintAdjustmentMode = .normal
+    }
     
     setStatusColor(transaction)
     setCellColors(transaction)
@@ -38,13 +45,13 @@ class TransactionListViewCell: UITableViewCell {
       if let img = UIImage.init(named: transaction.symbol.lowercased()) {
         coinImage.image = img
       } else {
-        coinImage.image = generateCoinImage(transaction.symbol)
+        coinImage.image = generateTextImage(transaction.symbol)
         coinImage.layer.cornerRadius = coinImage.frame.width * 0.5
       }
     }
   }
   
-  fileprivate func setStatusColor(_ transaction: Transaction) {
+  private func setStatusColor(_ transaction: Transaction) {
     let transactionColors = UIColor.RainbowTheme.Transactions.self
     var color = transactionColors.blueGreyMediumLight
     
@@ -64,7 +71,7 @@ class TransactionListViewCell: UITableViewCell {
     transactionType.textColor = color
   }
   
-  fileprivate func setCellColors(_ transaction: Transaction) {
+  private func setCellColors(_ transaction: Transaction) {
     coinName.alpha = 1.0
     nativeDisplay.alpha = 1.0
     
@@ -86,24 +93,5 @@ class TransactionListViewCell: UITableViewCell {
     default:
       break
     }
-  }
-  
-  fileprivate func generateCoinImage(_ coinCode: String) -> UIImage? {
-    let frame = CGRect(x: 0, y: 0, width: 40, height: 40)
-    
-    let nameLabel = MyBoundedLabel(frame: frame)
-    nameLabel.textAlignment = .center
-    nameLabel.backgroundColor = UIColor(red: 0.23, green: 0.24, blue: 0.32, alpha: 1.0)
-    nameLabel.textColor = .white
-    nameLabel.font = .systemFont(ofSize: 14, weight: .regular)
-    nameLabel.text = coinCode
-    nameLabel.adjustsFontSizeToFitWidth = true
-    
-    UIGraphicsBeginImageContext(frame.size)
-    if let currentContext = UIGraphicsGetCurrentContext() {
-      nameLabel.layer.render(in: currentContext)
-      return UIGraphicsGetImageFromCurrentImageContext()
-    }
-    return nil
   }
 }

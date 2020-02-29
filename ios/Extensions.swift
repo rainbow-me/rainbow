@@ -20,16 +20,16 @@ fileprivate func generateHapticFeedback(_ hapticEffect: String) {
     generator.notificationOccurred(.warning)
     
   case "light":
-      let generator = UIImpactFeedbackGenerator(style: .light)
-      generator.impactOccurred()
-
+    let generator = UIImpactFeedbackGenerator(style: .light)
+    generator.impactOccurred()
+    
   case "medium":
-      let generator = UIImpactFeedbackGenerator(style: .medium)
-      generator.impactOccurred()
-
+    let generator = UIImpactFeedbackGenerator(style: .medium)
+    generator.impactOccurred()
+    
   case "heavy":
-      let generator = UIImpactFeedbackGenerator(style: .heavy)
-      generator.impactOccurred()
+    let generator = UIImpactFeedbackGenerator(style: .heavy)
+    generator.impactOccurred()
   default:
     let generator = UISelectionFeedbackGenerator()
     generator.selectionChanged()
@@ -40,34 +40,56 @@ extension UIView {
   static func fromNib<T: UIView>() -> T {
     return Bundle(for: T.self).loadNibNamed(String(describing: T.self), owner: nil, options: nil)![0] as! T
   }
-  
-  func animateQuickTap(
-    duration: TimeInterval = 0.15,
-    options: UIView.AnimationOptions = .curveEaseInOut,
-    scale: CGFloat = 0.97
-  ) {
-    UIView.animate(withDuration: duration, delay: 0, options: [options, .autoreverse], animations: {
-      self.transform = CGAffineTransform(scaleX: scale, y: scale)
-    })
-  }
-  
+
   func animateTapStart(
-    duration: TimeInterval = 0.15,
-    options: UIView.AnimationOptions = .curveEaseInOut,
+    duration: TimeInterval = 0.1,
     scale: CGFloat = 0.97,
     useHaptic: String? = nil
   ) {
     if useHaptic != nil {
       generateHapticFeedback(useHaptic!)
     }
-    UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
+    
+    let timingFunction = CAMediaTimingFunction(controlPoints: 0.25, 0.46, 0.45, 0.94)
+    
+    CATransaction.begin()
+    CATransaction.setAnimationTimingFunction(timingFunction)
+    
+    UIView.animate(withDuration: duration) {
       self.transform = CGAffineTransform(scaleX: scale, y: scale)
-    })
+    }
+    
+    CATransaction.commit()
   }
   
-  func animateTapEnd(duration: TimeInterval = 0.15, options: UIView.AnimationOptions = .curveEaseInOut, scale: CGFloat = 0.97) {
-    UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: 0.3, initialSpringVelocity: 10.0, options: options, animations: {
+  func animateTapEnd(duration: TimeInterval = 0.1) {
+    let timingFunction = CAMediaTimingFunction(controlPoints: 0.25, 0.46, 0.45, 0.94)
+    
+    CATransaction.begin()
+    CATransaction.setAnimationTimingFunction(timingFunction)
+    
+    UIView.animate(withDuration: duration) {
       self.transform = .identity
-    })
+    }
+    
+    CATransaction.commit()
+  }
+}
+
+extension Date {
+  func days(from date: Date) -> Int {
+    return Calendar.current.dateComponents([.day], from: date, to: self).day ?? 0
+  }
+  
+  func hours(from date: Date) -> Int {
+    return Calendar.current.dateComponents([.hour], from: date, to: self).hour ?? 0
+  }
+  
+  func minutes(from date: Date) -> Int {
+    return Calendar.current.dateComponents([.minute], from: date, to: self).minute ?? 0
+  }
+  
+  func seconds(from date: Date) -> Int {
+    return Calendar.current.dateComponents([.second], from: date, to: self).second ?? 0
   }
 }

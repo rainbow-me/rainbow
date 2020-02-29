@@ -15,6 +15,7 @@ const AssetList = ({
   hideHeader,
   isEmpty,
   isWalletEthZero,
+  network,
   scrollViewTracker,
   sections,
   ...props
@@ -26,6 +27,7 @@ const AssetList = ({
       {...props}
       hideHeader={hideHeader}
       isWalletEthZero={isWalletEthZero}
+      network={network}
     />
   ) : (
     <RecyclerAssetList

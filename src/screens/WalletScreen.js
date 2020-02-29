@@ -1,5 +1,6 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
+import { get } from 'lodash';
 import React, { Component } from 'react';
 import Animated from 'react-native-reanimated';
 import { withNavigation } from 'react-navigation';
@@ -12,6 +13,8 @@ import {
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
+import ExchangeFab from '../components/fab/ExchangeFab';
+import SendFab from '../components/fab/SendFab';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import {
   withAccountData,
@@ -27,6 +30,7 @@ import {
 import { position } from '../styles';
 import { isNewValueForObjectPaths } from '../utils';
 import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
+import networkInfo from '../helpers/networkInfo';
 
 class WalletScreen extends Component {
   static propTypes = {
@@ -61,31 +65,47 @@ class WalletScreen extends Component {
     }
   };
 
-  shouldComponentUpdate = nextProps =>
-    isNewValueForObjectPaths(this.props, nextProps, [
-      'language',
-      'nativeCurrency',
-      'network',
-      'accountAddress',
-    ]) ||
-    (nextProps.navigation.getParam('focused', true) &&
+  shouldComponentUpdate = nextProps => {
+    const isFocused = this.props.navigation.getParam('focused', true);
+    const willBeFocused = nextProps.navigation.getParam('focused', true);
+    const sectionLengthHasChanged =
+      this.props.sections.length !== nextProps.sections.length;
+
+    return (
+      // We need it when coming back from settings
+      (!isFocused && willBeFocused) ||
+      // We need it when switching accounts or network
+      sectionLengthHasChanged ||
+      // We need it when loading assets or empty wallet
       isNewValueForObjectPaths(this.props, nextProps, [
-        'fetchingAssets',
+        'network',
+        'loadingAssets',
         'fetchingUniqueTokens',
         'isEmpty',
         'isWalletEthZero',
-        'sections',
-      ]));
+      ]) ||
+      // We need it to update prices / balances (only when focused!)
+      (willBeFocused &&
+        isNewValueForObjectPaths(this.props, nextProps, ['sections']))
+    );
+  };
 
   render = () => {
     const {
       isEmpty,
       isWalletEthZero,
       navigation,
+      network,
       refreshAccountData,
       scrollViewTracker,
       sections,
     } = this.props;
+
+    // Show the exchange fab only for supported networks
+    // (mainnet & rinkeby)
+    const fabs = get(networkInfo[network], 'exchange_enabled')
+      ? [ExchangeFab, SendFab]
+      : [SendFab];
 
     return (
       <Page {...position.sizeAsObject('100%')} flex={1}>
@@ -96,6 +116,8 @@ class WalletScreen extends Component {
           disabled={isWalletEthZero}
           scrollViewTracker={scrollViewTracker}
           sections={sections}
+          network={network}
+          fabs={fabs}
         >
           <Header marginTop={5} justify="space-between">
             <ProfileHeaderButton navigation={navigation} />
@@ -107,6 +129,7 @@ class WalletScreen extends Component {
             isWalletEthZero={isWalletEthZero}
             scrollViewTracker={scrollViewTracker}
             sections={sections}
+            network={network}
           />
         </FabWrapper>
       </Page>

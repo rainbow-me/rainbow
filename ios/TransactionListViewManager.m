@@ -9,15 +9,25 @@
 #import "RCTConvert+TransactionList.h"
 
 @interface RCT_EXTERN_MODULE(TransactionListViewManager, RCTViewManager)
- 
-RCT_EXPORT_VIEW_PROPERTY(transactions, Transactions)
+
+RCT_EXPORT_VIEW_PROPERTY(data, TransactionData)
 RCT_EXPORT_VIEW_PROPERTY(accountAddress, NSString)
+RCT_EXPORT_VIEW_PROPERTY(onRequestPress, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onRequestExpire, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onTransactionPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(accountColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(accountName, NSString)
-RCT_EXPORT_VIEW_PROPERTY(onItemPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onReceivePress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onAvatarPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onCopyAddressPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(isAvatarPickerAvailable, BOOL)
+
+@end
+
+@implementation TransactionListViewManager: RCTViewManager
+
+- (UIView *)view {
+  return [[TransactionListView alloc] init];
+}
 
 @end

@@ -1,13 +1,17 @@
 import { isNil, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
+import networkTypes from '../helpers/networkTypes';
 import {
   addressAssetsReceived,
   compoundInfoReceived,
   transactionsReceived,
   transactionsRemoved,
 } from './data';
-import { testnetExplorerInit } from './testnetExplorer';
+import {
+  testnetExplorerInit,
+  testnetExplorerClearState,
+} from './testnetExplorer';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
@@ -83,7 +87,12 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
   }
 };
 
-export const explorerClearState = () => dispatch => {
+export const explorerClearState = () => (dispatch, getState) => {
+  const { network } = getState().settings;
+  // if we're not on mainnnet clear the testnet state
+  if (network !== networkTypes.mainnet) {
+    return testnetExplorerClearState();
+  }
   clearInterval(getCompoundInterval);
   dispatch(explorerUnsubscribe());
   dispatch({ type: EXPLORER_CLEAR_STATE });
@@ -93,7 +102,7 @@ export const explorerInit = () => (dispatch, getState) => {
   const { network, accountAddress, nativeCurrency } = getState().settings;
   // Fallback to the testnet data provider
   // if we're not on mainnnet
-  if (network !== 'mainnet') {
+  if (network !== networkTypes.mainnet) {
     return dispatch(testnetExplorerInit());
   }
 

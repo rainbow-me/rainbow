@@ -40,7 +40,7 @@ const FloatingEmojis = ({
           // if a user has smashed the button 7 times, they deserve a 🌈 rainbow
           emojiToRender:
             (existingEmojis.length + 1) % 7 === 0 ? 'rainbow' : emoji,
-          x: x ? x - getRandomNumber(-20, 20) : `${getRandomNumber(...range)}%`,
+          x: x ? x - getRandomNumber(-20, 20) : getRandomNumber(...range) + '%',
           y: y || 0,
         };
         return [...existingEmojis, newEmoji];
@@ -54,7 +54,10 @@ const FloatingEmojis = ({
       {typeof children === 'function' ? children({ onNewEmoji }) : children}
       <Animated.View
         pointerEvents="none"
-        style={{ opacity, ...position.coverAsObject }}
+        style={{
+          opacity,
+          ...position.coverAsObject,
+        }}
       >
         {emojis.map(({ emojiToRender, x, y }, index) => (
           <FloatingEmoji

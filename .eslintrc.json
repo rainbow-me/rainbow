@@ -3,8 +3,11 @@
   "settings": {
     "react": { "version": "16" }
   },
+  "globals": {
+    "__DEV__": true
+  },
   "rules": {
-    "sort-keys": ["error", "asc", {"caseSensitive": false, "natural": false}],
+    "sort-keys": ["error", "asc", { "caseSensitive": false, "natural": false }],
     "jest/no-truthy-falsy": 0,
     "react-native/no-inline-styles": 0,
     "import/named": 0,
