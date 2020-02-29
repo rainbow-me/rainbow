@@ -77,39 +77,44 @@ const BalanceCoinRow = ({
   onPressSend,
   isCoinListEdited,
   ...props
-}) =>
-  item.isSmall ? (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
-      <CoinRow
-        onPress={onPress}
-        onPressSend={onPressSend}
-        {...item}
-        {...props}
-        bottomRowRender={BottomRow}
-        topRowRender={TopRow}
-      />
-    </ButtonPressAnimation>
-  ) : (
-    <>
-      <CoinCheckButton isAbsolute {...item} />
-      <TransitionToggler
-        startingWidth={0}
-        endingWidth={42}
-        toggle={isCoinListEdited}
-      >
-        <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
-          <CoinRow
-            onPress={onPress}
-            onPressSend={onPressSend}
-            {...item}
-            {...props}
-            bottomRowRender={BottomRow}
-            topRowRender={TopRow}
-          />
-        </ButtonPressAnimation>
-      </TransitionToggler>
-    </>
-  );
+}) => {
+  if (!item.isHidden || isCoinListEdited) {
+    return item.isSmall ? (
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+        <CoinRow
+          onPress={onPress}
+          onPressSend={onPressSend}
+          {...item}
+          {...props}
+          bottomRowRender={BottomRow}
+          topRowRender={TopRow}
+        />
+      </ButtonPressAnimation>
+    ) : (
+      <>
+        <CoinCheckButton isAbsolute {...item} />
+        <TransitionToggler
+          startingWidth={0}
+          endingWidth={42}
+          toggle={isCoinListEdited}
+        >
+          <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+            <CoinRow
+              onPress={onPress}
+              onPressSend={onPressSend}
+              {...item}
+              {...props}
+              bottomRowRender={BottomRow}
+              topRowRender={TopRow}
+            />
+          </ButtonPressAnimation>
+        </TransitionToggler>
+      </>
+    );
+  } else {
+    return null;
+  }
+};
 
 BalanceCoinRow.propTypes = {
   item: PropTypes.object,

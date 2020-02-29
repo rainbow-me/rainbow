@@ -11,6 +11,7 @@ const COIN_LIST_OPTIONS_LOAD_FAILURE =
   'editOptions/COIN_LIST_OPTIONS_LOAD_FAILURE';
 
 const SET_IS_COIN_LIST_EDITED = 'editOptions/SET_IS_COIN_LIST_EDITED';
+const SET_PINNED_COINS = 'editOptions/SET_PINNED_COINS';
 const CLEAR_SELECTED_COINS = 'editOptions/SET_IS_COIN_LIST_EDITED';
 const PUSH_SELECTED_COIN = 'editOptions/SET_IS_COIN_LIST_EDITED';
 
@@ -53,24 +54,34 @@ export const pushSelectedCoins = payload => dispatch => {
   });
 };
 
+export const setPinnedCoins = () => dispatch => {
+  console.log('i did');
+  dispatch({
+    type: SET_PINNED_COINS,
+  });
+};
+
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   hiddenCoins: [],
   isCoinListEdited: false,
-  pinnedCoins: ['eth'],
-  selectedCoins: [],
+  pinnedCoins: [],
+  selectedCoins: ['eth'],
 };
 
 export default (state = INITIAL_STATE, action) =>
   produce(state, draft => {
     if (action.type === COIN_LIST_OPTIONS_LOAD_SUCCESS) {
-      // draft.pinnedCoins = action.payload.pinnedCoins;
-      // draft.hiddenCoins = action.payload.hiddenCoins;
+      // draft.pinnedCoins = action.payload.pinnedCoins || [];
+      // draft.hiddenCoins = action.payload.hiddenCoins || [];
     } else if (action.type === SET_IS_COIN_LIST_EDITED) {
       draft.isCoinListEdited = action.payload;
     } else if (action.type === CLEAR_SELECTED_COINS) {
       draft.selectedCoins = [];
     } else if (action.type === PUSH_SELECTED_COIN) {
       draft.selectedCoins = draft.selectedCoins.push(action.payload);
+    } else if (action.type === SET_PINNED_COINS) {
+      console.log('XD');
+      draft.pinnedCoins = draft.selectedCoins;
     }
   });

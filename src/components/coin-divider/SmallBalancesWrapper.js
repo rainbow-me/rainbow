@@ -21,6 +21,7 @@ class SmallBalancesWrapper extends PureComponent {
     openSmallBalances: PropTypes.bool,
     setIsCoinListEdited: PropTypes.func,
     setOpenSmallBalances: PropTypes.func,
+    setPinnedCoins: PropTypes.func,
   };
 
   state = { areChildrenVisible: true };
@@ -35,6 +36,7 @@ class SmallBalancesWrapper extends PureComponent {
       checkList,
       openSmallBalances,
       isCoinListEdited,
+      setPinnedCoins,
       setIsCoinListEdited,
     } = this.props;
 
@@ -44,6 +46,8 @@ class SmallBalancesWrapper extends PureComponent {
           balancesSum={balancesSum}
           onPress={this.handlePress}
           onEdit={setIsCoinListEdited}
+          // onHide={}
+          onPin={setPinnedCoins}
           isCoinListEdited={isCoinListEdited}
           openSmallBalances={openSmallBalances}
         />
