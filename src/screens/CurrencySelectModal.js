@@ -251,6 +251,7 @@ export default compose(
   withNavigationFocus,
   mapProps(({ navigation, ...props }) => ({
     ...props,
+    headerTitle: get(navigation, 'state.params.headerTitle', null),
     navigation,
     transitionPosition: get(navigation, 'state.params.position'),
     type: get(navigation, 'state.params.type', null),
