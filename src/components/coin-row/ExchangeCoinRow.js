@@ -17,15 +17,8 @@ const containerStyles = css`
   padding-right: 0;
 `;
 
-const BottomRow = ({ balance, native, showBalance, symbol }) => {
-  let text = symbol;
-  if (balance && showBalance && native) {
-    text = `${balance.display} ≈ ${native.balance.display}`;
-  } else if (balance && showBalance) {
-    text = `${balance.display}`;
-  }
-  return <BottomRowText>{text}</BottomRowText>;
-};
+const BottomRow = ({ showBalance, symbol }) =>
+  showBalance ? null : <BottomRowText>{symbol}</BottomRowText>;
 
 BottomRow.propTypes = {
   showBalance: PropTypes.bool,
