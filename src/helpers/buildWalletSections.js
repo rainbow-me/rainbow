@@ -107,8 +107,7 @@ const withBalanceSection = (
   isWalletEthZero,
   language,
   nativeCurrency,
-  network,
-  showShitcoins
+  network
 ) => {
   let totalValue = Number(get(assetsTotal, 'amount', 0));
   const assets = map(savings, cToken => {
@@ -158,7 +157,6 @@ const withBalanceSection = (
     balances: true,
     data: balanceSectionData,
     header: {
-      showShitcoins,
       title: lang.t('account.tab_balances'),
       totalItems: isLoadingBalances ? 1 : allAssetsCount,
       totalValue: `$${totalValue.toFixed(2)}`,
