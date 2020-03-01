@@ -4,7 +4,7 @@
  * keeping in mind that they should never be broken
  */
 
-export const discoverSheetAvailable = false;
+export const discoverSheetAvailable = true;
 export const chartExpandedAvailable = false;
 export const nativeTransactionListAvailable = false;
 export const nativeButtonPressAnimationAvailable = false;

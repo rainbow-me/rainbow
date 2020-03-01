@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
+import SlackBottomSheet from 'react-native-slack-bottom-sheet';
 import BottomSheet from 'reanimated-bottom-sheet';
 import Animated from 'react-native-reanimated';
 
@@ -372,7 +373,25 @@ export default class DiscoverSheet extends React.Component {
   );
 
   render() {
-    return (
+    return Platform.OS === 'ios' ? (
+      <SlackBottomSheet
+        presentGlobally={false}
+        backgroundOpacity={0}
+        allowsDragToDismiss={false}
+        allowsTapToDismiss={false}
+        blocksBackgroundTouches={false}
+        startFromShortForm
+        interactsWithOuterScrollView
+      >
+        <View style={StyleSheet.absoluteFillObject}>
+          <ScrollView
+            style={{ backgroundColor: 'white', opacity: 1, paddingTop: 12 }}
+          >
+            <Lorem />
+          </ScrollView>
+        </View>
+      </SlackBottomSheet>
+    ) : (
       <BottomSheet
         borderRadius={20}
         renderContent={this.renderInner}
