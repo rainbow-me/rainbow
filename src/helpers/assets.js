@@ -35,8 +35,7 @@ export const buildCoinsList = assets => {
       });
     } else if (
       (assets[i].native && assets[i].native.balance.amount > 1) ||
-      assets[i].address === 'eth' ||
-      assets.length < 4
+      assets[i].address === 'eth'
     ) {
       newAssets.push({ isCoin: true, isSmall: false, ...assets[i] });
     } else {
@@ -44,17 +43,27 @@ export const buildCoinsList = assets => {
     }
   }
 
-  if (newAssets.length > amountOfShowedCoins) {
-    smallBalances.assets = newAssets
+  const allAssets = pinnedAssets.concat(newAssets);
+  if (
+    amountOfShowedCoins > pinnedAssets.length &&
+    allAssets.length > amountOfShowedCoins
+  ) {
+    smallBalances.assets = allAssets
       .splice(amountOfShowedCoins)
+      .concat(smallBalances.assets);
+  } else if (
+    amountOfShowedCoins < pinnedAssets.length &&
+    allAssets.length > pinnedAssets.length
+  ) {
+    smallBalances.assets = allAssets
+      .splice(pinnedAssets.length)
       .concat(smallBalances.assets);
   }
 
   if (smallBalances.assets.length > 0) {
-    newAssets.push(smallBalances);
+    allAssets.push(smallBalances);
   }
 
-  const allAssets = pinnedAssets.concat(newAssets);
   return allAssets;
 };
 
