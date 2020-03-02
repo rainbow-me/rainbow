@@ -1,16 +1,22 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { pure } from 'recompact';
+import { compose } from 'recompact';
 import { CoinIcon } from '../coin-icon';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { colors } from '../../styles';
 import { Icon } from '../icons';
+import { withEditOptions } from '../../hoc';
 
 const CoinRowPaddingTop = 15;
 const CoinRowPaddingBottom = 7;
 
-const CoinCheckButton = ({ isAbsolute }) => {
+const CoinCheckButton = ({
+  isAbsolute,
+  uniqueId,
+  pushSelectedCoin,
+  removeSelectedCoin,
+}) => {
   const [toggle, setToggle] = useState(false);
 
   return (
@@ -22,7 +28,16 @@ const CoinCheckButton = ({ isAbsolute }) => {
         width: 66,
       }}
     >
-      <ButtonPressAnimation onPress={() => setToggle(!toggle)}>
+      <ButtonPressAnimation
+        onPress={() => {
+          if (toggle) {
+            removeSelectedCoin(uniqueId);
+          } else {
+            pushSelectedCoin(uniqueId);
+          }
+          setToggle(!toggle);
+        }}
+      >
         <View
           style={{
             alignItems: 'center',
@@ -74,4 +89,4 @@ CoinCheckButton.propTypes = {
 
 CoinCheckButton.defaultProps = {};
 
-export default pure(CoinCheckButton);
+export default compose(withEditOptions)(CoinCheckButton);

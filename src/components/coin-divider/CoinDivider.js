@@ -121,126 +121,126 @@ class CoinDivider extends PureComponent {
       >
         <Highlight highlight={isCoinDivider} />
         <Row>
-          <ButtonPressAnimation
-            onPress={onPress}
-            scaleTo={0.96}
-            style={{ position: 'absolute', width: openSmallBalances ? 80 : 54 }}
-          >
+          <Row style={{ position: 'absolute' }}>
             <OpacityToggler
               endingOpacity={1}
               startingOpacity={0}
-              isVisible={!this.state.isCurrentlyCoinListEdited}
-              animationNode={this._node}
+              isVisible={this.state.isCurrentlyCoinListEdited}
             >
-              <Row
-                align="center"
-                borderRadius={RoundButtonSizeToggler.capSize / 2}
-                height={CoinDividerHeight}
-                justify="space-between"
-                width={54}
-                paddingHorizontal={10}
-              >
-                <RoundButtonSizeToggler
-                  animationNode={this._node}
-                  endingWidth={CoinDividerHeight}
-                  isAbsolute
-                  reversed={!this._initialState}
-                  startingWidth={5}
-                  toggle={openSmallBalances}
-                />
-                <View>
-                  <CoinDividerButtonLabel
-                    isVisible={openSmallBalances}
-                    label="All"
-                    node={this._node}
-                    steps={[1, 0]}
-                  />
-                  <CoinDividerButtonLabel
-                    isVisible={openSmallBalances}
-                    label="Less"
-                    node={this._node}
-                    steps={[0, 1]}
-                  />
-                </View>
-                <View style={{ opacity: 0.6, paddingBottom: 1 }}>
-                  <RotationArrow
-                    endingOffset={20}
-                    endingPosition={-90}
-                    isOpen={openSmallBalances}
-                  >
-                    <FastImage
-                      source={Caret}
-                      style={{ height: 17, width: 9 }}
-                    />
-                  </RotationArrow>
-                </View>
-              </Row>
-            </OpacityToggler>
-          </ButtonPressAnimation>
-          <OpacityToggler
-            endingOpacity={1}
-            startingOpacity={0}
-            isVisible={this.state.isCurrentlyCoinListEdited}
-            animationNode={this._node}
-          >
-            <ButtonPressAnimation onPress={onPin}>
-              <View
-                style={{
-                  backgroundColor: colors.appleBlue,
-                  borderRadius: 15,
-                  height: 30,
-                  justifyContent: 'center',
-                  paddingHorizontal: 10,
-                }}
-              >
-                <Text
-                  color={isCoinListEdited ? 'white' : 'blueGreyDarkTransparent'}
-                  letterSpacing="tighter"
-                  size="lmedium"
-                  weight="semibold"
+              <ButtonPressAnimation onPress={onPin}>
+                <View
+                  style={{
+                    backgroundColor: colors.appleBlue,
+                    borderRadius: 15,
+                    height: 30,
+                    justifyContent: 'center',
+                    paddingHorizontal: 10,
+                  }}
                 >
-                  Pin
-                </Text>
-              </View>
-            </ButtonPressAnimation>
-          </OpacityToggler>
-          <OpacityToggler
-            endingOpacity={1}
-            startingOpacity={0}
-            isVisible={this.state.isCurrentlyCoinListEdited}
-            animationNode={this._node}
+                  <Text
+                    color={
+                      isCoinListEdited ? 'white' : 'blueGreyDarkTransparent'
+                    }
+                    letterSpacing="tighter"
+                    size="lmedium"
+                    weight="semibold"
+                  >
+                    Pin
+                  </Text>
+                </View>
+              </ButtonPressAnimation>
+            </OpacityToggler>
+            <OpacityToggler
+              endingOpacity={1}
+              startingOpacity={0}
+              isVisible={this.state.isCurrentlyCoinListEdited}
+            >
+              <ButtonPressAnimation>
+                <View
+                  style={{
+                    backgroundColor: colors.appleBlue,
+                    borderRadius: 15,
+                    height: 30,
+                    justifyContent: 'center',
+                    marginLeft: 10,
+                    paddingHorizontal: 10,
+                  }}
+                >
+                  <Text
+                    color={
+                      isCoinListEdited ? 'white' : 'blueGreyDarkTransparent'
+                    }
+                    letterSpacing="tighter"
+                    size="lmedium"
+                    weight="semibold"
+                  >
+                    Hide
+                  </Text>
+                </View>
+              </ButtonPressAnimation>
+            </OpacityToggler>
+          </Row>
+          <View
+            pointerEvents={
+              this.state.isCurrentlyCoinListEdited ? 'none' : 'auto'
+            }
           >
             <ButtonPressAnimation
-              onPress={() => {
-                this.setState(prevState => {
-                  onEdit(!prevState.isCurrentlyCoinListEdited);
-                  return {
-                    isCurrentlyCoinListEdited: !prevState.isCurrentlyCoinListEdited,
-                  };
-                });
-              }}
+              onPress={onPress}
+              scaleTo={0.96}
+              style={{ width: openSmallBalances ? 80 : 54 }}
             >
-              <View
-                style={{
-                  backgroundColor: colors.appleBlue,
-                  borderRadius: 15,
-                  height: 30,
-                  justifyContent: 'center',
-                  marginLeft: 10,
-                  paddingHorizontal: 10,
-                }}
+              <OpacityToggler
+                endingOpacity={0}
+                startingOpacity={1}
+                isVisible={this.props.isCoinListEdited}
               >
-                <Text
-                  color={isCoinListEdited ? 'white' : 'blueGreyDarkTransparent'}
-                  letterSpacing="tighter"
-                  size="lmedium"
-                  weight="semibold"
+                <Row
+                  align="center"
+                  borderRadius={RoundButtonSizeToggler.capSize / 2}
+                  height={CoinDividerHeight}
+                  justify="space-between"
+                  width={54}
+                  paddingHorizontal={10}
                 >
-                  Hide
-                </Text>
-              </View>
+                  <RoundButtonSizeToggler
+                    animationNode={this._node}
+                    endingWidth={CoinDividerHeight}
+                    isAbsolute
+                    reversed={!this._initialState}
+                    startingWidth={5}
+                    toggle={openSmallBalances}
+                  />
+                  <View>
+                    <CoinDividerButtonLabel
+                      isVisible={openSmallBalances}
+                      label="All"
+                      node={this._node}
+                      steps={[1, 0]}
+                    />
+                    <CoinDividerButtonLabel
+                      isVisible={openSmallBalances}
+                      label="Less"
+                      node={this._node}
+                      steps={[0, 1]}
+                    />
+                  </View>
+                  <View style={{ opacity: 0.6, paddingBottom: 1 }}>
+                    <RotationArrow
+                      endingOffset={20}
+                      endingPosition={-90}
+                      isOpen={openSmallBalances}
+                    >
+                      <FastImage
+                        source={Caret}
+                        style={{ height: 17, width: 9 }}
+                      />
+                    </RotationArrow>
+                  </View>
+                </Row>
+              </OpacityToggler>
             </ButtonPressAnimation>
-          </OpacityToggler>
+          </View>
         </Row>
         <View style={{ flexDirection: 'row' }}>
           <View
