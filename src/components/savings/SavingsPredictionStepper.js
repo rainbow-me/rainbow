@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
-import { colors, fonts, padding, position } from '../../styles';
+import { colors, fonts, padding } from '../../styles';
 import { AnimatedNumber, ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
@@ -39,6 +39,7 @@ const predictionFormatter = value =>
     .toFixed(2)
     .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 
+// eslint-disable-next-line no-unused-vars
 const SavingsPredictionStepper = ({ balance, interestRate }) => {
   const [step, setStep] = useState(0);
   const incrementStep = useCallback(
