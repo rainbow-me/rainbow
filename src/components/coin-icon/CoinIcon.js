@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { View } from 'react-native';
 import { css } from 'styled-components/primitives';
 import ReactCoinIcon, { FallbackIcon } from 'react-coin-icon';
 import { onlyUpdateForKeys } from 'recompact';
@@ -62,21 +62,23 @@ const CoinIconFallback = fallbackProps => {
 const enhance = onlyUpdateForKeys(['bgColor', 'symbol', 'address']);
 
 const CoinIcon = enhance(
-  ({ bgColor, showShadow, size, symbol, address, ...props }) =>
+  ({ bgColor, showShadow, size, symbol, address, isPinned, ...props }) =>
     showShadow ? (
       <>
-        <View
-          style={{
-            backgroundColor: colors.darkerGrey,
-            borderRadius: 10,
-            bottom: 3,
-            height: 20,
-            left: 14,
-            position: 'absolute',
-            width: 20,
-            zIndex: 10,
-          }}
-        />
+        {isPinned ? (
+          <View
+            style={{
+              backgroundColor: colors.darkerGrey,
+              borderRadius: 10,
+              bottom: 3,
+              height: 20,
+              left: 14,
+              position: 'absolute',
+              width: 20,
+              zIndex: 10,
+            }}
+          />
+        ) : null}
         <ShadowStack
           {...props}
           {...borders.buildCircleAsObject(size)}

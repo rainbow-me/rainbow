@@ -3,6 +3,7 @@ import {
   getHiddenCoins,
   getPinnedCoins,
 } from '../handlers/localstorage/accountLocal';
+import { union } from 'lodash';
 
 // -- Constants --------------------------------------- //
 const COIN_LIST_OPTIONS_LOAD_SUCCESS =
@@ -83,19 +84,20 @@ export default (state = INITIAL_STATE, action) =>
       // draft.hiddenCoins = action.payload.hiddenCoins || [];
     } else if (action.type === SET_IS_COIN_LIST_EDITED) {
       draft.isCoinListEdited = action.payload;
+      if (!draft.isCoinListEdited) {
+        draft.selectedCoins = [];
+      }
     } else if (action.type === CLEAR_SELECTED_COINS) {
       draft.selectedCoins = [];
     } else if (action.type === PUSH_SELECTED_COIN) {
-      console.log(action.payload);
       draft.selectedCoins.push(action.payload);
-      console.log(draft.selectedCoins);
     } else if (action.type === REMOVE_SELECTED_COIN) {
       draft.selectedCoins.splice(
         draft.selectedCoins.indexOf(action.payload),
         1
       );
-      console.log('lel', draft.selectedCoins);
     } else if (action.type === SET_PINNED_COINS) {
-      draft.pinnedCoins = draft.selectedCoins;
+      draft.pinnedCoins = union(draft.selectedCoins, draft.pinnedCoins);
+      draft.selectedCoins = [];
     }
   });

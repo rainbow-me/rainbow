@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { compose } from 'recompact';
 import { CoinIcon } from '../coin-icon';
@@ -16,8 +16,13 @@ const CoinCheckButton = ({
   uniqueId,
   pushSelectedCoin,
   removeSelectedCoin,
+  isCoinListEdited,
 }) => {
   const [toggle, setToggle] = useState(false);
+
+  useEffect(() => {
+    setToggle(false);
+  }, [isCoinListEdited]);
 
   return (
     <View

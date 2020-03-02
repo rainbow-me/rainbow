@@ -27,7 +27,12 @@ export const buildCoinsList = assets => {
   };
   for (let i = 0; i < assets.length; i++) {
     if (pinnedCoins.includes(assets[i].uniqueId)) {
-      pinnedAssets.push({ isCoin: true, isSmall: false, ...assets[i] });
+      pinnedAssets.push({
+        isCoin: true,
+        isPinned: true,
+        isSmall: false,
+        ...assets[i],
+      });
     } else if (
       (assets[i].native && assets[i].native.balance.amount > 1) ||
       assets[i].address === 'eth' ||
