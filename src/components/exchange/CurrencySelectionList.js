@@ -39,22 +39,33 @@ const NoResultMessage = withNeverRerender(() => (
   </ColumnWithMargins>
 ));
 
-const CurrencySelectionList = ({ itemProps, listItems, showList, query }) => {
+const CurrencySelectionList = ({
+  itemProps,
+  listItems,
+  showList,
+  query,
+  isSearching,
+}) => {
   const skeletonTransitionRef = useRef();
   const [showSkeleton, setShowSkeleton] = useState(true);
-
   const showNoResults = get(listItems, '[0].data', []).length === 0;
 
   useEffect(() => {
-    if (!showSkeleton && !showList) {
+    if (!showSkeleton && (!showList || isSearching)) {
       setShowSkeleton(true);
+    } else if (showSkeleton && showList && !isSearching) {
+      hideSkeleton();
     }
-  }, [showList, showSkeleton]);
+  }, [isSearching, showList, showSkeleton]);
+
+  const hideSkeleton = () => {
+    skeletonTransitionRef.current.animateNextTransition();
+    setShowSkeleton(false);
+  };
 
   const onListLayout = () => {
     if (showSkeleton && showList) {
-      skeletonTransitionRef.current.animateNextTransition();
-      setShowSkeleton(false);
+      hideSkeleton();
     }
   };
 
