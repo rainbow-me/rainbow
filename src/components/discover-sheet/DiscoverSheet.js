@@ -379,13 +379,20 @@ export default class DiscoverSheet extends React.Component {
         backgroundOpacity={0}
         allowsDragToDismiss={false}
         allowsTapToDismiss={false}
+        isHapticFeedbackEnabled={false}
         blocksBackgroundTouches={false}
         startFromShortForm
         interactsWithOuterScrollView
       >
         <View style={StyleSheet.absoluteFillObject}>
           <ScrollView
-            style={{ backgroundColor: 'white', opacity: 1, paddingTop: 12 }}
+            style={{
+              backgroundColor: 'white',
+              marginBottom: -20,
+              opacity: 1,
+              paddingTop: 12,
+            }}
+            contentContainerStyle={{ marginBottom: 20 }}
           >
             <Lorem />
           </ScrollView>
