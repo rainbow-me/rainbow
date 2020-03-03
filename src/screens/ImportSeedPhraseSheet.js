@@ -19,7 +19,7 @@ import { Input } from '../components/inputs';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { Text } from '../components/text';
-import { useClipboard } from '../hooks';
+import { useClipboard, useInitializeWallet } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { colors, padding, shadow, borders } from '../styles';
 import { isValidSeed as validateSeed } from '../helpers/validators';
@@ -103,13 +103,10 @@ const ImportButton = ({ disabled, onPress, seedPhrase }) => (
   </StyledImportButton>
 );
 
-const ImportSeedPhraseSheet = ({
-  initializeWallet,
-  isEmpty,
-  setAppearListener,
-}) => {
+const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   const { clipboard } = useClipboard();
   const { navigate, setParams } = useNavigation();
+  const initializeWallet = useInitializeWallet();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
 
@@ -249,7 +246,6 @@ const ImportSeedPhraseSheet = ({
 };
 
 ImportSeedPhraseSheet.propTypes = {
-  initializeWallet: PropTypes.func,
   isEmpty: PropTypes.bool,
   setAppearListener: PropTypes.func,
 };

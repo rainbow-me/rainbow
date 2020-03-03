@@ -31,6 +31,7 @@ import { checkIsValidAddress } from '../helpers/validators';
 import {
   useAccountAssets,
   useAccountSettings,
+  useRefreshAccountData,
   useSendableUniqueTokens,
 } from '../hooks';
 import { sendTransaction } from '../model/wallet';
@@ -61,7 +62,6 @@ const SheetContainer = isNativeStackAvailable
 const SendSheet = ({
   contacts,
   dataAddNewTransaction,
-  fetchData,
   gasLimit,
   gasPrices,
   gasPricesStartPolling,
@@ -79,6 +79,7 @@ const SendSheet = ({
 }) => {
   const { allAssets } = useAccountAssets();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
+  const fetchData = useRefreshAccountData();
   const {
     accountAddress,
     nativeCurrency,
@@ -453,7 +454,6 @@ const SendSheet = ({
 
 SendSheet.propTypes = {
   dataAddNewTransaction: PropTypes.func.isRequired,
-  fetchData: PropTypes.func.isRequired,
   gasLimit: PropTypes.number,
   gasPrices: PropTypes.object,
   gasUpdateDefaultGasLimit: PropTypes.func.isRequired,

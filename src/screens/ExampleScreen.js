@@ -1,11 +1,9 @@
-import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Text, View } from 'react-native';
 import { compose } from 'recompact';
 import Button from '../components/buttons/Button';
 import { Centered, Page } from '../components/layout';
 import {
-  withDataInit,
   withGas,
   withUniswapAllowances,
   withBlockPolling,
@@ -16,13 +14,8 @@ import unlockAndSwap from '../raps/unlockAndSwap';
 import { loadWallet } from '../model/wallet';
 
 class ExampleScreen extends PureComponent {
-  static propTypes = {
-    initializeWallet: PropTypes.func,
-  };
-
   componentDidMount = async () => {
     try {
-      await this.props.initializeWallet();
       await this.props.rapsRemove();
     } catch (error) {
       console.log('lol error on ExampleScreen like a n00b: ', error);
@@ -92,7 +85,6 @@ class ExampleScreen extends PureComponent {
 }
 
 export default compose(
-  withDataInit,
   withUniswapAllowances,
   withGas,
   withBlockPolling,

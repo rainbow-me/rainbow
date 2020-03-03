@@ -1,7 +1,7 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
@@ -13,34 +13,43 @@ import {
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
-import { withDataInit, withStatusBarStyle, withKeyboardHeight } from '../hoc';
-import { useAccountSettings, useWalletSectionsData } from '../hooks';
+import { withStatusBarStyle, withKeyboardHeight } from '../hoc';
+import {
+  useAccountSettings,
+  useInitializeWallet,
+  useRefreshAccountData,
+  useWalletSectionsData,
+} from '../hooks';
 import ExchangeFab from '../components/fab/ExchangeFab';
 import SendFab from '../components/fab/SendFab';
 import { position } from '../styles';
 import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import networkInfo from '../helpers/networkInfo';
 
-const WalletScreen = ({
-  initializeWallet,
-  navigation,
-  refreshAccountData,
-  scrollViewTracker,
-  setKeyboardHeight,
-}) => {
+const WalletScreen = ({ navigation, scrollViewTracker, setKeyboardHeight }) => {
+  const [initialized, setInitialized] = useState(false);
+  const initializeWallet = useInitializeWallet();
+  const refreshAccountData = useRefreshAccountData();
   useEffect(() => {
-    initializeWallet()
-      .then(() => {
-        getKeyboardHeight()
-          .then(keyboardHeight => {
-            if (keyboardHeight) {
-              setKeyboardHeight(keyboardHeight);
-            }
-          })
-          .catch(() => {});
-      })
-      .catch(() => {});
-  }, [initializeWallet, setKeyboardHeight]);
+    if (!initialized) {
+      initializeWallet()
+        .then(() => {
+          setInitialized(true);
+          getKeyboardHeight()
+            .then(keyboardHeight => {
+              if (keyboardHeight) {
+                setKeyboardHeight(keyboardHeight);
+              }
+            })
+            .catch(() => {
+              setInitialized(true);
+            });
+        })
+        .catch(() => {
+          setInitialized(true);
+        });
+    }
+  }, [initializeWallet, initialized, setKeyboardHeight]);
   const { network } = useAccountSettings();
   const { isEmpty, isWalletEthZero, sections } = useWalletSectionsData();
 
@@ -94,15 +103,12 @@ const WalletScreen = ({
 };
 
 WalletScreen.propTypes = {
-  initializeWallet: PropTypes.func,
   navigation: PropTypes.object,
-  refreshAccountData: PropTypes.func,
   scrollViewTracker: PropTypes.object,
   setKeyboardHeight: PropTypes.func,
 };
 
 export default compose(
-  withDataInit,
   withSafeTimeout,
   withNavigation,
   withKeyboardHeight,

@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
+import { useDispatch } from 'react-redux';
 import { compose, mapProps, shouldUpdate } from 'recompact';
 import {
   usePrevious,
@@ -37,6 +38,7 @@ const CurrencySelectModal = ({
   transitionPosition,
   type,
 }) => {
+  const { dispatch } = useDispatch();
   const {
     curatedAssets,
     favorites,
@@ -55,9 +57,9 @@ const CurrencySelectModal = ({
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      uniswapGetAllExchanges();
+      dispatch(uniswapGetAllExchanges());
     });
-  }, [uniswapGetAllExchanges]);
+  }, [dispatch, uniswapGetAllExchanges]);
 
   useEffect(() => {
     if (debounceHandler && debounceHandler.current)
@@ -125,14 +127,16 @@ const CurrencySelectModal = ({
 
   const handleDidBlur = useCallback(() => {
     Object.keys(assetsToFavoriteQueue).map(assetToFavorite =>
-      uniswapUpdateFavorites(
-        assetToFavorite,
-        assetsToFavoriteQueue[assetToFavorite]
+      dispatch(
+        uniswapUpdateFavorites(
+          assetToFavorite,
+          assetsToFavoriteQueue[assetToFavorite]
+        )
       )
     );
 
     handleChangeSearchQuery('');
-  }, [assetsToFavoriteQueue, uniswapUpdateFavorites]);
+  }, [assetsToFavoriteQueue, dispatch, uniswapUpdateFavorites]);
 
   const handleWillBlur = useCallback(
     () => dangerouslySetIsGestureBlocked(false),
