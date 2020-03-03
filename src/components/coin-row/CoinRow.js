@@ -2,7 +2,11 @@ import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import { withAccountSettings, withFabSendAction } from '../../hoc';
+import {
+  withAccountSettings,
+  withFabSendAction,
+  withEditOptions,
+} from '../../hoc';
 import { padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import Highlight from '../Highlight';
@@ -30,7 +34,11 @@ const CoinRowHighlight = withProps({
   marginHorizontal: 8,
 })(Highlight);
 
-const enhance = compose(withAccountSettings, withFabSendAction);
+const enhance = compose(
+  withAccountSettings,
+  withFabSendAction,
+  withEditOptions
+);
 
 const CoinRow = enhance(
   ({
@@ -42,11 +50,12 @@ const CoinRow = enhance(
     highlight,
     symbol,
     topRowRender,
+    isCoinListEdited,
     ...props
   }) => (
     <Container align="center" css={containerStyles}>
       <CoinRowHighlight visible={highlight} />
-      {createElement(coinIconRender, { symbol, ...props })}
+      {createElement(coinIconRender, { isCoinListEdited, symbol, ...props })}
       <Content css={contentStyles}>
         <Row align="center" justify="space-between">
           {topRowRender({ symbol, ...props })}

@@ -237,5 +237,8 @@ export default Component =>
           return null;
         }
       },
+      reloadData: ownProps => () => {
+        ownProps.dataLoadState();
+      },
     })
   )(Component);

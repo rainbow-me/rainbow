@@ -7,8 +7,11 @@ import {
   setPinnedCoins,
 } from '../redux/editOptions';
 
-const mapStateToProps = ({ editOptions: { isCoinListEdited } }) => ({
+const mapStateToProps = ({
+  editOptions: { isCoinListEdited, wasRecentlyPinned },
+}) => ({
   isCoinListEdited,
+  wasRecentlyPinned,
 });
 
 export default Component =>

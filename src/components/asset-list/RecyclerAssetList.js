@@ -103,6 +103,7 @@ const hasRowChanged = (r1, r2) => {
     'item.percentageOwned'
   );
   const isNewUniswapToken = isNewValueForPath(r1, r2, 'item.tokenSymbol');
+  const isPinned = isNewValueForPath(r1, r2, 'item.isPinned');
 
   const isCollectiblesRow = has(r1, 'item.tokens') && has(r2, 'item.tokens');
   let isNewAssetBalance = false;
@@ -150,7 +151,8 @@ const hasRowChanged = (r1, r2) => {
     isNewTotalItems ||
     isNewTotalValue ||
     isNewUniswapPercentageOwned ||
-    isNewUniswapToken
+    isNewUniswapToken ||
+    isPinned
   );
 };
 
@@ -782,6 +784,7 @@ class RecyclerAssetList extends Component {
         <SmallBalancesWrapper
           assets={this.renderList}
           checkList={this.checkList}
+          reloadData={this.props.reloadData}
         />
       );
     }

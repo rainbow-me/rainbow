@@ -75,6 +75,7 @@ const INITIAL_STATE = {
   isCoinListEdited: false,
   pinnedCoins: [],
   selectedCoins: [],
+  wasRecentlyPinned: false,
 };
 
 export default (state = INITIAL_STATE, action) =>
@@ -90,6 +91,9 @@ export default (state = INITIAL_STATE, action) =>
     } else if (action.type === CLEAR_SELECTED_COINS) {
       draft.selectedCoins = [];
     } else if (action.type === PUSH_SELECTED_COIN) {
+      if (draft.wasRecentlyPinned) {
+        draft.wasRecentlyPinned = false;
+      }
       draft.selectedCoins.push(action.payload);
     } else if (action.type === REMOVE_SELECTED_COIN) {
       draft.selectedCoins.splice(
@@ -99,5 +103,6 @@ export default (state = INITIAL_STATE, action) =>
     } else if (action.type === SET_PINNED_COINS) {
       draft.pinnedCoins = union(draft.selectedCoins, draft.pinnedCoins);
       draft.selectedCoins = [];
+      draft.wasRecentlyPinned = true;
     }
   });

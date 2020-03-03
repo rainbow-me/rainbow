@@ -68,6 +68,7 @@ class CoinDivider extends PureComponent {
     onEdit: PropTypes.func,
     onPress: PropTypes.func,
     openSmallBalances: PropTypes.bool,
+    reloadData: PropTypes.func,
   };
 
   state = {
@@ -104,6 +105,7 @@ class CoinDivider extends PureComponent {
       balancesSum,
       isCoinDivider,
       onEdit,
+      reloadData,
       onPin,
       isCoinListEdited,
       onPress,
@@ -127,7 +129,12 @@ class CoinDivider extends PureComponent {
               startingOpacity={0}
               isVisible={this.state.isCurrentlyCoinListEdited}
             >
-              <ButtonPressAnimation onPress={onPin}>
+              <ButtonPressAnimation
+                onPress={async () => {
+                  await onPin();
+                  reloadData();
+                }}
+              >
                 <View
                   style={{
                     backgroundColor: colors.appleBlue,

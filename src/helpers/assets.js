@@ -52,8 +52,8 @@ export const buildCoinsList = assets => {
       .splice(amountOfShowedCoins)
       .concat(smallBalances.assets);
   } else if (
-    amountOfShowedCoins < pinnedAssets.length &&
-    allAssets.length > pinnedAssets.length
+    amountOfShowedCoins <= pinnedAssets.length &&
+    allAssets.length >= pinnedAssets.length
   ) {
     smallBalances.assets = allAssets
       .splice(pinnedAssets.length)

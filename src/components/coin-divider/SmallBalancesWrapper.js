@@ -38,6 +38,7 @@ class SmallBalancesWrapper extends PureComponent {
       isCoinListEdited,
       setPinnedCoins,
       setIsCoinListEdited,
+      reloadData,
     } = this.props;
 
     return (
@@ -46,7 +47,7 @@ class SmallBalancesWrapper extends PureComponent {
           balancesSum={balancesSum}
           onPress={this.handlePress}
           onEdit={setIsCoinListEdited}
-          // onHide={}
+          reloadData={reloadData}
           onPin={setPinnedCoins}
           isCoinListEdited={isCoinListEdited}
           openSmallBalances={openSmallBalances}

@@ -45,6 +45,7 @@ class WalletScreen extends Component {
     navigation: PropTypes.object,
     network: PropTypes.string,
     refreshAccountData: PropTypes.func,
+    reloadData: PropTypes.func,
     scrollViewTracker: PropTypes.object,
     sections: PropTypes.array,
     setKeyboardHeight: PropTypes.func,
@@ -99,6 +100,7 @@ class WalletScreen extends Component {
       refreshAccountData,
       scrollViewTracker,
       sections,
+      reloadData,
     } = this.props;
 
     // Show the exchange fab only for supported networks
@@ -130,6 +132,7 @@ class WalletScreen extends Component {
             scrollViewTracker={scrollViewTracker}
             sections={sections}
             network={network}
+            reloadData={reloadData}
           />
         </FabWrapper>
       </Page>

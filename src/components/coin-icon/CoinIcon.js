@@ -59,13 +59,27 @@ const CoinIconFallback = fallbackProps => {
   }
 };
 
-const enhance = onlyUpdateForKeys(['bgColor', 'symbol', 'address']);
-
+const enhance = onlyUpdateForKeys([
+  'bgColor',
+  'symbol',
+  'address',
+  'isCoinListEdited',
+  'isPinned',
+]);
 const CoinIcon = enhance(
-  ({ bgColor, showShadow, size, symbol, address, isPinned, ...props }) =>
+  ({
+    bgColor,
+    showShadow,
+    size,
+    symbol,
+    address,
+    isPinned,
+    isCoinListEdited,
+    ...props
+  }) =>
     showShadow ? (
       <>
-        {isPinned ? (
+        {isPinned && isCoinListEdited ? (
           <View
             style={{
               backgroundColor: colors.darkerGrey,
