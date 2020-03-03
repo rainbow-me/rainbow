@@ -20,6 +20,7 @@ import GestureBlocker from '../components/GestureBlocker';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { exchangeModalBorderRadius } from './ExchangeModal';
+import matchSorter from 'match-sorter';
 
 const appendAssetWithUniqueId = asset => ({
   ...asset,
@@ -180,10 +181,12 @@ class CurrencySelectModal extends Component {
       headerTitle = 'Swap';
       filteredList = headerlessSection(uniswapAssetsInWallet);
       if (!isEmpty(searchQueryForSearch)) {
-        filteredList = filterList(uniswapAssetsInWallet, searchQueryForSearch, [
-          'symbol',
-          'name',
-        ]);
+        filteredList = filterList(
+          uniswapAssetsInWallet,
+          searchQueryForSearch,
+          ['symbol', 'name'],
+          { threshold: matchSorter.rankings.WORD_STARTS_WITH }
+        );
         filteredList = headerlessSection(filteredList);
       }
     } else if (type === CurrencySelectionTypes.output) {
@@ -193,10 +196,12 @@ class CurrencySelectModal extends Component {
         const [filteredBest, filteredHigh, filteredLow] = map(
           [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
           section => {
-            return filterList(section, searchQueryForSearch, [
-              'symbol',
-              'name',
-            ]);
+            return filterList(
+              section,
+              searchQueryForSearch,
+              ['symbol', 'name'],
+              { threshold: matchSorter.rankings.WORD_STARTS_WITH }
+            );
           }
         );
 
