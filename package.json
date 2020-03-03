@@ -185,7 +185,7 @@
     "babel-plugin-rewire": "^1.2.0",
     "babel-plugin-styled-components": "^1.10.6",
     "babel-plugin-transform-remove-console": "^6.9.4",
-    "detox": "^15.2.2",
+    "detox": "^15.4.2",
     "eslint": "^6.6.0",
     "eslint-config-satya164": "^2.4.1",
     "jest": "^24.9.0",
@@ -210,7 +210,7 @@
       "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/Rainbow.app",
         "build": "xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build",
-          "type": "ios.simulator",
+        "type": "ios.simulator",
         "device": {
           "type": "iPhone 11 Pro"
         }
