@@ -828,7 +828,7 @@
 					"\"$(SRCROOT)/Rainbow\"",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.2.4;
+				MARKETING_VERSION = 1.2.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -884,7 +884,7 @@
 					"\"$(SRCROOT)/Rainbow\"",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.2.4;
+				MARKETING_VERSION = 1.2.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -975,7 +975,7 @@
 					"\"$(SRCROOT)/Rainbow\"",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.2.4;
+				MARKETING_VERSION = 1.2.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1067,7 +1067,7 @@
 					"\"$(SRCROOT)/Rainbow\"",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.2.4;
+				MARKETING_VERSION = 1.2.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
