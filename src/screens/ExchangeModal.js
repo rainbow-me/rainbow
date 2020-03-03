@@ -875,10 +875,12 @@ const ExchangeModal = ({
               />
             )}
           </FloatingPanel>
-          <SwapInfo
-            asset={outputCurrency}
-            amount={(inputAmount > 0 && outputAmountDisplay) || null}
-          />
+          {isDeposit && (
+            <SwapInfo
+              asset={outputCurrency}
+              amount={(inputAmount > 0 && outputAmountDisplay) || null}
+            />
+          )}
           {isSlippageWarningVisible && <SlippageWarning slippage={slippage} />}
           {showConfirmButton && (
             <Fragment>
