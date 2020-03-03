@@ -1,6 +1,21 @@
 import matchSorter from 'match-sorter';
+import { toLower, get } from 'lodash';
 
 export const filterList = (list, searchQuery, keys = null) =>
   matchSorter(list, searchQuery, {
     keys,
   });
+
+export const filterScams = (safeList, nonSafeList) => {
+  return nonSafeList.filter(item => {
+    for (let i = 0; i < safeList.length; i++) {
+      if (
+        toLower(get(safeList[i], 'symbol')) === toLower(item.symbol) ||
+        toLower(get(safeList[i], 'name')) === toLower(item.name)
+      ) {
+        return false;
+      }
+    }
+    return true;
+  });
+};
