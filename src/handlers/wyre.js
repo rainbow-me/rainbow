@@ -7,7 +7,7 @@ import {
   WYRE_ACCOUNT_ID,
   WYRE_ENDPOINT,
 } from 'react-native-dotenv';
-import { add, feeCalculation, toFixedDecimals } from '../helpers/utilities';
+import { add, feeCalculation } from '../helpers/utilities';
 
 const WYRE_PERCENT_FEE = 4;
 const WYRE_FLAT_FEE_USD = 0.3;
@@ -94,7 +94,7 @@ export const requestWyreApplePay = (
         .then(orderId => {
           trackOrder(orderId, paymentResponse);
         })
-        .catch(error => {
+        .catch(() => {
           paymentResponse.complete('failure');
         });
     })
@@ -178,10 +178,7 @@ const getWyrePaymentDetails = (
     },
     {
       amount: { currency: SOURCE_CURRENCY_USD, value: feeAmount },
-      label: `Fee ${WYRE_PERCENT_FEE}% + $${toFixedDecimals(
-        WYRE_FLAT_FEE_USD,
-        2
-      )}`,
+      label: 'Fee',
     },
   ],
   id: 'rainbow-wyre',
