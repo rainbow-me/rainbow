@@ -4,7 +4,7 @@ import { toLower, get } from 'lodash';
 export const filterList = (list, searchQuery, keys = null, options = null) =>
   matchSorter(list, searchQuery, {
     keys,
-    options,
+    ...options,
   });
 
 export const filterScams = (safeList, nonSafeList) => {
