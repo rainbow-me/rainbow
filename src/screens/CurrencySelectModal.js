@@ -52,6 +52,7 @@ class CurrencySelectModal extends Component {
 
   state = {
     assetsToFavoriteQueue: {},
+    isSearching: false,
     searchQuery: '',
     searchQueryForSearch: '',
   };
@@ -103,11 +104,14 @@ class CurrencySelectModal extends Component {
   };
 
   handleChangeSearchQuery = searchQuery => {
-    this.setState({ searchQuery }, () => {
+    this.setState({ isSearching: true, searchQuery }, () => {
       if (this.debounceHandler) clearTimeout(this.debounceHandler);
       this.debounceHandler = setTimeout(() => {
-        this.setState({ searchQueryForSearch: searchQuery });
-      }, 250);
+        this.setState({
+          isSearching: false,
+          searchQueryForSearch: searchQuery,
+        });
+      }, 150);
     });
   };
 
@@ -173,7 +177,7 @@ class CurrencySelectModal extends Component {
       return null;
     }
 
-    const { searchQuery, searchQueryForSearch } = this.state;
+    const { searchQuery, searchQueryForSearch, isSearching } = this.state;
 
     let headerTitle = '';
     let filteredList = [];
@@ -227,7 +231,6 @@ class CurrencySelectModal extends Component {
     }
 
     const isFocused = this.props.navigation.getParam('focused', false);
-
     return (
       <KeyboardFixedOpenLayout>
         <Animated.View
@@ -272,6 +275,7 @@ class CurrencySelectModal extends Component {
                 }}
                 listItems={filteredList}
                 showList={isFocused}
+                isSearching={isSearching}
                 type={type}
                 query={searchQueryForSearch}
               />
