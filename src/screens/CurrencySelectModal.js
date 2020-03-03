@@ -56,9 +56,11 @@ const CurrencySelectModal = ({
   const debounceHandler = useRef();
 
   useEffect(() => {
+    /*
     InteractionManager.runAfterInteractions(() => {
       dispatch(uniswapGetAllExchanges());
     });
+    */
   }, [dispatch, uniswapGetAllExchanges]);
 
   useEffect(() => {
