@@ -9,7 +9,7 @@ import { compose, mapProps } from 'recompact';
 import { withUniswapAssets } from '../hoc';
 import { position } from '../styles';
 import { isNewValueForObjectPaths } from '../utils';
-import { filterList } from '../utils/search';
+import { filterList, filterScams } from '../utils/search';
 import { interpolate } from '../components/animations';
 import {
   CurrencySelectionList,
@@ -207,13 +207,13 @@ class CurrencySelectModal extends Component {
 
         filteredHigh.length &&
           filteredList.push({
-            data: filteredHigh,
+            data: filterScams(filteredBest, filteredHigh),
             title: filteredBest.length ? 'MORE RESULTS' : '',
           });
 
         filteredLow.length &&
           filteredList.push({
-            data: filteredLow,
+            data: filterScams(filteredBest, filteredLow),
             title: 'LOW LIQUIDITY',
           });
       } else {
