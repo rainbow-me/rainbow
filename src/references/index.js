@@ -36,3 +36,11 @@ export const cleanUniswapAssetsFallback = mapValues(
     ...loweredTokenOverridesFallback[key],
   })
 );
+
+export const shitcoinBlacklist = {
+  mainnet: [
+    '0xc12d1c73ee7dc3615ba4e37e4abfdbddfa38907e', // KickToken (KICK)
+    '0xdbadabe39b91f2069e27291add14a1d95e3ff54f', // betbeb.com空投1万个ETH (BEB)
+    '0xf222ba8af81d799c565241b0d3eedf9bdc4fc462', // betbeb.com空投1万个ETH (BEB)
+  ],
+};
