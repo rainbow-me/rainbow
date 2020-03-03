@@ -1,9 +1,10 @@
 import matchSorter from 'match-sorter';
 import { toLower, get } from 'lodash';
 
-export const filterList = (list, searchQuery, keys = null) =>
+export const filterList = (list, searchQuery, keys = null, options = null) =>
   matchSorter(list, searchQuery, {
     keys,
+    options,
   });
 
 export const filterScams = (safeList, nonSafeList) => {
