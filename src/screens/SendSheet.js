@@ -27,6 +27,7 @@ import {
   formatInputDecimals,
 } from '../helpers/utilities';
 import { checkIsValidAddress } from '../helpers/validators';
+import { usePrevious } from '../hooks';
 import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
 import { deviceUtils, ethereumUtils, gasUtils } from '../utils';
@@ -326,12 +327,13 @@ const SendSheet = ({
   }, [isValidAddress]);
 
   const assetOverride = useNavigationParam('asset');
+  const prevAssetOverride = usePrevious(assetOverride);
 
   useEffect(() => {
-    if (isValidAddress && assetOverride) {
+    if (assetOverride && assetOverride !== prevAssetOverride) {
       sendUpdateSelected(assetOverride);
     }
-  }, [assetOverride, isValidAddress, sendUpdateSelected]);
+  }, [assetOverride, isValidAddress, prevAssetOverride, sendUpdateSelected]);
 
   const recipientOverride = useNavigationParam('address');
 
