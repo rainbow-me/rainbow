@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-describe('Example', () => {
+describe('Import From Seed', () => {
   beforeEach(async () => {
     await device.reloadReactNative();
   });
