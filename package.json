@@ -187,7 +187,7 @@
     "babel-plugin-rewire": "^1.2.0",
     "babel-plugin-styled-components": "^1.10.6",
     "babel-plugin-transform-remove-console": "^6.9.4",
-    "detox": "^15.2.2",
+    "detox": "^15.4.2",
     "eslint": "^6.6.0",
     "eslint-config-satya164": "^2.4.1",
     "jest": "^24.9.0",
@@ -207,24 +207,19 @@
       "./config/test/jest-setup.js"
     ]
   },
-  "rnpm": {
-    "assets": [
-      "./src/assets/fonts"
-    ]
-  },
   "detox": {
     "configurations": {
       "ios.sim.release": {
-        "binaryPath": "ios/build/Rainbow/Build/Products/Release-iphonesimulator/Rainbow.app",
-        "build": "./node_modules/.bin/react-native run-ios  --configuration Release --simulator 'iPhone 11 Pro'",
+        "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/Rainbow.app",
+        "build": "xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build",
         "type": "ios.simulator",
         "device": {
           "type": "iPhone 11 Pro"
         }
       },
       "ios.sim.debug": {
-        "binaryPath": "ios/build/Rainbow/Build/Products/Debug-iphonesimulator/Rainbow.app",
-        "build": "./node_modules/.bin/react-native run-ios --simulator 'iPhone 11 Pro'",
+        "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/Rainbow.app",
+        "build": "xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build",
         "type": "ios.simulator",
         "device": {
           "type": "iPhone 11 Pro"

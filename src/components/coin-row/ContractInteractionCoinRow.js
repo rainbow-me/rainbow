@@ -9,8 +9,8 @@ import {
 } from 'recompact';
 import { Linking } from 'react-native';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import { ethereumUtils } from '../../utils/';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
-import { getEtherscanHostFromNetwork } from '../../utils/ethereumUtils';
 import { ButtonPressAnimation } from '../animations';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
@@ -71,11 +71,10 @@ export default compose(
           buttonIndex => {
             if (buttonIndex === 0) {
               const normalizedHash = hash.replace(/-.*/g, '');
-              Linking.openURL(
-                `https://${getEtherscanHostFromNetwork(
-                  network
-                )}/tx/${normalizedHash}`
+              const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
+                network
               );
+              Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
             }
           }
         );

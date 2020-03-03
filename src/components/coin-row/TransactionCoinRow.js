@@ -8,9 +8,8 @@ import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import { colors } from '../../styles';
-import { abbreviations } from '../../utils';
+import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
-import { getEtherscanHostFromNetwork } from '../../utils/ethereumUtils';
 import { ButtonPressAnimation } from '../animations';
 import { FlexItem, Row, RowWithMargins } from '../layout';
 import BalanceText from './BalanceText';
@@ -146,11 +145,10 @@ export default compose(
               });
             } else if (buttonIndex === 1) {
               const normalizedHash = hash.replace(/-.*/g, '');
-              Linking.openURL(
-                `https://${getEtherscanHostFromNetwork(
-                  network
-                )}/tx/${normalizedHash}`
+              const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
+                network
               );
+              Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
             }
           }
         );

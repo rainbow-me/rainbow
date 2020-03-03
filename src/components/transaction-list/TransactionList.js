@@ -13,10 +13,9 @@ import {
   withContacts,
 } from '../../hoc';
 import { removeRequest } from '../../redux/requests';
+import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
-import { getEtherscanHostFromNetwork } from '../../utils/ethereumUtils';
 import { colors } from '../../styles';
-import { abbreviations } from '../../utils';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
@@ -159,11 +158,10 @@ export default compose(
               });
             } else if (buttonIndex === 1) {
               const normalizedHash = hash.replace(/-.*/g, '');
-              Linking.openURL(
-                `https://${getEtherscanHostFromNetwork(
-                  network
-                )}/tx/${normalizedHash}`
+              const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
+                network
               );
+              Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
             }
           }
         );

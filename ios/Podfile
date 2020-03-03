@@ -42,7 +42,6 @@ target 'Rainbow' do
 
   pod 'FLAnimatedImage'
   pod 'libwebp'
-  pod 'CodePush', :path => '../node_modules/react-native-code-push'
   pod 'RNInputMask', :path => '../node_modules/react-native-text-input-mask/ios/InputMask'
 
   permissions_path = '../node_modules/react-native-permissions/ios'
@@ -51,7 +50,6 @@ target 'Rainbow' do
 
   use_native_modules!
 
-  pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
 
 end
 
