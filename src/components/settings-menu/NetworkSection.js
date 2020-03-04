@@ -20,11 +20,11 @@ const NetworkSection = () => {
   const clearAccountData = useClearAccountData();
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
-  const { dispatch } = useDispatch();
+  const dispatch = useDispatch();
 
   const onNetworkChange = async network => {
     await clearAccountData();
-    await dispatch(settingsUpdateNetwork(toLower(network)));
+    await dispatch(settingsUpdateNetwork(network));
     InteractionManager.runAfterInteractions(async () => {
       await loadAccountData();
       await initializeAccountData();

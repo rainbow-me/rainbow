@@ -50,8 +50,8 @@ const buildInterstitialTransform = offsetY => ({
 });
 
 const onAddFromFaucet = network => {
-  const faucet_url = get(networkInfo[network], 'faucet_url');
-  Linking.openURL(faucet_url);
+  const faucetUrl = get(networkInfo[network], 'faucet_url');
+  Linking.openURL(faucetUrl);
 };
 
 const AddFundsInterstitial = ({
@@ -97,6 +97,7 @@ const AddFundsInterstitial = ({
 );
 
 AddFundsInterstitial.propTypes = {
+  network: PropTypes.string,
   offsetY: PropTypes.number,
   onPressAddFunds: PropTypes.func.isRequired,
   onPressImportWallet: PropTypes.func.isRequired,
@@ -111,7 +112,6 @@ export default compose(
   withNavigation,
   withHandlers({
     onPressAddFunds: ({ navigation }) => () => {
-      console.log('should go to modal');
       navigation.navigate('ReceiveModal');
     },
     onPressImportWallet: ({ navigation }) => () =>
