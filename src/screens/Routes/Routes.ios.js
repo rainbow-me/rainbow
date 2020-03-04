@@ -348,7 +348,7 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
             assetType: type,
           };
         }
-        sentryUtils.addInfoBreadcrumb(routeName);
+        sentryUtils.addNavBreadcrumb(prevRouteName, routeName, paramsToTrack);
         return analytics.screen(routeName, paramsToTrack);
       }
     }}
