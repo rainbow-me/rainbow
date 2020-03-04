@@ -47,7 +47,6 @@ class CurrencySelectModal extends Component {
     transitionPosition: PropTypes.object,
     type: PropTypes.oneOf(Object.keys(CurrencySelectionTypes)),
     uniswapAssetsInWallet: PropTypes.arrayOf(PropTypes.object),
-    uniswapGetAllExchanges: PropTypes.func,
   };
 
   state = {
@@ -55,12 +54,6 @@ class CurrencySelectModal extends Component {
     searchQuery: '',
     searchQueryForSearch: '',
   };
-
-  componentDidMount() {
-    InteractionManager.runAfterInteractions(() => {
-      this.props.uniswapGetAllExchanges();
-    });
-  }
 
   shouldComponentUpdate = (nextProps, nextState) => {
     const isNewType = this.props.type !== nextProps.type;
@@ -81,7 +74,7 @@ class CurrencySelectModal extends Component {
     const isNewProps = isNewValueForObjectPaths(
       { ...this.props, isFocused },
       { ...nextProps, isFocused: willBeFocused },
-      ['isFocused', 'type']
+      ['isFocused', 'type', 'globalHighLiquidityAssets']
     );
 
     const isNewState = isNewValueForObjectPaths(this.state, nextState, [
@@ -105,21 +98,17 @@ class CurrencySelectModal extends Component {
   handleChangeSearchQuery = searchQuery => {
     // When searching for the input field
     // or clearing the search no need for debouncing
-    if (
-      searchQuery === '' ||
-      this.props.type === CurrencySelectionTypes.input
-    ) {
-      this.setState({ searchQuery, searchQueryForSearch: searchQuery });
-    } else {
-      this.setState({ searchQuery }, () => {
-        if (this.debounceHandler) clearTimeout(this.debounceHandler);
-        this.debounceHandler = setTimeout(() => {
+    this.setState({ searchQuery }, () => {
+      if (this.debounceHandler) clearTimeout(this.debounceHandler);
+      this.debounceHandler = setTimeout(
+        () => {
           this.setState({
             searchQueryForSearch: searchQuery,
           });
-        }, 250);
-      });
-    }
+        },
+        searchQuery === '' ? 1 : 250
+      );
+    });
   };
 
   handleFavoriteAsset = (assetAddress, isFavorited) => {
@@ -238,6 +227,9 @@ class CurrencySelectModal extends Component {
     }
 
     const isFocused = this.props.navigation.getParam('focused', false);
+    const loading = !(
+      globalHighLiquidityAssets && globalHighLiquidityAssets.length
+    );
     return (
       <KeyboardFixedOpenLayout>
         <Animated.View
@@ -284,6 +276,7 @@ class CurrencySelectModal extends Component {
                 showList={isFocused}
                 type={type}
                 query={searchQueryForSearch}
+                loading={loading}
               />
             </Column>
             <GestureBlocker type="bottom" />

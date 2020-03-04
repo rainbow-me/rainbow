@@ -37,6 +37,7 @@ import {
 import {
   uniswapLoadState,
   uniswapClearState,
+  uniswapGetAllExchanges,
   uniswapPairsInit,
   uniswapUpdateState,
 } from '../redux/uniswap';
@@ -78,6 +79,7 @@ export default Component =>
       uniqueTokensLoadState,
       uniqueTokensRefreshState,
       uniswapClearState,
+      uniswapGetAllExchanges,
       uniswapLoadState,
       uniswapPairsInit,
       uniswapUpdateState,
@@ -122,8 +124,9 @@ export default Component =>
           sentryUtils.addInfoBreadcrumb('Initialize account data');
           console.log('Initialize account data for ', ownProps.network);
           ownProps.explorerInit();
-          ownProps.uniswapPairsInit();
+          await ownProps.uniswapPairsInit();
           await ownProps.uniqueTokensRefreshState();
+          await ownProps.uniswapGetAllExchanges();
         } catch (error) {
           // TODO error state
           console.log('Error initializing account data: ', error);
