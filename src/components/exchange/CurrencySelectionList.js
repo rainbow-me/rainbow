@@ -39,29 +39,23 @@ const NoResultMessage = withNeverRerender(() => (
   </ColumnWithMargins>
 ));
 
-const CurrencySelectionList = ({ itemProps, listItems, showList, query }) => {
+const CurrencySelectionList = ({
+  itemProps,
+  listItems,
+  loading,
+  showList,
+  query,
+}) => {
   const skeletonTransitionRef = useRef();
   const [showSkeleton, setShowSkeleton] = useState(true);
   const showNoResults = get(listItems, '[0].data', []).length === 0;
 
   useEffect(() => {
-    if (!showSkeleton && !showList) {
-      setShowSkeleton(true);
-    } else if (showSkeleton && showList) {
-      hideSkeleton();
+    if (showSkeleton && !loading) {
+      skeletonTransitionRef.current.animateNextTransition();
+      setShowSkeleton(false);
     }
-  }, [showList, showSkeleton]);
-
-  const hideSkeleton = () => {
-    skeletonTransitionRef.current.animateNextTransition();
-    setShowSkeleton(false);
-  };
-
-  const onListLayout = () => {
-    if (showSkeleton && showList) {
-      hideSkeleton();
-    }
-  };
+  }, [loading, showList, showSkeleton]);
 
   return (
     <Transitioning.View
@@ -77,7 +71,6 @@ const CurrencySelectionList = ({ itemProps, listItems, showList, query }) => {
             <ExchangeAssetList
               itemProps={itemProps}
               items={listItems}
-              onLayout={onListLayout}
               query={query}
             />
           )}
