@@ -2,6 +2,8 @@ import produce from 'immer';
 import {
   getHiddenCoins,
   getPinnedCoins,
+  savePinnedCoins,
+  saveHiddenCoins,
 } from '../handlers/localstorage/accountLocal';
 import { union } from 'lodash';
 
@@ -64,14 +66,20 @@ export const removeSelectedCoin = payload => dispatch => {
   });
 };
 
-export const setPinnedCoins = () => dispatch => {
+export const setPinnedCoins = () => (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
   dispatch({
+    accountAddress,
+    network,
     type: SET_PINNED_COINS,
   });
 };
 
-export const setHiddenCoins = () => dispatch => {
+export const setHiddenCoins = () => (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
   dispatch({
+    accountAddress,
+    network,
     type: SET_HIDDEN_COINS,
   });
 };
@@ -88,8 +96,8 @@ const INITIAL_STATE = {
 export default (state = INITIAL_STATE, action) =>
   produce(state, draft => {
     if (action.type === COIN_LIST_OPTIONS_LOAD_SUCCESS) {
-      // draft.pinnedCoins = action.payload.pinnedCoins || [];
-      // draft.hiddenCoins = action.payload.hiddenCoins || [];
+      draft.pinnedCoins = action.payload.pinnedCoins || [];
+      draft.hiddenCoins = action.payload.hiddenCoins || [];
     } else if (action.type === SET_IS_COIN_LIST_EDITED) {
       draft.isCoinListEdited = action.payload;
       if (!draft.isCoinListEdited) {
@@ -109,10 +117,12 @@ export default (state = INITIAL_STATE, action) =>
       );
     } else if (action.type === SET_PINNED_COINS) {
       draft.pinnedCoins = union(draft.selectedCoins, draft.pinnedCoins);
+      savePinnedCoins(draft.pinnedCoins, action.accountAddress, action.network);
       draft.selectedCoins = [];
       draft.wasRecentlyPinned = true;
     } else if (action.type === SET_HIDDEN_COINS) {
       draft.hiddenCoins = union(draft.selectedCoins, draft.hiddenCoins);
+      saveHiddenCoins(draft.pinnedCoins, action.accountAddress, action.network);
       draft.selectedCoins = [];
       draft.wasRecentlyPinned = true;
     }
