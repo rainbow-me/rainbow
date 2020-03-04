@@ -39,24 +39,18 @@ const NoResultMessage = withNeverRerender(() => (
   </ColumnWithMargins>
 ));
 
-const CurrencySelectionList = ({
-  itemProps,
-  listItems,
-  showList,
-  query,
-  isSearching,
-}) => {
+const CurrencySelectionList = ({ itemProps, listItems, showList, query }) => {
   const skeletonTransitionRef = useRef();
   const [showSkeleton, setShowSkeleton] = useState(true);
   const showNoResults = get(listItems, '[0].data', []).length === 0;
 
   useEffect(() => {
-    if (!showSkeleton && (!showList || isSearching)) {
+    if (!showSkeleton && !showList) {
       setShowSkeleton(true);
-    } else if (showSkeleton && showList && !isSearching) {
+    } else if (showSkeleton && showList) {
       hideSkeleton();
     }
-  }, [isSearching, showList, showSkeleton]);
+  }, [showList, showSkeleton]);
 
   const hideSkeleton = () => {
     skeletonTransitionRef.current.animateNextTransition();
@@ -108,6 +102,6 @@ CurrencySelectionList.propTypes = {
 };
 
 const propsAreEqual = (...props) =>
-  !isNewValueForObjectPaths(...props, ['listItems', 'showList', 'query']);
+  !isNewValueForObjectPaths(...props, ['listItems', 'showList']);
 
 export default memo(CurrencySelectionList, propsAreEqual);

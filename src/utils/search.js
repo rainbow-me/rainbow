@@ -8,6 +8,7 @@ export const filterList = (list, searchQuery, keys = null, options = null) =>
   });
 
 export const filterScams = (safeList, nonSafeList) => {
+  if (!safeList || !safeList.length) return nonSafeList;
   return nonSafeList.filter(item => {
     for (let i = 0; i < safeList.length; i++) {
       if (

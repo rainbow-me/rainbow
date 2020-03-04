@@ -1,6 +1,7 @@
-import { concat, get, isEmpty, map } from 'lodash';
-import PropTypes from 'prop-types';
 import { produce } from 'immer';
+import { concat, get, isEmpty, map } from 'lodash';
+import matchSorter from 'match-sorter';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -20,7 +21,6 @@ import GestureBlocker from '../components/GestureBlocker';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { exchangeModalBorderRadius } from './ExchangeModal';
-import matchSorter from 'match-sorter';
 
 const appendAssetWithUniqueId = asset => ({
   ...asset,
@@ -52,7 +52,6 @@ class CurrencySelectModal extends Component {
 
   state = {
     assetsToFavoriteQueue: {},
-    isSearching: false,
     searchQuery: '',
     searchQueryForSearch: '',
   };
@@ -104,15 +103,23 @@ class CurrencySelectModal extends Component {
   };
 
   handleChangeSearchQuery = searchQuery => {
-    this.setState({ isSearching: true, searchQuery }, () => {
-      if (this.debounceHandler) clearTimeout(this.debounceHandler);
-      this.debounceHandler = setTimeout(() => {
-        this.setState({
-          isSearching: false,
-          searchQueryForSearch: searchQuery,
-        });
-      }, 150);
-    });
+    // When searching for the input field
+    // or clearing the search no need for debouncing
+    if (
+      searchQuery === '' ||
+      this.props.type === CurrencySelectionTypes.input
+    ) {
+      this.setState({ searchQuery, searchQueryForSearch: searchQuery });
+    } else {
+      this.setState({ searchQuery }, () => {
+        if (this.debounceHandler) clearTimeout(this.debounceHandler);
+        this.debounceHandler = setTimeout(() => {
+          this.setState({
+            searchQueryForSearch: searchQuery,
+          });
+        }, 250);
+      });
+    }
   };
 
   handleFavoriteAsset = (assetAddress, isFavorited) => {
@@ -177,7 +184,7 @@ class CurrencySelectModal extends Component {
       return null;
     }
 
-    const { searchQuery, searchQueryForSearch, isSearching } = this.state;
+    const { searchQuery, searchQueryForSearch } = this.state;
 
     let headerTitle = '';
     let filteredList = [];
@@ -189,7 +196,7 @@ class CurrencySelectModal extends Component {
           uniswapAssetsInWallet,
           searchQueryForSearch,
           ['symbol', 'name'],
-          { threshold: matchSorter.rankings.WORD_STARTS_WITH }
+          { threshold: matchSorter.rankings.CONTAINS }
         );
         filteredList = headerlessSection(filteredList);
       }
@@ -204,7 +211,7 @@ class CurrencySelectModal extends Component {
               section,
               searchQueryForSearch,
               ['symbol', 'name'],
-              { threshold: matchSorter.rankings.WORD_STARTS_WITH }
+              { threshold: matchSorter.rankings.CONTAINS }
             );
           }
         );
@@ -217,7 +224,7 @@ class CurrencySelectModal extends Component {
         filteredHigh.length &&
           filteredList.push({
             data: filterScams(filteredBest, filteredHigh),
-            title: filteredBest.length ? 'MORE RESULTS' : '',
+            title: filteredHigh.length ? 'MORE RESULTS' : '',
           });
 
         filteredLow.length &&
@@ -275,7 +282,6 @@ class CurrencySelectModal extends Component {
                 }}
                 listItems={filteredList}
                 showList={isFocused}
-                isSearching={isSearching}
                 type={type}
                 query={searchQueryForSearch}
               />
