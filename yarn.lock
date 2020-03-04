@@ -9670,10 +9670,10 @@ react-native-screens@2.0.0-beta.13:
   dependencies:
     debounce "^1.2.0"
 
-react-native-slack-bottom-sheet@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/react-native-slack-bottom-sheet/-/react-native-slack-bottom-sheet-0.2.3.tgz#16139f699ecd6d76d8d6fdb9f0e290061a005bb6"
-  integrity sha512-iSji3uL/XDEbZ8l3PV6zcRG4Y8q9+tfQ5F5JKymoFopz0ZLopQLn/4ZFHyx9kwAo0sSqak+pgxj/p3wMPsM8Ew==
+react-native-slack-bottom-sheet@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-slack-bottom-sheet/-/react-native-slack-bottom-sheet-0.3.0.tgz#a31b12fe7ecb1c7dcb497f032694cb7c413eefdf"
+  integrity sha512-G1PqhDeOVxGRqt1eYeix7vZpGQeY8EJJ+zZ2NIFjU/4XRQnd0MfiHnPy44ZMQsg14ECgoN57y+OJ+a0G6hW3zQ==
 
 react-native-splash-screen@^3.2.0:
   version "3.2.0"

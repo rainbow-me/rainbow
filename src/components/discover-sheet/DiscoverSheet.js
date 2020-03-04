@@ -375,6 +375,7 @@ export default class DiscoverSheet extends React.Component {
   render() {
     return Platform.OS === 'ios' ? (
       <SlackBottomSheet
+        unmountAnimation={false}
         initialAnimation={false}
         presentGlobally={false}
         backgroundOpacity={0}
