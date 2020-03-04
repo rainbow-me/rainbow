@@ -333,7 +333,7 @@ const SendSheet = ({
     if (assetOverride && assetOverride !== prevAssetOverride) {
       sendUpdateSelected(assetOverride);
     }
-  }, [assetOverride, isValidAddress, prevAssetOverride, sendUpdateSelected]);
+  }, [assetOverride, prevAssetOverride, sendUpdateSelected]);
 
   const recipientOverride = useNavigationParam('address');
 
