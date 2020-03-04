@@ -10,6 +10,7 @@ export { default as useInitializeAccountData } from './useInitializeAccountData'
 export { default as useInitializeWallet } from './useInitializeWallet';
 export { default as useInteraction } from './useInteraction';
 export { default as useInternetStatus } from './useInternetStatus';
+export { default as useLoadAccountData } from './useLoadAccountData';
 export { default as useMagicFocus } from './useMagicFocus';
 export { default as usePrevious } from './usePrevious';
 export { default as useRefreshAccountData } from './useRefreshAccountData';

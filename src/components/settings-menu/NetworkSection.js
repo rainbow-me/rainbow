@@ -2,8 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import { toLower, values } from 'lodash';
 import React from 'react';
 import { InteractionManager } from 'react-native';
-import { onlyUpdateForKeys } from 'recompact';
-import { compose } from 'recompose';
+import { useDispatch } from 'react-redux';
 import networkInfo from '../../helpers/networkInfo';
 import {
   useAccountSettings,
@@ -13,7 +12,6 @@ import {
 } from '../../hooks';
 import { RadioList, RadioListItem } from '../radio-list';
 import { settingsUpdateNetwork } from '../../redux/settings';
-import { store } from '../../redux/store';
 
 const networks = values(networkInfo);
 
@@ -22,7 +20,7 @@ const NetworkSection = () => {
   const clearAccountData = useClearAccountData();
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
-  const { dispatch } = store;
+  const { dispatch } = useDispatch();
 
   const onNetworkChange = async network => {
     await clearAccountData();
@@ -51,4 +49,4 @@ const NetworkSection = () => {
   );
 };
 
-export default compose(onlyUpdateForKeys(['network']))(NetworkSection);
+export default NetworkSection;
