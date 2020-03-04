@@ -126,11 +126,7 @@ class QRScannerScreenWithData extends Component {
     );
   };
 }
-const mapStateToProps = ({
-  navigation: {
-    transitionProps: { modalVisible },
-  },
-}) => ({
+const mapStateToProps = ({ modal: { visible: modalVisible } }) => ({
   modalVisible,
 });
 export default compose(
