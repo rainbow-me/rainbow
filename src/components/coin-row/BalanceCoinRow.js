@@ -78,42 +78,38 @@ const BalanceCoinRow = ({
   isCoinListEdited,
   ...props
 }) => {
-  if (!item.isHidden || isCoinListEdited) {
-    return item.isSmall ? (
-      <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
-        <CoinRow
-          onPress={onPress}
-          onPressSend={onPressSend}
-          {...item}
-          {...props}
-          bottomRowRender={BottomRow}
-          topRowRender={TopRow}
-        />
-      </ButtonPressAnimation>
-    ) : (
-      <>
-        <CoinCheckButton isAbsolute {...item} />
-        <TransitionToggler
-          startingWidth={0}
-          endingWidth={42}
-          toggle={isCoinListEdited}
-        >
-          <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
-            <CoinRow
-              onPress={onPress}
-              onPressSend={onPressSend}
-              {...item}
-              {...props}
-              bottomRowRender={BottomRow}
-              topRowRender={TopRow}
-            />
-          </ButtonPressAnimation>
-        </TransitionToggler>
-      </>
-    );
-  } else {
-    return null;
-  }
+  return item.isSmall ? (
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+      <CoinRow
+        onPress={onPress}
+        onPressSend={onPressSend}
+        {...item}
+        {...props}
+        bottomRowRender={BottomRow}
+        topRowRender={TopRow}
+      />
+    </ButtonPressAnimation>
+  ) : (
+    <>
+      <CoinCheckButton isAbsolute {...item} />
+      <TransitionToggler
+        startingWidth={0}
+        endingWidth={42}
+        toggle={isCoinListEdited}
+      >
+        <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+          <CoinRow
+            onPress={onPress}
+            onPressSend={onPressSend}
+            {...item}
+            {...props}
+            bottomRowRender={BottomRow}
+            topRowRender={TopRow}
+          />
+        </ButtonPressAnimation>
+      </TransitionToggler>
+    </>
+  );
 };
 
 BalanceCoinRow.propTypes = {
@@ -153,7 +149,16 @@ export default compose(
       'nativeCurrency'
     );
     const isEdited = isNewValueForPath(props, nextProps, 'isCoinListEdited');
+    const isPinned = isNewValueForPath(props, nextProps, 'item.isPinned');
+    const isHidden = isNewValueForPath(props, nextProps, 'item.isHidden');
 
-    return isNewItem || isNewNativeCurrency || isChangeInOpenAssets || isEdited;
+    return (
+      isNewItem ||
+      isNewNativeCurrency ||
+      isChangeInOpenAssets ||
+      isEdited ||
+      isPinned ||
+      isHidden
+    );
   })
 )(BalanceCoinRow);

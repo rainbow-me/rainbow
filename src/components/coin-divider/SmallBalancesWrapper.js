@@ -36,6 +36,7 @@ class SmallBalancesWrapper extends PureComponent {
       checkList,
       openSmallBalances,
       isCoinListEdited,
+      setHiddenCoins,
       setPinnedCoins,
       setIsCoinListEdited,
       reloadData,
@@ -49,6 +50,7 @@ class SmallBalancesWrapper extends PureComponent {
           onEdit={setIsCoinListEdited}
           reloadData={reloadData}
           onPin={setPinnedCoins}
+          onHide={setHiddenCoins}
           isCoinListEdited={isCoinListEdited}
           openSmallBalances={openSmallBalances}
         />

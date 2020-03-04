@@ -8,6 +8,7 @@ import { onlyUpdateForKeys } from 'recompact';
 import { ShadowStack } from '../shadow-stack';
 import { toChecksumAddress } from '../../handlers/web3';
 import { borders, colors, fonts } from '../../styles';
+import { Icon } from '../icons';
 const CoinIconSize = 40;
 
 const fallbackTextStyles = css`
@@ -64,7 +65,9 @@ const enhance = onlyUpdateForKeys([
   'symbol',
   'address',
   'isCoinListEdited',
+  'wasRecentlyPinned',
   'isPinned',
+  'isHidden',
 ]);
 const CoinIcon = enhance(
   ({
@@ -74,24 +77,33 @@ const CoinIcon = enhance(
     symbol,
     address,
     isPinned,
+    isHidden,
     isCoinListEdited,
     ...props
   }) =>
     showShadow ? (
       <>
-        {isPinned && isCoinListEdited ? (
+        {(isPinned || isHidden) && isCoinListEdited ? (
           <View
             style={{
+              alignItems: 'center',
               backgroundColor: colors.darkerGrey,
               borderRadius: 10,
               bottom: 3,
               height: 20,
+              justifyContent: 'center',
               left: 14,
               position: 'absolute',
               width: 20,
               zIndex: 10,
             }}
-          />
+          >
+            <Icon
+              name={isPinned ? 'pin' : 'hidden'}
+              size={20}
+              color={colors.white}
+            />
+          </View>
         ) : null}
         <ShadowStack
           {...props}

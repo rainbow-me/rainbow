@@ -51,11 +51,17 @@ const CoinRow = enhance(
     symbol,
     topRowRender,
     isCoinListEdited,
+    wasRecentlyPinned,
     ...props
   }) => (
     <Container align="center" css={containerStyles}>
       <CoinRowHighlight visible={highlight} />
-      {createElement(coinIconRender, { isCoinListEdited, symbol, ...props })}
+      {createElement(coinIconRender, {
+        isCoinListEdited,
+        symbol,
+        wasRecentlyPinned,
+        ...props,
+      })}
       <Content css={contentStyles}>
         <Row align="center" justify="space-between">
           {topRowRender({ symbol, ...props })}

@@ -104,6 +104,7 @@ class CoinDivider extends PureComponent {
     const {
       balancesSum,
       isCoinDivider,
+      onHide,
       onEdit,
       reloadData,
       onPin,
@@ -162,7 +163,12 @@ class CoinDivider extends PureComponent {
               startingOpacity={0}
               isVisible={this.state.isCurrentlyCoinListEdited}
             >
-              <ButtonPressAnimation>
+              <ButtonPressAnimation
+                onPress={async () => {
+                  await onHide();
+                  reloadData();
+                }}
+              >
                 <View
                   style={{
                     backgroundColor: colors.appleBlue,
@@ -249,7 +255,13 @@ class CoinDivider extends PureComponent {
             </ButtonPressAnimation>
           </View>
         </Row>
-        <View style={{ flexDirection: 'row' }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            width: 100,
+          }}
+        >
           <View
             style={{
               height: 30,
@@ -270,7 +282,7 @@ class CoinDivider extends PureComponent {
             </OpacityToggler>
           </View>
           <View
-            style={{ alignItems: 'flex-end', position: 'absolute', width: 62 }}
+            style={{ alignItems: 'flex-end', position: 'absolute', width: 64 }}
           >
             <OpacityToggler
               endingOpacity={1}

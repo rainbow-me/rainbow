@@ -18,15 +18,23 @@ export const buildAssetUniqueIdentifier = item => {
 };
 
 export const buildCoinsList = assets => {
-  const newAssets = [];
-  const pinnedAssets = [];
-  const { pinnedCoins } = store.getState().editOptions;
+  const newAssets = [],
+    pinnedAssets = [],
+    hiddenAssets = [];
+  const { pinnedCoins, hiddenCoins } = store.getState().editOptions;
   const smallBalances = {
     assets: [],
     smallBalancesContainer: true,
   };
   for (let i = 0; i < assets.length; i++) {
-    if (pinnedCoins.includes(assets[i].uniqueId)) {
+    if (hiddenCoins.includes(assets[i].uniqueId)) {
+      hiddenAssets.push({
+        isCoin: true,
+        isHidden: true,
+        isSmall: true,
+        ...assets[i],
+      });
+    } else if (pinnedCoins.includes(assets[i].uniqueId)) {
       pinnedAssets.push({
         isCoin: true,
         isPinned: true,
@@ -35,13 +43,16 @@ export const buildCoinsList = assets => {
       });
     } else if (
       (assets[i].native && assets[i].native.balance.amount > 1) ||
-      assets[i].address === 'eth'
+      assets[i].address === 'eth' ||
+      assets.length < 4
     ) {
       newAssets.push({ isCoin: true, isSmall: false, ...assets[i] });
     } else {
       smallBalances.assets.push({ isCoin: true, isSmall: true, ...assets[i] });
     }
   }
+
+  smallBalances.assets = smallBalances.assets.concat(hiddenAssets);
 
   const allAssets = pinnedAssets.concat(newAssets);
   if (
@@ -60,7 +71,7 @@ export const buildCoinsList = assets => {
       .concat(smallBalances.assets);
   }
 
-  if (smallBalances.assets.length > 0) {
+  if (smallBalances.assets.length > 0 || hiddenCoins.length > 0) {
     allAssets.push(smallBalances);
   }
 
