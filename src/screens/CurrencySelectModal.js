@@ -210,15 +210,21 @@ class CurrencySelectModal extends Component {
         filteredBest.length &&
           filteredList.push({ data: filteredBest, title: '' });
 
-        filteredHigh.length &&
+        const filteredHighWithoutScams = filterScams(
+          filteredBest,
+          filteredHigh
+        );
+
+        filteredHighWithoutScams.length &&
           filteredList.push({
-            data: filterScams(filteredBest, filteredHigh),
-            title: filteredHigh.length ? 'MORE RESULTS' : '',
+            data: filteredHighWithoutScams,
+            title: filteredBest.length ? 'MORE RESULTS' : '',
           });
 
-        filteredLow.length &&
+        const filteredLowWithoutScams = filterScams(filteredBest, filteredLow);
+        filteredLowWithoutScams.length &&
           filteredList.push({
-            data: filterScams(filteredBest, filteredLow),
+            data: filteredLowWithoutScams,
             title: 'LOW LIQUIDITY',
           });
       } else {
