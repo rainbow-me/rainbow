@@ -340,7 +340,9 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
         }
         store.dispatch(
           setModalVisible(
-            routeName === 'WalletScreen' || routeName === 'QRScannerScreen'
+            routeName === 'WalletScreen' ||
+              routeName === 'QRScannerScreen' ||
+              routeName === 'ProfileScreen'
           )
         );
 
