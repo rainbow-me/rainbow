@@ -337,6 +337,12 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
           //   })
           // );
         }
+        store.dispatch(
+          updateTransitionProps({
+            modalVisible:
+              routeName === 'WalletScreen' || routeName === 'QRScannerScreen',
+          })
+        );
 
         if (routeName === 'ExpandedAssetScreen') {
           const { asset, type } = params;

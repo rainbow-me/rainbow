@@ -12,6 +12,7 @@ const INITIAL_STATE = {
     date: Date.now(),
     effect: '',
     isTransitioning: false,
+    modalVisible: true,
   },
 };
 

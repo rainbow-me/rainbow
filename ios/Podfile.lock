@@ -378,7 +378,7 @@ PODS:
     - ReactCommon/callinvoker (= 0.62.0-rc.1)
   - ReactNativePayments (1.1.5):
     - React
-  - reactnativeslackbottomsheet (0.2.2):
+  - reactnativeslackbottomsheet (0.2.3):
     - PanModal
     - React
   - RNAnalytics (1.1.0):
@@ -442,7 +442,6 @@ PODS:
   - Sentry (4.4.3):
     - Sentry/Core (= 4.4.3)
   - Sentry/Core (4.4.3)
-  - SocketRocket (0.5.1)
   - SRSRadialGradient (1.0.6):
     - React
   - SSZipArchive (2.2.2)
@@ -520,7 +519,6 @@ DEPENDENCIES:
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNStoreReview (from `../node_modules/react-native-store-review/ios`)
   - RNSVG (from `../node_modules/react-native-svg`)
-  - SocketRocket (from `../node_modules/detox/ios_src/SocketRocket`)
   - SRSRadialGradient (from `../node_modules/react-native-radial-gradient/ios`)
   - TcpSockets (from `../node_modules/react-native-tcp`)
   - ToolTipMenu (from `../node_modules/react-native-tooltip`)
@@ -681,8 +679,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-store-review/ios"
   RNSVG:
     :path: "../node_modules/react-native-svg"
-  SocketRocket:
-    :path: "../node_modules/detox/ios_src/SocketRocket"
   SRSRadialGradient:
     :path: "../node_modules/react-native-radial-gradient/ios"
   TcpSockets:
@@ -756,7 +752,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: 2e7618e869b2ba4a15042d6def29dd32df734793
   ReactCommon: 13c3473a975e73db91b1999e0d6d89c62400785d
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
-  reactnativeslackbottomsheet: c86b74b2e34b2f868fdc0942ee55c866682d1eb9
+  reactnativeslackbottomsheet: 1d95a839ab2327fbf2ad6e133a32996215b441b4
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 44395cb9c7c1523104c2b499eb426ef7aff82bca
   RNCMaskedView: a88953beefbd347a29072d9eba90e42945fe291e
@@ -781,7 +777,6 @@ SPEC CHECKSUMS:
   SDWebImage: 4d5c027c935438f341ed33dbac53ff9f479922ca
   SDWebImageWebPCoder: 947093edd1349d820c40afbd9f42acb6cdecd987
   Sentry: 14bdd673870e8cf64932b149fad5bbbf39a9b390
-  SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SRSRadialGradient: 77bcb1ae812d0c77560e54ed9e52166df032db1d
   SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
