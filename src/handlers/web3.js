@@ -9,12 +9,15 @@ import {
   multiply,
 } from '../helpers/utilities';
 import smartContractMethods from '../references/smartcontract-methods.json';
+import networkTypes from '../helpers/networkTypes';
 
 const infuraUrl = `https://network.infura.io/v3/${REACT_APP_INFURA_PROJECT_ID}`;
 /**
  * @desc web3 http instance
  */
-export let web3Provider;
+export let web3Provider = new ethers.providers.JsonRpcProvider(
+  replace(infuraUrl, 'network', networkTypes.mainnet)
+);
 
 /**
  * @desc set a different web3 provider
