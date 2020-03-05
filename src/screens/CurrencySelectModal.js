@@ -169,7 +169,6 @@ class CurrencySelectModal extends Component {
       type,
       uniswapAssetsInWallet,
     } = this.props;
-    console.log('IS INITIALIZED', isInitialized);
 
     if (type === null || type === undefined) {
       return null;
