@@ -1,22 +1,25 @@
 import { isNil } from 'lodash';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import styled from 'styled-components/primitives';
 import { useSafeArea } from 'react-native-safe-area-context';
+import styled from 'styled-components/primitives';
+import { AddCashForm, AddCashStatus } from '../components/add-cash';
+import { Column, ColumnWithMargins, FlexItem } from '../components/layout';
 import {
-  AddCashForm,
-  AddCashHeader,
-  AddCashStatus,
-} from '../components/add-cash';
-import { Column, FlexItem } from '../components/layout';
-import { useDimensions, useWyreApplePay } from '../hooks';
+  SheetHandle,
+  SheetSubtitleCycler,
+  SheetTitle,
+} from '../components/sheet';
+import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import {
+  useDimensions,
+  useShakeAnimation,
+  useTimeout,
+  useWyreApplePay,
+} from '../hooks';
 import { borders, colors } from '../styles';
 import { deviceUtils } from '../utils';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-
-const cashLimitYearly = 1500;
-const cashLimitDaily = 250;
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);
@@ -31,25 +34,43 @@ const SheetContainer = styled(Column)`
   width: 100%;
 `;
 
-const headerSubtitles = [
-  `Up to $${cashLimitDaily} daily`,
-  `Up to $${cashLimitYearly} yearly`,
-];
+const cashLimitYearly = 1500;
+const cashLimitDaily = 250;
+
+const cashLimits = {
+  daily: `Up to $${cashLimitDaily} daily`,
+  yearly: `Up to $${cashLimitYearly} yearly`,
+};
+
+const SubtitleInterval = 3000;
 
 const AddCashSheet = () => {
   const { isNarrowPhone } = useDimensions();
   const insets = useSafeArea();
 
+  const [errorAnimation, onShake] = useShakeAnimation();
+  const [errorIndex, setErrorIndex] = useState(null);
+  const [cancelTimeout, createTimeout] = useTimeout();
+
   const {
     onPurchase,
+    orderCurrency,
     orderStatus,
-    transferHash,
     transferStatus,
   } = useWyreApplePay();
 
-  const showOrderStatus = true || !isNil(orderStatus);
+  const onClearError = useCallback(() => setErrorIndex(null), []);
 
-  console.log('insets', insets);
+  const onLimitExceeded = useCallback(
+    limit => {
+      cancelTimeout();
+      setErrorIndex(Object.keys(cashLimits).indexOf(limit));
+      createTimeout(() => onClearError(), SubtitleInterval);
+    },
+    [cancelTimeout, createTimeout, onClearError]
+  );
+
+  const showOrderStatus = !isNil(orderStatus);
 
   return (
     <SheetContainer>
@@ -60,19 +81,37 @@ const AddCashSheet = () => {
         justify="end"
         paddingBottom={isNarrowPhone ? 15 : insets.bottom + 21}
       >
-        <AddCashHeader subtitles={showOrderStatus ? null : headerSubtitles} />
-        <FlexItem>
+        <Column align="center" paddingVertical={isNativeStackAvailable ? 6 : 8}>
+          <SheetHandle />
+          <ColumnWithMargins margin={4} paddingTop={7}>
+            <SheetTitle>Add Cash</SheetTitle>
+            {!showOrderStatus && (
+              <SheetSubtitleCycler
+                animatedValue={errorAnimation}
+                errorIndex={errorIndex}
+                interval={SubtitleInterval}
+                items={Object.values(cashLimits)}
+                paddingVertical={14}
+              />
+            )}
+          </ColumnWithMargins>
+        </Column>
+        <FlexItem width="100%">
           {showOrderStatus ? (
             <AddCashStatus
+              orderCurrency={orderCurrency}
               orderStatus={orderStatus}
-              transferHash={transferHash}
               transferStatus={transferStatus}
             />
           ) : (
             <AddCashForm
               limitDaily={cashLimitDaily}
               limitYearly={cashLimitYearly}
+              onClearError={onClearError}
+              onLimitExceeded={onLimitExceeded}
               onPurchase={onPurchase}
+              onShake={onShake}
+              shakeAnim={errorAnimation}
             />
           )}
         </FlexItem>
@@ -81,4 +120,4 @@ const AddCashSheet = () => {
   );
 };
 
-export default AddCashSheet;
+export default React.memo(AddCashSheet);

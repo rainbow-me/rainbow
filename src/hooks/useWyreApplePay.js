@@ -20,6 +20,7 @@ import useAccountData from './useAccountData';
 export default function useWyreApplePay() {
   const { accountAddress, assets } = useAccountData();
 
+  const [orderCurrency, setOrderCurrency] = useState(null);
   const [orderStatus, setOrderStatus] = useState(null);
   const [transferHash, setTransferHash] = useState(null);
   const [transferStatus, setTransferStatus] = useState(null);
@@ -100,14 +101,18 @@ export default function useWyreApplePay() {
   );
 
   const getOrderStatus = useCallback(
-    async (orderId, paymentResponse) => {
-      const retry = () => getOrderStatus(orderId, paymentResponse);
+    async (destCurrency, orderId, paymentResponse) => {
+      const retry = () =>
+        getOrderStatus(destCurrency, orderId, paymentResponse);
 
       try {
         if (!completedPaymentResponse && isEmpty(orderId)) {
           paymentResponse.complete('failure');
           setCompletedPaymentResponse(true);
         }
+
+        setOrderCurrency(destCurrency);
+
         const { orderStatus, transferId } = await trackWyreOrder(orderId);
         setOrderStatus(orderStatus);
 
@@ -167,6 +172,7 @@ export default function useWyreApplePay() {
 
   return {
     onPurchase,
+    orderCurrency,
     orderStatus,
     transferHash,
     transferStatus,

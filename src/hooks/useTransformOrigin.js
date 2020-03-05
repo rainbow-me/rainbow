@@ -33,7 +33,7 @@ export default function useTransformOrigin(transformOrigin) {
   }, [height, transformOrigin, width]);
 
   const withTransformOrigin = useCallback(
-    transform => transformOriginUtil(offsetX, offsetY, transform),
+    transform => transformOriginUtil({ x: offsetX, y: offsetY }, transform),
     [offsetX, offsetY]
   );
 

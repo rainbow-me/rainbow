@@ -114,6 +114,10 @@ PODS:
   - libwebp/mux (1.1.0):
     - libwebp/demux
   - libwebp/webp (1.1.0)
+  - lottie-ios (3.1.3)
+  - lottie-react-native (3.3.2):
+    - lottie-ios (~> 3.1.3)
+    - React
   - nanopb (0.3.9011):
     - nanopb/decode (= 0.3.9011)
     - nanopb/encode (= 0.3.9011)
@@ -382,9 +386,9 @@ PODS:
     - React
   - RNCAsyncStorage (1.7.1):
     - React
-  - RNCMaskedView (0.1.6):
+  - RNCMaskedView (0.1.7):
     - React
-  - RNCPushNotificationIOS (1.0.6):
+  - RNCPushNotificationIOS (1.0.7):
     - React
   - RNDeviceInfo (5.3.1):
     - React
@@ -420,7 +424,7 @@ PODS:
     - React
   - RNReanimated (1.7.0):
     - React
-  - RNScreens (2.0.0-beta.13):
+  - RNScreens (2.2.0):
     - React
   - RNSentry (1.3.3):
     - React
@@ -457,6 +461,8 @@ DEPENDENCIES:
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - libwebp
+  - lottie-ios (from `../node_modules/lottie-ios`)
+  - lottie-react-native (from `../node_modules/lottie-react-native`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera.podspec`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -563,6 +569,10 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
+  lottie-ios:
+    :path: "../node_modules/lottie-ios"
+  lottie-react-native:
+    :path: "../node_modules/lottie-react-native"
   Permission-Camera:
     :path: "../node_modules/react-native-permissions/ios/Camera.podspec"
   Permission-FaceID:
@@ -708,6 +718,8 @@ SPEC CHECKSUMS:
   GoogleUtilities: 06eb53bb579efe7099152735900dd04bf09e7275
   JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
+  lottie-ios: 496ac5cea1bbf1a7bd1f1f472f3232eb1b8d744b
+  lottie-react-native: 2a1a82bb326ae51331a5520de0cf706733c6db69
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   Permission-Camera: 8fe4753b02396489b11c5089e4f57bab7fe1ef42
   Permission-FaceID: 29c3f213a033c24330a554a5dad7681d6e3698f8
@@ -745,8 +757,8 @@ SPEC CHECKSUMS:
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 44395cb9c7c1523104c2b499eb426ef7aff82bca
-  RNCMaskedView: a88953beefbd347a29072d9eba90e42945fe291e
-  RNCPushNotificationIOS: 05262c52fcfb861a2b79aa8e51cad66263c9ea52
+  RNCMaskedView: 76c40a1d41c3e2535df09246a2b5487f04de0814
+  RNCPushNotificationIOS: eea954fa69537d4a8db898fe1b1a06e2b7e15841
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNFastImage: 9b0c22643872bb7494c8d87bbbb66cc4c0d9e7a2
   RNFBApp: 7d4006751de8bb5cafa2e8d2e7d94ee250df81db
@@ -760,7 +772,7 @@ SPEC CHECKSUMS:
   RNPermissions: 2f74237e97b08beda01e914301e12524ddddf5b8
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
-  RNScreens: ba539a5086136eb356e43699cb588a80369763ca
+  RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
   RNSentry: 86baf0c87120cd5eb491d073989f8cbc1a2174c6
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: 82d44baa568873faae1a9929dd30d29db8f06732
