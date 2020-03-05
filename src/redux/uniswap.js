@@ -124,7 +124,6 @@ export const uniswapGetAllExchanges = () => async (dispatch, getState) => {
       payload: allPairs,
       type: UNISWAP_UPDATE_ALL_PAIRS,
     });
-    console.log('updating all pairs :: done');
   } catch (error) {
     dispatch({
       payload: { allPairs: {} },
