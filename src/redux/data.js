@@ -246,6 +246,11 @@ export const addressAssetsReceived = (
       !!Number(get(asset, 'balance.amount'))
   );
 
+  saveAssets(parsedAssets, accountAddress, network);
+  dispatch({
+    payload: parsedAssets,
+    type: DATA_UPDATE_ASSETS,
+  });
   if (!change) {
     const missingPriceAssetAddresses = map(
       filter(parsedAssets, asset => isNil(asset.price)),
@@ -253,11 +258,6 @@ export const addressAssetsReceived = (
     );
     dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
   }
-  saveAssets(parsedAssets, accountAddress, network);
-  dispatch({
-    payload: parsedAssets,
-    type: DATA_UPDATE_ASSETS,
-  });
 };
 
 const subscribeToMissingPrices = addresses => (dispatch, getState) => {
