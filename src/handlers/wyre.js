@@ -92,7 +92,7 @@ export const requestWyreApplePay = (
         destCurrency
       )
         .then(orderId => {
-          trackOrder(orderId, paymentResponse);
+          trackOrder(destCurrency, orderId, paymentResponse);
         })
         .catch(() => {
           paymentResponse.complete('failure');

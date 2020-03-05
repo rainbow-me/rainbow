@@ -37,7 +37,7 @@ const base = {
   primaryBlue: '#5d9df6', // '93, 157, 246'
   purple: '#32325d', // '50, 50, 93'
   purpleLight: '#FFD9FE', // '255, 217, 254'
-  red: '#d64b47', // '214, 75, 71'
+  red: '#FF494A', // '255, 73, 74'
   rowDivider: '#f9f9fa', // '249, 249, 250'
   shadowGrey: '#6F6F6F', // '111, 111, 111'
   shimmer: '#edeef1', // '237, 238, 241'
@@ -83,7 +83,7 @@ const vendor = {
   walletconnect: '#4099ff', // '64, 153, 255'
 };
 
-const buildRgba = (color, alpha) => `rgba(${chroma(color).rgb()}, ${alpha})`;
+const buildRgba = (color, alpha) => `rgba(${chroma(color).rgb()},${alpha})`;
 
 const isColorLight = targetColor =>
   chroma(targetColor || base.white).luminance() > 0.5;
