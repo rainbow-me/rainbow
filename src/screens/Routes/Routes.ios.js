@@ -16,7 +16,7 @@ import {
 } from '../../navigation';
 import { updateTransitionProps } from '../../redux/navigation';
 import store from '../../redux/store';
-import { deviceUtils } from '../../utils';
+import { deviceUtils, sentryUtils } from '../../utils';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from '../ProfileScreenWithData';
@@ -404,7 +404,7 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
             assetType: type,
           };
         }
-
+        sentryUtils.addNavBreadcrumb(prevRouteName, routeName, paramsToTrack);
         return analytics.screen(routeName, paramsToTrack);
       }
     }}

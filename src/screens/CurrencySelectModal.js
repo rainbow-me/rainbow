@@ -1,4 +1,5 @@
 import { concat, get, isEmpty, map } from 'lodash';
+import matchSorter from 'match-sorter';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager } from 'react-native';
@@ -12,7 +13,8 @@ import {
   useUniswapAssetsInWallet,
 } from '../hooks';
 import { position } from '../styles';
-import { filterList } from '../utils/search';
+import { isNewValueForObjectPaths } from '../utils';
+import { filterList, filterScams } from '../utils/search';
 import { interpolate } from '../components/animations';
 import {
   CurrencySelectionList,
@@ -22,7 +24,6 @@ import {
 import GestureBlocker from '../components/GestureBlocker';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
-import { isNewValueForObjectPaths } from '../utils';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 
 const headerlessSection = data => [{ data, title: '' }];
@@ -44,7 +45,7 @@ const CurrencySelectModal = ({
     favorites,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
-    uniswapGetAllExchanges,
+    isInitialized,
     uniswapUpdateFavorites,
   } = useUniswapAssets();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
@@ -56,19 +57,14 @@ const CurrencySelectModal = ({
   const debounceHandler = useRef();
 
   useEffect(() => {
-    /*
-    InteractionManager.runAfterInteractions(() => {
-      dispatch(uniswapGetAllExchanges());
-    });
-    */
-  }, [dispatch, uniswapGetAllExchanges]);
-
-  useEffect(() => {
     if (debounceHandler && debounceHandler.current)
       clearTimeout(debounceHandler.current);
-    debounceHandler.current = setTimeout(() => {
-      setSearchQueryForSearch(searchQuery);
-    }, 250);
+    debounceHandler.current = setTimeout(
+      () => {
+        setSearchQueryForSearch(searchQuery);
+      },
+      searchQuery === '' ? 1 : 250
+    );
   }, [searchQuery]);
 
   const isFocused = navigation.getParam('focused', false);
@@ -160,10 +156,12 @@ const CurrencySelectModal = ({
   if (type === CurrencySelectionTypes.input) {
     filteredList = headerlessSection(uniswapAssetsInWallet);
     if (!isEmpty(searchQueryForSearch)) {
-      filteredList = filterList(uniswapAssetsInWallet, searchQueryForSearch, [
-        'symbol',
-        'name',
-      ]);
+      filteredList = filterList(
+        uniswapAssetsInWallet,
+        searchQueryForSearch,
+        ['symbol', 'name'],
+        { threshold: matchSorter.rankings.CONTAINS }
+      );
       filteredList = headerlessSection(filteredList);
     }
   } else if (type === CurrencySelectionTypes.output) {
@@ -171,25 +169,37 @@ const CurrencySelectModal = ({
     if (!isEmpty(searchQueryForSearch)) {
       const [filteredBest, filteredHigh, filteredLow] = map(
         [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
-        section => filterList(section, searchQueryForSearch, ['symbol', 'name'])
+        section =>
+          filterList(section, searchQueryForSearch, ['symbol', 'name'], {
+            threshold: matchSorter.rankings.CONTAINS,
+          })
       );
 
       filteredList = [];
       filteredBest.length &&
         filteredList.push({ data: filteredBest, title: '' });
 
-      filteredHigh.length &&
+      const filteredHighWithoutScams = filterScams(filteredBest, filteredHigh);
+
+      filteredHighWithoutScams.length &&
         filteredList.push({
-          data: filteredHigh,
+          data: filteredHighWithoutScams,
           title: filteredBest.length ? 'MORE RESULTS' : '',
         });
 
-      filteredLow.length &&
-        filteredList.push({ data: filteredLow, title: 'LOW LIQUIDITY' });
+      const filteredLowWithoutScams = filterScams(filteredBest, filteredLow);
+
+      filteredLowWithoutScams.length &&
+        filteredList.push({
+          data: filteredLowWithoutScams,
+          title: 'LOW LIQUIDITY',
+        });
     } else {
       filteredList = headerlessSection(concat(favorites, curatedAssets));
     }
   }
+
+  const loading = !isInitialized;
 
   return (
     <KeyboardFixedOpenLayout>
@@ -234,6 +244,7 @@ const CurrencySelectModal = ({
                 showFavoriteButton: type === CurrencySelectionTypes.output,
               }}
               listItems={filteredList}
+              loading={loading}
               showList={isFocused}
               type={type}
               query={searchQueryForSearch}

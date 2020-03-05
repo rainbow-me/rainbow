@@ -72,11 +72,13 @@ export const parseTransactions = (
     pendingTransactions,
     parsedNewTransactions
   );
-  const updatedResults = concat(
-    updatedPendingTransactions,
-    parsedNewTransactions,
-    remainingTransactions
-  );
+  const updatedResults = appended
+    ? concat(
+        updatedPendingTransactions,
+        parsedNewTransactions,
+        remainingTransactions
+      )
+    : concat(updatedPendingTransactions, parsedNewTransactions);
   return uniqBy(updatedResults, txn => txn.hash);
 };
 

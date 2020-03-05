@@ -31,6 +31,7 @@ import { checkIsValidAddress } from '../helpers/validators';
 import {
   useAccountAssets,
   useAccountSettings,
+  usePrevious,
   useRefreshAccountData,
   useSendableUniqueTokens,
 } from '../hooks';
@@ -335,12 +336,13 @@ const SendSheet = ({
   }, [isValidAddress]);
 
   const assetOverride = useNavigationParam('asset');
+  const prevAssetOverride = usePrevious(assetOverride);
 
   useEffect(() => {
-    if (isValidAddress && assetOverride) {
+    if (assetOverride && assetOverride !== prevAssetOverride) {
       sendUpdateSelected(assetOverride);
     }
-  }, [assetOverride, isValidAddress, sendUpdateSelected]);
+  }, [assetOverride, prevAssetOverride, sendUpdateSelected]);
 
   const recipientOverride = useNavigationParam('address');
 

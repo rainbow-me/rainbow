@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAccountSettings } from '../hooks';
 import { explorerInit } from '../redux/explorer';
-import { uniswapPairsInit } from '../redux/uniswap';
+import { uniswapGetAllExchanges, uniswapPairsInit } from '../redux/uniswap';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { sentryUtils } from '../utils';
 
@@ -14,9 +14,10 @@ export default function useInitializeAccountData() {
   const initializeAccountData = useCallback(async () => {
     try {
       sentryUtils.addInfoBreadcrumb('Initialize account data');
-      console.log('Initialize account data for ', network);
+      console.log('Initialize account data for', network);
       dispatch(explorerInit());
-      dispatch(uniswapPairsInit());
+      await dispatch(uniswapPairsInit());
+      await dispatch(uniswapGetAllExchanges());
       await dispatch(uniqueTokensRefreshState());
     } catch (error) {
       // TODO error state

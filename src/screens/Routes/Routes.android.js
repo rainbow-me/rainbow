@@ -10,7 +10,7 @@ import { enableScreens } from 'react-native-screens';
 import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { ExchangeModalNavigator, Navigation } from '../../navigation';
-import { deviceUtils } from '../../utils';
+import { deviceUtils, sentryUtils } from '../../utils';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from '../ProfileScreenWithData';
@@ -303,6 +303,7 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
           };
         }
 
+        sentryUtils.addNavBreadcrumb(prevRouteName, routeName, paramsToTrack);
         return analytics.screen(routeName, paramsToTrack);
       }
     }}

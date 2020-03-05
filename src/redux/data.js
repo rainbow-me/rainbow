@@ -36,7 +36,10 @@ import { divide } from '../helpers/utilities';
 import { parseAccountAssets } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
-import { loweredTokenOverridesFallback } from '../references';
+import {
+  loweredTokenOverridesFallback,
+  shitcoinBlacklist,
+} from '../references';
 import { ethereumUtils, isLowerCaseMatch } from '../utils';
 import { uniswapUpdateLiquidityTokens } from './uniswap';
 
@@ -215,9 +218,14 @@ export const addressAssetsReceived = (
       item => item.uniqueId
     );
   }
+
   parsedAssets = parsedAssets.filter(
-    asset => !!Number(get(asset, 'balance.amount'))
+    asset =>
+      // Shitcoin filtering
+      shitcoinBlacklist[network].indexOf(get(asset, 'address')) === -1 &&
+      !!Number(get(asset, 'balance.amount'))
   );
+
   if (!change) {
     const missingPriceAssetAddresses = map(
       filter(parsedAssets, asset => isNil(asset.price)),
