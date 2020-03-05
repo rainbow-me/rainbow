@@ -20,10 +20,11 @@ export let web3Provider;
  * @desc set a different web3 provider
  * @param {String} network
  */
-export const web3SetHttpProvider = network => {
+export const web3SetHttpProvider = async network => {
   web3Provider = new ethers.providers.JsonRpcProvider(
     replace(infuraUrl, 'network', network)
   );
+  return web3Provider.ready;
 };
 
 export const sendRpcCall = async payload =>

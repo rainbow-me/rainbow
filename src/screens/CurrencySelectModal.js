@@ -160,10 +160,11 @@ class CurrencySelectModal extends Component {
 
   render = () => {
     const {
+      curatedAssets,
       favorites,
       globalHighLiquidityAssets,
       globalLowLiquidityAssets,
-      curatedAssets,
+      isInitialized,
       transitionPosition,
       type,
       uniswapAssetsInWallet,
@@ -233,9 +234,8 @@ class CurrencySelectModal extends Component {
     }
 
     const isFocused = this.props.navigation.getParam('focused', false);
-    const loading = !(
-      globalHighLiquidityAssets && globalHighLiquidityAssets.length
-    );
+    const loading = !isInitialized;
+
     return (
       <KeyboardFixedOpenLayout>
         <Animated.View
@@ -302,6 +302,7 @@ export default compose(
       favorites,
       globalHighLiquidityAssets,
       globalLowLiquidityAssets,
+      isInitialized,
       navigation,
       ...props
     }) => ({
@@ -310,6 +311,7 @@ export default compose(
       favorites: normalizeAssetItems(favorites),
       globalHighLiquidityAssets: normalizeAssetItems(globalHighLiquidityAssets),
       globalLowLiquidityAssets: normalizeAssetItems(globalLowLiquidityAssets),
+      isInitialized,
       navigation,
       transitionPosition: get(navigation, 'state.params.position'),
       type: get(navigation, 'state.params.type', null),
