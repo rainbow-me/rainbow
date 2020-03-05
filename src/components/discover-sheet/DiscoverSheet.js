@@ -378,6 +378,7 @@ export default function DiscoverSheet(props) {
   return Platform.OS === 'ios' ? (
     <SlackBottomSheet
       {...props}
+      topOffset={100}
       unmountAnimation={false}
       initialAnimation={false}
       presentGlobally={false}
