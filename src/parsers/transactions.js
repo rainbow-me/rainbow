@@ -68,11 +68,13 @@ export default (
     pendingTransactions,
     parsedTransactions
   );
-  const updatedResults = concat(
-    updatedPendingTransactions,
-    parsedTransactions,
-    remainingTransactions
-  );
+  const updatedResults = appended
+    ? concat(
+        updatedPendingTransactions,
+        parsedTransactions,
+        remainingTransactions
+      )
+    : concat(updatedPendingTransactions, parsedTransactions);
   const dedupedResults = uniqBy(updatedResults, txn => txn.hash);
   return { approvalTransactions, dedupedResults };
 };
