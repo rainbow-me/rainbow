@@ -360,8 +360,9 @@ const Lorem = () => (
     </Text>
   </View>
 );
-export default class DiscoverSheet extends React.Component {
-  renderInner = () => (
+
+function renderInner() {
+  return (
     <View style={{ backgroundColor: 'white', paddingTop: 12 }}>
       <View style={styles.header}>
         <View style={styles.panelHeader}>
@@ -371,45 +372,47 @@ export default class DiscoverSheet extends React.Component {
       <Lorem />
     </View>
   );
-
-  render() {
-    return Platform.OS === 'ios' ? (
-      <SlackBottomSheet
-        unmountAnimation={false}
-        initialAnimation={false}
-        presentGlobally={false}
-        backgroundOpacity={0}
-        allowsDragToDismiss={false}
-        allowsTapToDismiss={false}
-        isHapticFeedbackEnabled={false}
-        blocksBackgroundTouches={false}
-        startFromShortForm
-        interactsWithOuterScrollView
-      >
-        <View style={StyleSheet.absoluteFillObject}>
-          <ScrollView
-            style={{
-              backgroundColor: 'white',
-              marginBottom: -20,
-              opacity: 1,
-              paddingTop: 12,
-            }}
-            contentContainerStyle={{ marginBottom: 20 }}
-          >
-            <Lorem />
-          </ScrollView>
-        </View>
-      </SlackBottomSheet>
-    ) : (
-      <BottomSheet
-        borderRadius={20}
-        renderContent={this.renderInner}
-        overdragResistanceFactor={0}
-        snapPoints={[300, 744]}
-        springConfig={discoverSheetSpring}
-      />
-    );
-  }
+}
+export default function DiscoverSheet(props) {
+  const [initialPosition, setInitialPosition] = React.useState('long');
+  return Platform.OS === 'ios' ? (
+    <SlackBottomSheet
+      {...props}
+      unmountAnimation={false}
+      initialAnimation={false}
+      presentGlobally={false}
+      backgroundOpacity={0}
+      allowsDragToDismiss={false}
+      allowsTapToDismiss={false}
+      isHapticFeedbackEnabled={false}
+      onWillTransition={({ type }) => setInitialPosition(type)}
+      blocksBackgroundTouches={false}
+      startFromShortForm={initialPosition === 'short'}
+      interactsWithOuterScrollView
+    >
+      <View style={StyleSheet.absoluteFillObject}>
+        <ScrollView
+          style={{
+            backgroundColor: 'white',
+            marginBottom: -20,
+            opacity: 1,
+            paddingTop: 12,
+          }}
+          contentContainerStyle={{ marginBottom: 20 }}
+        >
+          <Lorem />
+        </ScrollView>
+      </View>
+    </SlackBottomSheet>
+  ) : (
+    <BottomSheet
+      borderRadius={20}
+      renderContent={renderInner}
+      overdragResistanceFactor={0}
+      snapPoints={[300, 744]}
+      springConfig={discoverSheetSpring}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
