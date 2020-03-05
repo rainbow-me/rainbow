@@ -16,7 +16,7 @@ export default function useWalletSectionsData() {
 
   // TODO JIN select exactly what I need for build wallet sections
   const accountData = useAccountAssets();
-  const { language, nativeCurrency } = useAccountSettings();
+  const { language, network, nativeCurrency } = useAccountSettings();
   const uniqueTokens = useSendableUniqueTokens();
   const uniswap = useSelector(readableUniswapSelector);
 
@@ -26,6 +26,7 @@ export default function useWalletSectionsData() {
     const accountInfo = {
       language,
       nativeCurrency,
+      network,
       ...accountData,
       ...uniqueTokens,
       ...uniswap,
@@ -43,6 +44,7 @@ export default function useWalletSectionsData() {
     isWalletEthZero,
     language,
     nativeCurrency,
+    network,
     uniqueTokens,
     uniswap,
   ]);

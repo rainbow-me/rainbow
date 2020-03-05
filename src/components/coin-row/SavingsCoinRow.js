@@ -64,7 +64,7 @@ const SavingsCoinRow = ({ item, onPress, onPressSend, ...props }) => (
 
 SavingsCoinRow.propTypes = {
   item: PropTypes.object,
-  nativeCurrency: PropTypes.string.isRequired,
+  nativeCurrency: PropTypes.string,
   onPress: PropTypes.func,
   onPressSend: PropTypes.func,
   openSmallBalances: PropTypes.bool,

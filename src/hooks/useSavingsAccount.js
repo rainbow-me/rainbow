@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { get, keyBy, property, toLower } from 'lodash';
+import { find, get, keyBy, property, toLower } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { compoundClient } from '../apollo/client';
@@ -8,6 +8,7 @@ import {
   COMPOUND_ALL_MARKETS_QUERY,
 } from '../apollo/queries';
 import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
+import { CDAI_CONTRACT } from '../references';
 
 // const pollInterval = 15000;
 
@@ -37,19 +38,34 @@ export default function useSavingsAccount(pollInterval = 0) {
       get(marketsQuery, 'data.markets', []),
       property('id')
     );
-    const accountTokens = get(tokenQuery, 'data.account.tokens', []);
-    return accountTokens.map(token => {
-      const address = token.id.split('-')[0];
-      const { name, symbol, ...marketData } = markets[address] || {};
+    let accountTokens = get(tokenQuery, 'data.account.tokens', []);
+    accountTokens = accountTokens.map(token => {
+      const [cTokenAddress] = token.id.split('-');
+      const { name, symbol, ...marketData } = markets[cTokenAddress] || {};
 
       return {
         ...marketData,
         ...token,
-        cTokenAddress: address,
-        name: parseAssetName(name, address, tokenOverrides),
-        symbol: parseAssetSymbol(symbol, address, tokenOverrides),
+        cTokenAddress,
+        name: parseAssetName(name, cTokenAddress, tokenOverrides),
+        symbol: parseAssetSymbol(symbol, cTokenAddress, tokenOverrides),
       };
     });
+    console.log('Account tokens', accountTokens);
+    // TODO JIN test by replacing the DAI with an empty one
+    const accountHasCDAI = find(
+      accountTokens,
+      token => token.cTokenAddress === CDAI_CONTRACT
+    );
+    if (!accountHasCDAI) {
+      const DAIMarketData = {
+        ...markets[CDAI_CONTRACT],
+        cTokenAddress: CDAI_CONTRACT,
+      };
+      accountTokens.push({ ...DAIMarketData });
+    }
+
+    return accountTokens;
   }, [marketsQuery, tokenOverrides, tokenQuery]);
 
   return tokens;
