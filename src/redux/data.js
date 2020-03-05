@@ -368,7 +368,7 @@ export const dataUpdateTokenOverrides = tokenOverrides => dispatch =>
     type: DATA_UPDATE_TOKEN_OVERRIDES,
   });
 
-export const dataAddNewTransaction = (txDetails, disableTxnWatcher) => (
+export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
   dispatch,
   getState
 ) =>
