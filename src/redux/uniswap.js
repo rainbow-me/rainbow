@@ -114,7 +114,6 @@ export const uniswapGetAllExchanges = () => async (dispatch, getState) => {
   const { network } = getState().settings;
   const { pairs } = getState().uniswap;
   try {
-    console.log('updating all pairs');
     const ignoredTokens = filter(keys(pairs), x => x !== 'eth');
     const allPairs =
       network === networkTypes.mainnet
