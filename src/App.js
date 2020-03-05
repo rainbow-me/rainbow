@@ -27,8 +27,7 @@ import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { FlexItem } from './components/layout';
-import OfflineBadge from './components/OfflineBadge';
-import TestnetBadge from './components/TestnetBadge';
+import { OfflineToast, TestnetToast } from './components/toasts';
 import {
   reactNativeDisableYellowBox,
   reactNativeEnableLogbox,
@@ -183,8 +182,8 @@ class App extends Component {
       <Provider store={store}>
         <FlexItem>
           <Routes ref={this.handleNavigatorRef} />
-          <OfflineBadge />
-          <TestnetBadge network={this.props.network} />
+          <OfflineToast />
+          <TestnetToast network={this.props.network} />
         </FlexItem>
       </Provider>
     </SafeAreaProvider>

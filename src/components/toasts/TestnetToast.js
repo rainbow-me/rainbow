@@ -2,12 +2,15 @@ import React from 'react';
 import Animated from 'react-native-reanimated';
 import { bin, useSpringTransition } from 'react-native-redash';
 import styled from 'styled-components';
-import { useInternetStatus } from '../hooks';
-import { colors, padding, shadow } from '../styles';
-import { interpolate } from './animations';
-import { Icon } from './icons';
-import { Centered, RowWithMargins } from './layout';
-import { Text } from './text';
+import networkInfo from '../../helpers/networkInfo';
+import networkTypes from '../../helpers/networkTypes';
+import { colors, padding, shadow } from '../../styles';
+import { isNewValueForObjectPaths } from '../../utils';
+import { interpolate } from '../animations';
+import { Nbsp } from '../html-entities';
+import { Icon } from '../icons';
+import { Centered, RowWithMargins } from '../layout';
+import { Text } from '../text';
 
 const StyledBadge = styled(RowWithMargins).attrs({
   component: Centered,
@@ -25,10 +28,10 @@ const StyledBadge = styled(RowWithMargins).attrs({
 
 const DefaultAnimationValue = 60;
 
-const OfflineBadge = () => {
-  const isConnected = useInternetStatus();
+const TestnetToast = ({ network }) => {
+  const isMainnet = network === networkTypes.mainnet;
 
-  const animation = useSpringTransition(bin(isConnected), {
+  const animation = useSpringTransition(bin(isMainnet), {
     damping: 14,
     mass: 1,
     overshootClamping: false,
@@ -36,6 +39,8 @@ const OfflineBadge = () => {
     restSpeedThreshold: 0.001,
     stiffness: 121.6,
   });
+
+  const { name, color } = networkInfo[network];
 
   return (
     <Animated.View
@@ -55,14 +60,22 @@ const OfflineBadge = () => {
       }}
     >
       <StyledBadge shouldRasterizeIOS>
-        <Icon color={colors.white} marginTop={3} name="offline" />
+        <Icon
+          color={color}
+          marginTop={5}
+          marginLeft={5}
+          marginRight={5}
+          name="dot"
+        />
         <Text color={colors.white} size="smedium" weight="semibold">
-          Offline
+          <Nbsp /> {name} <Nbsp />
         </Text>
       </StyledBadge>
     </Animated.View>
   );
 };
 
-const neverRerender = () => true;
-export default React.memo(OfflineBadge, neverRerender);
+const propsAreEqual = (...props) =>
+  !isNewValueForObjectPaths(...props, ['network']);
+
+export default React.memo(TestnetToast, propsAreEqual);
