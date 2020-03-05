@@ -724,14 +724,17 @@ class ExchangeModal extends Component {
       const txn = await executeSwap(tradeDetails, gasLimit, gasPrice);
       this.setState({ isAuthorizing: false });
       if (txn) {
-        dataAddNewTransaction({
-          amount: inputAmount,
-          asset: inputCurrency,
-          from: accountAddress,
-          hash: txn.hash,
-          nonce: get(txn, 'nonce'),
-          to: get(txn, 'to'),
-        });
+        dataAddNewTransaction(
+          {
+            amount: inputAmount,
+            asset: inputCurrency,
+            from: accountAddress,
+            hash: txn.hash,
+            nonce: get(txn, 'nonce'),
+            to: get(txn, 'to'),
+          },
+          true
+        );
         navigation.setParams({ focused: false });
         navigation.navigate('ProfileScreen');
       }
