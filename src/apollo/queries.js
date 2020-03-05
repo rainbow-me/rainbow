@@ -4,7 +4,7 @@ export const COMPOUND_ACCOUNT_QUERY = gql`
   query account($id: ID!) {
     account(id: $id) {
       id
-      tokens {
+      tokens(where: { cTokenBalance_gt: 0 }) {
         borrowBalanceUnderlying
         cTokenBalance
         id
