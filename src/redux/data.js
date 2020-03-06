@@ -429,6 +429,19 @@ export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
       });
   });
 
+const finalizeStatus = status => {
+  switch (status) {
+    case TransactionStatusTypes.sending:
+      return TransactionStatusTypes.sent;
+    case TransactionStatusTypes.receiving:
+      return TransactionStatusTypes.received;
+    case TransactionStatusTypes.purchasing:
+      return TransactionStatusTypes.purchased;
+    default:
+      return TransactionStatusTypes.sent;
+  }
+};
+
 export const dataWatchPendingTransactions = () => async (
   dispatch,
   getState
@@ -447,7 +460,9 @@ export const dataWatchPendingTransactions = () => async (
         if (txObj && txObj.blockNumber) {
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
-          updatedTransactions[index].status = TransactionStatusTypes.sent;
+          updatedTransactions[index].status = finalizeStatus(
+            updatedTransactions[index].status
+          );
           updatedTransactions[index].pending = false;
           updatedTransactions[index].minedAt = minedAt;
         }
