@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -33,14 +33,9 @@ const QRScannerScreen = ({
 }) => {
   const { result: isEmulator } = useIsEmulator();
   const insets = useSafeArea();
-  const [modalMounted, setModalMounted] = useState(false);
-  useEffect(() => setTimeout(() => setModalMounted(true), 10), []);
-
   return (
     <View>
-      {discoverSheetAvailable && modalMounted ? (
-        <DiscoverSheet visible={modalVisible} />
-      ) : null}
+      {discoverSheetAvailable ? <DiscoverSheet visible={modalVisible} /> : null}
       <Centered
         {...position.sizeAsObject('100%')}
         backgroundColor={colors.appleBlue}
