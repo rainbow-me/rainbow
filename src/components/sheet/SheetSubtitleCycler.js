@@ -54,8 +54,8 @@ const SheetSubtitleCycler = ({
   const [selectedIndex, setSelectedIndex] = useState(defaultSelectedIndex);
   const { onLayout, withTransformOrigin } = useTransformOrigin('top');
 
-  const [stopInterval, startInterval] = useInterval();
-  const [stopTimeout, startTimeout] = useTimeout();
+  const [startInterval, stopInterval] = useInterval();
+  const [startTimeout, stopTimeout] = useTimeout();
   const clearTimers = useCallback(() => {
     stopInterval();
     stopTimeout();

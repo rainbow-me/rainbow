@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 export default function useInterval() {
-  const ref = useRef();
+  const handle = useRef();
 
-  const clear = useCallback(
-    () => ref.current && clearInterval(ref.current),
+  const start = useCallback((func, ms) => {
+    handle.current = setInterval(func, ms);
+  }, []);
+
+  const stop = useCallback(
+    () => handle.current && clearInterval(handle.current),
     []
   );
 
-  const create = useCallback((func, ms) => {
-    ref.current = setInterval(func, ms);
-  }, []);
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => () => clear(), []);
+  useEffect(() => () => stop(), []);
 
-  return [clear, create, ref];
+  return [start, stop, handle];
 }
