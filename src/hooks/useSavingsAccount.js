@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { find, get, keyBy, property, toLower } from 'lodash';
+import { find, get, keyBy, orderBy, property, toLower } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { compoundClient } from '../apollo/client';
@@ -7,6 +7,7 @@ import {
   COMPOUND_ACCOUNT_QUERY,
   COMPOUND_ALL_MARKETS_QUERY,
 } from '../apollo/queries';
+import { multiply } from '../helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
 import { CDAI_CONTRACT } from '../references';
 
@@ -38,25 +39,36 @@ export default function useSavingsAccount(pollInterval = 0) {
       get(marketsQuery, 'data.markets', []),
       property('id')
     );
+
     let accountTokens = get(tokenQuery, 'data.account.tokens', []);
+
     accountTokens = accountTokens.map(token => {
       const [cTokenAddress] = token.id.split('-');
       const { name, symbol, ...marketData } = markets[cTokenAddress] || {};
+
+      const ethPrice = multiply(
+        marketData.underlyingPrice,
+        token.supplyBalanceUnderlying
+      );
 
       return {
         ...marketData,
         ...token,
         cTokenAddress,
+        ethPrice,
         name: parseAssetName(name, cTokenAddress, tokenOverrides),
         symbol: parseAssetSymbol(symbol, cTokenAddress, tokenOverrides),
       };
     });
+
+    accountTokens = orderBy(accountTokens, ['ethPrice'], ['desc']);
+
     console.log('Account tokens', accountTokens);
-    // TODO JIN test by replacing the DAI with an empty one
     const accountHasCDAI = find(
       accountTokens,
       token => token.cTokenAddress === CDAI_CONTRACT
     );
+
     if (!accountHasCDAI) {
       const DAIMarketData = {
         ...markets[CDAI_CONTRACT],
