@@ -107,31 +107,23 @@ export default (state = INITIAL_STATE, action) =>
       }
     } else if (action.type === CLEAR_SELECTED_COINS) {
       draft.selectedCoins = [];
-    } else if (action.type === PUSH_SELECTED_COIN) {
-      if (draft.wasRecentlyPinned) {
-        draft.wasRecentlyPinned = false;
+    } else if (
+      action.type === PUSH_SELECTED_COIN ||
+      action.type === REMOVE_SELECTED_COIN
+    ) {
+      if (action.type === PUSH_SELECTED_COIN) {
+        if (draft.wasRecentlyPinned) {
+          draft.wasRecentlyPinned = false;
+        }
+        draft.selectedCoins.push(action.payload);
       }
-      draft.selectedCoins.push(action.payload);
-      if (
-        draft.selectedCoins.length > 0 &&
-        difference(draft.hiddenCoins, draft.selectedCoins).length ===
-          draft.hiddenCoins.length - draft.selectedCoins.length
-      ) {
-        draft.currentAction = 'unhide';
-      } else if (
-        draft.selectedCoins.length > 0 &&
-        difference(draft.pinnedCoins, draft.selectedCoins).length ===
-          draft.pinnedCoins.length - draft.selectedCoins.length
-      ) {
-        draft.currentAction = 'unpin';
-      } else {
-        draft.currentAction = 'standard';
+
+      if (action.type === REMOVE_SELECTED_COIN) {
+        draft.selectedCoins.splice(
+          draft.selectedCoins.indexOf(action.payload),
+          1
+        );
       }
-    } else if (action.type === REMOVE_SELECTED_COIN) {
-      draft.selectedCoins.splice(
-        draft.selectedCoins.indexOf(action.payload),
-        1
-      );
       if (
         draft.selectedCoins.length > 0 &&
         difference(draft.hiddenCoins, draft.selectedCoins).length ===
@@ -148,7 +140,10 @@ export default (state = INITIAL_STATE, action) =>
         draft.currentAction = 'standard';
       }
     } else if (action.type === SET_PINNED_COINS) {
-      if (draft.currentAction === 'standard') {
+      if (
+        draft.currentAction === 'standard' ||
+        draft.currentAction === 'unhide'
+      ) {
         draft.hiddenCoins = without(draft.hiddenCoins, ...draft.selectedCoins);
         saveHiddenCoins(
           draft.hiddenCoins,
@@ -159,11 +154,15 @@ export default (state = INITIAL_STATE, action) =>
       } else if (draft.currentAction === 'unpin') {
         draft.pinnedCoins = without(draft.pinnedCoins, ...draft.selectedCoins);
       }
+      draft.currentAction = 'standard';
       savePinnedCoins(draft.pinnedCoins, action.accountAddress, action.network);
       draft.selectedCoins = [];
       draft.wasRecentlyPinned = true;
     } else if (action.type === SET_HIDDEN_COINS) {
-      if (draft.currentAction === 'standard') {
+      if (
+        draft.currentAction === 'standard' ||
+        draft.currentAction === 'unpin'
+      ) {
         draft.pinnedCoins = without(draft.pinnedCoins, ...draft.selectedCoins);
         savePinnedCoins(
           draft.pinnedCoins,
@@ -174,6 +173,7 @@ export default (state = INITIAL_STATE, action) =>
       } else if (draft.currentAction === 'unhide') {
         draft.hiddenCoins = without(draft.hiddenCoins, ...draft.selectedCoins);
       }
+      draft.currentAction = 'standard';
       saveHiddenCoins(draft.hiddenCoins, action.accountAddress, action.network);
       draft.selectedCoins = [];
       draft.wasRecentlyPinned = true;

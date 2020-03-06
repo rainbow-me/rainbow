@@ -7,6 +7,7 @@ import { compose, withHandlers } from 'recompact';
 import {
   getIsWalletEmpty,
   getAccountInfo,
+  getAssets,
 } from '../handlers/localstorage/accountLocal';
 import { hasEthBalance } from '../handlers/web3';
 import networkTypes from '../helpers/networkTypes';
@@ -15,6 +16,7 @@ import {
   dataClearState,
   dataLoadState,
   dataTokenOverridesInit,
+  dataUpdateAssets,
 } from '../redux/data';
 import { explorerClearState, explorerInit } from '../redux/explorer';
 import { gasPricesStartPolling } from '../redux/gas';
@@ -237,8 +239,12 @@ export default Component =>
           return null;
         }
       },
-      reloadData: ownProps => () => {
-        ownProps.dataLoadState();
+      reloadData: ownProps => async () => {
+        const assets = await getAssets(
+          ownProps.accountAddress,
+          ownProps.network
+        );
+        store.dispatch(dataUpdateAssets(assets));
       },
     })
   )(Component);

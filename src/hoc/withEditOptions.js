@@ -9,8 +9,9 @@ import {
 } from '../redux/editOptions';
 
 const mapStateToProps = ({
-  editOptions: { isCoinListEdited, wasRecentlyPinned },
+  editOptions: { currentAction, isCoinListEdited, wasRecentlyPinned },
 }) => ({
+  currentAction,
   isCoinListEdited,
   wasRecentlyPinned,
 });

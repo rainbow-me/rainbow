@@ -64,6 +64,7 @@ function runTiming(clock, value, dest) {
 class CoinDivider extends PureComponent {
   static propTypes = {
     balancesSum: PropTypes.string,
+    currentAction: PropTypes.string,
     isCoinDivider: PropTypes.bool,
     onEdit: PropTypes.func,
     onPress: PropTypes.func,
@@ -111,6 +112,7 @@ class CoinDivider extends PureComponent {
       isCoinListEdited,
       onPress,
       openSmallBalances,
+      currentAction,
     } = this.props;
 
     return (
@@ -153,7 +155,7 @@ class CoinDivider extends PureComponent {
                     size="lmedium"
                     weight="semibold"
                   >
-                    Pin
+                    {currentAction === 'unpin' ? 'Unpin' : 'Pin'}
                   </Text>
                 </View>
               </ButtonPressAnimation>
@@ -187,7 +189,7 @@ class CoinDivider extends PureComponent {
                     size="lmedium"
                     weight="semibold"
                   >
-                    Hide
+                    {currentAction === 'unhide' ? 'Unhide' : 'Hide'}
                   </Text>
                 </View>
               </ButtonPressAnimation>

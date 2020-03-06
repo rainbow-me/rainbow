@@ -40,6 +40,7 @@ class SmallBalancesWrapper extends PureComponent {
       setPinnedCoins,
       setIsCoinListEdited,
       reloadData,
+      currentAction,
     } = this.props;
 
     return (
@@ -53,6 +54,7 @@ class SmallBalancesWrapper extends PureComponent {
           onHide={setHiddenCoins}
           isCoinListEdited={isCoinListEdited}
           openSmallBalances={openSmallBalances}
+          currentAction={currentAction}
         />
         <OpacityToggler
           endingOpacity={1}
