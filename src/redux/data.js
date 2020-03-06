@@ -361,12 +361,18 @@ export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
   });
 
 const getConfirmedState = type => {
-  if (type === TransactionTypes.deposit) {
-    return TransactionStatusTypes.deposited;
-  } else if (type === TransactionTypes.withdraw) {
-    return TransactionStatusTypes.withdrew;
+  switch (type) {
+    case TransactionTypes.authorize:
+      return TransactionStatusTypes.approved;
+    case TransactionTypes.deposit:
+      return TransactionStatusTypes.deposited;
+    case TransactionTypes.withdraw:
+      return TransactionStatusTypes.withdrew;
+    case TransactionTypes.receive:
+      return TransactionStatusTypes.received;
+    default:
+      return TransactionStatusTypes.sent;
   }
-  return TransactionStatusTypes.sent;
 };
 
 export const dataWatchPendingTransactions = () => async (
