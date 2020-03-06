@@ -1,5 +1,6 @@
 import { isEmpty, toLower } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import {
   requestWyreApplePay,
   trackWyreOrder,
@@ -24,6 +25,8 @@ export default function useWyreApplePay() {
   const [orderStatus, setOrderStatus] = useState(null);
   const [transferHash, setTransferHash] = useState(null);
   const [transferStatus, setTransferStatus] = useState(null);
+
+  const dispatch = useDispatch();
 
   const [completedPaymentResponse, setCompletedPaymentResponse] = useState(
     false
@@ -65,7 +68,7 @@ export default function useWyreApplePay() {
             to: accountAddress,
             type: TransactionTypes.purchase,
           };
-          dataAddNewPurchaseTransaction(txDetails);
+          dispatch(dataAddNewPurchaseTransaction(txDetails));
           getTransferStatus(transferId);
         } else {
           transferHashTimeout.current = setTimeout(retry, 1000);
@@ -74,7 +77,7 @@ export default function useWyreApplePay() {
         transferHashTimeout.current = setTimeout(retry, 1000);
       }
     },
-    [accountAddress, assets, getTransferStatus]
+    [accountAddress, assets, dispatch, getTransferStatus]
   );
 
   const getTransferStatus = useCallback(
