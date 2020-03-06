@@ -50,7 +50,7 @@ const AddCashSheet = () => {
 
   const [errorAnimation, onShake] = useShakeAnimation();
   const [errorIndex, setErrorIndex] = useState(null);
-  const [cancelTimeout, createTimeout] = useTimeout();
+  const [startErrorTimeout, stopErrorTimeout] = useTimeout();
 
   const {
     onPurchase,
@@ -63,11 +63,11 @@ const AddCashSheet = () => {
 
   const onLimitExceeded = useCallback(
     limit => {
-      cancelTimeout();
+      stopErrorTimeout();
       setErrorIndex(Object.keys(cashLimits).indexOf(limit));
-      createTimeout(() => onClearError(), SubtitleInterval);
+      startErrorTimeout(() => onClearError(), SubtitleInterval);
     },
-    [cancelTimeout, createTimeout, onClearError]
+    [startErrorTimeout, stopErrorTimeout, onClearError]
   );
 
   const showOrderStatus = !isNil(orderStatus);

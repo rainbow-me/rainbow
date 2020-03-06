@@ -1,15 +1,19 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 export default function useTimeout() {
-  const ref = useRef();
+  const handle = useRef();
 
-  const clear = useCallback(() => ref.current && clearTimeout(ref.current), []);
-  const create = useCallback((func, ms) => {
-    ref.current = setTimeout(func, ms);
+  const start = useCallback((func, ms) => {
+    handle.current = setTimeout(func, ms);
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => () => clear(), []);
+  const stop = useCallback(
+    () => handle.current && clearTimeout(handle.current),
+    []
+  );
 
-  return [clear, create, ref];
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => () => stop(), []);
+
+  return [start, stop, handle];
 }
