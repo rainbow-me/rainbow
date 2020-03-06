@@ -42,11 +42,18 @@ const emojiStyleInterpolator = ({
     },
   };
 };
-const backgroundInterpolator = ({
-  next: { progress: next } = { next: undefined },
-}) => ({
-  cardStyle: next === undefined ? {} : { opacity: 1 },
-});
+const backgroundInterpolator = ({ current: { progress: current } }) => {
+  const cardOpacity = current.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1],
+  });
+
+  return {
+    cardStyle: {
+      opacity: cardOpacity,
+    },
+  };
+};
 
 const exchangeStyleInterpolator = ({
   current: { progress: current },
