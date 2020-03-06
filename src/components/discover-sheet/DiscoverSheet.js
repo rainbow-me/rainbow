@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
 import BottomSheet from 'reanimated-bottom-sheet';
@@ -374,7 +374,12 @@ function renderInner() {
   );
 }
 export default function DiscoverSheet(props) {
-  const [initialPosition, setInitialPosition] = React.useState('long');
+  const [initialPosition, setInitialPosition] = useState('long');
+  const position = useRef({ x: 0, y: 0 });
+  const setPosition = useCallback(
+    ({ nativeEvent: { contentOffset } }) => (position.current = contentOffset),
+    []
+  );
   return Platform.OS === 'ios' ? (
     <SlackBottomSheet
       {...props}
@@ -390,6 +395,7 @@ export default function DiscoverSheet(props) {
       blocksBackgroundTouches={false}
       startFromShortForm={initialPosition === 'short'}
       interactsWithOuterScrollView
+      contentOffset={position.current}
     >
       <View style={StyleSheet.absoluteFillObject}>
         <ScrollView
@@ -399,6 +405,8 @@ export default function DiscoverSheet(props) {
             opacity: 1,
             paddingTop: 12,
           }}
+          onScrollEndDrag={setPosition}
+          onMomentumScrollEnd={setPosition}
           contentContainerStyle={{ marginBottom: 20 }}
         >
           <Lorem />
