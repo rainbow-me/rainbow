@@ -54,13 +54,21 @@ const SavingsSheet = () => {
               color={colors.dark}
               icon="minusCircled"
               label="Withdraw"
-              onPress={() => navigate('SavingsWithdrawModal')}
+              onPress={() =>
+                navigate('SavingsWithdrawModal', {
+                  defaultInputAddress: underlying.address,
+                })
+              }
             />
             <SheetActionButton
               color={colors.dodgerBlue}
               icon="plusCircled"
               label="Deposit"
-              onPress={() => navigate('SavingsDepositModal')}
+              onPress={() =>
+                navigate('SavingsDepositModal', {
+                  defaultInputAddress: underlying.address,
+                })
+              }
             />
           </SheetActionButtonRow>
           <Divider zIndex={0} />

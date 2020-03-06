@@ -99,12 +99,13 @@ const ExchangeModal = ({
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const { accountAddress, chainId, nativeCurrency } = useAccountSettings();
 
+  const defaultInputItem =
+    ethereumUtils.getAsset(allAssets, defaultInputAddress) ||
+    ethereumUtils.getAsset(allAssets);
+  const [inputCurrency, setInputCurrency] = useState(defaultInputItem);
   const [inputAmount, setInputAmount] = useState(null);
   const [inputAmountDisplay, setInputAmountDisplay] = useState(null);
   const [inputAsExactAmount, setInputAsExactAmount] = useState(true);
-  const [inputCurrency, setInputCurrency] = useState(
-    ethereumUtils.getAsset(allAssets, defaultInputAddress)
-  );
 
   const [extraTradeDetails, setExtraTradeDetails] = useState({});
   const [isAuthorizing, setIsAuthorizing] = useState(false);

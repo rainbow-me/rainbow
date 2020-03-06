@@ -71,6 +71,7 @@ ProfileScreen.propTypes = {
   isEmpty: PropTypes.bool,
   nativeCurrency: PropTypes.string,
   navigation: PropTypes.object,
+  network: PropTypes.string,
   onPressBackButton: PropTypes.func,
   onPressSettings: PropTypes.func,
   requests: PropTypes.array,

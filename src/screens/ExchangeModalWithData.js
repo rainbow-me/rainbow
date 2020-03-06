@@ -1,4 +1,5 @@
 import { get } from 'lodash';
+import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
 import {
   withBlockedHorizontalSwipe,
@@ -14,6 +15,7 @@ const ExchangeModalWithData = compose(
   withBlockedHorizontalSwipe,
   withGas,
   withBlockPolling,
+  withNavigation,
   withTransactionConfirmationScreen,
   withTransitionProps,
   withUniswapAllowances,
