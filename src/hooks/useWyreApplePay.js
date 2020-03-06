@@ -19,7 +19,7 @@ import { ethereumUtils } from '../utils';
 import useAccountData from './useAccountData';
 
 export default function useWyreApplePay() {
-  const { accountAddress, assets } = useAccountData();
+  const { accountAddress, assets, network } = useAccountData();
 
   const [orderCurrency, setOrderCurrency] = useState(null);
   const [orderStatus, setOrderStatus] = useState(null);
@@ -49,14 +49,15 @@ export default function useWyreApplePay() {
         } = await trackWyreTransfer(transferId);
 
         setTransferStatus(transferStatus);
-        const destAssetAddress = toLower(AddCashCurrencies[destCurrency]);
+        const destAssetAddress = toLower(
+          AddCashCurrencies[network][destCurrency]
+        );
 
         if (transferHash) {
           setTransferHash(transferHash);
           let asset = ethereumUtils.getAsset(assets, destAssetAddress);
           if (!asset) {
-            asset = AddCashCurrencyInfo[destAssetAddress];
-            // TODO JIN fetch the price
+            asset = AddCashCurrencyInfo[network][destAssetAddress];
           }
           const txDetails = {
             amount: destAmount,
@@ -77,7 +78,7 @@ export default function useWyreApplePay() {
         transferHashTimeout.current = setTimeout(retry, 1000);
       }
     },
-    [accountAddress, assets, dispatch, getTransferStatus]
+    [accountAddress, assets, dispatch, getTransferStatus, network]
   );
 
   const getTransferStatus = useCallback(

@@ -7,6 +7,7 @@ export default function useAccountData() {
     assets: data.assets,
     compoundAssets: data.compoundAssets,
     nativeCurrency: settings.nativeCurrency,
+    network: settings.network,
     settings,
     tokenOverrides: data.tokenOverrides,
   }));

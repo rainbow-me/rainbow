@@ -3,20 +3,40 @@ import tokenOverridesFallback from './token-overrides.json';
 import uniswapAssetsFallback from './uniswap-pairs.json';
 
 export const AddCashCurrencies = {
-  DAI: '0x6b175474e89094c44da98b954eedeac495271d0f',
-  ETH: 'eth',
+  kovan: {
+    DAI: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2',
+    ETH: 'eth',
+  },
+  mainnet: {
+    DAI: '0x6b175474e89094c44da98b954eedeac495271d0f',
+    ETH: 'eth',
+  },
 };
 
 export const AddCashCurrencyInfo = {
-  '0x6b175474e89094c44da98b954eedeac495271d0f': {
-    decimals: 18,
-    name: 'Dai',
-    symbol: 'DAI',
+  kovan: {
+    '0xc4375b7de8af5a38a93548eb8453a498222c4ff2': {
+      decimals: 18,
+      name: 'Dai',
+      symbol: 'DAI',
+    },
+    eth: {
+      decimals: 18,
+      name: 'Ethereum',
+      symbol: 'ETH',
+    },
   },
-  eth: {
-    decimals: 18,
-    name: 'Ethereum',
-    symbol: 'ETH',
+  mainnet: {
+    '0x6b175474e89094c44da98b954eedeac495271d0f': {
+      decimals: 18,
+      name: 'Dai',
+      symbol: 'DAI',
+    },
+    eth: {
+      decimals: 18,
+      name: 'Ethereum',
+      symbol: 'ETH',
+    },
   },
 };
 
