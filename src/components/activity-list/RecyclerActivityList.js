@@ -1,6 +1,7 @@
 import { get, times } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
+import { Platform } from 'react-native';
 import {
   RecyclerListView,
   DataProvider,
@@ -128,7 +129,7 @@ export default class RecyclerActivityList extends PureComponent {
         } else {
           dim.height = this.props.isLoading
             ? deviceUtils.dimensions.height
-            : addCashButtonAvailable
+            : Platform.OS === 'ios' && addCashButtonAvailable
             ? 276
             : 204;
         }

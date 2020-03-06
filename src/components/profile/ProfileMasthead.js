@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { View, Text } from 'react-native';
+import { Platform, View, Text } from 'react-native';
 import { compose, withHandlers } from 'recompact';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
@@ -35,7 +35,7 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   margin-bottom: 24;
-  padding-bottom: ${addCashButtonAvailable ? 12 : 32};
+  padding-bottom: ${Platform.OS === 'ios' && addCashButtonAvailable ? 12 : 32};
 `;
 
 const AvatarCircle = styled(View)`
@@ -112,7 +112,7 @@ const ProfileMasthead = ({
           text="Receive"
         />
       </RowWithMargins>
-      {addCashButtonAvailable && (
+      {Platform.OS === 'ios' && addCashButtonAvailable && (
         <AddCashButton onPress={() => navigate('AddCashSheet')}>
           Add Cash
         </AddCashButton>
