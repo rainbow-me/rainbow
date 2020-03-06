@@ -9,7 +9,7 @@ import {
 } from '../apollo/queries';
 import { multiply } from '../helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
-import { CDAI_CONTRACT } from '../references';
+import { CDAI_CONTRACT, SAI_ADDRESS } from '../references';
 
 // const pollInterval = 15000;
 
@@ -46,6 +46,12 @@ export default function useSavingsAccount(pollInterval = 0) {
       const [cTokenAddress] = token.id.split('-');
       const { name, symbol, ...marketData } = markets[cTokenAddress] || {};
 
+      // Rename old DAI as SAI
+      marketData.underlyingSymbol =
+        marketData.underlyingAddress === SAI_ADDRESS
+          ? 'SAI'
+          : marketData.underlyingSymbol;
+
       const ethPrice = multiply(
         marketData.underlyingPrice,
         token.supplyBalanceUnderlying
@@ -64,6 +70,7 @@ export default function useSavingsAccount(pollInterval = 0) {
     accountTokens = orderBy(accountTokens, ['ethPrice'], ['desc']);
 
     console.log('Account tokens', accountTokens);
+
     const accountHasCDAI = find(
       accountTokens,
       token => token.cTokenAddress === CDAI_CONTRACT
