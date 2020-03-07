@@ -7,6 +7,7 @@ const base = {
   backgroundGrey: '#141414', // 20, 20, 20
   black: '#000000', // '0, 0, 0'
   blueGreyDark: '#3C4252', // '60, 66, 82'
+  blueGreyDark50: '#9DA0A8',
   blueGreyDarker: '#0F0F11', // '15, 15, 17'
   blueGreyLight: '#A1A5AC',
   blueGreyLighter: '#666A73', // '102, 106, 115'
