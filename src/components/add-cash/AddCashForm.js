@@ -29,56 +29,75 @@ const AddCashForm = ({
   const [currency, setCurrency] = useState(currencies[initialCurrencyIndex]);
   const [value, setValue] = useState(null);
 
-  console.log('limitYearly', limitYearly);
-
   const handlePurchase = useCallback(() => onPurchase({ currency, value }), [
     currency,
     onPurchase,
     value,
   ]);
 
-  const handleNumpadPress = val =>
-    setValue(prevText => {
-      let curText = prevText;
-      if (!curText) {
-        if (val === '0' || isNaN(val)) {
+  const handleNumpadPress = useCallback(
+    newValue => {
+      setValue(prevValue => {
+        const isExceedingDailyLimit =
+          parseFloat(prevValue + `${parseFloat(newValue)}`) > limitDaily;
+
+        const isExceedingYearlyLimit =
+          parseFloat(prevValue + `${parseFloat(newValue)}`) > limitYearly;
+
+        const isInvalidFirstEntry =
+          !prevValue &&
+          (newValue === '0' || newValue === '.' || newValue === 'back');
+
+        const isMaxDecimalCount =
+          prevValue && prevValue.includes('.') && newValue === '.';
+
+        const isMaxDecimalLength =
+          prevValue &&
+          prevValue.charAt(prevValue.length - 3) === '.' &&
+          newValue !== 'back';
+
+        if (
+          isExceedingDailyLimit ||
+          isExceedingYearlyLimit ||
+          isInvalidFirstEntry ||
+          isMaxDecimalCount ||
+          isMaxDecimalLength
+        ) {
+          if (isExceedingDailyLimit) onLimitExceeded('daily');
+          if (isExceedingYearlyLimit) onLimitExceeded('yearly');
           onShake();
-          return prevText;
-        } else curText = val;
-      } else if (isNaN(val)) {
-        if (val === 'back') {
-          onClearError();
-          curText = curText.slice(0, -1);
-        } else if (curText.includes('.')) {
-          onShake();
-          return prevText;
-        } else curText += val;
-      } else {
-        if (curText.charAt(curText.length - 3) === '.') {
-          onShake();
-          return prevText;
-        } else if (curText + val <= limitDaily) {
-          curText += val;
-        } else {
-          onLimitExceeded('daily');
-          onShake();
-          return prevText;
+          return prevValue;
         }
-      }
-      let prevPosition = 1;
-      if (prevText && prevText.length > 3) {
-        prevPosition = 1 - (prevText.length - 3) * 0.075;
-      }
-      if (curText.length > 3) {
-        const characterCount = 1 - (curText.length - 3) * 0.075;
-        setScaleAnim(
-          runSpring(new Clock(), prevPosition, characterCount, 0, 400, 40)
-        );
-      } else if (curText.length == 3) {
-        setScaleAnim(runSpring(new Clock(), prevPosition, 1, 0, 400, 40));
-      }
-      return curText;
-    });
+
+        let nextValue = prevValue;
+        if (nextValue === null) {
+          nextValue = newValue;
+        } else if (newValue === 'back') {
+          nextValue = prevValue.slice(0, -1);
+        } else {
+          nextValue += newValue;
+        }
+
+        onClearError();
+
+        let prevPosition = 1;
+        if (prevValue && prevValue.length > 3) {
+          prevPosition = 1 - (prevValue.length - 3) * 0.075;
+        }
+        if (nextValue.length > 3) {
+          const characterCount = 1 - (nextValue.length - 3) * 0.075;
+          setScaleAnim(
+            runSpring(new Clock(), prevPosition, characterCount, 0, 400, 40)
+          );
+        } else if (nextValue.length == 3) {
+          setScaleAnim(runSpring(new Clock(), prevPosition, 1, 0, 400, 40));
+        }
+
+        return nextValue;
+      });
+    },
+    [limitDaily, limitYearly, onClearError, onLimitExceeded, onShake]
+  );
 
   return (
     <Fragment>
@@ -107,6 +126,7 @@ const AddCashForm = ({
         </Centered>
         <AddCashFooter
           disabled={isEmpty(value) || parseFloat(value) === 0}
+          onDisabledPress={onShake}
           onSubmit={handlePurchase}
         />
       </ColumnWithMargins>
@@ -117,8 +137,11 @@ const AddCashForm = ({
 AddCashForm.propTypes = {
   limitDaily: PropTypes.number,
   limitYearly: PropTypes.number,
+  onClearError: PropTypes.func,
   onLimitExceeded: PropTypes.func,
   onPurchase: PropTypes.func,
+  onShake: PropTypes.func,
+  shakeAnim: PropTypes.object,
 };
 
 export default React.memo(AddCashForm);

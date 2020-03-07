@@ -15,21 +15,27 @@ import { Rounded } from '../text';
 const AnimatedRounded = Animated.createAnimatedComponent(toClass(Rounded));
 
 const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
-  const errorColorAnimation = useTimingTransition(error, {
-    duration: error ? 50 : 250,
-    ease: Easing[error ? 'out' : 'in'](Easing.ease),
-  });
+  const ease = Easing[error ? 'out' : 'in'](Easing.ease);
 
   const opacity = useTimingTransition(selected, {
     duration: 250,
-    ease: Easing[error ? 'out' : 'in'](Easing.ease),
+    ease,
+  });
+
+  const textColorAnimation = useTimingTransition(error, {
+    duration: error ? 50 : 250,
+    ease,
   });
 
   return (
     <Animated.View {...position.coverAsObject} style={{ opacity }}>
       <AnimatedRounded
         align="center"
-        color={bInterpolateColor(errorColorAnimation, '#9CA0A9', colors.red)}
+        color={bInterpolateColor(
+          textColorAnimation,
+          colors.blueGreyDark50,
+          colors.red
+        )}
         letterSpacing="uppercase"
         size="smedium"
         uppercase
@@ -91,7 +97,7 @@ const SheetSubtitleCycler = ({
     !isNil(errorIndex),
     interpolate(animatedValue, {
       inputRange: [-20, -10, 0, 10, 20],
-      outputRange: [1.025, 1.1, 1, 1.1, 1.025],
+      outputRange: [1.025, 1.2, 1, 1.2, 1.025],
     }),
     1
   );

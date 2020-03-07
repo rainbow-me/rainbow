@@ -1,19 +1,23 @@
+import LottieView from 'lottie-react-native';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { Transition, Transitioning } from 'react-native-reanimated';
+import { useNavigation } from 'react-navigation-hooks';
 import { withProps } from 'recompact';
+import jumpingDaiAnimation from '../../assets/lottie/jumping-dai.json';
+import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';
 import {
   WYRE_ORDER_STATUS_TYPES,
   WYRE_TRANSFER_STATUS_TYPES,
 } from '../../helpers/wyreStatusTypes';
-import jumpingDaiAnimation from '../../assets/lottie/jumping-dai.json';
-import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';
-import { ButtonPressAnimation, TouchableScale } from '../animations';
+import { useDimensions, useTimeout } from '../../hooks';
+import { position } from '../../styles';
 import { Centered } from '../layout';
-import { FloatingEmojisTapHandler, FloatingEmojis } from '../floating-emojis';
-import { Br, Rounded } from '../text';
-import { useDimensions, useEmailRainbow } from '../../hooks';
-import { colors, padding, position } from '../../styles';
-import LottieView from 'lottie-react-native';
+import { CoinIcon } from '../coin-icon';
+import { FloatingEmojisTapper } from '../floating-emojis';
+import { Br, Emoji, Rounded } from '../text';
+import NeedHelpButton from './NeedHelpButton';
 
 const StatusMessageText = withProps({
   align: 'center',
@@ -23,80 +27,155 @@ const StatusMessageText = withProps({
   weight: 'bold',
 })(Rounded);
 
-const AddCashStatus = ({ orderCurrency, orderStatus, transferStatus }) => {
-  const currency = orderCurrency.toLowerCase();
-  const onEmailRainbow = useEmailRainbow({ subject: 'support' });
-  const { width } = useDimensions();
+const sx = StyleSheet.create({
+  container: {
+    ...position.sizeAsObject('100%'),
+    flex: 1,
+    flexDirection: 'column',
+  },
+  content: {
+    paddingHorizontal: 19,
+    transform: [{ translateY: -42.5 }],
+  },
+});
 
-  const isFailed =
-    orderStatus === WYRE_ORDER_STATUS_TYPES.failed ||
-    transferStatus === WYRE_TRANSFER_STATUS_TYPES.failed;
+const duration = 420;
+const transition = (
+  <Transition.Sequence>
+    <Transition.Out
+      durationMs={duration / 2}
+      interpolation="easeIn"
+      propagation="bottom"
+      type="fade"
+    />
+    <Transition.Change durationMs={duration} interpolation="easeInOut" />
+    <Transition.Together>
+      <Transition.In
+        delayMs={duration / 3}
+        durationMs={duration}
+        interpolation="easeOut"
+        propagation="top"
+        type="fade"
+      />
+      <Transition.In
+        delayMs={duration / 3}
+        durationMs={duration / 3}
+        interpolation="easeOut"
+        propagation="top"
+        type="scale"
+      />
+    </Transition.Together>
+  </Transition.Sequence>
+);
+
+const Content = props => {
+  const { width } = useDimensions();
+  return (
+    <Centered
+      {...props}
+      direction="column"
+      flex={1}
+      style={sx.content}
+      width={width}
+    />
+  );
+};
+
+const AddCashFailed = () => (
+  <Content>
+    <Centered height={85}>
+      <Emoji name="cry" size={50} />
+    </Centered>
+    <StatusMessageText>
+      Sorry, your purchase failed. <Br />
+      You were not charged.
+    </StatusMessageText>
+    <NeedHelpButton marginTop={24} subject="Purchase Failed" />
+  </Content>
+);
+
+const AddCashPending = ({ currency }) => (
+  <Fragment>
+    <Content>
+      <Centered height={85}>
+        <LottieView
+          autoPlay
+          loop
+          style={{ height: 263 }}
+          source={
+            currency === 'eth' ? jumpingEthAnimation : jumpingDaiAnimation
+          }
+        />
+      </Centered>
+      <StatusMessageText>
+        Your {currency.toUpperCase()} is on the way <Br />
+        and will arrive shortly
+      </StatusMessageText>
+    </Content>
+    <Centered>
+      <NeedHelpButton />
+    </Centered>
+  </Fragment>
+);
+
+const AddCashSuccess = ({ currency }) => {
+  const { navigate } = useNavigation();
+  const [startTimeout] = useTimeout();
+
+  startTimeout(() => navigate('WalletScreen'), 2696.9);
 
   return (
-    <Centered direction="column" flex={1} width="100%">
-      {isFailed ? (
-        <StatusMessageText>
-          Sorry, the purchase failed. Contact us if you need help!
-        </StatusMessageText>
+    <Content>
+      <Centered paddingBottom={19}>
+        <CoinIcon size={60} symbol={currency} />
+      </Centered>
+      <StatusMessageText>It&#39;s here! 🥳</StatusMessageText>
+    </Content>
+  );
+};
+
+const AddCashStatus = ({ orderCurrency, orderStatus, transferStatus }) => {
+  const ref = useRef();
+  const [status, setStatus] = useState(null);
+
+  useEffect(() => {
+    if (
+      orderStatus === WYRE_ORDER_STATUS_TYPES.success ||
+      transferStatus === WYRE_TRANSFER_STATUS_TYPES.success
+    ) {
+      setStatus(WYRE_TRANSFER_STATUS_TYPES.success);
+      if (ref.current) ref.current.animateNextTransition();
+    }
+
+    if (
+      orderStatus === WYRE_ORDER_STATUS_TYPES.failed ||
+      transferStatus === WYRE_TRANSFER_STATUS_TYPES.failed
+    ) {
+      setStatus(WYRE_TRANSFER_STATUS_TYPES.failed);
+      if (ref.current) ref.current.animateNextTransition();
+    }
+  }, [orderStatus, transferStatus]);
+
+  const currency = (orderCurrency || 'ETH').toLowerCase();
+
+  return (
+    <Transitioning.View ref={ref} style={sx.container} transition={transition}>
+      {status === WYRE_TRANSFER_STATUS_TYPES.failed ? (
+        <AddCashFailed />
       ) : (
-        <FloatingEmojis
+        <FloatingEmojisTapper
           {...position.centeredAsObject}
-          distance={350}
-          duration={2000}
           emoji="money_with_wings"
           flex={1}
-          size={36}
-          wiggleFactor={1}
         >
-          {({ onNewEmoji }) => (
-            <FloatingEmojisTapHandler onNewEmoji={onNewEmoji}>
-              <TouchableScale activeScale={1.01}>
-                <Centered
-                  direction="column"
-                  flex={1}
-                  style={{ transform: [{ translateY: -42.5 }] }}
-                  width={width}
-                >
-                  <Centered height={85}>
-                    <LottieView
-                      autoPlay
-                      loop
-                      style={{ height: 263 }}
-                      source={
-                        currency === 'eth'
-                          ? jumpingEthAnimation
-                          : jumpingDaiAnimation
-                      }
-                    />
-                  </Centered>
-                  <StatusMessageText>
-                    Your {currency.toUpperCase()} is on the way <Br />
-                    and will arrive shortly
-                  </StatusMessageText>
-                </Centered>
-              </TouchableScale>
-            </FloatingEmojisTapHandler>
+          {status === WYRE_TRANSFER_STATUS_TYPES.success ? (
+            <AddCashSuccess currency={currency} />
+          ) : (
+            <AddCashPending currency={currency} />
           )}
-        </FloatingEmojis>
+        </FloatingEmojisTapper>
       )}
-      <ButtonPressAnimation onPress={onEmailRainbow} scaleTo={1.1}>
-        <Centered
-          backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
-          borderRadius={15}
-          css={padding(5, 10)}
-        >
-          <Rounded
-            align="center"
-            color={colors.alpha(colors.blueGreyDark, 0.6)}
-            letterSpacing={0.4}
-            size="lmedium"
-            weight="semibold"
-          >
-            Need help?
-          </Rounded>
-        </Centered>
-      </ButtonPressAnimation>
-    </Centered>
+    </Transitioning.View>
   );
 };
 

@@ -1,4 +1,4 @@
-import { debounce, toLower, upperFirst } from 'lodash';
+import { debounce, upperFirst } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import Mailer from 'react-native-mail';
 import { Alert } from '../components/alerts';
@@ -32,12 +32,11 @@ export default function useEmailRainbow({
                 text: 'No thanks',
               },
             ],
-            // eslint-disable-next-line prettier/prettier
-            message: `Would you like to manually copy our ${toLower(subject)} email address to your clipboard?`,
+            message: `Would you like to manually copy our email address to your clipboard?`,
             title: 'Unable to auto-launch email client',
           })
         : null,
-    [emailAddress, setClipboard, subject]
+    [emailAddress, setClipboard]
   );
 
   return useCallback(

@@ -1,4 +1,3 @@
-import { isNil } from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
@@ -49,17 +48,18 @@ const AddCashSheet = () => {
   const insets = useSafeArea();
 
   const [errorAnimation, onShake] = useShakeAnimation();
-  const [errorIndex, setErrorIndex] = useState(null);
   const [startErrorTimeout, stopErrorTimeout] = useTimeout();
 
+  const [errorIndex, setErrorIndex] = useState(null);
+  const onClearError = useCallback(() => setErrorIndex(null), []);
+
   const {
+    isPendingPurchase,
     onPurchase,
     orderCurrency,
     orderStatus,
     transferStatus,
   } = useWyreApplePay();
-
-  const onClearError = useCallback(() => setErrorIndex(null), []);
 
   const onLimitExceeded = useCallback(
     limit => {
@@ -69,8 +69,6 @@ const AddCashSheet = () => {
     },
     [startErrorTimeout, stopErrorTimeout, onClearError]
   );
-
-  const showOrderStatus = !isNil(orderStatus);
 
   return (
     <SheetContainer>
@@ -85,7 +83,7 @@ const AddCashSheet = () => {
           <SheetHandle />
           <ColumnWithMargins margin={4} paddingTop={7}>
             <SheetTitle>Add Cash</SheetTitle>
-            {!showOrderStatus && (
+            {!isPendingPurchase && (
               <SheetSubtitleCycler
                 animatedValue={errorAnimation}
                 errorIndex={errorIndex}
@@ -97,7 +95,7 @@ const AddCashSheet = () => {
           </ColumnWithMargins>
         </Column>
         <FlexItem width="100%">
-          {showOrderStatus ? (
+          {isPendingPurchase ? (
             <AddCashStatus
               orderCurrency={orderCurrency}
               orderStatus={orderStatus}
