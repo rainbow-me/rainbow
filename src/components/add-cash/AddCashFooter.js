@@ -6,7 +6,7 @@ import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Emoji, Rounded } from '../text';
 import ApplePayButton from './ApplePayButton';
 
-const AddCashFooter = ({ disabled, onSubmit, ...props }) => {
+const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
   const { isNarrowPhone } = useDimensions();
   return (
     <ColumnWithMargins
@@ -17,8 +17,12 @@ const AddCashFooter = ({ disabled, onSubmit, ...props }) => {
       width="100%"
       {...props}
     >
-      <Row>
-        <ApplePayButton disabled={disabled} onSubmit={onSubmit} />
+      <Row width="100%">
+        <ApplePayButton
+          disabled={disabled}
+          onDisabledPress={onDisabledPress}
+          onSubmit={onSubmit}
+        />
       </Row>
       <RowWithMargins align="center" margin={6}>
         <Centered marginTop={2}>
@@ -40,7 +44,8 @@ const AddCashFooter = ({ disabled, onSubmit, ...props }) => {
 
 AddCashFooter.propTypes = {
   disabled: PropTypes.bool,
+  onDisabledPress: PropTypes.func,
   onSubmit: PropTypes.func,
 };
 
-export default AddCashFooter;
+export default React.memo(AddCashFooter);
