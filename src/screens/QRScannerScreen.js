@@ -21,7 +21,6 @@ const QRScannerScreen = ({
   enableScanning,
   isCameraAuthorized,
   isFocused,
-  modalVisible,
   onPressBackButton,
   onPressPasteSessionUri,
   onScanSuccess,
@@ -35,7 +34,7 @@ const QRScannerScreen = ({
   const insets = useSafeArea();
   return (
     <View>
-      {discoverSheetAvailable ? <DiscoverSheet visible={modalVisible} /> : null}
+      {discoverSheetAvailable ? <DiscoverSheet /> : null}
       <Centered
         {...position.sizeAsObject('100%')}
         backgroundColor={colors.appleBlue}
@@ -90,7 +89,6 @@ QRScannerScreen.propTypes = {
   enableScanning: PropTypes.bool,
   isCameraAuthorized: PropTypes.bool,
   isFocused: PropTypes.bool.isRequired,
-  modalVisible: PropTypes.bool.isRequired,
   onPressBackButton: PropTypes.func,
   onPressPasteSessionUri: PropTypes.func,
   onScanSuccess: PropTypes.func,
@@ -107,7 +105,6 @@ const arePropsEqual = (prev, next) =>
     'isFocused',
     'sheetHeight',
     'walletConnectorsCount',
-    'modalVisible',
   ]);
 
 export default React.memo(QRScannerScreen, arePropsEqual);

@@ -10,7 +10,6 @@ import isWalletEmpty from './isWalletEmpty';
 import isWalletEthZero from './isWalletEthZero';
 import keyboardHeight from './keyboardHeight';
 import navigation from './navigation';
-import modal from './modal';
 import nonce from './nonce';
 import openStateSettings from './openStateSettings';
 import requests from './requests';
@@ -31,7 +30,6 @@ export default combineReducers({
   isWalletEmpty,
   isWalletEthZero,
   keyboardHeight,
-  modal,
   navigation,
   nonce,
   openStateSettings,

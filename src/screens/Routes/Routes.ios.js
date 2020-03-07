@@ -11,7 +11,6 @@ import { createStackNavigator } from 'react-navigation-stack';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { ExchangeModalNavigator, Navigation } from '../../navigation';
 import { updateTransitionProps } from '../../redux/navigation';
-import { setModalVisible } from '../../redux/modal';
 import store from '../../redux/store';
 import { deviceUtils } from '../../utils';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
@@ -338,13 +337,6 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
           //   })
           // );
         }
-        store.dispatch(
-          setModalVisible(
-            routeName === 'WalletScreen' ||
-              routeName === 'QRScannerScreen' ||
-              routeName === 'ProfileScreen'
-          )
-        );
 
         if (routeName === 'ExpandedAssetScreen') {
           const { asset, type } = params;
