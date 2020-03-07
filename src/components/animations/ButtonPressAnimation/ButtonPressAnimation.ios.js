@@ -208,7 +208,6 @@ function ButtonPressAnimationJS({
   scaleTo,
   style,
   transformOrigin,
-  ...props
 }) {
   const [interactionHandle, createHandle, removeHandle] = useInteraction();
   const { onLayout, withTransformOrigin } = useTransformOrigin(transformOrigin);
@@ -365,7 +364,6 @@ function ButtonPressAnimationJS({
             transform: withTransformOrigin({ scale }),
           },
         ]}
-        {...props}
       >
         {children}
       </Animated.View>
