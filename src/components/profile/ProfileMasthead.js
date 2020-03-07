@@ -112,9 +112,7 @@ const ProfileMasthead = ({
         />
       </RowWithMargins>
       {addCashButtonAvailable && (
-        <AddCashButton onPress={() => navigate('AddCashSheet')}>
-          Add Cash
-        </AddCashButton>
+        <AddCashButton onPress={() => navigate('AddCashSheet')} />
       )}
       {showBottomDivider && (
         <Divider style={{ bottom: 0, position: 'absolute' }} />

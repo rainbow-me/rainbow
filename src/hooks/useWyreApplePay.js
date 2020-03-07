@@ -1,5 +1,5 @@
 import { isEmpty, toLower } from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   requestWyreApplePay,
   trackWyreOrder,
@@ -14,24 +14,28 @@ import {
 import { dataAddNewPurchaseTransaction } from '../redux/data';
 import { AddCashCurrencies, AddCashCurrencyInfo } from '../references';
 import { ethereumUtils } from '../utils';
-
 import useAccountData from './useAccountData';
+import useTimeout from './useTimeout';
 
 export default function useWyreApplePay() {
   const { accountAddress, assets } = useAccountData();
 
+  const [isPendingPurchase, setPendingPurchase] = useState(false);
   const [orderCurrency, setOrderCurrency] = useState(null);
   const [orderStatus, setOrderStatus] = useState(null);
   const [transferHash, setTransferHash] = useState(null);
   const [transferStatus, setTransferStatus] = useState(null);
 
-  const [completedPaymentResponse, setCompletedPaymentResponse] = useState(
-    false
-  );
+  const [retryOrderStatusTimeout] = useTimeout();
+  const [retryTransferHashTimeout] = useTimeout();
+  const [retryTransferStatusTimeout] = useTimeout();
+  const [startPurchaseSuccessTimeout] = useTimeout();
 
-  const transferStatusTimeout = useRef();
-  const orderStatusTimeout = useRef();
-  const transferHashTimeout = useRef();
+  const handlePurchaseSuccess = useCallback(() => {
+    // In order to have the UI appear to be in-sync with the Apple Pay modal's
+    // animation, we need to artificially delay before marking a purchase as pending.
+    startPurchaseSuccessTimeout(() => setPendingPurchase(true), 1500);
+  }, [startPurchaseSuccessTimeout]);
 
   const getTransferHash = useCallback(
     async transferId => {
@@ -68,13 +72,13 @@ export default function useWyreApplePay() {
           dataAddNewPurchaseTransaction(txDetails);
           getTransferStatus(transferId);
         } else {
-          transferHashTimeout.current = setTimeout(retry, 1000);
+          retryTransferHashTimeout(retry, 1000);
         }
       } catch (error) {
-        transferHashTimeout.current = setTimeout(retry, 1000);
+        retryTransferHashTimeout(retry, 1000);
       }
     },
-    [accountAddress, assets, getTransferStatus]
+    [accountAddress, assets, getTransferStatus, retryTransferHashTimeout]
   );
 
   const getTransferStatus = useCallback(
@@ -91,13 +95,13 @@ export default function useWyreApplePay() {
           setTransferHash(transferHash);
           setTransferStatus(transferStatus);
         } else {
-          transferStatusTimeout.current = setTimeout(retry, 10000);
+          retryTransferStatusTimeout(retry, 10000);
         }
       } catch (error) {
-        transferStatusTimeout.current = setTimeout(retry, 1000);
+        retryTransferStatusTimeout(retry, 1000);
       }
     },
-    [transferHash]
+    [retryTransferStatusTimeout, transferHash]
   );
 
   const getOrderStatus = useCallback(
@@ -106,9 +110,9 @@ export default function useWyreApplePay() {
         getOrderStatus(destCurrency, orderId, paymentResponse);
 
       try {
-        if (!completedPaymentResponse && isEmpty(orderId)) {
+        if (!isPendingPurchase && isEmpty(orderId)) {
           paymentResponse.complete('failure');
-          setCompletedPaymentResponse(true);
+          handlePurchaseSuccess();
         }
 
         setOrderCurrency(destCurrency);
@@ -120,42 +124,31 @@ export default function useWyreApplePay() {
         const isPending = orderStatus === WYRE_ORDER_STATUS_TYPES.pending;
         const isSuccess = orderStatus === WYRE_ORDER_STATUS_TYPES.success;
 
-        if (!completedPaymentResponse) {
+        if (!isPendingPurchase) {
           if (isFailed) {
             paymentResponse.complete('failed');
-            setCompletedPaymentResponse(true);
+            handlePurchaseSuccess();
           } else if (isPending || isSuccess) {
             paymentResponse.complete('success');
-            setCompletedPaymentResponse(true);
+            handlePurchaseSuccess();
           }
         }
 
         if (transferId) {
           getTransferHash(transferId);
         } else if (!isFailed) {
-          orderStatusTimeout.current = setTimeout(retry, 1000);
+          retryOrderStatusTimeout(retry, 1000);
         }
       } catch (error) {
-        orderStatusTimeout.current = setTimeout(retry, 1000);
+        retryOrderStatusTimeout(retry, 1000);
       }
     },
-    [completedPaymentResponse, getTransferHash]
-  );
-
-  // Clear  timeouts
-  useEffect(
-    () => () => {
-      if (orderStatusTimeout.current) {
-        clearTimeout(orderStatusTimeout.current);
-      }
-      if (transferHashTimeout.current) {
-        clearTimeout(transferHashTimeout.current);
-      }
-      if (transferStatusTimeout.current) {
-        clearTimeout(transferStatusTimeout.current);
-      }
-    },
-    []
+    [
+      isPendingPurchase,
+      getTransferHash,
+      handlePurchaseSuccess,
+      retryOrderStatusTimeout,
+    ]
   );
 
   const onPurchase = useCallback(
@@ -171,6 +164,7 @@ export default function useWyreApplePay() {
   );
 
   return {
+    isPendingPurchase,
     onPurchase,
     orderCurrency,
     orderStatus,
