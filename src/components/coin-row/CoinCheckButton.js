@@ -6,7 +6,7 @@ import { CoinIcon } from '../coin-icon';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { colors } from '../../styles';
 import { Icon } from '../icons';
-import { withEditOptions } from '../../hoc';
+import { withCoinRecentlyPinned } from '../../hoc';
 
 const CoinRowPaddingTop = 15;
 const CoinRowPaddingBottom = 7;
@@ -22,7 +22,7 @@ const CoinCheckButton = ({
   const [toggle, setToggle] = useState(false);
 
   useEffect(() => {
-    if (wasRecentlyPinned || !isCoinListEdited) {
+    if ((wasRecentlyPinned && toggle) || (!isCoinListEdited && toggle)) {
       setToggle(false);
     }
   }, [isCoinListEdited, wasRecentlyPinned]);
@@ -97,4 +97,4 @@ CoinCheckButton.propTypes = {
 
 CoinCheckButton.defaultProps = {};
 
-export default compose(withEditOptions)(CoinCheckButton);
+export default React.memo(compose(withCoinRecentlyPinned)(CoinCheckButton));

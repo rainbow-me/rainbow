@@ -18,6 +18,8 @@ import { Row } from '../layout';
 import { Monospace, Text } from '../text';
 import CoinDividerButtonLabel from './CoinDividerButtonLabel';
 import { colors } from '../../styles';
+import { compose } from 'recompact';
+import { withCoinCurrentAction } from '../../hoc';
 
 const {
   block,
@@ -140,17 +142,28 @@ class CoinDivider extends PureComponent {
               >
                 <View
                   style={{
-                    backgroundColor: colors.appleBlue,
+                    backgroundColor:
+                      currentAction !== 'none'
+                        ? colors.appleBlue
+                        : colors.lightBlueGrey,
                     borderRadius: 15,
                     height: 30,
                     justifyContent: 'center',
                     paddingHorizontal: 10,
+                    shadowColor:
+                      currentAction !== 'none'
+                        ? colors.appleBlue
+                        : colors.white,
+                    shadowOffset: { height: 4, width: 0 },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 12,
                   }}
                 >
                   <Text
-                    color={
-                      isCoinListEdited ? 'white' : 'blueGreyDarkTransparent'
-                    }
+                    color={currentAction !== 'none' ? 'white' : 'blueGreyDark'}
+                    style={{
+                      opacity: currentAction !== 'none' ? 1 : 0.2,
+                    }}
                     letterSpacing="tighter"
                     size="lmedium"
                     weight="semibold"
@@ -173,18 +186,29 @@ class CoinDivider extends PureComponent {
               >
                 <View
                   style={{
-                    backgroundColor: colors.appleBlue,
+                    backgroundColor:
+                      currentAction !== 'none'
+                        ? colors.appleBlue
+                        : colors.lightBlueGrey,
                     borderRadius: 15,
                     height: 30,
                     justifyContent: 'center',
                     marginLeft: 10,
                     paddingHorizontal: 10,
+                    shadowColor:
+                      currentAction !== 'none'
+                        ? colors.appleBlue
+                        : colors.white,
+                    shadowOffset: { height: 4, width: 0 },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 12,
                   }}
                 >
                   <Text
-                    color={
-                      isCoinListEdited ? 'white' : 'blueGreyDarkTransparent'
-                    }
+                    color={currentAction !== 'none' ? 'white' : 'blueGreyDark'}
+                    style={{
+                      opacity: currentAction !== 'none' ? 1 : 0.2,
+                    }}
                     letterSpacing="tighter"
                     size="lmedium"
                     weight="semibold"
@@ -285,6 +309,7 @@ class CoinDivider extends PureComponent {
           </View>
           <View
             style={{ alignItems: 'flex-end', position: 'absolute', width: 64 }}
+            pointerEvents={openSmallBalances ? 'auto' : 'none'}
           >
             <OpacityToggler
               endingOpacity={1}
@@ -311,6 +336,12 @@ class CoinDivider extends PureComponent {
                     height: 30,
                     justifyContent: 'center',
                     paddingHorizontal: 10,
+                    shadowColor: isCoinListEdited
+                      ? colors.appleBlue
+                      : colors.white,
+                    shadowOffset: { height: 4, width: 0 },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 12,
                   }}
                 >
                   <Text
@@ -333,4 +364,4 @@ class CoinDivider extends PureComponent {
   }
 }
 
-export default CoinDivider;
+export default compose(withCoinCurrentAction)(CoinDivider);

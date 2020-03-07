@@ -86,7 +86,7 @@ export const setHiddenCoins = () => (dispatch, getState) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  currentAction: 'standard',
+  currentAction: 'none',
   hiddenCoins: [],
   isCoinListEdited: false,
   pinnedCoins: [],
@@ -112,9 +112,6 @@ export default (state = INITIAL_STATE, action) =>
       action.type === REMOVE_SELECTED_COIN
     ) {
       if (action.type === PUSH_SELECTED_COIN) {
-        if (draft.wasRecentlyPinned) {
-          draft.wasRecentlyPinned = false;
-        }
         draft.selectedCoins.push(action.payload);
       }
 
@@ -124,7 +121,9 @@ export default (state = INITIAL_STATE, action) =>
           1
         );
       }
-      if (
+      if (draft.selectedCoins.length == 0) {
+        draft.currentAction = 'none';
+      } else if (
         draft.selectedCoins.length > 0 &&
         difference(draft.hiddenCoins, draft.selectedCoins).length ===
           draft.hiddenCoins.length - draft.selectedCoins.length
@@ -157,7 +156,8 @@ export default (state = INITIAL_STATE, action) =>
       draft.currentAction = 'standard';
       savePinnedCoins(draft.pinnedCoins, action.accountAddress, action.network);
       draft.selectedCoins = [];
-      draft.wasRecentlyPinned = true;
+      draft.currentAction = 'none';
+      draft.wasRecentlyPinned = !draft.wasRecentlyPinned;
     } else if (action.type === SET_HIDDEN_COINS) {
       if (
         draft.currentAction === 'standard' ||
@@ -176,6 +176,7 @@ export default (state = INITIAL_STATE, action) =>
       draft.currentAction = 'standard';
       saveHiddenCoins(draft.hiddenCoins, action.accountAddress, action.network);
       draft.selectedCoins = [];
-      draft.wasRecentlyPinned = true;
+      draft.currentAction = 'none';
+      draft.wasRecentlyPinned = !draft.wasRecentlyPinned;
     }
   });

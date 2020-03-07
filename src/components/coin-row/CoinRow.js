@@ -20,6 +20,10 @@ const Container = styled(Row)`
   width: 100%;
 `;
 
+const OpacityWrapper = styled(Row)`
+  flex: 1;
+`;
+
 const Content = styled(Column).attrs({
   flex: 1,
   justify: 'space-between',
@@ -51,7 +55,7 @@ const CoinRow = enhance(
     symbol,
     topRowRender,
     isCoinListEdited,
-    wasRecentlyPinned,
+    isHidden,
     ...props
   }) => (
     <Container align="center" css={containerStyles}>
@@ -59,17 +63,20 @@ const CoinRow = enhance(
       {createElement(coinIconRender, {
         isCoinListEdited,
         symbol,
-        wasRecentlyPinned,
         ...props,
       })}
-      <Content css={contentStyles}>
-        <Row align="center" justify="space-between">
-          {topRowRender({ symbol, ...props })}
-        </Row>
-        <Row align="center" justify="space-between">
-          {bottomRowRender({ symbol, ...props })}
-        </Row>
-      </Content>
+      <OpacityWrapper
+        style={{ opacity: isHidden && isCoinListEdited ? 0.4 : 1 }}
+      >
+        <Content css={contentStyles}>
+          <Row align="center" justify="space-between">
+            {topRowRender({ symbol, ...props })}
+          </Row>
+          <Row align="center" justify="space-between">
+            {bottomRowRender({ symbol, ...props })}
+          </Row>
+        </Content>
+      </OpacityWrapper>
       {typeof children === 'function'
         ? children({ symbol, ...props })
         : children}

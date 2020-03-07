@@ -65,7 +65,6 @@ const enhance = onlyUpdateForKeys([
   'symbol',
   'address',
   'isCoinListEdited',
-  'wasRecentlyPinned',
   'isPinned',
   'isHidden',
 ]);
