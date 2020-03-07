@@ -39,6 +39,7 @@ import LockIcon from './svg/LockIcon';
 import OfflineIcon from './svg/OfflineIcon';
 import PasscodeIcon from './svg/PasscodeIcon';
 import ProgressIcon from './svg/ProgressIcon';
+import QRCodeIcon from './svg/QRCodeIcon';
 import SearchIcon from './svg/SearchIcon';
 import SendIcon from './svg/SendIcon';
 import SendSmallIcon from './svg/SendSmallIcon';
@@ -93,6 +94,7 @@ Icon.IconTypes = {
   offline: OfflineIcon,
   passcode: PasscodeIcon,
   progress: ProgressIcon,
+  qrCode: QRCodeIcon,
   search: SearchIcon,
   send: SendIcon,
   sendSmall: SendSmallIcon,

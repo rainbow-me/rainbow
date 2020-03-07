@@ -4,6 +4,7 @@ import { sortAssetsByNativeAmountSelector } from '../hoc/assetSelectors';
 export default function useAccountData() {
   const accountData = useSelector(({ data, settings }) => ({
     accountAddress: settings.accountAddress,
+    accountENS: settings.accountENS,
     assets: data.assets,
     compoundAssets: data.compoundAssets,
     nativeCurrency: settings.nativeCurrency,
