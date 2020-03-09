@@ -6,6 +6,13 @@ const addInfoBreadcrumb = message =>
     message,
   });
 
+const addDataBreadcrumb = (message, data) =>
+  addBreadcrumb({
+    data,
+    level: 'info',
+    message,
+  });
+
 const addNavBreadcrumb = (prevRoute, nextRoute, data) =>
   addBreadcrumb({
     data,
@@ -14,6 +21,7 @@ const addNavBreadcrumb = (prevRoute, nextRoute, data) =>
   });
 
 export default {
+  addDataBreadcrumb,
   addInfoBreadcrumb,
   addNavBreadcrumb,
 };
