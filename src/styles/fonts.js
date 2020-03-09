@@ -14,11 +14,15 @@ font.letterSpacing = {
   tighter: -0.2,
   tight: -0.1,
   loose: 0.15,
+  roundedTight: 0.4,
   looser: 0.46,
+  roundedMedium: 0.5,
+  rounded: 0.6,
 };
 
 font.lineHeight = {
   none: 0,
+  tightest: 14,
   tight: 16,
   normal: 20,
   loose: 21,
@@ -38,7 +42,7 @@ font.size = {
   large: '18px',
   larger: '20px',
   blarge: '21px',
-  big: '22px',
+  big: '23px',
   bigger: '26px',
   biggest: '27px',
   h1: '42px',
