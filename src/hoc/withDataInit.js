@@ -9,6 +9,7 @@ import {
   getAccountInfo,
 } from '../handlers/localstorage/accountLocal';
 import { hasEthBalance } from '../handlers/web3';
+import networkTypes from '../helpers/networkTypes';
 import { walletInit } from '../model/wallet';
 import {
   dataClearState,
@@ -36,6 +37,7 @@ import {
 import {
   uniswapLoadState,
   uniswapClearState,
+  uniswapGetAllExchanges,
   uniswapPairsInit,
   uniswapUpdateState,
 } from '../redux/uniswap';
@@ -77,6 +79,7 @@ export default Component =>
       uniqueTokensLoadState,
       uniqueTokensRefreshState,
       uniswapClearState,
+      uniswapGetAllExchanges,
       uniswapLoadState,
       uniswapPairsInit,
       uniswapUpdateState,
@@ -121,8 +124,9 @@ export default Component =>
           sentryUtils.addInfoBreadcrumb('Initialize account data');
           console.log('Initialize account data for ', ownProps.network);
           ownProps.explorerInit();
-          ownProps.uniswapPairsInit();
+          await ownProps.uniswapPairsInit();
           await ownProps.uniqueTokensRefreshState();
+          await ownProps.uniswapGetAllExchanges();
         } catch (error) {
           // TODO error state
           console.log('Error initializing account data: ', error);
@@ -135,7 +139,7 @@ export default Component =>
         const promises = [];
         const p1 = ownProps.settingsLoadState();
         promises.push(p1);
-        if (ownProps.network === 'mainnet') {
+        if (ownProps.network === networkTypes.mainnet) {
           const p2 = ownProps.dataLoadState();
           promises.push(p2);
           const p3 = ownProps.uniqueTokensLoadState();
@@ -154,6 +158,11 @@ export default Component =>
         return promiseUtils.PromiseAllWithFails(promises);
       },
       refreshAccountData: ownProps => async () => {
+        // Nothing to refresh for testnets
+        if (ownProps.network !== networkTypes.mainnet) {
+          return Promise.all([delay(1250)]);
+        }
+
         try {
           const getUniswap = ownProps.uniswapUpdateState();
           const getUniqueTokens = ownProps.uniqueTokensRefreshState();

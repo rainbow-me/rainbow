@@ -1,29 +1,28 @@
 import analytics from '@segment/analytics-react-native';
-import { toLower, upperFirst } from 'lodash';
+import { toLower, values } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { InteractionManager } from 'react-native';
 import { onlyUpdateForKeys } from 'recompact';
 import { compose, withHandlers } from 'recompose';
+import networkInfo from '../../helpers/networkInfo';
 import { withAccountSettings, withDataInit } from '../../hoc';
 import { RadioList, RadioListItem } from '../radio-list';
 
-const NETWORKS = [
-  { disabled: false, name: 'Mainnet' },
-  { disabled: false, name: 'Rinkeby' },
-];
+const networks = values(networkInfo);
 
 const NetworkSection = ({ network, onNetworkChange }) => (
   <RadioList
     extraData={network}
-    items={NETWORKS.map(({ disabled, name }) => ({
+    items={networks.map(({ disabled, name, value }) => ({
       disabled,
-      key: name,
+      key: value,
       label: name,
-      selected: toLower(network) === toLower(name),
-      value: name,
+      selected: toLower(network) === toLower(value),
+      value,
     }))}
     renderItem={RadioListItem}
-    value={upperFirst(network)}
+    value={network}
     onChange={onNetworkChange}
   />
 );
@@ -45,9 +44,11 @@ export default compose(
     }) => async network => {
       await clearAccountData();
       await settingsUpdateNetwork(toLower(network));
-      await loadAccountData();
-      await initializeAccountData();
-      analytics.track('Changed network', { network });
+      InteractionManager.runAfterInteractions(async () => {
+        await loadAccountData();
+        await initializeAccountData();
+        analytics.track('Changed network', { network });
+      });
     },
   }),
   onlyUpdateForKeys(['network'])

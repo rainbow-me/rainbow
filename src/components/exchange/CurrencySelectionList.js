@@ -39,24 +39,23 @@ const NoResultMessage = withNeverRerender(() => (
   </ColumnWithMargins>
 ));
 
-const CurrencySelectionList = ({ itemProps, listItems, showList, query }) => {
+const CurrencySelectionList = ({
+  itemProps,
+  listItems,
+  loading,
+  showList,
+  query,
+}) => {
   const skeletonTransitionRef = useRef();
   const [showSkeleton, setShowSkeleton] = useState(true);
-
   const showNoResults = get(listItems, '[0].data', []).length === 0;
 
   useEffect(() => {
-    if (!showSkeleton && !showList) {
-      setShowSkeleton(true);
-    }
-  }, [showList, showSkeleton]);
-
-  const onListLayout = () => {
-    if (showSkeleton && showList) {
+    if (showSkeleton && !loading) {
       skeletonTransitionRef.current.animateNextTransition();
       setShowSkeleton(false);
     }
-  };
+  }, [loading, showSkeleton]);
 
   return (
     <Transitioning.View
@@ -72,7 +71,6 @@ const CurrencySelectionList = ({ itemProps, listItems, showList, query }) => {
             <ExchangeAssetList
               itemProps={itemProps}
               items={listItems}
-              onLayout={onListLayout}
               query={query}
             />
           )}
@@ -97,6 +95,6 @@ CurrencySelectionList.propTypes = {
 };
 
 const propsAreEqual = (...props) =>
-  !isNewValueForObjectPaths(...props, ['listItems', 'showList', 'query']);
+  !isNewValueForObjectPaths(...props, ['listItems', 'showList']);
 
 export default memo(CurrencySelectionList, propsAreEqual);

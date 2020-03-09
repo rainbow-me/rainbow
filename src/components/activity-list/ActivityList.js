@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, mapProps, onlyUpdateForKeys, withProps } from 'recompact';
 import { buildTransactionsSectionsSelector } from '../../helpers/transactions';
+import networkTypes from '../../helpers/networkTypes';
 import {
   withAccountSettings,
   withAccountTransactions,
@@ -11,7 +12,7 @@ import RecyclerActivityList from './RecyclerActivityList';
 import TestnetEmptyState from './TestnetEmptyState';
 
 const ActivityList = ({ header, isEmpty, sections, network }) =>
-  network === 'mainnet' || sections.length ? (
+  network === networkTypes.mainnet || sections.length ? (
     <RecyclerActivityList
       header={header}
       isLoading={!isEmpty && !sections.length}

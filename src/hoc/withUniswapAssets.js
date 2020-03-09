@@ -129,9 +129,12 @@ const withUniswapAssetsSelector = createSelector(
   withUniswapAssets
 );
 
-const mapStateToProps = ({ uniswap: { allPairs, favorites, pairs } }) => ({
+const mapStateToProps = ({
+  uniswap: { allPairs, favorites, pairs, isInitialized },
+}) => ({
   allPairs,
   favorites,
+  isInitialized,
   pairs,
 });
 

@@ -6,7 +6,7 @@ import adapter from 'detox/runners/jest/adapter';
 import specReporter from 'detox/runners/jest/specReporter';
 
 // Set the default timeout
-jest.setTimeout(120000);
+jest.setTimeout(240000);
 
 jasmine.getEnv().addReporter(adapter);
 

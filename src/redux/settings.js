@@ -12,6 +12,7 @@ import { dataClearState } from './data';
 import { explorerInit } from './explorer';
 import { ethereumUtils } from '../utils';
 import { web3SetHttpProvider } from '../handlers/web3';
+import networkTypes from '../helpers/networkTypes';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -61,7 +62,7 @@ export const settingsLoadNetwork = () => async dispatch => {
   try {
     const network = await getNetwork();
     const chainId = ethereumUtils.getChainIdFromNetwork(network);
-    web3SetHttpProvider(network);
+    await web3SetHttpProvider(network);
     dispatch({
       payload: { chainId, network },
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
@@ -93,7 +94,7 @@ export const settingsUpdateAccountAddress = accountAddress => dispatch =>
 
 export const settingsUpdateNetwork = network => async dispatch => {
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
-  web3SetHttpProvider(network);
+  await web3SetHttpProvider(network);
   try {
     await saveNetwork(network);
     dispatch({
@@ -148,7 +149,7 @@ export const INITIAL_STATE = {
   chainId: 1,
   language: 'en',
   nativeCurrency: 'USD',
-  network: 'mainnet',
+  network: networkTypes.mainnet,
 };
 
 export default (state = INITIAL_STATE, action) => {

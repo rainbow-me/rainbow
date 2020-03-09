@@ -43,7 +43,7 @@ class QRCodeScannerCamera extends PureComponent {
 
     InteractionManager.runAfterInteractions(() => {
       const isScannerEnabled =
-        this.scannerRef && !this.scannerRef.state.disablingByUser;
+        this.scannerRef && !this.scannerRef.state.scanning;
 
       if (enableScanning && !isScannerEnabled) {
         this.handleEnableScanner();

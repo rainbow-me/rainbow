@@ -8,7 +8,7 @@ import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import { colors } from '../../styles';
-import { abbreviations } from '../../utils';
+import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { ButtonPressAnimation } from '../animations';
 import { FlexItem, Row, RowWithMargins } from '../layout';
@@ -17,6 +17,7 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
+import { withAccountSettings } from '../../hoc';
 
 const containerStyles = css`
   padding-left: 15;
@@ -94,8 +95,15 @@ export default compose(
     })
   ),
   withNavigation,
+  withAccountSettings,
   withHandlers({
-    onPressTransaction: ({ contact, hash, item, navigation }) => async () => {
+    onPressTransaction: ({
+      contact,
+      hash,
+      item,
+      navigation,
+      network,
+    }) => async () => {
       const { from, to, status } = item;
       const isSent = status === TransactionStatusTypes.sent;
       const headerInfo = {
@@ -137,7 +145,10 @@ export default compose(
               });
             } else if (buttonIndex === 1) {
               const normalizedHash = hash.replace(/-.*/g, '');
-              Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
+              const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
+                network
+              );
+              Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
             }
           }
         );
