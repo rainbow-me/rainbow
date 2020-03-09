@@ -63,6 +63,7 @@ platform :ios do
       plist_path: "Rainbow/Info.plist",
     )
     match(
+      force: true,
       type: "appstore",
       app_identifier: "me.rainbow",
       git_url: "git@github.com:rainbow-me/rainbow-code-signing.git"
