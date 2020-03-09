@@ -234,7 +234,6 @@ const MainNavigator = createStackNavigator(
     },
     headerMode: 'none',
     initialRouteName: 'SwipeLayout',
-    keyboardHandlingEnabled: false,
     mode: 'modal',
   }
 );
