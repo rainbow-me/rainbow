@@ -15,7 +15,7 @@ import {
 } from '../animations';
 import Highlight from '../Highlight';
 import { Row } from '../layout';
-import { Monospace } from '../text';
+import { Text } from '../text';
 import CoinDividerButtonLabel from './CoinDividerButtonLabel';
 
 const {
@@ -106,14 +106,15 @@ export default class CoinDivider extends PureComponent {
         align="center"
         height={CoinDividerHeight}
         justify="space-between"
-        marginTop={8}
+        marginBottom={6}
+        marginTop={5}
         paddingHorizontal={19}
         width={deviceUtils.dimensions.width}
       >
         <Highlight highlight={isCoinDivider} />
         <ButtonPressAnimation
           onPress={onPress}
-          scaleTo={0.96}
+          scaleTo={0.9}
           style={{ width: openSmallBalances ? 80 : 54 }}
         >
           <Row
@@ -161,9 +162,14 @@ export default class CoinDivider extends PureComponent {
           isVisible={openSmallBalances}
           animationNode={this._node}
         >
-          <Monospace color="dark" size="lmedium" style={{ paddingBottom: 1 }}>
+          <Text
+            align="right"
+            color="dark"
+            size="lmedium"
+            style={{ paddingBottom: 1 }}
+          >
             {balancesSum}
-          </Monospace>
+          </Text>
         </OpacityToggler>
       </Row>
     );

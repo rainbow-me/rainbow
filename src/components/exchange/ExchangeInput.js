@@ -27,7 +27,6 @@ export default class ExchangeInput extends Component {
 
   static defaultProps = {
     color: colors.dark,
-    fontFamily: fonts.family.SFProDisplay,
     fontSize: fonts.size.h2,
     fontWeight: fonts.weight.medium,
     mask: '[099999999999999999].[999999999999999999]',

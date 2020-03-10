@@ -28,7 +28,7 @@ const base = {
   lighterGrey: '#f7f7f8', // '247, 247, 248'
   lightestGrey: '#E9EBEF', // '238, 233, 232'
   lightGrey: '#CDCFD4', // '205, 207, 212'
-  limeGreen: '#3FCC18', // '58, 166, 134'
+  limeGreen: '#2CCC00', // '58, 166, 134'
   mediumGrey: '#a1a5b3', // '161, 165, 179'
   orangeLight: '#FEBE44', // '254, 190, 68'
   orangeMedium: '#FCA247', // '252, 162, 71'

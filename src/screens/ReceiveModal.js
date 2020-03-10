@@ -25,6 +25,7 @@ const AddressText = styled(Monospace).attrs({
   color: colors.blueGreyLightest,
 })`
   font-size: 13.86;
+  letter-spacing: null;
   line-height: 19;
   text-align: justify;
   width: 100%;

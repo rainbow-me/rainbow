@@ -349,8 +349,11 @@ class RecyclerAssetList extends Component {
               sections[balancesIndex].data.length - 1
             ].assets.length;
           dim.height = openSmallBalances
-            ? CoinDivider.height + size * CoinRow.height + ListFooter.height + 9
-            : CoinDivider.height + ListFooter.height + 16;
+            ? CoinDivider.height +
+              size * CoinRow.height +
+              ListFooter.height +
+              10
+            : CoinDivider.height + ListFooter.height + 14;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
         } else if (type === ViewTypes.UNISWAP_ROW_LAST) {
@@ -730,7 +733,7 @@ class RecyclerAssetList extends Component {
     <RefreshControl
       onRefresh={this.handleRefresh}
       refreshing={this.state.isRefreshing}
-      tintColor={colors.alpha(colors.blueGreyLight, 0.666)}
+      tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
     />
   );
 

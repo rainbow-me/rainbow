@@ -10,8 +10,8 @@ import { Text } from '../../text';
 
 const ButtonSizeTypes = {
   default: {
-    fontSize: 'h5',
-    padding: [12, 16, 15],
+    fontSize: 'large',
+    padding: [12, 15, 16],
   },
   small: {
     fontSize: 'medium',
@@ -80,6 +80,7 @@ const Button = ({
       ) : (
         <Text
           color={color}
+          letterSpacing="roundedTight"
           size={ButtonSizeTypes[size].fontSize}
           weight="semibold"
           {...textProps}

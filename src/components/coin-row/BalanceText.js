@@ -1,7 +1,9 @@
 import { withProps } from 'recompact';
-import { Monospace } from '../text';
+import Text from '../text/Text';
 
 export default withProps(({ color }) => ({
+  align: 'right',
   color: color || 'dark',
   size: 'lmedium',
-}))(Monospace);
+  weight: 'regular',
+}))(Text);

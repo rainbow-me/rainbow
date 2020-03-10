@@ -19,10 +19,10 @@ const QRCodeScannerCrosshair = ({ showText, text }) => (
     {showText ? (
       <Text
         color="white"
-        letterSpacing="tight"
+        letterSpacing="rounded"
         lineHeight="none"
-        size="lmedium"
-        weight="medium"
+        size="large"
+        weight="bold"
       >
         {text}
       </Text>

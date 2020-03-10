@@ -28,10 +28,10 @@ const OuterBorder = styled(Centered)`
 
 const Text = styled(TextElement).attrs({
   color: colors.blueGreyLightest,
-  size: 'medium',
+  letterSpacing: 'roundedTight',
+  size: 'lmedium',
   weight: 'medium',
 })`
-  letter-spacing: -0.18px;
   line-height: 18;
 `;
 

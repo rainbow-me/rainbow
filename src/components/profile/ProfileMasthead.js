@@ -22,7 +22,8 @@ import { isAvatarPickerAvailable } from '../../config/experimental';
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
   firstSectionLength: abbreviations.defaultNumCharsPerSection,
-  size: 'big',
+  letterSpacing: 'roundedMedium',
+  size: 'bigger',
   truncationLength: 4,
   weight: 'bold',
 })`

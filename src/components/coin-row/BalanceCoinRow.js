@@ -19,18 +19,28 @@ const formatPercentageString = percentString =>
         .split('-')
         .join('- ')
         .split('%')
-        .join(' %')
+        .join('%')
     : '-';
 
 const BottomRow = ({ balance, native }) => {
   const percentChange = get(native, 'change');
   const percentageChangeDisplay = formatPercentageString(percentChange);
   const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
+  const isNull = !percentChange;
 
   return (
     <Fragment>
       <BottomRowText>{balance.display}</BottomRowText>
-      <BottomRowText color={isPositive ? colors.limeGreen : null}>
+      <BottomRowText
+        align="right"
+        color={
+          isPositive
+            ? colors.limeGreen
+            : isNull
+            ? colors.alpha(colors.blueGreyDark, 0.2)
+            : null
+        }
+      >
         {percentageChangeDisplay}
       </BottomRowText>
     </Fragment>
@@ -66,7 +76,7 @@ TopRow.propTypes = {
 };
 
 const BalanceCoinRow = ({ item, onPress, onPressSend, ...props }) => (
-  <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+  <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
     <CoinRow
       onPress={onPress}
       onPressSend={onPressSend}
