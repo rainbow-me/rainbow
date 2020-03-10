@@ -24,7 +24,6 @@ import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import { nonceClearState } from '../redux/nonce';
 import { contactsLoadState } from '../redux/contacts';
-import { coinListLoadState } from '../redux/editOptions';
 import {
   clearOpenStateSettings,
   openStateSettingsLoadState,
@@ -52,6 +51,10 @@ import {
   walletConnectLoadState,
   walletConnectClearState,
 } from '../redux/walletconnect';
+import {
+  coinListLoadState,
+  clearHiddenAndPinnedCoins,
+} from '../redux/editOptions';
 
 import { promiseUtils, sentryUtils } from '../utils';
 import withHideSplashScreen from './withHideSplashScreen';
@@ -60,6 +63,7 @@ import store from '../redux/store';
 export default Component =>
   compose(
     connect(null, {
+      clearHiddenAndPinnedCoins,
       clearIsWalletEmpty,
       clearOpenStateSettings,
       coinListLoadState,
@@ -108,6 +112,7 @@ export default Component =>
         const p6 = ownProps.nonceClearState();
         const p7 = ownProps.requestsClearState();
         const p8 = ownProps.uniswapClearState();
+        const p9 = ownProps.clearHiddenAndPinnedCoins();
         return promiseUtils.PromiseAllWithFails([
           p0,
           p1,
@@ -118,6 +123,7 @@ export default Component =>
           p6,
           p7,
           p8,
+          p9,
         ]);
       },
       initializeAccountData: ownProps => async () => {
@@ -228,6 +234,7 @@ export default Component =>
           ownProps.onHideSplashScreen();
           sentryUtils.addInfoBreadcrumb('Hide splash screen');
           ownProps.initializeAccountData();
+          await ownProps.coinListLoadState();
           return walletAddress;
         } catch (error) {
           // TODO specify error states more granular

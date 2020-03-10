@@ -19,6 +19,7 @@ const SET_HIDDEN_COINS = 'editOptions/SET_HIDDEN_COINS';
 const CLEAR_SELECTED_COINS = 'editOptions/CLEAR_SELECTED_COINS';
 const PUSH_SELECTED_COIN = 'editOptions/PUSH_SELECTED_COIN';
 const REMOVE_SELECTED_COIN = 'editOptions/REMOVE_SELECTED_COIN';
+const CLEAR_COINS = 'editOptions/CLEAR_COINS';
 
 // -- Actions --------------------------------------------------------------- //
 export const coinListLoadState = () => async (dispatch, getState) => {
@@ -26,6 +27,7 @@ export const coinListLoadState = () => async (dispatch, getState) => {
     const { accountAddress, network } = getState().settings;
     const hiddenCoins = await getHiddenCoins(accountAddress, network);
     const pinnedCoins = await getPinnedCoins(accountAddress, network);
+    console.log('load: ', pinnedCoins);
     dispatch({
       payload: {
         hiddenCoins,
@@ -81,6 +83,15 @@ export const setHiddenCoins = () => (dispatch, getState) => {
     accountAddress,
     network,
     type: SET_HIDDEN_COINS,
+  });
+};
+
+export const clearHiddenAndPinnedCoins = () => (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
+  dispatch({
+    accountAddress,
+    network,
+    type: CLEAR_COINS,
   });
 };
 
@@ -178,5 +189,9 @@ export default (state = INITIAL_STATE, action) =>
       draft.selectedCoins = [];
       draft.currentAction = 'none';
       draft.wasRecentlyPinned = !draft.wasRecentlyPinned;
+    } else if (action.type === CLEAR_COINS) {
+      draft.selectedCoins = [];
+      draft.hiddenCoins = [];
+      draft.pinnedCoins = [];
     }
   });
