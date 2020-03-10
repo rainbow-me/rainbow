@@ -92,7 +92,14 @@ const ProfileMasthead = ({
         <AddressAbbreviation address={accountAddress} />
       </CopyTooltip>
       <RowWithMargins align="center" margin={1}>
-        <FloatingEmojis>
+        <FloatingEmojis
+          distance={250}
+          duration={500}
+          fadeOut={false}
+          scaleTo={0}
+          size={50}
+          wiggleFactor={0}
+        >
           {({ onNewEmoji }) => (
             <ProfileAction
               icon="copy"
