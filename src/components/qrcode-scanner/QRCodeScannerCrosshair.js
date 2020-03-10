@@ -36,7 +36,7 @@ QRCodeScannerCrosshair.propTypes = {
 };
 
 QRCodeScannerCrosshair.defaultProps = {
-  text: 'Scan to connect or send',
+  text: 'Find a code to scan',
 };
 
 export default QRCodeScannerCrosshair;
