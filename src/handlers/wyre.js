@@ -88,7 +88,10 @@ export const requestWyreApplePay = (
   paymentRequest
     .show()
     .then(paymentResponse => {
-      sentryUtils.addInfoBreadcrumb('Apple Pay - Received payment response');
+      sentryUtils.addDataBreadcrumb(
+        'Apple Pay - Received payment response',
+        paymentResponse
+      );
       processWyrePayment(
         paymentResponse,
         totalAmount,
