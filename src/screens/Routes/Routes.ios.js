@@ -76,7 +76,7 @@ const sendFlowRoutes = {
   },
   SendSheet: {
     navigationOptions: {
-      ...expandedPreset,
+      ...sheetPreset,
       onTransitionStart: props => {
         expandedPreset.onTransitionStart(props);
         onTransitionStart();
