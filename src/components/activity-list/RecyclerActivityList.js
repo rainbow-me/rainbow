@@ -121,7 +121,7 @@ export default class RecyclerActivityList extends PureComponent {
         if (type === ViewTypes.ROW) {
           dim.height = 64;
         } else if (type === ViewTypes.FOOTER) {
-          dim.height = 27;
+          dim.height = 19;
         } else if (type === ViewTypes.HEADER) {
           dim.height = 35;
         } else {
