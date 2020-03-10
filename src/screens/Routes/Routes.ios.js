@@ -179,20 +179,6 @@ const MainNavigator = createStackNavigator(
       },
       screen: SavingsSheet,
     },
-    SavingsWithdrawModal: {
-      navigationOptions: {
-        ...exchangePreset,
-        onTransitionEnd,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      params: {
-        isGestureBlocked: false,
-      },
-      screen: WithdrawModal,
-    },
     SettingsModal: {
       navigationOptions: {
         ...expandedPreset,
@@ -225,7 +211,14 @@ const MainNavigator = createStackNavigator(
       },
       screen: WalletConnectConfirmationModal,
     },
-    ...(isNativeStackAvailable ? {} : sendFlowRoutes),
+    ...(isNativeStackAvailable
+      ? {}
+      : {
+          OverlayExpandedAssetScreen: {
+            navigationOptions: overlayExpandedPreset,
+            screen: ExpandedAssetScreenWithData,
+          },
+        }),
   },
   {
     defaultNavigationOptions: {
@@ -242,35 +235,62 @@ const MainNavigator = createStackNavigator(
 let appearListener = null;
 const setListener = listener => (appearListener = listener);
 
-const NativeStack = createNativeStackNavigator(
+const NativeStack = createStackNavigator(
   {
-    ImportSeedPhraseSheet: function ImportSeedPhraseSheetWrapper(...props) {
-      return (
-        <ImportSeedPhraseSheetWithData
-          {...props}
-          setAppearListener={setListener}
-        />
-      );
+    NativeStack: createNativeStackNavigator(
+      {
+        ImportSeedPhraseSheet: function ImportSeedPhraseSheetWrapper(...props) {
+          return (
+            <ImportSeedPhraseSheetWithData
+              {...props}
+              setAppearListener={setListener}
+            />
+          );
+        },
+        MainNavigator,
+        SendSheetNavigator: isNativeStackAvailable
+          ? createStackNavigator(sendFlowRoutes, {
+              defaultNavigationOptions: {
+                onTransitionEnd,
+                onTransitionStart,
+              },
+              headerMode: 'none',
+              initialRouteName: 'SendSheet',
+              mode: 'modal',
+            })
+          : () => null,
+      },
+      {
+        defaultNavigationOptions: {
+          onAppear: () => appearListener && appearListener(),
+        },
+        headerMode: 'none',
+        initialRouteName: 'MainNavigator',
+        mode: 'modal',
+      }
+    ),
+    SavingsWithdrawModal: {
+      navigationOptions: {
+        ...exchangePreset,
+        onTransitionEnd,
+        onTransitionStart: props => {
+          expandedPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
+      },
+      params: {
+        isGestureBlocked: false,
+      },
+      screen: WithdrawModal,
     },
-    MainNavigator,
-    SendSheetNavigator: isNativeStackAvailable
-      ? createStackNavigator(sendFlowRoutes, {
-          defaultNavigationOptions: {
-            onTransitionEnd,
-            onTransitionStart,
-          },
-          headerMode: 'none',
-          initialRouteName: 'SendSheet',
-          mode: 'modal',
-        })
-      : () => null,
   },
   {
     defaultNavigationOptions: {
-      onAppear: () => appearListener && appearListener(),
+      onTransitionEnd,
+      onTransitionStart,
     },
     headerMode: 'none',
-    initialRouteName: 'MainNavigator',
+    initialRouteName: 'NativeStack',
     mode: 'modal',
   }
 );
@@ -288,6 +308,20 @@ const NativeStackFallback = createStackNavigator(
       screen: ImportSeedPhraseSheetWithData,
     },
     MainNavigator,
+    SavingsWithdrawModal: {
+      navigationOptions: {
+        ...exchangePreset,
+        onTransitionEnd,
+        onTransitionStart: props => {
+          expandedPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
+      },
+      params: {
+        isGestureBlocked: false,
+      },
+      screen: WithdrawModal,
+    },
     SendSheet: {
       navigationOptions: {
         ...omit(sheetPreset, 'gestureResponseDistance'),
