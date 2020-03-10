@@ -1,23 +1,21 @@
-import { sum } from 'lodash';
+import { get, sum } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { createElement, Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import Animated, { spring } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
-import ShadowStack from 'react-native-shadow-stack';
 import { useDimensions } from '../../hooks';
-import { colors } from '../../styles';
+import { position } from '../../styles';
 import { magicMemo } from '../../utils';
-import { ButtonPressAnimation } from '../animations';
-import { RowWithMargins } from '../layout';
+import { Centered, Row } from '../layout';
+import JellySelectorIndicator from './JellySelectorIndicator';
+import JellySelectorItem from './JellySelectorItem';
 
-const AnimatedShadowStack = Animated.createAnimatedComponent(ShadowStack);
-
-const horizontalMargin = 8;
+const horizontalMargin = 100;
 const maxWidth = 300;
 
 const springTo = (node, toValue) =>
-  spring(node, {
+  Animated.spring(node, {
     damping: 38,
     mass: 1,
     overshootClamping: false,
@@ -28,123 +26,137 @@ const springTo = (node, toValue) =>
   }).start();
 
 let calculatedItemWidths = 0;
-let itemPositions = [];
-let itemWidths = [];
-
-const calculatePosition = () => {
-  const widthSum = sum(itemWidths);
-  const center = widthSum / 2;
-  let w = 0;
-  for (let i = 0; i < itemWidths.length; i++) {
-    itemPositions[i] = w + itemWidths[i] / 2 - center;
-    w += itemWidths[i];
-  }
-};
+let positions = [];
+let widths = [];
 
 const JellySelector = ({
+  backgroundColor,
+  defaultIndex,
   disableSelection,
   height,
-  initialCurrencyIndex,
   items,
   onSelect,
   renderItem,
 }) => {
   const { width: deviceWidth } = useDimensions();
-  const [selected, setSelected] = useState(initialCurrencyIndex);
+  const [selected, setSelected] = useState(defaultIndex);
   const [translateX, width] = useValues([0, 0], []);
 
   useEffect(() => {
-    itemWidths = [];
-    itemPositions = [];
+    widths = [];
+    positions = [];
 
     return () => {
       calculatedItemWidths = 0;
     };
   }, []);
 
-  const animateTransition = (index, skipAnimation) => {
-    const nextTranslateX =
-      itemPositions[index] + horizontalMargin * (index ? 0.5 : -0.5);
-    const nextWidth = itemWidths[index];
+  const animateTransition = useCallback(
+    (index, skipAnimation) => {
+      const nextWidth = widths[index];
+      const nextX = positions[index]; // + widths[index] / 2;
 
-    if (skipAnimation) {
-      translateX.setValue(nextTranslateX);
-      width.setValue(nextWidth);
-    } else {
-      springTo(translateX, nextTranslateX);
-      springTo(width, nextWidth);
-    }
-  };
+      if (skipAnimation) {
+        translateX.setValue(nextX);
+        width.setValue(nextWidth);
+      } else {
+        springTo(translateX, nextX);
+        springTo(width, nextWidth);
+      }
+    },
+    [translateX, width]
+  );
+
+  const handleItemLayout = useCallback(
+    (event, index) => {
+      console.log('happening', index, get(event, 'nativeEvent.layout'));
+
+      const itemWidth = get(event, 'nativeEvent.layout.width');
+      const itemX = get(event, 'nativeEvent.layout.x');
+
+      widths[index] = Math.floor(itemWidth);
+      positions[index] = Math.floor(itemWidth / 2 + itemX);
+
+      calculatedItemWidths++;
+
+      if (items.length === calculatedItemWidths) {
+        animateTransition(defaultIndex, true);
+      }
+    },
+    [animateTransition, defaultIndex, items.length]
+  );
+
+  const handleItemPress = useCallback(
+    (event, index) => {
+      console.log('ITEM PRESS', index);
+      if (!disableSelection) {
+        animateTransition(index);
+        setSelected(index);
+      }
+      onSelect(items[index]);
+    },
+    [animateTransition, disableSelection, items, onSelect]
+  );
+
+  console.log(' ');
+  console.log('👋️');
+  console.log('widths', widths);
+  console.log('positions', positions);
+  console.log(' ');
 
   return (
-    <Fragment>
-      <AnimatedShadowStack
-        borderRadius={height / 2}
-        height={height}
-        marginBottom={height * -1}
-        shadows={[
-          [0, 0, 9, colors.shadowGrey, 0.1],
-          [0, 5, 15, colors.shadowGrey, 0.12],
-          [0, 10, 30, colors.shadowGrey, 0.06],
-        ]}
-        style={{ transform: [{ translateX }], width }}
-        zIndex={10}
+    <Centered width="100%" height={32} paddingHorizontal={15}>
+      <JellySelectorIndicator
+        backgroundColor={backgroundColor}
+        translateX={translateX}
+        width={width}
       />
-      <RowWithMargins
-        justify="center"
-        margin={horizontalMargin}
-        maxWidth={maxWidth}
-        width={deviceWidth}
+      <Row
+        justify="space-between"
+        left={15}
+        position="absolute"
+        right={15}
+        top={0}
+        width="100%"
         zIndex={11}
       >
         {items.map((item, index) => (
-          <View
-            key={`jellyViewKey${item}`}
-            onLayout={({ nativeEvent }) => {
-              itemWidths[index] = nativeEvent.layout.width;
-              calculatedItemWidths++;
-              if (items.length === calculatedItemWidths) {
-                calculatePosition();
-                animateTransition(initialCurrencyIndex, true);
-              }
-            }}
-          >
-            <ButtonPressAnimation
-              enableHapticFeedback={false}
-              key={`jellyButtonKey${item}`}
-              onPress={() => {
-                if (!disableSelection) {
-                  animateTransition(index);
-                  setSelected(index);
-                }
-                onSelect(items[index]);
-              }}
-              scaleTo={0.94}
-              style={{ width: itemWidths[index] }}
-            >
-              {createElement(renderItem, {
-                isSelected: selected === index,
-                item,
-              })}
-            </ButtonPressAnimation>
-          </View>
+          <JellySelectorItem
+            index={index}
+            isSelected={selected === index}
+            item={item}
+            key={index}
+            onLayout={handleItemLayout}
+            onPress={handleItemPress}
+            renderItem={renderItem}
+            width={widths[index]}
+          />
         ))}
-      </RowWithMargins>
-    </Fragment>
+      </Row>
+    </Centered>
   );
 };
 
 JellySelector.propTypes = {
+  backgroundColor: PropTypes.string,
+  defaultIndex: PropTypes.number,
   disableSelection: PropTypes.bool,
   height: PropTypes.number.isRequired,
-  initialCurrencyIndex: PropTypes.number,
   items: PropTypes.array,
   onSelect: PropTypes.func,
   renderItem: PropTypes.func,
 };
 
-export default magicMemo(JellySelector, [
-  'height',
-  'initialCurrencyIndex',
-  'items',
-]);
+JellySelector.defaultProps = {
+  defaultIndex: 0,
+};
+
+export default JellySelector;
+
+
+// magicMemo(JellySelector, [
+//   'backgroundColor',
+//   'height',
+//   'defaultIndex',
+//   'items',
+// ]);

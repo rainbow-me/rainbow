@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 import { View } from 'react-primitives';
 import stylePropType from 'react-style-proptype';
 
-const FlexItem = ({ flex, grow, shrink, style, ...props }) => {
+const FlexItem = ({ flex, grow, shrink, style, ...props }, ref) => {
   const flexItemStyles = useMemo(
     () => ({
       flex:
@@ -17,7 +17,7 @@ const FlexItem = ({ flex, grow, shrink, style, ...props }) => {
     [flex, grow, shrink]
   );
 
-  return <View {...props} style={[flexItemStyles, style]} />;
+  return <View {...props} ref={ref} style={[flexItemStyles, style]} />;
 };
 
 FlexItem.propTypes = {
@@ -27,4 +27,4 @@ FlexItem.propTypes = {
   style: PropTypes.oneOfType([PropTypes.arrayOf(stylePropType), stylePropType]),
 };
 
-export default FlexItem;
+export default React.forwardRef(FlexItem);

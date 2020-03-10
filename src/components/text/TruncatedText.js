@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { createElement, memo } from 'react';
+import { createElement } from 'react';
 import Text from './Text';
 
 const TruncatedText = ({ component, ...props }) =>
@@ -17,4 +17,4 @@ TruncatedText.defaultProps = {
   numberOfLines: 1,
 };
 
-export default memo(TruncatedText);
+export default TruncatedText;

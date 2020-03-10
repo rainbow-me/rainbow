@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import styled from 'styled-components';
+import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import TouchableBackdrop from '../TouchableBackdrop';

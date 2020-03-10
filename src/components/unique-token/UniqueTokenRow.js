@@ -34,7 +34,7 @@ const UniqueTokenRow = React.memo(({ item }) => {
 
   const handleItemPress = useCallback(
     asset =>
-      navigate(Routes.EXPANDED_ASSET_SCREEN, {
+      navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset,
         isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
         type: 'unique_token',

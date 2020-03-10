@@ -365,6 +365,13 @@ export default class Chart extends PureComponent {
       this.reloadChart(this.props.currentDataSource);
     }
   }
+
+  componentWillUnmount = () => {
+    if (this.timeoutHandle) {
+      clearTimeout(this.timeoutHandle)
+    }
+  };
+
   touchX = new Value(0);
   lastTouchX = new Value(0);
 
@@ -396,7 +403,7 @@ export default class Chart extends PureComponent {
         chartData: data,
         isLoading: true,
       });
-      setTimeout(async () => {
+      this.timeoutHandle = setTimeout(async () => {
         const createdSVG = this.createAnimatedPath();
         await this.setState({
           animatedDividers: createdSVG.points,
@@ -406,8 +413,7 @@ export default class Chart extends PureComponent {
       });
     }
     if (currentInterval !== this.currentInterval) {
-      setTimeout(async () => {
-        // eslint-disable-next-line import/no-named-as-default-member
+      this.timeoutHandle = setTimeout(async () => {
         Animated.timing(
           this.chartAnimationValues[this.currentInterval],
           this._configDown

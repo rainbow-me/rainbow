@@ -1,18 +1,19 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useWindowDimensions } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
 import stylePropType from 'react-style-proptype';
+import { useDimensions } from '../../hooks';
 import { colors, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { InnerBorder, RowWithMargins } from '../layout';
-import { Text } from '../text';
+import { Emoji, Text } from '../text';
 
 const SheetActionButton = ({
   borderRadius,
   children,
   color,
+  emoji,
   icon,
   label,
   onPress,
@@ -20,7 +21,7 @@ const SheetActionButton = ({
   style,
   ...props
 }) => {
-  const dims = useWindowDimensions();
+  const { width: deviceWidth } = useDimensions();
 
   return (
     <ButtonPressAnimation
@@ -39,13 +40,14 @@ const SheetActionButton = ({
       {children || (
         <RowWithMargins
           align="center"
-          css={padding(9, 15, 12)}
-          height={dims.width >= 414 ? 44 : 40}
-          margin={0}
+          css={padding(9.5, 14, 11, 15)}
+          height={deviceWidth >= 414 ? 44 : 40}
+          margin={4}
           zIndex={1}
         >
-          <Icon color="white" name={icon} size={16} />
-          <Text color="white" size="lmedium" weight="semibold">
+          {emoji && <Emoji name={emoji} size="large" />}
+          {icon && <Icon color="white" name={icon} size={18} height={18} />}
+          <Text color="white" size="large" weight="semibold">
             {label}
           </Text>
         </RowWithMargins>
@@ -59,6 +61,7 @@ SheetActionButton.propTypes = {
   borderRadius: PropTypes.number,
   children: PropTypes.node,
   color: PropTypes.string,
+  emoji: PropTypes.string,
   onPress: PropTypes.func,
   shadows: PropTypes.arrayOf(PropTypes.array),
   style: stylePropType,

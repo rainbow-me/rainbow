@@ -5,8 +5,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import { pure } from 'recompact';
 import { colors, padding, position } from '../../styles';
 import { deviceUtils } from '../../utils';
-import ContextMenu from '../ContextMenu';
 import Divider from '../Divider';
+import { ContextMenu } from '../context-menu';
 import { Row } from '../layout';
 import { H1 } from '../text';
 

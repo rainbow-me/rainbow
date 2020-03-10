@@ -149,7 +149,7 @@ class SendHeader extends PureComponent {
     }
 
     Keyboard.dismiss();
-    navigation.navigate(Routes.OVERLAY_EXPANDED_ASSET_SCREEN, {
+    navigation.navigate(Routes.MODAL_SCREEN, {
       address: recipient,
       asset: {},
       color,

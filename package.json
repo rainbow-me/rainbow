@@ -117,7 +117,7 @@
     "react-native-device-info": "5.3.1",
     "react-native-dotenv": "^0.2.0",
     "react-native-emoji": "1.5.0",
-    "react-native-fast-image": "andrewschenk-linx/react-native-fast-image#fix-ios-xcode-proj",
+    "react-native-fast-image": "^8.1.5",
     "react-native-gesture-handler": "1.6.0",
     "react-native-haptic-feedback": "^1.8.2",
     "react-native-indicators": "0.17.0",

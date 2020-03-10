@@ -82,7 +82,7 @@ UniqueTokenCard.propTypes = {
     image_preview_url: PropTypes.string,
   }),
   onPress: PropTypes.func,
-  resizeMode: UniqueTokenImage.propTypes.resizeMode,
+  resizeMode: PropTypes.string,
   scaleTo: PropTypes.number,
   shadowStyle: stylePropType,
   size: PropTypes.number,

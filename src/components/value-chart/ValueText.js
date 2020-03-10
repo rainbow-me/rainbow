@@ -1,93 +1,94 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import { View } from 'react-native';
+import React, { Fragment, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
-import { colors, fonts } from '../../styles';
-import { deviceUtils } from '../../utils';
-import { TruncatedText } from '../text';
-import TrendIndicatorText from './TrendIndicatorText';
+import { colors } from '../../styles';
+import { Icon } from '../icons';
+import { RowWithMargins } from '../layout';
+import { Text, TruncatedText } from '../text';
 
-const HeadingTextStyles = {
-  color: colors.dark,
-  weight: 'bold',
-};
+const Subtitle = props => (
+  <TruncatedText
+    {...props}
+    color={colors.blueGreyLight}
+    letterSpacing="uppercase"
+    size="smedium"
+    weight="semibold"
+  />
+);
 
-const Title = styled(TruncatedText).attrs(HeadingTextStyles)`
-  font-size: 30px;
-  margin-bottom: 6.5px;
-`;
-
-const Header = styled(TruncatedText)`
-  font-size: ${fonts.size.smedium};
-  color: ${colors.alpha(colors.blueGreyDark, 0.5)};
-  font-weight: ${fonts.weight.semibold};
-`;
+const Title = props => <TruncatedText {...props} size="h2" weight="bold" />;
 
 const transition = (
   <Transition.Together>
     <Transition.Out
       durationMs={220}
-      type="slide-top"
-      propagation="right"
       interpolation="easeInOut"
+      propagation="right"
+      type="slide-top"
     />
     <Transition.In
-      durationMs={200}
       delayMs={120}
-      type="fade"
+      durationMs={200}
       propagation="left"
+      type="fade"
     />
   </Transition.Together>
 );
 
-class ValueText extends React.Component {
-  static propTypes = {
-    change: PropTypes.string,
-    direction: PropTypes.bool,
-    headerText: PropTypes.string,
-  };
+const ValueText = ({ change, direction, headerText, value }) => {
+  const transitionRef = useRef();
 
-  state = {
-    text: undefined,
-  };
-
-  updateValue = text => {
-    this.ref.animateNextTransition();
-    this.setState({ text });
-  };
-
-  render() {
-    return (
-      <View
-        style={{
-          height: 85,
-          paddingLeft: 15,
-          width: deviceUtils.dimensions.width,
-        }}
-      >
-        <Transitioning.View
-          ref={ref => (this.ref = ref)}
-          transition={transition}
-        >
-          {this.state.text ? (
-            <View>
-              <Header>{this.props.headerText}</Header>
-              <Title>${Number(this.state.text).toFixed(2)}</Title>
-              <TrendIndicatorText direction={this.props.direction}>
-                {Math.abs(Number(this.props.change))}%
-              </TrendIndicatorText>
-            </View>
-          ) : (
-            <>
-              <Header>Downloading data...</Header>
-              <Title>Loading...</Title>
-            </>
-          )}
-        </Transitioning.View>
-      </View>
-    );
+  if (transitionRef.current) {
+    transitionRef.current.animateNextTransition();
   }
-}
 
-export default ValueText;
+  return (
+    <Transitioning.View
+      height={85}
+      paddingLeft={15}
+      ref={transitionRef}
+      transition={transition}
+      width="100%"
+    >
+      {value ? (
+        <Fragment>
+          <Subtitle>{headerText}</Subtitle>
+          <Title>${value}</Title>
+          <RowWithMargins align="center" margin={2} marginTop={2}>
+            <Icon
+              color={direction ? colors.chartGreen : colors.red}
+              direction={direction ? 'right' : 'left'}
+              fat
+              height={15}
+              name="arrow"
+              width={13}
+            />
+            <Text
+              color={direction ? colors.chartGreen : colors.red}
+              letterSpacing="roundedTight"
+              lineHeight="loose"
+              size="large"
+              weight="bold"
+            >
+              {Math.abs(Number(change))}%
+            </Text>
+          </RowWithMargins>
+        </Fragment>
+      ) : (
+        <Fragment>
+          <Subtitle>Downloading data...</Subtitle>
+          <Title>Loading...</Title>
+        </Fragment>
+      )}
+    </Transitioning.View>
+  );
+};
+
+ValueText.propTypes = {
+  change: PropTypes.string,
+  direction: PropTypes.bool,
+  headerText: PropTypes.string,
+  value: PropTypes.number,
+};
+
+export default React.memo(ValueText);

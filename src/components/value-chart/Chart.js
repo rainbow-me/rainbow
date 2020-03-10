@@ -1,6 +1,7 @@
-import React, { Fragment, useMemo, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useMemo, useRef, useState,  } from 'react';
 import { greaterThan, toFixedDecimals } from '../../helpers/utilities';
 import { colors } from '../../styles';
+import { Column } from '../layout';
 import TimespanSelector from './TimespanSelector';
 import ValueChart from './ValueChart';
 import ValueText from './ValueText';
@@ -28,9 +29,11 @@ const colorsArray = [
   colors.purple,
 ];
 
+const chartStroke = { detailed: 1.5, simplified: 3 };
+
 let colorIndex = 0;
 
-export default function Chart({ change }) {
+const Chart = ({ change, ...props }) => {
   const textInputRef = useRef(null);
 
   const data2 = useMemo(() => {
@@ -64,32 +67,56 @@ export default function Chart({ change }) {
 
   const positiveChange = greaterThan(change, 0);
 
+  const valueRef = useRef(null);
+  const [curVal, setCurVal] = useState(0);
+
+  const handleValueUpdate = useCallback(v => {
+    // console.log('value update', v);
+    setCurVal(v);
+    // textInputRef.current = v;
+  }, [setCurVal]);
+
+// lol => {
+//           lol = valueRef.current;
+//           console.log('lol', lol);
+//           return lol;
+//         }
+
+  console.log('HAPPENIGN');
+
   return (
-    <Fragment>
+    <Column
+      overflow="hidden"
+      paddingBottom={21}
+      paddingTop={19}
+      width="100%"
+      {...props}
+    >
       <ValueText
-        headerText="PRICE"
-        direction={positiveChange}
         change={toFixedDecimals(change, 2)}
+        direction={positiveChange}
+        headerText="PRICE"
         ref={textInputRef}
+        value={curVal}
       />
       <ValueChart
-        mode="gesture-managed"
-        enableSelect
-        onValueUpdate={value => {
-          textInputRef.current.updateValue(value);
-        }}
-        currentDataSource={currentChart}
         amountOfPathPoints={100}
+        barColor={positiveChange ? colors.chartGreen : colors.red}
+        currentDataSource={currentChart}
         data={data2}
-        barColor={positiveChange ? colors.green : colors.red}
-        stroke={{ detailed: 1.5, simplified: 3 }}
+        enableSelect
         importantPointsIndexInterval={25}
+        mode="gesture-managed"
+        onValueUpdate={handleValueUpdate}
+        stroke={chartStroke}
       />
       <TimespanSelector
-        reloadChart={setCurrentChart}
-        color={positiveChange ? colors.green : colors.red}
+        color={positiveChange ? colors.chartGreen : colors.red}
         isLoading={false}
+        reloadChart={setCurrentChart}
       />
-    </Fragment>
+    </Column>
   );
-}
+};
+
+export default React.memo(Chart);
