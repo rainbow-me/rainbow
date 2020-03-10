@@ -8,6 +8,7 @@ import {
   WYRE_ENDPOINT,
 } from 'react-native-dotenv';
 import { add, feeCalculation } from '../helpers/utilities';
+import { sentryUtils } from '../utils';
 
 const WYRE_PERCENT_FEE = 4;
 const WYRE_FLAT_FEE_USD = 0.3;
@@ -82,9 +83,12 @@ export const requestWyreApplePay = (
     paymentOptions
   );
 
+  sentryUtils.addInfoBreadcrumb('Apple Pay - Show payment request');
+
   paymentRequest
     .show()
     .then(paymentResponse => {
+      sentryUtils.addInfoBreadcrumb('Apple Pay - Received payment response');
       processWyrePayment(
         paymentResponse,
         totalAmount,
@@ -94,12 +98,14 @@ export const requestWyreApplePay = (
         .then(orderId => {
           trackOrder(destCurrency, orderId, paymentResponse);
         })
-        .catch(() => {
+        .catch(error => {
+          captureException(error);
           paymentResponse.complete('failure');
         });
     })
     .catch(error => {
-      console.log('payment request error', error);
+      console.log('Apple Pay - payment request error', error);
+      captureException(error);
     });
 };
 

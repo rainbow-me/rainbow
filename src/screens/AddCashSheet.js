@@ -54,7 +54,7 @@ const AddCashSheet = () => {
   const onClearError = useCallback(() => setErrorIndex(null), []);
 
   const {
-    isPendingPurchase,
+    isPaymentComplete,
     onPurchase,
     orderCurrency,
     orderStatus,
@@ -83,7 +83,7 @@ const AddCashSheet = () => {
           <SheetHandle />
           <ColumnWithMargins margin={4} paddingTop={7}>
             <SheetTitle>Add Cash</SheetTitle>
-            {!isPendingPurchase && (
+            {!isPaymentComplete && (
               <SheetSubtitleCycler
                 animatedValue={errorAnimation}
                 errorIndex={errorIndex}
@@ -95,7 +95,7 @@ const AddCashSheet = () => {
           </ColumnWithMargins>
         </Column>
         <FlexItem width="100%">
-          {isPendingPurchase ? (
+          {isPaymentComplete ? (
             <AddCashStatus
               orderCurrency={orderCurrency}
               orderStatus={orderStatus}

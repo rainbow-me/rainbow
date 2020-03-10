@@ -1,3 +1,4 @@
+import { captureMessage } from '@sentry/react-native';
 import { isEmpty, toLower } from 'lodash';
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -21,7 +22,7 @@ import useTimeout from './useTimeout';
 export default function useWyreApplePay() {
   const { accountAddress, assets, network } = useAccountData();
 
-  const [isPendingPurchase, setPendingPurchase] = useState(false);
+  const [isPaymentComplete, setPaymentComplete] = useState(false);
   const [orderCurrency, setOrderCurrency] = useState(null);
   const [orderStatus, setOrderStatus] = useState(null);
   const [transferHash, setTransferHash] = useState(null);
@@ -32,13 +33,14 @@ export default function useWyreApplePay() {
   const [retryOrderStatusTimeout] = useTimeout();
   const [retryTransferHashTimeout] = useTimeout();
   const [retryTransferStatusTimeout] = useTimeout();
-  const [startPurchaseSuccessTimeout] = useTimeout();
+  const [startPaymentCompleteTimeout] = useTimeout();
 
-  const handlePurchaseSuccess = useCallback(() => {
+  const handlePaymentCallback = useCallback(() => {
     // In order to have the UI appear to be in-sync with the Apple Pay modal's
     // animation, we need to artificially delay before marking a purchase as pending.
-    startPurchaseSuccessTimeout(() => setPendingPurchase(true), 1500);
-  }, [startPurchaseSuccessTimeout]);
+    captureMessage('Wyre handle payment callback');
+    startPaymentCompleteTimeout(() => setPaymentComplete(true), 1500);
+  }, [startPaymentCompleteTimeout]);
 
   const getTransferHash = useCallback(
     async transferId => {
@@ -121,9 +123,9 @@ export default function useWyreApplePay() {
         getOrderStatus(destCurrency, orderId, paymentResponse);
 
       try {
-        if (!isPendingPurchase && isEmpty(orderId)) {
+        if (!isPaymentComplete && isEmpty(orderId)) {
           paymentResponse.complete('failure');
-          handlePurchaseSuccess();
+          handlePaymentCallback();
         }
 
         setOrderCurrency(destCurrency);
@@ -135,13 +137,13 @@ export default function useWyreApplePay() {
         const isPending = orderStatus === WYRE_ORDER_STATUS_TYPES.pending;
         const isSuccess = orderStatus === WYRE_ORDER_STATUS_TYPES.success;
 
-        if (!isPendingPurchase) {
+        if (!isPaymentComplete) {
           if (isFailed) {
             paymentResponse.complete('failed');
-            handlePurchaseSuccess();
+            handlePaymentCallback();
           } else if (isPending || isSuccess) {
             paymentResponse.complete('success');
-            handlePurchaseSuccess();
+            handlePaymentCallback();
           }
         }
 
@@ -155,9 +157,9 @@ export default function useWyreApplePay() {
       }
     },
     [
-      isPendingPurchase,
+      isPaymentComplete,
       getTransferHash,
-      handlePurchaseSuccess,
+      handlePaymentCallback,
       retryOrderStatusTimeout,
     ]
   );
@@ -175,7 +177,7 @@ export default function useWyreApplePay() {
   );
 
   return {
-    isPendingPurchase,
+    isPaymentComplete,
     onPurchase,
     orderCurrency,
     orderStatus,
