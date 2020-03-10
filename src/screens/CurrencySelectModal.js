@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
+//  withNavigation,
 import { useDispatch } from 'react-redux';
 import { compose, mapProps, shouldUpdate } from 'recompact';
 import {
@@ -67,7 +68,7 @@ const CurrencySelectModal = ({
     );
   }, [searchQuery]);
 
-  const isFocused = navigation.getParam('focused', false);
+  const isFocused = navigation.isFocused();
   const wasFocused = usePrevious(isFocused);
 
   useEffect(() => {
@@ -274,8 +275,8 @@ export default compose(
     type: get(navigation, 'state.params.type', null),
   })),
   shouldUpdate((props, nextProps) => {
-    const isFocused = props.navigation.getParam('focused', false);
-    const willBeFocused = nextProps.navigation.getParam('focused', false);
+    const isFocused = props.navigation.isFocused();
+    const willBeFocused = nextProps.navigation.isFocused();
 
     const isNewType = props.type !== nextProps.type;
 
