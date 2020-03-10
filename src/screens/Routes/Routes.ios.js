@@ -267,6 +267,7 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
 
       if (
         prevRouteName !== routeName &&
+        isNativeStackAvailable &&
         (nativeStackRoutes[prevRouteName] || nativeStackRoutes[routeName])
       ) {
         Navigation.handleAction(
