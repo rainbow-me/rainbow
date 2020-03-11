@@ -20,6 +20,7 @@ import { Icon } from '../icons';
 import { Centered, Row } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { GradientText, Text } from '../text';
+import AnimateNumber from '@bankify/react-native-animate-number';
 
 const sx = StyleSheet.create({
   text: {
@@ -30,41 +31,47 @@ const sx = StyleSheet.create({
   },
 });
 
-const initialTime = new Date().getTime();
 const MAX_DECIMALS_TO_SHOW = 10;
 const AVERAGE_BLOCK_TIME_MS = 15000;
-const REFRESH_RATE_MS = 50;
+const BLOCKS_IN_30_DAYS = (60000 / AVERAGE_BLOCK_TIME_MS) * 60 * 24 * 30;
+
 const STABLECOINS = ['DAI', 'SAI', 'USDC', 'USDT'];
-const FIXED_FONT_WIDTH = 9.8;
+
+const dollarFormatter = val => `$${val}`;
+
+const ANIMATE_NUMBER_INTERVAL = 10;
+const ANIMATE_NUMBER_STEPS = 10;
 
 const formatValue = (value, symbol) => {
-  if (!value) return;
-  if (STABLECOINS.indexOf(symbol) !== -1) {
-    return (
-      <GradientText
-        colors={['#000000', '#2CCC00']}
-        steps={[0.6, 1]}
-        end={{ x: 0.9, y: 0.5 }}
-        style={sx.text}
-      >
-        {`$${value}`}
-      </GradientText>
-    );
-  } else {
-    return (
-      <React.Fragment>
-        <GradientText
-          colors={['#000000', '#2CCC00']}
-          steps={[0.6, 1]}
-          end={{ x: 0.9, y: 0.5 }}
-          style={[sx.text, { minWidth: value.length * FIXED_FONT_WIDTH }]}
-        >
-          {`${value}`}
-        </GradientText>
-        <Text style={sx.text}>{symbol}</Text>
-      </React.Fragment>
-    );
+  if (!value || Number(value) === 0) return;
+  const isStablecoin = STABLECOINS.indexOf(symbol) !== -1;
+  const numberComponent = (
+    <GradientText
+      colors={['#000000', '#2CCC00']}
+      steps={[0.6, 1]}
+      end={{ x: 0.9, y: 0.5 }}
+      style={sx.text}
+    >
+      <AnimateNumber
+        interval={ANIMATE_NUMBER_INTERVAL}
+        steps={ANIMATE_NUMBER_STEPS}
+        timing="linear"
+        value={value}
+        formatValue={isStablecoin ? dollarFormatter : null}
+      />
+    </GradientText>
+  );
+
+  if (isStablecoin) {
+    return numberComponent;
   }
+
+  return (
+    <React.Fragment>
+      {numberComponent}
+      <Text style={sx.text}>{symbol}</Text>
+    </React.Fragment>
+  );
 };
 
 const SavingsListRow = ({
@@ -73,35 +80,51 @@ const SavingsListRow = ({
   supplyRate,
   underlying,
 }) => {
-  const [value, setValue] = useState(null);
+  const initialValue = Number(supplyBalanceUnderlying).toFixed(
+    MAX_DECIMALS_TO_SHOW
+  );
+  const [animating, setAnimating] = useState(false);
+  const [value, setValue] = useState(initialValue);
   const apy = useMemo(() => calculateAPY(supplyRate), [supplyRate]);
 
   useEffect(() => {
-    const getCurrentValue = () => {
-      const deltaMs = new Date().getTime() - initialTime;
-      const blocksSince = Number(deltaMs / AVERAGE_BLOCK_TIME_MS.toFixed(10));
+    const getFutureValue = () => {
       const valuePerBlock = calculateCompoundInterestPerBlock(
         supplyBalanceUnderlying,
         apy
       );
       const currentValue =
-        Number(supplyBalanceUnderlying) + valuePerBlock * blocksSince;
+        Number(initialValue) + valuePerBlock * BLOCKS_IN_30_DAYS;
 
       if (currentValue !== value) {
-        const valuePerSecond = (valuePerBlock / 15).toExponential();
+        //const valuePerSecond = (valuePerBlock / 15).toExponential();
         // The decimals to show are the exponent + 1
-        const exponent = valuePerSecond.split('-').pop();
-        const decimals = Math.min(Number(exponent) + 1, MAX_DECIMALS_TO_SHOW);
-        const formattedValue = currentValue.toFixed(decimals);
+        // const exponent = valuePerSecond.split('-').pop();
+        // const decimals = Math.min(Number(exponent) + 1, MAX_DECIMALS_TO_SHOW);
+        const formattedValue = currentValue.toFixed(MAX_DECIMALS_TO_SHOW);
+        console.log(
+          'UPDATING ASSET VAL',
+          underlying.symbol,
+          value,
+          formattedValue
+        );
+
         setValue(formattedValue);
+        setAnimating(true);
       }
-      setTimeout(() => getCurrentValue(), REFRESH_RATE_MS);
     };
 
-    if (!value) {
-      getCurrentValue();
+    if (!animating) {
+      getFutureValue();
     }
-  }, [apy, supplyBalanceUnderlying, value]);
+  }, [
+    animating,
+    apy,
+    initialValue,
+    supplyBalanceUnderlying,
+    underlying.symbol,
+    value,
+  ]);
 
   return (
     <Centered css={padding(9, 0, 3)} direction="column">
