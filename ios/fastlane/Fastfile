@@ -71,7 +71,7 @@ platform :ios do
     gym(
       scheme: "Rainbow",
       export_method: "app-store",
-      export_xcargs: "-allowProvisioningUpdates",
+      xcargs: "-allowProvisioningUpdates",
       include_symbols: true,
     )
     pilot(
