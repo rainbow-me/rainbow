@@ -4,6 +4,7 @@ import { createSelector } from 'reselect';
 import { sortAssetsByNativeAmountSelector } from '../hoc/assetSelectors';
 
 const uniswapPairsSelector = state => state.uniswap.pairs;
+const uniswapAllPairsSelector = state => state.uniswap.allPairs;
 
 const filterUniswapAssetsByAvailability = uniswapAssetAddresses => ({
   address,
@@ -17,21 +18,33 @@ const includeExchangeAddress = uniswapPairs => asset => ({
   ),
 });
 
-const withUniswapAssetsInWallet = (assetData, uniswapPairs) => {
+const withUniswapAssetsInWallet = (
+  assetData,
+  uniswapPairs,
+  uniswapAllPairs
+) => {
+  const uniswapCuratedAndGlobalPairs = {
+    ...uniswapPairs,
+    ...uniswapAllPairs,
+  };
   const { allAssets } = assetData;
   const availableAssets = filter(
     allAssets,
-    filterUniswapAssetsByAvailability(keys(uniswapPairs))
+    filterUniswapAssetsByAvailability(keys(uniswapCuratedAndGlobalPairs))
   );
   const uniswapAssetsInWallet = map(
     availableAssets,
-    includeExchangeAddress(uniswapPairs)
+    includeExchangeAddress(uniswapCuratedAndGlobalPairs)
   );
   return { uniswapAssetsInWallet };
 };
 
 const withUniswapAssetsInWalletSelector = createSelector(
-  [sortAssetsByNativeAmountSelector, uniswapPairsSelector],
+  [
+    sortAssetsByNativeAmountSelector,
+    uniswapPairsSelector,
+    uniswapAllPairsSelector,
+  ],
   withUniswapAssetsInWallet
 );
 
