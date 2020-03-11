@@ -12,6 +12,7 @@ import {
 import { OpacityToggler } from '../animations';
 import CoinDivider from './CoinDivider';
 import TransitionToggler from '../animations/TransitionToggler';
+import withCoinListEdited from '../../hoc/withCoinListEdited';
 
 class SmallBalancesWrapper extends PureComponent {
   static propTypes = {
@@ -90,6 +91,7 @@ export default compose(
   withOpenBalances,
   withSafeTimeout,
   withEditOptions,
+  withCoinListEdited,
   withProps(({ assets, nativeCurrencySymbol }) => {
     const balance = assets.reduce(reduceBalances, 0);
     return isNumber(balance)

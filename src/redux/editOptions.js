@@ -193,5 +193,6 @@ export default (state = INITIAL_STATE, action) =>
       draft.selectedCoins = [];
       draft.hiddenCoins = [];
       draft.pinnedCoins = [];
+      draft.isCoinListEdited = false;
     }
   });

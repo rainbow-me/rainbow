@@ -7,6 +7,7 @@ import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { colors } from '../../styles';
 import { Icon } from '../icons';
 import { withCoinRecentlyPinned } from '../../hoc';
+import withCoinListEdited from '../../hoc/withCoinListEdited';
 
 const CoinRowPaddingTop = 15;
 const CoinRowPaddingBottom = 7;
@@ -97,4 +98,6 @@ CoinCheckButton.propTypes = {
 
 CoinCheckButton.defaultProps = {};
 
-export default React.memo(compose(withCoinRecentlyPinned)(CoinCheckButton));
+export default React.memo(
+  compose(withCoinRecentlyPinned, withCoinListEdited)(CoinCheckButton)
+);

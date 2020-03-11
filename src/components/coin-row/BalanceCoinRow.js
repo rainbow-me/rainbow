@@ -18,6 +18,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import CoinCheckButton from './CoinCheckButton';
 import TransitionToggler from '../animations/TransitionToggler';
+import withCoinListEdited from '../../hoc/withCoinListEdited';
 
 const formatPercentageString = percentString =>
   percentString
@@ -124,6 +125,7 @@ export default compose(
   withAccountSettings,
   withOpenBalances,
   withEditOptions,
+  withCoinListEdited,
   withHandlers({
     onPress: ({ item, onPress }) => () => {
       if (onPress) {

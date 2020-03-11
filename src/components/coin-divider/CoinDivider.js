@@ -20,6 +20,7 @@ import CoinDividerButtonLabel from './CoinDividerButtonLabel';
 import { colors } from '../../styles';
 import { compose } from 'recompact';
 import { withCoinCurrentAction } from '../../hoc';
+import withCoinListEdited from '../../hoc/withCoinListEdited';
 
 const {
   block,
@@ -364,4 +365,4 @@ class CoinDivider extends PureComponent {
   }
 }
 
-export default compose(withCoinCurrentAction)(CoinDivider);
+export default compose(withCoinCurrentAction, withCoinListEdited)(CoinDivider);

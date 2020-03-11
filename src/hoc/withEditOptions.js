@@ -8,12 +8,8 @@ import {
   setPinnedCoins,
 } from '../redux/editOptions';
 
-const mapStateToProps = ({ editOptions: { isCoinListEdited } }) => ({
-  isCoinListEdited,
-});
-
 export default Component =>
-  connect(mapStateToProps, {
+  connect(() => ({}), {
     clearSelectedCoins,
     pushSelectedCoin,
     removeSelectedCoin,

@@ -11,6 +11,7 @@ import { padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import Highlight from '../Highlight';
 import { Column, Row } from '../layout';
+import withCoinListEdited from '../../hoc/withCoinListEdited';
 
 const CoinRowPaddingTop = 15;
 const CoinRowPaddingBottom = 7;
@@ -41,7 +42,8 @@ const CoinRowHighlight = withProps({
 const enhance = compose(
   withAccountSettings,
   withFabSendAction,
-  withEditOptions
+  withEditOptions,
+  withCoinListEdited
 );
 
 const CoinRow = enhance(
