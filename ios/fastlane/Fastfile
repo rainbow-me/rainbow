@@ -68,11 +68,20 @@ platform :ios do
       app_identifier: "me.rainbow",
       git_url: "git@github.com:rainbow-me/rainbow-code-signing.git"
     )
+    automatic_code_signing(
+      use_automatic_signing: false
+    )
     gym(
+      workspace: "Rainbow.xccworkspace",
       scheme: "Rainbow",
-      export_method: "app-store",
-      xcargs: "-allowProvisioningUpdates",
       include_symbols: true,
+      configuration: "Release",
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+            "me.rainbow" => "match AppStore me.rainbow"
+        }
+      }
     )
     pilot(
       app_identifier: "me.rainbow",
