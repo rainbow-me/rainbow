@@ -17,13 +17,7 @@ const QRCodeScannerCrosshair = ({ showText, text }) => (
   <Container>
     <Icon css={position.cover} name="crosshair" />
     {showText ? (
-      <Text
-        color="white"
-        letterSpacing="rounded"
-        lineHeight="none"
-        size="large"
-        weight="bold"
-      >
+      <Text color="white" lineHeight="none" size="large" weight="bold">
         {text}
       </Text>
     ) : null}

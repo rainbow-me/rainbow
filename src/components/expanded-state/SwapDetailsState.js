@@ -105,7 +105,7 @@ const SwapDetailsState = ({
                         />
                         <Text
                           align="right"
-                          color="#FE6DDE"
+                          color="#E540F1"
                           letterSpacing="roundedTight"
                           size="lmedium"
                           weight="semibold"

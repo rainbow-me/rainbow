@@ -52,7 +52,7 @@ const CoinRow = enhance(
         <Row align="center" justify="space-between">
           {topRowRender({ symbol, ...props })}
         </Row>
-        <Row align="center" justify="space-between">
+        <Row align="center" marginBottom={0.5} justify="space-between">
           {bottomRowRender({ symbol, ...props })}
         </Row>
       </Content>

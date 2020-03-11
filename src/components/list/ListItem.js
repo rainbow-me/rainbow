@@ -57,7 +57,7 @@ const ListItem = enhance(
           <TruncatedText
             flex={1}
             paddingRight={fonts.size.bmedium}
-            size="bmedium"
+            size="large"
           >
             {label}
           </TruncatedText>

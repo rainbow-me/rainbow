@@ -62,8 +62,8 @@ const UniswapInvestmentCard = enhance(
         color: colors.dark,
         emoji: 'unicorn_face',
         isCollapsible,
-        title: 'Uniswap',
-        titleColor: '#D040FF',
+        title: `ETH • ${tokenSymbol}`,
+        titleColor: '#E540F1',
         value: floor(parseFloat(totalBalanceAmount), 4)
           ? totalNativeDisplay
           : `< ${convertAmountToNativeDisplay(0.01, nativeCurrency)}`,
@@ -79,7 +79,7 @@ const UniswapInvestmentCard = enhance(
         onPress={onPressContainer}
         scaleTo={0.96}
       >
-        <ColumnWithMargins css={padding(8, 15, 15)} margin={6}>
+        <ColumnWithMargins css={padding(8, 15, 15)} margin={5}>
           <Row align="center" justify="space-between">
             <AssetLabel>Ethereum</AssetLabel>
             <AssetLabel>{tokenName}</AssetLabel>
