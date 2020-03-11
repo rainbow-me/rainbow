@@ -77,11 +77,6 @@ platform :ios do
       include_symbols: true,
       configuration: "Release",
       export_method: "app-store",
-      export_options: {
-        provisioningProfiles: {
-            "me.rainbow" => "match AppStore me.rainbow"
-        }
-      }
     )
     pilot(
       app_identifier: "me.rainbow",
