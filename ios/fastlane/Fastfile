@@ -72,7 +72,7 @@ platform :ios do
       use_automatic_signing: false
     )
     gym(
-      workspace: "Rainbow.xccworkspace",
+      workspace: "Rainbow.xcworkspace",
       scheme: "Rainbow",
       include_symbols: true,
       configuration: "Release",
