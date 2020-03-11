@@ -47,7 +47,7 @@ const LoadingState = ({ children }) => (
         style={{ paddingTop: 200, position: 'absolute', width: '100%' }}
       >
         <ActivityIndicator
-          color={colors.alpha(colors.blueGreyLight, 0.666)}
+          color={colors.alpha(colors.blueGreyDark, 0.4)}
           size={32}
         />
       </Centered>
@@ -123,7 +123,7 @@ export default class RecyclerActivityList extends PureComponent {
         } else if (type === ViewTypes.FOOTER) {
           dim.height = 19;
         } else if (type === ViewTypes.HEADER) {
-          dim.height = 35;
+          dim.height = 39;
         } else {
           dim.height = this.props.isLoading
             ? deviceUtils.dimensions.height
