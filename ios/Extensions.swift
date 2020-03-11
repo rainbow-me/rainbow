@@ -40,11 +40,16 @@ extension UIView {
   static func fromNib<T: UIView>() -> T {
     return Bundle(for: T.self).loadNibNamed(String(describing: T.self), owner: nil, options: nil)![0] as! T
   }
-  
+
   func animateTapStart(
     duration: TimeInterval = 0.1,
-    scale: CGFloat = 0.97
+    scale: CGFloat = 0.97,
+    useHaptic: String? = nil
   ) {
+    if useHaptic != nil {
+      generateHapticFeedback(useHaptic!)
+    }
+    
     let timingFunction = CAMediaTimingFunction(controlPoints: 0.25, 0.46, 0.45, 0.94)
     
     CATransaction.begin()
@@ -57,10 +62,7 @@ extension UIView {
     CATransaction.commit()
   }
   
-  func animateTapEnd(duration: TimeInterval = 0.1, useHaptic: String? = nil) {
-    if useHaptic != nil {
-      generateHapticFeedback(useHaptic!)
-    }
+  func animateTapEnd(duration: TimeInterval = 0.1) {
     let timingFunction = CAMediaTimingFunction(controlPoints: 0.25, 0.46, 0.45, 0.94)
     
     CATransaction.begin()
