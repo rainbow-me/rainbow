@@ -129,6 +129,7 @@ class ExchangeModal extends Component {
     inputNativePrice: null,
     isAssetApproved: true,
     isAuthorizing: false,
+    isFocused: false,
     isSufficientBalance: true,
     isUnlockingAsset: false,
     nativeAmount: null,
@@ -142,6 +143,11 @@ class ExchangeModal extends Component {
     tradeDetails: null,
   };
 
+  static getDerivedStateFromProps(props, state) {
+    const isFocused = props.navigation.isFocused();
+    return { ...state, isFocused };
+  }
+
   componentDidMount() {
     InteractionManager.runAfterInteractions(() => {
       this.props.navigation.setParams({ focused: true });
@@ -152,8 +158,8 @@ class ExchangeModal extends Component {
   }
 
   shouldComponentUpdate = (nextProps, nextState) => {
-    const isFocused = this.props.navigation.getParam('focused', false);
-    const willBeFocused = nextProps.navigation.getParam('focused', false);
+    const isFocused = this.state.isFocused;
+    const willBeFocused = nextState.isFocused;
 
     const isNewProps = isNewValueForObjectPaths(this.props, nextProps, [
       'inputReserve.token.address',

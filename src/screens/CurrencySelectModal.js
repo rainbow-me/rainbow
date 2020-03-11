@@ -5,7 +5,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { NavigationEvents, withNavigationFocus } from 'react-navigation';
+import {
+  NavigationEvents,
+  withNavigation,
+  withNavigationFocus,
+} from 'react-navigation';
 import { compose, mapProps } from 'recompact';
 import { withUniswapAssets } from '../hoc';
 import { position } from '../styles';
@@ -51,15 +55,21 @@ class CurrencySelectModal extends Component {
 
   state = {
     assetsToFavoriteQueue: {},
+    isFocused: false,
     searchQuery: '',
     searchQueryForSearch: '',
   };
 
+  static getDerivedStateFromProps(props, state) {
+    const isFocused = props.navigation.isFocused();
+    return { ...state, isFocused };
+  }
+
   shouldComponentUpdate = (nextProps, nextState) => {
     const isNewType = this.props.type !== nextProps.type;
 
-    const isFocused = this.props.navigation.getParam('focused', false);
-    const willBeFocused = nextProps.navigation.getParam('focused', false);
+    const isFocused = this.state.isFocused;
+    const willBeFocused = nextState.isFocused;
 
     if (!isFocused && willBeFocused) {
       this.handleWillFocus();
@@ -233,7 +243,7 @@ class CurrencySelectModal extends Component {
       }
     }
 
-    const isFocused = this.props.navigation.getParam('focused', false);
+    const isFocused = this.props.navigation.isFocused();
     const loading = !isInitialized;
 
     return (
@@ -295,6 +305,7 @@ class CurrencySelectModal extends Component {
 
 export default compose(
   withNavigationFocus,
+  withNavigation,
   withUniswapAssets,
   mapProps(
     ({
