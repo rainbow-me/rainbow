@@ -77,6 +77,9 @@ platform :ios do
       include_symbols: true,
       configuration: "Release",
       export_method: "app-store",
+      xcargs: {
+          :PROVISIONING_PROFILE_SPECIFIER => "match AppStore me.rainbow"
+      }
     )
     pilot(
       app_identifier: "me.rainbow",
