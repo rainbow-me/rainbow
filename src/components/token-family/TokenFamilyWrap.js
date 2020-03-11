@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { View } from 'react-primitives';
-import { compose } from 'recompact';
-import { withFabSendAction } from '../../hoc';
 import { colors } from '../../styles';
 import TokenFamilyHeader from './TokenFamilyHeader';
 
@@ -100,4 +98,4 @@ TokenFamilyWrap.propTypes = {
   title: PropTypes.string,
 };
 
-export default compose(withFabSendAction)(TokenFamilyWrap);
+export default TokenFamilyWrap;
