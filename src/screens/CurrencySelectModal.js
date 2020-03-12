@@ -1,15 +1,20 @@
-import { concat, get, isEmpty, map } from 'lodash';
-import PropTypes from 'prop-types';
 import { produce } from 'immer';
+import { concat, get, isEmpty, map } from 'lodash';
+import matchSorter from 'match-sorter';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { NavigationEvents, withNavigationFocus } from 'react-navigation';
+import {
+  NavigationEvents,
+  withNavigation,
+  withNavigationFocus,
+} from 'react-navigation';
 import { compose, mapProps } from 'recompact';
 import { withUniswapAssets } from '../hoc';
 import { position } from '../styles';
 import { isNewValueForObjectPaths } from '../utils';
-import { filterList } from '../utils/search';
+import { filterList, filterScams } from '../utils/search';
 import { interpolate } from '../components/animations';
 import {
   CurrencySelectionList,
@@ -46,26 +51,25 @@ class CurrencySelectModal extends Component {
     transitionPosition: PropTypes.object,
     type: PropTypes.oneOf(Object.keys(CurrencySelectionTypes)),
     uniswapAssetsInWallet: PropTypes.arrayOf(PropTypes.object),
-    uniswapGetAllExchanges: PropTypes.func,
   };
 
   state = {
     assetsToFavoriteQueue: {},
+    isFocused: false,
     searchQuery: '',
     searchQueryForSearch: '',
   };
 
-  componentDidMount() {
-    InteractionManager.runAfterInteractions(() => {
-      this.props.uniswapGetAllExchanges();
-    });
+  static getDerivedStateFromProps(props, state) {
+    const isFocused = props.navigation.isFocused();
+    return { ...state, isFocused };
   }
 
   shouldComponentUpdate = (nextProps, nextState) => {
     const isNewType = this.props.type !== nextProps.type;
 
-    const isFocused = this.props.navigation.getParam('focused', false);
-    const willBeFocused = nextProps.navigation.getParam('focused', false);
+    const isFocused = this.state.isFocused;
+    const willBeFocused = nextState.isFocused;
 
     if (!isFocused && willBeFocused) {
       this.handleWillFocus();
@@ -80,7 +84,7 @@ class CurrencySelectModal extends Component {
     const isNewProps = isNewValueForObjectPaths(
       { ...this.props, isFocused },
       { ...nextProps, isFocused: willBeFocused },
-      ['isFocused', 'type']
+      ['isFocused', 'type', 'globalHighLiquidityAssets']
     );
 
     const isNewState = isNewValueForObjectPaths(this.state, nextState, [
@@ -102,11 +106,18 @@ class CurrencySelectModal extends Component {
   };
 
   handleChangeSearchQuery = searchQuery => {
+    // When searching for the input field
+    // or clearing the search no need for debouncing
     this.setState({ searchQuery }, () => {
       if (this.debounceHandler) clearTimeout(this.debounceHandler);
-      this.debounceHandler = setTimeout(() => {
-        this.setState({ searchQueryForSearch: searchQuery });
-      }, 250);
+      this.debounceHandler = setTimeout(
+        () => {
+          this.setState({
+            searchQueryForSearch: searchQuery,
+          });
+        },
+        searchQuery === '' ? 1 : 250
+      );
     });
   };
 
@@ -159,10 +170,11 @@ class CurrencySelectModal extends Component {
 
   render = () => {
     const {
+      curatedAssets,
       favorites,
       globalHighLiquidityAssets,
       globalLowLiquidityAssets,
-      curatedAssets,
+      isInitialized,
       transitionPosition,
       type,
       uniswapAssetsInWallet,
@@ -180,10 +192,12 @@ class CurrencySelectModal extends Component {
       headerTitle = 'Swap';
       filteredList = headerlessSection(uniswapAssetsInWallet);
       if (!isEmpty(searchQueryForSearch)) {
-        filteredList = filterList(uniswapAssetsInWallet, searchQueryForSearch, [
-          'symbol',
-          'name',
-        ]);
+        filteredList = filterList(
+          uniswapAssetsInWallet,
+          searchQueryForSearch,
+          ['symbol', 'name'],
+          { threshold: matchSorter.rankings.CONTAINS }
+        );
         filteredList = headerlessSection(filteredList);
       }
     } else if (type === CurrencySelectionTypes.output) {
@@ -193,10 +207,12 @@ class CurrencySelectModal extends Component {
         const [filteredBest, filteredHigh, filteredLow] = map(
           [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
           section => {
-            return filterList(section, searchQueryForSearch, [
-              'symbol',
-              'name',
-            ]);
+            return filterList(
+              section,
+              searchQueryForSearch,
+              ['symbol', 'name'],
+              { threshold: matchSorter.rankings.CONTAINS }
+            );
           }
         );
 
@@ -205,15 +221,21 @@ class CurrencySelectModal extends Component {
         filteredBest.length &&
           filteredList.push({ data: filteredBest, title: '' });
 
-        filteredHigh.length &&
+        const filteredHighWithoutScams = filterScams(
+          filteredBest,
+          filteredHigh
+        );
+
+        filteredHighWithoutScams.length &&
           filteredList.push({
-            data: filteredHigh,
+            data: filteredHighWithoutScams,
             title: filteredBest.length ? 'MORE RESULTS' : '',
           });
 
-        filteredLow.length &&
+        const filteredLowWithoutScams = filterScams(filteredBest, filteredLow);
+        filteredLowWithoutScams.length &&
           filteredList.push({
-            data: filteredLow,
+            data: filteredLowWithoutScams,
             title: 'LOW LIQUIDITY',
           });
       } else {
@@ -221,7 +243,8 @@ class CurrencySelectModal extends Component {
       }
     }
 
-    const isFocused = this.props.navigation.getParam('focused', false);
+    const isFocused = this.props.navigation.isFocused();
+    const loading = !isInitialized;
 
     return (
       <KeyboardFixedOpenLayout>
@@ -269,6 +292,7 @@ class CurrencySelectModal extends Component {
                 showList={isFocused}
                 type={type}
                 query={searchQueryForSearch}
+                loading={loading}
               />
             </Column>
             <GestureBlocker type="bottom" />
@@ -281,6 +305,7 @@ class CurrencySelectModal extends Component {
 
 export default compose(
   withNavigationFocus,
+  withNavigation,
   withUniswapAssets,
   mapProps(
     ({
@@ -288,6 +313,7 @@ export default compose(
       favorites,
       globalHighLiquidityAssets,
       globalLowLiquidityAssets,
+      isInitialized,
       navigation,
       ...props
     }) => ({
@@ -296,6 +322,7 @@ export default compose(
       favorites: normalizeAssetItems(favorites),
       globalHighLiquidityAssets: normalizeAssetItems(globalHighLiquidityAssets),
       globalLowLiquidityAssets: normalizeAssetItems(globalLowLiquidityAssets),
+      isInitialized,
       navigation,
       transitionPosition: get(navigation, 'state.params.position'),
       type: get(navigation, 'state.params.type', null),

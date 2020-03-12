@@ -40,7 +40,10 @@ import { parseAccountAssets } from '../parsers/accounts';
 import { parseCompoundDeposits } from '../parsers/compound';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import parseTransactions from '../parsers/transactions';
-import { loweredTokenOverridesFallback } from '../references';
+import {
+  loweredTokenOverridesFallback,
+  shitcoinBlacklist,
+} from '../references';
 import { ethereumUtils, isLowerCaseMatch } from '../utils';
 import {
   uniswapRemovePendingApproval,
@@ -235,9 +238,19 @@ export const addressAssetsReceived = (
       item => item.uniqueId
     );
   }
+
   parsedAssets = parsedAssets.filter(
-    asset => !!Number(get(asset, 'balance.amount'))
+    asset =>
+      // Shitcoin filtering
+      shitcoinBlacklist[network].indexOf(get(asset, 'address')) === -1 &&
+      !!Number(get(asset, 'balance.amount'))
   );
+
+  saveAssets(parsedAssets, accountAddress, network);
+  dispatch({
+    payload: parsedAssets,
+    type: DATA_UPDATE_ASSETS,
+  });
   if (!change) {
     const missingPriceAssetAddresses = map(
       filter(parsedAssets, asset => isNil(asset.price)),
@@ -245,11 +258,6 @@ export const addressAssetsReceived = (
     );
     dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
   }
-  saveAssets(parsedAssets, accountAddress, network);
-  dispatch({
-    payload: parsedAssets,
-    type: DATA_UPDATE_ASSETS,
-  });
 };
 
 const subscribeToMissingPrices = addresses => (dispatch, getState) => {
@@ -360,7 +368,10 @@ export const dataUpdateTokenOverrides = tokenOverrides => dispatch =>
     type: DATA_UPDATE_TOKEN_OVERRIDES,
   });
 
-export const dataAddNewTransaction = txDetails => (dispatch, getState) =>
+export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
+  dispatch,
+  getState
+) =>
   new Promise((resolve, reject) => {
     const { transactions } = getState().data;
     const { accountAddress, nativeCurrency, network } = getState().settings;
@@ -372,7 +383,9 @@ export const dataAddNewTransaction = txDetails => (dispatch, getState) =>
           type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
         });
         saveLocalTransactions(_transactions, accountAddress, network);
-        dispatch(startPendingTransactionWatcher());
+        if (!disableTxnWatcher) {
+          dispatch(startPendingTransactionWatcher());
+        }
         resolve(true);
       })
       .catch(error => {

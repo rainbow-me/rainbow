@@ -111,16 +111,24 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
 
 export const uniswapGetAllExchanges = () => async (dispatch, getState) => {
   const { tokenOverrides } = getState().data;
+  const { network } = getState().settings;
   const { pairs } = getState().uniswap;
   try {
     const ignoredTokens = filter(keys(pairs), x => x !== 'eth');
-    const allPairs = await getAllExchanges(tokenOverrides, ignoredTokens);
+    const allPairs =
+      network === networkTypes.mainnet
+        ? await getAllExchanges(tokenOverrides, ignoredTokens)
+        : {};
     dispatch({
       payload: allPairs,
       type: UNISWAP_UPDATE_ALL_PAIRS,
     });
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
+  } catch (error) {
+    dispatch({
+      payload: { allPairs: {} },
+      type: UNISWAP_UPDATE_ALL_PAIRS,
+    });
+  }
 };
 
 export const uniswapPairsInit = () => async (dispatch, getState) => {
@@ -321,6 +329,7 @@ export const INITIAL_UNISWAP_STATE = {
   fetchingUniswap: false,
   inputCurrency: null,
   inputReserve: null,
+  isInitialized: false,
   liquidityTokens: [],
   loadingUniswap: false,
   outputCurrency: null,
@@ -341,6 +350,7 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         break;
       case UNISWAP_UPDATE_ALL_PAIRS:
         draft.allPairs = action.payload;
+        draft.isInitialized = true;
         break;
       case UNISWAP_UPDATE_PAIRS:
         draft.pairs = action.payload;
