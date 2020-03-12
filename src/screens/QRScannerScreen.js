@@ -35,7 +35,9 @@ const QRScannerScreen = ({
   const insets = useSafeArea();
   return (
     <View>
-      {discoverSheetAvailable && modalVisible ? <DiscoverSheet /> : null}
+      {discoverSheetAvailable ? (
+        <DiscoverSheet modalVisible={modalVisible} />
+      ) : null}
       <Centered
         {...position.sizeAsObject('100%')}
         backgroundColor={colors.appleBlue}

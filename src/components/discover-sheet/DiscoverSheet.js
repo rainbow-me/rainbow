@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
 import BottomSheet from 'reanimated-bottom-sheet';
 import Animated from 'react-native-reanimated';
 import { useIsFocused, useNavigation } from 'react-navigation-hooks';
-import { position } from '../../styles';
 import { BaseButton } from 'react-native-gesture-handler';
 
 const { SpringUtils } = Animated;
@@ -412,37 +411,50 @@ export function SlackBottomSheetContent() {
   );
 }
 
-function DiscoverSheet() {
+function DiscoverSheet({ modalVisible }) {
+  const [initialPosition, setInitialPosition] = useState('long');
+  const position = useRef({ x: 0, y: 0 });
+  const setPosition = useCallback(
+    ({ nativeEvent: { contentOffset } }) => (position.current = contentOffset),
+    []
+  );
   const isFocused = useIsFocused();
+  // noinspection JSConstructorReturnsPrimitive
   return Platform.OS === 'ios' ? (
-    <SlackBottomSheet
-      topOffset={100}
-      unmountAnimation={false}
-      initialAnimation={false}
-      presentGlobally={false}
-      backgroundOpacity={0}
-      allowsDragToDismiss={false}
-      allowsTapToDismiss={false}
-      isHapticFeedbackEnabled={false}
-      blocksBackgroundTouches={false}
-      interactsWithOuterScrollView
-      contentOffset={position.current}
-      scrollsToTopOnTapStatusBar={isFocused}
-    >
-      <View style={StyleSheet.absoluteFillObject}>
-        <ScrollView
-          style={{
-            backgroundColor: 'white',
-            marginBottom: -20,
-            opacity: 1,
-            paddingTop: 12,
-          }}
-          contentContainerStyle={{ marginBottom: 20 }}
-        >
-          <Lorem />
-        </ScrollView>
-      </View>
-    </SlackBottomSheet>
+    modalVisible ? (
+      <SlackBottomSheet
+        topOffset={100}
+        unmountAnimation={false}
+        initialAnimation={false}
+        presentGlobally={false}
+        backgroundOpacity={0}
+        allowsDragToDismiss={false}
+        allowsTapToDismiss={false}
+        isHapticFeedbackEnabled={false}
+        onWillTransition={({ type }) => setInitialPosition(type)}
+        blocksBackgroundTouches={false}
+        startFromShortForm={initialPosition === 'short'}
+        interactsWithOuterScrollView
+        scrollsToTopOnTapStatusBar={isFocused}
+      >
+        <View style={StyleSheet.absoluteFillObject}>
+          <ScrollView
+            style={{
+              backgroundColor: 'white',
+              marginBottom: -20,
+              opacity: 1,
+              paddingTop: 12,
+            }}
+            contentOffset={position.current}
+            onScrollEndDrag={setPosition}
+            onMomentumScrollEnd={setPosition}
+            contentContainerStyle={{ marginBottom: 20 }}
+          >
+            <Lorem />
+          </ScrollView>
+        </View>
+      </SlackBottomSheet>
+    ) : null
   ) : (
     <BottomSheet
       borderRadius={20}
