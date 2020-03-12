@@ -1,23 +1,26 @@
-import { concat, toLower } from 'lodash';
-import store from '../redux/store';
+import { concat } from 'lodash';
 import { rapsAddOrUpdate } from '../redux/raps';
-import { CDAI_CONTRACT, DAI_ADDRESS } from '../references';
+import store from '../redux/store';
+import { savingsAssetsListByUnderlying } from '../references';
 import { createNewAction, createNewRap, RapActionTypes } from './common';
 
 const createSwapAndDepositCompoundRap = ({
   inputCurrency,
-  outputCurrency, // DAI
+  outputCurrency,
   inputAmount,
   outputAmount,
   selectedGasPrice,
   callback,
 }) => {
-  const isInputDAI = toLower(inputCurrency.address) === toLower(DAI_ADDRESS);
+  const { network } = store.getState().settings;
+  const requiresSwap = !!outputCurrency;
   console.log('[swap and deposit] currencies', inputCurrency, outputCurrency);
   console.log('[swap and deposit] amounts', inputAmount, outputAmount);
   let actions = [];
-  if (!isInputDAI) {
-    console.log('[swap and deposit] inputCurr is not DAI');
+  if (requiresSwap) {
+    console.log(
+      '[swap and deposit] inputCurr is not the same as the output currency'
+    );
     // create unlock for swap rap
     const unlock = createNewAction(RapActionTypes.unlock, {
       assetToUnlock: inputCurrency,
@@ -39,19 +42,25 @@ const createSwapAndDepositCompoundRap = ({
     console.log('[swap and deposit] making swap func');
   }
 
-  // create unlock DAI on Compound rap
-  console.log('[swap and deposit] making unlock DAI func');
-  const unlockDAI = createNewAction(RapActionTypes.unlock, {
-    assetToUnlock: isInputDAI ? inputCurrency : outputCurrency,
-    contractAddress: CDAI_CONTRACT,
-  });
-  actions = concat(actions, unlockDAI);
+  const tokenToDeposit = requiresSwap ? outputCurrency : inputCurrency;
+  const cTokenContract =
+    savingsAssetsListByUnderlying[network][tokenToDeposit.address]
+      .contractAddress;
+  console.log('ctokencontract', cTokenContract);
 
-  console.log('[swap and deposit] making deposit func');
+  // create unlock token on Compound rap
+  console.log('[swap and deposit] making unlock token func');
+  const unlockTokenToDeposit = createNewAction(RapActionTypes.unlock, {
+    assetToUnlock: tokenToDeposit,
+    contractAddress: cTokenContract,
+  });
+  actions = concat(actions, unlockTokenToDeposit);
+
   // create a deposit rap
+  console.log('[swap and deposit] making deposit func');
   const deposit = createNewAction(RapActionTypes.depositCompound, {
-    inputAmount: isInputDAI ? inputAmount : outputAmount,
-    inputCurrency: isInputDAI ? inputCurrency : outputCurrency,
+    inputAmount: requiresSwap ? outputAmount : inputAmount,
+    inputCurrency: tokenToDeposit,
     selectedGasPrice,
   });
   actions = concat(actions, deposit);

@@ -6,8 +6,8 @@ import { dataAddNewTransaction } from '../redux/data';
 import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
 import { gasUtils } from '../utils';
-import { CDAI_CONTRACT } from '../references';
-import compoundCDAIABI from '../references/compound/compound-cdai-abi.json';
+import { savingsAssetsListByUnderlying } from '../references';
+import compoundCERC20ABI from '../references/compound/compound-cerc20-abi.json';
 
 const NOOP = () => undefined;
 
@@ -37,7 +37,7 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
   const { inputAmount, inputCurrency, selectedGasPrice } = parameters;
   const { dispatch } = store;
   const { gasPrices } = store.getState().gas;
-  const { accountAddress } = store.getState().settings;
+  const { accountAddress, network } = store.getState().settings;
   const rawInputAmount = convertAmountToRawAmount(
     inputAmount,
     inputCurrency.decimals
@@ -51,7 +51,16 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
   }
   console.log('[deposit] gas price', gasPrice);
 
-  const compound = new ethers.Contract(CDAI_CONTRACT, compoundCDAIABI, wallet);
+  const cTokenContract =
+    savingsAssetsListByUnderlying[network][inputCurrency.address]
+      .contractAddress;
+  console.log('ctokencontract', cTokenContract);
+
+  const compound = new ethers.Contract(
+    cTokenContract,
+    compoundCERC20ABI,
+    wallet
+  );
 
   const gasLimit = await estimateDepositGasLimit(
     compound,
