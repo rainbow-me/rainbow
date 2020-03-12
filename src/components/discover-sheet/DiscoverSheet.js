@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
 import BottomSheet from 'reanimated-bottom-sheet';
 import Animated from 'react-native-reanimated';
-import { useNavigation } from 'react-navigation-hooks';
+import { useIsFocused, useNavigation } from 'react-navigation-hooks';
 import { position } from '../../styles';
 import { BaseButton } from 'react-native-gesture-handler';
 
@@ -395,6 +395,7 @@ function renderInner() {
 }
 
 function DiscoverSheet() {
+  const isFocused = useIsFocused();
   return Platform.OS === 'ios' ? (
     <SlackBottomSheet
       topOffset={100}
@@ -408,6 +409,7 @@ function DiscoverSheet() {
       blocksBackgroundTouches={false}
       interactsWithOuterScrollView
       contentOffset={position.current}
+      scrollsToTopOnTapStatusBar={isFocused}
     >
       <View style={StyleSheet.absoluteFillObject}>
         <ScrollView
