@@ -114,6 +114,7 @@ const BalanceCoinRow = ({
   );
 
 BalanceCoinRow.propTypes = {
+  isFirstCoinRow: PropTypes.bool,
   item: PropTypes.object,
   nativeCurrency: PropTypes.string.isRequired,
   onPress: PropTypes.func,
