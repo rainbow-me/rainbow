@@ -163,7 +163,7 @@ const sheetStyleInterpolator = ({
       transform: [{ translateY }],
     },
     overlayStyle: {
-      backgroundColor: 'rgb(0, 0, 0)',
+      backgroundColor: colors.black,
       opacity: backgroundOpacity,
     },
   };
