@@ -1,4 +1,5 @@
 const calculateAPY = supplyRate => {
+  if (!supplyRate) return (0).toFixed(2);
   const approxBlockTime = 15;
   let blocksPerYear = (60 / approxBlockTime) * 60 * 24 * 365;
   const periodicRate = (supplyRate * 1) / blocksPerYear;
