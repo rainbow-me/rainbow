@@ -75,20 +75,46 @@ TopRow.propTypes = {
   nativeCurrencySymbol: PropTypes.string,
 };
 
-const BalanceCoinRow = ({ item, onPress, onPressSend, ...props }) => (
-  <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
-    <CoinRow
-      onPress={onPress}
-      onPressSend={onPressSend}
-      {...item}
-      {...props}
-      bottomRowRender={BottomRow}
-      topRowRender={TopRow}
-    />
-  </ButtonPressAnimation>
-);
+const BalanceCoinRow = ({
+  isFirstCoinRow,
+  item,
+  onPress,
+  onPressSend,
+  ...props
+}) =>
+  isFirstCoinRow ? (
+    <FlexItem
+      flex={1}
+      style={{
+        justifyContent: 'flex-end',
+      }}
+    >
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+        <CoinRow
+          onPress={onPress}
+          onPressSend={onPressSend}
+          {...item}
+          {...props}
+          bottomRowRender={BottomRow}
+          topRowRender={TopRow}
+        />
+      </ButtonPressAnimation>
+    </FlexItem>
+  ) : (
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+      <CoinRow
+        onPress={onPress}
+        onPressSend={onPressSend}
+        {...item}
+        {...props}
+        bottomRowRender={BottomRow}
+        topRowRender={TopRow}
+      />
+    </ButtonPressAnimation>
+  );
 
 BalanceCoinRow.propTypes = {
+  isFirstCoinRow: PropTypes.bool,
   item: PropTypes.object,
   nativeCurrency: PropTypes.string.isRequired,
   onPress: PropTypes.func,
