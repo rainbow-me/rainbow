@@ -236,7 +236,9 @@ const nativeStackRoutes = {
   SendSheet: {
     navigationOptions: {
       ...omit(sheetPreset, 'gestureResponseDistance'),
-      onTransitionStart: () => null,
+      onTransitionStart: () => {
+        onTransitionStart();
+      },
     },
     screen: SendSheetWithData,
   },
