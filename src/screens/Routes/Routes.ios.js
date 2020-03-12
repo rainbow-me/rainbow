@@ -170,7 +170,6 @@ const MainNavigator = createStackNavigator(
       },
       screen: WalletConnectConfirmationModal,
     },
-    ...(isNativeStackAvailable ? {} : sendFlowRoutes),
   },
   {
     defaultNavigationOptions: {
@@ -230,13 +229,14 @@ const nativeStackRoutes = {
     screen: ImportSeedPhraseSheetWithData,
   },
   MainNavigator,
+  OverlayExpandedAssetScreen: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ExpandedAssetScreenWithData,
+  },
   SendSheet: {
     navigationOptions: {
       ...omit(sheetPreset, 'gestureResponseDistance'),
-      onTransitionStart: props => {
-        onTransitionStart(props);
-        sheetPreset.onTransitionStart(props);
-      },
+      onTransitionStart: () => null,
     },
     screen: SendSheetWithData,
   },
