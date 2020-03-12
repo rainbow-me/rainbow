@@ -130,7 +130,7 @@ const expandStyleInterpolator = targetOpacity => ({
       transform: [{ translateY }],
     },
     overlayStyle: {
-      backgroundColor: 'rgb(15, 15, 17)',
+      backgroundColor: colors.blueGreyDarker,
       opacity: backgroundOpacity,
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
