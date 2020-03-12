@@ -11,6 +11,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { ExchangeModalNavigator, Navigation } from '../../navigation';
 import { updateTransitionProps } from '../../redux/navigation';
+import { setModalVisible } from '../../redux/modal';
 import store from '../../redux/store';
 import { deviceUtils, sentryUtils } from '../../utils';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
@@ -33,6 +34,8 @@ import {
   backgroundPreset,
   overlayExpandedPreset,
 } from '../../navigation/transitions/effects';
+import { SlackBottomSheetContent } from '../../components/discover-sheet/DiscoverSheet';
+import createBottomSheetNavigator from '../../navigation/createBottomSheetNavigator';
 
 enableScreens();
 
@@ -218,6 +221,7 @@ const NativeStack = createNativeStackNavigator(
     mode: 'modal',
   }
 );
+
 const nativeStackRoutes = {
   ImportSeedPhraseSheet: {
     navigationOptions: {
@@ -254,7 +258,17 @@ const NativeStackFallback = createStackNavigator(nativeStackRoutes, {
 
 const Stack = isNativeStackAvailable ? NativeStack : NativeStackFallback;
 
-const AppContainer = createAppContainer(Stack);
+const BottomSheetNavigator = createBottomSheetNavigator(
+  {
+    BottomSheetSample: SlackBottomSheetContent,
+    Stack,
+  },
+  {
+    initialRouteName: 'Stack',
+  }
+);
+
+const AppContainer = createAppContainer(BottomSheetNavigator);
 
 // eslint-disable-next-line react/display-name
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
@@ -340,6 +354,14 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
           //   })
           // );
         }
+
+        store.dispatch(
+          setModalVisible(
+            routeName === 'WalletScreen' ||
+              routeName === 'QRScannerScreen' ||
+              routeName === 'ProfileScreen'
+          )
+        );
 
         if (routeName === 'ExpandedAssetScreen') {
           const { asset, type } = params;

@@ -18,6 +18,7 @@ import {
 import { addressUtils } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
 import withStatusBarStyle from '../hoc/withStatusBarStyle';
+import { connect } from 'react-redux';
 
 class QRScannerScreenWithData extends Component {
   static propTypes = {
@@ -129,11 +130,17 @@ class QRScannerScreenWithData extends Component {
     );
   }
 }
+
+const mapStateToProps = ({ modal: { visible: modalVisible } }) => ({
+  modalVisible,
+});
+
 export default compose(
   withNavigationFocus,
   withWalletConnectOnSessionRequest,
   withAccountAddress,
   withSafeTimeout,
   withWalletConnectConnections,
+  connect(mapStateToProps),
   withStatusBarStyle('light-content')
 )(QRScannerScreenWithData);

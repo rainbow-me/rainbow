@@ -394,6 +394,24 @@ function renderInner() {
   );
 }
 
+export function SlackBottomSheetContent() {
+  return (
+    <View style={StyleSheet.absoluteFillObject}>
+      <ScrollView
+        style={{
+          backgroundColor: 'white',
+          marginBottom: -20,
+          opacity: 1,
+          paddingTop: 12,
+        }}
+        contentContainerStyle={{ marginBottom: 20 }}
+      >
+        <Lorem />
+      </ScrollView>
+    </View>
+  );
+}
+
 function DiscoverSheet() {
   const isFocused = useIsFocused();
   return Platform.OS === 'ios' ? (

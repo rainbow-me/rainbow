@@ -95,7 +95,10 @@ export default compose(
   withTransitionProps,
   withHandlers({
     onPress: ({ navigation, transitionProps }) => () => {
-      performSafely(() => navigation.navigate('SendSheet'), transitionProps);
+      performSafely(
+        () => navigation.navigate('BottomSheetSample'),
+        transitionProps
+      );
     },
   }),
   onlyUpdateForKeys(['disabled', 'sections'])
