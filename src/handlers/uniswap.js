@@ -23,9 +23,7 @@ import {
   multiply,
 } from '../helpers/utilities';
 import { loadWallet } from '../model/wallet';
-import exchangeABI from '../references/uniswap-exchange-abi.json';
-import uniswapTestnetAssets from '../references/uniswap-pairs-testnet.json';
-import erc20ABI from '../references/erc20-abi.json';
+import { erc20ABI, exchangeABI, uniswapTestnetAssets } from '../references';
 import { toHex, web3Provider } from './web3';
 
 const uniswapPairsEndpoint = axios.create({
