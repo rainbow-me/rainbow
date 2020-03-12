@@ -106,6 +106,35 @@ const hasRowChanged = (r1, r2) => {
   const isCollectiblesRow = has(r1, 'item.tokens') && has(r2, 'item.tokens');
   let isNewAssetBalance = false;
 
+  let savingsSectionChanged = false;
+  if (
+    r1.item &&
+    r2.item &&
+    r1.item.assets &&
+    r2.item.assets &&
+    r1.item.savingsContainer &&
+    r2.item.savingsContainer
+  ) {
+    if (r1.item.assets.length !== r2.item.assets.length) {
+      savingsSectionChanged = true;
+    } else if (r2.item.assets.length > 0) {
+      for (let i = 0; i < r2.item.assets.length; i++) {
+        if (r1.item.assets[i].supplyRate) {
+          if (r1.item.assets[i].supplyRate !== r2.item.assets[i].supplyRate) {
+            savingsSectionChanged = true;
+          }
+        } else if (r1.item.assets[i].supplyBalanceUnderlying) {
+          if (
+            r1.item.assets[i].supplyBalanceUnderlying !==
+            r2.item.assets[i].supplyBalanceUnderlying
+          ) {
+            savingsSectionChanged = true;
+          }
+        }
+      }
+    }
+  }
+
   if (!isCollectiblesRow) {
     isNewAssetBalance = isNewValueForPath(
       r1,
@@ -148,7 +177,9 @@ const hasRowChanged = (r1, r2) => {
     isNewTotalItems ||
     isNewTotalValue ||
     isNewUniswapPercentageOwned ||
-    isNewUniswapToken
+    isNewUniswapToken ||
+    savingsSectionChanged ||
+    smallBalancedChanged
   );
 };
 
