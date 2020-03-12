@@ -8,7 +8,9 @@ import { compose, withHandlers } from 'recompact';
 import {
   calculateAPY,
   calculateCompoundInterestPerBlock,
+  APROX_BLOCK_TIME,
 } from '../../helpers/savings';
+import { add, multiply } from '../../helpers/utilities';
 import { colors, padding, position, fonts } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation, AnimatedNumber } from '../animations';
@@ -17,10 +19,9 @@ import { Icon } from '../icons';
 import { Centered, Row } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { GradientText, Text } from '../text';
-import { add, multiply } from '../../helpers/utilities';
 
 const MAX_DECIMALS_TO_SHOW = 10;
-const AVERAGE_BLOCK_TIME_MS = 15000;
+const AVERAGE_BLOCK_TIME_MS = APROX_BLOCK_TIME * 1000;
 const BLOCKS_IN_1_DAY = (60000 / AVERAGE_BLOCK_TIME_MS) * 60 * 24 * 1000;
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
 const ANIMATE_NUMBER_INTERVAL = 30;

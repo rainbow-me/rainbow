@@ -97,7 +97,10 @@ const SavingsSheet = () => {
             )}
           </FloatingEmojis>
           <Divider zIndex={0} />
-          <SavingsPredictionStepper />
+          <SavingsPredictionStepper
+            balance={supplyBalanceUnderlying}
+            interestRate={supplyRate}
+          />
         </Fragment>
       )}
     </Sheet>

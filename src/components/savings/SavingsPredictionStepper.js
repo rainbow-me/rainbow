@@ -4,32 +4,27 @@ import { colors, fonts, padding } from '../../styles';
 import { AnimatedNumber, ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
+import { calculateEarningsInDays } from '../../helpers/savings';
 
 /* eslint-disable sort-keys */
 const steps = {
   Monthly: {
-    number: '3.96',
-    multiplier: 1,
+    days: 30,
   },
   Yearly: {
-    number: '47.48',
-    multiplier: 1,
+    days: 365,
   },
   '5-Year': {
-    number: '331.28',
-    multiplier: 1,
+    days: 365 * 5,
   },
   '10-Year': {
-    number: '923.50',
-    multiplier: 1,
+    days: 365 * 10,
   },
   '20-Year': {
-    number: '3874.76',
-    multiplier: 1,
+    days: 365 * 20,
   },
   '50-Year': {
-    number: '140187.19',
-    multiplier: 1,
+    days: 365 * 50,
   },
 };
 /* eslint-enable sort-keys */
@@ -39,16 +34,19 @@ const predictionFormatter = value =>
     .toFixed(2)
     .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 
-// eslint-disable-next-line no-unused-vars
 const SavingsPredictionStepper = ({ balance, interestRate }) => {
+  console.log({ balance, interestRate });
   const [step, setStep] = useState(0);
   const incrementStep = useCallback(
     p => (p + 1 === Object.keys(steps).length ? 0 : p + 1),
     []
   );
 
-  const NUMBER = Number(Object.values(steps)[step].number);
-  console.log('NUMBER', NUMBER);
+  const NUMBER = calculateEarningsInDays(
+    balance,
+    interestRate,
+    Object.values(steps)[step].days
+  );
 
   return (
     <ButtonPressAnimation
