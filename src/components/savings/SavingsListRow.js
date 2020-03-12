@@ -1,65 +1,69 @@
+import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
 import React, { useState, useMemo, useEffect } from 'react';
-import { compose, withHandlers } from 'recompact';
 import { StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { withNavigation } from 'react-navigation';
-// import {
-//   convertAmountToPercentageDisplay,
-//   multiply,
-// } from '../../helpers/utilities';
+import { compose, withHandlers } from 'recompact';
 import {
   calculateAPY,
   calculateCompoundInterestPerBlock,
 } from '../../helpers/savings';
 import { colors, padding, position, fonts } from '../../styles';
 import { deviceUtils } from '../../utils';
-import { ButtonPressAnimation } from '../animations';
+import { ButtonPressAnimation, AnimatedNumber } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Icon } from '../icons';
 import { Centered, Row } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { GradientText, Text } from '../text';
-import AnimateNumber from '@bankify/react-native-animate-number';
+import { add, multiply } from '../../helpers/utilities';
+
+const MAX_DECIMALS_TO_SHOW = 10;
+const AVERAGE_BLOCK_TIME_MS = 15000;
+const BLOCKS_IN_1_DAY = (60000 / AVERAGE_BLOCK_TIME_MS) * 60 * 24 * 1000;
+const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
+const ANIMATE_NUMBER_INTERVAL = 30;
+const STABLECOINS = ['DAI', 'SAI', 'USDC', 'USDT'];
 
 const sx = StyleSheet.create({
   text: {
     color: colors.blueGreyDark,
     fontSize: 16,
+    fontVariant: ['tabular-nums'],
     fontWeight: fonts.weight.semibold,
     marginRight: 5,
   },
 });
 
-const MAX_DECIMALS_TO_SHOW = 10;
-const AVERAGE_BLOCK_TIME_MS = 15000;
-const BLOCKS_IN_30_DAYS = (60000 / AVERAGE_BLOCK_TIME_MS) * 60 * 24 * 30;
+const animatedNumberFormatterWithDolllars = val =>
+  `$${parseFloat(val).toFixed(MAX_DECIMALS_TO_SHOW)}`;
+const animatedNumberFormatter = val =>
+  `${parseFloat(val).toFixed(MAX_DECIMALS_TO_SHOW)}`;
 
-const STABLECOINS = ['DAI', 'SAI', 'USDC', 'USDT'];
-
-const dollarFormatter = val => `$${val}`;
-
-const ANIMATE_NUMBER_INTERVAL = 10;
-const ANIMATE_NUMBER_STEPS = 10;
-
-const formatValue = (value, symbol) => {
-  if (!value || Number(value) === 0) return;
+const renderAnimatedNumber = (value, steps, symbol) => {
   const isStablecoin = STABLECOINS.indexOf(symbol) !== -1;
   const numberComponent = (
-    <GradientText
-      colors={['#000000', '#2CCC00']}
-      steps={[0.6, 1]}
-      end={{ x: 0.9, y: 0.5 }}
+    // <GradientText
+    //   colors={['#000000', '#2CCC00']}
+    //   steps={[0.6, 1]}
+    //   end={{ x: 0.9, y: 0.5 }}
+    //   style={sx.text}
+    //   renderer={
+    <AnimatedNumber
+      disableTabularNums
       style={sx.text}
-    >
-      <AnimateNumber
-        interval={ANIMATE_NUMBER_INTERVAL}
-        steps={ANIMATE_NUMBER_STEPS}
-        timing="linear"
-        value={value}
-        formatValue={isStablecoin ? dollarFormatter : null}
-      />
-    </GradientText>
+      formatter={
+        isStablecoin
+          ? animatedNumberFormatterWithDolllars
+          : animatedNumberFormatter
+      }
+      steps={steps}
+      time={ANIMATE_NUMBER_INTERVAL}
+      value={Number(value)}
+    />
+    // }
+    // />
   );
 
   if (isStablecoin) {
@@ -80,51 +84,32 @@ const SavingsListRow = ({
   supplyRate,
   underlying,
 }) => {
-  const initialValue = Number(supplyBalanceUnderlying).toFixed(
-    MAX_DECIMALS_TO_SHOW
-  );
-  const [animating, setAnimating] = useState(false);
+  const initialValue = BigNumber(supplyBalanceUnderlying);
   const [value, setValue] = useState(initialValue);
+  const [steps, setSteps] = useState(0);
   const apy = useMemo(() => calculateAPY(supplyRate), [supplyRate]);
 
   useEffect(() => {
     const getFutureValue = () => {
+      if (!supplyBalanceUnderlying) return;
       const valuePerBlock = calculateCompoundInterestPerBlock(
         supplyBalanceUnderlying,
         apy
       );
-      const currentValue =
-        Number(initialValue) + valuePerBlock * BLOCKS_IN_30_DAYS;
+      const futureValue = BigNumber(
+        add(initialValue, multiply(valuePerBlock, BLOCKS_IN_1_DAY))
+      );
 
-      if (currentValue !== value) {
-        //const valuePerSecond = (valuePerBlock / 15).toExponential();
-        // The decimals to show are the exponent + 1
-        // const exponent = valuePerSecond.split('-').pop();
-        // const decimals = Math.min(Number(exponent) + 1, MAX_DECIMALS_TO_SHOW);
-        const formattedValue = currentValue.toFixed(MAX_DECIMALS_TO_SHOW);
-        console.log(
-          'UPDATING ASSET VAL',
-          underlying.symbol,
-          value,
-          formattedValue
-        );
-
-        setValue(formattedValue);
-        setAnimating(true);
+      if (!futureValue.eq(value)) {
+        const steps = MS_IN_1_DAY / ANIMATE_NUMBER_INTERVAL;
+        setValue(futureValue);
+        setSteps(steps);
       }
     };
+    getFutureValue();
+  }, [apy, initialValue, supplyBalanceUnderlying, underlying, value]);
 
-    if (!animating) {
-      getFutureValue();
-    }
-  }, [
-    animating,
-    apy,
-    initialValue,
-    supplyBalanceUnderlying,
-    underlying.symbol,
-    value,
-  ]);
+  const displayValue = value.toFixed(MAX_DECIMALS_TO_SHOW);
 
   return (
     <Centered css={padding(9, 0, 3)} direction="column">
@@ -162,8 +147,8 @@ const SavingsListRow = ({
                   style={{ marginRight: 7 }}
                 />
               ) : null}
-              {supplyBalanceUnderlying ? (
-                formatValue(value, underlying.symbol)
+              {supplyBalanceUnderlying && !isNaN(displayValue) ? (
+                renderAnimatedNumber(displayValue, steps, underlying.symbol)
               ) : (
                 <>
                   <Text

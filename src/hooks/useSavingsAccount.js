@@ -69,8 +69,6 @@ export default function useSavingsAccount(pollInterval = 0) {
 
     accountTokens = orderBy(accountTokens, ['ethPrice'], ['desc']);
 
-    console.log('Account tokens', accountTokens);
-
     const accountHasCDAI = find(
       accountTokens,
       token => token.cTokenAddress === CDAI_CONTRACT
@@ -83,7 +81,6 @@ export default function useSavingsAccount(pollInterval = 0) {
       };
       accountTokens.push({ ...DAIMarketData });
     }
-
     return accountTokens;
   }, [marketsQuery, tokenOverrides, tokenQuery]);
 
