@@ -1,7 +1,7 @@
 import { mapKeys, mapValues, toLower } from 'lodash';
 import tokenOverridesFallback from './token-overrides.json';
 import uniswapAssetsFallback from './uniswap-pairs.json';
-import savingAssets from './saving-assets.json';
+import savingAssets from './compound/saving-assets.json';
 
 export const CDAI_CONTRACT = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
 export const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';
@@ -38,6 +38,18 @@ export const cleanUniswapAssetsFallback = mapValues(
 );
 
 export const savingsAssetsList = savingAssets;
+
+export const savingsAssetsListByUnderlying = mapValues(
+  savingAssets,
+  assetsByNetwork =>
+    mapKeys(
+      mapValues(assetsByNetwork, (assetByContract, contractAddress) => ({
+        ...assetByContract,
+        contractAddress,
+      })),
+      value => value.address
+    )
+);
 
 export const shitcoinBlacklist = {
   goerli: [],

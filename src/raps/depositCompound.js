@@ -7,7 +7,7 @@ import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
 import { gasUtils } from '../utils';
 import { CDAI_CONTRACT } from '../references';
-import compoundCDAIABI from '../references/compound-cdai-abi.json';
+import compoundCDAIABI from '../references/compound/compound-cdai-abi.json';
 
 const NOOP = () => undefined;
 
