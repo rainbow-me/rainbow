@@ -31,12 +31,18 @@ class QRScannerScreenWithData extends Component {
   state = {
     enableScanning: true,
     isCameraAuthorized: true,
+    isFocused: false,
     sheetHeight: 240,
   };
 
+  static getDerivedStateFromProps(props, state) {
+    const isFocused = props.navigation.isFocused();
+    return { ...state, isFocused };
+  }
+
   componentDidUpdate = (prevProps, prevState) => {
-    const wasFocused = prevProps.navigation.getParam('focused', false);
-    const isFocused = this.props.navigation.getParam('focused', false);
+    const wasFocused = prevState.isFocused;
+    const isFocused = this.state.isFocused;
 
     if (isFocused && !wasFocused && Platform.OS === 'ios') {
       request(PERMISSIONS.IOS.CAMERA).then(permission => {
@@ -108,22 +114,20 @@ class QRScannerScreenWithData extends Component {
     });
   };
 
-  render = () => {
-    const isFocused = this.props.navigation.getParam('focused', false);
-
+  render() {
     return (
       <QRScannerScreen
         {...this.props}
         {...this.state}
-        isFocused={isFocused}
-        enableScanning={this.state.enableScanning && isFocused}
+        isFocused={this.state.isFocused}
+        enableScanning={this.state.enableScanning && this.state.isFocused}
         onPressBackButton={this.handlePressBackButton}
         onPressPasteSessionUri={this.handlePressPasteSessionUri}
         onScanSuccess={this.handleScanSuccess}
         onSheetLayout={this.handleSheetLayout}
       />
     );
-  };
+  }
 }
 
 export default compose(

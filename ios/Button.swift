@@ -12,7 +12,6 @@ class Button : RCTView {
   @objc var disabled: Bool = false {
     didSet {
       isUserInteractionEnabled = !disabled
-      alpha = disabled ? 0.3 : 1.0
     }
   }
   @objc var duration: TimeInterval = 0.1
@@ -56,13 +55,14 @@ class Button : RCTView {
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     animateTapStart(
       duration: duration,
-      scale: scaleTo
+      scale: scaleTo,
+      useHaptic: enableHapticFeedback ? hapticType: nil
     )
     onPressStart([:])
   }
   
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration, useHaptic: enableHapticFeedback ? hapticType: nil)
+    animateTapEnd(duration: duration)
     onPress([:])
   }
   

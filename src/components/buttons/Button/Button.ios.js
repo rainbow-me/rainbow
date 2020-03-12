@@ -80,7 +80,6 @@ const Button = ({
       ) : (
         <Text
           color={color}
-          letterSpacing="roundedTight"
           size={ButtonSizeTypes[size].fontSize}
           weight="semibold"
           {...textProps}

@@ -173,7 +173,7 @@ const closeSpec = {
   animation: 'spring',
   config: {
     bounciness: 0,
-    speed: 10,
+    speed: 14,
   },
 };
 

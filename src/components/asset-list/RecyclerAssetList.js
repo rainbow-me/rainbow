@@ -570,7 +570,7 @@ class RecyclerAssetList extends Component {
     ) {
       let balancesHeight = 0;
       if (balances.data) {
-        balancesHeight += CoinRow.height * 2 * (balances.data.length - 1);
+        balancesHeight += CoinRow.height * (balances.data.length - 1);
         if (balances.data[balances.data.length - 1].smallBalancesContainer) {
           balancesHeight += CoinDivider.height + ListFooter.height;
           if (openSmallBalances) {
@@ -579,7 +579,7 @@ class RecyclerAssetList extends Component {
               balances.data[balances.data.length - 1].assets.length;
           }
         } else {
-          balancesHeight += CoinRow.height + ListFooter.height + 200;
+          balancesHeight += CoinRow.height + ListFooter.height;
         }
       }
 

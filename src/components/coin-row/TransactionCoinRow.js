@@ -20,7 +20,7 @@ import TransactionStatusBadge from './TransactionStatusBadge';
 import { withAccountSettings } from '../../hoc';
 
 const containerStyles = css`
-  padding-left: 15;
+  padding-left: 19;
 `;
 
 const rowRenderPropTypes = {
