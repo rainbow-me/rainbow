@@ -18,15 +18,17 @@ const CoinCheckButton = ({
   pushSelectedCoin,
   removeSelectedCoin,
   isCoinListEdited,
-  wasRecentlyPinned,
+  recentlyPinnedCount,
 }) => {
   const [toggle, setToggle] = useState(false);
+  const [previousPinned, setPreviousPinned] = useState(0);
 
   useEffect(() => {
-    if ((wasRecentlyPinned && toggle) || (!isCoinListEdited && toggle)) {
+    if (toggle && (recentlyPinnedCount > previousPinned || !isCoinListEdited)) {
+      setPreviousPinned(recentlyPinnedCount);
       setToggle(false);
     }
-  }, [isCoinListEdited, wasRecentlyPinned]);
+  }, [isCoinListEdited, recentlyPinnedCount]);
 
   return (
     <View

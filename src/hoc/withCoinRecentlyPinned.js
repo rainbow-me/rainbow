@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
 import { pushSelectedCoin, removeSelectedCoin } from '../redux/editOptions';
 
-const mapStateToProps = ({ editOptions: { wasRecentlyPinned } }) => ({
-  wasRecentlyPinned,
+const mapStateToProps = ({ editOptions: { recentlyPinnedCount } }) => ({
+  recentlyPinnedCount,
 });
 
 export default Component =>

@@ -7,6 +7,13 @@ import {
 } from '../handlers/localstorage/accountLocal';
 import { union, without, difference } from 'lodash';
 
+const ACTIONS = {
+  NONE: 'none',
+  STANDARD: 'standard',
+  UNHIDE: 'unhide',
+  UNPIN: 'unpin',
+};
+
 // -- Constants --------------------------------------- //
 const COIN_LIST_OPTIONS_LOAD_SUCCESS =
   'editOptions/COIN_LIST_OPTIONS_LOAD_SUCCESS';
@@ -27,7 +34,6 @@ export const coinListLoadState = () => async (dispatch, getState) => {
     const { accountAddress, network } = getState().settings;
     const hiddenCoins = await getHiddenCoins(accountAddress, network);
     const pinnedCoins = await getPinnedCoins(accountAddress, network);
-    console.log('load: ', pinnedCoins);
     dispatch({
       payload: {
         hiddenCoins,
@@ -97,12 +103,12 @@ export const clearHiddenAndPinnedCoins = () => (dispatch, getState) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  currentAction: 'none',
+  currentAction: ACTIONS.NONE,
   hiddenCoins: [],
   isCoinListEdited: false,
   pinnedCoins: [],
+  recentlyPinnedCount: 0,
   selectedCoins: [],
-  wasRecentlyPinned: false,
 };
 
 // GOT TO CLEAN THAT ONE UP FROM REDUNDANT CODE
@@ -133,26 +139,26 @@ export default (state = INITIAL_STATE, action) =>
         );
       }
       if (draft.selectedCoins.length == 0) {
-        draft.currentAction = 'none';
+        draft.currentAction = ACTIONS.NONE;
       } else if (
         draft.selectedCoins.length > 0 &&
         difference(draft.hiddenCoins, draft.selectedCoins).length ===
           draft.hiddenCoins.length - draft.selectedCoins.length
       ) {
-        draft.currentAction = 'unhide';
+        draft.currentAction = ACTIONS.UNHIDE;
       } else if (
         draft.selectedCoins.length > 0 &&
         difference(draft.pinnedCoins, draft.selectedCoins).length ===
           draft.pinnedCoins.length - draft.selectedCoins.length
       ) {
-        draft.currentAction = 'unpin';
+        draft.currentAction = ACTIONS.UNPIN;
       } else {
-        draft.currentAction = 'standard';
+        draft.currentAction = ACTIONS.STANDARD;
       }
     } else if (action.type === SET_PINNED_COINS) {
       if (
-        draft.currentAction === 'standard' ||
-        draft.currentAction === 'unhide'
+        draft.currentAction === ACTIONS.STANDARD ||
+        draft.currentAction === ACTIONS.UNHIDE
       ) {
         draft.hiddenCoins = without(draft.hiddenCoins, ...draft.selectedCoins);
         saveHiddenCoins(
@@ -161,18 +167,18 @@ export default (state = INITIAL_STATE, action) =>
           action.network
         );
         draft.pinnedCoins = union(draft.selectedCoins, draft.pinnedCoins);
-      } else if (draft.currentAction === 'unpin') {
+      } else if (draft.currentAction === ACTIONS.UNPIN) {
         draft.pinnedCoins = without(draft.pinnedCoins, ...draft.selectedCoins);
       }
-      draft.currentAction = 'standard';
+      draft.currentAction = ACTIONS.STANDARD;
       savePinnedCoins(draft.pinnedCoins, action.accountAddress, action.network);
       draft.selectedCoins = [];
-      draft.currentAction = 'none';
-      draft.wasRecentlyPinned = !draft.wasRecentlyPinned;
+      draft.currentAction = ACTIONS.NONE;
+      draft.recentlyPinnedCount++;
     } else if (action.type === SET_HIDDEN_COINS) {
       if (
-        draft.currentAction === 'standard' ||
-        draft.currentAction === 'unpin'
+        draft.currentAction === ACTIONS.STANDARD ||
+        draft.currentAction === ACTIONS.UNPIN
       ) {
         draft.pinnedCoins = without(draft.pinnedCoins, ...draft.selectedCoins);
         savePinnedCoins(
@@ -181,14 +187,14 @@ export default (state = INITIAL_STATE, action) =>
           action.network
         );
         draft.hiddenCoins = union(draft.selectedCoins, draft.hiddenCoins);
-      } else if (draft.currentAction === 'unhide') {
+      } else if (draft.currentAction === ACTIONS.UNHIDE) {
         draft.hiddenCoins = without(draft.hiddenCoins, ...draft.selectedCoins);
       }
-      draft.currentAction = 'standard';
+      draft.currentAction = ACTIONS.STANDARD;
       saveHiddenCoins(draft.hiddenCoins, action.accountAddress, action.network);
       draft.selectedCoins = [];
-      draft.currentAction = 'none';
-      draft.wasRecentlyPinned = !draft.wasRecentlyPinned;
+      draft.currentAction = ACTIONS.NONE;
+      draft.recentlyPinnedCount++;
     } else if (action.type === CLEAR_COINS) {
       draft.selectedCoins = [];
       draft.hiddenCoins = [];
