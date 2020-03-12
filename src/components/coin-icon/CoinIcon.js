@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import FastImage from 'react-native-fast-image';
 import { View } from 'react-native';
 import { css } from 'styled-components/primitives';
@@ -19,14 +19,7 @@ const fallbackTextStyles = css`
 const CoinIconFallback = fallbackProps => {
   const { height, width, address, symbol } = fallbackProps;
   const [remoteIconUrl, setRemoteIconUrl] = useState(null);
-  useEffect(() => {
-    if (remoteIconUrl === null) {
-      checkIfRemoteIconIsAvailable();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const checkIfRemoteIconIsAvailable = async () => {
+  const checkIfRemoteIconIsAvailable = useCallback(async () => {
     try {
       const checksummedAddress = toChecksumAddress(address);
       const potentialIconUrl = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${checksummedAddress}/logo.png`;
@@ -39,7 +32,9 @@ const CoinIconFallback = fallbackProps => {
     } catch (e) {
       setRemoteIconUrl(false);
     }
-  };
+  }, [address]);
+
+  checkIfRemoteIconIsAvailable();
 
   if (remoteIconUrl) {
     return (
