@@ -331,6 +331,7 @@ export const getLiquidityInfo = async (
 };
 
 export const getAllExchanges = async (tokenOverrides, excluded = []) => {
+  const pageSize = 600;
   let allTokens = {};
   let data = [];
   try {
@@ -341,13 +342,13 @@ export const getAllExchanges = async (tokenOverrides, excluded = []) => {
         query: UNISWAP_ALL_EXCHANGES_QUERY,
         variables: {
           excluded,
-          first: 100,
+          first: pageSize,
           skip: skip,
         },
       });
       data = data.concat(result.data.exchanges);
-      skip = skip + 100;
-      if (result.data.exchanges.length < 100) {
+      skip = skip + pageSize;
+      if (result.data.exchanges.length < pageSize) {
         dataEnd = true;
       }
     }
