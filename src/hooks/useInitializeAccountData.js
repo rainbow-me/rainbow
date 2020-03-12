@@ -6,6 +6,7 @@ import { explorerInit } from '../redux/explorer';
 import { uniswapGetAllExchanges, uniswapPairsInit } from '../redux/uniswap';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { sentryUtils } from '../utils';
+import { InteractionManager } from 'react-native';
 
 export default function useInitializeAccountData() {
   const dispatch = useDispatch();
@@ -13,12 +14,19 @@ export default function useInitializeAccountData() {
 
   const initializeAccountData = useCallback(async () => {
     try {
-      sentryUtils.addInfoBreadcrumb('Initialize account data');
-      console.log('Initialize account data for', network);
-      dispatch(explorerInit());
-      await dispatch(uniswapPairsInit());
-      await dispatch(uniswapGetAllExchanges());
-      await dispatch(uniqueTokensRefreshState());
+      InteractionManager.runAfterInteractions(() => {
+        sentryUtils.addInfoBreadcrumb('Initialize account data');
+        dispatch(explorerInit());
+      });
+
+      InteractionManager.runAfterInteractions(async () => {
+        await dispatch(uniswapPairsInit());
+        await dispatch(uniswapGetAllExchanges());
+      });
+
+      InteractionManager.runAfterInteractions(async () => {
+        await dispatch(uniqueTokensRefreshState());
+      });
     } catch (error) {
       // TODO error state
       console.log('Error initializing account data: ', error);
