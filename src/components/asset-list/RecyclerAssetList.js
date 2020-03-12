@@ -795,17 +795,7 @@ class RecyclerAssetList extends Component {
 
     // TODO sections
     return isNotUniqueToken
-      ? isFirstCoinRow
-        ? renderItem({
-            item,
-            style: [
-              {
-                marginBottom: firstCoinRowMarginTop,
-                marginTop: firstCoinRowMarginTop,
-              },
-            ],
-          })
-        : renderItem({ item })
+      ? renderItem({ isFirstCoinRow, item })
       : renderItem({
           childrenAmount: item.childrenAmount,
           familyId: item.familyId,
