@@ -19,11 +19,14 @@ import {
 } from '../components/sheet';
 import Divider from '../components/Divider';
 import { convertAmountToDepositDisplay } from '../helpers/utilities';
+import { DAI_ADDRESS } from '../references';
 
 const SavingsSheet = () => {
   const { getParam, navigate } = useNavigation();
 
   const isEmpty = getParam('isEmpty');
+  const nativeValue = getParam('nativeValue');
+  const isStablecoin = getParam('isStablecoin');
   const underlying = getParam('underlying');
   const lifetimeSupplyInterestAccrued = getParam(
     'lifetimeSupplyInterestAccrued'
@@ -31,11 +34,8 @@ const SavingsSheet = () => {
   const supplyBalanceUnderlying = getParam('supplyBalanceUnderlying');
   const supplyRate = getParam('supplyRate');
 
-  // TODO JIN transactions list
-  const balance = convertAmountToDepositDisplay(supplyBalanceUnderlying, {
-    address: underlying.address,
-    decimals: underlying.decimals,
-    symbol: underlying.symbol,
+  const balance = convertAmountToDepositDisplay(nativeValue, {
+    address: DAI_ADDRESS,
   });
 
   return (
@@ -47,6 +47,7 @@ const SavingsSheet = () => {
           <SavingsSheetHeader
             balance={balance}
             lifetimeAccruedInterest={lifetimeSupplyInterestAccrued}
+            isStablecoin={isStablecoin}
           />
           <SheetActionButtonRow>
             <SheetActionButton

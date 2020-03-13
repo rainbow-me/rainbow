@@ -37,7 +37,6 @@ import AssetListHeader from './AssetListHeader';
 import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
 import withOpenSavings from '../../hoc/withOpenSavings';
 import SavingsListWrapper from '../savings/SavingsListWrapper';
-import SavingsListRow from '../savings/SavingsListRow';
 
 /* eslint-disable sort-keys */
 export const ViewTypes = {
@@ -86,7 +85,6 @@ let smallBalancesIndex = 0;
 let savingsIndex = 0;
 
 const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
-const SavingsListRowRenderer = pure(data => <SavingsListRow {...data} />);
 
 const hasRowChanged = (r1, r2) => {
   const isNewTitle = isNewValueForPath(r1, r2, 'title');
@@ -847,15 +845,7 @@ class RecyclerAssetList extends Component {
     }
 
     if (type === ViewTypes.COIN_SAVINGS) {
-      if (this.savingsList.length !== item.assets.length) {
-        smallBalancedChanged = false;
-        const savingsList = [];
-        for (let i = 0; i < item.assets.length; i++) {
-          savingsList.push(<SavingsListRowRenderer {...item.assets[i]} />);
-        }
-        this.savingsList = savingsList;
-      }
-      return <SavingsListWrapper assets={this.savingsList} />;
+      return <SavingsListWrapper assets={item.assets} />;
     }
 
     if (type === ViewTypes.COIN_SMALL_BALANCES) {
