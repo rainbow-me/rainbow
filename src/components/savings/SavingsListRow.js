@@ -249,7 +249,6 @@ export default compose(
     }) => () => {
       navigation.navigate('SavingsSheet', {
         isEmpty: !supplyBalanceUnderlying,
-        isStablecoin: STABLECOINS.indexOf(underlying.symbol) !== -1,
         lifetimeSupplyInterestAccrued,
         nativeValue,
         supplyBalanceUnderlying,
