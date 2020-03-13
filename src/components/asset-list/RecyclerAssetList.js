@@ -850,19 +850,12 @@ class RecyclerAssetList extends Component {
       if (this.savingsList.length !== item.assets.length) {
         smallBalancedChanged = false;
         const savingsList = [];
-        this.savingsSumValue = 0;
         for (let i = 0; i < item.assets.length; i++) {
-          this.savingsSumValue += item.assets[i].value || 0;
           savingsList.push(<SavingsListRowRenderer {...item.assets[i]} />);
         }
         this.savingsList = savingsList;
       }
-      return (
-        <SavingsListWrapper
-          assets={this.savingsList}
-          savingsSumValue={this.savingsSumValue}
-        />
-      );
+      return <SavingsListWrapper assets={this.savingsList} />;
     }
 
     if (type === ViewTypes.COIN_SMALL_BALANCES) {
