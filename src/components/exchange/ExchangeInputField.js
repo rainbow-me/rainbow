@@ -18,6 +18,7 @@ const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 const ExchangeInputField = ({
   assignInputFieldRef,
   assignNativeFieldRef,
+  disableInputCurrencySelection,
   inputAmount,
   inputCurrencyAddress,
   inputCurrencySymbol,
@@ -81,10 +82,12 @@ const ExchangeInputField = ({
             />
           </RowWithMargins>
         </TouchableWithoutFeedback>
-        <TokenSelectionButton
-          onPress={onPressSelectInputCurrency}
-          symbol={inputCurrencySymbol}
-        />
+        {!disableInputCurrencySelection && (
+          <TokenSelectionButton
+            onPress={onPressSelectInputCurrency}
+            symbol={inputCurrencySymbol}
+          />
+        )}
       </Row>
       <Row
         align="center"
@@ -133,6 +136,7 @@ const ExchangeInputField = ({
 ExchangeInputField.propTypes = {
   assignInputFieldRef: PropTypes.func,
   assignNativeFieldRef: PropTypes.func,
+  disableInputCurrencySelection: PropTypes.bool,
   inputAmount: PropTypes.string,
   inputCurrencyAddress: PropTypes.string,
   inputCurrencySymbol: PropTypes.string,

@@ -54,7 +54,7 @@ const SavingsSheet = () => {
               label="Withdraw"
               onPress={() =>
                 navigate('SavingsWithdrawModal', {
-                  defaultInputAddress: underlying.address,
+                  defaultInputAsset: underlying,
                 })
               }
             />
@@ -64,7 +64,7 @@ const SavingsSheet = () => {
               label="Deposit"
               onPress={() =>
                 navigate('SavingsDepositModal', {
-                  defaultInputAddress: underlying.address,
+                  defaultInputAsset: underlying,
                 })
               }
             />

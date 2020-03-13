@@ -4,12 +4,12 @@ import createSwapAndDepositCompoundRap from '../raps/swapAndDepositCompound';
 import ExchangeModalWithData from './ExchangeModalWithData';
 
 const WithdrawModal = ({ navigation, ...props }) => {
-  const defaultInputAddress = navigation.getParam('defaultInputAddress', 'eth');
+  const defaultInputAsset = navigation.getParam('defaultInputAsset');
   return (
     <ExchangeModalWithData
       createRap={createSwapAndDepositCompoundRap}
-      defaultInputAddress={defaultInputAddress}
-      inputHeaderTitle="Withdraw"
+      defaultInputAsset={defaultInputAsset}
+      inputHeaderTitle={`Withdraw ${defaultInputAsset.symbol}`}
       showOutputField={false}
       type={ExchangeModalTypes.withdrawal}
       {...props}

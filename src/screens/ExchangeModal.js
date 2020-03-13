@@ -75,7 +75,7 @@ const isSameAsset = (a, b) => {
 const getNativeTag = field => get(field, '_inputRef._nativeTag');
 
 const ExchangeModal = ({
-  defaultInputAddress,
+  defaultInputAsset,
   gasPricesStartPolling,
   gasPricesStopPolling,
   gasUpdateDefaultGasLimit,
@@ -103,6 +103,7 @@ const ExchangeModal = ({
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const { accountAddress, chainId, nativeCurrency } = useAccountSettings();
 
+  const defaultInputAddress = get(defaultInputAsset, 'address');
   const defaultInputItem =
     ethereumUtils.getAsset(allAssets, defaultInputAddress) ||
     ethereumUtils.getAsset(allAssets);
@@ -871,6 +872,7 @@ const ExchangeModal = ({
               title={inputHeaderTitle}
             />
             <ExchangeInputField
+              disableInputCurrencySelection={isWithdrawal}
               inputAmount={inputAmountDisplay}
               inputCurrencyAddress={get(inputCurrency, 'address', null)}
               inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
