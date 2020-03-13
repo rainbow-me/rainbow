@@ -25,6 +25,7 @@ export const COMPOUND_ALL_MARKETS_QUERY = gql`
       name
       supplyRate
       underlyingAddress
+      underlyingName
       underlyingSymbol
       underlyingDecimals
       underlyingPrice

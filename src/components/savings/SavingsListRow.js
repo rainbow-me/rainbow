@@ -43,12 +43,6 @@ const animatedNumberFormatter = val => `${formatSavingsAmount(val)}`;
 const renderAnimatedNumber = (value, steps, symbol) => {
   const isStablecoin = STABLECOINS.indexOf(symbol) !== -1;
   const numberComponent = (
-    // <GradientText
-    //   colors={['#000000', '#2CCC00']}
-    //   steps={[0.6, 1]}
-    //   end={{ x: 0.9, y: 0.5 }}
-    //   style={sx.text}
-    //   renderer={
     <AnimatedNumber
       disableTabularNums
       style={sx.text}
@@ -61,8 +55,6 @@ const renderAnimatedNumber = (value, steps, symbol) => {
       time={ANIMATE_NUMBER_INTERVAL}
       value={Number(value)}
     />
-    // }
-    // />
   );
 
   if (isStablecoin) {

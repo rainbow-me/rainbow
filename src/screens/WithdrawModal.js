@@ -9,7 +9,7 @@ const WithdrawModal = ({ navigation, ...props }) => {
     <ExchangeModalWithData
       createRap={createSwapAndDepositCompoundRap}
       defaultInputAsset={defaultInputAsset}
-      inputHeaderTitle={`Withdraw ${defaultInputAsset.symbol}`}
+      inputHeaderTitle={`Withdraw ${defaultInputAsset.name}`}
       showOutputField={false}
       type={ExchangeModalTypes.withdrawal}
       {...props}

@@ -9,9 +9,40 @@ import {
 } from '../apollo/queries';
 import { multiply } from '../helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
-import { CDAI_CONTRACT, SAI_ADDRESS } from '../references';
+import { CDAI_CONTRACT, DAI_ADDRESS } from '../references';
 
 // const pollInterval = 15000;
+
+const getMarketData = (marketData, tokenOverrides) => {
+  const underlying = getUnderlyingData(marketData, tokenOverrides);
+  const { supplyRate, underlyingPrice } = marketData;
+
+  return {
+    supplyRate,
+    underlying,
+    underlyingPrice,
+  };
+};
+
+const getUnderlyingData = (marketData, tokenOverrides) => {
+  const {
+    underlyingAddress,
+    underlyingDecimals,
+    underlyingName,
+    underlyingSymbol,
+  } = marketData;
+
+  return {
+    address: underlyingAddress,
+    decimals: underlyingDecimals,
+    name: parseAssetName(underlyingName, underlyingAddress, tokenOverrides),
+    symbol: parseAssetSymbol(
+      underlyingSymbol,
+      underlyingAddress,
+      tokenOverrides
+    ),
+  };
+};
 
 export default function useSavingsAccount(pollInterval = 0) {
   const { accountAddress, tokenOverrides } = useSelector(
@@ -43,26 +74,23 @@ export default function useSavingsAccount(pollInterval = 0) {
 
     accountTokens = accountTokens.map(token => {
       const [cTokenAddress] = token.id.split('-');
-      const { name, symbol, ...marketData } = markets[cTokenAddress] || {};
+      const marketData = markets[cTokenAddress] || {};
 
-      // Rename old DAI as SAI
-      marketData.underlyingSymbol =
-        marketData.underlyingAddress === SAI_ADDRESS
-          ? 'SAI'
-          : marketData.underlyingSymbol;
-
-      const ethPrice = multiply(
-        marketData.underlyingPrice,
-        token.supplyBalanceUnderlying
+      const { supplyRate, underlying, underlyingPrice } = getMarketData(
+        marketData,
+        tokenOverrides
       );
 
+      const ethPrice = multiply(underlyingPrice, token.supplyBalanceUnderlying);
+
+      const { lifetimeSupplyInterestAccrued, supplyBalanceUnderlying } = token;
+
       return {
-        ...marketData,
-        ...token,
-        cTokenAddress,
         ethPrice,
-        name: parseAssetName(name, cTokenAddress, tokenOverrides),
-        symbol: parseAssetSymbol(symbol, cTokenAddress, tokenOverrides),
+        lifetimeSupplyInterestAccrued,
+        supplyBalanceUnderlying,
+        supplyRate,
+        underlying,
       };
     });
 
@@ -70,16 +98,17 @@ export default function useSavingsAccount(pollInterval = 0) {
 
     const accountHasCDAI = find(
       accountTokens,
-      token => token.cTokenAddress === CDAI_CONTRACT
+      token => token.underlying.address === DAI_ADDRESS
     );
 
-    if (!accountHasCDAI) {
-      const DAIMarketData = {
-        ...markets[CDAI_CONTRACT],
-        cTokenAddress: CDAI_CONTRACT,
-      };
+    if (!accountHasCDAI && markets[CDAI_CONTRACT]) {
+      const DAIMarketData = getMarketData(
+        markets[CDAI_CONTRACT],
+        tokenOverrides
+      );
       accountTokens.push({ ...DAIMarketData });
     }
+
     return accountTokens;
   }, [marketsQuery, tokenOverrides, tokenQuery]);
 

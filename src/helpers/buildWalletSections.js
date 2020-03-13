@@ -115,9 +115,7 @@ const withBalanceSection = (
       lifetimeSupplyInterestAccrued,
       supplyBalanceUnderlying,
       supplyRate,
-      underlyingAddress,
-      underlyingDecimals,
-      underlyingSymbol,
+      underlying,
       ethPrice,
     } = cToken;
     return {
@@ -125,25 +123,22 @@ const withBalanceSection = (
       lifetimeSupplyInterestAccrued,
       supplyBalanceUnderlying,
       supplyRate,
-      underlying: {
-        address: underlyingAddress,
-        decimals: underlyingDecimals,
-        symbol: underlyingSymbol,
-      },
+      underlying,
     };
   });
-  // TODO JIN get the DAI APY, currency, set to 0 if it does not exist already
-  // console.log('ASSETS', assets);
+
   const savingsSection = {
     assets,
     savingsContainer: true,
   };
+
   let balanceSectionData = [...buildCoinsList(allAssets)];
 
   if (networkTypes.mainnet === network) {
     balanceSectionData.push(savingsSection);
   }
   /*
+  // TODO JIN
   assets.forEach(saving => {
     if (saving.value) {
       totalValue = Number(totalValue) + Number(saving.value);
