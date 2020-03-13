@@ -1,13 +1,13 @@
 import { ethers } from 'ethers';
 import { get } from 'lodash';
-import { toHex } from '../handlers/web3';
-import { convertAmountToRawAmount } from '../helpers/utilities';
-import { dataAddNewTransaction } from '../redux/data';
-import { rapsAddOrUpdate } from '../redux/raps';
-import store from '../redux/store';
-import { gasUtils } from '../utils';
-import { savingsAssetsListByUnderlying } from '../references';
-import compoundCERC20ABI from '../references/compound/compound-cerc20-abi.json';
+import { toHex } from '../../handlers/web3';
+import { convertAmountToRawAmount } from '../../helpers/utilities';
+import { dataAddNewTransaction } from '../../redux/data';
+import { rapsAddOrUpdate } from '../../redux/raps';
+import store from '../../redux/store';
+import { gasUtils } from '../../utils';
+import { savingsAssetsListByUnderlying } from '../../references';
+import compoundCERC20ABI from '../../references/compound/compound-cerc20-abi.json';
 
 const NOOP = () => undefined;
 

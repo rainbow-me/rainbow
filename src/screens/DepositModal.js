@@ -1,4 +1,5 @@
 import React from 'react';
+import ExchangeModalTypes from '../helpers/exchangeModalTypes';
 import createSwapAndDepositCompoundRap from '../raps/swapAndDepositCompound';
 import ExchangeModalWithData from './ExchangeModalWithData';
 
@@ -9,8 +10,8 @@ const DepositModal = ({ navigation, ...props }) => {
       createRap={createSwapAndDepositCompoundRap}
       defaultInputAddress={defaultInputAddress}
       inputHeaderTitle="Deposit"
-      isDeposit
       showOutputField={false}
+      type={ExchangeModalTypes.deposit}
       {...props}
     />
   );

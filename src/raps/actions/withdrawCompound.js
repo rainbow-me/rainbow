@@ -1,26 +1,25 @@
 import { ethers } from 'ethers';
 import { get } from 'lodash';
-import { toHex } from '../handlers/web3';
-import { convertAmountToRawAmount } from '../helpers/utilities';
-import { dataAddNewTransaction } from '../redux/data';
-import { rapsAddOrUpdate } from '../redux/raps';
-import store from '../redux/store';
-import { gasUtils } from '../utils';
-import { savingsAssetsListByUnderlying } from '../references';
-import compoundCERC20ABI from '../references/compound/compound-cerc20-abi.json';
+import { toHex } from '../../handlers/web3';
+import { convertAmountToRawAmount } from '../../helpers/utilities';
+import { dataAddNewTransaction } from '../../redux/data';
+import { rapsAddOrUpdate } from '../../redux/raps';
+import store from '../../redux/store';
+import { gasUtils } from '../../utils';
+import { savingsAssetsListByUnderlying } from '../../references';
+import compoundCERC20ABI from '../../references/compound/compound-cerc20-abi.json';
 
 const NOOP = () => undefined;
 
-// TODO
 const estimateWithdrawalGasLimit = async (
   compound,
   accountAddress,
-  rawMintAmount
+  rawRedeemAmount
 ) => {
   try {
     console.log('[withdraw] estimating gas');
     const params = { from: accountAddress, value: toHex(0) };
-    const gasLimit = await compound.estimate.mint(rawMintAmount, params);
+    const gasLimit = await compound.estimate.redeem(rawRedeemAmount, params);
     console.log('[withdraw] estimated gas limit for withdraw', gasLimit);
     console.log(
       '[withdraw] TO STRING estimated gas limit for withdraw',
@@ -34,7 +33,6 @@ const estimateWithdrawalGasLimit = async (
 };
 
 // TODO
-// withdrawals do not require an authorization
 const withdrawCompound = async (wallet, currentRap, index, parameters) => {
   console.log('[withdraw]');
   const { inputAmount, inputCurrency, selectedGasPrice } = parameters;
@@ -52,13 +50,12 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
   if (!gasPrice) {
     gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
   }
-  console.log('[withdraw] gas price', gasPrice);
 
+  console.log('[withdraw] gas price', gasPrice);
   const cTokenContract =
     savingsAssetsListByUnderlying[network][inputCurrency.address]
       .contractAddress;
 
-  console.log('ctokencontract', cTokenContract);
   const compound = new ethers.Contract(
     cTokenContract,
     compoundCERC20ABI,
@@ -82,10 +79,11 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     rawInputAmount,
     transactionParams
   );
-  console.log('[withdraw] minted - result', withdraw);
+  console.log('[withdraw] redeemed - result', withdraw);
 
   currentRap.actions[index].transaction.hash = withdraw.hash;
 
+  // TODO JIN: include a deposit / withdraw status
   const newTransaction = {
     amount: inputAmount,
     asset: inputCurrency,
@@ -94,8 +92,11 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     nonce: get(withdraw, 'nonce'),
     to: get(withdraw, 'to'),
   };
+
   console.log('[withdraw] adding new txn', newTransaction);
+  // TODO JIN could watch the txn?
   dispatch(dataAddNewTransaction(newTransaction, true));
+
   console.log('[withdraw] calling the callback');
   currentRap.callback();
   currentRap.callback = NOOP;
@@ -113,6 +114,7 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     currentRap.actions[index].transaction.confirmed = false;
     dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
   }
+  console.log('[withdraw] complete!');
 };
 
 export default withdrawCompound;

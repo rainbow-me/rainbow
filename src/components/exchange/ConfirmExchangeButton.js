@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
 import { colors } from '../../styles';
 import { HoldToAuthorizeButton } from '../buttons';
 import { SlippageWarningTheshold } from './SlippageWarning';
@@ -13,13 +14,18 @@ const ConfirmExchangeButtonShadows = [
 const ConfirmExchangeButton = ({
   disabled,
   isAuthorizing,
-  isDeposit,
   isSufficientBalance,
   onSubmit,
   slippage,
+  type,
   ...props
 }) => {
-  let label = isDeposit ? 'Deposit to Savings' : 'Hold to Swap';
+  let label =
+    type === ExchangeModalTypes.deposit
+      ? 'Deposit to Savings'
+      : type === ExchangeModalTypes.withdrawal
+      ? 'Withdraw from Savings'
+      : 'Hold to Swap';
   if (!isSufficientBalance) {
     label = 'Insufficient Funds';
   } else if (slippage > SlippageWarningTheshold) {
@@ -46,10 +52,10 @@ const ConfirmExchangeButton = ({
 ConfirmExchangeButton.propTypes = {
   disabled: PropTypes.bool,
   isAuthorizing: PropTypes.bool,
-  isDeposit: PropTypes.bool,
   isSufficientBalance: PropTypes.bool,
   onSubmit: PropTypes.func,
   slippage: PropTypes.number,
+  type: PropTypes.oneOf(Object.values(ExchangeModalTypes)),
 };
 
 export default React.memo(ConfirmExchangeButton);

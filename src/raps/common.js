@@ -1,8 +1,9 @@
 import { rapsAddOrUpdate } from '../redux/raps';
-import depositCompound from './depositCompound';
-import unlock from './unlock';
-import swap from './swap';
 import store from '../redux/store';
+import depositCompound from './actions/depositCompound';
+import unlock from './actions/unlock';
+import swap from './actions/swap';
+import withdrawCompound from './actions/withdrawCompound';
 
 const NOOP = () => undefined;
 
@@ -21,6 +22,8 @@ const findActionByType = type => {
       return swap;
     case RapActionTypes.depositCompound:
       return depositCompound;
+    case RapActionTypes.withdrawCompound:
+      return withdrawCompound;
     default:
       return NOOP;
   }
