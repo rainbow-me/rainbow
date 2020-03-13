@@ -4,17 +4,18 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { NavigationEvents, withNavigationFocus } from 'react-navigation';
+import { NavigationEvents } from 'react-navigation';
+import { useFocusState } from 'react-navigation-hooks';
+
 //  withNavigation,
 import { useDispatch } from 'react-redux';
-import { compose, mapProps, shouldUpdate } from 'recompact';
+import { compose, mapProps } from 'recompact';
 import {
   usePrevious,
   useUniswapAssets,
   useUniswapAssetsInWallet,
 } from '../hooks';
 import { position } from '../styles';
-import { isNewValueForObjectPaths } from '../utils';
 import { filterList, filterScams } from '../utils/search';
 import { interpolate } from '../components/animations';
 import {
@@ -26,6 +27,7 @@ import GestureBlocker from '../components/GestureBlocker';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { exchangeModalBorderRadius } from './ExchangeModal';
+import { shouldUpdate } from 'recompose';
 
 const headerlessSection = data => [{ data, title: '' }];
 
@@ -68,7 +70,7 @@ const CurrencySelectModal = ({
     );
   }, [searchQuery]);
 
-  const isFocused = navigation.isFocused();
+  const isFocused = useFocusState().isFocused;
   const wasFocused = usePrevious(isFocused);
 
   useEffect(() => {
@@ -266,7 +268,6 @@ CurrencySelectModal.propTypes = {
 };
 
 export default compose(
-  withNavigationFocus,
   mapProps(({ navigation, ...props }) => ({
     ...props,
     headerTitle: get(navigation, 'state.params.headerTitle', null),
@@ -275,17 +276,6 @@ export default compose(
     type: get(navigation, 'state.params.type', null),
   })),
   shouldUpdate((props, nextProps) => {
-    const isFocused = props.navigation.isFocused();
-    const willBeFocused = nextProps.navigation.isFocused();
-
-    const isNewType = props.type !== nextProps.type;
-
-    const isNewProps = isNewValueForObjectPaths(
-      { ...props, isFocused },
-      { ...nextProps, isFocused: willBeFocused },
-      ['isFocused', 'type']
-    );
-
-    return isNewType || isNewProps;
+    return props.type !== nextProps.type;
   })
 )(CurrencySelectModal);
