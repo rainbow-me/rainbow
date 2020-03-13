@@ -265,6 +265,11 @@ class ExchangeModal extends Component {
         this.inputFocusInteractionHandle
       );
     }
+    if (this.inputRefocusInteractionHandle) {
+      InteractionManager.clearInteractionHandle(
+        this.inputRefocusInteractionHandle
+      );
+    }
     InteractionManager.runAfterInteractions(() => {
       this.props.uniswapClearCurrenciesAndReserves();
       this.props.gasPricesStopPolling();
@@ -798,9 +803,13 @@ class ExchangeModal extends Component {
   };
 
   handleRefocusLastInput = () => {
-    InteractionManager.runAfterInteractions(() => {
-      TextInput.State.focusTextInput(this.findNextFocused());
-    });
+    this.inputRefocusInteractionHandle = InteractionManager.runAfterInteractions(
+      () => {
+        if (this.props.navigation.isFocused()) {
+          TextInput.State.focusTextInput(this.findNextFocused());
+        }
+      }
+    );
   };
 
   navigateToSwapDetailsModal = () => {
