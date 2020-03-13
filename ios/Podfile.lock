@@ -461,6 +461,7 @@ DEPENDENCIES:
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - libwebp
+  - PanModal (from `https://github.com/slackhq/PanModal`, commit `1819113e97bba04fb776d300956ec78febbd6ccb`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera.podspec`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -547,7 +548,6 @@ SPEC REPOS:
     - JWT
     - libwebp
     - nanopb
-    - PanModal
     - Protobuf
     - SDWebImage
     - SDWebImageWebPCoder
@@ -569,6 +569,9 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
+  PanModal:
+    :commit: 1819113e97bba04fb776d300956ec78febbd6ccb
+    :git: https://github.com/slackhq/PanModal
   Permission-Camera:
     :path: "../node_modules/react-native-permissions/ios/Camera.podspec"
   Permission-FaceID:
@@ -688,6 +691,11 @@ EXTERNAL SOURCES:
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
+CHECKOUT OPTIONS:
+  PanModal:
+    :commit: 1819113e97bba04fb776d300956ec78febbd6ccb
+    :git: https://github.com/slackhq/PanModal
+
 SPEC CHECKSUMS:
   Analytics: f82f3cd6d3c8fbfd76ce25773199576656981a4a
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
@@ -783,6 +791,6 @@ SPEC CHECKSUMS:
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: b9a1f7189009fa4b6266ee0a63235547326295d2
 
-PODFILE CHECKSUM: 056d676880e0903c906715772145882214dfb738
+PODFILE CHECKSUM: 151a2512ce20b31d7ec5c5dfe514a4a4ed46851d
 
 COCOAPODS: 1.8.4
