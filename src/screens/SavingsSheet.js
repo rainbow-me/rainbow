@@ -21,7 +21,6 @@ import Divider from '../components/Divider';
 import { convertAmountToDepositDisplay } from '../helpers/utilities';
 
 const SavingsSheet = () => {
-  console.log('[SAVINGS SHEET]');
   const { getParam, navigate } = useNavigation();
 
   const isEmpty = getParam('isEmpty');

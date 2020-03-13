@@ -35,7 +35,6 @@ const predictionFormatter = value =>
     .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 
 const SavingsPredictionStepper = ({ balance, interestRate }) => {
-  console.log({ balance, interestRate });
   const [step, setStep] = useState(0);
   const incrementStep = useCallback(
     p => (p + 1 === Object.keys(steps).length ? 0 : p + 1),

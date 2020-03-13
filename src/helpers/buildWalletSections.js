@@ -118,8 +118,10 @@ const withBalanceSection = (
       underlyingAddress,
       underlyingDecimals,
       underlyingSymbol,
+      ethPrice,
     } = cToken;
     return {
+      ethPrice,
       lifetimeSupplyInterestAccrued,
       supplyBalanceUnderlying,
       supplyRate,
