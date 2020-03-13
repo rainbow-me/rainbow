@@ -1,10 +1,8 @@
 import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { withNavigation } from 'react-navigation';
-import { compose, withHandlers } from 'recompact';
 import {
   calculateAPY,
   calculateCompoundInterestPerBlock,
@@ -20,6 +18,7 @@ import { Icon } from '../icons';
 import { Centered, Row } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { GradientText, Text } from '../text';
+import { useNavigation } from 'react-navigation-hooks';
 
 const AVERAGE_BLOCK_TIME_MS = APROX_BLOCK_TIME * 1000;
 const BLOCKS_IN_1_DAY = (60000 / AVERAGE_BLOCK_TIME_MS) * 60 * 24 * 1000;
@@ -79,7 +78,8 @@ const renderAnimatedNumber = (value, steps, symbol) => {
 };
 
 const SavingsListRow = ({
-  onPress,
+  lifetimeSupplyInterestAccrued,
+  nativeValue,
   supplyBalanceUnderlying,
   supplyRate,
   underlying,
@@ -88,6 +88,25 @@ const SavingsListRow = ({
   const [value, setValue] = useState(initialValue);
   const [steps, setSteps] = useState(0);
   const apy = useMemo(() => calculateAPY(supplyRate), [supplyRate]);
+  const { navigate } = useNavigation();
+
+  const onButtonPress = useCallback(() => {
+    navigate('SavingsSheet', {
+      isEmpty: !supplyBalanceUnderlying,
+      lifetimeSupplyInterestAccrued,
+      nativeValue,
+      supplyBalanceUnderlying,
+      supplyRate,
+      underlying,
+    });
+  }, [
+    lifetimeSupplyInterestAccrued,
+    nativeValue,
+    navigate,
+    supplyBalanceUnderlying,
+    supplyRate,
+    underlying,
+  ]);
 
   useEffect(() => {
     const getFutureValue = () => {
@@ -123,7 +142,7 @@ const SavingsListRow = ({
         ]}
       >
         <ButtonPressAnimation
-          onPress={onPress}
+          onPress={onButtonPress}
           scaleTo={supplyBalanceUnderlying ? 0.92 : 1}
         >
           <Row
@@ -162,7 +181,7 @@ const SavingsListRow = ({
                   >
                     $0.00
                   </Text>
-                  <ButtonPressAnimation onPress={onPress} scaleTo={0.92}>
+                  <ButtonPressAnimation onPress={onButtonPress} scaleTo={0.92}>
                     <ShadowStack
                       width={97}
                       height={30}
@@ -230,31 +249,11 @@ const SavingsListRow = ({
 };
 
 SavingsListRow.propTypes = {
-  onPress: PropTypes.func,
+  lifetimeSupplyInterestAccrued: PropTypes.string,
+  nativeValue: PropTypes.number,
   supplyBalanceUnderlying: PropTypes.string,
   supplyRate: PropTypes.string,
   underlying: PropTypes.object,
 };
 
-export default compose(
-  withNavigation,
-  withHandlers({
-    onPress: ({
-      navigation,
-      supplyRate,
-      lifetimeSupplyInterestAccrued,
-      underlying,
-      supplyBalanceUnderlying,
-      nativeValue,
-    }) => () => {
-      navigation.navigate('SavingsSheet', {
-        isEmpty: !supplyBalanceUnderlying,
-        lifetimeSupplyInterestAccrued,
-        nativeValue,
-        supplyBalanceUnderlying,
-        supplyRate,
-        underlying,
-      });
-    },
-  })
-)(SavingsListRow);
+export default SavingsListRow;
