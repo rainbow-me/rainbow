@@ -137,14 +137,7 @@ const withBalanceSection = (
   if (networkTypes.mainnet === network) {
     balanceSectionData.push(savingsSection);
   }
-  /*
-  // TODO JIN
-  assets.forEach(saving => {
-    if (saving.value) {
-      totalValue = Number(totalValue) + Number(saving.value);
-    }
-  });
-  */
+
   const isLoadingBalances = !isWalletEthZero && isBalancesSectionEmpty;
   if (isLoadingBalances) {
     balanceSectionData = [{ item: { uniqueId: 'skeleton0' } }];

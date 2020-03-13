@@ -19,7 +19,6 @@ import {
 } from '../components/sheet';
 import Divider from '../components/Divider';
 import { convertAmountToDepositDisplay } from '../helpers/utilities';
-import { DAI_ADDRESS } from '../references';
 
 const SavingsSheet = () => {
   const { getParam, navigate } = useNavigation();
@@ -33,9 +32,7 @@ const SavingsSheet = () => {
   const supplyBalanceUnderlying = getParam('supplyBalanceUnderlying');
   const supplyRate = getParam('supplyRate');
 
-  const balance = convertAmountToDepositDisplay(nativeValue, {
-    address: DAI_ADDRESS,
-  });
+  const balance = convertAmountToDepositDisplay(nativeValue, underlying);
 
   return (
     <Sheet>

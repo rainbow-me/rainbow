@@ -77,7 +77,6 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     value: toHex(0),
   };
   console.log('[withdraw] txn params', transactionParams);
-  // TODO JIN we want to redeem the underlying amount - what about max?
   const withdraw = await compound.redeemUnderlying(
     rawInputAmount,
     transactionParams
@@ -86,7 +85,6 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
 
   currentRap.actions[index].transaction.hash = withdraw.hash;
 
-  // TODO JIN: include a deposit / withdraw status
   const newTransaction = {
     amount: inputAmount,
     asset: inputCurrency,
@@ -97,8 +95,7 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
   };
 
   console.log('[withdraw] adding new txn', newTransaction);
-  // TODO JIN could watch the txn?
-  dispatch(dataAddNewTransaction(newTransaction, true));
+  dispatch(dataAddNewTransaction(newTransaction));
 
   console.log('[withdraw] calling the callback');
   currentRap.callback();
