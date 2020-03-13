@@ -15,6 +15,7 @@ import {
   deviceUtils,
   dimensionsPropType,
   safeAreaInsetValues,
+  sentryUtils,
 } from '../../utils';
 import { Centered } from '../layout';
 import { Pager } from '../pager';
@@ -184,8 +185,13 @@ export default compose(
         url: permalink,
       });
     },
-    onPressView: ({ asset: { permalink } }) => () => {
-      Linking.openURL(permalink);
+    onPressView: ({ asset }) => () => {
+      sentryUtils.addDataBreadcrumb(
+        'UniqueTokenExpandedState press view on OpenSea',
+        asset
+      );
+      const { permalink } = asset;
+      permalink && Linking.openURL(permalink);
     },
   }),
   onlyUpdateForPropTypes

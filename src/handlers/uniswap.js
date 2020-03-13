@@ -19,12 +19,11 @@ import {
   convertRawAmountToDecimalFormat,
   divide,
   fromWei,
+  greaterThan,
   multiply,
 } from '../helpers/utilities';
 import { loadWallet } from '../model/wallet';
-import exchangeABI from '../references/uniswap-exchange-abi.json';
-import uniswapTestnetAssets from '../references/uniswap-pairs-testnet.json';
-import erc20ABI from '../references/erc20-abi.json';
+import { erc20ABI, exchangeABI, uniswapTestnetAssets } from '../references';
 import { toHex, web3Provider } from './web3';
 
 const uniswapPairsEndpoint = axios.create({
@@ -358,15 +357,18 @@ export const getAllExchanges = async (tokenOverrides, excluded = []) => {
   }
   data.forEach(exchange => {
     const tokenAddress = toLower(exchange.tokenAddress);
-    const tokenExchangeInfo = {
-      decimals: exchange.tokenDecimals,
-      ethBalance: exchange.ethBalance,
-      exchangeAddress: exchange.id,
-      name: exchange.tokenName,
-      symbol: exchange.tokenSymbol,
-      ...tokenOverrides[tokenAddress],
-    };
-    allTokens[tokenAddress] = tokenExchangeInfo;
+    const hasLiquidity = greaterThan(exchange.ethBalance, 0);
+    if (hasLiquidity) {
+      const tokenExchangeInfo = {
+        decimals: exchange.tokenDecimals,
+        ethBalance: exchange.ethBalance,
+        exchangeAddress: exchange.id,
+        name: exchange.tokenName,
+        symbol: exchange.tokenSymbol,
+        ...tokenOverrides[tokenAddress],
+      };
+      allTokens[tokenAddress] = tokenExchangeInfo;
+    }
   });
   return allTokens;
 };

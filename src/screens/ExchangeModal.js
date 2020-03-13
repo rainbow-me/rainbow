@@ -711,8 +711,11 @@ const ExchangeModal = ({
     }
 
     if (isDeposit && newInputCurrency.address !== defaultInputAddress) {
-      const dai = ethereumUtils.getAsset(allAssets, defaultInputAddress);
-      updateOutputCurrency(dai, false);
+      const newDepositOutput = ethereumUtils.getAsset(
+        allAssets,
+        defaultInputAddress
+      );
+      updateOutputCurrency(newDepositOutput, false);
     }
   };
 

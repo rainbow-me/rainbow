@@ -30,6 +30,7 @@ const WalletScreen = ({ navigation, scrollViewTracker, setKeyboardHeight }) => {
   const [initialized, setInitialized] = useState(false);
   const initializeWallet = useInitializeWallet();
   const refreshAccountData = useRefreshAccountData();
+
   useEffect(() => {
     if (!initialized) {
       initializeWallet()
@@ -50,22 +51,9 @@ const WalletScreen = ({ navigation, scrollViewTracker, setKeyboardHeight }) => {
         });
     }
   }, [initializeWallet, initialized, setKeyboardHeight]);
+
   const { network } = useAccountSettings();
   const { isEmpty, isWalletEthZero, sections } = useWalletSectionsData();
-
-  /*
-  shouldComponentUpdate = nextProps =>
-    nextProps.navigation.getParam('focused', true) &&
-    isNewValueForObjectPaths(this.props, nextProps, [
-      'fetchingAssets',
-      'fetchingUniqueTokens',
-      'isEmpty',
-      'isWalletEthZero',
-      'language',
-      'nativeCurrency',
-      'sections',
-    ]);
-  */
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
