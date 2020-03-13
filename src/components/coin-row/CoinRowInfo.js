@@ -7,6 +7,8 @@ import { Row } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinRow from './CoinRow';
+import { compose } from 'recompact';
+import { withAccountSettings } from '../../hoc';
 
 const CoinRowPaddingTop = 15;
 const CoinRowPaddingBottom = 7;
@@ -56,4 +58,4 @@ CoinRowInfo.propTypes = {
   nativeCurrencySymbol: PropTypes.string,
 };
 
-export default CoinRowInfo;
+export default compose(withAccountSettings)(CoinRowInfo);
