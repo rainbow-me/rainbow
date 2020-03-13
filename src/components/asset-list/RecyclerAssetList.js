@@ -36,6 +36,7 @@ import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
 import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
 import CoinCheckButton from '../coin-row/CoinCheckButton';
+import CoinRowInfo from '../coin-row/CoinRowInfo';
 
 /* eslint-disable sort-keys */
 export const ViewTypes = {
@@ -651,6 +652,7 @@ class RecyclerAssetList extends Component {
 
   renderList = [];
   checkList = [];
+  valuesList = [];
 
   scrollToOffset = (position, animated) => {
     setTimeout(() => {
@@ -764,6 +766,7 @@ class RecyclerAssetList extends Component {
         smallBalancedChanged = false;
         const renderList = [];
         const checkList = [];
+        const valuesList = [];
         for (let i = 0; i < item.assets.length; i++) {
           renderList.push(
             renderItem({
@@ -775,15 +778,18 @@ class RecyclerAssetList extends Component {
             })
           );
           checkList.push(<CoinCheckButton {...item.assets[i]} />);
+          valuesList.push(<CoinRowInfo native={item.assets[i].native} />);
         }
         this.renderList = renderList;
         this.checkList = checkList;
+        this.valuesList = valuesList;
       }
 
       return (
         <SmallBalancesWrapper
           assets={this.renderList}
           checkList={this.checkList}
+          valuesList={this.valuesList}
           reloadData={this.props.reloadData}
         />
       );

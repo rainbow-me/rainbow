@@ -41,6 +41,7 @@ class SmallBalancesWrapper extends PureComponent {
       setPinnedCoins,
       setIsCoinListEdited,
       reloadData,
+      valuesList,
     } = this.props;
 
     return (
@@ -69,6 +70,7 @@ class SmallBalancesWrapper extends PureComponent {
             >
               {assets}
             </TransitionToggler>
+            <View style={{ position: 'absolute', right: 0 }}>{valuesList}</View>
           </View>
         </OpacityToggler>
       </Fragment>

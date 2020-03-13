@@ -1,6 +1,6 @@
-import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
+import { View } from 'react-native';
 import { compose, shouldUpdate, withHandlers } from 'recompact';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import {
@@ -8,59 +8,34 @@ import {
   withOpenBalances,
   withEditOptions,
 } from '../../hoc';
-import { colors } from '../../styles';
-import { isNewValueForPath } from '../../utils';
+import { isNewValueForPath, deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { FlexItem, Row } from '../layout';
-import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import CoinCheckButton from './CoinCheckButton';
 import TransitionToggler from '../animations/TransitionToggler';
 import withCoinListEdited from '../../hoc/withCoinListEdited';
+import CoinRowInfo from './CoinRowInfo';
 
-const formatPercentageString = percentString =>
-  percentString
-    ? percentString
-        .split('-')
-        .join('- ')
-        .split('%')
-        .join(' %')
-    : '-';
-
-const BottomRow = ({ balance, native }) => {
-  const percentChange = get(native, 'change');
-  const percentageChangeDisplay = formatPercentageString(percentChange);
-  const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
-
+const BottomRow = ({ balance }) => {
   return (
     <Fragment>
       <BottomRowText>{balance.display}</BottomRowText>
-      <BottomRowText color={isPositive ? colors.limeGreen : null}>
-        {percentageChangeDisplay}
-      </BottomRowText>
     </Fragment>
   );
 };
 
 BottomRow.propTypes = {
   balance: PropTypes.shape({ display: PropTypes.string }),
-  native: PropTypes.object,
 };
 
-const TopRow = ({ name, native, nativeCurrencySymbol }) => {
-  const nativeDisplay = get(native, 'balance.display');
-
+const TopRow = ({ name }) => {
   return (
     <Row align="center" justify="space-between">
       <FlexItem flex={1}>
         <CoinName>{name}</CoinName>
-      </FlexItem>
-      <FlexItem flex={0}>
-        <BalanceText color={nativeDisplay ? null : colors.blueGreyLight}>
-          {nativeDisplay || `${nativeCurrencySymbol}0.00`}
-        </BalanceText>
       </FlexItem>
     </Row>
   );
@@ -68,8 +43,6 @@ const TopRow = ({ name, native, nativeCurrencySymbol }) => {
 
 TopRow.propTypes = {
   name: PropTypes.string,
-  native: PropTypes.object,
-  nativeCurrencySymbol: PropTypes.string,
 };
 
 const BalanceCoinRow = ({
@@ -77,6 +50,7 @@ const BalanceCoinRow = ({
   onPress,
   onPressSend,
   isCoinListEdited,
+  nativeCurrencySymbol,
   ...props
 }) => {
   return item.isSmall ? (
@@ -91,25 +65,33 @@ const BalanceCoinRow = ({
       />
     </ButtonPressAnimation>
   ) : (
-    <>
-      <CoinCheckButton isAbsolute {...item} />
-      <TransitionToggler
-        startingWidth={0}
-        endingWidth={42}
-        toggle={isCoinListEdited}
-      >
-        <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
-          <CoinRow
-            onPress={onPress}
-            onPressSend={onPressSend}
-            {...item}
-            {...props}
-            bottomRowRender={BottomRow}
-            topRowRender={TopRow}
+    <Row>
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+        <Row>
+          <TransitionToggler
+            startingWidth={0}
+            endingWidth={42}
+            toggle={isCoinListEdited}
+          >
+            <View style={{ width: deviceUtils.dimensions.width - 120 - 13 }}>
+              <CoinRow
+                onPress={onPress}
+                onPressSend={onPressSend}
+                {...item}
+                {...props}
+                bottomRowRender={BottomRow}
+                topRowRender={TopRow}
+              />
+            </View>
+          </TransitionToggler>
+          <CoinRowInfo
+            native={item.native}
+            nativeCurrencySymbol={nativeCurrencySymbol}
           />
-        </ButtonPressAnimation>
-      </TransitionToggler>
-    </>
+        </Row>
+      </ButtonPressAnimation>
+      {isCoinListEdited ? <CoinCheckButton isAbsolute {...item} /> : null}
+    </Row>
   );
 };
 

@@ -93,6 +93,7 @@ CoinRow.propTypes = {
   containerStyles: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
   contentStyles: PropTypes.string,
   highlight: PropTypes.bool,
+  isCoinListEdited: PropTypes.bool,
   onPress: PropTypes.func,
   symbol: PropTypes.string,
   topRowRender: PropTypes.func,
