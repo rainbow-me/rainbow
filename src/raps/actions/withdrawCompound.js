@@ -5,9 +5,12 @@ import { convertAmountToRawAmount } from '../../helpers/utilities';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
 import store from '../../redux/store';
+import {
+  compoundCETHABI,
+  compoundCERC20ABI,
+  savingsAssetsListByUnderlying,
+} from '../../references';
 import { gasUtils } from '../../utils';
-import { savingsAssetsListByUnderlying } from '../../references';
-import compoundCERC20ABI from '../../references/compound/compound-cerc20-abi.json';
 
 const NOOP = () => undefined;
 
@@ -58,7 +61,7 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
 
   const compound = new ethers.Contract(
     cTokenContract,
-    compoundCERC20ABI,
+    inputCurrency.address === 'eth' ? compoundCETHABI : compoundCERC20ABI,
     wallet
   );
 
