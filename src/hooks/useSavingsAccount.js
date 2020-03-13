@@ -34,7 +34,6 @@ export default function useSavingsAccount(pollInterval = 0) {
   });
 
   const tokens = useMemo(() => {
-    console.log('[SAVINGS MEMO]');
     const markets = keyBy(
       get(marketsQuery, 'data.markets', []),
       property('id')

@@ -26,7 +26,6 @@ const SavingsSheet = () => {
 
   const isEmpty = getParam('isEmpty');
   const nativeValue = getParam('nativeValue');
-  const isStablecoin = getParam('isStablecoin');
   const underlying = getParam('underlying');
   const lifetimeSupplyInterestAccrued = getParam(
     'lifetimeSupplyInterestAccrued'
@@ -47,7 +46,6 @@ const SavingsSheet = () => {
           <SavingsSheetHeader
             balance={balance}
             lifetimeAccruedInterest={lifetimeSupplyInterestAccrued}
-            isStablecoin={isStablecoin}
           />
           <SheetActionButtonRow>
             <SheetActionButton
