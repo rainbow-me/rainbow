@@ -4,6 +4,7 @@ import { colors, padding } from '../../styles';
 import { Icon } from '../icons';
 import { Centered, RowWithMargins } from '../layout';
 import { DollarFigure, Rounded } from '../text';
+import { formatSavingsAmount } from '../../helpers/savings';
 
 const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => (
   <Centered css={padding(9, 0, 3)} direction="column">
@@ -16,7 +17,7 @@ const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => (
     >
       Savings
     </Rounded>
-    <DollarFigure value={balance} />
+    <DollarFigure value={balance} decimals={4} />
     <RowWithMargins align="center" margin={5} marginTop={1}>
       <Icon name="plusCircled" />
       <Rounded
@@ -26,7 +27,7 @@ const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => (
         lineHeight="loose"
         weight="bold"
       >
-        {lifetimeAccruedInterest}
+        {formatSavingsAmount(lifetimeAccruedInterest)}
       </Rounded>
     </RowWithMargins>
   </Centered>

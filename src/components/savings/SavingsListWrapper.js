@@ -8,6 +8,10 @@ import { OpacityToggler } from '../animations';
 import { View } from 'react-native';
 import { useAccountAssets } from '../../hooks';
 import { ethereumUtils } from '../../utils';
+import { pure } from 'recompose';
+import SavingsListRow from './SavingsListRow';
+
+const SavingsListRowRenderer = pure(data => <SavingsListRow {...data} />);
 
 const SavingsListWrapper = ({ assets, openSavings }) => {
   const [savingsSumValue, setSavingsSumValue] = useState(0);
@@ -19,9 +23,11 @@ const SavingsListWrapper = ({ assets, openSavings }) => {
     const updateSum = () => {
       let newSavingsSumValue = 0;
       if (priceOfEther) {
-        assets.forEach(asset => {
-          const { ethPrice } = asset.props;
-          newSavingsSumValue += priceOfEther * ethPrice;
+        assets.forEach((asset, i) => {
+          const { ethPrice } = asset;
+          const nativeValue = priceOfEther * ethPrice;
+          assets[i].nativeValue = nativeValue;
+          newSavingsSumValue += nativeValue;
         });
         setSavingsSumValue(newSavingsSumValue);
       }
@@ -39,7 +45,9 @@ const SavingsListWrapper = ({ assets, openSavings }) => {
           isVisible={openSavings}
           startingOpacity={0}
         >
-          {assets}
+          {assets.map(item => (
+            <SavingsListRowRenderer key={item.underlying.symbol} {...item} />
+          ))}
         </OpacityToggler>
       </View>
     </React.Fragment>

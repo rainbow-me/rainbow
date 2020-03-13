@@ -1,4 +1,7 @@
+import BigNumber from 'bignumber.js';
+
 const APROX_BLOCK_TIME = 15;
+const MAX_DECIMALS_TO_SHOW = 10;
 
 const calculateAPY = supplyRate => {
   if (!supplyRate) return (0).toFixed(2);
@@ -23,9 +26,15 @@ const calculateEarningsInDays = (amount, apr, days) => {
   return compoundInterestPerBlock * blocksPerMinute * 60 * 24 * days;
 };
 
+const formatSavingsAmount = amount => {
+  const amountBN = BigNumber(amount);
+  return amountBN.toFixed(MAX_DECIMALS_TO_SHOW);
+};
+
 export {
   calculateAPY,
   calculateCompoundInterestPerBlock,
   calculateEarningsInDays,
+  formatSavingsAmount,
   APROX_BLOCK_TIME,
 };

@@ -9,6 +9,7 @@ import {
   calculateAPY,
   calculateCompoundInterestPerBlock,
   APROX_BLOCK_TIME,
+  formatSavingsAmount,
 } from '../../helpers/savings';
 import { add, multiply } from '../../helpers/utilities';
 import { colors, padding, position, fonts } from '../../styles';
@@ -20,7 +21,6 @@ import { Centered, Row } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { GradientText, Text } from '../text';
 
-const MAX_DECIMALS_TO_SHOW = 10;
 const AVERAGE_BLOCK_TIME_MS = APROX_BLOCK_TIME * 1000;
 const BLOCKS_IN_1_DAY = (60000 / AVERAGE_BLOCK_TIME_MS) * 60 * 24 * 1000;
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
@@ -38,9 +38,8 @@ const sx = StyleSheet.create({
 });
 
 const animatedNumberFormatterWithDolllars = val =>
-  `$${parseFloat(val).toFixed(MAX_DECIMALS_TO_SHOW)}`;
-const animatedNumberFormatter = val =>
-  `${parseFloat(val).toFixed(MAX_DECIMALS_TO_SHOW)}`;
+  `$${formatSavingsAmount(val)}`;
+const animatedNumberFormatter = val => `${formatSavingsAmount(val)}`;
 
 const renderAnimatedNumber = (value, steps, symbol) => {
   const isStablecoin = STABLECOINS.indexOf(symbol) !== -1;
@@ -110,7 +109,7 @@ const SavingsListRow = ({
     getFutureValue();
   }, [apy, initialValue, supplyBalanceUnderlying, underlying, value]);
 
-  const displayValue = value.toFixed(MAX_DECIMALS_TO_SHOW);
+  const displayValue = formatSavingsAmount(value);
 
   return (
     <Centered css={padding(9, 0, 3)} direction="column">
@@ -246,10 +245,13 @@ export default compose(
       lifetimeSupplyInterestAccrued,
       underlying,
       supplyBalanceUnderlying,
+      nativeValue,
     }) => () => {
       navigation.navigate('SavingsSheet', {
         isEmpty: !supplyBalanceUnderlying,
+        isStablecoin: STABLECOINS.indexOf(underlying.symbol) !== -1,
         lifetimeSupplyInterestAccrued,
+        nativeValue,
         supplyBalanceUnderlying,
         supplyRate,
         underlying,
