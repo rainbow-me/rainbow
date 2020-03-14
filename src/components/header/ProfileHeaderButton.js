@@ -14,10 +14,8 @@ import { isAvatarPickerAvailable } from '../../config/experimental';
 
 const AvatarCircle = styled(View)`
   border-radius: 17px;
-  margin-bottom: 16px;
   height: 34px;
   width: 34px;
-  position: absolute;
   z-index: 10;
 `;
 
@@ -51,8 +49,9 @@ const ProfileHeaderButton = ({
             {new GraphemeSplitter().splitGraphemes(accountName)[0]}
           </FirstLetter>
         </AvatarCircle>
-      ) : null}
-      <Avatar size={34} />
+      ) : (
+        <Avatar size={34} />
+      )}
       {pendingRequestCount > 0 && (
         <Badge delay={1500} value={pendingRequestCount} zIndex={1} />
       )}

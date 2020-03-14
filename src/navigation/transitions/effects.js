@@ -21,7 +21,7 @@ const emojiStyleInterpolator = ({
   });
 
   const scale = current.interpolate({
-    inputRange: [-1, 0, 0.99, 2],
+    inputRange: [-1, 0, 1, 2],
     outputRange: [0.01, 0.01, 1, 1],
   });
 
@@ -213,6 +213,7 @@ export const emojiPreset = {
   cardStyleInterpolator: emojiStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical-inverted',
+  gestureEnabled: false,
   gestureResponseDistance,
   onTransitionStart,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },

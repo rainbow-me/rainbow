@@ -18,6 +18,7 @@ import { FloatingEmojis } from '../floating-emojis';
 import { TruncatedAddress } from '../text';
 import ProfileAction from './ProfileAction';
 import { isAvatarPickerAvailable } from '../../config/experimental';
+import { ShadowStack } from '../shadow-stack';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
@@ -69,13 +70,25 @@ const ProfileMasthead = ({
           onPress={onPressAvatar}
           scaleTo={0.82}
         >
-          <AvatarCircle
-            style={{ backgroundColor: colors.avatarColor[accountColor] }}
+          <ShadowStack
+            height={65}
+            width={65}
+            marginBottom={16}
+            borderRadius={40}
+            shadows={[
+              [0, 6, 10, colors.dark, 0.12],
+              [0, 2, 5, colors.dark, 0.08],
+            ]}
+            shouldRasterizeIOS
           >
-            <FirstLetter>
-              {new GraphemeSplitter().splitGraphemes(accountName)[0]}
-            </FirstLetter>
-          </AvatarCircle>
+            <AvatarCircle
+              style={{ backgroundColor: colors.avatarColor[accountColor] }}
+            >
+              <FirstLetter>
+                {new GraphemeSplitter().splitGraphemes(accountName)[0]}
+              </FirstLetter>
+            </AvatarCircle>
+          </ShadowStack>
         </ButtonPressAnimation>
       ) : (
         <FastImage
