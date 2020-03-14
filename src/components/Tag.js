@@ -27,7 +27,7 @@ const OuterBorder = styled(Centered)`
 `;
 
 const Text = styled(TextElement).attrs({
-  color: colors.blueGreyLightest,
+  color: colors.alpha(colors.blueGreyDark, 0.5),
   letterSpacing: 'roundedTight',
   size: 'lmedium',
   weight: 'medium',
@@ -36,7 +36,7 @@ const Text = styled(TextElement).attrs({
 `;
 
 const Title = styled(TextElement).attrs({
-  color: colors.blueGreyLightest,
+  color: colors.alpha(colors.blueGreyDark, 0.4),
   size: 'tiny',
   weight: 'medium',
 })`

@@ -35,7 +35,7 @@ const BottomRow = ({ balance, native }) => {
         align="right"
         color={
           isPositive
-            ? colors.limeGreen
+            ? colors.green
             : isNull
             ? colors.alpha(colors.blueGreyDark, 0.2)
             : null
@@ -61,7 +61,9 @@ const TopRow = ({ name, native, nativeCurrencySymbol }) => {
         <CoinName>{name}</CoinName>
       </FlexItem>
       <FlexItem flex={0}>
-        <BalanceText color={nativeDisplay ? null : colors.blueGreyLight}>
+        <BalanceText
+          color={nativeDisplay ? null : colors.alpha(colors.blueGreyDark, 0.5)}
+        >
           {nativeDisplay || `${nativeCurrencySymbol}0.00`}
         </BalanceText>
       </FlexItem>

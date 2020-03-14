@@ -2,21 +2,13 @@
 const font = {};
 
 font.family = {
-  Graphik: 'Graphik',
   SFMono: 'SFMono-Regular',
-  SFProDisplay: 'SF Pro Display',
-  SFProText: 'SF Pro Text',
   SFProRounded: 'SF Pro Rounded',
 };
 
 font.letterSpacing = {
-  tightest: -0.3,
-  tighter: -0.2,
-  tight: -0.1,
-  loose: 0.15,
   roundedTightest: 0.2,
   roundedTight: 0.4,
-  looser: 0.46,
   roundedMedium: 0.5,
   rounded: 0.6,
 };

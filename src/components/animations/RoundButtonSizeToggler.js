@@ -73,7 +73,7 @@ export default class RoundButtonSizeToggler extends PureComponent {
   };
 
   static defaultProps = {
-    color: colors.lightBlueGrey,
+    color: colors.blueGreyDarkLight,
     friction: 20,
     tension: 200,
   };

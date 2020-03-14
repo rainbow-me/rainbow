@@ -53,7 +53,7 @@ const BackupSection = ({ navigation, seedPhrase, toggleSeedPhrase }) => (
       ) : (
         <Text
           align="center"
-          color="blueGreyLightest"
+          color={colors.alpha(colors.blueGreyDark, 0.6)}
           lineHeight="loose"
           size="lmedium"
         >

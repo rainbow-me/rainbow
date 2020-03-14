@@ -15,7 +15,7 @@ import InvestmentCardPill from './InvestmentCardPill';
 const UniswapInvestmentCardHeight = 114;
 
 const AssetLabel = withProps({
-  color: 'blueGreyDarkTransparent',
+  color: colors.alpha(colors.blueGreyDark, 0.6),
   lineHeight: 'tight',
   size: 'smedium',
 })(Text);

@@ -40,7 +40,7 @@ const BottomRow = ({ name, native, status, type }) => {
   if (isOutgoingSwap) coinNameColor = colors.alpha(colors.blueGreyDark, 0.5);
 
   let balanceTextColor = colors.alpha(colors.blueGreyDark, 0.5);
-  if (isReceived) balanceTextColor = colors.limeGreen;
+  if (isReceived) balanceTextColor = colors.green;
   if (isSent) balanceTextColor = colors.dark;
   if (isIncomingSwap) balanceTextColor = colors.swapPurple;
   if (isOutgoingSwap) balanceTextColor = colors.dark;

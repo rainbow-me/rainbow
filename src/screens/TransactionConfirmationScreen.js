@@ -167,17 +167,22 @@ export default class TransactionConfirmationScreen extends PureComponent {
           size={60}
           style={{ marginBottom: 24 }}
         />
-        <Text color="white" letterSpacing="looser" size="h4" weight="semibold">
+        <Text
+          color="white"
+          letterSpacing="roundedMedium"
+          size="h4"
+          weight="semibold"
+        >
           {this.props.dappName}
         </Text>
         <TransactionType>{this.requestHeader()}</TransactionType>
         <CancelButtonContainer>
           <Button
-            backgroundColor={colors.blueGreyMedium}
+            backgroundColor={colors.alpha(colors.grey, 0.4)}
             onPress={this.props.onCancel}
             showShadow={false}
             size="small"
-            textProps={{ color: colors.backgroundGrey, size: 'lmedium' }}
+            textProps={{ color: colors.black, size: 'lmedium' }}
           >
             {lang.t('wallet.action.reject')}
           </Button>

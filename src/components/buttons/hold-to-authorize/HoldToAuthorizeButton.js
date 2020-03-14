@@ -26,7 +26,7 @@ const ButtonBorderRadius = 30;
 const ButtonHeight = 59;
 
 const ButtonDisabledBgColor = {
-  dark: colors.darkGrey, // blueGreyLighter,
+  dark: colors.darkGrey,
   light: colors.lightGrey,
 };
 

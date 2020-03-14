@@ -15,7 +15,7 @@ import { Monospace } from '../text';
 import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
 
 const FallbackTextColorVariants = {
-  dark: colors.blueGreyLight,
+  dark: colors.alpha(colors.blueGreyDark, 0.5),
   light: colors.white,
 };
 

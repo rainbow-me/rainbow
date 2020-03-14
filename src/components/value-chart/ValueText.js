@@ -20,9 +20,8 @@ const Title = styled(TruncatedText).attrs(HeadingTextStyles)`
 
 const Header = styled(TruncatedText)`
   font-size: ${fonts.size.smedium};
-  color: ${colors.blueGreyLight};
+  color: ${colors.alpha(colors.blueGreyDark, 0.5)};
   font-weight: ${fonts.weight.semibold};
-  letter-spacing: 1.3;
 `;
 
 const transition = (

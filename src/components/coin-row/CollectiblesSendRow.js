@@ -101,7 +101,7 @@ const CollectiblesSendRow = enhance(
     <Fragment>
       {isFirstRow && (
         <Centered style={{ height: dividerHeight }}>
-          <Divider color={colors.alpha(colors.blueGreyLighter, 0.05)} />
+          <Divider color={colors.rowDividerLight} />
         </Centered>
       )}
       <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>

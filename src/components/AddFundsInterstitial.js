@@ -43,7 +43,7 @@ const Container = styled(Centered)`
 
 const Paragraph = styled(Text).attrs({
   align: 'center',
-  color: colors.placeholder,
+  color: colors.alpha(colors.blueGreyDark, 0.3),
   lineHeight: 'paragraphSmall',
   size: 'lmedium',
 })`
@@ -82,27 +82,27 @@ const AddFundsInterstitial = ({
       {network === networkTypes.mainnet ? (
         <React.Fragment>
           <InterstitialButton
-            backgroundColor={colors.blueGreyDark}
+            backgroundColor={colors.paleBlue}
             onPress={onPressImportWallet}
           >
             Import My Wallet
           </InterstitialButton>
           <Paragraph>
             If you already have an Ethereum wallet, you can securely import it
-            with its seed phrase or private key.
+            with a seed phrase or private key.
           </Paragraph>
         </React.Fragment>
       ) : (
         <React.Fragment>
           <InterstitialButton
-            backgroundColor={colors.blueGreyDark}
+            backgroundColor={colors.paleBlue}
             onPress={() => onAddFromFaucet(network)}
           >
             Add from Faucet
           </InterstitialButton>
           <Paragraph>
-            You can request ETH through the {get(networkInfo[network], 'name')}{' '}
-            faucet.
+            You can request test ETH through the{' '}
+            {get(networkInfo[network], 'name')} faucet.
           </Paragraph>
         </React.Fragment>
       )}

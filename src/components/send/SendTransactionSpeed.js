@@ -29,7 +29,7 @@ const SendTransactionSpeed = ({
         opacity={1}
         showShadow={false}
         size="small"
-        textProps={{ color: colors.blueGreyLightest }}
+        textProps={{ color: colors.alpha(colors.blueGreyDark, 0.6) }}
         type="pill"
       >
         Fee: {fee}

@@ -207,11 +207,7 @@ class SendHeader extends PureComponent {
           )}
           {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
         </AddressInputContainer>
-        <Divider
-          color={colors.alpha(colors.blueGreyLight, 0.05)}
-          flex={0}
-          inset={false}
-        />
+        <Divider color={colors.rowDividerLight} flex={0} inset={false} />
       </Fragment>
     );
   };

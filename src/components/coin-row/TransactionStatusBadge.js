@@ -41,7 +41,7 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
 
   let statusColor = colors.alpha(colors.blueGreyDark, 0.7);
   if (pending) {
-    statusColor = colors.primaryBlue;
+    statusColor = colors.appleBlue;
   } else if (isTrade && status === TransactionStatusTypes.sent) {
     statusColor = colors.swapPurple;
   }
