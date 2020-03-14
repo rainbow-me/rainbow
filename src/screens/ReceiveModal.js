@@ -63,7 +63,15 @@ const ReceiveModal = () => {
         </Column>
       </Column>
       <ModalFooterButtonsRow>
-        <FloatingEmojis flex={1}>
+        <FloatingEmojis
+          distance={250}
+          duration={500}
+          fadeOut={false}
+          flex={1}
+          scaleTo={0}
+          size={50}
+          wiggleFactor={0}
+        >
           {({ onNewEmoji }) => (
             <ModalFooterButton
               icon="copy"
