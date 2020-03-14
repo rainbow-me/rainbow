@@ -36,13 +36,14 @@ const BottomRow = ({ name, native, status, type }) => {
     status === TransactionStatusTypes.received &&
     type === TransactionTypes.trade;
 
-  let balanceTextColor = colors.alpha(colors.blueGreyDark, 0.5);
   let coinNameColor = colors.dark;
+  if (isOutgoingSwap) coinNameColor = colors.alpha(colors.blueGreyDark, 0.5);
+
+  let balanceTextColor = colors.alpha(colors.blueGreyDark, 0.5);
   if (isReceived) balanceTextColor = colors.limeGreen;
   if (isSent) balanceTextColor = colors.dark;
   if (isIncomingSwap) balanceTextColor = colors.swapPurple;
   if (isOutgoingSwap) balanceTextColor = colors.dark;
-  if (isOutgoingSwap) coinNameColor = colors.alpha(colors.blueGreyDark, 0.5);
 
   const nativeDisplay = get(native, 'display');
   const balanceText = nativeDisplay
