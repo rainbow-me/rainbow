@@ -5,5 +5,4 @@ export default withProps(({ color }) => ({
   align: 'right',
   color: color || 'dark',
   size: 'lmedium',
-  weight: 'regular',
 }))(Text);

@@ -149,7 +149,7 @@ const SettingsSection = ({
         />
         <ListItem
           icon={<Emoji name="rainbow" />}
-          label="Follow Us"
+          label="Follow Us on Twitter"
           onPress={onPressTwitter}
           value={SettingsExternalURLs.twitter}
         />

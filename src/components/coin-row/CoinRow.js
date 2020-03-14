@@ -3,7 +3,7 @@ import React, { createElement } from 'react';
 import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withAccountSettings, withFabSendAction } from '../../hoc';
-import { colors, padding } from '../../styles';
+import { padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import Highlight from '../Highlight';
 import { Column, Row } from '../layout';
@@ -13,7 +13,6 @@ const CoinRowPaddingBottom = 10;
 
 const Container = styled(Row)`
   ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom, 19)}
-  background-color: ${colors.white};
   width: 100%;
 `;
 

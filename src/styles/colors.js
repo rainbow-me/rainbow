@@ -18,7 +18,6 @@ const base = {
   chartGreen: '#66d28f', // '102, 210, 143'
   dark: '#25292E', // '37, 41, 46'
   darkGrey: '#71778a', // '113, 119, 138'
-  dodgerBlue: '#575CFF', // '87, 92, 255'
   green: '#00994d', // '0, 153, 77'
   grey: '#a9adb9', // '169, 173, 185'
   grey20: '#333333', // '51, 51, 51'
@@ -42,6 +41,7 @@ const base = {
   rowDividerLight: 'rgba(60, 66, 82, 0.02)', // '60, 66, 82'
   shimmer: '#edeef1', // '237, 238, 241'
   skeleton: '#f6f7f8', // '246, 247, 248'
+  swapPurple: '#575CFF', // '87, 92, 255'
   transparent: 'transparent',
   white: '#ffffff', // '255, 255, 255'
 };

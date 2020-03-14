@@ -28,28 +28,39 @@ const rowRenderPropTypes = {
 };
 
 const BottomRow = ({ name, native, status, type }) => {
-  const isFailed = status === TransactionStatusTypes.failed;
   const isReceived = status === TransactionStatusTypes.received;
   const isSent = status === TransactionStatusTypes.sent;
-  const isSwapped =
+  const isOutgoingSwap =
     status === TransactionStatusTypes.sent && type === TransactionTypes.trade;
+  const isIncomingSwap =
+    status === TransactionStatusTypes.received &&
+    type === TransactionTypes.trade;
 
-  let balanceTextColor = colors.blueGreyLight;
+  let balanceTextColor = colors.alpha(colors.blueGreyDark, 0.5);
+  let coinNameColor = colors.dark;
   if (isReceived) balanceTextColor = colors.limeGreen;
-  if (isSent) balanceTextColor = colors.blueGreyDark;
+  if (isSent) balanceTextColor = colors.dark;
+  if (isIncomingSwap) balanceTextColor = colors.swapPurple;
+  if (isOutgoingSwap) balanceTextColor = colors.dark;
+  if (isOutgoingSwap) coinNameColor = colors.alpha(colors.blueGreyDark, 0.5);
 
   const nativeDisplay = get(native, 'display');
   const balanceText = nativeDisplay
-    ? compact([isFailed || isSent ? '-' : null, nativeDisplay]).join(' ')
+    ? compact([isSent ? '-' : null, nativeDisplay]).join(' ')
     : '';
 
   return (
-    <Row align="center" justify="space-between" opacity={isSwapped ? 0.5 : 1}>
+    <Row align="center" justify="space-between">
       <FlexItem flex={1}>
-        <CoinName>{name}</CoinName>
+        <CoinName color={coinNameColor}>{name}</CoinName>
       </FlexItem>
       <FlexItem flex={0}>
-        <BalanceText color={balanceTextColor}>{balanceText}</BalanceText>
+        <BalanceText
+          color={balanceTextColor}
+          weight={isReceived ? 'medium' : null}
+        >
+          {balanceText}
+        </BalanceText>
       </FlexItem>
     </Row>
   );
