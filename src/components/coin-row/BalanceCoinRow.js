@@ -26,7 +26,6 @@ const BottomRow = ({ balance, native }) => {
   const percentChange = get(native, 'change');
   const percentageChangeDisplay = formatPercentageString(percentChange);
   const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
-  const isNull = !percentChange;
 
   return (
     <Fragment>
@@ -36,7 +35,7 @@ const BottomRow = ({ balance, native }) => {
         color={
           isPositive
             ? colors.green
-            : isNull
+            : !percentChange
             ? colors.alpha(colors.blueGreyDark, 0.2)
             : null
         }
