@@ -9,7 +9,7 @@ import { Text } from '../text';
 
 const ButtonIcon = styled(Icon)`
   ${position.maxSize('100%')};
-  margin-right: 7;
+  margin-right: 9;
 `;
 
 const Container = styled(Centered)`
@@ -24,11 +24,11 @@ const IconContainer = styled(Centered)`
 `;
 
 const ModalFooterButton = ({ icon, label, onPress }) => (
-  <Container component={BorderlessButton} onPress={onPress}>
+  <Container component={BorderlessButton} onPress={onPress} paddingBottom={7}>
     <IconContainer>
       <ButtonIcon color={colors.appleBlue} name={icon} />
     </IconContainer>
-    <Text color="appleBlue" size="large" weight="medium">
+    <Text color="appleBlue" size="large" weight="semibold">
       {label}
     </Text>
   </Container>

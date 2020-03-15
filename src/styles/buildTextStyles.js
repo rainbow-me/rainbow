@@ -4,7 +4,7 @@ import fonts from './fonts';
 
 export default css`
   ${({ align }) => (align ? `text-align: ${align};` : '')}
-  ${({ letterSpacing }) =>
+  ${({ letterSpacing = 'rounded' }) =>
     letterSpacing
       ? `letter-spacing: ${fonts.letterSpacing[letterSpacing]};`
       : ''}
@@ -12,7 +12,7 @@ export default css`
     lineHeight ? `line-height: ${fonts.lineHeight[lineHeight]};` : ''}
   ${({ uppercase }) => (uppercase ? 'text-transform: uppercase;' : '')}
   color: ${({ color }) => colors.get(color) || colors.dark}
-  ${({ emoji, family = 'SFProText', mono }) =>
+  ${({ emoji, family = 'SFProRounded', mono }) =>
     emoji ? '' : `font-family: ${fonts.family[mono ? 'SFMono' : family]}`};
   font-size: ${({ size }) =>
     typeof size === 'number' ? size : fonts.size[size || 'medium']};

@@ -16,15 +16,14 @@ const TrendIndicatorText = ({ children, direction }) => (
       }}
     >
       <Icon
-        color={direction ? colors.chartGreen : colors.red}
+        color={direction ? colors.green : colors.red}
         name="arrow"
         direction={direction ? 'left' : 'right'}
       />
     </View>
     <Text
       style={{
-        color: direction ? colors.chartGreen : colors.red,
-        fontFamily: fonts.family.SFProRounded,
+        color: direction ? colors.green : colors.red,
         fontWeight: fonts.weight.semibold,
         lineHeight: 17,
         paddingLeft: 2,

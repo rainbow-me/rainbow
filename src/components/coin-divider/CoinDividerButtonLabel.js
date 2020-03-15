@@ -13,7 +13,7 @@ const CoinDividerButtonLabel = ({ isVisible, label, node, steps }) => (
   >
     <Text
       color="blueGreyDark"
-      letterSpacing="tighter"
+      letterSpacing="roundedTight"
       size="lmedium"
       style={{
         opacity: 0.6,

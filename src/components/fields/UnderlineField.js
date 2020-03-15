@@ -130,25 +130,22 @@ export default class UnderlineField extends PureComponent {
 
     return (
       <Column flex={1} {...props}>
-        <Row
-          align="center"
-          justify="space-between"
-          style={{ marginBottom: 10 }}
-        >
-          <FlexItem style={{ paddingRight: 10 }}>
+        <Row align="center" justify="space-between" style={{ marginBottom: 8 }}>
+          <FlexItem style={{ paddingRight: 8 }}>
             <Input
               autoFocus={autoFocus}
-              color={colors.blueGreyDark}
-              family="SFMono"
+              color={colors.dark}
               keyboardType={keyboardType}
+              letterSpacing="roundedTightest"
               maxLength={maxLength}
               onBlur={this.onBlur}
               onChange={this.onChange}
               onFocus={this.onFocus}
               placeholder={placeholder}
               ref={this.handleRef}
-              size="h2"
+              size="h3"
               value={this.format(String(this.props.value || ''))}
+              weight="medium"
             />
           </FlexItem>
           {showFieldButton && (

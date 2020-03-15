@@ -25,12 +25,15 @@ import ActivityIndicator from '../ActivityIndicator';
 import { Centered, Column } from '../layout';
 import ListFooter from '../list/ListFooter';
 import ActivityListHeader from './ActivityListHeader';
+import transactionTypes from '../../helpers/transactionTypes';
+import transactionStatusTypes from '../../helpers/transactionStatusTypes';
 
 const ViewTypes = {
   COMPONENT_HEADER: 0,
   FOOTER: 1,
   HEADER: 2,
   ROW: 3,
+  SWAPPED_ROW: 4,
 };
 
 const Wrapper = styled.View`
@@ -47,7 +50,7 @@ const LoadingState = ({ children }) => (
         style={{ paddingTop: 200, position: 'absolute', width: '100%' }}
       >
         <ActivityIndicator
-          color={colors.alpha(colors.blueGreyLight, 0.666)}
+          color={colors.alpha(colors.blueGreyDark, 0.4)}
           size={32}
         />
       </Centered>
@@ -97,6 +100,7 @@ export default class RecyclerActivityList extends PureComponent {
     this.state = {
       dataProvider: new DataProvider(hasRowChanged, this.getStableId),
       headersIndices: [],
+      swappedIndices: [],
     };
 
     this.layoutProvider = new LayoutProvider(
@@ -113,17 +117,23 @@ export default class RecyclerActivityList extends PureComponent {
           return ViewTypes.FOOTER;
         }
 
+        if (this.state.swappedIndices.includes(index)) {
+          return ViewTypes.SWAPPED_ROW;
+        }
+
         return ViewTypes.ROW;
       },
       (type, dim) => {
         // This values has been hardcoded for omitting imports' cycle
         dim.width = deviceUtils.dimensions.width;
         if (type === ViewTypes.ROW) {
-          dim.height = 64;
+          dim.height = 70;
+        } else if (type === ViewTypes.SWAPPED_ROW) {
+          dim.height = 52;
         } else if (type === ViewTypes.FOOTER) {
-          dim.height = 27;
+          dim.height = 19;
         } else if (type === ViewTypes.HEADER) {
-          dim.height = 35;
+          dim.height = 39;
         } else {
           dim.height = this.props.isLoading
             ? deviceUtils.dimensions.height
@@ -135,8 +145,20 @@ export default class RecyclerActivityList extends PureComponent {
 
   static getDerivedStateFromProps(props, state) {
     const headersIndices = [];
+    const swappedIndices = [];
+    let index = 1;
     const items = props.sections.reduce(
       (ctx, section) => {
+        section.data.forEach(asset => {
+          if (
+            asset.type === transactionTypes.trade &&
+            asset.status === transactionStatusTypes.sent
+          ) {
+            swappedIndices.push(index);
+          }
+          index++;
+        });
+        index = index + 2;
         headersIndices.push(ctx.length);
         return ctx
           .concat([
@@ -156,6 +178,7 @@ export default class RecyclerActivityList extends PureComponent {
     return {
       dataProvider: state.dataProvider.cloneWithRows(items),
       headersIndices,
+      swappedIndices,
     };
   }
 

@@ -42,8 +42,8 @@ const SettingsExternalURLs = {
 const SettingIcon = styled(FastImage)`
   ${position.size(44)};
   margin-left: -6;
-  margin-right: -6;
-  margin-top: 6.5;
+  margin-right: -4;
+  margin-top: 8;
 `;
 
 let versionPressInterval = null;
@@ -149,7 +149,7 @@ const SettingsSection = ({
         />
         <ListItem
           icon={<Emoji name="rainbow" />}
-          label="Follow Us"
+          label="Follow Us on Twitter"
           onPress={onPressTwitter}
           value={SettingsExternalURLs.twitter}
         />
@@ -164,7 +164,7 @@ const SettingsSection = ({
           onPress={onPressReview}
         />
       </ColumnWithDividers>
-      <Column align="center" flex={1} justify="end" paddingBottom={24}>
+      <Column align="center" flex={1} justify="end" paddingBottom={19}>
         <TouchableWithoutFeedback onPress={handleVersionPress}>
           <AppVersionStamp />
         </TouchableWithoutFeedback>

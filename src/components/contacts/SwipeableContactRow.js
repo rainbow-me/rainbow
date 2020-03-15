@@ -38,7 +38,7 @@ const RightAction = ({ onPress, progress, text, x }) => {
         <Text
           align="center"
           color={colors.alpha(colors.blueGreyDark, 0.4)}
-          letterSpacing="tight"
+          letterSpacing="roundedTight"
           size="smaller"
           weight="medium"
         >

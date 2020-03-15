@@ -6,7 +6,7 @@ import { css } from 'styled-components/primitives';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
-import { Monospace } from '../text';
+import Text from '../text/Text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
@@ -27,9 +27,9 @@ const BottomRow = ({ balance, native, nativeCurrencySymbol }) => {
     get(native, 'balance.display') || `${nativeCurrencySymbol}0.00`;
 
   return (
-    <Monospace color={colors.alpha(colors.blueGreyDark, 0.6)} size="smedium">
+    <Text color={colors.alpha(colors.blueGreyDark, 0.5)} size="smedium">
       {get(balance, 'display')} ≈ {fiatValue}
-    </Monospace>
+    </Text>
   );
 };
 
@@ -56,7 +56,7 @@ const enhance = shouldUpdate((props, nextProps) => {
 });
 
 const SendCoinRow = enhance(({ item, onPress, selected, ...props }) => (
-  <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+  <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
     <CoinRow
       {...item}
       bottomRowRender={BottomRow}

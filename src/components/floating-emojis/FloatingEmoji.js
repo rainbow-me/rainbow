@@ -11,8 +11,10 @@ const FloatingEmoji = ({
   distance,
   duration,
   emoji,
+  fadeOut,
   index,
   left,
+  scaleTo,
   size,
   top,
   wiggleFactor,
@@ -27,7 +29,7 @@ const FloatingEmoji = ({
     return {
       opacity: interpolate(progress, {
         inputRange: [0, distance / 2, distance - size],
-        outputRange: [1, 0.89, 0],
+        outputRange: [1, fadeOut ? 0.89 : 1, fadeOut ? 0 : 1],
       }),
       rotate: concat(
         interpolate(progress, {
@@ -38,7 +40,7 @@ const FloatingEmoji = ({
       ),
       scale: interpolate(progress, {
         inputRange: [0, 15, 30, 50, distance],
-        outputRange: [0, 1.2, 1.1, 1, 1],
+        outputRange: [0, 1.2, 1.1, 1, scaleTo],
       }),
       translateX: add(
         multiply(
@@ -82,7 +84,9 @@ FloatingEmoji.propTypes = {
   distance: PropTypes.number.isRequired,
   duration: PropTypes.number.isRequired,
   emoji: PropTypes.string.isRequired,
+  fadeOut: PropTypes.bool,
   left: PropTypes.string.isRequired,
+  scaleTo: PropTypes.number.isRequired,
   size: PropTypes.string.isRequired,
   top: PropTypes.number,
   wiggleFactor: PropTypes.number,

@@ -3,13 +3,13 @@ import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { pure } from 'recompose';
 import { colors } from '../../styles';
-import { Monospace } from '../text';
+import { Text } from '../text';
 
 const TransactionMessage = ({ maxHeight, message }) => (
   <ScrollView style={{ maxHeight }}>
-    <Monospace color={colors.blueGreyDarkTransparent} size="lmedium">
+    <Text color={colors.alpha(colors.blueGreyDark, 0.6)} size="lmedium">
       {message}
-    </Monospace>
+    </Text>
   </ScrollView>
 );
 
