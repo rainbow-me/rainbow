@@ -62,13 +62,7 @@ const ExchangeModalHeader = ({ onPressDetails, showDetailsButton }) => {
   return (
     <Column align="center" css={padding(8, 0)}>
       <SheetHandle marginBottom={SheetHandleMargin} />
-      <Text
-        align="center"
-        letterSpacing="tighter"
-        lineHeight="loose"
-        size="large"
-        weight="bold"
-      >
+      <Text align="center" lineHeight="loose" size="large" weight="bold">
         Swap
       </Text>
       <InfoButtonTransition ref={ref} transition={transition}>

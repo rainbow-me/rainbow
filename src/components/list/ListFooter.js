@@ -5,7 +5,7 @@ import { colors } from '../../styles';
 const ListFooterHeight = 27;
 
 const Spacer = styled.View`
-  background-color: ${colors.white};
+  background-color: ${colors.transparent};
   height: ${ListFooterHeight};
   width: 100%;
 `;

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { withNeverRerender } from '../../hoc';
-import { colors, padding } from '../../styles';
+import { colors, fonts, padding } from '../../styles';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
 import { EnDash } from '../html-entities';
@@ -100,7 +100,10 @@ export default class ExchangeOutputField extends PureComponent {
             symbol={outputCurrencySymbol}
           />
           <ExchangeInput
+            disableTabularNums
             editable={!!outputCurrencySymbol}
+            fontFamily={fonts.family.SFProRounded}
+            letterSpacing={fonts.letterSpacing.roundedTightest}
             onBlur={onBlur}
             onChangeText={setOutputAmount}
             onFocus={onFocus}

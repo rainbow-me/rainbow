@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { TouchableWithoutFeedback } from 'react-native';
-import { colors } from '../../styles';
+import { colors, fonts } from '../../styles';
 import { isNewValueForObjectPaths } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { TokenSelectionButton } from '../buttons';
@@ -100,7 +100,10 @@ export default class ExchangeInputField extends Component {
                 address={inputCurrencyAddress}
               />
               <ExchangeInput
+                disableTabularNums
                 editable={!!inputCurrencySymbol}
+                fontFamily={fonts.family.SFProRounded}
+                letterSpacing={fonts.letterSpacing.roundedTightest}
                 onChangeText={setInputAmount}
                 onBlur={onBlur}
                 onFocus={onFocus}

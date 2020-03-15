@@ -133,7 +133,7 @@ const expandStyleInterpolator = targetOpacity => ({
       transform: [{ translateY }],
     },
     overlayStyle: {
-      backgroundColor: 'rgb(37, 41, 46)',
+      backgroundColor: colors.blueGreyDarker,
       opacity: backgroundOpacity,
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
@@ -149,7 +149,7 @@ const sheetStyleInterpolator = ({
 }) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, 0.9, 0.9],
+    outputRange: [0, 0, 1, 1],
   });
 
   const translateY = current.interpolate({
@@ -159,15 +159,15 @@ const sheetStyleInterpolator = ({
 
   return {
     cardStyle: {
-      transform: [{ translateY }],
-    },
-    overlayStyle: {
-      backgroundColor: '#141414',
-      opacity: backgroundOpacity,
       shadowColor: colors.black,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.4,
       shadowRadius: 25,
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
+      backgroundColor: colors.black,
+      opacity: backgroundOpacity,
     },
   };
 };
@@ -176,15 +176,14 @@ const closeSpec = {
   animation: 'spring',
   config: {
     bounciness: 0,
-    overshootClamping: true,
-    speed: 25,
+    speed: 14,
   },
 };
 
 const openSpec = {
   animation: 'spring',
   config: {
-    bounciness: 4,
+    bounciness: 6,
     speed: 25,
   },
 };
@@ -274,14 +273,14 @@ export const exchangeDetailsPreset = {
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
-  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+  transitionSpec: { close: closeSpec, open: openSpec },
 };
 
 export const expandedPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: expandStyleInterpolator(0.4),
+  cardStyleInterpolator: expandStyleInterpolator(0.7),
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
@@ -293,7 +292,7 @@ export const overlayExpandedPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
-  cardStyleInterpolator: expandStyleInterpolator(0.7),
+  cardStyleInterpolator: expandStyleInterpolator(0.6),
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,

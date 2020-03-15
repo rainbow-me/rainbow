@@ -27,16 +27,16 @@ const OuterBorder = styled(Centered)`
 `;
 
 const Text = styled(TextElement).attrs({
-  color: colors.blueGreyLightest,
-  size: 'medium',
+  color: colors.alpha(colors.blueGreyDark, 0.5),
+  letterSpacing: 'roundedTight',
+  size: 'lmedium',
   weight: 'medium',
 })`
-  letter-spacing: -0.18px;
   line-height: 18;
 `;
 
 const Title = styled(TextElement).attrs({
-  color: colors.blueGreyLightest,
+  color: colors.alpha(colors.blueGreyDark, 0.4),
   size: 'tiny',
   weight: 'medium',
 })`

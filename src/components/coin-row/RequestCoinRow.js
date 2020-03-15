@@ -79,7 +79,7 @@ class RequestCoinRow extends React.PureComponent {
           topRowRender={TopRow}
         >
           <Button
-            backgroundColor={colors.primaryBlue}
+            backgroundColor={colors.appleBlue}
             containerStyles={`
               border-radius: 18;
               height: 36;
@@ -122,8 +122,7 @@ export default compose(
 
       return {
         createdAt,
-        expirationColor:
-          percentElapsed > 25 ? colors.primaryBlue : colors.orangeMedium,
+        expirationColor: percentElapsed > 25 ? colors.appleBlue : colors.orange,
         expiresAt,
         percentElapsed,
       };

@@ -77,7 +77,7 @@ Divider.propTypes = {
 };
 
 Divider.defaultProps = {
-  color: colors.lighterGrey,
+  color: colors.rowDivider,
   horizontal: true,
   inset: [0, 0, 0, 19],
   size: DefaultDividerSize,

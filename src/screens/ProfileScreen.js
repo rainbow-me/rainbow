@@ -60,7 +60,9 @@ const ProfileScreen = ({
       />
     )}
     {/* Show the interstitial only for mainnet */}
-    {isEmpty && network === networkTypes.mainnet && <AddFundsInterstitial />}
+    {isEmpty && network === networkTypes.mainnet && (
+      <AddFundsInterstitial network={network} />
+    )}
   </Page>
 );
 

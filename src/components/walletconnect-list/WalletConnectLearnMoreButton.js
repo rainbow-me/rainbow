@@ -25,10 +25,7 @@ const WalletConnectLearnMoreButton = ({ onPressLearnMore }) => (
         >
           Learn More
         </Text>
-        <Divider
-          color={colors.alpha(colors.blueGreyLight, 0.05)}
-          inset={false}
-        />
+        <Divider color={colors.rowDividerLight} inset={false} />
       </Centered>
     </ButtonPressAnimation>
   </Row>

@@ -20,7 +20,8 @@ import AvatarCircle from './AvatarCircle';
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
   firstSectionLength: abbreviations.defaultNumCharsPerSection,
-  size: 'big',
+  letterSpacing: 'roundedMedium',
+  size: 'bigger',
   truncationLength: 4,
   weight: 'bold',
 })`
@@ -59,7 +60,14 @@ const ProfileMasthead = ({
         <AddressAbbreviation address={accountAddress} />
       </CopyTooltip>
       <RowWithMargins align="center" margin={1}>
-        <FloatingEmojis>
+        <FloatingEmojis
+          distance={250}
+          duration={500}
+          fadeOut={false}
+          scaleTo={0}
+          size={50}
+          wiggleFactor={0}
+        >
           {({ onNewEmoji }) => (
             <ProfileAction
               icon="copy"
