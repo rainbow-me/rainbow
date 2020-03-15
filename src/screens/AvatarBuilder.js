@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import Animated from 'react-native-reanimated';
 import { withNavigation } from 'react-navigation';
@@ -109,29 +109,7 @@ class AvatarBuilder extends PureComponent {
           pointerEvents="box-none"
           top={statusBarHeight + 46}
         >
-          <View
-            backgroundColor={this.state.avatarColor}
-            borderRadius={32.5}
-            height={65}
-            marginBottom={5}
-            shadowColor={colors.black}
-            shadowOffset={{ height: 4, width: 0 }}
-            shadowOpacity={0.2}
-            shadowRadius={5}
-            width={65}
-          >
-            <Text
-              style={{
-                fontSize: 38,
-                height: 65,
-                lineHeight: 65,
-                textAlign: 'center',
-                width: 65,
-              }}
-            >
-              {this.state.emoji}
-            </Text>
-          </View>
+          <View height={100} />
 
           <Row
             justify="center"

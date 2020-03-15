@@ -1,14 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { View, Text } from 'react-native';
 import { compose, withHandlers } from 'recompact';
 import FastImage from 'react-native-fast-image';
-import GraphemeSplitter from 'grapheme-splitter';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
-import { margin, colors, borders } from '../../styles';
+import { margin, borders } from '../../styles';
 import { abbreviations } from '../../utils';
-import { ButtonPressAnimation } from '../animations';
 import { useNavigation } from 'react-navigation-hooks';
 import { useClipboard } from '../../hooks';
 import CopyTooltip from '../copy-tooltip';
@@ -18,7 +15,7 @@ import { FloatingEmojis } from '../floating-emojis';
 import { TruncatedAddress } from '../text';
 import ProfileAction from './ProfileAction';
 import { isAvatarPickerAvailable } from '../../config/experimental';
-import { ShadowStack } from '../shadow-stack';
+import AvatarCircle from './AvatarCircle';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
@@ -36,27 +33,9 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   padding-bottom: 32;
 `;
 
-const AvatarCircle = styled(View)`
-  border-radius: 33px;
-  margin-bottom: 16px;
-  height: 65px;
-  width: 65px;
-`;
-
-const FirstLetter = styled(Text)`
-  width: 100%;
-  text-align: center;
-  color: #fff;
-  font-weight: 600;
-  font-size: 37;
-  line-height: 65;
-`;
-
 const ProfileMasthead = ({
   accountAddress,
   showBottomDivider,
-  accountColor,
-  accountName,
   onPressAvatar,
 }) => {
   const { setClipboard } = useClipboard();
@@ -65,31 +44,7 @@ const ProfileMasthead = ({
   return (
     <Container>
       {isAvatarPickerAvailable ? (
-        <ButtonPressAnimation
-          hapticType="impactMedium"
-          onPress={onPressAvatar}
-          scaleTo={0.82}
-        >
-          <ShadowStack
-            height={65}
-            width={65}
-            marginBottom={16}
-            borderRadius={40}
-            shadows={[
-              [0, 6, 10, colors.dark, 0.12],
-              [0, 2, 5, colors.dark, 0.08],
-            ]}
-            shouldRasterizeIOS
-          >
-            <AvatarCircle
-              style={{ backgroundColor: colors.avatarColor[accountColor] }}
-            >
-              <FirstLetter>
-                {new GraphemeSplitter().splitGraphemes(accountName)[0]}
-              </FirstLetter>
-            </AvatarCircle>
-          </ShadowStack>
-        </ButtonPressAnimation>
+        <AvatarCircle onPress={onPressAvatar} />
       ) : (
         <FastImage
           source={AvatarImageSource}
@@ -133,8 +88,6 @@ const ProfileMasthead = ({
 
 ProfileMasthead.propTypes = {
   accountAddress: PropTypes.string,
-  accountColor: PropTypes.number,
-  accountName: PropTypes.string,
   showBottomDivider: PropTypes.bool,
 };
 

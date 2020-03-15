@@ -1,7 +1,9 @@
-import { StatusBar } from 'react-native';
+import React from 'react';
+import { StatusBar, View, Animated } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
+import AvatarCircle from '../../components/profile/AvatarCircle';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
@@ -32,6 +34,7 @@ const emojiStyleInterpolator = ({
     },
     overlayStyle: {
       backgroundColor: 'rgb(37, 41, 46)',
+      current,
       opacity: backgroundOpacity,
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
@@ -216,6 +219,34 @@ export const emojiPreset = {
   gestureEnabled: false,
   gestureResponseDistance,
   onTransitionStart,
+  renderOverlay: style => {
+    const backgroundOpacity = style.current.interpolate({
+      inputRange: [-1, 0, 0.975, 2],
+      outputRange: [0, 0, 1, 1],
+    });
+
+    return (
+      <Animated.View
+        pointerEvents="none"
+        style={{
+          backgroundColor: 'rgb(37, 41, 46)',
+          height: deviceUtils.dimensions.height,
+          opacity: backgroundOpacity,
+          position: 'absolute',
+          width: deviceUtils.dimensions.width,
+        }}
+      >
+        <View
+          style={{
+            alignItems: 'center',
+            top: 64,
+          }}
+        >
+          <AvatarCircle />
+        </View>
+      </Animated.View>
+    );
+  },
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
