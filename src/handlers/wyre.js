@@ -120,9 +120,15 @@ export const trackWyreOrder = async orderId => {
       const transferId = get(response, 'data.transferId');
       return { orderStatus, transferId };
     }
+    sentryUtils.addDataBreadcrumb(
+      'WYRE - Tracking Response Received',
+      JSON.stringify(response, null, 2)
+    );
+
     const {
       data: { exceptionId, message },
     } = response;
+
     throw new WyreAPIException(exceptionId, message);
   } catch (error) {
     captureException(error);

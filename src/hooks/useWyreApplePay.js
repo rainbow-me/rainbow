@@ -1,4 +1,4 @@
-import { captureMessage } from '@sentry/react-native';
+import { captureMessage, captureException } from '@sentry/react-native';
 import { isEmpty, toLower } from 'lodash';
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -153,6 +153,7 @@ export default function useWyreApplePay() {
           retryOrderStatusTimeout(retry, 1000);
         }
       } catch (error) {
+        captureException(error);
         retryOrderStatusTimeout(retry, 1000);
       }
     },
