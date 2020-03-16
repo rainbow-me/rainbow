@@ -8,7 +8,8 @@ import { removeRequest } from '../../redux/requests';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { RequestCoinIcon } from '../coin-icon';
-import { Text } from '../text';
+import { RowWithMargins } from '../layout';
+import { Emoji, Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
@@ -26,9 +27,12 @@ const TopRow = ({ expirationColor, expiresAt }) => {
   const minutes = differenceInMinutes(expiresAt, Date.now());
 
   return (
-    <Text color={expirationColor} size="smedium" weight="semibold">
-      Expires in {minutes || 0}m
-    </Text>
+    <RowWithMargins margin={2}>
+      <Emoji name="clock4" size="tiny" style={{ marginTop: 1.75 }} />
+      <Text color={expirationColor} size="smedium" weight="semibold">
+        Expires in {minutes || 0}m
+      </Text>
+    </RowWithMargins>
   );
 };
 
