@@ -833,7 +833,7 @@ const ExchangeModal = ({
   } = extraTradeDetails;
 
   const showDetailsButton =
-    !isDeposit &&
+    !(isDeposit || isWithdrawal) &&
     get(inputCurrency, 'symbol') &&
     get(outputCurrency, 'symbol') &&
     inputExecutionRate !== 'NaN' &&
