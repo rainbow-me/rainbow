@@ -1,7 +1,6 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { InteractionManager } from 'react-native';
 import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
 import { withAccountData, withAccountSettings } from '../../hoc';
 import { ethereumUtils } from '../../utils';
@@ -37,11 +36,7 @@ export default compose(
   }),
   withHandlers({
     onPressSend: ({ navigation, asset }) => () => {
-      navigation.goBack();
-
-      InteractionManager.runAfterInteractions(() => {
-        navigation.navigate('SendSheet', { asset });
-      });
+      navigation.navigate('SendSheet', { asset });
     },
   }),
   onlyUpdateForKeys(['price', 'subtitle'])

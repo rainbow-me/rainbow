@@ -46,15 +46,16 @@ TopRow.propTypes = {
 };
 
 const BalanceCoinRow = ({
+  isFirstCoinRow,
   item,
   onPress,
   onPressSend,
   isCoinListEdited,
   nativeCurrencySymbol,
   ...props
-}) => {
-  return item.isSmall ? (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+}) =>
+  item.isSmall ? (
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
       <CoinRow
         onPress={onPress}
         onPressSend={onPressSend}
@@ -64,9 +65,44 @@ const BalanceCoinRow = ({
         topRowRender={TopRow}
       />
     </ButtonPressAnimation>
+  ) : isFirstCoinRow ? (
+    <FlexItem
+      flex={1}
+      style={{
+        justifyContent: 'flex-end',
+      }}
+    >
+      <Row>
+        <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+          <Row>
+            <TransitionToggler
+              startingWidth={0}
+              endingWidth={42}
+              toggle={isCoinListEdited}
+            >
+              <View style={{ width: deviceUtils.dimensions.width - 120 - 13 }}>
+                <CoinRow
+                  onPress={onPress}
+                  onPressSend={onPressSend}
+                  {...item}
+                  {...props}
+                  bottomRowRender={BottomRow}
+                  topRowRender={TopRow}
+                />
+              </View>
+            </TransitionToggler>
+            <CoinRowInfo
+              native={item.native}
+              nativeCurrencySymbol={nativeCurrencySymbol}
+            />
+          </Row>
+        </ButtonPressAnimation>
+        {isCoinListEdited ? <CoinCheckButton isAbsolute {...item} /> : null}
+      </Row>
+    </FlexItem>
   ) : (
     <Row>
-      <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
         <Row>
           <TransitionToggler
             startingWidth={0}
@@ -93,9 +129,9 @@ const BalanceCoinRow = ({
       {isCoinListEdited ? <CoinCheckButton isAbsolute {...item} /> : null}
     </Row>
   );
-};
 
 BalanceCoinRow.propTypes = {
+  isFirstCoinRow: PropTypes.bool,
   item: PropTypes.object,
   nativeCurrency: PropTypes.string.isRequired,
   onPress: PropTypes.func,

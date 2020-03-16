@@ -13,8 +13,8 @@ import Highlight from '../Highlight';
 import { Column, Row } from '../layout';
 import withCoinListEdited from '../../hoc/withCoinListEdited';
 
-const CoinRowPaddingTop = 15;
-const CoinRowPaddingBottom = 7;
+const CoinRowPaddingTop = 9;
+const CoinRowPaddingBottom = 10;
 
 const Container = styled(Row)`
   ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom, 19)}
@@ -74,7 +74,7 @@ const CoinRow = enhance(
           <Row align="center" justify="space-between">
             {topRowRender({ symbol, ...props })}
           </Row>
-          <Row align="center" justify="space-between">
+          <Row align="center" justify="space-between" marginBottom={0.5}>
             {bottomRowRender({ symbol, ...props })}
           </Row>
         </Content>

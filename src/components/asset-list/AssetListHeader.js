@@ -2,17 +2,17 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForKeys } from 'recompact';
 import Divider from '../Divider';
-import { Monospace } from '../text';
 import { ListHeader } from '../list';
+import { H1 } from '../text';
 
 const enhance = onlyUpdateForKeys(['title', 'totalValue']);
 
 const AssetListHeader = enhance(({ title, totalValue, isSticky, ...props }) => (
   <ListHeader isSticky={isSticky} title={title} {...props}>
     {totalValue ? (
-      <Monospace size="larger" weight="semibold">
+      <H1 letterSpacing="roundedTight" weight="semibold">
         {totalValue}
-      </Monospace>
+      </H1>
     ) : null}
   </ListHeader>
 ));

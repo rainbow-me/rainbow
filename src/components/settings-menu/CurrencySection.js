@@ -29,7 +29,7 @@ const CurrencyListItem = ({ currency, emojiName, label, ...item }) => (
   <RadioListItem
     {...item}
     icon={renderCurrencyIcon(currency, emojiName)}
-    label={`${label} (${currency})`}
+    label={`${label}`}
     value={currency}
   />
 );

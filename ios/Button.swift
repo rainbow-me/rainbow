@@ -12,7 +12,6 @@ class Button : RCTView {
   @objc var disabled: Bool = false {
     didSet {
       isUserInteractionEnabled = !disabled
-      alpha = disabled ? 0.3 : 1.0
     }
   }
   @objc var duration: TimeInterval = 0.1

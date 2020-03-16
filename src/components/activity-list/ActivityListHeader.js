@@ -3,7 +3,7 @@ import { ListHeader } from '../list';
 import { Text } from '../text';
 
 const titleRenderer = withProps({
-  size: 'large',
+  size: 'larger',
   weight: 'bold',
 })(Text);
 

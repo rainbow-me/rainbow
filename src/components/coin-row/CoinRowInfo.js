@@ -46,7 +46,16 @@ const CoinRowInfo = ({ native, nativeCurrencySymbol }) => {
       >
         {nativeDisplay || `${nativeCurrencySymbol}0.00`}
       </BalanceText>
-      <BottomRowText color={isPositive ? colors.limeGreen : null}>
+      <BottomRowText
+        align="right"
+        color={
+          isPositive
+            ? colors.green
+            : !percentChange
+            ? colors.alpha(colors.blueGreyDark, 0.2)
+            : null
+        }
+      >
         {percentageChangeDisplay}
       </BottomRowText>
     </Container>

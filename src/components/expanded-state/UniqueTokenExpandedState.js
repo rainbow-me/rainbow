@@ -1,7 +1,7 @@
 import withViewLayoutProps from '@hocs/with-view-layout-props';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { InteractionManager, Linking, Share } from 'react-native';
+import { Linking, Share } from 'react-native';
 import {
   compose,
   onlyUpdateForPropTypes,
@@ -172,12 +172,8 @@ export default compose(
   })),
   withProps(buildPanelDimensions),
   withHandlers({
-    onPressSend: ({ asset, navigation }) => () => {
-      navigation.goBack();
-
-      InteractionManager.runAfterInteractions(() => {
-        navigation.navigate('SendSheet', { asset });
-      });
+    onPressSend: ({ navigation, asset }) => () => {
+      navigation.navigate('SendSheet', { asset });
     },
     onPressShare: ({ asset: { name, permalink } }) => () => {
       Share.share({

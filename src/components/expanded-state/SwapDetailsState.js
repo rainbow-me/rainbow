@@ -20,7 +20,12 @@ const DetailsRow = ({ label, value, ...props }) => (
     <Text flex={0} size="lmedium">
       {label}
     </Text>
-    <Text color={colors.alpha(colors.dark, 0.6)} size="lmedium">
+    <Text
+      align="right"
+      color={colors.alpha(colors.dark, 0.6)}
+      letterSpacing="roundedTight"
+      size="lmedium"
+    >
       {value}
     </Text>
   </Row>
@@ -59,7 +64,7 @@ const SwapDetailsState = ({
           {({ onNewEmoji }) => (
             <FloatingEmojisTapHandler onNewEmoji={onNewEmoji}>
               <TouchableScale activeScale={1.01}>
-                <AssetPanel overflow="visible">
+                <AssetPanel overflow="visible" radius={20}>
                   <ColumnWithMargins
                     {...position.centeredAsObject}
                     css={padding(24, 19)}
@@ -91,14 +96,20 @@ const SwapDetailsState = ({
                     )}
                     <Row align="center" justify="space-between">
                       <Text size="lmedium">Exchange</Text>
-                      <RowWithMargins align="center" margin={5}>
+                      <RowWithMargins align="center" margin={2}>
                         <Emoji
                           lineHeight="none"
                           name="unicorn_face"
                           size="lmedium"
                           weight="medium"
                         />
-                        <Text color="#DC6BE5" size="lmedium" weight="medium">
+                        <Text
+                          align="right"
+                          color="#E540F1"
+                          letterSpacing="roundedTight"
+                          size="lmedium"
+                          weight="semibold"
+                        >
                           Uniswap
                         </Text>
                       </RowWithMargins>

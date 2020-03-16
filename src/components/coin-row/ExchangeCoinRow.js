@@ -51,7 +51,7 @@ const ExchangeCoinRow = ({
       {...props}
       height={CoinRow.height}
       onPress={() => onPress(item)}
-      scaleTo={0.98}
+      scaleTo={0.96}
     >
       <CoinRow
         {...item}
