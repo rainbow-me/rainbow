@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, mapProps, pure } from 'recompose';
 import { colors } from '../../../styles';
-import { Monospace, TruncatedAddress } from '../../text';
+import { Text, TruncatedAddress } from '../../text';
 import TransactionMessage from '../TransactionMessage';
 import TransactionSheet from '../TransactionSheet';
 import TransactionRow from '../TransactionRow';
@@ -18,20 +18,20 @@ const DefaultTransactionConfirmationSection = ({
     <TransactionRow title={lang.t('wallet.action.to')}>
       <TruncatedAddress
         address={address}
-        color={colors.blueGreyDarkTransparent}
+        color={colors.alpha(colors.blueGreyDark, 0.6)}
         size="lmedium"
         truncationLength={15}
       />
     </TransactionRow>
     {!!value && (
       <TransactionRow title={lang.t('wallet.action.value')}>
-        <Monospace
-          color={colors.blueGreyDarkTransparent}
+        <Text
+          color={colors.alpha(colors.blueGreyDark, 0.6)}
           size="lmedium"
           uppercase
         >
           {value}
-        </Monospace>
+        </Text>
       </TransactionRow>
     )}
     {!!data && (

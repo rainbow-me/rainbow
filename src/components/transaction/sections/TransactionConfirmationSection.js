@@ -7,15 +7,15 @@ import { colors, fonts, padding } from '../../../styles';
 import { CoinIcon } from '../../coin-icon';
 import { Nbsp } from '../../html-entities';
 import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
-import { Monospace, TruncatedAddress, TruncatedText } from '../../text';
+import { Text, TruncatedAddress, TruncatedText } from '../../text';
 import TransactionRow from '../TransactionRow';
 import TransactionSheet from '../TransactionSheet';
 
 const Amount = withProps({
-  color: colors.blueGreyDarkTransparent,
+  color: colors.alpha(colors.blueGreyDark, 0.6),
   size: 'lmedium',
   uppercase: true,
-})(Monospace);
+})(Text);
 
 const AmountRow = styled(Row).attrs({
   align: 'center',
@@ -25,7 +25,7 @@ const AmountRow = styled(Row).attrs({
   flex-shrink: 0;
 `;
 
-const NativeAmount = styled(Monospace).attrs({
+const NativeAmount = styled(Text).attrs({
   size: 'h2',
   weight: 'medium',
 })`
@@ -51,7 +51,7 @@ const TransactionConfirmationSection = ({
     <TransactionRow title={lang.t('wallet.action.to')}>
       <TruncatedAddress
         address={address}
-        color={colors.blueGreyDarkTransparent}
+        color={colors.alpha(colors.blueGreyDark, 0.6)}
         size="lmedium"
         truncationLength={15}
       />

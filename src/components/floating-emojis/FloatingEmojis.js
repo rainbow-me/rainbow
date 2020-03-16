@@ -12,8 +12,10 @@ const FloatingEmojis = ({
   distance,
   duration,
   emoji,
+  fadeOut,
   opacity,
   range,
+  scaleTo,
   size,
   wiggleFactor,
   ...props
@@ -64,9 +66,11 @@ const FloatingEmojis = ({
             distance={Math.ceil(distance)}
             duration={duration}
             emoji={emojiToRender}
+            fadeOut={fadeOut}
             index={index}
             key={`${x}${y}`}
             left={x}
+            scaleTo={scaleTo}
             size={size}
             top={y}
             wiggleFactor={wiggleFactor}
@@ -82,8 +86,10 @@ FloatingEmojis.propTypes = {
   distance: PropTypes.number,
   duration: PropTypes.number,
   emoji: PropTypes.string.isRequired,
+  fadeOut: PropTypes.bool,
   opacity: PropTypes.oneOfType([PropTypes.number, PropTypes.object]),
   range: PropTypes.arrayOf(PropTypes.number),
+  scaleTo: PropTypes.number,
   size: PropTypes.string.isRequired,
   wiggleFactor: PropTypes.number,
 };
@@ -96,8 +102,10 @@ FloatingEmojis.defaultProps = {
   // head to https://unicodey.com/emoji-data/table.htm and reference the
   // table's "Short Name" column.
   emoji: '+1',
+  fadeOut: true,
   opacity: 1,
   range: [0, 80],
+  scaleTo: 1,
   size: 30,
   wiggleFactor: 0.5,
 };

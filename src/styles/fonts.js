@@ -2,29 +2,25 @@
 const font = {};
 
 font.family = {
-  Graphik: 'Graphik',
   SFMono: 'SFMono-Regular',
-  SFProDisplay: 'SF Pro Display',
   SFProRounded: 'SF Pro Rounded',
   SFProText: 'SF Pro Text',
 };
 
 font.letterSpacing = {
-  tightest: -0.3,
-  tighter: -0.2,
-  tight: -0.1,
-  loose: 0.15,
-  looser: 0.3,
-  loosest: 0.46,
-  looseyGoosey: 0.6,
-  uppercase: 0.8,
+  roundedTightest: 0.2,
+  roundedTight: 0.4,
+  roundedMedium: 0.5,
+  rounded: 0.6,
 };
 
 font.lineHeight = {
   none: 0,
+  tightest: 14,
   tight: 16,
   normal: 20,
   loose: 21,
+  paragraphSmall: 25,
   looser: 26,
   loosest: 28,
   giant: 108,
@@ -42,13 +38,13 @@ font.size = {
   large: '18px',
   larger: '20px',
   blarge: '21px',
-  big: '22px',
+  big: '23px',
   bigger: '26px',
   biggest: '27px',
   giant: '90px',
   h1: '42px',
-  h2: '30px',
-  h3: '24px',
+  h2: '32px',
+  h3: '30px',
   h4: '20px',
   h5: '17px',
   h6: '14px',

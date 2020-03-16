@@ -8,5 +8,5 @@ export const addCashButtonAvailable = true;
 export const discoverSheetAvailable = false;
 export const chartExpandedAvailable = false;
 export const nativeTransactionListAvailable = false;
-export const nativeButtonPressAnimationAvailable = false;
+export const nativeButtonPressAnimationAvailable = true;
 export const isAvatarPickerAvailable = false;

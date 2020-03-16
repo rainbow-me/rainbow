@@ -293,17 +293,17 @@ PODS:
   - React-jsinspector (0.62.0-rc.5)
   - react-native-blur (0.8.0):
     - React
-  - react-native-camera (3.19.0):
+  - react-native-camera (3.19.1):
     - React
-    - react-native-camera/RCT (= 3.19.0)
-    - react-native-camera/RN (= 3.19.0)
-  - react-native-camera/RCT (3.19.0):
+    - react-native-camera/RCT (= 3.19.1)
+    - react-native-camera/RN (= 3.19.1)
+  - react-native-camera/RCT (3.19.1):
     - React
-  - react-native-camera/RN (3.19.0):
+  - react-native-camera/RN (3.19.1):
     - React
   - react-native-mail (4.1.0):
     - React
-  - react-native-netinfo (5.5.1):
+  - react-native-netinfo (5.6.2):
     - React
   - react-native-randombytes (3.5.3):
     - React
@@ -433,9 +433,9 @@ PODS:
     - React
   - RNSVG (11.0.0):
     - React
-  - SDWebImage (5.6.0):
-    - SDWebImage/Core (= 5.6.0)
-  - SDWebImage/Core (5.6.0)
+  - SDWebImage (5.5.2):
+    - SDWebImage/Core (= 5.5.2)
+  - SDWebImage/Core (5.5.2)
   - SDWebImageWebPCoder (0.2.5):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.0)
@@ -734,9 +734,9 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 7f96dd5e1264c67b2143e73af54f86abda99cde6
   React-jsinspector: a3017d13fbcb7f4c42dcbcd415b97135ac3f0f41
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: 1f4c5be75a037b5573716a01d84ca0390c162954
+  react-native-camera: 9b410bc370c57513a6e7d5b20d516c86d5dae703
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
-  react-native-netinfo: 3bf235d94cc291cf0673ad9fd9eaae82f84ed8a9
+  react-native-netinfo: 73303369946c2487c600418961bfdc87748b832f
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
@@ -776,7 +776,7 @@ SPEC CHECKSUMS:
   RNSentry: 86baf0c87120cd5eb491d073989f8cbc1a2174c6
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: 82d44baa568873faae1a9929dd30d29db8f06732
-  SDWebImage: 21b19f56b4226cdfe3aefe4e6848dc43ed129a86
+  SDWebImage: 4d5c027c935438f341ed33dbac53ff9f479922ca
   SDWebImageWebPCoder: 947093edd1349d820c40afbd9f42acb6cdecd987
   Sentry: 14bdd673870e8cf64932b149fad5bbbf39a9b390
   SRSRadialGradient: 77bcb1ae812d0c77560e54ed9e52166df032db1d
@@ -787,4 +787,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 4141760bf5d4d6e54d34d2b4341d84cf7ce4cc03
 
-COCOAPODS: 1.9.0
+COCOAPODS: 1.8.4

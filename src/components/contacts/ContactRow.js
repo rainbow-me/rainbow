@@ -23,7 +23,6 @@ const ContactRow = ({ address, color, nickname, ...props }) => (
       <ContactAvatar color={color} value={nickname} />
       <Column justify="space-between">
         <Text
-          letterSpacing="tight"
           numberOfLines={1}
           size="lmedium"
           weight="medium"

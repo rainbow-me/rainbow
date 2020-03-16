@@ -7,19 +7,27 @@ import { compose, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import networkTypes from '../helpers/networkTypes';
 import networkInfo from '../helpers/networkInfo';
-import { colors, margin } from '../styles';
+import { colors, margin, padding } from '../styles';
 import { Button } from './buttons';
 import Divider from './Divider';
 import { Centered } from './layout';
 import { Text } from './text';
 
 const ButtonContainerHeight = 193;
-const ButtonContainerWidth = 225;
+const ButtonContainerWidth = 250;
 
-const InterstitialMargin = 18;
+const InterstitialMargin = 19;
 
 const ButtonContainer = styled(Centered).attrs({ direction: 'column' })`
   width: ${ButtonContainerWidth};
+`;
+
+const InterstitialButton = styled(Button)`
+  ${padding(12, 16, 16)};
+  shadow-color: ${colors.dark};
+  shadow-offset: 0px 4px;
+  shadow-opacity: 0.25;
+  shadow-radius: 6;
 `;
 
 const DividerContainer = styled(Centered)`
@@ -35,9 +43,9 @@ const Container = styled(Centered)`
 
 const Paragraph = styled(Text).attrs({
   align: 'center',
-  color: colors.placeholder,
-  lineHeight: 'loose',
-  size: 'smedium',
+  color: colors.alpha(colors.blueGreyDark, 0.3),
+  lineHeight: 'paragraphSmall',
+  size: 'lmedium',
 })`
   margin-top: ${InterstitialMargin};
 `;
@@ -62,33 +70,39 @@ const AddFundsInterstitial = ({
 }) => (
   <Container style={buildInterstitialTransform(offsetY)}>
     <ButtonContainer>
-      <Button backgroundColor={colors.appleBlue} onPress={onPressAddFunds}>
+      <InterstitialButton
+        backgroundColor={colors.appleBlue}
+        onPress={onPressAddFunds}
+      >
         Add Funds
-      </Button>
+      </InterstitialButton>
       <DividerContainer>
         <Divider inset={false} />
       </DividerContainer>
       {network === networkTypes.mainnet ? (
         <React.Fragment>
-          <Button backgroundColor="#5D9DF6" onPress={onPressImportWallet}>
-            Import Wallet
-          </Button>
+          <InterstitialButton
+            backgroundColor={colors.paleBlue}
+            onPress={onPressImportWallet}
+          >
+            Import My Wallet
+          </InterstitialButton>
           <Paragraph>
-            Use your private key or 12 to 24 word seed phrase from an existing
-            wallet.
+            If you already have an Ethereum wallet, you can securely import it
+            with a seed phrase or private key.
           </Paragraph>
         </React.Fragment>
       ) : (
         <React.Fragment>
-          <Button
-            backgroundColor="#5D9DF6"
+          <InterstitialButton
+            backgroundColor={colors.paleBlue}
             onPress={() => onAddFromFaucet(network)}
           >
             Add from Faucet
-          </Button>
+          </InterstitialButton>
           <Paragraph>
-            You can request ETH through the {get(networkInfo[network], 'name')}{' '}
-            faucet.
+            You can request test ETH through the{' '}
+            {get(networkInfo[network], 'name')} faucet.
           </Paragraph>
         </React.Fragment>
       )}

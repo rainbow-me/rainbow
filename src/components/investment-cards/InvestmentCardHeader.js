@@ -6,10 +6,10 @@ import { pure } from 'recompact';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { colors } from '../../styles';
 import { Column, Row, RowWithMargins } from '../layout';
-import { Emoji, Monospace, Text } from '../text';
+import { Emoji, Text } from '../text';
 import { RotationArrow } from '../animations';
 
-const height = 48;
+const height = 49;
 
 const InvestmentCardHeader = pure(
   ({ collapsed, color, emoji, isCollapsible, title, titleColor, value }) => (
@@ -19,37 +19,47 @@ const InvestmentCardHeader = pure(
       justify="space-between"
       paddingHorizontal={15}
     >
-      <Row align="center">
+      <RowWithMargins align="center" margin={3} paddingBottom={3}>
         <Column align="start" justify="center" width={24}>
-          <Emoji name={emoji} lineHeight="none" size="smedium" />
+          <Emoji
+            name={emoji}
+            lineHeight="none"
+            style={{ paddingBottom: 1.5 }}
+            size="medium"
+          />
         </Column>
         <Text
           color={titleColor || color}
-          letterSpacing="tight"
+          letterSpacing="roundedTight"
           size="lmedium"
-          weight="medium"
+          weight="semibold"
         >
           {title}
         </Text>
-      </Row>
-      <RowWithMargins align="center" margin={1}>
-        <Monospace color={color} size="lmedium" weight="medium">
+      </RowWithMargins>
+      <Row align="center" paddingBottom={3}>
+        <Text
+          color={color}
+          letterSpacing="roundedTight"
+          size="lmedium"
+          weight="semibold"
+        >
           {value}
-        </Monospace>
+        </Text>
         {isCollapsible && (
-          <View paddingLeft={10}>
+          <View paddingLeft={12} paddingRight={4}>
             <RotationArrow isOpen={!collapsed} endingPosition={90}>
               <FastImage
                 source={Caret}
                 style={{
-                  height: 13.5,
-                  width: 6.5,
+                  height: 17,
+                  width: 9,
                 }}
               />
             </RotationArrow>
           </View>
         )}
-      </RowWithMargins>
+      </Row>
     </Row>
   )
 );

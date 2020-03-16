@@ -14,7 +14,7 @@ import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
 
 const Label = withProps({
-  color: colors.alpha(colors.white, 0.4),
+  color: colors.alpha(colors.white, 0.5),
   size: 'smedium',
   weight: 'medium',
 })(Text);
@@ -24,7 +24,12 @@ const renderEstimatedTimeText = animatedNumber => (
 );
 
 const renderGasPriceText = animatedNumber => (
-  <Text color="white" letterSpacing="tight" size="lmedium" weight="semibold">
+  <Text
+    color="white"
+    letterSpacing="roundedTight"
+    size="lmedium"
+    weight="semibold"
+  >
     {animatedNumber}
   </Text>
 );
@@ -76,10 +81,10 @@ class GasSpeedButton extends PureComponent {
     <ButtonPressAnimation
       hapticType="impactHeavy"
       onPress={this.handlePress}
-      scaleTo={0.99999}
+      scaleTo={0.99}
       width="100%"
     >
-      <Column css={padding(14, 19, 0)} width="100%">
+      <Column css={padding(15, 19, 0)} width="100%">
         <Row align="center" justify="space-between">
           <AnimateNumber
             formatter={this.formatAnimatedGasPrice}

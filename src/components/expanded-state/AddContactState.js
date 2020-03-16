@@ -156,7 +156,7 @@ class AddContactState extends PureComponent {
               <Input
                 autoCapitalize="words"
                 autoFocus
-                letterSpacing="tightest"
+                letterSpacing="roundedTight"
                 onChange={this.handleChange}
                 onSubmitEditing={this.handleAddContact}
                 returnKeyType="done"
@@ -166,7 +166,7 @@ class AddContactState extends PureComponent {
                 style={{ width: '100%' }}
                 textAlign="center"
                 value={value}
-                weight="semibold"
+                weight="bold"
               />
               <CopyTooltip
                 onHide={this.handleFocusInput}

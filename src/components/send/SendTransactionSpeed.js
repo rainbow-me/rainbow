@@ -20,15 +20,16 @@ const SendTransactionSpeed = ({
   const time = get(gasPrice, 'estimatedTime.display', '');
 
   return (
-    <Row justify="space-between">
+    <Row justify="space-between" marginBottom={10}>
       <Button
         backgroundColor={colors.white}
         borderColor={colors.dark}
         borderWidth={1}
-        disabled
+        onPress={onPressTransactionSpeed}
+        opacity={1}
         showShadow={false}
         size="small"
-        textProps={{ color: colors.blueGreyLightest }}
+        textProps={{ color: colors.alpha(colors.blueGreyDark, 0.6) }}
         type="pill"
       >
         Fee: {fee}
@@ -45,12 +46,12 @@ const SendTransactionSpeed = ({
           color={colors.white}
           name="clock"
           style={{
-            ...position.sizeAsObject(13),
+            ...position.sizeAsObject(14),
             flex: 0,
             marginRight: 5,
           }}
         />
-        <Text color={colors.white} weight="medium">
+        <Text color={colors.white} size="medium" weight="medium">
           Arrives in ~ {time}
         </Text>
       </Button>

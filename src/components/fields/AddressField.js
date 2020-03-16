@@ -160,7 +160,7 @@ export default withNavigation(
             onChangeText={this.onChangeText}
             ref={this.handleInputRef}
             selectTextOnFocus
-            spellCheck
+            spellCheck={false}
             size="bmedium"
             style={{
               flexGrow: 1,
@@ -173,10 +173,8 @@ export default withNavigation(
           {!inputValue && (
             <Placeholder>
               <TouchableWithoutFeedback onPress={this.onPressNickname}>
-                <PlaceholderText>ENS or Address (</PlaceholderText>
+                <PlaceholderText>ENS or Address (0x...)</PlaceholderText>
               </TouchableWithoutFeedback>
-              <PlaceholderText family="SFMono">0x</PlaceholderText>
-              <PlaceholderText>...)</PlaceholderText>
             </Placeholder>
           )}
         </Row>

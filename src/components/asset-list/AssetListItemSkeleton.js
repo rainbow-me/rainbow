@@ -53,9 +53,9 @@ const FakeText = styled.View`
 const Wrapper = styled(RowWithMargins).attrs({
   align: 'center',
   justify: 'space-between',
-  margin: 11,
+  margin: 10,
 })`
-  ${({ index }) => padding(index === 0 ? 15 : 12.5, 19, 12.5, 15)};
+  ${({ index }) => padding(index === 0 ? 15 : 15, 19, 15, 19)};
   ${position.size('100%')};
   background-color: ${colors.transparent};
 `;
@@ -146,7 +146,7 @@ export default class AssetListItemSkeleton extends PureComponent {
         <ColumnWithMargins
           backgroundColor={colors.transparent}
           flex={1}
-          margin={11}
+          margin={10}
         >
           <FakeRow marginTop={1}>
             <FakeText width={100} />

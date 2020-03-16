@@ -26,9 +26,7 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
   family: 'SFProRounded',
   firstSectionLength: abbreviations.defaultNumCharsPerSection,
-  letterSpacing: 0.5,
-  lineHeight: 31,
-  monospace: false,
+  letterSpacing: 'roundedMedium',
   size: 'bigger',
   truncationLength: 4,
   weight: 'bold',
@@ -99,7 +97,14 @@ const ProfileMasthead = ({
         <AddressAbbreviation address={accountENS || accountAddress} />
       </CopyTooltip>
       <RowWithMargins align="center" margin={1}>
-        <FloatingEmojis>
+        <FloatingEmojis
+          distance={250}
+          duration={500}
+          fadeOut={false}
+          scaleTo={0}
+          size={50}
+          wiggleFactor={0}
+        >
           {({ onNewEmoji }) => (
             <ProfileAction
               icon="copy"

@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 // import Animated from 'react-native-reanimated';
 import { withNavigation } from 'react-navigation';
-import { InteractionManager } from 'react-native';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { withFabSelection, withTransitionProps } from '../../hoc';
 import { colors } from '../../styles';
@@ -11,29 +10,6 @@ import { Centered } from '../layout';
 // import DeleteButton from './DeleteButton';
 import FloatingActionButton from './FloatingActionButton';
 // import MovableFabWrapper from './MovableFabWrapper';
-
-let onPressMutex = false;
-/**
- * This function is a bit hacky workaround for an issue of blinking
- * keyboard while navigating from wallet screen to send sheet immediately
- * after closing asset screen. Firstly, I guarantee that there're no
- * collapsing events by mutex, then I set additional timeout with flexible
- * time set in order to make sure that there's always enough time
- * to close the keyboard after transition.
- */
-function performSafely(operation, transitionProps) {
-  if (onPressMutex) {
-    return;
-  }
-  onPressMutex = true;
-  InteractionManager.runAfterInteractions(() => {
-    const current = Date.now();
-    setTimeout(() => {
-      operation();
-      onPressMutex = false;
-    }, Math.max(1000 - current + transitionProps.date + transitionProps.isTransitioning ? 400 : 0, 0));
-  });
-}
 
 const FloatingActionButtonWithDisabled = withFabSelection(FloatingActionButton);
 
@@ -94,9 +70,7 @@ export default compose(
   withNavigation,
   withTransitionProps,
   withHandlers({
-    onPress: ({ navigation, transitionProps }) => () => {
-      performSafely(() => navigation.navigate('SendSheet'), transitionProps);
-    },
+    onPress: ({ navigation }) => () => navigation.navigate('SendSheet'),
   }),
   onlyUpdateForKeys(['disabled', 'sections'])
   // withProps({

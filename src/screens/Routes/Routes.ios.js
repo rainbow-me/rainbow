@@ -77,7 +77,7 @@ const sendFlowRoutes = {
   },
   SendSheet: {
     navigationOptions: {
-      ...expandedPreset,
+      ...sheetPreset,
       onTransitionStart: props => {
         expandedPreset.onTransitionStart(props);
         onTransitionStart();
@@ -171,7 +171,6 @@ const MainNavigator = createStackNavigator(
       },
       screen: WalletConnectConfirmationModal,
     },
-    ...(isNativeStackAvailable ? {} : sendFlowRoutes),
   },
   {
     defaultNavigationOptions: {
@@ -223,50 +222,52 @@ const NativeStack = createNativeStackNavigator(
   }
 );
 
-const NativeStackFallback = createStackNavigator(
-  {
-    AddCashSheet: {
-      navigationOptions: {
-        ...sheetPreset,
-        onTransitionStart: props => {
-          onTransitionStart(props);
-          sheetPreset.onTransitionStart(props);
-        },
+const nativeStackRoutes = {
+  AddCashSheet: {
+    navigationOptions: {
+      ...sheetPreset,
+      onTransitionStart: props => {
+        onTransitionStart(props);
+        sheetPreset.onTransitionStart(props);
       },
-      screen: AddCashSheet,
     },
-    ImportSeedPhraseSheet: {
-      navigationOptions: {
-        ...sheetPreset,
-        onTransitionStart: props => {
-          sheetPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: ImportSeedPhraseSheetWithData,
-    },
-    MainNavigator,
-    SendSheet: {
-      navigationOptions: {
-        ...omit(sheetPreset, 'gestureResponseDistance'),
-        onTransitionStart: props => {
-          onTransitionStart(props);
-          sheetPreset.onTransitionStart(props);
-        },
-      },
-      screen: SendSheetWithData,
-    },
+    screen: AddCashSheet,
   },
-  {
-    defaultNavigationOptions: {
-      onTransitionEnd,
-      onTransitionStart,
+  ImportSeedPhraseSheet: {
+    navigationOptions: {
+      ...sheetPreset,
+      onTransitionStart: props => {
+        sheetPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
     },
-    headerMode: 'none',
-    initialRouteName: 'MainNavigator',
-    mode: 'modal',
-  }
-);
+    screen: ImportSeedPhraseSheetWithData,
+  },
+  MainNavigator,
+  OverlayExpandedAssetScreen: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ExpandedAssetScreenWithData,
+  },
+  SendSheet: {
+    navigationOptions: {
+      ...omit(sheetPreset, 'gestureResponseDistance'),
+      onTransitionStart: () => {
+        onTransitionStart();
+      },
+    },
+    screen: SendSheetWithData,
+  },
+};
+
+const NativeStackFallback = createStackNavigator(nativeStackRoutes, {
+  defaultNavigationOptions: {
+    onTransitionEnd,
+    onTransitionStart,
+  },
+  headerMode: 'none',
+  initialRouteName: 'MainNavigator',
+  mode: 'modal',
+});
 
 const Stack = isNativeStackAvailable ? NativeStack : NativeStackFallback;
 
@@ -280,7 +281,12 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
       const prevRouteName = Navigation.getActiveRouteName(prevState);
       // native stack rn does not support onTransitionEnd and onTransitionStart
       // Set focus manually on route changes
-      if (prevRouteName !== routeName) {
+
+      if (
+        prevRouteName !== routeName &&
+        isNativeStackAvailable &&
+        (nativeStackRoutes[prevRouteName] || nativeStackRoutes[routeName])
+      ) {
         Navigation.handleAction(
           NavigationActions.setParams({
             key: routeName,
