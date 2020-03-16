@@ -1,5 +1,5 @@
 import { PaymentRequest } from '@rainbow-me/react-native-payments';
-import { captureException } from '@sentry/react-native';
+import { captureException, captureMessage } from '@sentry/react-native';
 import axios from 'axios';
 import { get, last, split } from 'lodash';
 import {
@@ -165,8 +165,15 @@ const processWyrePayment = async (
 ) => {
   const data = createPayload(paymentResponse, amount, dest, destCurrency);
   try {
+    sentryUtils.addDataBreadcrumb('WYRE - processWyrePayment request', data);
     const response = await wyreApi.post('/v3/apple-pay/process/partner', data);
+
     if (response.status >= 200 && response.status < 300) {
+      sentryUtils.addDataBreadcrumb(
+        'WYRE - processWyrePayment response',
+        response.data
+      );
+      captureMessage('ProcessWyrePayment OK Response Received');
       return get(response, 'data.id', null);
     }
     const {
