@@ -9,8 +9,8 @@ import { Icon } from '../icons';
 import { withCoinRecentlyPinned } from '../../hoc';
 import withCoinListEdited from '../../hoc/withCoinListEdited';
 
-const CoinRowPaddingTop = 15;
-const CoinRowPaddingBottom = 7;
+const CoinRowPaddingTop = 9;
+const CoinRowPaddingBottom = 10;
 
 const CoinCheckButton = ({
   isAbsolute,
