@@ -238,7 +238,7 @@ export const emojiPreset = {
         <View
           style={{
             alignItems: 'center',
-            top: 64,
+            top: 63,
           }}
         >
           <AvatarCircle />

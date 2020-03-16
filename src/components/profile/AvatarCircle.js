@@ -31,6 +31,7 @@ const ProfileAction = ({ onPress, accountColor, accountName }) => (
     hapticType="impactMedium"
     onPress={onPress}
     scaleTo={0.82}
+    paddingTop={2}
   >
     <ShadowStack
       height={65}
