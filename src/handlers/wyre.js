@@ -118,10 +118,15 @@ export const trackWyreOrder = async orderId => {
     if (response.status >= 200 && response.status < 300) {
       const orderStatus = get(response, 'data.status');
       const transferId = get(response, 'data.transferId');
+      sentryUtils.addDataBreadcrumb(
+        'WYRE - Track wyre order response',
+        response.data
+      );
+      captureMessage('trackWyreOrder OK Response Received');
       return { orderStatus, transferId };
     }
     sentryUtils.addDataBreadcrumb(
-      'WYRE - Tracking Response Received',
+      'WYRE - Tracking Response Received - NOT 200',
       JSON.stringify(response, null, 2)
     );
 
@@ -176,6 +181,11 @@ const processWyrePayment = async (
       captureMessage('ProcessWyrePayment OK Response Received');
       return get(response, 'data.id', null);
     }
+    sentryUtils.addDataBreadcrumb(
+      'WYRE - processWyrePayment response - was not 200',
+      response.data
+    );
+    captureMessage('ProcessWyrePayment NOT OK Response Received');
     const {
       data: { exceptionId, message },
     } = response;
