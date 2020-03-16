@@ -53,7 +53,9 @@ const BottomRow = ({ name, native, status, type }) => {
   return (
     <Row align="center" justify="space-between">
       <FlexItem flex={1}>
-        <CoinName color={coinNameColor}>{name}</CoinName>
+        <CoinName color={coinNameColor} letterSpacing="roundedMedium">
+          {name}
+        </CoinName>
       </FlexItem>
       <FlexItem flex={0}>
         <BalanceText
