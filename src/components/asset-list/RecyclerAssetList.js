@@ -239,7 +239,11 @@ class RecyclerAssetList extends Component {
             0
           );
           const firstBalanceIndex = headersIndices[balancesIndex] + 1;
-          if (index === firstBalanceIndex) {
+          if (
+            index === firstBalanceIndex &&
+            !sections[balancesIndex].data[firstBalanceIndex - 1]
+              .smallBalancesContainer
+          ) {
             return ViewTypes.COIN_ROW_FIRST;
           }
           const lastBalanceIndex =

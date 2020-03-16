@@ -66,6 +66,7 @@ function runTiming(clock, value, dest) {
 
 class CoinDivider extends PureComponent {
   static propTypes = {
+    assetsAmount: PropTypes.number,
     balancesSum: PropTypes.string,
     currentAction: PropTypes.string,
     isCoinDivider: PropTypes.bool,
@@ -106,6 +107,7 @@ class CoinDivider extends PureComponent {
 
   render() {
     const {
+      assetsAmount,
       balancesSum,
       isCoinDivider,
       onHide,
@@ -223,7 +225,9 @@ class CoinDivider extends PureComponent {
           </Row>
           <View
             pointerEvents={
-              this.state.isCurrentlyCoinListEdited ? 'none' : 'auto'
+              this.state.isCurrentlyCoinListEdited || assetsAmount === 0
+                ? 'none'
+                : 'auto'
             }
           >
             <ButtonPressAnimation
@@ -234,7 +238,7 @@ class CoinDivider extends PureComponent {
               <OpacityToggler
                 endingOpacity={0}
                 startingOpacity={1}
-                isVisible={this.props.isCoinListEdited}
+                isVisible={this.props.isCoinListEdited || assetsAmount === 0}
               >
                 <Row
                   align="center"
@@ -298,7 +302,7 @@ class CoinDivider extends PureComponent {
             }}
           >
             <OpacityToggler
-              isVisible={openSmallBalances}
+              isVisible={openSmallBalances || assetsAmount === 0}
               animationNode={this._node}
             >
               <Text
@@ -313,12 +317,14 @@ class CoinDivider extends PureComponent {
           </View>
           <View
             style={{ alignItems: 'flex-end', position: 'absolute', width: 64 }}
-            pointerEvents={openSmallBalances ? 'auto' : 'none'}
+            pointerEvents={
+              openSmallBalances || assetsAmount === 0 ? 'auto' : 'none'
+            }
           >
             <OpacityToggler
               endingOpacity={1}
               startingOpacity={0}
-              isVisible={openSmallBalances}
+              isVisible={openSmallBalances || assetsAmount === 0}
               animationNode={this._node}
             >
               <ButtonPressAnimation

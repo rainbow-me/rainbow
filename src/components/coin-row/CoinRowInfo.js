@@ -10,8 +10,8 @@ import CoinRow from './CoinRow';
 import { compose } from 'recompact';
 import { withAccountSettings } from '../../hoc';
 
-const CoinRowPaddingTop = 15;
-const CoinRowPaddingBottom = 7;
+const CoinRowPaddingTop = 9;
+const CoinRowPaddingBottom = 9;
 
 const Container = styled(Row)`
   ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom, 19)}
@@ -41,7 +41,7 @@ const CoinRowInfo = ({ native, nativeCurrencySymbol }) => {
   return (
     <Container>
       <BalanceText
-        color={nativeDisplay ? null : colors.blueGreyLight}
+        color={nativeDisplay ? null : colors.alpha(colors.blueGreyDark, 0.5)}
         numberOfLines={1}
       >
         {nativeDisplay || `${nativeCurrencySymbol}0.00`}
@@ -55,6 +55,9 @@ const CoinRowInfo = ({ native, nativeCurrencySymbol }) => {
             ? colors.alpha(colors.blueGreyDark, 0.2)
             : null
         }
+        style={{
+          marginBottom: 0.5,
+        }}
       >
         {percentageChangeDisplay}
       </BottomRowText>

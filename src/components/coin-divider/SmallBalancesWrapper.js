@@ -47,6 +47,7 @@ class SmallBalancesWrapper extends PureComponent {
     return (
       <Fragment>
         <CoinDivider
+          assetsAmount={assets.length}
           balancesSum={balancesSum}
           onPress={this.handlePress}
           onEdit={setIsCoinListEdited}

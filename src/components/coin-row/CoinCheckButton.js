@@ -34,7 +34,6 @@ const CoinCheckButton = ({
     <View
       style={{
         height: CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom,
-        paddingTop: 10,
         position: isAbsolute ? 'absolute' : 'relative',
         width: 66,
       }}
