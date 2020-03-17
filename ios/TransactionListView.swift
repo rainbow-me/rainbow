@@ -50,7 +50,14 @@ class TransactionListView: UIView, UITableViewDelegate {
     }
   }
   @objc func onAvatarPressed(_ sender: UIButton) {
-    self.onAvatarPress([:])
+    tableView.setContentOffset(.zero, animated: true)
+    if tableView.contentOffset.y == CGFloat(0) {
+      self.onAvatarPress([:])
+    } else {
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+        self.onAvatarPress([:])
+      }
+    }
   }
   
   @objc func onPressInAvatar(_ sender: UIButton) {
