@@ -105,10 +105,22 @@ ProfileMasthead.defaultProps = {
 
 export default compose(
   withHandlers({
-    onPressAvatar: ({ navigation, accountColor, accountName }) => () =>
-      navigation.navigate('AvatarBuilder', {
-        accountColor: accountColor,
-        accountName: accountName,
-      }),
+    onPressAvatar: ({
+      navigation,
+      accountColor,
+      accountName,
+      recyclerListRef,
+    }) => () => {
+      recyclerListRef.scrollToTop(true);
+      setTimeout(
+        () => {
+          navigation.navigate('AvatarBuilder', {
+            accountColor: accountColor,
+            accountName: accountName,
+          });
+        },
+        recyclerListRef.getCurrentScrollOffset() > 0 ? 200 : 1
+      );
+    },
   })
 )(ProfileMasthead);

@@ -5,7 +5,6 @@ import AddFundsInterstitial from '../components/AddFundsInterstitial';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { FlexItem, Page } from '../components/layout';
 import { Icon } from '../components/icons';
-import { ProfileMasthead } from '../components/profile';
 import { colors, position } from '../styles';
 import TransactionList from '../components/transaction-list/TransactionList';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
@@ -43,15 +42,7 @@ const ProfileScreen = ({
         accountAddress={accountAddress}
         accountColor={accountColor}
         accountName={accountName}
-        header={
-          <ProfileMasthead
-            accountAddress={accountAddress}
-            accountColor={accountColor}
-            accountName={accountName}
-            navigation={navigation}
-            showBottomDivider={!isEmpty}
-          />
-        }
+        navigation={navigation}
         isEmpty={isEmpty}
         nativeCurrency={nativeCurrency}
         requests={requests}

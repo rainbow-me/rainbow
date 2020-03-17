@@ -4,6 +4,7 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import AvatarCircle from '../../components/profile/AvatarCircle';
+import Header from '../../components/header/Header';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
@@ -33,13 +34,7 @@ const emojiStyleInterpolator = ({
       transform: [{ translateY }, { scale }],
     },
     overlayStyle: {
-      backgroundColor: 'rgb(37, 41, 46)',
-      current,
-      opacity: backgroundOpacity,
-      shadowColor: colors.dark,
-      shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.6,
-      shadowRadius: 25,
+      opacity: current,
     },
   };
 };
@@ -209,17 +204,8 @@ export const onTransitionStart = props => {
 };
 
 export const emojiPreset = {
-  cardOverlayEnabled: true,
-  cardShadowEnabled: true,
-  cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: emojiStyleInterpolator,
-  cardTransparent: true,
-  gestureDirection: 'vertical-inverted',
-  gestureEnabled: false,
-  gestureResponseDistance,
-  onTransitionStart,
-  renderOverlay: style => {
-    const backgroundOpacity = style.current.interpolate({
+  cardOverlay: ({ style }) => {
+    const backgroundOpacity = style.opacity.interpolate({
       inputRange: [-1, 0, 0.975, 2],
       outputRange: [0, 0, 1, 1],
     });
@@ -232,13 +218,17 @@ export const emojiPreset = {
           height: deviceUtils.dimensions.height,
           opacity: backgroundOpacity,
           position: 'absolute',
+          shadowColor: colors.dark,
+          shadowOffset: { height: 10, width: 0 },
+          shadowOpacity: 0.6,
+          shadowRadius: 25,
           width: deviceUtils.dimensions.width,
         }}
       >
         <View
           style={{
             alignItems: 'center',
-            top: 63,
+            top: Header.heightWithStatusBar - 1,
           }}
         >
           <AvatarCircle />
@@ -246,6 +236,15 @@ export const emojiPreset = {
       </Animated.View>
     );
   },
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: emojiStyleInterpolator,
+  cardTransparent: true,
+  gestureDirection: 'vertical-inverted',
+  gestureEnabled: false,
+  gestureResponseDistance,
+  onTransitionStart,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
