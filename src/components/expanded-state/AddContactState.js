@@ -18,6 +18,7 @@ import TouchableBackdrop from '../TouchableBackdrop';
 import { AssetPanel } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
 import PlaceholderText from '../text/PlaceholderText';
+import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
@@ -128,11 +129,18 @@ class AddContactState extends PureComponent {
   };
 
   render() {
-    const { address, contact } = this.props;
+    const { address, contact, navigation } = this.props;
     const { color, value } = this.state;
 
     return (
-      <KeyboardFixedOpenLayout>
+      <KeyboardFixedOpenLayout
+        additionalPadding={
+          navigation.dangerouslyGetParent().state.routeName ===
+            'SendSheetNavigator' && isNativeStackAvailable
+            ? 40
+            : 0
+        }
+      >
         <TouchableBackdrop onPress={this.handleAddContact} />
         <FloatingPanels maxWidth={deviceUtils.dimensions.width - 110}>
           <AssetPanel>
