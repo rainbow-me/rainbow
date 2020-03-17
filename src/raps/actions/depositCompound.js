@@ -13,7 +13,8 @@ import {
 import { gasUtils } from '../../utils';
 
 const NOOP = () => undefined;
-const SAVINGS_DEPOSIT_GAS_LIMIT = 350000;
+const SAVINGS_ERC20_DEPOSIT_GAS_LIMIT = 350000;
+const SAVINGS_ETH_DEPOSIT_GAS_LIMIT = 200000;
 
 const depositCompound = async (wallet, currentRap, index, parameters) => {
   console.log('[deposit]');
@@ -46,7 +47,10 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
   );
 
   const transactionParams = {
-    gasLimit: SAVINGS_DEPOSIT_GAS_LIMIT,
+    gasLimit:
+      inputCurrency.address === 'eth'
+        ? SAVINGS_ETH_DEPOSIT_GAS_LIMIT
+        : SAVINGS_ERC20_DEPOSIT_GAS_LIMIT,
     gasPrice: gasPrice ? toHex(gasPrice) : undefined,
     value: toHex(0),
   };
