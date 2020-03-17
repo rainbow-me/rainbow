@@ -47,10 +47,10 @@ export default class RequestVendorLogoIcon extends PureComponent {
 
   renderFallbackText = () => (
     <Text
+      align="center"
       color={colors.getFallbackTextColor(this.props.backgroundColor)}
-      size="large"
-      style={{ marginBottom: 2 }}
-      weight="medium"
+      size="smedium"
+      weight="semibold"
     >
       {initials(this.props.dappName)}
     </Text>
