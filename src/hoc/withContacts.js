@@ -7,7 +7,7 @@ import { contactsAddOrUpdate, removeContact } from '../redux/contacts';
 const contactsSelector = state => state.contacts;
 
 const withSortedContacts = contacts => ({
-  sortedContacts: sortBy(values(contacts), 'name'),
+  sortedContacts: sortBy(values(contacts), 'nickname'),
 });
 
 const withSortedContactsSelector = createSelector(
