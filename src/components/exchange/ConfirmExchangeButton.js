@@ -52,6 +52,7 @@ const ConfirmExchangeButton = ({
 ConfirmExchangeButton.propTypes = {
   disabled: PropTypes.bool,
   isAuthorizing: PropTypes.bool,
+  isDeposit: PropTypes.bool,
   isSufficientBalance: PropTypes.bool,
   onSubmit: PropTypes.func,
   slippage: PropTypes.number,
