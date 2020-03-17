@@ -52,27 +52,37 @@ class ContextMenu extends PureComponent {
     this.props.setIsActionSheetOpen(false);
   };
 
-  render = () => (
-    <Fragment>
-      <ButtonPressAnimation activeOpacity={0.2} onPress={this.showActionSheet}>
-        <Centered
-          css={padding(2, 9, 0, 9)}
-          height="100%"
-          {...omit(this.props, ActionSheetProps)}
+  render = () => {
+    const funcOptions = this.props.dynamicOptions
+      ? this.props.dynamicOptions()
+      : false;
+
+    return (
+      <Fragment>
+        <ButtonPressAnimation
+          activeOpacity={0.2}
+          onPress={this.showActionSheet}
         >
-          <Icon name="threeDots" />
-        </Centered>
-      </ButtonPressAnimation>
-      <ActionSheet
-        {...pick(this.props, ActionSheetProps)}
-        cancelButtonIndex={
-          this.props.cancelButtonIndex || this.props.options.length - 1
-        }
-        onPress={this.handlePressActionSheet}
-        ref={this.handleActionSheetRef}
-      />
-    </Fragment>
-  );
+          <Centered
+            css={padding(2, 9, 0, 9)}
+            height="100%"
+            {...omit(this.props, ActionSheetProps)}
+          >
+            <Icon name="threeDots" />
+          </Centered>
+        </ButtonPressAnimation>
+        <ActionSheet
+          {...pick(this.props, ActionSheetProps)}
+          cancelButtonIndex={
+            this.props.cancelButtonIndex || this.props.options.length - 1
+          }
+          options={funcOptions ? funcOptions : this.props.options}
+          onPress={this.handlePressActionSheet}
+          ref={this.handleActionSheetRef}
+        />
+      </Fragment>
+    );
+  };
 }
 
 export default withActionSheetManager(ContextMenu);

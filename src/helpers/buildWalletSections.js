@@ -11,6 +11,12 @@ import { UniswapInvestmentCard } from '../components/investment-cards';
 import { TokenFamilyWrap } from '../components/token-family';
 import { buildUniqueTokenList, buildCoinsList } from './assets';
 import { chartExpandedAvailable } from '../config/experimental';
+import store from '../redux/store';
+import {
+  setIsCoinListEdited,
+  setPinnedCoins,
+  setHiddenCoins,
+} from '../redux/editOptions';
 
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
@@ -118,6 +124,36 @@ const withBalanceSection = (
     balances: true,
     data: balanceSectionData,
     header: {
+      contextMenuOptions: {
+        cancelButtonIndex: 1,
+        dynamicOptions: () =>
+          store.getState().editOptions.isCoinListEdited
+            ? ['Pin', 'Cancel', 'Hide', 'Finish']
+            : ['Edit', 'Cancel'],
+        onPressActionSheet: index => {
+          if (store.getState().editOptions.isCoinListEdited) {
+            if (index === 3) {
+              store.dispatch(
+                setIsCoinListEdited(
+                  !store.getState().editOptions.isCoinListEdited
+                )
+              );
+            } else if (index === 0) {
+              store.dispatch(setPinnedCoins());
+            } else if (index === 2) {
+              store.dispatch(setHiddenCoins());
+            }
+          } else {
+            if (index === 0) {
+              store.dispatch(
+                setIsCoinListEdited(
+                  !store.getState().editOptions.isCoinListEdited
+                )
+              );
+            }
+          }
+        },
+      },
       showShitcoins,
       title: lang.t('account.tab_balances'),
       totalItems: isLoadingBalances ? 1 : allAssetsCount,
