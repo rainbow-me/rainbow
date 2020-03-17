@@ -103,7 +103,7 @@ export const requestWyreApplePay = (
         })
         .catch(error => {
           captureException(error);
-          paymentResponse.complete('failure');
+          paymentResponse.complete('fail');
         });
     })
     .catch(error => {

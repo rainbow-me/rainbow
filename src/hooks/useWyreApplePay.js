@@ -124,7 +124,7 @@ export default function useWyreApplePay() {
 
       try {
         if (!isPaymentComplete && isEmpty(orderId)) {
-          paymentResponse.complete('failure');
+          paymentResponse.complete('fail');
           handlePaymentCallback();
         }
 
@@ -139,7 +139,7 @@ export default function useWyreApplePay() {
 
         if (!isPaymentComplete) {
           if (isFailed) {
-            paymentResponse.complete('failed');
+            paymentResponse.complete('fail');
             handlePaymentCallback();
           } else if (isPending || isSuccess) {
             paymentResponse.complete('success');
