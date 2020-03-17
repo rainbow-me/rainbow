@@ -10,9 +10,9 @@ import { colors, position } from '../../styles';
 import { magicMemo } from '../../utils';
 import { interpolate } from '../animations';
 import { Centered } from '../layout';
-import { Rounded } from '../text';
+import { Text } from '../text';
 
-const AnimatedRounded = Animated.createAnimatedComponent(toClass(Rounded));
+const AnimatedText = Animated.createAnimatedComponent(toClass(Text));
 
 const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
   const ease = Easing[error ? 'out' : 'in'](Easing.ease);
@@ -29,7 +29,7 @@ const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
 
   return (
     <Animated.View {...position.coverAsObject} style={{ opacity }}>
-      <AnimatedRounded
+      <AnimatedText
         align="center"
         color={bInterpolateColor(
           textColorAnimation,
@@ -42,7 +42,7 @@ const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
         weight="semibold"
       >
         {subtitle}
-      </AnimatedRounded>
+      </AnimatedText>
     </Animated.View>
   );
 };

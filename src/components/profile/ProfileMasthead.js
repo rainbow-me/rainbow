@@ -9,7 +9,7 @@ import {
   addCashButtonAvailable,
   isAvatarPickerAvailable,
 } from '../../config/experimental';
-import { colors, borders, margin } from '../../styles';
+import { colors, borders } from '../../styles';
 import { abbreviations, getFirstGrapheme } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { useNavigation } from 'react-navigation-hooks';
@@ -31,7 +31,7 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
   truncationLength: 4,
   weight: 'bold',
 })`
-  ${margin(1, 0, 2)};
+  margin-bottom: 2;
   width: 100%;
 `;
 
@@ -70,7 +70,7 @@ const ProfileMasthead = ({
     <Centered
       direction="column"
       marginBottom={24}
-      paddingBottom={Platform.OS === 'ios' && addCashButtonAvailable ? 12 : 32}
+      paddingBottom={Platform.OS === 'ios' && addCashButtonAvailable ? 12 : 42}
     >
       {isAvatarPickerAvailable ? (
         <ButtonPressAnimation
@@ -87,10 +87,7 @@ const ProfileMasthead = ({
       ) : (
         <FastImage
           source={AvatarImageSource}
-          style={{
-            ...borders.buildCircleAsObject(85),
-            marginBottom: 3,
-          }}
+          style={{ ...borders.buildCircleAsObject(85) }}
         />
       )}
       <CopyTooltip textToCopy={accountAddress} tooltipText="Copy Address">
@@ -128,7 +125,10 @@ const ProfileMasthead = ({
         <AddCashButton onPress={() => navigate('AddCashSheet')} />
       )}
       {showBottomDivider && (
-        <Divider style={{ bottom: 0, position: 'absolute' }} />
+        <Divider
+          color={colors.rowDividerLight}
+          style={{ bottom: 0, position: 'absolute' }}
+        />
       )}
     </Centered>
   );

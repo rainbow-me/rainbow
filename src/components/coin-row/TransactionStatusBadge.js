@@ -41,15 +41,10 @@ const StatusProps = {
 
 const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
   const isTrade = type === transactionTypes.trade;
-  const isPurchase = type === transactionTypes.purchase;
 
   let statusColor = colors.alpha(colors.blueGreyDark, 0.7);
   if (pending) {
     statusColor = colors.appleBlue;
-  } else if (isTrade && status === TransactionStatusTypes.received) {
-    statusColor = colors.dodgerBlue;
-  } else if (isPurchase && status === TransactionStatusTypes.purchased) {
-    statusColor = colors.dodgerBlue;
   } else if (isTrade && status === TransactionStatusTypes.sent) {
     statusColor = colors.swapPurple;
   }

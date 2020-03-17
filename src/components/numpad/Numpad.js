@@ -5,7 +5,7 @@ import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, FlexItem, Row } from '../layout';
-import { Rounded } from '../text';
+import { Text } from '../text';
 
 const KeyColor = colors.alpha(colors.blueGreyDark, 0.8);
 const defaultTransform = { transform: [{ scale: 0.5 }] };
@@ -32,9 +32,9 @@ const KeyboardRow = withProps({
 const Numpad = ({ decimal, onPress, width }) => {
   const renderCell = symbol => (
     <KeyboardButton key={symbol} onPress={() => onPress(symbol.toString())}>
-      <Rounded align="center" color={KeyColor} size={44} weight="bold">
+      <Text align="center" color={KeyColor} size={44} weight="bold">
         {symbol}
-      </Rounded>
+      </Text>
     </KeyboardButton>
   );
 

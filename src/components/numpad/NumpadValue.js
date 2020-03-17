@@ -5,7 +5,7 @@ import { StyleSheet } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
 import { useDimensions } from '../../hooks';
-import { Rounded } from '../text';
+import { Text } from '../text';
 
 const sx = StyleSheet.create({
   gradient: {
@@ -40,7 +40,7 @@ const NumpadValueGradient = () => {
 const NumpadValueText = props => {
   const { width } = useDimensions();
   return (
-    <Rounded
+    <Text
       {...props}
       align="center"
       color="white"

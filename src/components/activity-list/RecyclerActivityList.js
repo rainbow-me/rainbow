@@ -140,7 +140,7 @@ export default class RecyclerActivityList extends PureComponent {
           dim.height = this.props.isLoading
             ? deviceUtils.dimensions.height
             : Platform.OS === 'ios' && addCashButtonAvailable
-            ? 276
+            ? 278
             : 204;
         }
       }

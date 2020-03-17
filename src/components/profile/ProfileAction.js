@@ -4,14 +4,14 @@ import { colors, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
-import { Rounded } from '../text';
+import { Text } from '../text';
 
 const ProfileAction = ({ icon, iconSize, onPress, text, ...props }) => (
   <ButtonPressAnimation onPress={onPress} {...props}>
     <RowWithMargins
       align="center"
       backgroundColor={colors.transparent}
-      css={padding(8, 9)}
+      css={padding(6, 9, 9)}
       margin={6}
     >
       <Icon
@@ -19,15 +19,9 @@ const ProfileAction = ({ icon, iconSize, onPress, text, ...props }) => (
         name={icon}
         style={position.sizeAsObject(iconSize)}
       />
-      <Rounded
-        color="appleBlue"
-        letterSpacing="looseyGoosey"
-        lineHeight={19}
-        size="lmedium"
-        weight="semibold"
-      >
+      <Text color="appleBlue" lineHeight={19} size="lmedium" weight="semibold">
         {text}
-      </Rounded>
+      </Text>
     </RowWithMargins>
   </ButtonPressAnimation>
 );

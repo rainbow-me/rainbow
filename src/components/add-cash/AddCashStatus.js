@@ -16,16 +16,15 @@ import { position } from '../../styles';
 import { Centered } from '../layout';
 import { CoinIcon } from '../coin-icon';
 import { FloatingEmojisTapper } from '../floating-emojis';
-import { Br, Emoji, Rounded } from '../text';
+import { Br, Emoji, Text } from '../text';
 import NeedHelpButton from './NeedHelpButton';
 
 const StatusMessageText = withProps({
   align: 'center',
-  letterSpacing: 'looseyGoosey',
   lineHeight: 30,
   size: 23,
   weight: 'bold',
-})(Rounded);
+})(Text);
 
 const sx = StyleSheet.create({
   container: {

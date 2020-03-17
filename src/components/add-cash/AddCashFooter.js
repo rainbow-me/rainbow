@@ -3,7 +3,7 @@ import React from 'react';
 import { useDimensions } from '../../hooks';
 import { colors } from '../../styles';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
-import { Emoji, Rounded } from '../text';
+import { Emoji, Text } from '../text';
 import ApplePayButton from './ApplePayButton';
 
 const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
@@ -24,19 +24,18 @@ const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
           onSubmit={onSubmit}
         />
       </Row>
-      <RowWithMargins align="center" margin={6}>
-        <Centered marginTop={2}>
-          <Emoji name="us" size="lmedium" />
+      <RowWithMargins align="center" margin={4}>
+        <Centered marginTop={1}>
+          <Emoji name="us" size="medium" />
         </Centered>
-        <Rounded
+        <Text
           color={colors.alpha(colors.blueGreyDark, 0.6)}
-          letterSpacing="looseyGoosey"
           lineHeight="normal"
           size="lmedium"
           weight="semibold"
         >
           Supports most US debit cards
-        </Rounded>
+        </Text>
       </RowWithMargins>
     </ColumnWithMargins>
   );

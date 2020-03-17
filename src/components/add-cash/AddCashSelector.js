@@ -4,7 +4,7 @@ import React from 'react';
 import { colors } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { RowWithMargins } from '../layout';
-import { Rounded } from '../text';
+import { Text } from '../text';
 import { JellySelector } from '../jelly-selector';
 
 const CurrencyItemHeight = 40;
@@ -20,14 +20,15 @@ const CurrencyItem = ({ item, isSelected }) => {
       paddingRight={11}
     >
       <CoinIcon size={26} symbol={item} />
-      <Rounded
-        color={colors.alpha(colors.blueGreyDark, isSelected ? 0.7 : 0.5)}
-        letterSpacing="looseyGoosey"
-        size="large"
+      <Text
+        color={colors.alpha(colors.blueGreyDark, isSelected ? 0.8 : 0.5)}
+        letterSpacing="roundedMedium"
+        size="larger"
+        style={{ paddingBottom: 1.5 }}
         weight="semibold"
       >
         {upperFirst(toLower(label))}
-      </Rounded>
+      </Text>
     </RowWithMargins>
   );
 };

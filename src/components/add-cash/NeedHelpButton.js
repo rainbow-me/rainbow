@@ -4,28 +4,28 @@ import { useEmailRainbow } from '../../hooks';
 import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
-import { Rounded } from '../text';
+import { Text } from '../text';
 
 const NeedHelpButton = ({ subject, ...props }) => {
   const onEmailRainbow = useEmailRainbow({ subject });
 
   return (
-    <ButtonPressAnimation onPress={onEmailRainbow} scaleTo={1.1}>
+    <ButtonPressAnimation onPress={onEmailRainbow} scaleTo={0.9}>
       <Centered
         backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
         borderRadius={15}
-        css={padding(5, 10)}
+        css={padding(5, 10, 6)}
         {...props}
       >
-        <Rounded
+        <Text
           align="center"
           color={colors.alpha(colors.blueGreyDark, 0.6)}
-          letterSpacing={0.4}
+          letterSpacing="roundedTight"
           size="lmedium"
           weight="semibold"
         >
           Need help?
-        </Rounded>
+        </Text>
       </Centered>
     </ButtonPressAnimation>
   );

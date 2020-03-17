@@ -1,10 +1,10 @@
 import React from 'react';
-import { Rounded } from '../text';
+import { Text } from '../text';
 
 const SheetTitle = props => (
-  <Rounded
+  <Text
     align="center"
-    letterSpacing="looseyGoosey"
+    letterSpacing="roundedMedium"
     lineHeight="loose"
     size="large"
     weight="bold"

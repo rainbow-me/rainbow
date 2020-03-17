@@ -9,13 +9,14 @@ import AddCashIconSource from '../../assets/addCashIcon.png';
 import { margin, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, Row, RowWithMargins } from '../layout';
-import { Rounded } from '../text';
+import { Text } from '../text';
 
 const BorderRadius = 28;
 const BorderWidth = 2;
 
 const sx = StyleSheet.create({
   content: {
+    alignSelf: 'center',
     height: '100%',
     marginRight: 9,
     paddingBottom: 4,
@@ -83,21 +84,21 @@ const AddCashButton = ({ onPress }) => (
       </Centered>
       <OuterGradient>
         <InnerGradient>
-          <RowWithMargins align="center" margin={-2} style={sx.content}>
+          <RowWithMargins align="center" margin={-3} style={sx.content}>
             <FastImage
               resizeMode={FastImage.resizeMode.contain}
               source={AddCashIconSource}
               style={sx.icon}
             />
-            <Rounded
+            <Text
               align="center"
               color="white"
-              letterSpacing="looser"
+              letterSpacing="roundedTight"
               size="larger"
               weight="bold"
             >
               Add Cash
-            </Rounded>
+            </Text>
           </RowWithMargins>
         </InnerGradient>
       </OuterGradient>
