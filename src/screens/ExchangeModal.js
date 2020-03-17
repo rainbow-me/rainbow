@@ -916,6 +916,7 @@ const ExchangeModal = ({
                   isSufficientBalance={isSufficientBalance}
                   onSubmit={handleSubmit}
                   slippage={slippage}
+                  type={type}
                 />
               </Centered>
               <GasSpeedButton />
