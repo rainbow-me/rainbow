@@ -121,6 +121,7 @@ const SavingsListRow = ({
   }, [apy, initialValue, supplyBalanceUnderlying, underlying, value]);
 
   const displayValue = formatSavingsAmount(value);
+  if (!underlying || !underlying.address) return null;
 
   return (
     <Centered css={padding(9, 0, 3)} direction="column">
