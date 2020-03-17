@@ -112,11 +112,12 @@ const withBalanceSection = (
   let totalValue = Number(get(assetsTotal, 'amount', 0));
   const assets = map(savings, cToken => {
     const {
+      ethPrice,
       lifetimeSupplyInterestAccrued,
       supplyBalanceUnderlying,
       supplyRate,
       underlying,
-      ethPrice,
+      underlyingPrice,
     } = cToken;
     return {
       ethPrice,
@@ -124,6 +125,7 @@ const withBalanceSection = (
       supplyBalanceUnderlying,
       supplyRate,
       underlying,
+      underlyingPrice,
     };
   });
 

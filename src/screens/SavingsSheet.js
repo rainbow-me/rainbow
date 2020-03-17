@@ -26,6 +26,7 @@ const SavingsSheet = () => {
   const isEmpty = getParam('isEmpty');
   const nativeValue = getParam('nativeValue');
   const underlying = getParam('underlying');
+  const underlyingPrice = getParam('underlyingPrice');
   const lifetimeSupplyInterestAccrued = getParam(
     'lifetimeSupplyInterestAccrued'
   );
@@ -52,6 +53,7 @@ const SavingsSheet = () => {
               onPress={() =>
                 navigate('SavingsWithdrawModal', {
                   defaultInputAsset: underlying,
+                  underlyingPrice,
                 })
               }
             />

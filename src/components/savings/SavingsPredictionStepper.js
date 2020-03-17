@@ -87,8 +87,8 @@ const SavingsPredictionStepper = ({ balance, interestRate }) => {
 };
 
 SavingsPredictionStepper.propTypes = {
-  balance: PropTypes.number,
-  interestRate: PropTypes.number,
+  balance: PropTypes.string,
+  interestRate: PropTypes.string,
 };
 
 export default React.memo(SavingsPredictionStepper);

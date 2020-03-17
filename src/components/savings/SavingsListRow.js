@@ -75,6 +75,7 @@ const SavingsListRow = ({
   supplyBalanceUnderlying,
   supplyRate,
   underlying,
+  underlyingPrice,
 }) => {
   const initialValue = BigNumber(supplyBalanceUnderlying);
   const [value, setValue] = useState(initialValue);
@@ -90,6 +91,7 @@ const SavingsListRow = ({
       supplyBalanceUnderlying,
       supplyRate,
       underlying,
+      underlyingPrice,
     });
   }, [
     lifetimeSupplyInterestAccrued,
@@ -98,6 +100,7 @@ const SavingsListRow = ({
     supplyBalanceUnderlying,
     supplyRate,
     underlying,
+    underlyingPrice,
   ]);
 
   useEffect(() => {
@@ -247,6 +250,7 @@ SavingsListRow.propTypes = {
   supplyBalanceUnderlying: PropTypes.string,
   supplyRate: PropTypes.string,
   underlying: PropTypes.object,
+  underlyingPrice: PropTypes.string,
 };
 
 export default SavingsListRow;

@@ -91,6 +91,7 @@ export default function useSavingsAccount(pollInterval = 0) {
         supplyBalanceUnderlying,
         supplyRate,
         underlying,
+        underlyingPrice,
       };
     });
 

@@ -5,6 +5,8 @@ import ExchangeModalWithData from './ExchangeModalWithData';
 
 const WithdrawModal = ({ navigation, ...props }) => {
   const defaultInputAsset = navigation.getParam('defaultInputAsset');
+  const underlyingPrice = navigation.getParam('underlyingPrice');
+
   return (
     <ExchangeModalWithData
       createRap={createSwapAndDepositCompoundRap}
@@ -12,6 +14,7 @@ const WithdrawModal = ({ navigation, ...props }) => {
       inputHeaderTitle={`Withdraw ${defaultInputAsset.name}`}
       showOutputField={false}
       type={ExchangeModalTypes.withdrawal}
+      underlyingPrice={underlyingPrice}
       {...props}
     />
   );

@@ -42,6 +42,7 @@ import {
   divide,
   greaterThanOrEqualTo,
   isZero,
+  multiply,
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
 import {
@@ -74,6 +75,28 @@ const isSameAsset = (a, b) => {
 
 const getNativeTag = field => get(field, '_inputRef._nativeTag');
 
+const createMissingWithdrawalAsset = (asset, underlyingPrice, priceOfEther) => {
+  const { address, decimals, name, symbol } = asset;
+  const priceInUSD = multiply(priceOfEther, underlyingPrice);
+
+  return {
+    address,
+    decimals,
+    name,
+    native: {
+      price: {
+        amount: priceInUSD,
+        display: '',
+      },
+    },
+    price: {
+      value: priceInUSD,
+    },
+    symbol,
+    uniqueId: address,
+  };
+};
+
 const ExchangeModal = ({
   defaultInputAsset,
   gasPricesStartPolling,
@@ -90,6 +113,7 @@ const ExchangeModal = ({
   showOutputField,
   tabPosition,
   type,
+  underlyingPrice,
   uniswapClearCurrenciesAndReserves,
   uniswapUpdateInputCurrency,
   uniswapUpdateOutputCurrency,
@@ -104,9 +128,18 @@ const ExchangeModal = ({
   const { accountAddress, chainId, nativeCurrency } = useAccountSettings();
 
   const defaultInputAddress = get(defaultInputAsset, 'address');
-  const defaultInputItem =
-    ethereumUtils.getAsset(allAssets, defaultInputAddress) ||
-    ethereumUtils.getAsset(allAssets);
+  let defaultInputItem = ethereumUtils.getAsset(allAssets, defaultInputAddress);
+  if (!defaultInputItem && isWithdrawal) {
+    const eth = ethereumUtils.getAsset(allAssets);
+    const priceOfEther = get(eth, 'native.price.amount', null);
+    defaultInputItem = createMissingWithdrawalAsset(
+      defaultInputAsset,
+      underlyingPrice,
+      priceOfEther
+    );
+  } else if (!defaultInputItem) {
+    defaultInputItem = ethereumUtils.getAsset(allAssets);
+  }
   const [inputCurrency, setInputCurrency] = useState(defaultInputItem);
   const [inputAmount, setInputAmount] = useState(null);
   const [inputAmountDisplay, setInputAmountDisplay] = useState(null);
@@ -946,6 +979,7 @@ ExchangeModal.propTypes = {
   tabPosition: PropTypes.object, // animated value
   tradeDetails: PropTypes.object,
   type: PropTypes.oneOf(Object.values(ExchangeModalTypes)),
+  underlyingPrice: PropTypes.string,
   uniswapAssetsInWallet: PropTypes.arrayOf(PropTypes.object),
   uniswapUpdateInputCurrency: PropTypes.func,
   uniswapUpdateOutputCurrency: PropTypes.func,
