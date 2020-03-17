@@ -476,6 +476,7 @@ const ExchangeModal = ({
         selectedGasPrice,
         inputCurrency
       );
+
       const isSufficientBalance =
         !inputAmount || greaterThanOrEqualTo(inputBalance, inputAmount);
       setIsSufficientBalance(isSufficientBalance);
@@ -719,9 +720,19 @@ const ExchangeModal = ({
           );
         }
         setNativeAmount(newNativeAmount);
+
+        // update sufficient balance
+        const inputBalance = ethereumUtils.getBalanceAmount(
+          selectedGasPrice,
+          inputCurrency
+        );
+
+        const isSufficientBalance =
+          !newInputAmount || greaterThanOrEqualTo(inputBalance, newInputAmount);
+        setIsSufficientBalance(isSufficientBalance);
       }
     },
-    [getMarketPrice, inputCurrency]
+    [getMarketPrice, inputCurrency, selectedGasPrice]
   );
 
   const previousInputCurrency = usePrevious(inputCurrency);
