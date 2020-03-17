@@ -1,44 +1,19 @@
-import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import SavingsListHeader from './SavingsListHeader';
 import { compose } from 'recompact';
 import withOpenSavings from '../../hoc/withOpenSavings';
 import { OpacityToggler } from '../animations';
 import { View } from 'react-native';
-import { useAccountAssets } from '../../hooks';
-import { ethereumUtils } from '../../utils';
 import { pure } from 'recompose';
 import SavingsListRow from './SavingsListRow';
 
 const SavingsListRowRenderer = pure(data => <SavingsListRow {...data} />);
 
-const SavingsListWrapper = ({ assets, openSavings }) => {
-  const [savingsSumValue, setSavingsSumValue] = useState(0);
-  const { assets: allAssets } = useAccountAssets();
-  const eth = ethereumUtils.getAsset(allAssets);
-  const priceOfEther = get(eth, 'native.price.amount', null);
-
-  useMemo(() => {
-    const updateSum = () => {
-      let newSavingsSumValue = 0;
-      if (priceOfEther) {
-        assets.forEach((asset, i) => {
-          const { ethPrice } = asset;
-          const nativeValue = priceOfEther * ethPrice;
-          assets[i].nativeValue = nativeValue;
-          newSavingsSumValue += nativeValue;
-        });
-        setSavingsSumValue(newSavingsSumValue);
-      }
-    };
-
-    return updateSum();
-  }, [assets, priceOfEther]);
-
+const SavingsListWrapper = ({ assets, openSavings, totalValue }) => {
   return (
     <React.Fragment>
-      <SavingsListHeader savingsSumValue={savingsSumValue} />
+      <SavingsListHeader savingsSumValue={totalValue} />
       <View pointerEvents={openSavings ? 'auto' : 'none'}>
         <OpacityToggler
           endingOpacity={1}
@@ -56,6 +31,12 @@ const SavingsListWrapper = ({ assets, openSavings }) => {
 
 SavingsListWrapper.propTypes = {
   assets: PropTypes.array,
+  openSavings: PropTypes.bool,
+  totalValue: PropTypes.number,
+};
+
+SavingsListWrapper.defaultProps = {
+  totalValue: 0,
 };
 
 export default compose(withOpenSavings)(SavingsListWrapper);

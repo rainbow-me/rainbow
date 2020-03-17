@@ -12,6 +12,7 @@ import { CollectibleTokenFamily } from '../components/token-family';
 import { buildUniqueTokenList, buildCoinsList } from './assets';
 import { chartExpandedAvailable } from '../config/experimental';
 import networkTypes from './networkTypes';
+import { ethereumUtils } from '../utils';
 
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
@@ -129,9 +130,24 @@ const withBalanceSection = (
     };
   });
 
+  const eth = ethereumUtils.getAsset(allAssets);
+  const priceOfEther = get(eth, 'native.price.amount', null);
+  let totalSavingsValue = 0;
+  if (priceOfEther) {
+    assets.forEach((asset, i) => {
+      const { ethPrice } = asset;
+      const nativeValue = priceOfEther * ethPrice;
+      assets[i].nativeValue = nativeValue;
+      totalSavingsValue += nativeValue;
+    });
+  }
+
+  totalValue += totalSavingsValue;
+
   const savingsSection = {
     assets,
     savingsContainer: true,
+    totalValue: totalSavingsValue,
   };
 
   let balanceSectionData = [...buildCoinsList(allAssets)];

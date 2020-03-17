@@ -845,7 +845,9 @@ class RecyclerAssetList extends Component {
     }
 
     if (type === ViewTypes.COIN_SAVINGS) {
-      return <SavingsListWrapper assets={item.assets} />;
+      return (
+        <SavingsListWrapper assets={item.assets} totalValue={item.totalValue} />
+      );
     }
 
     if (type === ViewTypes.COIN_SMALL_BALANCES) {
