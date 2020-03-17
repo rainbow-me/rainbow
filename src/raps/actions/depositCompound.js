@@ -13,27 +13,7 @@ import {
 import { gasUtils } from '../../utils';
 
 const NOOP = () => undefined;
-
-const estimateDepositGasLimit = async (
-  compound,
-  accountAddress,
-  rawMintAmount
-) => {
-  try {
-    console.log('[deposit] estimating gas');
-    const params = { from: accountAddress, value: toHex(0) };
-    const gasLimit = await compound.estimate.mint(rawMintAmount, params);
-    console.log('[deposit] estimated gas limit for deposit', gasLimit);
-    console.log(
-      '[deposit] TO STRING estimated gas limit for deposit',
-      gasLimit.toString()
-    );
-    return gasLimit ? gasLimit.toString() : null;
-  } catch (error) {
-    console.log('[deposit] ERROR estimating gas', error);
-    return null;
-  }
-};
+const SAVINGS_DEPOSIT_GAS_LIMIT = 350000;
 
 const depositCompound = async (wallet, currentRap, index, parameters) => {
   console.log('[deposit]');
@@ -65,14 +45,8 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
     wallet
   );
 
-  const gasLimit = await estimateDepositGasLimit(
-    compound,
-    accountAddress,
-    rawInputAmount
-  );
-
   const transactionParams = {
-    gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+    gasLimit: SAVINGS_DEPOSIT_GAS_LIMIT,
     gasPrice: gasPrice ? toHex(gasPrice) : undefined,
     value: toHex(0),
   };
@@ -101,6 +75,7 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
   try {
     console.log('[deposit] waiting for the deposit to go thru');
     await deposit.wait();
+    console.log('[deposit] deposit completed!');
     // update rap for confirmed status
     currentRap.actions[index].transaction.confirmed = true;
     dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
