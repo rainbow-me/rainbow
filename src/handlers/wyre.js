@@ -1,5 +1,5 @@
 import { PaymentRequest } from '@rainbow-me/react-native-payments';
-import { captureException, captureMessage } from '@sentry/react-native';
+import { captureException } from '@sentry/react-native';
 import axios from 'axios';
 import { get, last, split } from 'lodash';
 import {
@@ -93,10 +93,6 @@ export const requestWyreApplePay = (
   paymentRequest
     .show()
     .then(paymentResponse => {
-      sentryUtils.addDataBreadcrumb(
-        'Apple Pay - Received payment response',
-        paymentResponse
-      );
       processWyrePayment(
         paymentResponse,
         totalAmount,
@@ -107,12 +103,13 @@ export const requestWyreApplePay = (
           trackOrder(destCurrency, orderId, paymentResponse);
         })
         .catch(error => {
+          sentryUtils.addInfoBreadcrumb('processWyrePayment - catch');
           captureException(error);
           paymentResponse.complete('fail');
         });
     })
     .catch(error => {
-      console.log('Apple Pay - payment request error', error);
+      sentryUtils.addInfoBreadcrumb('Apple Pay - Show payment request catch');
       captureException(error);
     });
 };
@@ -123,17 +120,8 @@ export const trackWyreOrder = async orderId => {
     if (response.status >= 200 && response.status < 300) {
       const orderStatus = get(response, 'data.status');
       const transferId = get(response, 'data.transferId');
-      sentryUtils.addDataBreadcrumb(
-        'WYRE - Track wyre order response',
-        response.data
-      );
       return { data: response.data, orderStatus, transferId };
     }
-    sentryUtils.addDataBreadcrumb(
-      'WYRE - Tracking Response Received - NOT 200',
-      JSON.stringify(response, null, 2)
-    );
-
     const {
       data: { exceptionId, message },
     } = response;
@@ -183,7 +171,6 @@ const processWyrePayment = async (
       'WYRE - processWyrePayment response - was not 200',
       response.data
     );
-    captureMessage('ProcessWyrePayment NOT OK Response Received');
     const {
       data: { exceptionId, message },
     } = response;

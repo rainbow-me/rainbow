@@ -38,7 +38,6 @@ export default function useWyreApplePay() {
   const handlePaymentCallback = useCallback(() => {
     // In order to have the UI appear to be in-sync with the Apple Pay modal's
     // animation, we need to artificially delay before marking a purchase as pending.
-    captureMessage('Wyre handle payment callback');
     startPaymentCompleteTimeout(() => setPaymentComplete(true), 1500);
   }, [startPaymentCompleteTimeout]);
 
@@ -133,11 +132,6 @@ export default function useWyreApplePay() {
         const { data, orderStatus, transferId } = await trackWyreOrder(orderId);
         setOrderStatus(orderStatus);
 
-        sentryUtils.addDataBreadcrumb('Wyre order status', {
-          orderStatus,
-          transferId,
-        });
-
         const isFailed = orderStatus === WYRE_ORDER_STATUS_TYPES.failed;
         const isPending = orderStatus === WYRE_ORDER_STATUS_TYPES.pending;
         const isSuccess = orderStatus === WYRE_ORDER_STATUS_TYPES.success;
@@ -150,8 +144,6 @@ export default function useWyreApplePay() {
             paymentResponse.complete('fail');
             handlePaymentCallback();
           } else if (isPending || isSuccess) {
-            sentryUtils.addDataBreadcrumb('Wyre order data', data);
-            captureMessage(`Wyre final check - order status success`);
             paymentResponse.complete('success');
             handlePaymentCallback();
           } else if (!isChecking) {
