@@ -140,7 +140,6 @@ const withBalanceSection = (
   }
 
   totalValue += totalSavingsValue;
-
   const savingsSection = {
     assets,
     savingsContainer: true,
