@@ -55,14 +55,13 @@ class Button : RCTView {
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     animateTapStart(
       duration: duration,
-      scale: scaleTo,
-      useHaptic: enableHapticFeedback ? hapticType: nil
+      scale: scaleTo
     )
     onPressStart([:])
   }
   
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration)
+    animateTapEnd(duration: duration, useHaptic: enableHapticFeedback ? hapticType: nil)
     onPress([:])
   }
   
