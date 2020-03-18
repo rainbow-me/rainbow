@@ -17,7 +17,11 @@ const StatusProps = {
     style: position.maxSizeAsObject(12),
   },
   [TransactionStatusTypes.purchased]: {
+    marginRight: 3,
     name: 'arrow',
+  },
+  [TransactionStatusTypes.purchasing]: {
+    marginRight: 3,
   },
   [TransactionStatusTypes.received]: {
     marginRight: 2,
