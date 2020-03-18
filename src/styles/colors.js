@@ -17,7 +17,7 @@ const base = {
   lightestGrey: '#E9EBEF', // '238, 233, 232'
   lightGrey: '#CDCFD4', // '205, 207, 212'
   mediumGrey: '#A1A5B3', // '161, 165, 179'
-  orange: '#FFB200', // '255, 178, 0'
+  orange: '#FF9900', // '255, 153, 0'
   orangeLight: '#FEBE44', // '254, 190, 68'
   paleBlue: '#579DFF',
   purple: '#32325D', // '50, 50, 93'
@@ -30,6 +30,7 @@ const base = {
   swapPurple: '#575CFF', // '87, 92, 255'
   transparent: 'transparent',
   white: '#FFFFFF', // '255, 255, 255'
+  yellowOrange: '#FFB200', // '255, 178, 0'
 };
 
 const avatarColor = [
