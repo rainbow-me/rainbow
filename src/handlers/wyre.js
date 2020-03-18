@@ -4,8 +4,11 @@ import axios from 'axios';
 import { get, last, split } from 'lodash';
 import {
   RAINBOW_WYRE_MERCHANT_ID,
+  RAINBOW_WYRE_MERCHANT_ID_TEST,
   WYRE_ACCOUNT_ID,
+  WYRE_ACCOUNT_ID_TEST,
   WYRE_ENDPOINT,
+  WYRE_ENDPOINT_TEST,
 } from 'react-native-dotenv';
 import { add, feeCalculation } from '../helpers/utilities';
 import { sentryUtils } from '../utils';
@@ -15,7 +18,7 @@ const WYRE_FLAT_FEE_USD = 0.3;
 const SOURCE_CURRENCY_USD = 'USD';
 
 const wyreApi = axios.create({
-  baseURL: WYRE_ENDPOINT,
+  baseURL: __DEV__ ? WYRE_ENDPOINT_TEST : WYRE_ENDPOINT,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
@@ -56,7 +59,9 @@ export const requestWyreApplePay = (
       data: {
         countryCode: 'US',
         currencyCode: SOURCE_CURRENCY_USD,
-        merchantIdentifier: RAINBOW_WYRE_MERCHANT_ID,
+        merchantIdentifier: __DEV__
+          ? RAINBOW_WYRE_MERCHANT_ID_TEST
+          : RAINBOW_WYRE_MERCHANT_ID,
         supportedCountries: ['US'],
         supportedNetworks: ['visa', 'mastercard', 'amex'],
       },
@@ -238,7 +243,7 @@ const createPayload = (paymentResponse, amount, dest, destCurrency) => {
   };
 
   return {
-    partnerId: WYRE_ACCOUNT_ID,
+    partnerId: __DEV__ ? WYRE_ACCOUNT_ID_TEST : WYRE_ACCOUNT_ID,
     payload: {
       orderRequest: {
         amount,
