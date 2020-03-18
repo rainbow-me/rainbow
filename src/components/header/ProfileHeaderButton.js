@@ -7,7 +7,9 @@ import styled from 'styled-components/primitives';
 import { withRequests, withAccountInfo } from '../../hoc';
 import { Badge } from '../badge';
 import { Centered } from '../layout';
+import { ShadowStack } from '../shadow-stack';
 import Avatar from '../Avatar';
+import InnerBorder from '../InnerBorder';
 import HeaderButton from './HeaderButton';
 import { colors } from '../../styles';
 import { isAvatarPickerAvailable } from '../../config/experimental';
@@ -20,12 +22,13 @@ const AvatarCircle = styled(View)`
 `;
 
 const FirstLetter = styled(Text)`
-  width: 100%;
-  text-align: center;
   color: #fff;
-  font-weight: 600;
-  font-size: 24;
+  font-size: 23;
+  font-weight: 400;
+  letter-spacing: -0.6;
   line-height: 34;
+  text-align: center;
+  width: 100%;
 `;
 
 const ProfileHeaderButton = ({
@@ -42,13 +45,26 @@ const ProfileHeaderButton = ({
   >
     <Centered>
       {isAvatarPickerAvailable ? (
-        <AvatarCircle
-          style={{ backgroundColor: colors.avatarColor[accountColor] }}
+        <ShadowStack
+          backgroundColor={colors.avatarColor[accountColor]}
+          borderRadius={65}
+          height={34}
+          width={34}
+          shadows={[
+            [0, 2, 2.5, colors.dark, 0.08],
+            [0, 6, 5, colors.dark, 0.12],
+          ]}
+          shouldRasterizeIOS
         >
-          <FirstLetter>
-            {new GraphemeSplitter().splitGraphemes(accountName)[0]}
-          </FirstLetter>
-        </AvatarCircle>
+          <AvatarCircle
+            style={{ backgroundColor: colors.avatarColor[accountColor] }}
+          >
+            <FirstLetter>
+              {new GraphemeSplitter().splitGraphemes(accountName)[0]}
+            </FirstLetter>
+            <InnerBorder opacity={0.04} radius={34} />
+          </AvatarCircle>
+        </ShadowStack>
       ) : (
         <Avatar size={34} />
       )}

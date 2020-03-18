@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import { View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import Animated from 'react-native-reanimated';
 import { withNavigation } from 'react-navigation';
@@ -37,8 +36,8 @@ const Container = styled(Column)`
 `;
 
 const SheetContainer = styled(Column)`
-  border-radius: 20px;
   background-color: ${colors.white};
+  border-radius: 20px;
   height: 420px;
   overflow: hidden;
   width: 100%;
@@ -98,7 +97,8 @@ class AvatarBuilder extends PureComponent {
   };
 
   render() {
-    const colorCircleTopPadding = 8;
+    const colorCircleTopPadding = 15;
+    const colorCircleBottomPadding = 19;
 
     return (
       <Container {...deviceUtils.dimensions}>
@@ -107,29 +107,27 @@ class AvatarBuilder extends PureComponent {
         <Column
           align="center"
           pointerEvents="box-none"
-          top={statusBarHeight + 46}
+          top={statusBarHeight + 110}
         >
-          <View height={100} />
-
           <Row
             justify="center"
             maxWidth={375}
-            paddingBottom={17}
-            paddingTop={colorCircleTopPadding}
+            height={38 + colorCircleTopPadding + colorCircleBottomPadding}
+            paddingTop={colorCircleTopPadding + 7}
+            paddingBottom={colorCircleBottomPadding + 7}
             width="100%"
           >
             <Animated.View
               alignSelf="center"
-              marginTop={-7}
               borderColor={this.state.avatarColor}
               borderRadius={19}
               borderWidth={3}
               height={38}
+              top={colorCircleTopPadding}
               position="absolute"
               style={{
                 transform: [{ translateX: this.springAnim }],
               }}
-              top={colorCircleTopPadding}
               width={38}
             />
             {this.avatarColors}
@@ -152,7 +150,7 @@ class AvatarBuilder extends PureComponent {
 export default compose(
   withAccountInfo,
   withHandlers({
-    onPressBackground: ({ navigation }) => () => navigation.goBack(),
+    onPressBackground: ({ navigation }) => () => navigation.popToTop(),
   }),
   withNavigation
 )(AvatarBuilder);

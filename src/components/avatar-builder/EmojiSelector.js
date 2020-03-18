@@ -3,7 +3,6 @@
 // eslint-disable-next-line import/extensions
 import emoji from 'emoji-datasource';
 import PropTypes from 'prop-types';
-import { isEmulatorSync } from 'react-native-device-info';
 import React, { PureComponent } from 'react';
 import {
   Dimensions,
@@ -460,9 +459,6 @@ export default class EmojiSelector extends PureComponent {
             style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}
           >
             {showSearchBar ? Searchbar : null}
-            {isEmulatorSync() ? (
-              <Text> Scrolling might not work perfectly on a simulator</Text>
-            ) : null}
             {!isReady ? (
               <View style={styles.loader} {...other}>
                 <View style={styles.sectionHeaderWrap}>

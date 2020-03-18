@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar, View, Animated } from 'react-native';
+import { Animated, StatusBar, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
@@ -9,29 +9,21 @@ import Header from '../../components/header/Header';
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
 
-const emojiStyleInterpolator = ({
-  current: { progress: current },
-  layouts: { screen },
-}) => {
+const emojiStyleInterpolator = ({ current: { progress: current } }) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 1, 1],
   });
 
-  const translateY = current.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-(screen.height / 2) + statusBarHeight + 78.5, 0],
-  });
-
   const scale = current.interpolate({
-    inputRange: [-1, 0, 1, 2],
-    outputRange: [0.01, 0.01, 1, 1],
+    inputRange: [0, 1],
+    outputRange: [0, 1],
   });
 
   return {
     cardStyle: {
       opacity: backgroundOpacity,
-      transform: [{ translateY }, { scale }],
+      transform: [{ scale }],
     },
     overlayStyle: {
       opacity: current,
@@ -175,6 +167,23 @@ const closeSpec = {
   },
 };
 
+const emojiCloseSpec = {
+  animation: 'spring',
+  config: {
+    damping: 30,
+    overshootClamping: true,
+    stiffness: 700,
+  },
+};
+
+const emojiOpenSpec = {
+  animation: 'spring',
+  config: {
+    damping: 32,
+    stiffness: 500,
+  },
+};
+
 const openSpec = {
   animation: 'spring',
   config: {
@@ -245,7 +254,7 @@ export const emojiPreset = {
   gestureEnabled: false,
   gestureResponseDistance,
   onTransitionStart,
-  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+  transitionSpec: { close: emojiCloseSpec, open: emojiOpenSpec },
 };
 
 export const backgroundPreset = {

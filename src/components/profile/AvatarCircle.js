@@ -5,51 +5,52 @@ import { View } from 'react-native';
 import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
+import InnerBorder from '../InnerBorder';
 import { Text } from '../text';
 import { ShadowStack } from '../shadow-stack';
 import { withAccountInfo } from '../../hoc';
 import GraphemeSplitter from 'grapheme-splitter';
 
 const AvatarCircle = styled(View)`
-  border-radius: 33px;
-  margin-bottom: 16px;
   height: 65px;
+  margin-bottom: 16px;
   width: 65px;
 `;
 
 const FirstLetter = styled(Text)`
-  width: 100%;
-  text-align: center;
   color: #fff;
+  font-size: 38;
   font-weight: 600;
-  font-size: 37;
-  line-height: 65;
+  letter-spacing: 1.2;
+  line-height: 66;
+  text-align: center;
+  width: 100%;
 `;
 
 const ProfileAction = ({ onPress, accountColor, accountName }) => (
   <ButtonPressAnimation
     hapticType="impactMedium"
     onPress={onPress}
-    scaleTo={0.82}
+    scaleTo={0.86}
     paddingTop={2}
   >
     <ShadowStack
+      backgroundColor={colors.avatarColor[accountColor]}
+      borderRadius={65}
       height={65}
       width={65}
       marginBottom={16}
-      borderRadius={40}
       shadows={[
-        [0, 6, 10, colors.dark, 0.12],
-        [0, 2, 5, colors.dark, 0.08],
+        [0, 2, 2.5, colors.dark, 0.08],
+        [0, 6, 5, colors.dark, 0.12],
       ]}
       shouldRasterizeIOS
     >
-      <AvatarCircle
-        style={{ backgroundColor: colors.avatarColor[accountColor] }}
-      >
+      <AvatarCircle backgroundColor={colors.avatarColor[accountColor]}>
         <FirstLetter>
           {new GraphemeSplitter().splitGraphemes(accountName)[0]}
         </FirstLetter>
+        <InnerBorder opacity={0.04} radius={65} />
       </AvatarCircle>
     </ShadowStack>
   </ButtonPressAnimation>
