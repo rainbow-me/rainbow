@@ -127,8 +127,7 @@ export const trackWyreOrder = async orderId => {
         'WYRE - Track wyre order response',
         response.data
       );
-      captureMessage('trackWyreOrder OK Response Received');
-      return { orderStatus, transferId };
+      return { data: response.data, orderStatus, transferId };
     }
     sentryUtils.addDataBreadcrumb(
       'WYRE - Tracking Response Received - NOT 200',
@@ -175,15 +174,9 @@ const processWyrePayment = async (
 ) => {
   const data = createPayload(paymentResponse, amount, dest, destCurrency);
   try {
-    sentryUtils.addDataBreadcrumb('WYRE - processWyrePayment request', data);
     const response = await wyreApi.post('/v3/apple-pay/process/partner', data);
 
     if (response.status >= 200 && response.status < 300) {
-      sentryUtils.addDataBreadcrumb(
-        'WYRE - processWyrePayment response',
-        response.data
-      );
-      captureMessage('ProcessWyrePayment OK Response Received');
       return get(response, 'data.id', null);
     }
     sentryUtils.addDataBreadcrumb(

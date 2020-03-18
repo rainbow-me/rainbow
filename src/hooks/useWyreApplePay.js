@@ -15,7 +15,7 @@ import {
 } from '../helpers/wyreStatusTypes';
 import { dataAddNewPurchaseTransaction } from '../redux/data';
 import { AddCashCurrencies, AddCashCurrencyInfo } from '../references';
-import { ethereumUtils } from '../utils';
+import { ethereumUtils, sentryUtils } from '../utils';
 import useAccountData from './useAccountData';
 import useTimeout from './useTimeout';
 
@@ -130,20 +130,33 @@ export default function useWyreApplePay() {
 
         setOrderCurrency(destCurrency);
 
-        const { orderStatus, transferId } = await trackWyreOrder(orderId);
+        const { data, orderStatus, transferId } = await trackWyreOrder(orderId);
         setOrderStatus(orderStatus);
+
+        sentryUtils.addDataBreadcrumb('Wyre order status', {
+          orderStatus,
+          transferId,
+        });
 
         const isFailed = orderStatus === WYRE_ORDER_STATUS_TYPES.failed;
         const isPending = orderStatus === WYRE_ORDER_STATUS_TYPES.pending;
         const isSuccess = orderStatus === WYRE_ORDER_STATUS_TYPES.success;
+        const isChecking = orderStatus === WYRE_ORDER_STATUS_TYPES.checking;
 
         if (!isPaymentComplete) {
           if (isFailed) {
+            sentryUtils.addDataBreadcrumb('Wyre order data', data);
+            captureMessage(`Wyre final check - order status failed`);
             paymentResponse.complete('fail');
             handlePaymentCallback();
           } else if (isPending || isSuccess) {
+            sentryUtils.addDataBreadcrumb('Wyre order data', data);
+            captureMessage(`Wyre final check - order status success`);
             paymentResponse.complete('success');
             handlePaymentCallback();
+          } else if (!isChecking) {
+            sentryUtils.addDataBreadcrumb('Wyre order data', data);
+            captureMessage(`Wyre final check - order status unknown`);
           }
         }
 
