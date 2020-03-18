@@ -10,24 +10,22 @@ import SavingsListRow from './SavingsListRow';
 
 const SavingsListRowRenderer = pure(data => <SavingsListRow {...data} />);
 
-const SavingsListWrapper = ({ assets, openSavings, totalValue }) => {
-  return (
-    <React.Fragment>
-      <SavingsListHeader savingsSumValue={totalValue} />
-      <View pointerEvents={openSavings ? 'auto' : 'none'}>
-        <OpacityToggler
-          endingOpacity={1}
-          isVisible={openSavings}
-          startingOpacity={0}
-        >
-          {assets.map(item => (
-            <SavingsListRowRenderer key={item.underlying.symbol} {...item} />
-          ))}
-        </OpacityToggler>
-      </View>
-    </React.Fragment>
-  );
-};
+const SavingsListWrapper = ({ assets, openSavings, totalValue }) => (
+  <React.Fragment>
+    <SavingsListHeader savingsSumValue={totalValue} />
+    <View pointerEvents={openSavings ? 'auto' : 'none'}>
+      <OpacityToggler
+        endingOpacity={1}
+        isVisible={openSavings}
+        startingOpacity={0}
+      >
+        {assets.map(item => (
+          <SavingsListRowRenderer key={item.underlying.symbol} {...item} />
+        ))}
+      </OpacityToggler>
+    </View>
+  </React.Fragment>
+);
 
 SavingsListWrapper.propTypes = {
   assets: PropTypes.array,
