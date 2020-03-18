@@ -23,6 +23,9 @@ const StatusProps = {
   [TransactionStatusTypes.purchasing]: {
     marginRight: 3,
   },
+  [TransactionStatusTypes.sending]: {
+    marginRight: 3,
+  },
   [TransactionStatusTypes.received]: {
     marginRight: 2,
     name: 'arrow',
