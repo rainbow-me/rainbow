@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { onlyUpdateForKeys } from 'recompact';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
-import { CollectiblesSendRow, SendCoinRow } from '../coin-row';
+import { CollectiblesSendRow, SavingsCoinRow, SendCoinRow } from '../coin-row';
 import { View } from 'react-primitives';
 import {
   DataProvider,
@@ -30,11 +30,22 @@ const Divider = styled.View`
 class SendAssetList extends React.Component {
   constructor(args) {
     super(args);
+
+    this.data = this.props.allAssets;
+    if (this.props.savings) {
+      this.data = this.data.concat([
+        { data: this.props.savings, name: 'Savings' },
+      ]);
+    }
+    if (this.props.uniqueTokens) {
+      this.data = this.data.concat(this.props.uniqueTokens);
+    }
     this.state = {
       dataProvider: new DataProvider((r1, r2) => {
         return r1 !== r2;
-      }).cloneWithRows(this.props.allAssets.concat(this.props.uniqueTokens)),
+      }).cloneWithRows(this.data),
       openCards: [],
+      openSavings: false,
     };
 
     const imageTokens = [];
@@ -55,17 +66,39 @@ class SendAssetList extends React.Component {
         if (i < this.props.allAssets.length - 1) {
           return 'COIN_ROW';
         } else if (i === this.props.allAssets.length - 1) {
-          return 'COIN_ROW_LAST';
+          return this.props.savings && this.props.savings.length !== 0
+            ? 'COIN_ROW'
+            : 'COIN_ROW_LAST';
+        } else if (
+          i === this.props.allAssets.length &&
+          this.props.savings &&
+          this.props.savings.length > 0
+        ) {
+          return {
+            size: this.state.openSavings
+              ? rowHeight * this.props.savings.length
+              : 0,
+            type: 'SAVINGS_ROW',
+          };
         } else {
           if (
             this.state.openCards[
-              this.props.uniqueTokens[i - this.props.allAssets.length].familyId
+              this.props.uniqueTokens[
+                i -
+                  this.props.allAssets.length -
+                  (this.props.savings && this.props.savings.length > 0 ? 1 : 0)
+              ].familyId
             ]
           ) {
             return {
               size:
-                this.props.uniqueTokens[i - this.props.allAssets.length].data
-                  .length + 1,
+                this.props.uniqueTokens[
+                  i -
+                    this.props.allAssets.length -
+                    (this.props.savings && this.props.savings.length > 0
+                      ? 1
+                      : 0)
+                ].data.length + 1,
               type: 'COLLECTIBLE_ROW',
             };
           } else {
@@ -74,20 +107,18 @@ class SendAssetList extends React.Component {
         }
       },
       (type, dim) => {
+        dim.width = deviceUtils.dimensions.width;
         if (type === 'COIN_ROW') {
-          dim.width = deviceUtils.dimensions.width;
           dim.height = rowHeight;
         } else if (type === 'COIN_ROW_LAST') {
-          dim.width = deviceUtils.dimensions.width;
           dim.height = rowHeight + dividerHeight;
+        } else if (type.type === 'SAVINGS_ROW') {
+          dim.height = type.size + familyHeaderHeight + dividerHeight;
         } else if (type.type === 'COLLECTIBLE_ROW') {
-          dim.width = deviceUtils.dimensions.width;
           dim.height = type.size * familyHeaderHeight;
         } else if (type === 'COLLECTIBLE_ROW_CLOSED') {
-          dim.width = deviceUtils.dimensions.width;
           dim.height = familyHeaderHeight;
         } else {
-          dim.width = 0;
           dim.height = 0;
         }
       }
@@ -146,6 +177,15 @@ class SendAssetList extends React.Component {
     }
   };
 
+  changeOpenSavings = () => {
+    const { openSavings } = this.state;
+    LayoutAnimation.configureNext(
+      LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+    );
+    const newOpenSavings = !openSavings;
+    this.setState({ openSavings: newOpenSavings });
+  };
+
   mapTokens = collectibles => {
     const items = collectibles.map(collectible => {
       const newItem = {};
@@ -169,6 +209,23 @@ class SendAssetList extends React.Component {
       this.props.onSelectAsset(item);
     };
     return <SendCoinRow {...item} onPress={onPress} />;
+  };
+
+  mapSavings = savings => {
+    const items = savings.map(token => {
+      const onPress = () => {
+        this.props.onSelectAsset(token);
+      };
+      return (
+        <SavingsCoinRow
+          onPress={onPress}
+          key={Math.random()}
+          {...token}
+          {...token.underlying}
+        />
+      );
+    });
+    return items;
   };
 
   balancesRenderLastItem = item => {
@@ -201,11 +258,30 @@ class SendAssetList extends React.Component {
     );
   };
 
+  savingsRenderItem = item => (
+    <View marginTop={10}>
+      <TokenFamilyHeader
+        childrenAmount={item.data.length}
+        familyImage="asd"
+        isCoinRow
+        isOpen={this.state.openSavings}
+        onPress={() => {
+          this.changeOpenSavings();
+        }}
+        title={item.name}
+      />
+      {this.state.openSavings && this.mapSavings(item.data)}
+      <Divider />
+    </View>
+  );
+
   _renderRow(type, data) {
     if (type === 'COIN_ROW') {
       return this.balancesRenderItem(data);
     } else if (type === 'COIN_ROW_LAST') {
       return this.balancesRenderLastItem(data);
+    } else if (type.type === 'SAVINGS_ROW') {
+      return this.savingsRenderItem(data);
     } else if (type.type === 'COLLECTIBLE_ROW') {
       return this.collectiblesRenderItem(data);
     } else if (type === 'COLLECTIBLE_ROW_CLOSED') {
