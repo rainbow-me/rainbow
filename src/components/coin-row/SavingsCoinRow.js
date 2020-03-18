@@ -71,6 +71,7 @@ const SavingsCoinRow = ({ item, onPress, onPressSend, ...props }) => (
     <CoinRow
       {...item}
       {...props}
+      {...props.underlying}
       bottomRowRender={BottomRow}
       onPress={onPress}
       onPressSend={onPressSend}

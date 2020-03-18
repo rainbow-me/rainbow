@@ -34,6 +34,7 @@ import {
   usePrevious,
   useRefreshAccountData,
   useSendableUniqueTokens,
+  useSavingsAccount,
 } from '../hooks';
 import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
@@ -80,6 +81,7 @@ const SendSheet = ({
 }) => {
   const { allAssets } = useAccountAssets();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
+  const savings = useSavingsAccount();
   const fetchData = useRefreshAccountData();
   const {
     accountAddress,
@@ -413,6 +415,7 @@ const SendSheet = ({
               allAssets={allAssets}
               fetchData={fetchData}
               onSelectAsset={sendUpdateSelected}
+              savings={savings}
               uniqueTokens={sendableUniqueTokens}
             />
           )}

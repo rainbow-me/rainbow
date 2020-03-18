@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { onlyUpdateForKeys } from 'recompact';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
-import { CollectiblesSendRow, SendCoinRow } from '../coin-row';
+import { CollectiblesSendRow, SavingsCoinRow, SendCoinRow } from '../coin-row';
 import { View } from 'react-primitives';
 import {
   DataProvider,
@@ -33,7 +33,11 @@ class SendAssetList extends React.Component {
     this.state = {
       dataProvider: new DataProvider((r1, r2) => {
         return r1 !== r2;
-      }).cloneWithRows(this.props.allAssets.concat(this.props.uniqueTokens)),
+      }).cloneWithRows(
+        this.props.allAssets
+          .concat(this.props.savings)
+          .concat(this.props.uniqueTokens)
+      ),
       openCards: [],
     };
 
@@ -56,16 +60,29 @@ class SendAssetList extends React.Component {
           return 'COIN_ROW';
         } else if (i === this.props.allAssets.length - 1) {
           return 'COIN_ROW_LAST';
+        } else if (
+          i <
+          this.props.allAssets.length + this.props.savings.length - 1
+        ) {
+          return 'SAVINGS_ROW';
+        } else if (
+          i ===
+          this.props.allAssets.length + this.props.savings.length - 1
+        ) {
+          return 'SAVINGS_ROW_LAST';
         } else {
           if (
             this.state.openCards[
-              this.props.uniqueTokens[i - this.props.allAssets.length].familyId
+              this.props.uniqueTokens[
+                i - this.props.allAssets.length - this.props.savings.length
+              ].familyId
             ]
           ) {
             return {
               size:
-                this.props.uniqueTokens[i - this.props.allAssets.length].data
-                  .length + 1,
+                this.props.uniqueTokens[
+                  i - this.props.allAssets.length - this.props.savings.length
+                ].data.length + 1,
               type: 'COLLECTIBLE_ROW',
             };
           } else {
@@ -74,20 +91,20 @@ class SendAssetList extends React.Component {
         }
       },
       (type, dim) => {
+        dim.width = deviceUtils.dimensions.width;
         if (type === 'COIN_ROW') {
-          dim.width = deviceUtils.dimensions.width;
           dim.height = rowHeight;
         } else if (type === 'COIN_ROW_LAST') {
-          dim.width = deviceUtils.dimensions.width;
+          dim.height = rowHeight + dividerHeight;
+        } else if (type === 'SAVINGS_ROW') {
+          dim.height = rowHeight;
+        } else if (type === 'SAVINGS_ROW_LAST') {
           dim.height = rowHeight + dividerHeight;
         } else if (type.type === 'COLLECTIBLE_ROW') {
-          dim.width = deviceUtils.dimensions.width;
           dim.height = type.size * familyHeaderHeight;
         } else if (type === 'COLLECTIBLE_ROW_CLOSED') {
-          dim.width = deviceUtils.dimensions.width;
           dim.height = familyHeaderHeight;
         } else {
-          dim.width = 0;
           dim.height = 0;
         }
       }
@@ -201,11 +218,34 @@ class SendAssetList extends React.Component {
     );
   };
 
+  savingsRenderItem = item => {
+    const onPress = () => {
+      this.props.onSelectAsset(item);
+    };
+    return <SavingsCoinRow {...item} onPress={onPress} />;
+  };
+
+  savingsRenderLastItem = item => {
+    const onPress = () => {
+      this.props.onSelectAsset(item);
+    };
+    return (
+      <Fragment>
+        <SavingsCoinRow {...item} onPress={onPress} />
+        <Divider />
+      </Fragment>
+    );
+  };
+
   _renderRow(type, data) {
     if (type === 'COIN_ROW') {
       return this.balancesRenderItem(data);
     } else if (type === 'COIN_ROW_LAST') {
       return this.balancesRenderLastItem(data);
+    } else if (type === 'SAVINGS_ROW') {
+      return this.savingsRenderItem(data);
+    } else if (type === 'SAVINGS_ROW_LAST') {
+      return this.savingsRenderLastItem(data);
     } else if (type.type === 'COLLECTIBLE_ROW') {
       return this.collectiblesRenderItem(data);
     } else if (type === 'COLLECTIBLE_ROW_CLOSED') {
