@@ -16,7 +16,7 @@ import {
   settingsUpdateAccountColor,
 } from '../redux/settings';
 import { saveAccountInfo } from '../handlers/localstorage/accountLocal';
-import { withAccountInfo } from '../hoc';
+import { withAccountInfo, withAccountSettings } from '../hoc';
 
 const { Value } = Animated;
 
@@ -47,18 +47,12 @@ class AvatarBuilder extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      avatarColor:
-        colors.avatarColor[this.props.navigation.getParam('accountColor', 4)],
-      avatarColorIndex: this.props.navigation.getParam('accountColor', 4),
-      emoji: this.props.navigation.getParam('accountName', '🙃'),
-      position: new Value(
-        (this.props.navigation.getParam('accountColor', 4) - 4) * 39
-      ),
+      avatarColor: colors.avatarColor[this.props.accountColor],
+      avatarColorIndex: this.props.accountColor,
+      emoji: this.props.accountName,
+      position: new Value((this.props.accountColor - 4) * 39),
     };
-
-    this.springAnim = new Value(
-      (this.props.navigation.getParam('accountColor', 4) - 4) * 39
-    );
+    this.springAnim = new Value((this.props.accountColor - 4) * 39);
   }
 
   onChangeEmoji = event => {
@@ -148,6 +142,7 @@ class AvatarBuilder extends PureComponent {
 }
 
 export default compose(
+  withAccountSettings,
   withAccountInfo,
   withHandlers({
     onPressBackground: ({ navigation }) => () => navigation.popToTop(),
