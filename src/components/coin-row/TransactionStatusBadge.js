@@ -42,7 +42,7 @@ const StatusProps = {
   },
 };
 
-const getRealDisplayStatus = status => {
+const getCustomDisplayStatus = status => {
   switch (status) {
     case TransactionStatusTypes.deposited:
     case TransactionStatusTypes.withdrew:
@@ -72,22 +72,13 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
     status === TransactionStatusTypes.sending &&
     type === transactionTypes.deposit
   ) {
-    displayStatus = 'Depositing';
+    displayStatus = TransactionStatusTypes.depositing;
   } else if (
     pending &&
     status === TransactionStatusTypes.sending &&
     type === transactionTypes.withdraw
   ) {
-    displayStatus = 'Withdrawing';
-  }
-
-  // Backwards compatibility
-  if (!status && !displayStatus) {
-    if (type === 'withdraw') {
-      displayStatus = TransactionStatusTypes.withdrew;
-    } else if (type === 'deposit') {
-      displayStatus = TransactionStatusTypes.deposited;
-    }
+    displayStatus = TransactionStatusTypes.withdrawing;
   }
 
   return (
@@ -106,7 +97,7 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
         />
       )}
       <Text color={statusColor} size="smedium" weight="semibold">
-        {getRealDisplayStatus(displayStatus)}
+        {getCustomDisplayStatus(displayStatus)}
       </Text>
     </RowWithMargins>
   );
