@@ -68,12 +68,12 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
     hash: deposit.hash,
     nonce: get(deposit, 'nonce'),
     to: get(deposit, 'to'),
-    type: transactionTypes.savingsDeposit,
+    type: transactionTypes.deposit,
   };
   console.log('[deposit] adding new txn', newTransaction);
   dispatch(dataAddNewTransaction(newTransaction, true));
   console.log('[deposit] calling the callback');
-  currentRap.callback();
+  await currentRap.callback();
   currentRap.callback = NOOP;
 
   // wait for it to complete

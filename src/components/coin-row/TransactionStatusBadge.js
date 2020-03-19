@@ -70,13 +70,13 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
   if (
     pending &&
     status === TransactionStatusTypes.sending &&
-    type === transactionTypes.savingsDeposit
+    type === transactionTypes.deposit
   ) {
     displayStatus = 'Depositing';
   } else if (
     pending &&
     status === TransactionStatusTypes.sending &&
-    type === transactionTypes.savingsWithdrawal
+    type === transactionTypes.withdraw
   ) {
     displayStatus = 'Withdrawing';
   }

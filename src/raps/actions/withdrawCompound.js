@@ -11,32 +11,11 @@ import {
   savingsAssetsListByUnderlying,
 } from '../../references';
 import { gasUtils } from '../../utils';
+import transactionTypes from '../../helpers/transactionTypes';
 
 const NOOP = () => undefined;
 
-const estimateWithdrawalGasLimit = async (
-  compound,
-  accountAddress,
-  rawRedeemAmount,
-  isMax
-) => {
-  try {
-    console.log('[withdraw] estimating gas');
-    const params = { from: accountAddress, value: toHex(0) };
-    const gasLimit = isMax
-      ? await compound.estimate.redeem(rawRedeemAmount, params)
-      : await compound.estimate.redeemUnderlying(rawRedeemAmount, params);
-    console.log('[withdraw] estimated gas limit for withdraw', gasLimit);
-    console.log(
-      '[withdraw] TO STRING estimated gas limit for withdraw',
-      gasLimit.toString()
-    );
-    return gasLimit ? gasLimit.toString() : null;
-  } catch (error) {
-    console.log('[withdraw] ERROR estimating gas', error);
-    return null;
-  }
-};
+const SAVINGS_ERC20_WITHDRAW_GAS_LIMIT = 500000;
 
 const withdrawCompound = async (wallet, currentRap, index, parameters) => {
   console.log('[withdraw]');
@@ -67,15 +46,8 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     wallet
   );
 
-  const gasLimit = await estimateWithdrawalGasLimit(
-    compound,
-    accountAddress,
-    rawInputAmount,
-    isMax
-  );
-
   const transactionParams = {
-    gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+    gasLimit: SAVINGS_ERC20_WITHDRAW_GAS_LIMIT,
     gasPrice: gasPrice ? toHex(gasPrice) : undefined,
     value: toHex(0),
   };
@@ -94,6 +66,7 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     hash: withdraw.hash,
     nonce: get(withdraw, 'nonce'),
     to: get(withdraw, 'to'),
+    type: transactionTypes.withdraw,
   };
 
   console.log('[withdraw] adding new txn', newTransaction);
