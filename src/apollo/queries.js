@@ -5,7 +5,6 @@ export const COMPOUND_ACCOUNT_QUERY = gql`
     account(id: $id) {
       id
       tokens(where: { cTokenBalance_gt: 0 }) {
-        borrowBalanceUnderlying
         cTokenBalance
         id
         lifetimeSupplyInterestAccrued

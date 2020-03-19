@@ -629,7 +629,7 @@ const ExchangeModal = ({
       };
       const rap = createRap({
         callback,
-        inputAmount: isMax ? cTokenBalance : inputAmount,
+        inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
         inputAsExactAmount,
         inputCurrency,
         isMax,
