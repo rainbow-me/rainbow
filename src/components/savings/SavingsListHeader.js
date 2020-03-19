@@ -3,14 +3,15 @@ import React from 'react';
 import FastImage from 'react-native-fast-image';
 import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
+import { compose } from 'recompact';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { colors } from '../../styles';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import Highlight from '../Highlight';
+import { Icon } from '../icons';
 import { Row, RowWithMargins } from '../layout';
-import { Emoji, TruncatedText, Monospace } from '../text';
+import { TruncatedText, Monospace } from '../text';
 import withOpenSavings from '../../hoc/withOpenSavings';
-import { compose } from 'recompact';
 
 const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
 
@@ -45,7 +46,7 @@ const SavingsListHeader = ({
       >
         <Highlight visible={highlight} />
         <RowWithMargins align="center" margin={emoji ? 5 : 9}>
-          <Emoji size="lmedium" name={emoji} />
+          <Icon size="lmedium" name={emoji} />
           <TruncatedText
             letterSpacing="tight"
             lineHeight="normal"

@@ -278,7 +278,9 @@ const getTransactionLabel = (
   if (pending && isToAccount) return TransactionStatusTypes.receiving;
 
   if (status === 'failed') return TransactionStatusTypes.failed;
-  if (type === 'deposit') return TransactionStatusTypes.deposited;
+  if (type === 'deposit') return TransactionStatusTypes.savingsDeposit;
+  if (type === 'withdraw') return TransactionStatusTypes.savingsWithdrawal;
+
   if (type === 'authorize') return TransactionStatusTypes.approved;
 
   if (isFromAccount && isToAccount) return TransactionStatusTypes.self;
