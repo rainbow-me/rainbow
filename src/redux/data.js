@@ -32,6 +32,7 @@ import {
 import { apiGetTokenOverrides } from '../handlers/tokenOverrides';
 import { getTransactionByHash } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
+import transactionTypes from '../helpers/transactionTypes';
 import { divide } from '../helpers/utilities';
 import { parseAccountAssets } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
@@ -359,6 +360,18 @@ export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
       });
   });
 
+const getConfirmedState = type => {
+  if (type.indexOf('savings') !== -1) {
+    if (type === transactionTypes.deposit) {
+      return TransactionStatusTypes.deposited;
+    }
+    if (type === transactionTypes.withdraw) {
+      return TransactionStatusTypes.withdrew;
+    }
+  }
+  return TransactionStatusTypes.sent;
+};
+
 export const dataWatchPendingTransactions = () => async (
   dispatch,
   getState
@@ -377,7 +390,9 @@ export const dataWatchPendingTransactions = () => async (
         if (txObj && txObj.blockNumber) {
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
-          updatedTransactions[index].status = TransactionStatusTypes.sent;
+          updatedTransactions[index].status = getConfirmedState(
+            updatedTransactions[index].type
+          );
           updatedTransactions[index].pending = false;
           updatedTransactions[index].minedAt = minedAt;
         }

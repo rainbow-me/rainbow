@@ -32,7 +32,7 @@ const getDisplayAction = (action, name) => {
   switch (toLower(action)) {
     case 'deposit':
       return `Deposited ${name}`;
-    case 'withdrawal':
+    case 'withdraw':
       return `Withdrew ${name}`;
     default:
       return name;
@@ -43,18 +43,12 @@ const BottomRow = ({ name, native, status, type }) => {
   const isFailed = status === TransactionStatusTypes.failed;
   const isReceived = status === TransactionStatusTypes.received;
   const isSent = status === TransactionStatusTypes.sent;
-  const isSavingsDeposit =
-    type === TransactionTypes.savingsDeposit || type === 'deposit';
-  const isSavingsWithdrawal =
-    type === TransactionTypes.savingsWithdrawal || type === 'withdrawal';
-
   let action = null;
 
+  //console.log({ name, native, status, type });
+
   // Savings override
-  if (
-    (isSavingsDeposit || isSavingsWithdrawal) &&
-    status !== TransactionStatusTypes.sending
-  ) {
+  if (status !== TransactionStatusTypes.sending) {
     action = type.replace('savings', '');
   }
 

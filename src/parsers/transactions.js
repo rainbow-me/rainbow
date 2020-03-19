@@ -128,9 +128,15 @@ const parseTransaction = (
   transaction.minedAt = txn.mined_at;
   transaction.pending = false;
   transaction.to = txn.address_to;
+
   const changes = get(txn, 'changes', []);
   let internalTransactions = changes;
-  if (isEmpty(changes) && txn.status === 'failed' && txn.type === 'deposit') {
+
+  if (
+    isEmpty(changes) &&
+    txn.status === 'failed' &&
+    (txn.type === 'deposit' || txn.type === 'withdraw')
+  ) {
     const asset = savingsAssetsList[network][toLower(transaction.to)];
 
     const assetInternalTransaction = {
@@ -141,6 +147,7 @@ const parseTransaction = (
     };
     internalTransactions = [assetInternalTransaction];
   }
+
   if (
     isEmpty(changes) &&
     txn.status === 'failed' &&
@@ -160,6 +167,7 @@ const parseTransaction = (
     };
     internalTransactions = [assetInternalTransaction];
   }
+
   if (isEmpty(changes) && txn.type === 'authorize') {
     const approveInternalTransaction = {
       address_from: transaction.from,
@@ -233,6 +241,7 @@ const parseTransaction = (
       to: internalTxn.address_to,
     };
   });
+
   return reverse(internalTransactions);
 };
 
