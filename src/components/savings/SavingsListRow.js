@@ -70,6 +70,7 @@ const renderAnimatedNumber = (value, steps, symbol) => {
 };
 
 const SavingsListRow = ({
+  cTokenBalance,
   lifetimeSupplyInterestAccrued,
   nativeValue,
   supplyBalanceUnderlying,
@@ -85,6 +86,7 @@ const SavingsListRow = ({
 
   const onButtonPress = useCallback(() => {
     navigate('SavingsSheet', {
+      cTokenBalance,
       isEmpty: !supplyBalanceUnderlying,
       lifetimeSupplyInterestAccrued,
       nativeValue,
@@ -94,6 +96,7 @@ const SavingsListRow = ({
       underlyingPrice,
     });
   }, [
+    cTokenBalance,
     lifetimeSupplyInterestAccrued,
     nativeValue,
     navigate,
@@ -245,6 +248,7 @@ const SavingsListRow = ({
 };
 
 SavingsListRow.propTypes = {
+  cTokenBalance: PropTypes.string,
   lifetimeSupplyInterestAccrued: PropTypes.string,
   nativeValue: PropTypes.number,
   supplyBalanceUnderlying: PropTypes.string,

@@ -111,34 +111,19 @@ const withBalanceSection = (
   network
 ) => {
   let totalValue = Number(get(assetsTotal, 'amount', 0));
-  const assets = map(savings, cToken => {
-    const {
-      ethPrice,
-      lifetimeSupplyInterestAccrued,
-      supplyBalanceUnderlying,
-      supplyRate,
-      underlying,
-      underlyingPrice,
-    } = cToken;
-    return {
-      ethPrice,
-      lifetimeSupplyInterestAccrued,
-      supplyBalanceUnderlying,
-      supplyRate,
-      underlying,
-      underlyingPrice,
-    };
-  });
-
+  let assets = savings;
   const eth = ethereumUtils.getAsset(allAssets);
   const priceOfEther = get(eth, 'native.price.amount', null);
   let totalSavingsValue = 0;
   if (priceOfEther) {
-    assets.forEach((asset, i) => {
+    assets = map(savings, asset => {
       const { ethPrice } = asset;
       const nativeValue = priceOfEther * ethPrice;
-      assets[i].nativeValue = nativeValue;
       totalSavingsValue += nativeValue;
+      return {
+        ...asset,
+        nativeValue,
+      };
     });
   }
 

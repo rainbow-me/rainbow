@@ -5,6 +5,7 @@ import { createNewAction, createNewRap, RapActionTypes } from './common';
 const createWithdrawFromCompoundRap = ({
   inputCurrency,
   inputAmount,
+  isMax,
   selectedGasPrice,
   callback,
 }) => {
@@ -15,6 +16,7 @@ const createWithdrawFromCompoundRap = ({
   const withdraw = createNewAction(RapActionTypes.withdrawCompound, {
     inputAmount,
     inputCurrency,
+    isMax,
     selectedGasPrice,
   });
   const actions = [withdraw];

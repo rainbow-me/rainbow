@@ -98,6 +98,7 @@ const createMissingWithdrawalAsset = (asset, underlyingPrice, priceOfEther) => {
 };
 
 const ExchangeModal = ({
+  cTokenBalance,
   defaultInputAsset,
   gasPricesStartPolling,
   gasPricesStopPolling,
@@ -111,6 +112,7 @@ const ExchangeModal = ({
   createRap,
   selectedGasPrice,
   showOutputField,
+  supplyBalanceUnderlying,
   tabPosition,
   type,
   underlyingPrice,
@@ -141,6 +143,7 @@ const ExchangeModal = ({
     defaultInputItem = ethereumUtils.getAsset(allAssets);
   }
   const [inputCurrency, setInputCurrency] = useState(defaultInputItem);
+  const [isMax, setIsMax] = useState(false);
   const [inputAmount, setInputAmount] = useState(null);
   const [inputAmountDisplay, setInputAmountDisplay] = useState(null);
   const [inputAsExactAmount, setInputAsExactAmount] = useState(true);
@@ -601,13 +604,18 @@ const ExchangeModal = ({
   const handlePressMaxBalance = () => {
     console.log('[max] selectedGasPrice', selectedGasPrice);
     console.log('[max] inputCurrency', inputCurrency);
-    const maxBalance = ethereumUtils.getBalanceAmount(
-      selectedGasPrice,
-      inputCurrency
-    );
+    let maxBalance;
+    if (isWithdrawal) {
+      maxBalance = supplyBalanceUnderlying;
+    } else {
+      maxBalance = ethereumUtils.getBalanceAmount(
+        selectedGasPrice,
+        inputCurrency
+      );
+    }
     console.log('[max] maxBalance', maxBalance);
 
-    return updateInputAmount(maxBalance);
+    return updateInputAmount(maxBalance, maxBalance, true, true);
   };
 
   const handleSubmit = async () => {
@@ -621,9 +629,10 @@ const ExchangeModal = ({
       };
       const rap = createRap({
         callback,
-        inputAmount,
+        inputAmount: isMax ? cTokenBalance : inputAmount,
         inputAsExactAmount,
         inputCurrency,
+        isMax,
         outputAmount,
         outputCurrency,
         selectedGasPrice: null,
@@ -692,7 +701,12 @@ const ExchangeModal = ({
   };
 
   const updateInputAmount = useCallback(
-    (newInputAmount, newAmountDisplay, newInputAsExactAmount = true) => {
+    (
+      newInputAmount,
+      newAmountDisplay,
+      newInputAsExactAmount = true,
+      newIsMax = false
+    ) => {
       console.log(
         '[update input amount]',
         newInputAmount,
@@ -703,6 +717,8 @@ const ExchangeModal = ({
       setInputAmountDisplay(
         newAmountDisplay !== undefined ? newAmountDisplay : newInputAmount
       );
+      console.log('[update input amount] - set max?', newIsMax);
+      setIsMax(newIsMax);
 
       if (!nativeFieldRef.current.isFocused()) {
         let newNativeAmount = null;
@@ -787,6 +803,8 @@ const ExchangeModal = ({
 
     const isNativeZero = isZero(nativeAmount);
     setNativeAmount(nativeAmount);
+
+    setIsMax(false);
 
     if (nativeAmount && !isNativeZero) {
       let nativePrice = get(inputCurrency, 'native.price.amount', null);
@@ -977,6 +995,7 @@ const ExchangeModal = ({
 
 ExchangeModal.propTypes = {
   createRap: PropTypes.func,
+  cTokenBalance: PropTypes.string,
   defaultInputAddress: PropTypes.string,
   gasPricesStartPolling: PropTypes.func,
   gasPricesStopPolling: PropTypes.func,
@@ -987,6 +1006,7 @@ ExchangeModal.propTypes = {
   navigation: PropTypes.object,
   outputReserve: PropTypes.object,
   selectedGasPrice: PropTypes.object,
+  supplyBalanceUnderlying: PropTypes.string,
   tabPosition: PropTypes.object, // animated value
   tradeDetails: PropTypes.object,
   type: PropTypes.oneOf(Object.values(ExchangeModalTypes)),

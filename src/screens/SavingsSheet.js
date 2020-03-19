@@ -23,6 +23,7 @@ import { convertAmountToDepositDisplay } from '../helpers/utilities';
 const SavingsSheet = () => {
   const { getParam, navigate } = useNavigation();
 
+  const cTokenBalance = getParam('cTokenBalance');
   const isEmpty = getParam('isEmpty');
   const nativeValue = getParam('nativeValue');
   const underlying = getParam('underlying');
@@ -52,7 +53,9 @@ const SavingsSheet = () => {
               label="Withdraw"
               onPress={() =>
                 navigate('SavingsWithdrawModal', {
+                  cTokenBalance,
                   defaultInputAsset: underlying,
+                  supplyBalanceUnderlying,
                   underlyingPrice,
                 })
               }

@@ -17,12 +17,15 @@ const NOOP = () => undefined;
 const estimateWithdrawalGasLimit = async (
   compound,
   accountAddress,
-  rawRedeemAmount
+  rawRedeemAmount,
+  isMax
 ) => {
   try {
     console.log('[withdraw] estimating gas');
     const params = { from: accountAddress, value: toHex(0) };
-    const gasLimit = await compound.estimate.redeem(rawRedeemAmount, params);
+    const gasLimit = isMax
+      ? await compound.estimate.redeem(rawRedeemAmount, params)
+      : await compound.estimate.redeemUnderlying(rawRedeemAmount, params);
     console.log('[withdraw] estimated gas limit for withdraw', gasLimit);
     console.log(
       '[withdraw] TO STRING estimated gas limit for withdraw',
@@ -35,10 +38,9 @@ const estimateWithdrawalGasLimit = async (
   }
 };
 
-// TODO
 const withdrawCompound = async (wallet, currentRap, index, parameters) => {
   console.log('[withdraw]');
-  const { inputAmount, inputCurrency, selectedGasPrice } = parameters;
+  const { inputAmount, inputCurrency, isMax, selectedGasPrice } = parameters;
   const { dispatch } = store;
   const { gasPrices } = store.getState().gas;
   const { accountAddress, network } = store.getState().settings;
@@ -68,7 +70,8 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
   const gasLimit = await estimateWithdrawalGasLimit(
     compound,
     accountAddress,
-    rawInputAmount
+    rawInputAmount,
+    isMax
   );
 
   const transactionParams = {
@@ -77,10 +80,9 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     value: toHex(0),
   };
   console.log('[withdraw] txn params', transactionParams);
-  const withdraw = await compound.redeemUnderlying(
-    rawInputAmount,
-    transactionParams
-  );
+  const withdraw = isMax
+    ? await compound.redeem(rawInputAmount, transactionParams)
+    : await compound.redeemUnderlying(rawInputAmount, transactionParams);
   console.log('[withdraw] redeemed - result', withdraw);
 
   currentRap.actions[index].transaction.hash = withdraw.hash;

@@ -83,9 +83,14 @@ export default function useSavingsAccount(pollInterval = 0) {
 
       const ethPrice = multiply(underlyingPrice, token.supplyBalanceUnderlying);
 
-      const { lifetimeSupplyInterestAccrued, supplyBalanceUnderlying } = token;
+      const {
+        cTokenBalance,
+        lifetimeSupplyInterestAccrued,
+        supplyBalanceUnderlying,
+      } = token;
 
       return {
+        cTokenBalance,
         ethPrice,
         lifetimeSupplyInterestAccrued,
         supplyBalanceUnderlying,
