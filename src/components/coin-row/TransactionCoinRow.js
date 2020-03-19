@@ -18,6 +18,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 import { withAccountSettings } from '../../hoc';
+import toLower from 'lodash/toLower';
 
 const containerStyles = css`
   padding-left: 15;
@@ -27,27 +28,36 @@ const rowRenderPropTypes = {
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
 };
 
-const getDisplayAction = action => {
-  switch (action) {
-    case 'Deposit':
-      return 'Deposited';
-    case 'Withdrawal':
-      return 'Withdrew';
+const getDisplayAction = (action, name) => {
+  switch (toLower(action)) {
+    case 'deposit':
+      return `Deposited ${name}`;
+    case 'withdrawal':
+      return `Withdrew ${name}`;
+    default:
+      return name;
   }
 };
 
-const BottomRow = ({ name, native, status, type, ...props }) => {
+const BottomRow = ({ name, native, status, type }) => {
   const isFailed = status === TransactionStatusTypes.failed;
   const isReceived = status === TransactionStatusTypes.received;
   const isSent = status === TransactionStatusTypes.sent;
-  const isSavingsDeposit = status === TransactionStatusTypes.savingsDeposit;
+  const isSavingsDeposit =
+    type === TransactionTypes.savingsDeposit || type === 'deposit';
   const isSavingsWithdrawal =
-    status === TransactionStatusTypes.savingsWithdrawal;
+    type === TransactionTypes.savingsWithdrawal || type === 'withdrawal';
+
   let action = null;
-  if (isSavingsDeposit || isSavingsWithdrawal) {
-    action = status.replace('savings', '');
-    console.log('TX', JSON.stringify(props, null, 2));
+
+  // Savings override
+  if (
+    (isSavingsDeposit || isSavingsWithdrawal) &&
+    status !== TransactionStatusTypes.sending
+  ) {
+    action = type.replace('savings', '');
   }
+
   const isSwapped =
     status === TransactionStatusTypes.sent && type === TransactionTypes.trade;
 
@@ -63,9 +73,7 @@ const BottomRow = ({ name, native, status, type, ...props }) => {
   return (
     <Row align="center" justify="space-between" opacity={isSwapped ? 0.5 : 1}>
       <FlexItem flex={1}>
-        <CoinName>
-          {action ? `${getDisplayAction(action)} ${name}` : name}
-        </CoinName>
+        <CoinName>{getDisplayAction(action, name)}</CoinName>
       </FlexItem>
       <FlexItem flex={0}>
         <BalanceText color={balanceTextColor}>{balanceText}</BalanceText>

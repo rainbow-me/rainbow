@@ -11,6 +11,7 @@ import {
   savingsAssetsListByUnderlying,
 } from '../../references';
 import { gasUtils } from '../../utils';
+import transactionTypes from '../../helpers/transactionTypes';
 
 const NOOP = () => undefined;
 const SAVINGS_ERC20_DEPOSIT_GAS_LIMIT = 350000;
@@ -67,6 +68,7 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
     hash: deposit.hash,
     nonce: get(deposit, 'nonce'),
     to: get(deposit, 'to'),
+    type: transactionTypes.savingsDeposit,
   };
   console.log('[deposit] adding new txn', newTransaction);
   dispatch(dataAddNewTransaction(newTransaction, true));
