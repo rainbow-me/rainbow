@@ -20,7 +20,7 @@ import FloatingPanels from './FloatingPanels';
 import PlaceholderText from '../text/PlaceholderText';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 
-const nativeStackAdditionalPadding = 40;
+const nativeStackAdditionalPadding = 80;
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
