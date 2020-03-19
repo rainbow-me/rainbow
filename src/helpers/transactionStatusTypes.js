@@ -1,16 +1,16 @@
 export default {
   approved: 'approved',
   approving: 'approving',
+  deposited: 'deposited',
   depositing: 'depositing',
   failed: 'failed',
   received: 'received',
   receiving: 'receiving',
-  savingsDeposit: 'savingsDeposit',
-  savingsWithdrawal: 'savingsWithdrawal',
   self: 'self',
   sending: 'sending',
   sent: 'sent',
   swapped: 'swapped',
   unknown: 'unknown status',
   withdrawing: 'withdrawing',
+  withdrew: 'withdrew',
 };

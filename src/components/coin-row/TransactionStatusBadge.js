@@ -11,11 +11,11 @@ import Spinner from '../Spinner';
 import { Text } from '../text';
 
 const StatusProps = {
-  [TransactionStatusTypes.savingsDeposit]: {
+  [TransactionStatusTypes.deposited]: {
     name: 'sunflower',
     style: { fontSize: 12 },
   },
-  [TransactionStatusTypes.savingsWithdrawal]: {
+  [TransactionStatusTypes.withdrew]: {
     name: 'sunflower',
     style: { fontSize: 12 },
   },
@@ -44,8 +44,8 @@ const StatusProps = {
 
 const getRealDisplayStatus = status => {
   switch (status) {
-    case 'savingsDeposit':
-    case 'savingsWithdrawal':
+    case TransactionStatusTypes.deposited:
+    case TransactionStatusTypes.withdrew:
       return 'Savings';
     default:
       return upperFirst(status);
@@ -62,10 +62,33 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
     statusColor = colors.dodgerBlue;
   }
 
-  const displayStatus =
+  let displayStatus =
     isTrade && status === TransactionStatusTypes.sent
       ? TransactionStatusTypes.swapped
       : status;
+
+  if (
+    pending &&
+    status === TransactionStatusTypes.sending &&
+    type === transactionTypes.savingsDeposit
+  ) {
+    displayStatus = 'Depositing';
+  } else if (
+    pending &&
+    status === TransactionStatusTypes.sending &&
+    type === transactionTypes.savingsWithdrawal
+  ) {
+    displayStatus = 'Withdrawing';
+  }
+
+  // Backwards compatibility
+  if (!status && !displayStatus) {
+    if (type === 'withdraw') {
+      displayStatus = TransactionStatusTypes.withdrew;
+    } else if (type === 'deposit') {
+      displayStatus = TransactionStatusTypes.deposited;
+    }
+  }
 
   return (
     <RowWithMargins

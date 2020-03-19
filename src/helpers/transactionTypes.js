@@ -3,6 +3,8 @@ export default {
   deposit: 'deposit',
   execution: 'execution',
   receive: 'receive',
+  savingsDeposit: 'savingsDeposit',
+  savingsWithdrawal: 'savingsWithdrawal',
   send: 'send',
   trade: 'trade',
 };
