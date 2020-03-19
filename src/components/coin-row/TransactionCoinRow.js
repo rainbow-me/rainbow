@@ -27,10 +27,27 @@ const rowRenderPropTypes = {
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
 };
 
-const BottomRow = ({ name, native, status, type }) => {
+const getDisplayAction = action => {
+  switch (action) {
+    case 'Deposit':
+      return 'Deposited';
+    case 'Withdrawal':
+      return 'Withdrew';
+  }
+};
+
+const BottomRow = ({ name, native, status, type, ...props }) => {
   const isFailed = status === TransactionStatusTypes.failed;
   const isReceived = status === TransactionStatusTypes.received;
   const isSent = status === TransactionStatusTypes.sent;
+  const isSavingsDeposit = status === TransactionStatusTypes.savingsDeposit;
+  const isSavingsWithdrawal =
+    status === TransactionStatusTypes.savingsWithdrawal;
+  let action = null;
+  if (isSavingsDeposit || isSavingsWithdrawal) {
+    action = status.replace('savings', '');
+    console.log('TX', JSON.stringify(props, null, 2));
+  }
   const isSwapped =
     status === TransactionStatusTypes.sent && type === TransactionTypes.trade;
 
@@ -46,7 +63,9 @@ const BottomRow = ({ name, native, status, type }) => {
   return (
     <Row align="center" justify="space-between" opacity={isSwapped ? 0.5 : 1}>
       <FlexItem flex={1}>
-        <CoinName>{name}</CoinName>
+        <CoinName>
+          {action ? `${getDisplayAction(action)} ${name}` : name}
+        </CoinName>
       </FlexItem>
       <FlexItem flex={0}>
         <BalanceText color={balanceTextColor}>{balanceText}</BalanceText>

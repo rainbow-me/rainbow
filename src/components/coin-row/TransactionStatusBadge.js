@@ -11,8 +11,13 @@ import Spinner from '../Spinner';
 import { Text } from '../text';
 
 const StatusProps = {
-  [TransactionStatusTypes.deposited]: {
-    name: 'arrow',
+  [TransactionStatusTypes.savingsDeposit]: {
+    name: 'sunflower',
+    style: { fontSize: 12 },
+  },
+  [TransactionStatusTypes.savingsWithdrawal]: {
+    name: 'sunflower',
+    style: { fontSize: 12 },
   },
   [TransactionStatusTypes.approved]: {
     name: 'dot',
@@ -35,6 +40,16 @@ const StatusProps = {
     small: true,
     style: position.maxSizeAsObject(12),
   },
+};
+
+const getRealDisplayStatus = status => {
+  switch (status) {
+    case 'savingsDeposit':
+    case 'savingsWithdrawal':
+      return 'Savings';
+    default:
+      return upperFirst(status);
+  }
 };
 
 const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
@@ -68,7 +83,7 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
         />
       )}
       <Text color={statusColor} size="smedium" weight="semibold">
-        {upperFirst(displayStatus)}
+        {getRealDisplayStatus(displayStatus)}
       </Text>
     </RowWithMargins>
   );
