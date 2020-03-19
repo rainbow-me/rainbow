@@ -20,6 +20,8 @@ import FloatingPanels from './FloatingPanels';
 import PlaceholderText from '../text/PlaceholderText';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 
+const nativeStackAdditionalPadding = 40;
+
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
   color: colors.blueGreyDark,
@@ -132,15 +134,14 @@ class AddContactState extends PureComponent {
     const { address, contact, navigation } = this.props;
     const { color, value } = this.state;
 
+    const additionalPadding =
+      navigation.dangerouslyGetParent().state.routeName ===
+        'SendSheetNavigator' && isNativeStackAvailable
+        ? nativeStackAdditionalPadding
+        : 0;
+
     return (
-      <KeyboardFixedOpenLayout
-        additionalPadding={
-          navigation.dangerouslyGetParent().state.routeName ===
-            'SendSheetNavigator' && isNativeStackAvailable
-            ? 40
-            : 0
-        }
-      >
+      <KeyboardFixedOpenLayout additionalPadding={additionalPadding}>
         <TouchableBackdrop onPress={this.handleAddContact} />
         <FloatingPanels maxWidth={deviceUtils.dimensions.width - 110}>
           <AssetPanel>
