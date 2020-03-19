@@ -31,6 +31,7 @@ const transition = (
 );
 
 const KeyboardFixedOpenLayout = ({
+  additionalPadding,
   keyboardHeight,
   setKeyboardHeight,
   ...props
@@ -71,7 +72,7 @@ const KeyboardFixedOpenLayout = ({
   return (
     <Transitioning.View
       ref={ref}
-      height={deviceHeight - resolvedKeyboardHeight}
+      height={deviceHeight - resolvedKeyboardHeight - additionalPadding}
       style={containerStyle}
       transition={transition}
     >
@@ -83,8 +84,13 @@ const KeyboardFixedOpenLayout = ({
 };
 
 KeyboardFixedOpenLayout.propTypes = {
+  additionalPadding: PropTypes.bool,
   keyboardHeight: PropTypes.number,
   setKeyboardHeight: PropTypes.func,
+};
+
+KeyboardFixedOpenLayout.defaultProps = {
+  additionalPadding: 0,
 };
 
 export default withKeyboardHeight(KeyboardFixedOpenLayout);
