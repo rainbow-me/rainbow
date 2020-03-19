@@ -73,7 +73,7 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
   console.log('[deposit] adding new txn', newTransaction);
   dispatch(dataAddNewTransaction(newTransaction, true));
   console.log('[deposit] calling the callback');
-  await currentRap.callback();
+  currentRap.callback();
   currentRap.callback = NOOP;
 
   // wait for it to complete

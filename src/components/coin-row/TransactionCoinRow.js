@@ -1,4 +1,4 @@
-import { compact, get } from 'lodash';
+import { compact, get, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, mapProps, onlyUpdateForKeys, withHandlers } from 'recompact';
@@ -7,6 +7,7 @@ import { withNavigation } from 'react-navigation';
 import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
+import { withAccountSettings } from '../../hoc';
 import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
@@ -17,8 +18,6 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
-import { withAccountSettings } from '../../hoc';
-import toLower from 'lodash/toLower';
 
 const containerStyles = css`
   padding-left: 15;
@@ -43,14 +42,7 @@ const BottomRow = ({ name, native, status, type }) => {
   const isFailed = status === TransactionStatusTypes.failed;
   const isReceived = status === TransactionStatusTypes.received;
   const isSent = status === TransactionStatusTypes.sent;
-  let action = null;
-
-  //console.log({ name, native, status, type });
-
-  // Savings override
-  if (status !== TransactionStatusTypes.sending) {
-    action = type.replace('savings', '');
-  }
+  let action = status !== TransactionStatusTypes.sending ? type : null;
 
   const isSwapped =
     status === TransactionStatusTypes.sent && type === TransactionTypes.trade;

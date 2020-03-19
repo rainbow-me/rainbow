@@ -624,15 +624,8 @@ const ExchangeModal = ({
       const wallet = await loadWallet();
       setIsAuthorizing(false);
       const callback = () => {
-        return new Promise(resolve => {
-          console.log('Callback exec!');
-          navigation.setParams({ focused: false });
-          navigation.navigate('ProfileScreen');
-          InteractionManager.runAfterInteractions(() => {
-            console.log('Callback done!');
-            resolve();
-          });
-        });
+        navigation.setParams({ focused: false });
+        navigation.navigate('ProfileScreen');
       };
       const rap = createRap({
         callback,

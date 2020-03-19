@@ -361,13 +361,10 @@ export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
   });
 
 const getConfirmedState = type => {
-  if (type.indexOf('savings') !== -1) {
-    if (type === transactionTypes.deposit) {
-      return TransactionStatusTypes.deposited;
-    }
-    if (type === transactionTypes.withdraw) {
-      return TransactionStatusTypes.withdrew;
-    }
+  if (type === transactionTypes.deposit) {
+    return TransactionStatusTypes.deposited;
+  } else if (type === transactionTypes.withdraw) {
+    return TransactionStatusTypes.withdrew;
   }
   return TransactionStatusTypes.sent;
 };
