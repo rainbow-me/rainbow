@@ -17,13 +17,10 @@ const StatusProps = {
     style: position.maxSizeAsObject(12),
   },
   [TransactionStatusTypes.purchased]: {
-    marginRight: 3,
+    marginRight: 2,
     name: 'arrow',
   },
   [TransactionStatusTypes.purchasing]: {
-    marginRight: 3,
-  },
-  [TransactionStatusTypes.sending]: {
     marginRight: 3,
   },
   [TransactionStatusTypes.received]: {
@@ -33,6 +30,9 @@ const StatusProps = {
   [TransactionStatusTypes.self]: {
     marginRight: 4,
     name: 'dot',
+  },
+  [TransactionStatusTypes.sending]: {
+    marginRight: 3,
   },
   [TransactionStatusTypes.sent]: {
     marginRight: 3,

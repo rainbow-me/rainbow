@@ -4,7 +4,6 @@ const font = {};
 font.family = {
   SFMono: 'SFMono-Regular',
   SFProRounded: 'SF Pro Rounded',
-  SFProText: 'SF Pro Text',
 };
 
 font.letterSpacing = {

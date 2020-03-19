@@ -1,7 +1,7 @@
 import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { toClass } from 'recompact';
 import Animated, { Easing } from 'react-native-reanimated';
 import { bInterpolateColor, useTimingTransition } from 'react-native-redash';
@@ -18,12 +18,12 @@ const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
   const ease = Easing[error ? 'out' : 'in'](Easing.ease);
 
   const opacity = useTimingTransition(selected, {
-    duration: 250,
+    duration: 200,
     ease,
   });
 
   const textColorAnimation = useTimingTransition(error, {
-    duration: error ? 50 : 250,
+    duration: error ? 50 : 200,
     ease,
   });
 
@@ -97,13 +97,13 @@ const SheetSubtitleCycler = ({
     !isNil(errorIndex),
     interpolate(animatedValue, {
       inputRange: [-20, -10, 0, 10, 20],
-      outputRange: [1.025, 1.2, 1, 1.2, 1.025],
+      outputRange: [1.025, 1.25, 1, 1.25, 1.025],
     }),
     1
   );
 
   return (
-    <TouchableOpacity activeOpacity={0.69} onPress={handlePress}>
+    <TouchableWithoutFeedback onPress={handlePress}>
       <Centered width="100%" {...props}>
         <Animated.View
           {...position.coverAsObject}
@@ -120,7 +120,7 @@ const SheetSubtitleCycler = ({
           ))}
         </Animated.View>
       </Centered>
-    </TouchableOpacity>
+    </TouchableWithoutFeedback>
   );
 };
 
