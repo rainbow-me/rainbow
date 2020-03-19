@@ -24,12 +24,7 @@ import {
 } from '../components/exchange';
 import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
 import { GasSpeedButton } from '../components/gas';
-import GestureBlocker from '../components/GestureBlocker';
-import {
-  Centered,
-  Column,
-  KeyboardFixedOpenLayout,
-} from '../components/layout';
+import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import { estimateSwapGasLimit, executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
@@ -1042,7 +1037,6 @@ class ExchangeModal extends Component {
               radius={exchangeModalBorderRadius}
               overflow="visible"
             >
-              <GestureBlocker type="top" />
               <ExchangeModalHeader
                 onPressDetails={this.navigateToSwapDetailsModal}
                 showDetailsButton={showDetailsButton}
@@ -1100,9 +1094,6 @@ class ExchangeModal extends Component {
                 <GasSpeedButton />
               </Fragment>
             )}
-            <Column>
-              <GestureBlocker type="bottom" />
-            </Column>
           </AnimatedFloatingPanels>
         </Centered>
       </KeyboardFixedOpenLayout>

@@ -212,6 +212,7 @@ const ImportSeedPhraseSheet = ({
             keyboardType={
               Platform.OS === 'android' ? 'visible-password' : 'default'
             }
+            lineHeight="looser"
             multiline
             numberOfLines={7}
             ref={isNativeStackAvailable ? inputRef : inputRefListener}

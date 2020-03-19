@@ -17,11 +17,11 @@ const StyledBadge = styled(RowWithMargins).attrs({
   margin: 5,
   self: 'center',
 })`
-  ${padding(10)};
+  ${padding(9, 10, 11, 10)};
   ${shadow.build(0, 6, 10, colors.dark, 0.14)}
   background: ${colors.dark};
   border-radius: 50;
-  bottom: 40;
+  bottom: 42;
   position: absolute;
   z-index: 100;
 `;

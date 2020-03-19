@@ -4,7 +4,7 @@ import React from 'react';
 import { compose, pure, withHandlers } from 'recompact';
 import { UnderlineField } from '../fields';
 import { RowWithMargins } from '../layout';
-import { Monospace } from '../text';
+import { Text } from '../text';
 
 const SendAssetFormField = ({
   autoFocus,
@@ -34,11 +34,11 @@ const SendAssetFormField = ({
       placeholder={placeholder}
       value={value}
     />
-    <Monospace color="blueGreyDark" size="h2">
+    <Text align="right" color="dark" size="h3">
       {label.length > labelMaxLength
         ? label.substring(0, labelMaxLength)
         : label}
-    </Monospace>
+    </Text>
   </RowWithMargins>
 );
 

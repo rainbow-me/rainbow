@@ -17,13 +17,7 @@ const QRCodeScannerCrosshair = ({ showText, text }) => (
   <Container>
     <Icon css={position.cover} name="crosshair" />
     {showText ? (
-      <Text
-        color="white"
-        letterSpacing="tight"
-        lineHeight="none"
-        size="lmedium"
-        weight="medium"
-      >
+      <Text color="white" lineHeight="none" size="large" weight="bold">
         {text}
       </Text>
     ) : null}
@@ -36,7 +30,7 @@ QRCodeScannerCrosshair.propTypes = {
 };
 
 QRCodeScannerCrosshair.defaultProps = {
-  text: 'Scan to connect or send',
+  text: 'Find a code to scan',
 };
 
 export default QRCodeScannerCrosshair;

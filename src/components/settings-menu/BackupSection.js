@@ -20,7 +20,7 @@ const Content = styled(Centered)`
 `;
 
 const ToggleSeedPhraseButton = styled(Button)`
-  ${shadow.build(0, 6, 10, colors.purple, 0.14)}
+  ${shadow.build(0, 5, 15, colors.purple, 0.3)}
   background-color: ${colors.appleBlue};
   width: 235;
 `;
@@ -31,7 +31,7 @@ const BackupSection = ({ navigation, seedPhrase, toggleSeedPhrase }) => (
       source={SeedPhraseImageSource}
       style={position.sizeAsObject(70)}
     />
-    <Text lineHeight="loose" size="large" weight="semibold">
+    <Text lineHeight="loosest" size="larger" weight="semibold">
       Your Private Key
     </Text>
     <Content flex={0} seedPhrase={seedPhrase}>
@@ -43,15 +43,20 @@ const BackupSection = ({ navigation, seedPhrase, toggleSeedPhrase }) => (
         >
           <Monospace
             align="center"
-            lineHeight="loosest"
-            size="h5"
-            weight="medium"
+            lineHeight="looser"
+            size="large"
+            weight="regular"
           >
             {seedPhrase}
           </Monospace>
         </CopyTooltip>
       ) : (
-        <Text align="center" color="blueGreyLightest" lineHeight="loose">
+        <Text
+          align="center"
+          color={colors.alpha(colors.blueGreyDark, 0.6)}
+          lineHeight="loose"
+          size="lmedium"
+        >
           If you lose access to your device, the only way to restore your funds
           is with your private key.
           <Br />

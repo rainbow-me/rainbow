@@ -48,7 +48,7 @@ const BottomSendButtons = ({ onPressSend, onPressSwap }) => (
         shadows={FabShadow}
         shadowProps={{ opacity: 1 }}
       >
-        <Button backgroundColor={colors.dodgerBlue}>
+        <Button backgroundColor={colors.swapPurple}>
           <Icon height={22} marginBottom={4} name="swap" width={23} />
           <ButtonText>Swap</ButtonText>
         </Button>

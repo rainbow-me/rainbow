@@ -24,13 +24,13 @@ const MultiDigitValue = css`
 
 const SingleDigitValue = css`
   ${({ size }) => borders.buildCircle(size)}
-  ${padding(2, 0, 3)}
+  ${padding(2, 0, 3, 1)}
 `;
 
 const Circle = styled(Centered)`
   ${({ valueLength }) =>
     valueLength === 1 ? SingleDigitValue : MultiDigitValue}
-  background-color: ${colors.primaryBlue};
+  background-color: ${colors.appleBlue};
   border-radius: 15;
 `;
 

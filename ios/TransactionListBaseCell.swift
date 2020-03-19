@@ -38,7 +38,7 @@ class TransactionListBaseCell : UITableViewCell {
   }
   
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration)
+    animateTapEnd(duration: duration, useHaptic: "selection")
     if row != nil {
       onItemPress(["index":row!])
     }

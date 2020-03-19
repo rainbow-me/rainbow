@@ -25,7 +25,6 @@ const HeaderContainer = styled(Centered).attrs({ flex: 0 })`
 const HeaderTitle = withProps({
   align: 'center',
   height: 21,
-  letterSpacing: 'tighter',
   lineHeight: 'loose',
   size: 'large',
   weight: 'bold',

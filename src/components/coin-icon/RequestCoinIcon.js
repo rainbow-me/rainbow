@@ -12,6 +12,7 @@ const RequestCoinIcon = ({
   size,
 }) => (
   <CircularProgress
+    childrenContainerStyle={{ overflow: 'visible' }}
     fill={percentElapsed}
     lineCap="round"
     prefill={percentElapsed}
@@ -20,13 +21,7 @@ const RequestCoinIcon = ({
     tintColor={expirationColor}
     width={2}
   >
-    {() => (
-      <RequestVendorLogoIcon
-        borderRadius={size}
-        dappName={dappName}
-        showLargeShadow
-      />
-    )}
+    {() => <RequestVendorLogoIcon borderRadius={size} dappName={dappName} />}
   </CircularProgress>
 );
 

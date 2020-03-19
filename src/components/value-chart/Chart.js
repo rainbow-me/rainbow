@@ -127,13 +127,13 @@ export default function Chart() {
         currentDataSource={currentChart}
         amountOfPathPoints={100}
         data={data2}
-        barColor={change > 0 ? colors.chartGreen : colors.red}
+        barColor={change > 0 ? colors.green : colors.red}
         stroke={{ detailed: 1.5, simplified: 3 }}
         importantPointsIndexInterval={25}
       />
       <TimespanSelector
         reloadChart={setCurrentChart}
-        color={change > 0 ? colors.chartGreen : colors.red}
+        color={change > 0 ? colors.green : colors.red}
         isLoading={false}
       />
     </>

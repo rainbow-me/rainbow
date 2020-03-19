@@ -20,7 +20,7 @@ import TransactionStatusBadge from './TransactionStatusBadge';
 import { withAccountSettings } from '../../hoc';
 
 const containerStyles = css`
-  padding-left: 15;
+  padding-left: 19;
 `;
 
 const rowRenderPropTypes = {
@@ -28,28 +28,42 @@ const rowRenderPropTypes = {
 };
 
 const BottomRow = ({ name, native, status, type }) => {
-  const isFailed = status === TransactionStatusTypes.failed;
   const isReceived = status === TransactionStatusTypes.received;
   const isSent = status === TransactionStatusTypes.sent;
-  const isSwapped =
+  const isOutgoingSwap =
     status === TransactionStatusTypes.sent && type === TransactionTypes.trade;
+  const isIncomingSwap =
+    status === TransactionStatusTypes.received &&
+    type === TransactionTypes.trade;
 
-  let balanceTextColor = colors.blueGreyLight;
-  if (isReceived) balanceTextColor = colors.limeGreen;
-  if (isSent) balanceTextColor = colors.blueGreyDark;
+  let coinNameColor = colors.dark;
+  if (isOutgoingSwap) coinNameColor = colors.alpha(colors.blueGreyDark, 0.5);
+
+  let balanceTextColor = colors.alpha(colors.blueGreyDark, 0.5);
+  if (isReceived) balanceTextColor = colors.green;
+  if (isSent) balanceTextColor = colors.dark;
+  if (isIncomingSwap) balanceTextColor = colors.swapPurple;
+  if (isOutgoingSwap) balanceTextColor = colors.dark;
 
   const nativeDisplay = get(native, 'display');
   const balanceText = nativeDisplay
-    ? compact([isFailed || isSent ? '-' : null, nativeDisplay]).join(' ')
+    ? compact([isSent ? '-' : null, nativeDisplay]).join(' ')
     : '';
 
   return (
-    <Row align="center" justify="space-between" opacity={isSwapped ? 0.5 : 1}>
+    <Row align="center" justify="space-between">
       <FlexItem flex={1}>
-        <CoinName>{name}</CoinName>
+        <CoinName color={coinNameColor} letterSpacing="roundedMedium">
+          {name}
+        </CoinName>
       </FlexItem>
       <FlexItem flex={0}>
-        <BalanceText color={balanceTextColor}>{balanceText}</BalanceText>
+        <BalanceText
+          color={balanceTextColor}
+          weight={isReceived ? 'medium' : null}
+        >
+          {balanceText}
+        </BalanceText>
       </FlexItem>
     </Row>
   );
@@ -69,7 +83,7 @@ const TopRow = ({ balance, pending, status, type }) => (
 TopRow.propTypes = rowRenderPropTypes;
 
 const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
-  <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.98}>
+  <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>
     <CoinRow
       {...item}
       {...props}

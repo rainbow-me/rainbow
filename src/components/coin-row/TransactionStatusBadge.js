@@ -6,25 +6,30 @@ import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import transactionTypes from '../../helpers/transactionTypes';
 import { colors, position } from '../../styles';
 import Icon from '../icons/Icon';
-import { RowWithMargins } from '../layout';
+import { Row } from '../layout';
 import Spinner from '../Spinner';
 import { Text } from '../text';
 
 const StatusProps = {
   [TransactionStatusTypes.failed]: {
+    marginRight: 4,
     name: 'closeCircled',
     style: position.maxSizeAsObject(12),
   },
   [TransactionStatusTypes.received]: {
+    marginRight: 2,
     name: 'arrow',
   },
   [TransactionStatusTypes.self]: {
+    marginRight: 4,
     name: 'dot',
   },
   [TransactionStatusTypes.sent]: {
+    marginRight: 3,
     name: 'sendSmall',
   },
   [TransactionStatusTypes.swapped]: {
+    marginRight: 3,
     name: 'swap',
     small: true,
     style: position.maxSizeAsObject(12),
@@ -34,11 +39,11 @@ const StatusProps = {
 const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
   const isTrade = type === transactionTypes.trade;
 
-  let statusColor = colors.blueGreyMediumLight;
+  let statusColor = colors.alpha(colors.blueGreyDark, 0.7);
   if (pending) {
-    statusColor = colors.primaryBlue;
-  } else if (isTrade && status === TransactionStatusTypes.received) {
-    statusColor = colors.dodgerBlue;
+    statusColor = colors.appleBlue;
+  } else if (isTrade && status === TransactionStatusTypes.sent) {
+    statusColor = colors.swapPurple;
   }
 
   const displayStatus =
@@ -47,12 +52,7 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
       : status;
 
   return (
-    <RowWithMargins
-      align="center"
-      margin={4}
-      opacity={displayStatus === TransactionStatusTypes.swapped ? 0.7 : 1}
-      {...props}
-    >
+    <Row align="center" {...props}>
       {pending && <Spinner color={colors.appleBlue} size={12} />}
       {displayStatus && includes(Object.keys(StatusProps), displayStatus) && (
         <Icon
@@ -64,7 +64,7 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
       <Text color={statusColor} size="smedium" weight="semibold">
         {upperFirst(displayStatus)}
       </Text>
-    </RowWithMargins>
+    </Row>
   );
 };
 

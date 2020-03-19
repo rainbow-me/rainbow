@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { colors, fonts } from '../../styles';
+import { colors } from '../../styles';
 
 class DateText extends React.Component {
   state = {
@@ -16,7 +16,6 @@ class DateText extends React.Component {
       <Text
         style={{
           color: colors.blueGreyDark,
-          fontFamily: fonts.family.SFProDisplay,
           opacity: 0.5,
         }}
       >
