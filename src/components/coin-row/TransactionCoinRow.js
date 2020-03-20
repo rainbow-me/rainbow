@@ -1,4 +1,4 @@
-import { compact, get, toLower } from 'lodash';
+import { compact, get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, mapProps, onlyUpdateForKeys, withHandlers } from 'recompact';
@@ -27,11 +27,11 @@ const rowRenderPropTypes = {
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
 };
 
-const getDisplayAction = (action, name) => {
-  switch (toLower(action)) {
-    case 'deposit':
+const getDisplayAction = (type, name) => {
+  switch (type) {
+    case TransactionTypes.deposit:
       return `Deposited ${name}`;
-    case 'withdraw':
+    case TransactionTypes.withdraw:
       return `Withdrew ${name}`;
     default:
       return name;
@@ -42,7 +42,6 @@ const BottomRow = ({ name, native, status, type }) => {
   const isFailed = status === TransactionStatusTypes.failed;
   const isReceived = status === TransactionStatusTypes.received;
   const isSent = status === TransactionStatusTypes.sent;
-  let action = status !== TransactionStatusTypes.sending ? type : null;
 
   const isSwapped =
     status === TransactionStatusTypes.sent && type === TransactionTypes.trade;
@@ -59,7 +58,7 @@ const BottomRow = ({ name, native, status, type }) => {
   return (
     <Row align="center" justify="space-between" opacity={isSwapped ? 0.5 : 1}>
       <FlexItem flex={1}>
-        <CoinName>{getDisplayAction(action, name)}</CoinName>
+        <CoinName>{getDisplayAction(type, name)}</CoinName>
       </FlexItem>
       <FlexItem flex={0}>
         <BalanceText color={balanceTextColor}>{balanceText}</BalanceText>
