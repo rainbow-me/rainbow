@@ -118,7 +118,7 @@ const withBalanceSection = (
   if (priceOfEther) {
     assets = map(savings, asset => {
       const { ethPrice } = asset;
-      const nativeValue = priceOfEther * ethPrice;
+      const nativeValue = ethPrice ? priceOfEther * ethPrice : 0;
       totalSavingsValue += nativeValue;
       return {
         ...asset,
