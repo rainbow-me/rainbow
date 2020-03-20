@@ -55,13 +55,11 @@ export default function useSavingsAccount() {
 
   const marketsQuery = useQuery(COMPOUND_ALL_MARKETS_QUERY, {
     client: compoundClient,
-    fetchPolicy: 'network-only',
     pollInterval: COMPOUND_MARKETS_QUERY_INTERVAL,
   });
 
   const tokenQuery = useQuery(COMPOUND_ACCOUNT_QUERY, {
     client: compoundClient,
-    fetchPolicy: 'network-only',
     pollInterval: COMPOUND_ACCOUNT_QUERY_INTERVAL,
     skip: !toLower(accountAddress),
     variables: { id: toLower(accountAddress) },
