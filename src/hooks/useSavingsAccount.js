@@ -11,7 +11,8 @@ import { multiply } from '../helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
 import { CDAI_CONTRACT, DAI_ADDRESS } from '../references';
 
-// const pollInterval = 15000;
+const COMPOUND_ACCOUNT_QUERY_INTERVAL = 10000;
+const COMPOUND_MARKETS_QUERY_INTERVAL = 14000;
 
 const getMarketData = (marketData, tokenOverrides) => {
   const underlying = getUnderlyingData(marketData, tokenOverrides);
@@ -55,13 +56,13 @@ export default function useSavingsAccount() {
   const marketsQuery = useQuery(COMPOUND_ALL_MARKETS_QUERY, {
     client: compoundClient,
     fetchPolicy: 'network-only',
-    pollInterval: 14000,
+    pollInterval: COMPOUND_MARKETS_QUERY_INTERVAL,
   });
 
   const tokenQuery = useQuery(COMPOUND_ACCOUNT_QUERY, {
     client: compoundClient,
     fetchPolicy: 'network-only',
-    pollInterval: 10000,
+    pollInterval: COMPOUND_ACCOUNT_QUERY_INTERVAL,
     skip: !toLower(accountAddress),
     variables: { id: toLower(accountAddress) },
   });
