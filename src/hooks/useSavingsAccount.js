@@ -44,7 +44,7 @@ const getUnderlyingData = (marketData, tokenOverrides) => {
   };
 };
 
-export default function useSavingsAccount(pollInterval = 0) {
+export default function useSavingsAccount() {
   const { accountAddress, tokenOverrides } = useSelector(
     ({ data, settings }) => ({
       accountAddress: settings.accountAddress,
@@ -54,12 +54,14 @@ export default function useSavingsAccount(pollInterval = 0) {
 
   const marketsQuery = useQuery(COMPOUND_ALL_MARKETS_QUERY, {
     client: compoundClient,
-    pollInterval,
+    fetchPolicy: 'network-only',
+    pollInterval: 14000,
   });
 
   const tokenQuery = useQuery(COMPOUND_ACCOUNT_QUERY, {
     client: compoundClient,
-    pollInterval,
+    fetchPolicy: 'network-only',
+    pollInterval: 10000,
     skip: !toLower(accountAddress),
     variables: { id: toLower(accountAddress) },
   });
