@@ -13,11 +13,11 @@ import Highlight from '../Highlight';
 import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
 import { Row, RowWithMargins } from '../layout';
 import { ShadowStack } from '../shadow-stack';
-import { TruncatedText, Monospace } from '../text';
+import { Text, TruncatedText } from '../text';
 
 const { timing, Value } = Animated;
 
-const AnimatedMonospace = Animated.createAnimatedComponent(toClass(Monospace));
+const AnimatedText = Animated.createAnimatedComponent(toClass(Text));
 const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
 
 const TokenFamilyHeaderAnimationDuration = 200;
@@ -81,7 +81,7 @@ export default class TokenFamilyHeader extends PureComponent {
   };
 
   render = () => (
-    <ButtonPressAnimation onPress={this.props.onHeaderPress} scaleTo={0.98}>
+    <ButtonPressAnimation onPress={this.props.onHeaderPress} scaleTo={1.05}>
       <Row
         align="center"
         backgroundColor={colors.white}
@@ -94,9 +94,8 @@ export default class TokenFamilyHeader extends PureComponent {
         <RowWithMargins align="center" margin={10}>
           {this.renderFamilyIcon()}
           <TruncatedText
-            letterSpacing="tight"
             lineHeight="normal"
-            size="lmedium"
+            size="large"
             style={{ marginBottom: 1 }}
             weight="semibold"
           >
@@ -104,9 +103,11 @@ export default class TokenFamilyHeader extends PureComponent {
           </TruncatedText>
         </RowWithMargins>
         <RowWithMargins align="center" margin={14}>
-          <AnimatedMonospace
+          <AnimatedText
+            align="right"
             color="dark"
-            size="lmedium"
+            letterSpacing="roundedTight"
+            size="large"
             style={{
               marginBottom: 1,
               opacity: interpolate(this.animation, {
@@ -116,7 +117,7 @@ export default class TokenFamilyHeader extends PureComponent {
             }}
           >
             {this.props.childrenAmount}
-          </AnimatedMonospace>
+          </AnimatedText>
           <AnimatedFastImage
             resizeMode={FastImage.resizeMode.contain}
             source={CaretImageSource}

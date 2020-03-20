@@ -24,12 +24,7 @@ import {
 } from '../components/exchange';
 import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
 import { GasSpeedButton } from '../components/gas';
-import GestureBlocker from '../components/GestureBlocker';
-import {
-  Centered,
-  Column,
-  KeyboardFixedOpenLayout,
-} from '../components/layout';
+import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import { estimateSwapGasLimit, executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
@@ -129,6 +124,7 @@ class ExchangeModal extends Component {
     inputNativePrice: null,
     isAssetApproved: true,
     isAuthorizing: false,
+    isFocused: false,
     isSufficientBalance: true,
     isUnlockingAsset: false,
     nativeAmount: null,
@@ -142,6 +138,11 @@ class ExchangeModal extends Component {
     tradeDetails: null,
   };
 
+  static getDerivedStateFromProps(props, state) {
+    const isFocused = props.navigation.isFocused();
+    return { ...state, isFocused };
+  }
+
   componentDidMount() {
     InteractionManager.runAfterInteractions(() => {
       this.props.navigation.setParams({ focused: true });
@@ -152,8 +153,8 @@ class ExchangeModal extends Component {
   }
 
   shouldComponentUpdate = (nextProps, nextState) => {
-    const isFocused = this.props.navigation.getParam('focused', false);
-    const willBeFocused = nextProps.navigation.getParam('focused', false);
+    const isFocused = this.state.isFocused;
+    const willBeFocused = nextState.isFocused;
 
     const isNewProps = isNewValueForObjectPaths(this.props, nextProps, [
       'inputReserve.token.address',
@@ -257,6 +258,11 @@ class ExchangeModal extends Component {
     if (this.inputFocusInteractionHandle) {
       InteractionManager.clearInteractionHandle(
         this.inputFocusInteractionHandle
+      );
+    }
+    if (this.inputRefocusInteractionHandle) {
+      InteractionManager.clearInteractionHandle(
+        this.inputRefocusInteractionHandle
       );
     }
     InteractionManager.runAfterInteractions(() => {
@@ -792,9 +798,13 @@ class ExchangeModal extends Component {
   };
 
   handleRefocusLastInput = () => {
-    InteractionManager.runAfterInteractions(() => {
-      TextInput.State.focusTextInput(this.findNextFocused());
-    });
+    this.inputRefocusInteractionHandle = InteractionManager.runAfterInteractions(
+      () => {
+        if (this.props.navigation.isFocused()) {
+          TextInput.State.focusTextInput(this.findNextFocused());
+        }
+      }
+    );
   };
 
   navigateToSwapDetailsModal = () => {
@@ -1036,7 +1046,6 @@ class ExchangeModal extends Component {
               radius={exchangeModalBorderRadius}
               overflow="visible"
             >
-              <GestureBlocker type="top" />
               <ExchangeModalHeader
                 onPressDetails={this.navigateToSwapDetailsModal}
                 showDetailsButton={showDetailsButton}
@@ -1094,9 +1103,6 @@ class ExchangeModal extends Component {
                 <GasSpeedButton />
               </Fragment>
             )}
-            <Column>
-              <GestureBlocker type="bottom" />
-            </Column>
           </AnimatedFloatingPanels>
         </Centered>
       </KeyboardFixedOpenLayout>

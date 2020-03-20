@@ -7,7 +7,7 @@ import { RequestVendorLogoIcon } from '../coin-icon';
 import ContextMenu from '../ContextMenu';
 import { withWalletConnectConnections } from '../../hoc';
 import { Centered, ColumnWithMargins, FlexItem, Row } from '../layout';
-import { padding } from '../../styles';
+import { colors, padding } from '../../styles';
 import { TruncatedText } from '../text';
 
 const ContainerPadding = 15;
@@ -43,13 +43,25 @@ const WalletConnectListItem = enhance(
         css={padding(ContainerPadding, 0, ContainerPadding, ContainerPadding)}
       >
         <RequestVendorLogoIcon
+          backgroundColor={colors.white}
           dappName={dappName}
           imageUrl={dappIcon}
           size={VendorLogoIconSize}
         />
-        <ColumnWithMargins css={padding(0, 18, 1.5, 12)} flex={1} margin={3.5}>
-          <TruncatedText letterSpacing="tighter" size="lmedium" weight="medium">
-            {dappName || 'Unknown connection'}
+        <ColumnWithMargins css={padding(0, 18, 1.5, 12)} flex={1} margin={2}>
+          <TruncatedText
+            letterSpacing="roundedTight"
+            size="lmedium"
+            weight="bold"
+          >
+            {dappName || 'Unknown Application'}
+          </TruncatedText>
+          <TruncatedText
+            color={colors.alpha(colors.blueGreyDark, 0.6)}
+            size="smedium"
+            weight="medium"
+          >
+            Connected
           </TruncatedText>
         </ColumnWithMargins>
       </Row>

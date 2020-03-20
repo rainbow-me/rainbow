@@ -103,7 +103,7 @@ const parseAssetsNative = (assets, nativeCurrency) => {
       native: {
         balance: nativeDisplay,
         change: isLowerCaseMatch(get(asset, 'symbol'), nativeCurrency)
-          ? '———'
+          ? null
           : convertAmountToPercentageDisplay(
               assetNativePrice.relative_change_24h
             ),

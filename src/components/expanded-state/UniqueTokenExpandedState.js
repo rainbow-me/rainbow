@@ -1,7 +1,7 @@
 import withViewLayoutProps from '@hocs/with-view-layout-props';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { InteractionManager, Linking, Share } from 'react-native';
+import { Linking, Share } from 'react-native';
 import {
   compose,
   onlyUpdateForPropTypes,
@@ -15,6 +15,7 @@ import {
   deviceUtils,
   dimensionsPropType,
   safeAreaInsetValues,
+  sentryUtils,
 } from '../../utils';
 import { Centered } from '../layout';
 import { Pager } from '../pager';
@@ -171,12 +172,8 @@ export default compose(
   })),
   withProps(buildPanelDimensions),
   withHandlers({
-    onPressSend: ({ asset, navigation }) => () => {
-      navigation.goBack();
-
-      InteractionManager.runAfterInteractions(() => {
-        navigation.navigate('SendSheet', { asset });
-      });
+    onPressSend: ({ navigation, asset }) => () => {
+      navigation.navigate('SendSheet', { asset });
     },
     onPressShare: ({ asset: { name, permalink } }) => () => {
       Share.share({
@@ -184,8 +181,13 @@ export default compose(
         url: permalink,
       });
     },
-    onPressView: ({ asset: { permalink } }) => () => {
-      Linking.openURL(permalink);
+    onPressView: ({ asset }) => () => {
+      sentryUtils.addDataBreadcrumb(
+        'UniqueTokenExpandedState press view on OpenSea',
+        asset
+      );
+      const { permalink } = asset;
+      permalink && Linking.openURL(permalink);
     },
   }),
   onlyUpdateForPropTypes

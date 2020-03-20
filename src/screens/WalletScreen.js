@@ -52,6 +52,15 @@ class WalletScreen extends Component {
     uniqueTokens: PropTypes.array,
   };
 
+  state = {
+    isFocused: true,
+  };
+
+  static getDerivedStateFromProps(props, state) {
+    const isFocused = props.navigation.isFocused();
+    return { ...state, isFocused };
+  }
+
   componentDidMount = async () => {
     try {
       await this.props.initializeWallet();
@@ -65,9 +74,10 @@ class WalletScreen extends Component {
     }
   };
 
-  shouldComponentUpdate = nextProps => {
-    const isFocused = this.props.navigation.getParam('focused', true);
-    const willBeFocused = nextProps.navigation.getParam('focused', true);
+  shouldComponentUpdate = (nextProps, nextState) => {
+    const isFocused = this.state.isFocused;
+    const willBeFocused = nextState.isFocused;
+
     const sectionLengthHasChanged =
       this.props.sections.length !== nextProps.sections.length;
 

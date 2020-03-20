@@ -48,9 +48,11 @@ const SendAssetFormCollectible = enhance(
         <UniqueTokenCard
           {...props}
           borderEnabled={false}
-          disabled
+          enableHapticFeedback={false}
           height={height}
           item={props}
+          opacity={1}
+          scaleTo={1}
           resizeMode="contain"
           shadowStyle={{
             shadowColor: colors.dark,
