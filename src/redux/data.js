@@ -25,6 +25,7 @@ import {
   removeAssetPricesFromUniswap,
   removeAssets,
   removeLocalTransactions,
+  removeSavings,
   saveAssetPricesFromUniswap,
   saveAssets,
   saveLocalTransactions,
@@ -123,6 +124,7 @@ export const dataClearState = () => (dispatch, getState) => {
     uniswapPricesSubscription.unsubscribe &&
     uniswapPricesSubscription.unsubscribe();
   removeAssets(accountAddress, network);
+  removeSavings(accountAddress, network);
   removeAssetPricesFromUniswap(accountAddress, network);
   removeLocalTransactions(accountAddress, network);
   dispatch({ type: DATA_CLEAR_STATE });

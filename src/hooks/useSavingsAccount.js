@@ -1,10 +1,12 @@
 import { useQuery } from '@apollo/client';
 import { find, get, keyBy, orderBy, property, toLower } from 'lodash';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { compoundClient } from '../apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '../apollo/queries';
+import { getSavings, saveSavings } from '../handlers/localstorage/accountLocal';
 import { multiply } from '../helpers/utilities';
+import { useAccountSettings } from '../hooks';
 import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
 import { CDAI_CONTRACT, DAI_ADDRESS } from '../references';
 
@@ -42,12 +44,13 @@ const getUnderlyingData = (marketData, tokenOverrides) => {
 };
 
 export default function useSavingsAccount() {
-  const { accountAddress, tokenOverrides } = useSelector(
-    ({ data, settings }) => ({
-      accountAddress: settings.accountAddress,
-      tokenOverrides: data.tokenOverrides,
-    })
-  );
+  const [accountTokensBackup, setAccountTokensBackup] = useState([]);
+
+  const { tokenOverrides } = useSelector(({ data }) => ({
+    tokenOverrides: data.tokenOverrides,
+  }));
+
+  const { accountAddress, network } = useAccountSettings();
 
   const compoundQuery = useQuery(COMPOUND_ACCOUNT_AND_MARKET_QUERY, {
     client: compoundClient,
@@ -55,6 +58,17 @@ export default function useSavingsAccount() {
     skip: !toLower(accountAddress),
     variables: { id: toLower(accountAddress) },
   });
+
+  const getSavingsFromStorage = useCallback(async () => {
+    if (accountAddress) {
+      const savingsAccountLocal = await getSavings(accountAddress, network);
+      setAccountTokensBackup(savingsAccountLocal);
+    }
+  }, [accountAddress, network]);
+
+  useEffect(() => {
+    getSavingsFromStorage();
+  }, [accountAddress, getSavingsFromStorage, network]);
 
   const tokens = useMemo(() => {
     const markets = keyBy(
@@ -107,8 +121,17 @@ export default function useSavingsAccount() {
       accountTokens.push({ ...DAIMarketData });
     }
 
-    return accountTokens;
-  }, [compoundQuery, tokenOverrides]);
+    if (accountTokens.length) {
+      saveSavings(accountTokens, accountAddress, network);
+    }
+    return (accountTokens.length && accountTokens) || accountTokensBackup;
+  }, [
+    accountAddress,
+    accountTokensBackup,
+    compoundQuery,
+    network,
+    tokenOverrides,
+  ]);
 
   return tokens;
 }

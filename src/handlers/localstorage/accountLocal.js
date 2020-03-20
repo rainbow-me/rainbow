@@ -9,6 +9,7 @@ import {
 
 const assetPricesFromUniswapVersion = '0.1.0';
 const assetsVersion = '0.2.0';
+const savingsVersion = '0.1.0';
 const transactionsVersion = '0.2.3';
 const uniqueTokensVersion = '0.2.0';
 
@@ -18,10 +19,38 @@ const ASSETS = 'assets';
 const OPEN_FAMILIES = 'openFamilies';
 const OPEN_INVESTMENT_CARDS = 'openInvestmentCards';
 const SMALL_BALANCE_TOGGLE = 'smallBalanceToggle';
+const SAVINGS = 'savings';
 const SAVINGS_TOGGLE = 'savingsToggle';
 const TRANSACTIONS = 'transactions';
 const UNIQUE_TOKENS = 'uniquetokens';
 const WALLET_EMPTY = 'iswalletempty';
+
+/**
+ * @desc get savings
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getSavings = (accountAddress, network) =>
+  getAccountLocal(SAVINGS, accountAddress, network, [], savingsVersion);
+
+/**
+ * @desc save savings
+ * @param  {String}   [address]
+ * @param  {Array}    [savings]
+ * @param  {String}   [network]
+ */
+export const saveSavings = (savings, accountAddress, network) =>
+  saveAccountLocal(SAVINGS, savings, accountAddress, network, savingsVersion);
+
+/**
+ * @desc remove savings
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const removeSavings = (accountAddress, network) =>
+  removeAccountLocal(SAVINGS, accountAddress, network);
 
 /**
  * @desc get assets
