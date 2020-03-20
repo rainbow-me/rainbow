@@ -837,11 +837,15 @@ class ExchangeModal extends Component {
   };
 
   navigateToSelectInputCurrency = () => {
+    const initialCurrency = this.state.inputCurrency.uniqueId;
     InteractionManager.runAfterInteractions(() => {
       this.props.navigation.setParams({ focused: false });
       this.props.navigation.navigate('CurrencySelectScreen', {
         onSelectCurrency: this.setInputCurrency,
         restoreFocusOnSwapModal: () => {
+          if (initialCurrency !== this.state.inputCurrency.uniqueId) {
+            this.setNativeAmount();
+          }
           this.props.navigation.setParams({ focused: true });
         },
         type: CurrencySelectionTypes.input,
@@ -850,11 +854,16 @@ class ExchangeModal extends Component {
   };
 
   navigateToSelectOutputCurrency = () => {
+    const initialCurrency =
+      this.state.outputCurrency && this.state.outputCurrency.uniqueId;
     InteractionManager.runAfterInteractions(() => {
       this.props.navigation.setParams({ focused: false });
       this.props.navigation.navigate('CurrencySelectScreen', {
         onSelectCurrency: this.setOutputCurrency,
         restoreFocusOnSwapModal: () => {
+          if (initialCurrency !== this.state.outputCurrency.uniqueId) {
+            this.setNativeAmount();
+          }
           this.props.navigation.setParams({ focused: true });
         },
         type: CurrencySelectionTypes.output,
