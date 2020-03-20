@@ -17,6 +17,7 @@ import {
   uniqBy,
 } from 'lodash';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
+import TransactionTypes from '../helpers/transactionTypes';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
@@ -135,7 +136,8 @@ const parseTransaction = (
   if (
     isEmpty(changes) &&
     txn.status === 'failed' &&
-    (txn.type === 'deposit' || txn.type === 'withdraw')
+    (txn.type === TransactionTypes.deposit ||
+      txn.type === TransactionTypes.withdraw)
   ) {
     const asset = savingsAssetsList[network][toLower(transaction.to)];
 
@@ -151,7 +153,7 @@ const parseTransaction = (
   if (
     isEmpty(changes) &&
     txn.status === 'failed' &&
-    txn.type === 'execution' &&
+    txn.type === TransactionTypes.execution &&
     txn.direction === 'out'
   ) {
     const assetInternalTransaction = {
@@ -168,7 +170,7 @@ const parseTransaction = (
     internalTransactions = [assetInternalTransaction];
   }
 
-  if (isEmpty(changes) && txn.type === 'authorize') {
+  if (isEmpty(changes) && txn.type === TransactionTypes.authorize) {
     const approveInternalTransaction = {
       address_from: transaction.from,
       address_to: transaction.to,
@@ -199,7 +201,10 @@ const parseTransaction = (
     };
     internalTransactions = [ethInternalTransaction];
   }
-  if (transaction.type === 'trade' && transaction.protocol === 'uniswap') {
+  if (
+    transaction.type === TransactionTypes.trade &&
+    transaction.protocol === 'uniswap'
+  ) {
     internalTransactions = transformUniswapRefund(internalTransactions);
   }
   internalTransactions = internalTransactions.map((internalTxn, index) => {
@@ -282,15 +287,24 @@ const getTransactionLabel = (
   const isFromAccount = isLowerCaseMatch(from, accountAddress);
   const isToAccount = isLowerCaseMatch(to, accountAddress);
 
-  if (pending && type === 'authorize') return TransactionStatusTypes.approving;
+  if (pending && type === TransactionTypes.authorize)
+    return TransactionStatusTypes.approving;
+  if (pending && type === TransactionTypes.deposit)
+    return TransactionStatusTypes.depositing;
+  if (pending && type === TransactionTypes.withdraw)
+    return TransactionStatusTypes.withdrawing;
+
   if (pending && isFromAccount) return TransactionStatusTypes.sending;
   if (pending && isToAccount) return TransactionStatusTypes.receiving;
 
   if (status === 'failed') return TransactionStatusTypes.failed;
-  if (type === 'deposit') return TransactionStatusTypes.deposited;
-  if (type === 'withdraw') return TransactionStatusTypes.withdrew;
 
-  if (type === 'authorize') return TransactionStatusTypes.approved;
+  if (type === TransactionTypes.deposit)
+    return TransactionStatusTypes.deposited;
+  if (type === TransactionTypes.withdraw)
+    return TransactionStatusTypes.withdrew;
+  if (type === TransactionTypes.authorize)
+    return TransactionStatusTypes.approved;
 
   if (isFromAccount && isToAccount) return TransactionStatusTypes.self;
 

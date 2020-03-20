@@ -1,6 +1,8 @@
 import { ethers } from 'ethers';
 import { get } from 'lodash';
 import { toHex } from '../../handlers/web3';
+import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import TransactionTypes from '../../helpers/transactionTypes';
 import { convertAmountToRawAmount } from '../../helpers/utilities';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
@@ -11,7 +13,6 @@ import {
   savingsAssetsListByUnderlying,
 } from '../../references';
 import { gasUtils } from '../../utils';
-import transactionTypes from '../../helpers/transactionTypes';
 
 const NOOP = () => undefined;
 const SAVINGS_ERC20_DEPOSIT_GAS_LIMIT = 350000;
@@ -67,8 +68,9 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
     from: accountAddress,
     hash: deposit.hash,
     nonce: get(deposit, 'nonce'),
+    status: TransactionStatusTypes.depositing,
     to: get(deposit, 'to'),
-    type: transactionTypes.deposit,
+    type: TransactionTypes.deposit,
   };
   console.log('[deposit] adding new txn', newTransaction);
   dispatch(dataAddNewTransaction(newTransaction, true));
