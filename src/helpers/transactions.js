@@ -47,9 +47,9 @@ let thisYearTimestamp = calculateTimestampOfThisYear();
 
 const getTimestamps = () => {
   const now = new Date();
-  // When the day changes, we need to recalculate timestamps
+  // When the day / month changes, we need to recalculate timestamps
   if (
-    timestampsCalculation.getDate() !== now.getDate() &&
+    timestampsCalculation.getDate() !== now.getDate() ||
     timestampsCalculation.getMonth() !== now.getMonth()
   ) {
     todayTimestamp = calculateTimestampOfToday();
