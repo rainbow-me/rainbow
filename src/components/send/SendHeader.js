@@ -151,7 +151,7 @@ class SendHeader extends PureComponent {
       address: recipient,
       asset: {},
       color,
-      contact: isEmpty(contact) ? false : contact,
+      contact: isEmpty(contact.address) ? false : contact,
       onRefocusInput: refocusCallback,
       type: 'contact',
     });
