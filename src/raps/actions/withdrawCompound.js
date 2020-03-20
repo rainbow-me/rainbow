@@ -16,6 +16,7 @@ import { gasUtils } from '../../utils';
 
 const NOOP = () => undefined;
 
+const CTOKEN_DECIMALS = 8;
 const SAVINGS_ERC20_WITHDRAW_GAS_LIMIT = 500000;
 
 const withdrawCompound = async (wallet, currentRap, index, parameters) => {
@@ -26,7 +27,7 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
   const { accountAddress, network } = store.getState().settings;
   const rawInputAmount = convertAmountToRawAmount(
     inputAmount,
-    inputCurrency.decimals
+    isMax ? CTOKEN_DECIMALS : inputCurrency.decimals
   );
   console.log('[withdraw] raw input amount', rawInputAmount);
 
