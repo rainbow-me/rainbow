@@ -22,9 +22,9 @@ const ConfirmExchangeButton = ({
 }) => {
   let label =
     type === ExchangeModalTypes.deposit
-      ? 'Deposit to Savings'
+      ? 'Hold to Deposit'
       : type === ExchangeModalTypes.withdrawal
-      ? 'Withdraw from Savings'
+      ? 'Hold to Withdraw '
       : 'Hold to Swap';
   if (!isSufficientBalance) {
     label = 'Insufficient Funds';
