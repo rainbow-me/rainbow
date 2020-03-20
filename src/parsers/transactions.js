@@ -135,10 +135,10 @@ const parseTransaction = (
 
   if (
     isEmpty(changes) &&
-    txn.status === 'failed' &&
     (txn.type === TransactionTypes.deposit ||
       txn.type === TransactionTypes.withdraw)
   ) {
+    transaction.status = 'failed';
     const asset = savingsAssetsList[network][toLower(transaction.to)];
 
     const assetInternalTransaction = {
