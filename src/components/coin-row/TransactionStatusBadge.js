@@ -62,24 +62,10 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
     statusColor = colors.dodgerBlue;
   }
 
-  let displayStatus =
+  const displayStatus =
     isTrade && status === TransactionStatusTypes.sent
       ? TransactionStatusTypes.swapped
       : status;
-
-  if (
-    pending &&
-    status === TransactionStatusTypes.sending &&
-    type === TransactionTypes.deposit
-  ) {
-    displayStatus = TransactionStatusTypes.depositing;
-  } else if (
-    pending &&
-    status === TransactionStatusTypes.sending &&
-    type === TransactionTypes.withdraw
-  ) {
-    displayStatus = TransactionStatusTypes.withdrawing;
-  }
 
   return (
     <RowWithMargins
