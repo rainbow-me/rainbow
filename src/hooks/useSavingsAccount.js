@@ -3,16 +3,12 @@ import { find, get, keyBy, orderBy, property, toLower } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { compoundClient } from '../apollo/client';
-import {
-  COMPOUND_ACCOUNT_QUERY,
-  COMPOUND_ALL_MARKETS_QUERY,
-} from '../apollo/queries';
+import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '../apollo/queries';
 import { multiply } from '../helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
 import { CDAI_CONTRACT, DAI_ADDRESS } from '../references';
 
-const COMPOUND_ACCOUNT_QUERY_INTERVAL = 10000;
-const COMPOUND_MARKETS_QUERY_INTERVAL = 14000;
+const COMPOUND_QUERY_INTERVAL = 10000;
 
 const getMarketData = (marketData, tokenOverrides) => {
   const underlying = getUnderlyingData(marketData, tokenOverrides);
@@ -53,25 +49,20 @@ export default function useSavingsAccount() {
     })
   );
 
-  const marketsQuery = useQuery(COMPOUND_ALL_MARKETS_QUERY, {
+  const compoundQuery = useQuery(COMPOUND_ACCOUNT_AND_MARKET_QUERY, {
     client: compoundClient,
-    pollInterval: COMPOUND_MARKETS_QUERY_INTERVAL,
-  });
-
-  const tokenQuery = useQuery(COMPOUND_ACCOUNT_QUERY, {
-    client: compoundClient,
-    pollInterval: COMPOUND_ACCOUNT_QUERY_INTERVAL,
+    pollInterval: COMPOUND_QUERY_INTERVAL,
     skip: !toLower(accountAddress),
     variables: { id: toLower(accountAddress) },
   });
 
   const tokens = useMemo(() => {
     const markets = keyBy(
-      get(marketsQuery, 'data.markets', []),
+      get(compoundQuery, 'data.markets', []),
       property('id')
     );
 
-    let accountTokens = get(tokenQuery, 'data.account.tokens', []);
+    let accountTokens = get(compoundQuery, 'data.account.tokens', []);
 
     accountTokens = accountTokens.map(token => {
       const [cTokenAddress] = token.id.split('-');
@@ -117,7 +108,7 @@ export default function useSavingsAccount() {
     }
 
     return accountTokens;
-  }, [marketsQuery, tokenOverrides, tokenQuery]);
+  }, [compoundQuery, tokenOverrides]);
 
   return tokens;
 }
