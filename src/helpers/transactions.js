@@ -1,10 +1,4 @@
-import {
-  format,
-  isThisMonth,
-  isThisYear,
-  isToday,
-  isYesterday,
-} from 'date-fns';
+import { format } from 'date-fns';
 import { get, groupBy, isEmpty, map, toLower } from 'lodash';
 import { createSelector } from 'reselect';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
@@ -17,16 +11,47 @@ const transactionsSelector = state => state.transactions;
 export const buildTransactionUniqueIdentifier = ({ hash, displayDetails }) =>
   hash || get(displayDetails, 'timestampInMs');
 
+const calculateTimestampOfToday = () => {
+  var d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+};
+
+const calculateTimestampOfYesterday = () => {
+  var d = new Date();
+  d.setDate(d.getDate() - 1);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+};
+
+const calculateTimestampOfThisMonth = () => {
+  var d = new Date();
+  d.setDate(0);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+};
+
+const calculateTimestampOfThisYear = () => {
+  var d = new Date();
+  d.setFullYear(d.getFullYear, 1, 1);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+};
+
+const todayTimestamp = calculateTimestampOfToday();
+const yesterdayTimestamp = calculateTimestampOfYesterday();
+const thisMonthTimestamp = calculateTimestampOfThisMonth();
+const thisYearTimestamp = calculateTimestampOfThisYear();
+
 const groupTransactionByDate = ({ pending, minedAt }) => {
   if (pending) return 'Pending';
+  const ts = parseInt(minedAt, 10) * 1000;
 
-  const timestamp = new Date(parseInt(minedAt, 10) * 1000);
+  if (ts > todayTimestamp) return 'Today';
+  if (ts > yesterdayTimestamp) return 'Yesterday';
+  if (ts > thisMonthTimestamp) return 'This Month';
 
-  if (isToday(timestamp)) return 'Today';
-  if (isYesterday(timestamp)) return 'Yesterday';
-  if (isThisMonth(timestamp)) return 'This Month';
-
-  return format(timestamp, `MMMM${isThisYear(timestamp) ? '' : ' yyyy'}`);
+  return format(ts, `MMMM${ts > thisYearTimestamp ? '' : ' yyyy'}`);
 };
 
 const addContactInfo = contacts => txn => {
@@ -55,7 +80,6 @@ const buildTransactionsSections = (
       transactionsWithContacts,
       groupTransactionByDate
     );
-
     sectionedTransactions = Object.keys(transactionsByDate).map(section => ({
       data: transactionsByDate[section],
       title: section,
