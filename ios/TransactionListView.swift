@@ -56,8 +56,6 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
         items.append(item)
       }
       
-      print("ITEMS ARE: ", items)
-      
       sections = items.flatMap { $0.sections }
       tableView.reloadData()
     }
