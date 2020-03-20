@@ -38,13 +38,42 @@ const calculateTimestampOfThisYear = () => {
   return d.getTime();
 };
 
-const todayTimestamp = calculateTimestampOfToday();
-const yesterdayTimestamp = calculateTimestampOfYesterday();
-const thisMonthTimestamp = calculateTimestampOfThisMonth();
-const thisYearTimestamp = calculateTimestampOfThisYear();
+let timestampsCalculation = new Date();
+
+let todayTimestamp = calculateTimestampOfToday();
+let yesterdayTimestamp = calculateTimestampOfYesterday();
+let thisMonthTimestamp = calculateTimestampOfThisMonth();
+let thisYearTimestamp = calculateTimestampOfThisYear();
+
+const getTimestamps = () => {
+  const now = new Date();
+  // When the day changes, we need to recalculate timestamps
+  if (
+    timestampsCalculation.getDate() !== now.getDate() &&
+    timestampsCalculation.getMonth() !== now.getMonth()
+  ) {
+    todayTimestamp = calculateTimestampOfToday();
+    yesterdayTimestamp = calculateTimestampOfYesterday();
+    thisMonthTimestamp = calculateTimestampOfThisMonth();
+    thisYearTimestamp = calculateTimestampOfThisYear();
+  }
+  return {
+    thisMonthTimestamp,
+    thisYearTimestamp,
+    todayTimestamp,
+    yesterdayTimestamp,
+  };
+};
 
 const groupTransactionByDate = ({ pending, minedAt }) => {
   if (pending) return 'Pending';
+  const {
+    todayTimestamp,
+    yesterdayTimestamp,
+    thisMonthTimestamp,
+    thisYearTimestamp,
+  } = getTimestamps();
+
   const ts = parseInt(minedAt, 10) * 1000;
 
   if (ts > todayTimestamp) return 'Today';
