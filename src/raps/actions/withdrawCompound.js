@@ -1,6 +1,8 @@
 import { ethers } from 'ethers';
 import { get } from 'lodash';
 import { toHex } from '../../handlers/web3';
+import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import TransactionTypes from '../../helpers/transactionTypes';
 import { convertAmountToRawAmount } from '../../helpers/utilities';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
@@ -11,7 +13,6 @@ import {
   savingsAssetsListByUnderlying,
 } from '../../references';
 import { gasUtils } from '../../utils';
-import transactionTypes from '../../helpers/transactionTypes';
 
 const NOOP = () => undefined;
 
@@ -65,8 +66,9 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     from: accountAddress,
     hash: withdraw.hash,
     nonce: get(withdraw, 'nonce'),
+    status: TransactionStatusTypes.withdrawing,
     to: get(withdraw, 'to'),
-    type: transactionTypes.withdraw,
+    type: TransactionTypes.withdraw,
   };
 
   console.log('[withdraw] adding new txn', newTransaction);

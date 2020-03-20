@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForPropTypes } from 'recompact';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import transactionTypes from '../../helpers/transactionTypes';
+import TransactionTypes from '../../helpers/transactionTypes';
 import { colors, position } from '../../styles';
 import Icon from '../icons/Icon';
 import { RowWithMargins } from '../layout';
@@ -53,7 +53,7 @@ const getCustomDisplayStatus = status => {
 };
 
 const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
-  const isTrade = type === transactionTypes.trade;
+  const isTrade = type === TransactionTypes.trade;
 
   let statusColor = colors.blueGreyMediumLight;
   if (pending) {
@@ -70,13 +70,13 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
   if (
     pending &&
     status === TransactionStatusTypes.sending &&
-    type === transactionTypes.deposit
+    type === TransactionTypes.deposit
   ) {
     displayStatus = TransactionStatusTypes.depositing;
   } else if (
     pending &&
     status === TransactionStatusTypes.sending &&
-    type === transactionTypes.withdraw
+    type === TransactionTypes.withdraw
   ) {
     displayStatus = TransactionStatusTypes.withdrawing;
   }
@@ -106,7 +106,7 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
 TransactionStatusBadge.propTypes = {
   pending: PropTypes.bool,
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
-  type: PropTypes.oneOf(Object.values(transactionTypes)),
+  type: PropTypes.oneOf(Object.values(TransactionTypes)),
 };
 
 TransactionStatusBadge.defaultProps = {

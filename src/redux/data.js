@@ -32,7 +32,7 @@ import {
 import { apiGetTokenOverrides } from '../handlers/tokenOverrides';
 import { getTransactionReceipt } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
-import transactionTypes from '../helpers/transactionTypes';
+import TransactionTypes from '../helpers/transactionTypes';
 import { divide, isZero } from '../helpers/utilities';
 import { parseAccountAssets } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
@@ -361,9 +361,9 @@ export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
   });
 
 const getConfirmedState = type => {
-  if (type === transactionTypes.deposit) {
+  if (type === TransactionTypes.deposit) {
     return TransactionStatusTypes.deposited;
-  } else if (type === transactionTypes.withdraw) {
+  } else if (type === TransactionTypes.withdraw) {
     return TransactionStatusTypes.withdrew;
   }
   return TransactionStatusTypes.sent;
