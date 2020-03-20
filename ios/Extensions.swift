@@ -43,7 +43,8 @@ extension UIView {
   
   func animateTapStart(
     duration: TimeInterval = 0.1,
-    scale: CGFloat = 0.97
+    scale: CGFloat = 0.97,
+    transformOrigin: CGPoint = .init(x: 0.5, y: 0.5)
   ) {
     let timingFunction = CAMediaTimingFunction(controlPoints: 0.25, 0.46, 0.45, 0.94)
     
@@ -52,6 +53,7 @@ extension UIView {
     
     UIView.animate(withDuration: duration) {
       self.transform = CGAffineTransform(scaleX: scale, y: scale)
+      self.layer.anchorPoint = CGPoint(x: 1 - transformOrigin.x, y: 1 - transformOrigin.y)
     }
     
     CATransaction.commit()
@@ -67,6 +69,7 @@ extension UIView {
     CATransaction.setAnimationTimingFunction(timingFunction)
     
     UIView.animate(withDuration: duration) {
+      self.layer.anchorPoint = .init(x: 0.5, y: 0.5)
       self.transform = .identity
     }
     
