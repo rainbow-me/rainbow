@@ -298,8 +298,8 @@ export default class EmojiSelector extends PureComponent {
       return (
         <View
           style={{
-            top: index === 0 && -300,
-            bottom: index !== 0 && -300,
+            top: index === 0 && -3000,
+            bottom: index !== 0 && -3000,
             height: 400,
             width: width,
             backgroundColor: colors.white,
@@ -477,7 +477,9 @@ export default class EmojiSelector extends PureComponent {
                     this.hasRowChanged
                   ).cloneWithRows(this.state.allEmojiList)}
                   layoutProvider={this._layoutProvider}
-                  renderAheadOffset={10}
+                  canChangeSize={false}
+                  renderAheadStep={100}
+                  renderAheadOffset={300}
                   rowRenderer={this.renderItem}
                   style={{ width: deviceUtils.dimensions.width }}
                   onScroll={this.handleScroll}
