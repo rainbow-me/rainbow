@@ -57,6 +57,8 @@ export default compose(
     };
   }),
   onlyUpdateForKeys([
+    'initialized',
+    'isFocused',
     'network',
     'contacts',
     'isEmpty',

@@ -7,6 +7,7 @@ const contactsSelector = state => state.contacts;
 const requestsSelector = state => state.requests;
 const transactionsSelector = state => state.transactions;
 const focusedSelector = state => state.isFocused;
+const initializedSelector = state => state.initialized;
 
 export const buildTransactionUniqueIdentifier = ({ hash, displayDetails }) =>
   hash || get(displayDetails, 'timestampInMs');
@@ -94,24 +95,17 @@ const addContactInfo = contacts => txn => {
   };
 };
 
-let wasInitialized = false;
-
-// Automatically initialize
-// After 10 seconds
-setTimeout(() => {
-  wasInitialized = true;
-}, 10000);
-
 const buildTransactionsSections = (
   contacts,
   requests,
   transactions,
-  isFocused
+  isFocused,
+  initialized
 ) => {
-  if (!wasInitialized && !isFocused) {
+  if (!isFocused && !initialized) {
     return { sections: [] };
   }
-  wasInitialized = true;
+
   let sectionedTransactions = [];
 
   const transactionsWithContacts = map(transactions, addContactInfo(contacts));
@@ -136,13 +130,18 @@ const buildTransactionsSections = (
       },
     ];
   }
-
   return {
     sections: [...requestsToApprove, ...sectionedTransactions],
   };
 };
 
 export const buildTransactionsSectionsSelector = createSelector(
-  [contactsSelector, requestsSelector, transactionsSelector, focusedSelector],
+  [
+    contactsSelector,
+    requestsSelector,
+    transactionsSelector,
+    focusedSelector,
+    initializedSelector,
+  ],
   buildTransactionsSections
 );
