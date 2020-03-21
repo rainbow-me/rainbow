@@ -21,8 +21,6 @@ const ProfileScreen = ({
   nativeCurrency,
   navigation,
   network,
-  onPressBackButton,
-  onPressSettings,
   requests,
   transactions,
   transactionsCount,
@@ -33,6 +31,9 @@ const ProfileScreen = ({
       setActivityListInitialized(true);
     }, ACTIVITY_LIST_INITIALIZATION_DELAY);
   }, []);
+
+  const onPressBackButton = () => navigation.navigate('WalletScreen');
+  const onPressSettings = () => navigation.navigate('SettingsModal');
 
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>
@@ -85,8 +86,6 @@ ProfileScreen.propTypes = {
   nativeCurrency: PropTypes.string,
   navigation: PropTypes.object,
   network: PropTypes.string,
-  onPressBackButton: PropTypes.func,
-  onPressSettings: PropTypes.func,
   requests: PropTypes.array,
   transactions: PropTypes.array,
   transactionsCount: PropTypes.number,
