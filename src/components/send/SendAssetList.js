@@ -30,14 +30,20 @@ const Divider = styled.View`
 class SendAssetList extends React.Component {
   constructor(args) {
     super(args);
+
+    this.data = this.props.allAssets;
+    if (this.props.savings) {
+      this.data = this.data.concat([
+        { data: this.props.savings, name: 'Savings' },
+      ]);
+    }
+    if (this.props.uniqueTokens) {
+      this.data = this.data.concat(this.props.uniqueTokens);
+    }
     this.state = {
       dataProvider: new DataProvider((r1, r2) => {
         return r1 !== r2;
-      }).cloneWithRows(
-        this.props.allAssets
-          .concat([{ data: this.props.savings, name: 'Savings' }])
-          .concat(this.props.uniqueTokens)
-      ),
+      }).cloneWithRows(this.data),
       openCards: [],
       openSavings: false,
     };
@@ -60,9 +66,12 @@ class SendAssetList extends React.Component {
         if (i < this.props.allAssets.length - 1) {
           return 'COIN_ROW';
         } else if (i === this.props.allAssets.length - 1) {
-          return this.props.savings.length === 0 ? 'COIN_ROW_LAST' : 'COIN_ROW';
+          return this.props.savings && this.props.savings.length !== 0
+            ? 'COIN_ROW'
+            : 'COIN_ROW_LAST';
         } else if (
           i === this.props.allAssets.length &&
+          this.props.savings &&
           this.props.savings.length > 0
         ) {
           return {
@@ -77,7 +86,7 @@ class SendAssetList extends React.Component {
               this.props.uniqueTokens[
                 i -
                   this.props.allAssets.length -
-                  (this.props.savings.length > 0 ? 1 : 0)
+                  (this.props.savings && this.props.savings.length > 0 ? 1 : 0)
               ].familyId
             ]
           ) {
@@ -86,7 +95,9 @@ class SendAssetList extends React.Component {
                 this.props.uniqueTokens[
                   i -
                     this.props.allAssets.length -
-                    (this.props.savings.length > 0 ? 1 : 0)
+                    (this.props.savings && this.props.savings.length > 0
+                      ? 1
+                      : 0)
                 ].data.length + 1,
               type: 'COLLECTIBLE_ROW',
             };
