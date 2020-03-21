@@ -16,6 +16,7 @@ class Button : RCTView {
   }
   @objc var duration: TimeInterval = 0.1
   @objc var scaleTo: CGFloat = 0.97
+  @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5)
   @objc var enableHapticFeedback: Bool = true
   @objc var hapticType: String = "selection"
   @objc var minLongPressDuration: TimeInterval = 0.5 {
@@ -55,7 +56,8 @@ class Button : RCTView {
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     animateTapStart(
       duration: duration,
-      scale: scaleTo
+      scale: scaleTo,
+      transformOrigin: transformOrigin
     )
     onPressStart([:])
   }

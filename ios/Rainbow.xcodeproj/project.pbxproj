@@ -42,7 +42,6 @@
 		A49B52B423DB5D1100A00918 /* TransactionViewModelTransactionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52B323DB5D1100A00918 /* TransactionViewModelTransactionItem.swift */; };
 		A49B52B623DB5D5600A00918 /* TransactionViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52B523DB5D5600A00918 /* TransactionViewModelProtocol.swift */; };
 		A49B52B823DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52B723DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift */; };
-		A49B52BA23DB61E600A00918 /* TransactionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52B923DB61E600A00918 /* TransactionViewModel.swift */; };
 		A49B52BC23DBA61200A00918 /* TransactionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52BB23DBA61100A00918 /* TransactionData.swift */; };
 		A49B52C023DCCDA800A00918 /* TransactionRequestSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52BF23DCCDA800A00918 /* TransactionRequestSection.swift */; };
 		A49B52C223DCD11D00A00918 /* TransactionSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52C123DCD11D00A00918 /* TransactionSection.swift */; };
@@ -126,7 +125,6 @@
 		A49B52B323DB5D1100A00918 /* TransactionViewModelTransactionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModelTransactionItem.swift; sourceTree = "<group>"; };
 		A49B52B523DB5D5600A00918 /* TransactionViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModelProtocol.swift; sourceTree = "<group>"; };
 		A49B52B723DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModelTransactionRequestItem.swift; sourceTree = "<group>"; };
-		A49B52B923DB61E600A00918 /* TransactionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModel.swift; sourceTree = "<group>"; };
 		A49B52BB23DBA61100A00918 /* TransactionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionData.swift; sourceTree = "<group>"; };
 		A49B52BF23DCCDA800A00918 /* TransactionRequestSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRequestSection.swift; sourceTree = "<group>"; };
 		A49B52C123DCD11D00A00918 /* TransactionSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSection.swift; sourceTree = "<group>"; };
@@ -323,7 +321,6 @@
 			children = (
 				A49B52B323DB5D1100A00918 /* TransactionViewModelTransactionItem.swift */,
 				A49B52B723DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift */,
-				A49B52B923DB61E600A00918 /* TransactionViewModel.swift */,
 				A49B52B523DB5D5600A00918 /* TransactionViewModelProtocol.swift */,
 			);
 			name = ViewModels;
@@ -577,7 +574,6 @@
 				A4704B4923C546DA00E50E4B /* TransactionListView.swift in Sources */,
 				A49B52BC23DBA61200A00918 /* TransactionData.swift in Sources */,
 				A49B52AF23DB411900A00918 /* TransactionRequest.swift in Sources */,
-				A49B52BA23DB61E600A00918 /* TransactionViewModel.swift in Sources */,
 				A49B52C223DCD11D00A00918 /* TransactionSection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

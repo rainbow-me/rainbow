@@ -43,12 +43,15 @@ extension UIView {
   
   func animateTapStart(
     duration: TimeInterval = 0.1,
-    scale: CGFloat = 0.97
+    scale: CGFloat = 0.97,
+    transformOrigin: CGPoint = .init(x: 0.5, y: 0.5)
   ) {
     let timingFunction = CAMediaTimingFunction(controlPoints: 0.25, 0.46, 0.45, 0.94)
     
     CATransaction.begin()
     CATransaction.setAnimationTimingFunction(timingFunction)
+    
+    self.setAnchorPoint(CGPoint(x: transformOrigin.x, y: transformOrigin.y))
     
     UIView.animate(withDuration: duration) {
       self.transform = CGAffineTransform(scaleX: scale, y: scale)
@@ -89,5 +92,26 @@ extension Date {
   
   func seconds(from date: Date) -> Int {
     return Calendar.current.dateComponents([.second], from: date, to: self).second ?? 0
+  }
+}
+
+extension UIView {
+  func setAnchorPoint(_ point: CGPoint) {
+    var newPoint = CGPoint(x: bounds.size.width * point.x, y: bounds.size.height * point.y)
+    var oldPoint = CGPoint(x: bounds.size.width * layer.anchorPoint.x, y: bounds.size.height * layer.anchorPoint.y);
+    
+    newPoint = newPoint.applying(transform)
+    oldPoint = oldPoint.applying(transform)
+    
+    var position = layer.position
+    
+    position.x -= oldPoint.x
+    position.x += newPoint.x
+    
+    position.y -= oldPoint.y
+    position.y += newPoint.y
+    
+    layer.position = position
+    layer.anchorPoint = point
   }
 }
