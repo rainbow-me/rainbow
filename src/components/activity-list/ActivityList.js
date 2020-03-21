@@ -10,6 +10,7 @@ import {
 } from '../../hoc';
 import RecyclerActivityList from './RecyclerActivityList';
 import TestnetEmptyState from './TestnetEmptyState';
+import { withNavigationFocus } from 'react-navigation';
 
 const ActivityList = ({ header, isEmpty, sections, network }) =>
   network === networkTypes.mainnet || sections.length ? (
@@ -38,6 +39,7 @@ export default compose(
   withAccountSettings,
   withAccountTransactions,
   withContacts,
+  withNavigationFocus,
   withProps(buildTransactionsSectionsSelector),
   mapProps(({ nativeCurrency, requests, sections, ...props }) => {
     let pendingTransactionsCount = 0;
@@ -47,7 +49,6 @@ export default compose(
     if (pendingTxSection && pendingTxSection.title === 'Pending') {
       pendingTransactionsCount = pendingTxSection.data.length;
     }
-
     return {
       ...props,
       nativeCurrency,

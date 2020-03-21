@@ -9,7 +9,6 @@ import {
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
-import { colors } from '../../styles';
 import {
   deviceUtils,
   isNewValueForPath,
@@ -21,8 +20,7 @@ import {
   RequestCoinRow,
   TransactionCoinRow,
 } from '../coin-row';
-import ActivityIndicator from '../ActivityIndicator';
-import { Centered, Column } from '../layout';
+import { Column } from '../layout';
 import ListFooter from '../list/ListFooter';
 import ActivityListHeader from './ActivityListHeader';
 
@@ -43,14 +41,6 @@ const LoadingState = ({ children }) => (
   <Column flex={1}>
     {children}
     <Column flex={1}>
-      <Centered
-        style={{ paddingTop: 200, position: 'absolute', width: '100%' }}
-      >
-        <ActivityIndicator
-          color={colors.alpha(colors.blueGreyLight, 0.666)}
-          size={32}
-        />
-      </Centered>
       {times(11, index => (
         <AssetListItemSkeleton key={`activitySkeleton${index}`} />
       ))}
