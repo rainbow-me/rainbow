@@ -43,6 +43,7 @@ const ProfileScreen = ({
         accountAddress={accountAddress}
         accountColor={accountColor}
         accountName={accountName}
+        navigation={navigation}
         header={
           <ProfileMasthead
             accountAddress={accountAddress}

@@ -3,10 +3,10 @@ import { get, groupBy, isEmpty, map, toLower } from 'lodash';
 import { createSelector } from 'reselect';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 
-const accountAddressSelector = state => state.accountAddress;
 const contactsSelector = state => state.contacts;
 const requestsSelector = state => state.requests;
 const transactionsSelector = state => state.transactions;
+const focusedSelector = state => state.isFocused;
 
 export const buildTransactionUniqueIdentifier = ({ hash, displayDetails }) =>
   hash || get(displayDetails, 'timestampInMs');
@@ -94,12 +94,24 @@ const addContactInfo = contacts => txn => {
   };
 };
 
+let wasInitialized = false;
+
+// Automatically initialize
+// After 10 seconds
+setTimeout(() => {
+  wasInitialized = true;
+}, 10000);
+
 const buildTransactionsSections = (
-  accountAddress,
   contacts,
   requests,
-  transactions
+  transactions,
+  isFocused
 ) => {
+  if (!wasInitialized && !isFocused) {
+    return { sections: [] };
+  }
+  wasInitialized = true;
   let sectionedTransactions = [];
 
   const transactionsWithContacts = map(transactions, addContactInfo(contacts));
@@ -131,11 +143,6 @@ const buildTransactionsSections = (
 };
 
 export const buildTransactionsSectionsSelector = createSelector(
-  [
-    accountAddressSelector,
-    contactsSelector,
-    requestsSelector,
-    transactionsSelector,
-  ],
+  [contactsSelector, requestsSelector, transactionsSelector, focusedSelector],
   buildTransactionsSections
 );
