@@ -20,7 +20,8 @@ const base = {
   mediumGrey: '#A1A5B3', // '161, 165, 179'
   orange: '#FF9900', // '255, 153, 0'
   orangeLight: '#FEBE44', // '254, 190, 68'
-  paleBlue: '#579DFF',
+  paleBlue: '#579DFF', // 87, 157, 255
+  pink: '#FF54BB', // 255, 84, 187
   purple: '#32325D', // '50, 50, 93'
   purpleLight: '#FFD9FE', // '255, 217, 254'
   red: '#FF494A', // '255, 73, 74'

@@ -24,7 +24,7 @@ const AddCashForm = ({
   onShake,
   shakeAnim,
 }) => {
-  const { isNarrowPhone } = useDimensions();
+  const { isNarrowPhone, isSmallPhone, isTinyPhone } = useDimensions();
   const [scaleAnim, setScaleAnim] = useState(1);
   const [currency, setCurrency] = useState(currencies[initialCurrencyIndex]);
   const [value, setValue] = useState(null);
@@ -104,9 +104,9 @@ const AddCashForm = ({
       <Centered flex={1}>
         <ColumnWithMargins
           align="center"
-          css={padding(0, 24, isNarrowPhone ? 0 : 24)}
+          css={padding(0, 24, isNarrowPhone ? 12 : 24)}
           justify="center"
-          margin={8}
+          margin={isSmallPhone ? -2 : 8}
           width="100%"
         >
           <NumpadValue scale={scaleAnim} translateX={shakeAnim} value={value} />
@@ -117,7 +117,7 @@ const AddCashForm = ({
           />
         </ColumnWithMargins>
       </Centered>
-      <ColumnWithMargins align="center" margin={15}>
+      <ColumnWithMargins align="center" margin={isTinyPhone ? 15 : 27}>
         <Centered maxWidth={313}>
           <Numpad
             onPress={handleNumpadPress}

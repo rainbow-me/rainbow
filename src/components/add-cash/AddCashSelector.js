@@ -21,7 +21,7 @@ const CurrencyItem = ({ item, isSelected }) => {
     >
       <CoinIcon size={26} symbol={item} />
       <Text
-        color={colors.alpha(colors.blueGreyDark, isSelected ? 0.8 : 0.5)}
+        color={colors.alpha(colors.blueGreyDark, isSelected ? 0.8 : 0.6)}
         letterSpacing="roundedMedium"
         size="larger"
         style={{ paddingBottom: 1.5 }}
