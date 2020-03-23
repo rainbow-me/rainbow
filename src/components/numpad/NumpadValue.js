@@ -9,9 +9,12 @@ import { Text } from '../text';
 
 const width = deviceUtils.dimensions.width;
 
+const fontSize = Math.round(width * 0.24);
+const lineHeight = Math.round(width * 0.288);
+
 const sx = StyleSheet.create({
   gradient: {
-    height: Math.round(width * 0.288),
+    height: lineHeight,
     width: '100%',
   },
   maskElement: {
@@ -44,8 +47,8 @@ const NumpadValueText = props => {
       align="center"
       color="white"
       letterSpacing="roundedTightest"
-      lineHeight={Math.round(width * 0.288)}
-      size={Math.round(width * 0.24)}
+      lineHeight={lineHeight}
+      size={fontSize}
       weight="bold"
     />
   );

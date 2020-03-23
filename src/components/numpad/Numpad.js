@@ -14,12 +14,14 @@ const defaultTransform = { transform: [{ scale: 0.5 }] };
 const KeyboardButton = ({ children, ...props }) => {
   const { isTinyPhone } = useDimensions();
   const keyHeight = isTinyPhone ? 60 : 64;
+  const yTransformOrigin = 0.5 + 8 / keyHeight;
+
   return (
     <ButtonPressAnimation
       {...props}
       duration={35}
       scaleTo={1.6}
-      transformOrigin={[0.5, 0.5 + 8 / keyHeight]}
+      transformOrigin={[0.5, yTransformOrigin]}
     >
       <Centered height={keyHeight} style={defaultTransform} width={80}>
         {children}
