@@ -1,10 +1,11 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { css } from 'styled-components/primitives';
+import { useDimensions } from '../../hooks';
 import { haptics } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
+import { FloatingEmojis } from '../floating-emojis';
 import { Centered, ColumnWithMargins } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
@@ -12,10 +13,8 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 
-const containerStyles = css`
-  padding-left: 15;
-  padding-right: 0;
-`;
+const CoinRowPaddingTop = 11;
+const CoinRowPaddingBottom = 11;
 
 const BottomRow = ({ showBalance, symbol }) =>
   showBalance ? null : <BottomRowText>{symbol}</BottomRowText>;
@@ -44,19 +43,25 @@ const ExchangeCoinRow = ({
   showFavoriteButton,
   ...props
 }) => {
+  const { width } = useDimensions();
   const [localFavorite, setLocalFavorite] = useState(!!item.favorite);
 
   return (
     <ButtonPressAnimation
       {...props}
-      height={CoinRow.height}
+      height={CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom}
       onPress={() => onPress(item)}
       scaleTo={0.96}
     >
       <CoinRow
         {...item}
         bottomRowRender={BottomRow}
-        containerStyles={containerStyles}
+        containerStyles={{
+          paddingBottom: CoinRowPaddingBottom,
+          paddingLeft: 15,
+          paddingRight: showFavoriteButton ? 38 : 0,
+          paddingTop: CoinRowPaddingTop,
+        }}
         showBalance={showBalance}
         topRowRender={TopRow}
       >
@@ -69,15 +74,40 @@ const ExchangeCoinRow = ({
           </ColumnWithMargins>
         )}
         {showFavoriteButton && (
-          <CoinRowFavoriteButton
-            isFavorited={localFavorite}
-            onPress={() => {
-              const newLocalFavorite = !localFavorite;
-              setLocalFavorite(newLocalFavorite);
-              onFavoriteAsset(item.address, newLocalFavorite);
-              haptics.selection();
-            }}
-          />
+          <FloatingEmojis
+            centerVertically
+            emoji="star2"
+            disableHorizontalMovement
+            disableVerticalMovement
+            distance={70}
+            duration={400}
+            fadeOut={false}
+            left={width - 46}
+            marginTop={11}
+            position="absolute"
+            range={[0, 0]}
+            right={0}
+            scaleTo={0}
+            size={32}
+            top={0}
+            wiggleFactor={0}
+            zIndex={100}
+          >
+            {({ onNewEmoji }) => (
+              <CoinRowFavoriteButton
+                isFavorited={localFavorite}
+                onPress={() => {
+                  const newLocalFavorite = !localFavorite;
+                  if (newLocalFavorite) {
+                    onNewEmoji();
+                    haptics.notificationSuccess();
+                  }
+                  setLocalFavorite(newLocalFavorite);
+                  onFavoriteAsset(item.address, newLocalFavorite);
+                }}
+              />
+            )}
+          </FloatingEmojis>
         )}
       </CoinRow>
     </ButtonPressAnimation>
