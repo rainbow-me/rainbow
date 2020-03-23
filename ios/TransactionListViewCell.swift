@@ -49,6 +49,18 @@ class TransactionListViewCell: TransactionListBaseCell {
         coinImage.layer.cornerRadius = coinImage.frame.width * 0.5
       }
     }
+    
+    // Savings override
+    if(transaction.type.lowercased() == "deposit" || transaction.type.lowercased() == "withdraw"){
+      
+      if(transaction.status.lowercased() == "deposited" || transaction.status.lowercased() == "withdrew"){
+        transactionIcon.image = UIImage.init(named: "sunflower")
+        transactionType.text = "Savings";
+        coinName.text = transaction.status.capitalized + " " + transaction.coinName;
+      } else if(transaction.status.lowercased() == "failed"){
+        coinName.text = (transaction.type.lowercased() == "withdraw" ? "Withdrew" : "Deposited") + " " + transaction.coinName;
+      }
+    }
   }
   
   private func setStatusColor(_ transaction: Transaction) {
