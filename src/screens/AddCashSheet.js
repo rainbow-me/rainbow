@@ -23,10 +23,12 @@ import { deviceUtils } from '../utils';
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);
 const sheetHeight =
-  deviceHeight - statusBarHeight - (isNativeStackAvailable ? 10 : 0);
+  deviceHeight -
+  statusBarHeight -
+  (isNativeStackAvailable ? (deviceHeight >= 812 ? 10 : 20) : 0);
 
 const SheetContainer = styled(Column)`
-  ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 30)};
+  ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
   background-color: ${colors.white};
   height: ${isNativeStackAvailable ? deviceHeight : sheetHeight};
   top: ${isNativeStackAvailable ? 0 : statusBarHeight};
@@ -79,9 +81,12 @@ const AddCashSheet = () => {
         justify="end"
         paddingBottom={isNarrowPhone ? 15 : insets.bottom + 21}
       >
-        <Column align="center" paddingVertical={isNativeStackAvailable ? 6 : 8}>
+        <Column align="center" paddingVertical={6}>
           <SheetHandle />
-          <ColumnWithMargins margin={4} paddingTop={7}>
+          <ColumnWithMargins
+            margin={4}
+            paddingTop={isNativeStackAvailable ? 7 : 5}
+          >
             <SheetTitle>Add Cash</SheetTitle>
             {!isPaymentComplete && (
               <SheetSubtitleCycler

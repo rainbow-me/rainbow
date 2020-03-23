@@ -23,7 +23,6 @@ font.lineHeight = {
   paragraphSmall: 25,
   looser: 26,
   loosest: 28,
-  giant: 108,
 };
 
 font.size = {
@@ -41,7 +40,6 @@ font.size = {
   big: '23px',
   bigger: '26px',
   biggest: '27px',
-  giant: '90px',
   h1: '42px',
   h2: '32px',
   h3: '30px',

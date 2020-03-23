@@ -42,7 +42,7 @@ const ApplePayButtonShadowElement = ({ opacity, type }) => (
 
 const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
   const disabledAnimation = useTimingTransition(!disabled, {
-    duration: 100,
+    duration: 66,
     ease: Easing.out(Easing.ease),
   });
 
@@ -93,7 +93,12 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
           zIndex={1}
         >
           <Centered {...position.sizeAsObject('100%')}>
-            <Icon color={colors.white} flex={1} name="applePay" />
+            <Icon
+              color={colors.white}
+              flex={1}
+              name="applePay"
+              marginBottom={2}
+            />
           </Centered>
           <InnerBorder radius={ApplePayButtonBorderRadius} />
         </AnimatedCenter>

@@ -40,20 +40,18 @@ extension UIView {
   static func fromNib<T: UIView>() -> T {
     return Bundle(for: T.self).loadNibNamed(String(describing: T.self), owner: nil, options: nil)![0] as! T
   }
-
+  
   func animateTapStart(
     duration: TimeInterval = 0.1,
     scale: CGFloat = 0.97,
-    useHaptic: String? = nil
+    transformOrigin: CGPoint = .init(x: 0.5, y: 0.5)
   ) {
-    if useHaptic != nil {
-      generateHapticFeedback(useHaptic!)
-    }
-    
     let timingFunction = CAMediaTimingFunction(controlPoints: 0.25, 0.46, 0.45, 0.94)
     
     CATransaction.begin()
     CATransaction.setAnimationTimingFunction(timingFunction)
+    
+    self.setAnchorPoint(CGPoint(x: transformOrigin.x, y: transformOrigin.y))
     
     UIView.animate(withDuration: duration) {
       self.transform = CGAffineTransform(scaleX: scale, y: scale)
@@ -62,7 +60,10 @@ extension UIView {
     CATransaction.commit()
   }
   
-  func animateTapEnd(duration: TimeInterval = 0.1) {
+  func animateTapEnd(duration: TimeInterval = 0.1, useHaptic: String? = nil) {
+    if useHaptic != nil {
+      generateHapticFeedback(useHaptic!)
+    }
     let timingFunction = CAMediaTimingFunction(controlPoints: 0.25, 0.46, 0.45, 0.94)
     
     CATransaction.begin()
@@ -91,5 +92,26 @@ extension Date {
   
   func seconds(from date: Date) -> Int {
     return Calendar.current.dateComponents([.second], from: date, to: self).second ?? 0
+  }
+}
+
+extension UIView {
+  func setAnchorPoint(_ point: CGPoint) {
+    var newPoint = CGPoint(x: bounds.size.width * point.x, y: bounds.size.height * point.y)
+    var oldPoint = CGPoint(x: bounds.size.width * layer.anchorPoint.x, y: bounds.size.height * layer.anchorPoint.y);
+    
+    newPoint = newPoint.applying(transform)
+    oldPoint = oldPoint.applying(transform)
+    
+    var position = layer.position
+    
+    position.x -= oldPoint.x
+    position.x += newPoint.x
+    
+    position.y -= oldPoint.y
+    position.y += newPoint.y
+    
+    layer.position = position
+    layer.anchorPoint = point
   }
 }

@@ -7,27 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		041ED9A91C634D62B70DD2A0 /* SF-Pro-Rounded-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = B809485D25CC4982B166E287 /* SF-Pro-Rounded-Black.otf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 24979E7720F84004007EB0DA /* GoogleService-Info.plist */; };
 		3CBE29CD2381E43900BE05AC /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBE29CC2381E43900BE05AC /* Dummy.swift */; };
-		45537F942F2B45A2AE0F6E97 /* SF-Pro-Rounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = C71A958627CB4BF6B7085E7B /* SF-Pro-Rounded-Medium.otf */; };
-		5D1949044DCB413FBE7AE82E /* SFMono-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2C4A4A4FB3D84F14A48989D8 /* SFMono-Light.otf */; };
-		5F1FC886FDBF4E50875905D8 /* SF-Pro-Rounded-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6B6183D1BB01462A8EC6971D /* SF-Pro-Rounded-Heavy.otf */; };
-		5F34DEED060F41878C4C5A59 /* SFMono-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0A8698C728414E56A3FD89A6 /* SFMono-Heavy.otf */; };
 		66FEC91623EDA14000A0F367 /* RoundedCornerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FEC91523EDA13F00A0F367 /* RoundedCornerView.swift */; };
 		7287CE1EC33B4913AEE1F4B6 /* SFMono-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */; };
-		788C192F52404F80BC99C83E /* SF-Pro-Rounded-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = CC103294F38D49DEBB00C234 /* SF-Pro-Rounded-Light.otf */; };
-		7DE5483C7F3043379686F961 /* SF-Pro-Rounded-Ultralight.otf in Resources */ = {isa = PBXBuildFile; fileRef = E10B4784EF2A4C569A43746A /* SF-Pro-Rounded-Ultralight.otf */; };
-		830AB06937A24F36A5A233E4 /* SF-Pro-Rounded-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 12778C645D644BCC8744A30F /* SF-Pro-Rounded-Bold.otf */; };
-		888BD587381C4F859E34255C /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6F593D06488648D6B4082A13 /* SF-Pro-Rounded-Regular.otf */; };
-		8FB4C0E7FE3240F2B2D23CE2 /* SFMono-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8789D635428240B5ABF282EE /* SFMono-Bold.otf */; };
 		90FC6B24164C6F1720EEB0BF /* libPods-Rainbow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13E5CE549E13349A65C71B53 /* libPods-Rainbow.a */; };
-		92D7BFC8AFDA4E649EA6FF08 /* SFMono-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B1089F835D6A4F578009B47F /* SFMono-Semibold.otf */; };
-		9DF9D782A0E8467FAA079A68 /* SF-Pro-Rounded-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = C2BA36ED122C4932A09957E5 /* SF-Pro-Rounded-Semibold.otf */; };
 		A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277D9E23CBD1910042BAF4 /* Extensions.swift */; };
 		A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277DA223CFE85F0042BAF4 /* Theme.swift */; };
 		A44A4EEE23EC928900B543F1 /* CoinIconWithProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44A4EED23EC928900B543F1 /* CoinIconWithProgressBar.swift */; };
@@ -42,7 +30,6 @@
 		A49B52B423DB5D1100A00918 /* TransactionViewModelTransactionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52B323DB5D1100A00918 /* TransactionViewModelTransactionItem.swift */; };
 		A49B52B623DB5D5600A00918 /* TransactionViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52B523DB5D5600A00918 /* TransactionViewModelProtocol.swift */; };
 		A49B52B823DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52B723DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift */; };
-		A49B52BA23DB61E600A00918 /* TransactionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52B923DB61E600A00918 /* TransactionViewModel.swift */; };
 		A49B52BC23DBA61200A00918 /* TransactionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52BB23DBA61100A00918 /* TransactionData.swift */; };
 		A49B52C023DCCDA800A00918 /* TransactionRequestSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52BF23DCCDA800A00918 /* TransactionRequestSection.swift */; };
 		A49B52C223DCD11D00A00918 /* TransactionSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52C123DCD11D00A00918 /* TransactionSection.swift */; };
@@ -51,20 +38,22 @@
 		A4D04BA923D12F99008C1DEC /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BA823D12F99008C1DEC /* Button.swift */; };
 		A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */; };
 		A4F8DACB23DF85DF00560E47 /* TransactionListBaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F8DACA23DF85DF00560E47 /* TransactionListBaseCell.swift */; };
+		AA6228EF24272F510078BDAA /* SF-Pro-Rounded-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EB24272B200078BDAA /* SF-Pro-Rounded-Bold.otf */; };
+		AA6228F024272F510078BDAA /* SF-Pro-Rounded-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EC24272B200078BDAA /* SF-Pro-Rounded-Heavy.otf */; };
+		AA6228F124272F510078BDAA /* SF-Pro-Rounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228ED24272B200078BDAA /* SF-Pro-Rounded-Medium.otf */; };
+		AA6228F224272F510078BDAA /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EE24272B200078BDAA /* SF-Pro-Rounded-Regular.otf */; };
+		AA6228F324272F510078BDAA /* SF-Pro-Rounded-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EA24272B200078BDAA /* SF-Pro-Rounded-Semibold.otf */; };
 		ADBDB9381DFEBF1600ED6528 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		B7A3E82A4C4449F4A18EB5C2 /* SFMono-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 95F2888C850F40C8A26E083B /* SFMono-Regular.otf */; };
 		C72F456C99A646399192517D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AED33BAB4247CEBEF8464D /* libz.tbd */; };
 		ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2971642150620600B7C4FE /* JavaScriptCore.framework */; };
-		EEDAF090F37B4DD9905C3AA1 /* SF-Pro-Rounded-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2508987EAA5746B799931646 /* SF-Pro-Rounded-Thin.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* RainbowTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RainbowTests.m; sourceTree = "<group>"; };
-		0A8698C728414E56A3FD89A6 /* SFMono-Heavy.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Heavy.otf"; path = "../src/assets/fonts/SFMono-Heavy.otf"; sourceTree = "<group>"; };
 		11CCA3399B351ABE3E5296FE /* Pods-Rainbow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.release.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.release.xcconfig"; sourceTree = "<group>"; };
-		12778C645D644BCC8744A30F /* SF-Pro-Rounded-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Bold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Bold.otf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Rainbow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rainbow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Rainbow/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = Rainbow/AppDelegate.m; sourceTree = "<group>"; };
@@ -75,10 +64,6 @@
 		13E5CE549E13349A65C71B53 /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		157155032418733F009B698B /* RainbowRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowRelease.entitlements; path = Rainbow/RainbowRelease.entitlements; sourceTree = "<group>"; };
 		157155042418734C009B698B /* RainbowDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowDebug.entitlements; path = Rainbow/RainbowDebug.entitlements; sourceTree = "<group>"; };
-		1736F851327A41C3815212E7 /* SF-Pro-Text-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-BoldItalic.otf"; path = "../src/assets/fonts/SF-Pro-Text-BoldItalic.otf"; sourceTree = "<group>"; };
-		182DC054E3584C83822F2A82 /* Graphik-RegularItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-RegularItalic.otf"; path = "../src/assets/fonts/Graphik-RegularItalic.otf"; sourceTree = "<group>"; };
-		1DEDF110038147A598C9B152 /* SF-Pro-Text-HeavyItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-HeavyItalic.otf"; path = "../src/assets/fonts/SF-Pro-Text-HeavyItalic.otf"; sourceTree = "<group>"; };
-		233322FCDC624F6FA60C4B52 /* SF-Pro-Text-Heavy.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-Heavy.otf"; path = "../src/assets/fonts/SF-Pro-Text-Heavy.otf"; sourceTree = "<group>"; };
 		24979E3620F84003007EB0DA /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Protobuf.framework; path = Frameworks/Protobuf.framework; sourceTree = "<group>"; };
 		24979E7420F84004007EB0DA /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };
 		24979E7520F84004007EB0DA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCore.framework; path = Frameworks/FirebaseCore.framework; sourceTree = "<group>"; };
@@ -91,34 +76,14 @@
 		24979E7C20F84004007EB0DA /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCoreDiagnostics.framework; path = Frameworks/FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };
 		24979E7D20F84005007EB0DA /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = module.modulemap; path = Frameworks/module.modulemap; sourceTree = "<group>"; };
 		24979E7E20F84005007EB0DA /* nanopb.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nanopb.framework; path = Frameworks/nanopb.framework; sourceTree = "<group>"; };
-		2508987EAA5746B799931646 /* SF-Pro-Rounded-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Thin.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Thin.otf"; sourceTree = "<group>"; };
 		2837FCCEA7D33A4F128B7574 /* Pods-Rainbow.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.localrelease.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.localrelease.xcconfig"; sourceTree = "<group>"; };
-		2C4A4A4FB3D84F14A48989D8 /* SFMono-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Light.otf"; path = "../src/assets/fonts/SFMono-Light.otf"; sourceTree = "<group>"; };
-		2DA6F347A6B540399883FF91 /* Graphik-MediumItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-MediumItalic.otf"; path = "../src/assets/fonts/Graphik-MediumItalic.otf"; sourceTree = "<group>"; };
-		3459F05BF10649C4A787D900 /* SF-Pro-Display-MediumItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-MediumItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-MediumItalic.otf"; sourceTree = "<group>"; };
-		35833023DB594F1AA6A72866 /* SF-Pro-Display-Ultralight.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Ultralight.otf"; path = "../src/assets/fonts/SF-Pro-Display-Ultralight.otf"; sourceTree = "<group>"; };
-		35A24AFF4AB449C287EE66A8 /* SF-Pro-Text-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-Medium.otf"; path = "../src/assets/fonts/SF-Pro-Text-Medium.otf"; sourceTree = "<group>"; };
 		3C379D5D20FD1F92009AF81F /* Rainbow.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Rainbow.entitlements; path = Rainbow/Rainbow.entitlements; sourceTree = "<group>"; };
 		3CBE29CB2381E43800BE05AC /* Rainbow-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Rainbow-Bridging-Header.h"; sourceTree = "<group>"; };
 		3CBE29CC2381E43900BE05AC /* Dummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dummy.swift; sourceTree = "<group>"; };
-		3EA8003C5E2D46E38184714B /* Graphik-ThinItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-ThinItalic.otf"; path = "../src/assets/fonts/Graphik-ThinItalic.otf"; sourceTree = "<group>"; };
 		466CDCBFE61F83D2AE1C7410 /* Pods-Rainbow.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.debug.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.debug.xcconfig"; sourceTree = "<group>"; };
-		51E41940863B4B88BDEF48D7 /* Graphik-SuperItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-SuperItalic.otf"; path = "../src/assets/fonts/Graphik-SuperItalic.otf"; sourceTree = "<group>"; };
-		5842861A013B4B379705CC5A /* SF-Pro-Display-Semibold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Semibold.otf"; path = "../src/assets/fonts/SF-Pro-Display-Semibold.otf"; sourceTree = "<group>"; };
-		662C7FD632C1481AB5AB1DB7 /* SF-Pro-Display-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Thin.otf"; path = "../src/assets/fonts/SF-Pro-Display-Thin.otf"; sourceTree = "<group>"; };
 		668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Medium.otf"; path = "../src/assets/fonts/SFMono-Medium.otf"; sourceTree = "<group>"; };
 		66FEC91523EDA13F00A0F367 /* RoundedCornerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedCornerView.swift; sourceTree = "<group>"; };
-		6B6183D1BB01462A8EC6971D /* SF-Pro-Rounded-Heavy.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Heavy.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Heavy.otf"; sourceTree = "<group>"; };
-		6F593D06488648D6B4082A13 /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Regular.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; };
-		715DAAA3174542BAB93807A6 /* SF-Pro-Text-RegularItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-RegularItalic.otf"; path = "../src/assets/fonts/SF-Pro-Text-RegularItalic.otf"; sourceTree = "<group>"; };
-		7818F79CD3944D17AF4196A5 /* Graphik-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Black.otf"; path = "../src/assets/fonts/Graphik-Black.otf"; sourceTree = "<group>"; };
 		794D8432FD61C2EC61786302 /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		7A9AF25703474604964D6EC1 /* Graphik-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Light.otf"; path = "../src/assets/fonts/Graphik-Light.otf"; sourceTree = "<group>"; };
-		7CD46377E5FC4E5EBFD57D71 /* Graphik-Super.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Super.otf"; path = "../src/assets/fonts/Graphik-Super.otf"; sourceTree = "<group>"; };
-		7CEEDA7A68C24426BBAA8D77 /* Graphik-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-BoldItalic.otf"; path = "../src/assets/fonts/Graphik-BoldItalic.otf"; sourceTree = "<group>"; };
-		84DB92DCDF5D4374B26FFCC6 /* SF-Pro-Display-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-BoldItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-BoldItalic.otf"; sourceTree = "<group>"; };
-		86B30DBBDA594167BFE4747E /* SF-Pro-Display-SemiboldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-SemiboldItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-SemiboldItalic.otf"; sourceTree = "<group>"; };
-		8789D635428240B5ABF282EE /* SFMono-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Bold.otf"; path = "../src/assets/fonts/SFMono-Bold.otf"; sourceTree = "<group>"; };
 		95F2888C850F40C8A26E083B /* SFMono-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Regular.otf"; path = "../src/assets/fonts/SFMono-Regular.otf"; sourceTree = "<group>"; };
 		98AED33BAB4247CEBEF8464D /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		9DEADFA4826D4D0BAA950D21 /* libRNFIRMessaging.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFIRMessaging.a; sourceTree = "<group>"; };
@@ -137,7 +102,6 @@
 		A49B52B323DB5D1100A00918 /* TransactionViewModelTransactionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModelTransactionItem.swift; sourceTree = "<group>"; };
 		A49B52B523DB5D5600A00918 /* TransactionViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModelProtocol.swift; sourceTree = "<group>"; };
 		A49B52B723DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModelTransactionRequestItem.swift; sourceTree = "<group>"; };
-		A49B52B923DB61E600A00918 /* TransactionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModel.swift; sourceTree = "<group>"; };
 		A49B52BB23DBA61100A00918 /* TransactionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionData.swift; sourceTree = "<group>"; };
 		A49B52BF23DCCDA800A00918 /* TransactionRequestSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRequestSection.swift; sourceTree = "<group>"; };
 		A49B52C123DCD11D00A00918 /* TransactionSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSection.swift; sourceTree = "<group>"; };
@@ -147,20 +111,13 @@
 		A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ButtonManager.m; sourceTree = "<group>"; };
 		A4F8DACA23DF85DF00560E47 /* TransactionListBaseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListBaseCell.swift; sourceTree = "<group>"; };
 		A8846B6B5BC96732D5A4A107 /* Pods-Rainbow.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.staging.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.staging.xcconfig"; sourceTree = "<group>"; };
-		A8AE8DE50B9544B6BC186E6C /* SF-Pro-Display-BlackItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-BlackItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-BlackItalic.otf"; sourceTree = "<group>"; };
-		AA6B0A8BE2484F46980BE9AC /* SF-Pro-Text-Semibold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-Semibold.otf"; path = "../src/assets/fonts/SF-Pro-Text-Semibold.otf"; sourceTree = "<group>"; };
-		AA8FE0DD2380A33F00AFAFB6 /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Regular.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; };
-		AA8FE0DE2380A33F00AFAFB6 /* SF-Pro-Rounded-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Medium.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Medium.otf"; sourceTree = "<group>"; };
-		AA8FE0DF2380A33F00AFAFB6 /* SF-Pro-Rounded-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Semibold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Semibold.otf"; sourceTree = "<group>"; };
-		AA8FE0E02380A33F00AFAFB6 /* SF-Pro-Rounded-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Bold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Bold.otf"; sourceTree = "<group>"; };
+		AA6228EA24272B200078BDAA /* SF-Pro-Rounded-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Semibold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Semibold.otf"; sourceTree = "<group>"; };
+		AA6228EB24272B200078BDAA /* SF-Pro-Rounded-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Bold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Bold.otf"; sourceTree = "<group>"; };
+		AA6228EC24272B200078BDAA /* SF-Pro-Rounded-Heavy.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Heavy.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Heavy.otf"; sourceTree = "<group>"; };
+		AA6228ED24272B200078BDAA /* SF-Pro-Rounded-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Medium.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Medium.otf"; sourceTree = "<group>"; };
+		AA6228EE24272B200078BDAA /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Regular.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; };
 		B0C692B061D7430D8194DC98 /* ToolTipMenuTests.xctest */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ToolTipMenuTests.xctest; sourceTree = "<group>"; };
-		B1089F835D6A4F578009B47F /* SFMono-Semibold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Semibold.otf"; path = "../src/assets/fonts/SFMono-Semibold.otf"; sourceTree = "<group>"; };
-		B809485D25CC4982B166E287 /* SF-Pro-Rounded-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Black.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Black.otf"; sourceTree = "<group>"; };
-		C2BA36ED122C4932A09957E5 /* SF-Pro-Rounded-Semibold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Semibold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Semibold.otf"; sourceTree = "<group>"; };
-		C71A958627CB4BF6B7085E7B /* SF-Pro-Rounded-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Medium.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Medium.otf"; sourceTree = "<group>"; };
-		CC103294F38D49DEBB00C234 /* SF-Pro-Rounded-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Light.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Light.otf"; sourceTree = "<group>"; };
 		D755E71324B04FEE9C691D14 /* libRNFirebase.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFirebase.a; sourceTree = "<group>"; };
-		E10B4784EF2A4C569A43746A /* SF-Pro-Rounded-Ultralight.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Ultralight.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Ultralight.otf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
@@ -332,7 +289,6 @@
 			children = (
 				A49B52B323DB5D1100A00918 /* TransactionViewModelTransactionItem.swift */,
 				A49B52B723DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift */,
-				A49B52B923DB61E600A00918 /* TransactionViewModel.swift */,
 				A49B52B523DB5D5600A00918 /* TransactionViewModelProtocol.swift */,
 			);
 			name = ViewModels;
@@ -361,46 +317,13 @@
 		DCAC1D8CC45E468FBB7E1395 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				7818F79CD3944D17AF4196A5 /* Graphik-Black.otf */,
-				7CEEDA7A68C24426BBAA8D77 /* Graphik-BoldItalic.otf */,
-				7A9AF25703474604964D6EC1 /* Graphik-Light.otf */,
-				2DA6F347A6B540399883FF91 /* Graphik-MediumItalic.otf */,
-				182DC054E3584C83822F2A82 /* Graphik-RegularItalic.otf */,
-				7CD46377E5FC4E5EBFD57D71 /* Graphik-Super.otf */,
-				51E41940863B4B88BDEF48D7 /* Graphik-SuperItalic.otf */,
-				3EA8003C5E2D46E38184714B /* Graphik-ThinItalic.otf */,
-				A8AE8DE50B9544B6BC186E6C /* SF-Pro-Display-BlackItalic.otf */,
-				84DB92DCDF5D4374B26FFCC6 /* SF-Pro-Display-BoldItalic.otf */,
-				3459F05BF10649C4A787D900 /* SF-Pro-Display-MediumItalic.otf */,
-				5842861A013B4B379705CC5A /* SF-Pro-Display-Semibold.otf */,
-				86B30DBBDA594167BFE4747E /* SF-Pro-Display-SemiboldItalic.otf */,
-				662C7FD632C1481AB5AB1DB7 /* SF-Pro-Display-Thin.otf */,
-				35833023DB594F1AA6A72866 /* SF-Pro-Display-Ultralight.otf */,
-				AA8FE0E02380A33F00AFAFB6 /* SF-Pro-Rounded-Bold.otf */,
-				AA8FE0DE2380A33F00AFAFB6 /* SF-Pro-Rounded-Medium.otf */,
-				AA8FE0DD2380A33F00AFAFB6 /* SF-Pro-Rounded-Regular.otf */,
-				AA8FE0DF2380A33F00AFAFB6 /* SF-Pro-Rounded-Semibold.otf */,
-				1736F851327A41C3815212E7 /* SF-Pro-Text-BoldItalic.otf */,
-				233322FCDC624F6FA60C4B52 /* SF-Pro-Text-Heavy.otf */,
-				1DEDF110038147A598C9B152 /* SF-Pro-Text-HeavyItalic.otf */,
-				35A24AFF4AB449C287EE66A8 /* SF-Pro-Text-Medium.otf */,
-				715DAAA3174542BAB93807A6 /* SF-Pro-Text-RegularItalic.otf */,
-				AA6B0A8BE2484F46980BE9AC /* SF-Pro-Text-Semibold.otf */,
-				8789D635428240B5ABF282EE /* SFMono-Bold.otf */,
-				0A8698C728414E56A3FD89A6 /* SFMono-Heavy.otf */,
-				2C4A4A4FB3D84F14A48989D8 /* SFMono-Light.otf */,
 				668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */,
 				95F2888C850F40C8A26E083B /* SFMono-Regular.otf */,
-				B1089F835D6A4F578009B47F /* SFMono-Semibold.otf */,
-				B809485D25CC4982B166E287 /* SF-Pro-Rounded-Black.otf */,
-				12778C645D644BCC8744A30F /* SF-Pro-Rounded-Bold.otf */,
-				6B6183D1BB01462A8EC6971D /* SF-Pro-Rounded-Heavy.otf */,
-				CC103294F38D49DEBB00C234 /* SF-Pro-Rounded-Light.otf */,
-				C71A958627CB4BF6B7085E7B /* SF-Pro-Rounded-Medium.otf */,
-				6F593D06488648D6B4082A13 /* SF-Pro-Rounded-Regular.otf */,
-				C2BA36ED122C4932A09957E5 /* SF-Pro-Rounded-Semibold.otf */,
-				2508987EAA5746B799931646 /* SF-Pro-Rounded-Thin.otf */,
-				E10B4784EF2A4C569A43746A /* SF-Pro-Rounded-Ultralight.otf */,
+				AA6228EB24272B200078BDAA /* SF-Pro-Rounded-Bold.otf */,
+				AA6228EC24272B200078BDAA /* SF-Pro-Rounded-Heavy.otf */,
+				AA6228ED24272B200078BDAA /* SF-Pro-Rounded-Medium.otf */,
+				AA6228EE24272B200078BDAA /* SF-Pro-Rounded-Regular.otf */,
+				AA6228EA24272B200078BDAA /* SF-Pro-Rounded-Semibold.otf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -488,21 +411,13 @@
 				A4AF3CCE23DA37F700F230F3 /* TransactionListRequestViewCell.xib in Resources */,
 				A485E61623C8F4A400E5C3D4 /* TransactionListViewHeader.xib in Resources */,
 				A4704B4D23C546DA00E50E4B /* TransactionListViewCell.xib in Resources */,
-				8FB4C0E7FE3240F2B2D23CE2 /* SFMono-Bold.otf in Resources */,
-				5F34DEED060F41878C4C5A59 /* SFMono-Heavy.otf in Resources */,
-				5D1949044DCB413FBE7AE82E /* SFMono-Light.otf in Resources */,
 				7287CE1EC33B4913AEE1F4B6 /* SFMono-Medium.otf in Resources */,
 				B7A3E82A4C4449F4A18EB5C2 /* SFMono-Regular.otf in Resources */,
-				92D7BFC8AFDA4E649EA6FF08 /* SFMono-Semibold.otf in Resources */,
-				041ED9A91C634D62B70DD2A0 /* SF-Pro-Rounded-Black.otf in Resources */,
-				830AB06937A24F36A5A233E4 /* SF-Pro-Rounded-Bold.otf in Resources */,
-				5F1FC886FDBF4E50875905D8 /* SF-Pro-Rounded-Heavy.otf in Resources */,
-				788C192F52404F80BC99C83E /* SF-Pro-Rounded-Light.otf in Resources */,
-				45537F942F2B45A2AE0F6E97 /* SF-Pro-Rounded-Medium.otf in Resources */,
-				888BD587381C4F859E34255C /* SF-Pro-Rounded-Regular.otf in Resources */,
-				9DF9D782A0E8467FAA079A68 /* SF-Pro-Rounded-Semibold.otf in Resources */,
-				EEDAF090F37B4DD9905C3AA1 /* SF-Pro-Rounded-Thin.otf in Resources */,
-				7DE5483C7F3043379686F961 /* SF-Pro-Rounded-Ultralight.otf in Resources */,
+				AA6228EF24272F510078BDAA /* SF-Pro-Rounded-Bold.otf in Resources */,
+				AA6228F024272F510078BDAA /* SF-Pro-Rounded-Heavy.otf in Resources */,
+				AA6228F124272F510078BDAA /* SF-Pro-Rounded-Medium.otf in Resources */,
+				AA6228F224272F510078BDAA /* SF-Pro-Rounded-Regular.otf in Resources */,
+				AA6228F324272F510078BDAA /* SF-Pro-Rounded-Semibold.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -610,7 +525,6 @@
 				A4704B4923C546DA00E50E4B /* TransactionListView.swift in Sources */,
 				A49B52BC23DBA61200A00918 /* TransactionData.swift in Sources */,
 				A49B52AF23DB411900A00918 /* TransactionRequest.swift in Sources */,
-				A49B52BA23DB61E600A00918 /* TransactionViewModel.swift in Sources */,
 				A49B52C223DCD11D00A00918 /* TransactionSection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

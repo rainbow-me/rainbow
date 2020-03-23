@@ -4,12 +4,17 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
-import { useDimensions } from '../../hooks';
+import { deviceUtils } from '../../utils';
 import { Text } from '../text';
+
+const width = deviceUtils.dimensions.width;
+
+const fontSize = Math.round(width * 0.24);
+const lineHeight = Math.round(width * 0.288);
 
 const sx = StyleSheet.create({
   gradient: {
-    height: 108,
+    height: lineHeight,
     width: '100%',
   },
   maskElement: {
@@ -21,8 +26,6 @@ const sx = StyleSheet.create({
 const gradientColors = ['#FFB114', '#FF54BB', '#00F0FF', '#34F3FF'];
 const gradientStops = [0.2049, 0.6354, 0.8318, 0.9541];
 const NumpadValueGradient = () => {
-  const { width } = useDimensions();
-
   const gradientXPoint = width - 48;
   const gradientPoints = [gradientXPoint, 53.5];
 
@@ -38,14 +41,14 @@ const NumpadValueGradient = () => {
 };
 
 const NumpadValueText = props => {
-  const { width } = useDimensions();
   return (
     <Text
       {...props}
       align="center"
       color="white"
-      lineHeight={108}
-      size={width * 0.24}
+      letterSpacing="roundedTightest"
+      lineHeight={lineHeight}
+      size={fontSize}
       weight="bold"
     />
   );

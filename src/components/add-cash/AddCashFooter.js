@@ -7,13 +7,12 @@ import { Emoji, Text } from '../text';
 import ApplePayButton from './ApplePayButton';
 
 const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
-  const { isNarrowPhone } = useDimensions();
+  const { isTinyPhone } = useDimensions();
   return (
     <ColumnWithMargins
       align="center"
       margin={19}
       paddingHorizontal={15}
-      paddingTop={isNarrowPhone ? 4 : 24}
       width="100%"
       {...props}
     >
@@ -24,19 +23,21 @@ const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
           onSubmit={onSubmit}
         />
       </Row>
-      <RowWithMargins align="center" margin={4}>
-        <Centered marginTop={1}>
-          <Emoji name="us" size="medium" />
-        </Centered>
-        <Text
-          color={colors.alpha(colors.blueGreyDark, 0.6)}
-          lineHeight="normal"
-          size="lmedium"
-          weight="semibold"
-        >
-          Supports most US debit cards
-        </Text>
-      </RowWithMargins>
+      {!isTinyPhone && (
+        <RowWithMargins align="center" margin={4}>
+          <Centered marginTop={1}>
+            <Emoji name="us" size="medium" />
+          </Centered>
+          <Text
+            color={colors.alpha(colors.blueGreyDark, 0.6)}
+            lineHeight="normal"
+            size="lmedium"
+            weight="semibold"
+          >
+            Supports most US debit cards
+          </Text>
+        </RowWithMargins>
+      )}
     </ColumnWithMargins>
   );
 };

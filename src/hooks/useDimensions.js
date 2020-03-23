@@ -5,6 +5,10 @@ const deviceDimensions = {
     height: 667,
     width: 375,
   },
+  iphoneSE: {
+    height: 568,
+    width: 320,
+  },
   iphoneX: {
     height: 812,
     width: 375,
@@ -19,6 +23,7 @@ export default function useDimensions() {
     isNarrowPhone: width < deviceDimensions.iphoneX.width,
     isSmallPhone: height <= deviceDimensions.iphone6.height,
     isTallPhone: height >= deviceDimensions.iphoneX.height,
+    isTinyPhone: height <= deviceDimensions.iphoneSE.height,
     width,
   };
 }
