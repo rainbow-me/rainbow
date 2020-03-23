@@ -1,7 +1,7 @@
 import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { View } from 'react-native';
+import { LayoutAnimation, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Animated from 'react-native-reanimated';
 import Caret from '../../assets/family-dropdown-arrow.png';
@@ -142,6 +142,9 @@ class CoinDivider extends PureComponent {
                 onPress={async () => {
                   await onPin();
                   reloadData();
+                  LayoutAnimation.configureNext(
+                    LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+                  );
                 }}
               >
                 <View
@@ -186,6 +189,9 @@ class CoinDivider extends PureComponent {
                 onPress={async () => {
                   await onHide();
                   reloadData();
+                  LayoutAnimation.configureNext(
+                    LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+                  );
                 }}
               >
                 <View

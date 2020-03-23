@@ -71,15 +71,7 @@ class LayoutItemAnimator extends BaseItemAnimator {
     });
   animateWillMount = NOOP;
   animateWillUnmount = NOOP;
-  animateWillUpdate = () =>
-    LayoutAnimation.configureNext({
-      duration: 200,
-      update: {
-        initialVelocity: 0,
-        springDamping: 1,
-        type: LayoutAnimation.Types.spring,
-      },
-    });
+  animateWillUpdate = () => NOOP;
 }
 
 const layoutItemAnimator = new LayoutItemAnimator();
