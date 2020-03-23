@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { compose, onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
+import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { withAccountData, withAccountSettings, withContacts } from '../../hoc';
 import { colors, margin, padding } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
@@ -18,7 +19,6 @@ import TouchableBackdrop from '../TouchableBackdrop';
 import { AssetPanel } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
 import PlaceholderText from '../text/PlaceholderText';
-import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 
 const nativeStackAdditionalPadding = 80;
 
