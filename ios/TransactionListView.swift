@@ -24,6 +24,7 @@ class TransactionListView: UIView, UITableViewDelegate {
   @objc var scaleTo: CGFloat = 0.97
   @objc var enableHapticFeedback: Bool = true
   @objc var hapticType: String = "selection"
+  @objc var scrollToTopDelay: TimeInterval = 0.2
   @objc var accountAddress: String? = nil {
     didSet {
       header.accountAddress.text = accountAddress
@@ -54,7 +55,7 @@ class TransactionListView: UIView, UITableViewDelegate {
     if tableView.contentOffset.y == CGFloat(0) {
       self.onAvatarPress([:])
     } else {
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+      DispatchQueue.main.asyncAfter(deadline: .now() + scrollToTopDelay) {
         self.onAvatarPress([:])
       }
     }
