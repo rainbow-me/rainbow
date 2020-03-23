@@ -13,6 +13,11 @@ import FloatingActionButton from './FloatingActionButton';
 
 const FloatingActionButtonWithDisabled = withFabSelection(FloatingActionButton);
 
+const FabShadow = [
+  [0, 10, 30, colors.dark, 0.4],
+  [0, 5, 15, colors.paleBlue, 0.5],
+];
+
 const SendFab = ({
   //areas,
   //deleteButtonScale,
@@ -40,6 +45,7 @@ const SendFab = ({
       disabled={disabled}
       onPress={onPress}
       scaleTo={scaleTo}
+      shadows={FabShadow}
       tapRef={tapRef}
     >
       <Icon height={22} marginBottom={4} name="send" width={23} />

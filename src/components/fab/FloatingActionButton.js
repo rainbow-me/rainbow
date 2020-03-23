@@ -24,12 +24,14 @@ export default class FloatingActionButton extends Component {
     onPress: PropTypes.func,
     onPressIn: PropTypes.func,
     scaleTo: PropTypes.number,
+    shadows: PropTypes.arrayOf(PropTypes.array),
     size: PropTypes.number,
     tapRef: PropTypes.object,
   };
 
   static defaultProps = {
     scaleTo: 0.86,
+    shadows: FabShadow,
     size: FabSize,
   };
 
@@ -65,6 +67,7 @@ export default class FloatingActionButton extends Component {
       disabled,
       isFabSelectionValid,
       scaleTo,
+      shadows,
       size,
       ...props
     } = this.props;
@@ -81,7 +84,7 @@ export default class FloatingActionButton extends Component {
       >
         <ShadowStack
           {...borders.buildCircleAsObject(size)}
-          shadows={FabShadow}
+          shadows={shadows}
           shadowProps={{ opacity: isDisabled ? 0 : 1 }}
         >
           <View
