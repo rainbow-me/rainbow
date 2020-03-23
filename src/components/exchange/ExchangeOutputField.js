@@ -103,6 +103,7 @@ export default class ExchangeOutputField extends PureComponent {
             disableTabularNums
             editable={!!outputCurrencySymbol}
             fontFamily={fonts.family.SFProRounded}
+            height={40}
             letterSpacing={fonts.letterSpacing.roundedTightest}
             onBlur={onBlur}
             onChangeText={setOutputAmount}
