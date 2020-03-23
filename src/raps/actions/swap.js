@@ -3,11 +3,11 @@ import {
   calculateTradeDetails,
   executeSwap,
   estimateSwapGasLimit,
-} from '../handlers/uniswap';
-import store from '../redux/store';
-import { dataAddNewTransaction } from '../redux/data';
-import { rapsAddOrUpdate } from '../redux/raps';
-import { gasUtils } from '../utils';
+} from '../../handlers/uniswap';
+import store from '../../redux/store';
+import { dataAddNewTransaction } from '../../redux/data';
+import { rapsAddOrUpdate } from '../../redux/raps';
+import { gasUtils } from '../../utils';
 
 const NOOP = () => undefined;
 

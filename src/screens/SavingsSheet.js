@@ -21,23 +21,20 @@ import Divider from '../components/Divider';
 import { convertAmountToDepositDisplay } from '../helpers/utilities';
 
 const SavingsSheet = () => {
-  console.log('[SAVINGS SHEET]');
   const { getParam, navigate } = useNavigation();
 
+  const cTokenBalance = getParam('cTokenBalance');
   const isEmpty = getParam('isEmpty');
+  const nativeValue = getParam('nativeValue');
   const underlying = getParam('underlying');
+  const underlyingPrice = getParam('underlyingPrice');
   const lifetimeSupplyInterestAccrued = getParam(
     'lifetimeSupplyInterestAccrued'
   );
   const supplyBalanceUnderlying = getParam('supplyBalanceUnderlying');
   const supplyRate = getParam('supplyRate');
 
-  // TODO JIN transactions list
-  const balance = convertAmountToDepositDisplay(supplyBalanceUnderlying, {
-    address: underlying.address,
-    decimals: underlying.decimals,
-    symbol: underlying.symbol,
-  });
+  const balance = convertAmountToDepositDisplay(nativeValue, underlying);
 
   return (
     <Sheet>
@@ -56,7 +53,10 @@ const SavingsSheet = () => {
               label="Withdraw"
               onPress={() =>
                 navigate('SavingsWithdrawModal', {
-                  defaultInputAddress: underlying.address,
+                  cTokenBalance,
+                  defaultInputAsset: underlying,
+                  supplyBalanceUnderlying,
+                  underlyingPrice,
                 })
               }
             />
@@ -66,7 +66,7 @@ const SavingsSheet = () => {
               label="Deposit"
               onPress={() =>
                 navigate('SavingsDepositModal', {
-                  defaultInputAddress: underlying.address,
+                  defaultInputAsset: underlying,
                 })
               }
             />
@@ -97,7 +97,10 @@ const SavingsSheet = () => {
             )}
           </FloatingEmojis>
           <Divider zIndex={0} />
-          <SavingsPredictionStepper />
+          <SavingsPredictionStepper
+            balance={supplyBalanceUnderlying}
+            interestRate={supplyRate}
+          />
         </Fragment>
       )}
     </Sheet>

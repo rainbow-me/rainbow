@@ -14,7 +14,6 @@ export default function useWalletSectionsData() {
     })
   );
 
-  // TODO JIN select exactly what I need for build wallet sections
   const accountData = useAccountAssets();
   const { language, network, nativeCurrency } = useAccountSettings();
   const uniqueTokens = useSendableUniqueTokens();

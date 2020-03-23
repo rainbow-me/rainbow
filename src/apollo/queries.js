@@ -1,11 +1,21 @@
 import gql from 'graphql-tag';
 
-export const COMPOUND_ACCOUNT_QUERY = gql`
+export const COMPOUND_ACCOUNT_AND_MARKET_QUERY = gql`
   query account($id: ID!) {
+    markets {
+      exchangeRate
+      id
+      name
+      supplyRate
+      underlyingAddress
+      underlyingName
+      underlyingSymbol
+      underlyingDecimals
+      underlyingPrice
+    }
     account(id: $id) {
       id
       tokens(where: { cTokenBalance_gt: 0 }) {
-        borrowBalanceUnderlying
         cTokenBalance
         id
         lifetimeSupplyInterestAccrued
@@ -13,21 +23,6 @@ export const COMPOUND_ACCOUNT_QUERY = gql`
         symbol
         totalUnderlyingSupplied
       }
-    }
-  }
-`;
-
-export const COMPOUND_ALL_MARKETS_QUERY = gql`
-  query markets {
-    markets {
-      exchangeRate
-      id
-      name
-      supplyRate
-      underlyingAddress
-      underlyingSymbol
-      underlyingDecimals
-      underlyingPrice
     }
   }
 `;

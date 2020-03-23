@@ -37,7 +37,6 @@ import AssetListHeader from './AssetListHeader';
 import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
 import withOpenSavings from '../../hoc/withOpenSavings';
 import SavingsListWrapper from '../savings/SavingsListWrapper';
-import SavingsListRow from '../savings/SavingsListRow';
 
 /* eslint-disable sort-keys */
 export const ViewTypes = {
@@ -86,7 +85,6 @@ let smallBalancesIndex = 0;
 let savingsIndex = 0;
 
 const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
-const SavingsListRowRenderer = pure(data => <SavingsListRow {...data} />);
 
 const hasRowChanged = (r1, r2) => {
   const isNewTitle = isNewValueForPath(r1, r2, 'title');
@@ -105,6 +103,35 @@ const hasRowChanged = (r1, r2) => {
 
   const isCollectiblesRow = has(r1, 'item.tokens') && has(r2, 'item.tokens');
   let isNewAssetBalance = false;
+
+  let savingsSectionChanged = false;
+  if (
+    r1.item &&
+    r2.item &&
+    r1.item.assets &&
+    r2.item.assets &&
+    r1.item.savingsContainer &&
+    r2.item.savingsContainer
+  ) {
+    if (r1.item.assets.length !== r2.item.assets.length) {
+      savingsSectionChanged = true;
+    } else if (r2.item.assets.length > 0) {
+      for (let i = 0; i < r2.item.assets.length; i++) {
+        if (r1.item.assets[i].supplyRate) {
+          if (r1.item.assets[i].supplyRate !== r2.item.assets[i].supplyRate) {
+            savingsSectionChanged = true;
+          }
+        } else if (r1.item.assets[i].supplyBalanceUnderlying) {
+          if (
+            r1.item.assets[i].supplyBalanceUnderlying !==
+            r2.item.assets[i].supplyBalanceUnderlying
+          ) {
+            savingsSectionChanged = true;
+          }
+        }
+      }
+    }
+  }
 
   if (!isCollectiblesRow) {
     isNewAssetBalance = isNewValueForPath(
@@ -148,7 +175,9 @@ const hasRowChanged = (r1, r2) => {
     isNewTotalItems ||
     isNewTotalValue ||
     isNewUniswapPercentageOwned ||
-    isNewUniswapToken
+    isNewUniswapToken ||
+    savingsSectionChanged ||
+    smallBalancedChanged
   );
 };
 
@@ -816,21 +845,8 @@ class RecyclerAssetList extends Component {
     }
 
     if (type === ViewTypes.COIN_SAVINGS) {
-      if (this.savingsList.length !== item.assets.length) {
-        smallBalancedChanged = false;
-        const savingsList = [];
-        this.savingsSumValue = 0;
-        for (let i = 0; i < item.assets.length; i++) {
-          this.savingsSumValue += item.assets[i].value || 0;
-          savingsList.push(<SavingsListRowRenderer {...item.assets[i]} />);
-        }
-        this.savingsList = savingsList;
-      }
       return (
-        <SavingsListWrapper
-          assets={this.savingsList}
-          savingsSumValue={this.savingsSumValue}
-        />
+        <SavingsListWrapper assets={item.assets} totalValue={item.totalValue} />
       );
     }
 

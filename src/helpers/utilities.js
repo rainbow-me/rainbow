@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import BigNumber from 'bignumber.js';
-import { DAI_ADDRESS, USDC_ADDRESS } from '../references';
+import { DAI_ADDRESS, SAI_ADDRESS, USDC_ADDRESS } from '../references';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 
 /**
@@ -359,7 +359,11 @@ export const convertAmountToBalanceDisplay = (value, asset, buffer) => {
  */
 export const convertAmountToDepositDisplay = (value, asset) => {
   let prettyAmount = value;
-  if (asset.address === DAI_ADDRESS || asset.address === USDC_ADDRESS) {
+  if (
+    asset.address === DAI_ADDRESS ||
+    asset.address === USDC_ADDRESS ||
+    asset.address === SAI_ADDRESS
+  ) {
     prettyAmount = BigNumber(value).toFixed(2);
     return `$${prettyAmount}`;
   }

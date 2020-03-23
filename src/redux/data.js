@@ -25,14 +25,16 @@ import {
   removeAssetPricesFromUniswap,
   removeAssets,
   removeLocalTransactions,
+  removeSavings,
   saveAssetPricesFromUniswap,
   saveAssets,
   saveLocalTransactions,
 } from '../handlers/localstorage/accountLocal';
 import { apiGetTokenOverrides } from '../handlers/tokenOverrides';
-import { getTransactionByHash } from '../handlers/web3';
+import { getTransactionReceipt } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
-import { divide } from '../helpers/utilities';
+import TransactionTypes from '../helpers/transactionTypes';
+import { divide, isZero } from '../helpers/utilities';
 import { parseAccountAssets } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
@@ -122,6 +124,7 @@ export const dataClearState = () => (dispatch, getState) => {
     uniswapPricesSubscription.unsubscribe &&
     uniswapPricesSubscription.unsubscribe();
   removeAssets(accountAddress, network);
+  removeSavings(accountAddress, network);
   removeAssetPricesFromUniswap(accountAddress, network);
   removeLocalTransactions(accountAddress, network);
   dispatch({ type: DATA_CLEAR_STATE });
@@ -359,6 +362,21 @@ export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
       });
   });
 
+const getConfirmedState = type => {
+  switch (type) {
+    case TransactionTypes.authorize:
+      return TransactionStatusTypes.approved;
+    case TransactionTypes.deposit:
+      return TransactionStatusTypes.deposited;
+    case TransactionTypes.withdraw:
+      return TransactionStatusTypes.withdrew;
+    case TransactionTypes.receive:
+      return TransactionStatusTypes.received;
+    default:
+      return TransactionStatusTypes.sent;
+  }
+};
+
 export const dataWatchPendingTransactions = () => async (
   dispatch,
   getState
@@ -373,11 +391,17 @@ export const dataWatchPendingTransactions = () => async (
     pending.map(async (tx, index) => {
       const txHash = tx.hash.split('-').shift();
       try {
-        const txObj = await getTransactionByHash(txHash);
+        const txObj = await getTransactionReceipt(txHash);
         if (txObj && txObj.blockNumber) {
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
-          updatedTransactions[index].status = TransactionStatusTypes.sent;
+          if (!isZero(txObj.status)) {
+            updatedTransactions[index].status = getConfirmedState(
+              updatedTransactions[index].type
+            );
+          } else {
+            updatedTransactions[index].status = TransactionStatusTypes.failed;
+          }
           updatedTransactions[index].pending = false;
           updatedTransactions[index].minedAt = minedAt;
         }

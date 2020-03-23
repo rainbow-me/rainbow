@@ -31,6 +31,7 @@ export const parseNewTransaction = async (
   );
   let tx = pick(txDetails, ['dappName', 'from', 'hash', 'nonce', 'to']);
   const nonce = tx.nonce || (tx.from ? await getTransactionCount(tx.from) : '');
+  const status = txDetails.status || TransactionStatusTypes.sending;
   tx = {
     ...tx,
     balance,
@@ -39,8 +40,9 @@ export const parseNewTransaction = async (
     native,
     nonce,
     pending: !!txDetails.hash,
-    status: TransactionStatusTypes.sending,
+    status,
     symbol: get(txDetails, 'asset.symbol'),
+    type: get(txDetails, 'type'),
   };
 
   return tx;

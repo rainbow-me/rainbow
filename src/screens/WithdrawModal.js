@@ -1,16 +1,26 @@
 import React from 'react';
-import createSwapAndDepositCompoundRap from '../raps/swapAndDepositCompound';
+import ExchangeModalTypes from '../helpers/exchangeModalTypes';
+import createWithdrawFromCompoundRap from '../raps/withdrawFromCompound';
 import ExchangeModalWithData from './ExchangeModalWithData';
 
 const WithdrawModal = ({ navigation, ...props }) => {
-  const defaultInputAddress = navigation.getParam('defaultInputAddress', 'eth');
+  const cTokenBalance = navigation.getParam('cTokenBalance');
+  const defaultInputAsset = navigation.getParam('defaultInputAsset');
+  const underlyingPrice = navigation.getParam('underlyingPrice');
+  const supplyBalanceUnderlying = navigation.getParam(
+    'supplyBalanceUnderlying'
+  );
+
   return (
     <ExchangeModalWithData
-      createRap={createSwapAndDepositCompoundRap}
-      defaultInputAddress={defaultInputAddress}
-      inputHeaderTitle="Withdraw"
-      isDeposit
+      createRap={createWithdrawFromCompoundRap}
+      cTokenBalance={cTokenBalance}
+      defaultInputAsset={defaultInputAsset}
+      inputHeaderTitle={`Withdraw ${defaultInputAsset.name}`}
       showOutputField={false}
+      type={ExchangeModalTypes.withdrawal}
+      underlyingPrice={underlyingPrice}
+      supplyBalanceUnderlying={supplyBalanceUnderlying}
       {...props}
     />
   );

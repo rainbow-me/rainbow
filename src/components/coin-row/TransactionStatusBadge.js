@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForPropTypes } from 'recompact';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import transactionTypes from '../../helpers/transactionTypes';
+import TransactionTypes from '../../helpers/transactionTypes';
 import { colors, position } from '../../styles';
 import Icon from '../icons/Icon';
 import { RowWithMargins } from '../layout';
@@ -12,7 +12,12 @@ import { Text } from '../text';
 
 const StatusProps = {
   [TransactionStatusTypes.deposited]: {
-    name: 'arrow',
+    name: 'sunflower',
+    style: { fontSize: 12 },
+  },
+  [TransactionStatusTypes.withdrew]: {
+    name: 'sunflower',
+    style: { fontSize: 12 },
   },
   [TransactionStatusTypes.approved]: {
     name: 'dot',
@@ -37,8 +42,18 @@ const StatusProps = {
   },
 };
 
+const getCustomDisplayStatus = status => {
+  switch (status) {
+    case TransactionStatusTypes.deposited:
+    case TransactionStatusTypes.withdrew:
+      return 'Savings';
+    default:
+      return upperFirst(status);
+  }
+};
+
 const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
-  const isTrade = type === transactionTypes.trade;
+  const isTrade = type === TransactionTypes.trade;
 
   let statusColor = colors.blueGreyMediumLight;
   if (pending) {
@@ -68,7 +83,7 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
         />
       )}
       <Text color={statusColor} size="smedium" weight="semibold">
-        {upperFirst(displayStatus)}
+        {getCustomDisplayStatus(displayStatus)}
       </Text>
     </RowWithMargins>
   );
@@ -77,7 +92,7 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
 TransactionStatusBadge.propTypes = {
   pending: PropTypes.bool,
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
-  type: PropTypes.oneOf(Object.values(transactionTypes)),
+  type: PropTypes.oneOf(Object.values(TransactionTypes)),
 };
 
 TransactionStatusBadge.defaultProps = {

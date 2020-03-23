@@ -7,6 +7,7 @@ import { withNavigation } from 'react-navigation';
 import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
+import { withAccountSettings } from '../../hoc';
 import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
@@ -17,7 +18,6 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
-import { withAccountSettings } from '../../hoc';
 
 const containerStyles = css`
   padding-left: 15;
@@ -27,10 +27,22 @@ const rowRenderPropTypes = {
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
 };
 
+const getDisplayAction = (type, name) => {
+  switch (type) {
+    case TransactionTypes.deposit:
+      return `Deposited ${name}`;
+    case TransactionTypes.withdraw:
+      return `Withdrew ${name}`;
+    default:
+      return name;
+  }
+};
+
 const BottomRow = ({ name, native, status, type }) => {
   const isFailed = status === TransactionStatusTypes.failed;
   const isReceived = status === TransactionStatusTypes.received;
   const isSent = status === TransactionStatusTypes.sent;
+
   const isSwapped =
     status === TransactionStatusTypes.sent && type === TransactionTypes.trade;
 
@@ -46,7 +58,7 @@ const BottomRow = ({ name, native, status, type }) => {
   return (
     <Row align="center" justify="space-between" opacity={isSwapped ? 0.5 : 1}>
       <FlexItem flex={1}>
-        <CoinName>{name}</CoinName>
+        <CoinName>{getDisplayAction(type, name)}</CoinName>
       </FlexItem>
       <FlexItem flex={0}>
         <BalanceText color={balanceTextColor}>{balanceText}</BalanceText>

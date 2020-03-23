@@ -12,6 +12,7 @@ import { CollectibleTokenFamily } from '../components/token-family';
 import { buildUniqueTokenList, buildCoinsList } from './assets';
 import { chartExpandedAvailable } from '../config/experimental';
 import networkTypes from './networkTypes';
+import { ethereumUtils } from '../utils';
 
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
@@ -110,44 +111,36 @@ const withBalanceSection = (
   network
 ) => {
   let totalValue = Number(get(assetsTotal, 'amount', 0));
-  const assets = map(savings, cToken => {
-    const {
-      lifetimeSupplyInterestAccrued,
-      supplyBalanceUnderlying,
-      supplyRate,
-      underlyingAddress,
-      underlyingDecimals,
-      underlyingSymbol,
-    } = cToken;
-    return {
-      lifetimeSupplyInterestAccrued,
-      supplyBalanceUnderlying,
-      supplyRate,
-      underlying: {
-        address: underlyingAddress,
-        decimals: underlyingDecimals,
-        symbol: underlyingSymbol,
-      },
-    };
-  });
-  // TODO JIN get the DAI APY, currency, set to 0 if it does not exist already
-  // console.log('ASSETS', assets);
+  let assets = savings;
+  const eth = ethereumUtils.getAsset(allAssets);
+  const priceOfEther = get(eth, 'native.price.amount', null);
+  let totalSavingsValue = 0;
+  if (priceOfEther) {
+    assets = map(savings, asset => {
+      const { ethPrice } = asset;
+      const nativeValue = ethPrice ? priceOfEther * ethPrice : 0;
+      totalSavingsValue += nativeValue;
+      return {
+        ...asset,
+        nativeValue,
+      };
+    });
+  }
+
+  totalValue += totalSavingsValue;
+
   const savingsSection = {
     assets,
     savingsContainer: true,
+    totalValue: totalSavingsValue,
   };
+
   let balanceSectionData = [...buildCoinsList(allAssets)];
 
   if (networkTypes.mainnet === network) {
     balanceSectionData.push(savingsSection);
   }
-  /*
-  assets.forEach(saving => {
-    if (saving.value) {
-      totalValue = Number(totalValue) + Number(saving.value);
-    }
-  });
-  */
+
   const isLoadingBalances = !isWalletEthZero && isBalancesSectionEmpty;
   if (isLoadingBalances) {
     balanceSectionData = [{ item: { uniqueId: 'skeleton0' } }];

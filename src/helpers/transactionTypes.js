@@ -5,4 +5,5 @@ export default {
   receive: 'receive',
   send: 'send',
   trade: 'trade',
+  withdraw: 'withdraw',
 };

@@ -159,20 +159,6 @@ const MainNavigator = createStackNavigator(
       },
       screen: ReceiveModal,
     },
-    SavingsDepositModal: {
-      navigationOptions: {
-        ...exchangePreset,
-        onTransitionEnd,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      params: {
-        isGestureBlocked: false,
-      },
-      screen: SavingModalNavigator,
-    },
     SavingsSheet: {
       navigationOptions: {
         ...savingsPreset,
@@ -227,7 +213,6 @@ const MainNavigator = createStackNavigator(
     },
     headerMode: 'none',
     initialRouteName: 'SwipeLayout',
-    keyboardHandlingEnabled: false,
     mode: 'modal',
   }
 );
@@ -269,6 +254,20 @@ const NativeStack = createStackNavigator(
         mode: 'modal',
       }
     ),
+    SavingsDepositModal: {
+      navigationOptions: {
+        ...exchangePreset,
+        onTransitionEnd,
+        onTransitionStart: props => {
+          expandedPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
+      },
+      params: {
+        isGestureBlocked: false,
+      },
+      screen: SavingModalNavigator,
+    },
     SavingsWithdrawModal: {
       navigationOptions: {
         ...exchangePreset,
@@ -295,52 +294,65 @@ const NativeStack = createStackNavigator(
   }
 );
 
-const NativeStackFallback = createStackNavigator(
-  {
-    ImportSeedPhraseSheet: {
-      navigationOptions: {
-        ...sheetPreset,
-        onTransitionStart: () => {
-          StatusBar.setBarStyle('light-content');
-        },
+const nativeStackRoutes = {
+  ImportSeedPhraseSheet: {
+    navigationOptions: {
+      ...sheetPreset,
+      onTransitionStart: () => {
+        StatusBar.setBarStyle('light-content');
       },
-      screen: ImportSeedPhraseSheetWithData,
     },
-    MainNavigator,
-    SavingsWithdrawModal: {
-      navigationOptions: {
-        ...exchangePreset,
-        onTransitionEnd,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      params: {
-        isGestureBlocked: false,
-      },
-      screen: WithdrawModal,
-    },
-    SendSheet: {
-      navigationOptions: {
-        ...omit(sheetPreset, 'gestureResponseDistance'),
-        onTransitionStart: () => {
-          StatusBar.setBarStyle('light-content');
-        },
-      },
-      screen: SendSheetWithData,
-    },
+    screen: ImportSeedPhraseSheetWithData,
   },
-  {
-    defaultNavigationOptions: {
+  MainNavigator,
+  SavingsDepositModal: {
+    navigationOptions: {
+      ...exchangePreset,
       onTransitionEnd,
-      onTransitionStart,
+      onTransitionStart: props => {
+        expandedPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
     },
-    headerMode: 'none',
-    initialRouteName: 'MainNavigator',
-    mode: 'modal',
-  }
-);
+    params: {
+      isGestureBlocked: false,
+    },
+    screen: SavingModalNavigator,
+  },
+  SavingsWithdrawModal: {
+    navigationOptions: {
+      ...exchangePreset,
+      onTransitionEnd,
+      onTransitionStart: props => {
+        expandedPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
+    },
+    params: {
+      isGestureBlocked: false,
+    },
+    screen: WithdrawModal,
+  },
+  SendSheet: {
+    navigationOptions: {
+      ...omit(sheetPreset, 'gestureResponseDistance'),
+      onTransitionStart: () => {
+        StatusBar.setBarStyle('light-content');
+      },
+    },
+    screen: SendSheetWithData,
+  },
+};
+
+const NativeStackFallback = createStackNavigator(nativeStackRoutes, {
+  defaultNavigationOptions: {
+    onTransitionEnd,
+    onTransitionStart,
+  },
+  headerMode: 'none',
+  initialRouteName: 'MainNavigator',
+  mode: 'modal',
+});
 
 const Stack = isNativeStackAvailable ? NativeStack : NativeStackFallback;
 
@@ -354,7 +366,12 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
       const prevRouteName = Navigation.getActiveRouteName(prevState);
       // native stack rn does not support onTransitionEnd and onTransitionStart
       // Set focus manually on route changes
-      if (prevRouteName !== routeName) {
+
+      if (
+        prevRouteName !== routeName &&
+        isNativeStackAvailable &&
+        (nativeStackRoutes[prevRouteName] || nativeStackRoutes[routeName])
+      ) {
         Navigation.handleAction(
           NavigationActions.setParams({
             key: routeName,

@@ -51,9 +51,10 @@ import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
 import WalletConnectIcon from './svg/WalletConnectIcon';
 import WarningIcon from './svg/WarningIcon';
+import Emoji from 'react-native-emoji';
 
 const Icon = ({ name, ...props }) =>
-  createElement(Icon.IconTypes[name] || Flex, props);
+  createElement(Icon.IconTypes[name] || Flex, { name, ...props });
 
 Icon.IconTypes = {
   arrow: ArrowIcon,
@@ -100,6 +101,7 @@ Icon.IconTypes = {
   signature: SignatureIcon,
   spinner: SpinnerIcon,
   star: StarIcon,
+  sunflower: Emoji,
   swap: SwapIcon,
   threeDots: ThreeDotsIcon,
   touchid: TouchIdIcon,

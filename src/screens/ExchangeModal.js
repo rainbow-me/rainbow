@@ -32,6 +32,7 @@ import {
   calculateTradeDetails,
   estimateSwapGasLimit,
 } from '../handlers/uniswap';
+import ExchangeModalTypes from '../helpers/exchangeModalTypes';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
@@ -41,6 +42,7 @@ import {
   divide,
   greaterThanOrEqualTo,
   isZero,
+  multiply,
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
 import {
@@ -73,36 +75,75 @@ const isSameAsset = (a, b) => {
 
 const getNativeTag = field => get(field, '_inputRef._nativeTag');
 
+const createMissingWithdrawalAsset = (asset, underlyingPrice, priceOfEther) => {
+  const { address, decimals, name, symbol } = asset;
+  const priceInUSD = multiply(priceOfEther, underlyingPrice);
+
+  return {
+    address,
+    decimals,
+    name,
+    native: {
+      price: {
+        amount: priceInUSD,
+        display: '',
+      },
+    },
+    price: {
+      value: priceInUSD,
+    },
+    symbol,
+    uniqueId: address,
+  };
+};
+
 const ExchangeModal = ({
-  defaultInputAddress,
+  cTokenBalance,
+  defaultInputAsset,
   gasPricesStartPolling,
   gasPricesStopPolling,
   gasUpdateDefaultGasLimit,
   gasUpdateTxFee,
   inputHeaderTitle,
   inputReserve,
-  isDeposit,
   isTransitioning,
   navigation,
   outputReserve,
   createRap,
   selectedGasPrice,
   showOutputField,
+  supplyBalanceUnderlying,
   tabPosition,
+  type,
+  underlyingPrice,
   uniswapClearCurrenciesAndReserves,
   uniswapUpdateInputCurrency,
   uniswapUpdateOutputCurrency,
   web3ListenerInit,
   web3ListenerStop,
 }) => {
+  const isDeposit = type === ExchangeModalTypes.deposit;
+  const isWithdrawal = type === ExchangeModalTypes.withdrawal;
+
   const { allAssets } = useAccountAssets();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const { accountAddress, chainId, nativeCurrency } = useAccountSettings();
 
-  const defaultInputItem =
-    ethereumUtils.getAsset(allAssets, defaultInputAddress) ||
-    ethereumUtils.getAsset(allAssets);
+  const defaultInputAddress = get(defaultInputAsset, 'address');
+  let defaultInputItem = ethereumUtils.getAsset(allAssets, defaultInputAddress);
+  if (!defaultInputItem && isWithdrawal) {
+    const eth = ethereumUtils.getAsset(allAssets);
+    const priceOfEther = get(eth, 'native.price.amount', null);
+    defaultInputItem = createMissingWithdrawalAsset(
+      defaultInputAsset,
+      underlyingPrice,
+      priceOfEther
+    );
+  } else if (!defaultInputItem) {
+    defaultInputItem = ethereumUtils.getAsset(allAssets);
+  }
   const [inputCurrency, setInputCurrency] = useState(defaultInputItem);
+  const [isMax, setIsMax] = useState(false);
   const [inputAmount, setInputAmount] = useState(null);
   const [inputAmountDisplay, setInputAmountDisplay] = useState(null);
   const [inputAsExactAmount, setInputAsExactAmount] = useState(true);
@@ -115,7 +156,7 @@ const ExchangeModal = ({
   const [outputAmountDisplay, setOutputAmountDisplay] = useState(null);
   const [outputCurrency, setOutputCurrency] = useState(null);
   const [showConfirmButton, setShowConfirmButton] = useState(
-    isDeposit ? true : false
+    isDeposit || isWithdrawal ? true : false
   );
   const [slippage, setSlippage] = useState(null);
 
@@ -128,7 +169,11 @@ const ExchangeModal = ({
   useEffect(() => {
     console.log('[effect 1] gasPrices');
     gasUpdateDefaultGasLimit(
-      isDeposit ? ethUnits.basic_deposit : ethUnits.basic_swap
+      isDeposit
+        ? ethUnits.basic_deposit
+        : isWithdrawal
+        ? ethUnits.basic_withdrawal
+        : ethUnits.basic_swap
     );
     gasPricesStartPolling();
     web3ListenerInit();
@@ -142,6 +187,7 @@ const ExchangeModal = ({
     gasPricesStopPolling,
     gasUpdateDefaultGasLimit,
     isDeposit,
+    isWithdrawal,
     uniswapClearCurrenciesAndReserves,
     web3ListenerInit,
     web3ListenerStop,
@@ -161,7 +207,7 @@ const ExchangeModal = ({
 
   useEffect(() => {
     if (
-      isDeposit &&
+      (isDeposit || isWithdrawal) &&
       inputCurrency &&
       inputCurrency.address === defaultInputAddress
     )
@@ -175,12 +221,13 @@ const ExchangeModal = ({
     getMarketDetails,
     inputCurrency,
     isDeposit,
+    isWithdrawal,
     nativeAmount,
   ]);
 
   useEffect(() => {
     if (
-      isDeposit &&
+      (isDeposit || isWithdrawal) &&
       inputCurrency &&
       inputCurrency.address === defaultInputAddress
     )
@@ -194,6 +241,7 @@ const ExchangeModal = ({
     inputCurrencyUniqueId,
     inputReserveTokenAddress,
     isDeposit,
+    isWithdrawal,
     outputAmount,
     outputCurrencyUniqueId,
     outputReserveTokenAddress,
@@ -431,6 +479,7 @@ const ExchangeModal = ({
         selectedGasPrice,
         inputCurrency
       );
+
       const isSufficientBalance =
         !inputAmount || greaterThanOrEqualTo(inputBalance, inputAmount);
       setIsSufficientBalance(isSufficientBalance);
@@ -555,13 +604,18 @@ const ExchangeModal = ({
   const handlePressMaxBalance = () => {
     console.log('[max] selectedGasPrice', selectedGasPrice);
     console.log('[max] inputCurrency', inputCurrency);
-    const maxBalance = ethereumUtils.getBalanceAmount(
-      selectedGasPrice,
-      inputCurrency
-    );
+    let maxBalance;
+    if (isWithdrawal) {
+      maxBalance = supplyBalanceUnderlying;
+    } else {
+      maxBalance = ethereumUtils.getBalanceAmount(
+        selectedGasPrice,
+        inputCurrency
+      );
+    }
     console.log('[max] maxBalance', maxBalance);
 
-    return updateInputAmount(maxBalance);
+    return updateInputAmount(maxBalance, maxBalance, true, true);
   };
 
   const handleSubmit = async () => {
@@ -575,9 +629,10 @@ const ExchangeModal = ({
       };
       const rap = createRap({
         callback,
-        inputAmount,
+        inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
         inputAsExactAmount,
         inputCurrency,
+        isMax,
         outputAmount,
         outputCurrency,
         selectedGasPrice: null,
@@ -646,7 +701,12 @@ const ExchangeModal = ({
   };
 
   const updateInputAmount = useCallback(
-    (newInputAmount, newAmountDisplay, newInputAsExactAmount = true) => {
+    (
+      newInputAmount,
+      newAmountDisplay,
+      newInputAsExactAmount = true,
+      newIsMax = false
+    ) => {
       console.log(
         '[update input amount]',
         newInputAmount,
@@ -657,6 +717,8 @@ const ExchangeModal = ({
       setInputAmountDisplay(
         newAmountDisplay !== undefined ? newAmountDisplay : newInputAmount
       );
+      console.log('[update input amount] - set max?', newIsMax);
+      setIsMax(newIsMax);
 
       if (!nativeFieldRef.current.isFocused()) {
         let newNativeAmount = null;
@@ -674,9 +736,27 @@ const ExchangeModal = ({
           );
         }
         setNativeAmount(newNativeAmount);
+
+        // update sufficient balance
+        const inputBalance = ethereumUtils.getBalanceAmount(
+          selectedGasPrice,
+          inputCurrency
+        );
+
+        const isSufficientBalance =
+          !newInputAmount || isWithdrawal
+            ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
+            : greaterThanOrEqualTo(inputBalance, newInputAmount);
+        setIsSufficientBalance(isSufficientBalance);
       }
     },
-    [getMarketPrice, inputCurrency]
+    [
+      getMarketPrice,
+      inputCurrency,
+      isWithdrawal,
+      selectedGasPrice,
+      supplyBalanceUnderlying,
+    ]
   );
 
   const previousInputCurrency = usePrevious(inputCurrency);
@@ -696,23 +776,31 @@ const ExchangeModal = ({
     console.log('[update input curr] setting input curr', newInputCurrency);
     setInputCurrency(newInputCurrency);
     setShowConfirmButton(
-      isDeposit ? !!newInputCurrency : !!newInputCurrency && !!outputCurrency
+      isDeposit || isWithdrawal
+        ? !!newInputCurrency
+        : !!newInputCurrency && !!outputCurrency
     );
 
     uniswapUpdateInputCurrency(newInputCurrency);
 
     if (userSelected && isSameAsset(newInputCurrency, outputCurrency)) {
       console.log('[update input curr] setting output curr to prev input curr');
-      if (isDeposit) {
+      if (isDeposit || isWithdrawal) {
         updateOutputCurrency(null, false);
       } else {
         updateOutputCurrency(previousInputCurrency, false);
       }
     }
 
-    if (isDeposit && newInputCurrency.address !== defaultInputAddress) {
-      const dai = ethereumUtils.getAsset(allAssets, defaultInputAddress);
-      updateOutputCurrency(dai, false);
+    if (
+      (isDeposit || isWithdrawal) &&
+      newInputCurrency.address !== defaultInputAddress
+    ) {
+      const newDepositOutput = ethereumUtils.getAsset(
+        allAssets,
+        defaultInputAddress
+      );
+      updateOutputCurrency(newDepositOutput, false);
     }
   };
 
@@ -723,6 +811,8 @@ const ExchangeModal = ({
 
     const isNativeZero = isZero(nativeAmount);
     setNativeAmount(nativeAmount);
+
+    setIsMax(false);
 
     if (nativeAmount && !isNativeZero) {
       let nativePrice = get(inputCurrency, 'native.price.amount', null);
@@ -776,7 +866,9 @@ const ExchangeModal = ({
     setInputAsExactAmount(true);
     setOutputCurrency(newOutputCurrency);
     setShowConfirmButton(
-      isDeposit ? !!inputCurrency : !!inputCurrency && !!newOutputCurrency
+      isDeposit || isWithdrawal
+        ? !!inputCurrency
+        : !!inputCurrency && !!newOutputCurrency
     );
 
     console.log(
@@ -800,6 +892,7 @@ const ExchangeModal = ({
     }
   };
 
+  // TODO JIN?
   const isSlippageWarningVisible =
     isSufficientBalance && !!inputAmount && !!outputAmount;
 
@@ -811,7 +904,7 @@ const ExchangeModal = ({
   } = extraTradeDetails;
 
   const showDetailsButton =
-    !showOutputField &&
+    !(isDeposit || isWithdrawal) &&
     get(inputCurrency, 'symbol') &&
     get(outputCurrency, 'symbol') &&
     inputExecutionRate !== 'NaN' &&
@@ -850,6 +943,7 @@ const ExchangeModal = ({
               title={inputHeaderTitle}
             />
             <ExchangeInputField
+              disableInputCurrencySelection={isWithdrawal}
               inputAmount={inputAmountDisplay}
               inputCurrencyAddress={get(inputCurrency, 'address', null)}
               inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
@@ -893,6 +987,7 @@ const ExchangeModal = ({
                   isSufficientBalance={isSufficientBalance}
                   onSubmit={handleSubmit}
                   slippage={slippage}
+                  type={type}
                 />
               </Centered>
               <GasSpeedButton />
@@ -909,6 +1004,7 @@ const ExchangeModal = ({
 
 ExchangeModal.propTypes = {
   createRap: PropTypes.func,
+  cTokenBalance: PropTypes.string,
   defaultInputAddress: PropTypes.string,
   gasPricesStartPolling: PropTypes.func,
   gasPricesStopPolling: PropTypes.func,
@@ -919,8 +1015,11 @@ ExchangeModal.propTypes = {
   navigation: PropTypes.object,
   outputReserve: PropTypes.object,
   selectedGasPrice: PropTypes.object,
+  supplyBalanceUnderlying: PropTypes.string,
   tabPosition: PropTypes.object, // animated value
   tradeDetails: PropTypes.object,
+  type: PropTypes.oneOf(Object.values(ExchangeModalTypes)),
+  underlyingPrice: PropTypes.string,
   uniswapAssetsInWallet: PropTypes.arrayOf(PropTypes.object),
   uniswapUpdateInputCurrency: PropTypes.func,
   uniswapUpdateOutputCurrency: PropTypes.func,

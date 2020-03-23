@@ -1,91 +1,137 @@
 import { useQuery } from '@apollo/client';
 import { find, get, keyBy, orderBy, property, toLower } from 'lodash';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { compoundClient } from '../apollo/client';
-import {
-  COMPOUND_ACCOUNT_QUERY,
-  COMPOUND_ALL_MARKETS_QUERY,
-} from '../apollo/queries';
+import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '../apollo/queries';
+import { getSavings, saveSavings } from '../handlers/localstorage/accountLocal';
 import { multiply } from '../helpers/utilities';
+import { useAccountSettings } from '../hooks';
 import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
-import { CDAI_CONTRACT, SAI_ADDRESS } from '../references';
+import { CDAI_CONTRACT, DAI_ADDRESS } from '../references';
 
-// const pollInterval = 15000;
+const COMPOUND_QUERY_INTERVAL = 10000;
 
-export default function useSavingsAccount(pollInterval = 0) {
-  const { accountAddress, tokenOverrides } = useSelector(
-    ({ data, settings }) => ({
-      accountAddress: settings.accountAddress,
-      tokenOverrides: data.tokenOverrides,
-    })
-  );
+const getMarketData = (marketData, tokenOverrides) => {
+  const underlying = getUnderlyingData(marketData, tokenOverrides);
+  const { supplyRate, underlyingPrice } = marketData;
 
-  const marketsQuery = useQuery(COMPOUND_ALL_MARKETS_QUERY, {
+  return {
+    supplyRate,
+    underlying,
+    underlyingPrice,
+  };
+};
+
+const getUnderlyingData = (marketData, tokenOverrides) => {
+  const {
+    underlyingAddress,
+    underlyingDecimals,
+    underlyingName,
+    underlyingSymbol,
+  } = marketData;
+
+  return {
+    address: underlyingAddress,
+    decimals: underlyingDecimals,
+    name: parseAssetName(underlyingName, underlyingAddress, tokenOverrides),
+    symbol: parseAssetSymbol(
+      underlyingSymbol,
+      underlyingAddress,
+      tokenOverrides
+    ),
+  };
+};
+
+export default function useSavingsAccount() {
+  const [accountTokensBackup, setAccountTokensBackup] = useState([]);
+
+  const { tokenOverrides } = useSelector(({ data }) => ({
+    tokenOverrides: data.tokenOverrides,
+  }));
+
+  const { accountAddress, network } = useAccountSettings();
+
+  const compoundQuery = useQuery(COMPOUND_ACCOUNT_AND_MARKET_QUERY, {
     client: compoundClient,
-    pollInterval,
-  });
-
-  const tokenQuery = useQuery(COMPOUND_ACCOUNT_QUERY, {
-    client: compoundClient,
-    pollInterval,
+    pollInterval: COMPOUND_QUERY_INTERVAL,
     skip: !toLower(accountAddress),
     variables: { id: toLower(accountAddress) },
   });
 
+  const getSavingsFromStorage = useCallback(async () => {
+    if (accountAddress) {
+      const savingsAccountLocal = await getSavings(accountAddress, network);
+      setAccountTokensBackup(savingsAccountLocal);
+    }
+  }, [accountAddress, network]);
+
+  useEffect(() => {
+    getSavingsFromStorage();
+  }, [accountAddress, getSavingsFromStorage, network]);
+
   const tokens = useMemo(() => {
-    console.log('[SAVINGS MEMO]');
     const markets = keyBy(
-      get(marketsQuery, 'data.markets', []),
+      get(compoundQuery, 'data.markets', []),
       property('id')
     );
 
-    let accountTokens = get(tokenQuery, 'data.account.tokens', []);
+    let accountTokens = get(compoundQuery, 'data.account.tokens', []);
 
     accountTokens = accountTokens.map(token => {
       const [cTokenAddress] = token.id.split('-');
-      const { name, symbol, ...marketData } = markets[cTokenAddress] || {};
+      const marketData = markets[cTokenAddress] || {};
 
-      // Rename old DAI as SAI
-      marketData.underlyingSymbol =
-        marketData.underlyingAddress === SAI_ADDRESS
-          ? 'SAI'
-          : marketData.underlyingSymbol;
-
-      const ethPrice = multiply(
-        marketData.underlyingPrice,
-        token.supplyBalanceUnderlying
+      const { supplyRate, underlying, underlyingPrice } = getMarketData(
+        marketData,
+        tokenOverrides
       );
 
+      const ethPrice = multiply(underlyingPrice, token.supplyBalanceUnderlying);
+
+      const {
+        cTokenBalance,
+        lifetimeSupplyInterestAccrued,
+        supplyBalanceUnderlying,
+      } = token;
+
       return {
-        ...marketData,
-        ...token,
-        cTokenAddress,
+        cTokenBalance,
         ethPrice,
-        name: parseAssetName(name, cTokenAddress, tokenOverrides),
-        symbol: parseAssetSymbol(symbol, cTokenAddress, tokenOverrides),
+        lifetimeSupplyInterestAccrued,
+        supplyBalanceUnderlying,
+        supplyRate,
+        underlying,
+        underlyingPrice,
       };
     });
 
     accountTokens = orderBy(accountTokens, ['ethPrice'], ['desc']);
 
-    console.log('Account tokens', accountTokens);
-
     const accountHasCDAI = find(
       accountTokens,
-      token => token.cTokenAddress === CDAI_CONTRACT
+      token => token.underlying.address === DAI_ADDRESS
     );
 
-    if (!accountHasCDAI) {
-      const DAIMarketData = {
-        ...markets[CDAI_CONTRACT],
-        cTokenAddress: CDAI_CONTRACT,
-      };
+    if (!accountHasCDAI && markets[CDAI_CONTRACT]) {
+      const DAIMarketData = getMarketData(
+        markets[CDAI_CONTRACT],
+        tokenOverrides
+      );
       accountTokens.push({ ...DAIMarketData });
     }
 
-    return accountTokens;
-  }, [marketsQuery, tokenOverrides, tokenQuery]);
+    if (accountTokens.length) {
+      saveSavings(accountTokens, accountAddress, network);
+    }
+    return (accountTokens.length && accountTokens) || accountTokensBackup;
+  }, [
+    accountAddress,
+    accountTokensBackup,
+    compoundQuery,
+    network,
+    tokenOverrides,
+  ]);
 
   return tokens;
 }

@@ -94,9 +94,7 @@ export default function useInitializeWallet() {
         // TODO specify error states more granular
         onHideSplashScreen();
         captureException(error);
-        Alert.alert(
-          'Import failed due to an invalid private key. Please try again.'
-        );
+        Alert.alert('Something went wrong while importing. Please try again!');
         return null;
       }
     },
