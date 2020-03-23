@@ -46,6 +46,7 @@ const ConfirmExchangeButton = ({
       disabledBackgroundColor={colors.grey20}
       flex={1}
       hideBiometricIcon={isUnlockingAsset}
+      hideInnerBorder
       isAuthorizing={isAuthorizing}
       label={label}
       onLongPress={isAssetApproved ? onSubmit : onUnlockAsset}
