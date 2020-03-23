@@ -3,7 +3,7 @@ import { get } from 'lodash';
 import { toHex } from '../../handlers/web3';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
-import { convertAmountToRawAmount } from '../../helpers/utilities';
+import { convertAmountToRawAmount, isZero } from '../../helpers/utilities';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
 import store from '../../redux/store';
@@ -29,6 +29,7 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     inputAmount,
     isMax ? CTOKEN_DECIMALS : inputCurrency.decimals
   );
+  console.log('[withdraw] is max', isMax);
   console.log('[withdraw] raw input amount', rawInputAmount);
 
   console.log('[withdraw] execute the withdraw');
@@ -83,10 +84,18 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
   currentRap.actions[index].transaction.hash = withdraw.hash;
   try {
     console.log('[withdraw] waiting for the withdraw to go thru');
-    await withdraw.wait();
-    // update rap for confirmed status
-    currentRap.actions[index].transaction.confirmed = true;
-    dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+    const receipt = await wallet.provider.waitForTransaction(withdraw.hash);
+    console.log('[withdraw] withdrawal completed! Receipt:', receipt);
+    if (!isZero(receipt.status)) {
+      currentRap.actions[index].transaction.confirmed = true;
+      console.log('[withdraw] updated txn confirmed to true');
+      dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+      console.log('[withdraw] updated raps');
+    } else {
+      console.log('[withdraw] status not success');
+      currentRap.actions[index].transaction.confirmed = false;
+      dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+    }
   } catch (error) {
     console.log('[withdraw] error waiting for withdraw', error);
     currentRap.actions[index].transaction.confirmed = false;

@@ -3,7 +3,7 @@ import { get } from 'lodash';
 import { toHex } from '../../handlers/web3';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
-import { convertAmountToRawAmount } from '../../helpers/utilities';
+import { convertAmountToRawAmount, isZero } from '../../helpers/utilities';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
 import store from '../../redux/store';
@@ -73,7 +73,7 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
     type: TransactionTypes.deposit,
   };
   console.log('[deposit] adding new txn', newTransaction);
-  dispatch(dataAddNewTransaction(newTransaction, true));
+  dispatch(dataAddNewTransaction(newTransaction));
   console.log('[deposit] calling the callback');
   currentRap.callback();
   currentRap.callback = NOOP;
@@ -81,17 +81,24 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
   // wait for it to complete
   currentRap.actions[index].transaction.hash = deposit.hash;
   try {
-    console.log('[deposit] waiting for the deposit to go thru');
-    await deposit.wait();
-    console.log('[deposit] deposit completed!');
-    // update rap for confirmed status
-    currentRap.actions[index].transaction.confirmed = true;
-    dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+    console.log('[deposit] waiting for the deposit to go thru', deposit.hash);
+    const receipt = await wallet.provider.waitForTransaction(deposit.hash);
+    console.log('[deposit] receipt:', receipt);
+    if (!isZero(receipt.status)) {
+      currentRap.actions[index].transaction.confirmed = true;
+      dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+      console.log('[deposit] updated raps');
+    } else {
+      console.log('[deposit] status not success');
+      currentRap.actions[index].transaction.confirmed = false;
+      dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+    }
   } catch (error) {
     console.log('[deposit] error waiting for deposit', error);
     currentRap.actions[index].transaction.confirmed = false;
     dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
   }
+  console.log('[deposit] completed');
 };
 
 export default depositCompound;

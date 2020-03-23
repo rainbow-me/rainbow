@@ -1,5 +1,5 @@
 import { get, toLower } from 'lodash';
-import { greaterThan } from '../../helpers/utilities';
+import { greaterThan, isZero } from '../../helpers/utilities';
 import store from '../../redux/store';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
@@ -74,17 +74,23 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   console.log('[unlock] APPROVAL SUBMITTED, HASH', approval.hash);
   console.log('[unlock] WAITING TO BE MINED...');
   try {
-    await approval.wait();
-    // update rap for confirmed status
-    currentRap.actions[index].transaction.confirmed = true;
-    dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
-    console.log('[unlock] APPROVAL READY, LETS GOOO');
+    const receipt = await wallet.provider.waitForTransaction(approval.hash);
+    if (!isZero(receipt.status)) {
+      // update rap for confirmed status
+      currentRap.actions[index].transaction.confirmed = true;
+      dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+      console.log('[unlock] APPROVED');
+    } else {
+      console.log('[unlock] error waiting for approval');
+      currentRap.actions[index].transaction.confirmed = false;
+      dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+    }
   } catch (error) {
-    console.log('[unlock] error waiting for approval', error);
+    console.log('[unlock] approval status not success', error);
     currentRap.actions[index].transaction.confirmed = false;
     dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
   }
-  console.log('[unlock] returning', currentRap, approval);
+  console.log('[unlock] completed', currentRap, approval);
   return { rap: currentRap, txn: approval };
 };
 
