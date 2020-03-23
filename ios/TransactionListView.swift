@@ -7,7 +7,7 @@
 
 import Foundation
 
-class TransactionListView: UIView, UITableViewDelegate {
+class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var onTransactionPress: RCTBubblingEventBlock = { _ in }
   @objc var onRequestPress: RCTBubblingEventBlock = { _ in }
   @objc var onRequestExpire: RCTBubblingEventBlock = { _ in }
@@ -22,6 +22,7 @@ class TransactionListView: UIView, UITableViewDelegate {
     }
   }
   @objc var scaleTo: CGFloat = 0.97
+  @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5)
   @objc var enableHapticFeedback: Bool = true
   @objc var hapticType: String = "selection"
   @objc var accountAddress: String? = nil {
@@ -41,11 +42,21 @@ class TransactionListView: UIView, UITableViewDelegate {
   }
   @objc var data: TransactionData = TransactionData() {
     didSet {
-      viewModel = TransactionViewModel(data: data)
-      viewModel!.onRequestPress = onRequestPress
-      viewModel!.onTransactionPress = onTransactionPress
-      viewModel!.onRequestExpire = onRequestExpire
-      tableView.dataSource = viewModel
+      let transactions = data.value(forKey: "transactions") as! [Transaction]
+      let requests = data.value(forKey: "requests") as! [TransactionRequest]
+      var items = [TransactionViewModelProtocol]()
+      
+      if !requests.isEmpty {
+        let item = TransactionViewModelTransactionRequestItem(requests: requests)
+        items.append(item)
+      }
+      
+      if !transactions.isEmpty {
+        let item = TransactionViewModelTransactionItem(transactions: transactions)
+        items.append(item)
+      }
+      
+      sections = items.flatMap { $0.sections }
       tableView.reloadData()
     }
   }
@@ -74,7 +85,7 @@ class TransactionListView: UIView, UITableViewDelegate {
     ])
   }
   
-  var viewModel: TransactionViewModel?
+  var sections: [TransactionSectionProtocol] = [TransactionSectionProtocol]()
   
   let tableView = UITableView()
   let header: TransactionListViewHeader = TransactionListViewHeader.fromNib()
@@ -83,7 +94,7 @@ class TransactionListView: UIView, UITableViewDelegate {
   override init(frame: CGRect) {
     super.init(frame: frame)
     
-    tableView.dataSource = viewModel
+    tableView.dataSource = self
     tableView.delegate = self
     tableView.rowHeight = 60
     tableView.delaysContentTouches = false
@@ -128,11 +139,11 @@ class TransactionListView: UIView, UITableViewDelegate {
     let view = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: 40))
     let label = UILabel(frame: CGRect(x: 20, y: 20, width: view.frame.width, height: view.frame.height))
     
-    if viewModel?.sections.count == 0 {
+    if sections.count == 0 {
       return nil
     }
     
-    let section = viewModel!.sections[section]
+    let section = sections[section]
     
     label.text = section.title
     label.font = .systemFont(ofSize: 18.0, weight: .semibold)
@@ -140,5 +151,47 @@ class TransactionListView: UIView, UITableViewDelegate {
     view.addSubview(label)
     
     return view
+  }
+  
+  func numberOfSections(in tableView: UITableView) -> Int {
+    return sections.count
+  }
+  
+  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    if sections.count == 0 {
+      return 0
+    }
+    return sections[section].data.count
+  }
+  
+  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    let item = sections[indexPath.section]
+    
+    if item.type == .transactions {
+      let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionListViewCell", for: indexPath) as! TransactionListViewCell
+      let transaction = sections[indexPath.section].data[indexPath.row] as! Transaction
+      
+      cell.onItemPress = onTransactionPress
+      cell.layer.anchorPoint = transformOrigin
+      cell.row = indexPath.row
+      cell.scaleTo = scaleTo
+      cell.set(transaction: transaction)
+      cell.selectionStyle = .none
+      
+      return cell;
+    } else {
+      let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionListRequestViewCell", for: indexPath) as! TransactionListRequestViewCell
+      let request = sections[indexPath.section].data[indexPath.row] as! TransactionRequest
+      
+      cell.onItemPress = onRequestPress
+      cell.layer.anchorPoint = transformOrigin
+      cell.onRequestExpire = onRequestExpire
+      cell.row = indexPath.row
+      cell.scaleTo = scaleTo
+      cell.set(request: request)
+      cell.selectionStyle = .none
+      
+      return cell;
+    }
   }
 }
