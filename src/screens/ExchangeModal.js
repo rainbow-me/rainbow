@@ -744,11 +744,19 @@ const ExchangeModal = ({
         );
 
         const isSufficientBalance =
-          !newInputAmount || greaterThanOrEqualTo(inputBalance, newInputAmount);
+          !newInputAmount || isWithdrawal
+            ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
+            : greaterThanOrEqualTo(inputBalance, newInputAmount);
         setIsSufficientBalance(isSufficientBalance);
       }
     },
-    [getMarketPrice, inputCurrency, selectedGasPrice]
+    [
+      getMarketPrice,
+      inputCurrency,
+      isWithdrawal,
+      selectedGasPrice,
+      supplyBalanceUnderlying,
+    ]
   );
 
   const previousInputCurrency = usePrevious(inputCurrency);
@@ -884,6 +892,7 @@ const ExchangeModal = ({
     }
   };
 
+  // TODO JIN?
   const isSlippageWarningVisible =
     isSufficientBalance && !!inputAmount && !!outputAmount;
 
@@ -975,7 +984,7 @@ const ExchangeModal = ({
                   disabled={!Number(inputAmountDisplay)}
                   isAuthorizing={isAuthorizing}
                   isDeposit={isDeposit}
-                  isSufficientBalance={isWithdrawal || isSufficientBalance}
+                  isSufficientBalance={isSufficientBalance}
                   onSubmit={handleSubmit}
                   slippage={slippage}
                   type={type}
