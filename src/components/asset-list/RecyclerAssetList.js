@@ -792,7 +792,7 @@ class RecyclerAssetList extends Component {
                 ...item.assets[i],
                 isSmall: true,
               },
-              key: `CoinSmallBalances${i}`,
+              key: `CoinSmallBalances${item.assets[i].symbol}`,
             })
           );
           checkList.push(<CoinCheckButton {...item.assets[i]} />);
