@@ -3,10 +3,10 @@ import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 
 const base = {
-  appleBlue: '#0E76FD', // 14, 118, 253
+  appleBlue: '#0E76FD', // '14, 118, 253'
   black: '#000000', // '0, 0, 0'
   blueGreyDark: '#3C4252', // '60, 66, 82'
-  blueGreyDark50: '#9DA0A8',
+  blueGreyDark50: '#9DA0A8', // '60, 66, 82, 0.5'
   blueGreyDarker: '#0F0F11', // '15, 15, 17'
   blueGreyDarkLight: '#F3F4F5', // '243, 244, 245'
   dark: '#25292E', // '37, 41, 46'
@@ -25,15 +25,16 @@ const base = {
   purple: '#32325D', // '50, 50, 93'
   purpleLight: '#FFD9FE', // '255, 217, 254'
   red: '#FF494A', // '255, 73, 74'
-  rowDivider: 'rgba(60, 66, 82, 0.03)', // '60, 66, 82'
-  rowDividerLight: 'rgba(60, 66, 82, 0.02)', // '60, 66, 82'
+  rowDivider: 'rgba(60, 66, 82, 0.03)', // '60, 66, 82, 0.03'
+  rowDividerLight: 'rgba(60, 66, 82, 0.02)', // '60, 66, 82, 0.03'
   shadowGrey: '#6F6F6F', // '111, 111, 111'
   shimmer: '#EDEEF1', // '237, 238, 241'
   skeleton: '#F6F7F8', // '246, 247, 248'
   swapPurple: '#575CFF', // '87, 92, 255'
   transparent: 'transparent',
   white: '#FFFFFF', // '255, 255, 255'
-  yellowOrange: '#FFB200', // '255, 178, 0'
+  yellow: '#FFD657', // '255, 214, 87'
+  yellowOrange: '#FFC400', // '255, 178, 0'
 };
 
 const avatarColor = [
@@ -41,7 +42,7 @@ const avatarColor = [
   '#01D3FF', // '2, 211, 255'
   '#FB60C4', // '251, 96, 196'
   '#3F6AFF', // '63, 106, 255'
-  '#FFD963', // '250, 218, 61'
+  '#FFD963', // '255, 217, 99'
   '#B140FF', // '177, 64, 255'
   '#41EBC1', // '64, 235, 193'
   '#F46E38', // '244, 110, 56'
