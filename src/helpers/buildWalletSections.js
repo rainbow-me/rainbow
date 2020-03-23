@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import { compact, flattenDeep, get, groupBy, property } from 'lodash';
 import React from 'react';
+import { LayoutAnimation } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
@@ -17,6 +18,8 @@ import {
   setPinnedCoins,
   setHiddenCoins,
 } from '../redux/editOptions';
+import { getAssets } from '../handlers/localstorage/accountLocal';
+import { dataUpdateAssets } from '../redux/data';
 
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
@@ -114,6 +117,7 @@ const withBalanceSection = (
   nativeCurrency,
   showShitcoins
 ) => {
+  allAssets.splice(3);
   let balanceSectionData = buildCoinsList(allAssets);
   const isLoadingBalances = !isWalletEthZero && isBalancesSectionEmpty;
   if (isLoadingBalances) {
@@ -124,36 +128,51 @@ const withBalanceSection = (
     balances: true,
     data: balanceSectionData,
     header: {
-      contextMenuOptions: {
-        cancelButtonIndex: 1,
-        dynamicOptions: () =>
-          store.getState().editOptions.isCoinListEdited
-            ? ['Pin', 'Cancel', 'Hide', 'Finish']
-            : ['Edit', 'Cancel'],
-        onPressActionSheet: index => {
-          if (store.getState().editOptions.isCoinListEdited) {
-            if (index === 3) {
-              store.dispatch(
-                setIsCoinListEdited(
-                  !store.getState().editOptions.isCoinListEdited
-                )
-              );
-            } else if (index === 0) {
-              store.dispatch(setPinnedCoins());
-            } else if (index === 2) {
-              store.dispatch(setHiddenCoins());
+      contextMenuOptions:
+        allAssets.length < 5 &&
+        !balanceSectionData[balanceSectionData.length - 1]
+          .smallBalancesContainer
+          ? {
+              cancelButtonIndex: 1,
+              dynamicOptions: () =>
+                store.getState().editOptions.isCoinListEdited
+                  ? ['Pin', 'Cancel', 'Hide', 'Finish']
+                  : ['Edit', 'Cancel'],
+              onPressActionSheet: async index => {
+                if (store.getState().editOptions.isCoinListEdited) {
+                  if (index === 3) {
+                    store.dispatch(
+                      setIsCoinListEdited(
+                        !store.getState().editOptions.isCoinListEdited
+                      )
+                    );
+                  } else if (index === 0) {
+                    store.dispatch(setPinnedCoins());
+                  } else if (index === 2) {
+                    store.dispatch(setHiddenCoins());
+                  }
+                  if (index === 2 || index === 0) {
+                    const assets = await getAssets(
+                      store.getState().settings.accountAddress,
+                      store.getState().settings.network
+                    );
+                    store.dispatch(dataUpdateAssets(assets));
+                    LayoutAnimation.configureNext(
+                      LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+                    );
+                  }
+                } else {
+                  if (index === 0) {
+                    store.dispatch(
+                      setIsCoinListEdited(
+                        !store.getState().editOptions.isCoinListEdited
+                      )
+                    );
+                  }
+                }
+              },
             }
-          } else {
-            if (index === 0) {
-              store.dispatch(
-                setIsCoinListEdited(
-                  !store.getState().editOptions.isCoinListEdited
-                )
-              );
-            }
-          }
-        },
-      },
+          : undefined,
       showShitcoins,
       title: lang.t('account.tab_balances'),
       totalItems: isLoadingBalances ? 1 : allAssetsCount,

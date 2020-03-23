@@ -74,7 +74,7 @@ export const buildCoinsList = assets => {
   if (
     smallBalances.assets.length > 0 ||
     hiddenCoins.length > 0 ||
-    pinnedCoins.length === allAssets.length
+    (pinnedCoins.length === allAssets.length && allAssets.length > 4)
   ) {
     allAssets.push(smallBalances);
   }
