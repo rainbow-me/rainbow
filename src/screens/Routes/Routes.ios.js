@@ -300,9 +300,8 @@ const NativeStackFallback = createStackNavigator(
     ImportSeedPhraseSheet: {
       navigationOptions: {
         ...sheetPreset,
-        onTransitionStart: props => {
-          sheetPreset.onTransitionStart(props);
-          onTransitionStart();
+        onTransitionStart: () => {
+          StatusBar.setBarStyle('light-content');
         },
       },
       screen: ImportSeedPhraseSheetWithData,
@@ -325,9 +324,8 @@ const NativeStackFallback = createStackNavigator(
     SendSheet: {
       navigationOptions: {
         ...omit(sheetPreset, 'gestureResponseDistance'),
-        onTransitionStart: props => {
-          onTransitionStart(props);
-          sheetPreset.onTransitionStart(props);
+        onTransitionStart: () => {
+          StatusBar.setBarStyle('light-content');
         },
       },
       screen: SendSheetWithData,
