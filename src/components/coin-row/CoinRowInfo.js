@@ -9,6 +9,7 @@ import BottomRowText from './BottomRowText';
 import CoinRow from './CoinRow';
 import { compose } from 'recompact';
 import { withAccountSettings } from '../../hoc';
+import withCoinListEdited from '../../hoc/withCoinListEdited';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 9;
@@ -32,15 +33,28 @@ const formatPercentageString = percentString =>
         .join(' %')
     : '-';
 
-const CoinRowInfo = ({ native, nativeCurrencySymbol }) => {
+const CoinRowInfo = ({
+  isCoinListEdited,
+  isHidden,
+  native,
+  nativeCurrencySymbol,
+}) => {
   const nativeDisplay = get(native, 'balance.display');
 
   const percentChange = get(native, 'change');
   const percentageChangeDisplay = formatPercentageString(percentChange);
   const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
   return (
-    <Container>
+    <Container style={{ opacity: isHidden && isCoinListEdited ? 0.4 : 1 }}>
       <BalanceText
+        style={
+          isHidden && isCoinListEdited
+            ? {
+                textDecorationLine: 'line-through',
+                textDecorationStyle: 'solid',
+              }
+            : {}
+        }
         color={nativeDisplay ? null : colors.alpha(colors.blueGreyDark, 0.5)}
         numberOfLines={1}
       >
@@ -70,4 +84,4 @@ CoinRowInfo.propTypes = {
   nativeCurrencySymbol: PropTypes.string,
 };
 
-export default compose(withAccountSettings)(CoinRowInfo);
+export default compose(withAccountSettings, withCoinListEdited)(CoinRowInfo);

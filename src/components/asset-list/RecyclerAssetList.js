@@ -796,7 +796,13 @@ class RecyclerAssetList extends Component {
             })
           );
           checkList.push(<CoinCheckButton {...item.assets[i]} />);
-          valuesList.push(<CoinRowInfo native={item.assets[i].native} />);
+          valuesList.push(
+            <CoinRowInfo
+              native={item.assets[i].native}
+              isHidden={item.assets[i].isHidden}
+              key={`CoinSmallBalancesInfo${item.assets[i].symbol}`}
+            />
+          );
         }
         this.renderList = renderList;
         this.checkList = checkList;
