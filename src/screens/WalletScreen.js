@@ -22,7 +22,6 @@ import {
   withDataInit,
   withIsWalletEmpty,
   withIsWalletEthZero,
-  withStatusBarStyle,
   withUniqueTokens,
   withUniswapLiquidityTokenInfo,
   withKeyboardHeight,
@@ -158,7 +157,6 @@ export default compose(
   withIsWalletEmpty,
   withIsWalletEthZero,
   withKeyboardHeight,
-  withStatusBarStyle('dark-content'),
   withProps(buildWalletSectionsSelector),
   withProps({ scrollViewTracker: new Animated.Value(0) })
 )(WalletScreen);
