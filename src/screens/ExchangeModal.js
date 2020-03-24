@@ -659,12 +659,6 @@ const ExchangeModal = ({
         onSelectCurrency: updateInputCurrency,
         restoreFocusOnSwapModal: () => {
           navigation.setParams({ focused: true });
-          if (
-            !previousInputCurrency ||
-            previousInputCurrency.uniqueId !== inputCurrency.uniqueId
-          ) {
-            setNativeAmount();
-          }
         },
         type: CurrencySelectionTypes.input,
       });
@@ -680,12 +674,6 @@ const ExchangeModal = ({
         onSelectCurrency: updateOutputCurrency,
         restoreFocusOnSwapModal: () => {
           navigation.setParams({ focused: true });
-          if (
-            !previousOutputCurrency ||
-            previousOutputCurrency.uniqueId !== outputCurrency.uniqueId
-          ) {
-            setNativeAmount();
-          }
         },
         type: CurrencySelectionTypes.output,
       });
