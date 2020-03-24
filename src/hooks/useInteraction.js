@@ -4,8 +4,10 @@ import { InteractionManager } from 'react-native';
 export default function useInteraction() {
   const interactionHandle = useRef();
 
-  const createInteractionHandle = useCallback(() => {
-    interactionHandle.current = InteractionManager.createInteractionHandle();
+  const createInteractionHandle = useCallback(callback => {
+    interactionHandle.current = callback
+      ? InteractionManager.runAfterInteractions(callback)
+      : InteractionManager.createInteractionHandle();
   }, []);
 
   const removeInteractionHandle = useCallback(() => {
@@ -17,5 +19,5 @@ export default function useInteraction() {
 
   useEffect(() => () => removeInteractionHandle());
 
-  return [interactionHandle, createInteractionHandle, removeInteractionHandle];
+  return [createInteractionHandle, removeInteractionHandle, interactionHandle];
 }

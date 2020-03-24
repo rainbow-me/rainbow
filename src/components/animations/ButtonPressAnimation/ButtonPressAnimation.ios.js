@@ -209,7 +209,7 @@ function ButtonPressAnimationJS({
   style,
   transformOrigin,
 }) {
-  const [interactionHandle, createHandle, removeHandle] = useInteraction();
+  const [createHandle, removeHandle, interactionHandle] = useInteraction();
   const { onLayout, withTransformOrigin } = useTransformOrigin(transformOrigin);
 
   const optionallyTriggerHaptic = useCallback(() => {
