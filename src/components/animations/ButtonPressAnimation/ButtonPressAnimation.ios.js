@@ -392,6 +392,7 @@ ButtonPressAnimation.propTypes = {
   scaleTo: PropTypes.number,
   style: stylePropType,
   transformOrigin: directionPropType,
+  useLateHaptic: PropTypes.bool,
 };
 
 ButtonPressAnimation.defaultProps = {
@@ -410,4 +411,5 @@ Button.defaultProps = {
   hapticType: 'selection',
   minLongPressDuration: 500,
   scaleTo: animations.keyframes.button.to.scale,
+  useLateHaptic: true,
 };
