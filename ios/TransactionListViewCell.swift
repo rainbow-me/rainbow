@@ -33,14 +33,12 @@ class TransactionListViewCell: TransactionListBaseCell {
     nativeDisplay.text = transaction.nativeDisplay
     balanceDisplay.text = transaction.balanceDisplay
     
-    if let image = UIImage.init(named: transaction.status.lowercased()) {
-      transactionIcon.image = image
-      transactionIcon.tintAdjustmentMode = .normal
-    }
-    
+   
     setStatusColor(transaction)
     setCellColors(transaction)
-    
+    setText(transaction)
+    setIcon(transaction)
+
     if transaction.symbol != nil {
       if let img = UIImage.init(named: transaction.symbol.lowercased()) {
         coinImage.image = img
@@ -51,20 +49,47 @@ class TransactionListViewCell: TransactionListBaseCell {
     }
   }
   
+  private func setIcon(_ transaction: Transaction) {
+    if (transaction.pending) {
+       transactionIcon.image = UIImage.init(named: "spinner");
+       transactionIcon.image!.accessibilityIdentifier = "spinner"
+       transactionIcon.rotate()
+     } else if let image = UIImage.init(named: transaction.status.lowercased()) {
+       if (transactionIcon.image != nil && transactionIcon.image?.accessibilityIdentifier == "spinner") {
+         transactionIcon.stopRotating()
+       }
+       transactionIcon.image = image
+       transactionIcon.image!.accessibilityIdentifier = "static";
+     }
+
+    // Savings Overrides
+    if (transaction.status.lowercased() ==  "deposited" || transaction.status.lowercased() == "withdrew") {
+      transactionIcon.image = UIImage.init(named: "sunflower")
+    }
+    
+    // Swap Overrides
+    if transaction.type.lowercased() == "trade" && transaction.status.lowercased() == "sent" {
+        transactionIcon.image = UIImage.init(named: "swapped")
+    }
+    
+    // Authorize Overrides
+    if transaction.type.lowercased() == "authorize" && transaction.status.lowercased() == "approved" {
+      transactionIcon.image = UIImage.init(named: "self")
+    }
+    
+    transactionIcon.tintAdjustmentMode = .normal
+
+  }
+  
   private func setStatusColor(_ transaction: Transaction) {
     let transactionColors = UIColor.RainbowTheme.Transactions.self
     var color = transactionColors.blueGreyMediumLight
     
     if transaction.pending {
       color = transactionColors.primaryBlue
-    } else if transaction.type == "trade" {
-      if transaction.status.lowercased() == "received" {
-        color = transactionColors.dodgerBlue
-      } else if transaction.status.lowercased() == "sent" {
-        color = transactionColors.dodgerBlue
-        transactionIcon.image = UIImage.init(named: "swapped")
-        transactionType.text = "Swapped"
-      }
+    } else if transaction.type == "trade"  && transaction.status.lowercased() == "sent" {
+      color = transactionColors.swapPurple
+      transactionType.text = "Swapped"
     }
     
     transactionIcon.tintColor = color
@@ -83,15 +108,33 @@ class TransactionListViewCell: TransactionListBaseCell {
     }
     
     switch transaction.status {
-    case "Sent":
-      nativeDisplay.textColor = UIColor.RainbowTheme.Transactions.dark
-      nativeDisplay.text = "- " + transaction.nativeDisplay
-      break
-    case "Received":
-      nativeDisplay.textColor = UIColor.RainbowTheme.Transactions.limeGreen
-      break
-    default:
-      break
+      case "Sent":
+        nativeDisplay.textColor = UIColor.RainbowTheme.Transactions.dark
+        nativeDisplay.text = "- " + transaction.nativeDisplay
+        break
+      case "Received":
+        nativeDisplay.textColor = UIColor.RainbowTheme.Transactions.green
+        break
+      default:
+        break
+    }
+  }
+  
+  private func setText(_ transaction: Transaction) {
+    if let type = transaction.type {
+      if (type.lowercased() == "deposit" || type.lowercased() == "withdraw") {
+        if let status = transaction.status {
+          if (status.lowercased() == "depositing" || status.lowercased() == "withdrawing" || status.lowercased() == "sending") {
+            transactionType.text = " \(status.capitalized)";
+            coinName.text = "\(transaction.symbol!)";
+          } else if (status.lowercased() == "deposited" || status.lowercased() == "withdrew") {
+            transactionType.text = " Savings";
+            coinName.text = "\(status.capitalized) \(transaction.symbol!)";
+          } else if (transaction.status.lowercased() == "failed") {
+            coinName.text = "\(type.lowercased() == "withdraw" ? "Withdrew" : "Deposited") \(transaction.symbol!)";
+          }
+        }
+      }
     }
   }
 }

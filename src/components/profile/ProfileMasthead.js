@@ -1,23 +1,23 @@
+import GraphemeSplitter from 'grapheme-splitter';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View, Text } from 'react-native';
-import { compose, withHandlers } from 'recompact';
 import FastImage from 'react-native-fast-image';
-import GraphemeSplitter from 'grapheme-splitter';
+import { useNavigation } from 'react-navigation-hooks';
+import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
+import { isAvatarPickerAvailable } from '../../config/experimental';
+import { useClipboard } from '../../hooks';
 import { margin, colors, borders } from '../../styles';
 import { abbreviations } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { useNavigation } from 'react-navigation-hooks';
-import { useClipboard } from '../../hooks';
 import CopyTooltip from '../copy-tooltip';
+import { FloatingEmojis } from '../floating-emojis';
 import Divider from '../Divider';
 import { Centered, RowWithMargins } from '../layout';
-import { FloatingEmojis } from '../floating-emojis';
 import { TruncatedAddress } from '../text';
 import ProfileAction from './ProfileAction';
-import { isAvatarPickerAvailable } from '../../config/experimental';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',

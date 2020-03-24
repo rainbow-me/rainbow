@@ -1,4 +1,8 @@
 export default {
+  approved: 'approved',
+  approving: 'approving',
+  deposited: 'deposited',
+  depositing: 'depositing',
   failed: 'failed',
   received: 'received',
   receiving: 'receiving',
@@ -7,4 +11,6 @@ export default {
   sent: 'sent',
   swapped: 'swapped',
   unknown: 'unknown status',
+  withdrawing: 'withdrawing',
+  withdrew: 'withdrew',
 };

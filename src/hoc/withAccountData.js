@@ -1,14 +1,13 @@
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
-import { sortAssetsByNativeAmountSelector } from './assetSelectors';
+import { sortAssetsByNativeAmountSelector } from './assetSelectorsOriginal';
 
 const mapStateToProps = ({
-  data: { assetPricesFromUniswap, assets, compoundAssets, loadingAssets },
+  data: { assetPricesFromUniswap, assets, loadingAssets },
   settings: { nativeCurrency },
 }) => ({
   assetPricesFromUniswap,
   assets,
-  compoundAssets,
   loadingAssets,
   nativeCurrency,
 });

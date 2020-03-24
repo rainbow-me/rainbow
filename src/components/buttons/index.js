@@ -3,7 +3,6 @@ export { default as Button } from './Button';
 export {
   HoldToAuthorizeButton,
   HoldToAuthorizeButtonIcon,
-  UnlockingSpinner,
 } from './hold-to-authorize';
 export { default as PasteAddressButton } from './PasteAddressButton';
 export { default as TokenSelectionButton } from './TokenSelectionButton';

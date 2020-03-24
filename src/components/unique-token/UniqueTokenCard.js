@@ -6,8 +6,8 @@ import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
 import { withFabSendAction } from '../../hoc';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
+import { InnerBorder } from '../layout';
 import Highlight from '../Highlight';
-import InnerBorder from '../InnerBorder';
 import UniqueTokenImage from './UniqueTokenImage';
 
 const UniqueTokenCardBorderRadius = 18;
@@ -17,10 +17,9 @@ const UniqueTokenCard = ({
   disabled,
   enableHapticFeedback,
   height,
+  highlight,
   item: { background, image_preview_url, ...item },
   onPress,
-  onPressSend,
-  highlight,
   resizeMode,
   scaleTo,
   shadowStyle,
@@ -28,13 +27,11 @@ const UniqueTokenCard = ({
   width,
   ...props
 }) => {
-  const backgroundColor = background || colors.lightestGrey;
   return (
     <ButtonPressAnimation
       disabled={disabled}
       enableHapticFeedback={enableHapticFeedback}
       onPress={onPress}
-      onPressSend={onPressSend}
       scaleTo={scaleTo}
       style={{
         shadowColor: colors.dark,
@@ -53,10 +50,10 @@ const UniqueTokenCard = ({
         width={width}
       >
         <UniqueTokenImage
-          backgroundColor={backgroundColor}
-          resizeMode={resizeMode}
+          backgroundColor={background || colors.lightestGrey}
           imageUrl={image_preview_url}
           item={item}
+          resizeMode={resizeMode}
         />
         {borderEnabled && (
           <InnerBorder
@@ -85,7 +82,6 @@ UniqueTokenCard.propTypes = {
     image_preview_url: PropTypes.string,
   }),
   onPress: PropTypes.func,
-  onPressSend: PropTypes.func,
   resizeMode: UniqueTokenImage.propTypes.resizeMode,
   scaleTo: PropTypes.number,
   shadowStyle: stylePropType,
@@ -101,19 +97,14 @@ UniqueTokenCard.defaultProps = {
 };
 
 export default compose(
+  withFabSendAction,
   withHandlers({
     onPress: ({ item, onPress }) => () => {
       if (onPress) {
         onPress(item);
       }
     },
-    onPressSend: ({ item, onPressSend }) => () => {
-      if (onPressSend) {
-        onPressSend(item);
-      }
-    },
   }),
   withProps(({ item: { uniqueId } }) => ({ uniqueId })),
-  withFabSendAction,
-  onlyUpdateForKeys(['height', 'style', 'uniqueId', 'width', 'highlight'])
+  onlyUpdateForKeys(['height', 'highlight', 'style', 'uniqueId', 'width'])
 )(UniqueTokenCard);

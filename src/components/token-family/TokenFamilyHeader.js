@@ -1,123 +1,89 @@
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import { FallbackIcon } from 'react-coin-icon';
+import React from 'react';
 import FastImage from 'react-native-fast-image';
 import Animated, { Easing } from 'react-native-reanimated';
-import { toRad } from 'react-native-redash';
-import { toClass, withProps } from 'recompact';
+import { toRad, useTimingTransition } from 'react-native-redash';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
-import { borders, colors } from '../../styles';
-import { initials, isNewValueForPath } from '../../utils';
+import { colors } from '../../styles';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import Highlight from '../Highlight';
-import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
 import { Row, RowWithMargins } from '../layout';
-import { ShadowStack } from '../shadow-stack';
-import { Text, TruncatedText } from '../text';
+import { Emoji, TruncatedText, Monospace } from '../text';
+import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 
-const { timing, Value } = Animated;
-
-const AnimatedText = Animated.createAnimatedComponent(toClass(Text));
 const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
 
 const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 50;
 
-const FamilyIcon = withProps(({ familyImage }) => ({
-  id: familyImage,
-  source: { uri: familyImage },
-}))(ImageWithCachedDimensions);
+const TokenFamilyHeader = ({
+  childrenAmount,
+  emoji,
+  familyImage,
+  highlight,
+  isCoinRow,
+  isOpen,
+  onPress,
+  title,
+}) => {
+  const animation = useTimingTransition(isOpen, {
+    duration: TokenFamilyHeaderAnimationDuration,
+    easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+  });
 
-export default class TokenFamilyHeader extends PureComponent {
-  static propTypes = {
-    childrenAmount: PropTypes.number,
-    familyImage: PropTypes.string,
-    familyName: PropTypes.string,
-    highlight: PropTypes.bool,
-    isCoinRow: PropTypes.bool,
-    isOpen: PropTypes.bool,
-    onHeaderPress: PropTypes.func,
-  };
-
-  componentDidUpdate = prevProps => {
-    if (isNewValueForPath(this.props, prevProps, 'isOpen')) {
-      this.runTiming();
-    }
-  };
-
-  static animationDuration = TokenFamilyHeaderAnimationDuration;
-
-  static height = TokenFamilyHeaderHeight;
-
-  animation = new Value(this.props.isOpen ? 1 : 0);
-
-  runTiming = () =>
-    timing(this.animation, {
-      duration: TokenFamilyHeaderAnimationDuration,
-      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-      toValue: this.props.isOpen ? 1 : 0,
-    }).start();
-
-  renderFamilyIcon = () => {
-    const { familyImage, familyName, isCoinRow } = this.props;
-    const size = borders.buildCircleAsObject(isCoinRow ? 40 : 32);
-
-    return (
-      <ShadowStack
-        {...size}
-        backgroundColor={familyImage ? colors.white : colors.purpleLight}
-        shadows={[
-          [0, 4, 6, colors.dark, 0.04],
-          [0, 1, 3, colors.dark, 0.08],
-        ]}
-      >
-        {familyImage ? (
-          <FamilyIcon familyImage={familyImage} style={size} />
-        ) : (
-          <FallbackIcon {...size} symbol={initials(familyName)} />
-        )}
-      </ShadowStack>
-    );
-  };
-
-  render = () => (
-    <ButtonPressAnimation onPress={this.props.onHeaderPress} scaleTo={1.05}>
+  return (
+    <ButtonPressAnimation
+      key={`${emoji || familyImage || title}_${isOpen}`}
+      onPress={onPress}
+      scaleTo={1.05}
+    >
       <Row
         align="center"
         backgroundColor={colors.white}
         height={TokenFamilyHeaderHeight}
         justify="space-between"
-        paddingHorizontal={this.props.isCoinRow ? 16 : 19}
+        paddingHorizontal={isCoinRow ? 16 : 19}
         width="100%"
       >
-        <Highlight visible={this.props.highlight} />
-        <RowWithMargins align="center" margin={10}>
-          {this.renderFamilyIcon()}
+        <Highlight visible={highlight} />
+        <RowWithMargins align="center" margin={emoji ? 5 : 9}>
+          {emoji ? (
+            <Emoji size="lmedium" name={emoji} />
+          ) : (
+            <TokenFamilyHeaderIcon
+              familyImage={familyImage}
+              familyName={title}
+              isCoinRow={isCoinRow}
+            />
+          )}
           <TruncatedText
             lineHeight="normal"
             size="large"
             style={{ marginBottom: 1 }}
             weight="semibold"
           >
-            {this.props.familyName}
+            {title}
           </TruncatedText>
         </RowWithMargins>
         <RowWithMargins align="center" margin={14}>
-          <AnimatedText
-            align="right"
-            color="dark"
-            letterSpacing="roundedTight"
-            size="large"
+          <Animated.View
             style={{
-              marginBottom: 1,
-              opacity: interpolate(this.animation, {
+              opacity: interpolate(animation, {
                 inputRange: [0, 1],
                 outputRange: [1, 0],
               }),
             }}
           >
-            {this.props.childrenAmount}
-          </AnimatedText>
+            <Monospace
+              align="right"
+              color="dark"
+              letterSpacing="roundedTight"
+              size="large"
+              style={{ marginBottom: 1 }}
+            >
+              {childrenAmount}
+            </Monospace>
+          </Animated.View>
           <AnimatedFastImage
             resizeMode={FastImage.resizeMode.contain}
             source={CaretImageSource}
@@ -128,7 +94,7 @@ export default class TokenFamilyHeader extends PureComponent {
               transform: [
                 {
                   rotate: toRad(
-                    interpolate(this.animation, {
+                    interpolate(animation, {
                       inputRange: [0, 1],
                       outputRange: [0, 90],
                     })
@@ -142,4 +108,25 @@ export default class TokenFamilyHeader extends PureComponent {
       </Row>
     </ButtonPressAnimation>
   );
-}
+};
+
+TokenFamilyHeader.animationDuration = TokenFamilyHeaderAnimationDuration;
+
+TokenFamilyHeader.height = TokenFamilyHeaderHeight;
+
+TokenFamilyHeader.propTypes = {
+  childrenAmount: PropTypes.number,
+  emoji: PropTypes.string,
+  familyImage: PropTypes.string,
+  highlight: PropTypes.bool,
+  isCoinRow: PropTypes.bool,
+  isOpen: PropTypes.bool,
+  onPress: PropTypes.func,
+  title: PropTypes.string,
+};
+
+TokenFamilyHeader.defaultProps = {
+  // emoji: 'sunflower',
+};
+
+export default TokenFamilyHeader;

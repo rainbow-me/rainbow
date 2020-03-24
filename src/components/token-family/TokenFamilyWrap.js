@@ -1,163 +1,101 @@
-import { withSafeTimeout } from '@hocs/safe-timers';
 import { times } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { withNavigation } from 'react-navigation';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Transition, Transitioning } from 'react-native-reanimated';
 import { View } from 'react-primitives';
-import {
-  compose,
-  lifecycle,
-  onlyUpdateForKeys,
-  withState,
-  withHandlers,
-  withProps,
-} from 'recompact';
-import { createSelector } from 'reselect';
-import { withOpenFamilyTabs, withFabSendAction } from '../../hoc';
 import { colors } from '../../styles';
-import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyHeader from './TokenFamilyHeader';
 
 export const TokenFamilyWrapPaddingTop = 6;
 
-const EnhancedUniqueTokenRow = compose(
-  withNavigation,
-  withHandlers({
-    onPress: ({ assetType, navigation }) => item => {
-      navigation.navigate('ExpandedAssetScreen', {
-        asset: item,
-        type: assetType,
-      });
-    },
-    onPressSend: ({ navigation }) => asset => {
-      navigation.navigate('SendSheet', { asset });
-    },
-  })
-)(UniqueTokenRow);
-
-const getHeight = openFamilyTab =>
-  openFamilyTab ? UniqueTokenRow.height + 100 : 100;
+const transition = (
+  <Transition.In
+    durationMs={75}
+    interpolation="easeIn"
+    propagation="top"
+    type="fade"
+  />
+);
 
 const TokenFamilyWrap = ({
-  areChildrenVisible,
   childrenAmount,
-  familyId,
-  familyImage,
-  familyName,
   highlight,
-  isFamilyOpen,
+  isFirst,
+  isOpen,
   item,
-  paddingTop,
-  onPressFamilyHeader,
-  renderCollectibleItem,
-}) => (
-  <View
-    backgroundColor={colors.white}
-    paddingTop={paddingTop}
-    overflow="hidden"
-  >
-    <TokenFamilyHeader
-      childrenAmount={childrenAmount}
-      familyImage={familyImage}
-      familyName={familyName}
-      highlight={highlight}
-      isOpen={isFamilyOpen}
-      onHeaderPress={onPressFamilyHeader}
-    />
-    {areChildrenVisible && (
-      <View
-        key={`uniqueTokenRow_${familyId}_fadeIn`}
-        paddingTop={TokenFamilyWrapPaddingTop}
-      >
-        {times(item.length, renderCollectibleItem)}
-      </View>
-    )}
-  </View>
-);
+  onToggle,
+  renderItem,
+  title,
+  ...props
+}) => {
+  const transitionRef = useRef();
+  const [areChildrenVisible, setAreChildrenVisible] = useState(false);
 
-TokenFamilyWrap.propTypes = {
-  areChildrenVisible: PropTypes.bool,
-  childrenAmount: PropTypes.number,
-  familyId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  familyImage: PropTypes.string,
-  familyName: PropTypes.string,
-  highlight: PropTypes.bool,
-  isFamilyOpen: PropTypes.bool,
-  item: PropTypes.array,
-  onPressFamilyHeader: PropTypes.func,
-  paddingTop: PropTypes.number,
-  renderCollectibleItem: PropTypes.func,
+  const timeoutHandle = useRef();
+  const clearHandle = useCallback(
+    () => timeoutHandle.current && clearTimeout(timeoutHandle.current),
+    []
+  );
+
+  const showChildren = useCallback(() => {
+    if (!areChildrenVisible) {
+      setAreChildrenVisible(true);
+      if (transitionRef.current) {
+        transitionRef.current.animateNextTransition();
+      }
+    }
+  }, [areChildrenVisible]);
+
+  useEffect(() => {
+    clearHandle();
+    if (areChildrenVisible && !isOpen) {
+      setAreChildrenVisible(false);
+    } else if (!areChildrenVisible && isOpen) {
+      timeoutHandle.current = setTimeout(
+        showChildren,
+        TokenFamilyHeader.animationDuration
+      );
+    }
+    return () => clearHandle();
+  }, [areChildrenVisible, clearHandle, isOpen, showChildren]);
+
+  return (
+    <View
+      backgroundColor={colors.white}
+      overflow="hidden"
+      paddingTop={isFirst ? TokenFamilyWrapPaddingTop : 0}
+    >
+      <TokenFamilyHeader
+        {...props}
+        childrenAmount={childrenAmount}
+        highlight={highlight}
+        isOpen={isOpen}
+        onPress={onToggle}
+        title={title}
+      />
+      {/*
+          XXX 👇️👇️👇️👇️ not sure if this Transitioning.View should have a `key` defined for performance or not
+      */}
+      <Transitioning.View
+        paddingTop={areChildrenVisible ? TokenFamilyWrapPaddingTop : 0}
+        ref={transitionRef}
+        transition={transition}
+      >
+        {areChildrenVisible ? times(item.length, renderItem) : null}
+      </Transitioning.View>
+    </View>
+  );
 };
 
-TokenFamilyWrap.getHeight = getHeight;
+TokenFamilyWrap.propTypes = {
+  childrenAmount: PropTypes.number,
+  highlight: PropTypes.bool,
+  isFirst: PropTypes.bool,
+  isOpen: PropTypes.bool,
+  item: PropTypes.array,
+  onToggle: PropTypes.func,
+  renderItem: PropTypes.func,
+  title: PropTypes.string,
+};
 
-const familyIdSelector = state => state.familyId;
-const openFamilyTabsSelector = state => state.openFamilyTabs;
-
-const isFamilyOpenSelector = (familyId, openFamilyTabs) => ({
-  isFamilyOpen: openFamilyTabs && openFamilyTabs[familyId],
-});
-
-const withFamilyOpenStateProps = createSelector(
-  [familyIdSelector, openFamilyTabsSelector],
-  isFamilyOpenSelector
-);
-
-export default compose(
-  withSafeTimeout,
-  withFabSendAction,
-  withOpenFamilyTabs,
-  withProps(withFamilyOpenStateProps),
-  withState('areChildrenVisible', 'setAreChildrenVisible', false),
-  withHandlers({
-    onHideChildren: ({ areChildrenVisible, setAreChildrenVisible }) => () => {
-      if (areChildrenVisible) {
-        setAreChildrenVisible(false);
-      }
-    },
-    onPressFamilyHeader: ({
-      familyId,
-      isFamilyOpen,
-      setOpenFamilyTabs,
-    }) => () =>
-      setOpenFamilyTabs({
-        index: familyId,
-        state: !isFamilyOpen,
-      }),
-    onShowChildren: ({ areChildrenVisible, setAreChildrenVisible }) => () => {
-      if (!areChildrenVisible) {
-        setAreChildrenVisible(true);
-      }
-    },
-    renderCollectibleItem: ({ familyId, item }) => index => (
-      <EnhancedUniqueTokenRow
-        assetType="unique_token"
-        item={item[index]}
-        key={`uniqueTokenRow_${familyId}_${index}`}
-      />
-    ),
-  }),
-  lifecycle({
-    componentDidMount() {
-      this.props.onShowChildren();
-    },
-    componentDidUpdate() {
-      if (!this.props.isFamilyOpen) {
-        this.props.onHideChildren();
-      } else if (!this.props.areChildrenVisible) {
-        this.props.setSafeTimeout(
-          this.props.onShowChildren,
-          TokenFamilyHeader.animationDuration
-        );
-      }
-    },
-  }),
-  onlyUpdateForKeys([
-    'areChildrenVisible',
-    'childrenAmount',
-    'highlight',
-    'paddingTop',
-    'isFamilyOpen',
-    'uniqueId',
-  ])
-)(TokenFamilyWrap);
+export default TokenFamilyWrap;

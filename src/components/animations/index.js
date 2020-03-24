@@ -1,6 +1,10 @@
+export { contains, interpolate, timing, updateState } from './procs';
+export {
+  default as AnimatedNumber,
+  defaultAnimatedNumberProps,
+} from './AnimatedNumber';
 export { default as ButtonPressAnimation } from './ButtonPressAnimation';
 export { default as FlyInAnimation } from './FlyInAnimation';
-export { contains, interpolate, timing, updateState } from './procs';
 export { default as OpacityToggler } from './OpacityToggler';
 export { default as RotationArrow } from './RotationArrow';
 export { default as RoundButtonSizeToggler } from './RoundButtonSizeToggler';

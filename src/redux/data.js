@@ -21,34 +21,29 @@ import {
 import {
   getAssetPricesFromUniswap,
   getAssets,
-  getCompoundAssets,
   getLocalTransactions,
   removeAssetPricesFromUniswap,
   removeAssets,
-  removeCompoundAssets,
   removeLocalTransactions,
+  removeSavings,
   saveAssetPricesFromUniswap,
   saveAssets,
-  saveCompoundAssets,
   saveLocalTransactions,
 } from '../handlers/localstorage/accountLocal';
 import { apiGetTokenOverrides } from '../handlers/tokenOverrides';
-import { getTransactionByHash } from '../handlers/web3';
+import { getTransactionReceipt } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
-import { divide } from '../helpers/utilities';
+import TransactionTypes from '../helpers/transactionTypes';
+import { divide, isZero } from '../helpers/utilities';
 import { parseAccountAssets } from '../parsers/accounts';
-import { parseCompoundDeposits } from '../parsers/compound';
 import { parseNewTransaction } from '../parsers/newTransaction';
-import parseTransactions from '../parsers/transactions';
+import { parseTransactions } from '../parsers/transactions';
 import {
   loweredTokenOverridesFallback,
   shitcoinBlacklist,
 } from '../references';
 import { ethereumUtils, isLowerCaseMatch } from '../utils';
-import {
-  uniswapRemovePendingApproval,
-  uniswapUpdateLiquidityTokens,
-} from './uniswap';
+import { uniswapUpdateLiquidityTokens } from './uniswap';
 
 let watchPendingTransactionsHandler = null;
 
@@ -57,7 +52,6 @@ let watchPendingTransactionsHandler = null;
 const DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP =
   'data/DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP';
 const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
-const DATA_UPDATE_COMPOUND_ASSETS = 'data/DATA_UPDATE_COMPOUND_ASSETS';
 const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
 const DATA_UPDATE_TOKEN_OVERRIDES = 'data/DATA_UPDATE_TOKEN_OVERRIDES';
 const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
@@ -69,9 +63,6 @@ const DATA_LOAD_ASSETS_FAILURE = 'data/DATA_LOAD_ASSETS_FAILURE';
 
 const DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS =
   'data/DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS';
-
-const DATA_LOAD_COMPOUND_ASSETS_SUCCESS =
-  'data/DATA_LOAD_COMPOUND_ASSETS_SUCCESS';
 
 const DATA_LOAD_TRANSACTIONS_REQUEST = 'data/DATA_LOAD_TRANSACTIONS_REQUEST';
 const DATA_LOAD_TRANSACTIONS_SUCCESS = 'data/DATA_LOAD_TRANSACTIONS_SUCCESS';
@@ -107,14 +98,6 @@ export const dataLoadState = () => async (dispatch, getState) => {
     dispatch({ type: DATA_LOAD_ASSETS_FAILURE });
   }
   try {
-    const compoundAssets = await getCompoundAssets(accountAddress, network);
-    dispatch({
-      payload: compoundAssets,
-      type: DATA_LOAD_COMPOUND_ASSETS_SUCCESS,
-    });
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
-  try {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
     const transactions = await getLocalTransactions(accountAddress, network);
     dispatch({
@@ -141,8 +124,8 @@ export const dataClearState = () => (dispatch, getState) => {
     uniswapPricesSubscription.unsubscribe &&
     uniswapPricesSubscription.unsubscribe();
   removeAssets(accountAddress, network);
+  removeSavings(accountAddress, network);
   removeAssetPricesFromUniswap(accountAddress, network);
-  removeCompoundAssets(accountAddress, network);
   removeLocalTransactions(accountAddress, network);
   dispatch({ type: DATA_CLEAR_STATE });
 };
@@ -179,15 +162,15 @@ export const transactionsReceived = (message, appended = false) => (
   const { accountAddress, nativeCurrency, network } = getState().settings;
   const { transactions, tokenOverrides } = getState().data;
   if (!transactionData.length) return;
-  const { approvalTransactions, dedupedResults } = parseTransactions(
+  const dedupedResults = parseTransactions(
     transactionData,
     accountAddress,
     nativeCurrency,
     transactions,
     tokenOverrides,
+    network,
     appended
   );
-  dispatch(uniswapRemovePendingApproval(approvalTransactions));
   dispatch({
     payload: dedupedResults,
     type: DATA_UPDATE_TRANSACTIONS,
@@ -348,20 +331,6 @@ const get24HourPrice = async (exchangeAddress, yesterday) => {
   return get(result, 'data.exchangeHistoricalDatas[0]');
 };
 
-export const compoundInfoReceived = message => (dispatch, getState) => {
-  const isValidMeta = dispatch(checkMeta(message));
-  if (!isValidMeta) return;
-  const { tokenOverrides } = getState().data;
-  const { accountAddress, network } = getState().settings;
-  const deposits = get(message, 'payload.info.deposits', []);
-  const parsedDeposits = parseCompoundDeposits(deposits, tokenOverrides);
-  dispatch({
-    payload: parsedDeposits,
-    type: DATA_UPDATE_COMPOUND_ASSETS,
-  });
-  saveCompoundAssets(parsedDeposits, accountAddress, network);
-};
-
 export const dataUpdateTokenOverrides = tokenOverrides => dispatch =>
   dispatch({
     payload: tokenOverrides,
@@ -393,6 +362,21 @@ export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
       });
   });
 
+const getConfirmedState = type => {
+  switch (type) {
+    case TransactionTypes.authorize:
+      return TransactionStatusTypes.approved;
+    case TransactionTypes.deposit:
+      return TransactionStatusTypes.deposited;
+    case TransactionTypes.withdraw:
+      return TransactionStatusTypes.withdrew;
+    case TransactionTypes.receive:
+      return TransactionStatusTypes.received;
+    default:
+      return TransactionStatusTypes.sent;
+  }
+};
+
 export const dataWatchPendingTransactions = () => async (
   dispatch,
   getState
@@ -407,11 +391,17 @@ export const dataWatchPendingTransactions = () => async (
     pending.map(async (tx, index) => {
       const txHash = tx.hash.split('-').shift();
       try {
-        const txObj = await getTransactionByHash(txHash);
+        const txObj = await getTransactionReceipt(txHash);
         if (txObj && txObj.blockNumber) {
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
-          updatedTransactions[index].status = TransactionStatusTypes.sent;
+          if (!isZero(txObj.status)) {
+            updatedTransactions[index].status = getConfirmedState(
+              updatedTransactions[index].type
+            );
+          } else {
+            updatedTransactions[index].status = TransactionStatusTypes.failed;
+          }
           updatedTransactions[index].pending = false;
           updatedTransactions[index].minedAt = minedAt;
         }
@@ -454,7 +444,6 @@ const startPendingTransactionWatcher = () => async dispatch => {
 const INITIAL_STATE = {
   assetPricesFromUniswap: {},
   assets: [],
-  compoundAssets: [],
   loadingAssets: false,
   loadingTransactions: false,
   tokenOverrides: loweredTokenOverridesFallback,
@@ -470,8 +459,6 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, assetPricesFromUniswap: action.payload };
     case DATA_UPDATE_ASSETS:
       return { ...state, assets: action.payload };
-    case DATA_UPDATE_COMPOUND_ASSETS:
-      return { ...state, compoundAssets: action.payload };
     case DATA_UPDATE_TOKEN_OVERRIDES:
       return { ...state, tokenOverrides: action.payload };
     case DATA_UPDATE_TRANSACTIONS:
@@ -507,11 +494,6 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         assets: action.payload,
         loadingAssets: false,
-      };
-    case DATA_LOAD_COMPOUND_ASSETS_SUCCESS:
-      return {
-        ...state,
-        compoundAssets: action.payload,
       };
     case DATA_LOAD_ASSETS_FAILURE:
       return {

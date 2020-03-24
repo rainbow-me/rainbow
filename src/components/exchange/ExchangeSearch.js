@@ -5,8 +5,7 @@ import styled from 'styled-components/primitives';
 import { colors, margin, padding } from '../../styles';
 import { Icon } from '../icons';
 import { ClearInputDecorator, Input } from '../inputs';
-import InnerBorder from '../InnerBorder';
-import { RowWithMargins } from '../layout';
+import { InnerBorder, RowWithMargins } from '../layout';
 
 const ExchangeSearchHeight = 40;
 

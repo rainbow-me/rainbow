@@ -1,20 +1,29 @@
-import { getExecutionDetails, getTokenReserves } from '@uniswap/sdk';
+import {
+  getExecutionDetails,
+  getTokenReserves,
+  tradeExactEthForTokensWithData,
+  tradeEthForExactTokensWithData,
+  tradeExactTokensForEthWithData,
+  tradeTokensForExactEthWithData,
+  tradeExactTokensForTokensWithData,
+  tradeTokensForExactTokensWithData,
+} from '@uniswap/sdk';
 import axios from 'axios';
 import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
 import { get, map, mapKeys, mapValues, toLower, zipObject } from 'lodash';
 import { uniswapClient } from '../apollo/client';
-import { DIRECTORY_QUERY } from '../apollo/queries';
+import { UNISWAP_ALL_EXCHANGES_QUERY } from '../apollo/queries';
 import {
+  convertAmountToRawAmount,
   convertRawAmountToDecimalFormat,
   divide,
   fromWei,
+  greaterThan,
   multiply,
 } from '../helpers/utilities';
 import { loadWallet } from '../model/wallet';
-import exchangeABI from '../references/uniswap-exchange-abi.json';
-import uniswapTestnetAssets from '../references/uniswap-pairs-testnet.json';
-import erc20ABI from '../references/erc20-abi.json';
+import { erc20ABI, exchangeABI, uniswapTestnetAssets } from '../references';
 import { toHex, web3Provider } from './web3';
 
 const uniswapPairsEndpoint = axios.create({
@@ -157,15 +166,20 @@ export const getContractExecutionDetails = (tradeDetails, providerOrSigner) => {
   };
 };
 
-export const executeSwap = async (tradeDetails, gasLimit, gasPrice) => {
-  const wallet = await loadWallet();
-  if (!wallet) return null;
+export const executeSwap = async (
+  tradeDetails,
+  gasLimit,
+  gasPrice,
+  wallet = null
+) => {
+  const walletToUse = wallet || (await loadWallet());
+  if (!walletToUse) return null;
   const {
     exchange,
     methodName,
     updatedMethodArgs,
     value,
-  } = getContractExecutionDetails(tradeDetails, wallet);
+  } = getContractExecutionDetails(tradeDetails, walletToUse);
   const transactionParams = {
     gasLimit: gasLimit ? toHex(gasLimit) : undefined,
     gasPrice: gasPrice ? toHex(gasPrice) : undefined,
@@ -317,6 +331,7 @@ export const getLiquidityInfo = async (
 };
 
 export const getAllExchanges = async (tokenOverrides, excluded = []) => {
+  const pageSize = 600;
   let allTokens = {};
   let data = [];
   try {
@@ -324,16 +339,16 @@ export const getAllExchanges = async (tokenOverrides, excluded = []) => {
     let skip = 0;
     while (!dataEnd) {
       let result = await uniswapClient.query({
-        query: DIRECTORY_QUERY,
+        query: UNISWAP_ALL_EXCHANGES_QUERY,
         variables: {
           excluded,
-          first: 100,
+          first: pageSize,
           skip: skip,
         },
       });
       data = data.concat(result.data.exchanges);
-      skip = skip + 100;
-      if (result.data.exchanges.length < 100) {
+      skip = skip + pageSize;
+      if (result.data.exchanges.length < pageSize) {
         dataEnd = true;
       }
     }
@@ -342,15 +357,72 @@ export const getAllExchanges = async (tokenOverrides, excluded = []) => {
   }
   data.forEach(exchange => {
     const tokenAddress = toLower(exchange.tokenAddress);
-    const tokenExchangeInfo = {
-      decimals: exchange.tokenDecimals,
-      ethBalance: exchange.ethBalance,
-      exchangeAddress: exchange.id,
-      name: exchange.tokenName,
-      symbol: exchange.tokenSymbol,
-      ...tokenOverrides[tokenAddress],
-    };
-    allTokens[tokenAddress] = tokenExchangeInfo;
+    const hasLiquidity = greaterThan(exchange.ethBalance, 0);
+    if (hasLiquidity) {
+      const tokenExchangeInfo = {
+        decimals: exchange.tokenDecimals,
+        ethBalance: exchange.ethBalance,
+        exchangeAddress: exchange.id,
+        name: exchange.tokenName,
+        symbol: exchange.tokenSymbol,
+        ...tokenOverrides[tokenAddress],
+      };
+      allTokens[tokenAddress] = tokenExchangeInfo;
+    }
   });
   return allTokens;
+};
+
+export const calculateTradeDetails = (
+  chainId,
+  inputAmount,
+  inputCurrency,
+  inputReserve,
+  outputAmount,
+  outputCurrency,
+  outputReserve,
+  inputAsExactAmount
+) => {
+  const { address: inputAddress, decimals: inputDecimals } = inputCurrency;
+  const { address: outputAddress, decimals: outputDecimals } = outputCurrency;
+
+  const isInputEth = inputAddress === 'eth';
+  const isOutputEth = outputAddress === 'eth';
+
+  const rawInputAmount = convertAmountToRawAmount(
+    parseFloat(inputAmount) || 0,
+    inputDecimals
+  );
+
+  const rawOutputAmount = convertAmountToRawAmount(
+    parseFloat(outputAmount) || 0,
+    outputDecimals
+  );
+
+  let tradeDetails = null;
+
+  if (isInputEth && !isOutputEth) {
+    tradeDetails = inputAsExactAmount
+      ? tradeExactEthForTokensWithData(outputReserve, rawInputAmount, chainId)
+      : tradeEthForExactTokensWithData(outputReserve, rawOutputAmount, chainId);
+  } else if (!isInputEth && isOutputEth) {
+    tradeDetails = inputAsExactAmount
+      ? tradeExactTokensForEthWithData(inputReserve, rawInputAmount, chainId)
+      : tradeTokensForExactEthWithData(inputReserve, rawOutputAmount, chainId);
+  } else if (!isInputEth && !isOutputEth) {
+    tradeDetails = inputAsExactAmount
+      ? tradeExactTokensForTokensWithData(
+          inputReserve,
+          outputReserve,
+          rawInputAmount,
+          chainId
+        )
+      : tradeTokensForExactTokensWithData(
+          inputReserve,
+          outputReserve,
+          rawOutputAmount,
+          chainId
+        );
+  }
+  return tradeDetails;
 };

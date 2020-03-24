@@ -182,8 +182,8 @@ class App extends Component {
     <SafeAreaProvider>
       <Provider store={store}>
         <FlexItem>
-          <Routes ref={this.handleNavigatorRef} />
           <OfflineBadge />
+          <Routes ref={this.handleNavigatorRef} />
           <TestnetBadge network={this.props.network} />
         </FlexItem>
       </Provider>

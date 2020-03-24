@@ -1,15 +1,11 @@
 import produce from 'immer';
 import {
-  compact,
   concat,
   filter,
   get,
-  invertBy,
   isEmpty,
   keys,
   map,
-  mapValues,
-  omit,
   toLower,
   uniq,
   without,
@@ -19,13 +15,11 @@ import {
   getLiquidity,
   getUniswapFavorites,
   getUniswapLiquidityInfo,
-  getUniswapPendingApprovals,
   removeUniswapStorage,
   saveAllowances,
   saveLiquidity,
   saveLiquidityInfo,
   saveUniswapFavorites,
-  saveUniswapPendingApprovals,
 } from '../handlers/localstorage/uniswap';
 import {
   getAllExchanges,
@@ -63,16 +57,12 @@ const UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE =
   'uniswap/UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE';
 const UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE =
   'uniswap/UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE';
-const UNISWAP_UPDATE_PENDING_APPROVALS =
-  'uniswap/UNISWAP_UPDATE_PENDING_APPROVALS';
 const UNISWAP_UPDATE_ALLOWANCES = 'uniswap/UNISWAP_UPDATE_ALLOWANCES';
 const UNISWAP_UPDATE_LIQUIDITY_TOKENS =
   'uniswap/UNISWAP_UPDATE_LIQUIDITY_TOKENS';
 const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
 
 // -- Actions --------------------------------------------------------------- //
-const extractTransactionHash = txn => toLower(txn.hash).split('-')[0];
-const firstItem = value => get(value, '[0]');
 const hasTokenQuantity = token => token.quantity > 0;
 const getAssetCode = token => get(token, 'asset.asset_code');
 
@@ -91,16 +81,11 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
     const allowances = await getAllowances(accountAddress, network);
     const favorites = await getUniswapFavorites(network);
     const liquidityTokens = await getLiquidity(accountAddress, network);
-    const pendingApprovals = await getUniswapPendingApprovals(
-      accountAddress,
-      network
-    );
     dispatch({
       payload: {
         allowances,
         favorites,
         liquidityTokens,
-        pendingApprovals,
       },
       type: UNISWAP_LOAD_SUCCESS,
     });
@@ -189,52 +174,6 @@ export const uniswapClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   removeUniswapStorage(accountAddress, network);
   dispatch({ type: UNISWAP_CLEAR_STATE });
-};
-
-export const uniswapAddPendingApproval = (
-  tokenAddress,
-  txHash,
-  creationTimestamp,
-  estimatedTimeInMs
-) => (dispatch, getState) => {
-  const { accountAddress, network } = getState().settings;
-  const { pendingApprovals } = getState().uniswap;
-  const updatedPendingApprovals = {
-    ...pendingApprovals,
-    [toLower(tokenAddress)]: {
-      creationTimestamp,
-      estimatedTimeInMs,
-      hash: toLower(txHash),
-    },
-  };
-  dispatch({
-    payload: updatedPendingApprovals,
-    type: UNISWAP_UPDATE_PENDING_APPROVALS,
-  });
-  saveUniswapPendingApprovals(updatedPendingApprovals, accountAddress, network);
-};
-
-export const uniswapRemovePendingApproval = transactions => (
-  dispatch,
-  getState
-) => {
-  const loweredTxHashes = map(transactions, extractTransactionHash);
-  const { pendingApprovals } = getState().uniswap;
-  const invertedPendingApprovals = mapValues(
-    invertBy(pendingApprovals, value => value.hash),
-    firstItem
-  );
-  const updatedAddresses = compact(
-    map(loweredTxHashes, hash => invertedPendingApprovals[hash])
-  );
-  if (isEmpty(updatedAddresses)) return;
-  const updatedPendingApprovals = omit(pendingApprovals, ...updatedAddresses);
-  dispatch({
-    payload: updatedPendingApprovals,
-    type: UNISWAP_UPDATE_PENDING_APPROVALS,
-  });
-  const { accountAddress, network } = getState().settings;
-  saveUniswapPendingApprovals(updatedPendingApprovals, accountAddress, network);
 };
 
 export const uniswapUpdateFavorites = (assetAddress, add = true) => (
@@ -335,7 +274,6 @@ export const INITIAL_UNISWAP_STATE = {
   outputCurrency: null,
   outputReserve: null,
   pairs: cleanUniswapAssetsFallback,
-  pendingApprovals: {},
   uniswapLiquidityTokenInfo: {},
 };
 
@@ -360,7 +298,6 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         draft.favorites = action.payload.favorites;
         draft.liquidityTokens = action.payload.liquidityTokens;
         draft.loadingUniswap = false;
-        draft.pendingApprovals = action.payload.pendingApprovals;
         break;
       case UNISWAP_UPDATE_FAVORITES:
         draft.favorites = action.payload;
@@ -392,9 +329,6 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         break;
       case UNISWAP_UPDATE_LIQUIDITY_TOKENS:
         draft.liquidityTokens = action.payload;
-        break;
-      case UNISWAP_UPDATE_PENDING_APPROVALS:
-        draft.pendingApprovals = action.payload;
         break;
       case UNISWAP_UPDATE_ALLOWANCES:
         draft.allowances = action.payload;

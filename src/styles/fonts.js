@@ -3,7 +3,9 @@ const font = {};
 
 font.family = {
   SFMono: 'SFMono-Regular',
+  SFProDisplay: 'SF Pro Display',
   SFProRounded: 'SF Pro Rounded',
+  SFProText: 'SF Pro Text',
 };
 
 font.letterSpacing = {
@@ -22,6 +24,7 @@ font.lineHeight = {
   paragraphSmall: 25,
   looser: 26,
   loosest: 28,
+  giant: 108,
 };
 
 font.size = {

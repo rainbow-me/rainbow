@@ -1,4 +1,4 @@
-import { find, get, replace, toLower } from 'lodash';
+import { find, get, isEmpty, replace, toLower } from 'lodash';
 import chains from '../references/chains.json';
 import networkTypes from '../helpers/networkTypes';
 import {
@@ -16,7 +16,7 @@ const getEthPriceUnit = assets => {
 
 const getBalanceAmount = (selectedGasPrice, selected) => {
   let amount = '';
-  if (selected.address === 'eth') {
+  if (selected.address === 'eth' && !isEmpty(selectedGasPrice)) {
     const balanceAmount = get(selected, 'balance.amount', 0);
     const txFeeRaw = get(selectedGasPrice, 'txFee.value.amount');
     const txFeeAmount = fromWei(txFeeRaw);
