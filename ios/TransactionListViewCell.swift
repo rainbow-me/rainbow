@@ -50,15 +50,21 @@ class TransactionListViewCell: TransactionListBaseCell {
       }
     }
     
-    // Savings override
-    if(transaction.type.lowercased() == "deposit" || transaction.type.lowercased() == "withdraw"){
-      
-      if(transaction.status.lowercased() == "deposited" || transaction.status.lowercased() == "withdrew"){
-        transactionIcon.image = UIImage.init(named: "sunflower")
-        transactionType.text = " Savings";
-        coinName.text = transaction.status.capitalized + " " + transaction.coinName;
-      } else if(transaction.status.lowercased() == "failed"){
-        coinName.text = (transaction.type.lowercased() == "withdraw" ? "Withdrew" : "Deposited") + " " + transaction.coinName;
+     // Savings override
+    if let type = transaction.type {
+      if(type.lowercased() == "deposit" || type.lowercased() == "withdraw"){
+        if let status = transaction.status {
+          if(status.lowercased() == "depositing" || status.lowercased() == "withdrawing"){
+            transactionIcon.image = UIImage.init(named: "swapped")
+            transactionType.text = " \(status.capitalized)";
+          }else if(status.lowercased() == "deposited" || status.lowercased() == "withdrew"){
+            transactionIcon.image = UIImage.init(named: "sunflower")
+            transactionType.text = " Savings";
+            coinName.text = "\(status.capitalized) \(String(describing: transaction.coinName))";
+          } else if(transaction.status.lowercased() == "failed"){
+            coinName.text = "\(type.lowercased() == "withdraw" ? "Withdrew" : "Deposited")) \(String(describing: transaction.coinName))";
+          }
+        }
       }
     }
   }
@@ -69,14 +75,21 @@ class TransactionListViewCell: TransactionListBaseCell {
     
     if transaction.pending {
       color = transactionColors.primaryBlue
-    } else if transaction.type == "trade" {
-      if transaction.status.lowercased() == "sent" {
-        color = transactionColors.dodgerBlue
-        transactionIcon.image = UIImage.init(named: "swapped")
-        transactionType.text = "Swapped"
+      transactionIcon.rotate()
+      transactionIcon.image = UIImage.init(named: "spinner")
+      transactionIcon.tintColor = transactionColors.primaryBlue
+    } else {
+      transactionIcon.stopRotating()
+      transactionIcon.tintColor = color
+      if transaction.type == "trade" {
+        if transaction.status.lowercased() == "sent" {
+          color = transactionColors.dodgerBlue
+          transactionIcon.image = UIImage.init(named: "swapped")
+          transactionType.text = "Swapped"
+        }
+      } else if(transaction.status.lowercased() == "approved"){
+        transactionIcon.image = UIImage.init(named: "self")
       }
-    } else if(transaction.status.lowercased() == "approved"){
-      transactionIcon.image = UIImage.init(named: "self")
     }
     
     
