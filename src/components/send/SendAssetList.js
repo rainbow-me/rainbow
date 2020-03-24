@@ -2,7 +2,11 @@ import React, { Fragment } from 'react';
 import { onlyUpdateForKeys } from 'recompact';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
-import { CollectiblesSendRow, SavingsCoinRow, SendCoinRow } from '../coin-row';
+import {
+  CollectiblesSendRow,
+  SendCoinRow,
+  SendSavingsCoinRow,
+} from '../coin-row';
 import { View } from 'react-primitives';
 import {
   DataProvider,
@@ -10,6 +14,7 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import { LayoutAnimation } from 'react-native';
+import SavingsListHeader from '../savings/SavingsListHeader';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import FastImage from 'react-native-fast-image';
@@ -32,12 +37,12 @@ class SendAssetList extends React.Component {
     super(args);
 
     this.data = this.props.allAssets;
-    if (this.props.savings) {
+    if (this.props.savings && this.props.savings.length > 0) {
       this.data = this.data.concat([
         { data: this.props.savings, name: 'Savings' },
       ]);
     }
-    if (this.props.uniqueTokens) {
+    if (this.props.uniqueTokens && this.props.uniqueTokens.length > 0) {
       this.data = this.data.concat(this.props.uniqueTokens);
     }
     this.state = {
@@ -45,7 +50,7 @@ class SendAssetList extends React.Component {
         return r1 !== r2;
       }).cloneWithRows(this.data),
       openCards: [],
-      openSavings: false,
+      openSavings: true,
     };
 
     const imageTokens = [];
@@ -188,15 +193,13 @@ class SendAssetList extends React.Component {
 
   mapTokens = collectibles => {
     const items = collectibles.map(collectible => {
-      const newItem = {};
-      newItem.item = collectible;
       const onPress = () => {
         this.props.onSelectAsset(collectible);
       };
       return (
         <CollectiblesSendRow
           key={collectible.id}
-          {...newItem}
+          item={collectible}
           onPress={onPress}
         />
       );
@@ -217,11 +220,10 @@ class SendAssetList extends React.Component {
         this.props.onSelectAsset(token);
       };
       return (
-        <SavingsCoinRow
+        <SendSavingsCoinRow
+          key={token.address}
+          item={token}
           onPress={onPress}
-          key={Math.random()}
-          {...token}
-          {...token.underlying}
         />
       );
     });
@@ -260,15 +262,12 @@ class SendAssetList extends React.Component {
 
   savingsRenderItem = item => (
     <View marginTop={10}>
-      <TokenFamilyHeader
+      <SavingsListHeader
         childrenAmount={item.data.length}
-        familyImage="asd"
-        isCoinRow
         isOpen={this.state.openSavings}
         onPress={() => {
           this.changeOpenSavings();
         }}
-        title={item.name}
       />
       {this.state.openSavings && this.mapSavings(item.data)}
       <Divider />

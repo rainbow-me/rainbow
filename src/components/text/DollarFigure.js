@@ -14,7 +14,7 @@ const DollarFigure = ({ value, decimals = 2 }) => {
   return (
     <Row>
       <Text letterSpacing="zero" size="h1" weight="heavy">
-        {dollars.charAt(0) === '$' ? dollars : `$${dollars}`}
+        {dollars}
       </Text>
       <Text
         align="right"

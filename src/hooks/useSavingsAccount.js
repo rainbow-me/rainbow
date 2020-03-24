@@ -1,10 +1,11 @@
 import { useQuery } from '@apollo/client';
-import { find, get, keyBy, orderBy, property, toLower } from 'lodash';
+import { concat, find, get, keyBy, orderBy, property, toLower } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { compoundClient } from '../apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '../apollo/queries';
 import { getSavings, saveSavings } from '../handlers/localstorage/accountLocal';
+import AssetTypes from '../helpers/assetTypes';
 import { multiply } from '../helpers/utilities';
 import { useAccountSettings } from '../hooks';
 import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
@@ -14,12 +15,26 @@ const COMPOUND_QUERY_INTERVAL = 10000;
 
 const getMarketData = (marketData, tokenOverrides) => {
   const underlying = getUnderlyingData(marketData, tokenOverrides);
-  const { supplyRate, underlyingPrice } = marketData;
+  const cToken = getCTokenData(marketData, tokenOverrides);
+  const { exchangeRate, supplyRate, underlyingPrice } = marketData;
 
   return {
+    cToken,
+    exchangeRate,
     supplyRate,
     underlying,
     underlyingPrice,
+  };
+};
+
+const getCTokenData = (marketData, tokenOverrides) => {
+  const { id: cTokenAddress, name, symbol } = marketData;
+
+  return {
+    address: cTokenAddress,
+    decimals: 8,
+    name: parseAssetName(name, cTokenAddress, tokenOverrides),
+    symbol: parseAssetSymbol(symbol, cTokenAddress, tokenOverrides),
   };
 };
 
@@ -43,7 +58,7 @@ const getUnderlyingData = (marketData, tokenOverrides) => {
   };
 };
 
-export default function useSavingsAccount() {
+export default function useSavingsAccount(includeDefaultDai = false) {
   const [accountTokensBackup, setAccountTokensBackup] = useState([]);
 
   const { tokenOverrides } = useSelector(({ data }) => ({
@@ -82,10 +97,13 @@ export default function useSavingsAccount() {
       const [cTokenAddress] = token.id.split('-');
       const marketData = markets[cTokenAddress] || {};
 
-      const { supplyRate, underlying, underlyingPrice } = getMarketData(
-        marketData,
-        tokenOverrides
-      );
+      const {
+        cToken,
+        exchangeRate,
+        supplyRate,
+        underlying,
+        underlyingPrice,
+      } = getMarketData(marketData, tokenOverrides);
 
       const ethPrice = multiply(underlyingPrice, token.supplyBalanceUnderlying);
 
@@ -96,11 +114,14 @@ export default function useSavingsAccount() {
       } = token;
 
       return {
+        cToken,
         cTokenBalance,
         ethPrice,
+        exchangeRate,
         lifetimeSupplyInterestAccrued,
         supplyBalanceUnderlying,
         supplyRate,
+        type: AssetTypes.cToken,
         underlying,
         underlyingPrice,
       };
@@ -108,27 +129,41 @@ export default function useSavingsAccount() {
 
     accountTokens = orderBy(accountTokens, ['ethPrice'], ['desc']);
 
+    if (accountTokens.length) {
+      saveSavings(accountTokens, accountAddress, network);
+    }
+
     const accountHasCDAI = find(
       accountTokens,
       token => token.underlying.address === DAI_ADDRESS
     );
 
-    if (!accountHasCDAI && markets[CDAI_CONTRACT]) {
+    const shouldAddDai =
+      includeDefaultDai && !accountHasCDAI && markets[CDAI_CONTRACT];
+
+    if (accountTokens.length && shouldAddDai) {
       const DAIMarketData = getMarketData(
         markets[CDAI_CONTRACT],
         tokenOverrides
       );
-      accountTokens.push({ ...DAIMarketData });
+      return concat(accountTokens, { ...DAIMarketData });
     }
-
     if (accountTokens.length) {
-      saveSavings(accountTokens, accountAddress, network);
+      return accountTokens;
     }
-    return (accountTokens.length && accountTokens) || accountTokensBackup;
+    if (shouldAddDai) {
+      const DAIMarketData = getMarketData(
+        markets[CDAI_CONTRACT],
+        tokenOverrides
+      );
+      return concat(accountTokensBackup, { ...DAIMarketData });
+    }
+    return accountTokensBackup;
   }, [
     accountAddress,
     accountTokensBackup,
     compoundQuery,
+    includeDefaultDai,
     network,
     tokenOverrides,
   ]);

@@ -1,7 +1,8 @@
 import { ethers } from 'ethers';
 import { get, replace, startsWith } from 'lodash';
 import { REACT_APP_INFURA_PROJECT_ID } from 'react-native-dotenv';
-import { ethereumUtils } from '../utils';
+import AssetTypes from '../helpers/assetTypes';
+import NetworkTypes from '../helpers/networkTypes';
 import {
   convertAmountToRawAmount,
   convertStringToHex,
@@ -9,14 +10,14 @@ import {
   multiply,
 } from '../helpers/utilities';
 import smartContractMethods from '../references/smartcontract-methods.json';
-import networkTypes from '../helpers/networkTypes';
+import { ethereumUtils } from '../utils';
 
 const infuraUrl = `https://network.infura.io/v3/${REACT_APP_INFURA_PROJECT_ID}`;
 /**
  * @desc web3 http instance
  */
 export let web3Provider = new ethers.providers.JsonRpcProvider(
-  replace(infuraUrl, 'network', networkTypes.mainnet)
+  replace(infuraUrl, 'network', NetworkTypes.mainnet)
 );
 
 /**
@@ -227,7 +228,7 @@ export const createSignableTransaction = async transaction => {
   if (get(transaction, 'asset.address') === 'eth') {
     return getTxDetails(transaction);
   }
-  const isNft = get(transaction, 'asset.isNft', false);
+  const isNft = get(transaction, 'asset.type') === AssetTypes.nft;
   const result = isNft
     ? await getTransferNftTransaction(transaction)
     : await getTransferTokenTransaction(transaction);
@@ -235,7 +236,7 @@ export const createSignableTransaction = async transaction => {
 };
 
 const estimateAssetBalancePortion = asset => {
-  if (!asset.isNft) {
+  if (!(asset.type === AssetTypes.nft)) {
     const assetBalance = get(asset, 'balance.amount');
     const decimals = get(asset, 'decimals');
     const portion = multiply(assetBalance, 0.1);
@@ -297,7 +298,7 @@ export const estimateGasLimit = async ({
     to: _recipient,
     value,
   };
-  if (asset.isNft) {
+  if (asset.type === AssetTypes.nft) {
     const contractAddress = get(asset, 'asset_contract.address');
     const data = getDataForNftTransfer(address, _recipient, asset);
     estimateGasData = {

@@ -17,6 +17,7 @@ export { default as useInternetStatus } from './useInternetStatus';
 export { default as useInterval } from './useInterval';
 export { default as useLoadAccountData } from './useLoadAccountData';
 export { default as useMagicFocus } from './useMagicFocus';
+export { default as useOpenSavings } from './useOpenSavings';
 export { default as usePrevious } from './usePrevious';
 export { default as useRefreshAccountData } from './useRefreshAccountData';
 export { default as useSavingsAccount } from './useSavingsAccount';

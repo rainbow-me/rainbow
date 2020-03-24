@@ -9,10 +9,10 @@ import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
-import { buildUniqueTokenList, buildCoinsList } from './assets';
 import { chartExpandedAvailable } from '../config/experimental';
-import networkTypes from './networkTypes';
 import { ethereumUtils } from '../utils';
+import { buildUniqueTokenList, buildCoinsList } from './assets';
+import networkTypes from './networkTypes';
 
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
