@@ -79,6 +79,7 @@ class HoldToAuthorizeButton extends PureComponent {
     disabled: PropTypes.bool,
     disabledBackgroundColor: PropTypes.string,
     hideBiometricIcon: PropTypes.bool,
+    hideInnerBorder: PropTypes.bool,
     isAuthorizing: PropTypes.bool,
     label: PropTypes.string,
     onLongPress: PropTypes.func.isRequired,
@@ -181,6 +182,7 @@ class HoldToAuthorizeButton extends PureComponent {
       disabledBackgroundColor,
       enableLongPress,
       hideBiometricIcon,
+      hideInnerBorder,
       label,
       shadows,
       style,
@@ -227,7 +229,9 @@ class HoldToAuthorizeButton extends PureComponent {
                     <Title>{isAuthorizing ? 'Authorizing' : label}</Title>
                   </Fragment>
                 )}
-                <InnerBorder radius={ButtonBorderRadius} />
+                {!hideInnerBorder && (
+                  <InnerBorder radius={ButtonBorderRadius} />
+                )}
               </Content>
             </ShadowStack>
           </Animated.View>

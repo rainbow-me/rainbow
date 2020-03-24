@@ -37,7 +37,7 @@ const enhance = compose(
 
     return {
       isSevere,
-      severityColor: isSevere ? colors.red : colors.yellowOrange,
+      severityColor: isSevere ? colors.red : colors.orangeLight,
       showWarning: slippage >= SlippageWarningThresholdInBips,
     };
   })

@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import styled from 'styled-components/primitives';
 import { colors, margin, padding } from '../../styles';
 import { Icon } from '../icons';
@@ -10,10 +9,10 @@ import { InnerBorder, RowWithMargins } from '../layout';
 const ExchangeSearchHeight = 40;
 
 const Container = styled(RowWithMargins).attrs({
-  margin: 7,
+  margin: 0,
 })`
-  ${margin(0, 15, 10)};
-  ${padding(0, 13, 0)};
+  ${margin(0, 15, 8)};
+  ${padding(0, 37, 0, 13)};
   background-color: ${colors.skeleton};
   border-radius: ${ExchangeSearchHeight / 2};
   height: ${ExchangeSearchHeight};
@@ -44,47 +43,47 @@ export default class ExchangeSearch extends PureComponent {
   inputRef = React.createRef();
 
   render = () => (
-    <TouchableWithoutFeedback onPress={this.focus} paddingHorizontal={15}>
-      <Container>
-        <Icon
-          color={colors.alpha(colors.blueGreyDark, 0.4)}
-          flex={0}
-          marginTop={10.5}
-          name="search"
-        />
-        <Input
-          allowFontScaling={false}
-          autoCapitalize="words"
-          autoFocus={this.props.autoFocus}
-          blurOnSubmit={false}
-          clearTextOnFocus
-          color={colors.dark}
-          enablesReturnKeyAutomatically
-          flex={1}
-          keyboardAppearance="dark"
-          keyboardType="ascii-capable"
-          lineHeight="loose"
-          onChangeText={this.props.onChangeText}
-          onFocus={this.props.onFocus}
-          placeholder="Search"
-          placeholderTextColor={colors.grey}
-          ref={this.inputRef}
-          returnKeyType="search"
-          selectionColor={colors.appleBlue}
-          size="large"
-          value={this.props.searchQuery}
-        />
-        <ClearInputDecorator
-          inputHeight={ExchangeSearchHeight}
-          isVisible={this.props.searchQuery !== ''}
-          onPress={this.clearInput}
-        />
-        <InnerBorder
-          color={colors.dark}
-          opacity={0.01}
-          radius={ExchangeSearchHeight / 2}
-        />
-      </Container>
-    </TouchableWithoutFeedback>
+    <Container>
+      <Icon
+        color={colors.alpha(colors.blueGreyDark, 0.4)}
+        flex={0}
+        marginTop={10.5}
+        name="search"
+      />
+      <Input
+        allowFontScaling={false}
+        autoCapitalize="words"
+        autoFocus={this.props.autoFocus}
+        blurOnSubmit={false}
+        clearTextOnFocus
+        color={colors.dark}
+        enablesReturnKeyAutomatically
+        flex={1}
+        keyboardAppearance="dark"
+        keyboardType="ascii-capable"
+        lineHeight="loose"
+        marginLeft={7}
+        onChangeText={this.props.onChangeText}
+        onFocus={this.props.onFocus}
+        placeholder="Search"
+        placeholderTextColor={colors.grey}
+        ref={this.inputRef}
+        returnKeyType="search"
+        selectionColor={colors.appleBlue}
+        size="large"
+        spellCheck={false}
+        value={this.props.searchQuery}
+      />
+      <ClearInputDecorator
+        inputHeight={ExchangeSearchHeight}
+        isVisible={this.props.searchQuery !== ''}
+        onPress={this.clearInput}
+      />
+      <InnerBorder
+        color={colors.dark}
+        opacity={0.01}
+        radius={ExchangeSearchHeight / 2}
+      />
+    </Container>
   );
 }

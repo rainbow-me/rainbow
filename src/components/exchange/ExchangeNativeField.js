@@ -94,7 +94,12 @@ class ExchangeNativeField extends Component {
     return (
       <TouchableWithoutFeedback flex={0} onPress={this.focusNativeField}>
         <Row align="center" flex={1} height={height}>
-          <Text flex={0} size="large" style={{ color }} weight="regular">
+          <Text
+            flex={0}
+            size="large"
+            style={{ color, marginBottom: 0.5 }}
+            weight="regular"
+          >
             {symbol}
           </Text>
           <ExchangeInput

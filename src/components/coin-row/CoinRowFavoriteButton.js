@@ -27,9 +27,7 @@ const CoinRowFavoriteButton = ({ isFavorited, onPress }) => (
     <Centered {...position.sizeAsObject('100%')}>
       <Icon
         color={
-          isFavorited
-            ? colors.orangeLight
-            : colors.alpha(colors.blueGreyDark, 0.15)
+          isFavorited ? colors.yellow : colors.alpha(colors.blueGreyDark, 0.12)
         }
         name="star"
       />

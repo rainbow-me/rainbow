@@ -8,11 +8,15 @@ const EMPTY_ARRAY = [];
 const getRandomNumber = (min, max) => Math.random() * (max - min) + min;
 
 const FloatingEmojis = ({
+  centerVertically,
   children,
+  disableHorizontalMovement,
+  disableVerticalMovement,
   distance,
   duration,
   emoji,
   fadeOut,
+  marginTop,
   opacity,
   range,
   scaleTo,
@@ -63,6 +67,9 @@ const FloatingEmojis = ({
       >
         {emojis.map(({ emojiToRender, x, y }, index) => (
           <FloatingEmoji
+            centerVertically={centerVertically}
+            disableHorizontalMovement={disableHorizontalMovement}
+            disableVerticalMovement={disableVerticalMovement}
             distance={Math.ceil(distance)}
             duration={duration}
             emoji={emojiToRender}
@@ -70,6 +77,7 @@ const FloatingEmojis = ({
             index={index}
             key={`${x}${y}`}
             left={x}
+            marginTop={marginTop}
             scaleTo={scaleTo}
             size={size}
             top={y}
@@ -82,11 +90,15 @@ const FloatingEmojis = ({
 };
 
 FloatingEmojis.propTypes = {
+  centerVertically: PropTypes.bool,
   children: PropTypes.node,
+  disableHorizontalMovement: PropTypes.bool,
+  disableVerticalMovement: PropTypes.bool,
   distance: PropTypes.number,
   duration: PropTypes.number,
   emoji: PropTypes.string.isRequired,
   fadeOut: PropTypes.bool,
+  marginTop: PropTypes.number,
   opacity: PropTypes.oneOfType([PropTypes.number, PropTypes.object]),
   range: PropTypes.arrayOf(PropTypes.number),
   scaleTo: PropTypes.number,

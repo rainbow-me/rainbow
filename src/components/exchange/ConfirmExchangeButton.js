@@ -39,6 +39,7 @@ const ConfirmExchangeButton = ({
       disabled={disabled || !isSufficientBalance}
       disabledBackgroundColor={colors.grey20}
       flex={1}
+      hideInnerBorder
       isAuthorizing={isAuthorizing}
       label={label}
       onLongPress={onSubmit}

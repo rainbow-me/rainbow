@@ -72,6 +72,7 @@ const ExchangeInputField = ({
               disableTabularNums
               editable={!!inputCurrencySymbol}
               fontFamily={fonts.family.SFProRounded}
+              height={40}
               letterSpacing={fonts.letterSpacing.roundedTightest}
               onChangeText={setInputAmount}
               onBlur={onBlur}
