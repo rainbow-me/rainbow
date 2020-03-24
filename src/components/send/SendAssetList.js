@@ -2,7 +2,11 @@ import React, { Fragment } from 'react';
 import { onlyUpdateForKeys } from 'recompact';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
-import { CollectiblesSendRow, SavingsCoinRow, SendCoinRow } from '../coin-row';
+import {
+  CollectiblesSendRow,
+  SendCoinRow,
+  SendSavingsCoinRow,
+} from '../coin-row';
 import { View } from 'react-primitives';
 import {
   DataProvider,
@@ -217,11 +221,13 @@ class SendAssetList extends React.Component {
         this.props.onSelectAsset(token);
       };
       return (
-        <SavingsCoinRow
+        <SendSavingsCoinRow
           onPress={onPress}
-          key={Math.random()}
+          key={token.cToken.address}
           {...token}
           {...token.underlying}
+          {...token}
+          {...token.cToken}
         />
       );
     });

@@ -1,5 +1,5 @@
 import analytics from '@segment/analytics-react-native';
-import { get, isEmpty, isString, toLower } from 'lodash';
+import { get, isEmpty, isString, map, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -81,7 +81,19 @@ const SendSheet = ({
 }) => {
   const { allAssets } = useAccountAssets();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const savings = useSavingsAccount();
+  let savings = useSavingsAccount();
+  const eth = ethereumUtils.getAsset(allAssets);
+  const priceOfEther = get(eth, 'native.price.amount', null);
+  if (priceOfEther) {
+    savings = map(savings, asset => {
+      const { ethPrice } = asset;
+      const nativeValue = ethPrice ? priceOfEther * ethPrice : 0;
+      return {
+        ...asset,
+        nativeValue,
+      };
+    });
+  }
   const fetchData = useRefreshAccountData();
   const {
     accountAddress,

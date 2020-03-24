@@ -14,12 +14,25 @@ const COMPOUND_QUERY_INTERVAL = 10000;
 
 const getMarketData = (marketData, tokenOverrides) => {
   const underlying = getUnderlyingData(marketData, tokenOverrides);
+  const cToken = getCTokenData(marketData, tokenOverrides);
   const { supplyRate, underlyingPrice } = marketData;
 
   return {
+    cToken,
     supplyRate,
     underlying,
     underlyingPrice,
+  };
+};
+
+const getCTokenData = (marketData, tokenOverrides) => {
+  const { id: cTokenAddress, name, symbol } = marketData;
+
+  return {
+    address: cTokenAddress,
+    decimals: 8,
+    name: parseAssetName(name, cTokenAddress, tokenOverrides),
+    symbol: parseAssetSymbol(symbol, cTokenAddress, tokenOverrides),
   };
 };
 
@@ -82,7 +95,7 @@ export default function useSavingsAccount() {
       const [cTokenAddress] = token.id.split('-');
       const marketData = markets[cTokenAddress] || {};
 
-      const { supplyRate, underlying, underlyingPrice } = getMarketData(
+      const { cToken, supplyRate, underlying, underlyingPrice } = getMarketData(
         marketData,
         tokenOverrides
       );
@@ -96,6 +109,7 @@ export default function useSavingsAccount() {
       } = token;
 
       return {
+        cToken,
         cTokenBalance,
         ethPrice,
         lifetimeSupplyInterestAccrued,
