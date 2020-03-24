@@ -6,8 +6,6 @@ import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents } from 'react-navigation';
 import { useFocusState } from 'react-navigation-hooks';
-
-//  withNavigation,
 import { useDispatch } from 'react-redux';
 import { compose, mapProps } from 'recompact';
 import {
@@ -27,7 +25,6 @@ import GestureBlocker from '../components/GestureBlocker';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { exchangeModalBorderRadius } from './ExchangeModal';
-import { shouldUpdate } from 'recompose';
 
 const headerlessSection = data => [{ data, title: '' }];
 
@@ -274,8 +271,5 @@ export default compose(
     navigation,
     transitionPosition: get(navigation, 'state.params.position'),
     type: get(navigation, 'state.params.type', null),
-  })),
-  shouldUpdate((props, nextProps) => {
-    return props.type !== nextProps.type;
-  })
+  }))
 )(CurrencySelectModal);

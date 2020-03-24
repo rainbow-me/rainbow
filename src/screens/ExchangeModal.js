@@ -543,6 +543,7 @@ const ExchangeModal = ({
     accountAddress,
     calculateInputGivenOutputChange,
     calculateOutputGivenInputChange,
+    clearForm,
     gasUpdateTxFee,
     inputAmount,
     inputAsExactAmount,
@@ -567,14 +568,6 @@ const ExchangeModal = ({
 
   const assignOutputFieldRef = ref => {
     outputFieldRef.current = ref;
-  };
-
-  const clearForm = () => {
-    if (inputFieldRef && inputFieldRef.current) inputFieldRef.current.clear();
-    if (nativeFieldRef && nativeFieldRef.current)
-      nativeFieldRef.current.clear();
-    if (outputFieldRef && outputFieldRef.current)
-      outputFieldRef.current.clear();
   };
 
   const findNextFocused = () => {
@@ -759,6 +752,15 @@ const ExchangeModal = ({
       supplyBalanceUnderlying,
     ]
   );
+
+  const clearForm = useCallback(() => {
+    if (inputFieldRef && inputFieldRef.current) inputFieldRef.current.clear();
+    if (nativeFieldRef && nativeFieldRef.current)
+      nativeFieldRef.current.clear();
+    if (outputFieldRef && outputFieldRef.current)
+      outputFieldRef.current.clear();
+    updateInputAmount();
+  }, [updateInputAmount]);
 
   const previousInputCurrency = usePrevious(inputCurrency);
 
