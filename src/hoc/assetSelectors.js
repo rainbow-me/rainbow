@@ -12,9 +12,10 @@ import { isLowerCaseMatch } from '../utils';
 const EMPTY_ARRAY = [];
 
 const assetPricesFromUniswapSelector = state =>
-  state.data.assetPricesFromUniswap;
-const assetsSelector = state => state.data.assets;
-const nativeCurrencySelector = state => state.settings.nativeCurrency;
+  state.data ? state.data.assetPricesFromUniswap : state.assetPricesFromUniswap;
+const assetsSelector = state => (state.data ? state.data.assets : state.assets);
+const nativeCurrencySelector = state =>
+  state.settings ? state.settings.nativeCurrency : state.nativeCurrency;
 
 const sortAssetsByNativeAmount = (
   originalAssets,

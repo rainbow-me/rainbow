@@ -8,5 +8,9 @@
 	<array>
 		<string>applinks:rainbow.me</string>
 	</array>
+	<key>com.apple.developer.in-app-payments</key>
+	<array>
+		<string>merchant.me.rainbow</string>
+	</array>
 </dict>
 </plist>

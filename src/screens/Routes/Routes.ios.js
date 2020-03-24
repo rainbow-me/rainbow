@@ -17,6 +17,7 @@ import {
 import { updateTransitionProps } from '../../redux/navigation';
 import store from '../../redux/store';
 import { deviceUtils, sentryUtils } from '../../utils';
+import AddCashSheet from '../AddCashSheet';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from '../ProfileScreenWithData';
@@ -254,6 +255,9 @@ const savingsModalsRoutes = {
 const nativeStackWrapperRoutes = {
   NativeStack: createNativeStackNavigator(
     {
+      AddCashSheet: function AddCashSheetWrapper(...props) {
+        return <AddCashSheet {...props} />;
+      },
       ImportSeedPhraseSheet: function ImportSeedPhraseSheetWrapper(...props) {
         return (
           <ImportSeedPhraseSheetWithData
@@ -298,6 +302,17 @@ const NativeStackWrapper = createStackNavigator(nativeStackWrapperRoutes, {
 });
 
 const routesWithNativeStack = {
+  AddCashSheet: {
+    navigationOptions: {
+      ...sheetPreset,
+      onTransitionStart: props => {
+        StatusBar.setBarStyle('light-content');
+        onTransitionStart(props);
+        sheetPreset.onTransitionStart(props);
+      },
+    },
+    screen: AddCashSheet,
+  },
   ImportSeedPhraseSheet: {
     navigationOptions: {
       ...sheetPreset,

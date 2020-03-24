@@ -6,6 +6,7 @@ const base = {
   appleBlue: '#0E76FD', // 14, 118, 253
   black: '#000000', // '0, 0, 0'
   blueGreyDark: '#3C4252', // '60, 66, 82'
+  blueGreyDark50: '#9DA0A8',
   blueGreyDarker: '#0F0F11', // '15, 15, 17'
   blueGreyDarkLight: '#F3F4F5', // '243, 244, 245'
   dark: '#25292E', // '37, 41, 46'
@@ -19,12 +20,14 @@ const base = {
   mediumGrey: '#A1A5B3', // '161, 165, 179'
   orange: '#FF9900', // '255, 153, 0'
   orangeLight: '#FEBE44', // '254, 190, 68'
-  paleBlue: '#579DFF',
+  paleBlue: '#579DFF', // 87, 157, 255
+  pink: '#FF54BB', // 255, 84, 187
   purple: '#32325D', // '50, 50, 93'
   purpleLight: '#FFD9FE', // '255, 217, 254'
   red: '#FF494A', // '255, 73, 74'
   rowDivider: 'rgba(60, 66, 82, 0.03)', // '60, 66, 82'
   rowDividerLight: 'rgba(60, 66, 82, 0.02)', // '60, 66, 82'
+  shadowGrey: '#6F6F6F', // '111, 111, 111'
   shimmer: '#EDEEF1', // '237, 238, 241'
   skeleton: '#F6F7F8', // '246, 247, 248'
   swapPurple: '#575CFF', // '87, 92, 255'
@@ -70,7 +73,7 @@ const vendor = {
   walletconnect: '#4099FF', // '64, 153, 255'
 };
 
-const buildRgba = (color, alpha) => `rgba(${chroma(color).rgb()}, ${alpha})`;
+const buildRgba = (color, alpha) => `rgba(${chroma(color).rgb()},${alpha})`;
 
 const isColorLight = targetColor =>
   chroma(targetColor || base.white).luminance() > 0.5;

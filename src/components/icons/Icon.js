@@ -2,9 +2,11 @@ import PropTypes from 'prop-types';
 import { createElement } from 'react';
 import Flex from '../layout/Flex';
 
+import ApplePayIcon from './svg/ApplePayIcon';
 import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import ArrowIcon from './svg/ArrowIcon';
 import AvatarIcon from './svg/AvatarIcon';
+import BackspaceIcon from './svg/BackspaceIcon';
 import CameraIcon from './svg/CameraIcon';
 import CaretIcon from './svg/CaretIcon';
 import CaretThinIcon from './svg/CaretThinIcon';
@@ -39,6 +41,7 @@ import OfflineIcon from './svg/OfflineIcon';
 import PasscodeIcon from './svg/PasscodeIcon';
 import PlusCircledIcon from './svg/PlusCircledIcon';
 import ProgressIcon from './svg/ProgressIcon';
+import QRCodeIcon from './svg/QRCodeIcon';
 import SearchIcon from './svg/SearchIcon';
 import SendIcon from './svg/SendIcon';
 import SendSmallIcon from './svg/SendSmallIcon';
@@ -57,9 +60,11 @@ const Icon = ({ name, ...props }) =>
   createElement(Icon.IconTypes[name] || Flex, { name, ...props });
 
 Icon.IconTypes = {
+  applePay: ApplePayIcon,
   arrow: ArrowIcon,
   arrowCircled: ArrowCircledIcon,
   avatar: AvatarIcon,
+  backspace: BackspaceIcon,
   camera: CameraIcon,
   caret: CaretIcon,
   caretThin: CaretThinIcon,
@@ -94,6 +99,7 @@ Icon.IconTypes = {
   passcode: PasscodeIcon,
   plusCircled: PlusCircledIcon,
   progress: ProgressIcon,
+  qrCode: QRCodeIcon,
   search: SearchIcon,
   send: SendIcon,
   sendSmall: SendSmallIcon,

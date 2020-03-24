@@ -13,6 +13,7 @@ font.letterSpacing = {
   roundedTight: 0.4,
   roundedMedium: 0.5,
   rounded: 0.6,
+  uppercase: 0.8,
 };
 
 font.lineHeight = {

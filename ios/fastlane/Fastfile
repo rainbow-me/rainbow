@@ -26,7 +26,7 @@ platform :ios do
 
     release_version = "me.rainbow-#{version_from_plist}"
 
-    dist = latest_testflight_build_number(version: version_from_plist).to_s
+    dist = (latest_testflight_build_number(version: get_version_number) + 1).to_s
 
     sentry_create_release(
       finalize: true, # Whether to finalize the release. If not provided or false, the release can be finalized using the sentry_finalize_release action
@@ -63,14 +63,20 @@ platform :ios do
       plist_path: "Rainbow/Info.plist",
     )
     match(
+      force: true,
       type: "appstore",
       app_identifier: "me.rainbow",
       git_url: "git@github.com:rainbow-me/rainbow-code-signing.git"
     )
+    automatic_code_signing(
+      use_automatic_signing: false
+    )
     gym(
+      workspace: "Rainbow.xcworkspace",
       scheme: "Rainbow",
-      export_method: "app-store",
       include_symbols: true,
+      configuration: "Release",
+      export_method: "app-store",
     )
     pilot(
       app_identifier: "me.rainbow",

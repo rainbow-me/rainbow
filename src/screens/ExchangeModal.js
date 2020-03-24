@@ -274,6 +274,7 @@ const ExchangeModal = ({
         (!useInputReserve && !outputReserve)
       )
         return 0;
+
       const marketDetails = getUniswapMarketDetails(
         undefined,
         useInputReserve ? inputReserve : outputReserve

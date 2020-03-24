@@ -33,6 +33,22 @@
         "symbol": "ETH"
       },
       "quantity": 0
+    },
+    {
+      "asset": {
+        "asset_code": "0xc4375b7de8af5a38a93548eb8453a498222c4ff2",
+        "coingecko_id": "dai",
+        "decimals": 18,
+        "icon_url": "https://s3.amazonaws.com/icons.assets/DAI_mcd.png",
+        "name": "Dai",
+        "price": {
+          "changed_at": 1582562452,
+          "relative_change_24h": 0.8470466197462612,
+          "value": 1
+        },
+        "symbol": "DAI"
+      },
+      "quantity": 0
     }
   ],
   "rinkeby": [

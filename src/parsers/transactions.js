@@ -6,6 +6,7 @@ import {
   findIndex,
   flatten,
   get,
+  includes,
   isEmpty,
   partition,
   pick,
@@ -46,6 +47,7 @@ export const parseTransactions = (
   accountAddress,
   nativeCurrency,
   existingTransactions,
+  purchaseTransactions,
   tokenOverrides,
   network,
   appended = false
@@ -60,6 +62,7 @@ export const parseTransactions = (
         accountAddress,
         nativeCurrency,
         tokenOverrides,
+        purchaseTransactions,
         network
       )
     )
@@ -116,6 +119,7 @@ const parseTransaction = (
   accountAddress,
   nativeCurrency,
   tokenOverrides,
+  purchaseTransactions,
   network
 ) => {
   const transaction = pick(txn, [
@@ -231,6 +235,8 @@ const parseTransaction = (
       transaction.pending,
       transaction.status,
       internalTxn.address_to,
+      transaction.hash,
+      purchaseTransactions,
       transaction.type
     );
 
@@ -282,8 +288,15 @@ const getTransactionLabel = (
   pending,
   status,
   to,
+  hash,
+  purchaseTransactions,
   type
 ) => {
+  if (includes(purchaseTransactions, toLower(hash))) {
+    if (pending) return TransactionStatusTypes.purchasing;
+    if (status !== 'failed') return TransactionStatusTypes.purchased;
+  }
+
   const isFromAccount = isLowerCaseMatch(from, accountAddress);
   const isToAccount = isLowerCaseMatch(to, accountAddress);
 

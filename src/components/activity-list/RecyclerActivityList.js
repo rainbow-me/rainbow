@@ -1,6 +1,7 @@
 import { get, times } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
+import { Platform } from 'react-native';
 import {
   RecyclerListView,
   DataProvider,
@@ -8,6 +9,7 @@ import {
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
+import { addCashButtonAvailable } from '../../config/experimental';
 import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
 import {
   deviceUtils,
@@ -127,6 +129,8 @@ export default class RecyclerActivityList extends PureComponent {
         } else {
           dim.height = this.props.isLoading
             ? deviceUtils.dimensions.height
+            : Platform.OS === 'ios' && addCashButtonAvailable
+            ? 278
             : 204;
         }
       }

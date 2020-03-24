@@ -39,7 +39,10 @@ const getDisplayAction = (type, name) => {
 };
 
 const BottomRow = ({ name, native, status, type }) => {
-  const isReceived = status === TransactionStatusTypes.received;
+  const isFailed = status === TransactionStatusTypes.failed;
+  const isReceived =
+    status === TransactionStatusTypes.received ||
+    status === TransactionStatusTypes.purchased;
   const isSent = status === TransactionStatusTypes.sent;
 
   const isOutgoingSwap =
@@ -59,7 +62,7 @@ const BottomRow = ({ name, native, status, type }) => {
 
   const nativeDisplay = get(native, 'display');
   const balanceText = nativeDisplay
-    ? compact([isSent ? '-' : null, nativeDisplay]).join(' ')
+    ? compact([isFailed || isSent ? '-' : null, nativeDisplay]).join(' ')
     : '';
 
   return (

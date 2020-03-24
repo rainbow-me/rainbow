@@ -1,4 +1,4 @@
-export { contains, interpolate, timing, updateState } from './procs';
+export { contains, interpolate, runSpring, timing, updateState } from './procs';
 export {
   default as AnimatedNumber,
   defaultAnimatedNumberProps,

@@ -11,6 +11,7 @@ import {
   mapValues,
   property,
   remove,
+  toLower,
   uniqBy,
 } from 'lodash';
 import { uniswapClient } from '../apollo/client';
@@ -22,13 +23,16 @@ import {
   getAssetPricesFromUniswap,
   getAssets,
   getLocalTransactions,
+  getPurchaseTransactions,
   removeAssetPricesFromUniswap,
   removeAssets,
   removeLocalTransactions,
+  removePurchaseTransactions,
   removeSavings,
   saveAssetPricesFromUniswap,
   saveAssets,
   saveLocalTransactions,
+  savePurchaseTransactions,
 } from '../handlers/localstorage/accountLocal';
 import { apiGetTokenOverrides } from '../handlers/tokenOverrides';
 import { getTransactionReceipt } from '../handlers/web3';
@@ -52,6 +56,8 @@ let watchPendingTransactionsHandler = null;
 const DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP =
   'data/DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP';
 const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
+const DATA_UPDATE_PURCHASE_TRANSACTIONS =
+  'data/DATA_UPDATE_PURCHASE_TRANSACTIONS';
 const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
 const DATA_UPDATE_TOKEN_OVERRIDES = 'data/DATA_UPDATE_TOKEN_OVERRIDES';
 const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
@@ -107,6 +113,14 @@ export const dataLoadState = () => async (dispatch, getState) => {
   } catch (error) {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
   }
+  try {
+    const purchases = await getPurchaseTransactions(accountAddress, network);
+    dispatch({
+      payload: purchases,
+      type: DATA_UPDATE_PURCHASE_TRANSACTIONS,
+    });
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
 };
 
 export const dataTokenOverridesInit = () => async dispatch => {
@@ -127,6 +141,7 @@ export const dataClearState = () => (dispatch, getState) => {
   removeSavings(accountAddress, network);
   removeAssetPricesFromUniswap(accountAddress, network);
   removeLocalTransactions(accountAddress, network);
+  removePurchaseTransactions(accountAddress, network);
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
@@ -160,13 +175,18 @@ export const transactionsReceived = (message, appended = false) => (
   const transactionData = get(message, 'payload.transactions', []);
   if (!transactionData.length) return;
   const { accountAddress, nativeCurrency, network } = getState().settings;
-  const { transactions, tokenOverrides } = getState().data;
+  const {
+    purchaseTransactions,
+    transactions,
+    tokenOverrides,
+  } = getState().data;
   if (!transactionData.length) return;
   const dedupedResults = parseTransactions(
     transactionData,
     accountAddress,
     nativeCurrency,
     transactions,
+    purchaseTransactions,
     tokenOverrides,
     network,
     appended
@@ -337,6 +357,22 @@ export const dataUpdateTokenOverrides = tokenOverrides => dispatch =>
     type: DATA_UPDATE_TOKEN_OVERRIDES,
   });
 
+export const dataAddNewPurchaseTransaction = txDetails => (
+  dispatch,
+  getState
+) => {
+  const purchaseHash = txDetails.hash;
+  const { purchaseTransactions } = getState().data;
+  const { accountAddress, network } = getState().settings;
+  const updatedPurchases = [toLower(purchaseHash), ...purchaseTransactions];
+  dispatch({
+    payload: updatedPurchases,
+    type: DATA_UPDATE_PURCHASE_TRANSACTIONS,
+  });
+  savePurchaseTransactions(updatedPurchases, accountAddress, network);
+  dispatch(dataAddNewTransaction(txDetails));
+};
+
 export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
   dispatch,
   getState
@@ -372,6 +408,8 @@ const getConfirmedState = type => {
       return TransactionStatusTypes.withdrew;
     case TransactionTypes.receive:
       return TransactionStatusTypes.received;
+    case TransactionTypes.purchase:
+      return TransactionStatusTypes.purchased;
     default:
       return TransactionStatusTypes.sent;
   }
@@ -446,6 +484,7 @@ const INITIAL_STATE = {
   assets: [],
   loadingAssets: false,
   loadingTransactions: false,
+  purchaseTransactions: [],
   tokenOverrides: loweredTokenOverridesFallback,
   transactions: [],
   uniswapPricesSubscription: null,
@@ -499,6 +538,11 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         loadingAssets: false,
+      };
+    case DATA_UPDATE_PURCHASE_TRANSACTIONS:
+      return {
+        ...state,
+        purchaseTransactions: action.payload,
       };
     case DATA_ADD_NEW_TRANSACTION_SUCCESS:
       return {
