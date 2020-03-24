@@ -1,9 +1,9 @@
-import { withProps } from 'recompact';
-import styled from 'styled-components/primitives';
+import React from 'react';
+import { Text as TextPrimitive } from 'react-primitives';
 import { buildTextStyles } from '../../styles';
 
-const Text = styled.Text`
-  ${buildTextStyles}
-`;
-
-export default withProps({ allowFontScaling: false })(Text);
+export default function Text(props) {
+  return (
+    <TextPrimitive {...props} allowFontScaling={false} css={buildTextStyles} />
+  );
+}

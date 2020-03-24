@@ -42,6 +42,7 @@ export const parseNewTransaction = async (
     pending: !!txDetails.hash,
     status,
     symbol: get(txDetails, 'asset.symbol'),
+    type: get(txDetails, 'type'),
   };
 
   return tx;

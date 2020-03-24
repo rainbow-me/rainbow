@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Svg, { Defs, G, LinearGradient, Path, Stop } from 'svgs';
+import { Defs, G, LinearGradient, Path, Stop } from 'svgs';
 import { colors } from '../../../styles';
+import Svg from '../Svg';
 
 const PasscodeIcon = ({ color, ...props }) => (
   <Svg viewBox="0 0 18 24" {...props}>

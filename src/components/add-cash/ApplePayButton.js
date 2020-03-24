@@ -6,8 +6,7 @@ import { toClass } from 'recompact';
 import { colors, position } from '../../styles';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Icon } from '../icons';
-import InnerBorder from '../InnerBorder';
-import { Centered } from '../layout';
+import { Centered, InnerBorder } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 
 const AnimatedCenter = Animated.createAnimatedComponent(toClass(Centered));

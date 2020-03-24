@@ -1,4 +1,8 @@
 export { contains, interpolate, runSpring, timing, updateState } from './procs';
+export {
+  default as AnimatedNumber,
+  defaultAnimatedNumberProps,
+} from './AnimatedNumber';
 export { default as ButtonPressAnimation } from './ButtonPressAnimation';
 export { default as FlyInAnimation } from './FlyInAnimation';
 export { default as OpacityToggler } from './OpacityToggler';
