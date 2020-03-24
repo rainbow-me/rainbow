@@ -744,9 +744,10 @@ const ExchangeModal = ({
         );
 
         const isSufficientBalance =
-          !newInputAmount || isWithdrawal
+          !newInputAmount ||
+          (isWithdrawal
             ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
-            : greaterThanOrEqualTo(inputBalance, newInputAmount);
+            : greaterThanOrEqualTo(inputBalance, newInputAmount));
         setIsSufficientBalance(isSufficientBalance);
       }
     },
@@ -892,7 +893,6 @@ const ExchangeModal = ({
     }
   };
 
-  // TODO JIN?
   const isSlippageWarningVisible =
     isSufficientBalance && !!inputAmount && !!outputAmount;
 
