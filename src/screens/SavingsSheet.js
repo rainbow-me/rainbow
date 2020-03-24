@@ -15,10 +15,7 @@ import {
 } from '../components/floating-emojis';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import Divider from '../components/Divider';
-import {
-  convertAmountToDepositDisplay,
-  convertAmountToNativeDisplay,
-} from '../helpers/utilities';
+import { convertAmountToNativeDisplay } from '../helpers/utilities';
 import { useAccountSettings } from '../hooks';
 
 const SavingsSheet = () => {
@@ -38,11 +35,10 @@ const SavingsSheet = () => {
   const supplyBalanceUnderlying = getParam('supplyBalanceUnderlying');
   const supplyRate = getParam('supplyRate');
 
-  const balance = convertAmountToDepositDisplay(nativeValue, underlying);
+  const balance = convertAmountToNativeDisplay(nativeValue, nativeCurrency);
   const lifetimeAccruedInterest = convertAmountToNativeDisplay(
     lifetimeSupplyInterestAccruedNative,
-    nativeCurrency,
-    1
+    nativeCurrency
   );
 
   useEffect(() => {

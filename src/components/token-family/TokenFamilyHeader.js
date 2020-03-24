@@ -126,8 +126,4 @@ TokenFamilyHeader.propTypes = {
   title: PropTypes.string,
 };
 
-TokenFamilyHeader.defaultProps = {
-  // emoji: 'sunflower',
-};
-
 export default TokenFamilyHeader;

@@ -1,4 +1,5 @@
 import { filter, find, get, isNil, map, pick, uniq } from 'lodash';
+import AssetTypes from '../helpers/assetTypes';
 
 /**
  * @desc parse unique tokens from opensea
@@ -41,11 +42,11 @@ export const parseAccountUniqueTokens = data => {
       background: background_color ? `#${background_color}` : null,
       familyImage: asset_contract.image_url,
       id: token_id,
-      isNft: true,
       isSendable:
         asset_contract.nft_version === '1.0' ||
         asset_contract.nft_version === '3.0',
       lastPrice: asset.last_sale ? Number(asset.last_sale.total_price) : null,
+      type: AssetTypes.nft,
       uniqueId: `${get(asset_contract, 'address')}_${token_id}`,
     })
   );

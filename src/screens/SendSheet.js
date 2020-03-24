@@ -1,5 +1,5 @@
 import analytics from '@segment/analytics-react-native';
-import { get, isEmpty, isString, toLower } from 'lodash';
+import { get, isEmpty, isString, map, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -21,10 +21,13 @@ import {
   SendTransactionSpeed,
 } from '../components/send';
 import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
+import AssetTypes from '../helpers/assetTypes';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { formatDepositAmount } from '../helpers/savings';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
+  convertAmountToNativeDisplay,
   formatInputDecimals,
 } from '../helpers/utilities';
 import { checkIsValidAddress } from '../helpers/validators';
@@ -81,13 +84,56 @@ const SendSheet = ({
 }) => {
   const { allAssets } = useAccountAssets();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const savings = useSavingsAccount();
-  const fetchData = useRefreshAccountData();
   const {
     accountAddress,
     nativeCurrency,
     nativeCurrencySymbol,
   } = useAccountSettings();
+
+  let savings = useSavingsAccount();
+  const eth = ethereumUtils.getAsset(allAssets);
+  const priceOfEther = get(eth, 'native.price.amount', null);
+  if (priceOfEther) {
+    savings = map(savings, asset => {
+      const { cToken, cTokenBalance, exchangeRate, underlyingPrice } = asset;
+      const cTokenBalanceDisplay = formatDepositAmount(
+        cTokenBalance,
+        cToken.symbol,
+        false
+      );
+
+      const nativeValue = exchangeRate * underlyingPrice * priceOfEther;
+      const nativeValueDisplay = convertAmountToNativeDisplay(
+        nativeValue,
+        nativeCurrency
+      );
+      const balanceNativeValue = cTokenBalance * nativeValue;
+      const balanceNativeDisplay = convertAmountToNativeDisplay(
+        balanceNativeValue,
+        nativeCurrency
+      );
+
+      return {
+        ...asset,
+        ...cToken,
+        balance: {
+          amount: cTokenBalance,
+          display: cTokenBalanceDisplay,
+        },
+        native: {
+          balance: {
+            amount: balanceNativeValue,
+            display: balanceNativeDisplay,
+          },
+        },
+        price: {
+          display: nativeValueDisplay,
+          value: nativeValue,
+        },
+      };
+    });
+  }
+  const fetchData = useRefreshAccountData();
 
   const { navigate } = useNavigation();
   const [amountDetails, setAmountDetails] = useState({
@@ -152,7 +198,7 @@ const SendSheet = ({
 
   const sendUpdateSelected = useCallback(
     newSelected => {
-      if (get(newSelected, 'isNft')) {
+      if (get(newSelected, 'type') === AssetTypes.nft) {
         setAmountDetails({
           assetAmount: '1',
           isSufficientBalance: true,
@@ -167,7 +213,7 @@ const SendSheet = ({
         sendUpdateAssetAmount('');
       }
     },
-    [amountDetails.assetAmount, sendUpdateAssetAmount]
+    [sendUpdateAssetAmount]
   );
 
   const sendUpdateRecipient = useCallback(newRecipient => {
@@ -231,6 +277,7 @@ const SendSheet = ({
       return false;
 
     let submitSuccess = false;
+
     const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
@@ -277,7 +324,7 @@ const SendSheet = ({
       const submitSuccessful = await onSubmit();
       analytics.track('Sent transaction', {
         assetName: selected.name,
-        assetType: selected.isNft ? 'unique_token' : 'token',
+        assetType: selected.type,
         isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
       });
       if (submitSuccessful) {
@@ -291,8 +338,8 @@ const SendSheet = ({
     navigate,
     onSubmit,
     recipient,
-    selected.isNft,
     selected.name,
+    selected.type,
   ]);
 
   const onPressTransactionSpeed = useCallback(
@@ -335,7 +382,7 @@ const SendSheet = ({
     if (isValidAddress && showAssetList) {
       Keyboard.dismiss();
     }
-  }, [isValidAddress]);
+  }, [isValidAddress, showAssetList]);
 
   const assetOverride = useNavigationParam('asset');
   const prevAssetOverride = usePrevious(assetOverride);
