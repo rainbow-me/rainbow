@@ -9,8 +9,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
+
 import { TextInput, InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { useIsFocused } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import { toClass } from 'recompact';
 import { interpolate } from '../components/animations';
@@ -63,7 +65,6 @@ import { colors, padding, position } from '../styles';
 import { ethereumUtils } from '../utils';
 import { CurrencySelectionTypes } from './CurrencySelectModal';
 import SwapInfo from '../components/exchange/SwapInfo';
-import { useIsFocused } from 'react-navigation-hooks';
 
 export const exchangeModalBorderRadius = 30;
 
