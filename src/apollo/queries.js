@@ -27,15 +27,6 @@ export const COMPOUND_ACCOUNT_AND_MARKET_QUERY = gql`
   }
 `;
 
-export const COMPOUND_SUPPLY_RATE = gql`
-  query markets($cTokenAddress: ID!) {
-    markets(where: { id: $cTokenAddress }) {
-      id
-      supplyRate
-    }
-  }
-`;
-
 export const UNISWAP_PRICES_QUERY = gql`
   query exchanges($addresses: [String]!) {
     exchanges(where: { tokenAddress_in: $addresses, price_gt: 0 }) {

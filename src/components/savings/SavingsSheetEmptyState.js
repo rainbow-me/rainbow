@@ -1,7 +1,7 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import { colors, fonts, padding } from '../../styles';
-import { useCompoundSupplyRate } from '../../hooks';
 import { CoinIcon } from '../coin-icon';
 import Divider from '../Divider';
 import { Centered, ColumnWithMargins } from '../layout';
@@ -17,9 +17,9 @@ const APRHeadingTextStyle = {
 
 const APRHeadingText = p => <Rounded {...p} style={APRHeadingTextStyle} />;
 
-const SavingsSheetEmptyState = () => {
+const SavingsSheetEmptyState = ({ supplyRate: baseSupplyRate, underlying }) => {
+  const supplyRate = `${(baseSupplyRate * 100).toFixed(1)}%`;
   const { navigate } = useNavigation();
-  const supplyRate = useCompoundSupplyRate();
 
   return (
     <Centered direction="column" paddingTop={9}>
@@ -51,7 +51,11 @@ const SavingsSheetEmptyState = () => {
           color={colors.dodgerBlue}
           icon="plusCircled"
           label="Deposit from wallet"
-          onPress={() => navigate('SavingsDepositModal')}
+          onPress={() =>
+            navigate('SavingsDepositModal', {
+              defaultInputAsset: underlying,
+            })
+          }
         />
         {/*
           <SheetButton
@@ -64,6 +68,11 @@ const SavingsSheetEmptyState = () => {
       </ColumnWithMargins>
     </Centered>
   );
+};
+
+SavingsSheetEmptyState.propTypes = {
+  supplyRate: PropTypes.string,
+  underlying: PropTypes.object,
 };
 
 const neverRerender = () => true;

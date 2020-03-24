@@ -39,7 +39,10 @@ const SavingsSheet = () => {
   return (
     <Sheet>
       {isEmpty ? (
-        <SavingsSheetEmptyState />
+        <SavingsSheetEmptyState
+          supplyRate={supplyRate}
+          underlying={underlying}
+        />
       ) : (
         <Fragment>
           <SavingsSheetHeader
