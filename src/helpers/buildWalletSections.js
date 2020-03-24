@@ -134,10 +134,18 @@ const withBalanceSection = (
           .smallBalancesContainer
           ? {
               cancelButtonIndex: 1,
-              dynamicOptions: () =>
-                store.getState().editOptions.isCoinListEdited
-                  ? ['Pin', 'Cancel', 'Hide', 'Finish']
-                  : ['Edit', 'Cancel'],
+              dynamicOptions: () => {
+                const currentAction = store.getState().editOptions
+                  .currentAction;
+                return store.getState().editOptions.isCoinListEdited
+                  ? [
+                      currentAction !== 'unpin' ? 'Pin' : 'Unpin',
+                      'Cancel',
+                      'Hide',
+                      'Finish',
+                    ]
+                  : ['Edit', 'Cancel'];
+              },
               onPressActionSheet: async index => {
                 if (store.getState().editOptions.isCoinListEdited) {
                   if (index === 3) {

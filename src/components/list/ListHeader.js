@@ -39,7 +39,7 @@ const ListHeader = pure(
       >
         <Row align="center">
           {createElement(titleRenderer, { children: title })}
-          {contextMenuOptions && <ContextMenu {...contextMenuOptions} />}
+          <ContextMenu {...contextMenuOptions} />
         </Row>
         {children}
       </Row>

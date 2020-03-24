@@ -5,17 +5,30 @@ import Divider from '../Divider';
 import { ListHeader } from '../list';
 import { H1 } from '../text';
 
-const enhance = onlyUpdateForKeys(['title', 'totalValue']);
+const enhance = onlyUpdateForKeys([
+  'title',
+  'totalValue',
+  'contextMenuOptions',
+]);
 
-const AssetListHeader = enhance(({ title, totalValue, isSticky, ...props }) => (
-  <ListHeader isSticky={isSticky} title={title} {...props}>
-    {totalValue ? (
-      <H1 letterSpacing="roundedTight" weight="semibold">
-        {totalValue}
-      </H1>
-    ) : null}
-  </ListHeader>
-));
+const AssetListHeader = enhance(
+  ({ title, totalValue, isSticky, contextMenuOptions, ...props }) => {
+    return (
+      <ListHeader
+        isSticky={isSticky}
+        title={title}
+        contextMenuOptions={contextMenuOptions}
+        {...props}
+      >
+        {totalValue ? (
+          <H1 letterSpacing="roundedTight" weight="semibold">
+            {totalValue}
+          </H1>
+        ) : null}
+      </ListHeader>
+    );
+  }
+);
 
 AssetListHeader.propTypes = {
   isSticky: PropTypes.bool,

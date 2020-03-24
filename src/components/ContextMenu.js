@@ -1,12 +1,12 @@
 import { omit, pick } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import ActionSheet from 'react-native-actionsheet';
 import { withActionSheetManager } from '../hoc';
 import { padding } from '../styles';
 import { ButtonPressAnimation } from './animations';
 import { Icon } from './icons';
-import { Centered } from './layout';
+import { Centered, Row } from './layout';
 
 const ActionSheetProps = [
   'cancelButtonIndex',
@@ -58,19 +58,21 @@ class ContextMenu extends PureComponent {
       : false;
 
     return (
-      <Fragment>
-        <ButtonPressAnimation
-          activeOpacity={0.2}
-          onPress={this.showActionSheet}
-        >
-          <Centered
-            css={padding(2, 9, 0, 9)}
-            height="100%"
-            {...omit(this.props, ActionSheetProps)}
+      <Row width={30} height={30}>
+        {this.props.onPressActionSheet && (
+          <ButtonPressAnimation
+            activeOpacity={0.2}
+            onPress={this.showActionSheet}
           >
-            <Icon name="threeDots" />
-          </Centered>
-        </ButtonPressAnimation>
+            <Centered
+              css={padding(2, 9, 0, 9)}
+              height="100%"
+              {...omit(this.props, ActionSheetProps)}
+            >
+              <Icon name="threeDots" />
+            </Centered>
+          </ButtonPressAnimation>
+        )}
         <ActionSheet
           {...pick(this.props, ActionSheetProps)}
           cancelButtonIndex={
@@ -80,7 +82,7 @@ class ContextMenu extends PureComponent {
           onPress={this.handlePressActionSheet}
           ref={this.handleActionSheetRef}
         />
-      </Fragment>
+      </Row>
     );
   };
 }
