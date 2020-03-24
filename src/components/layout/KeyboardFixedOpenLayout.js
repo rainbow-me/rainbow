@@ -84,7 +84,7 @@ const KeyboardFixedOpenLayout = ({
 };
 
 KeyboardFixedOpenLayout.propTypes = {
-  additionalPadding: PropTypes.bool,
+  additionalPadding: PropTypes.number,
   keyboardHeight: PropTypes.number,
   setKeyboardHeight: PropTypes.func,
 };
