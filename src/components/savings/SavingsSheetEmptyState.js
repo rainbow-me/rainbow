@@ -48,7 +48,7 @@ const SavingsSheetEmptyState = ({ supplyRate: baseSupplyRate, underlying }) => {
       <Divider inset={[0, 42]} />
       <ColumnWithMargins css={padding(19, 15)} margin={19} width="100%">
         <SheetButton
-          color={colors.dodgerBlue}
+          color={colors.swapPurple}
           icon="plusCircled"
           label="Deposit from wallet"
           onPress={() =>

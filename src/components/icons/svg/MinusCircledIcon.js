@@ -20,7 +20,7 @@ MinusCircledIcon.propTypes = {
 };
 
 MinusCircledIcon.defaultProps = {
-  color: colors.limeGreen,
+  color: colors.green,
   size: 17,
 };
 

@@ -91,7 +91,7 @@ class TransactionListViewCell: TransactionListBaseCell {
     if transaction.pending {
       color = transactionColors.primaryBlue
     } else if transaction.type == "trade"  && transaction.status.lowercased() == "sent" {
-      color = transactionColors.dodgerBlue
+      color = transactionColors.swapPurple
       transactionType.text = "Swapped"
     }
     

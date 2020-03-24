@@ -72,7 +72,7 @@ const SavingsPredictionStepper = ({ balance, interestRate }) => {
             formatter={predictionFormatter}
             steps={9}
             style={{
-              color: colors.dodgerBlue,
+              color: colors.swapPurple,
               flexGrow: 1,
               fontSize: parseFloat(fonts.size.lmedium),
               fontWeight: fonts.weight.semibold,

@@ -14,8 +14,8 @@ const BottomRow = ({ lifetimeSupplyInterestAccrued, supplyRate, symbol }) => (
   <Fragment>
     <APRPill>{`${(parseFloat(supplyRate) * 100).toFixed(4)}% APR`}</APRPill>
     <RowWithMargins align="center" margin={4}>
-      <Icon name="plusCircled" size={15} />
-      <Text color={colors.limeGreen} size="smedium" weight="semibold">
+      <Icon name="plusCircled" size={15} color={colors.green} />
+      <Text color={colors.green} size="smedium" weight="semibold">
         {parseFloat(lifetimeSupplyInterestAccrued).toFixed(3)} {symbol}
       </Text>
     </RowWithMargins>
