@@ -62,22 +62,19 @@ class TransactionListViewCell: TransactionListBaseCell {
        transactionIcon.image!.accessibilityIdentifier = "static";
      }
 
-    // Swap Overrides
-    if transaction.type.lowercased() == "trade" {
-      switch transaction.status.lowercased() {
-      case "sent":
-        transactionIcon.image = UIImage.init(named: "swapped")
-        break;
-      case "approved":
-        transactionIcon.image = UIImage.init(named: "self")
-        break;
-      default: break
-      }
-    }
-
     // Savings Overrides
     if (transaction.status.lowercased() ==  "deposited" || transaction.status.lowercased() == "withdrew") {
       transactionIcon.image = UIImage.init(named: "sunflower")
+    }
+    
+    // Swap Overrides
+    if transaction.type.lowercased() == "trade" && transaction.status.lowercased() == "sent" {
+        transactionIcon.image = UIImage.init(named: "swapped")
+    }
+    
+    // Authorize Overrides
+    if transaction.type.lowercased() == "authorize" && transaction.status.lowercased() == "approved" {
+      transactionIcon.image = UIImage.init(named: "self")
     }
     
     transactionIcon.tintAdjustmentMode = .normal
@@ -111,15 +108,15 @@ class TransactionListViewCell: TransactionListBaseCell {
     }
     
     switch transaction.status {
-    case "Sent":
-      nativeDisplay.textColor = UIColor.RainbowTheme.Transactions.dark
-      nativeDisplay.text = "- " + transaction.nativeDisplay
-      break
-    case "Received":
-      nativeDisplay.textColor = UIColor.RainbowTheme.Transactions.limeGreen
-      break
-    default:
-      break
+      case "Sent":
+        nativeDisplay.textColor = UIColor.RainbowTheme.Transactions.dark
+        nativeDisplay.text = "- " + transaction.nativeDisplay
+        break
+      case "Received":
+        nativeDisplay.textColor = UIColor.RainbowTheme.Transactions.green
+        break
+      default:
+        break
     }
   }
   
@@ -129,11 +126,12 @@ class TransactionListViewCell: TransactionListBaseCell {
         if let status = transaction.status {
           if (status.lowercased() == "depositing" || status.lowercased() == "withdrawing" || status.lowercased() == "sending") {
             transactionType.text = " \(status.capitalized)";
+            coinName.text = "\(transaction.symbol!)";
           } else if (status.lowercased() == "deposited" || status.lowercased() == "withdrew") {
             transactionType.text = " Savings";
-            coinName.text = "\(status.capitalized) \(transaction.coinName!)";
+            coinName.text = "\(status.capitalized) \(transaction.symbol!)";
           } else if (transaction.status.lowercased() == "failed") {
-            coinName.text = "\(type.lowercased() == "withdraw" ? "Withdrew" : "Deposited") \(transaction.coinName!)";
+            coinName.text = "\(type.lowercased() == "withdraw" ? "Withdrew" : "Deposited") \(transaction.symbol!)";
           }
         }
       }
