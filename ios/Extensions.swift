@@ -41,8 +41,6 @@ extension UIView {
     return Bundle(for: T.self).loadNibNamed(String(describing: T.self), owner: nil, options: nil)![0] as! T
   }
   
-  private static let kRotationAnimationKey = "rotationanimationkey"
-
   func animateTapStart(
     duration: TimeInterval = 0.1,
     scale: CGFloat = 0.97,
@@ -76,10 +74,14 @@ extension UIView {
     
     CATransaction.commit()
   }
-  
+}
 
-  func rotate(duration: Double = 1) {
-      if layer.animation(forKey: UIView.kRotationAnimationKey) == nil {
+extension UIImageView {
+  
+  private static let kRotationAnimationKey = "rotationanimationkey"
+  
+  func rotate(duration: Double = 2) {
+      if layer.animation(forKey: UIImageView.kRotationAnimationKey) == nil {
           let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation")
 
           rotationAnimation.fromValue = 0.0
@@ -87,13 +89,13 @@ extension UIView {
           rotationAnimation.duration = duration
           rotationAnimation.repeatCount = Float.infinity
 
-          layer.add(rotationAnimation, forKey: UIView.kRotationAnimationKey)
+          layer.add(rotationAnimation, forKey: UIImageView.kRotationAnimationKey)
       }
   }
 
   func stopRotating() {
-      if layer.animation(forKey: UIView.kRotationAnimationKey) != nil {
-          layer.removeAnimation(forKey: UIView.kRotationAnimationKey)
+      if layer.animation(forKey: UIImageView.kRotationAnimationKey) != nil {
+          layer.removeAnimation(forKey: UIImageView.kRotationAnimationKey)
       }
   }
 }

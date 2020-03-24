@@ -33,14 +33,12 @@ class TransactionListViewCell: TransactionListBaseCell {
     nativeDisplay.text = transaction.nativeDisplay
     balanceDisplay.text = transaction.balanceDisplay
     
-    if let image = UIImage.init(named: transaction.status.lowercased()) {
-      transactionIcon.image = image
-      transactionIcon.tintAdjustmentMode = .normal
-    }
-    
+   
     setStatusColor(transaction)
     setCellColors(transaction)
-    
+    setText(transaction)
+    setIcon(transaction)
+
     if transaction.symbol != nil {
       if let img = UIImage.init(named: transaction.symbol.lowercased()) {
         coinImage.image = img
@@ -49,24 +47,41 @@ class TransactionListViewCell: TransactionListBaseCell {
         coinImage.layer.cornerRadius = coinImage.frame.width * 0.5
       }
     }
-    
-     // Savings override
-    if let type = transaction.type {
-      if(type.lowercased() == "deposit" || type.lowercased() == "withdraw"){
-        if let status = transaction.status {
-          if(status.lowercased() == "depositing" || status.lowercased() == "withdrawing"){
-            transactionIcon.image = UIImage.init(named: "swapped")
-            transactionType.text = " \(status.capitalized)";
-          }else if(status.lowercased() == "deposited" || status.lowercased() == "withdrew"){
-            transactionIcon.image = UIImage.init(named: "sunflower")
-            transactionType.text = " Savings";
-            coinName.text = "\(status.capitalized) \(String(describing: transaction.coinName))";
-          } else if(transaction.status.lowercased() == "failed"){
-            coinName.text = "\(type.lowercased() == "withdraw" ? "Withdrew" : "Deposited")) \(String(describing: transaction.coinName))";
-          }
-        }
+  }
+  
+  private func setIcon(_ transaction: Transaction) {
+    if(transaction.pending){
+       transactionIcon.image = UIImage.init(named: "spinner");
+       transactionIcon.image!.accessibilityIdentifier = "spinner"
+       transactionIcon.rotate()
+     } else  if let image = UIImage.init(named: transaction.status.lowercased()) {
+       if(transactionIcon.image != nil && transactionIcon.image?.accessibilityIdentifier == "spinner"){
+         transactionIcon.stopRotating()
+       }
+       transactionIcon.image = image
+       transactionIcon.image!.accessibilityIdentifier = "static";
+     }
+
+    // Swap Overrides
+    if transaction.type.lowercased() == "trade" {
+      switch(transaction.status.lowercased()) {
+        case "sent":
+          transactionIcon.image = UIImage.init(named: "swapped")
+          break;
+        case "approved":
+          transactionIcon.image = UIImage.init(named: "self")
+          break;
+        default: break
       }
     }
+
+    // Savings Overrides
+    if(transaction.status.lowercased() ==  "deposited" || transaction.status.lowercased() == "withdrew"){
+      transactionIcon.image = UIImage.init(named: "sunflower")
+    }
+    
+    transactionIcon.tintAdjustmentMode = .normal
+
   }
   
   private func setStatusColor(_ transaction: Transaction) {
@@ -75,24 +90,10 @@ class TransactionListViewCell: TransactionListBaseCell {
     
     if transaction.pending {
       color = transactionColors.primaryBlue
-      transactionIcon.rotate()
-      transactionIcon.image = UIImage.init(named: "spinner")
-      transactionIcon.tintColor = transactionColors.primaryBlue
-    } else {
-      transactionIcon.stopRotating()
-      transactionIcon.tintColor = color
-      if transaction.type == "trade" {
-        if transaction.status.lowercased() == "sent" {
-          color = transactionColors.dodgerBlue
-          transactionIcon.image = UIImage.init(named: "swapped")
-          transactionType.text = "Swapped"
-        }
-      } else if(transaction.status.lowercased() == "approved"){
-        transactionIcon.image = UIImage.init(named: "self")
-      }
+    } else if transaction.type == "trade"  && transaction.status.lowercased() == "sent" {
+      color = transactionColors.dodgerBlue
+      transactionType.text = "Swapped"
     }
-    
-    
     
     transactionIcon.tintColor = color
     transactionType.textColor = color
@@ -119,6 +120,23 @@ class TransactionListViewCell: TransactionListBaseCell {
       break
     default:
       break
+    }
+  }
+  
+  private func setText(_ transaction: Transaction) {
+    if let type = transaction.type {
+      if(type.lowercased() == "deposit" || type.lowercased() == "withdraw"){
+        if let status = transaction.status {
+          if(status.lowercased() == "depositing" || status.lowercased() == "withdrawing" || status.lowercased() == "sending"){
+            transactionType.text = " \(status.capitalized)";
+          }else if(status.lowercased() == "deposited" || status.lowercased() == "withdrew"){
+            transactionType.text = " Savings";
+            coinName.text = "\(status.capitalized) \(transaction.coinName!)";
+          } else if(transaction.status.lowercased() == "failed"){
+            coinName.text = "\(type.lowercased() == "withdraw" ? "Withdrew" : "Deposited")) \(transaction.coinName!))";
+          }
+        }
+      }
     }
   }
 }
