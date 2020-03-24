@@ -178,7 +178,6 @@ const ExchangeModal = ({
   const [lastFocusedInput, handleFocus] = useMagicFocus(inputFieldRef.current);
 
   useEffect(() => {
-    console.log('[effect 1] gasPrices');
     dispatch(
       gasUpdateDefaultGasLimit(
         isDeposit
@@ -329,10 +328,6 @@ const ExchangeModal = ({
   );
 
   const updateTradeDetails = useCallback(() => {
-    console.log('getting trade details');
-    console.log('> input amount', inputAmount);
-    console.log('> native amount', nativeAmount);
-    console.log('> output amount', outputAmount);
     let updatedInputAmount = inputAmount;
     let updatedInputAsExactAmount = inputAsExactAmount;
     const isMissingAmounts = !inputAmount && !outputAmount;
@@ -365,7 +360,6 @@ const ExchangeModal = ({
     inputAsExactAmount,
     inputCurrency,
     inputReserve,
-    nativeAmount,
     outputAmount,
     outputCurrency,
     outputReserve,
@@ -412,9 +406,6 @@ const ExchangeModal = ({
   const calculateOutputGivenInputChange = useCallback(
     (tradeDetails, isInputEmpty, isInputZero, outputDecimals) => {
       console.log('calculate OUTPUT given INPUT change');
-      console.log('> input amount', inputAmount);
-      console.log('> native amount', nativeAmount);
-      console.log('> output amount', outputAmount);
       if (
         (isInputEmpty || isInputZero) &&
         outputFieldRef &&
@@ -446,14 +437,7 @@ const ExchangeModal = ({
         }
       }
     },
-    [
-      getMarketPrice,
-      inputAmount,
-      inputAsExactAmount,
-      nativeAmount,
-      outputAmount,
-      outputCurrency,
-    ]
+    [getMarketPrice, inputAsExactAmount, outputCurrency]
   );
 
   const getMarketDetails = useCallback(async () => {
@@ -465,15 +449,6 @@ const ExchangeModal = ({
 
     try {
       const tradeDetails = updateTradeDetails();
-      console.log('Trade details', tradeDetails);
-      console.log(
-        'Trade details - input',
-        tradeDetails.inputAmount.amount.toFixed()
-      );
-      console.log(
-        'Trade details - output',
-        tradeDetails.outputAmount.amount.toFixed()
-      );
       updateExtraTradeDetails(tradeDetails);
 
       const isMissingAmounts = !inputAmount && !outputAmount;
@@ -610,8 +585,6 @@ const ExchangeModal = ({
   };
 
   const handlePressMaxBalance = () => {
-    console.log('[max] selectedGasPrice', selectedGasPrice);
-    console.log('[max] inputCurrency', inputCurrency);
     let maxBalance;
     if (isWithdrawal) {
       maxBalance = supplyBalanceUnderlying;
@@ -621,7 +594,6 @@ const ExchangeModal = ({
         inputCurrency
       );
     }
-    console.log('[max] maxBalance', maxBalance);
 
     return updateInputAmount(maxBalance, maxBalance, true, true);
   };
@@ -727,17 +699,11 @@ const ExchangeModal = ({
       newInputAsExactAmount = true,
       newIsMax = false
     ) => {
-      console.log(
-        '[update input amount]',
-        newInputAmount,
-        newInputAsExactAmount
-      );
       setInputAmount(newInputAmount);
       setInputAsExactAmount(newInputAsExactAmount);
       setInputAmountDisplay(
         newAmountDisplay !== undefined ? newAmountDisplay : newInputAmount
       );
-      console.log('[update input amount] - set max?', newIsMax);
       setIsMax(newIsMax);
 
       if (!nativeFieldRef.current.isFocused()) {
@@ -758,17 +724,19 @@ const ExchangeModal = ({
         setNativeAmount(newNativeAmount);
 
         // update sufficient balance
-        const inputBalance = ethereumUtils.getBalanceAmount(
-          selectedGasPrice,
-          inputCurrency
-        );
+        if (inputCurrency) {
+          const inputBalance = ethereumUtils.getBalanceAmount(
+            selectedGasPrice,
+            inputCurrency
+          );
 
-        const isSufficientBalance =
-          !newInputAmount ||
-          (isWithdrawal
-            ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
-            : greaterThanOrEqualTo(inputBalance, newInputAmount));
-        setIsSufficientBalance(isSufficientBalance);
+          const isSufficientBalance =
+            !newInputAmount ||
+            (isWithdrawal
+              ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
+              : greaterThanOrEqualTo(inputBalance, newInputAmount));
+          setIsSufficientBalance(isSufficientBalance);
+        }
       }
     },
     [
@@ -869,12 +837,11 @@ const ExchangeModal = ({
     newAmountDisplay,
     newInputAsExactAmount = false
   ) => {
-    console.log('update output amt', newInputAsExactAmount);
+    setInputAsExactAmount(newInputAsExactAmount);
     setOutputAmount(newOutputAmount);
     setOutputAmountDisplay(
       newAmountDisplay !== undefined ? newAmountDisplay : newOutputAmount
     );
-    setInputAsExactAmount(newInputAsExactAmount);
   };
 
   const updateOutputCurrency = (newOutputCurrency, userSelected = true) => {
