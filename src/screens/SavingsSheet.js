@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
-import { Column } from '../components/layout';
-import { colors } from '../styles';
+import { Column, RowWithMargins } from '../components/layout';
+import { colors, padding } from '../styles';
 import { SavingsCoinRow } from '../components/coin-row';
 import {
   SavingsPredictionStepper,
@@ -12,11 +12,7 @@ import {
   FloatingEmojis,
   FloatingEmojisTapHandler,
 } from '../components/floating-emojis';
-import {
-  Sheet,
-  SheetActionButton,
-  SheetActionButtonRow,
-} from '../components/sheet';
+import { Sheet, SheetActionButton } from '../components/sheet';
 import Divider from '../components/Divider';
 import { convertAmountToDepositDisplay } from '../helpers/utilities';
 
@@ -49,7 +45,7 @@ const SavingsSheet = () => {
             balance={balance}
             lifetimeAccruedInterest={lifetimeSupplyInterestAccrued}
           />
-          <SheetActionButtonRow>
+          <RowWithMargins css={padding(24, 7.5)} margin={7.5}>
             <SheetActionButton
               color={colors.dark}
               icon="minusCircled"
@@ -64,7 +60,7 @@ const SavingsSheet = () => {
               }
             />
             <SheetActionButton
-              color={colors.dodgerBlue}
+              color={colors.swapPurple}
               icon="plusCircled"
               label="Deposit"
               onPress={() =>
@@ -73,7 +69,7 @@ const SavingsSheet = () => {
                 })
               }
             />
-          </SheetActionButtonRow>
+          </RowWithMargins>
           <Divider zIndex={0} />
           <FloatingEmojis
             distance={350}

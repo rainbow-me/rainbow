@@ -20,7 +20,7 @@ PlusCircledIcon.propTypes = {
 };
 
 PlusCircledIcon.defaultProps = {
-  color: colors.limeGreen,
+  color: colors.green,
   size: 19,
 };
 

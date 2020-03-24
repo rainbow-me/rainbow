@@ -19,9 +19,9 @@ const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => (
     </Rounded>
     <DollarFigure value={balance} decimals={4} />
     <RowWithMargins align="center" margin={5} marginTop={1}>
-      <Icon name="plusCircled" />
+      <Icon name="plusCircled" color={colors.green} />
       <Rounded
-        color={colors.limeGreen}
+        color={colors.green}
         letterSpacing="looser"
         size="large"
         lineHeight="loose"
