@@ -44,8 +44,12 @@ extension UIView {
   func animateTapStart(
     duration: TimeInterval = 0.1,
     scale: CGFloat = 0.97,
-    transformOrigin: CGPoint = .init(x: 0.5, y: 0.5)
+    transformOrigin: CGPoint = .init(x: 0.5, y: 0.5),
+    useHaptic: String? = nil
   ) {
+    if useHaptic != nil {
+      generateHapticFeedback(useHaptic!)
+    }
     let timingFunction = CAMediaTimingFunction(controlPoints: 0.25, 0.46, 0.45, 0.94)
     
     CATransaction.begin()
