@@ -74,7 +74,8 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
   };
 
   console.log('[withdraw] adding new txn', newTransaction);
-  dispatch(dataAddNewTransaction(newTransaction));
+  // Disable the txn watcher because Compound can silently fail
+  dispatch(dataAddNewTransaction(newTransaction, true));
 
   console.log('[withdraw] calling the callback');
   currentRap.callback();

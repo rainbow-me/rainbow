@@ -73,7 +73,8 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
     type: TransactionTypes.deposit,
   };
   console.log('[deposit] adding new txn', newTransaction);
-  dispatch(dataAddNewTransaction(newTransaction));
+  // Disable the txn watcher because Compound can silently fail
+  dispatch(dataAddNewTransaction(newTransaction, true));
   console.log('[deposit] calling the callback');
   currentRap.callback();
   currentRap.callback = NOOP;
