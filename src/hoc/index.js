@@ -6,7 +6,6 @@ export { default as withAccountTransactions } from './withAccountTransactions';
 export { default as withActionSheetManager } from './withActionSheetManager';
 export { default as withAppState } from './withAppState';
 export { default as withBlockedHorizontalSwipe } from './withBlockedHorizontalSwipe';
-export { default as withBlockPolling } from './withBlockPolling';
 export { default as withContacts } from './withContacts';
 export { default as withDeepLink } from './withDeepLink';
 export { default as withFabSelection } from './withFabSelection';

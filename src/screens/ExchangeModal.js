@@ -11,6 +11,7 @@ import React, {
 } from 'react';
 import { TextInput, InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { useDispatch } from 'react-redux';
 import { toClass } from 'recompact';
 import { interpolate } from '../components/animations';
 import {
@@ -48,8 +49,11 @@ import {
 import {
   useAccountAssets,
   useAccountSettings,
+  useBlockPolling,
+  useGas,
   useMagicFocus,
   usePrevious,
+  useUniswapAllowances,
   useUniswapAssetsInWallet,
 } from '../hooks';
 import { loadWallet } from '../model/wallet';
@@ -100,10 +104,6 @@ const createMissingWithdrawalAsset = (asset, underlyingPrice, priceOfEther) => {
 const ExchangeModal = ({
   cTokenBalance,
   defaultInputAsset,
-  gasPricesStartPolling,
-  gasPricesStopPolling,
-  gasUpdateDefaultGasLimit,
-  gasUpdateTxFee,
   inputHeaderTitle,
   inputReserve,
   isTransitioning,
@@ -116,16 +116,24 @@ const ExchangeModal = ({
   tabPosition,
   type,
   underlyingPrice,
-  uniswapClearCurrenciesAndReserves,
-  uniswapUpdateInputCurrency,
-  uniswapUpdateOutputCurrency,
-  web3ListenerInit,
-  web3ListenerStop,
 }) => {
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
 
+  const dispatch = useDispatch();
   const { allAssets } = useAccountAssets();
+  const {
+    gasPricesStartPolling,
+    gasPricesStopPolling,
+    gasUpdateDefaultGasLimit,
+    gasUpdateTxFee,
+  } = useGas();
+  const {
+    uniswapClearCurrenciesAndReserves,
+    uniswapUpdateInputCurrency,
+    uniswapUpdateOutputCurrency,
+  } = useUniswapAllowances();
+  const { web3ListenerInit, web3ListenerStop } = useBlockPolling();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const { accountAddress, chainId, nativeCurrency } = useAccountSettings();
 
@@ -168,21 +176,24 @@ const ExchangeModal = ({
 
   useEffect(() => {
     console.log('[effect 1] gasPrices');
-    gasUpdateDefaultGasLimit(
-      isDeposit
-        ? ethUnits.basic_deposit
-        : isWithdrawal
-        ? ethUnits.basic_withdrawal
-        : ethUnits.basic_swap
+    dispatch(
+      gasUpdateDefaultGasLimit(
+        isDeposit
+          ? ethUnits.basic_deposit
+          : isWithdrawal
+          ? ethUnits.basic_withdrawal
+          : ethUnits.basic_swap
+      )
     );
-    gasPricesStartPolling();
-    web3ListenerInit();
+    dispatch(gasPricesStartPolling());
+    dispatch(web3ListenerInit());
     return () => {
-      uniswapClearCurrenciesAndReserves();
-      gasPricesStopPolling();
-      web3ListenerStop();
+      dispatch(uniswapClearCurrenciesAndReserves());
+      dispatch(gasPricesStopPolling());
+      dispatch(web3ListenerStop());
     };
   }, [
+    dispatch,
     gasPricesStartPolling,
     gasPricesStopPolling,
     gasUpdateDefaultGasLimit,
@@ -532,9 +543,9 @@ const ExchangeModal = ({
           accountAddress,
           tradeDetails
         );
-        gasUpdateTxFee(gasLimit);
+        dispatch(gasUpdateTxFee(gasLimit));
       } catch (error) {
-        gasUpdateTxFee(ethUnits.basic_swap);
+        dispatch(gasUpdateTxFee(ethUnits.basic_swap));
       }
     } catch (error) {
       console.log('error getting market details', error);
@@ -544,6 +555,7 @@ const ExchangeModal = ({
     calculateInputGivenOutputChange,
     calculateOutputGivenInputChange,
     clearForm,
+    dispatch,
     gasUpdateTxFee,
     inputAmount,
     inputAsExactAmount,
@@ -784,7 +796,7 @@ const ExchangeModal = ({
         : !!newInputCurrency && !!outputCurrency
     );
 
-    uniswapUpdateInputCurrency(newInputCurrency);
+    dispatch(uniswapUpdateInputCurrency(newInputCurrency));
 
     if (userSelected && isSameAsset(newInputCurrency, outputCurrency)) {
       console.log('[update input curr] setting output curr to prev input curr');
@@ -864,7 +876,7 @@ const ExchangeModal = ({
       '[update output curr] input currency at the moment',
       inputCurrency
     );
-    uniswapUpdateOutputCurrency(newOutputCurrency);
+    dispatch(uniswapUpdateOutputCurrency(newOutputCurrency));
 
     setInputAsExactAmount(true);
     setOutputCurrency(newOutputCurrency);
@@ -1008,10 +1020,6 @@ ExchangeModal.propTypes = {
   createRap: PropTypes.func,
   cTokenBalance: PropTypes.string,
   defaultInputAddress: PropTypes.string,
-  gasPricesStartPolling: PropTypes.func,
-  gasPricesStopPolling: PropTypes.func,
-  gasUpdateDefaultGasLimit: PropTypes.func,
-  gasUpdateTxFee: PropTypes.func,
   inputHeaderTitle: PropTypes.string,
   inputReserve: PropTypes.object,
   navigation: PropTypes.object,
@@ -1022,11 +1030,6 @@ ExchangeModal.propTypes = {
   tradeDetails: PropTypes.object,
   type: PropTypes.oneOf(Object.values(ExchangeModalTypes)),
   underlyingPrice: PropTypes.string,
-  uniswapAssetsInWallet: PropTypes.arrayOf(PropTypes.object),
-  uniswapUpdateInputCurrency: PropTypes.func,
-  uniswapUpdateOutputCurrency: PropTypes.func,
-  web3ListenerInit: PropTypes.func,
-  web3ListenerStop: PropTypes.func,
 };
 
 export default ExchangeModal;

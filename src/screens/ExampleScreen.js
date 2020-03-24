@@ -3,12 +3,7 @@ import { Text, View } from 'react-native';
 import { compose } from 'recompact';
 import Button from '../components/buttons/Button';
 import { Centered, Page } from '../components/layout';
-import {
-  withGas,
-  withUniswapAllowances,
-  withBlockPolling,
-  withRaps,
-} from '../hoc';
+import { withGas, withUniswapAllowances, withRaps } from '../hoc';
 import { colors, position } from '../styles';
 import unlockAndSwap from '../raps/unlockAndSwap';
 import { loadWallet } from '../model/wallet';
@@ -21,10 +16,6 @@ class ExampleScreen extends PureComponent {
       console.log('lol error on ExampleScreen like a n00b: ', error);
     }
   };
-
-  componentWillUnmount() {
-    this.props.web3ListenerStop();
-  }
 
   doSwap = async () => {
     const wallet = await loadWallet();
@@ -84,9 +75,4 @@ class ExampleScreen extends PureComponent {
   );
 }
 
-export default compose(
-  withUniswapAllowances,
-  withGas,
-  withBlockPolling,
-  withRaps
-)(ExampleScreen);
+export default compose(withUniswapAllowances, withGas, withRaps)(ExampleScreen);
