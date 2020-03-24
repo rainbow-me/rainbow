@@ -55,7 +55,7 @@ class TransactionListViewCell: TransactionListBaseCell {
       
       if(transaction.status.lowercased() == "deposited" || transaction.status.lowercased() == "withdrew"){
         transactionIcon.image = UIImage.init(named: "sunflower")
-        transactionType.text = "Savings";
+        transactionType.text = " Savings";
         coinName.text = transaction.status.capitalized + " " + transaction.coinName;
       } else if(transaction.status.lowercased() == "failed"){
         coinName.text = (transaction.type.lowercased() == "withdraw" ? "Withdrew" : "Deposited") + " " + transaction.coinName;
@@ -70,14 +70,16 @@ class TransactionListViewCell: TransactionListBaseCell {
     if transaction.pending {
       color = transactionColors.primaryBlue
     } else if transaction.type == "trade" {
-      if transaction.status.lowercased() == "received" {
-        color = transactionColors.dodgerBlue
-      } else if transaction.status.lowercased() == "sent" {
+      if transaction.status.lowercased() == "sent" {
         color = transactionColors.dodgerBlue
         transactionIcon.image = UIImage.init(named: "swapped")
         transactionType.text = "Swapped"
       }
+    } else if(transaction.status.lowercased() == "approved"){
+      transactionIcon.image = UIImage.init(named: "self")
     }
+    
+    
     
     transactionIcon.tintColor = color
     transactionType.textColor = color
