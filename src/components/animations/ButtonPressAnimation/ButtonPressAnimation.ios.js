@@ -411,5 +411,5 @@ Button.defaultProps = {
   hapticType: 'selection',
   minLongPressDuration: 500,
   scaleTo: animations.keyframes.button.to.scale,
-  useLateHaptic: false,
+  useLateHaptic: true,
 };

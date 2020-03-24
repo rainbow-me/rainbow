@@ -77,6 +77,7 @@ export default class FloatingActionButton extends Component {
         onPress={this.handlePress}
         onPressIn={this.handlePressIn}
         scaleTo={scaleTo}
+        useLateHaptic={false}
         {...props}
       >
         <ShadowStack

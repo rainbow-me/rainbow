@@ -19,7 +19,7 @@ class Button : RCTView {
   @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5)
   @objc var enableHapticFeedback: Bool = true
   @objc var hapticType: String = "selection"
-  @objc var useLateHaptic: Bool = false
+  @objc var useLateHaptic: Bool = true
   @objc var minLongPressDuration: TimeInterval = 0.5 {
     didSet {
       if longPress != nil {
