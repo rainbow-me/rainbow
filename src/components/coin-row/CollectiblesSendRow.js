@@ -8,7 +8,7 @@ import { ButtonPressAnimation } from '../animations';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import Divider from '../Divider';
 import { Centered, InnerBorder } from '../layout';
-import { Monospace, TruncatedText } from '../text';
+import { TruncatedText } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
@@ -21,11 +21,7 @@ const selectedStyles = css`
 `;
 
 const BottomRow = ({ subtitle }) => (
-  <TruncatedText
-    color={colors.alpha(colors.blueGreyDark, 0.5)}
-    component={Monospace}
-    size="smedium"
-  >
+  <TruncatedText color={colors.alpha(colors.blueGreyDark, 0.5)} size="smedium">
     {subtitle}
   </TruncatedText>
 );
@@ -104,7 +100,7 @@ const CollectiblesSendRow = enhance(
     <Fragment>
       {isFirstRow && (
         <Centered style={{ height: dividerHeight }}>
-          <Divider color={colors.alpha(colors.blueGreyLighter, 0.05)} />
+          <Divider color={colors.rowDividerLight} />
         </Centered>
       )}
       <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>

@@ -21,6 +21,7 @@ const Container = styled(Row).attrs({ align: 'center' })`
 `;
 
 const Text = styled(UnstyledText).attrs({
+  align: 'center',
   color: 'appleBlue',
   size: 'large',
   weight: 'medium',

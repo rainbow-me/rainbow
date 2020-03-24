@@ -151,7 +151,7 @@ class SendHeader extends PureComponent {
       address: recipient,
       asset: {},
       color,
-      contact: isEmpty(contact) ? false : contact,
+      contact: isEmpty(contact.address) ? false : contact,
       onRefocusInput: refocusCallback,
       type: 'contact',
     });
@@ -207,11 +207,7 @@ class SendHeader extends PureComponent {
           )}
           {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
         </AddressInputContainer>
-        <Divider
-          color={colors.alpha(colors.blueGreyLight, 0.05)}
-          flex={0}
-          inset={false}
-        />
+        <Divider color={colors.rowDivider} flex={0} inset={false} />
       </Fragment>
     );
   };

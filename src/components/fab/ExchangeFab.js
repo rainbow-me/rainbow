@@ -10,7 +10,7 @@ import FloatingActionButton from './FloatingActionButton';
 const ExchangeFab = ({ disabled, onPress, ...props }) => (
   <FloatingActionButton
     {...props}
-    backgroundColor={colors.dodgerBlue}
+    backgroundColor={colors.swapPurple}
     disabled={disabled}
     onPress={onPress}
   >

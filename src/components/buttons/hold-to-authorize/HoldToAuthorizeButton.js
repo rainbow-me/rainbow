@@ -25,7 +25,7 @@ const ButtonBorderRadius = 30;
 const ButtonHeight = 59;
 
 const ButtonDisabledBgColor = {
-  dark: colors.darkGrey, // blueGreyLighter,
+  dark: colors.darkGrey,
   light: colors.lightGrey,
 };
 
@@ -55,8 +55,8 @@ const Content = styled(Centered)`
 
 const Title = withProps({
   color: 'white',
-  size: 'large',
-  style: { marginBottom: 2 },
+  size: 'larger',
+  style: { marginBottom: 4 },
   weight: 'semibold',
 })(Text);
 

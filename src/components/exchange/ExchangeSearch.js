@@ -12,7 +12,7 @@ const ExchangeSearchHeight = 40;
 const Container = styled(RowWithMargins).attrs({
   margin: 7,
 })`
-  ${margin(0, 15, 4)};
+  ${margin(0, 15, 10)};
   ${padding(0, 13, 0)};
   background-color: ${colors.skeleton};
   border-radius: ${ExchangeSearchHeight / 2};

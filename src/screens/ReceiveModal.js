@@ -22,9 +22,10 @@ import { haptics } from '../utils';
 const QRCodeSize = Platform.OS === 'ios' ? 180 : 190;
 
 const AddressText = styled(Monospace).attrs({
-  color: colors.blueGreyLightest,
+  color: colors.alpha(colors.blueGreyDark, 0.6),
 })`
   font-size: 13.86;
+  letter-spacing: null;
   line-height: 19;
   text-align: justify;
   width: 100%;
@@ -62,7 +63,15 @@ const ReceiveModal = () => {
         </Column>
       </Column>
       <ModalFooterButtonsRow>
-        <FloatingEmojis flex={1}>
+        <FloatingEmojis
+          distance={250}
+          duration={500}
+          fadeOut={false}
+          flex={1}
+          scaleTo={0}
+          size={50}
+          wiggleFactor={0}
+        >
           {({ onNewEmoji }) => (
             <ModalFooterButton
               icon="copy"

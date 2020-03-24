@@ -15,11 +15,13 @@ const UniqueTokenCardBorderRadius = 18;
 const UniqueTokenCard = ({
   borderEnabled,
   disabled,
+  enableHapticFeedback,
   height,
   highlight,
   item: { background, image_preview_url, ...item },
   onPress,
   resizeMode,
+  scaleTo,
   shadowStyle,
   style,
   width,
@@ -28,8 +30,9 @@ const UniqueTokenCard = ({
   return (
     <ButtonPressAnimation
       disabled={disabled}
+      enableHapticFeedback={enableHapticFeedback}
       onPress={onPress}
-      scaleTo={0.96}
+      scaleTo={scaleTo}
       style={{
         shadowColor: colors.dark,
         shadowOffset: { height: 2, width: 0 },
@@ -71,6 +74,7 @@ const UniqueTokenCard = ({
 UniqueTokenCard.propTypes = {
   borderEnabled: PropTypes.bool,
   disabled: PropTypes.bool,
+  enableHapticFeedback: PropTypes.bool,
   height: PropTypes.number,
   highlight: PropTypes.bool,
   item: PropTypes.shape({
@@ -79,6 +83,7 @@ UniqueTokenCard.propTypes = {
   }),
   onPress: PropTypes.func,
   resizeMode: UniqueTokenImage.propTypes.resizeMode,
+  scaleTo: PropTypes.number,
   shadowStyle: stylePropType,
   size: PropTypes.number,
   style: stylePropType,
@@ -87,6 +92,8 @@ UniqueTokenCard.propTypes = {
 
 UniqueTokenCard.defaultProps = {
   borderEnabled: true,
+  enableHapticFeedback: true,
+  scaleTo: 0.96,
 };
 
 export default compose(

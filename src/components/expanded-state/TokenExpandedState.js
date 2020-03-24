@@ -1,7 +1,6 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { InteractionManager } from 'react-native';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { useAccountAssets } from '../../hooks';
 import { ethereumUtils } from '../../utils';
@@ -38,11 +37,7 @@ TokenExpandedState.propTypes = {
 export default compose(
   withHandlers({
     onPressSend: ({ navigation, asset }) => () => {
-      navigation.goBack();
-
-      InteractionManager.runAfterInteractions(() => {
-        navigation.navigate('SendSheet', { asset });
-      });
+      navigation.navigate('SendSheet', { asset });
     },
   }),
   onlyUpdateForKeys(['price', 'subtitle'])

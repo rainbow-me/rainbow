@@ -17,6 +17,7 @@ RCT_EXPORT_VIEW_PROPERTY(disabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(duration, NSTimeInterval)
 RCT_EXPORT_VIEW_PROPERTY(enableHapticFeedback, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(hapticType, NSString)
+RCT_EXPORT_VIEW_PROPERTY(transformOrigin, CGPoint)
 RCT_EXPORT_VIEW_PROPERTY(minLongPressDuration, NSTimeInterval)
 RCT_EXPORT_VIEW_PROPERTY(scaleTo, CGFloat)
 

@@ -23,11 +23,10 @@ const containerStyle = {
   top: 0,
 };
 
-export const GasSpeedLabelPagerItemHeight = 28;
+export const GasSpeedLabelPagerItemHeight = 26;
 
 const GasSpeedLabel = withProps({
   color: 'white',
-  letterSpacing: 'tight',
   size: 'lmedium',
   weight: 'semibold',
 })(Text);
@@ -69,8 +68,8 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
       }),
       // animate out
       interpolate(transitionVal, {
-        inputRange: [0, 0.333, 1],
-        outputRange: [1, 0.666, 0],
+        inputRange: [0, 1],
+        outputRange: [1, 0],
       })
     ),
     defaultOpacity

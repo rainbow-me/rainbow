@@ -44,7 +44,6 @@ const InfoButtonTransition = styled(Transitioning.View)`
 
 const Title = withProps({
   align: 'center',
-  letterSpacing: 'tighter',
   lineHeight: 'loose',
   size: 'large',
   weight: 'bold',

@@ -168,6 +168,9 @@ const ExchangeModal = ({
   );
   const [slippage, setSlippage] = useState(null);
 
+  const previousInputCurrency = usePrevious(inputCurrency);
+  const previousOutputCurrency = usePrevious(outputCurrency);
+
   const inputFieldRef = useRef();
   const nativeFieldRef = useRef();
   const outputFieldRef = useRef();
@@ -684,6 +687,9 @@ const ExchangeModal = ({
         onSelectCurrency: updateInputCurrency,
         restoreFocusOnSwapModal: () => {
           navigation.setParams({ focused: true });
+          if (previousInputCurrency.uniqueId !== inputCurrency.uniqueId) {
+            setNativeAmount();
+          }
         },
         type: CurrencySelectionTypes.input,
       });
@@ -699,6 +705,9 @@ const ExchangeModal = ({
         onSelectCurrency: updateOutputCurrency,
         restoreFocusOnSwapModal: () => {
           navigation.setParams({ focused: true });
+          if (previousOutputCurrency.uniqueId !== outputCurrency.uniqueId) {
+            setNativeAmount();
+          }
         },
         type: CurrencySelectionTypes.output,
       });
@@ -773,8 +782,6 @@ const ExchangeModal = ({
       outputFieldRef.current.clear();
     updateInputAmount();
   }, [updateInputAmount]);
-
-  const previousInputCurrency = usePrevious(inputCurrency);
 
   const updateInputCurrency = (newInputCurrency, userSelected = true) => {
     console.log(
@@ -863,8 +870,6 @@ const ExchangeModal = ({
     );
     setInputAsExactAmount(newInputAsExactAmount);
   };
-
-  const previousOutputCurrency = usePrevious(outputCurrency);
 
   const updateOutputCurrency = (newOutputCurrency, userSelected = true) => {
     console.log(

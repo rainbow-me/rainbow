@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { compose, onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
+import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { withContacts } from '../../hoc';
 import { colors, margin, padding } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
@@ -18,6 +19,8 @@ import TouchableBackdrop from '../TouchableBackdrop';
 import { AssetPanel } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
 import PlaceholderText from '../text/PlaceholderText';
+
+const nativeStackAdditionalPadding = 80;
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
@@ -128,11 +131,17 @@ class AddContactState extends PureComponent {
   };
 
   render() {
-    const { address, contact } = this.props;
+    const { address, contact, navigation } = this.props;
     const { color, value } = this.state;
 
+    const additionalPadding =
+      navigation.dangerouslyGetParent().state.routeName ===
+        'SendSheetNavigator' && isNativeStackAvailable
+        ? nativeStackAdditionalPadding
+        : 0;
+
     return (
-      <KeyboardFixedOpenLayout>
+      <KeyboardFixedOpenLayout additionalPadding={additionalPadding}>
         <TouchableBackdrop onPress={this.handleAddContact} />
         <FloatingPanels maxWidth={deviceUtils.dimensions.width - 110}>
           <AssetPanel>
@@ -156,7 +165,7 @@ class AddContactState extends PureComponent {
               <Input
                 autoCapitalize="words"
                 autoFocus
-                letterSpacing="tightest"
+                letterSpacing="roundedTight"
                 onChange={this.handleChange}
                 onSubmitEditing={this.handleAddContact}
                 returnKeyType="done"
@@ -166,7 +175,7 @@ class AddContactState extends PureComponent {
                 style={{ width: '100%' }}
                 textAlign="center"
                 value={value}
-                weight="semibold"
+                weight="bold"
               />
               <CopyTooltip
                 onHide={this.handleFocusInput}

@@ -13,7 +13,7 @@ import {
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
-import { withStatusBarStyle, withKeyboardHeight } from '../hoc';
+import { withKeyboardHeight } from '../hoc';
 import {
   useAccountSettings,
   useInitializeWallet,
@@ -100,6 +100,5 @@ export default compose(
   withSafeTimeout,
   withNavigation,
   withKeyboardHeight,
-  withStatusBarStyle('dark-content'),
   withProps({ scrollViewTracker: new Animated.Value(0) })
 )(WalletScreen);

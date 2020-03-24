@@ -84,7 +84,7 @@ const sendFlowRoutes = {
   },
   SendSheet: {
     navigationOptions: {
-      ...expandedPreset,
+      ...sheetPreset,
       onTransitionStart: props => {
         expandedPreset.onTransitionStart(props);
         onTransitionStart();
@@ -297,7 +297,7 @@ const NativeStackWrapper = createStackNavigator(nativeStackWrapperRoutes, {
   mode: 'modal',
 });
 
-const nativeStackRoutes = {
+const routesWithNativeStack = {
   ImportSeedPhraseSheet: {
     navigationOptions: {
       ...sheetPreset,
@@ -308,11 +308,16 @@ const nativeStackRoutes = {
     screen: ImportSeedPhraseSheetWithData,
   },
   MainNavigator,
+  OverlayExpandedAssetScreen: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ExpandedAssetScreenWithData,
+  },
   SendSheet: {
     navigationOptions: {
       ...omit(sheetPreset, 'gestureResponseDistance'),
       onTransitionStart: () => {
         StatusBar.setBarStyle('light-content');
+        onTransitionStart();
       },
     },
     screen: SendSheetWithData,
@@ -320,7 +325,7 @@ const nativeStackRoutes = {
   ...savingsModalsRoutes,
 };
 
-const NativeStackFallback = createStackNavigator(nativeStackRoutes, {
+const NativeStackFallback = createStackNavigator(routesWithNativeStack, {
   defaultNavigationOptions: {
     onTransitionEnd,
     onTransitionStart,
@@ -346,7 +351,8 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
       if (
         prevRouteName !== routeName &&
         isNativeStackAvailable &&
-        (nativeStackRoutes[prevRouteName] || nativeStackRoutes[routeName])
+        (routesWithNativeStack[prevRouteName] ||
+          routesWithNativeStack[routeName])
       ) {
         Navigation.handleAction(
           NavigationActions.setParams({

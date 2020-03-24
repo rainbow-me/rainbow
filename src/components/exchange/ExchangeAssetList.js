@@ -7,7 +7,7 @@ import { exchangeModalBorderRadius } from '../../screens/ExchangeModal';
 import { isNewValueForObjectPaths } from '../../utils';
 import { CoinRow, ExchangeCoinRow } from '../coin-row';
 import { Text } from '../text';
-import { colors } from '../../styles';
+import { colors, fonts } from '../../styles';
 
 const styles = StyleSheet.create({
   headerStyle: {
@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
   headerStyleText: {
     color: colors.blueGreyDark,
     fontSize: 12,
+    fontWeight: fonts.weight.semibold,
     opacity: 0.4,
   },
 });

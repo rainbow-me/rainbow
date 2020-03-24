@@ -7,13 +7,17 @@ import { compose, onlyUpdateForKeys, withProps } from 'recompact';
 import { removeRequest } from '../../redux/requests';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
-import { Button } from '../buttons';
 import { RequestCoinIcon } from '../coin-icon';
-import { Text } from '../text';
+import { RowWithMargins } from '../layout';
+import { Emoji, Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
-const BottomRow = ({ dappName }) => <CoinName>{dappName}</CoinName>;
+const BottomRow = ({ dappName, expirationColor }) => (
+  <CoinName color={expirationColor} weight="semibold">
+    {dappName}
+  </CoinName>
+);
 
 BottomRow.propTypes = {
   dappName: PropTypes.string,
@@ -23,9 +27,12 @@ const TopRow = ({ expirationColor, expiresAt }) => {
   const minutes = differenceInMinutes(expiresAt, Date.now());
 
   return (
-    <Text color={expirationColor} weight="semibold">
-      Expires in {minutes || 0}m
-    </Text>
+    <RowWithMargins margin={2}>
+      <Emoji name="clock4" size="tiny" style={{ marginTop: 1.75 }} />
+      <Text color={expirationColor} size="smedium" weight="semibold">
+        Expires in {minutes || 0}m
+      </Text>
+    </RowWithMargins>
   );
 };
 
@@ -77,24 +84,7 @@ class RequestCoinRow extends React.PureComponent {
           expirationColor={expirationColor}
           expiresAt={expiresAt}
           topRowRender={TopRow}
-        >
-          <Button
-            backgroundColor={colors.primaryBlue}
-            containerStyles={`
-              border-radius: 18;
-              height: 36;
-              padding-left: 12;
-              padding-right: 12;
-            `}
-            disabled={false}
-            onPress={this.handlePressOpen}
-            ref={this.buttonRef}
-            size="small"
-            textProps={{ size: 'smedium' }}
-          >
-            Open
-          </Button>
-        </CoinRow>
+        />
       </ButtonPressAnimation>
     );
   };
@@ -122,8 +112,7 @@ export default compose(
 
       return {
         createdAt,
-        expirationColor:
-          percentElapsed > 25 ? colors.primaryBlue : colors.orangeMedium,
+        expirationColor: percentElapsed > 25 ? colors.appleBlue : colors.orange,
         expiresAt,
         percentElapsed,
       };

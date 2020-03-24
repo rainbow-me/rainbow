@@ -10,15 +10,15 @@ import { GasSpeedLabelPagerItemHeight } from './GasSpeedLabelPagerItem';
 const EmojiForGasSpeedType = {
   [gasUtils.FAST]: {
     emoji: 'rocket', // 🚀️
-    position: [1, 2], // x: 1, y: 2
+    position: [-1, 0], // (x, y)
   },
   [gasUtils.NORMAL]: {
     emoji: 'stopwatch', // ⏱️
-    position: [2, 1], // x: 2, y: 1
+    position: [-0.5, -1], // (x, y)
   },
   [gasUtils.SLOW]: {
     emoji: 'snail', // 🐌️
-    position: [1, 0], // x: 1, y: 0
+    position: [-1, -2], // (x, y)
   },
 };
 

@@ -35,7 +35,7 @@ const TokenFamilyHeader = ({
     <ButtonPressAnimation
       key={`${emoji || familyImage || title}_${isOpen}`}
       onPress={onPress}
-      scaleTo={0.98}
+      scaleTo={1.05}
     >
       <Row
         align="center"
@@ -57,9 +57,8 @@ const TokenFamilyHeader = ({
             />
           )}
           <TruncatedText
-            letterSpacing="tight"
             lineHeight="normal"
-            size="lmedium"
+            size="large"
             style={{ marginBottom: 1 }}
             weight="semibold"
           >
@@ -75,7 +74,13 @@ const TokenFamilyHeader = ({
               }),
             }}
           >
-            <Monospace color="dark" size="lmedium" style={{ marginBottom: 1 }}>
+            <Monospace
+              align="right"
+              color="dark"
+              letterSpacing="roundedTight"
+              size="large"
+              style={{ marginBottom: 1 }}
+            >
               {childrenAmount}
             </Monospace>
           </Animated.View>

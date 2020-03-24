@@ -162,7 +162,7 @@ const SendSheet = ({
         });
       } else {
         setSelected(newSelected);
-        sendUpdateAssetAmount(amountDetails.assetAmount);
+        sendUpdateAssetAmount('');
       }
     },
     [amountDetails.assetAmount, sendUpdateAssetAmount]
@@ -330,7 +330,7 @@ const SendSheet = ({
   }, [gasUpdateDefaultGasLimit]);
 
   useEffect(() => {
-    if (isValidAddress) {
+    if (isValidAddress && showAssetList) {
       Keyboard.dismiss();
     }
   }, [isValidAddress]);

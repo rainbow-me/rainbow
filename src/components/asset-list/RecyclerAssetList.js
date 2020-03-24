@@ -41,20 +41,19 @@ import SavingsListWrapper from '../savings/SavingsListWrapper';
 /* eslint-disable sort-keys */
 export const ViewTypes = {
   HEADER: 0,
-  COIN_ROW: 1,
-  COIN_ROW_LAST: 2,
-  COIN_SMALL_BALANCES: 3,
-  COIN_SAVINGS: 12,
-  FOOTER: 11,
-  UNIQUE_TOKEN_ROW: 4,
-  UNIQUE_TOKEN_ROW_CLOSED: 5,
-  UNIQUE_TOKEN_ROW_CLOSED_LAST: 6,
-  UNIQUE_TOKEN_ROW_FIRST: 8, // TODO remove
-  UNIQUE_TOKEN_ROW_LAST: 9, // TODO remove
-  UNISWAP_ROW: 7,
-  UNISWAP_ROW_CLOSED: 9,
-  UNISWAP_ROW_CLOSED_LAST: 10,
-  UNISWAP_ROW_LAST: 8,
+  COIN_ROW_FIRST: 1,
+  COIN_ROW: 2,
+  COIN_ROW_LAST: 3,
+  COIN_SMALL_BALANCES: 4,
+  COIN_SAVINGS: 5,
+  UNISWAP_ROW: 6,
+  UNISWAP_ROW_LAST: 7,
+  UNISWAP_ROW_CLOSED: 8,
+  UNISWAP_ROW_CLOSED_LAST: 9,
+  UNIQUE_TOKEN_ROW: 10,
+  UNIQUE_TOKEN_ROW_CLOSED: 11,
+  UNIQUE_TOKEN_ROW_CLOSED_LAST: 12,
+  FOOTER: 13,
 };
 /* eslint-enable sort-keys */
 
@@ -78,6 +77,7 @@ class LayoutItemAnimator extends BaseItemAnimator {
 
 const layoutItemAnimator = new LayoutItemAnimator();
 
+const firstCoinRowMarginTop = 6;
 const reloadHeightOffsetTop = -60;
 const reloadHeightOffsetBottom = -62;
 let smallBalancedChanged = false;
@@ -258,6 +258,10 @@ class RecyclerAssetList extends Component {
             `[${balancesIndex}].data.length`,
             0
           );
+          const firstBalanceIndex = headersIndices[balancesIndex] + 1;
+          if (index === firstBalanceIndex) {
+            return ViewTypes.COIN_ROW_FIRST;
+          }
           const lastBalanceIndex =
             headersIndices[balancesIndex] + balanceItemsCount;
           if (index === lastBalanceIndex - 1) {
@@ -387,6 +391,8 @@ class RecyclerAssetList extends Component {
             extraSpaceForDropShadow;
         } else if (type.get === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED) {
           dim.height = TokenFamilyHeaderHeight + firstRowExtraTopPadding;
+        } else if (type === ViewTypes.COIN_ROW_FIRST) {
+          dim.height = CoinRow.height + firstCoinRowMarginTop;
         } else if (type === ViewTypes.COIN_ROW_LAST) {
           dim.height = areSmallCollectibles
             ? CoinRow.height
@@ -828,7 +834,7 @@ class RecyclerAssetList extends Component {
     <RefreshControl
       onRefresh={this.handleRefresh}
       refreshing={this.state.isRefreshing}
-      tintColor={colors.alpha(colors.blueGreyLight, 0.666)}
+      tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
     />
   );
 
@@ -876,6 +882,7 @@ class RecyclerAssetList extends Component {
 
     const isNotUniqueToken =
       type === ViewTypes.COIN_ROW ||
+      type === ViewTypes.COIN_ROW_FIRST ||
       type === ViewTypes.COIN_ROW_LAST ||
       type === ViewTypes.UNISWAP_ROW ||
       type === ViewTypes.UNISWAP_ROW_LAST ||
@@ -883,9 +890,11 @@ class RecyclerAssetList extends Component {
       type === ViewTypes.UNISWAP_ROW_CLOSED_LAST ||
       type === ViewTypes.FOOTER;
 
+    const isFirstCoinRow = type === ViewTypes.COIN_ROW_FIRST;
+
     // TODO sections
     return isNotUniqueToken
-      ? renderItem({ item })
+      ? renderItem({ isFirstCoinRow, item })
       : renderItem({
           childrenAmount: item.childrenAmount,
           familyId: item.familyId,

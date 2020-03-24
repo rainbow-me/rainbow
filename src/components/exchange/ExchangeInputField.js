@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { TouchableWithoutFeedback } from 'react-native';
-import { colors } from '../../styles';
+import { colors, fonts } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
@@ -69,7 +69,10 @@ const ExchangeInputField = ({
               address={inputCurrencyAddress}
             />
             <ExchangeInput
+              disableTabularNums
               editable={!!inputCurrencySymbol}
+              fontFamily={fonts.family.SFProRounded}
+              letterSpacing={fonts.letterSpacing.roundedTightest}
               onChangeText={setInputAmount}
               onBlur={onBlur}
               onFocus={onFocus}
