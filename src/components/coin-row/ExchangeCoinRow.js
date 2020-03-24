@@ -100,7 +100,7 @@ const ExchangeCoinRow = ({
                   const newLocalFavorite = !localFavorite;
                   if (newLocalFavorite) {
                     onNewEmoji();
-                    haptics.notificationSuccess();
+                    haptics.impactMedium();
                   }
                   setLocalFavorite(newLocalFavorite);
                   onFavoriteAsset(item.address, newLocalFavorite);

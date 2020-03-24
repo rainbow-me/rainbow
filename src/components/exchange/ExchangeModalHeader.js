@@ -30,9 +30,9 @@ const InfoButton = styled(Centered).attrs({
   pressOutTension: 300,
 })`
   ${InfoButtonPosition};
-  padding-left: ${InfoButtonPaddingHorizontal * 2};
+  margin-top: ${SheetHandleMargin + 4};
+  padding-left: ${InfoButtonPaddingHorizontal};
   padding-right: ${InfoButtonPaddingHorizontal};
-  padding-top: ${SheetHandleMargin + 4};
 `;
 
 const InfoButtonTransition = styled(Transitioning.View)`
