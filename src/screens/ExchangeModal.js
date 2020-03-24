@@ -105,10 +105,8 @@ const ExchangeModal = ({
   cTokenBalance,
   defaultInputAsset,
   inputHeaderTitle,
-  inputReserve,
   isTransitioning,
   navigation,
-  outputReserve,
   createRap,
   selectedGasPrice,
   showOutputField,
@@ -129,6 +127,8 @@ const ExchangeModal = ({
     gasUpdateTxFee,
   } = useGas();
   const {
+    inputReserve,
+    outputReserve,
     uniswapClearCurrenciesAndReserves,
     uniswapUpdateInputCurrency,
     uniswapUpdateOutputCurrency,
@@ -687,7 +687,10 @@ const ExchangeModal = ({
         onSelectCurrency: updateInputCurrency,
         restoreFocusOnSwapModal: () => {
           navigation.setParams({ focused: true });
-          if (previousInputCurrency.uniqueId !== inputCurrency.uniqueId) {
+          if (
+            !previousInputCurrency ||
+            previousInputCurrency.uniqueId !== inputCurrency.uniqueId
+          ) {
             setNativeAmount();
           }
         },
@@ -705,7 +708,10 @@ const ExchangeModal = ({
         onSelectCurrency: updateOutputCurrency,
         restoreFocusOnSwapModal: () => {
           navigation.setParams({ focused: true });
-          if (previousOutputCurrency.uniqueId !== outputCurrency.uniqueId) {
+          if (
+            !previousOutputCurrency ||
+            previousOutputCurrency.uniqueId !== outputCurrency.uniqueId
+          ) {
             setNativeAmount();
           }
         },
@@ -1026,9 +1032,7 @@ ExchangeModal.propTypes = {
   cTokenBalance: PropTypes.string,
   defaultInputAddress: PropTypes.string,
   inputHeaderTitle: PropTypes.string,
-  inputReserve: PropTypes.object,
   navigation: PropTypes.object,
-  outputReserve: PropTypes.object,
   selectedGasPrice: PropTypes.object,
   supplyBalanceUnderlying: PropTypes.string,
   tabPosition: PropTypes.object, // animated value
