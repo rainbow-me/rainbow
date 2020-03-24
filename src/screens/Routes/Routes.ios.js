@@ -220,91 +220,7 @@ const MainNavigator = createStackNavigator(
 let appearListener = null;
 const setListener = listener => (appearListener = listener);
 
-const NativeStack = createStackNavigator(
-  {
-    NativeStack: createNativeStackNavigator(
-      {
-        ImportSeedPhraseSheet: function ImportSeedPhraseSheetWrapper(...props) {
-          return (
-            <ImportSeedPhraseSheetWithData
-              {...props}
-              setAppearListener={setListener}
-            />
-          );
-        },
-        MainNavigator,
-        SendSheetNavigator: isNativeStackAvailable
-          ? createStackNavigator(sendFlowRoutes, {
-              defaultNavigationOptions: {
-                onTransitionEnd,
-                onTransitionStart,
-              },
-              headerMode: 'none',
-              initialRouteName: 'SendSheet',
-              mode: 'modal',
-            })
-          : () => null,
-      },
-      {
-        defaultNavigationOptions: {
-          onAppear: () => appearListener && appearListener(),
-        },
-        headerMode: 'none',
-        initialRouteName: 'MainNavigator',
-        mode: 'modal',
-      }
-    ),
-    SavingsDepositModal: {
-      navigationOptions: {
-        ...exchangePreset,
-        onTransitionEnd,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      params: {
-        isGestureBlocked: false,
-      },
-      screen: SavingModalNavigator,
-    },
-    SavingsWithdrawModal: {
-      navigationOptions: {
-        ...exchangePreset,
-        onTransitionEnd,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      params: {
-        isGestureBlocked: false,
-      },
-      screen: WithdrawModal,
-    },
-  },
-  {
-    defaultNavigationOptions: {
-      onTransitionEnd,
-      onTransitionStart,
-    },
-    headerMode: 'none',
-    initialRouteName: 'NativeStack',
-    mode: 'modal',
-  }
-);
-
-const nativeStackRoutes = {
-  ImportSeedPhraseSheet: {
-    navigationOptions: {
-      ...sheetPreset,
-      onTransitionStart: () => {
-        StatusBar.setBarStyle('light-content');
-      },
-    },
-    screen: ImportSeedPhraseSheetWithData,
-  },
-  MainNavigator,
+const savingsModalsRoutes = {
   SavingsDepositModal: {
     navigationOptions: {
       ...exchangePreset,
@@ -333,6 +249,65 @@ const nativeStackRoutes = {
     },
     screen: WithdrawModal,
   },
+};
+
+const nativeStackWrapperRoutes = {
+  NativeStack: createNativeStackNavigator(
+    {
+      ImportSeedPhraseSheet: function ImportSeedPhraseSheetWrapper(...props) {
+        return (
+          <ImportSeedPhraseSheetWithData
+            {...props}
+            setAppearListener={setListener}
+          />
+        );
+      },
+      MainNavigator,
+      SendSheetNavigator: isNativeStackAvailable
+        ? createStackNavigator(sendFlowRoutes, {
+            defaultNavigationOptions: {
+              onTransitionEnd,
+              onTransitionStart,
+            },
+            headerMode: 'none',
+            initialRouteName: 'SendSheet',
+            mode: 'modal',
+          })
+        : () => null,
+    },
+    {
+      defaultNavigationOptions: {
+        onAppear: () => appearListener && appearListener(),
+      },
+      headerMode: 'none',
+      initialRouteName: 'MainNavigator',
+      mode: 'modal',
+    }
+  ),
+  ...savingsModalsRoutes,
+};
+
+const NativeStackWrapper = createStackNavigator(nativeStackWrapperRoutes, {
+  defaultNavigationOptions: {
+    onTransitionEnd,
+    onTransitionStart,
+  },
+  headerMode: 'none',
+  initialRouteName: 'NativeStack',
+  mode: 'modal',
+});
+
+const nativeStackRoutes = {
+  ImportSeedPhraseSheet: {
+    navigationOptions: {
+      ...sheetPreset,
+      onTransitionStart: () => {
+        StatusBar.setBarStyle('light-content');
+      },
+    },
+    screen: ImportSeedPhraseSheetWithData,
+  },
+  MainNavigator,
   SendSheet: {
     navigationOptions: {
       ...omit(sheetPreset, 'gestureResponseDistance'),
@@ -342,6 +317,7 @@ const nativeStackRoutes = {
     },
     screen: SendSheetWithData,
   },
+  ...savingsModalsRoutes,
 };
 
 const NativeStackFallback = createStackNavigator(nativeStackRoutes, {
@@ -354,7 +330,7 @@ const NativeStackFallback = createStackNavigator(nativeStackRoutes, {
   mode: 'modal',
 });
 
-const Stack = isNativeStackAvailable ? NativeStack : NativeStackFallback;
+const Stack = isNativeStackAvailable ? NativeStackWrapper : NativeStackFallback;
 
 const AppContainer = createAppContainer(Stack);
 
