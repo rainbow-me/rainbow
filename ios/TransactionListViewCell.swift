@@ -50,12 +50,12 @@ class TransactionListViewCell: TransactionListBaseCell {
   }
   
   private func setIcon(_ transaction: Transaction) {
-    if(transaction.pending){
+    if (transaction.pending) {
        transactionIcon.image = UIImage.init(named: "spinner");
        transactionIcon.image!.accessibilityIdentifier = "spinner"
        transactionIcon.rotate()
-     } else  if let image = UIImage.init(named: transaction.status.lowercased()) {
-       if(transactionIcon.image != nil && transactionIcon.image?.accessibilityIdentifier == "spinner"){
+     } else if let image = UIImage.init(named: transaction.status.lowercased()) {
+       if (transactionIcon.image != nil && transactionIcon.image?.accessibilityIdentifier == "spinner") {
          transactionIcon.stopRotating()
        }
        transactionIcon.image = image
@@ -64,19 +64,19 @@ class TransactionListViewCell: TransactionListBaseCell {
 
     // Swap Overrides
     if transaction.type.lowercased() == "trade" {
-      switch(transaction.status.lowercased()) {
-        case "sent":
-          transactionIcon.image = UIImage.init(named: "swapped")
-          break;
-        case "approved":
-          transactionIcon.image = UIImage.init(named: "self")
-          break;
-        default: break
+      switch transaction.status.lowercased() {
+      case "sent":
+        transactionIcon.image = UIImage.init(named: "swapped")
+        break;
+      case "approved":
+        transactionIcon.image = UIImage.init(named: "self")
+        break;
+      default: break
       }
     }
 
     // Savings Overrides
-    if(transaction.status.lowercased() ==  "deposited" || transaction.status.lowercased() == "withdrew"){
+    if (transaction.status.lowercased() ==  "deposited" || transaction.status.lowercased() == "withdrew") {
       transactionIcon.image = UIImage.init(named: "sunflower")
     }
     
@@ -125,15 +125,15 @@ class TransactionListViewCell: TransactionListBaseCell {
   
   private func setText(_ transaction: Transaction) {
     if let type = transaction.type {
-      if(type.lowercased() == "deposit" || type.lowercased() == "withdraw"){
+      if (type.lowercased() == "deposit" || type.lowercased() == "withdraw") {
         if let status = transaction.status {
-          if(status.lowercased() == "depositing" || status.lowercased() == "withdrawing" || status.lowercased() == "sending"){
+          if (status.lowercased() == "depositing" || status.lowercased() == "withdrawing" || status.lowercased() == "sending") {
             transactionType.text = " \(status.capitalized)";
-          }else if(status.lowercased() == "deposited" || status.lowercased() == "withdrew"){
+          } else if (status.lowercased() == "deposited" || status.lowercased() == "withdrew") {
             transactionType.text = " Savings";
             coinName.text = "\(status.capitalized) \(transaction.coinName!)";
-          } else if(transaction.status.lowercased() == "failed"){
-            coinName.text = "\(type.lowercased() == "withdraw" ? "Withdrew" : "Deposited")) \(transaction.coinName!))";
+          } else if (transaction.status.lowercased() == "failed") {
+            coinName.text = "\(type.lowercased() == "withdraw" ? "Withdrew" : "Deposited") \(transaction.coinName!)";
           }
         }
       }
