@@ -1,12 +1,10 @@
 import { get } from 'lodash';
 import { compose, pure } from 'recompact';
-import { withDataInit, withIsWalletEmpty, withAccountSettings } from '../hoc';
+import { withIsWalletEmpty } from '../hoc';
 import { deviceUtils } from '../utils';
 import ImportSeedPhraseSheet from './ImportSeedPhraseSheet';
 
 const ImportSeedPhraseSheetWithData = compose(
-  withAccountSettings,
-  withDataInit,
   withIsWalletEmpty,
   pure
 )(ImportSeedPhraseSheet);

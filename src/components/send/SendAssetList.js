@@ -182,14 +182,14 @@ class SendAssetList extends React.Component {
     return (
       <View>
         <TokenFamilyHeader
-          isCoinRow
-          familyName={item.name}
-          familyImage={item.familyImage}
           childrenAmount={item.data.length}
+          familyImage={item.familyImage}
+          isCoinRow
           isOpen={this.state.openCards[item.familyId]}
-          onHeaderPress={() => {
+          onPress={() => {
             this.changeOpenTab(item.familyId);
           }}
+          title={item.name}
         />
         {this.state.openCards[item.familyId] && this.mapTokens(item.data)}
       </View>

@@ -33,7 +33,10 @@ export default compose(
   withFabSelection,
   withNavigation,
   withHandlers({
-    onPress: ({ navigation }) => () => navigation.navigate('ExchangeModal'),
+    onPress: ({ navigation }) => () => {
+      console.log('HAPPENING!!!!');
+      navigation.navigate('ExchangeModal');
+    },
   }),
   onlyUpdateForKeys(['disabled'])
 )(ExchangeFab);

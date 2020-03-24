@@ -36,8 +36,10 @@ import HandleIcon from './svg/HandleIcon';
 import InboxIcon from './svg/InboxIcon';
 import InfoIcon from './svg/InfoIcon';
 import LockIcon from './svg/LockIcon';
+import MinusCircledIcon from './svg/MinusCircledIcon';
 import OfflineIcon from './svg/OfflineIcon';
 import PasscodeIcon from './svg/PasscodeIcon';
+import PlusCircledIcon from './svg/PlusCircledIcon';
 import ProgressIcon from './svg/ProgressIcon';
 import QRCodeIcon from './svg/QRCodeIcon';
 import SearchIcon from './svg/SearchIcon';
@@ -52,9 +54,10 @@ import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
 import WalletConnectIcon from './svg/WalletConnectIcon';
 import WarningIcon from './svg/WarningIcon';
+import Emoji from 'react-native-emoji';
 
 const Icon = ({ name, ...props }) =>
-  createElement(Icon.IconTypes[name] || Flex, props);
+  createElement(Icon.IconTypes[name] || Flex, { name, ...props });
 
 Icon.IconTypes = {
   applePay: ApplePayIcon,
@@ -91,8 +94,10 @@ Icon.IconTypes = {
   inbox: InboxIcon,
   info: InfoIcon,
   lock: LockIcon,
+  minusCircled: MinusCircledIcon,
   offline: OfflineIcon,
   passcode: PasscodeIcon,
+  plusCircled: PlusCircledIcon,
   progress: ProgressIcon,
   qrCode: QRCodeIcon,
   search: SearchIcon,
@@ -102,6 +107,7 @@ Icon.IconTypes = {
   signature: SignatureIcon,
   spinner: SpinnerIcon,
   star: StarIcon,
+  sunflower: Emoji,
   swap: SwapIcon,
   threeDots: ThreeDotsIcon,
   touchid: TouchIdIcon,

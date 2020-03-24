@@ -44,8 +44,12 @@ extension UIView {
   func animateTapStart(
     duration: TimeInterval = 0.1,
     scale: CGFloat = 0.97,
-    transformOrigin: CGPoint = .init(x: 0.5, y: 0.5)
+    transformOrigin: CGPoint = .init(x: 0.5, y: 0.5),
+    useHaptic: String? = nil
   ) {
+    if useHaptic != nil {
+      generateHapticFeedback(useHaptic!)
+    }
     let timingFunction = CAMediaTimingFunction(controlPoints: 0.25, 0.46, 0.45, 0.94)
     
     CATransaction.begin()
@@ -74,6 +78,30 @@ extension UIView {
     }
     
     CATransaction.commit()
+  }
+}
+
+extension UIImageView {
+  
+  private static let kRotationAnimationKey = "rotationanimationkey"
+  
+  func rotate(duration: Double = 2) {
+      if layer.animation(forKey: UIImageView.kRotationAnimationKey) == nil {
+          let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation")
+
+          rotationAnimation.fromValue = 0.0
+          rotationAnimation.toValue = Float.pi * 2.0
+          rotationAnimation.duration = duration
+          rotationAnimation.repeatCount = Float.infinity
+
+          layer.add(rotationAnimation, forKey: UIImageView.kRotationAnimationKey)
+      }
+  }
+
+  func stopRotating() {
+      if layer.animation(forKey: UIImageView.kRotationAnimationKey) != nil {
+          layer.removeAnimation(forKey: UIImageView.kRotationAnimationKey)
+      }
   }
 }
 

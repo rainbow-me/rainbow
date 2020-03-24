@@ -9,7 +9,11 @@ import { enableScreens } from 'react-native-screens';
 import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
 import { createStackNavigator } from 'react-navigation-stack';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import { ExchangeModalNavigator, Navigation } from '../../navigation';
+import {
+  ExchangeModalNavigator,
+  Navigation,
+  SavingModalNavigator,
+} from '../../navigation';
 import { updateTransitionProps } from '../../redux/navigation';
 import store from '../../redux/store';
 import { deviceUtils, sentryUtils } from '../../utils';
@@ -19,6 +23,8 @@ import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from '../ProfileScreenWithData';
 import QRScannerScreenWithData from '../QRScannerScreenWithData';
 import ReceiveModal from '../ReceiveModal';
+import WithdrawModal from '../WithdrawModal';
+import SavingsSheet from '../SavingsSheet';
 import ExampleScreen from '../ExampleScreen';
 import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
 import SendSheetWithData from '../SendSheetWithData';
@@ -27,12 +33,14 @@ import TransactionConfirmationScreenWithData from '../TransactionConfirmationScr
 import WalletScreen from '../WalletScreen';
 import AvatarBuilder from '../AvatarBuilder';
 import {
+  backgroundPreset,
   emojiPreset,
   exchangePreset,
   expandedPreset,
-  sheetPreset,
-  backgroundPreset,
   overlayExpandedPreset,
+  savingsPreset,
+  sheetPreset,
+  swapDetailsPreset,
 } from '../../navigation/transitions/effects';
 
 enableScreens();
@@ -108,7 +116,16 @@ const MainNavigator = createStackNavigator(
       },
       screen: TransactionConfirmationScreenWithData,
     },
-    ExampleScreen,
+    ExampleScreen: {
+      navigationOptions: {
+        ...expandedPreset,
+        onTransitionStart: props => {
+          expandedPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
+      },
+      screen: ExampleScreen,
+    },
     ExchangeModal: {
       navigationOptions: {
         ...exchangePreset,
@@ -143,6 +160,12 @@ const MainNavigator = createStackNavigator(
       },
       screen: ReceiveModal,
     },
+    SavingsSheet: {
+      navigationOptions: {
+        ...savingsPreset,
+      },
+      screen: SavingsSheet,
+    },
     SettingsModal: {
       navigationOptions: {
         ...expandedPreset,
@@ -154,6 +177,10 @@ const MainNavigator = createStackNavigator(
       },
       screen: SettingsModal,
       transparentCard: true,
+    },
+    SwapDetailsScreen: {
+      navigationOptions: swapDetailsPreset,
+      screen: ExpandedAssetScreenWithData,
     },
     SwipeLayout: {
       navigationOptions: {
@@ -171,6 +198,14 @@ const MainNavigator = createStackNavigator(
       },
       screen: WalletConnectConfirmationModal,
     },
+    ...(isNativeStackAvailable
+      ? {}
+      : {
+          OverlayExpandedAssetScreen: {
+            navigationOptions: overlayExpandedPreset,
+            screen: ExpandedAssetScreenWithData,
+          },
+        }),
   },
   {
     defaultNavigationOptions: {
@@ -186,47 +221,92 @@ const MainNavigator = createStackNavigator(
 let appearListener = null;
 const setListener = listener => (appearListener = listener);
 
-const NativeStack = createNativeStackNavigator(
-  {
-    AddCashSheet: function AddCashSheetWrapper(...props) {
-      return <AddCashSheet {...props} />;
+const savingsModalsRoutes = {
+  SavingsDepositModal: {
+    navigationOptions: {
+      ...exchangePreset,
+      onTransitionEnd,
+      onTransitionStart: props => {
+        expandedPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
     },
-    ImportSeedPhraseSheet: function ImportSeedPhraseSheetWrapper(...props) {
-      return (
-        <ImportSeedPhraseSheetWithData
-          {...props}
-          setAppearListener={setListener}
-        />
-      );
+    params: {
+      isGestureBlocked: false,
     },
-    MainNavigator,
-    SendSheetNavigator: isNativeStackAvailable
-      ? createStackNavigator(sendFlowRoutes, {
-          defaultNavigationOptions: {
-            onTransitionEnd,
-            onTransitionStart,
-          },
-          headerMode: 'none',
-          initialRouteName: 'SendSheet',
-          mode: 'modal',
-        })
-      : () => null,
+    screen: SavingModalNavigator,
   },
-  {
-    defaultNavigationOptions: {
-      onAppear: () => appearListener && appearListener(),
+  SavingsWithdrawModal: {
+    navigationOptions: {
+      ...exchangePreset,
+      onTransitionEnd,
+      onTransitionStart: props => {
+        expandedPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
     },
-    headerMode: 'none',
-    initialRouteName: 'MainNavigator',
-    mode: 'modal',
-  }
-);
+    params: {
+      isGestureBlocked: false,
+    },
+    screen: WithdrawModal,
+  },
+};
 
-const nativeStackRoutes = {
+const nativeStackWrapperRoutes = {
+  NativeStack: createNativeStackNavigator(
+    {
+      AddCashSheet: function AddCashSheetWrapper(...props) {
+        return <AddCashSheet {...props} />;
+      },
+      ImportSeedPhraseSheet: function ImportSeedPhraseSheetWrapper(...props) {
+        return (
+          <ImportSeedPhraseSheetWithData
+            {...props}
+            setAppearListener={setListener}
+          />
+        );
+      },
+      MainNavigator,
+      SendSheetNavigator: isNativeStackAvailable
+        ? createStackNavigator(sendFlowRoutes, {
+            defaultNavigationOptions: {
+              onTransitionEnd,
+              onTransitionStart,
+            },
+            headerMode: 'none',
+            initialRouteName: 'SendSheet',
+            mode: 'modal',
+          })
+        : () => null,
+    },
+    {
+      defaultNavigationOptions: {
+        onAppear: () => appearListener && appearListener(),
+      },
+      headerMode: 'none',
+      initialRouteName: 'MainNavigator',
+      mode: 'modal',
+    }
+  ),
+  ...savingsModalsRoutes,
+};
+
+const NativeStackWrapper = createStackNavigator(nativeStackWrapperRoutes, {
+  defaultNavigationOptions: {
+    onTransitionEnd,
+    onTransitionStart,
+  },
+  headerMode: 'none',
+  initialRouteName: 'NativeStack',
+  mode: 'modal',
+});
+
+const routesWithNativeStack = {
   AddCashSheet: {
     navigationOptions: {
       ...sheetPreset,
       onTransitionStart: props => {
+        StatusBar.setBarStyle('light-content');
         onTransitionStart(props);
         sheetPreset.onTransitionStart(props);
       },
@@ -236,9 +316,8 @@ const nativeStackRoutes = {
   ImportSeedPhraseSheet: {
     navigationOptions: {
       ...sheetPreset,
-      onTransitionStart: props => {
-        sheetPreset.onTransitionStart(props);
-        onTransitionStart();
+      onTransitionStart: () => {
+        StatusBar.setBarStyle('light-content');
       },
     },
     screen: ImportSeedPhraseSheetWithData,
@@ -252,14 +331,16 @@ const nativeStackRoutes = {
     navigationOptions: {
       ...omit(sheetPreset, 'gestureResponseDistance'),
       onTransitionStart: () => {
+        StatusBar.setBarStyle('light-content');
         onTransitionStart();
       },
     },
     screen: SendSheetWithData,
   },
+  ...savingsModalsRoutes,
 };
 
-const NativeStackFallback = createStackNavigator(nativeStackRoutes, {
+const NativeStackFallback = createStackNavigator(routesWithNativeStack, {
   defaultNavigationOptions: {
     onTransitionEnd,
     onTransitionStart,
@@ -269,7 +350,7 @@ const NativeStackFallback = createStackNavigator(nativeStackRoutes, {
   mode: 'modal',
 });
 
-const Stack = isNativeStackAvailable ? NativeStack : NativeStackFallback;
+const Stack = isNativeStackAvailable ? NativeStackWrapper : NativeStackFallback;
 
 const AppContainer = createAppContainer(Stack);
 
@@ -285,7 +366,8 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
       if (
         prevRouteName !== routeName &&
         isNativeStackAvailable &&
-        (nativeStackRoutes[prevRouteName] || nativeStackRoutes[routeName])
+        (routesWithNativeStack[prevRouteName] ||
+          routesWithNativeStack[routeName])
       ) {
         Navigation.handleAction(
           NavigationActions.setParams({

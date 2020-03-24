@@ -19,7 +19,6 @@ const SendAssetFormToken = ({
 }) => (
   <ColumnWithMargins {...props} flex={0} margin={18} width="100%">
     <SendAssetFormField
-      autoFocus
       format={removeLeadingZeros}
       label={selected.symbol}
       onChange={onChangeAssetAmount}
@@ -28,6 +27,7 @@ const SendAssetFormToken = ({
       value={assetAmount}
     />
     <SendAssetFormField
+      autoFocus
       format={formatNativeInput}
       label={nativeCurrency}
       onChange={onChangeNativeAmount}

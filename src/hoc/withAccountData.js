@@ -4,12 +4,11 @@ import { dataAddNewPurchaseTransaction } from '../redux/data';
 import { sortAssetsByNativeAmountSelector } from './assetSelectors';
 
 const mapStateToProps = ({
-  data: { assetPricesFromUniswap, assets, compoundAssets, loadingAssets },
+  data: { assetPricesFromUniswap, assets, loadingAssets },
   settings: { nativeCurrency },
 }) => ({
   assetPricesFromUniswap,
   assets,
-  compoundAssets,
   loadingAssets,
   nativeCurrency,
 });

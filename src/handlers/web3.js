@@ -39,6 +39,12 @@ export const getTransactionByHash = txHash =>
     params: [txHash],
   });
 
+export const getTransactionReceipt = txHash =>
+  sendRpcCall({
+    method: 'eth_getTransactionReceipt',
+    params: [txHash],
+  });
+
 /**
  * @desc check if hex string
  * @param {String} value

@@ -17,7 +17,6 @@ import {
 } from '../hoc';
 import { addressUtils } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
-import withStatusBarStyle from '../hoc/withStatusBarStyle';
 
 class QRScannerScreenWithData extends Component {
   static propTypes = {
@@ -135,6 +134,5 @@ export default compose(
   withWalletConnectOnSessionRequest,
   withAccountAddress,
   withSafeTimeout,
-  withWalletConnectConnections,
-  withStatusBarStyle('light-content')
+  withWalletConnectConnections
 )(QRScannerScreenWithData);

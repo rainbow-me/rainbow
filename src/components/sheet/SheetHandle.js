@@ -1,12 +1,16 @@
-import styled from 'styled-components/primitives';
-import { withNeverRerender } from '../../hoc';
+import React from 'react';
+import { View } from 'react-primitives';
+import { colors } from '../../styles';
 
-const SheetHandle = styled.View`
-  background-color: #3c4252;
-  border-radius: 3;
-  height: 5px;
-  opacity: 0.3;
-  width: 36px;
-`;
+const SheetHandle = props => (
+  <View
+    {...props}
+    backgroundColor={colors.alpha(colors.blueGreyDark, 0.3)}
+    borderRadius={3}
+    height={5}
+    width={36}
+  />
+);
 
-export default withNeverRerender(SheetHandle);
+const neverRerender = () => true;
+export default React.memo(SheetHandle, neverRerender);

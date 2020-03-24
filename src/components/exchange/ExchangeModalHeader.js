@@ -1,5 +1,7 @@
+import PropTypes from 'prop-types';
 import React, { useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
+import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { usePrevious } from '../../hooks';
 import { colors, padding, position } from '../../styles';
@@ -40,6 +42,13 @@ const InfoButtonTransition = styled(Transitioning.View)`
   ${InfoButtonPosition};
 `;
 
+const Title = withProps({
+  align: 'center',
+  lineHeight: 'loose',
+  size: 'large',
+  weight: 'bold',
+})(Text);
+
 const transition = (
   <Transition.Sequence>
     <Transition.Out durationMs={200} interpolation="easeOut" type="fade" />
@@ -51,7 +60,7 @@ const transition = (
   </Transition.Sequence>
 );
 
-const ExchangeModalHeader = ({ onPressDetails, showDetailsButton }) => {
+const ExchangeModalHeader = ({ onPressDetails, showDetailsButton, title }) => {
   const ref = useRef();
   const prevShowDetailsButton = usePrevious(showDetailsButton);
 
@@ -62,9 +71,7 @@ const ExchangeModalHeader = ({ onPressDetails, showDetailsButton }) => {
   return (
     <Column align="center" css={padding(8, 0)}>
       <SheetHandle marginBottom={SheetHandleMargin} />
-      <Text align="center" lineHeight="loose" size="large" weight="bold">
-        Swap
-      </Text>
+      <Title>{title}</Title>
       <InfoButtonTransition ref={ref} transition={transition}>
         {showDetailsButton && (
           <InfoButton onPress={onPressDetails} useNativeDriver>
@@ -78,6 +85,16 @@ const ExchangeModalHeader = ({ onPressDetails, showDetailsButton }) => {
       </InfoButtonTransition>
     </Column>
   );
+};
+
+ExchangeModalHeader.propTypes = {
+  onPressDetails: PropTypes.func,
+  showDetailsButton: PropTypes.bool,
+  title: PropTypes.string,
+};
+
+ExchangeModalHeader.defaultProps = {
+  title: 'Swap',
 };
 
 export default React.memo(ExchangeModalHeader);

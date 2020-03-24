@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { TouchableWithoutFeedback } from 'react-native';
 import { colors, fonts } from '../../styles';
-import { isNewValueForObjectPaths } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
@@ -13,157 +12,146 @@ import ExchangeInput from './ExchangeInput';
 import ExchangeNativeField from './ExchangeNativeField';
 
 const BottomRowHeight = 32;
+const padding = 15;
+const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
-export default class ExchangeInputField extends Component {
-  static propTypes = {
-    inputAmount: PropTypes.string,
-    inputCurrencyAddress: PropTypes.string,
-    inputCurrencySymbol: PropTypes.string,
-    inputFieldRef: PropTypes.func,
-    isAssetApproved: PropTypes.bool,
-    nativeAmount: PropTypes.string,
-    nativeCurrency: PropTypes.string,
-    nativeFieldRef: PropTypes.func,
-    onBlur: PropTypes.func,
-    onFocus: PropTypes.func,
-    onPressMaxBalance: PropTypes.func,
-    onPressSelectInputCurrency: PropTypes.func,
-    setInputAmount: PropTypes.func,
-    setNativeAmount: PropTypes.func,
-  };
+const ExchangeInputField = ({
+  assignInputFieldRef,
+  assignNativeFieldRef,
+  disableInputCurrencySelection,
+  inputAmount,
+  inputCurrencyAddress,
+  inputCurrencySymbol,
+  nativeAmount,
+  nativeCurrency,
+  onBlur,
+  onFocus,
+  onPressMaxBalance,
+  onPressSelectInputCurrency,
+  setInputAmount,
+  setNativeAmount,
+}) => {
+  const inputFieldRef = useRef();
 
-  shouldComponentUpdate = nextProps =>
-    isNewValueForObjectPaths(this.props, nextProps, [
-      'inputAmount',
-      'inputCurrencySymbol',
-      'isAssetApproved',
-      'nativeAmount',
-      'nativeCurrency',
-    ]);
-
-  inputFieldRef = undefined;
-
-  padding = 15;
-
-  handleFocusInputField = () => {
-    if (this.inputFieldRef) {
-      this.inputFieldRef.focus();
+  const handleFocusInputField = () => {
+    if (inputFieldRef && inputFieldRef.current) {
+      inputFieldRef.current.focus();
     }
   };
 
-  handleInputFieldRef = ref => {
-    this.inputFieldRef = ref;
-    this.props.inputFieldRef(ref);
+  const handleInputFieldRef = ref => {
+    inputFieldRef.current = ref;
+    assignInputFieldRef(ref);
   };
 
-  render = () => {
-    const {
-      inputAmount,
-      inputCurrencyAddress,
-      inputCurrencySymbol,
-      isAssetApproved,
-      nativeAmount,
-      nativeCurrency,
-      nativeFieldRef,
-      onBlur,
-      onFocus,
-      onPressMaxBalance,
-      onPressSelectInputCurrency,
-      setInputAmount,
-      setNativeAmount,
-    } = this.props;
-
-    const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
-
-    return (
-      <ColumnWithMargins
-        backgroundColor={colors.white}
-        flex={0}
-        margin={12}
-        paddingTop={16}
-        width="100%"
-        zIndex={1}
-      >
-        <Row align="center">
-          <TouchableWithoutFeedback onPress={this.handleFocusInputField}>
-            <RowWithMargins
-              align="center"
-              flex={1}
-              margin={10}
-              paddingLeft={this.padding}
-            >
-              <CoinIcon
-                bgColor={inputCurrencySymbol ? undefined : skeletonColor}
-                flex={0}
-                size={40}
-                symbol={inputCurrencySymbol}
-                address={inputCurrencyAddress}
-              />
-              <ExchangeInput
-                disableTabularNums
-                editable={!!inputCurrencySymbol}
-                fontFamily={fonts.family.SFProRounded}
-                height={40}
-                letterSpacing={fonts.letterSpacing.roundedTightest}
-                onChangeText={setInputAmount}
-                onBlur={onBlur}
-                onFocus={onFocus}
-                placeholder={inputCurrencySymbol ? '0' : EnDash.unicode}
-                placeholderTextColor={
-                  inputCurrencySymbol ? undefined : skeletonColor
-                }
-                refInput={this.handleInputFieldRef}
-                value={inputAmount}
-              />
-            </RowWithMargins>
-          </TouchableWithoutFeedback>
+  return (
+    <ColumnWithMargins
+      backgroundColor={colors.white}
+      flex={0}
+      margin={12}
+      paddingTop={16}
+      width="100%"
+      zIndex={1}
+    >
+      <Row align="center">
+        <TouchableWithoutFeedback onPress={handleFocusInputField}>
+          <RowWithMargins
+            align="center"
+            flex={1}
+            margin={10}
+            paddingLeft={padding}
+          >
+            <CoinIcon
+              bgColor={inputCurrencySymbol ? undefined : skeletonColor}
+              flex={0}
+              size={40}
+              symbol={inputCurrencySymbol}
+              address={inputCurrencyAddress}
+            />
+            <ExchangeInput
+              disableTabularNums
+              editable={!!inputCurrencySymbol}
+              fontFamily={fonts.family.SFProRounded}
+              height={40}
+              letterSpacing={fonts.letterSpacing.roundedTightest}
+              onChangeText={setInputAmount}
+              onBlur={onBlur}
+              onFocus={onFocus}
+              placeholder={inputCurrencySymbol ? '0' : EnDash.unicode}
+              placeholderTextColor={
+                inputCurrencySymbol ? undefined : skeletonColor
+              }
+              refInput={handleInputFieldRef}
+              value={inputAmount}
+            />
+          </RowWithMargins>
+        </TouchableWithoutFeedback>
+        {!disableInputCurrencySelection && (
           <TokenSelectionButton
             onPress={onPressSelectInputCurrency}
-            showLockIcon={inputCurrencySymbol && !isAssetApproved}
             symbol={inputCurrencySymbol}
           />
-        </Row>
-        <Row
-          align="center"
+        )}
+      </Row>
+      <Row
+        align="center"
+        height={BottomRowHeight}
+        justify="space-between"
+        paddingLeft={padding}
+      >
+        <ExchangeNativeField
           height={BottomRowHeight}
-          justify="space-between"
-          paddingLeft={this.padding}
-        >
-          <ExchangeNativeField
+          nativeAmount={nativeAmount}
+          nativeCurrency={nativeCurrency}
+          nativeFieldRef={assignNativeFieldRef}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          setNativeAmount={setNativeAmount}
+        />
+        <ButtonPressAnimation marginRight={4} onPress={onPressMaxBalance}>
+          <RowWithMargins
+            align="center"
             height={BottomRowHeight}
-            nativeAmount={nativeAmount}
-            nativeCurrency={nativeCurrency}
-            nativeFieldRef={nativeFieldRef}
-            onBlur={onBlur}
-            onFocus={onFocus}
-            setNativeAmount={setNativeAmount}
-          />
-          <ButtonPressAnimation marginRight={4} onPress={onPressMaxBalance}>
-            <RowWithMargins
+            margin={0}
+            paddingHorizontal={padding}
+          >
+            <Emoji
+              lineHeight="none"
+              name="moneybag"
+              style={{ marginTop: 0.5 }}
+              size="lmedium"
+            />
+            <Text
               align="center"
-              height={BottomRowHeight}
-              margin={0}
-              paddingHorizontal={this.padding}
+              color="appleBlue"
+              size="lmedium"
+              style={{ marginTop: 1 }}
+              weight="semibold"
             >
-              <Emoji
-                lineHeight="none"
-                name="moneybag"
-                style={{ marginTop: 0.5 }}
-                size="lmedium"
-              />
-              <Text
-                align="center"
-                color="appleBlue"
-                size="lmedium"
-                style={{ marginTop: 1 }}
-                weight="semibold"
-              >
-                Max
-              </Text>
-            </RowWithMargins>
-          </ButtonPressAnimation>
-        </Row>
-      </ColumnWithMargins>
-    );
-  };
-}
+              Max
+            </Text>
+          </RowWithMargins>
+        </ButtonPressAnimation>
+      </Row>
+    </ColumnWithMargins>
+  );
+};
+
+ExchangeInputField.propTypes = {
+  assignInputFieldRef: PropTypes.func,
+  assignNativeFieldRef: PropTypes.func,
+  disableInputCurrencySelection: PropTypes.bool,
+  inputAmount: PropTypes.string,
+  inputCurrencyAddress: PropTypes.string,
+  inputCurrencySymbol: PropTypes.string,
+  nativeAmount: PropTypes.string,
+  nativeCurrency: PropTypes.string,
+  onBlur: PropTypes.func,
+  onFocus: PropTypes.func,
+  onPressMaxBalance: PropTypes.func,
+  onPressSelectInputCurrency: PropTypes.func,
+  setInputAmount: PropTypes.func,
+  setNativeAmount: PropTypes.func,
+};
+
+export default ExchangeInputField;

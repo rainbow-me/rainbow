@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { View } from 'react-primitives';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import InnerBorder from '../InnerBorder';
 import { borders, colors, position } from '../../styles';
 import { isNewValueForObjectPaths } from '../../utils';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { InnerBorder } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 
 const FabSize = 56;
@@ -80,6 +80,7 @@ export default class FloatingActionButton extends Component {
         onPress={this.handlePress}
         onPressIn={this.handlePressIn}
         scaleTo={scaleTo}
+        useLateHaptic={false}
         {...props}
       >
         <ShadowStack
