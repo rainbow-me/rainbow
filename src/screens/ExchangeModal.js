@@ -9,8 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-
-import { TextInput, InteractionManager } from 'react-native';
+import { InteractionManager, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useIsFocused } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
@@ -53,6 +52,7 @@ import {
   useAccountSettings,
   useBlockPolling,
   useGas,
+  useInteraction,
   useMagicFocus,
   usePrevious,
   useUniswapAllowances,
@@ -160,10 +160,6 @@ const ExchangeModal = ({
 
   const [extraTradeDetails, setExtraTradeDetails] = useState({});
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const [
-    inputRefocusInteractionHandle,
-    setInputRefocusInteractionHandle,
-  ] = useState(null);
   const [isSufficientBalance, setIsSufficientBalance] = useState(true);
   const [nativeAmount, setNativeAmount] = useState(null);
   const [outputAmount, setOutputAmount] = useState(null);
@@ -182,7 +178,7 @@ const ExchangeModal = ({
   const outputFieldRef = useRef();
 
   const [lastFocusedInput, handleFocus] = useMagicFocus(inputFieldRef.current);
-
+  const [createRefocusInteraction] = useInteraction();
   const isScreenFocused = useIsFocused();
 
   useEffect(() => {
@@ -198,11 +194,6 @@ const ExchangeModal = ({
     dispatch(gasPricesStartPolling());
     dispatch(web3ListenerInit());
     return () => {
-      if (inputRefocusInteractionHandle) {
-        InteractionManager.clearInteractionHandle(
-          inputRefocusInteractionHandle
-        );
-      }
       dispatch(uniswapClearCurrenciesAndReserves());
       dispatch(gasPricesStopPolling());
       dispatch(web3ListenerStop());
@@ -212,7 +203,6 @@ const ExchangeModal = ({
     gasPricesStartPolling,
     gasPricesStopPolling,
     gasUpdateDefaultGasLimit,
-    inputRefocusInteractionHandle,
     isDeposit,
     isWithdrawal,
     uniswapClearCurrenciesAndReserves,
@@ -644,13 +634,11 @@ const ExchangeModal = ({
   };
 
   const handleRefocusLastInput = () => {
-    setInputRefocusInteractionHandle(
-      InteractionManager.runAfterInteractions(() => {
-        if (isScreenFocused) {
-          TextInput.State.focusTextInput(findNextFocused());
-        }
-      })
-    );
+    createRefocusInteraction(() => {
+      if (isScreenFocused) {
+        TextInput.State.focusTextInput(findNextFocused());
+      }
+    });
   };
 
   const navigateToSwapDetailsModal = () => {
