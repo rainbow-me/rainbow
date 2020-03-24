@@ -53,6 +53,7 @@ const CurrencySelectModal = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
 
+  const shouldUpdateFavoritesRef = useRef(false);
   const searchInputRef = useRef();
   const debounceHandler = useRef();
 
@@ -87,6 +88,30 @@ const CurrencySelectModal = ({
     isFocused,
     navigation.state.params,
     wasFocused,
+  ]);
+
+  const searchQueryExists = searchQuery.length > 0;
+
+  useEffect(() => {
+    if (!searchQueryExists && shouldUpdateFavoritesRef.current) {
+      shouldUpdateFavoritesRef.current = false;
+
+      Object.keys(assetsToFavoriteQueue).map(assetToFavorite =>
+        dispatch(
+          uniswapUpdateFavorites(
+            assetToFavorite,
+            assetsToFavoriteQueue[assetToFavorite]
+          )
+        )
+      );
+    } else if (searchQueryExists) {
+      shouldUpdateFavoritesRef.current = true;
+    }
+  }, [
+    assetsToFavoriteQueue,
+    dispatch,
+    searchQueryExists,
+    uniswapUpdateFavorites,
   ]);
 
   const dangerouslySetIsGestureBlocked = useCallback(
