@@ -63,6 +63,7 @@ import { colors, padding, position } from '../styles';
 import { ethereumUtils } from '../utils';
 import { CurrencySelectionTypes } from './CurrencySelectModal';
 import SwapInfo from '../components/exchange/SwapInfo';
+import { useIsFocused } from 'react-navigation-hooks';
 
 export const exchangeModalBorderRadius = 30;
 
@@ -158,6 +159,10 @@ const ExchangeModal = ({
 
   const [extraTradeDetails, setExtraTradeDetails] = useState({});
   const [isAuthorizing, setIsAuthorizing] = useState(false);
+  const [
+    inputRefocusInteractionHandle,
+    setInputRefocusInteractionHandle,
+  ] = useState(null);
   const [isSufficientBalance, setIsSufficientBalance] = useState(true);
   const [nativeAmount, setNativeAmount] = useState(null);
   const [outputAmount, setOutputAmount] = useState(null);
@@ -177,6 +182,8 @@ const ExchangeModal = ({
 
   const [lastFocusedInput, handleFocus] = useMagicFocus(inputFieldRef.current);
 
+  const isScreenFocused = useIsFocused();
+
   useEffect(() => {
     dispatch(
       gasUpdateDefaultGasLimit(
@@ -190,6 +197,11 @@ const ExchangeModal = ({
     dispatch(gasPricesStartPolling());
     dispatch(web3ListenerInit());
     return () => {
+      if (inputRefocusInteractionHandle) {
+        InteractionManager.clearInteractionHandle(
+          inputRefocusInteractionHandle
+        );
+      }
       dispatch(uniswapClearCurrenciesAndReserves());
       dispatch(gasPricesStopPolling());
       dispatch(web3ListenerStop());
@@ -199,6 +211,7 @@ const ExchangeModal = ({
     gasPricesStartPolling,
     gasPricesStopPolling,
     gasUpdateDefaultGasLimit,
+    inputRefocusInteractionHandle,
     isDeposit,
     isWithdrawal,
     uniswapClearCurrenciesAndReserves,
@@ -630,9 +643,13 @@ const ExchangeModal = ({
   };
 
   const handleRefocusLastInput = () => {
-    InteractionManager.runAfterInteractions(() => {
-      TextInput.State.focusTextInput(findNextFocused());
-    });
+    setInputRefocusInteractionHandle(
+      InteractionManager.runAfterInteractions(() => {
+        if (isScreenFocused) {
+          TextInput.State.focusTextInput(findNextFocused());
+        }
+      })
+    );
   };
 
   const navigateToSwapDetailsModal = () => {
