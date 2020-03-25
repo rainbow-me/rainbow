@@ -1,6 +1,7 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { InteractionManager } from 'react-native';
 import { useDimensions } from '../../hooks';
 import { haptics } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -99,8 +100,10 @@ const ExchangeCoinRow = ({
                 onPress={() => {
                   const newLocalFavorite = !localFavorite;
                   if (newLocalFavorite) {
-                    onNewEmoji();
                     haptics.impactMedium();
+                    InteractionManager.runAfterInteractions(() => {
+                      onNewEmoji();
+                    });
                   }
                   setLocalFavorite(newLocalFavorite);
                   onFavoriteAsset(item.address, newLocalFavorite);
