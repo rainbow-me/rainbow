@@ -1,6 +1,5 @@
 import { Animated, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { calculateKeyboardHeight } from '../../helpers/keyboardHeight';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 
@@ -35,10 +34,6 @@ const emojiStyleInterpolator = ({
     overlayStyle: {
       backgroundColor: 'rgb(37, 41, 46)',
       opacity: backgroundOpacity,
-      shadowColor: colors.dark,
-      shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.6,
-      shadowRadius: 25,
     },
   };
 };
@@ -71,15 +66,14 @@ const exchangeStyleInterpolator = ({
 
   return {
     cardStyle: {
-      // Translation for the animation of the current card
+      shadowColor: colors.black,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.6,
+      shadowRadius: 25,
       transform: [{ translateY }],
     },
     overlayStyle: {
       opacity: backgroundOpacity,
-      shadowColor: colors.black,
-      shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.4,
-      shadowRadius: 25,
     },
   };
 };
@@ -90,26 +84,20 @@ const exchangeDetailsStyleInterpolator = ({
 }) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, 0.7, 0.7],
+    outputRange: [0, 0, 0, 0],
   });
 
   const translateY = current.interpolate({
-    extrapolate: 'clamp',
     inputRange: [0, 1],
     outputRange: [screen.height, 0],
   });
 
   return {
     cardStyle: {
-      // Translation for the animation of the current card
       transform: [{ translateY }],
     },
     overlayStyle: {
       opacity: backgroundOpacity,
-      shadowColor: colors.black,
-      shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.4,
-      shadowRadius: 25,
     },
   };
 };
@@ -130,15 +118,14 @@ const expandStyleInterpolator = targetOpacity => ({
 
   return {
     cardStyle: {
-      transform: [{ translateY }],
-    },
-    overlayStyle: {
-      backgroundColor: colors.blueGreyDarker,
-      opacity: backgroundOpacity,
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
+      opacity: backgroundOpacity,
     },
   };
 };
@@ -160,15 +147,15 @@ const savingsStyleInterpolator = ({
 
   return {
     cardStyle: {
-      // Translation for the animation of the current card
+      shadowColor: colors.dark,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.6,
+      shadowRadius: 25,
       transform: [{ translateY }],
     },
     overlayStyle: {
+      backgroundColor: colors.dark,
       opacity: backgroundOpacity,
-      shadowColor: colors.black,
-      shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.4,
-      shadowRadius: 25,
     },
   };
 };
@@ -226,19 +213,12 @@ const swapDetailInterpolator = ({
 
   return {
     cardStyle: {
-      // Translation for the animation of the current card
       transform: [{ translateY }],
     },
     overlayStyle: {
-      backgroundColor: 'rgb(37, 41, 46)',
-      borderBottomWidth: calculateKeyboardHeight(deviceUtils.dimensions.height),
-      borderColor: colors.blueGreyDarker,
+      backgroundColor: colors.dark,
       opacity: backgroundOpacity,
       overflow: 'hidden',
-      shadowColor: colors.dark,
-      shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.6,
-      shadowRadius: 25,
     },
   };
 };
@@ -279,9 +259,14 @@ export const onTransitionStart = props => {
   }
 };
 
+export const backgroundPreset = {
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: backgroundInterpolator,
+};
+
 export const emojiPreset = {
   cardOverlayEnabled: true,
-  cardShadowEnabled: true,
+  cardShadowEnabled: false,
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: emojiStyleInterpolator,
   cardTransparent: true,
@@ -291,9 +276,15 @@ export const emojiPreset = {
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
-export const backgroundPreset = {
+export const exchangeDetailsPreset = {
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: backgroundInterpolator,
+  cardStyleInterpolator: exchangeDetailsStyleInterpolator,
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
+  transitionSpec: { close: closeSpec, open: openSpec },
 };
 
 export const exchangePreset = {
@@ -311,7 +302,7 @@ export const expandedPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: exchangeDetailsStyleInterpolator,
+  cardStyleInterpolator: expandStyleInterpolator(0.7),
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
@@ -319,11 +310,11 @@ export const expandedPreset = {
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 
-export const exchangeDetailsPreset = {
+export const overlayExpandedPreset = {
   cardOverlayEnabled: true,
-  cardShadowEnabled: true,
-  cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: exchangeDetailsStyleInterpolator,
+  cardShadowEnabled: false,
+  cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
+  cardStyleInterpolator: expandStyleInterpolator(0.6),
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
@@ -339,17 +330,6 @@ export const savingsPreset = {
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
-};
-
-export const overlayExpandedPreset = {
-  cardOverlayEnabled: true,
-  cardShadowEnabled: true,
-  cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
-  cardStyleInterpolator: expandStyleInterpolator(0.6),
-  cardTransparent: true,
-  gestureDirection: 'vertical',
-  gestureResponseDistance,
-  transitionSpec: { close: closeSpec, open: openSpec },
 };
 
 export const sheetPreset = {

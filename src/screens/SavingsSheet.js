@@ -58,7 +58,7 @@ const SavingsSheet = () => {
             balance={balance}
             lifetimeAccruedInterest={lifetimeAccruedInterest}
           />
-          <RowWithMargins css={padding(24, 7.5)} margin={7.5}>
+          <RowWithMargins css={padding(24, 15)} margin={15}>
             <SheetActionButton
               color={colors.dark}
               icon="minusCircled"
@@ -97,7 +97,7 @@ const SavingsSheet = () => {
                   <SavingsCoinRow
                     item={{
                       lifetimeSupplyInterestAccrued,
-                      name: underlying.symbol,
+                      name: underlying.name,
                       supplyBalanceUnderlying,
                       supplyRate,
                       symbol: underlying.symbol,

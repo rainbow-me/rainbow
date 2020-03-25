@@ -2,13 +2,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Row } from '../layout';
-import { Rounded } from '../text';
+import { Text } from '../text';
 
 const sx = StyleSheet.create({
-  cents: {
-    marginLeft: 1,
-    top: 7,
-  },
+  cents: { top: 7 },
 });
 
 const DollarFigure = ({ value, decimals = 2 }) => {
@@ -16,12 +13,18 @@ const DollarFigure = ({ value, decimals = 2 }) => {
   const formattedCents = cents.substr(0, decimals);
   return (
     <Row>
-      <Rounded letterSpacing={0.2} size="h1" weight="heavy">
+      <Text letterSpacing="zero" size="h1" weight="heavy">
         {dollars.charAt(0) === '$' ? dollars : `$${dollars}`}
-      </Rounded>
-      <Rounded letterSpacing={0.1} size="large" style={sx.cents} weight="heavy">
+      </Text>
+      <Text
+        align="right"
+        letterSpacing="roundedTightest"
+        size="large"
+        style={sx.cents}
+        weight="heavy"
+      >
         {`.${formattedCents}`}
-      </Rounded>
+      </Text>
     </Row>
   );
 };

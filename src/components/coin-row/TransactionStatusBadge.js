@@ -11,16 +11,16 @@ import Spinner from '../Spinner';
 import { Text } from '../text';
 
 const StatusProps = {
+  [TransactionStatusTypes.approved]: {
+    marginRight: 4,
+    name: 'dot',
+  },
   [TransactionStatusTypes.deposited]: {
     name: 'sunflower',
-    style: { fontSize: 12 },
+    style: { fontSize: 12, marginBottom: 2, marginRight: 2 },
   },
-  [TransactionStatusTypes.withdrew]: {
-    name: 'sunflower',
-    style: { fontSize: 12 },
-  },
-  [TransactionStatusTypes.approved]: {
-    name: 'dot',
+  [TransactionStatusTypes.depositing]: {
+    marginRight: 4,
   },
   [TransactionStatusTypes.failed]: {
     marginRight: 4,
@@ -32,7 +32,7 @@ const StatusProps = {
     name: 'arrow',
   },
   [TransactionStatusTypes.purchasing]: {
-    marginRight: 3,
+    marginRight: 4,
   },
   [TransactionStatusTypes.received]: {
     marginRight: 2,
@@ -43,7 +43,7 @@ const StatusProps = {
     name: 'dot',
   },
   [TransactionStatusTypes.sending]: {
-    marginRight: 3,
+    marginRight: 4,
   },
   [TransactionStatusTypes.sent]: {
     marginRight: 3,
@@ -54,6 +54,13 @@ const StatusProps = {
     name: 'swap',
     small: true,
     style: position.maxSizeAsObject(12),
+  },
+  [TransactionStatusTypes.withdrawing]: {
+    marginRight: 4,
+  },
+  [TransactionStatusTypes.withdrew]: {
+    name: 'sunflower',
+    style: { fontSize: 12, marginBottom: 2, marginRight: 2 },
   },
 };
 

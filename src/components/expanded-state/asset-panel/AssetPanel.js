@@ -4,7 +4,7 @@ import { ColumnWithDividers } from '../../layout';
 import FloatingPanel from '../FloatingPanel';
 
 const AssetPanel = ({ children, ...props }) => (
-  <FloatingPanel {...props} hideShadow>
+  <FloatingPanel {...props}>
     <ColumnWithDividers>{children}</ColumnWithDividers>
   </FloatingPanel>
 );

@@ -10,7 +10,7 @@ import { ButtonPressAnimation, interpolate } from '../animations';
 import Highlight from '../Highlight';
 import { Icon } from '../icons';
 import { Row, RowWithMargins } from '../layout';
-import { TruncatedText, Monospace } from '../text';
+import { Text, TruncatedText } from '../text';
 import withOpenSavings from '../../hoc/withOpenSavings';
 
 const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
@@ -34,7 +34,7 @@ const SavingsListHeader = ({
     <ButtonPressAnimation
       key={`${emoji}_${openSavings}`}
       onPress={() => setOpenSavings(!openSavings)}
-      scaleTo={0.98}
+      scaleTo={1.05}
     >
       <Row
         align="center"
@@ -46,18 +46,17 @@ const SavingsListHeader = ({
       >
         <Highlight visible={highlight} />
         <RowWithMargins align="center" margin={emoji ? 5 : 9}>
-          <Icon size="lmedium" name={emoji} />
+          <Icon name={emoji} style={{ marginBottom: 2 }} />
           <TruncatedText
-            letterSpacing="tight"
+            letterSpacing="roundedTight"
             lineHeight="normal"
-            size="lmedium"
-            style={{ marginBottom: 1 }}
+            size="large"
             weight="semibold"
           >
             Savings
           </TruncatedText>
         </RowWithMargins>
-        <RowWithMargins align="center" margin={14}>
+        <RowWithMargins align="center" margin={13}>
           <Animated.View
             style={{
               opacity: interpolate(animation, {
@@ -66,9 +65,14 @@ const SavingsListHeader = ({
               }),
             }}
           >
-            <Monospace color="dark" size="lmedium" style={{ marginBottom: 1 }}>
+            <Text
+              align="right"
+              color="dark"
+              size="large"
+              style={{ marginBottom: 1 }}
+            >
               ${Number(savingsSumValue).toFixed(2)}
-            </Monospace>
+            </Text>
           </Animated.View>
           <AnimatedFastImage
             resizeMode={FastImage.resizeMode.contain}

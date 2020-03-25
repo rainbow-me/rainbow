@@ -8,7 +8,7 @@ import { colors } from '../../styles';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import Highlight from '../Highlight';
 import { Row, RowWithMargins } from '../layout';
-import { Emoji, TruncatedText, Monospace } from '../text';
+import { Emoji, Text, TruncatedText } from '../text';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 
 const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
@@ -65,7 +65,7 @@ const TokenFamilyHeader = ({
             {title}
           </TruncatedText>
         </RowWithMargins>
-        <RowWithMargins align="center" margin={14}>
+        <RowWithMargins align="center" margin={13}>
           <Animated.View
             style={{
               opacity: interpolate(animation, {
@@ -74,7 +74,7 @@ const TokenFamilyHeader = ({
               }),
             }}
           >
-            <Monospace
+            <Text
               align="right"
               color="dark"
               letterSpacing="roundedTight"
@@ -82,7 +82,7 @@ const TokenFamilyHeader = ({
               style={{ marginBottom: 1 }}
             >
               {childrenAmount}
-            </Monospace>
+            </Text>
           </Animated.View>
           <AnimatedFastImage
             resizeMode={FastImage.resizeMode.contain}
