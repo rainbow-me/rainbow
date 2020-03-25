@@ -393,6 +393,27 @@ export const convertAmountToDepositDisplay = (value, asset) => {
 };
 
 /**
+ * @desc savings earnings display
+ * @param  {BigNumber}  value
+ * @param  {Object}     asset
+ * @return {String}
+ */
+export const convertAmountToSavingsEarningsDisplay = (
+  value,
+  asset,
+  nativeCurrency,
+  buffer
+) => {
+  const decimals = get(asset, 'decimals', 18);
+  const display = handleSignificantDecimals(value, decimals, buffer);
+  const nativeSelected = supportedNativeCurrencies[nativeCurrency];
+  if (nativeSelected.alignment === 'left') {
+    return `${nativeSelected.symbol}${display}`;
+  }
+  return `${display} ${nativeSelected.currency}`;
+};
+
+/**
  * @desc convert from amount to display formatted string
  * @param  {BigNumber}  value
  * @param  {Number}     buffer

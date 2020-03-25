@@ -14,10 +14,15 @@ import {
 } from '../components/floating-emojis';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import Divider from '../components/Divider';
-import { convertAmountToDepositDisplay } from '../helpers/utilities';
+import {
+  convertAmountToDepositDisplay,
+  convertAmountToSavingsEarningsDisplay,
+} from '../helpers/utilities';
+import { useAccountSettings } from '../hooks';
 
 const SavingsSheet = () => {
   const { getParam, navigate } = useNavigation();
+  const { nativeCurrency } = useAccountSettings();
 
   const cTokenBalance = getParam('cTokenBalance');
   const isEmpty = getParam('isEmpty');
@@ -27,10 +32,19 @@ const SavingsSheet = () => {
   const lifetimeSupplyInterestAccrued = getParam(
     'lifetimeSupplyInterestAccrued'
   );
+  const lifetimeSupplyInterestAccruedNative = getParam(
+    'lifetimeSupplyInterestAccruedNative'
+  );
   const supplyBalanceUnderlying = getParam('supplyBalanceUnderlying');
   const supplyRate = getParam('supplyRate');
 
   const balance = convertAmountToDepositDisplay(nativeValue, underlying);
+  const lifetimeAccruedInterest = convertAmountToSavingsEarningsDisplay(
+    lifetimeSupplyInterestAccruedNative,
+    underlying,
+    nativeCurrency,
+    1
+  );
 
   return (
     <Sheet>
@@ -43,7 +57,7 @@ const SavingsSheet = () => {
         <Fragment>
           <SavingsSheetHeader
             balance={balance}
-            lifetimeAccruedInterest={lifetimeSupplyInterestAccrued}
+            lifetimeAccruedInterest={lifetimeAccruedInterest}
           />
           <RowWithMargins css={padding(24, 7.5)} margin={7.5}>
             <SheetActionButton
