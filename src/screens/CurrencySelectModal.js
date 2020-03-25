@@ -39,7 +39,7 @@ const CurrencySelectModal = ({
   transitionPosition,
   type,
 }) => {
-  const { dispatch } = useDispatch();
+  const dispatch = useDispatch();
   const {
     curatedAssets,
     favorites,
