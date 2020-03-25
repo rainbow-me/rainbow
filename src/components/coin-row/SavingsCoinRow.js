@@ -36,9 +36,9 @@ BottomRow.propTypes = {
 };
 
 const TopRow = ({ name, supplyBalanceUnderlying, symbol }) => (
-  <Row align="center" justify="space-between" marginBottom={3}>
+  <Row align="center" justify="space-between" marginBottom={0}>
     <FlexItem flex={1}>
-      <CoinName letterSpacing="tight" weight="semibold">
+      <CoinName letterSpacing="roundedMedium" weight="semibold">
         {name}
       </CoinName>
     </FlexItem>

@@ -28,11 +28,12 @@ const STABLECOINS = ['DAI', 'SAI', 'USDC', 'USDT'];
 
 const sx = StyleSheet.create({
   text: {
-    color: colors.blueGreyDark,
+    color: colors.dark,
     fontSize: 16,
-    fontVariant: ['tabular-nums'],
-    fontWeight: fonts.weight.semibold,
-    marginRight: 5,
+    fontWeight: fonts.weight.bold,
+    marginBottom: 0.5,
+    marginRight: 4,
+    textAlign: 'left',
   },
 });
 
@@ -44,7 +45,7 @@ const renderAnimatedNumber = (value, steps, symbol) => {
   const isStablecoin = STABLECOINS.indexOf(symbol) !== -1;
   const numberComponent = (
     <AnimatedNumber
-      disableTabularNums
+      letterSpacing={parseFloat(fonts.letterSpacing.roundedTightest)}
       style={sx.text}
       formatter={
         isStablecoin
@@ -133,26 +134,26 @@ const SavingsListRow = ({
   if (!underlying || !underlying.address) return null;
 
   return (
-    <Centered css={padding(9, 0, 3)} direction="column">
-      <ShadowStack
-        height={50}
-        width={deviceUtils.dimensions.width - 18}
-        borderRadius={25}
-        shadows={[
-          [0, 3, 5, colors.dark, 0.2],
-          [0, 6, 10, colors.dark, 0.14],
-        ]}
-      >
-        <ButtonPressAnimation
-          onPress={onButtonPress}
-          scaleTo={supplyBalanceUnderlying ? 0.92 : 1}
+    <ButtonPressAnimation onPress={onButtonPress} scaleTo={0.96}>
+      <Centered css={padding(0, 0, 15)} direction="column">
+        <ShadowStack
+          height={49}
+          width={deviceUtils.dimensions.width - 38}
+          borderRadius={25}
+          shadows={[
+            [0, 10, 30, colors.dark, 0.1],
+            [0, 5, 15, colors.dark, 0.04],
+          ]}
         >
           <Row
             style={{
               alignItems: 'center',
               justifyContent: 'space-between',
-              marginLeft: 5,
-              padding: 10,
+              marginLeft: 0,
+              paddingBottom: 10,
+              paddingLeft: 11,
+              paddingRight: 10,
+              paddingTop: 9,
             }}
           >
             <Row
@@ -165,7 +166,7 @@ const SavingsListRow = ({
                 <CoinIcon
                   symbol={underlying.symbol}
                   size={26}
-                  style={{ marginRight: 7 }}
+                  style={{ marginRight: 6 }}
                 />
               ) : null}
               {supplyBalanceUnderlying && !isNaN(displayValue) ? (
@@ -230,13 +231,20 @@ const SavingsListRow = ({
                 end={{ x: 1, y: 1 }}
                 pointerEvents="none"
                 start={{ x: 0, y: 0 }}
-                opacity={0.12}
+                opacity={0.1}
                 style={position.coverAsObject}
               />
               <GradientText
+                align="center"
+                angle={false}
+                end={{ x: 1, y: 1 }}
+                letterSpacing="roundedTight"
+                start={{ x: 0, y: 0 }}
+                steps={[0, 1]}
                 style={{
-                  fontSize: 16,
+                  fontSize: parseFloat(fonts.size.lmedium),
                   fontWeight: fonts.weight.semibold,
+                  paddingBottom: 1,
                   paddingHorizontal: 10,
                 }}
               >
@@ -244,9 +252,9 @@ const SavingsListRow = ({
               </GradientText>
             </Centered>
           </Row>
-        </ButtonPressAnimation>
-      </ShadowStack>
-    </Centered>
+        </ShadowStack>
+      </Centered>
+    </ButtonPressAnimation>
   );
 };
 

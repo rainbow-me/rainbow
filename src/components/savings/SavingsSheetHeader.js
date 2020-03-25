@@ -3,31 +3,31 @@ import React from 'react';
 import { colors, padding } from '../../styles';
 import { Icon } from '../icons';
 import { Centered, RowWithMargins } from '../layout';
-import { DollarFigure, Rounded } from '../text';
+import { DollarFigure, Text } from '../text';
 
 const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => (
   <Centered css={padding(9, 0, 3)} direction="column">
-    <Rounded
+    <Text
       color={colors.alpha(colors.blueGreyDark, 0.5)}
-      letterSpacing="tooLoose"
+      letterSpacing="uppercase"
       size="smedium"
       uppercase
       weight="semibold"
     >
       Savings
-    </Rounded>
+    </Text>
     <DollarFigure value={balance} decimals={2} />
-    <RowWithMargins align="center" margin={5} marginTop={1}>
+    <RowWithMargins align="center" margin={4} marginTop={1}>
       <Icon name="plusCircled" color={colors.green} />
-      <Rounded
+      <Text
         color={colors.green}
-        letterSpacing="looser"
+        letterSpacing="roundedTight"
         size="large"
         lineHeight="loose"
-        weight="bold"
+        weight="semibold"
       >
         {lifetimeAccruedInterest}
-      </Rounded>
+      </Text>
     </RowWithMargins>
   </Centered>
 );

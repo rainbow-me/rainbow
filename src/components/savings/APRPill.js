@@ -9,14 +9,17 @@ const APRPill = ({ children }) => (
     borderRadius={10}
     center={[0, 10]}
     colors={[colors.alpha('#F2F5F7', 0.8), colors.alpha('#DFE4EB', 0.8)]}
+    marginLeft={-6}
     overflow="hidden"
     paddingBottom={3}
-    paddingHorizontal={5}
+    paddingHorizontal={6}
     paddingTop={2}
     radius={81}
   >
     <Text
+      align="center"
       color={colors.alpha(colors.blueGreyDark, 0.5)}
+      letterSpacing="roundedTight"
       size="small"
       weight="semibold"
     >

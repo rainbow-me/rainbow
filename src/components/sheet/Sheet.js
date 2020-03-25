@@ -16,7 +16,7 @@ const Sheet = ({ children }) => {
       <TouchableBackdrop onPress={goBack} />
       <Column
         backgroundColor={colors.white}
-        css={borders.buildRadius('top', 24)}
+        css={borders.buildRadius('top', 39)}
         paddingBottom={insets.bottom}
       >
         <Centered paddingBottom={15} paddingTop={6}>

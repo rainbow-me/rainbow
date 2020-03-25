@@ -5,7 +5,15 @@ import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Text from './Text';
 
-const GradientText = ({ angle, colors, end, renderer, steps, ...props }) => {
+const GradientText = ({
+  angle,
+  colors,
+  end,
+  renderer,
+  start,
+  steps,
+  ...props
+}) => {
   const textElement = createElement(renderer, props);
 
   return (
@@ -16,7 +24,7 @@ const GradientText = ({ angle, colors, end, renderer, steps, ...props }) => {
         colors={colors}
         end={end}
         locations={steps}
-        start={{ x: 0, y: 0.5 }}
+        start={start}
         useAngle={!!angle}
       >
         <View opacity={0}>{textElement}</View>
@@ -36,6 +44,7 @@ GradientText.defaultProps = {
   colors: ['#2CCC00', '#FEBE44'],
   end: { x: 1, y: 0.5 },
   renderer: Text,
+  start: { x: 0, y: 0.5 },
   steps: [0.72, 1],
 };
 

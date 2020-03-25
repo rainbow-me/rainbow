@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
+import { fonts } from '../../styles';
 
 const clearHandle = handle => handle && clearInterval(handle);
 
@@ -66,6 +67,7 @@ const AnimatedNumber = ({
       ref={textInputRef}
       style={[
         {
+          fontFamily: fonts.family.SFProRounded,
           fontVariant: disableTabularNums ? undefined : ['tabular-nums'],
           textAlign,
         },

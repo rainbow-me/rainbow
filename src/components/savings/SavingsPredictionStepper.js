@@ -56,13 +56,8 @@ const SavingsPredictionStepper = ({ balance, interestRate }) => {
     >
       <Row align="center" css={padding(15, 19)}>
         <RowWithMargins align="center" margin={6}>
-          <Emoji
-            letterSpacing="tight"
-            lineHeight="looser"
-            name="crystal_ball"
-            size="lmedium"
-          />
-          <Text letterSpacing="tight" size="lmedium">
+          <Emoji name="crystal_ball" size="lmedium" />
+          <Text size="lmedium">
             {`Est. ${Object.keys(steps)[step]} Earnings`}
           </Text>
         </RowWithMargins>
@@ -76,6 +71,7 @@ const SavingsPredictionStepper = ({ balance, interestRate }) => {
               flexGrow: 1,
               fontSize: parseFloat(fonts.size.lmedium),
               fontWeight: fonts.weight.semibold,
+              letterSpacing: fonts.letterSpacing.roundedTight,
             }}
             time={8}
             value={NUMBER}
