@@ -15,7 +15,6 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import CoinCheckButton from './CoinCheckButton';
-import TransitionToggler from '../animations/TransitionToggler';
 import withCoinListEdited from '../../hoc/withCoinListEdited';
 import CoinRowInfo from './CoinRowInfo';
 
@@ -55,16 +54,29 @@ const BalanceCoinRow = ({
   ...props
 }) =>
   item.isSmall ? (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
-      <CoinRow
-        onPress={onPress}
-        onPressSend={onPressSend}
-        {...item}
-        {...props}
-        bottomRowRender={BottomRow}
-        topRowRender={TopRow}
-      />
-    </ButtonPressAnimation>
+    <View width={deviceUtils.dimensions.width}>
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+        <Row>
+          <View left={isCoinListEdited ? 42 : 0} width={250}>
+            <CoinRow
+              onPress={onPress}
+              onPressSend={onPressSend}
+              {...item}
+              {...props}
+              bottomRowRender={BottomRow}
+              topRowRender={TopRow}
+            />
+          </View>
+          <View position="absolute" right={3}>
+            <CoinRowInfo
+              isHidden={item.isHidden}
+              native={item.native}
+              nativeCurrencySymbol={nativeCurrencySymbol}
+            />
+          </View>
+        </Row>
+      </ButtonPressAnimation>
+    </View>
   ) : isFirstCoinRow ? (
     <FlexItem
       flex={1}
@@ -72,62 +84,52 @@ const BalanceCoinRow = ({
         justifyContent: 'flex-end',
       }}
     >
-      <Row>
-        <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
-          <Row>
-            <TransitionToggler
-              startingWidth={0}
-              endingWidth={42}
-              toggle={isCoinListEdited}
-            >
-              <View style={{ width: deviceUtils.dimensions.width - 120 - 13 }}>
-                <CoinRow
-                  onPress={onPress}
-                  onPressSend={onPressSend}
-                  {...item}
-                  {...props}
-                  bottomRowRender={BottomRow}
-                  topRowRender={TopRow}
-                />
-              </View>
-            </TransitionToggler>
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+        <Row>
+          <View left={isCoinListEdited ? 42 : 0} width={250}>
+            <CoinRow
+              onPress={onPress}
+              onPressSend={onPressSend}
+              {...item}
+              {...props}
+              bottomRowRender={BottomRow}
+              topRowRender={TopRow}
+            />
+          </View>
+          <View position="absolute" right={3}>
             <CoinRowInfo
               native={item.native}
               nativeCurrencySymbol={nativeCurrencySymbol}
             />
-          </Row>
-        </ButtonPressAnimation>
-        {isCoinListEdited ? <CoinCheckButton isAbsolute {...item} /> : null}
-      </Row>
-    </FlexItem>
-  ) : (
-    <Row>
-      <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
-        <Row>
-          <TransitionToggler
-            startingWidth={0}
-            endingWidth={42}
-            toggle={isCoinListEdited}
-          >
-            <View style={{ width: deviceUtils.dimensions.width - 120 - 13 }}>
-              <CoinRow
-                onPress={onPress}
-                onPressSend={onPressSend}
-                {...item}
-                {...props}
-                bottomRowRender={BottomRow}
-                topRowRender={TopRow}
-              />
-            </View>
-          </TransitionToggler>
-          <CoinRowInfo
-            native={item.native}
-            nativeCurrencySymbol={nativeCurrencySymbol}
-          />
+          </View>
         </Row>
       </ButtonPressAnimation>
       {isCoinListEdited ? <CoinCheckButton isAbsolute {...item} /> : null}
-    </Row>
+    </FlexItem>
+  ) : (
+    <>
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+        <Row>
+          <View left={isCoinListEdited ? 42 : 0} width={250}>
+            <CoinRow
+              onPress={onPress}
+              onPressSend={onPressSend}
+              {...item}
+              {...props}
+              bottomRowRender={BottomRow}
+              topRowRender={TopRow}
+            />
+          </View>
+          <View position="absolute" right={3}>
+            <CoinRowInfo
+              native={item.native}
+              nativeCurrencySymbol={nativeCurrencySymbol}
+            />
+          </View>
+        </Row>
+      </ButtonPressAnimation>
+      {isCoinListEdited ? <CoinCheckButton isAbsolute {...item} /> : null}
+    </>
   );
 
 BalanceCoinRow.propTypes = {

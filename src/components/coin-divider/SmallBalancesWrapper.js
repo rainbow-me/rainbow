@@ -11,7 +11,6 @@ import {
 } from '../../hoc';
 import { OpacityToggler } from '../animations';
 import CoinDivider from './CoinDivider';
-import TransitionToggler from '../animations/TransitionToggler';
 import withCoinListEdited from '../../hoc/withCoinListEdited';
 
 class SmallBalancesWrapper extends PureComponent {
@@ -40,7 +39,6 @@ class SmallBalancesWrapper extends PureComponent {
       setHiddenCoins,
       setPinnedCoins,
       setIsCoinListEdited,
-      valuesList,
     } = this.props;
 
     return (
@@ -63,20 +61,20 @@ class SmallBalancesWrapper extends PureComponent {
           <View pointerEvents={openSmallBalances ? 'auto' : 'none'}>
             <View
               style={{
-                opacity: isCoinListEdited ? 1 : 0,
+                opacity: openSmallBalances ? 1 : 0,
                 position: 'absolute',
               }}
             >
-              {checkList}
-            </View>
-            <TransitionToggler
-              startingWidth={0}
-              endingWidth={42}
-              toggle={isCoinListEdited}
-            >
               {assets}
-            </TransitionToggler>
-            <View style={{ position: 'absolute', right: 3 }}>{valuesList}</View>
+              <View
+                style={{
+                  opacity: isCoinListEdited ? 1 : 0,
+                  position: 'absolute',
+                }}
+              >
+                {checkList}
+              </View>
+            </View>
           </View>
         </OpacityToggler>
       </Fragment>

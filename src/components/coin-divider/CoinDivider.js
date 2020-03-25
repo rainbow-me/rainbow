@@ -346,6 +346,9 @@ class CoinDivider extends PureComponent {
                 onPress={() => {
                   this.setState(prevState => {
                     onEdit(!prevState.isCurrentlyCoinListEdited);
+                    LayoutAnimation.configureNext(
+                      LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+                    );
                     return {
                       isCurrentlyCoinListEdited: !prevState.isCurrentlyCoinListEdited,
                     };
