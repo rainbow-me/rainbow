@@ -11,7 +11,7 @@
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		15E531D5242B28EF00797B89 /* ViewWithPersistentAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D4242B28EF00797B89 /* ViewWithPersistentAnimations.swift */; };
+		15E531D5242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D4242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift */; };
 		24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 24979E7720F84004007EB0DA /* GoogleService-Info.plist */; };
 		3CBE29CD2381E43900BE05AC /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBE29CC2381E43900BE05AC /* Dummy.swift */; };
 		66FEC91623EDA14000A0F367 /* RoundedCornerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FEC91523EDA13F00A0F367 /* RoundedCornerView.swift */; };
@@ -65,7 +65,7 @@
 		13E5CE549E13349A65C71B53 /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		157155032418733F009B698B /* RainbowRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowRelease.entitlements; path = Rainbow/RainbowRelease.entitlements; sourceTree = "<group>"; };
 		157155042418734C009B698B /* RainbowDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowDebug.entitlements; path = Rainbow/RainbowDebug.entitlements; sourceTree = "<group>"; };
-		15E531D4242B28EF00797B89 /* ViewWithPersistentAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewWithPersistentAnimations.swift; sourceTree = "<group>"; };
+		15E531D4242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageViewWithPersistentAnimations.swift; sourceTree = "<group>"; };
 		24979E3620F84003007EB0DA /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Protobuf.framework; path = Frameworks/Protobuf.framework; sourceTree = "<group>"; };
 		24979E7420F84004007EB0DA /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };
 		24979E7520F84004007EB0DA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCore.framework; path = Frameworks/FirebaseCore.framework; sourceTree = "<group>"; };
@@ -183,7 +183,7 @@
 		15E531D6242B28F800797B89 /* Animations */ = {
 			isa = PBXGroup;
 			children = (
-				15E531D4242B28EF00797B89 /* ViewWithPersistentAnimations.swift */,
+				15E531D4242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift */,
 			);
 			name = Animations;
 			sourceTree = "<group>";
@@ -527,7 +527,7 @@
 				A477567E23DB3A85005AE8FD /* TransactionListViewManager.m in Sources */,
 				A477567C23DB2FAA005AE8FD /* Transaction.swift in Sources */,
 				A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */,
-				15E531D5242B28EF00797B89 /* ViewWithPersistentAnimations.swift in Sources */,
+				15E531D5242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift in Sources */,
 				A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */,
 				A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */,
 				A49B52B823DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift in Sources */,
