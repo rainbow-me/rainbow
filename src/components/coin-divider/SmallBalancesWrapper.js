@@ -40,7 +40,6 @@ class SmallBalancesWrapper extends PureComponent {
       setHiddenCoins,
       setPinnedCoins,
       setIsCoinListEdited,
-      reloadData,
       valuesList,
     } = this.props;
 
@@ -51,7 +50,6 @@ class SmallBalancesWrapper extends PureComponent {
           balancesSum={balancesSum}
           onPress={this.handlePress}
           onEdit={setIsCoinListEdited}
-          reloadData={reloadData}
           onPin={setPinnedCoins}
           onHide={setHiddenCoins}
           isCoinListEdited={isCoinListEdited}
@@ -63,7 +61,14 @@ class SmallBalancesWrapper extends PureComponent {
           startingOpacity={0}
         >
           <View pointerEvents={openSmallBalances ? 'auto' : 'none'}>
-            <View style={{ position: 'absolute' }}>{checkList}</View>
+            <View
+              style={{
+                opacity: isCoinListEdited ? 1 : 0,
+                position: 'absolute',
+              }}
+            >
+              {checkList}
+            </View>
             <TransitionToggler
               startingWidth={0}
               endingWidth={42}
@@ -71,7 +76,7 @@ class SmallBalancesWrapper extends PureComponent {
             >
               {assets}
             </TransitionToggler>
-            <View style={{ position: 'absolute', right: 0 }}>{valuesList}</View>
+            <View style={{ position: 'absolute', right: 3 }}>{valuesList}</View>
           </View>
         </OpacityToggler>
       </Fragment>

@@ -53,20 +53,12 @@ const ClearInputDecorator = ({ inputHeight, isVisible, onPress }) => {
     ref.current.animateNextTransition();
   }
 
-  const paddingLeft = inputHeight / 2;
-  const paddingRight = inputHeight / 4;
-
   return (
-    <Container height={inputHeight} width={paddingLeft * 2 + paddingRight}>
+    <Container>
       {isVisible && (
         <Transitioning.View ref={ref} transition={transition}>
-          <ButtonPressAnimation
-            exclusive
-            onPressStart={onPress}
-            scaleTo={0.69}
-            style={{ paddingLeft, paddingRight }}
-          >
-            <Centered height={inputHeight} width={paddingLeft}>
+          <ButtonPressAnimation onPress={onPress} scaleTo={0.8}>
+            <Centered height={inputHeight} width={inputHeight}>
               <Icon
                 color={colors.blueGreyDark}
                 name="clearInput"

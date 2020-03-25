@@ -11,16 +11,17 @@ import {
 import { dataClearState } from './data';
 import { explorerInit } from './explorer';
 import { ethereumUtils } from '../utils';
-import { web3SetHttpProvider } from '../handlers/web3';
+import { web3Provider, web3SetHttpProvider } from '../handlers/web3';
 import networkTypes from '../helpers/networkTypes';
 
 // -- Constants ------------------------------------------------------------- //
 
 const SETTINGS_UPDATE_SETTINGS_ADDRESS =
   'settings/SETTINGS_UPDATE_SETTINGS_ADDRESS';
-const SETTINGS_UPDATE_SETTINGS_NAME = 'settings/SETTINGS_UPDATE_SETTINGS_NAME';
+const SETTINGS_UPDATE_SETTINGS_ENS = 'settings/SETTINGS_UPDATE_SETTINGS_ENS';
 const SETTINGS_UPDATE_SETTINGS_COLOR =
   'settings/SETTINGS_UPDATE_SETTINGS_COLOR';
+const SETTINGS_UPDATE_SETTINGS_NAME = 'settings/SETTINGS_UPDATE_SETTINGS_NAME';
 const SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS =
   'settings/SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS';
 const SETTINGS_UPDATE_NATIVE_CURRENCY_FAILURE =
@@ -86,11 +87,19 @@ export const settingsUpdateAccountColor = accountColor => dispatch => {
   });
 };
 
-export const settingsUpdateAccountAddress = accountAddress => dispatch =>
+export const settingsUpdateAccountAddress = accountAddress => async dispatch => {
   dispatch({
     payload: accountAddress,
     type: SETTINGS_UPDATE_SETTINGS_ADDRESS,
   });
+
+  await web3Provider.lookupAddress(accountAddress).then(accountENS =>
+    dispatch({
+      payload: accountENS,
+      type: SETTINGS_UPDATE_SETTINGS_ENS,
+    })
+  );
+};
 
 export const settingsUpdateNetwork = network => async dispatch => {
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
@@ -145,6 +154,7 @@ export const settingsChangeNativeCurrency = nativeCurrency => dispatch => {
 export const INITIAL_STATE = {
   accountAddress: '',
   accountColor: 1,
+  accountENS: null,
   accountName: '😊',
   chainId: 1,
   language: 'en',
@@ -158,6 +168,11 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         accountAddress: action.payload,
+      };
+    case SETTINGS_UPDATE_SETTINGS_ENS:
+      return {
+        ...state,
+        accountENS: action.payload,
       };
     case SETTINGS_UPDATE_SETTINGS_NAME:
       return {

@@ -1,32 +1,87 @@
-import {
-  format,
-  isThisMonth,
-  isThisYear,
-  isToday,
-  isYesterday,
-} from 'date-fns';
+import { format } from 'date-fns';
 import { get, groupBy, isEmpty, map, toLower } from 'lodash';
 import { createSelector } from 'reselect';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 
-const accountAddressSelector = state => state.accountAddress;
 const contactsSelector = state => state.contacts;
 const requestsSelector = state => state.requests;
 const transactionsSelector = state => state.transactions;
+const focusedSelector = state => state.isFocused;
+const initializedSelector = state => state.initialized;
 
 export const buildTransactionUniqueIdentifier = ({ hash, displayDetails }) =>
   hash || get(displayDetails, 'timestampInMs');
 
+const calculateTimestampOfToday = () => {
+  var d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+};
+
+const calculateTimestampOfYesterday = () => {
+  var d = new Date();
+  d.setDate(d.getDate() - 1);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+};
+
+const calculateTimestampOfThisMonth = () => {
+  var d = new Date();
+  d.setDate(0);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+};
+
+const calculateTimestampOfThisYear = () => {
+  var d = new Date();
+  d.setFullYear(d.getFullYear, 1, 1);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+};
+
+let timestampsCalculation = new Date();
+
+let todayTimestamp = calculateTimestampOfToday();
+let yesterdayTimestamp = calculateTimestampOfYesterday();
+let thisMonthTimestamp = calculateTimestampOfThisMonth();
+let thisYearTimestamp = calculateTimestampOfThisYear();
+
+const getTimestamps = () => {
+  const now = new Date();
+  // When the day / month changes, we need to recalculate timestamps
+  if (
+    timestampsCalculation.getDate() !== now.getDate() ||
+    timestampsCalculation.getMonth() !== now.getMonth()
+  ) {
+    todayTimestamp = calculateTimestampOfToday();
+    yesterdayTimestamp = calculateTimestampOfYesterday();
+    thisMonthTimestamp = calculateTimestampOfThisMonth();
+    thisYearTimestamp = calculateTimestampOfThisYear();
+  }
+  return {
+    thisMonthTimestamp,
+    thisYearTimestamp,
+    todayTimestamp,
+    yesterdayTimestamp,
+  };
+};
+
 const groupTransactionByDate = ({ pending, minedAt }) => {
   if (pending) return 'Pending';
+  const {
+    todayTimestamp,
+    yesterdayTimestamp,
+    thisMonthTimestamp,
+    thisYearTimestamp,
+  } = getTimestamps();
 
-  const timestamp = new Date(parseInt(minedAt, 10) * 1000);
+  const ts = parseInt(minedAt, 10) * 1000;
 
-  if (isToday(timestamp)) return 'Today';
-  if (isYesterday(timestamp)) return 'Yesterday';
-  if (isThisMonth(timestamp)) return 'This Month';
+  if (ts > todayTimestamp) return 'Today';
+  if (ts > yesterdayTimestamp) return 'Yesterday';
+  if (ts > thisMonthTimestamp) return 'This Month';
 
-  return format(timestamp, `MMMM${isThisYear(timestamp) ? '' : ' yyyy'}`);
+  return format(ts, `MMMM${ts > thisYearTimestamp ? '' : ' yyyy'}`);
 };
 
 const addContactInfo = contacts => txn => {
@@ -41,11 +96,16 @@ const addContactInfo = contacts => txn => {
 };
 
 const buildTransactionsSections = (
-  accountAddress,
   contacts,
   requests,
-  transactions
+  transactions,
+  isFocused,
+  initialized
 ) => {
+  if (!isFocused && !initialized) {
+    return { sections: [] };
+  }
+
   let sectionedTransactions = [];
 
   const transactionsWithContacts = map(transactions, addContactInfo(contacts));
@@ -55,7 +115,6 @@ const buildTransactionsSections = (
       transactionsWithContacts,
       groupTransactionByDate
     );
-
     sectionedTransactions = Object.keys(transactionsByDate).map(section => ({
       data: transactionsByDate[section],
       title: section,
@@ -71,7 +130,6 @@ const buildTransactionsSections = (
       },
     ];
   }
-
   return {
     sections: [...requestsToApprove, ...sectionedTransactions],
   };
@@ -79,10 +137,11 @@ const buildTransactionsSections = (
 
 export const buildTransactionsSectionsSelector = createSelector(
   [
-    accountAddressSelector,
     contactsSelector,
     requestsSelector,
     transactionsSelector,
+    focusedSelector,
+    initializedSelector,
   ],
   buildTransactionsSections
 );

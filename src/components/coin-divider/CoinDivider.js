@@ -21,6 +21,9 @@ import CoinDividerButtonLabel from './CoinDividerButtonLabel';
 import { compose } from 'recompact';
 import { withCoinCurrentAction } from '../../hoc';
 import withCoinListEdited from '../../hoc/withCoinListEdited';
+import { getAssets } from '../../handlers/localstorage/accountLocal';
+import { dataUpdateAssets } from '../../redux/data';
+import store from '../../redux/store';
 
 const {
   block,
@@ -73,7 +76,6 @@ class CoinDivider extends PureComponent {
     onEdit: PropTypes.func,
     onPress: PropTypes.func,
     openSmallBalances: PropTypes.bool,
-    reloadData: PropTypes.func,
   };
 
   state = {
@@ -112,7 +114,6 @@ class CoinDivider extends PureComponent {
       isCoinDivider,
       onHide,
       onEdit,
-      reloadData,
       onPin,
       isCoinListEdited,
       onPress,
@@ -141,7 +142,11 @@ class CoinDivider extends PureComponent {
               <ButtonPressAnimation
                 onPress={async () => {
                   await onPin();
-                  reloadData();
+                  const assets = await getAssets(
+                    store.getState().settings.accountAddress,
+                    store.getState().settings.network
+                  );
+                  store.dispatch(dataUpdateAssets(assets));
                   LayoutAnimation.configureNext(
                     LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
                   );
@@ -188,7 +193,11 @@ class CoinDivider extends PureComponent {
               <ButtonPressAnimation
                 onPress={async () => {
                   await onHide();
-                  reloadData();
+                  const assets = await getAssets(
+                    store.getState().settings.accountAddress,
+                    store.getState().settings.network
+                  );
+                  store.dispatch(dataUpdateAssets(assets));
                   LayoutAnimation.configureNext(
                     LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
                   );

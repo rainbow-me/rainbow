@@ -1,5 +1,6 @@
 import { get } from 'lodash';
 import BigNumber from 'bignumber.js';
+import { DAI_ADDRESS, SAI_ADDRESS, USDC_ADDRESS } from '../references';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 
 /**
@@ -25,6 +26,14 @@ export const convertAmountToRawAmount = (value, decimals) =>
     .toFixed();
 
 export const isZero = value => BigNumber(value).isZero();
+
+/**
+ * @desc to fixed decimals
+ * @param  {Number}  value
+ * @return {String}
+ */
+export const toFixedDecimals = (value, decimals) =>
+  BigNumber(`${value}`).toFixed(decimals);
 
 /**
  * @desc convert from number to string
@@ -74,6 +83,20 @@ export const mod = (numberOne, numberTwo) =>
   BigNumber(`${numberOne}`)
     .mod(BigNumber(`${numberTwo}`))
     .toFixed();
+
+/**
+ * @desc calculate the fee for a given amount, percent fee, and fixed fee
+ * @param  {Number}   amount (base amount to calculate fee off of)
+ * @param  {Number}   percent fee (4% would just be 4)
+ * @param  {Number}   fixed fee (flat rate to add)
+ * @return {String}   fixed format to 2 decimals with ROUND_HALF_UP
+ */
+export const feeCalculation = (amount, percentFee, fixedFee) =>
+  BigNumber(amount)
+    .times(percentFee)
+    .dividedBy(100)
+    .plus(fixedFee)
+    .toFixed(2, BigNumber.ROUND_HALF_UP);
 
 /**
  * @desc compares if numberOne is greater than or equal to numberTwo
@@ -348,6 +371,25 @@ export const convertAmountToBalanceDisplay = (value, asset, buffer) => {
   const decimals = get(asset, 'decimals', 18);
   const display = handleSignificantDecimals(value, decimals, buffer);
   return `${display} ${asset.symbol}`;
+};
+
+/**
+ * @desc deposit display
+ * @param  {BigNumber}  value
+ * @param  {Object}     asset
+ * @return {String}
+ */
+export const convertAmountToDepositDisplay = (value, asset) => {
+  let prettyAmount = value;
+  if (
+    asset.address === DAI_ADDRESS ||
+    asset.address === USDC_ADDRESS ||
+    asset.address === SAI_ADDRESS
+  ) {
+    prettyAmount = BigNumber(value).toFixed(2);
+    return `$${prettyAmount}`;
+  }
+  return `${prettyAmount} ${asset.symbol}`;
 };
 
 /**

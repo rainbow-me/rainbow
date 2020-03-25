@@ -8,12 +8,16 @@ import { Emoji } from '../text';
 const { add, concat, multiply, sin } = Animated;
 
 const FloatingEmoji = ({
+  centerVertically,
+  disableHorizontalMovement,
+  disableVerticalMovement,
   distance,
   duration,
   emoji,
   fadeOut,
   index,
   left,
+  marginTop,
   scaleTo,
   size,
   top,
@@ -69,10 +73,16 @@ const FloatingEmoji = ({
     <Animated.View
       style={{
         left,
+        marginTop,
         opacity,
         position: 'absolute',
-        top: top || size * -0.5,
-        transform: [{ rotate }, { scale }, { translateX }, { translateY }],
+        top: centerVertically ? null : top || size * -0.5,
+        transform: [
+          { rotate },
+          { scale },
+          disableHorizontalMovement ? null : { translateX },
+          disableVerticalMovement ? null : { translateY },
+        ],
       }}
     >
       <Emoji name={emoji} size={size} />
@@ -81,11 +91,15 @@ const FloatingEmoji = ({
 };
 
 FloatingEmoji.propTypes = {
+  centerVertically: PropTypes.bool,
+  disableHorizontalMovement: PropTypes.bool,
+  disableVerticalMovement: PropTypes.bool,
   distance: PropTypes.number.isRequired,
   duration: PropTypes.number.isRequired,
   emoji: PropTypes.string.isRequired,
   fadeOut: PropTypes.bool,
   left: PropTypes.string.isRequired,
+  marginTop: PropTypes.number,
   scaleTo: PropTypes.number.isRequired,
   size: PropTypes.string.isRequired,
   top: PropTypes.number,

@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { KeyboardAvoidingView, StatusBar, Platform } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
+import { Button } from '../components/buttons';
 import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
@@ -18,7 +19,7 @@ import { Input } from '../components/inputs';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { Text } from '../components/text';
-import { useClipboard } from '../hooks';
+import { useClipboard, useInitializeWallet } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { colors, padding, shadow, borders } from '../styles';
 import { isValidSeed as validateSeed } from '../helpers/validators';
@@ -57,7 +58,9 @@ const HandleIcon = styled(Icon).attrs({
   margin-bottom: 2;
 `;
 
-const StyledImportButton = styled(BorderlessButton)`
+const StyledImportButton = styled(
+  Platform.OS === 'ios' ? BorderlessButton : Button
+)`
   ${padding(5, 9, 7)};
   ${shadow.build(0, 6, 10, colors.dark, 0.16)};
   background-color: ${({ disabled }) =>
@@ -100,13 +103,10 @@ const ImportButton = ({ disabled, onPress, seedPhrase }) => (
   </StyledImportButton>
 );
 
-const ImportSeedPhraseSheet = ({
-  initializeWallet,
-  isEmpty,
-  setAppearListener,
-}) => {
+const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   const { clipboard } = useClipboard();
   const { navigate, setParams } = useNavigation();
+  const initializeWallet = useInitializeWallet();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
 
@@ -247,7 +247,6 @@ const ImportSeedPhraseSheet = ({
 };
 
 ImportSeedPhraseSheet.propTypes = {
-  initializeWallet: PropTypes.func,
   isEmpty: PropTypes.bool,
   setAppearListener: PropTypes.func,
 };

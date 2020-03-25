@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { compact, flattenDeep, get, groupBy, property } from 'lodash';
+import { compact, flattenDeep, get, groupBy, map, property } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -9,7 +9,7 @@ import { createSelector } from 'reselect';
 import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
-import { TokenFamilyWrap } from '../components/token-family';
+import { CollectibleTokenFamily } from '../components/token-family';
 import { buildUniqueTokenList, buildCoinsList } from './assets';
 import { chartExpandedAvailable } from '../config/experimental';
 import store from '../redux/store';
@@ -20,15 +20,18 @@ import {
 } from '../redux/editOptions';
 import { getAssets } from '../handlers/localstorage/accountLocal';
 import { dataUpdateAssets } from '../redux/data';
+import networkTypes from './networkTypes';
+import { ethereumUtils } from '../utils';
 
-const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
+const allAssetsSelector = state => state.allAssets;
 const assetsTotalSelector = state => state.assetsTotal;
+const savingsSelector = state => state.savings;
 const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
 const isWalletEthZeroSelector = state => state.isWalletEthZero;
 const languageSelector = state => state.language;
+const networkSelector = state => state.network;
 const nativeCurrencySelector = state => state.nativeCurrency;
-const setIsWalletEmptySelector = state => state.setIsWalletEmpty;
 const uniqueTokensSelector = state => state.uniqueTokens;
 const uniswapSelector = state => state.uniswap;
 const uniswapTotalSelector = state => state.uniswapTotal;
@@ -61,7 +64,7 @@ const balancesRenderItem = item => (
   />
 );
 const tokenFamilyItem = item => (
-  <TokenFamilyWrap {...item} uniqueId={item.uniqueId} />
+  <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
 );
 const uniswapRenderItem = item => (
   <UniswapCardItem {...item} assetType="uniswap" isCollapsible />
@@ -74,7 +77,6 @@ const filterWalletSections = sections =>
 
 const buildWalletSections = (
   balanceSection,
-  setIsWalletEmpty,
   uniqueTokenFamiliesSection,
   uniswapSection
 ) => {
@@ -82,7 +84,6 @@ const buildWalletSections = (
 
   const filteredSections = filterWalletSections(sections);
   const isEmpty = !filteredSections.length;
-  setIsWalletEmpty(isEmpty);
 
   return {
     isEmpty,
@@ -111,13 +112,56 @@ const withBalanceSection = (
   allAssets,
   allAssetsCount,
   assetsTotal,
+  savings,
   isBalancesSectionEmpty,
   isWalletEthZero,
   language,
   nativeCurrency,
-  showShitcoins
+  network
 ) => {
-  let balanceSectionData = buildCoinsList(allAssets);
+  let totalValue = Number(get(assetsTotal, 'amount', 0));
+  let assets = savings;
+  const eth = ethereumUtils.getAsset(allAssets);
+  const priceOfEther = get(eth, 'native.price.amount', null);
+  let totalSavingsValue = 0;
+  if (priceOfEther) {
+    assets = map(savings, asset => {
+      const {
+        supplyBalanceUnderlying,
+        underlyingPrice,
+        lifetimeSupplyInterestAccrued,
+      } = asset;
+      const nativeValue = supplyBalanceUnderlying
+        ? supplyBalanceUnderlying * underlyingPrice * priceOfEther
+        : 0;
+
+      totalSavingsValue += nativeValue;
+      const lifetimeSupplyInterestAccruedNative = lifetimeSupplyInterestAccrued
+        ? lifetimeSupplyInterestAccrued * underlyingPrice * priceOfEther
+        : 0;
+
+      return {
+        ...asset,
+        lifetimeSupplyInterestAccruedNative,
+        nativeValue,
+      };
+    });
+  }
+
+  totalValue += totalSavingsValue;
+
+  const savingsSection = {
+    assets,
+    savingsContainer: true,
+    totalValue: totalSavingsValue,
+  };
+
+  let balanceSectionData = [...buildCoinsList(allAssets)];
+
+  if (networkTypes.mainnet === network) {
+    balanceSectionData.push(savingsSection);
+  }
+
   const isLoadingBalances = !isWalletEthZero && isBalancesSectionEmpty;
   if (isLoadingBalances) {
     balanceSectionData = [{ item: { uniqueId: 'skeleton0' } }];
@@ -178,10 +222,9 @@ const withBalanceSection = (
               },
             }
           : undefined,
-      showShitcoins,
       title: lang.t('account.tab_balances'),
       totalItems: isLoadingBalances ? 1 : allAssetsCount,
-      totalValue: get(assetsTotal, 'display', ''),
+      totalValue: `$${totalValue.toFixed(2)}`,
     },
     name: 'balances',
     renderItem: isLoadingBalances
@@ -272,10 +315,12 @@ const balanceSectionSelector = createSelector(
     allAssetsSelector,
     allAssetsCountSelector,
     assetsTotalSelector,
+    savingsSelector,
     isBalancesSectionEmptySelector,
     isWalletEthZeroSelector,
     languageSelector,
     nativeCurrencySelector,
+    networkSelector,
   ],
   withBalanceSection
 );
@@ -295,12 +340,7 @@ const uniqueTokenFamiliesSelector = createSelector(
   withUniqueTokenFamiliesSection
 );
 
-export default createSelector(
-  [
-    balanceSectionSelector,
-    setIsWalletEmptySelector,
-    uniqueTokenFamiliesSelector,
-    uniswapSectionSelector,
-  ],
+export const buildWalletSectionsSelector = createSelector(
+  [balanceSectionSelector, uniqueTokenFamiliesSelector, uniswapSectionSelector],
   buildWalletSections
 );

@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import { shouldUpdate } from 'recompact';
-import { padding, position } from '../../styles';
+import React, { useCallback } from 'react';
+import { StyleSheet } from 'react-native';
+import { useNavigation } from 'react-navigation-hooks';
+import { position } from '../../styles';
 import { deviceUtils, isNewValueForPath } from '../../utils';
 import { Row } from '../layout';
 import UniqueTokenCard from './UniqueTokenCard';
@@ -11,37 +12,44 @@ const RowPadding = 19;
 const CardSize =
   (deviceUtils.dimensions.width - RowPadding * 2 - CardMargin) / 2;
 
-const enhance = shouldUpdate((...props) =>
-  isNewValueForPath(...props, 'item.uniqueId')
-);
+const sx = StyleSheet.create({
+  container: {
+    marginBottom: CardMargin,
+    marginTop: 0,
+    paddingHorizontal: RowPadding,
+    width: '100%',
+  },
+});
 
-const UniqueTokenRow = enhance(({ item, onPress, onPressSend }) => (
-  <Row
-    align="center"
-    css={`
-      ${padding(0, RowPadding)};
-      margin-bottom: ${CardMargin};
-      margin-top: 0;
-      width: 100%;
-    `}
-  >
-    {item.map((uniqueToken, itemIndex) => (
-      <UniqueTokenCard
-        {...position.sizeAsObject(CardSize)}
-        item={uniqueToken}
-        key={uniqueToken.uniqueId}
-        onPress={onPress}
-        onPressSend={onPressSend}
-        style={{ marginLeft: itemIndex >= 1 ? CardMargin : 0 }}
-      />
-    ))}
-  </Row>
-));
+const arePropsEqual = (...props) =>
+  !isNewValueForPath(...props, 'item.uniqueId');
+
+// eslint-disable-next-line react/display-name
+const UniqueTokenRow = React.memo(({ item }) => {
+  const { navigate } = useNavigation();
+
+  const handleItemPress = useCallback(
+    asset => navigate('ExpandedAssetScreen', { asset, type: 'unique_token' }),
+    [navigate]
+  );
+
+  return (
+    <Row align="center" style={sx.container}>
+      {item.map((uniqueToken, itemIndex) => (
+        <UniqueTokenCard
+          {...position.sizeAsObject(CardSize)}
+          item={uniqueToken}
+          key={uniqueToken.uniqueId}
+          onPress={handleItemPress}
+          style={{ marginLeft: itemIndex >= 1 ? CardMargin : 0 }}
+        />
+      ))}
+    </Row>
+  );
+}, arePropsEqual);
 
 UniqueTokenRow.propTypes = {
   item: PropTypes.array,
-  onPress: PropTypes.func,
-  onPressSend: PropTypes.func,
 };
 
 UniqueTokenRow.height = CardSize + CardMargin;

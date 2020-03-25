@@ -19,6 +19,7 @@ class Button : RCTView {
   @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5)
   @objc var enableHapticFeedback: Bool = true
   @objc var hapticType: String = "selection"
+  @objc var useLateHaptic: Bool = true
   @objc var minLongPressDuration: TimeInterval = 0.5 {
     didSet {
       if longPress != nil {
@@ -57,13 +58,15 @@ class Button : RCTView {
     animateTapStart(
       duration: duration,
       scale: scaleTo,
-      transformOrigin: transformOrigin
+      transformOrigin: transformOrigin,
+      useHaptic: useLateHaptic ? nil : hapticType
     )
     onPressStart([:])
   }
   
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration, useHaptic: enableHapticFeedback ? hapticType: nil)
+    let useHaptic = useLateHaptic && enableHapticFeedback ? hapticType : nil
+    animateTapEnd(duration: duration, useHaptic: useHaptic)
     onPress([:])
   }
   

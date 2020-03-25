@@ -23,11 +23,11 @@ const skeletonTransition = (
 const NoResultMessage = withNeverRerender(() => (
   <ColumnWithMargins
     {...position.centeredAsObject}
-    margin={10}
-    paddingBottom={CurrencySelectModalHeader.height + ExchangeSearch.height}
+    margin={3}
+    paddingBottom={CurrencySelectModalHeader.height + ExchangeSearch.height / 2}
   >
     <Centered>
-      <Emoji lineHeight="none" name="ghost" size="h1" />
+      <Emoji lineHeight="none" name="ghost" size={42} />
     </Centered>
     <Text
       color={colors.alpha(colors.blueGreyDark, 0.4)}

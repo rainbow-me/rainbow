@@ -11,6 +11,7 @@ import createNativeStackNavigator from 'react-native-screens/createNativeStackNa
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { ExchangeModalNavigator, Navigation } from '../../navigation';
 import { deviceUtils, sentryUtils } from '../../utils';
+import AddCashSheet from '../AddCashSheet';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from '../ProfileScreenWithData';
@@ -156,6 +157,9 @@ const setListener = listener => (appearListener = listener);
 
 const NativeStack = createNativeStackNavigator(
   {
+    AddCashSheet: function AddCashSheetWrapper(...props) {
+      return <AddCashSheet {...props} />;
+    },
     ImportSeedPhraseSheet: function ImportSeedPhraseSheetWrapper(...props) {
       return (
         <ImportSeedPhraseSheetWithData
@@ -181,6 +185,16 @@ const NativeStack = createNativeStackNavigator(
 
 const NativeStackFallback = createStackNavigator(
   {
+    AddCashSheet: {
+      navigationOptions: {
+        ...sheetPreset,
+        onTransitionStart: props => {
+          onTransitionStart(props);
+          sheetPreset.onTransitionStart(props);
+        },
+      },
+      screen: AddCashSheet,
+    },
     ImportSeedPhraseSheet: {
       navigationOptions: {
         ...sheetPreset,

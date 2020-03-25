@@ -45,7 +45,9 @@ const CoinRowInfo = ({
   const percentageChangeDisplay = formatPercentageString(percentChange);
   const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
   return (
-    <Container style={{ opacity: isHidden && isCoinListEdited ? 0.4 : 1 }}>
+    <Container
+      style={{ height: 59, opacity: isHidden && isCoinListEdited ? 0.4 : 1 }}
+    >
       <BalanceText
         style={
           isHidden && isCoinListEdited
