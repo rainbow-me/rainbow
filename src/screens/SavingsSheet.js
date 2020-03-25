@@ -16,7 +16,7 @@ import { Sheet, SheetActionButton } from '../components/sheet';
 import Divider from '../components/Divider';
 import {
   convertAmountToDepositDisplay,
-  convertAmountToSavingsEarningsDisplay,
+  convertAmountToNativeDisplay,
 } from '../helpers/utilities';
 import { useAccountSettings } from '../hooks';
 
@@ -39,9 +39,8 @@ const SavingsSheet = () => {
   const supplyRate = getParam('supplyRate');
 
   const balance = convertAmountToDepositDisplay(nativeValue, underlying);
-  const lifetimeAccruedInterest = convertAmountToSavingsEarningsDisplay(
+  const lifetimeAccruedInterest = convertAmountToNativeDisplay(
     lifetimeSupplyInterestAccruedNative,
-    underlying,
     nativeCurrency,
     1
   );
