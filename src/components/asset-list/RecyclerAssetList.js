@@ -563,7 +563,8 @@ class RecyclerAssetList extends Component {
             balancesHeight += CoinRow.height * (balances.data.length - 1);
             if (
               balances.data[balances.data.length - 1].smallBalancesContainer ||
-              balances.data[balances.data.length - 2].smallBalancesContainer
+              (balances.length > 1 &&
+                balances.data[balances.data.length - 2].smallBalancesContainer)
             ) {
               balancesHeight +=
                 CoinDivider.height +
@@ -657,7 +658,8 @@ class RecyclerAssetList extends Component {
         balancesHeight += CoinRow.height * (balances.data.length - 1);
         if (
           balances.data[balances.data.length - 1].smallBalancesContainer ||
-          balances.data[balances.data.length - 2].smallBalancesContainer
+          (balances.length > 1 &&
+            balances.data[balances.data.length - 2].smallBalancesContainer)
         ) {
           balancesHeight +=
             CoinDivider.height +
