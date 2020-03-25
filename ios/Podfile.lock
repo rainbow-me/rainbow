@@ -123,9 +123,9 @@ PODS:
     - nanopb/encode (= 0.3.9011)
   - nanopb/decode (0.3.9011)
   - nanopb/encode (0.3.9011)
-  - Permission-Camera (2.0.9):
+  - Permission-Camera (2.0.10):
     - RNPermissions
-  - Permission-FaceID (2.0.9):
+  - Permission-FaceID (2.0.10):
     - RNPermissions
   - Protobuf (3.11.4)
   - RCTRequired (0.62.0-rc.5)
@@ -293,13 +293,13 @@ PODS:
   - React-jsinspector (0.62.0-rc.5)
   - react-native-blur (0.8.0):
     - React
-  - react-native-camera (3.19.1):
+  - react-native-camera (3.21.0):
     - React
-    - react-native-camera/RCT (= 3.19.1)
-    - react-native-camera/RN (= 3.19.1)
-  - react-native-camera/RCT (3.19.1):
+    - react-native-camera/RCT (= 3.21.0)
+    - react-native-camera/RN (= 3.21.0)
+  - react-native-camera/RCT (3.21.0):
     - React
-  - react-native-camera/RN (3.19.1):
+  - react-native-camera/RN (3.21.0):
     - React
   - react-native-mail (4.1.0):
     - React
@@ -388,7 +388,7 @@ PODS:
     - React
   - RNCMaskedView (0.1.7):
     - React
-  - RNCPushNotificationIOS (1.0.7):
+  - RNCPushNotificationIOS (1.1.0):
     - React
   - RNDeviceInfo (5.3.1):
     - React
@@ -418,7 +418,7 @@ PODS:
     - React
   - RNOS (1.2.8):
     - React
-  - RNPermissions (2.0.9):
+  - RNPermissions (2.0.10):
     - React
   - RNReactNativeHapticFeedback (1.9.0):
     - React
@@ -721,8 +721,8 @@ SPEC CHECKSUMS:
   lottie-ios: 496ac5cea1bbf1a7bd1f1f472f3232eb1b8d744b
   lottie-react-native: 2a1a82bb326ae51331a5520de0cf706733c6db69
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
-  Permission-Camera: 8fe4753b02396489b11c5089e4f57bab7fe1ef42
-  Permission-FaceID: 29c3f213a033c24330a554a5dad7681d6e3698f8
+  Permission-Camera: a8f6007d17b02ed8a2d6bac1c37c2fd5df9b4e8a
+  Permission-FaceID: cb03a979336319d837a4e5e867306345297c5230
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
   RCTRequired: 8f1dd8582716f10ba3763029a8313146df2ae8de
   RCTTypeSafety: 0fba7626dcbaccf374f72bc3249e8e64396ad536
@@ -734,7 +734,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 7f96dd5e1264c67b2143e73af54f86abda99cde6
   React-jsinspector: a3017d13fbcb7f4c42dcbcd415b97135ac3f0f41
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: 9b410bc370c57513a6e7d5b20d516c86d5dae703
+  react-native-camera: 4e12e877b8fef60b0914a49c942a0f32479e5b50
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-netinfo: 73303369946c2487c600418961bfdc87748b832f
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
@@ -758,7 +758,7 @@ SPEC CHECKSUMS:
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 44395cb9c7c1523104c2b499eb426ef7aff82bca
   RNCMaskedView: 76c40a1d41c3e2535df09246a2b5487f04de0814
-  RNCPushNotificationIOS: eea954fa69537d4a8db898fe1b1a06e2b7e15841
+  RNCPushNotificationIOS: ec3e8c17cda6a92a0bb97a53ec5ecf5771d94d21
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNFastImage: 9b0c22643872bb7494c8d87bbbb66cc4c0d9e7a2
   RNFBApp: 7d4006751de8bb5cafa2e8d2e7d94ee250df81db
@@ -769,7 +769,7 @@ SPEC CHECKSUMS:
   RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
-  RNPermissions: 2f74237e97b08beda01e914301e12524ddddf5b8
+  RNPermissions: 1008d3511fee0e25739cf81c4af0d1b2248f1053
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
@@ -787,4 +787,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 4141760bf5d4d6e54d34d2b4341d84cf7ce4cc03
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.9.0
