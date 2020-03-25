@@ -77,11 +77,11 @@ const BalanceCoinRow = ({
         </Row>
       </ButtonPressAnimation>
     </View>
-  ) : isFirstCoinRow ? (
+  ) : (
     <FlexItem
       flex={1}
       style={{
-        justifyContent: 'flex-end',
+        justifyContent: isFirstCoinRow ? 'flex-end' : 'flex-start',
       }}
     >
       <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
@@ -106,30 +106,6 @@ const BalanceCoinRow = ({
       </ButtonPressAnimation>
       {isCoinListEdited ? <CoinCheckButton isAbsolute {...item} /> : null}
     </FlexItem>
-  ) : (
-    <>
-      <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
-        <Row>
-          <View left={isCoinListEdited ? 42 : 0} width={250}>
-            <CoinRow
-              onPress={onPress}
-              onPressSend={onPressSend}
-              {...item}
-              {...props}
-              bottomRowRender={BottomRow}
-              topRowRender={TopRow}
-            />
-          </View>
-          <View position="absolute" right={3}>
-            <CoinRowInfo
-              native={item.native}
-              nativeCurrencySymbol={nativeCurrencySymbol}
-            />
-          </View>
-        </Row>
-      </ButtonPressAnimation>
-      {isCoinListEdited ? <CoinCheckButton isAbsolute {...item} /> : null}
-    </>
   );
 
 BalanceCoinRow.propTypes = {
