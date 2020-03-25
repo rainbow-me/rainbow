@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
+import { convertAmountToBalanceDisplay } from '../../helpers/utilities';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
@@ -9,7 +10,6 @@ import BalanceText from './BalanceText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { APRPill } from '../savings';
-import { convertAmountToBalanceDisplay } from '../../helpers/utilities';
 
 const BottomRow = ({ lifetimeSupplyInterestAccrued, supplyRate, symbol }) => (
   <Fragment>
