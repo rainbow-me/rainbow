@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components/primitives';
 import { View } from 'react-native';
 import { compose } from 'recompact';
 import { CoinIcon } from '../coin-icon';
@@ -11,6 +12,38 @@ import withCoinListEdited from '../../hoc/withCoinListEdited';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;
+
+const Centered = styled.View`
+  align-items: center;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+`;
+
+const CircleOutline = styled.View`
+  border-color: ${colors.blueGreyDark};
+  border-radius: 11;
+  border-width: 1.5;
+  height: 22;
+  opacity: 0.15;
+  position: absolute;
+  width: 22;
+`;
+
+const CheckmarkBackground = styled.View`
+  background-color: ${colors.appleBlue};
+  border-radius: 11;
+  height: 22;
+  padding-top: 4.5;
+  padding-left: 4.5;
+  padding-right: 4.5;
+  padding-bottom: 4.5;
+  shadow-color: ${colors.appleBlue};
+  shadow-offset: {width: 0, height: 4};
+  shadow-opacity: 0.4;
+  shadow-radius: 12;
+  width: 22;
+`;
 
 const CoinCheckButton = ({
   isAbsolute,
@@ -48,46 +81,14 @@ const CoinCheckButton = ({
           setToggle(!toggle);
         }}
       >
-        <View
-          style={{
-            alignItems: 'center',
-            height: '100%',
-            justifyContent: 'center',
-            width: '100%',
-          }}
-        >
-          <View
-            style={{
-              borderColor: colors.blueGreyDarkTransparent,
-              borderRadius: 11,
-              borderWidth: 1.5,
-              height: 22,
-              opacity: 0.15,
-              position: 'absolute',
-              width: 22,
-            }}
-          />
+        <Centered>
+          <CircleOutline />
           <OpacityToggler isVisible={!toggle}>
-            <View
-              style={{
-                backgroundColor: colors.appleBlue,
-                borderRadius: 11,
-                height: 22,
-                padding: 4.5,
-                shadowColor: colors.appleBlue,
-                shadowOffset: {
-                  height: 4,
-                  width: 0,
-                },
-                shadowOpacity: 0.4,
-                shadowRadius: 12,
-                width: 22,
-              }}
-            >
+            <CheckmarkBackground>
               <Icon name="checkmark" color="white" />
-            </View>
+            </CheckmarkBackground>
           </OpacityToggler>
-        </View>
+        </Centered>
       </ButtonPressAnimation>
     </View>
   );

@@ -1,19 +1,32 @@
 import PropTypes from 'prop-types';
 import React, { useState, useCallback } from 'react';
 import FastImage from 'react-native-fast-image';
-import { View } from 'react-native';
-import { css } from 'styled-components/primitives';
+import styled, { css } from 'styled-components/primitives';
 import ReactCoinIcon, { FallbackIcon } from 'react-coin-icon';
 import { onlyUpdateForKeys } from 'recompact';
 import { ShadowStack } from '../shadow-stack';
 import { toChecksumAddress } from '../../handlers/web3';
 import { borders, colors, fonts } from '../../styles';
 import { Icon } from '../icons';
+
 const CoinIconSize = 40;
 
 const fallbackTextStyles = css`
   font-family: ${fonts.family.SFMono};
   margin-bottom: 1;
+`;
+
+const IndicatorIcon = styled.View`
+  align-items: center;
+  background-color: ${colors.darkerGrey};
+  border-radius: 10;
+  bottom: 3;
+  height: 20;
+  justify-content: center;
+  left: 14;
+  position: absolute;
+  width: 20;
+  z-index: 10;
 `;
 
 const CoinIconFallback = fallbackProps => {
@@ -78,26 +91,13 @@ const CoinIcon = enhance(
     showShadow ? (
       <>
         {(isPinned || isHidden) && isCoinListEdited ? (
-          <View
-            style={{
-              alignItems: 'center',
-              backgroundColor: colors.darkerGrey,
-              borderRadius: 10,
-              bottom: 3,
-              height: 20,
-              justifyContent: 'center',
-              left: 14,
-              position: 'absolute',
-              width: 20,
-              zIndex: 10,
-            }}
-          >
+          <IndicatorIcon>
             <Icon
               name={isPinned ? 'pin' : 'hidden'}
               size={20}
               color={colors.white}
             />
-          </View>
+          </IndicatorIcon>
         ) : null}
         <ShadowStack
           {...props}
