@@ -22,6 +22,7 @@ import { getAssets } from '../handlers/localstorage/accountLocal';
 import { dataUpdateAssets } from '../redux/data';
 import networkTypes from './networkTypes';
 import { ethereumUtils } from '../utils';
+import { setOpenSmallBalances } from '../redux/openStateSettings';
 
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
@@ -173,8 +174,13 @@ const withBalanceSection = (
     header: {
       contextMenuOptions:
         allAssets.length <= 5 &&
-        !balanceSectionData[balanceSectionData.length - 1]
-          .smallBalancesContainer
+        !(
+          balanceSectionData[balanceSectionData.length - 1]
+            .smallBalancesContainer ||
+          (balanceSectionData.length > 1 &&
+            balanceSectionData[balanceSectionData.length - 2]
+              .smallBalancesContainer)
+        )
           ? {
               cancelButtonIndex: 0,
               dynamicOptions: () => {
@@ -203,6 +209,7 @@ const withBalanceSection = (
                     store.dispatch(setPinnedCoins());
                   } else if (index === 2) {
                     store.dispatch(setHiddenCoins());
+                    store.dispatch(setOpenSmallBalances(true));
                   }
                   if (index === 2 || index === 1) {
                     const assets = await getAssets(
@@ -210,13 +217,16 @@ const withBalanceSection = (
                       store.getState().settings.network
                     );
                     store.dispatch(dataUpdateAssets(assets));
-                    LayoutAnimation.configureNext(
-                      LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-                    );
                   }
+                  LayoutAnimation.configureNext(
+                    LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+                  );
                 } else {
                   if (index === 1) {
                     store.dispatch(setIsCoinListEdited(!isCoinListEdited));
+                    LayoutAnimation.configureNext(
+                      LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+                    );
                   }
                 }
               },
