@@ -21,9 +21,7 @@ import CoinDividerButtonLabel from './CoinDividerButtonLabel';
 import { compose } from 'recompact';
 import { withCoinCurrentAction } from '../../hoc';
 import withCoinListEdited from '../../hoc/withCoinListEdited';
-import { getAssets } from '../../handlers/localstorage/accountLocal';
-import { dataUpdateAssets } from '../../redux/data';
-import store from '../../redux/store';
+import CoinDividerEditButton from './CoinDividerEditButton';
 
 const {
   block,
@@ -134,109 +132,21 @@ class CoinDivider extends PureComponent {
         <Highlight highlight={isCoinDivider} />
         <Row>
           <Row style={{ position: 'absolute' }}>
-            <OpacityToggler
-              endingOpacity={1}
-              startingOpacity={0}
+            <CoinDividerEditButton
+              onPress={onPin}
               isVisible={this.state.isCurrentlyCoinListEdited}
-            >
-              <ButtonPressAnimation
-                onPress={async () => {
-                  await onPin();
-                  const assets = await getAssets(
-                    store.getState().settings.accountAddress,
-                    store.getState().settings.network
-                  );
-                  store.dispatch(dataUpdateAssets(assets));
-                  LayoutAnimation.configureNext(
-                    LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-                  );
-                }}
-              >
-                <View
-                  style={{
-                    backgroundColor:
-                      currentAction !== 'none'
-                        ? colors.appleBlue
-                        : colors.lightBlueGrey,
-                    borderRadius: 15,
-                    height: 30,
-                    justifyContent: 'center',
-                    paddingHorizontal: 10,
-                    shadowColor:
-                      currentAction !== 'none'
-                        ? colors.appleBlue
-                        : colors.white,
-                    shadowOffset: { height: 4, width: 0 },
-                    shadowOpacity: 0.4,
-                    shadowRadius: 12,
-                  }}
-                >
-                  <Text
-                    color={currentAction !== 'none' ? 'white' : 'blueGreyDark'}
-                    style={{
-                      opacity: currentAction !== 'none' ? 1 : 0.2,
-                    }}
-                    letterSpacing="tighter"
-                    size="lmedium"
-                    weight="semibold"
-                  >
-                    {currentAction === 'unpin' ? 'Unpin' : 'Pin'}
-                  </Text>
-                </View>
-              </ButtonPressAnimation>
-            </OpacityToggler>
-            <OpacityToggler
-              endingOpacity={1}
-              startingOpacity={0}
+              isActive={currentAction !== 'none'}
+              text={currentAction === 'unpin' ? 'Unpin' : 'Pin'}
+              shouldRelaodList
+              style={{ marginRight: 10 }}
+            />
+            <CoinDividerEditButton
+              onPress={onHide}
               isVisible={this.state.isCurrentlyCoinListEdited}
-            >
-              <ButtonPressAnimation
-                onPress={async () => {
-                  await onHide();
-                  const assets = await getAssets(
-                    store.getState().settings.accountAddress,
-                    store.getState().settings.network
-                  );
-                  store.dispatch(dataUpdateAssets(assets));
-                  LayoutAnimation.configureNext(
-                    LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-                  );
-                }}
-              >
-                <View
-                  style={{
-                    backgroundColor:
-                      currentAction !== 'none'
-                        ? colors.appleBlue
-                        : colors.lightBlueGrey,
-                    borderRadius: 15,
-                    height: 30,
-                    justifyContent: 'center',
-                    marginLeft: 10,
-                    paddingHorizontal: 10,
-                    shadowColor:
-                      currentAction !== 'none'
-                        ? colors.appleBlue
-                        : colors.white,
-                    shadowOffset: { height: 4, width: 0 },
-                    shadowOpacity: 0.4,
-                    shadowRadius: 12,
-                  }}
-                >
-                  <Text
-                    color={currentAction !== 'none' ? 'white' : 'blueGreyDark'}
-                    style={{
-                      opacity: currentAction !== 'none' ? 1 : 0.2,
-                    }}
-                    letterSpacing="tighter"
-                    size="lmedium"
-                    weight="semibold"
-                  >
-                    {currentAction === 'unhide' ? 'Unhide' : 'Hide'}
-                  </Text>
-                </View>
-              </ButtonPressAnimation>
-            </OpacityToggler>
+              isActive={currentAction !== 'none'}
+              text={currentAction === 'unhide' ? 'Unhide' : 'Hide'}
+              shouldRelaodList
+            />
           </Row>
           <View
             pointerEvents={
@@ -336,55 +246,24 @@ class CoinDivider extends PureComponent {
               openSmallBalances || assetsAmount === 0 ? 'auto' : 'none'
             }
           >
-            <OpacityToggler
-              endingOpacity={1}
-              startingOpacity={0}
-              isVisible={openSmallBalances || assetsAmount === 0}
+            <CoinDividerEditButton
               animationNode={this._node}
-            >
-              <ButtonPressAnimation
-                onPress={() => {
-                  this.setState(prevState => {
-                    onEdit(!prevState.isCurrentlyCoinListEdited);
-                    LayoutAnimation.configureNext(
-                      LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-                    );
-                    return {
-                      isCurrentlyCoinListEdited: !prevState.isCurrentlyCoinListEdited,
-                    };
-                  });
-                }}
-              >
-                <View
-                  style={{
-                    backgroundColor: isCoinListEdited
-                      ? colors.appleBlue
-                      : colors.lightBlueGrey,
-                    borderRadius: 15,
-                    height: 30,
-                    justifyContent: 'center',
-                    paddingHorizontal: 10,
-                    shadowColor: isCoinListEdited
-                      ? colors.appleBlue
-                      : colors.white,
-                    shadowOffset: { height: 4, width: 0 },
-                    shadowOpacity: 0.4,
-                    shadowRadius: 12,
-                  }}
-                >
-                  <Text
-                    color={
-                      isCoinListEdited ? 'white' : 'blueGreyDarkTransparent'
-                    }
-                    letterSpacing="tighter"
-                    size="lmedium"
-                    weight="semibold"
-                  >
-                    {isCoinListEdited ? 'Done' : 'Edit'}
-                  </Text>
-                </View>
-              </ButtonPressAnimation>
-            </OpacityToggler>
+              onPress={() => {
+                this.setState(prevState => {
+                  onEdit(!prevState.isCurrentlyCoinListEdited);
+                  LayoutAnimation.configureNext(
+                    LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+                  );
+                  return {
+                    isCurrentlyCoinListEdited: !prevState.isCurrentlyCoinListEdited,
+                  };
+                });
+              }}
+              isVisible={openSmallBalances || assetsAmount === 0}
+              isActive={isCoinListEdited}
+              text={isCoinListEdited ? 'Done' : 'Edit'}
+              textOpacityAlwaysOn
+            />
           </View>
         </View>
       </Row>
