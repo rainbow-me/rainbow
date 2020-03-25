@@ -117,7 +117,7 @@ const withBalanceSection = (
   nativeCurrency,
   showShitcoins
 ) => {
-  allAssets.splice(3);
+  allAssets.splice(2);
   let balanceSectionData = buildCoinsList(allAssets);
   const isLoadingBalances = !isWalletEthZero && isBalancesSectionEmpty;
   if (isLoadingBalances) {
@@ -133,33 +133,35 @@ const withBalanceSection = (
         !balanceSectionData[balanceSectionData.length - 1]
           .smallBalancesContainer
           ? {
-              cancelButtonIndex: 1,
+              cancelButtonIndex: 0,
               dynamicOptions: () => {
                 const currentAction = store.getState().editOptions
                   .currentAction;
-                return store.getState().editOptions.isCoinListEdited
+                const isCoinListEdited = store.getState().editOptions
+                  .isCoinListEdited;
+                return isCoinListEdited && currentAction !== 'none'
                   ? [
-                      currentAction !== 'unpin' ? 'Pin' : 'Unpin',
                       'Cancel',
+                      currentAction !== 'unpin' ? 'Pin' : 'Unpin',
                       'Hide',
                       'Finish',
                     ]
-                  : ['Edit', 'Cancel'];
+                  : ['Cancel', isCoinListEdited ? 'Finish' : 'Edit'];
               },
               onPressActionSheet: async index => {
-                if (store.getState().editOptions.isCoinListEdited) {
+                const currentAction = store.getState().editOptions
+                  .currentAction;
+                const isCoinListEdited = store.getState().editOptions
+                  .isCoinListEdited;
+                if (isCoinListEdited && currentAction !== 'none') {
                   if (index === 3) {
-                    store.dispatch(
-                      setIsCoinListEdited(
-                        !store.getState().editOptions.isCoinListEdited
-                      )
-                    );
-                  } else if (index === 0) {
+                    store.dispatch(setIsCoinListEdited(!isCoinListEdited));
+                  } else if (index === 1) {
                     store.dispatch(setPinnedCoins());
                   } else if (index === 2) {
                     store.dispatch(setHiddenCoins());
                   }
-                  if (index === 2 || index === 0) {
+                  if (index === 2 || index === 1) {
                     const assets = await getAssets(
                       store.getState().settings.accountAddress,
                       store.getState().settings.network
@@ -170,12 +172,8 @@ const withBalanceSection = (
                     );
                   }
                 } else {
-                  if (index === 0) {
-                    store.dispatch(
-                      setIsCoinListEdited(
-                        !store.getState().editOptions.isCoinListEdited
-                      )
-                    );
+                  if (index === 1) {
+                    store.dispatch(setIsCoinListEdited(!isCoinListEdited));
                   }
                 }
               },

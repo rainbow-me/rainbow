@@ -39,9 +39,11 @@ class ContextMenu extends PureComponent {
   };
 
   showActionSheet = () => {
-    if (this.props.isActionSheetOpen) return;
-    this.props.setIsActionSheetOpen(true);
-    this.actionSheetRef.show();
+    setTimeout(() => {
+      if (this.props.isActionSheetOpen) return;
+      this.props.setIsActionSheetOpen(true);
+      this.actionSheetRef.show();
+    }, 40);
   };
 
   handlePressActionSheet = buttonIndex => {
@@ -76,7 +78,9 @@ class ContextMenu extends PureComponent {
         <ActionSheet
           {...pick(this.props, ActionSheetProps)}
           cancelButtonIndex={
-            this.props.cancelButtonIndex || this.props.options.length - 1
+            Number.isInteger(this.props.cancelButtonIndex)
+              ? this.props.cancelButtonIndex
+              : this.props.options.length - 1
           }
           options={funcOptions ? funcOptions : this.props.options}
           onPress={this.handlePressActionSheet}
