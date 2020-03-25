@@ -117,11 +117,23 @@ const withBalanceSection = (
   let totalSavingsValue = 0;
   if (priceOfEther) {
     assets = map(savings, asset => {
-      const { ethPrice } = asset;
-      const nativeValue = ethPrice ? priceOfEther * ethPrice : 0;
+      const {
+        supplyBalanceUnderlying,
+        underlyingPrice,
+        lifetimeSupplyInterestAccrued,
+      } = asset;
+      const nativeValue = supplyBalanceUnderlying
+        ? supplyBalanceUnderlying * underlyingPrice * priceOfEther
+        : 0;
+
       totalSavingsValue += nativeValue;
+      const lifetimeSupplyInterestAccruedNative = lifetimeSupplyInterestAccrued
+        ? lifetimeSupplyInterestAccrued * underlyingPrice * priceOfEther
+        : 0;
+
       return {
         ...asset,
+        lifetimeSupplyInterestAccruedNative,
         nativeValue,
       };
     });

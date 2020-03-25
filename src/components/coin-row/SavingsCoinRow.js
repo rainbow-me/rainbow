@@ -9,6 +9,7 @@ import BalanceText from './BalanceText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { APRPill } from '../savings';
+import { convertAmountToBalanceDisplay } from '../../helpers/utilities';
 
 const BottomRow = ({ lifetimeSupplyInterestAccrued, supplyRate, symbol }) => (
   <Fragment>
@@ -16,7 +17,13 @@ const BottomRow = ({ lifetimeSupplyInterestAccrued, supplyRate, symbol }) => (
     <RowWithMargins align="center" margin={4}>
       <Icon name="plusCircled" size={15} color={colors.green} />
       <Text color={colors.green} size="smedium" weight="semibold">
-        {parseFloat(lifetimeSupplyInterestAccrued).toFixed(3)} {symbol}
+        {convertAmountToBalanceDisplay(
+          lifetimeSupplyInterestAccrued,
+          {
+            symbol,
+          },
+          1
+        )}
       </Text>
     </RowWithMargins>
   </Fragment>
@@ -37,7 +44,7 @@ const TopRow = ({ name, supplyBalanceUnderlying, symbol }) => (
     </FlexItem>
     <FlexItem flex={0}>
       <BalanceText>
-        {`${parseFloat(supplyBalanceUnderlying).toFixed(6)} ${symbol}`}
+        {convertAmountToBalanceDisplay(supplyBalanceUnderlying, { symbol })}
       </BalanceText>
     </FlexItem>
   </Row>

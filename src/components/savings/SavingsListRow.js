@@ -72,6 +72,7 @@ const renderAnimatedNumber = (value, steps, symbol) => {
 const SavingsListRow = ({
   cTokenBalance,
   lifetimeSupplyInterestAccrued,
+  lifetimeSupplyInterestAccruedNative,
   nativeValue,
   supplyBalanceUnderlying,
   supplyRate,
@@ -89,6 +90,7 @@ const SavingsListRow = ({
       cTokenBalance,
       isEmpty: !supplyBalanceUnderlying,
       lifetimeSupplyInterestAccrued,
+      lifetimeSupplyInterestAccruedNative,
       nativeValue,
       supplyBalanceUnderlying,
       supplyRate,
@@ -98,6 +100,7 @@ const SavingsListRow = ({
   }, [
     cTokenBalance,
     lifetimeSupplyInterestAccrued,
+    lifetimeSupplyInterestAccruedNative,
     nativeValue,
     navigate,
     supplyBalanceUnderlying,
