@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  UIImageViewWithPersistentAnimations.swift
 //  Rainbow
 //
 //  Created by Bruno Andres Barbieri on 3/25/20.
