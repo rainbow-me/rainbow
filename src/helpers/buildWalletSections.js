@@ -117,7 +117,6 @@ const withBalanceSection = (
   nativeCurrency,
   showShitcoins
 ) => {
-  allAssets.splice(2);
   let balanceSectionData = buildCoinsList(allAssets);
   const isLoadingBalances = !isWalletEthZero && isBalancesSectionEmpty;
   if (isLoadingBalances) {
@@ -129,7 +128,7 @@ const withBalanceSection = (
     data: balanceSectionData,
     header: {
       contextMenuOptions:
-        allAssets.length < 5 &&
+        allAssets.length <= 5 &&
         !balanceSectionData[balanceSectionData.length - 1]
           .smallBalancesContainer
           ? {
