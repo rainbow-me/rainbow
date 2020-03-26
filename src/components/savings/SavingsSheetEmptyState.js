@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
+import { calculateAPY } from '../../helpers/savings';
 import { colors, fonts, padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import Divider from '../Divider';
@@ -16,7 +17,7 @@ const APRHeadingTextStyle = {
 const APRHeadingText = p => <Text {...p} style={APRHeadingTextStyle} />;
 
 const SavingsSheetEmptyState = ({ supplyRate: baseSupplyRate, underlying }) => {
-  const supplyRate = `${(baseSupplyRate * 100).toFixed(1)}%`;
+  const apy = useMemo(() => calculateAPY(baseSupplyRate), [baseSupplyRate]);
   const { navigate } = useNavigation();
 
   return (
@@ -29,7 +30,7 @@ const SavingsSheetEmptyState = ({ supplyRate: baseSupplyRate, underlying }) => {
           renderer={Text}
           style={APRHeadingTextStyle}
         >
-          {supplyRate}
+          {apy}%
         </GradientText>
         <APRHeadingText> on your dollars</APRHeadingText>
       </Centered>
