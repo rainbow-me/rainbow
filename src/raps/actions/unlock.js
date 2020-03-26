@@ -9,8 +9,7 @@ const NOOP = () => undefined;
 
 const unlock = async (wallet, currentRap, index, parameters) => {
   const { dispatch } = store;
-  const { assetToUnlock, contractAddress } = parameters;
-  const { accountAddress } = store.getState().settings;
+  const { accountAddress, assetToUnlock, contractAddress } = parameters;
   console.log(
     '[unlock] begin unlock rap for',
     assetToUnlock,

@@ -20,10 +20,15 @@ const SAVINGS_ETH_DEPOSIT_GAS_LIMIT = 200000;
 
 const depositCompound = async (wallet, currentRap, index, parameters) => {
   console.log('[deposit]');
-  const { inputAmount, inputCurrency, selectedGasPrice } = parameters;
+  const {
+    accountAddress,
+    inputAmount,
+    inputCurrency,
+    network,
+    selectedGasPrice,
+  } = parameters;
   const { dispatch } = store;
   const { gasPrices } = store.getState().gas;
-  const { accountAddress, network } = store.getState().settings;
   const rawInputAmount = convertAmountToRawAmount(
     inputAmount,
     inputCurrency.decimals

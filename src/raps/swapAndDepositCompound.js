@@ -65,8 +65,10 @@ const createSwapAndDepositCompoundRap = ({
   // create a deposit rap
   console.log('[swap and deposit] making deposit func');
   const deposit = createNewAction(RapActionTypes.depositCompound, {
+    accountAddress,
     inputAmount: requiresSwap ? outputAmount : inputAmount,
     inputCurrency: tokenToDeposit,
+    network,
     selectedGasPrice,
   });
   actions = concat(actions, deposit);
