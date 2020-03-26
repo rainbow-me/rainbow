@@ -3,15 +3,18 @@ import { rapsAddOrUpdate } from '../redux/raps';
 import { createNewAction, createNewRap, RapActionTypes } from './common';
 
 const createUnlockAndSwapRap = ({
-  inputCurrency,
-  outputCurrency,
-  inputAmount,
-  outputAmount,
-  selectedGasPrice,
-  inputAsExactAmount,
   callback,
+  inputAmount,
+  inputAsExactAmount,
+  inputCurrency,
+  inputReserve,
+  outputAmount,
+  outputCurrency,
+  outputReserve,
+  selectedGasPrice,
 }) => {
   // create unlock rap
+  const { accountAddress, chainId } = store.getState().settings;
   const unlock = createNewAction(RapActionTypes.unlock, {
     assetToUnlock: inputCurrency,
     contractAddress: inputCurrency.exchangeAddress,
@@ -19,11 +22,15 @@ const createUnlockAndSwapRap = ({
 
   // create a swap rap
   const swap = createNewAction(RapActionTypes.swap, {
+    accountAddress,
+    chainId,
     inputAmount,
     inputAsExactAmount,
     inputCurrency,
+    inputReserve,
     outputAmount,
     outputCurrency,
+    outputReserve,
     selectedGasPrice,
   });
 
