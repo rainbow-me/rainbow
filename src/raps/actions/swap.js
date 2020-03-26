@@ -75,7 +75,8 @@ const swap = async (wallet, currentRap, index, parameters) => {
 
   try {
     console.log('[swap] waiting for the swap to go thru');
-    await swap.wait();
+    const receipt = await wallet.provider.waitForTransaction(swap.hash);
+    console.log('[swap] receipt:', receipt);
     // update rap for confirmed status
     currentRap.actions[index].transaction.confirmed = true;
     dispatch(rapsAddOrUpdate(currentRap.id, currentRap));

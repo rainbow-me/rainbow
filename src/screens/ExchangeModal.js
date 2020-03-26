@@ -9,7 +9,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, TextInput } from 'react-native';
+import { InteractionManager, TextInput, Platform } from 'react-native';
+import BackgroundTimer from 'react-native-background-timer';
 import Animated from 'react-native-reanimated';
 import { useIsFocused } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
@@ -604,9 +605,39 @@ const ExchangeModal = ({
   };
 
   const handleSubmit = async () => {
+    if (Platform.OS === 'ios') {
+      try {
+        console.log('[BG EXEC]: starting background execution');
+        BackgroundTimer.start();
+        await doSubmit();
+      } catch (e) {
+        console.log('[BG] HandleSubmit blew up');
+      } finally {
+        BackgroundTimer.stop();
+        console.log('[BG EXEC]: finished background execution');
+      }
+    } else {
+      let timeoutId;
+      try {
+        console.log('[BG EXEC]: starting background execution');
+        timeoutId = BackgroundTimer.setTimeout(async () => {
+          await doSubmit();
+          BackgroundTimer.clearTimeout(timeoutId);
+          console.log('[BG EXEC]: finished background execution');
+        }, 1);
+      } catch (e) {
+        console.log('[BG] HandleSubmit blew up');
+        timeoutId && BackgroundTimer.clearTimeout(timeoutId);
+        console.log('[BG EXEC]: finished background execution');
+      }
+    }
+  };
+
+  const doSubmit = async () => {
     setIsAuthorizing(true);
     try {
       const wallet = await loadWallet();
+
       setIsAuthorizing(false);
       const callback = () => {
         navigation.setParams({ focused: false });
@@ -623,10 +654,12 @@ const ExchangeModal = ({
         selectedGasPrice: null,
       });
       console.log('[exchange - handle submit] rap', rap);
-      executeRap(wallet, rap);
+      await executeRap(wallet, rap);
       console.log('[exchange - handle submit] executed rap!');
+      BackgroundTimer.stopBackgroundTimer();
     } catch (error) {
       setIsAuthorizing(false);
+      BackgroundTimer.stopBackgroundTimer();
       console.log('[exchange - handle submit] error submitting swap', error);
       navigation.setParams({ focused: false });
       navigation.navigate('WalletScreen');
