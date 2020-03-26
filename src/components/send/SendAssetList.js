@@ -36,12 +36,12 @@ class SendAssetList extends React.Component {
     super(args);
 
     this.data = this.props.allAssets;
-    if (this.props.savings) {
+    if (this.props.savings && this.props.savings.length > 0) {
       this.data = this.data.concat([
         { data: this.props.savings, name: 'Savings' },
       ]);
     }
-    if (this.props.uniqueTokens) {
+    if (this.props.uniqueTokens && this.props.uniqueTokens.length > 0) {
       this.data = this.data.concat(this.props.uniqueTokens);
     }
     this.state = {
