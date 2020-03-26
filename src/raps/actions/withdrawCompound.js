@@ -21,10 +21,16 @@ const SAVINGS_ERC20_WITHDRAW_GAS_LIMIT = 500000;
 
 const withdrawCompound = async (wallet, currentRap, index, parameters) => {
   console.log('[withdraw]');
-  const { inputAmount, inputCurrency, isMax, selectedGasPrice } = parameters;
+  const {
+    accountAddress,
+    inputAmount,
+    inputCurrency,
+    isMax,
+    network,
+    selectedGasPrice,
+  } = parameters;
   const { dispatch } = store;
   const { gasPrices } = store.getState().gas;
-  const { accountAddress, network } = store.getState().settings;
   const rawInputAmount = convertAmountToRawAmount(
     inputAmount,
     isMax ? CTOKEN_DECIMALS : inputCurrency.decimals

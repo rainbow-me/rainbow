@@ -14,17 +14,19 @@ const NOOP = () => undefined;
 const swap = async (wallet, currentRap, index, parameters) => {
   console.log('[swap] swap on uniswap!');
   const {
-    inputCurrency,
-    outputCurrency,
+    accountAddress,
+    chainId,
     inputAmount,
-    outputAmount,
-    selectedGasPrice = null,
     inputAsExactAmount,
+    inputCurrency,
+    inputReserve,
+    outputAmount,
+    outputCurrency,
+    outputReserve,
+    selectedGasPrice = null,
   } = parameters;
   const { dispatch } = store;
   const { gasPrices } = store.getState().gas;
-  const { accountAddress, chainId } = store.getState().settings;
-  const { inputReserve, outputReserve } = store.getState().uniswap;
   console.log('[swap] calculating trade details');
 
   // Get Trade Details
