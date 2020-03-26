@@ -21,17 +21,23 @@ import {
   SendTransactionSpeed,
 } from '../components/send';
 import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
+import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   formatInputDecimals,
 } from '../helpers/utilities';
 import { checkIsValidAddress } from '../helpers/validators';
-import { usePrevious } from '../hooks';
+import {
+  useAccountAssets,
+  useAccountSettings,
+  usePrevious,
+  useRefreshAccountData,
+  useSendableUniqueTokens,
+} from '../hooks';
 import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
 import { deviceUtils, ethereumUtils, gasUtils } from '../utils';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 
 const sheetHeight = deviceUtils.dimensions.height - 10;
 
@@ -55,11 +61,8 @@ const SheetContainer = isNativeStackAvailable
     `;
 
 const SendSheet = ({
-  accountAddress,
-  allAssets,
   contacts,
   dataAddNewTransaction,
-  fetchData,
   gasLimit,
   gasPrices,
   gasPricesStartPolling,
@@ -68,16 +71,22 @@ const SendSheet = ({
   gasUpdateGasPriceOption,
   gasUpdateTxFee,
   isSufficientGas,
-  nativeCurrency,
-  nativeCurrencySymbol,
   removeContact,
   selectedGasPrice,
-  sendableUniqueTokens,
   setAppearListener,
   sortedContacts,
   txFees,
   ...props
 }) => {
+  const { allAssets } = useAccountAssets();
+  const { sendableUniqueTokens } = useSendableUniqueTokens();
+  const fetchData = useRefreshAccountData();
+  const {
+    accountAddress,
+    nativeCurrency,
+    nativeCurrencySymbol,
+  } = useAccountSettings();
+
   const { navigate } = useNavigation();
   const [amountDetails, setAmountDetails] = useState({
     assetAmount: '',
@@ -153,7 +162,7 @@ const SendSheet = ({
         });
       } else {
         setSelected(newSelected);
-        sendUpdateAssetAmount(amountDetails.assetAmount);
+        sendUpdateAssetAmount('');
       }
     },
     [amountDetails.assetAmount, sendUpdateAssetAmount]
@@ -321,7 +330,7 @@ const SendSheet = ({
   }, [gasUpdateDefaultGasLimit]);
 
   useEffect(() => {
-    if (isValidAddress) {
+    if (isValidAddress && showAssetList) {
       Keyboard.dismiss();
     }
   }, [isValidAddress]);
@@ -446,21 +455,15 @@ const SendSheet = ({
 };
 
 SendSheet.propTypes = {
-  accountAddress: PropTypes.string.isRequired,
-  allAssets: PropTypes.array,
   dataAddNewTransaction: PropTypes.func.isRequired,
-  fetchData: PropTypes.func.isRequired,
   gasLimit: PropTypes.number,
   gasPrices: PropTypes.object,
   gasUpdateDefaultGasLimit: PropTypes.func.isRequired,
   gasUpdateGasPriceOption: PropTypes.func.isRequired,
   gasUpdateTxFee: PropTypes.func.isRequired,
   isSufficientGas: PropTypes.bool.isRequired,
-  nativeCurrency: PropTypes.string.isRequired,
-  nativeCurrencySymbol: PropTypes.string.isRequired,
   removeContact: PropTypes.func.isRequired,
   selectedGasPrice: PropTypes.object,
-  sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
   setAppearListener: PropTypes.func,
   sortedContacts: PropTypes.array,
   txFees: PropTypes.object.isRequired,

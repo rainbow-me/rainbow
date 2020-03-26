@@ -7,6 +7,7 @@ import { withNavigation } from 'react-navigation';
 import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
+import { withAccountSettings } from '../../hoc';
 import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
@@ -17,7 +18,6 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
-import { withAccountSettings } from '../../hoc';
 
 const containerStyles = css`
   padding-left: 19;
@@ -27,9 +27,24 @@ const rowRenderPropTypes = {
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
 };
 
+const getDisplayAction = (type, name) => {
+  switch (type) {
+    case TransactionTypes.deposit:
+      return `Deposited ${name}`;
+    case TransactionTypes.withdraw:
+      return `Withdrew ${name}`;
+    default:
+      return name;
+  }
+};
+
 const BottomRow = ({ name, native, status, type }) => {
-  const isReceived = status === TransactionStatusTypes.received;
+  const isFailed = status === TransactionStatusTypes.failed;
+  const isReceived =
+    status === TransactionStatusTypes.received ||
+    status === TransactionStatusTypes.purchased;
   const isSent = status === TransactionStatusTypes.sent;
+
   const isOutgoingSwap =
     status === TransactionStatusTypes.sent && type === TransactionTypes.trade;
   const isIncomingSwap =
@@ -47,14 +62,14 @@ const BottomRow = ({ name, native, status, type }) => {
 
   const nativeDisplay = get(native, 'display');
   const balanceText = nativeDisplay
-    ? compact([isSent ? '-' : null, nativeDisplay]).join(' ')
+    ? compact([isFailed || isSent ? '-' : null, nativeDisplay]).join(' ')
     : '';
 
   return (
     <Row align="center" justify="space-between">
       <FlexItem flex={1}>
-        <CoinName color={coinNameColor} letterSpacing="roundedMedium">
-          {name}
+        <CoinName color={coinNameColor}>
+          {getDisplayAction(type, name)}
         </CoinName>
       </FlexItem>
       <FlexItem flex={0}>

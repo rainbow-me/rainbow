@@ -10,39 +10,29 @@ import { borders, colors, fonts } from '../../styles';
 const CoinIconSize = 40;
 
 const fallbackTextStyles = css`
-  font-family: ${fonts.family.SFMono};
+  font-family: ${fonts.family.SFProRounded};
+  letter-spacing: ${fonts.letterSpacing.roundedTight};
   margin-bottom: 1;
+  text-align: center;
 `;
 
 const CoinIconFallback = fallbackProps => {
   const { height, width, address, symbol } = fallbackProps;
   const [remoteIconUrl, setRemoteIconUrl] = useState(null);
-  const checkIfRemoteIconIsAvailable = useCallback(async () => {
-    try {
+  const [iconNotAvailable, setIconNotAvailable] = useState(false);
+  const loadRemoteIcon = useCallback(async () => {
+    if (address) {
       const checksummedAddress = toChecksumAddress(address);
       const potentialIconUrl = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${checksummedAddress}/logo.png`;
-      const response = await fetch(potentialIconUrl);
-      if (response.status >= 400) {
-        setRemoteIconUrl(false);
-      } else {
-        setRemoteIconUrl(potentialIconUrl);
-      }
-    } catch (e) {
-      setRemoteIconUrl(false);
+      setRemoteIconUrl(potentialIconUrl);
     }
   }, [address]);
 
-  checkIfRemoteIconIsAvailable();
+  if (!iconNotAvailable) {
+    loadRemoteIcon();
+  }
 
-  if (remoteIconUrl) {
-    return (
-      <FastImage
-        {...fallbackProps}
-        style={{ height, width }}
-        source={{ uri: remoteIconUrl }}
-      />
-    );
-  } else {
+  if (iconNotAvailable) {
     return (
       <FallbackIcon
         {...fallbackProps}
@@ -50,7 +40,19 @@ const CoinIconFallback = fallbackProps => {
         symbol={symbol || ''}
       />
     );
+  } else if (remoteIconUrl) {
+    return (
+      <FastImage
+        {...fallbackProps}
+        style={{ height, width }}
+        source={{ uri: remoteIconUrl }}
+        onError={() => {
+          setIconNotAvailable(true);
+        }}
+      />
+    );
   }
+  return null;
 };
 
 const enhance = onlyUpdateForKeys(['bgColor', 'symbol', 'address']);

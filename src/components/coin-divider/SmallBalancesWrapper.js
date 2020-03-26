@@ -31,15 +31,15 @@ class SmallBalancesWrapper extends PureComponent {
           onPress={this.handlePress}
           openSmallBalances={openSmallBalances}
         />
-        <OpacityToggler
-          endingOpacity={1}
-          isVisible={openSmallBalances}
-          startingOpacity={0}
-        >
-          <View pointerEvents={openSmallBalances ? 'auto' : 'none'}>
+        <View pointerEvents={openSmallBalances ? 'auto' : 'none'}>
+          <OpacityToggler
+            endingOpacity={1}
+            isVisible={openSmallBalances}
+            startingOpacity={0}
+          >
             {assets}
-          </View>
-        </OpacityToggler>
+          </OpacityToggler>
+        </View>
       </Fragment>
     );
   };

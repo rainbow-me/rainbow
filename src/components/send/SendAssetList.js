@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
+import { onlyUpdateForKeys } from 'recompact';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
 import { CollectiblesSendRow, SendCoinRow } from '../coin-row';
@@ -95,19 +95,9 @@ class SendAssetList extends React.Component {
     this._renderRow = this._renderRow.bind(this);
   }
 
-  enhanceRenderItem = compose(
-    withHandlers({
-      onPress: itemInfo => () => {
-        return this.props.onSelectAsset(
-          itemInfo.item ? itemInfo.item : itemInfo
-        );
-      },
-    })
-  );
-
-  TokenItem = React.memo(this.enhanceRenderItem(SendCoinRow));
-
-  UniqueTokenItem = React.memo(this.enhanceRenderItem(CollectiblesSendRow));
+  onItemPress = itemInfo => {
+    return this.props.onSelectAsset(itemInfo.item ? itemInfo.item : itemInfo);
+  };
 
   rlv = React.createRef();
 
@@ -164,32 +154,51 @@ class SendAssetList extends React.Component {
     const items = collectibles.map(collectible => {
       const newItem = {};
       newItem.item = collectible;
-      return <this.UniqueTokenItem key={collectible.id} {...newItem} />;
+      const onPress = () => {
+        this.props.onSelectAsset(collectible);
+      };
+      return (
+        <CollectiblesSendRow
+          key={collectible.id}
+          {...newItem}
+          onPress={onPress}
+        />
+      );
     });
     return items;
   };
 
-  balancesRenderItem = item => <this.TokenItem {...item} />;
+  balancesRenderItem = item => {
+    const onPress = () => {
+      this.props.onSelectAsset(item);
+    };
+    return <SendCoinRow {...item} onPress={onPress} />;
+  };
 
-  balancesRenderLastItem = item => (
-    <Fragment>
-      <this.TokenItem {...item} />
-      <Divider />
-    </Fragment>
-  );
+  balancesRenderLastItem = item => {
+    const onPress = () => {
+      this.props.onSelectAsset(item);
+    };
+    return (
+      <Fragment>
+        <SendCoinRow {...item} onPress={onPress} />
+        <Divider />
+      </Fragment>
+    );
+  };
 
   collectiblesRenderItem = item => {
     return (
       <View>
         <TokenFamilyHeader
-          isCoinRow
-          familyName={item.name}
-          familyImage={item.familyImage}
           childrenAmount={item.data.length}
+          familyImage={item.familyImage}
+          isCoinRow
           isOpen={this.state.openCards[item.familyId]}
-          onHeaderPress={() => {
+          onPress={() => {
             this.changeOpenTab(item.familyId);
           }}
+          title={item.name}
         />
         {this.state.openCards[item.familyId] && this.mapTokens(item.data)}
       </View>
@@ -199,8 +208,7 @@ class SendAssetList extends React.Component {
   _renderRow(type, data) {
     if (type === 'COIN_ROW') {
       return this.balancesRenderItem(data);
-    }
-    if (type === 'COIN_ROW_LAST') {
+    } else if (type === 'COIN_ROW_LAST') {
       return this.balancesRenderLastItem(data);
     } else if (type.type === 'COLLECTIBLE_ROW') {
       return this.collectiblesRenderItem(data);

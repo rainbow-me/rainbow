@@ -2,9 +2,11 @@ import PropTypes from 'prop-types';
 import { createElement } from 'react';
 import Flex from '../layout/Flex';
 
+import ApplePayIcon from './svg/ApplePayIcon';
 import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import ArrowIcon from './svg/ArrowIcon';
 import AvatarIcon from './svg/AvatarIcon';
+import BackspaceIcon from './svg/BackspaceIcon';
 import CameraIcon from './svg/CameraIcon';
 import CaretIcon from './svg/CaretIcon';
 import CaretThinIcon from './svg/CaretThinIcon';
@@ -34,9 +36,12 @@ import HandleIcon from './svg/HandleIcon';
 import InboxIcon from './svg/InboxIcon';
 import InfoIcon from './svg/InfoIcon';
 import LockIcon from './svg/LockIcon';
+import MinusCircledIcon from './svg/MinusCircledIcon';
 import OfflineIcon from './svg/OfflineIcon';
 import PasscodeIcon from './svg/PasscodeIcon';
+import PlusCircledIcon from './svg/PlusCircledIcon';
 import ProgressIcon from './svg/ProgressIcon';
+import QRCodeIcon from './svg/QRCodeIcon';
 import SearchIcon from './svg/SearchIcon';
 import SendIcon from './svg/SendIcon';
 import SendSmallIcon from './svg/SendSmallIcon';
@@ -49,14 +54,17 @@ import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
 import WalletConnectIcon from './svg/WalletConnectIcon';
 import WarningIcon from './svg/WarningIcon';
+import Emoji from 'react-native-emoji';
 
 const Icon = ({ name, ...props }) =>
-  createElement(Icon.IconTypes[name] || Flex, props);
+  createElement(Icon.IconTypes[name] || Flex, { name, ...props });
 
 Icon.IconTypes = {
+  applePay: ApplePayIcon,
   arrow: ArrowIcon,
   arrowCircled: ArrowCircledIcon,
   avatar: AvatarIcon,
+  backspace: BackspaceIcon,
   camera: CameraIcon,
   caret: CaretIcon,
   caretThin: CaretThinIcon,
@@ -86,9 +94,12 @@ Icon.IconTypes = {
   inbox: InboxIcon,
   info: InfoIcon,
   lock: LockIcon,
+  minusCircled: MinusCircledIcon,
   offline: OfflineIcon,
   passcode: PasscodeIcon,
+  plusCircled: PlusCircledIcon,
   progress: ProgressIcon,
+  qrCode: QRCodeIcon,
   search: SearchIcon,
   send: SendIcon,
   sendSmall: SendSmallIcon,
@@ -96,6 +107,7 @@ Icon.IconTypes = {
   signature: SignatureIcon,
   spinner: SpinnerIcon,
   star: StarIcon,
+  sunflower: Emoji,
   swap: SwapIcon,
   threeDots: ThreeDotsIcon,
   touchid: TouchIdIcon,

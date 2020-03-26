@@ -1,5 +1,11 @@
 export default {
+  approved: 'approved',
+  approving: 'approving',
+  deposited: 'deposited',
+  depositing: 'depositing',
   failed: 'failed',
+  purchased: 'purchased',
+  purchasing: 'purchasing',
   received: 'received',
   receiving: 'receiving',
   self: 'self',
@@ -7,4 +13,6 @@ export default {
   sent: 'sent',
   swapped: 'swapped',
   unknown: 'unknown status',
+  withdrawing: 'withdrawing',
+  withdrew: 'withdrew',
 };

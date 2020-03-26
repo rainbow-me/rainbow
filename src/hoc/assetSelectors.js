@@ -1,4 +1,4 @@
-import { concat, get, groupBy, isEmpty, isNil, map, toNumber } from 'lodash';
+import { get, groupBy, isEmpty, isNil, map, toNumber } from 'lodash';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import {
@@ -11,15 +11,15 @@ import { isLowerCaseMatch } from '../utils';
 
 const EMPTY_ARRAY = [];
 
-const assetPricesFromUniswapSelector = state => state.assetPricesFromUniswap;
-const assetsSelector = state => state.assets;
-const compoundAssetsSelector = state => state.compoundAssets;
-const nativeCurrencySelector = state => state.nativeCurrency;
+const assetPricesFromUniswapSelector = state =>
+  state.data ? state.data.assetPricesFromUniswap : state.assetPricesFromUniswap;
+const assetsSelector = state => (state.data ? state.data.assets : state.assets);
+const nativeCurrencySelector = state =>
+  state.settings ? state.settings.nativeCurrency : state.nativeCurrency;
 
 const sortAssetsByNativeAmount = (
   originalAssets,
   assetPricesFromUniswap,
-  compoundAssets,
   nativeCurrency
 ) => {
   let updatedAssets = originalAssets;
@@ -47,7 +47,7 @@ const sortAssetsByNativeAmount = (
       return asset;
     });
   }
-  let assetsNativePrices = concat(updatedAssets, compoundAssets);
+  let assetsNativePrices = updatedAssets;
   let total = null;
   if (!isEmpty(assetsNativePrices)) {
     const parsedAssets = parseAssetsNative(assetsNativePrices, nativeCurrency);
@@ -72,10 +72,12 @@ const sortAssetsByNativeAmount = (
   return {
     allAssets,
     allAssetsCount: allAssets.length,
+    assetPricesFromUniswap,
     assets: sortedAssets,
     assetsCount: sortedAssets.length,
     assetsTotal: total,
     isBalancesSectionEmpty: isEmpty(allAssets),
+    nativeCurrency,
     shitcoins: sortedShitcoins,
     shitcoinsCount: sortedShitcoins.length,
   };
@@ -127,11 +129,6 @@ const parseAssetsNative = (assets, nativeCurrency) => {
 };
 
 export const sortAssetsByNativeAmountSelector = createSelector(
-  [
-    assetsSelector,
-    assetPricesFromUniswapSelector,
-    compoundAssetsSelector,
-    nativeCurrencySelector,
-  ],
+  [assetsSelector, assetPricesFromUniswapSelector, nativeCurrencySelector],
   sortAssetsByNativeAmount
 );

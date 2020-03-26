@@ -12,8 +12,7 @@ import styled from 'styled-components/primitives';
 import { useBiometryType, BiometryTypes } from '../../../hooks';
 import { colors, padding } from '../../../styles';
 import { haptics } from '../../../utils';
-import InnerBorder from '../../InnerBorder';
-import { Centered } from '../../layout';
+import { Centered, InnerBorder } from '../../layout';
 import { ShadowStack } from '../../shadow-stack';
 import { Text } from '../../text';
 import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
@@ -80,6 +79,7 @@ class HoldToAuthorizeButton extends PureComponent {
     disabled: PropTypes.bool,
     disabledBackgroundColor: PropTypes.string,
     hideBiometricIcon: PropTypes.bool,
+    hideInnerBorder: PropTypes.bool,
     isAuthorizing: PropTypes.bool,
     label: PropTypes.string,
     onLongPress: PropTypes.func.isRequired,
@@ -182,6 +182,7 @@ class HoldToAuthorizeButton extends PureComponent {
       disabledBackgroundColor,
       enableLongPress,
       hideBiometricIcon,
+      hideInnerBorder,
       label,
       shadows,
       style,
@@ -228,7 +229,9 @@ class HoldToAuthorizeButton extends PureComponent {
                     <Title>{isAuthorizing ? 'Authorizing' : label}</Title>
                   </Fragment>
                 )}
-                <InnerBorder radius={ButtonBorderRadius} />
+                {!hideInnerBorder && (
+                  <InnerBorder radius={ButtonBorderRadius} />
+                )}
               </Content>
             </ShadowStack>
           </Animated.View>

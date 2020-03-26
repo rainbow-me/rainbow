@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { View } from 'react-primitives';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import InnerBorder from '../InnerBorder';
 import { borders, colors, position } from '../../styles';
 import { isNewValueForObjectPaths } from '../../utils';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { InnerBorder } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 
 const FabSize = 56;
@@ -24,12 +24,14 @@ export default class FloatingActionButton extends Component {
     onPress: PropTypes.func,
     onPressIn: PropTypes.func,
     scaleTo: PropTypes.number,
+    shadows: PropTypes.arrayOf(PropTypes.array),
     size: PropTypes.number,
     tapRef: PropTypes.object,
   };
 
   static defaultProps = {
     scaleTo: 0.86,
+    shadows: FabShadow,
     size: FabSize,
   };
 
@@ -65,6 +67,7 @@ export default class FloatingActionButton extends Component {
       disabled,
       isFabSelectionValid,
       scaleTo,
+      shadows,
       size,
       ...props
     } = this.props;
@@ -77,11 +80,12 @@ export default class FloatingActionButton extends Component {
         onPress={this.handlePress}
         onPressIn={this.handlePressIn}
         scaleTo={scaleTo}
+        useLateHaptic={false}
         {...props}
       >
         <ShadowStack
           {...borders.buildCircleAsObject(size)}
-          shadows={FabShadow}
+          shadows={shadows}
           shadowProps={{ opacity: isDisabled ? 0 : 1 }}
         >
           <View

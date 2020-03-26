@@ -5,7 +5,7 @@ import { View } from 'react-native';
 import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
-import InnerBorder from '../InnerBorder';
+import { InnerBorder } from '../layout';
 import { Text } from '../text';
 import { ShadowStack } from '../shadow-stack';
 import { withAccountInfo } from '../../hoc';
@@ -32,7 +32,7 @@ const ProfileAction = ({ onPress, accountColor, accountName }) => (
     hapticType="impactMedium"
     onPress={onPress}
     scaleTo={0.86}
-    paddingTop={2}
+    paddingTop={4}
   >
     <ShadowStack
       backgroundColor={colors.avatarColor[accountColor]}

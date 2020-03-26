@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Svg, { Path } from 'svgs';
+import { Path } from 'svgs';
 import { colors } from '../../../styles';
+import Svg from '../Svg';
 
 const FaceIdIcon = ({ color, ...props }) => (
   <Svg viewBox="0 0 27 27" {...props}>

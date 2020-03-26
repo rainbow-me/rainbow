@@ -1,6 +1,7 @@
-import { get, times } from 'lodash';
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
+import { Platform } from 'react-native';
 import {
   RecyclerListView,
   DataProvider,
@@ -8,26 +9,24 @@ import {
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
+import { addCashButtonAvailable } from '../../config/experimental';
 import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
-import { colors } from '../../styles';
 import {
   deviceUtils,
   isNewValueForPath,
   safeAreaInsetValues,
 } from '../../utils';
-import { AssetListItemSkeleton } from '../asset-list';
 import {
   ContractInteractionCoinRow,
   RequestCoinRow,
   TransactionCoinRow,
 } from '../coin-row';
-import ActivityIndicator from '../ActivityIndicator';
-import { Centered, Column } from '../layout';
 import ListFooter from '../list/ListFooter';
 import ActivityListHeader from './ActivityListHeader';
 import transactionTypes from '../../helpers/transactionTypes';
 import transactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { ProfileMasthead } from '../profile';
+import LoadingState from './LoadingState';
 
 const ViewTypes = {
   COMPONENT_HEADER: 0,
@@ -42,25 +41,6 @@ const Wrapper = styled.View`
   overflow: hidden;
   width: 100%;
 `;
-
-const LoadingState = ({ children }) => (
-  <Column flex={1}>
-    {children}
-    <Column flex={1}>
-      <Centered
-        style={{ paddingTop: 200, position: 'absolute', width: '100%' }}
-      >
-        <ActivityIndicator
-          color={colors.alpha(colors.blueGreyDark, 0.4)}
-          size={32}
-        />
-      </Centered>
-      {times(11, index => (
-        <AssetListItemSkeleton key={`activitySkeleton${index}`} />
-      ))}
-    </Column>
-  </Column>
-);
 
 const hasRowChanged = (r1, r2) => {
   if (
@@ -138,6 +118,8 @@ export default class RecyclerActivityList extends PureComponent {
         } else {
           dim.height = this.props.isLoading
             ? deviceUtils.dimensions.height
+            : Platform.OS === 'ios' && addCashButtonAvailable
+            ? 278
             : 204;
         }
       }

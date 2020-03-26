@@ -8,6 +8,7 @@ import Header from '../../components/header/Header';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
+export let swapDetailsTransitionPosition = new Animated.Value(0);
 
 const emojiStyleInterpolator = ({ current: { progress: current } }) => {
   const backgroundOpacity = current.interpolate({
@@ -59,15 +60,14 @@ const exchangeStyleInterpolator = ({
 
   return {
     cardStyle: {
-      // Translation for the animation of the current card
+      shadowColor: colors.black,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.6,
+      shadowRadius: 25,
       transform: [{ translateY }],
     },
     overlayStyle: {
       opacity: backgroundOpacity,
-      shadowColor: colors.black,
-      shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.4,
-      shadowRadius: 25,
     },
   };
 };
@@ -78,7 +78,7 @@ const exchangeDetailsStyleInterpolator = ({
 }) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, 0.7, 0.7],
+    outputRange: [0, 0, 0, 0],
   });
 
   const translateY = current.interpolate({
@@ -88,15 +88,10 @@ const exchangeDetailsStyleInterpolator = ({
 
   return {
     cardStyle: {
-      // Translation for the animation of the current card
       transform: [{ translateY }],
     },
     overlayStyle: {
       opacity: backgroundOpacity,
-      shadowColor: colors.black,
-      shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.4,
-      shadowRadius: 25,
     },
   };
 };
@@ -117,15 +112,44 @@ const expandStyleInterpolator = targetOpacity => ({
 
   return {
     cardStyle: {
-      transform: [{ translateY }],
-    },
-    overlayStyle: {
-      backgroundColor: colors.blueGreyDarker,
-      opacity: backgroundOpacity,
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
+      opacity: backgroundOpacity,
+    },
+  };
+};
+
+const savingsStyleInterpolator = ({
+  current: { progress: current },
+  layouts: { screen },
+}) => {
+  const backgroundOpacity = current.interpolate({
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, 0.4, 0.4],
+  });
+
+  const translateY = current.interpolate({
+    extrapolate: 'clamp',
+    inputRange: [0, 1],
+    outputRange: [screen.height, 0],
+  });
+
+  return {
+    cardStyle: {
+      shadowColor: colors.dark,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.6,
+      shadowRadius: 25,
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
+      backgroundColor: colors.dark,
+      opacity: backgroundOpacity,
     },
   };
 };
@@ -140,6 +164,7 @@ const sheetStyleInterpolator = ({
   });
 
   const translateY = current.interpolate({
+    extrapolate: 'clamp',
     inputRange: [0, 1],
     outputRange: [screen.height, 0],
   });
@@ -155,6 +180,39 @@ const sheetStyleInterpolator = ({
     overlayStyle: {
       backgroundColor: colors.black,
       opacity: backgroundOpacity,
+    },
+  };
+};
+
+const swapDetailInterpolator = ({
+  current: { progress: current },
+  layouts: { screen },
+}) => {
+  // kinda hacky... but lets me expose the
+  // stack's transitionPosition in an exportable wayy
+  Animated.spring(swapDetailsTransitionPosition, {
+    toValue: current,
+    useNativeDriver: true,
+  }).start();
+
+  const backgroundOpacity = current.interpolate({
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, 0.7, 0.7],
+  });
+
+  const translateY = current.interpolate({
+    inputRange: [0, 1],
+    outputRange: [screen.height, 0],
+  });
+
+  return {
+    cardStyle: {
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
+      backgroundColor: colors.dark,
+      opacity: backgroundOpacity,
+      overflow: 'hidden',
     },
   };
 };
@@ -212,6 +270,11 @@ export const onTransitionStart = props => {
   }
 };
 
+export const backgroundPreset = {
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: backgroundInterpolator,
+};
+
 export const emojiPreset = {
   cardOverlay: ({ style }) => {
     const backgroundOpacity = style.opacity.interpolate({
@@ -237,7 +300,7 @@ export const emojiPreset = {
         <View
           style={{
             alignItems: 'center',
-            top: Header.heightWithStatusBar - 1,
+            top: Header.heightWithStatusBar - 4,
           }}
         >
           <AvatarCircle />
@@ -246,7 +309,7 @@ export const emojiPreset = {
     );
   },
   cardOverlayEnabled: true,
-  cardShadowEnabled: true,
+  cardShadowEnabled: false,
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: emojiStyleInterpolator,
   cardTransparent: true,
@@ -255,22 +318,6 @@ export const emojiPreset = {
   gestureResponseDistance,
   onTransitionStart,
   transitionSpec: { close: emojiCloseSpec, open: emojiOpenSpec },
-};
-
-export const backgroundPreset = {
-  cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: backgroundInterpolator,
-};
-
-export const exchangePreset = {
-  cardOverlayEnabled: true,
-  cardShadowEnabled: true,
-  cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: exchangeStyleInterpolator,
-  cardTransparent: true,
-  gestureDirection: 'vertical',
-  gestureResponseDistance,
-  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
 export const exchangeDetailsPreset = {
@@ -282,6 +329,17 @@ export const exchangeDetailsPreset = {
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: openSpec },
+};
+
+export const exchangePreset = {
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: exchangeStyleInterpolator,
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
+  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
 export const expandedPreset = {
@@ -298,13 +356,24 @@ export const expandedPreset = {
 
 export const overlayExpandedPreset = {
   cardOverlayEnabled: true,
-  cardShadowEnabled: true,
+  cardShadowEnabled: false,
   cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
   cardStyleInterpolator: expandStyleInterpolator(0.6),
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: openSpec },
+};
+
+export const savingsPreset = {
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: savingsStyleInterpolator,
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
+  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
 export const sheetPreset = {
@@ -317,4 +386,14 @@ export const sheetPreset = {
   gestureResponseDistance,
   onTransitionStart,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+};
+
+export const swapDetailsPreset = {
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: swapDetailInterpolator,
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
+  transitionSpec: { close: closeSpec, open: openSpec },
 };

@@ -18,25 +18,34 @@ export const parseAccountAssets = (data, uniqueTokens, tokenOverrides) => {
   });
 };
 
+const sanitize = s => s.replace(/[^a-z0-9áéíóúñü \.,_@:-]/gim, '');
+
+export const parseAssetName = (name, address, overrides) => {
+  if (get(overrides[address], 'name')) return overrides[address].name;
+  return name ? sanitize(name) : 'Unknown Token';
+};
+
+export const parseAssetSymbol = (symbol, address, overrides) => {
+  if (get(overrides[address], 'symbol')) return overrides[address].symbol;
+  return symbol ? toUpper(sanitize(symbol)) : '———';
+};
+
 /**
  * @desc parse asset
  * @param  {Object} assetData
  * @return {Object}
  */
-export const parseAsset = (assetData, tokenOverrides) => {
-  const address = get(assetData, 'asset_code', null);
-  const name = get(assetData, 'name') || 'Unknown Token';
-  let symbol = get(assetData, 'symbol') || '———';
-  if (symbol && symbol.includes('*')) {
-    symbol = symbol.replace(/[*]/g, '');
-  }
+export const parseAsset = (
+  { asset_code: address, ...asset } = {},
+  tokenOverrides
+) => {
+  const name = parseAssetName(asset.name, address, tokenOverrides);
   return {
-    address,
-    decimals: get(assetData, 'decimals'),
-    name,
-    price: get(assetData, 'price'),
-    symbol: toUpper(symbol),
-    uniqueId: address || name,
+    ...asset,
     ...tokenOverrides[address],
+    address,
+    name,
+    symbol: parseAssetSymbol(asset.symbol, address, tokenOverrides),
+    uniqueId: address || name,
   };
 };

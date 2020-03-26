@@ -2,13 +2,16 @@ import produce from 'immer';
 import {
   getOpenFamilies,
   getOpenInvestmentCards,
+  getSavingsToggle,
   getSmallBalanceToggle,
-  saveOpenFamilies,
-  saveOpenInvestmentCards,
-  saveSmallBalanceToggle,
   removeOpenFamilies,
   removeOpenInvestmentCards,
+  removeSavingsToggle,
   removeSmallBalanceToggle,
+  saveOpenFamilies,
+  saveOpenInvestmentCards,
+  saveSavingsToggle,
+  saveSmallBalanceToggle,
 } from '../handlers/localstorage/accountLocal';
 
 // -- Constants ------------------------------------------------------------- //
@@ -19,6 +22,7 @@ const OPEN_STATE_SETTINGS_LOAD_FAILURE =
 const CLEAR_OPEN_STATE_SETTINGS = 'openStateSettings/CLEAR_OPEN_STATE_SETTINGS';
 const PUSH_OPEN_FAMILY_TAB = 'openStateSettings/PUSH_OPEN_FAMILY_TAB';
 const SET_OPEN_FAMILY_TABS = 'openStateSettings/SET_OPEN_FAMILY_TABS';
+const SET_OPEN_SAVINGS = 'openStateSettings/SET_OPEN_SAVINGS';
 const SET_OPEN_SMALL_BALANCES = 'openStateSettings/SET_OPEN_SMALL_BALANCES';
 const SET_OPEN_INVESTMENT_CARDS = 'openStateSettings/SET_OPEN_INVESTMENT_CARDS';
 const PUSH_OPEN_INVESTMENT_CARD = 'openStateSettings/PUSH_OPEN_INVESTMENT_CARD';
@@ -27,6 +31,7 @@ const PUSH_OPEN_INVESTMENT_CARD = 'openStateSettings/PUSH_OPEN_INVESTMENT_CARD';
 export const openStateSettingsLoadState = () => async (dispatch, getState) => {
   try {
     const { accountAddress, network } = getState().settings;
+    const openSavings = await getSavingsToggle(accountAddress, network);
     const openSmallBalances = await getSmallBalanceToggle(
       accountAddress,
       network
@@ -40,6 +45,7 @@ export const openStateSettingsLoadState = () => async (dispatch, getState) => {
       payload: {
         openFamilyTabs,
         openInvestmentCards,
+        openSavings,
         openSmallBalances,
       },
       type: OPEN_STATE_SETTINGS_LOAD_SUCCESS,
@@ -47,6 +53,15 @@ export const openStateSettingsLoadState = () => async (dispatch, getState) => {
   } catch (error) {
     dispatch({ type: OPEN_STATE_SETTINGS_LOAD_FAILURE });
   }
+};
+
+export const setOpenSavings = payload => (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
+  saveSavingsToggle(payload, accountAddress, network);
+  dispatch({
+    payload,
+    type: SET_OPEN_SAVINGS,
+  });
 };
 
 export const setOpenSmallBalances = payload => (dispatch, getState) => {
@@ -102,6 +117,7 @@ export const clearOpenStateSettings = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   removeOpenFamilies(accountAddress, network);
   removeOpenInvestmentCards(accountAddress, network);
+  removeSavingsToggle(accountAddress, network);
   removeSmallBalanceToggle(accountAddress, network);
   dispatch({
     type: CLEAR_OPEN_STATE_SETTINGS,
@@ -112,6 +128,7 @@ export const clearOpenStateSettings = () => (dispatch, getState) => {
 export const INITIAL_STATE = {
   openFamilyTabs: {},
   openInvestmentCards: {},
+  openSavings: true,
   openSmallBalances: false,
 };
 
@@ -120,11 +137,14 @@ export default (state = INITIAL_STATE, action) =>
     if (action.type === OPEN_STATE_SETTINGS_LOAD_SUCCESS) {
       draft.openFamilyTabs = action.payload.openFamilyTabs;
       draft.openInvestmentCards = action.payload.openInvestmentCards;
+      draft.openSavings = action.payload.openSavings;
       draft.openSmallBalances = action.payload.openSmallBalances;
     } else if (action.type === SET_OPEN_FAMILY_TABS) {
       draft.openFamilyTabs = action.payload;
     } else if (action.type === PUSH_OPEN_FAMILY_TAB) {
       draft.openFamilyTabs = action.payload;
+    } else if (action.type === SET_OPEN_SAVINGS) {
+      draft.openSavings = action.payload;
     } else if (action.type === SET_OPEN_SMALL_BALANCES) {
       draft.openSmallBalances = action.payload;
     } else if (action.type === SET_OPEN_INVESTMENT_CARDS) {

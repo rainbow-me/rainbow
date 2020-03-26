@@ -1,37 +1,38 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Platform } from 'react-native';
 import { compose, withHandlers } from 'recompact';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
-import { margin, borders } from '../../styles';
+import {
+  addCashButtonAvailable,
+  isAvatarPickerAvailable,
+} from '../../config/experimental';
+import { colors, borders } from '../../styles';
 import { abbreviations } from '../../utils';
 import { useNavigation } from 'react-navigation-hooks';
-import { useClipboard } from '../../hooks';
+import { useAccountData, useClipboard } from '../../hooks';
 import CopyTooltip from '../copy-tooltip';
+import { FloatingEmojis } from '../floating-emojis';
 import Divider from '../Divider';
 import { Centered, RowWithMargins } from '../layout';
-import { FloatingEmojis } from '../floating-emojis';
 import { TruncatedAddress } from '../text';
+import AddCashButton from './AddCashButton';
 import ProfileAction from './ProfileAction';
-import { isAvatarPickerAvailable } from '../../config/experimental';
 import AvatarCircle from './AvatarCircle';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
+  family: 'SFProRounded',
   firstSectionLength: abbreviations.defaultNumCharsPerSection,
   letterSpacing: 'roundedMedium',
   size: 'bigger',
   truncationLength: 4,
   weight: 'bold',
 })`
-  ${margin(1, 0, 3)};
+  margin-bottom: 2;
   width: 100%;
-`;
-
-const Container = styled(Centered).attrs({ direction: 'column' })`
-  margin-bottom: 24;
-  padding-bottom: 32;
 `;
 
 const ProfileMasthead = ({
@@ -39,25 +40,26 @@ const ProfileMasthead = ({
   showBottomDivider,
   onPressAvatar,
 }) => {
+  const { accountENS } = useAccountData();
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
 
   return (
-    <Container>
+    <Centered
+      direction="column"
+      marginBottom={24}
+      paddingBottom={Platform.OS === 'ios' && addCashButtonAvailable ? 12 : 42}
+    >
       {isAvatarPickerAvailable ? (
         <AvatarCircle onPress={onPressAvatar} />
       ) : (
         <FastImage
           source={AvatarImageSource}
-          style={{
-            ...borders.buildCircleAsObject(85),
-            marginBottom: 3,
-          }}
+          style={{ ...borders.buildCircleAsObject(85) }}
         />
       )}
-
       <CopyTooltip textToCopy={accountAddress} tooltipText="Copy Address">
-        <AddressAbbreviation address={accountAddress} />
+        <AddressAbbreviation address={accountENS || accountAddress} />
       </CopyTooltip>
       <RowWithMargins align="center" margin={1}>
         <FloatingEmojis
@@ -81,16 +83,22 @@ const ProfileMasthead = ({
           )}
         </FloatingEmojis>
         <ProfileAction
-          icon="inbox"
+          icon="qrCode"
           onPress={() => navigate('ReceiveModal')}
           scaleTo={0.88}
           text="Receive"
         />
       </RowWithMargins>
-      {showBottomDivider && (
-        <Divider style={{ bottom: 0, position: 'absolute' }} />
+      {Platform.OS === 'ios' && addCashButtonAvailable && (
+        <AddCashButton onPress={() => navigate('AddCashSheet')} />
       )}
-    </Container>
+      {showBottomDivider && (
+        <Divider
+          color={colors.rowDividerLight}
+          style={{ bottom: 0, position: 'absolute' }}
+        />
+      )}
+    </Centered>
   );
 };
 

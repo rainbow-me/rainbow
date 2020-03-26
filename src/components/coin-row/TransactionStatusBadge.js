@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForPropTypes } from 'recompact';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import transactionTypes from '../../helpers/transactionTypes';
+import TransactionTypes from '../../helpers/transactionTypes';
 import { colors, position } from '../../styles';
 import Icon from '../icons/Icon';
 import { Row } from '../layout';
@@ -11,10 +11,28 @@ import Spinner from '../Spinner';
 import { Text } from '../text';
 
 const StatusProps = {
+  [TransactionStatusTypes.approved]: {
+    marginRight: 4,
+    name: 'dot',
+  },
+  [TransactionStatusTypes.deposited]: {
+    name: 'sunflower',
+    style: { fontSize: 12, marginBottom: 2, marginRight: 2 },
+  },
+  [TransactionStatusTypes.depositing]: {
+    marginRight: 4,
+  },
   [TransactionStatusTypes.failed]: {
     marginRight: 4,
     name: 'closeCircled',
     style: position.maxSizeAsObject(12),
+  },
+  [TransactionStatusTypes.purchased]: {
+    marginRight: 2,
+    name: 'arrow',
+  },
+  [TransactionStatusTypes.purchasing]: {
+    marginRight: 4,
   },
   [TransactionStatusTypes.received]: {
     marginRight: 2,
@@ -23,6 +41,9 @@ const StatusProps = {
   [TransactionStatusTypes.self]: {
     marginRight: 4,
     name: 'dot',
+  },
+  [TransactionStatusTypes.sending]: {
+    marginRight: 4,
   },
   [TransactionStatusTypes.sent]: {
     marginRight: 3,
@@ -34,10 +55,27 @@ const StatusProps = {
     small: true,
     style: position.maxSizeAsObject(12),
   },
+  [TransactionStatusTypes.withdrawing]: {
+    marginRight: 4,
+  },
+  [TransactionStatusTypes.withdrew]: {
+    name: 'sunflower',
+    style: { fontSize: 12, marginBottom: 2, marginRight: 2 },
+  },
+};
+
+const getCustomDisplayStatus = status => {
+  switch (status) {
+    case TransactionStatusTypes.deposited:
+    case TransactionStatusTypes.withdrew:
+      return 'Savings';
+    default:
+      return upperFirst(status);
+  }
 };
 
 const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
-  const isTrade = type === transactionTypes.trade;
+  const isTrade = type === TransactionTypes.trade;
 
   let statusColor = colors.alpha(colors.blueGreyDark, 0.7);
   if (pending) {
@@ -62,7 +100,7 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
         />
       )}
       <Text color={statusColor} size="smedium" weight="semibold">
-        {upperFirst(displayStatus)}
+        {getCustomDisplayStatus(displayStatus)}
       </Text>
     </Row>
   );
@@ -71,7 +109,7 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
 TransactionStatusBadge.propTypes = {
   pending: PropTypes.bool,
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
-  type: PropTypes.oneOf(Object.values(transactionTypes)),
+  type: PropTypes.oneOf(Object.values(TransactionTypes)),
 };
 
 TransactionStatusBadge.defaultProps = {

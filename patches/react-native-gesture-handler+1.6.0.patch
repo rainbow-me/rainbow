@@ -20,3 +20,16 @@ index b7f2207..26c9fda 100644
 +    return MEMOIZED.SectionList;
 +  },
  };
+diff --git a/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m b/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m
+index 73022d7..49b8507 100644
+--- a/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m
++++ b/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m
+@@ -78,7 +78,7 @@ - (void)bindToView:(UIView *)view
+         // we expect for RCTScrollView component to contain a subclass of UIScrollview as the only
+         // subview
+         UIScrollView *scrollView = [view.subviews objectAtIndex:0];
+-        scrollView.delaysContentTouches = YES;
++        scrollView.delaysContentTouches = NO;
+     }
+ }
+ 

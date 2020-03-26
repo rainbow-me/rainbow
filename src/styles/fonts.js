@@ -3,14 +3,18 @@ const font = {};
 
 font.family = {
   SFMono: 'SFMono-Regular',
+  SFProDisplay: 'SF Pro Display',
   SFProRounded: 'SF Pro Rounded',
+  SFProText: 'SF Pro Text',
 };
 
 font.letterSpacing = {
+  zero: 0,
   roundedTightest: 0.2,
   roundedTight: 0.4,
   roundedMedium: 0.5,
   rounded: 0.6,
+  uppercase: 0.8,
 };
 
 font.lineHeight = {
@@ -22,6 +26,7 @@ font.lineHeight = {
   paragraphSmall: 25,
   looser: 26,
   loosest: 28,
+  giant: 108,
 };
 
 font.size = {
@@ -39,7 +44,7 @@ font.size = {
   big: '23px',
   bigger: '26px',
   biggest: '27px',
-  h1: '42px',
+  h1: '41px',
   h2: '32px',
   h3: '30px',
   h4: '20px',
