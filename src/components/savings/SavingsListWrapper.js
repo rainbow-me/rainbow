@@ -1,35 +1,49 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import SavingsListHeader from './SavingsListHeader';
-import { compose } from 'recompact';
-import withOpenSavings from '../../hoc/withOpenSavings';
-import { OpacityToggler } from '../animations';
+import React, { useCallback } from 'react';
 import { View } from 'react-native';
+import { useDispatch } from 'react-redux';
 import { pure } from 'recompose';
+import { useOpenSavings } from '../../hooks';
+import { OpacityToggler } from '../animations';
+import SavingsListHeader from './SavingsListHeader';
 import SavingsListRow from './SavingsListRow';
 
 const SavingsListRowRenderer = pure(data => <SavingsListRow {...data} />);
 
-const SavingsListWrapper = ({ assets, openSavings, totalValue }) => (
-  <React.Fragment>
-    <SavingsListHeader savingsSumValue={totalValue} />
-    <View pointerEvents={openSavings ? 'auto' : 'none'}>
-      <OpacityToggler
-        endingOpacity={1}
-        isVisible={openSavings}
-        startingOpacity={0}
-      >
-        {assets.map(item => (
-          <SavingsListRowRenderer key={item.underlying.symbol} {...item} />
-        ))}
-      </OpacityToggler>
-    </View>
-  </React.Fragment>
-);
+const SavingsListWrapper = ({ assets, totalValue }) => {
+  const dispatch = useDispatch();
+  const { openSavings, setOpenSavings } = useOpenSavings();
+
+  const onPress = useCallback(() => dispatch(setOpenSavings(!openSavings)), [
+    dispatch,
+    openSavings,
+    setOpenSavings,
+  ]);
+
+  return (
+    <React.Fragment>
+      <SavingsListHeader
+        isOpen={openSavings}
+        savingsSumValue={totalValue}
+        onPress={onPress}
+      />
+      <View pointerEvents={openSavings ? 'auto' : 'none'}>
+        <OpacityToggler
+          endingOpacity={1}
+          isVisible={openSavings}
+          startingOpacity={0}
+        >
+          {assets.map(item => (
+            <SavingsListRowRenderer key={item.underlying.symbol} {...item} />
+          ))}
+        </OpacityToggler>
+      </View>
+    </React.Fragment>
+  );
+};
 
 SavingsListWrapper.propTypes = {
   assets: PropTypes.array,
-  openSavings: PropTypes.bool,
   totalValue: PropTypes.number,
 };
 
@@ -37,4 +51,4 @@ SavingsListWrapper.defaultProps = {
   totalValue: 0,
 };
 
-export default compose(withOpenSavings)(SavingsListWrapper);
+export default SavingsListWrapper;

@@ -14,6 +14,7 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import { LayoutAnimation } from 'react-native';
+import SavingsListHeader from '../savings/SavingsListHeader';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import FastImage from 'react-native-fast-image';
@@ -49,7 +50,7 @@ class SendAssetList extends React.Component {
         return r1 !== r2;
       }).cloneWithRows(this.data),
       openCards: [],
-      openSavings: false,
+      openSavings: true,
     };
 
     const imageTokens = [];
@@ -266,15 +267,12 @@ class SendAssetList extends React.Component {
 
   savingsRenderItem = item => (
     <View marginTop={10}>
-      <TokenFamilyHeader
+      <SavingsListHeader
         childrenAmount={item.data.length}
-        familyImage="asd"
-        isCoinRow
         isOpen={this.state.openSavings}
         onPress={() => {
           this.changeOpenSavings();
         }}
-        title={item.name}
       />
       {this.state.openSavings && this.mapSavings(item.data)}
       <Divider />
