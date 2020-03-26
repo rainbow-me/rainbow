@@ -8,13 +8,10 @@ import {
 
 export default function useUniswapAllowances() {
   const uniswapAllowances = useSelector(
-    ({
-      uniswap: { allowances, inputReserve, outputReserve, tokenReserves },
-    }) => ({
+    ({ uniswap: { allowances, inputReserve, outputReserve } }) => ({
       allowances,
       inputReserve,
       outputReserve,
-      tokenReserves,
     })
   );
   return {
