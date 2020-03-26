@@ -25,8 +25,10 @@ import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
+  convertAmountToNativeDisplay,
   formatInputDecimals,
 } from '../helpers/utilities';
+import { formatDepositAmount } from '../helpers/savings';
 import { checkIsValidAddress } from '../helpers/validators';
 import {
   useAccountAssets,
@@ -81,25 +83,42 @@ const SendSheet = ({
 }) => {
   const { allAssets } = useAccountAssets();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  let savings = useSavingsAccount();
-  const eth = ethereumUtils.getAsset(allAssets);
-  const priceOfEther = get(eth, 'native.price.amount', null);
-  if (priceOfEther) {
-    savings = map(savings, asset => {
-      const { ethPrice } = asset;
-      const nativeValue = ethPrice ? priceOfEther * ethPrice : 0;
-      return {
-        ...asset,
-        nativeValue,
-      };
-    });
-  }
-  const fetchData = useRefreshAccountData();
   const {
     accountAddress,
     nativeCurrency,
     nativeCurrencySymbol,
   } = useAccountSettings();
+
+  let savings = useSavingsAccount();
+  const eth = ethereumUtils.getAsset(allAssets);
+  const priceOfEther = get(eth, 'native.price.amount', null);
+  if (priceOfEther) {
+    savings = map(savings, asset => {
+      const {
+        cTokenBalance,
+        supplyBalanceUnderlying,
+        underlying,
+        underlyingPrice,
+      } = asset;
+      const cTokenBalanceDisplay = formatDepositAmount(
+        cTokenBalance,
+        underlying.symbol
+      );
+      const rawNativeValue = supplyBalanceUnderlying
+        ? supplyBalanceUnderlying * underlyingPrice * priceOfEther
+        : 0;
+      const nativeValue = convertAmountToNativeDisplay(
+        rawNativeValue,
+        nativeCurrency
+      );
+      return {
+        ...asset,
+        cTokenBalanceDisplay,
+        nativeValue,
+      };
+    });
+  }
+  const fetchData = useRefreshAccountData();
 
   const { navigate } = useNavigation();
   const [amountDetails, setAmountDetails] = useState({
@@ -179,7 +198,7 @@ const SendSheet = ({
         sendUpdateAssetAmount('');
       }
     },
-    [amountDetails.assetAmount, sendUpdateAssetAmount]
+    [sendUpdateAssetAmount]
   );
 
   const sendUpdateRecipient = useCallback(newRecipient => {
@@ -347,7 +366,7 @@ const SendSheet = ({
     if (isValidAddress && showAssetList) {
       Keyboard.dismiss();
     }
-  }, [isValidAddress]);
+  }, [isValidAddress, showAssetList]);
 
   const assetOverride = useNavigationParam('asset');
   const prevAssetOverride = usePrevious(assetOverride);

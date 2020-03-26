@@ -1,26 +1,19 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { convertAmountToDepositDisplay } from '../../helpers/utilities';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Monospace } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
-const BottomRow = ({ underlying, cTokenBalance: balance, nativeValue }) => {
-  console.log('native val', nativeValue);
-  const nativeBalance = convertAmountToDepositDisplay(nativeValue, underlying);
-  console.log('native balance', nativeBalance);
-
-  return (
-    <Monospace color={colors.alpha(colors.blueGreyDark, 0.6)} size="smedium">
-      {balance} ≈ {nativeBalance}
-    </Monospace>
-  );
-};
+const BottomRow = ({ cTokenBalanceDisplay, nativeValue }) => (
+  <Monospace color={colors.alpha(colors.blueGreyDark, 0.6)} size="smedium">
+    {cTokenBalanceDisplay} ≈ {nativeValue}
+  </Monospace>
+);
 
 BottomRow.propTypes = {
-  cTokenBalance: PropTypes.string,
+  cTokenBalanceDisplay: PropTypes.string,
   nativeValue: PropTypes.string,
 };
 

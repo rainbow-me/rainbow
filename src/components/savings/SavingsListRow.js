@@ -1,11 +1,18 @@
 import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, {
+  Fragment,
+  useState,
+  useMemo,
+  useEffect,
+  useCallback,
+} from 'react';
 import { StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   calculateAPY,
   calculateCompoundInterestInDays,
+  isSymbolStablecoin,
   formatSavingsAmount,
 } from '../../helpers/savings';
 import { colors, position, fonts } from '../../styles';
@@ -19,7 +26,6 @@ import { useNavigation } from 'react-navigation-hooks';
 
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
 const ANIMATE_NUMBER_INTERVAL = 30;
-const STABLECOINS = ['DAI', 'SAI', 'USDC', 'USDT'];
 
 const sx = StyleSheet.create({
   text: {
@@ -32,19 +38,19 @@ const sx = StyleSheet.create({
   },
 });
 
-const animatedNumberFormatterWithDolllars = val =>
+const animatedNumberFormatterWithDollars = val =>
   `$${formatSavingsAmount(val)}`;
 const animatedNumberFormatter = val => `${formatSavingsAmount(val)}`;
 
 const renderAnimatedNumber = (value, steps, symbol) => {
-  const isStablecoin = STABLECOINS.indexOf(symbol) !== -1;
+  const isStablecoin = isSymbolStablecoin(symbol);
   const numberComponent = (
     <AnimatedNumber
       letterSpacing={parseFloat(fonts.letterSpacing.roundedTightest)}
       style={sx.text}
       formatter={
         isStablecoin
-          ? animatedNumberFormatterWithDolllars
+          ? animatedNumberFormatterWithDollars
           : animatedNumberFormatter
       }
       steps={steps}
@@ -58,10 +64,10 @@ const renderAnimatedNumber = (value, steps, symbol) => {
   }
 
   return (
-    <React.Fragment>
+    <Fragment>
       {numberComponent}
       <Text style={sx.text}>{symbol}</Text>
-    </React.Fragment>
+    </Fragment>
   );
 };
 
@@ -184,7 +190,7 @@ const SavingsListRow = ({
               {supplyBalanceUnderlying && !isNaN(displayValue) ? (
                 renderAnimatedNumber(displayValue, steps, underlying.symbol)
               ) : (
-                <>
+                <Fragment>
                   <Text
                     style={{
                       color: colors.alpha(colors.blueGreyDark, 0.5),
@@ -236,7 +242,7 @@ const SavingsListRow = ({
                     </Text>
                     <InnerBorder radius={15} />
                   </ButtonPressAnimation>
-                </>
+                </Fragment>
               )}
             </Row>
             <Centered
