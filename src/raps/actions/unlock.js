@@ -1,5 +1,7 @@
 import { get, toLower } from 'lodash';
 import { greaterThan, isZero } from '../../helpers/utilities';
+import transactionStatusTypes from '../../helpers/transactionStatusTypes';
+import transactionTypes from '../../helpers/transactionTypes';
 import store from '../../redux/store';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
@@ -60,8 +62,9 @@ const unlock = async (wallet, currentRap, index, parameters) => {
       from: wallet.address,
       hash: approval.hash,
       nonce: get(approval, 'nonce'),
+      status: transactionStatusTypes.approving,
       to: get(approval, 'to'),
-      type: 'authorize',
+      type: transactionTypes.authorize,
     })
   );
   console.log('[unlock] calling callback');

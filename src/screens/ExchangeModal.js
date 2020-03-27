@@ -9,7 +9,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, TextInput, Platform } from 'react-native';
+import {
+  InteractionManager,
+  NativeModules,
+  TextInput,
+  Platform,
+} from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import Animated from 'react-native-reanimated';
 import { useIsFocused } from 'react-navigation-hooks';
@@ -68,6 +73,8 @@ import { CurrencySelectionTypes } from './CurrencySelectModal';
 import SwapInfo from '../components/exchange/SwapInfo';
 
 export const exchangeModalBorderRadius = 30;
+let NotificationManager =
+  Platform.OS === 'ios' ? NativeModules.NotificationManager : null;
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(
   toClass(FloatingPanels)
@@ -608,6 +615,9 @@ const ExchangeModal = ({
     if (Platform.OS === 'ios') {
       try {
         console.log('[BG EXEC]: starting background execution');
+        // Tell iOS we're running a rap (for tracking purposes)
+        NotificationManager &&
+          NotificationManager.postNotification('rapInProgress');
         BackgroundTimer.start();
         await doSubmit();
       } catch (e) {
@@ -631,6 +641,8 @@ const ExchangeModal = ({
         console.log('[BG EXEC]: finished background execution');
       }
     }
+    // Tell iOS we finished running a rap (for tracking purposes)
+    NotificationManager && NotificationManager.postNotification('rapCompleted');
   };
 
   const doSubmit = async () => {
