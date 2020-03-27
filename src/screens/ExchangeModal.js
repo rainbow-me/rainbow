@@ -658,10 +658,8 @@ const ExchangeModal = ({
       console.log('[exchange - handle submit] rap', rap);
       await executeRap(wallet, rap);
       console.log('[exchange - handle submit] executed rap!');
-      BackgroundTimer.stopBackgroundTimer();
     } catch (error) {
       setIsAuthorizing(false);
-      BackgroundTimer.stopBackgroundTimer();
       console.log('[exchange - handle submit] error submitting swap', error);
       navigation.setParams({ focused: false });
       navigation.navigate('WalletScreen');

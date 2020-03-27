@@ -70,7 +70,7 @@ const swap = async (wallet, currentRap, index, parameters) => {
     to: get(swap, 'to'),
   };
   console.log('[swap] adding new txn', newTransaction);
-  dispatch(dataAddNewTransaction(newTransaction, true));
+  dispatch(dataAddNewTransaction(newTransaction));
   console.log('[swap] calling the callback');
   currentRap.callback();
   currentRap.callback = NOOP;
