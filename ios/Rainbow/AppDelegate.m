@@ -12,8 +12,8 @@
 #import <React/RCTLinkingManager.h>
 #import <React/RCTRootView.h>
 #import <RNCPushNotificationIOS.h>
-#import "RNSplashScreen.h"
 #import <Sentry/Sentry.h>
+#import "RNSplashScreen.h"
 
 @implementation AppDelegate
 

@@ -437,7 +437,6 @@ export const dataWatchPendingTransactions = () => async (
             updatedTransactions[index].status = getConfirmedState(
               updatedTransactions[index].type
             );
-            console.log('[BRUNO]: Tx was confirmed, should update!!!!!!!!!');
           } else {
             updatedTransactions[index].status = TransactionStatusTypes.failed;
           }
