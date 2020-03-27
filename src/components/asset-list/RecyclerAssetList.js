@@ -407,8 +407,8 @@ class RecyclerAssetList extends Component {
           const size =
             sections[balancesIndex].data[smallBalancesIndex].assets.length;
           dim.height = openSmallBalances
-            ? CoinDivider.height + size * CoinRow.height + additionalHeight + 9
-            : CoinDivider.height + additionalHeight + 16;
+            ? CoinDivider.height + size * CoinRow.height + additionalHeight + 15
+            : CoinDivider.height + additionalHeight + 13;
         } else if (type === ViewTypes.COIN_SAVINGS) {
           const balancesIndex = findIndex(
             sections,
@@ -417,8 +417,9 @@ class RecyclerAssetList extends Component {
           dim.height = openSavings
             ? TokenFamilyHeaderHeight +
               ListFooter.height +
-              61 * sections[balancesIndex].data[savingsIndex].assets.length
-            : TokenFamilyHeaderHeight + ListFooter.height;
+              61 * sections[balancesIndex].data[savingsIndex].assets.length -
+              4
+            : TokenFamilyHeaderHeight + ListFooter.height - 10;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
         } else if (type === ViewTypes.UNISWAP_ROW_LAST) {
