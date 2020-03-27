@@ -6,7 +6,7 @@ import CurrencySelectModal from '../screens/CurrencySelectModal';
 import SwapModal from '../screens/SwapModal';
 import { deviceUtils } from '../utils';
 import createStackNavigator from './createStackNavigator';
-import { exchangeDetailsPreset } from './transitions/effects';
+import { swapDetailsPreset } from './transitions/effects';
 import ExpandedAssetScreenWithData from '../screens/ExpandedAssetScreenWithData';
 import { withBlockedHorizontalSwipe } from '../hoc';
 
@@ -25,7 +25,7 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator(
           },
           SwapDetailsScreen: {
             navigationOptions: {
-              ...exchangeDetailsPreset,
+              ...swapDetailsPreset,
             },
             screen: withBlockedHorizontalSwipe(ExpandedAssetScreenWithData),
           },

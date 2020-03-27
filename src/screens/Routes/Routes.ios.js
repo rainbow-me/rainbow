@@ -40,7 +40,6 @@ import {
   overlayExpandedPreset,
   savingsPreset,
   sheetPreset,
-  swapDetailsPreset,
 } from '../../navigation/transitions/effects';
 
 enableScreens();
@@ -177,10 +176,6 @@ const MainNavigator = createStackNavigator(
       },
       screen: SettingsModal,
       transparentCard: true,
-    },
-    SwapDetailsScreen: {
-      navigationOptions: swapDetailsPreset,
-      screen: ExpandedAssetScreenWithData,
     },
     SwipeLayout: {
       navigationOptions: {
