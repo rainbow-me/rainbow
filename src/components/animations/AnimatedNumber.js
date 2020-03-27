@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { fonts } from '../../styles';
 
-const clearHandle = handle => handle && clearInterval(handle);
+const clearHandle = handle => handle && clearTimeout(handle);
 
 export const defaultAnimatedNumberProps = {
   formatter: value => Number(value).toString(),
@@ -23,7 +23,7 @@ const AnimatedNumber = ({
   ...props
 }) => {
   const currentValue = useRef(value);
-  const intervalHandle = useRef();
+  const timeoutHandle = useRef();
   const textInputRef = useRef();
 
   const isPositive = useMemo(() => value - currentValue.current > 0, [value]);
@@ -46,19 +46,24 @@ const AnimatedNumber = ({
     }
 
     if (isComplete) {
-      clearHandle(intervalHandle.current);
+      clearHandle(timeoutHandle.current);
     }
   }, [formatter, isPositive, stepSize, value]);
 
+  const animateNumberInterval = useCallback(() => {
+    clearHandle(timeoutHandle.current);
+    InteractionManager.runAfterInteractions(() => {
+      animateNumber();
+      timeoutHandle.current = setTimeout(animateNumberInterval, Number(time));
+    });
+  }, [animateNumber, time]);
+
   useEffect(() => {
     if (currentValue.current !== value) {
-      clearHandle(intervalHandle.current);
-      InteractionManager.runAfterInteractions(() => {
-        intervalHandle.current = setInterval(animateNumber, Number(time));
-      });
+      animateNumberInterval();
     }
-    return () => clearHandle(intervalHandle.current);
-  }, [animateNumber, time, value]);
+    return () => clearHandle(timeoutHandle.current);
+  }, [animateNumber, animateNumberInterval, time, value]);
 
   return (
     <TextInput
