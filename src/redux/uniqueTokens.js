@@ -28,7 +28,7 @@ const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE =
 const UNIQUE_TOKENS_CLEAR_STATE = 'uniqueTokens/UNIQUE_TOKENS_CLEAR_STATE';
 
 // -- Actions --------------------------------------------------------------- //
-let getUniqueTokensInterval = null;
+let getUniqueTokensHandler = null;
 
 export const uniqueTokensLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
@@ -47,63 +47,60 @@ export const uniqueTokensLoadState = () => async (dispatch, getState) => {
 export const uniqueTokensClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   removeUniqueTokens(accountAddress, network);
-  clearInterval(getUniqueTokensInterval);
+  clearTimeout(getUniqueTokensHandler);
   dispatch({ type: UNIQUE_TOKENS_CLEAR_STATE });
 };
 
-export const uniqueTokensRefreshState = () => (dispatch, getState) =>
-  new Promise((resolve, reject) => {
-    const { network } = getState().settings;
-    // Currently not supported in testnets
-    if (network !== networkTypes.mainnet) {
-      resolve();
-      return;
+export const uniqueTokensRefreshState = () => async (dispatch, getState) => {
+  const { network } = getState().settings;
+
+  // Currently not supported in testnets
+  if (network !== networkTypes.mainnet) {
+    return;
+  }
+
+  dispatch(watchUniqueTokens());
+};
+
+const fetchUniqueTokens = () => async (dispatch, getState) => {
+  dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST });
+  const { accountAddress, network } = getState().settings;
+  const { assets } = getState().data;
+  const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
+  try {
+    const uniqueTokens = await apiGetAccountUniqueTokens(accountAddress);
+    const existingFamilies = getFamilies(existingUniqueTokens);
+    const newFamilies = getFamilies(uniqueTokens);
+    const incomingFamilies = without(newFamilies, ...existingFamilies);
+    if (incomingFamilies.length) {
+      const dedupedAssets = dedupeAssetsWithFamilies(assets, incomingFamilies);
+      dispatch(dataUpdateAssets(dedupedAssets));
     }
+    saveUniqueTokens(uniqueTokens, accountAddress, network);
+    dispatch({
+      payload: uniqueTokens,
+      type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
+    });
+  } catch (error) {
+    dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE });
+    captureException(error);
+  }
+};
 
-    const fetchUniqueTokens = () =>
-      new Promise((fetchResolve, fetchReject) => {
-        dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST });
-        const { accountAddress, network } = getState().settings;
-        const { assets } = getState().data;
-        const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
-        apiGetAccountUniqueTokens(accountAddress)
-          .then(uniqueTokens => {
-            const existingFamilies = getFamilies(existingUniqueTokens);
-            const newFamilies = getFamilies(uniqueTokens);
-            const incomingFamilies = without(newFamilies, ...existingFamilies);
-            if (incomingFamilies.length) {
-              const dedupedAssets = dedupeAssetsWithFamilies(
-                assets,
-                incomingFamilies
-              );
-              dispatch(dataUpdateAssets(dedupedAssets));
-            }
-            saveUniqueTokens(uniqueTokens, accountAddress, network);
-            dispatch({
-              payload: uniqueTokens,
-              type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
-            });
-            fetchResolve(true);
-          })
-          .catch(error => {
-            dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE });
-            captureException(error);
-            fetchReject(error);
-          });
-      });
-
-    return fetchUniqueTokens()
-      .then(() => {
-        clearInterval(getUniqueTokensInterval);
-        getUniqueTokensInterval = setInterval(fetchUniqueTokens, 15000); // 15 secs
-        resolve(true);
-      })
-      .catch(error => {
-        clearInterval(getUniqueTokensInterval);
-        getUniqueTokensInterval = setInterval(fetchUniqueTokens, 15000); // 15 secs
-        reject(error);
-      });
-  });
+const watchUniqueTokens = () => async dispatch => {
+  try {
+    await dispatch(fetchUniqueTokens());
+    getUniqueTokensHandler && clearTimeout(getUniqueTokensHandler);
+    getUniqueTokensHandler = setTimeout(() => {
+      dispatch(watchUniqueTokens());
+    }, 15000); // 15 secs
+  } catch (error) {
+    getUniqueTokensHandler && clearTimeout(getUniqueTokensHandler);
+    getUniqueTokensHandler = setTimeout(() => {
+      dispatch(watchUniqueTokens());
+    }, 15000); // 15 secs
+  }
+};
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNIQUE_TOKENS_STATE = {
