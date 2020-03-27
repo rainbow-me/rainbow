@@ -1,33 +1,43 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
+import { calculateAPY } from '../../helpers/savings';
 import { convertAmountToBalanceDisplay } from '../../helpers/utilities';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
-import { Icon } from '../icons';
 import { FlexItem, Row, RowWithMargins } from '../layout';
+import { CoinRowAPYPill } from '../savings';
 import { Text } from '../text';
 import BalanceText from './BalanceText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { APRPill } from '../savings';
 
-const BottomRow = ({ lifetimeSupplyInterestAccrued, supplyRate, symbol }) => (
-  <Fragment>
-    <APRPill>{`${(parseFloat(supplyRate) * 100).toFixed(4)}% APR`}</APRPill>
-    <RowWithMargins align="center" margin={4}>
-      <Icon name="plusCircled" size={15} color={colors.green} />
-      <Text color={colors.green} size="smedium" weight="semibold">
-        {convertAmountToBalanceDisplay(
-          lifetimeSupplyInterestAccrued,
-          {
-            symbol,
-          },
-          1
-        )}
-      </Text>
-    </RowWithMargins>
-  </Fragment>
-);
+const BottomRow = ({ lifetimeSupplyInterestAccrued, supplyRate, symbol }) => {
+  const apy = calculateAPY(supplyRate);
+  const apyTruncated = parseFloat(apy).toFixed(2);
+
+  return (
+    <Fragment>
+      <CoinRowAPYPill>{apyTruncated}% APY</CoinRowAPYPill>
+      <RowWithMargins align="center" margin={4}>
+        <Text
+          align="right"
+          color={colors.green}
+          size="smedium"
+          weight="semibold"
+        >
+          {'􀁍 '}
+          {convertAmountToBalanceDisplay(
+            lifetimeSupplyInterestAccrued,
+            {
+              symbol,
+            },
+            1
+          )}
+        </Text>
+      </RowWithMargins>
+    </Fragment>
+  );
+};
 
 BottomRow.propTypes = {
   lifetimeSupplyInterestAccrued: PropTypes.string,
@@ -36,7 +46,7 @@ BottomRow.propTypes = {
 };
 
 const TopRow = ({ name, supplyBalanceUnderlying, symbol }) => (
-  <Row align="center" justify="space-between" marginBottom={0}>
+  <Row align="center" justify="space-between" marginBottom={2}>
     <FlexItem flex={1}>
       <CoinName letterSpacing="roundedMedium" weight="semibold">
         {name}
