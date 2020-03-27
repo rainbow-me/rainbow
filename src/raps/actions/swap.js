@@ -4,6 +4,8 @@ import {
   executeSwap,
   estimateSwapGasLimit,
 } from '../../handlers/uniswap';
+import transactionStatusTypes from '../../helpers/transactionStatusTypes';
+import transactionTypes from '../../helpers/transactionTypes';
 import store from '../../redux/store';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
@@ -67,7 +69,9 @@ const swap = async (wallet, currentRap, index, parameters) => {
     from: accountAddress,
     hash: swap.hash,
     nonce: get(swap, 'nonce'),
+    status: transactionStatusTypes.swapping,
     to: get(swap, 'to'),
+    type: transactionTypes.swap,
   };
   console.log('[swap] adding new txn', newTransaction);
   dispatch(dataAddNewTransaction(newTransaction, true));
@@ -77,7 +81,8 @@ const swap = async (wallet, currentRap, index, parameters) => {
 
   try {
     console.log('[swap] waiting for the swap to go thru');
-    await swap.wait();
+    const receipt = await wallet.provider.waitForTransaction(swap.hash);
+    console.log('[swap] receipt:', receipt);
     // update rap for confirmed status
     currentRap.actions[index].transaction.confirmed = true;
     dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
