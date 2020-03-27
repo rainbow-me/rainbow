@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from 'react-navigation-hooks';
 import {
   calculateAPY,
   calculateCompoundInterestPerBlock,
@@ -10,15 +10,15 @@ import {
   formatSavingsAmount,
 } from '../../helpers/savings';
 import { add, multiply } from '../../helpers/utilities';
-import { colors, padding, position, fonts } from '../../styles';
+import { colors, fonts, padding } from '../../styles';
 import { deviceUtils } from '../../utils';
-import { ButtonPressAnimation, AnimatedNumber } from '../animations';
+import { AnimatedNumber, ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
-import { Icon } from '../icons';
 import { Centered, Row } from '../layout';
 import { ShadowStack } from '../shadow-stack';
-import { GradientText, Text } from '../text';
-import { useNavigation } from 'react-navigation-hooks';
+import { Text } from '../text';
+import APYPill from './APYPill';
+import DefaultDepositButton from './DefaultDepositButton';
 
 const AVERAGE_BLOCK_TIME_MS = APROX_BLOCK_TIME * 1000;
 const BLOCKS_IN_1_DAY = (60000 / AVERAGE_BLOCK_TIME_MS) * 60 * 24 * 1000;
@@ -133,6 +133,8 @@ const SavingsListRow = ({
   const displayValue = formatSavingsAmount(value);
   if (!underlying || !underlying.address) return null;
 
+  const hasValueToDisplay = supplyBalanceUnderlying && !isNaN(displayValue);
+
   return (
     <ButtonPressAnimation onPress={onButtonPress} scaleTo={0.96}>
       <Centered css={padding(0, 0, 15)} direction="column">
@@ -169,88 +171,13 @@ const SavingsListRow = ({
                   style={{ marginRight: 6 }}
                 />
               ) : null}
-              {supplyBalanceUnderlying && !isNaN(displayValue) ? (
+              {hasValueToDisplay ? (
                 renderAnimatedNumber(displayValue, steps, underlying.symbol)
               ) : (
-                <>
-                  <Text
-                    style={{
-                      color: colors.blueGreyDark,
-                      fontSize: 16,
-                      fontWeight: fonts.weight.semibold,
-                      marginRight: 10,
-                      opacity: 0.5,
-                    }}
-                  >
-                    $0.00
-                  </Text>
-                  <ButtonPressAnimation onPress={onButtonPress} scaleTo={0.92}>
-                    <ShadowStack
-                      width={97}
-                      height={30}
-                      borderRadius={25}
-                      paddingHorizontal={8}
-                      backgroundColor="#575CFF"
-                      alignItems="center"
-                      flexDirection="row"
-                      shadows={[
-                        [0, 3, 5, colors.dark, 0.2],
-                        [0, 6, 10, colors.dark, 0.14],
-                      ]}
-                    >
-                      <Icon
-                        name="plusCircled"
-                        color={colors.white}
-                        height={16}
-                      />
-                      <Text
-                        style={{
-                          color: colors.white,
-                          fontSize: 15,
-                          fontWeight: fonts.weight.semibold,
-                          marginLeft: -7.5,
-                          paddingHorizontal: 10,
-                        }}
-                      >
-                        Deposit
-                      </Text>
-                    </ShadowStack>
-                  </ButtonPressAnimation>
-                </>
+                <DefaultDepositButton onButtonPress={onButtonPress} />
               )}
             </Row>
-            <Centered
-              style={{
-                height: 30,
-              }}
-            >
-              <LinearGradient
-                borderRadius={17}
-                overflow="hidden"
-                colors={['#2CCC00', '#FEBE44']}
-                end={{ x: 1, y: 1 }}
-                pointerEvents="none"
-                start={{ x: 0, y: 0 }}
-                opacity={0.1}
-                style={position.coverAsObject}
-              />
-              <GradientText
-                align="center"
-                angle={false}
-                end={{ x: 1, y: 1 }}
-                letterSpacing="roundedTight"
-                start={{ x: 0, y: 0 }}
-                steps={[0, 1]}
-                style={{
-                  fontSize: parseFloat(fonts.size.lmedium),
-                  fontWeight: fonts.weight.semibold,
-                  paddingBottom: 1,
-                  paddingHorizontal: 10,
-                }}
-              >
-                {apy}% APY
-              </GradientText>
-            </Centered>
+            <APYPill apy={apy} />
           </Row>
         </ShadowStack>
       </Centered>
