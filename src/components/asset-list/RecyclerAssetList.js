@@ -514,7 +514,7 @@ class RecyclerAssetList extends Component {
       scrollingVelocity &&
       scrollingVelocity !== prevProps.scrollingVelocity
     ) {
-      this.scrollInterval(scrollingVelocity);
+      this.startScroll(scrollingVelocity);
     }
 
     if (openFamilyTabs !== prevProps.openFamilyTabs && collectibles.data) {
@@ -743,10 +743,10 @@ class RecyclerAssetList extends Component {
   savingsList = [];
   savingsSumValue = 0;
 
-  scrollInterval = scrollingVelocity => {
+  startScroll = scrollingVelocity => {
     clearTimeout(this.scrollHandle);
     this.rlv.scrollToOffset(0, this.position + scrollingVelocity * 10);
-    this.scrollHandle = setTimeout(this.scrollInterval, 30);
+    this.scrollHandle = setTimeout(this.startScroll, 30);
   };
 
   scrollToOffset = (position, animated) => {

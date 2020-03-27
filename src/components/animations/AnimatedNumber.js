@@ -23,7 +23,7 @@ const AnimatedNumber = ({
   ...props
 }) => {
   const currentValue = useRef(value);
-  const timeoutHandle = useRef();
+  const animateNumberHandle = useRef();
   const textInputRef = useRef();
 
   const isPositive = useMemo(() => value - currentValue.current > 0, [value]);
@@ -46,24 +46,27 @@ const AnimatedNumber = ({
     }
 
     if (isComplete) {
-      clearHandle(timeoutHandle.current);
+      clearHandle(animateNumberHandle.current);
     }
   }, [formatter, isPositive, stepSize, value]);
 
-  const animateNumberInterval = useCallback(() => {
-    clearHandle(timeoutHandle.current);
+  const startAnimateNumber = useCallback(() => {
+    clearHandle(animateNumberHandle.current);
     InteractionManager.runAfterInteractions(() => {
       animateNumber();
-      timeoutHandle.current = setTimeout(animateNumberInterval, Number(time));
+      animateNumberHandle.current = setTimeout(
+        startAnimateNumber,
+        Number(time)
+      );
     });
   }, [animateNumber, time]);
 
   useEffect(() => {
     if (currentValue.current !== value) {
-      animateNumberInterval();
+      startAnimateNumber();
     }
-    return () => clearHandle(timeoutHandle.current);
-  }, [animateNumber, animateNumberInterval, time, value]);
+    return () => clearHandle(animateNumberHandle.current);
+  }, [animateNumber, startAnimateNumber, time, value]);
 
   return (
     <TextInput
