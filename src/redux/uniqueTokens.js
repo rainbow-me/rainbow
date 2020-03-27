@@ -28,7 +28,7 @@ const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE =
 const UNIQUE_TOKENS_CLEAR_STATE = 'uniqueTokens/UNIQUE_TOKENS_CLEAR_STATE';
 
 // -- Actions --------------------------------------------------------------- //
-let getUniqueTokensHandler = null;
+let uniqueTokensHandle = null;
 
 export const uniqueTokensLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
@@ -47,7 +47,7 @@ export const uniqueTokensLoadState = () => async (dispatch, getState) => {
 export const uniqueTokensClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   removeUniqueTokens(accountAddress, network);
-  clearTimeout(getUniqueTokensHandler);
+  clearTimeout(uniqueTokensHandle);
   dispatch({ type: UNIQUE_TOKENS_CLEAR_STATE });
 };
 
@@ -90,13 +90,13 @@ const fetchUniqueTokens = () => async (dispatch, getState) => {
 const watchUniqueTokens = () => async dispatch => {
   try {
     await dispatch(fetchUniqueTokens());
-    getUniqueTokensHandler && clearTimeout(getUniqueTokensHandler);
-    getUniqueTokensHandler = setTimeout(() => {
+    uniqueTokensHandle && clearTimeout(uniqueTokensHandle);
+    uniqueTokensHandle = setTimeout(() => {
       dispatch(watchUniqueTokens());
     }, 15000); // 15 secs
   } catch (error) {
-    getUniqueTokensHandler && clearTimeout(getUniqueTokensHandler);
-    getUniqueTokensHandler = setTimeout(() => {
+    uniqueTokensHandle && clearTimeout(uniqueTokensHandle);
+    uniqueTokensHandle = setTimeout(() => {
       dispatch(watchUniqueTokens());
     }, 15000); // 15 secs
   }
