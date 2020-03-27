@@ -7,9 +7,7 @@ const BLOCKS_PER_YEAR = (60 / APPROX_BLOCK_TIME) * 60 * 24 * 365;
 const calculateAPY = supplyRate => {
   if (!supplyRate) return (0).toFixed(2);
   const periodicRate = (supplyRate * 1) / BLOCKS_PER_YEAR;
-  return ((Math.pow(1 + periodicRate, BLOCKS_PER_YEAR - 1) - 1) * 100).toFixed(
-    2
-  );
+  return (Math.pow(1 + periodicRate, BLOCKS_PER_YEAR - 1) - 1) * 100;
 };
 
 const calculateEarningsInDays = (principal, supplyRate, days) => {
