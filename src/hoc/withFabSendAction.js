@@ -26,7 +26,7 @@ const withPropsDerivedFromSelectedId = createSelector(
 
 let openFamilyCheck = 0;
 let currentFamilyId;
-let timer;
+let openFamilyTabsHandle;
 
 export default compose(
   connect(mapStateToProps),
@@ -49,11 +49,11 @@ export default compose(
       if (family && !fabDropped) {
         if (currentFamilyId !== family) {
           openFamilyCheck = 0;
-          clearTimeout(timer);
+          clearTimeout(openFamilyTabsHandle);
         }
 
         if (++openFamilyCheck === 1) {
-          timer = setTimeout(() => {
+          openFamilyTabsHandle = setTimeout(() => {
             if (family) {
               setOpenFamilyTabs({ index: familyId, state: true });
             }

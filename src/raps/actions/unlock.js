@@ -3,6 +3,8 @@ import { greaterThan, isZero } from '../../helpers/utilities';
 import transactionStatusTypes from '../../helpers/transactionStatusTypes';
 import transactionTypes from '../../helpers/transactionTypes';
 import store from '../../redux/store';
+import transactionStatusTypes from '../../helpers/transactionStatusTypes';
+import transactionTypes from '../../helpers/transactionTypes';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
 import { contractUtils, gasUtils } from '../../utils';
