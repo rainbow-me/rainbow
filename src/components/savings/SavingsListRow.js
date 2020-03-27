@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 import { InteractionManager, Platform, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import ShadowStack from 'react-native-shadow-stack';
 import {
   calculateAPY,
   calculateCompoundInterestInDays,
@@ -20,8 +21,8 @@ import { colors, position, fonts } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation, AnimatedNumber } from '../animations';
 import { CoinIcon } from '../coin-icon';
+import { Icon } from '../icons';
 import { Centered, Row, InnerBorder } from '../layout';
-import { ShadowStack } from '../shadow-stack';
 import { GradientText, Text } from '../text';
 import { useNavigation } from 'react-navigation-hooks';
 

@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import ShadowStack from 'react-native-shadow-stack';
 import stylePropType from 'react-style-proptype';
 import { FallbackIcon } from 'react-coin-icon';
 import { borders, colors } from '../../styles';
 import { initials } from '../../utils';
 import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
-import { ShadowStack } from '../shadow-stack';
 
 const TokenFamilyHeaderIcon = ({
   familyImage,

@@ -7,13 +7,13 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
+import ShadowStack from 'react-native-shadow-stack';
 import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { useBiometryType, BiometryTypes } from '../../../hooks';
 import { colors, padding } from '../../../styles';
 import { haptics } from '../../../utils';
 import { Centered, InnerBorder } from '../../layout';
-import { ShadowStack } from '../../shadow-stack';
 import { Text } from '../../text';
 import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
 
