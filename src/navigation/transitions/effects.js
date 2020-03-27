@@ -78,30 +78,6 @@ const exchangeStyleInterpolator = ({
   };
 };
 
-const exchangeDetailsStyleInterpolator = ({
-  current: { progress: current },
-  layouts: { screen },
-}) => {
-  const backgroundOpacity = current.interpolate({
-    inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, 0, 0],
-  });
-
-  const translateY = current.interpolate({
-    inputRange: [0, 1],
-    outputRange: [screen.height, 0],
-  });
-
-  return {
-    cardStyle: {
-      transform: [{ translateY }],
-    },
-    overlayStyle: {
-      opacity: backgroundOpacity,
-    },
-  };
-};
-
 const expandStyleInterpolator = targetOpacity => ({
   current: { progress: current },
   layouts: { screen },
@@ -274,17 +250,6 @@ export const emojiPreset = {
   gestureResponseDistance,
   onTransitionStart,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
-};
-
-export const exchangeDetailsPreset = {
-  cardOverlayEnabled: true,
-  cardShadowEnabled: true,
-  cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: exchangeDetailsStyleInterpolator,
-  cardTransparent: true,
-  gestureDirection: 'vertical',
-  gestureResponseDistance,
-  transitionSpec: { close: closeSpec, open: openSpec },
 };
 
 export const exchangePreset = {
