@@ -9,30 +9,35 @@ import { Centered, ColumnWithMargins } from '../layout';
 import { SheetButton } from '../sheet';
 import { Br, GradientText, Text } from '../text';
 
-const APRHeadingTextStyle = {
+const APYHeadingTextStyle = {
   fontSize: parseFloat(fonts.size.big),
   fontWeight: fonts.weight.bold,
 };
 
-const APRHeadingText = p => <Text {...p} style={APRHeadingTextStyle} />;
+const APYHeadingText = p => <Text {...p} style={APYHeadingTextStyle} />;
 
-const SavingsSheetEmptyState = ({ supplyRate: baseSupplyRate, underlying }) => {
-  const apy = useMemo(() => calculateAPY(baseSupplyRate), [baseSupplyRate]);
+const SavingsSheetEmptyState = ({ supplyRate, underlying }) => {
+  const apy = useMemo(() => calculateAPY(supplyRate), [supplyRate]);
+  const apyTruncated = Math.floor(apy * 10) / 10;
   const { navigate } = useNavigation();
 
   return (
     <Centered direction="column" paddingTop={9}>
       <CoinIcon size={50} symbol="DAI" />
       <Centered marginBottom={12} marginTop={15}>
-        <APRHeadingText>Get </APRHeadingText>
+        <APYHeadingText>Get </APYHeadingText>
         <GradientText
-          angle={114.53}
+          align="center"
+          angle={false}
+          end={{ x: 1, y: 1 }}
+          start={{ x: 0, y: 0 }}
+          steps={[0, 1]}
           renderer={Text}
-          style={APRHeadingTextStyle}
+          style={APYHeadingTextStyle}
         >
-          {apy}%
+          {apyTruncated}%
         </GradientText>
-        <APRHeadingText> on your dollars</APRHeadingText>
+        <APYHeadingText> on your dollars</APYHeadingText>
       </Centered>
       <Text
         align="center"
@@ -48,8 +53,7 @@ const SavingsSheetEmptyState = ({ supplyRate: baseSupplyRate, underlying }) => {
       <ColumnWithMargins css={padding(19, 15)} margin={19} width="100%">
         <SheetButton
           color={colors.swapPurple}
-          icon="plusCircled"
-          label="Deposit from Wallet"
+          label="􀁍 Deposit from Wallet"
           onPress={() =>
             navigate('SavingsDepositModal', {
               defaultInputAsset: underlying,

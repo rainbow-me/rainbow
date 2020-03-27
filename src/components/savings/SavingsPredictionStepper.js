@@ -58,9 +58,13 @@ const SavingsPredictionStepper = ({ balance, interestRate }) => {
       scaleTo={1.05}
       width="100%"
     >
-      <Row align="center" css={padding(15, 19)}>
-        <RowWithMargins align="center" margin={6}>
-          <Emoji name="crystal_ball" size="lmedium" />
+      <Row align="center" css={padding(15, 19, 19)}>
+        <RowWithMargins align="center" margin={5}>
+          <Emoji
+            name="crystal_ball"
+            size="medium"
+            style={{ marginBottom: 0.5 }}
+          />
           <Text size="lmedium">
             {`Est. ${Object.keys(steps)[step]} Earnings`}
           </Text>
