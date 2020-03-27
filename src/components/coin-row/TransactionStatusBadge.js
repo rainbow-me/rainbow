@@ -55,6 +55,9 @@ const StatusProps = {
     small: true,
     style: position.maxSizeAsObject(12),
   },
+  [TransactionStatusTypes.swapping]: {
+    marginRight: 4,
+  },
   [TransactionStatusTypes.withdrawing]: {
     marginRight: 4,
   },
