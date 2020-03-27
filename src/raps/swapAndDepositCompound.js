@@ -5,14 +5,16 @@ import { savingsAssetsListByUnderlying } from '../references';
 import { createNewAction, createNewRap, RapActionTypes } from './common';
 
 const createSwapAndDepositCompoundRap = ({
-  inputCurrency,
-  outputCurrency,
-  inputAmount,
-  outputAmount,
-  selectedGasPrice,
   callback,
+  inputAmount,
+  inputCurrency,
+  inputReserve,
+  outputAmount,
+  outputCurrency,
+  outputReserve,
+  selectedGasPrice,
 }) => {
-  const { network } = store.getState().settings;
+  const { accountAddress, chainId, network } = store.getState().settings;
   const requiresSwap = !!outputCurrency;
   console.log('[swap and deposit] currencies', inputCurrency, outputCurrency);
   console.log('[swap and deposit] amounts', inputAmount, outputAmount);
@@ -23,6 +25,7 @@ const createSwapAndDepositCompoundRap = ({
     );
     // create unlock for swap rap
     const unlock = createNewAction(RapActionTypes.unlock, {
+      accountAddress,
       assetToUnlock: inputCurrency,
       contractAddress: inputCurrency.exchangeAddress,
     });
@@ -31,11 +34,15 @@ const createSwapAndDepositCompoundRap = ({
 
     // create a swap rap
     const swap = createNewAction(RapActionTypes.swap, {
+      accountAddress,
+      chainId,
       inputAmount,
       inputAsExactAmount: false,
       inputCurrency,
+      inputReserve,
       outputAmount,
       outputCurrency,
+      outputReserve,
       selectedGasPrice,
     });
     actions = concat(actions, swap);
@@ -51,6 +58,7 @@ const createSwapAndDepositCompoundRap = ({
   // create unlock token on Compound rap
   console.log('[swap and deposit] making unlock token func');
   const unlockTokenToDeposit = createNewAction(RapActionTypes.unlock, {
+    accountAddress,
     assetToUnlock: tokenToDeposit,
     contractAddress: cTokenContract,
   });
@@ -59,8 +67,10 @@ const createSwapAndDepositCompoundRap = ({
   // create a deposit rap
   console.log('[swap and deposit] making deposit func');
   const deposit = createNewAction(RapActionTypes.depositCompound, {
+    accountAddress,
     inputAmount: requiresSwap ? outputAmount : inputAmount,
     inputCurrency: tokenToDeposit,
+    network,
     selectedGasPrice,
   });
   actions = concat(actions, deposit);

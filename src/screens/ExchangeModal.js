@@ -612,13 +612,15 @@ const ExchangeModal = ({
         inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
         inputAsExactAmount,
         inputCurrency,
+        inputReserve,
         isMax,
         outputAmount,
         outputCurrency,
+        outputReserve,
         selectedGasPrice: null,
       });
       console.log('[exchange - handle submit] rap', rap);
-      executeRap(wallet, rap);
+      await executeRap(wallet, rap);
       console.log('[exchange - handle submit] executed rap!');
     } catch (error) {
       setIsAuthorizing(false);
