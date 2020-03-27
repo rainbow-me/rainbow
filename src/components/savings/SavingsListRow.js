@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import AnimatedNumber from '@rainbow-me/react-native-animated-number';
 import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
 import React, {
@@ -19,7 +20,7 @@ import {
 } from '../../helpers/savings';
 import { colors, position, fonts } from '../../styles';
 import { deviceUtils } from '../../utils';
-import { ButtonPressAnimation, AnimatedNumber } from '../animations';
+import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Icon } from '../icons';
 import { Centered, Row, InnerBorder } from '../layout';

@@ -1,7 +1,8 @@
+import AnimatedNumber from '@rainbow-me/react-native-animated-number';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import { colors, fonts, padding } from '../../styles';
-import { AnimatedNumber, ButtonPressAnimation } from '../animations';
+import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import { calculateEarningsInDays } from '../../helpers/savings';
