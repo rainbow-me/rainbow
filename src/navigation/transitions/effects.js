@@ -101,6 +101,7 @@ const expandStyleInterpolator = targetOpacity => ({
       transform: [{ translateY }],
     },
     overlayStyle: {
+      backgroundColor: colors.blueGreyDarker,
       opacity: backgroundOpacity,
     },
   };
@@ -155,7 +156,7 @@ const sheetStyleInterpolator = ({
     cardStyle: {
       shadowColor: colors.black,
       shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.4,
+      shadowOpacity: 0.6,
       shadowRadius: 25,
       transform: [{ translateY }],
     },
@@ -171,7 +172,7 @@ const swapDetailInterpolator = ({
   layouts: { screen },
 }) => {
   // kinda hacky... but lets me expose the
-  // stack's transitionPosition in an exportable wayy
+  // stack's transitionPosition in an exportable way
   Animated.spring(swapDetailsTransitionPosition, {
     toValue: current,
     useNativeDriver: true,
@@ -189,10 +190,14 @@ const swapDetailInterpolator = ({
 
   return {
     cardStyle: {
+      shadowColor: colors.dark,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.6,
+      shadowRadius: 25,
       transform: [{ translateY }],
     },
     overlayStyle: {
-      backgroundColor: colors.dark,
+      backgroundColor: colors.blueGreyDarker,
       opacity: backgroundOpacity,
       overflow: 'hidden',
     },
@@ -310,6 +315,7 @@ export const sheetPreset = {
 };
 
 export const swapDetailsPreset = {
+  cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: swapDetailInterpolator,
