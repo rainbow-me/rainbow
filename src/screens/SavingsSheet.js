@@ -110,7 +110,7 @@ const SavingsSheet = () => {
           </FloatingEmojis>
           <Divider zIndex={0} />
           <SavingsPredictionStepper
-            balance={supplyBalanceUnderlying}
+            balance={nativeValue}
             interestRate={supplyRate}
           />
         </Fragment>
