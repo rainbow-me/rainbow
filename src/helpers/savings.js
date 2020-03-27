@@ -1,13 +1,13 @@
 import BigNumber from 'bignumber.js';
 
 const APROX_BLOCK_TIME = 15;
-const MAX_DECIMALS_TO_SHOW = 10;
+const MAX_DECIMALS_TO_SHOW = 9;
 
 const calculateAPY = supplyRate => {
   if (!supplyRate) return (0).toFixed(2);
   let blocksPerYear = (60 / APROX_BLOCK_TIME) * 60 * 24 * 365;
   const periodicRate = (supplyRate * 1) / blocksPerYear;
-  return ((Math.pow(1 + periodicRate, blocksPerYear - 1) - 1) * 100).toFixed(2);
+  return (Math.pow(1 + periodicRate, blocksPerYear - 1) - 1) * 100;
 };
 
 const calculateCompoundInterestPerBlock = (amount, apy) => {
