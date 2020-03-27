@@ -9,13 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  InteractionManager,
-  NativeModules,
-  TextInput,
-  Platform,
-} from 'react-native';
-import BackgroundTimer from 'react-native-background-timer';
+import { InteractionManager, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useIsFocused } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
@@ -68,13 +62,11 @@ import { loadWallet } from '../model/wallet';
 import { executeRap } from '../raps/common';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
-import { ethereumUtils } from '../utils';
+import { ethereumUtils, backgroundTask } from '../utils';
 import { CurrencySelectionTypes } from './CurrencySelectModal';
 import SwapInfo from '../components/exchange/SwapInfo';
 
 export const exchangeModalBorderRadius = 30;
-let NotificationManager =
-  Platform.OS === 'ios' ? NativeModules.NotificationManager : null;
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(
   toClass(FloatingPanels)
@@ -611,71 +603,39 @@ const ExchangeModal = ({
     return updateInputAmount(maxBalance, maxBalance, true, true);
   };
 
-  const handleSubmit = async () => {
-    if (Platform.OS === 'ios') {
+  const handleSubmit = () => {
+    backgroundTask.execute(async () => {
+      setIsAuthorizing(true);
       try {
-        console.log('[BG EXEC]: starting background execution');
-        // Tell iOS we're running a rap (for tracking purposes)
-        NotificationManager &&
-          NotificationManager.postNotification('rapInProgress');
-        BackgroundTimer.start();
-        await doSubmit();
-      } catch (e) {
-        console.log('[BG] HandleSubmit blew up');
-      } finally {
-        BackgroundTimer.stop();
-        console.log('[BG EXEC]: finished background execution');
-      }
-    } else {
-      let timeoutId;
-      try {
-        console.log('[BG EXEC]: starting background execution');
-        timeoutId = BackgroundTimer.setTimeout(async () => {
-          await doSubmit();
-          BackgroundTimer.clearTimeout(timeoutId);
-          console.log('[BG EXEC]: finished background execution');
-        }, 1);
-      } catch (e) {
-        console.log('[BG] HandleSubmit blew up');
-        timeoutId && BackgroundTimer.clearTimeout(timeoutId);
-        console.log('[BG EXEC]: finished background execution');
-      }
-    }
-    // Tell iOS we finished running a rap (for tracking purposes)
-    NotificationManager && NotificationManager.postNotification('rapCompleted');
-  };
+        const wallet = await loadWallet();
 
-  const doSubmit = async () => {
-    setIsAuthorizing(true);
-    try {
-      const wallet = await loadWallet();
-
-      setIsAuthorizing(false);
-      const callback = () => {
+        setIsAuthorizing(false);
+        const callback = () => {
+          navigation.setParams({ focused: false });
+          navigation.navigate('ProfileScreen');
+        };
+        const rap = createRap({
+          callback,
+          inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
+          inputAsExactAmount,
+          inputCurrency,
+          inputReserve,
+          isMax,
+          outputAmount,
+          outputCurrency,
+          outputReserve,
+          selectedGasPrice: null,
+        });
+        console.log('[exchange - handle submit] rap', rap);
+        await executeRap(wallet, rap);
+        console.log('[exchange - handle submit] executed rap!');
+      } catch (error) {
+        setIsAuthorizing(false);
+        console.log('[exchange - handle submit] error submitting swap', error);
         navigation.setParams({ focused: false });
-        navigation.navigate('ProfileScreen');
-      };
-      const rap = createRap({
-        callback,
-        inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
-        inputAsExactAmount,
-        inputCurrency,
-        inputReserve,
-        isMax,
-        outputAmount,
-        outputCurrency,
-        outputReserve,
-        selectedGasPrice: null,
-      });
-      console.log('[exchange - handle submit] rap', rap);
-      await executeRap(wallet, rap);
-      console.log('[exchange - handle submit] executed rap!');
-    } catch (error) {
-      setIsAuthorizing(false);
-      console.log('[exchange - handle submit] error submitting swap', error);
-      navigation.setParams({ focused: false });
-      navigation.navigate('WalletScreen');
-    }
+        navigation.navigate('WalletScreen');
+      }
+    });
   };
 
   const handleRefocusLastInput = () => {
