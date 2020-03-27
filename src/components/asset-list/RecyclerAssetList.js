@@ -507,17 +507,14 @@ class RecyclerAssetList extends Component {
     });
 
     if (scrollingVelocity === 0) {
-      clearInterval(this.interval);
+      clearTimeout(this.scrollHandle);
     }
 
     if (
       scrollingVelocity &&
       scrollingVelocity !== prevProps.scrollingVelocity
     ) {
-      clearInterval(this.interval);
-      this.interval = setInterval(() => {
-        this.rlv.scrollToOffset(0, this.position + scrollingVelocity * 10);
-      }, 30);
+      this.scrollInterval(scrollingVelocity);
     }
 
     if (openFamilyTabs !== prevProps.openFamilyTabs && collectibles.data) {
@@ -731,7 +728,7 @@ class RecyclerAssetList extends Component {
 
   componentWillUnmount = () => {
     this.isCancelled = true;
-    clearInterval(this.interval);
+    clearTimeout(this.scrollHandle);
   };
 
   rlv = React.createRef();
@@ -745,6 +742,12 @@ class RecyclerAssetList extends Component {
   renderList = [];
   savingsList = [];
   savingsSumValue = 0;
+
+  scrollInterval = scrollingVelocity => {
+    clearTimeout(this.scrollHandle);
+    this.rlv.scrollToOffset(0, this.position + scrollingVelocity * 10);
+    this.scrollHandle = setTimeout(this.scrollInterval, 30);
+  };
 
   scrollToOffset = (position, animated) => {
     setTimeout(() => {
