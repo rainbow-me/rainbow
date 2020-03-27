@@ -1,12 +1,12 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
+import ShadowStack from 'react-native-shadow-stack';
 import { withNeverRerender } from '../../hoc';
 import { colors, fonts, padding } from '../../styles';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
 import { EnDash } from '../html-entities';
 import { Row, RowWithMargins } from '../layout';
-import { ShadowStack } from '../shadow-stack';
 import ExchangeInput from './ExchangeInput';
 
 const paddingValue = 15;

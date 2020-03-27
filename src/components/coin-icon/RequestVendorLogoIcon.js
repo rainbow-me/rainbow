@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import FastImage from 'react-native-fast-image';
+import ShadowStack from 'react-native-shadow-stack';
 import { colors, position } from '../../styles';
 import { initials } from '../../utils';
 import { Centered } from '../layout';
-import { ShadowStack } from '../shadow-stack';
 import { Text } from '../text';
 import CoinIcon from './CoinIcon';
 
