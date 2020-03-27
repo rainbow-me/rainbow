@@ -9,11 +9,11 @@ const buildFontFamily = ({ emoji, family = 'SFProRounded', mono }) => {
 };
 
 const buildFontWeight = ({ emoji, weight = 'regular' }) => {
-  if (emoji) return '';
+  if (emoji || isNil(weight)) return '';
   return `font-weight: ${get(fonts, `weight[${weight}]`, weight)};`;
 };
 
-const buildLetterSpacing = ({ letterSpacing }) => {
+const buildLetterSpacing = ({ letterSpacing = 'rounded' }) => {
   if (isNil(letterSpacing)) return '';
   return `letter-spacing: ${get(
     fonts,
@@ -33,18 +33,9 @@ export default css`
   ${buildLetterSpacing}
   ${buildLineHeight}
   ${({ align }) => (align ? `text-align: ${align};` : '')}
-  ${({ letterSpacing = 'rounded' }) =>
-    letterSpacing
-      ? `letter-spacing: ${fonts.letterSpacing[letterSpacing]};`
-      : ''}
-  ${({ lineHeight }) =>
-    lineHeight ? `line-height: ${fonts.lineHeight[lineHeight]};` : ''}
+  ${({ opacity }) => (isNil(opacity) ? '' : `opacity: ${opacity};`)}
   ${({ uppercase }) => (uppercase ? 'text-transform: uppercase;' : '')}
   color: ${({ color }) => colors.get(color) || colors.dark}
-  ${({ emoji, family = 'SFProRounded', mono }) =>
-    emoji ? '' : `font-family: ${fonts.family[mono ? 'SFMono' : family]}`};
   font-size: ${({ size }) =>
     typeof size === 'number' ? size : fonts.size[size || 'medium']};
-  ${({ emoji, weight }) =>
-    emoji ? '' : `font-weight: ${fonts.weight[weight || 'regular']}`};
 `;
