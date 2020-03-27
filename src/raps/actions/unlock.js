@@ -1,6 +1,8 @@
 import { get, toLower } from 'lodash';
 import { greaterThan, isZero } from '../../helpers/utilities';
 import store from '../../redux/store';
+import transactionStatusTypes from '../../helpers/transactionStatusTypes';
+import transactionTypes from '../../helpers/transactionTypes';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
 import { contractUtils, gasUtils } from '../../utils';
@@ -54,17 +56,16 @@ const unlock = async (wallet, currentRap, index, parameters) => {
 
   console.log('[unlock] add a new txn');
   dispatch(
-    dataAddNewTransaction(
-      {
-        amount: 0,
-        asset: assetToUnlock,
-        from: wallet.address,
-        hash: approval.hash,
-        nonce: get(approval, 'nonce'),
-        to: get(approval, 'to'),
-      },
-      true
-    )
+    dataAddNewTransaction({
+      amount: 0,
+      asset: assetToUnlock,
+      from: wallet.address,
+      hash: approval.hash,
+      nonce: get(approval, 'nonce'),
+      status: transactionStatusTypes.approving,
+      to: get(approval, 'to'),
+      type: transactionTypes.authorize,
+    })
   );
   console.log('[unlock] calling callback');
   currentRap.callback();

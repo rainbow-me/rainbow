@@ -25,6 +25,7 @@ const createSwapAndDepositCompoundRap = ({
     );
     // create unlock for swap rap
     const unlock = createNewAction(RapActionTypes.unlock, {
+      accountAddress,
       assetToUnlock: inputCurrency,
       contractAddress: inputCurrency.exchangeAddress,
     });
@@ -57,6 +58,7 @@ const createSwapAndDepositCompoundRap = ({
   // create unlock token on Compound rap
   console.log('[swap and deposit] making unlock token func');
   const unlockTokenToDeposit = createNewAction(RapActionTypes.unlock, {
+    accountAddress,
     assetToUnlock: tokenToDeposit,
     contractAddress: cTokenContract,
   });
