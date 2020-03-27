@@ -61,6 +61,7 @@ const unlock = async (wallet, currentRap, index, parameters) => {
       hash: approval.hash,
       nonce: get(approval, 'nonce'),
       to: get(approval, 'to'),
+      type: 'authorize',
     })
   );
   console.log('[unlock] calling callback');
