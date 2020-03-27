@@ -62,7 +62,7 @@ import { loadWallet } from '../model/wallet';
 import { executeRap } from '../raps/common';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
-import { ethereumUtils } from '../utils';
+import { ethereumUtils, backgroundTask } from '../utils';
 import { CurrencySelectionTypes } from './CurrencySelectModal';
 import SwapInfo from '../components/exchange/SwapInfo';
 
@@ -603,36 +603,39 @@ const ExchangeModal = ({
     return updateInputAmount(maxBalance, maxBalance, true, true);
   };
 
-  const handleSubmit = async () => {
-    setIsAuthorizing(true);
-    try {
-      const wallet = await loadWallet();
-      setIsAuthorizing(false);
-      const callback = () => {
+  const handleSubmit = () => {
+    backgroundTask.execute(async () => {
+      setIsAuthorizing(true);
+      try {
+        const wallet = await loadWallet();
+
+        setIsAuthorizing(false);
+        const callback = () => {
+          navigation.setParams({ focused: false });
+          navigation.navigate('ProfileScreen');
+        };
+        const rap = createRap({
+          callback,
+          inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
+          inputAsExactAmount,
+          inputCurrency,
+          inputReserve,
+          isMax,
+          outputAmount,
+          outputCurrency,
+          outputReserve,
+          selectedGasPrice: null,
+        });
+        console.log('[exchange - handle submit] rap', rap);
+        await executeRap(wallet, rap);
+        console.log('[exchange - handle submit] executed rap!');
+      } catch (error) {
+        setIsAuthorizing(false);
+        console.log('[exchange - handle submit] error submitting swap', error);
         navigation.setParams({ focused: false });
-        navigation.navigate('ProfileScreen');
-      };
-      const rap = createRap({
-        callback,
-        inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
-        inputAsExactAmount,
-        inputCurrency,
-        inputReserve,
-        isMax,
-        outputAmount,
-        outputCurrency,
-        outputReserve,
-        selectedGasPrice: null,
-      });
-      console.log('[exchange - handle submit] rap', rap);
-      await executeRap(wallet, rap);
-      console.log('[exchange - handle submit] executed rap!');
-    } catch (error) {
-      setIsAuthorizing(false);
-      console.log('[exchange - handle submit] error submitting swap', error);
-      navigation.setParams({ focused: false });
-      navigation.navigate('WalletScreen');
-    }
+        navigation.navigate('WalletScreen');
+      }
+    });
   };
 
   const handleRefocusLastInput = () => {

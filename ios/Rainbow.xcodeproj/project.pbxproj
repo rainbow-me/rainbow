@@ -12,6 +12,7 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		15E531D5242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D4242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift */; };
+		15E531DA242DAB7100797B89 /* NotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D9242DAB7100797B89 /* NotificationManager.m */; };
 		24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 24979E7720F84004007EB0DA /* GoogleService-Info.plist */; };
 		3CBE29CD2381E43900BE05AC /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBE29CC2381E43900BE05AC /* Dummy.swift */; };
 		66FEC91623EDA14000A0F367 /* RoundedCornerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FEC91523EDA13F00A0F367 /* RoundedCornerView.swift */; };
@@ -66,6 +67,8 @@
 		157155032418733F009B698B /* RainbowRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowRelease.entitlements; path = Rainbow/RainbowRelease.entitlements; sourceTree = "<group>"; };
 		157155042418734C009B698B /* RainbowDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowDebug.entitlements; path = Rainbow/RainbowDebug.entitlements; sourceTree = "<group>"; };
 		15E531D4242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageViewWithPersistentAnimations.swift; sourceTree = "<group>"; };
+		15E531D8242DAB7100797B89 /* NotificationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationManager.h; sourceTree = "<group>"; };
+		15E531D9242DAB7100797B89 /* NotificationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationManager.m; sourceTree = "<group>"; };
 		24979E3620F84003007EB0DA /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Protobuf.framework; path = Frameworks/Protobuf.framework; sourceTree = "<group>"; };
 		24979E7420F84004007EB0DA /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };
 		24979E7520F84004007EB0DA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCore.framework; path = Frameworks/FirebaseCore.framework; sourceTree = "<group>"; };
@@ -159,6 +162,7 @@
 		13B07FAE1A68108700A75B9A /* Rainbow */ = {
 			isa = PBXGroup;
 			children = (
+				15E531D7242DAB3500797B89 /* NSNotifications */,
 				15E531D6242B28F800797B89 /* Animations */,
 				157155042418734C009B698B /* RainbowDebug.entitlements */,
 				157155032418733F009B698B /* RainbowRelease.entitlements */,
@@ -186,6 +190,15 @@
 				15E531D4242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift */,
 			);
 			name = Animations;
+			sourceTree = "<group>";
+		};
+		15E531D7242DAB3500797B89 /* NSNotifications */ = {
+			isa = PBXGroup;
+			children = (
+				15E531D8242DAB7100797B89 /* NotificationManager.h */,
+				15E531D9242DAB7100797B89 /* NotificationManager.m */,
+			);
+			name = NSNotifications;
 			sourceTree = "<group>";
 		};
 		24979D1220F83E3D007EB0DA /* Recovered References */ = {
@@ -518,6 +531,7 @@
 				3CBE29CD2381E43900BE05AC /* Dummy.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				A49B52B623DB5D5600A00918 /* TransactionViewModelProtocol.swift in Sources */,
+				15E531DA242DAB7100797B89 /* NotificationManager.m in Sources */,
 				A4F8DACB23DF85DF00560E47 /* TransactionListBaseCell.swift in Sources */,
 				A49B52C023DCCDA800A00918 /* TransactionRequestSection.swift in Sources */,
 				A4704B4823C546DA00E50E4B /* TransactionListViewCell.swift in Sources */,
