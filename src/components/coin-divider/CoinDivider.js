@@ -169,7 +169,7 @@ export default class CoinDivider extends PureComponent {
         >
           <Text
             align="right"
-            color="dark"
+            color={colors.alpha(colors.blueGreyDark, 0.6)}
             size="lmedium"
             style={{ paddingBottom: 1 }}
           >
