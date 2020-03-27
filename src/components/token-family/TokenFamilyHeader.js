@@ -57,6 +57,7 @@ const TokenFamilyHeader = ({
             />
           )}
           <TruncatedText
+            letterSpacing="roundedMedium"
             lineHeight="normal"
             size="large"
             style={{ marginBottom: 1 }}
