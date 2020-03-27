@@ -96,7 +96,7 @@ const expandStyleInterpolator = targetOpacity => ({
     cardStyle: {
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.6,
+      shadowOpacity: 0.5,
       shadowRadius: 25,
       transform: [{ translateY }],
     },
@@ -180,7 +180,7 @@ const swapDetailInterpolator = ({
 
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, 0.7, 0.7],
+    outputRange: [0, 0, 0.6, 0.6],
   });
 
   const translateY = current.interpolate({
@@ -192,7 +192,7 @@ const swapDetailInterpolator = ({
     cardStyle: {
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.6,
+      shadowOpacity: 0.5,
       shadowRadius: 25,
       transform: [{ translateY }],
     },
