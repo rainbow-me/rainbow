@@ -24,12 +24,7 @@ import {
 } from '../components/exchange';
 import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
 import { GasSpeedButton } from '../components/gas';
-import GestureBlocker from '../components/GestureBlocker';
-import {
-  Centered,
-  Column,
-  KeyboardFixedOpenLayout,
-} from '../components/layout';
+import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import {
   calculateTradeDetails,
   estimateSwapGasLimit,
@@ -928,7 +923,6 @@ const ExchangeModal = ({
             overflow="visible"
             style={{ paddingBottom: showOutputField ? 0 : 26 }}
           >
-            <GestureBlocker type="top" />
             <ExchangeModalHeader
               onPressDetails={navigateToSwapDetailsModal}
               showDetailsButton={showDetailsButton}
@@ -985,9 +979,6 @@ const ExchangeModal = ({
               <GasSpeedButton />
             </Fragment>
           )}
-          <Column>
-            <GestureBlocker type="bottom" />
-          </Column>
         </AnimatedFloatingPanels>
       </Centered>
     </KeyboardFixedOpenLayout>
