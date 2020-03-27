@@ -1,9 +1,13 @@
+import { NativeModules, Platform } from 'react-native';
 import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
 import depositCompound from './actions/depositCompound';
 import unlock from './actions/unlock';
 import swap from './actions/swap';
 import withdrawCompound from './actions/withdrawCompound';
+
+let NotificationManager =
+  Platform.OS === 'ios' ? NativeModules.NotificationManager : null;
 
 const NOOP = () => undefined;
 
@@ -31,6 +35,8 @@ const findActionByType = type => {
 
 export const executeRap = async (wallet, rap) => {
   const { actions } = rap;
+  // Tell iOS we're running a rap (for tracking purposes)
+  NotificationManager && NotificationManager.postNotification('rapInProgress');
   console.log('[common - executing rap]: actions', actions);
   for (let index = 0; index < actions.length; index++) {
     const action = actions[index];
@@ -51,6 +57,8 @@ export const executeRap = async (wallet, rap) => {
       break;
     }
   }
+  // Tell iOS we finished running a rap (for tracking purposes)
+  NotificationManager && NotificationManager.postNotification('rapCompleted');
   console.log('[common - executing rap] finished execute rap function');
 };
 
