@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 
 const APPROX_BLOCK_TIME = 15;
-const MAX_DECIMALS_TO_SHOW = 9;
+const MAX_DECIMALS_TO_SHOW = 10;
 const BLOCKS_PER_YEAR = (60 / APPROX_BLOCK_TIME) * 60 * 24 * 365;
 
 const calculateAPY = supplyRate => {
