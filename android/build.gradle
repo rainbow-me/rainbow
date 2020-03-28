@@ -20,7 +20,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.4.2")
+        classpath("com.android.tools.build:gradle:3.5.2")
         classpath 'com.google.gms:google-services:4.3.3'
         classpath 'io.fabric.tools:gradle:1.28.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
@@ -50,6 +50,6 @@ allprojects {
             url "$rootDir/../node_modules/detox/Detox-android"
         }
 
-        maven { url 'https://jitpack.io' }
+        maven { url 'https://www.jitpack.io' }
     }
 }
