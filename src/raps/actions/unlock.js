@@ -11,16 +11,19 @@ const NOOP = () => undefined;
 
 const unlock = async (wallet, currentRap, index, parameters) => {
   const { dispatch } = store;
-  const { accountAddress, assetToUnlock, contractAddress } = parameters;
+  const { accountAddress, amount, assetToUnlock, contractAddress } = parameters;
   console.log(
     '[unlock] begin unlock rap for',
     assetToUnlock,
     'on',
-    contractAddress
+    contractAddress,
+    'amount',
+    amount
   );
 
   const needsUnlocking = await assetNeedsUnlocking(
     accountAddress,
+    amount,
     assetToUnlock,
     contractAddress
   );
@@ -96,6 +99,7 @@ const unlock = async (wallet, currentRap, index, parameters) => {
 
 const assetNeedsUnlocking = async (
   accountAddress,
+  amount,
   assetToUnlock,
   contractAddress
 ) => {
@@ -112,7 +116,7 @@ const assetNeedsUnlocking = async (
     assetToUnlock,
     contractAddress
   );
-  return !greaterThan(allowance, 0);
+  return !greaterThan(allowance, amount);
 };
 
 export default unlock;

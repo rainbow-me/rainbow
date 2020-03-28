@@ -17,6 +17,7 @@ const createUnlockAndSwapRap = ({
   const { accountAddress, chainId } = store.getState().settings;
   const unlock = createNewAction(RapActionTypes.unlock, {
     accountAddress,
+    amount: inputAmount,
     assetToUnlock: inputCurrency,
     contractAddress: inputCurrency.exchangeAddress,
   });
