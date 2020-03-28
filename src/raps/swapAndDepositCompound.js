@@ -59,6 +59,7 @@ const createSwapAndDepositCompoundRap = ({
   console.log('[swap and deposit] making unlock token func');
   const unlockTokenToDeposit = createNewAction(RapActionTypes.unlock, {
     accountAddress,
+    amount: requiresSwap ? outputAmount : inputAmount,
     assetToUnlock: tokenToDeposit,
     contractAddress: cTokenContract,
   });
