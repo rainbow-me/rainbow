@@ -18,6 +18,7 @@ const FloatingEmojis = ({
   fadeOut,
   marginTop,
   opacity,
+  opacityThreshold,
   range,
   scaleTo,
   size,
@@ -78,6 +79,7 @@ const FloatingEmojis = ({
             key={`${x}${y}`}
             left={x}
             marginTop={marginTop}
+            opacityThreshold={opacityThreshold}
             scaleTo={scaleTo}
             size={size}
             top={y}
@@ -100,6 +102,7 @@ FloatingEmojis.propTypes = {
   fadeOut: PropTypes.bool,
   marginTop: PropTypes.number,
   opacity: PropTypes.oneOfType([PropTypes.number, PropTypes.object]),
+  opacityThreshold: PropTypes.number,
   range: PropTypes.arrayOf(PropTypes.number),
   scaleTo: PropTypes.number,
   size: PropTypes.string.isRequired,
