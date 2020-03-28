@@ -1,5 +1,9 @@
 import { get, toLower } from 'lodash';
-import { greaterThan, isZero } from '../../helpers/utilities';
+import {
+  greaterThan,
+  isZero,
+  convertAmountToRawAmount,
+} from '../../helpers/utilities';
 import transactionStatusTypes from '../../helpers/transactionStatusTypes';
 import transactionTypes from '../../helpers/transactionTypes';
 import store from '../../redux/store';
@@ -116,7 +120,9 @@ const assetNeedsUnlocking = async (
     assetToUnlock,
     contractAddress
   );
-  return !greaterThan(allowance, amount);
+
+  const rawAmount = convertAmountToRawAmount(amount, assetToUnlock.decimals);
+  return !greaterThan(allowance, rawAmount);
 };
 
 export default unlock;
