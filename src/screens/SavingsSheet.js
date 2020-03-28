@@ -91,13 +91,13 @@ const SavingsSheet = () => {
           </RowWithMargins>
           <Divider zIndex={0} />
           <FloatingEmojis
-            distance={250}
-            duration={500}
-            emoji="money_mouth_face"
-            fadeOut={false}
-            scaleTo={0}
+            disableHorizontalMovement
+            distance={600}
+            duration={600}
+            emoji="money_with_wings"
+            opacityThreshold={0.86}
+            scaleTo={0.3}
             size={40}
-            marginTop={-25}
             wiggleFactor={0}
           >
             {({ onNewEmoji }) => (
