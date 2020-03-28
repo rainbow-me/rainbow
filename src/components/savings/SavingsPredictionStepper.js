@@ -29,13 +29,17 @@ const steps = {
 };
 /* eslint-enable sort-keys */
 
-const predictionFormatter = value =>
-  `$${Number(value)
-    .toFixed(2)
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+const predictionFormatter = value => {
+  const val = Number(value).toFixed(2);
+  if (val === '0.00') {
+    return '< $0.01';
+  }
+
+  return `$${val}`;
+};
 
 const SavingsPredictionStepper = ({ balance, interestRate }) => {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
   const incrementStep = useCallback(
     p => (p + 1 === Object.keys(steps).length ? 0 : p + 1),
     []
