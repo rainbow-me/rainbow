@@ -35,7 +35,7 @@ const predictionFormatter = value => {
     return '< $0.01';
   }
 
-  return `$${val}`;
+  return `$${val.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 };
 
 const SavingsPredictionStepper = ({ balance, interestRate }) => {
