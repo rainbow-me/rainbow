@@ -26,6 +26,9 @@ const steps = {
   '50-Year': {
     days: 365 * 50,
   },
+  '100-Year': {
+    days: 365 * 100,
+  },
 };
 /* eslint-enable sort-keys */
 
@@ -55,7 +58,7 @@ const SavingsPredictionStepper = ({ balance, interestRate }) => {
     <ButtonPressAnimation
       duration={120}
       onPress={() => setStep(incrementStep)}
-      scaleTo={1.05}
+      scaleTo={1.04}
       width="100%"
     >
       <Row align="center" css={padding(15, 19, 19)}>
