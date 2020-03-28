@@ -5,11 +5,9 @@ import { StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   calculateAPY,
-  calculateCompoundInterestPerBlock,
-  APROX_BLOCK_TIME,
+  calculateCompoundInterestInDays,
   formatSavingsAmount,
 } from '../../helpers/savings';
-import { add, multiply } from '../../helpers/utilities';
 import { colors, padding, position, fonts } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation, AnimatedNumber } from '../animations';
@@ -20,8 +18,6 @@ import { ShadowStack } from '../shadow-stack';
 import { GradientText, Text } from '../text';
 import { useNavigation } from 'react-navigation-hooks';
 
-const AVERAGE_BLOCK_TIME_MS = APROX_BLOCK_TIME * 1000;
-const BLOCKS_IN_1_DAY = (60000 / AVERAGE_BLOCK_TIME_MS) * 60 * 24 * 1000;
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
 const ANIMATE_NUMBER_INTERVAL = 30;
 const STABLECOINS = ['DAI', 'SAI', 'USDC', 'USDT'];
@@ -80,7 +76,7 @@ const SavingsListRow = ({
   underlying,
   underlyingPrice,
 }) => {
-  const initialValue = BigNumber(supplyBalanceUnderlying);
+  const initialValue = supplyBalanceUnderlying;
   const [value, setValue] = useState(initialValue);
   const [steps, setSteps] = useState(0);
   const apy = useMemo(() => calculateAPY(supplyRate), [supplyRate]);
@@ -113,22 +109,27 @@ const SavingsListRow = ({
   useEffect(() => {
     const getFutureValue = () => {
       if (!supplyBalanceUnderlying) return;
-      const valuePerBlock = calculateCompoundInterestPerBlock(
-        supplyBalanceUnderlying,
-        apy
-      );
-      const futureValue = BigNumber(
-        add(initialValue, multiply(valuePerBlock, BLOCKS_IN_1_DAY))
+      const futureValue = calculateCompoundInterestInDays(
+        initialValue,
+        supplyRate,
+        1
       );
 
-      if (!futureValue.eq(value)) {
+      if (!BigNumber(futureValue).eq(value)) {
         const steps = MS_IN_1_DAY / ANIMATE_NUMBER_INTERVAL;
         setValue(futureValue);
         setSteps(steps);
       }
     };
     getFutureValue();
-  }, [apy, initialValue, supplyBalanceUnderlying, underlying, value]);
+  }, [
+    apy,
+    initialValue,
+    supplyBalanceUnderlying,
+    supplyRate,
+    underlying,
+    value,
+  ]);
 
   const displayValue = formatSavingsAmount(value);
   if (!underlying || !underlying.address) return null;
