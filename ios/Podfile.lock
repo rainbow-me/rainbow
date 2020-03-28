@@ -291,6 +291,8 @@ PODS:
     - React-cxxreact (= 0.62.0-rc.5)
     - React-jsi (= 0.62.0-rc.5)
   - React-jsinspector (0.62.0-rc.5)
+  - react-native-background-timer (2.2.0):
+    - React
   - react-native-blur (0.8.0):
     - React
   - react-native-camera (3.21.0):
@@ -476,6 +478,7 @@ DEPENDENCIES:
   - React-jsi (from `../node_modules/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
+  - react-native-background-timer (from `../node_modules/react-native-background-timer`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-mail (from `../node_modules/react-native-mail`)
@@ -595,6 +598,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
+  react-native-background-timer:
+    :path: "../node_modules/react-native-background-timer"
   react-native-blur:
     :path: "../node_modules/@react-native-community/blur"
   react-native-camera:
@@ -733,6 +738,7 @@ SPEC CHECKSUMS:
   React-jsi: 6eb628cbb8b427609cc7867da5c390b57284fb88
   React-jsiexecutor: 7f96dd5e1264c67b2143e73af54f86abda99cde6
   React-jsinspector: a3017d13fbcb7f4c42dcbcd415b97135ac3f0f41
+  react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: 4e12e877b8fef60b0914a49c942a0f32479e5b50
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89

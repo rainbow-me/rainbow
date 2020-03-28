@@ -1,8 +1,12 @@
 import { get, toLower } from 'lodash';
-import { greaterThan, isZero } from '../../helpers/utilities';
-import store from '../../redux/store';
+import {
+  greaterThan,
+  isZero,
+  convertAmountToRawAmount,
+} from '../../helpers/utilities';
 import transactionStatusTypes from '../../helpers/transactionStatusTypes';
 import transactionTypes from '../../helpers/transactionTypes';
+import store from '../../redux/store';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
 import { contractUtils, gasUtils } from '../../utils';
@@ -11,16 +15,19 @@ const NOOP = () => undefined;
 
 const unlock = async (wallet, currentRap, index, parameters) => {
   const { dispatch } = store;
-  const { accountAddress, assetToUnlock, contractAddress } = parameters;
+  const { accountAddress, amount, assetToUnlock, contractAddress } = parameters;
   console.log(
     '[unlock] begin unlock rap for',
     assetToUnlock,
     'on',
-    contractAddress
+    contractAddress,
+    'amount',
+    amount
   );
 
   const needsUnlocking = await assetNeedsUnlocking(
     accountAddress,
+    amount,
     assetToUnlock,
     contractAddress
   );
@@ -96,6 +103,7 @@ const unlock = async (wallet, currentRap, index, parameters) => {
 
 const assetNeedsUnlocking = async (
   accountAddress,
+  amount,
   assetToUnlock,
   contractAddress
 ) => {
@@ -112,7 +120,9 @@ const assetNeedsUnlocking = async (
     assetToUnlock,
     contractAddress
   );
-  return !greaterThan(allowance, 0);
+
+  const rawAmount = convertAmountToRawAmount(amount, assetToUnlock.decimals);
+  return !greaterThan(allowance, rawAmount);
 };
 
 export default unlock;
