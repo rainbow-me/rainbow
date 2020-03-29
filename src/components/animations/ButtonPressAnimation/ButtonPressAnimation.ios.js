@@ -391,7 +391,9 @@ ButtonPressAnimation.propTypes = {
   onPressStart: PropTypes.func,
   scaleTo: PropTypes.number,
   style: stylePropType,
-  transformOrigin: directionPropType,
+  transformOrigin: isNativeButtonAvailable
+    ? PropTypes.arrayOf(PropTypes.number)
+    : directionPropType,
   useLateHaptic: PropTypes.bool,
 };
 
