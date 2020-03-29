@@ -15,6 +15,7 @@ class Button : RCTView {
     }
   }
   @objc var duration: TimeInterval = 0.1
+  @objc var pressOutDuration: TimeInterval = -1
   @objc var scaleTo: CGFloat = 0.97
   @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5)
   @objc var enableHapticFeedback: Bool = true
@@ -66,11 +67,11 @@ class Button : RCTView {
   
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
     let useHaptic = useLateHaptic && enableHapticFeedback ? hapticType : nil
-    animateTapEnd(duration: duration, useHaptic: useHaptic)
+    animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration, useHaptic: useHaptic)
     onPress([:])
   }
   
   override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration)
+    animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
   }
 }

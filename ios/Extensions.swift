@@ -64,7 +64,11 @@ extension UIView {
     CATransaction.commit()
   }
   
-  func animateTapEnd(duration: TimeInterval = 0.1, useHaptic: String? = nil) {
+  func animateTapEnd(
+    duration: TimeInterval = 0.1,
+    pressOutDuration: TimeInterval = -1,
+    useHaptic: String? = nil
+  ) {
     if useHaptic != nil {
       generateHapticFeedback(useHaptic!)
     }
@@ -73,7 +77,7 @@ extension UIView {
     CATransaction.begin()
     CATransaction.setAnimationTimingFunction(timingFunction)
     
-    UIView.animate(withDuration: duration) {
+    UIView.animate(withDuration: pressOutDuration == -1 ? duration : pressOutDuration) {
       self.transform = .identity
     }
     
