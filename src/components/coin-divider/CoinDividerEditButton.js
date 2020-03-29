@@ -36,25 +36,30 @@ const CoinDividerEditButton = ({
       <View
         style={[
           {
-            backgroundColor: isActive ? colors.appleBlue : colors.lightBlueGrey,
+            backgroundColor: isActive
+              ? colors.appleBlue
+              : colors.alpha(colors.blueGreyDark, 0.06),
             borderRadius: 15,
             height: 30,
             justifyContent: 'center',
+            paddingBottom: 6,
             paddingHorizontal: 10,
+            paddingTop: 5,
             shadowColor: isActive ? colors.appleBlue : colors.white,
             shadowOffset: { height: 4, width: 0 },
             shadowOpacity: 0.4,
-            shadowRadius: 12,
+            shadowRadius: 6,
           },
           style,
         ]}
       >
         <Text
-          color={isActive ? 'white' : 'blueGreyDark'}
+          align="center"
+          color={isActive ? 'white' : colors.alpha(colors.blueGreyDark, 0.6)}
           style={{
-            opacity: textOpacityAlwaysOn || isActive ? 1 : 0.2,
+            opacity: textOpacityAlwaysOn || isActive ? 1 : 0.3333333333,
           }}
-          letterSpacing="tighter"
+          letterSpacing="roundedTight"
           size="lmedium"
           weight="semibold"
         >
