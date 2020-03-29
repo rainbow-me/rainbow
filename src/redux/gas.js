@@ -21,7 +21,7 @@ const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
 const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 
 // -- Actions --------------------------------------------------------------- //
-let getGasPricesTimeoutHandler = null;
+let gasPricesHandle = null;
 
 const getDefaultTxFees = () => (dispatch, getState) => {
   const { assets } = getState().data;
@@ -82,18 +82,18 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
         });
     });
 
-  const gasPricesPolling = async () => {
-    getGasPricesTimeoutHandler && clearTimeout(getGasPricesTimeoutHandler);
+  const watchGasPrices = async () => {
+    gasPricesHandle && clearTimeout(gasPricesHandle);
     try {
       await getGasPrices();
       // eslint-disable-next-line no-empty
     } catch (e) {
     } finally {
-      getGasPricesTimeoutHandler = setTimeout(gasPricesPolling, 15000); // 15 secs
+      gasPricesHandle = setTimeout(watchGasPrices, 15000); // 15 secs
     }
   };
 
-  gasPricesPolling();
+  watchGasPrices();
 };
 
 export const gasUpdateGasPriceOption = newGasPriceOption => (
@@ -194,7 +194,7 @@ const bumpGasPrices = data => {
 };
 
 export const gasPricesStopPolling = () => () => {
-  getGasPricesTimeoutHandler && clearTimeout(getGasPricesTimeoutHandler);
+  gasPricesHandle && clearTimeout(gasPricesHandle);
 };
 
 // -- Reducer --------------------------------------------------------------- //

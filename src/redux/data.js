@@ -49,7 +49,7 @@ import {
 import { ethereumUtils, isLowerCaseMatch } from '../utils';
 import { uniswapUpdateLiquidityTokens } from './uniswap';
 
-let watchPendingTransactionsHandler = null;
+let pendingTransactionsHandle = null;
 
 // -- Constants --------------------------------------- //
 
@@ -389,7 +389,7 @@ export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
         });
         saveLocalTransactions(_transactions, accountAddress, network);
         if (!disableTxnWatcher) {
-          dispatch(startPendingTransactionWatcher());
+          dispatch(watchPendingTransactions());
         }
         resolve(true);
       })
@@ -465,15 +465,14 @@ export const dataWatchPendingTransactions = () => async (
   return false;
 };
 
-const startPendingTransactionWatcher = () => async dispatch => {
-  watchPendingTransactionsHandler &&
-    clearTimeout(watchPendingTransactionsHandler);
+const watchPendingTransactions = () => async dispatch => {
+  pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
 
   const done = await dispatch(dataWatchPendingTransactions());
 
   if (!done) {
-    watchPendingTransactionsHandler = setTimeout(() => {
-      dispatch(startPendingTransactionWatcher());
+    pendingTransactionsHandle = setTimeout(() => {
+      dispatch(watchPendingTransactions());
     }, 1000);
   }
 };

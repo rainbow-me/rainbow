@@ -5,6 +5,7 @@ export { default as deviceUtils } from './deviceUtils';
 export { default as dimensionsPropType } from './dimensionsPropType';
 export { default as directionPropType } from './directionPropType';
 export { default as ethereumUtils } from './ethereumUtils';
+export { default as backgroundTask } from './backgroundTask';
 export { default as gasUtils } from './gas';
 export { default as haptics } from './haptics';
 export { getFirstGrapheme, initials, removeLeadingZeros } from './formatters';

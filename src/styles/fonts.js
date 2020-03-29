@@ -9,6 +9,7 @@ font.family = {
 };
 
 font.letterSpacing = {
+  zero: 0,
   roundedTightest: 0.2,
   roundedTight: 0.4,
   roundedMedium: 0.5,
@@ -43,7 +44,7 @@ font.size = {
   big: '23px',
   bigger: '26px',
   biggest: '27px',
-  h1: '42px',
+  h1: '41px',
   h2: '32px',
   h3: '30px',
   h4: '20px',

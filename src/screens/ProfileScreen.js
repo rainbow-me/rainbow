@@ -11,7 +11,7 @@ import TransactionList from '../components/transaction-list/TransactionList';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import networkTypes from '../helpers/networkTypes';
 
-const ACTIVITY_LIST_INITIALIZATION_DELAY = 7000;
+const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 
 const ProfileScreen = ({
   accountColor,
@@ -48,7 +48,20 @@ const ProfileScreen = ({
         />
       </Header>
       {nativeTransactionListAvailable ? (
-        <TransactionList navigation={navigation} style={{ flex: 1 }} />
+        <TransactionList
+          initialized={activityListInitialized}
+          navigation={navigation}
+          style={{ flex: 1 }}
+          header={
+            <ProfileMasthead
+              accountAddress={accountAddress}
+              accountColor={accountColor}
+              accountName={accountName}
+              navigation={navigation}
+              showBottomDivider={!isEmpty}
+            />
+          }
+        />
       ) : (
         <ActivityList
           accountAddress={accountAddress}

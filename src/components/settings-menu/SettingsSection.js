@@ -46,7 +46,7 @@ const SettingIcon = styled(FastImage)`
   margin-top: 8;
 `;
 
-let versionPressInterval = null;
+let versionPressHandle = null;
 let versionNumberOfTaps = 0;
 
 const SettingsSection = ({
@@ -64,14 +64,14 @@ const SettingsSection = ({
   onSendFeedback,
 }) => {
   const handleVersionPress = () => {
-    versionPressInterval && clearTimeout(versionPressInterval);
+    versionPressHandle && clearTimeout(versionPressHandle);
     versionNumberOfTaps++;
 
     if (versionNumberOfTaps === 5) {
       onPressHiddenFeature();
     }
 
-    versionPressInterval = setTimeout(() => {
+    versionPressHandle = setTimeout(() => {
       versionNumberOfTaps = 0;
     }, 3000);
   };

@@ -1,4 +1,4 @@
-import { get, times } from 'lodash';
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Platform } from 'react-native';
@@ -16,17 +16,16 @@ import {
   isNewValueForPath,
   safeAreaInsetValues,
 } from '../../utils';
-import { AssetListItemSkeleton } from '../asset-list';
 import {
   ContractInteractionCoinRow,
   RequestCoinRow,
   TransactionCoinRow,
 } from '../coin-row';
-import { Column } from '../layout';
 import ListFooter from '../list/ListFooter';
 import ActivityListHeader from './ActivityListHeader';
 import transactionTypes from '../../helpers/transactionTypes';
 import transactionStatusTypes from '../../helpers/transactionStatusTypes';
+import LoadingState from './LoadingState';
 
 const ViewTypes = {
   COMPONENT_HEADER: 0,
@@ -41,17 +40,6 @@ const Wrapper = styled.View`
   overflow: hidden;
   width: 100%;
 `;
-
-const LoadingState = ({ children }) => (
-  <Column flex={1}>
-    {children}
-    <Column flex={1}>
-      {times(11, index => (
-        <AssetListItemSkeleton key={`activitySkeleton${index}`} />
-      ))}
-    </Column>
-  </Column>
-);
 
 const hasRowChanged = (r1, r2) => {
   if (

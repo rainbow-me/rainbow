@@ -10,13 +10,16 @@ const createWithdrawFromCompoundRap = ({
   callback,
 }) => {
   console.log('[withdraw rap] withdraw', inputCurrency);
+  const { accountAddress, network } = store.getState().settings;
 
   // create a withdraw rap
   console.log('[withdraw rap] making redeem func');
   const withdraw = createNewAction(RapActionTypes.withdrawCompound, {
+    accountAddress,
     inputAmount,
     inputCurrency,
     isMax,
+    network,
     selectedGasPrice,
   });
   const actions = [withdraw];

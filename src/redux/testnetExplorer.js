@@ -9,7 +9,7 @@ import { setIsWalletEthZero } from './isWalletEthZero';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 
-let tesnetExplorerHandler = null;
+let testnetExplorerHandle = null;
 
 const fetchAssetPrices = async (coingecko_ids, nativeCurrency) => {
   try {
@@ -123,11 +123,11 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
         payload: { assets },
       })
     );
-    tesnetExplorerHandler = setTimeout(fetchAssetsBalancesAndPrices, 5000);
+    testnetExplorerHandle = setTimeout(fetchAssetsBalancesAndPrices, 5000);
   };
   fetchAssetsBalancesAndPrices();
 };
 
 export const testnetExplorerClearState = () => {
-  clearTimeout(tesnetExplorerHandler);
+  clearTimeout(testnetExplorerHandle);
 };

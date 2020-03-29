@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose, withHandlers, withState } from 'recompact';
 import { requireNativeComponent, Clipboard, Linking, View } from 'react-native';
-import { FloatingEmojis } from '../floating-emojis';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import {
@@ -16,6 +15,8 @@ import { removeRequest } from '../../redux/requests';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { colors } from '../../styles';
+import LoadingState from '../activity-list/LoadingState';
+import { FloatingEmojis } from '../floating-emojis';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
@@ -34,10 +35,15 @@ class TransactionList extends React.PureComponent {
   };
 
   render() {
+    if (!this.props.initialized && !this.props.navigation.isFocused()) {
+      return <LoadingState>{this.props.header}</LoadingState>;
+    }
+
     const data = {
       requests: this.props.requests,
       transactions: this.props.transactions,
     };
+
     return (
       <View style={this.props.style}>
         <NativeTransactionListView

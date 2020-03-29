@@ -1,3 +1,3 @@
 import PropTypes from 'prop-types';
 
-export default PropTypes.oneOf(['down', 'left', 'right', 'up']);
+export default PropTypes.oneOf(['bottom', 'left', 'right', 'top']);

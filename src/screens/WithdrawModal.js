@@ -16,7 +16,7 @@ const WithdrawModal = ({ navigation, ...props }) => {
       createRap={createWithdrawFromCompoundRap}
       cTokenBalance={cTokenBalance}
       defaultInputAsset={defaultInputAsset}
-      inputHeaderTitle={`Withdraw ${defaultInputAsset.name}`}
+      inputHeaderTitle={`Withdraw ${defaultInputAsset.symbol}`}
       showOutputField={false}
       type={ExchangeModalTypes.withdrawal}
       underlyingPrice={underlyingPrice}
