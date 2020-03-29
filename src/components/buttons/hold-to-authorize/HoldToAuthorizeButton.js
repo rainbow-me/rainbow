@@ -142,9 +142,9 @@ class HoldToAuthorizeButton extends PureComponent {
     const { disabled, enableLongPress } = this.props;
 
     if (disabled) {
-      if (state === BEGAN) {
-        animate(this.buttonScale, { toValue: 0.99 }).start(() => {
-          haptics.notificationWarning();
+      if (state === END) {
+        haptics.notificationWarning();
+        animate(this.buttonScale, { toValue: 1.02 }).start(() => {
           animate(this.buttonScale, { toValue: 1 }).start();
         });
       }
