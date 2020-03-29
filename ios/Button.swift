@@ -40,6 +40,8 @@ class Button : RCTView {
   }
   
   var longPress: UILongPressGestureRecognizer? = nil
+  var tapLocation: CGPoint? = nil
+  let touchMoveTolerance: CGFloat = 80.0
   
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -56,6 +58,10 @@ class Button : RCTView {
   }
   
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    if let touch = touches.first {
+      self.tapLocation = touch.location(in: self)
+    }
+    
     animateTapStart(
       duration: duration,
       scale: scaleTo,
@@ -65,13 +71,42 @@ class Button : RCTView {
     onPressStart([:])
   }
   
+  override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+    if let touch = touches.first {
+      let location = touch.location(in: self)
+      if !touchInRange(location: location, tolerance: self.touchMoveTolerance) {
+        animateTapEnd(duration: duration)
+      } else if touchInRange(location: location, tolerance: self.touchMoveTolerance / 2) {
+        animateTapStart(
+          duration: duration,
+          scale: scaleTo,
+          transformOrigin: transformOrigin
+        )
+      }
+    }
+  }
+  
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    let useHaptic = useLateHaptic && enableHapticFeedback ? hapticType : nil
-    animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration, useHaptic: useHaptic)
-    onPress([:])
+    if let touch = touches.first {
+      let location = touch.location(in: self)
+      if touchInRange(location: location, tolerance: self.touchMoveTolerance / 2) {
+          let useHaptic = useLateHaptic && enableHapticFeedback ? hapticType : nil
+          animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration, useHaptic: useHaptic)
+          onPress([:])
+      } else {
+        self.touchesCancelled(touches, with: event)
+      }
+    }
   }
   
   override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
     animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
+  }
+  
+  private func touchInRange(location: CGPoint, tolerance: CGFloat) -> Bool {
+    return (
+      (self.tapLocation!.x - tolerance)...(self.tapLocation!.x + tolerance) ~= location.x &&
+      (self.tapLocation!.y - tolerance)...(self.tapLocation!.y + tolerance) ~= location.y
+    )
   }
 }
