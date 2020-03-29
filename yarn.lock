@@ -8922,10 +8922,10 @@ raw-body@^2.2.0:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
-react-coin-icon@0.1.16:
-  version "0.1.16"
-  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.16.tgz#a4f0bfbe522ba6d45cf2ec5a4bebe37330339a64"
-  integrity sha512-gmjToHuk38wp5yQ4DAA0D6QNUWRfYvSCuC6XeI/JVKx+e9e+R3YNXmS+tR34LccR40kvTuYvkRfOuAzP9hVu4g==
+react-coin-icon@^0.1.17:
+  version "0.1.17"
+  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.17.tgz#00a6426b5a7f9653ed8107a4ca5898acefc26474"
+  integrity sha512-oyZswJS54tFrR67IvazfhHIC7EBqgAQ73biSXxu+as4pd3Rby+V3ChhrRENyz0K2IKGXl1p9pXpH+YcG8pWTYQ==
   dependencies:
     "@svgr/cli" "^4.3.0"
     lodash "^4.17.11"
