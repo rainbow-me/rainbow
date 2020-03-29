@@ -389,6 +389,7 @@ ButtonPressAnimation.propTypes = {
   onLongPress: PropTypes.func,
   onPress: PropTypes.func,
   onPressStart: PropTypes.func,
+  pressOutDuration: PropTypes.number,
   scaleTo: PropTypes.number,
   style: stylePropType,
   transformOrigin: isNativeButtonAvailable
