@@ -55,7 +55,7 @@ const exchangeStyleInterpolator = ({
   layouts: { screen },
 }) => {
   const backgroundOpacity = current.interpolate({
-    inputRange: [-1, 0, 0.975, 2],
+    inputRange: [-1, 0, 0.925, 2],
     outputRange: [0, 0, 1, 1],
   });
 
