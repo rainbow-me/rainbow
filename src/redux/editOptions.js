@@ -123,6 +123,7 @@ export default (state = INITIAL_STATE, action) =>
     } else if (action.type === SET_IS_COIN_LIST_EDITED) {
       draft.isCoinListEdited = action.payload;
       if (!draft.isCoinListEdited) {
+        draft.currentAction = ACTIONS.NONE;
         draft.selectedCoins = [];
       }
     } else if (action.type === CLEAR_SELECTED_COINS) {
