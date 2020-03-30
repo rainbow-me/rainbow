@@ -24,12 +24,7 @@ import {
 } from '../components/exchange';
 import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
 import { GasSpeedButton } from '../components/gas';
-import GestureBlocker from '../components/GestureBlocker';
-import {
-  Centered,
-  Column,
-  KeyboardFixedOpenLayout,
-} from '../components/layout';
+import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import {
   calculateTradeDetails,
   estimateSwapGasLimit,
@@ -62,7 +57,7 @@ import { loadWallet } from '../model/wallet';
 import { executeRap } from '../raps/common';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
-import { ethereumUtils } from '../utils';
+import { ethereumUtils, backgroundTask } from '../utils';
 import { CurrencySelectionTypes } from './CurrencySelectModal';
 import SwapInfo from '../components/exchange/SwapInfo';
 
@@ -603,34 +598,39 @@ const ExchangeModal = ({
     return updateInputAmount(maxBalance, maxBalance, true, true);
   };
 
-  const handleSubmit = async () => {
-    setIsAuthorizing(true);
-    try {
-      const wallet = await loadWallet();
-      setIsAuthorizing(false);
-      const callback = () => {
+  const handleSubmit = () => {
+    backgroundTask.execute(async () => {
+      setIsAuthorizing(true);
+      try {
+        const wallet = await loadWallet();
+
+        setIsAuthorizing(false);
+        const callback = () => {
+          navigation.setParams({ focused: false });
+          navigation.navigate('ProfileScreen');
+        };
+        const rap = createRap({
+          callback,
+          inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
+          inputAsExactAmount,
+          inputCurrency,
+          inputReserve,
+          isMax,
+          outputAmount,
+          outputCurrency,
+          outputReserve,
+          selectedGasPrice: null,
+        });
+        console.log('[exchange - handle submit] rap', rap);
+        await executeRap(wallet, rap);
+        console.log('[exchange - handle submit] executed rap!');
+      } catch (error) {
+        setIsAuthorizing(false);
+        console.log('[exchange - handle submit] error submitting swap', error);
         navigation.setParams({ focused: false });
-        navigation.navigate('ProfileScreen');
-      };
-      const rap = createRap({
-        callback,
-        inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
-        inputAsExactAmount,
-        inputCurrency,
-        isMax,
-        outputAmount,
-        outputCurrency,
-        selectedGasPrice: null,
-      });
-      console.log('[exchange - handle submit] rap', rap);
-      executeRap(wallet, rap);
-      console.log('[exchange - handle submit] executed rap!');
-    } catch (error) {
-      setIsAuthorizing(false);
-      console.log('[exchange - handle submit] error submitting swap', error);
-      navigation.setParams({ focused: false });
-      navigation.navigate('WalletScreen');
-    }
+        navigation.navigate('WalletScreen');
+      }
+    });
   };
 
   const handleRefocusLastInput = () => {
@@ -923,7 +923,6 @@ const ExchangeModal = ({
             overflow="visible"
             style={{ paddingBottom: showOutputField ? 0 : 26 }}
           >
-            <GestureBlocker type="top" />
             <ExchangeModalHeader
               onPressDetails={navigateToSwapDetailsModal}
               showDetailsButton={showDetailsButton}
@@ -980,9 +979,6 @@ const ExchangeModal = ({
               <GasSpeedButton />
             </Fragment>
           )}
-          <Column>
-            <GestureBlocker type="bottom" />
-          </Column>
         </AnimatedFloatingPanels>
       </Centered>
     </KeyboardFixedOpenLayout>

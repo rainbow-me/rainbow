@@ -18,6 +18,7 @@ const FloatingEmoji = ({
   index,
   left,
   marginTop,
+  opacityThreshold,
   scaleTo,
   size,
   top,
@@ -32,7 +33,7 @@ const FloatingEmoji = ({
 
     return {
       opacity: interpolate(progress, {
-        inputRange: [0, distance / 2, distance - size],
+        inputRange: [0, distance * opacityThreshold || 0.5, distance - size],
         outputRange: [1, fadeOut ? 0.89 : 1, fadeOut ? 0 : 1],
       }),
       rotate: concat(
@@ -100,6 +101,7 @@ FloatingEmoji.propTypes = {
   fadeOut: PropTypes.bool,
   left: PropTypes.string.isRequired,
   marginTop: PropTypes.number,
+  opacityThreshold: PropTypes.number,
   scaleTo: PropTypes.number.isRequired,
   size: PropTypes.string.isRequired,
   top: PropTypes.number,

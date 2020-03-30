@@ -53,7 +53,7 @@
                         <color key="textColor" red="0.63137254899999995" green="0.64705882349999999" blue="0.67450980390000004" alpha="0.70023544520547942" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="baB-yy-Mav">
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="baB-yy-Mav" customClass="UIImageViewWithPersistentAnimations" customModule="Rainbow" customModuleProvider="target">
                         <rect key="frame" x="67" y="9" width="14" height="14"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     </imageView>

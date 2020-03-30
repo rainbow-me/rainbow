@@ -12,8 +12,10 @@ import { Icon } from '../icons';
 const CoinIconSize = 40;
 
 const fallbackTextStyles = css`
-  font-family: ${fonts.family.SFMono};
+  font-family: ${fonts.family.SFProRounded};
+  letter-spacing: ${fonts.letterSpacing.roundedTight};
   margin-bottom: 1;
+  text-align: center;
 `;
 
 const IndicatorIcon = styled.View`

@@ -35,9 +35,9 @@ const SheetButton = ({
       />
       <RowWithMargins
         align="center"
-        css={padding(9.5, 14, 11, 15)}
+        css={padding(14, 15, 18)}
         height={56}
-        margin={7}
+        margin={6}
         zIndex={1}
       >
         {icon && <Icon color={textColor} name={icon} size={21} />}
@@ -46,7 +46,6 @@ const SheetButton = ({
           color={textColor}
           size="larger"
           style={{
-            letterSpacing: 0, // confirm w/ @christian.. spec calls for 0.6 but its fugly
             lineHeight: 24,
           }}
           weight="semibold"
@@ -72,9 +71,8 @@ SheetButton.propTypes = {
 SheetButton.defaultProps = {
   borderRadius: 50,
   shadows: [
-    [0, 2, 5, colors.dark, 0.15],
-    [0, 6, 10, colors.dark, 0.14],
-    [0, 1, 18, colors.dark, 0.08],
+    [0, 10, 30, colors.dark, 0.2],
+    [0, 5, 15, colors.swapPurple, 0.4],
   ],
   textColor: colors.white,
 };

@@ -26,16 +26,23 @@ const steps = {
   '50-Year': {
     days: 365 * 50,
   },
+  '100-Year': {
+    days: 365 * 100,
+  },
 };
 /* eslint-enable sort-keys */
 
-const predictionFormatter = value =>
-  `$${Number(value)
-    .toFixed(2)
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+const predictionFormatter = value => {
+  const val = Number(value).toFixed(2);
+  if (val === '0.00') {
+    return '< $0.01';
+  }
+
+  return `$${val.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+};
 
 const SavingsPredictionStepper = ({ balance, interestRate }) => {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
   const incrementStep = useCallback(
     p => (p + 1 === Object.keys(steps).length ? 0 : p + 1),
     []
@@ -51,18 +58,17 @@ const SavingsPredictionStepper = ({ balance, interestRate }) => {
     <ButtonPressAnimation
       duration={120}
       onPress={() => setStep(incrementStep)}
-      scaleTo={1.05}
+      scaleTo={1.04}
       width="100%"
     >
-      <Row align="center" css={padding(15, 19)}>
-        <RowWithMargins align="center" margin={6}>
+      <Row align="center" css={padding(15, 19, 19)}>
+        <RowWithMargins align="center" margin={5}>
           <Emoji
-            letterSpacing="tight"
-            lineHeight="looser"
             name="crystal_ball"
-            size="lmedium"
+            size="medium"
+            style={{ marginBottom: 0.5 }}
           />
-          <Text letterSpacing="tight" size="lmedium">
+          <Text size="lmedium">
             {`Est. ${Object.keys(steps)[step]} Earnings`}
           </Text>
         </RowWithMargins>
@@ -76,6 +82,7 @@ const SavingsPredictionStepper = ({ balance, interestRate }) => {
               flexGrow: 1,
               fontSize: parseFloat(fonts.size.lmedium),
               fontWeight: fonts.weight.semibold,
+              letterSpacing: fonts.letterSpacing.roundedTight,
             }}
             time={8}
             value={NUMBER}

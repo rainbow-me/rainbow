@@ -60,6 +60,7 @@ const ExchangeInputField = ({
             flex={1}
             margin={10}
             paddingLeft={padding}
+            paddingRight={disableInputCurrencySelection ? padding : null}
           >
             <CoinIcon
               bgColor={inputCurrencySymbol ? undefined : skeletonColor}

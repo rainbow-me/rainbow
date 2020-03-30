@@ -389,9 +389,12 @@ ButtonPressAnimation.propTypes = {
   onLongPress: PropTypes.func,
   onPress: PropTypes.func,
   onPressStart: PropTypes.func,
+  pressOutDuration: PropTypes.number,
   scaleTo: PropTypes.number,
   style: stylePropType,
-  transformOrigin: directionPropType,
+  transformOrigin: isNativeButtonAvailable
+    ? PropTypes.arrayOf(PropTypes.number)
+    : directionPropType,
   useLateHaptic: PropTypes.bool,
 };
 
