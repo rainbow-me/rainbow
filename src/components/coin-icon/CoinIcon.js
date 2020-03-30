@@ -116,7 +116,7 @@ const CoinIcon = enhance(
             [0, 1, 3, colors.dark, 0.08],
           ]}
           shouldRasterizeIOS
-          style={{ opacity: isHidden ? 0.4 : 1 }}
+          opacity={isHidden ? 0.4 : 1}
         >
           <ReactCoinIcon
             bgColor={bgColor}
