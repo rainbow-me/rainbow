@@ -12,7 +12,7 @@ const CoinDividerEditButton = ({
   isActive,
   isVisible,
   onPress,
-  shouldRelaodList,
+  shouldReloadList,
   style,
   text,
   textOpacityAlwaysOn,
@@ -21,7 +21,7 @@ const CoinDividerEditButton = ({
     <ButtonPressAnimation
       onPress={async () => {
         await onPress();
-        if (shouldRelaodList) {
+        if (shouldReloadList) {
           const assets = await getAssets(
             store.getState().settings.accountAddress,
             store.getState().settings.network
@@ -74,7 +74,7 @@ CoinDividerEditButton.propTypes = {
   isActive: PropTypes.bool,
   isVisible: PropTypes.bool,
   onPress: PropTypes.func,
-  shouldRelaodList: PropTypes.bool,
+  shouldReloadList: PropTypes.bool,
   style: PropTypes.object,
   text: PropTypes.string,
   textOpacityAlwaysOn: PropTypes.bool,
