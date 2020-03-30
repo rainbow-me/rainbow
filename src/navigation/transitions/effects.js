@@ -10,27 +10,6 @@ const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
 export let swapDetailsTransitionPosition = new Animated.Value(0);
 
-const emojiStyleInterpolator = ({ current: { progress: current } }) => {
-  const backgroundOpacity = current.interpolate({
-    inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, 1, 1],
-  });
-
-  const scale = current.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 1],
-  });
-
-  return {
-    cardStyle: {
-      opacity: backgroundOpacity,
-      transform: [{ scale }],
-    },
-    overlayStyle: {
-      opacity: current,
-    },
-  };
-};
 const backgroundInterpolator = ({ current: { progress: current } }) => {
   const cardOpacity = current.interpolate({
     inputRange: [0, 1],
@@ -206,23 +185,6 @@ const closeSpec = {
   },
 };
 
-const emojiCloseSpec = {
-  animation: 'spring',
-  config: {
-    damping: 30,
-    overshootClamping: true,
-    stiffness: 700,
-  },
-};
-
-const emojiOpenSpec = {
-  animation: 'spring',
-  config: {
-    damping: 32,
-    stiffness: 500,
-  },
-};
-
 const openSpec = {
   animation: 'spring',
   config: {
@@ -281,7 +243,7 @@ export const emojiPreset = {
         <View
           style={{
             alignItems: 'center',
-            top: Header.heightWithStatusBar - 4,
+            top: Header.heightWithStatusBar - 3,
           }}
         >
           <AvatarCircle />
@@ -292,13 +254,13 @@ export const emojiPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: false,
   cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: emojiStyleInterpolator,
+  cardStyleInterpolator: sheetStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical-inverted',
   gestureEnabled: false,
   gestureResponseDistance,
   onTransitionStart,
-  transitionSpec: { close: emojiCloseSpec, open: emojiOpenSpec },
+  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
 export const exchangePreset = {
