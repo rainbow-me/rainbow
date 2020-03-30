@@ -27,7 +27,6 @@ const sx = StyleSheet.create({
     fontSize: 16,
     fontWeight: fonts.weight.bold,
     marginBottom: 0.5,
-    marginRight: 4,
     textAlign: 'left',
   },
 });
@@ -41,13 +40,15 @@ const renderAnimatedNumber = (value, steps, symbol) => {
   const numberComponent = (
     <AnimatedNumber
       letterSpacing={parseFloat(fonts.letterSpacing.roundedTightest)}
-      style={sx.text}
       formatter={
         isStablecoin
           ? animatedNumberFormatterWithDolllars
           : animatedNumberFormatter
       }
+      marginLeft={6}
+      marginRight={4}
       steps={steps}
+      style={sx.text}
       time={ANIMATE_NUMBER_INTERVAL}
       value={Number(value)}
     />
@@ -175,11 +176,7 @@ const SavingsListRow = ({
               }}
             >
               {underlying.symbol && supplyBalanceUnderlying ? (
-                <CoinIcon
-                  symbol={underlying.symbol}
-                  size={26}
-                  style={{ marginRight: 6 }}
-                />
+                <CoinIcon symbol={underlying.symbol} size={26} />
               ) : null}
               {supplyBalanceUnderlying && !isNaN(displayValue) ? (
                 renderAnimatedNumber(displayValue, steps, underlying.symbol)
