@@ -85,6 +85,7 @@ const BalanceCoinRow = ({
           </View>
         </Row>
       </ButtonPressAnimation>
+      {isCoinListEdited ? <CoinCheckButton isAbsolute {...item} /> : null}
     </View>
   ) : (
     <FlexItem

@@ -35,7 +35,6 @@ import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
 import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
-import CoinCheckButton from '../coin-row/CoinCheckButton';
 import withOpenSavings from '../../hoc/withOpenSavings';
 import SavingsListWrapper from '../savings/SavingsListWrapper';
 
@@ -753,7 +752,6 @@ class RecyclerAssetList extends Component {
   position = 0;
 
   renderList = [];
-  checkList = [];
   savingsList = [];
   savingsSumValue = 0;
 
@@ -880,7 +878,6 @@ class RecyclerAssetList extends Component {
       ) {
         smallBalancedChanged = false;
         const renderList = [];
-        const checkList = [];
         for (let i = 0; i < item.assets.length; i++) {
           renderList.push(
             renderItem({
@@ -891,18 +888,11 @@ class RecyclerAssetList extends Component {
               key: `CoinSmallBalances${item.assets[i].symbol}`,
             })
           );
-          checkList.push(<CoinCheckButton {...item.assets[i]} />);
         }
         this.renderList = renderList;
-        this.checkList = checkList;
       }
 
-      return (
-        <SmallBalancesWrapper
-          assets={this.renderList}
-          checkList={this.checkList}
-        />
-      );
+      return <SmallBalancesWrapper assets={this.renderList} />;
     }
 
     const isNotUniqueToken =
