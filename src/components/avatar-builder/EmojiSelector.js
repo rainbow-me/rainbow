@@ -141,7 +141,7 @@ export default class EmojiSelector extends PureComponent {
             ((width - 21) / this.props.columns);
           dim.width = deviceUtils.dimensions.width;
         } else if (type === HEADER_ROW) {
-          dim.height = 35;
+          dim.height = 34.7;
           dim.width = deviceUtils.dimensions.width;
         } else if (type === OVERLAY) {
           dim.height = i === 0 ? 0.1 : 100;
