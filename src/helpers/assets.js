@@ -52,7 +52,9 @@ export const buildCoinsList = assets => {
     }
   }
 
-  smallBalances.assets = smallBalances.assets.concat(hiddenAssets);
+  if (store.getState().editOptions.isCoinListEdited) {
+    smallBalances.assets = smallBalances.assets.concat(hiddenAssets);
+  }
 
   const allAssets = pinnedAssets.concat(newAssets);
   if (

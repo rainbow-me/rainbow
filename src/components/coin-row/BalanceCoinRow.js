@@ -18,6 +18,8 @@ import CoinCheckButton from './CoinCheckButton';
 import withCoinListEdited from '../../hoc/withCoinListEdited';
 import CoinRowInfo from './CoinRowInfo';
 
+const editTranslateOffset = 32;
+
 const BottomRow = ({ balance }) => {
   return (
     <Fragment>
@@ -57,7 +59,14 @@ const BalanceCoinRow = ({
     <View width={deviceUtils.dimensions.width}>
       <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
         <Row>
-          <View left={isCoinListEdited ? 32 : 0} width={250}>
+          <View
+            left={isCoinListEdited ? editTranslateOffset : 0}
+            width={
+              deviceUtils.dimensions.width -
+              80 -
+              (isCoinListEdited ? editTranslateOffset : 0)
+            }
+          >
             <CoinRow
               onPress={onPress}
               onPressSend={onPressSend}
@@ -86,7 +95,14 @@ const BalanceCoinRow = ({
     >
       <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
         <Row>
-          <View left={isCoinListEdited ? 32 : 0} width={250}>
+          <View
+            left={isCoinListEdited ? editTranslateOffset : 0}
+            width={
+              deviceUtils.dimensions.width -
+              80 -
+              (isCoinListEdited ? editTranslateOffset : 0)
+            }
+          >
             <CoinRow
               onPress={onPress}
               onPressSend={onPressSend}

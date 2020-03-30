@@ -33,7 +33,10 @@ export const coinListLoadState = () => async (dispatch, getState) => {
   try {
     const { accountAddress, network } = getState().settings;
     const hiddenCoins = await getHiddenCoins(accountAddress, network);
-    const pinnedCoins = await getPinnedCoins(accountAddress, network);
+    let pinnedCoins = await getPinnedCoins(accountAddress, network);
+    if (!pinnedCoins) {
+      pinnedCoins = ['eth'];
+    }
     dispatch({
       payload: {
         hiddenCoins,
@@ -120,6 +123,7 @@ export default (state = INITIAL_STATE, action) =>
     } else if (action.type === SET_IS_COIN_LIST_EDITED) {
       draft.isCoinListEdited = action.payload;
       if (!draft.isCoinListEdited) {
+        draft.currentAction = ACTIONS.NONE;
         draft.selectedCoins = [];
       }
     } else if (action.type === CLEAR_SELECTED_COINS) {

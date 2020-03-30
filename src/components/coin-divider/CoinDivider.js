@@ -268,6 +268,7 @@ class CoinDivider extends PureComponent {
               isActive={isCoinListEdited}
               text={isCoinListEdited ? 'Done' : 'Edit'}
               textOpacityAlwaysOn
+              shouldRelaodList
             />
           </View>
         </View>
