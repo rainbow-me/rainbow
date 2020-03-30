@@ -21,11 +21,10 @@ const Centered = styled.View`
 `;
 
 const CircleOutline = styled.View`
-  border-color: ${colors.blueGreyDark};
+  border-color: ${colors.alpha(colors.blueGreyDark, 0.12)};
   border-radius: 11;
   border-width: 1.5;
   height: 22;
-  opacity: 0.15;
   position: absolute;
   width: 22;
 `;
@@ -39,9 +38,9 @@ const CheckmarkBackground = styled.View`
   padding-right: 4.5;
   padding-bottom: 4.5;
   shadow-color: ${colors.appleBlue};
-  shadow-offset: {width: 0, height: 4};
+  shadow-offset: 0px 4px;
   shadow-opacity: 0.4;
-  shadow-radius: 12;
+  shadow-radius: 6;
   width: 22;
 `;
 
@@ -68,7 +67,7 @@ const CoinCheckButton = ({
       style={{
         height: CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom,
         position: isAbsolute ? 'absolute' : 'relative',
-        width: 66,
+        width: 60,
       }}
     >
       <ButtonPressAnimation
@@ -83,7 +82,7 @@ const CoinCheckButton = ({
       >
         <Centered>
           <CircleOutline />
-          <OpacityToggler isVisible={!toggle}>
+          <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
             <CheckmarkBackground>
               <Icon name="checkmark" color="white" />
             </CheckmarkBackground>

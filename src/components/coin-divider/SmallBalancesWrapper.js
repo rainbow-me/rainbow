@@ -67,6 +67,7 @@ class SmallBalancesWrapper extends PureComponent {
             >
               {assets}
               <View
+                pointerEvents={isCoinListEdited ? 'auto' : 'none'}
                 style={{
                   opacity: isCoinListEdited ? 1 : 0,
                   position: 'absolute',

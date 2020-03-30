@@ -12,7 +12,7 @@ const CoinDividerEditButton = ({
   isActive,
   isVisible,
   onPress,
-  shouldRelaodList,
+  shouldReloadList,
   style,
   text,
   textOpacityAlwaysOn,
@@ -21,7 +21,7 @@ const CoinDividerEditButton = ({
     <ButtonPressAnimation
       onPress={async () => {
         await onPress();
-        if (shouldRelaodList) {
+        if (shouldReloadList) {
           const assets = await getAssets(
             store.getState().settings.accountAddress,
             store.getState().settings.network
@@ -32,29 +32,35 @@ const CoinDividerEditButton = ({
           );
         }
       }}
+      scaleTo={textOpacityAlwaysOn || isActive ? 0.9 : 1}
     >
       <View
         style={[
           {
-            backgroundColor: isActive ? colors.appleBlue : colors.lightBlueGrey,
+            backgroundColor: isActive
+              ? colors.appleBlue
+              : colors.alpha(colors.blueGreyDark, 0.06),
             borderRadius: 15,
             height: 30,
             justifyContent: 'center',
+            paddingBottom: 6,
             paddingHorizontal: 10,
-            shadowColor: isActive ? colors.appleBlue : colors.white,
+            paddingTop: 5,
+            shadowColor: colors.appleBlue,
             shadowOffset: { height: 4, width: 0 },
-            shadowOpacity: 0.4,
-            shadowRadius: 12,
+            shadowOpacity: isActive ? 0.4 : 0,
+            shadowRadius: 6,
           },
           style,
         ]}
       >
         <Text
-          color={isActive ? 'white' : 'blueGreyDark'}
+          align="center"
+          color={isActive ? 'white' : colors.alpha(colors.blueGreyDark, 0.6)}
           style={{
-            opacity: textOpacityAlwaysOn || isActive ? 1 : 0.2,
+            opacity: textOpacityAlwaysOn || isActive ? 1 : 0.3333333333,
           }}
-          letterSpacing="tighter"
+          letterSpacing="roundedTight"
           size="lmedium"
           weight="semibold"
         >
@@ -69,7 +75,7 @@ CoinDividerEditButton.propTypes = {
   isActive: PropTypes.bool,
   isVisible: PropTypes.bool,
   onPress: PropTypes.func,
-  shouldRelaodList: PropTypes.bool,
+  shouldReloadList: PropTypes.bool,
   style: PropTypes.object,
   text: PropTypes.string,
   textOpacityAlwaysOn: PropTypes.bool,

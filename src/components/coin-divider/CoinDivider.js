@@ -131,23 +131,6 @@ class CoinDivider extends PureComponent {
       >
         <Highlight highlight={isCoinDivider} />
         <Row>
-          <Row style={{ position: 'absolute' }}>
-            <CoinDividerEditButton
-              onPress={onPin}
-              isVisible={this.state.isCurrentlyCoinListEdited}
-              isActive={currentAction !== 'none'}
-              text={currentAction === 'unpin' ? 'Unpin' : 'Pin'}
-              shouldRelaodList
-              style={{ marginRight: 10 }}
-            />
-            <CoinDividerEditButton
-              onPress={onHide}
-              isVisible={this.state.isCurrentlyCoinListEdited}
-              isActive={currentAction !== 'none'}
-              text={currentAction === 'unhide' ? 'Unhide' : 'Hide'}
-              shouldRelaodList
-            />
-          </Row>
           <View
             pointerEvents={
               this.state.isCurrentlyCoinListEdited || assetsAmount === 0
@@ -212,6 +195,28 @@ class CoinDivider extends PureComponent {
               </OpacityToggler>
             </ButtonPressAnimation>
           </View>
+          <Row
+            pointerEvents={
+              this.state.isCurrentlyCoinListEdited ? 'auto' : 'none'
+            }
+            style={{ position: 'absolute' }}
+          >
+            <CoinDividerEditButton
+              onPress={onPin}
+              isVisible={this.state.isCurrentlyCoinListEdited}
+              isActive={currentAction !== 'none'}
+              text={currentAction === 'unpin' ? 'Unpin' : 'Pin'}
+              shouldReloadList
+              style={{ marginRight: 10 }}
+            />
+            <CoinDividerEditButton
+              onPress={onHide}
+              isVisible={this.state.isCurrentlyCoinListEdited}
+              isActive={currentAction !== 'none'}
+              text={currentAction === 'unhide' ? 'Unhide' : 'Hide'}
+              shouldReloadList
+            />
+          </Row>
         </Row>
         <View
           style={{

@@ -18,7 +18,7 @@ import CoinCheckButton from './CoinCheckButton';
 import withCoinListEdited from '../../hoc/withCoinListEdited';
 import CoinRowInfo from './CoinRowInfo';
 
-const editTranslateOffset = 42;
+const editTranslateOffset = 32;
 
 const BottomRow = ({ balance }) => {
   return (

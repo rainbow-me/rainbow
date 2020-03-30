@@ -70,9 +70,7 @@ const CoinRow = enhance(
         symbol,
         ...props,
       })}
-      <OpacityWrapper
-        style={{ opacity: isHidden && isCoinListEdited ? 0.4 : 1 }}
-      >
+      <OpacityWrapper style={{ opacity: isHidden ? 0.4 : 1 }}>
         <Content css={contentStyles}>
           <Row align="center" justify="space-between">
             {topRowRender({ symbol, ...props })}

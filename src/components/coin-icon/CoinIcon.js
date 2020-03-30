@@ -20,13 +20,17 @@ const fallbackTextStyles = css`
 
 const IndicatorIcon = styled.View`
   align-items: center;
-  background-color: ${colors.darkerGrey};
+  background-color: ${colors.blueGreyDark50};
   border-radius: 10;
   bottom: 3;
   height: 20;
   justify-content: center;
-  left: 14;
+  left: 10;
   position: absolute;
+  shadow-color: ${colors.blueGreyDark};
+  shadow-offset: 0px 4px;
+  shadow-opacity: 0.4;
+  shadow-radius: 6;
   width: 20;
   z-index: 10;
 `;
@@ -95,8 +99,10 @@ const CoinIcon = enhance(
         {(isPinned || isHidden) && isCoinListEdited ? (
           <IndicatorIcon>
             <Icon
+              marginTop={isPinned ? 1 : 0}
               name={isPinned ? 'pin' : 'hidden'}
-              size={20}
+              width={isPinned ? 8 : 14}
+              height={isPinned ? 13 : 10}
               color={colors.white}
             />
           </IndicatorIcon>
@@ -110,6 +116,7 @@ const CoinIcon = enhance(
             [0, 1, 3, colors.dark, 0.08],
           ]}
           shouldRasterizeIOS
+          opacity={isHidden ? 0.4 : 1}
         >
           <ReactCoinIcon
             bgColor={bgColor}
