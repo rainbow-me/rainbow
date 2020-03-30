@@ -57,7 +57,7 @@ const BalanceCoinRow = ({
     <View width={deviceUtils.dimensions.width}>
       <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
         <Row>
-          <View left={isCoinListEdited ? 42 : 0} width={250}>
+          <View left={isCoinListEdited ? 32 : 0} width={250}>
             <CoinRow
               onPress={onPress}
               onPressSend={onPressSend}
@@ -86,7 +86,7 @@ const BalanceCoinRow = ({
     >
       <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
         <Row>
-          <View left={isCoinListEdited ? 42 : 0} width={250}>
+          <View left={isCoinListEdited ? 32 : 0} width={250}>
             <CoinRow
               onPress={onPress}
               onPressSend={onPressSend}
