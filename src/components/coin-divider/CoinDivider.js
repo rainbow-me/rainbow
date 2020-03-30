@@ -206,7 +206,7 @@ class CoinDivider extends PureComponent {
               isVisible={this.state.isCurrentlyCoinListEdited}
               isActive={currentAction !== 'none'}
               text={currentAction === 'unpin' ? 'Unpin' : 'Pin'}
-              shouldRelaodList
+              shouldReloadList
               style={{ marginRight: 10 }}
             />
             <CoinDividerEditButton
@@ -214,7 +214,7 @@ class CoinDivider extends PureComponent {
               isVisible={this.state.isCurrentlyCoinListEdited}
               isActive={currentAction !== 'none'}
               text={currentAction === 'unhide' ? 'Unhide' : 'Hide'}
-              shouldRelaodList
+              shouldReloadList
             />
           </Row>
         </Row>
