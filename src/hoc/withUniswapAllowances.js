@@ -7,12 +7,11 @@ import {
 } from '../redux/uniswap';
 
 const mapStateToProps = ({
-  uniswap: { allowances, inputReserve, outputReserve, tokenReserves },
+  uniswap: { allowances, inputReserve, outputReserve },
 }) => ({
   allowances,
   inputReserve,
   outputReserve,
-  tokenReserves,
 });
 
 export default Component =>

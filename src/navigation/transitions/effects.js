@@ -72,30 +72,6 @@ const exchangeStyleInterpolator = ({
   };
 };
 
-const exchangeDetailsStyleInterpolator = ({
-  current: { progress: current },
-  layouts: { screen },
-}) => {
-  const backgroundOpacity = current.interpolate({
-    inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, 0, 0],
-  });
-
-  const translateY = current.interpolate({
-    inputRange: [0, 1],
-    outputRange: [screen.height, 0],
-  });
-
-  return {
-    cardStyle: {
-      transform: [{ translateY }],
-    },
-    overlayStyle: {
-      opacity: backgroundOpacity,
-    },
-  };
-};
-
 const expandStyleInterpolator = targetOpacity => ({
   current: { progress: current },
   layouts: { screen },
@@ -114,11 +90,12 @@ const expandStyleInterpolator = targetOpacity => ({
     cardStyle: {
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.6,
+      shadowOpacity: 0.5,
       shadowRadius: 25,
       transform: [{ translateY }],
     },
     overlayStyle: {
+      backgroundColor: colors.blueGreyDarker,
       opacity: backgroundOpacity,
     },
   };
@@ -173,7 +150,7 @@ const sheetStyleInterpolator = ({
     cardStyle: {
       shadowColor: colors.black,
       shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.4,
+      shadowOpacity: 0.6,
       shadowRadius: 25,
       transform: [{ translateY }],
     },
@@ -189,7 +166,7 @@ const swapDetailInterpolator = ({
   layouts: { screen },
 }) => {
   // kinda hacky... but lets me expose the
-  // stack's transitionPosition in an exportable wayy
+  // stack's transitionPosition in an exportable way
   Animated.spring(swapDetailsTransitionPosition, {
     toValue: current,
     useNativeDriver: true,
@@ -197,7 +174,7 @@ const swapDetailInterpolator = ({
 
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, 0.7, 0.7],
+    outputRange: [0, 0, 0.6, 0.6],
   });
 
   const translateY = current.interpolate({
@@ -207,10 +184,14 @@ const swapDetailInterpolator = ({
 
   return {
     cardStyle: {
+      shadowColor: colors.dark,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.5,
+      shadowRadius: 25,
       transform: [{ translateY }],
     },
     overlayStyle: {
-      backgroundColor: colors.dark,
+      backgroundColor: colors.blueGreyDarker,
       opacity: backgroundOpacity,
       overflow: 'hidden',
     },
@@ -320,17 +301,6 @@ export const emojiPreset = {
   transitionSpec: { close: emojiCloseSpec, open: emojiOpenSpec },
 };
 
-export const exchangeDetailsPreset = {
-  cardOverlayEnabled: true,
-  cardShadowEnabled: true,
-  cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: exchangeDetailsStyleInterpolator,
-  cardTransparent: true,
-  gestureDirection: 'vertical',
-  gestureResponseDistance,
-  transitionSpec: { close: closeSpec, open: openSpec },
-};
-
 export const exchangePreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
@@ -389,6 +359,7 @@ export const sheetPreset = {
 };
 
 export const swapDetailsPreset = {
+  cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: swapDetailInterpolator,

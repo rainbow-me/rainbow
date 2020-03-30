@@ -407,8 +407,8 @@ class RecyclerAssetList extends Component {
           const size =
             sections[balancesIndex].data[smallBalancesIndex].assets.length;
           dim.height = openSmallBalances
-            ? CoinDivider.height + size * CoinRow.height + additionalHeight + 9
-            : CoinDivider.height + additionalHeight + 16;
+            ? CoinDivider.height + size * CoinRow.height + additionalHeight + 15
+            : CoinDivider.height + additionalHeight + 13;
         } else if (type === ViewTypes.COIN_SAVINGS) {
           const balancesIndex = findIndex(
             sections,
@@ -417,8 +417,9 @@ class RecyclerAssetList extends Component {
           dim.height = openSavings
             ? TokenFamilyHeaderHeight +
               ListFooter.height +
-              61 * sections[balancesIndex].data[savingsIndex].assets.length
-            : TokenFamilyHeaderHeight + ListFooter.height;
+              61 * sections[balancesIndex].data[savingsIndex].assets.length -
+              4
+            : TokenFamilyHeaderHeight + ListFooter.height - 10;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
         } else if (type === ViewTypes.UNISWAP_ROW_LAST) {
@@ -507,17 +508,14 @@ class RecyclerAssetList extends Component {
     });
 
     if (scrollingVelocity === 0) {
-      clearInterval(this.interval);
+      clearTimeout(this.scrollHandle);
     }
 
     if (
       scrollingVelocity &&
       scrollingVelocity !== prevProps.scrollingVelocity
     ) {
-      clearInterval(this.interval);
-      this.interval = setInterval(() => {
-        this.rlv.scrollToOffset(0, this.position + scrollingVelocity * 10);
-      }, 30);
+      this.startScroll(scrollingVelocity);
     }
 
     if (openFamilyTabs !== prevProps.openFamilyTabs && collectibles.data) {
@@ -731,7 +729,7 @@ class RecyclerAssetList extends Component {
 
   componentWillUnmount = () => {
     this.isCancelled = true;
-    clearInterval(this.interval);
+    clearTimeout(this.scrollHandle);
   };
 
   rlv = React.createRef();
@@ -745,6 +743,12 @@ class RecyclerAssetList extends Component {
   renderList = [];
   savingsList = [];
   savingsSumValue = 0;
+
+  startScroll = scrollingVelocity => {
+    clearTimeout(this.scrollHandle);
+    this.rlv.scrollToOffset(0, this.position + scrollingVelocity * 10);
+    this.scrollHandle = setTimeout(this.startScroll, 30);
+  };
 
   scrollToOffset = (position, animated) => {
     setTimeout(() => {

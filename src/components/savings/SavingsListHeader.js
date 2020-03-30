@@ -8,15 +8,14 @@ import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { colors } from '../../styles';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import Highlight from '../Highlight';
-import { Icon } from '../icons';
 import { Row, RowWithMargins } from '../layout';
-import { Text, TruncatedText } from '../text';
+import { Emoji, Text, TruncatedText } from '../text';
 import withOpenSavings from '../../hoc/withOpenSavings';
 
 const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
 
 const TokenFamilyHeaderAnimationDuration = 200;
-const TokenFamilyHeaderHeight = 50;
+const TokenFamilyHeaderHeight = 44;
 
 const SavingsListHeader = ({
   emoji,
@@ -45,10 +44,10 @@ const SavingsListHeader = ({
         width="100%"
       >
         <Highlight visible={highlight} />
-        <RowWithMargins align="center" margin={emoji ? 5 : 9}>
-          <Icon name={emoji} style={{ marginBottom: 2 }} />
+        <RowWithMargins align="center" margin={emoji ? 3.5 : 9}>
+          <Emoji name={emoji} size="medium" style={{ marginBottom: 3.5 }} />
           <TruncatedText
-            letterSpacing="roundedTight"
+            letterSpacing="roundedMedium"
             lineHeight="normal"
             size="large"
             weight="semibold"

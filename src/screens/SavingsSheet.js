@@ -61,8 +61,7 @@ const SavingsSheet = () => {
           <RowWithMargins css={padding(24, 15)} margin={15}>
             <SheetActionButton
               color={colors.dark}
-              icon="minusCircled"
-              label="Withdraw"
+              label="􀁏 Withdraw"
               onPress={() =>
                 navigate('SavingsWithdrawModal', {
                   cTokenBalance,
@@ -71,29 +70,39 @@ const SavingsSheet = () => {
                   underlyingPrice,
                 })
               }
+              shadows={[
+                [0, 7, 21, colors.dark, 0.25],
+                [0, 3.5, 10.5, colors.dark, 0.35],
+              ]}
             />
             <SheetActionButton
               color={colors.swapPurple}
-              icon="plusCircled"
-              label="Deposit"
+              label="􀁍 Deposit"
               onPress={() =>
                 navigate('SavingsDepositModal', {
                   defaultInputAsset: underlying,
                 })
               }
+              shadows={[
+                [0, 7, 21, colors.dark, 0.25],
+                [0, 3.5, 10.5, colors.swapPurple, 0.35],
+              ]}
             />
           </RowWithMargins>
           <Divider zIndex={0} />
           <FloatingEmojis
-            distance={350}
-            duration={2000}
-            emoji="money_mouth_face"
-            size={36}
-            wiggleFactor={1}
+            disableHorizontalMovement
+            distance={600}
+            duration={600}
+            emoji="money_with_wings"
+            opacityThreshold={0.86}
+            scaleTo={0.3}
+            size={40}
+            wiggleFactor={0}
           >
             {({ onNewEmoji }) => (
               <FloatingEmojisTapHandler onNewEmoji={onNewEmoji}>
-                <Column paddingBottom={8}>
+                <Column paddingBottom={9} paddingTop={4}>
                   <SavingsCoinRow
                     item={{
                       lifetimeSupplyInterestAccrued,
@@ -108,9 +117,9 @@ const SavingsSheet = () => {
               </FloatingEmojisTapHandler>
             )}
           </FloatingEmojis>
-          <Divider zIndex={0} />
+          <Divider color={colors.rowDividerLight} zIndex={0} />
           <SavingsPredictionStepper
-            balance={supplyBalanceUnderlying}
+            balance={nativeValue}
             interestRate={supplyRate}
           />
         </Fragment>

@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { colors, padding } from '../../styles';
-import { Icon } from '../icons';
 import { Centered, RowWithMargins } from '../layout';
 import { DollarFigure, Text } from '../text';
 
@@ -18,7 +17,6 @@ const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => (
     </Text>
     <DollarFigure value={balance} decimals={2} />
     <RowWithMargins align="center" margin={4} marginTop={1}>
-      <Icon name="plusCircled" color={colors.green} />
       <Text
         color={colors.green}
         letterSpacing="roundedTight"
@@ -26,7 +24,7 @@ const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => (
         lineHeight="loose"
         weight="semibold"
       >
-        {lifetimeAccruedInterest}
+        􀁍 {lifetimeAccruedInterest}
       </Text>
     </RowWithMargins>
   </Centered>

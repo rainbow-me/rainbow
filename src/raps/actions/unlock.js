@@ -1,5 +1,11 @@
 import { get, toLower } from 'lodash';
-import { greaterThan, isZero } from '../../helpers/utilities';
+import {
+  greaterThan,
+  isZero,
+  convertAmountToRawAmount,
+} from '../../helpers/utilities';
+import transactionStatusTypes from '../../helpers/transactionStatusTypes';
+import transactionTypes from '../../helpers/transactionTypes';
 import store from '../../redux/store';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
@@ -9,17 +15,19 @@ const NOOP = () => undefined;
 
 const unlock = async (wallet, currentRap, index, parameters) => {
   const { dispatch } = store;
-  const { assetToUnlock, contractAddress } = parameters;
-  const { accountAddress } = store.getState().settings;
+  const { accountAddress, amount, assetToUnlock, contractAddress } = parameters;
   console.log(
     '[unlock] begin unlock rap for',
     assetToUnlock,
     'on',
-    contractAddress
+    contractAddress,
+    'amount',
+    amount
   );
 
   const needsUnlocking = await assetNeedsUnlocking(
     accountAddress,
+    amount,
     assetToUnlock,
     contractAddress
   );
@@ -55,17 +63,16 @@ const unlock = async (wallet, currentRap, index, parameters) => {
 
   console.log('[unlock] add a new txn');
   dispatch(
-    dataAddNewTransaction(
-      {
-        amount: 0,
-        asset: assetToUnlock,
-        from: wallet.address,
-        hash: approval.hash,
-        nonce: get(approval, 'nonce'),
-        to: get(approval, 'to'),
-      },
-      true
-    )
+    dataAddNewTransaction({
+      amount: 0,
+      asset: assetToUnlock,
+      from: wallet.address,
+      hash: approval.hash,
+      nonce: get(approval, 'nonce'),
+      status: transactionStatusTypes.approving,
+      to: get(approval, 'to'),
+      type: transactionTypes.authorize,
+    })
   );
   console.log('[unlock] calling callback');
   currentRap.callback();
@@ -96,6 +103,7 @@ const unlock = async (wallet, currentRap, index, parameters) => {
 
 const assetNeedsUnlocking = async (
   accountAddress,
+  amount,
   assetToUnlock,
   contractAddress
 ) => {
@@ -112,7 +120,9 @@ const assetNeedsUnlocking = async (
     assetToUnlock,
     contractAddress
   );
-  return !greaterThan(allowance, 0);
+
+  const rawAmount = convertAmountToRawAmount(amount, assetToUnlock.decimals);
+  return !greaterThan(allowance, rawAmount);
 };
 
 export default unlock;

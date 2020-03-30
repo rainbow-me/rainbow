@@ -39,9 +39,9 @@ const SheetActionButton = ({
       {children || (
         <RowWithMargins
           align="center"
-          css={padding(9.5, 14, 11, 15)}
+          css={padding(9, 15, 12)}
           height={dims.width >= 414 ? 44 : 40}
-          margin={4}
+          margin={0}
           zIndex={1}
         >
           <Icon color="white" name={icon} size={16} />

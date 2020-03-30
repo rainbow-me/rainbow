@@ -12,6 +12,7 @@
 #import <React/RCTLinkingManager.h>
 #import <React/RCTRootView.h>
 #import <RNCPushNotificationIOS.h>
+#import <Sentry/Sentry.h>
 #import "RNSplashScreen.h"
 
 @implementation AppDelegate
@@ -34,10 +35,28 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
-
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+  selector:@selector(handleRapInProgress:)
+      name:@"rapInProgress"
+    object:nil];
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+  selector:@selector(handleRapComplete:)
+      name:@"rapCompleted"
+    object:nil];
+  
   // Splashscreen - react-native-splash-screen
   [RNSplashScreen show];
   return YES;
+}
+
+- (void)handleRapInProgress:(NSNotification *)notification {
+  self.isRapRunning = YES;
+}
+
+- (void)handleRapComplete:(NSNotification *)notification {
+  self.isRapRunning = NO;
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
@@ -77,5 +96,25 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
                   continueUserActivity:userActivity
 										restorationHandler:restorationHandler];
 }
+
+
+- (void)applicationWillTerminate:(UIApplication *)application {
+  
+  if(self.isRapRunning){
+  
+    NSDictionary *event = @{@"message": @"applicationWillTerminate was called"};
+    
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:event
+                                                       options:0
+                                                         error:nil];
+
+    SentryEvent *sentryEvent = [[SentryEvent alloc] initWithJSON:jsonData];
+    [SentryClient.sharedClient sendEvent:sentryEvent withCompletionHandler:^(NSError * _Nullable error) {
+      NSLog((@"ApplicationWillTerminate was called"));
+    }];
+  }
+  
+}
+
 
 @end

@@ -12,6 +12,7 @@ export default {
   sending: 'sending',
   sent: 'sent',
   swapped: 'swapped',
+  swapping: 'swapping',
   unknown: 'unknown status',
   withdrawing: 'withdrawing',
   withdrew: 'withdrew',

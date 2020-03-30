@@ -55,12 +55,12 @@ const CurrencySelectModal = ({
 
   const shouldUpdateFavoritesRef = useRef(false);
   const searchInputRef = useRef();
-  const debounceHandler = useRef();
+  const searchQueryDebounceHandle = useRef();
 
   useEffect(() => {
-    if (debounceHandler && debounceHandler.current)
-      clearTimeout(debounceHandler.current);
-    debounceHandler.current = setTimeout(
+    if (searchQueryDebounceHandle && searchQueryDebounceHandle.current)
+      clearTimeout(searchQueryDebounceHandle.current);
+    searchQueryDebounceHandle.current = setTimeout(
       () => {
         setSearchQueryForSearch(searchQuery);
       },

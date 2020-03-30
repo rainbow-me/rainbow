@@ -95,10 +95,6 @@ class SendAssetList extends React.Component {
     this._renderRow = this._renderRow.bind(this);
   }
 
-  onItemPress = itemInfo => {
-    return this.props.onSelectAsset(itemInfo.item ? itemInfo.item : itemInfo);
-  };
-
   rlv = React.createRef();
 
   changeOpenTab = index => {

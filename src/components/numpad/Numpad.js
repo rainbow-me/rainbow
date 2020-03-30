@@ -20,6 +20,7 @@ const KeyboardButton = ({ children, ...props }) => {
     <ButtonPressAnimation
       {...props}
       duration={35}
+      pressOutDuration={75}
       scaleTo={1.6}
       transformOrigin={[0.5, yTransformOrigin]}
     >

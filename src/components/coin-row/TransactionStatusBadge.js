@@ -22,6 +22,12 @@ const StatusProps = {
   [TransactionStatusTypes.depositing]: {
     marginRight: 4,
   },
+  [TransactionStatusTypes.approving]: {
+    marginRight: 4,
+  },
+  [TransactionStatusTypes.swapping]: {
+    marginRight: 4,
+  },
   [TransactionStatusTypes.failed]: {
     marginRight: 4,
     name: 'closeCircled',
@@ -54,6 +60,9 @@ const StatusProps = {
     name: 'swap',
     small: true,
     style: position.maxSizeAsObject(12),
+  },
+  [TransactionStatusTypes.swapping]: {
+    marginRight: 4,
   },
   [TransactionStatusTypes.withdrawing]: {
     marginRight: 4,
