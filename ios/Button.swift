@@ -76,7 +76,7 @@ class Button : RCTView {
       let location = touch.location(in: self)
       if !touchInRange(location: location, tolerance: self.touchMoveTolerance) {
         animateTapEnd(duration: duration)
-      } else if touchInRange(location: location, tolerance: self.touchMoveTolerance / 2) {
+      } else if touchInRange(location: location, tolerance: self.touchMoveTolerance * 0.8) {
         animateTapStart(
           duration: duration,
           scale: scaleTo,
@@ -89,7 +89,7 @@ class Button : RCTView {
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
     if let touch = touches.first {
       let location = touch.location(in: self)
-      if touchInRange(location: location, tolerance: self.touchMoveTolerance / 2) {
+      if touchInRange(location: location, tolerance: self.touchMoveTolerance * 0.8) {
           let useHaptic = useLateHaptic && enableHapticFeedback ? hapticType : nil
           animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration, useHaptic: useHaptic)
           onPress([:])
