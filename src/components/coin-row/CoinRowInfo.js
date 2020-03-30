@@ -30,50 +30,22 @@ const formatPercentageString = percentString =>
         .split('-')
         .join('- ')
         .split('%')
-        .join(' %')
-    : '-';
+        .join('%')
+    : null;
 
-const CoinRowInfo = ({
-  isCoinListEdited,
-  isHidden,
-  native,
-  nativeCurrencySymbol,
-}) => {
+const CoinRowInfo = ({ isHidden, native }) => {
   const nativeDisplay = get(native, 'balance.display');
 
   const percentChange = get(native, 'change');
   const percentageChangeDisplay = formatPercentageString(percentChange);
   const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
   return (
-    <Container
-      style={{ height: 59, opacity: isHidden && isCoinListEdited ? 0.4 : 1 }}
-    >
-      <BalanceText
-        style={
-          isHidden && isCoinListEdited
-            ? {
-                textDecorationLine: 'line-through',
-                textDecorationStyle: 'solid',
-              }
-            : {}
-        }
-        color={nativeDisplay ? null : colors.alpha(colors.blueGreyDark, 0.5)}
-        numberOfLines={1}
-      >
-        {nativeDisplay || `${nativeCurrencySymbol}0.00`}
-      </BalanceText>
+    <Container style={{ height: 59, opacity: isHidden ? 0.4 : 1 }}>
+      <BalanceText numberOfLines={1}>{nativeDisplay}</BalanceText>
       <BottomRowText
         align="right"
-        color={
-          isPositive
-            ? colors.green
-            : !percentChange
-            ? colors.alpha(colors.blueGreyDark, 0.2)
-            : null
-        }
-        style={{
-          marginBottom: 0.5,
-        }}
+        color={isPositive ? colors.green : null}
+        style={{ marginBottom: 0.5 }}
       >
         {percentageChangeDisplay}
       </BottomRowText>
@@ -83,7 +55,6 @@ const CoinRowInfo = ({
 
 CoinRowInfo.propTypes = {
   native: PropTypes.object,
-  nativeCurrencySymbol: PropTypes.string,
 };
 
 export default compose(withAccountSettings, withCoinListEdited)(CoinRowInfo);

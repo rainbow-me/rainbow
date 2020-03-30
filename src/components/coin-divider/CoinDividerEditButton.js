@@ -32,6 +32,7 @@ const CoinDividerEditButton = ({
           );
         }
       }}
+      scaleTo={textOpacityAlwaysOn || isActive ? 0.9 : 1}
     >
       <View
         style={[
@@ -45,9 +46,9 @@ const CoinDividerEditButton = ({
             paddingBottom: 6,
             paddingHorizontal: 10,
             paddingTop: 5,
-            shadowColor: isActive ? colors.appleBlue : colors.white,
+            shadowColor: colors.appleBlue,
             shadowOffset: { height: 4, width: 0 },
-            shadowOpacity: 0.4,
+            shadowOpacity: isActive ? 0.4 : 0,
             shadowRadius: 6,
           },
           style,
