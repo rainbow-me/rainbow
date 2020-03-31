@@ -598,7 +598,7 @@ const ExchangeModal = ({
 
     analytics.track('Selected max balance', {
       category: isDeposit || isWithdrawal ? 'savings' : 'swap',
-      defaultInputAsset: defaultInputAsset.symbol,
+      defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
       type,
       value: Number(maxBalance.toString()),
     });
@@ -610,7 +610,7 @@ const ExchangeModal = ({
     backgroundTask.execute(async () => {
       analytics.track(`Submitted ${type}`, {
         category: isDeposit || isWithdrawal ? 'savings' : 'swap',
-        defaultInputAsset: defaultInputAsset.symbol,
+        defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
         type,
       });
 
@@ -640,7 +640,7 @@ const ExchangeModal = ({
         console.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
           category: isDeposit || isWithdrawal ? 'savings' : 'swap',
-          defaultInputAsset: defaultInputAsset.symbol,
+          defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
           type,
         });
       } catch (error) {
@@ -755,7 +755,7 @@ const ExchangeModal = ({
         if (newAmountDisplay) {
           analytics.track('Updated input amount', {
             category: isDeposit ? 'savings' : 'swap',
-            defaultInputAsset: defaultInputAsset.symbol,
+            defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
             type,
             value: Number(newAmountDisplay.toString()),
           });
@@ -763,7 +763,7 @@ const ExchangeModal = ({
       }
     },
     [
-      defaultInputAsset.symbol,
+      defaultInputAsset,
       getMarketPrice,
       inputCurrency,
       isDeposit,
@@ -828,7 +828,7 @@ const ExchangeModal = ({
 
     analytics.track('Switched input asset', {
       category: isDeposit ? 'savings' : 'swap',
-      defaultInputAsset: defaultInputAsset.symbol,
+      defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
       from: previousInputCurrency.symbol,
       label: newInputCurrency.symbol,
       type,
@@ -877,13 +877,13 @@ const ExchangeModal = ({
       if (newAmountDisplay) {
         analytics.track('Updated output amount', {
           category: isWithdrawal || isDeposit ? 'savings' : 'swap',
-          defaultInputAsset: defaultInputAsset.symbol,
+          defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
           type,
           value: Number(newAmountDisplay.toString()),
         });
       }
     },
-    [defaultInputAsset.symbol, isDeposit, isWithdrawal, type]
+    [defaultInputAsset, isDeposit, isWithdrawal, type]
   );
 
   const updateOutputCurrency = (newOutputCurrency, userSelected = true) => {
@@ -928,7 +928,7 @@ const ExchangeModal = ({
 
     analytics.track('Switched output asset', {
       category: isWithdrawal || isDeposit ? 'savings' : 'swap',
-      defaultInputAsset: defaultInputAsset.symbol,
+      defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
       from: (previousOutputCurrency && previousOutputCurrency.symbol) || null,
       label: newOutputCurrency.symbol,
       type,
