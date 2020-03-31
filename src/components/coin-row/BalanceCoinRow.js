@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { compose, shouldUpdate, withHandlers } from 'recompact';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
@@ -7,6 +7,7 @@ import {
   withAccountSettings,
   withOpenBalances,
   withEditOptions,
+  withCoinRecentlyPinned,
 } from '../../hoc';
 import { isNewValueForPath, deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -53,11 +54,36 @@ const BalanceCoinRow = ({
   onPressSend,
   isCoinListEdited,
   nativeCurrencySymbol,
+  pushSelectedCoin,
+  removeSelectedCoin,
+  recentlyPinnedCount,
   ...props
-}) =>
-  item.isSmall ? (
+}) => {
+  const [toggle, setToggle] = useState(false);
+  const [previousPinned, setPreviousPinned] = useState(0);
+
+  useEffect(() => {
+    if (toggle && (recentlyPinnedCount > previousPinned || !isCoinListEdited)) {
+      setPreviousPinned(recentlyPinnedCount);
+      setToggle(false);
+    }
+  }, [isCoinListEdited, recentlyPinnedCount]);
+
+  const handlePress = () => {
+    if (toggle) {
+      removeSelectedCoin(item.uniqueId);
+    } else {
+      pushSelectedCoin(item.uniqueId);
+    }
+    setToggle(!toggle);
+  };
+
+  return item.isSmall ? (
     <View width={deviceUtils.dimensions.width}>
-      <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+      <ButtonPressAnimation
+        onPress={isCoinListEdited ? handlePress : onPress}
+        scaleTo={0.96}
+      >
         <Row>
           <View
             left={isCoinListEdited ? editTranslateOffset : 0}
@@ -85,7 +111,9 @@ const BalanceCoinRow = ({
           </View>
         </Row>
       </ButtonPressAnimation>
-      {isCoinListEdited ? <CoinCheckButton isAbsolute {...item} /> : null}
+      {isCoinListEdited ? (
+        <CoinCheckButton isAbsolute toggle={toggle} onPress={handlePress} />
+      ) : null}
     </View>
   ) : (
     <FlexItem
@@ -94,7 +122,10 @@ const BalanceCoinRow = ({
         justifyContent: isFirstCoinRow ? 'flex-end' : 'flex-start',
       }}
     >
-      <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+      <ButtonPressAnimation
+        onPress={isCoinListEdited ? handlePress : onPress}
+        scaleTo={0.96}
+      >
         <Row>
           <View
             left={isCoinListEdited ? editTranslateOffset : 0}
@@ -121,9 +152,12 @@ const BalanceCoinRow = ({
           </View>
         </Row>
       </ButtonPressAnimation>
-      {isCoinListEdited ? <CoinCheckButton isAbsolute {...item} /> : null}
+      {isCoinListEdited ? (
+        <CoinCheckButton isAbsolute toggle={toggle} onPress={handlePress} />
+      ) : null}
     </FlexItem>
   );
+};
 
 BalanceCoinRow.propTypes = {
   isFirstCoinRow: PropTypes.bool,
@@ -139,6 +173,7 @@ export default compose(
   withOpenBalances,
   withEditOptions,
   withCoinListEdited,
+  withCoinRecentlyPinned,
   withHandlers({
     onPress: ({ item, onPress }) => () => {
       if (onPress) {
@@ -166,6 +201,9 @@ export default compose(
     const isEdited = isNewValueForPath(props, nextProps, 'isCoinListEdited');
     const isPinned = isNewValueForPath(props, nextProps, 'item.isPinned');
     const isHidden = isNewValueForPath(props, nextProps, 'item.isHidden');
+    const recentlyPinnedCount =
+      isNewValueForPath(props, nextProps, 'recentlyPinnedCount') &&
+      (props.item.isPinned || props.item.isHidden);
 
     return (
       isNewItem ||
@@ -173,7 +211,8 @@ export default compose(
       isChangeInOpenAssets ||
       isEdited ||
       isPinned ||
-      isHidden
+      isHidden ||
+      recentlyPinnedCount
     );
   })
 )(BalanceCoinRow);
