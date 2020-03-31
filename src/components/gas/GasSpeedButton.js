@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { LayoutAnimation } from 'react-native';
 import { compose, mapProps, onlyUpdateForKeys, withProps } from 'recompact';
+import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
 import { withAccountSettings, withGas } from '../../hoc';
 import { colors, padding } from '../../styles';
 import { gasUtils } from '../../utils';
@@ -43,6 +44,7 @@ class GasSpeedButton extends PureComponent {
     nativeCurrencySymbol: PropTypes.string,
     price: PropTypes.string,
     selectedGasPriceOption: PropTypes.oneOf(gasUtils.GasSpeedOrder),
+    type: PropTypes.oneOf(Object.values(ExchangeModalTypes)),
   };
 
   handlePress = () => {
@@ -72,9 +74,22 @@ class GasSpeedButton extends PureComponent {
     return `${this.props.nativeCurrencySymbol}${formattedPrice}`;
   };
 
+  getActionLabel = () => {
+    const { type } = this.props;
+    switch (type) {
+      case ExchangeModalTypes.deposit:
+        return 'Deposits in';
+      case ExchangeModalTypes.withdrawal:
+        return 'Withdraws in';
+      default:
+        return 'Swaps in';
+    }
+  };
+
   formatAnimatedEstimatedTime = estimatedTime => {
+    const actionLabel = this.getActionLabel();
     const time = parseFloat(estimatedTime || 0).toFixed(0);
-    return `Swaps in ~ ${time} ${this.props.estimatedTimeUnit}`;
+    return `${actionLabel} ~ ${time} ${this.props.estimatedTimeUnit}`;
   };
 
   render = () => (
