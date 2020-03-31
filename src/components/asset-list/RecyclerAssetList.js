@@ -417,7 +417,7 @@ class RecyclerAssetList extends Component {
             ? CoinRow.height
             : CoinRow.height + ListFooter.height + 1;
         } else if (type === ViewTypes.COIN_DIVIDER) {
-          dim.height = CoinDivider.height + 13;
+          dim.height = CoinDivider.height;
         } else if (type === ViewTypes.COIN_SMALL_BALANCES) {
           const balancesIndex = findIndex(
             sections,
@@ -476,6 +476,13 @@ class RecyclerAssetList extends Component {
     const items = sections.reduce((ctx, section) => {
       headersIndices.push(ctx.length);
       stickyComponentsIndices.push(ctx.length);
+      if (section.header.title == 'Balances') {
+        const coinDividerIndexInsideBalances = findIndex(
+          section.data,
+          ({ coinDivider }) => coinDivider
+        );
+        stickyComponentsIndices.push(coinDividerIndexInsideBalances + 1);
+      }
       return ctx
         .concat([
           {
@@ -951,9 +958,18 @@ class RecyclerAssetList extends Component {
         });
   };
 
-  stickyRowRenderer = (_, data) => (
-    <AssetListHeaderRenderer {...data} isSticky />
-  );
+  stickyRowRenderer = (_, data) => {
+    console.log(data);
+    return data.item && data.item.coinDivider ? (
+      <CoinDivider
+        assetsAmount={this.renderList.length}
+        balancesSum="$20.12"
+        isSticky
+      />
+    ) : (
+      <AssetListHeaderRenderer {...data} isSticky />
+    );
+  };
 
   render() {
     const {

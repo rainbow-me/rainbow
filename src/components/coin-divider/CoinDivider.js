@@ -120,17 +120,19 @@ class CoinDivider extends PureComponent {
       setOpenSmallBalances,
       openSmallBalances,
       currentAction,
+      isSticky,
     } = this.props;
 
     return (
       <Row
         align="center"
-        height={CoinDividerHeight}
+        height={CoinDividerHeight + 11}
         justify="space-between"
-        marginBottom={6}
-        marginTop={5}
+        paddingBottom={6}
+        paddingTop={5}
         paddingHorizontal={19}
         width={deviceUtils.dimensions.width}
+        backgroundColor={isSticky ? colors.white : colors.transparent}
       >
         <Highlight highlight={isCoinDivider} />
         <Row>

@@ -35,22 +35,15 @@ class SmallBalancesWrapper extends PureComponent {
 
     return (
       <Fragment>
-        {/* <CoinDivider
-          assetsAmount={assets.length}
-          balancesSum={balancesSum}
-          onPress={this.handlePress}
-          onEdit={setIsCoinListEdited}
-          onPin={setPinnedCoins}
-          onHide={setHiddenCoins}
-          isCoinListEdited={isCoinListEdited}
-          openSmallBalances={openSmallBalances}
-        /> */}
         <OpacityToggler
           endingOpacity={1}
           isVisible={openSmallBalances}
           startingOpacity={0}
         >
-          <View pointerEvents={openSmallBalances ? 'auto' : 'none'}>
+          <View
+            marginTop={13}
+            pointerEvents={openSmallBalances ? 'auto' : 'none'}
+          >
             <View
               style={{
                 opacity: openSmallBalances ? 1 : 0,
