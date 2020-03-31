@@ -146,6 +146,8 @@ class App extends Component {
   };
 
   handleInitializeAnalytics = async () => {
+    // Comment the line below to debug analytics
+    // if (__DEV__) return false;
     const storedIdentifier = await keychain.loadString(
       'analyticsUserIdentifier'
     );
@@ -171,7 +173,13 @@ class App extends Component {
     if (nextAppState === 'active') {
       PushNotificationIOS.removeAllDeliveredNotifications();
     }
+
     this.setState({ appState: nextAppState });
+
+    analytics.track('State change', {
+      category: 'app state',
+      label: nextAppState,
+    });
   };
 
   handleNavigatorRef = navigatorRef =>
