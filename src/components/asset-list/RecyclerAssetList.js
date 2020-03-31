@@ -806,6 +806,10 @@ class RecyclerAssetList extends Component {
       return `balance_${row.item.stableId}`;
     }
 
+    if (row.item && row.item.coinDivider) {
+      return `coinDivider`;
+    }
+
     if (index === dataProvider._data.length - 1) {
       return 'footer';
     }
