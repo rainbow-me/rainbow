@@ -1,5 +1,5 @@
 import analytics from '@segment/analytics-react-native';
-import { join, map } from 'lodash';
+import { get, join, map } from 'lodash';
 import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
 import depositCompound from './actions/depositCompound';
@@ -36,6 +36,12 @@ const getRapFullName = actions => {
   return join(actionTypes, ' + ');
 };
 
+const defaultPreviousAction = {
+  transaction: {
+    confirmed: true,
+  },
+};
+
 export const executeRap = async (wallet, rap) => {
   const { actions } = rap;
   const rapName = getRapFullName(actions);
@@ -47,6 +53,14 @@ export const executeRap = async (wallet, rap) => {
 
   console.log('[common - executing rap]: actions', actions);
   for (let index = 0; index < actions.length; index++) {
+    const previousAction = index ? actions[index - 1] : defaultPreviousAction;
+    const previousActionWasSuccess = get(
+      previousAction,
+      'transaction.confirmed',
+      false
+    );
+    if (!previousActionWasSuccess) break;
+
     const action = actions[index];
     const { parameters, type } = action;
     const actionPromise = findActionByType(type);
