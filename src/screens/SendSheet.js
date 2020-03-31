@@ -21,14 +21,15 @@ import {
   SendTransactionSpeed,
 } from '../components/send';
 import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
+import AssetTypes from '../helpers/assetTypes';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { formatDepositAmount } from '../helpers/savings';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   convertAmountToNativeDisplay,
   formatInputDecimals,
 } from '../helpers/utilities';
-import { formatDepositAmount } from '../helpers/savings';
 import { checkIsValidAddress } from '../helpers/validators';
 import {
   useAccountAssets,
@@ -94,27 +95,41 @@ const SendSheet = ({
   const priceOfEther = get(eth, 'native.price.amount', null);
   if (priceOfEther) {
     savings = map(savings, asset => {
-      const {
-        cTokenBalance,
-        supplyBalanceUnderlying,
-        underlying,
-        underlyingPrice,
-      } = asset;
+      const { cToken, cTokenBalance, exchangeRate, underlyingPrice } = asset;
       const cTokenBalanceDisplay = formatDepositAmount(
         cTokenBalance,
-        underlying.symbol
+        cToken.symbol,
+        false
       );
-      const rawNativeValue = supplyBalanceUnderlying
-        ? supplyBalanceUnderlying * underlyingPrice * priceOfEther
-        : 0;
-      const nativeValue = convertAmountToNativeDisplay(
-        rawNativeValue,
+
+      const nativeValue = exchangeRate * underlyingPrice * priceOfEther;
+      const nativeValueDisplay = convertAmountToNativeDisplay(
+        nativeValue,
         nativeCurrency
       );
+      const balanceNativeValue = cTokenBalance * nativeValue;
+      const balanceNativeDisplay = convertAmountToNativeDisplay(
+        balanceNativeValue,
+        nativeCurrency
+      );
+
       return {
         ...asset,
-        cTokenBalanceDisplay,
-        nativeValue,
+        ...cToken,
+        balance: {
+          amount: cTokenBalance,
+          display: cTokenBalanceDisplay,
+        },
+        native: {
+          balance: {
+            amount: balanceNativeValue,
+            display: balanceNativeDisplay,
+          },
+        },
+        price: {
+          display: nativeValueDisplay,
+          value: nativeValue,
+        },
       };
     });
   }
@@ -183,7 +198,7 @@ const SendSheet = ({
 
   const sendUpdateSelected = useCallback(
     newSelected => {
-      if (get(newSelected, 'isNft')) {
+      if (get(newSelected, 'type') === AssetTypes.nft) {
         setAmountDetails({
           assetAmount: '1',
           isSufficientBalance: true,
@@ -262,6 +277,7 @@ const SendSheet = ({
       return false;
 
     let submitSuccess = false;
+
     const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
@@ -308,7 +324,7 @@ const SendSheet = ({
       const submitSuccessful = await onSubmit();
       analytics.track('Sent transaction', {
         assetName: selected.name,
-        assetType: selected.isNft ? 'unique_token' : 'token',
+        assetType: selected.type,
         isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
       });
       if (submitSuccessful) {
@@ -322,8 +338,8 @@ const SendSheet = ({
     navigate,
     onSubmit,
     recipient,
-    selected.isNft,
     selected.name,
+    selected.type,
   ]);
 
   const onPressTransactionSpeed = useCallback(

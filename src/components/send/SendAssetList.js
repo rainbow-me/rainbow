@@ -193,15 +193,13 @@ class SendAssetList extends React.Component {
 
   mapTokens = collectibles => {
     const items = collectibles.map(collectible => {
-      const newItem = {};
-      newItem.item = collectible;
       const onPress = () => {
         this.props.onSelectAsset(collectible);
       };
       return (
         <CollectiblesSendRow
           key={collectible.id}
-          {...newItem}
+          item={collectible}
           onPress={onPress}
         />
       );
@@ -223,12 +221,9 @@ class SendAssetList extends React.Component {
       };
       return (
         <SendSavingsCoinRow
+          key={token.address}
+          item={token}
           onPress={onPress}
-          key={token.cToken.address}
-          {...token}
-          {...token.underlying}
-          {...token}
-          {...token.cToken}
         />
       );
     });

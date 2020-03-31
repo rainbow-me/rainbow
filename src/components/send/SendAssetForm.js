@@ -2,11 +2,13 @@ import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import { pure } from 'recompose';
 import styled from 'styled-components/primitives';
-import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
+import AssetTypes from '../../helpers/assetTypes';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import { colors, padding, position } from '../../styles';
 import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../../utils';
 import { SendCoinRow } from '../coin-row';
+import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
+import SendSavingsCoinRow from '../coin-row/SendSavingsCoinRow';
 import { Icon } from '../icons';
 import { Column, ColumnWithMargins } from '../layout';
 import { ShadowStack } from '../shadow-stack';
@@ -47,6 +49,9 @@ const SendAssetForm = ({
 }) => {
   const selectedAsset = ethereumUtils.getAsset(allAssets, selected.address);
 
+  const isNft = selected.type === AssetTypes.nft;
+  const isSavings = selected.type === AssetTypes.cToken;
+
   return (
     <Container>
       <ShadowStack
@@ -61,15 +66,22 @@ const SendAssetForm = ({
         shouldRasterizeIOS
         width={deviceUtils.dimensions.width}
       >
-        {createElement(selected.isNft ? CollectiblesSendRow : SendCoinRow, {
-          children: <Icon name="doubleCaret" />,
-          item: selected.isNft ? selected : selectedAsset,
-          onPress: onResetAssetSelection,
-          selected: true,
-        })}
+        {createElement(
+          isNft
+            ? CollectiblesSendRow
+            : isSavings
+            ? SendSavingsCoinRow
+            : SendCoinRow,
+          {
+            children: <Icon name="doubleCaret" />,
+            item: isNft || isSavings ? selected : selectedAsset,
+            onPress: onResetAssetSelection,
+            selected: true,
+          }
+        )}
       </ShadowStack>
-      <TransactionContainer isNft={selected.isNft}>
-        {selected.isNft ? (
+      <TransactionContainer isNft={isNft}>
+        {isNft ? (
           <SendAssetFormCollectible {...selected} />
         ) : (
           <SendAssetFormToken

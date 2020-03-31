@@ -6,15 +6,20 @@ import { Monospace } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
-const BottomRow = ({ cTokenBalanceDisplay, nativeValue }) => (
+const BottomRow = ({
+  balance: { display: balanceDisplay },
+  native: {
+    balance: { display: balanceNativeValue },
+  },
+}) => (
   <Monospace color={colors.alpha(colors.blueGreyDark, 0.6)} size="smedium">
-    {cTokenBalanceDisplay} ≈ {nativeValue}
+    {balanceDisplay} ≈ {balanceNativeValue}
   </Monospace>
 );
 
 BottomRow.propTypes = {
-  cTokenBalanceDisplay: PropTypes.string,
-  nativeValue: PropTypes.string,
+  balance: PropTypes.object,
+  native: PropTypes.object,
 };
 
 const TopRow = ({ name }) => <CoinName weight="regular">{name}</CoinName>;

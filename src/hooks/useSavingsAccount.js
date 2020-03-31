@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { compoundClient } from '../apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '../apollo/queries';
 import { getSavings, saveSavings } from '../handlers/localstorage/accountLocal';
+import AssetTypes from '../helpers/assetTypes';
 import { multiply } from '../helpers/utilities';
 import { useAccountSettings } from '../hooks';
 import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
@@ -15,10 +16,11 @@ const COMPOUND_QUERY_INTERVAL = 10000;
 const getMarketData = (marketData, tokenOverrides) => {
   const underlying = getUnderlyingData(marketData, tokenOverrides);
   const cToken = getCTokenData(marketData, tokenOverrides);
-  const { supplyRate, underlyingPrice } = marketData;
+  const { exchangeRate, supplyRate, underlyingPrice } = marketData;
 
   return {
     cToken,
+    exchangeRate,
     supplyRate,
     underlying,
     underlyingPrice,
@@ -95,10 +97,13 @@ export default function useSavingsAccount(includeDefaultDai = false) {
       const [cTokenAddress] = token.id.split('-');
       const marketData = markets[cTokenAddress] || {};
 
-      const { cToken, supplyRate, underlying, underlyingPrice } = getMarketData(
-        marketData,
-        tokenOverrides
-      );
+      const {
+        cToken,
+        exchangeRate,
+        supplyRate,
+        underlying,
+        underlyingPrice,
+      } = getMarketData(marketData, tokenOverrides);
 
       const ethPrice = multiply(underlyingPrice, token.supplyBalanceUnderlying);
 
@@ -112,9 +117,11 @@ export default function useSavingsAccount(includeDefaultDai = false) {
         cToken,
         cTokenBalance,
         ethPrice,
+        exchangeRate,
         lifetimeSupplyInterestAccrued,
         supplyBalanceUnderlying,
         supplyRate,
+        type: AssetTypes.cToken,
         underlying,
         underlyingPrice,
       };

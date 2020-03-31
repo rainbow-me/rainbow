@@ -31,9 +31,9 @@ const formatSavingsAmount = amount => {
   return amountBN.toFixed(MAX_DECIMALS_TO_SHOW);
 };
 
-const formatDepositAmount = (value, symbol) => {
+const formatDepositAmount = (value, symbol, useUSDForStablecoin = true) => {
   let prettyAmount = value;
-  if (isSymbolStablecoin(symbol)) {
+  if (useUSDForStablecoin && isSymbolStablecoin(symbol)) {
     prettyAmount = BigNumber(value).toFixed(2);
     return `$${prettyAmount}`;
   }
