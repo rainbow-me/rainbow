@@ -46,6 +46,7 @@ export const ViewTypes = {
   COIN_ROW_LAST: 3,
   COIN_SMALL_BALANCES: 4,
   COIN_SAVINGS: 5,
+  COIN_DIVIDER: 14,
   UNISWAP_ROW: 6,
   UNISWAP_ROW_LAST: 7,
   UNISWAP_ROW_CLOSED: 8,
@@ -229,6 +230,7 @@ class RecyclerAssetList extends Component {
       headersIndices: [],
       isRefreshing: false,
       itemsCount: 0,
+      stickyComponentsIndices: [],
     };
 
     this.layoutProvider = new LayoutProvider(
@@ -263,16 +265,16 @@ class RecyclerAssetList extends Component {
             `[${balancesIndex}].data.length`,
             0
           );
-          const firstBalanceIndex = headersIndices[balancesIndex] + 1;
-          if (
-            index === firstBalanceIndex &&
-            !sections[balancesIndex].data[firstBalanceIndex - 1]
-              .smallBalancesContainer
-          ) {
-            return ViewTypes.COIN_ROW_FIRST;
-          }
           const lastBalanceIndex =
             headersIndices[balancesIndex] + balanceItemsCount;
+          if (index === lastBalanceIndex - 2) {
+            if (
+              sections[balancesIndex].data[lastBalanceIndex - 2]
+                .smallBalancesContainer
+            ) {
+              return ViewTypes.COIN_DIVIDER;
+            }
+          }
           if (index === lastBalanceIndex - 1) {
             if (
               sections[balancesIndex].data[lastBalanceIndex - 2]
@@ -297,6 +299,14 @@ class RecyclerAssetList extends Component {
               return ViewTypes.COIN_SAVINGS;
             }
             return ViewTypes.COIN_ROW_LAST;
+          }
+          const firstBalanceIndex = headersIndices[balancesIndex] + 1;
+          if (
+            index === firstBalanceIndex &&
+            !sections[balancesIndex].data[firstBalanceIndex - 1]
+              .smallBalancesContainer
+          ) {
+            return ViewTypes.COIN_ROW_FIRST;
           }
         }
 
@@ -406,6 +416,8 @@ class RecyclerAssetList extends Component {
           dim.height = areSmallCollectibles
             ? CoinRow.height
             : CoinRow.height + ListFooter.height + 1;
+        } else if (type === ViewTypes.COIN_DIVIDER) {
+          dim.height = CoinDivider.height + 13;
         } else if (type === ViewTypes.COIN_SMALL_BALANCES) {
           const balancesIndex = findIndex(
             sections,
@@ -416,8 +428,8 @@ class RecyclerAssetList extends Component {
           const size =
             sections[balancesIndex].data[smallBalancesIndex].assets.length;
           dim.height = openSmallBalances
-            ? CoinDivider.height + size * CoinRow.height + additionalHeight + 15
-            : CoinDivider.height + additionalHeight + 13;
+            ? size * CoinRow.height + additionalHeight + 15
+            : additionalHeight + 13;
         } else if (type === ViewTypes.COIN_SAVINGS) {
           const balancesIndex = findIndex(
             sections,
@@ -460,8 +472,10 @@ class RecyclerAssetList extends Component {
 
   static getDerivedStateFromProps({ sections }, state) {
     const headersIndices = [];
+    const stickyComponentsIndices = [];
     const items = sections.reduce((ctx, section) => {
       headersIndices.push(ctx.length);
+      stickyComponentsIndices.push(ctx.length);
       return ctx
         .concat([
           {
@@ -485,6 +499,7 @@ class RecyclerAssetList extends Component {
       dataProvider: state.dataProvider.cloneWithRows(items),
       headersIndices,
       itemsCount: items.length,
+      stickyComponentsIndices,
     };
   }
 
@@ -895,6 +910,15 @@ class RecyclerAssetList extends Component {
       return <SmallBalancesWrapper assets={this.renderList} />;
     }
 
+    if (type === ViewTypes.COIN_DIVIDER) {
+      return (
+        <CoinDivider
+          assetsAmount={this.renderList.length}
+          balancesSum="$20.12"
+        />
+      );
+    }
+
     const isNotUniqueToken =
       type === ViewTypes.COIN_ROW ||
       type === ViewTypes.COIN_ROW_FIRST ||
@@ -934,13 +958,17 @@ class RecyclerAssetList extends Component {
       hideHeader,
       renderAheadOffset,
     } = this.props;
-    const { dataProvider, headersIndices } = this.state;
+    const {
+      dataProvider,
+      headersIndices,
+      stickyComponentsIndices,
+    } = this.state;
 
     return (
       <View backgroundColor={colors.white} flex={1} overflow="hidden">
         <StickyContainer
           overrideRowRenderer={this.stickyRowRenderer}
-          stickyHeaderIndices={headersIndices}
+          stickyHeaderIndices={stickyComponentsIndices}
         >
           <RecyclerListView
             dataProvider={dataProvider}

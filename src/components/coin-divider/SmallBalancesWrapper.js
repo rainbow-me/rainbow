@@ -10,18 +10,14 @@ import {
   withEditOptions,
 } from '../../hoc';
 import { OpacityToggler } from '../animations';
-import CoinDivider from './CoinDivider';
 import withCoinListEdited from '../../hoc/withCoinListEdited';
 
 class SmallBalancesWrapper extends PureComponent {
   static propTypes = {
     assets: PropTypes.array,
-    balancesSum: PropTypes.string,
     isCoinListEdited: PropTypes.bool,
     openSmallBalances: PropTypes.bool,
-    setIsCoinListEdited: PropTypes.func,
     setOpenSmallBalances: PropTypes.func,
-    setPinnedCoins: PropTypes.func,
   };
 
   state = { areChildrenVisible: true };
@@ -32,18 +28,14 @@ class SmallBalancesWrapper extends PureComponent {
   render = () => {
     const {
       assets,
-      balancesSum,
       checkList,
       openSmallBalances,
       isCoinListEdited,
-      setHiddenCoins,
-      setPinnedCoins,
-      setIsCoinListEdited,
     } = this.props;
 
     return (
       <Fragment>
-        <CoinDivider
+        {/* <CoinDivider
           assetsAmount={assets.length}
           balancesSum={balancesSum}
           onPress={this.handlePress}
@@ -52,7 +44,7 @@ class SmallBalancesWrapper extends PureComponent {
           onHide={setHiddenCoins}
           isCoinListEdited={isCoinListEdited}
           openSmallBalances={openSmallBalances}
-        />
+        /> */}
         <OpacityToggler
           endingOpacity={1}
           isVisible={openSmallBalances}

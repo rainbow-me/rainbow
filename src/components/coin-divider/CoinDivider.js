@@ -19,9 +19,13 @@ import { Row } from '../layout';
 import { Text } from '../text';
 import CoinDividerButtonLabel from './CoinDividerButtonLabel';
 import { compose } from 'recompact';
-import { withCoinCurrentAction } from '../../hoc';
-import withCoinListEdited from '../../hoc/withCoinListEdited';
+import {
+  withCoinCurrentAction,
+  withEditOptions,
+  withOpenBalances,
+} from '../../hoc';
 import CoinDividerEditButton from './CoinDividerEditButton';
+import withCoinListEdited from '../../hoc/withCoinListEdited';
 
 const {
   block,
@@ -71,9 +75,8 @@ class CoinDivider extends PureComponent {
     balancesSum: PropTypes.string,
     currentAction: PropTypes.string,
     isCoinDivider: PropTypes.bool,
-    onEdit: PropTypes.func,
-    onPress: PropTypes.func,
     openSmallBalances: PropTypes.bool,
+    setIsCoinListEdited: PropTypes.func,
   };
 
   state = {
@@ -110,11 +113,11 @@ class CoinDivider extends PureComponent {
       assetsAmount,
       balancesSum,
       isCoinDivider,
-      onHide,
-      onEdit,
-      onPin,
+      setHiddenCoins,
+      setIsCoinListEdited,
+      setPinnedCoins,
       isCoinListEdited,
-      onPress,
+      setOpenSmallBalances,
       openSmallBalances,
       currentAction,
     } = this.props;
@@ -139,7 +142,7 @@ class CoinDivider extends PureComponent {
             }
           >
             <ButtonPressAnimation
-              onPress={onPress}
+              onPress={() => setOpenSmallBalances(!openSmallBalances)}
               scaleTo={0.9}
               style={{ width: openSmallBalances ? 80 : 52.5 }}
             >
@@ -202,7 +205,7 @@ class CoinDivider extends PureComponent {
             style={{ position: 'absolute' }}
           >
             <CoinDividerEditButton
-              onPress={onPin}
+              onPress={setPinnedCoins}
               isVisible={this.state.isCurrentlyCoinListEdited}
               isActive={currentAction !== 'none'}
               text={currentAction === 'unpin' ? 'Unpin' : 'Pin'}
@@ -210,7 +213,7 @@ class CoinDivider extends PureComponent {
               style={{ marginRight: 10 }}
             />
             <CoinDividerEditButton
-              onPress={onHide}
+              onPress={setHiddenCoins}
               isVisible={this.state.isCurrentlyCoinListEdited}
               isActive={currentAction !== 'none'}
               text={currentAction === 'unhide' ? 'Unhide' : 'Hide'}
@@ -255,7 +258,7 @@ class CoinDivider extends PureComponent {
               animationNode={this._node}
               onPress={() => {
                 this.setState(prevState => {
-                  onEdit(!prevState.isCurrentlyCoinListEdited);
+                  setIsCoinListEdited(!prevState.isCurrentlyCoinListEdited);
                   LayoutAnimation.configureNext(
                     LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
                   );
@@ -277,4 +280,9 @@ class CoinDivider extends PureComponent {
   }
 }
 
-export default compose(withCoinCurrentAction, withCoinListEdited)(CoinDivider);
+export default compose(
+  withEditOptions,
+  withOpenBalances,
+  withCoinCurrentAction,
+  withCoinListEdited
+)(CoinDivider);
