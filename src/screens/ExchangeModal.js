@@ -976,7 +976,7 @@ const ExchangeModal = ({
                   type={type}
                 />
               </Centered>
-              <GasSpeedButton />
+              <GasSpeedButton type={type} />
             </Fragment>
           )}
         </AnimatedFloatingPanels>
