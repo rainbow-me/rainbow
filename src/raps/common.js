@@ -1,10 +1,11 @@
+import analytics from '@segment/analytics-react-native';
+import { join, map } from 'lodash';
 import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
 import depositCompound from './actions/depositCompound';
 import unlock from './actions/unlock';
 import swap from './actions/swap';
 import withdrawCompound from './actions/withdrawCompound';
-import analytics from '@segment/analytics-react-native';
 
 const NOOP = () => undefined;
 
@@ -31,13 +32,8 @@ const findActionByType = type => {
 };
 
 const getRapFullName = actions => {
-  let name = '';
-  for (let index = 0; index < actions.length; index++) {
-    const action = actions[index];
-    if (name !== '') name += ' + ';
-    name += action.type;
-  }
-  return name;
+  const actionTypes = map(actions, 'type');
+  return join(actionTypes, ' + ');
 };
 
 export const executeRap = async (wallet, rap) => {
