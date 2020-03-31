@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
 import depositCompound from './actions/depositCompound';
@@ -29,10 +30,24 @@ const findActionByType = type => {
   }
 };
 
+const defaultPreviousAction = {
+  transaction: {
+    confirmed: true,
+  },
+};
+
 export const executeRap = async (wallet, rap) => {
   const { actions } = rap;
   console.log('[common - executing rap]: actions', actions);
   for (let index = 0; index < actions.length; index++) {
+    const previousAction = index ? actions[index - 1] : defaultPreviousAction;
+    const previousActionWasSuccess = get(
+      previousAction,
+      'transaction.confirmed',
+      false
+    );
+    if (!previousActionWasSuccess) break;
+
     const action = actions[index];
     const { parameters, type } = action;
     const actionPromise = findActionByType(type);
