@@ -6,6 +6,7 @@ import {
 } from '../../handlers/uniswap';
 import transactionStatusTypes from '../../helpers/transactionStatusTypes';
 import transactionTypes from '../../helpers/transactionTypes';
+import { isZero } from '../../helpers/utilities';
 import store from '../../redux/store';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
@@ -86,9 +87,15 @@ const swap = async (wallet, currentRap, index, parameters) => {
     console.log('[swap] waiting for the swap to go thru');
     const receipt = await wallet.provider.waitForTransaction(swap.hash);
     console.log('[swap] receipt:', receipt);
-    // update rap for confirmed status
-    currentRap.actions[index].transaction.confirmed = true;
-    dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+    if (!isZero(receipt.status)) {
+      currentRap.actions[index].transaction.confirmed = true;
+      dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+      console.log('[swap] updated raps');
+    } else {
+      console.log('[swap] status not success');
+      currentRap.actions[index].transaction.confirmed = false;
+      dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+    }
   } catch (error) {
     console.log('[swap] error waiting for swap', error);
     currentRap.actions[index].transaction.confirmed = false;
