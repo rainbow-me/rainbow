@@ -53,29 +53,35 @@ export const executeRap = async (wallet, rap) => {
 
   console.log('[common - executing rap]: actions', actions);
   for (let index = 0; index < actions.length; index++) {
+    console.log('[1 INNER] index', index);
     const previousAction = index ? actions[index - 1] : defaultPreviousAction;
+    console.log('[2 INNER] previous action', previousAction);
     const previousActionWasSuccess = get(
       previousAction,
       'transaction.confirmed',
       false
+    );
+    console.log(
+      '[3 INNER] previous action was successful',
+      previousActionWasSuccess
     );
     if (!previousActionWasSuccess) break;
 
     const action = actions[index];
     const { parameters, type } = action;
     const actionPromise = findActionByType(type);
-    console.log(
-      '[common - executing rapp inner] action promise',
-      actionPromise
-    );
+    console.log('[4 INNER] executing type', type);
     try {
-      console.log(
-        '[common - executing rap inner] running the function with index',
-        index
-      );
-      await actionPromise(wallet, rap, index, parameters);
+      const output = await actionPromise(wallet, rap, index, parameters);
+      console.log('[5 INNER] action output', output);
+      const nextAction = index < actions.length - 1 ? actions[index + 1] : null;
+      console.log('[6 INNER] next action', nextAction);
+      if (nextAction) {
+        console.log('[7 INNER] updating params override');
+        nextAction.parameters.override = output;
+      }
     } catch (error) {
-      console.log('[common - executing rap inner] error running action', error);
+      console.log('[5 INNER] error running action', error);
       analytics.track('Rap failed', {
         category: 'raps',
         failed_action: type,

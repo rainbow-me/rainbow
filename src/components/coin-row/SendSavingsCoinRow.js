@@ -1,10 +1,23 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { colors } from '../../styles';
+import { css } from 'styled-components/primitives';
+import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Monospace } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+
+const containerStyles = css`
+  padding-left: 15;
+  padding-top: 17;
+`;
+
+const selectedHeight = 78;
+
+const selectedStyles = css`
+  ${padding(15, 15, 19, 15)};
+  height: ${selectedHeight};
+`;
 
 const BottomRow = ({
   balance: { display: balanceDisplay },
@@ -28,12 +41,13 @@ TopRow.propTypes = {
   name: PropTypes.string,
 };
 
-const SendSavingsCoinRow = ({ item, onPress, ...props }) => (
+const SendSavingsCoinRow = ({ item, onPress, selected, ...props }) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={1.01}>
     <CoinRow
       {...item}
       {...props}
       bottomRowRender={BottomRow}
+      containerStyles={selected ? selectedStyles : containerStyles}
       onPress={onPress}
       topRowRender={TopRow}
     />
@@ -43,6 +57,7 @@ const SendSavingsCoinRow = ({ item, onPress, ...props }) => (
 SendSavingsCoinRow.propTypes = {
   item: PropTypes.object,
   onPress: PropTypes.func,
+  selected: PropTypes.bool,
 };
 
 export default SendSavingsCoinRow;

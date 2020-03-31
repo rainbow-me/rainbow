@@ -126,6 +126,7 @@ export default {
   getEtherscanHostFromNetwork,
   getEthPriceUnit,
   getNetworkFromChainId,
+  padLeft,
   removeHexPrefix,
   transactionData,
 };

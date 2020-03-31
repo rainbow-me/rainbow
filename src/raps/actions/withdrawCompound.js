@@ -109,6 +109,7 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
   }
   console.log('[withdraw] complete!');
+  return null;
 };
 
 export default withdrawCompound;
