@@ -551,7 +551,8 @@ class RecyclerAssetList extends Component {
             balancesHeight += CoinRow.height * (balances.data.length - 1);
             if (
               balances.data[balances.data.length - 1].smallBalancesContainer ||
-              balances.data[balances.data.length - 2].smallBalancesContainer
+              (balances.data[balances.data.length - 2] &&
+                balances.data[balances.data.length - 2].smallBalancesContainer)
             ) {
               balancesHeight +=
                 CoinDivider.height +
@@ -638,14 +639,16 @@ class RecyclerAssetList extends Component {
 
     if (
       shouldAutoscrollBack ||
-      (openSmallBalances === false && prevProps.openSmallBalances === true)
+      (openSmallBalances === false && prevProps.openSmallBalances === true) ||
+      (openSavings === false && prevProps.openSavings === true)
     ) {
       let balancesHeight = 0;
       if (balances.data) {
         balancesHeight += CoinRow.height * (balances.data.length - 1);
         if (
           balances.data[balances.data.length - 1].smallBalancesContainer ||
-          balances.data[balances.data.length - 2].smallBalancesContainer
+          (balances.data[balances.data.length - 2] &&
+            balances.data[balances.data.length - 2].smallBalancesContainer)
         ) {
           balancesHeight +=
             CoinDivider.height +
@@ -701,13 +704,9 @@ class RecyclerAssetList extends Component {
           }
         }
       }
-      const renderSize =
-        balancesHeight +
-        investmentHeight +
-        collectiblesHeight +
-        ListFooter.height;
+      const renderSize = balancesHeight + investmentHeight + collectiblesHeight;
       const deviceDimensions =
-        deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 240 : 360);
+        deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 220 : 340);
       if (
         this.position + deviceDimensions > renderSize &&
         renderSize > deviceDimensions
