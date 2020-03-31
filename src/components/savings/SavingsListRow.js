@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
@@ -95,6 +96,12 @@ const SavingsListRow = ({
       supplyRate,
       underlying,
       underlyingPrice,
+    });
+
+    analytics.track('Opened Savings Sheet', {
+      category: 'savings',
+      empty: !supplyBalanceUnderlying,
+      label: underlying.symbol,
     });
   }, [
     cTokenBalance,

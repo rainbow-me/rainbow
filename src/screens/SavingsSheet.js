@@ -1,4 +1,5 @@
-import React, { Fragment } from 'react';
+import analytics from '@segment/analytics-react-native';
+import React, { Fragment, useEffect, useCallback } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import { Column, RowWithMargins } from '../components/layout';
 import { colors, padding } from '../styles';
@@ -23,7 +24,6 @@ import { useAccountSettings } from '../hooks';
 const SavingsSheet = () => {
   const { getParam, navigate } = useNavigation();
   const { nativeCurrency } = useAccountSettings();
-
   const cTokenBalance = getParam('cTokenBalance');
   const isEmpty = getParam('isEmpty');
   const nativeValue = getParam('nativeValue');
@@ -45,6 +45,49 @@ const SavingsSheet = () => {
     1
   );
 
+  useEffect(() => {
+    return () => {
+      analytics.track('Closed Savings Sheet', {
+        category: 'savings',
+        empty: isEmpty,
+        label: underlying.symbol,
+      });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onWithdraw = useCallback(() => {
+    navigate('SavingsWithdrawModal', {
+      cTokenBalance,
+      defaultInputAsset: underlying,
+      supplyBalanceUnderlying,
+      underlyingPrice,
+    });
+
+    analytics.track('Navigated to SavingsWithdrawModal', {
+      category: 'savings',
+      label: underlying.symbol,
+    });
+  }, [
+    cTokenBalance,
+    navigate,
+    supplyBalanceUnderlying,
+    underlying,
+    underlyingPrice,
+  ]);
+
+  const onDeposit = useCallback(() => {
+    navigate('SavingsDepositModal', {
+      defaultInputAsset: underlying,
+    });
+
+    analytics.track('Navigated to SavingsDepositModal', {
+      category: 'savings',
+      empty: isEmpty,
+      label: underlying.symbol,
+    });
+  }, [isEmpty, navigate, underlying]);
+
   return (
     <Sheet>
       {isEmpty ? (
@@ -62,14 +105,7 @@ const SavingsSheet = () => {
             <SheetActionButton
               color={colors.dark}
               label="􀁏 Withdraw"
-              onPress={() =>
-                navigate('SavingsWithdrawModal', {
-                  cTokenBalance,
-                  defaultInputAsset: underlying,
-                  supplyBalanceUnderlying,
-                  underlyingPrice,
-                })
-              }
+              onPress={onWithdraw}
               shadows={[
                 [0, 7, 21, colors.dark, 0.25],
                 [0, 3.5, 10.5, colors.dark, 0.35],
@@ -78,11 +114,7 @@ const SavingsSheet = () => {
             <SheetActionButton
               color={colors.swapPurple}
               label="􀁍 Deposit"
-              onPress={() =>
-                navigate('SavingsDepositModal', {
-                  defaultInputAsset: underlying,
-                })
-              }
+              onPress={onDeposit}
               shadows={[
                 [0, 7, 21, colors.dark, 0.25],
                 [0, 3.5, 10.5, colors.swapPurple, 0.35],
