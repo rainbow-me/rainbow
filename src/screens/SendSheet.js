@@ -29,6 +29,7 @@ import {
   convertAmountFromNativeValue,
   convertAmountToNativeDisplay,
   formatInputDecimals,
+  multiply,
 } from '../helpers/utilities';
 import { checkIsValidAddress } from '../helpers/validators';
 import {
@@ -102,12 +103,13 @@ const SendSheet = ({
         false
       );
 
-      const nativeValue = exchangeRate * underlyingPrice * priceOfEther;
-      const nativeValueDisplay = convertAmountToNativeDisplay(
-        nativeValue,
+      const underlyingNativePrice = multiply(underlyingPrice, priceOfEther);
+      const cTokenNativePrice = multiply(exchangeRate, underlyingNativePrice);
+      const cTokenNativePriceDisplay = convertAmountToNativeDisplay(
+        cTokenNativePrice,
         nativeCurrency
       );
-      const balanceNativeValue = cTokenBalance * nativeValue;
+      const balanceNativeValue = multiply(cTokenBalance, cTokenNativePrice);
       const balanceNativeDisplay = convertAmountToNativeDisplay(
         balanceNativeValue,
         nativeCurrency
@@ -127,8 +129,8 @@ const SendSheet = ({
           },
         },
         price: {
-          display: nativeValueDisplay,
-          value: nativeValue,
+          display: cTokenNativePriceDisplay,
+          value: cTokenNativePrice,
         },
       };
     });

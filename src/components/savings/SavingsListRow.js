@@ -75,7 +75,7 @@ const SavingsListRow = ({
   cTokenBalance,
   lifetimeSupplyInterestAccrued,
   lifetimeSupplyInterestAccruedNative,
-  nativeValue,
+  underlyingBalanceNativeValue,
   supplyBalanceUnderlying,
   supplyRate,
   underlying,
@@ -96,17 +96,17 @@ const SavingsListRow = ({
       isEmpty: !supplyBalanceUnderlying,
       lifetimeSupplyInterestAccrued,
       lifetimeSupplyInterestAccruedNative,
-      nativeValue,
       supplyBalanceUnderlying,
       supplyRate,
       underlying,
+      underlyingBalanceNativeValue,
       underlyingPrice,
     });
   }, [
     cTokenBalance,
     lifetimeSupplyInterestAccrued,
     lifetimeSupplyInterestAccruedNative,
-    nativeValue,
+    underlyingBalanceNativeValue,
     navigate,
     supplyBalanceUnderlying,
     supplyRate,
@@ -287,10 +287,10 @@ const SavingsListRow = ({
 SavingsListRow.propTypes = {
   cTokenBalance: PropTypes.string,
   lifetimeSupplyInterestAccrued: PropTypes.string,
-  nativeValue: PropTypes.number,
   supplyBalanceUnderlying: PropTypes.string,
   supplyRate: PropTypes.string,
   underlying: PropTypes.object,
+  underlyingBalanceNativeValue: PropTypes.string,
   underlyingPrice: PropTypes.string,
 };
 
