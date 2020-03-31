@@ -1,5 +1,5 @@
 import analytics from '@segment/analytics-react-native';
-import { get, isEmpty, isString, map, toLower } from 'lodash';
+import { get, isEmpty, isString, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -23,11 +23,9 @@ import {
 import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
 import AssetTypes from '../helpers/assetTypes';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-import { formatDepositAmount } from '../helpers/savings';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
-  convertAmountToNativeDisplay,
   formatInputDecimals,
 } from '../helpers/utilities';
 import { checkIsValidAddress } from '../helpers/validators';
@@ -37,7 +35,7 @@ import {
   usePrevious,
   useRefreshAccountData,
   useSendableUniqueTokens,
-  useSavingsAccount,
+  useSendSavingsAccount,
 } from '../hooks';
 import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
@@ -90,49 +88,7 @@ const SendSheet = ({
     nativeCurrencySymbol,
   } = useAccountSettings();
 
-  let savings = useSavingsAccount();
-  const eth = ethereumUtils.getAsset(allAssets);
-  const priceOfEther = get(eth, 'native.price.amount', null);
-  if (priceOfEther) {
-    savings = map(savings, asset => {
-      const { cToken, cTokenBalance, exchangeRate, underlyingPrice } = asset;
-      const cTokenBalanceDisplay = formatDepositAmount(
-        cTokenBalance,
-        cToken.symbol,
-        false
-      );
-
-      const nativeValue = exchangeRate * underlyingPrice * priceOfEther;
-      const nativeValueDisplay = convertAmountToNativeDisplay(
-        nativeValue,
-        nativeCurrency
-      );
-      const balanceNativeValue = cTokenBalance * nativeValue;
-      const balanceNativeDisplay = convertAmountToNativeDisplay(
-        balanceNativeValue,
-        nativeCurrency
-      );
-
-      return {
-        ...asset,
-        ...cToken,
-        balance: {
-          amount: cTokenBalance,
-          display: cTokenBalanceDisplay,
-        },
-        native: {
-          balance: {
-            amount: balanceNativeValue,
-            display: balanceNativeDisplay,
-          },
-        },
-        price: {
-          display: nativeValueDisplay,
-          value: nativeValue,
-        },
-      };
-    });
-  }
+  const savings = useSendSavingsAccount();
   const fetchData = useRefreshAccountData();
 
   const { navigate } = useNavigation();

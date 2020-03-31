@@ -21,6 +21,7 @@ export { default as useOpenSavings } from './useOpenSavings';
 export { default as usePrevious } from './usePrevious';
 export { default as useRefreshAccountData } from './useRefreshAccountData';
 export { default as useSavingsAccount } from './useSavingsAccount';
+export { default as useSendSavingsAccount } from './useSendSavingsAccount';
 export { default as useSendableUniqueTokens } from './useSendableUniqueTokens';
 export { default as useShakeAnimation } from './useShakeAnimation';
 export { default as useTimeout } from './useTimeout';
