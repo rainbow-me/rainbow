@@ -16,7 +16,7 @@ import { useAccountData, useClipboard } from '../../hooks';
 import CopyTooltip from '../copy-tooltip';
 import { FloatingEmojis } from '../floating-emojis';
 import Divider from '../Divider';
-import { Centered, RowWithMargins } from '../layout';
+import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress } from '../text';
 import AddCashButton from './AddCashButton';
 import ProfileAction from './ProfileAction';
@@ -45,10 +45,10 @@ const ProfileMasthead = ({
   const { navigate } = useNavigation();
 
   return (
-    <Centered
-      direction="column"
+    <Column
+      align="center"
+      height={Platform.OS === 'ios' && addCashButtonAvailable ? 260 : 185}
       marginBottom={24}
-      paddingBottom={Platform.OS === 'ios' && addCashButtonAvailable ? 12 : 42}
     >
       {isAvatarPickerAvailable ? (
         <AvatarCircle onPress={onPressAvatar} />
@@ -98,7 +98,7 @@ const ProfileMasthead = ({
           style={{ bottom: 0, position: 'absolute' }}
         />
       )}
-    </Centered>
+    </Column>
   );
 };
 

@@ -243,7 +243,7 @@ export const emojiPreset = {
         <View
           style={{
             alignItems: 'center',
-            top: Header.heightWithStatusBar - 3,
+            top: Header.heightWithStatusBar,
           }}
         >
           <AvatarCircle />

@@ -32,7 +32,7 @@ const ProfileAction = ({ onPress, accountColor, accountName }) => (
     hapticType="impactMedium"
     onPress={onPress}
     scaleTo={0.86}
-    paddingTop={4}
+    paddingTop={1}
   >
     <ShadowStack
       backgroundColor={colors.avatarColor[accountColor]}

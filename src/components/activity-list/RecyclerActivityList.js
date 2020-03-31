@@ -120,7 +120,7 @@ export default class RecyclerActivityList extends PureComponent {
             ? deviceUtils.dimensions.height
             : Platform.OS === 'ios' && addCashButtonAvailable
             ? 278
-            : 204;
+            : 203;
         }
       }
     );
