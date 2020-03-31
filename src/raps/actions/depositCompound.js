@@ -25,12 +25,15 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
     inputAmount,
     inputCurrency,
     network,
+    override,
     selectedGasPrice,
   } = parameters;
   const { dispatch } = store;
   const { gasPrices } = store.getState().gas;
+  const _inputAmount = override || inputAmount;
+  console.log('[deposit]', inputAmount, override, _inputAmount);
   const rawInputAmount = convertAmountToRawAmount(
-    inputAmount,
+    _inputAmount,
     inputCurrency.decimals
   );
   console.log('[deposit] raw input amount', rawInputAmount);
@@ -68,7 +71,7 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
   currentRap.actions[index].transaction.hash = deposit.hash;
 
   const newTransaction = {
-    amount: inputAmount,
+    amount: _inputAmount,
     asset: inputCurrency,
     from: accountAddress,
     hash: deposit.hash,
@@ -105,6 +108,7 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
     dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
   }
   console.log('[deposit] completed');
+  return null;
 };
 
 export default depositCompound;

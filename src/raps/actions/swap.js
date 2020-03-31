@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { find, get, toLower } from 'lodash';
 import {
   calculateTradeDetails,
   executeSwap,
@@ -6,13 +6,44 @@ import {
 } from '../../handlers/uniswap';
 import transactionStatusTypes from '../../helpers/transactionStatusTypes';
 import transactionTypes from '../../helpers/transactionTypes';
-import { isZero } from '../../helpers/utilities';
+import {
+  convertHexToString,
+  convertRawAmountToDecimalFormat,
+  isZero,
+} from '../../helpers/utilities';
 import store from '../../redux/store';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
-import { gasUtils } from '../../utils';
+import {
+  TRANSFER_EVENT_TOPIC_LENGTH,
+  TRANSFER_EVENT_KECCAK,
+} from '../../references';
+import { gasUtils, ethereumUtils } from '../../utils';
 
 const NOOP = () => undefined;
+
+export const findSwapOutputAmount = (receipt, accountAddress) => {
+  const { logs } = receipt;
+  const transferLog = find(logs, log => {
+    const { topics } = log;
+    const isTransferEvent =
+      topics.length === TRANSFER_EVENT_TOPIC_LENGTH &&
+      toLower(topics[0]) === TRANSFER_EVENT_KECCAK;
+    if (!isTransferEvent) return false;
+
+    const transferDestination = topics[2];
+    const cleanTransferDestination = toLower(
+      ethereumUtils.removeHexPrefix(transferDestination)
+    );
+    const addressNoHex = toLower(ethereumUtils.removeHexPrefix(accountAddress));
+    const cleanAccountAddress = ethereumUtils.padLeft(addressNoHex, 64);
+
+    return cleanTransferDestination === cleanAccountAddress;
+  });
+  if (!transferLog) return null;
+  const { data } = transferLog;
+  return convertHexToString(data);
+};
 
 const swap = async (wallet, currentRap, index, parameters) => {
   console.log('[swap] swap on uniswap!');
@@ -90,19 +121,26 @@ const swap = async (wallet, currentRap, index, parameters) => {
     if (!isZero(receipt.status)) {
       currentRap.actions[index].transaction.confirmed = true;
       dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+      const rawReceivedAmount = findSwapOutputAmount(receipt, accountAddress);
+      console.log('[swap] raw received amount', rawReceivedAmount);
       console.log('[swap] updated raps');
+      const convertedOutput = convertRawAmountToDecimalFormat(
+        rawReceivedAmount
+      );
+      console.log('[swap] updated raps', convertedOutput);
+      return convertedOutput;
     } else {
       console.log('[swap] status not success');
       currentRap.actions[index].transaction.confirmed = false;
       dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+      return null;
     }
   } catch (error) {
     console.log('[swap] error waiting for swap', error);
     currentRap.actions[index].transaction.confirmed = false;
     dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+    return null;
   }
-  console.log('[swap] returning', currentRap, swap);
-  return { rap: currentRap, txn: swap };
 };
 
 export default swap;
