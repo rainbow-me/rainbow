@@ -4,6 +4,7 @@ import depositCompound from './actions/depositCompound';
 import unlock from './actions/unlock';
 import swap from './actions/swap';
 import withdrawCompound from './actions/withdrawCompound';
+import analytics from '@segment/analytics-react-native';
 
 const NOOP = () => undefined;
 
@@ -29,8 +30,25 @@ const findActionByType = type => {
   }
 };
 
+const getRapFullName = actions => {
+  let name = '';
+  for (let index = 0; index < actions.length; index++) {
+    const action = actions[index];
+    if (name !== '') name += ' + ';
+    name += action.type;
+  }
+  return name;
+};
+
 export const executeRap = async (wallet, rap) => {
   const { actions } = rap;
+  const rapName = getRapFullName(actions);
+
+  analytics.track('Rap started', {
+    category: 'raps',
+    label: rapName,
+  });
+
   console.log('[common - executing rap]: actions', actions);
   for (let index = 0; index < actions.length; index++) {
     const action = actions[index];
@@ -48,9 +66,19 @@ export const executeRap = async (wallet, rap) => {
       await actionPromise(wallet, rap, index, parameters);
     } catch (error) {
       console.log('[common - executing rap inner] error running action', error);
+      analytics.track('Rap failed', {
+        category: 'raps',
+        failed_action: type,
+        label: rapName,
+      });
       break;
     }
   }
+
+  analytics.track('Rap completed', {
+    category: 'raps',
+    label: rapName,
+  });
   console.log('[common - executing rap] finished execute rap function');
 };
 
