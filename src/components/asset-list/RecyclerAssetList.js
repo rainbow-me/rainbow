@@ -37,6 +37,7 @@ import AssetListHeader from './AssetListHeader';
 import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
 import withOpenSavings from '../../hoc/withOpenSavings';
 import SavingsListWrapper from '../savings/SavingsListWrapper';
+import withCoinListEdited from '../../hoc/withCoinListEdited';
 
 /* eslint-disable sort-keys */
 export const ViewTypes = {
@@ -470,13 +471,13 @@ class RecyclerAssetList extends Component {
     );
   }
 
-  static getDerivedStateFromProps({ sections }, state) {
+  static getDerivedStateFromProps({ sections, isCoinListEdited }, state) {
     const headersIndices = [];
     const stickyComponentsIndices = [];
     const items = sections.reduce((ctx, section) => {
       headersIndices.push(ctx.length);
       stickyComponentsIndices.push(ctx.length);
-      if (section.header.title == 'Balances') {
+      if (section.header.title == 'Balances' && isCoinListEdited) {
         const coinDividerIndexInsideBalances = findIndex(
           section.data,
           ({ coinDivider }) => coinDivider
@@ -817,6 +818,10 @@ class RecyclerAssetList extends Component {
       return `coinDivider`;
     }
 
+    if (row.item && row.item.savingsContainer) {
+      return `savingsContainer`;
+    }
+
     if (index === dataProvider._data.length - 1) {
       return 'footer';
     }
@@ -923,10 +928,7 @@ class RecyclerAssetList extends Component {
 
     if (type === ViewTypes.COIN_DIVIDER) {
       return (
-        <CoinDivider
-          assetsAmount={this.renderList.length}
-          balancesSum="$20.12"
-        />
+        <CoinDivider assetsAmount={item.assetsAmount} balancesSum="$20.12" />
       );
     }
 
@@ -1021,6 +1023,7 @@ class RecyclerAssetList extends Component {
 }
 
 export default compose(
+  withCoinListEdited,
   withFabSelection,
   withOpenFamilyTabs,
   withOpenInvestmentCards,

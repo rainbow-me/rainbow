@@ -78,7 +78,10 @@ export const buildCoinsList = assets => {
     hiddenCoins.length > 0 ||
     (pinnedCoins.length === allAssets.length && allAssets.length > 4)
   ) {
-    allAssets.push({ coinDivider: true });
+    allAssets.push({
+      assetsAmount: smallBalances.assets.length,
+      coinDivider: true,
+    });
     allAssets.push(smallBalances);
   }
 

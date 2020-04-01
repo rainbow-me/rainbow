@@ -5,7 +5,6 @@ import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
 import { compose } from 'recompact';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
-import { colors } from '../../styles';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import Highlight from '../Highlight';
 import { Row, RowWithMargins } from '../layout';
@@ -37,7 +36,6 @@ const SavingsListHeader = ({
     >
       <Row
         align="center"
-        backgroundColor={colors.white}
         height={TokenFamilyHeaderHeight}
         justify="space-between"
         paddingHorizontal={19}
