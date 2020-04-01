@@ -33,6 +33,7 @@ const AddCashForm = ({
   const handlePurchase = useCallback(() => {
     analytics.track('Submitted Purchase', {
       category: 'add cash',
+      label: currency,
       value: Number(value),
     });
     return onPurchase({ currency, value });
