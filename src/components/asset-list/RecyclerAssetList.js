@@ -715,7 +715,7 @@ class RecyclerAssetList extends Component {
       ) {
         layoutItemAnimator.animateShift = () =>
           LayoutAnimation.configureNext(
-            LayoutAnimation.create(310, 'easeInEaseOut', 'opacity')
+            LayoutAnimation.create(340, 'easeInEaseOut', 'opacity')
           );
         this.scrollToOffset(renderSize - deviceDimensions, true);
         setTimeout(() => {
