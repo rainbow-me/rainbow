@@ -141,6 +141,20 @@ const SavingsListRow = ({
   ]);
 
   const displayValue = formatSavingsAmount(value);
+
+  useEffect(() => {
+    if (
+      underlying &&
+      underlying.symbol &&
+      supplyBalanceUnderlying &&
+      !isNaN(displayValue)
+    )
+      analytics.track('User has savings', {
+        category: 'savings',
+        label: underlying.symbol,
+      });
+  }, [displayValue, supplyBalanceUnderlying, underlying]);
+
   if (!underlying || !underlying.address) return null;
 
   return (
