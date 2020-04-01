@@ -39,9 +39,12 @@ const FakeAvatar = styled.View`
 `;
 
 const FakeRow = withProps({
-  align: 'center',
+  align: 'flex-end',
   flex: 0,
+  height: 10,
   justify: 'space-between',
+  paddingBottom: 5,
+  paddingTop: 5,
 })(Row);
 
 const FakeText = styled.View`
@@ -51,11 +54,11 @@ const FakeText = styled.View`
 `;
 
 const Wrapper = styled(RowWithMargins).attrs({
-  align: 'center',
+  align: 'flex-end',
   justify: 'space-between',
   margin: 10,
 })`
-  ${({ index }) => padding(index === 0 ? 15 : 15, 19, 15, 19)};
+  ${padding(9, 19, 10, 19)};
   ${position.size('100%')};
   background-color: ${colors.transparent};
 `;
@@ -148,7 +151,7 @@ export default class AssetListItemSkeleton extends PureComponent {
           flex={1}
           margin={10}
         >
-          <FakeRow marginTop={1}>
+          <FakeRow>
             <FakeText width={100} />
             <FakeText width={80} />
           </FakeRow>

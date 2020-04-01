@@ -21,5 +21,6 @@ const Header = React.memo(props => (
 ));
 
 Header.height = HeaderHeight;
+Header.heightWithStatusBar = HeaderHeightWithStatusBar;
 
 export default Header;

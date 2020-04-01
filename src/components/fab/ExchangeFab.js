@@ -34,7 +34,6 @@ export default compose(
   withNavigation,
   withHandlers({
     onPress: ({ navigation }) => () => {
-      console.log('HAPPENING!!!!');
       navigation.navigate('ExchangeModal');
     },
   }),

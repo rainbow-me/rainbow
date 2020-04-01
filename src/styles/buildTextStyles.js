@@ -3,7 +3,7 @@ import { css } from 'styled-components';
 import colors from './colors';
 import fonts from './fonts';
 
-const buildFontFamily = ({ emoji, family = 'SFProText', mono }) => {
+const buildFontFamily = ({ emoji, family = 'SFProRounded', mono }) => {
   if (emoji) return '';
   return `font-family: ${fonts.family[mono ? 'SFMono' : family]}`;
 };
