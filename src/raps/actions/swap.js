@@ -46,9 +46,12 @@ const swap = async (wallet, currentRap, index, parameters) => {
   // Execute Swap
   console.log('[swap] execute the swap');
   let gasPrice = get(selectedGasPrice, 'value.amount');
-  if (!gasPrice) {
+
+  // if swap is not the final action, use fast gas
+  if (currentRap.actions.length - 1 > index || !gasPrice) {
     gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
   }
+
   const gasLimit = await estimateSwapGasLimit(accountAddress, tradeDetails);
 
   console.log('[swap] About to execute swap with', {
