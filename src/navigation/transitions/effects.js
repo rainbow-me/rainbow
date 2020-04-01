@@ -23,6 +23,30 @@ const backgroundInterpolator = ({ current: { progress: current } }) => {
   };
 };
 
+const emojiStyleInterpolator = ({
+  current: { progress: current },
+  layouts: { screen },
+}) => {
+  const backgroundOpacity = current.interpolate({
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, 1, 1],
+  });
+
+  const translateY = current.interpolate({
+    inputRange: [0, 1],
+    outputRange: [screen.height, 0],
+  });
+
+  return {
+    cardStyle: {
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
+      opacity: backgroundOpacity,
+    },
+  };
+};
+
 const exchangeStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
@@ -185,6 +209,15 @@ const closeSpec = {
   },
 };
 
+const emojiOpenSpec = {
+  animation: 'spring',
+  config: {
+    damping: 37.5,
+    mass: 1,
+    stiffness: 500,
+  },
+};
+
 const openSpec = {
   animation: 'spring',
   config: {
@@ -250,13 +283,13 @@ export const emojiPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: false,
   cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: sheetStyleInterpolator,
+  cardStyleInterpolator: emojiStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical-inverted',
   gestureEnabled: false,
   gestureResponseDistance,
   onTransitionStart,
-  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+  transitionSpec: { close: closeSpec, open: emojiOpenSpec },
 };
 
 export const exchangePreset = {
