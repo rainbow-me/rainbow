@@ -671,6 +671,8 @@ class RecyclerAssetList extends Component {
           if (openSavings) {
             balancesHeight +=
               61 * balances.data[balances.data.length - 1].assets.length - 1;
+          } else {
+            balancesHeight -= ListFooter.height;
           }
         }
       }
@@ -706,9 +708,9 @@ class RecyclerAssetList extends Component {
       }
       const renderSize = balancesHeight + investmentHeight + collectiblesHeight;
       const deviceDimensions =
-        deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 220 : 340);
+        deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 240 : 360);
       if (
-        this.position + deviceDimensions > renderSize &&
+        this.position + deviceDimensions - 20 > renderSize &&
         renderSize > deviceDimensions
       ) {
         layoutItemAnimator.animateShift = () =>
