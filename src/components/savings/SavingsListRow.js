@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   calculateAPY,
@@ -22,10 +22,9 @@ const ANIMATE_NUMBER_INTERVAL = 30;
 const STABLECOINS = ['DAI', 'SAI', 'USDC', 'USDT'];
 
 const sx = StyleSheet.create({
-  animatedNumber: {
-    fontVariant: ['tabular-nums'],
+  animatedNumberAndroid: {
     height: 40,
-    paddingLeft: 37,
+    paddingLeft: 35,
     position: 'absolute',
   },
   text: {
@@ -50,7 +49,10 @@ const renderAnimatedNumber = (value, steps, symbol) => {
   return (
     <AnimatedNumber
       letterSpacing={parseFloat(fonts.letterSpacing.roundedTightest)}
-      style={[sx.text, sx.animatedNumber]}
+      style={[
+        sx.text,
+        Platform.OS === 'android' ? sx.animatedNumberAndroid : null,
+      ]}
       formatter={val => animatedNumberFormatter(val, symbol)}
       steps={steps}
       time={ANIMATE_NUMBER_INTERVAL}
@@ -141,7 +143,7 @@ const SavingsListRow = ({
             [0, 10, 30, colors.dark, 0.1],
             [0, 5, 15, colors.dark, 0.04],
           ]}
-          style={{ elevation: 12 }}
+          style={{ elevation: 15 }}
         >
           <LinearGradient
             borderRadius={49}
