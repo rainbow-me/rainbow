@@ -1,6 +1,7 @@
 /* eslint-disable sort-keys */
 /* eslint-disable react-native/no-unused-styles */
-// eslint-disable-next-line import/extensions
+import { BlurView } from '@react-native-community/blur';
+/* eslint-disable-next-line import/extensions */
 import emoji from 'emoji-datasource';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -14,25 +15,24 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {
+  State,
+  TapGestureHandler,
+  ScrollView,
+} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
-import 'string.fromcodepoint';
-import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
-import { colors, fonts, position } from '../../styles';
-import TabBar from './TabBar';
+import Animated from 'react-native-reanimated';
 import {
   DataProvider,
   LayoutProvider,
   ProgressiveListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
+import 'string.fromcodepoint';
+import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
+import { colors, fonts, position } from '../../styles';
 import { deviceUtils } from '../../utils';
-import {
-  State,
-  TapGestureHandler,
-  ScrollView,
-} from 'react-native-gesture-handler';
-import { BlurView } from '@react-native-community/blur';
-import Animated from 'react-native-reanimated';
+import TabBar from './TabBar';
 
 // TODO width attribute is temporary solution that will be removed as soon as I figure out why proper scaling does not work
 

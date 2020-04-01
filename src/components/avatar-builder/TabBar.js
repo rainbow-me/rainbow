@@ -1,9 +1,9 @@
 import React from 'react';
-import { ButtonPressAnimation } from '../animations';
+import LinearGradient from 'react-native-linear-gradient';
 import { colors, position } from '../../styles';
+import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Categories } from './EmojiSelector';
-import LinearGradient from 'react-native-linear-gradient';
 
 const TabBar = ({ categoryKeys, activeCategory, onPress }) => {
   return categoryKeys.map(c => {

@@ -1,9 +1,9 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { View } from 'react-native';
-import { ButtonPressAnimation } from '../animations';
 import { Easing } from 'react-native-reanimated';
 import { colors } from '../../styles';
+import { ButtonPressAnimation } from '../animations';
 
 const ColorCircle = ({ backgroundColor, isSelected, onPressColor }) => (
   <View align="center" height={42} justify="center" width={39}>
