@@ -1,17 +1,17 @@
+import GraphemeSplitter from 'grapheme-splitter';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View, Text } from 'react-native';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
-import GraphemeSplitter from 'grapheme-splitter';
 import styled from 'styled-components/primitives';
+import { isAvatarPickerAvailable } from '../../config/experimental';
 import { withRequests, withAccountInfo } from '../../hoc';
+import { colors } from '../../styles';
+import Avatar from '../Avatar';
 import { Badge } from '../badge';
 import { Centered, InnerBorder } from '../layout';
 import { ShadowStack } from '../shadow-stack';
-import Avatar from '../Avatar';
 import HeaderButton from './HeaderButton';
-import { colors } from '../../styles';
-import { isAvatarPickerAvailable } from '../../config/experimental';
 
 const AvatarCircle = styled(View)`
   border-radius: 17px;

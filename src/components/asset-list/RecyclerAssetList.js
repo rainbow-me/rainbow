@@ -15,6 +15,7 @@ import {
   withOpenBalances,
   withOpenFamilyTabs,
   withOpenInvestmentCards,
+  withOpenSavings,
 } from '../../hoc';
 import { colors } from '../../styles';
 import {
@@ -24,7 +25,6 @@ import {
 } from '../../utils';
 import { CoinDivider, SmallBalancesWrapper } from '../coin-divider';
 import { CoinRow } from '../coin-row';
-import { TokenFamilyHeader } from '../token-family';
 import { FloatingActionButton } from '../fab';
 import {
   InvestmentCard,
@@ -32,11 +32,11 @@ import {
   InvestmentCardHeader,
 } from '../investment-cards';
 import { ListFooter } from '../list';
+import SavingsListWrapper from '../savings/SavingsListWrapper';
+import { TokenFamilyHeader } from '../token-family';
+import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
-import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
-import withOpenSavings from '../../hoc/withOpenSavings';
-import SavingsListWrapper from '../savings/SavingsListWrapper';
 
 /* eslint-disable sort-keys */
 export const ViewTypes = {

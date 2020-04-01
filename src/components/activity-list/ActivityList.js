@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withNavigationFocus } from 'react-navigation';
 import { compose, onlyUpdateForKeys, withProps } from 'recompact';
-import { buildTransactionsSectionsSelector } from '../../helpers/transactions';
 import networkTypes from '../../helpers/networkTypes';
+import { buildTransactionsSectionsSelector } from '../../helpers/transactions';
 import {
   withAccountSettings,
   withAccountTransactions,
@@ -11,7 +12,6 @@ import {
 } from '../../hoc';
 import RecyclerActivityList from './RecyclerActivityList';
 import TestnetEmptyState from './TestnetEmptyState';
-import { withNavigationFocus } from 'react-navigation';
 
 const ActivityList = ({
   accountAddress,
