@@ -22,6 +22,9 @@ const ANIMATE_NUMBER_INTERVAL = 30;
 const STABLECOINS = ['DAI', 'SAI', 'USDC', 'USDT'];
 
 const sx = StyleSheet.create({
+  animatedNumber: {
+    height: 40,
+  },
   text: {
     color: colors.dark,
     fontSize: 16,
@@ -41,7 +44,7 @@ const renderAnimatedNumber = (value, steps, symbol) => {
   const numberComponent = (
     <AnimatedNumber
       letterSpacing={parseFloat(fonts.letterSpacing.roundedTightest)}
-      style={sx.text}
+      style={[sx.text, sx.animatedNumber]}
       formatter={
         isStablecoin
           ? animatedNumberFormatterWithDolllars
@@ -256,7 +259,7 @@ const SavingsListRow = ({
               />
               <GradientText
                 align="center"
-                angle={false}
+                angle={0}
                 end={{ x: 1, y: 1 }}
                 letterSpacing="roundedTight"
                 start={{ x: 0, y: 0 }}
