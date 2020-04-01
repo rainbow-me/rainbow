@@ -24,7 +24,6 @@ import AvatarCircle from './AvatarCircle';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
-  family: 'SFProRounded',
   firstSectionLength: abbreviations.defaultNumCharsPerSection,
   letterSpacing: 'roundedMedium',
   size: 'bigger',
