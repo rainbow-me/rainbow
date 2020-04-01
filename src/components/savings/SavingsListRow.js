@@ -23,7 +23,10 @@ const STABLECOINS = ['DAI', 'SAI', 'USDC', 'USDT'];
 
 const sx = StyleSheet.create({
   animatedNumber: {
+    fontVariant: ['tabular-nums'],
     height: 40,
+    paddingLeft: 37,
+    position: 'absolute',
   },
   text: {
     color: colors.dark,
@@ -35,36 +38,24 @@ const sx = StyleSheet.create({
   },
 });
 
-const animatedNumberFormatterWithDolllars = val =>
-  `$${formatSavingsAmount(val)}`;
-const animatedNumberFormatter = val => `${formatSavingsAmount(val)}`;
+const animatedNumberFormatter = (val, symbol) => {
+  const isStablecoin = STABLECOINS.indexOf(symbol) !== -1;
+  if (isStablecoin) {
+    return `$${formatSavingsAmount(val)}`;
+  }
+  return `${formatSavingsAmount(val)} ${symbol}`;
+};
 
 const renderAnimatedNumber = (value, steps, symbol) => {
-  const isStablecoin = STABLECOINS.indexOf(symbol) !== -1;
-  const numberComponent = (
+  return (
     <AnimatedNumber
       letterSpacing={parseFloat(fonts.letterSpacing.roundedTightest)}
       style={[sx.text, sx.animatedNumber]}
-      formatter={
-        isStablecoin
-          ? animatedNumberFormatterWithDolllars
-          : animatedNumberFormatter
-      }
+      formatter={val => animatedNumberFormatter(val, symbol)}
       steps={steps}
       time={ANIMATE_NUMBER_INTERVAL}
       value={Number(value)}
     />
-  );
-
-  if (isStablecoin) {
-    return numberComponent;
-  }
-
-  return (
-    <React.Fragment>
-      {numberComponent}
-      <Text style={sx.text}>{symbol}</Text>
-    </React.Fragment>
   );
 };
 
@@ -150,6 +141,7 @@ const SavingsListRow = ({
             [0, 10, 30, colors.dark, 0.1],
             [0, 5, 15, colors.dark, 0.04],
           ]}
+          style={{ elevation: 12 }}
         >
           <LinearGradient
             borderRadius={49}
