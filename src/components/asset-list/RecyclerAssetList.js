@@ -231,6 +231,7 @@ class RecyclerAssetList extends Component {
       headersIndices: [],
       isRefreshing: false,
       itemsCount: 0,
+      showCoinListEditor: false,
       stickyComponentsIndices: [],
     };
 
@@ -471,19 +472,12 @@ class RecyclerAssetList extends Component {
     );
   }
 
-  static getDerivedStateFromProps({ sections, isCoinListEdited }, state) {
+  static getDerivedStateFromProps({ sections }, state) {
     const headersIndices = [];
     const stickyComponentsIndices = [];
     const items = sections.reduce((ctx, section) => {
       headersIndices.push(ctx.length);
       stickyComponentsIndices.push(ctx.length);
-      if (section.header.title == 'Balances' && isCoinListEdited) {
-        const coinDividerIndexInsideBalances = findIndex(
-          section.data,
-          ({ coinDivider }) => coinDivider
-        );
-        stickyComponentsIndices.push(coinDividerIndexInsideBalances + 1);
-      }
       return ctx
         .concat([
           {
@@ -874,6 +868,16 @@ class RecyclerAssetList extends Component {
     ) {
       this.props.scrollViewTracker.setValue(offsetY);
     }
+
+    const offsetHeight = CoinRow.height * 3 + 5;
+    if (this.props.isCoinListEdited && offsetY > offsetHeight) {
+      this.setState({ showCoinListEditor: true });
+    } else if (
+      (offsetY < offsetHeight || !this.props.isCoinListEdited) &&
+      this.state.showCoinListEditor === true
+    ) {
+      this.setState({ showCoinListEditor: false });
+    }
   };
 
   renderRefreshControl = () => (
@@ -964,18 +968,18 @@ class RecyclerAssetList extends Component {
         });
   };
 
-  stickyRowRenderer = (_, data) => {
-    console.log(data);
-    return data.item && data.item.coinDivider ? (
-      <CoinDivider
-        assetsAmount={this.renderList.length}
-        balancesSum="$20.12"
-        isSticky
-      />
-    ) : (
+  stickyRowRenderer = (_, data) => (
+    <>
       <AssetListHeaderRenderer {...data} isSticky />
-    );
-  };
+      {/* {this.state.showCoinListEditor ? (
+        <CoinDivider
+          assetsAmount={this.renderList.length}
+          balancesSum="$20.12"
+          isSticky
+        />
+      ) : null} */}
+    </>
+  );
 
   render() {
     const {
