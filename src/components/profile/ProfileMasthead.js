@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Platform, View, Text } from 'react-native';
@@ -66,6 +67,13 @@ const ProfileMasthead = ({
     [accountColor, accountName, navigate]
   );
 
+  const onAddCash = useCallback(() => {
+    navigate('AddCashSheet');
+    analytics.track('Tapped Add Cash', {
+      category: 'add cash',
+    });
+  }, [navigate]);
+
   return (
     <Centered
       direction="column"
@@ -122,7 +130,7 @@ const ProfileMasthead = ({
         />
       </RowWithMargins>
       {Platform.OS === 'ios' && addCashButtonAvailable && (
-        <AddCashButton onPress={() => navigate('AddCashSheet')} />
+        <AddCashButton onPress={onAddCash} />
       )}
       {showBottomDivider && (
         <Divider

@@ -2,7 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, InteractionManager } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   calculateAPY,
@@ -143,17 +143,15 @@ const SavingsListRow = ({
   const displayValue = formatSavingsAmount(value);
 
   useEffect(() => {
-    if (
-      underlying &&
-      underlying.symbol &&
-      supplyBalanceUnderlying &&
-      !isNaN(displayValue)
-    )
-      analytics.track('User has savings', {
-        category: 'savings',
-        label: underlying.symbol,
+    if (underlying && underlying.symbol && supplyBalanceUnderlying)
+      InteractionManager.runAfterInteractions(() => {
+        analytics.track('User has savings', {
+          category: 'savings',
+          label: underlying.symbol,
+        });
       });
-  }, [displayValue, supplyBalanceUnderlying, underlying]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!underlying || !underlying.address) return null;
 
