@@ -714,16 +714,22 @@ class RecyclerAssetList extends Component {
         renderSize > deviceDimensions
       ) {
         layoutItemAnimator.animateShift = () =>
-          LayoutAnimation.configureNext(
-            LayoutAnimation.create(340, 'easeInEaseOut', 'opacity')
-          );
-        this.scrollToOffset(renderSize - deviceDimensions, true);
+          LayoutAnimation.configureNext({
+            duration: 340,
+            update: {
+              delay: 10,
+              type: 'easeInEaseOut',
+            },
+          });
+        setTimeout(() => {
+          this.rlv.scrollToEnd({ aniamted: true });
+        }, 10);
         setTimeout(() => {
           layoutItemAnimator.animateShift = () =>
             LayoutAnimation.configureNext(
               LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
             );
-        }, 300);
+        }, 350);
       }
     }
   }
