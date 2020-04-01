@@ -6,7 +6,8 @@ import GraphemeSplitter from 'grapheme-splitter';
 import styled from 'styled-components/primitives';
 import { withRequests, withAccountInfo } from '../../hoc';
 import { Badge } from '../badge';
-import { Centered } from '../layout';
+import { Centered, InnerBorder } from '../layout';
+import { ShadowStack } from '../shadow-stack';
 import Avatar from '../Avatar';
 import HeaderButton from './HeaderButton';
 import { colors } from '../../styles';
@@ -14,20 +15,19 @@ import { isAvatarPickerAvailable } from '../../config/experimental';
 
 const AvatarCircle = styled(View)`
   border-radius: 17px;
-  margin-bottom: 16px;
   height: 34px;
   width: 34px;
-  position: absolute;
   z-index: 10;
 `;
 
 const FirstLetter = styled(Text)`
-  width: 100%;
-  text-align: center;
   color: #fff;
-  font-weight: 600;
-  font-size: 24;
+  font-size: 23;
+  font-weight: 400;
+  letter-spacing: -0.6;
   line-height: 34;
+  text-align: center;
+  width: 100%;
 `;
 
 const ProfileHeaderButton = ({
@@ -44,15 +44,29 @@ const ProfileHeaderButton = ({
   >
     <Centered>
       {isAvatarPickerAvailable ? (
-        <AvatarCircle
-          style={{ backgroundColor: colors.avatarColor[accountColor] }}
+        <ShadowStack
+          backgroundColor={colors.avatarColor[accountColor]}
+          borderRadius={65}
+          height={34}
+          width={34}
+          shadows={[
+            [0, 2, 2.5, colors.dark, 0.08],
+            [0, 6, 5, colors.dark, 0.12],
+          ]}
+          shouldRasterizeIOS
         >
-          <FirstLetter>
-            {new GraphemeSplitter().splitGraphemes(accountName)[0]}
-          </FirstLetter>
-        </AvatarCircle>
-      ) : null}
-      <Avatar size={34} />
+          <AvatarCircle
+            style={{ backgroundColor: colors.avatarColor[accountColor] }}
+          >
+            <FirstLetter>
+              {new GraphemeSplitter().splitGraphemes(accountName)[0]}
+            </FirstLetter>
+            <InnerBorder opacity={0.04} radius={34} />
+          </AvatarCircle>
+        </ShadowStack>
+      ) : (
+        <Avatar size={34} />
+      )}
       {pendingRequestCount > 0 && (
         <Badge delay={1500} value={pendingRequestCount} zIndex={1} />
       )}

@@ -27,7 +27,7 @@ const TabBar = ({ categoryKeys, activeCategory, onPress }) => {
         >
           {category === activeCategory && (
             <LinearGradient
-              borderRadius={17}
+              borderRadius={15}
               overflow="hidden"
               colors={['#FFB114', '#FF54BB', '#00F0FF']}
               end={{ x: 0, y: 0.5 }}

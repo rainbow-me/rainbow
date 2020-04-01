@@ -25,6 +25,7 @@ import ListFooter from '../list/ListFooter';
 import ActivityListHeader from './ActivityListHeader';
 import transactionTypes from '../../helpers/transactionTypes';
 import transactionStatusTypes from '../../helpers/transactionStatusTypes';
+import { ProfileMasthead } from '../profile';
 import LoadingState from './LoadingState';
 
 const ViewTypes = {
@@ -119,7 +120,7 @@ export default class RecyclerActivityList extends PureComponent {
             ? deviceUtils.dimensions.height
             : Platform.OS === 'ios' && addCashButtonAvailable
             ? 278
-            : 204;
+            : 203;
         }
       }
     );
@@ -169,12 +170,26 @@ export default class RecyclerActivityList extends PureComponent {
     return buildTransactionUniqueIdentifier(row);
   };
 
+  handleListRef = ref => {
+    this.rlv = ref;
+  };
+
   rowRenderer = (type, data) => {
     if (type === ViewTypes.COMPONENT_HEADER) {
+      const header = (
+        <ProfileMasthead
+          accountAddress={this.props.accountAddress}
+          accountColor={this.props.accountColor}
+          accountName={this.props.accountName}
+          navigation={this.props.navigation}
+          showBottomDivider={!this.props.isEmpty}
+          recyclerListRef={this.rlv}
+        />
+      );
       return this.props.isLoading ? (
-        <LoadingState>{data.header}</LoadingState>
+        <LoadingState>{header}</LoadingState>
       ) : (
-        data.header
+        header
       );
     }
     if (type === ViewTypes.HEADER) return <ActivityListHeader {...data} />;
@@ -193,6 +208,7 @@ export default class RecyclerActivityList extends PureComponent {
         <RecyclerListView
           dataProvider={this.state.dataProvider}
           layoutProvider={this.layoutProvider}
+          ref={this.handleListRef}
           renderAheadOffset={deviceUtils.dimensions.height}
           rowRenderer={this.rowRenderer}
           scrollEnabled={!this.props.isLoading}

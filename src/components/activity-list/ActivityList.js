@@ -13,9 +13,23 @@ import RecyclerActivityList from './RecyclerActivityList';
 import TestnetEmptyState from './TestnetEmptyState';
 import { withNavigationFocus } from 'react-navigation';
 
-const ActivityList = ({ header, isEmpty, sections, network }) =>
+const ActivityList = ({
+  accountAddress,
+  accountColor,
+  accountName,
+  header,
+  isEmpty,
+  navigation,
+  sections,
+  network,
+}) =>
   network === networkTypes.mainnet || sections.length ? (
     <RecyclerActivityList
+      accountAddress={accountAddress}
+      accountColor={accountColor}
+      accountName={accountName}
+      navigation={navigation}
+      isEmpty={isEmpty}
       header={header}
       isLoading={!isEmpty && !sections.length}
       sections={sections}
@@ -25,8 +39,12 @@ const ActivityList = ({ header, isEmpty, sections, network }) =>
   );
 
 ActivityList.propTypes = {
+  accountAddress: PropTypes.string,
+  accountColor: PropTypes.number,
+  accountName: PropTypes.string,
   header: PropTypes.node,
   isEmpty: PropTypes.bool,
+  navigation: PropTypes.object,
   sections: PropTypes.arrayOf(
     PropTypes.shape({
       data: PropTypes.array,
