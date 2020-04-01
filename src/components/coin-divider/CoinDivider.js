@@ -79,10 +79,6 @@ class CoinDivider extends PureComponent {
     setIsCoinListEdited: PropTypes.func,
   };
 
-  state = {
-    isCurrentlyCoinListEdited: this.props.isCoinListEdited,
-  };
-
   componentWillMount() {
     this._initialState = this.props.openSmallBalances;
   }
@@ -138,7 +134,7 @@ class CoinDivider extends PureComponent {
         <Row>
           <View
             pointerEvents={
-              this.state.isCurrentlyCoinListEdited || assetsAmount === 0
+              this.props.isCoinListEdited || assetsAmount === 0
                 ? 'none'
                 : 'auto'
             }
@@ -201,14 +197,12 @@ class CoinDivider extends PureComponent {
             </ButtonPressAnimation>
           </View>
           <Row
-            pointerEvents={
-              this.state.isCurrentlyCoinListEdited ? 'auto' : 'none'
-            }
+            pointerEvents={this.props.isCoinListEdited ? 'auto' : 'none'}
             style={{ position: 'absolute' }}
           >
             <CoinDividerEditButton
               onPress={setPinnedCoins}
-              isVisible={this.state.isCurrentlyCoinListEdited}
+              isVisible={this.props.isCoinListEdited}
               isActive={currentAction !== 'none'}
               text={currentAction === 'unpin' ? 'Unpin' : 'Pin'}
               shouldReloadList
@@ -216,7 +210,7 @@ class CoinDivider extends PureComponent {
             />
             <CoinDividerEditButton
               onPress={setHiddenCoins}
-              isVisible={this.state.isCurrentlyCoinListEdited}
+              isVisible={this.props.isCoinListEdited}
               isActive={currentAction !== 'none'}
               text={currentAction === 'unhide' ? 'Unhide' : 'Hide'}
               shouldReloadList
@@ -259,15 +253,10 @@ class CoinDivider extends PureComponent {
             <CoinDividerEditButton
               animationNode={this._node}
               onPress={() => {
-                this.setState(prevState => {
-                  setIsCoinListEdited(!prevState.isCurrentlyCoinListEdited);
-                  LayoutAnimation.configureNext(
-                    LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-                  );
-                  return {
-                    isCurrentlyCoinListEdited: !prevState.isCurrentlyCoinListEdited,
-                  };
-                });
+                setIsCoinListEdited(!this.props.isCoinListEdited);
+                LayoutAnimation.configureNext(
+                  LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+                );
               }}
               isVisible={openSmallBalances || assetsAmount === 0}
               isActive={isCoinListEdited}

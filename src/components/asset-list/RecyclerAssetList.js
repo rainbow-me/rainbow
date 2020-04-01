@@ -890,7 +890,7 @@ class RecyclerAssetList extends Component {
     }
 
     const { item = {}, renderItem } = data;
-    const { hideHeader, sections } = this.props;
+    const { hideHeader, sections, isCoinListEdited } = this.props;
 
     if (type === ViewTypes.HEADER) {
       return hideHeader ? null : <AssetListHeaderRenderer {...data} />;
@@ -928,7 +928,11 @@ class RecyclerAssetList extends Component {
 
     if (type === ViewTypes.COIN_DIVIDER) {
       return (
-        <CoinDivider assetsAmount={item.assetsAmount} balancesSum="$20.12" />
+        <CoinDivider
+          assetsAmount={item.assetsAmount}
+          balancesSum="$20.12"
+          isCoinListEdited={isCoinListEdited}
+        />
       );
     }
 
