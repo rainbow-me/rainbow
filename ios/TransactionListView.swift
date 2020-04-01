@@ -25,6 +25,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5)
   @objc var enableHapticFeedback: Bool = true
   @objc var hapticType: String = "selection"
+  @objc var scrollToTopDelay: TimeInterval = 0.2
   @objc var accountAddress: String? = nil {
     didSet {
       header.accountAddress.text = accountAddress
@@ -61,7 +62,14 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
   }
   @objc func onAvatarPressed(_ sender: UIButton) {
-    self.onAvatarPress([:])
+    tableView.setContentOffset(.zero, animated: true)
+    if tableView.contentOffset.y == CGFloat(0) {
+      self.onAvatarPress([:])
+    } else {
+      DispatchQueue.main.asyncAfter(deadline: .now() + scrollToTopDelay) {
+        self.onAvatarPress([:])
+      }
+    }
   }
   
   @objc func onPressInAvatar(_ sender: UIButton) {

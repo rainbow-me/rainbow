@@ -1,11 +1,27 @@
-import { Animated, StatusBar } from 'react-native';
+import React from 'react';
+import { Animated, StatusBar, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
+import AvatarCircle from '../../components/profile/AvatarCircle';
+import Header from '../../components/header/Header';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
 export let swapDetailsTransitionPosition = new Animated.Value(0);
+
+const backgroundInterpolator = ({ current: { progress: current } }) => {
+  const cardOpacity = current.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1],
+  });
+
+  return {
+    cardStyle: {
+      opacity: cardOpacity,
+    },
+  };
+};
 
 const emojiStyleInterpolator = ({
   current: { progress: current },
@@ -18,34 +34,15 @@ const emojiStyleInterpolator = ({
 
   const translateY = current.interpolate({
     inputRange: [0, 1],
-    outputRange: [-(screen.height / 2) + statusBarHeight + 78.5, 0],
-  });
-
-  const scale = current.interpolate({
-    inputRange: [-1, 0, 0.99, 2],
-    outputRange: [0.01, 0.01, 1, 1],
+    outputRange: [screen.height, 0],
   });
 
   return {
     cardStyle: {
-      opacity: backgroundOpacity,
-      transform: [{ translateY }, { scale }],
+      transform: [{ translateY }],
     },
     overlayStyle: {
-      backgroundColor: 'rgb(37, 41, 46)',
       opacity: backgroundOpacity,
-    },
-  };
-};
-const backgroundInterpolator = ({ current: { progress: current } }) => {
-  const cardOpacity = current.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 1],
-  });
-
-  return {
-    cardStyle: {
-      opacity: cardOpacity,
     },
   };
 };
@@ -212,6 +209,15 @@ const closeSpec = {
   },
 };
 
+const emojiOpenSpec = {
+  animation: 'spring',
+  config: {
+    damping: 37.5,
+    mass: 1,
+    stiffness: 500,
+  },
+};
+
 const openSpec = {
   animation: 'spring',
   config: {
@@ -246,15 +252,44 @@ export const backgroundPreset = {
 };
 
 export const emojiPreset = {
+  cardOverlay: ({ style }) => {
+    const backgroundOpacity = style.opacity.interpolate({
+      inputRange: [-1, 0, 0.975, 2],
+      outputRange: [0, 0, 1, 1],
+    });
+
+    return (
+      <Animated.View
+        pointerEvents="none"
+        style={{
+          backgroundColor: 'rgb(51, 54, 59)',
+          height: deviceUtils.dimensions.height,
+          opacity: backgroundOpacity,
+          position: 'absolute',
+          width: deviceUtils.dimensions.width,
+        }}
+      >
+        <View
+          style={{
+            alignItems: 'center',
+            top: Header.heightWithStatusBar,
+          }}
+        >
+          <AvatarCircle overlayStyles />
+        </View>
+      </Animated.View>
+    );
+  },
   cardOverlayEnabled: true,
   cardShadowEnabled: false,
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: emojiStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical-inverted',
+  gestureEnabled: false,
   gestureResponseDistance,
   onTransitionStart,
-  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+  transitionSpec: { close: closeSpec, open: emojiOpenSpec },
 };
 
 export const exchangePreset = {

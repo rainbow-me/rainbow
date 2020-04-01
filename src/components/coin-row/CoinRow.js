@@ -78,6 +78,6 @@ CoinRow.defaultProps = {
   coinIconRender: CoinIcon,
 };
 
-CoinRow.height = CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom - 0.1;
+CoinRow.height = CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom;
 
 export default CoinRow;

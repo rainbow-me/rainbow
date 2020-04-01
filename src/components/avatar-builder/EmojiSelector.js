@@ -3,7 +3,6 @@
 // eslint-disable-next-line import/extensions
 import emoji from 'emoji-datasource';
 import PropTypes from 'prop-types';
-import { isEmulatorSync } from 'react-native-device-info';
 import React, { PureComponent } from 'react';
 import {
   Dimensions,
@@ -18,7 +17,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import 'string.fromcodepoint';
 import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
-import { colors, position } from '../../styles';
+import { colors, fonts, position } from '../../styles';
 import TabBar from './TabBar';
 import {
   DataProvider,
@@ -42,49 +41,49 @@ export const Categories = {
     icon: 'emojiSmileys',
     index: 0,
     name: 'Smileys & People',
-    width: 134,
+    width: 138,
   },
   nature: {
     icon: 'emojiAnimals',
     index: 1,
     name: 'Animals & Nature',
-    width: 138,
+    width: 143,
   },
   food: {
     icon: 'emojiFood',
     index: 2,
     name: 'Food & Drink',
-    width: 106,
+    width: 109,
   },
   activities: {
     icon: 'emojiActivities',
     index: 3,
     name: 'Activities',
-    width: 85,
+    width: 87,
   },
   places: {
     icon: 'emojiTravel',
     index: 4,
     name: 'Travel & Places',
-    width: 126,
+    width: 132,
   },
   objects: {
     icon: 'emojiObjects',
     index: 5,
     name: 'Objects',
-    width: 74,
+    width: 75,
   },
   icons: {
     icon: 'emojiSymbols',
     index: 6,
     name: 'Symbols',
-    width: 77,
+    width: 79,
   },
   flags: {
     icon: 'emojiFlags',
     index: 7,
     name: 'Flags',
-    width: 58,
+    width: 57,
   },
 };
 
@@ -142,7 +141,7 @@ export default class EmojiSelector extends PureComponent {
             ((width - 21) / this.props.columns);
           dim.width = deviceUtils.dimensions.width;
         } else if (type === HEADER_ROW) {
-          dim.height = 35;
+          dim.height = 34.7;
           dim.width = deviceUtils.dimensions.width;
         } else if (type === OVERLAY) {
           dim.height = i === 0 ? 0.1 : 100;
@@ -299,8 +298,8 @@ export default class EmojiSelector extends PureComponent {
       return (
         <View
           style={{
-            top: index === 0 && -300,
-            bottom: index !== 0 && -300,
+            top: index === 0 && -3000,
+            bottom: index !== 0 && -3000,
             height: 400,
             width: width,
             backgroundColor: colors.white,
@@ -460,9 +459,6 @@ export default class EmojiSelector extends PureComponent {
             style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}
           >
             {showSearchBar ? Searchbar : null}
-            {isEmulatorSync() ? (
-              <Text> Scrolling might not work perfectly on a simulator</Text>
-            ) : null}
             {!isReady ? (
               <View style={styles.loader} {...other}>
                 <View style={styles.sectionHeaderWrap}>
@@ -481,8 +477,11 @@ export default class EmojiSelector extends PureComponent {
                     this.hasRowChanged
                   ).cloneWithRows(this.state.allEmojiList)}
                   layoutProvider={this._layoutProvider}
-                  renderAheadOffset={10}
+                  canChangeSize={false}
+                  renderAheadStep={100}
+                  renderAheadOffset={300}
                   rowRenderer={this.renderItem}
+                  scrollIndicatorInsets={[15, 0, 15, 0]}
                   style={{ width: deviceUtils.dimensions.width }}
                   onScroll={this.handleScroll}
                   externalScrollView={this.renderScrollView}
@@ -513,7 +512,7 @@ export default class EmojiSelector extends PureComponent {
               style={position.coverAsObject}
             >
               <LinearGradient
-                borderRadius={17}
+                borderRadius={19}
                 overflow="hidden"
                 colors={['#FFFFFF', '#FFFFFF', '#F0F5FA']}
                 end={{ x: 0.5, y: 1 }}
@@ -598,7 +597,7 @@ const styles = StyleSheet.create({
   search: {
     ...Platform.select({
       ios: {
-        backgroundColor: 'rgba(255,255,255,0.75)',
+        backgroundColor: colors.alpha(colors.white, 0.75),
         borderRadius: 10,
         height: 36,
         paddingLeft: 8,
@@ -607,47 +606,48 @@ const styles = StyleSheet.create({
     margin: 8,
   },
   searchbar_container: {
-    backgroundColor: 'rgba(255,255,255,0.75)',
+    backgroundColor: colors.alpha(colors.white, 0.75),
     width: '100%',
     zIndex: 1,
   },
   sectionHeader: {
-    color: '#3C4252',
-    fontSize: 12,
-    fontWeight: '600',
-    opacity: 0.5,
-    paddingBottom: 5,
-    paddingLeft: 8.3,
-    paddingRight: 4,
-    paddingTop: 15,
-    // textAlign: "center",
+    color: colors.alpha(colors.blueGreyDark, 0.5),
+    fontFamily: fonts.family.SFProRounded,
+    fontSize: parseFloat(fonts.size.small),
+    fontWeight: fonts.weight.semibold,
+    letterSpacing: fonts.letterSpacing.rounded,
+    paddingBottom: 3.75,
+    paddingLeft: 9,
+    paddingRight: 9,
+    paddingTop: 15.25,
     textTransform: 'uppercase',
     width: '100%',
   },
   sectionHeaderWrap: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.white,
     marginRight: 10,
     paddingLeft: 10,
   },
   sectionStickyHeaderWrap: {
-    marginLeft: 10,
+    marginLeft: 12,
     flex: 1,
   },
   sectionStickyHeader: {
-    color: '#3C4252',
-    fontSize: 12,
-    fontWeight: '600',
-    opacity: 0.5,
-    paddingBottom: 5,
-    paddingLeft: 8.3,
-    paddingRight: 4,
-    paddingTop: 5,
+    backgroundColor: colors.alpha(colors.white, 0.7),
+    color: colors.alpha(colors.blueGreyDark, 0.5),
+    fontFamily: fonts.family.SFProRounded,
+    fontSize: parseFloat(fonts.size.small),
+    fontWeight: fonts.weight.semibold,
+    letterSpacing: fonts.letterSpacing.rounded,
+    paddingBottom: 3.75,
+    paddingLeft: 7,
+    paddingRight: 7,
+    paddingTop: 3.25,
     textTransform: 'uppercase',
-    backgroundColor: '#ffffffee',
   },
   sectionStickyBlur: {
-    marginTop: 10,
-    borderRadius: 15,
+    borderRadius: 11,
+    marginTop: 12,
   },
   tabBar: {
     alignSelf: 'center',
@@ -658,10 +658,5 @@ const styles = StyleSheet.create({
     padding: 4,
     position: 'absolute',
     width: 276,
-  },
-  overlay: {
-    height: 200,
-    width: width,
-    backgroundColor: colors.red,
   },
 });
