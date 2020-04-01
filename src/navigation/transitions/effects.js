@@ -229,14 +229,10 @@ export const emojiPreset = {
       <Animated.View
         pointerEvents="none"
         style={{
-          backgroundColor: 'rgb(37, 41, 46)',
+          backgroundColor: 'rgb(51, 54, 59)',
           height: deviceUtils.dimensions.height,
           opacity: backgroundOpacity,
           position: 'absolute',
-          shadowColor: colors.dark,
-          shadowOffset: { height: 10, width: 0 },
-          shadowOpacity: 0.6,
-          shadowRadius: 25,
           width: deviceUtils.dimensions.width,
         }}
       >
@@ -246,7 +242,7 @@ export const emojiPreset = {
             top: Header.heightWithStatusBar,
           }}
         >
-          <AvatarCircle />
+          <AvatarCircle overlayStyles />
         </View>
       </Animated.View>
     );

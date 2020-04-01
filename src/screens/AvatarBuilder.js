@@ -1,22 +1,22 @@
 import React, { PureComponent } from 'react';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import Animated from 'react-native-reanimated';
 import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
+import ColorCircle from '../components/avatar-builder/ColorCircle';
 import EmojiSelector from '../components/avatar-builder/EmojiSelector';
+import Header from '../components/header/Header';
 import { Column, Row } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
-import { colors } from '../styles';
-import { deviceUtils } from '../utils';
-import ColorCircle from '../components/avatar-builder/ColorCircle';
-import store from '../redux/store';
+import { saveAccountInfo } from '../handlers/localstorage/accountLocal';
+import { withAccountInfo, withAccountSettings } from '../hoc';
 import {
   settingsUpdateAccountName,
   settingsUpdateAccountColor,
 } from '../redux/settings';
-import { saveAccountInfo } from '../handlers/localstorage/accountLocal';
-import { withAccountInfo, withAccountSettings } from '../hoc';
+import store from '../redux/store';
+import { colors } from '../styles';
+import { deviceUtils } from '../utils';
 
 const { Value } = Animated;
 
@@ -29,7 +29,10 @@ const springConfig = {
   stiffness: 600,
 };
 
-const statusBarHeight = getStatusBarHeight(true);
+const AvatarCircleHeight = 65;
+const AvatarCircleMarginTop = 2;
+const AvatarBuilderTopPoint =
+  Header.heightWithStatusBar + AvatarCircleHeight + AvatarCircleMarginTop;
 
 const Container = styled(Column)`
   background-color: ${colors.transparent};
@@ -101,7 +104,7 @@ class AvatarBuilder extends PureComponent {
         <Column
           align="center"
           pointerEvents="box-none"
-          top={statusBarHeight + 110}
+          top={AvatarBuilderTopPoint}
         >
           <Row
             justify="center"
