@@ -1,7 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { Platform, View } from 'react-native';
+import { Platform } from 'react-native';
 import { compose, withHandlers } from 'recompact';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
@@ -17,10 +17,11 @@ import { useAccountData, useClipboard } from '../../hooks';
 import CopyTooltip from '../copy-tooltip';
 import { FloatingEmojis } from '../floating-emojis';
 import Divider from '../Divider';
-import { Centered, RowWithMargins } from '../layout';
+import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress } from '../text';
 import AddCashButton from './AddCashButton';
 import ProfileAction from './ProfileAction';
+import AvatarCircle from './AvatarCircle';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
@@ -32,14 +33,8 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
   weight: 'bold',
 })`
   margin-bottom: 2;
+  margin-top: ${isAvatarPickerAvailable ? 0 : -2};
   width: 100%;
-`;
-
-const AvatarCircle = styled(View)`
-  border-radius: 33px;
-  height: 65px;
-  margin-bottom: 16px;
-  width: 65px;
 `;
 
 const ProfileMasthead = ({
@@ -59,10 +54,10 @@ const ProfileMasthead = ({
   }, [navigate]);
 
   return (
-    <Centered
-      direction="column"
+    <Column
+      align="center"
+      height={Platform.OS === 'ios' && addCashButtonAvailable ? 260 : 185}
       marginBottom={24}
-      paddingBottom={Platform.OS === 'ios' && addCashButtonAvailable ? 12 : 42}
     >
       {isAvatarPickerAvailable ? (
         <AvatarCircle onPress={onPressAvatar} />
@@ -112,7 +107,7 @@ const ProfileMasthead = ({
           style={{ bottom: 0, position: 'absolute' }}
         />
       )}
-    </Centered>
+    </Column>
   );
 };
 
