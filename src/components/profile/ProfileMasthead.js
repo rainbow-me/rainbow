@@ -1,5 +1,6 @@
+import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useNavigation } from 'react-navigation-hooks';
@@ -43,6 +44,13 @@ const ProfileMasthead = ({
   const { accountENS } = useAccountData();
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
+
+  const onAddCash = useCallback(() => {
+    navigate('AddCashSheet');
+    analytics.track('Tapped Add Cash', {
+      category: 'add cash',
+    });
+  }, [navigate]);
 
   return (
     <Column
@@ -90,7 +98,7 @@ const ProfileMasthead = ({
         />
       </RowWithMargins>
       {Platform.OS === 'ios' && addCashButtonAvailable && (
-        <AddCashButton onPress={() => navigate('AddCashSheet')} />
+        <AddCashButton onPress={onAddCash} />
       )}
       {showBottomDivider && (
         <Divider

@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { getMarketDetails as getUniswapMarketDetails } from '@uniswap/sdk';
 import BigNumber from 'bignumber.js';
 import { find, get, isNil, toLower } from 'lodash';
@@ -437,7 +438,7 @@ const ExchangeModal = ({
         }
       }
     },
-    [getMarketPrice, inputAsExactAmount, outputCurrency]
+    [getMarketPrice, inputAsExactAmount, outputCurrency, updateOutputAmount]
   );
 
   const getMarketDetails = useCallback(async () => {
@@ -595,11 +596,24 @@ const ExchangeModal = ({
       );
     }
 
+    analytics.track('Selected max balance', {
+      category: isDeposit || isWithdrawal ? 'savings' : 'swap',
+      defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+      type,
+      value: Number(maxBalance.toString()),
+    });
+
     return updateInputAmount(maxBalance, maxBalance, true, true);
   };
 
   const handleSubmit = () => {
     backgroundTask.execute(async () => {
+      analytics.track(`Submitted ${type}`, {
+        category: isDeposit || isWithdrawal ? 'savings' : 'swap',
+        defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+        type,
+      });
+
       setIsAuthorizing(true);
       try {
         const wallet = await loadWallet();
@@ -624,6 +638,11 @@ const ExchangeModal = ({
         console.log('[exchange - handle submit] rap', rap);
         await executeRap(wallet, rap);
         console.log('[exchange - handle submit] executed rap!');
+        analytics.track(`Completed ${type}`, {
+          category: isDeposit || isWithdrawal ? 'savings' : 'swap',
+          defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+          type,
+        });
       } catch (error) {
         setIsAuthorizing(false);
         console.log('[exchange - handle submit] error submitting swap', error);
@@ -732,14 +751,26 @@ const ExchangeModal = ({
               : greaterThanOrEqualTo(inputBalance, newInputAmount));
           setIsSufficientBalance(isSufficientBalance);
         }
+
+        if (newAmountDisplay) {
+          analytics.track('Updated input amount', {
+            category: isDeposit ? 'savings' : 'swap',
+            defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+            type,
+            value: Number(newAmountDisplay.toString()),
+          });
+        }
       }
     },
     [
+      defaultInputAsset,
       getMarketPrice,
       inputCurrency,
+      isDeposit,
       isWithdrawal,
       selectedGasPrice,
       supplyBalanceUnderlying,
+      type,
     ]
   );
 
@@ -758,6 +789,7 @@ const ExchangeModal = ({
       newInputCurrency,
       userSelected
     );
+
     console.log('[update input curr] prev input curr', previousInputCurrency);
     if (!isSameAsset(newInputCurrency, previousInputCurrency)) {
       console.log('[update input curr] clear form');
@@ -793,6 +825,14 @@ const ExchangeModal = ({
       );
       updateOutputCurrency(newDepositOutput, false);
     }
+
+    analytics.track('Switched input asset', {
+      category: isDeposit ? 'savings' : 'swap',
+      defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+      from: previousInputCurrency.symbol,
+      label: newInputCurrency.symbol,
+      type,
+    });
   };
 
   const updateNativeAmount = nativeAmount => {
@@ -827,17 +867,24 @@ const ExchangeModal = ({
     setInputAsExactAmount(true);
   };
 
-  const updateOutputAmount = (
-    newOutputAmount,
-    newAmountDisplay,
-    newInputAsExactAmount = false
-  ) => {
-    setInputAsExactAmount(newInputAsExactAmount);
-    setOutputAmount(newOutputAmount);
-    setOutputAmountDisplay(
-      newAmountDisplay !== undefined ? newAmountDisplay : newOutputAmount
-    );
-  };
+  const updateOutputAmount = useCallback(
+    (newOutputAmount, newAmountDisplay, newInputAsExactAmount = false) => {
+      setInputAsExactAmount(newInputAsExactAmount);
+      setOutputAmount(newOutputAmount);
+      setOutputAmountDisplay(
+        newAmountDisplay !== undefined ? newAmountDisplay : newOutputAmount
+      );
+      if (newAmountDisplay) {
+        analytics.track('Updated output amount', {
+          category: isWithdrawal || isDeposit ? 'savings' : 'swap',
+          defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+          type,
+          value: Number(newAmountDisplay.toString()),
+        });
+      }
+    },
+    [defaultInputAsset, isDeposit, isWithdrawal, type]
+  );
 
   const updateOutputCurrency = (newOutputCurrency, userSelected = true) => {
     console.log(
@@ -878,6 +925,14 @@ const ExchangeModal = ({
         updateInputCurrency(null, false);
       }
     }
+
+    analytics.track('Switched output asset', {
+      category: isWithdrawal || isDeposit ? 'savings' : 'swap',
+      defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+      from: (previousOutputCurrency && previousOutputCurrency.symbol) || null,
+      label: newOutputCurrency.symbol,
+      type,
+    });
   };
 
   const isSlippageWarningVisible =

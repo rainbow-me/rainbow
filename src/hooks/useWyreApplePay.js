@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { captureMessage, captureException } from '@sentry/react-native';
 import { isEmpty, toLower } from 'lodash';
 import { useCallback, useState } from 'react';
@@ -123,6 +124,10 @@ export default function useWyreApplePay() {
 
       try {
         if (!isPaymentComplete && isEmpty(orderId)) {
+          analytics.track('Purchase failed', {
+            category: 'add cash',
+            error_type: 'no order id',
+          });
           paymentResponse.complete('fail');
           handlePaymentCallback();
         }
@@ -141,9 +146,17 @@ export default function useWyreApplePay() {
           if (isFailed) {
             sentryUtils.addDataBreadcrumb('Wyre order data', data);
             captureMessage(`Wyre final check - order status failed`);
+            analytics.track('Purchase failed', {
+              category: 'add cash',
+              data,
+              error_type: 'other',
+            });
             paymentResponse.complete('fail');
             handlePaymentCallback();
           } else if (isPending || isSuccess) {
+            analytics.track('Purchase completed', {
+              category: 'add cash',
+            });
             paymentResponse.complete('success');
             handlePaymentCallback();
           } else if (!isChecking) {

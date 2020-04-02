@@ -1,7 +1,8 @@
+import analytics from '@segment/analytics-react-native';
 import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { InteractionManager, Platform, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   calculateAPY,
@@ -92,6 +93,12 @@ const SavingsListRow = ({
       underlying,
       underlyingPrice,
     });
+
+    analytics.track('Opened Savings Sheet', {
+      category: 'savings',
+      empty: !supplyBalanceUnderlying,
+      label: underlying.symbol,
+    });
   }, [
     cTokenBalance,
     lifetimeSupplyInterestAccrued,
@@ -130,6 +137,18 @@ const SavingsListRow = ({
   ]);
 
   const displayValue = formatSavingsAmount(value);
+
+  useEffect(() => {
+    if (underlying && underlying.symbol && supplyBalanceUnderlying)
+      InteractionManager.runAfterInteractions(() => {
+        analytics.track('User has savings', {
+          category: 'savings',
+          label: underlying.symbol,
+        });
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (!underlying || !underlying.address) return null;
 
   return (
