@@ -270,6 +270,12 @@ class RecyclerAssetList extends Component {
           const lastBalanceIndex =
             headersIndices[balancesIndex] + balanceItemsCount;
           if (index === lastBalanceIndex - 2) {
+            if (this.coinDividerIndex !== index) {
+              this.coinDividerIndex = index;
+              if (this.props.isCoinListEdited) {
+                this.checkEditStikyHeader();
+              }
+            }
             if (
               sections[balancesIndex].data[lastBalanceIndex - 2]
                 .smallBalancesContainer
@@ -772,6 +778,18 @@ class RecyclerAssetList extends Component {
   savingsList = [];
   savingsSumValue = 0;
 
+  checkEditStikyHeader = () => {
+    const offsetHeight = CoinRow.height * (this.coinDividerIndex - 1) + 5;
+    if (this.props.isCoinListEdited && this.position > offsetHeight) {
+      this.setState({ showCoinListEditor: true });
+    } else if (
+      (this.position < offsetHeight || !this.props.isCoinListEdited) &&
+      this.state.showCoinListEditor === true
+    ) {
+      this.setState({ showCoinListEditor: false });
+    }
+  };
+
   startScroll = scrollingVelocity => {
     clearTimeout(this.scrollHandle);
     this.rlv.scrollToOffset(0, this.position + scrollingVelocity * 10);
@@ -869,14 +887,8 @@ class RecyclerAssetList extends Component {
       this.props.scrollViewTracker.setValue(offsetY);
     }
 
-    const offsetHeight = CoinRow.height * 3 + 5;
-    if (this.props.isCoinListEdited && offsetY > offsetHeight) {
-      this.setState({ showCoinListEditor: true });
-    } else if (
-      (offsetY < offsetHeight || !this.props.isCoinListEdited) &&
-      this.state.showCoinListEditor === true
-    ) {
-      this.setState({ showCoinListEditor: false });
+    if (this.props.isCoinListEdited) {
+      this.checkEditStikyHeader();
     }
   };
 
@@ -971,13 +983,13 @@ class RecyclerAssetList extends Component {
   stickyRowRenderer = (_, data) => (
     <>
       <AssetListHeaderRenderer {...data} isSticky />
-      {/* {this.state.showCoinListEditor ? (
+      {this.state.showCoinListEditor ? (
         <CoinDivider
           assetsAmount={this.renderList.length}
           balancesSum="$20.12"
           isSticky
         />
-      ) : null} */}
+      ) : null}
     </>
   );
 
@@ -987,6 +999,7 @@ class RecyclerAssetList extends Component {
       fetchData,
       hideHeader,
       renderAheadOffset,
+      isCoinListEdited,
     } = this.props;
     const {
       dataProvider,
@@ -998,7 +1011,7 @@ class RecyclerAssetList extends Component {
       <View backgroundColor={colors.white} flex={1} overflow="hidden">
         <StickyContainer
           overrideRowRenderer={this.stickyRowRenderer}
-          stickyHeaderIndices={stickyComponentsIndices}
+          stickyHeaderIndices={isCoinListEdited ? [0] : stickyComponentsIndices}
         >
           <RecyclerListView
             dataProvider={dataProvider}
