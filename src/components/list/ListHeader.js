@@ -23,7 +23,11 @@ const ListHeader = pure(
   }) => (
     <Fragment>
       <LinearGradient
-        colors={['#000000ff', '#00000080', '#000000ff']}
+        colors={[
+          colors.listHeaders.firstGradient,
+          colors.listHeaders.secondGradient,
+          colors.listHeaders.thirdGradient,
+        ]}
         end={{ x: 0, y: 0 }}
         pointerEvents="none"
         start={{ x: 0, y: 0.5 }}
