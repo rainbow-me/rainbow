@@ -122,12 +122,13 @@ if (darkMode) {
     blueGreyDarkLight: '#0F0F0F',
     dark: '#FFFFFF',
     darkGrey: '#FFFFFF',
-    green: '#FFFFFF',
+    green: '#69D44D',
     grey: '#FFFFFF',
     grey20: '#FFFFFF',
     lighterGrey: '#FFFFFF',
     lightestGrey: '#FFFFFF',
     lightGrey: '#FFFFFF',
+    skeleton: '#0F0F0F',
     white: '#000000',
   };
 
