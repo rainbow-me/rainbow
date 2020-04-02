@@ -1,3 +1,5 @@
+import analytics from '@segment/analytics-react-native';
+import { join, map } from 'lodash';
 import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
 import depositCompound from './actions/depositCompound';
@@ -29,8 +31,20 @@ const findActionByType = type => {
   }
 };
 
+const getRapFullName = actions => {
+  const actionTypes = map(actions, 'type');
+  return join(actionTypes, ' + ');
+};
+
 export const executeRap = async (wallet, rap) => {
   const { actions } = rap;
+  const rapName = getRapFullName(actions);
+
+  analytics.track('Rap started', {
+    category: 'raps',
+    label: rapName,
+  });
+
   console.log('[common - executing rap]: actions', actions);
   for (let index = 0; index < actions.length; index++) {
     const action = actions[index];
@@ -48,9 +62,19 @@ export const executeRap = async (wallet, rap) => {
       await actionPromise(wallet, rap, index, parameters);
     } catch (error) {
       console.log('[common - executing rap inner] error running action', error);
+      analytics.track('Rap failed', {
+        category: 'raps',
+        failed_action: type,
+        label: rapName,
+      });
       break;
     }
   }
+
+  analytics.track('Rap completed', {
+    category: 'raps',
+    label: rapName,
+  });
   console.log('[common - executing rap] finished execute rap function');
 };
 

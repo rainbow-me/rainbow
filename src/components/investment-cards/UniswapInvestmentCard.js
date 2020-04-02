@@ -53,7 +53,10 @@ const UniswapInvestmentCard = enhance(
     <InvestmentCard
       {...props}
       flex={0}
-      gradientColors={['#ECF1F5', '#E4E9F0']}
+      gradientColors={[
+        colors.uniswapInvestmentCards.startGradient,
+        colors.uniswapInvestmentCards.endGradient,
+      ]}
       collapsed={openInvestmentCards[uniqueId]}
       uniqueId={uniqueId}
       containerHeight={UniswapInvestmentCard.height}

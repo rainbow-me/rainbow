@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents } from 'react-navigation';
-import { useFocusState } from 'react-navigation-hooks';
+import { useIsFocused } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import { compose, mapProps } from 'recompact';
 import {
@@ -68,7 +68,7 @@ const CurrencySelectModal = ({
     );
   }, [searchQuery]);
 
-  const isFocused = useFocusState().isFocused;
+  const isFocused = useIsFocused();
   const wasFocused = usePrevious(isFocused);
 
   useEffect(() => {

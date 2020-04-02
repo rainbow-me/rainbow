@@ -1,15 +1,15 @@
+import GraphemeSplitter from 'grapheme-splitter';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose } from 'recompact';
 import { View } from 'react-native';
+import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
+import { withAccountInfo } from '../../hoc';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
-import { Text } from '../text';
 import { ShadowStack } from '../shadow-stack';
-import { withAccountInfo } from '../../hoc';
-import GraphemeSplitter from 'grapheme-splitter';
+import { Text } from '../text';
 
 const AvatarCircle = styled(View)`
   height: 65px;

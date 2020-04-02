@@ -5,11 +5,11 @@ import { View } from 'react-native';
 import { compose, withHandlers } from 'recompact';
 import { withOpenInvestmentCards } from '../../hoc';
 import { colors, position } from '../../styles';
-import { Column, InnerBorder } from '../layout';
 import { ButtonPressAnimation, SizeToggler } from '../animations';
+import { Column, InnerBorder } from '../layout';
+import InvestmentCardWrap from './InvestmentCard';
 import InvestmentCardHeader from './InvestmentCardHeader';
 import UniswapInvestmentCard from './UniswapInvestmentCard';
-import InvestmentCardWrap from './InvestmentCard';
 
 const InvestmentCardBorderRadius = 24.5;
 

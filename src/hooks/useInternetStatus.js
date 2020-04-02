@@ -10,7 +10,7 @@ export default function useInternetStatus() {
     const { isInternetReachable: newIsInternetReachable } = newState;
     if (!isNil(newIsInternetReachable)) {
       setIsInternetReachable(newIsInternetReachable);
-      if (newIsInternetReachable) {
+      if (!isInternetReachable && newIsInternetReachable) {
         analytics.track('Reconnected after offline');
       } else {
         analytics.track('Offline / lost connection');
