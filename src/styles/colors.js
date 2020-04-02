@@ -114,20 +114,21 @@ const transparent = {
 if (darkMode) {
   base = {
     ...base,
-    appleBlue: '#FFFFFF', // '14, 118, 253'
-    black: '#FFFFFF', // '0, 0, 0'
-    blueGreyDark: '#FFFFFF', // '60, 66, 82'
-    blueGreyDark50: '#FFFFFF', // '60, 66, 82, 0.5'
-    blueGreyDarker: '#FFFFFF', // '15, 15, 17'
-    blueGreyDarkLight: '#FFFFFF', // '243, 244, 245'
-    dark: '#FFFFFF', // '37, 41, 46'
-    darkGrey: '#FFFFFF', // '113, 119, 138'
-    green: '#FFFFFF', // '58, 166, 134'
-    grey: '#FFFFFF', // '169, 173, 185'
-    grey20: '#FFFFFF', // '51, 51, 51'
-    lighterGrey: '#FFFFFF', // '247, 247, 248'
-    lightestGrey: '#FFFFFF', // '238, 233, 232'
-    lightGrey: '#FFFFFF', // '205, 207, 212',
+    appleBlue: '#FFFFFF',
+    black: '#FFFFFF',
+    blueGreyDark: '#FFFFFF',
+    blueGreyDark50: '#FFFFFF',
+    blueGreyDarker: '#FFFFFF',
+    blueGreyDarkLight: '#0F0F0F',
+    dark: '#FFFFFF',
+    darkGrey: '#FFFFFF',
+    green: '#69D44D',
+    grey: '#FFFFFF',
+    grey20: '#FFFFFF',
+    lighterGrey: '#FFFFFF',
+    lightestGrey: '#FFFFFF',
+    lightGrey: '#FFFFFF',
+    skeleton: '#0F0F0F',
     white: '#000000',
   };
 

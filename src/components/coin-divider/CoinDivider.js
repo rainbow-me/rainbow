@@ -133,7 +133,6 @@ export default class CoinDivider extends PureComponent {
               reversed={!this._initialState}
               startingWidth={3}
               toggle={openSmallBalances}
-              color={colors.white}
             />
             <View>
               <CoinDividerButtonLabel
