@@ -1,8 +1,9 @@
 import chroma from 'chroma-js';
 import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
+import { darkMode } from '../config/debug';
 
-const base = {
+let base = {
   appleBlue: '#0E76FD', // '14, 118, 253'
   black: '#000000', // '0, 0, 0'
   blueGreyDark: '#3C4252', // '60, 66, 82'
@@ -62,6 +63,11 @@ const sendScreen = {
   lightGrey: '#FAFAFA', // '250, 250, 250'
 };
 
+let uniswapInvestmentCards = {
+  endGradient: '#E4E9F0',
+  startGradient: '#ECF1F5',
+};
+
 assetIcon.random = () => {
   const assetIconColors = Object.values(assetIcon);
   return assetIconColors[Math.floor(Math.random() * assetIconColors.length)];
@@ -99,6 +105,32 @@ const transparent = {
   whiteTransparent: buildRgba(base.white, 0.8), // '255, 255, 255'
 };
 
+if (darkMode) {
+  base = {
+    ...base,
+    appleBlue: '#FFFFFF', // '14, 118, 253'
+    black: '#FFFFFF', // '0, 0, 0'
+    blueGreyDark: '#FFFFFF', // '60, 66, 82'
+    blueGreyDark50: '#FFFFFF', // '60, 66, 82, 0.5'
+    blueGreyDarker: '#FFFFFF', // '15, 15, 17'
+    blueGreyDarkLight: '#FFFFFF', // '243, 244, 245'
+    dark: '#FFFFFF', // '37, 41, 46'
+    darkGrey: '#FFFFFF', // '113, 119, 138'
+    green: '#FFFFFF', // '58, 166, 134'
+    grey: '#FFFFFF', // '169, 173, 185'
+    grey20: '#FFFFFF', // '51, 51, 51'
+    lighterGrey: '#FFFFFF', // '247, 247, 248'
+    lightestGrey: '#FFFFFF', // '238, 233, 232'
+    lightGrey: '#FFFFFF', // '205, 207, 212',
+    white: '#000000',
+  };
+
+  uniswapInvestmentCards = {
+    endGradient: '#000000',
+    startGradient: '#000000',
+  };
+}
+
 const colors = {
   alpha: buildRgba,
   assetIcon,
@@ -107,6 +139,7 @@ const colors = {
   getTextColorForBackground,
   isColorLight,
   sendScreen,
+  uniswapInvestmentCards,
   ...base,
   ...transparent,
   ...vendor,
