@@ -68,6 +68,12 @@ let uniswapInvestmentCards = {
   startGradient: '#ECF1F5',
 };
 
+let listHeaders = {
+  firstGradient: '#ffffff00',
+  secondGradient: '#ffffff80',
+  thirdGradient: '#ffffff00',
+};
+
 assetIcon.random = () => {
   const assetIconColors = Object.values(assetIcon);
   return assetIconColors[Math.floor(Math.random() * assetIconColors.length)];
@@ -129,6 +135,12 @@ if (darkMode) {
     endGradient: '#000000',
     startGradient: '#000000',
   };
+
+  listHeaders = {
+    firstGradient: '#000000ff',
+    secondGradient: '#00000080',
+    thirdGradient: '#000000ff',
+  };
 }
 
 const colors = {
@@ -138,6 +150,7 @@ const colors = {
   getFallbackTextColor,
   getTextColorForBackground,
   isColorLight,
+  listHeaders,
   sendScreen,
   uniswapInvestmentCards,
   ...base,
