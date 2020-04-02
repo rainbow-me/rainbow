@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useState } from 'react';
@@ -29,11 +30,14 @@ const AddCashForm = ({
   const [currency, setCurrency] = useState(currencies[initialCurrencyIndex]);
   const [value, setValue] = useState(null);
 
-  const handlePurchase = useCallback(() => onPurchase({ currency, value }), [
-    currency,
-    onPurchase,
-    value,
-  ]);
+  const handlePurchase = useCallback(() => {
+    analytics.track('Submitted Purchase', {
+      category: 'add cash',
+      label: currency,
+      value: Number(value),
+    });
+    return onPurchase({ currency, value });
+  }, [currency, onPurchase, value]);
 
   const handleNumpadPress = useCallback(
     newValue => {
@@ -95,9 +99,21 @@ const AddCashForm = ({
 
         return nextValue;
       });
+
+      analytics.track('Updated cash amount', {
+        category: 'add cash',
+      });
     },
     [limitDaily, limitYearly, onClearError, onLimitExceeded, onShake]
   );
+
+  const onCurrencyChange = useCallback(val => {
+    setCurrency(val);
+    analytics.track('Switched currency to purchase', {
+      category: 'add cash',
+      label: val,
+    });
+  }, []);
 
   return (
     <Fragment>
@@ -113,7 +129,7 @@ const AddCashForm = ({
           <AddCashSelector
             currencies={currencies}
             initialCurrencyIndex={initialCurrencyIndex}
-            onSelect={setCurrency}
+            onSelect={onCurrencyChange}
           />
         </ColumnWithMargins>
       </Centered>

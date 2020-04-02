@@ -1,7 +1,8 @@
+import analytics from '@segment/analytics-react-native';
 import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { StyleSheet } from 'react-native';
+import { InteractionManager, Platform, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   calculateAPY,
@@ -22,6 +23,11 @@ const ANIMATE_NUMBER_INTERVAL = 30;
 const STABLECOINS = ['DAI', 'SAI', 'USDC', 'USDT'];
 
 const sx = StyleSheet.create({
+  animatedNumberAndroid: {
+    height: 40,
+    paddingLeft: 35,
+    position: 'absolute',
+  },
   text: {
     color: colors.dark,
     fontSize: 16,
@@ -31,38 +37,27 @@ const sx = StyleSheet.create({
   },
 });
 
-const animatedNumberFormatterWithDolllars = val =>
-  `$${formatSavingsAmount(val)}`;
-const animatedNumberFormatter = val => `${formatSavingsAmount(val)}`;
+const animatedNumberFormatter = (val, symbol) => {
+  const isStablecoin = STABLECOINS.indexOf(symbol) !== -1;
+  if (isStablecoin) {
+    return `$${formatSavingsAmount(val)}`;
+  }
+  return `${formatSavingsAmount(val)} ${symbol}`;
+};
 
 const renderAnimatedNumber = (value, steps, symbol) => {
-  const isStablecoin = STABLECOINS.indexOf(symbol) !== -1;
-  const numberComponent = (
+  return (
     <AnimatedNumber
       letterSpacing={parseFloat(fonts.letterSpacing.roundedTightest)}
-      formatter={
-        isStablecoin
-          ? animatedNumberFormatterWithDolllars
-          : animatedNumberFormatter
-      }
-      marginLeft={6}
-      marginRight={4}
+      style={[
+        sx.text,
+        Platform.OS === 'android' ? sx.animatedNumberAndroid : null,
+      ]}
+      formatter={val => animatedNumberFormatter(val, symbol)}
       steps={steps}
-      style={sx.text}
       time={ANIMATE_NUMBER_INTERVAL}
       value={Number(value)}
     />
-  );
-
-  if (isStablecoin) {
-    return numberComponent;
-  }
-
-  return (
-    <React.Fragment>
-      {numberComponent}
-      <Text style={sx.text}>{symbol}</Text>
-    </React.Fragment>
   );
 };
 
@@ -96,6 +91,12 @@ const SavingsListRow = ({
       supplyRate,
       underlying,
       underlyingPrice,
+    });
+
+    analytics.track('Opened Savings Sheet', {
+      category: 'savings',
+      empty: !supplyBalanceUnderlying,
+      label: underlying.symbol,
     });
   }, [
     cTokenBalance,
@@ -135,6 +136,18 @@ const SavingsListRow = ({
   ]);
 
   const displayValue = formatSavingsAmount(value);
+
+  useEffect(() => {
+    if (underlying && underlying.symbol && supplyBalanceUnderlying)
+      InteractionManager.runAfterInteractions(() => {
+        analytics.track('User has savings', {
+          category: 'savings',
+          label: underlying.symbol,
+        });
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (!underlying || !underlying.address) return null;
 
   return (
@@ -148,6 +161,7 @@ const SavingsListRow = ({
             [0, 10, 30, colors.dark, 0.1],
             [0, 5, 15, colors.dark, 0.04],
           ]}
+          style={{ elevation: 15 }}
         >
           <LinearGradient
             borderRadius={49}
@@ -253,7 +267,7 @@ const SavingsListRow = ({
               />
               <GradientText
                 align="center"
-                angle={false}
+                angle={0}
                 end={{ x: 1, y: 1 }}
                 letterSpacing="roundedTight"
                 start={{ x: 0, y: 0 }}
