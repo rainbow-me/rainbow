@@ -38,6 +38,7 @@ import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
 import withCoinListEdited from '../../hoc/withCoinListEdited';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 
 /* eslint-disable sort-keys */
 export const ViewTypes = {
@@ -1026,35 +1027,39 @@ class RecyclerAssetList extends Component {
 
     return (
       <View backgroundColor={colors.white} flex={1} overflow="hidden">
-        <StickyContainer
-          overrideRowRenderer={this.stickyRowRenderer}
-          stickyHeaderIndices={isCoinListEdited ? [0] : stickyComponentsIndices}
-        >
-          <RecyclerListView
-            dataProvider={dataProvider}
-            disableRecycling
-            extendedState={{ headersIndices }}
-            externalScrollView={externalScrollView}
-            itemAnimator={layoutItemAnimator}
-            layoutProvider={this.layoutProvider}
-            onScroll={this.handleScroll}
-            ref={this.handleListRef}
-            renderAheadOffset={renderAheadOffset}
-            rowRenderer={this.rowRenderer}
-            scrollIndicatorInsets={{
-              bottom: safeAreaInsetValues.bottom,
-              top: hideHeader ? 0 : AssetListHeader.height,
-            }}
-            scrollViewProps={{
-              refreshControl: fetchData && this.renderRefreshControl(),
-            }}
-            style={{
-              backgroundColor: colors.white,
-              flex: 1,
-              minHeight: 1,
-            }}
-          />
-        </StickyContainer>
+        <PanGestureHandler enabled={isCoinListEdited}>
+          <StickyContainer
+            overrideRowRenderer={this.stickyRowRenderer}
+            stickyHeaderIndices={
+              isCoinListEdited ? [0] : stickyComponentsIndices
+            }
+          >
+            <RecyclerListView
+              dataProvider={dataProvider}
+              disableRecycling
+              extendedState={{ headersIndices }}
+              externalScrollView={externalScrollView}
+              itemAnimator={layoutItemAnimator}
+              layoutProvider={this.layoutProvider}
+              onScroll={this.handleScroll}
+              ref={this.handleListRef}
+              renderAheadOffset={renderAheadOffset}
+              rowRenderer={this.rowRenderer}
+              scrollIndicatorInsets={{
+                bottom: safeAreaInsetValues.bottom,
+                top: hideHeader ? 0 : AssetListHeader.height,
+              }}
+              scrollViewProps={{
+                refreshControl: fetchData && this.renderRefreshControl(),
+              }}
+              style={{
+                backgroundColor: colors.white,
+                flex: 1,
+                minHeight: 1,
+              }}
+            />
+          </StickyContainer>
+        </PanGestureHandler>
       </View>
     );
   }
