@@ -9,6 +9,8 @@ import { multiply } from '../helpers/utilities';
 import { useAccountSettings } from '../hooks';
 import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
 import { CDAI_CONTRACT, DAI_ADDRESS } from '../references';
+import transactionStatusTypes from '../helpers/transactionStatusTypes';
+import usePrevious from './usePrevious';
 
 const COMPOUND_QUERY_INTERVAL = 10000;
 
@@ -46,10 +48,24 @@ const getUnderlyingData = (marketData, tokenOverrides) => {
 export default function useSavingsAccount() {
   const [accountTokensBackup, setAccountTokensBackup] = useState([]);
 
-  const { tokenOverrides } = useSelector(({ data }) => ({
+  const { tokenOverrides, lastTransaction } = useSelector(({ data }) => ({
+    lastTransaction: [...data.transactions]
+      .filter(
+        tx =>
+          tx.status === transactionStatusTypes.deposited ||
+          tx.status === transactionStatusTypes.withdrew
+      )
+      .sort((a, b) => a.nonce > b.nonce)
+      .pop(),
     tokenOverrides: data.tokenOverrides,
   }));
 
+  const prevTransaction = usePrevious(lastTransaction);
+
+  const needsRefresh =
+    prevTransaction &&
+    lastTransaction &&
+    prevTransaction.status !== lastTransaction.status;
   const { accountAddress, network } = useAccountSettings();
 
   const compoundQuery = useQuery(COMPOUND_ACCOUNT_AND_MARKET_QUERY, {
@@ -77,6 +93,11 @@ export default function useSavingsAccount() {
     );
 
     let accountTokens = get(compoundQuery, 'data.account.tokens', []);
+
+    if (needsRefresh) {
+      const { refetch } = compoundQuery;
+      refetch();
+    }
 
     accountTokens = accountTokens.map(token => {
       const [cTokenAddress] = token.id.split('-');
@@ -129,6 +150,7 @@ export default function useSavingsAccount() {
     accountAddress,
     accountTokensBackup,
     compoundQuery,
+    needsRefresh,
     network,
     tokenOverrides,
   ]);
