@@ -988,6 +988,9 @@ class RecyclerAssetList extends Component {
           assetsAmount={this.renderList.length}
           balancesSum="$20.12"
           isSticky
+          onEndEdit={() => {
+            this.setState({ showCoinListEditor: false });
+          }}
         />
       ) : null}
     </>

@@ -75,6 +75,7 @@ class CoinDivider extends PureComponent {
     balancesSum: PropTypes.string,
     currentAction: PropTypes.string,
     isCoinDivider: PropTypes.bool,
+    onEndEdit: PropTypes.func,
     openSmallBalances: PropTypes.bool,
     setIsCoinListEdited: PropTypes.func,
   };
@@ -117,6 +118,7 @@ class CoinDivider extends PureComponent {
       openSmallBalances,
       currentAction,
       isSticky,
+      onEndEdit,
     } = this.props;
 
     return (
@@ -255,6 +257,9 @@ class CoinDivider extends PureComponent {
               animationNode={this._node}
               onPress={() => {
                 setIsCoinListEdited(!this.props.isCoinListEdited);
+                if (this.props.isCoinListEdited) {
+                  onEndEdit();
+                }
                 LayoutAnimation.configureNext(
                   LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
                 );
