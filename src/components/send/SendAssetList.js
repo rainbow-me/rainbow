@@ -33,17 +33,16 @@ const Divider = styled.View`
 `;
 
 class SendAssetList extends React.Component {
-  constructor(args) {
-    super(args);
+  constructor(props) {
+    super(props);
 
-    this.data = this.props.allAssets;
-    if (this.props.savings && this.props.savings.length > 0) {
-      this.data = this.data.concat([
-        { data: this.props.savings, name: 'Savings' },
-      ]);
+    const { allAssets, savings, uniqueTokens } = props;
+    this.data = allAssets;
+    if (savings && savings.length > 0) {
+      this.data = this.data.concat([{ data: savings, name: 'Savings' }]);
     }
-    if (this.props.uniqueTokens && this.props.uniqueTokens.length > 0) {
-      this.data = this.data.concat(this.props.uniqueTokens);
+    if (uniqueTokens && uniqueTokens.length > 0) {
+      this.data = this.data.concat(uniqueTokens);
     }
     this.state = {
       dataProvider: new DataProvider((r1, r2) => {
@@ -54,7 +53,7 @@ class SendAssetList extends React.Component {
     };
 
     const imageTokens = [];
-    this.props.uniqueTokens.forEach(family => {
+    uniqueTokens.forEach(family => {
       family.data.forEach(token => {
         if (token.image_thumbnail_url) {
           imageTokens.push({
@@ -68,41 +67,27 @@ class SendAssetList extends React.Component {
 
     this._layoutProvider = new LayoutProvider(
       i => {
-        if (i < this.props.allAssets.length - 1) {
+        if (i < allAssets.length - 1) {
           return 'COIN_ROW';
-        } else if (i === this.props.allAssets.length - 1) {
-          return this.props.savings && this.props.savings.length !== 0
-            ? 'COIN_ROW'
-            : 'COIN_ROW_LAST';
-        } else if (
-          i === this.props.allAssets.length &&
-          this.props.savings &&
-          this.props.savings.length > 0
-        ) {
+        } else if (i === allAssets.length - 1) {
+          return savings && savings.length !== 0 ? 'COIN_ROW' : 'COIN_ROW_LAST';
+        } else if (i === allAssets.length && savings && savings.length > 0) {
           return {
-            size: this.state.openSavings
-              ? rowHeight * this.props.savings.length
-              : 0,
+            size: this.state.openSavings ? rowHeight * savings.length : 0,
             type: 'SAVINGS_ROW',
           };
         } else {
           if (
             this.state.openCards[
-              this.props.uniqueTokens[
-                i -
-                  this.props.allAssets.length -
-                  (this.props.savings && this.props.savings.length > 0 ? 1 : 0)
+              uniqueTokens[
+                i - allAssets.length - (savings && savings.length > 0 ? 1 : 0)
               ].familyId
             ]
           ) {
             return {
               size:
-                this.props.uniqueTokens[
-                  i -
-                    this.props.allAssets.length -
-                    (this.props.savings && this.props.savings.length > 0
-                      ? 1
-                      : 0)
+                uniqueTokens[
+                  i - allAssets.length - (savings && savings.length > 0 ? 1 : 0)
                 ].data.length + 1,
               type: 'COLLECTIBLE_ROW',
             };
