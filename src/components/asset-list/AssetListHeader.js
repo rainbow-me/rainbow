@@ -9,13 +9,22 @@ const enhance = onlyUpdateForKeys([
   'title',
   'totalValue',
   'contextMenuOptions',
+  'isCoinListEdited',
 ]);
 
 const AssetListHeader = enhance(
-  ({ title, totalValue, isSticky, contextMenuOptions, ...props }) => {
+  ({
+    title,
+    totalValue,
+    isCoinListEdited,
+    isSticky,
+    contextMenuOptions,
+    ...props
+  }) => {
     return (
       <ListHeader
         isSticky={isSticky}
+        isCoinListEdited={isCoinListEdited}
         title={title}
         contextMenuOptions={contextMenuOptions}
         {...props}

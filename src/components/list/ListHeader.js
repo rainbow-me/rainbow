@@ -16,6 +16,7 @@ const ListHeader = pure(
   ({
     children,
     contextMenuOptions,
+    isCoinListEdited,
     isSticky,
     showDivider,
     title,
@@ -52,7 +53,8 @@ const ListHeader = pure(
         <View
           style={{
             backgroundColor: colors.white,
-            height: deviceUtils.dimensions.height,
+            height: deviceUtils.dimensions.height + 100,
+            top: isCoinListEdited ? -100 : 0,
             width: deviceUtils.dimensions.width,
           }}
         />
