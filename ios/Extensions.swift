@@ -109,6 +109,16 @@ extension UIImageView {
   }
 }
 
+extension UILabel {
+  func addCharacterSpacing(kernValue: Double = 0.6) {
+    if let labelText = text, labelText.count > 0 {
+      let attributedString = NSMutableAttributedString(string: labelText)
+      attributedString.addAttribute(NSAttributedString.Key.kern, value: kernValue, range: NSRange(location: 0, length: attributedString.length - 1))
+      attributedText = attributedString
+    }
+  }
+}
+
 extension Date {
   func days(from date: Date) -> Int {
     return Calendar.current.dateComponents([.day], from: date, to: self).day ?? 0
