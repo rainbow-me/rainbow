@@ -56,6 +56,7 @@ import {
 } from '../hooks';
 import { loadWallet } from '../model/wallet';
 import { executeRap } from '../raps/common';
+import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import { backgroundTask, ethereumUtils, logger } from '../utils';
@@ -637,6 +638,9 @@ const ExchangeModal = ({
         });
         logger.log('[exchange - handle submit] rap', rap);
         await executeRap(wallet, rap);
+        if (isDeposit || isWithdrawal) {
+          dispatch(savingsLoadState());
+        }
         logger.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
           category: isDeposit || isWithdrawal ? 'savings' : 'swap',
