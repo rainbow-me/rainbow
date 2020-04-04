@@ -15,6 +15,7 @@ export const defaultAnimatedNumberProps = {
 const AnimatedNumber = ({
   disableTabularNums,
   formatter,
+  initialValue,
   steps,
   style,
   textAlign,
@@ -25,6 +26,7 @@ const AnimatedNumber = ({
   const currentValue = useRef(value);
   const animateNumberHandle = useRef();
   const textInputRef = useRef();
+  const initialValueRef = useRef(initialValue);
 
   const isPositive = useMemo(() => value - currentValue.current > 0, [value]);
   const stepSize = useMemo(
@@ -62,11 +64,20 @@ const AnimatedNumber = ({
   }, [animateNumber, time]);
 
   useEffect(() => {
-    if (currentValue.current !== value) {
+    // If the initialValue prop has changed
+    // We need to reset the number and restart the animation
+    if (initialValueRef.current !== initialValue) {
+      clearHandle(animateNumberHandle.current);
+      currentValue.current = initialValue;
+      startAnimateNumber();
+      setTimeout(() => {
+        initialValueRef.current = initialValue;
+      }, Number(time) + 1);
+    } else if (currentValue.current !== value) {
       startAnimateNumber();
     }
     return () => clearHandle(animateNumberHandle.current);
-  }, [animateNumber, startAnimateNumber, time, value]);
+  }, [animateNumber, startAnimateNumber, time, value, initialValue]);
 
   return (
     <TextInput
@@ -89,6 +100,7 @@ const AnimatedNumber = ({
 AnimatedNumber.propTypes = {
   disableTabularNums: PropTypes.bool,
   formatter: PropTypes.func,
+  initialValue: PropTypes.number,
   steps: PropTypes.number,
   textAlign: PropTypes.string,
   time: PropTypes.number,

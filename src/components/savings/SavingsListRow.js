@@ -52,7 +52,7 @@ const animatedNumberFormatter = (val, symbol) => {
   return `${formatSavingsAmount(val)} ${symbol}`;
 };
 
-const renderAnimatedNumber = (value, steps, symbol) => {
+const renderAnimatedNumber = (initialValue, value, steps, symbol) => {
   return (
     <AnimatedNumber
       letterSpacing={parseFloat(fonts.letterSpacing.roundedTightest)}
@@ -63,6 +63,7 @@ const renderAnimatedNumber = (value, steps, symbol) => {
       formatter={val => animatedNumberFormatter(val, symbol)}
       steps={steps}
       time={ANIMATE_NUMBER_INTERVAL}
+      initialValue={Number(initialValue)}
       value={Number(value)}
     />
   );
@@ -204,7 +205,12 @@ const SavingsListRow = ({
                 />
               ) : null}
               {supplyBalanceUnderlying && !isNaN(displayValue) ? (
-                renderAnimatedNumber(displayValue, steps, underlying.symbol)
+                renderAnimatedNumber(
+                  initialValue,
+                  displayValue,
+                  steps,
+                  underlying.symbol
+                )
               ) : (
                 <Fragment>
                   <Text
