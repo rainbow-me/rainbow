@@ -1,8 +1,13 @@
 import { concat, find } from 'lodash';
-import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import useAppState from './useAppState';
+import { savingsLoadState } from '../redux/savings';
 import { DAI_ADDRESS } from '../references';
 
 export default function useSavingsAccount(includeDefaultDai) {
+  const { justBecameActive } = useAppState();
+  const dispatch = useDispatch();
   const { accountTokens, daiMarketData } = useSelector(({ savings }) => ({
     accountTokens: savings.accountTokens,
     daiMarketData: savings.daiMarketData,
@@ -21,5 +26,12 @@ export default function useSavingsAccount(includeDefaultDai) {
       ...daiMarketData,
     });
   }
+
+  useEffect(() => {
+    if (justBecameActive) {
+      dispatch(savingsLoadState());
+    }
+  }, [dispatch, justBecameActive]);
+
   return tokens;
 }

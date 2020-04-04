@@ -81,6 +81,7 @@ const subscribeToCompoundData = async (dispatch, getState) => {
   const { savingsSubscription } = getState().savings;
 
   if (savingsSubscription) {
+    savingsSubscription.resetLastResults();
     savingsSubscription.refetch();
   } else {
     // First read from localstorage
