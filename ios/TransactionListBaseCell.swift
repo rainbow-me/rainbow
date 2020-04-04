@@ -8,12 +8,12 @@
 import Foundation
 
 class TransactionListBaseCell : UITableViewCell {
-  internal let duration = 0.1
+  internal let duration = 0.16
   internal let hapticType = "select"
   
   var onItemPress: (Dictionary<AnyHashable, Any>) -> Void = { _ in }
   var row: Int? = nil
-  var scaleTo: CGFloat = 0.97
+  var scaleTo: CGFloat = 0.96
   
   func addShadowLayer(_ view: UIView) {
     let shadowLayer = CAShapeLayer()

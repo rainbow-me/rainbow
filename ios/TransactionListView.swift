@@ -14,7 +14,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var onReceivePress: RCTBubblingEventBlock = { _ in }
   @objc var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
   @objc var onAvatarPress: RCTBubblingEventBlock = { _ in }
-  @objc var duration: TimeInterval = 0.15
+  @objc var duration: TimeInterval = 0.16
   @objc var isAvatarPickerAvailable: Bool = true {
     didSet {
       header.avatarView.isHidden = isAvatarPickerAvailable
