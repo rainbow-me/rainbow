@@ -1,11 +1,10 @@
 import { get, keyBy, property, toLower, orderBy } from 'lodash';
 import { compoundClient } from '../apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '../apollo/queries';
-import { multiply } from '../helpers/utilities';
-import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
-
 import { getSavings, saveSavings } from '../handlers/localstorage/accountLocal';
 import assetTypes from '../helpers/assetTypes';
+import { multiply } from '../helpers/utilities';
+import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
 import { CDAI_CONTRACT } from '../references';
 
 // -- Constants --------------------------------------- //
@@ -90,6 +89,7 @@ const subscribeToCompoundData = async (dispatch, getState) => {
       : [];
 
     const newSubscription = compoundClient.watchQuery({
+      fetchPolicy: 'network-only',
       pollInterval: COMPOUND_QUERY_INTERVAL, // 15 seconds
       query: COMPOUND_ACCOUNT_AND_MARKET_QUERY,
       skip: !toLower(accountAddress),
@@ -173,7 +173,7 @@ const subscribeToCompoundData = async (dispatch, getState) => {
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   accountTokens: [],
-  savingsMarkets: {},
+  daiMarketData: {},
   savingsSubscription: null,
 };
 
@@ -185,7 +185,7 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         accountTokens: action.payload.accountTokens,
-        savingsMarkets: action.payload.savingsMarkets,
+        daiMarketData: action.payload.daiMarketData,
       };
     case SAVINGS_CLEAR_STATE:
       return {
