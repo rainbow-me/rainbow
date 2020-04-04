@@ -14,6 +14,7 @@ import nonce from './nonce';
 import openStateSettings from './openStateSettings';
 import raps from './raps';
 import requests from './requests';
+import savings from './savings';
 import selectedInput from './selectedInput';
 import selectedWithFab from './selectedWithFab';
 import settings from './settings';
@@ -36,6 +37,7 @@ export default combineReducers({
   openStateSettings,
   raps,
   requests,
+  savings,
   selectedInput,
   selectedWithFab,
   settings,

@@ -6,6 +6,7 @@ import { dataLoadState } from '../redux/data';
 import { contactsLoadState } from '../redux/contacts';
 import { openStateSettingsLoadState } from '../redux/openStateSettings';
 import { requestsLoadState } from '../redux/requests';
+import { savingsLoadState } from '../redux/savings';
 import { settingsLoadState } from '../redux/settings';
 import { uniswapLoadState } from '../redux/uniswap';
 import { uniqueTokensLoadState } from '../redux/uniqueTokens';
@@ -23,11 +24,12 @@ export default function useLoadAccountData() {
     const p1 = dispatch(settingsLoadState());
     promises.push(p1);
     if (network === networkTypes.mainnet) {
-      const p2 = dispatch(dataLoadState());
-      const p3 = dispatch(uniqueTokensLoadState());
-      const p4 = dispatch(walletConnectLoadState());
-      const p5 = dispatch(requestsLoadState());
-      promises.push(p2, p3, p4, p5);
+      const p2 = dispatch(savingsLoadState());
+      const p3 = dispatch(dataLoadState());
+      const p4 = dispatch(uniqueTokensLoadState());
+      const p5 = dispatch(walletConnectLoadState());
+      const p6 = dispatch(requestsLoadState());
+      promises.push(p2, p3, p4, p5, p6);
     }
 
     const p6 = dispatch(uniswapLoadState());
