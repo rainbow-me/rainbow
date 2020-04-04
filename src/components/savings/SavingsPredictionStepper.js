@@ -1,11 +1,23 @@
 import AnimatedNumber from '@rainbow-me/react-native-animated-number';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { calculateEarningsInDays } from '../../helpers/savings';
 import { colors, fonts, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
-import { calculateEarningsInDays } from '../../helpers/savings';
+
+const sx = StyleSheet.create({
+  animatedNumber: {
+    color: colors.swapPurple,
+    flexGrow: 1,
+    fontFamily: fonts.family.SFProRounded,
+    fontSize: parseFloat(fonts.size.lmedium),
+    fontWeight: fonts.weight.semibold,
+    letterSpacing: fonts.letterSpacing.roundedTight,
+  },
+});
 
 /* eslint-disable sort-keys */
 const steps = {
@@ -78,13 +90,7 @@ const SavingsPredictionStepper = ({ balance, interestRate }) => {
             disableTabularNums
             formatter={predictionFormatter}
             steps={9}
-            style={{
-              color: colors.swapPurple,
-              flexGrow: 1,
-              fontSize: parseFloat(fonts.size.lmedium),
-              fontWeight: fonts.weight.semibold,
-              letterSpacing: fonts.letterSpacing.roundedTight,
-            }}
+            style={sx.animatedNumber}
             time={8}
             value={NUMBER}
           />

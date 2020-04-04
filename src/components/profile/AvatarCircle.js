@@ -2,13 +2,13 @@ import GraphemeSplitter from 'grapheme-splitter';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
+import ShadowStack from 'react-native-shadow-stack';
 import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withAccountInfo } from '../../hoc';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
-import { ShadowStack } from '../shadow-stack';
 import { Text } from '../text';
 
 const AvatarCircle = styled(View)`
