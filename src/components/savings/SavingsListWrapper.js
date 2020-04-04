@@ -33,9 +33,16 @@ const SavingsListWrapper = ({ assets, totalValue }) => {
           isVisible={openSavings}
           startingOpacity={0}
         >
-          {assets.map(item => (
-            <SavingsListRowRenderer key={item.underlying.symbol} {...item} />
-          ))}
+          {assets.map(
+            item =>
+              item &&
+              item.underlying && (
+                <SavingsListRowRenderer
+                  key={item.underlying.symbol}
+                  {...item}
+                />
+              )
+          )}
         </OpacityToggler>
       </View>
     </React.Fragment>
