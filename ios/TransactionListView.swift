@@ -104,7 +104,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     
     tableView.dataSource = self
     tableView.delegate = self
-    tableView.rowHeight = 60
+    tableView.rowHeight = 70
     tableView.delaysContentTouches = false
     tableView.separatorStyle = .none
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
@@ -123,7 +123,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.receive.addTarget(self, action: #selector(onReceivePressed(_:)), for: .touchUpInside)
     header.copyAddress.addTarget(self, action: #selector(onCopyAddressPressed(_:)), for: .touchUpInside)
     
-    headerSeparator.backgroundColor = UIColor(red:0.40, green:0.42, blue:0.45, alpha:0.05)
+    headerSeparator.backgroundColor = UIColor(red:0.24, green:0.26, blue:0.32, alpha:0.02)
     tableView.tableHeaderView = header
     addSubview(tableView)
   }
