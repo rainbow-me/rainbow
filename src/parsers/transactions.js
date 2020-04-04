@@ -242,6 +242,7 @@ const parseTransaction = (
 
     return {
       ...transaction,
+      address: updatedAsset.address,
       balance: convertRawAmountToBalance(valueUnit, updatedAsset),
       from: internalTxn.address_from,
       hash: `${transaction.hash}-${index}`,
