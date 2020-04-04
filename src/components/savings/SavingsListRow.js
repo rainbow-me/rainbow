@@ -1,74 +1,27 @@
 import analytics from '@segment/analytics-react-native';
-import AnimatedNumber from '@rainbow-me/react-native-animated-number';
 import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
-import React, {
-  Fragment,
-  useState,
-  useMemo,
-  useEffect,
-  useCallback,
-} from 'react';
-import { InteractionManager, Platform, StyleSheet } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { InteractionManager } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ShadowStack from 'react-native-shadow-stack';
+import { useNavigation } from 'react-navigation-hooks';
 import {
   calculateAPY,
   calculateCompoundInterestInDays,
-  isSymbolStablecoin,
   formatSavingsAmount,
 } from '../../helpers/savings';
-import { colors, position, fonts } from '../../styles';
-import { deviceUtils } from '../../utils';
+import { colors, padding, position } from '../../styles';
+import { useDimensions } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
-import { Icon } from '../icons';
-import { Centered, Row, InnerBorder } from '../layout';
-import { GradientText, Text } from '../text';
-import { useNavigation } from 'react-navigation-hooks';
+import { Centered, Row } from '../layout';
+import APYPill from './APYPill';
+import SavingsListRowAnimatedNumber from './SavingsListRowAnimatedNumber';
+import SavingsListRowEmptyState from './SavingsListRowEmptyState';
 
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
 const ANIMATE_NUMBER_INTERVAL = 30;
-
-const sx = StyleSheet.create({
-  animatedNumberAndroid: {
-    height: 40,
-    paddingLeft: 35,
-    position: 'absolute',
-  },
-  text: {
-    color: colors.dark,
-    fontSize: 16,
-    fontWeight: fonts.weight.bold,
-    marginBottom: 0.5,
-    marginRight: 4,
-    textAlign: 'left',
-  },
-});
-
-const animatedNumberFormatter = (val, symbol) => {
-  const isStablecoin = isSymbolStablecoin(symbol);
-  if (isStablecoin) {
-    return `$${formatSavingsAmount(val)}`;
-  }
-  return `${formatSavingsAmount(val)} ${symbol}`;
-};
-
-const renderAnimatedNumber = (value, steps, symbol) => {
-  return (
-    <AnimatedNumber
-      letterSpacing={parseFloat(fonts.letterSpacing.roundedTightest)}
-      style={[
-        sx.text,
-        Platform.OS === 'android' ? sx.animatedNumberAndroid : null,
-      ]}
-      formatter={val => animatedNumberFormatter(val, symbol)}
-      steps={steps}
-      time={ANIMATE_NUMBER_INTERVAL}
-      value={Number(value)}
-    />
-  );
-};
 
 const SavingsListRow = ({
   cTokenBalance,
@@ -80,6 +33,9 @@ const SavingsListRow = ({
   underlying,
   underlyingPrice,
 }) => {
+  const { width: deviceWidth } = useDimensions();
+  const { navigate } = useNavigation();
+
   const initialValue = supplyBalanceUnderlying;
   const [value, setValue] = useState(initialValue);
   const [steps, setSteps] = useState(0);
@@ -87,7 +43,6 @@ const SavingsListRow = ({
   const apyTruncated = supplyBalanceUnderlying
     ? parseFloat(apy).toFixed(2)
     : Math.floor(apy * 10) / 10;
-  const { navigate } = useNavigation();
 
   const onButtonPress = useCallback(() => {
     navigate('SavingsSheet', {
@@ -120,21 +75,18 @@ const SavingsListRow = ({
   ]);
 
   useEffect(() => {
-    const getFutureValue = () => {
-      if (!supplyBalanceUnderlying) return;
-      const futureValue = calculateCompoundInterestInDays(
-        initialValue,
-        supplyRate,
-        1
-      );
+    if (!supplyBalanceUnderlying) return;
 
-      if (!BigNumber(futureValue).eq(value)) {
-        const steps = MS_IN_1_DAY / ANIMATE_NUMBER_INTERVAL;
-        setValue(futureValue);
-        setSteps(steps);
-      }
-    };
-    getFutureValue();
+    const futureValue = calculateCompoundInterestInDays(
+      initialValue,
+      supplyRate,
+      1
+    );
+
+    if (!BigNumber(futureValue).eq(value)) {
+      setValue(futureValue);
+      setSteps(MS_IN_1_DAY / ANIMATE_NUMBER_INTERVAL);
+    }
   }, [
     apy,
     initialValue,
@@ -143,8 +95,6 @@ const SavingsListRow = ({
     underlying,
     value,
   ]);
-
-  const displayValue = formatSavingsAmount(value);
 
   useEffect(() => {
     if (underlying && underlying.symbol && supplyBalanceUnderlying)
@@ -157,14 +107,14 @@ const SavingsListRow = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!underlying || !underlying.address) return null;
+  const displayValue = formatSavingsAmount(value);
 
-  return (
+  return !underlying || !underlying.address ? null : (
     <ButtonPressAnimation onPress={onButtonPress} scaleTo={0.96}>
       <Centered direction="column" marginBottom={15}>
         <ShadowStack
           height={49}
-          width={deviceUtils.dimensions.width - 38}
+          width={deviceWidth - 38}
           borderRadius={49}
           shadows={[
             [0, 10, 30, colors.dark, 0.1],
@@ -176,125 +126,35 @@ const SavingsListRow = ({
             borderRadius={49}
             colors={['#FFFFFF', '#F7F9FA']}
             end={{ x: 0.5, y: 1 }}
+            opacity={0.1}
             pointerEvents="none"
             start={{ x: 0.5, y: 0 }}
-            opacity={0.1}
             style={position.coverAsObject}
           />
           <Row
-            style={{
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginLeft: 0,
-              paddingBottom: 10,
-              paddingLeft: 11,
-              paddingRight: 10,
-              paddingTop: 9,
-            }}
+            align="center"
+            css={padding(9, 10, 10, 11)}
+            justify="space-between"
           >
-            <Row
-              style={{
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
+            <Row align="center" justify="space-between">
               {underlying.symbol && supplyBalanceUnderlying ? (
-                <CoinIcon
-                  symbol={underlying.symbol}
-                  size={26}
-                  style={{ marginRight: 6 }}
-                />
+                <Centered marginRight={6}>
+                  <CoinIcon size={26} symbol={underlying.symbol} />
+                </Centered>
               ) : null}
               {supplyBalanceUnderlying && !isNaN(displayValue) ? (
-                renderAnimatedNumber(displayValue, steps, underlying.symbol)
+                <SavingsListRowAnimatedNumber
+                  initialValue={initialValue}
+                  interval={ANIMATE_NUMBER_INTERVAL}
+                  steps={steps}
+                  symbol={underlying.symbol}
+                  value={displayValue}
+                />
               ) : (
-                <Fragment>
-                  <Text
-                    style={{
-                      color: colors.alpha(colors.blueGreyDark, 0.5),
-                      fontSize: 16,
-                      fontWeight: fonts.weight.bold,
-                      letterSpacing: fonts.letterSpacing.roundedTightest,
-                      marginLeft: 4,
-                      marginRight: 8,
-                    }}
-                  >
-                    $0.00
-                  </Text>
-                  <ButtonPressAnimation
-                    alignItems="center"
-                    justifyContent="center"
-                    backgroundColor={colors.swapPurple}
-                    borderRadius={15}
-                    flexDirection="row"
-                    justify="space-around"
-                    height={30}
-                    onPress={onButtonPress}
-                    paddingRight={2}
-                    scaleTo={0.92}
-                    shadowColor={colors.swapPurple}
-                    shadowOffset={{ height: 4, width: 0 }}
-                    shadowOpacity={0.4}
-                    shadowRadius={6}
-                    width={97}
-                  >
-                    {/*
-                      <Icon
-                        name="plusCircled"
-                        color={colors.white}
-                        height={16}
-                        marginBottom={1}
-                        marginRight={3.5}
-                      />
-                    */}
-                    <Text
-                      style={{
-                        color: colors.white,
-                        fontSize: parseFloat(fonts.size.lmedium),
-                        fontWeight: fonts.weight.semibold,
-                        letterSpacing: fonts.letterSpacing.roundedTight,
-                        marginBottom: 1,
-                      }}
-                    >
-                      􀁍 Deposit
-                    </Text>
-                    <InnerBorder radius={15} />
-                  </ButtonPressAnimation>
-                </Fragment>
+                <SavingsListRowEmptyState onPress={onButtonPress} />
               )}
             </Row>
-            <Centered
-              style={{
-                height: 30,
-              }}
-            >
-              <LinearGradient
-                borderRadius={17}
-                overflow="hidden"
-                colors={['#2CCC00', '#FEBE44']}
-                end={{ x: 1, y: 1 }}
-                pointerEvents="none"
-                start={{ x: 0, y: 0 }}
-                opacity={0.1}
-                style={position.coverAsObject}
-              />
-              <GradientText
-                align="center"
-                angle={0}
-                end={{ x: 1, y: 1 }}
-                letterSpacing="roundedTight"
-                start={{ x: 0, y: 0 }}
-                steps={[0, 1]}
-                style={{
-                  fontSize: parseFloat(fonts.size.lmedium),
-                  fontWeight: fonts.weight.semibold,
-                  paddingBottom: 1,
-                  paddingHorizontal: 10,
-                }}
-              >
-                {apyTruncated}% APY
-              </GradientText>
-            </Centered>
+            <APYPill value={apyTruncated} />
           </Row>
         </ShadowStack>
       </Centered>
@@ -312,4 +172,4 @@ SavingsListRow.propTypes = {
   underlyingPrice: PropTypes.string,
 };
 
-export default SavingsListRow;
+export default React.memo(SavingsListRow);

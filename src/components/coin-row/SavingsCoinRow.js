@@ -5,7 +5,7 @@ import { convertAmountToBalanceDisplay } from '../../helpers/utilities';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { FlexItem, Row, RowWithMargins } from '../layout';
-import { CoinRowAPYPill } from '../savings';
+import { APYPill } from '../savings';
 import { Text } from '../text';
 import BalanceText from './BalanceText';
 import CoinName from './CoinName';
@@ -17,7 +17,7 @@ const BottomRow = ({ lifetimeSupplyInterestAccrued, supplyRate, symbol }) => {
 
   return (
     <Fragment>
-      <CoinRowAPYPill>{apyTruncated}% APY</CoinRowAPYPill>
+      <APYPill small value={apyTruncated} />
       <RowWithMargins align="center" margin={4}>
         <Text
           align="right"
