@@ -145,7 +145,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   
   func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     let view = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: 40))
-    let label = UILabel(frame: CGRect(x: 20, y: 20, width: view.frame.width, height: view.frame.height))
+    let label = UILabel(frame: CGRect(x: 19, y: 19, width: view.frame.width, height: view.frame.height))
     
     if sections.count == 0 {
       return nil
@@ -154,7 +154,9 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     let section = sections[section]
     
     label.text = section.title
-    label.font = .systemFont(ofSize: 18.0, weight: .semibold)
+    label.font = UIFont(name: "SFRounded-Bold", size: 20)
+    label.textColor = UIColor.RainbowTheme.Transactions.dark
+    label.addCharacterSpacing()
     view.backgroundColor = .white
     view.addSubview(label)
     
