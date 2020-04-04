@@ -54,25 +54,23 @@ const SavingsListHeader = ({
           </TruncatedText>
         </RowWithMargins>
         <RowWithMargins align="center" margin={13}>
-          {savingsSumValue && (
-            <Animated.View
-              style={{
-                opacity: interpolate(animation, {
-                  inputRange: [0, 1],
-                  outputRange: [1, 0],
-                }),
-              }}
+          <Animated.View
+            style={{
+              opacity: interpolate(animation, {
+                inputRange: [0, 1],
+                outputRange: [1, 0],
+              }),
+            }}
+          >
+            <Text
+              align="right"
+              color="dark"
+              size="large"
+              style={{ marginBottom: 1 }}
             >
-              <Text
-                align="right"
-                color="dark"
-                size="large"
-                style={{ marginBottom: 1 }}
-              >
-                ${Number(savingsSumValue).toFixed(2)}
-              </Text>
-            </Animated.View>
-          )}
+              ${Number(savingsSumValue).toFixed(2)}
+            </Text>
+          </Animated.View>
           <AnimatedFastImage
             resizeMode={FastImage.resizeMode.contain}
             source={CaretImageSource}
@@ -113,6 +111,7 @@ SavingsListHeader.propTypes = {
 
 SavingsListHeader.defaultProps = {
   emoji: 'sunflower',
+  savingsSumValue: 0,
 };
 
 export default SavingsListHeader;
