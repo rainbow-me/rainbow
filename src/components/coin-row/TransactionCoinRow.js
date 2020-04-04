@@ -27,12 +27,16 @@ const rowRenderPropTypes = {
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
 };
 
-const getDisplayAction = (type, name) => {
+const getDisplayAction = (type, status, name) => {
   switch (type) {
     case TransactionTypes.deposit:
-      return `Deposited ${name}`;
+      return status === TransactionStatusTypes.depositing
+        ? name
+        : `Deposited ${name}`;
     case TransactionTypes.withdraw:
-      return `Withdrew ${name}`;
+      return status === TransactionStatusTypes.withdrawing
+        ? name
+        : `Withdrew ${name}`;
     default:
       return name;
   }
@@ -69,7 +73,7 @@ const BottomRow = ({ name, native, status, type }) => {
     <Row align="center" justify="space-between">
       <FlexItem flex={1}>
         <CoinName color={coinNameColor}>
-          {getDisplayAction(type, name)}
+          {getDisplayAction(type, status, name)}
         </CoinName>
       </FlexItem>
       <FlexItem flex={0}>
