@@ -50,7 +50,6 @@ const SavingsListHeader = ({
             size="large"
             weight="semibold"
           >
-            {' '}
             Savings
           </TruncatedText>
         </RowWithMargins>
