@@ -21,21 +21,17 @@ class TransactionListBaseCell : UITableViewCell {
     let radius = view.frame.width / 2.0
     let circle = UIBezierPath(arcCenter: view.center, radius: radius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
     
-    shadowLayer.fillColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0).cgColor
-    shadowLayer.opacity = 0.04
-    shadowLayer.path = circle.cgPath
-    shadowLayer.shadowColor = UIColor(red: 0.15, green: 0.16, blue: 0.18, alpha: 1.0).cgColor
-    shadowLayer.shadowOffset = CGSize(width: 0, height: 3)
-    shadowLayer.shadowOpacity = 1.0
+    shadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
+    shadowLayer.shadowOffset = CGSize(width: 0, height: 4)
+    shadowLayer.shadowOpacity = 0.04
+    shadowLayer.shadowPath = circle.cgPath
     shadowLayer.shadowRadius = 3
     shadowLayer.zPosition = -1
     
-    secondShadowLayer.fillColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0).cgColor
-    secondShadowLayer.opacity = 0.08
-    secondShadowLayer.path = circle.cgPath
-    secondShadowLayer.shadowColor = UIColor(red: 0.15, green: 0.16, blue: 0.18, alpha: 1.0).cgColor
+    secondShadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
     secondShadowLayer.shadowOffset = CGSize(width: 0, height: 1)
-    secondShadowLayer.shadowOpacity = 1.0
+    secondShadowLayer.shadowOpacity = 0.08
+    secondShadowLayer.shadowPath = circle.cgPath
     secondShadowLayer.shadowRadius = 1.5
     secondShadowLayer.zPosition = -2
     
