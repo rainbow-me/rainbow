@@ -21,7 +21,7 @@ const FirstLetter = styled(Text)`
   color: #fff;
   font-size: 38;
   font-weight: 600;
-  letter-spacing: 1.2;
+  letter-spacing: 2;
   line-height: 66;
   text-align: center;
   width: 100%;
