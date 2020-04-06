@@ -256,10 +256,10 @@ class CoinDivider extends PureComponent {
             <CoinDividerEditButton
               animationNode={this._node}
               onPress={() => {
-                setIsCoinListEdited(!this.props.isCoinListEdited);
-                if (this.props.isCoinListEdited) {
+                if (this.props.isCoinListEdited && onEndEdit) {
                   onEndEdit();
                 }
+                setIsCoinListEdited(!this.props.isCoinListEdited);
                 LayoutAnimation.configureNext(
                   LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
                 );
