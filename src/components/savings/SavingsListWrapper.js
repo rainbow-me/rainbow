@@ -26,6 +26,7 @@ const SavingsListWrapper = ({ assets, totalValue }) => {
         isOpen={openSavings}
         savingsSumValue={totalValue}
         onPress={onPress}
+        showSumValue
       />
       <View pointerEvents={openSavings ? 'auto' : 'none'}>
         <OpacityToggler
