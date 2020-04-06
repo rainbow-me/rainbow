@@ -38,7 +38,7 @@ class CoinIconWithProgressBar : UIImageView {
       clockwise: true
     )
     shape.path = circularPath.cgPath
-    shape.strokeColor = UIColor.RainbowTheme.Transactions.primaryBlue.cgColor
+    shape.strokeColor = UIColor.RainbowTheme.Transactions.appleBlue.cgColor
     shape.lineWidth = lineWidth
     shape.lineCap = .round
     shape.fillColor = .none
