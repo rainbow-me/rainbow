@@ -44,42 +44,44 @@ const ProfileHeaderButton = ({
     isVisible={isCoinListEdited}
     startingOpacity={1}
   >
-    <HeaderButton
-      testID="goToProfile"
-      onPress={onPress}
-      shouldRasterizeIOS
-      transformOrigin="left"
-    >
-      <Centered>
-        {isAvatarPickerAvailable ? (
-          <ShadowStack
-            backgroundColor={colors.avatarColor[accountColor]}
-            borderRadius={65}
-            height={34}
-            width={34}
-            shadows={[
-              [0, 2, 2.5, colors.dark, 0.08],
-              [0, 6, 5, colors.dark, 0.12],
-            ]}
-            shouldRasterizeIOS
-          >
-            <AvatarCircle
-              style={{ backgroundColor: colors.avatarColor[accountColor] }}
+    <View pointerEvents={isCoinListEdited ? 'none' : 'auto'}>
+      <HeaderButton
+        testID="goToProfile"
+        onPress={onPress}
+        shouldRasterizeIOS
+        transformOrigin="left"
+      >
+        <Centered>
+          {isAvatarPickerAvailable ? (
+            <ShadowStack
+              backgroundColor={colors.avatarColor[accountColor]}
+              borderRadius={65}
+              height={34}
+              width={34}
+              shadows={[
+                [0, 2, 2.5, colors.dark, 0.08],
+                [0, 6, 5, colors.dark, 0.12],
+              ]}
+              shouldRasterizeIOS
             >
-              <FirstLetter>
-                {new GraphemeSplitter().splitGraphemes(accountName)[0]}
-              </FirstLetter>
-              <InnerBorder opacity={0.04} radius={34} />
-            </AvatarCircle>
-          </ShadowStack>
-        ) : (
-          <Avatar size={34} />
-        )}
-        {pendingRequestCount > 0 && (
-          <Badge delay={1500} value={pendingRequestCount} zIndex={1} />
-        )}
-      </Centered>
-    </HeaderButton>
+              <AvatarCircle
+                style={{ backgroundColor: colors.avatarColor[accountColor] }}
+              >
+                <FirstLetter>
+                  {new GraphemeSplitter().splitGraphemes(accountName)[0]}
+                </FirstLetter>
+                <InnerBorder opacity={0.04} radius={34} />
+              </AvatarCircle>
+            </ShadowStack>
+          ) : (
+            <Avatar size={34} />
+          )}
+          {pendingRequestCount > 0 && (
+            <Badge delay={1500} value={pendingRequestCount} zIndex={1} />
+          )}
+        </Centered>
+      </HeaderButton>
+    </View>
   </OpacityToggler>
 );
 

@@ -18,7 +18,7 @@ export const buildAssetUniqueIdentifier = item => {
 };
 
 export const buildCoinsList = assets => {
-  const standardAssets = [],
+  let standardAssets = [],
     pinnedAssets = [],
     hiddenAssets = [];
   const { pinnedCoins, hiddenCoins } = store.getState().editOptions;
@@ -44,7 +44,7 @@ export const buildCoinsList = assets => {
     } else if (
       (assets[i].native && assets[i].native.balance.amount > 1) ||
       assets[i].address === 'eth' ||
-      assets.length < 4
+      assets.length < 5
     ) {
       standardAssets.push({ isCoin: true, isSmall: false, ...assets[i] });
     } else {
@@ -53,7 +53,11 @@ export const buildCoinsList = assets => {
   }
 
   if (store.getState().editOptions.isCoinListEdited) {
-    smallBalances.assets = smallBalances.assets.concat(hiddenAssets);
+    if (assets.length < 5) {
+      standardAssets = standardAssets.concat(hiddenAssets);
+    } else {
+      smallBalances.assets = smallBalances.assets.concat(hiddenAssets);
+    }
   }
 
   const allAssets = pinnedAssets.concat(standardAssets);
@@ -75,8 +79,7 @@ export const buildCoinsList = assets => {
 
   if (
     smallBalances.assets.length > 0 ||
-    hiddenCoins.length > 0 ||
-    (pinnedCoins.length === allAssets.length && allAssets.length > 4)
+    (pinnedAssets.length === allAssets.length && allAssets.length > 4)
   ) {
     allAssets.push({
       assetsAmount: smallBalances.assets.length,

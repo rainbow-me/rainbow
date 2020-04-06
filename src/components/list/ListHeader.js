@@ -54,7 +54,7 @@ const ListHeader = pure(
           style={{
             backgroundColor: colors.white,
             height: deviceUtils.dimensions.height + 100,
-            top: isCoinListEdited ? -100 : 0,
+            top: isCoinListEdited ? -40 : 0,
             width: deviceUtils.dimensions.width,
           }}
         />

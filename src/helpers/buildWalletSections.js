@@ -213,7 +213,7 @@ const withBalanceSection = (
                   ? [
                       'Cancel',
                       currentAction !== 'unpin' ? 'Pin' : 'Unpin',
-                      'Hide',
+                      currentAction !== 'unhide' ? 'Hide' : 'Unhide',
                       'Finish',
                     ]
                   : ['Cancel', isCoinListEdited ? 'Finish' : 'Edit'];
