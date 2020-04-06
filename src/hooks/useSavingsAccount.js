@@ -1,4 +1,4 @@
-import { concat, find } from 'lodash';
+import { concat, find, isEmpty } from 'lodash';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import useAppState from './useAppState';
@@ -20,7 +20,8 @@ export default function useSavingsAccount(includeDefaultDai) {
 
   let tokens = accountTokens;
 
-  const shouldAddDai = includeDefaultDai && !accountHasCDAI && daiMarketData;
+  const shouldAddDai =
+    includeDefaultDai && !accountHasCDAI && !isEmpty(daiMarketData);
   if (shouldAddDai) {
     tokens = concat(accountTokens, {
       ...daiMarketData,
