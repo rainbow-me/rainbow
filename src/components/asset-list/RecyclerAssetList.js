@@ -722,7 +722,7 @@ class RecyclerAssetList extends Component {
             },
           });
         setTimeout(() => {
-          this.rlv.scrollToEnd({ aniamted: true });
+          this.rlv.scrollToEnd({ animated: true });
         }, 10);
         setTimeout(() => {
           layoutItemAnimator.animateShift = () =>
