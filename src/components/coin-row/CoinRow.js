@@ -55,6 +55,7 @@ const CoinRow = enhance(
     contentStyles,
     highlight,
     symbol,
+    address,
     topRowRender,
     isCoinListEdited,
     isHidden,
@@ -64,6 +65,7 @@ const CoinRow = enhance(
     <Container align="center" css={containerStyles}>
       <CoinRowHighlight visible={highlight} />
       {createElement(coinIconRender, {
+        address,
         isCoinListEdited,
         isHidden,
         isPinned,
@@ -88,6 +90,7 @@ const CoinRow = enhance(
 );
 
 CoinRow.propTypes = {
+  address: PropTypes.string,
   bottomRowRender: PropTypes.func,
   children: PropTypes.node,
   coinIconRender: PropTypes.func,

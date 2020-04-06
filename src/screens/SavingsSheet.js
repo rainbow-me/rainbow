@@ -15,10 +15,7 @@ import {
 } from '../components/floating-emojis';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import Divider from '../components/Divider';
-import {
-  convertAmountToDepositDisplay,
-  convertAmountToNativeDisplay,
-} from '../helpers/utilities';
+import { convertAmountToNativeDisplay } from '../helpers/utilities';
 import { useAccountSettings } from '../hooks';
 
 const SavingsSheet = () => {
@@ -26,7 +23,7 @@ const SavingsSheet = () => {
   const { nativeCurrency } = useAccountSettings();
   const cTokenBalance = getParam('cTokenBalance');
   const isEmpty = getParam('isEmpty');
-  const nativeValue = getParam('nativeValue');
+  const underlyingBalanceNativeValue = getParam('underlyingBalanceNativeValue');
   const underlying = getParam('underlying');
   const underlyingPrice = getParam('underlyingPrice');
   const lifetimeSupplyInterestAccrued = getParam(
@@ -38,11 +35,13 @@ const SavingsSheet = () => {
   const supplyBalanceUnderlying = getParam('supplyBalanceUnderlying');
   const supplyRate = getParam('supplyRate');
 
-  const balance = convertAmountToDepositDisplay(nativeValue, underlying);
+  const balance = convertAmountToNativeDisplay(
+    underlyingBalanceNativeValue,
+    nativeCurrency
+  );
   const lifetimeAccruedInterest = convertAmountToNativeDisplay(
     lifetimeSupplyInterestAccruedNative,
-    nativeCurrency,
-    1
+    nativeCurrency
   );
 
   useEffect(() => {
@@ -151,7 +150,7 @@ const SavingsSheet = () => {
           </FloatingEmojis>
           <Divider color={colors.rowDividerLight} zIndex={0} />
           <SavingsPredictionStepper
-            balance={nativeValue}
+            balance={underlyingBalanceNativeValue}
             interestRate={supplyRate}
           />
         </Fragment>

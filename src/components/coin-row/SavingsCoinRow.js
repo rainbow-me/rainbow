@@ -66,14 +66,13 @@ TopRow.propTypes = {
   symbol: PropTypes.string,
 };
 
-const SavingsCoinRow = ({ item, onPress, onPressSend, ...props }) => (
+const SavingsCoinRow = ({ item, onPress, ...props }) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={1.02}>
     <CoinRow
       {...item}
       {...props}
       bottomRowRender={BottomRow}
       onPress={onPress}
-      onPressSend={onPressSend}
       topRowRender={TopRow}
     />
   </ButtonPressAnimation>
@@ -81,10 +80,7 @@ const SavingsCoinRow = ({ item, onPress, onPressSend, ...props }) => (
 
 SavingsCoinRow.propTypes = {
   item: PropTypes.object,
-  nativeCurrency: PropTypes.string,
   onPress: PropTypes.func,
-  onPressSend: PropTypes.func,
-  openSmallBalances: PropTypes.bool,
 };
 
 export default SavingsCoinRow;

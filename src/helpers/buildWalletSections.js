@@ -1,5 +1,13 @@
 import lang from 'i18n-js';
-import { compact, flattenDeep, get, groupBy, map, property } from 'lodash';
+import {
+  compact,
+  flattenDeep,
+  get,
+  groupBy,
+  isEmpty,
+  map,
+  property,
+} from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -10,8 +18,9 @@ import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
-import { buildUniqueTokenList, buildCoinsList } from './assets';
 import { chartExpandedAvailable } from '../config/experimental';
+import { add, multiply, toFixedDecimals } from '../helpers/utilities';
+import { buildUniqueTokenList, buildCoinsList } from './assets';
 import store from '../redux/store';
 import {
   setIsCoinListEdited,
@@ -109,53 +118,65 @@ const withUniswapSection = (
   renderItem: uniswapRenderItem,
 });
 
+const withEthPrice = allAssets => {
+  const ethAsset = ethereumUtils.getAsset(allAssets);
+  return get(ethAsset, 'native.price.amount', null);
+};
+
+const withBalanceSavingsSection = (savings, priceOfEther) => {
+  let savingsAssets = savings;
+  let totalUnderlyingNativeValue = 0;
+  if (priceOfEther) {
+    savingsAssets = map(savings, asset => {
+      const {
+        supplyBalanceUnderlying,
+        underlyingPrice,
+        lifetimeSupplyInterestAccrued,
+      } = asset;
+      const underlyingNativePrice = multiply(underlyingPrice, priceOfEther);
+      const underlyingBalanceNativeValue = supplyBalanceUnderlying
+        ? multiply(supplyBalanceUnderlying, underlyingNativePrice)
+        : 0;
+      totalUnderlyingNativeValue = add(
+        totalUnderlyingNativeValue,
+        underlyingBalanceNativeValue
+      );
+      const lifetimeSupplyInterestAccruedNative = lifetimeSupplyInterestAccrued
+        ? multiply(lifetimeSupplyInterestAccrued, underlyingNativePrice)
+        : 0;
+
+      return {
+        ...asset,
+        lifetimeSupplyInterestAccruedNative,
+        underlyingBalanceNativeValue,
+      };
+    });
+  }
+
+  const savingsSection = {
+    assets: savingsAssets,
+    savingsContainer: true,
+    totalValue: totalUnderlyingNativeValue,
+  };
+  return savingsSection;
+};
+
 const withBalanceSection = (
   allAssets,
   allAssetsCount,
   assetsTotal,
-  savings,
+  savingsSection,
   isBalancesSectionEmpty,
   isWalletEthZero,
   language,
   nativeCurrency,
   network
 ) => {
-  let totalValue = Number(get(assetsTotal, 'amount', 0));
-  let assets = savings;
-  const eth = ethereumUtils.getAsset(allAssets);
-  const priceOfEther = get(eth, 'native.price.amount', null);
-  let totalSavingsValue = 0;
-  if (priceOfEther) {
-    assets = map(savings, asset => {
-      const {
-        supplyBalanceUnderlying,
-        underlyingPrice,
-        lifetimeSupplyInterestAccrued,
-      } = asset;
-      const nativeValue = supplyBalanceUnderlying
-        ? supplyBalanceUnderlying * underlyingPrice * priceOfEther
-        : 0;
-
-      totalSavingsValue += nativeValue;
-      const lifetimeSupplyInterestAccruedNative = lifetimeSupplyInterestAccrued
-        ? lifetimeSupplyInterestAccrued * underlyingPrice * priceOfEther
-        : 0;
-
-      return {
-        ...asset,
-        lifetimeSupplyInterestAccruedNative,
-        nativeValue,
-      };
-    });
-  }
-
-  totalValue += totalSavingsValue;
-
-  const savingsSection = {
-    assets,
-    savingsContainer: true,
-    totalValue: totalSavingsValue,
-  };
+  const totalSavingsValue = !isEmpty(savingsSection)
+    ? savingsSection.totalValue
+    : 0;
+  const totalAssetsValue = get(assetsTotal, 'amount', 0);
+  const totalValue = add(totalAssetsValue, totalSavingsValue);
 
   let balanceSectionData = [...buildCoinsList(allAssets)];
 
@@ -234,7 +255,7 @@ const withBalanceSection = (
           : undefined,
       title: lang.t('account.tab_balances'),
       totalItems: isLoadingBalances ? 1 : allAssetsCount,
-      totalValue: `$${totalValue.toFixed(2)}`,
+      totalValue: toFixedDecimals(totalValue, 2),
     },
     name: 'balances',
     renderItem: isLoadingBalances
@@ -320,12 +341,19 @@ const uniqueTokenDataSelector = createSelector(
   buildUniqueTokenList
 );
 
+const ethPriceSelector = createSelector([allAssetsSelector], withEthPrice);
+
+const balanceSavingsSectionSelector = createSelector(
+  [savingsSelector, ethPriceSelector],
+  withBalanceSavingsSection
+);
+
 const balanceSectionSelector = createSelector(
   [
     allAssetsSelector,
     allAssetsCountSelector,
     assetsTotalSelector,
-    savingsSelector,
+    balanceSavingsSectionSelector,
     isBalancesSectionEmptySelector,
     isWalletEthZeroSelector,
     languageSelector,

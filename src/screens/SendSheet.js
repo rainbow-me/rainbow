@@ -21,6 +21,7 @@ import {
   SendTransactionSpeed,
 } from '../components/send';
 import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
+import AssetTypes from '../helpers/assetTypes';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -34,6 +35,7 @@ import {
   usePrevious,
   useRefreshAccountData,
   useSendableUniqueTokens,
+  useSendSavingsAccount,
 } from '../hooks';
 import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
@@ -80,12 +82,14 @@ const SendSheet = ({
 }) => {
   const { allAssets } = useAccountAssets();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const fetchData = useRefreshAccountData();
   const {
     accountAddress,
     nativeCurrency,
     nativeCurrencySymbol,
   } = useAccountSettings();
+
+  const savings = useSendSavingsAccount();
+  const fetchData = useRefreshAccountData();
 
   const { navigate } = useNavigation();
   const [amountDetails, setAmountDetails] = useState({
@@ -150,7 +154,7 @@ const SendSheet = ({
 
   const sendUpdateSelected = useCallback(
     newSelected => {
-      if (get(newSelected, 'isNft')) {
+      if (get(newSelected, 'type') === AssetTypes.nft) {
         setAmountDetails({
           assetAmount: '1',
           isSufficientBalance: true,
@@ -165,7 +169,7 @@ const SendSheet = ({
         sendUpdateAssetAmount('');
       }
     },
-    [amountDetails.assetAmount, sendUpdateAssetAmount]
+    [sendUpdateAssetAmount]
   );
 
   const sendUpdateRecipient = useCallback(newRecipient => {
@@ -229,6 +233,7 @@ const SendSheet = ({
       return false;
 
     let submitSuccess = false;
+
     const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
@@ -275,7 +280,7 @@ const SendSheet = ({
       const submitSuccessful = await onSubmit();
       analytics.track('Sent transaction', {
         assetName: selected.name,
-        assetType: selected.isNft ? 'unique_token' : 'token',
+        assetType: selected.type,
         isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
       });
       if (submitSuccessful) {
@@ -289,8 +294,8 @@ const SendSheet = ({
     navigate,
     onSubmit,
     recipient,
-    selected.isNft,
     selected.name,
+    selected.type,
   ]);
 
   const onPressTransactionSpeed = useCallback(
@@ -333,7 +338,7 @@ const SendSheet = ({
     if (isValidAddress && showAssetList) {
       Keyboard.dismiss();
     }
-  }, [isValidAddress]);
+  }, [isValidAddress, showAssetList]);
 
   const assetOverride = useNavigationParam('asset');
   const prevAssetOverride = usePrevious(assetOverride);
@@ -413,6 +418,7 @@ const SendSheet = ({
               allAssets={allAssets}
               fetchData={fetchData}
               onSelectAsset={sendUpdateSelected}
+              savings={savings}
               uniqueTokens={sendableUniqueTokens}
             />
           )}

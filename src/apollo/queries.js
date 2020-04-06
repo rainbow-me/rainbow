@@ -7,6 +7,7 @@ export const COMPOUND_ACCOUNT_AND_MARKET_QUERY = gql`
       id
       name
       supplyRate
+      symbol
       underlyingAddress
       underlyingName
       underlyingSymbol

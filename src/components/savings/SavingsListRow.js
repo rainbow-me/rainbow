@@ -1,12 +1,19 @@
 import analytics from '@segment/analytics-react-native';
 import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, {
+  Fragment,
+  useState,
+  useMemo,
+  useEffect,
+  useCallback,
+} from 'react';
 import { InteractionManager, Platform, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   calculateAPY,
   calculateCompoundInterestInDays,
+  isSymbolStablecoin,
   formatSavingsAmount,
 } from '../../helpers/savings';
 import { colors, position, fonts } from '../../styles';
@@ -20,7 +27,6 @@ import { useNavigation } from 'react-navigation-hooks';
 
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
 const ANIMATE_NUMBER_INTERVAL = 30;
-const STABLECOINS = ['DAI', 'SAI', 'USDC', 'USDT'];
 
 const sx = StyleSheet.create({
   animatedNumberAndroid: {
@@ -38,7 +44,7 @@ const sx = StyleSheet.create({
 });
 
 const animatedNumberFormatter = (val, symbol) => {
-  const isStablecoin = STABLECOINS.indexOf(symbol) !== -1;
+  const isStablecoin = isSymbolStablecoin(symbol);
   if (isStablecoin) {
     return `$${formatSavingsAmount(val)}`;
   }
@@ -65,7 +71,7 @@ const SavingsListRow = ({
   cTokenBalance,
   lifetimeSupplyInterestAccrued,
   lifetimeSupplyInterestAccruedNative,
-  nativeValue,
+  underlyingBalanceNativeValue,
   supplyBalanceUnderlying,
   supplyRate,
   underlying,
@@ -86,10 +92,10 @@ const SavingsListRow = ({
       isEmpty: !supplyBalanceUnderlying,
       lifetimeSupplyInterestAccrued,
       lifetimeSupplyInterestAccruedNative,
-      nativeValue,
       supplyBalanceUnderlying,
       supplyRate,
       underlying,
+      underlyingBalanceNativeValue,
       underlyingPrice,
     });
 
@@ -102,7 +108,7 @@ const SavingsListRow = ({
     cTokenBalance,
     lifetimeSupplyInterestAccrued,
     lifetimeSupplyInterestAccruedNative,
-    nativeValue,
+    underlyingBalanceNativeValue,
     navigate,
     supplyBalanceUnderlying,
     supplyRate,
@@ -195,7 +201,7 @@ const SavingsListRow = ({
               {supplyBalanceUnderlying && !isNaN(displayValue) ? (
                 renderAnimatedNumber(displayValue, steps, underlying.symbol)
               ) : (
-                <>
+                <Fragment>
                   <Text
                     style={{
                       color: colors.alpha(colors.blueGreyDark, 0.5),
@@ -247,7 +253,7 @@ const SavingsListRow = ({
                     </Text>
                     <InnerBorder radius={15} />
                   </ButtonPressAnimation>
-                </>
+                </Fragment>
               )}
             </Row>
             <Centered
@@ -292,10 +298,10 @@ const SavingsListRow = ({
 SavingsListRow.propTypes = {
   cTokenBalance: PropTypes.string,
   lifetimeSupplyInterestAccrued: PropTypes.string,
-  nativeValue: PropTypes.number,
   supplyBalanceUnderlying: PropTypes.string,
   supplyRate: PropTypes.string,
   underlying: PropTypes.object,
+  underlyingBalanceNativeValue: PropTypes.string,
   underlyingPrice: PropTypes.string,
 };
 

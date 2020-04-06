@@ -19,7 +19,7 @@ export default function useWalletSectionsData() {
   const uniqueTokens = useSendableUniqueTokens();
   const uniswap = useSelector(readableUniswapSelector);
 
-  const accountSavings = useSavingsAccount();
+  const accountSavings = useSavingsAccount(true);
 
   const walletSections = useMemo(() => {
     const accountInfo = {

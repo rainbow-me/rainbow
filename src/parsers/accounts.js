@@ -1,4 +1,5 @@
 import { get, toUpper } from 'lodash';
+import AssetTypes from '../helpers/assetTypes';
 import { convertRawAmountToBalance } from '../helpers/utilities';
 import { dedupeUniqueTokens } from './uniqueTokens';
 
@@ -46,6 +47,7 @@ export const parseAsset = (
     address,
     name,
     symbol: parseAssetSymbol(asset.symbol, address, tokenOverrides),
+    type: AssetTypes.token,
     uniqueId: address || name,
   };
 };
