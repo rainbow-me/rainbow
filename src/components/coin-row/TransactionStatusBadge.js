@@ -84,11 +84,16 @@ const getCustomDisplayStatus = status => {
 };
 
 const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
+  const isSwapping = status === TransactionStatusTypes.swapping;
   const isTrade = type === TransactionTypes.trade;
 
   let statusColor = colors.alpha(colors.blueGreyDark, 0.7);
   if (pending) {
-    statusColor = colors.appleBlue;
+    if (isSwapping) {
+      statusColor = colors.swapPurple;
+    } else {
+      statusColor = colors.appleBlue;
+    }
   } else if (isTrade && status === TransactionStatusTypes.sent) {
     statusColor = colors.swapPurple;
   }
@@ -100,7 +105,12 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
 
   return (
     <Row align="center" {...props}>
-      {pending && <Spinner color={colors.appleBlue} size={12} />}
+      {pending && (
+        <Spinner
+          color={isSwapping ? colors.swapPurple : colors.appleBlue}
+          size={12}
+        />
+      )}
       {displayStatus && includes(Object.keys(StatusProps), displayStatus) && (
         <Icon
           color={statusColor}
