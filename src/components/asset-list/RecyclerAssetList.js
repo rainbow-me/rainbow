@@ -715,7 +715,7 @@ class RecyclerAssetList extends Component {
       ) {
         layoutItemAnimator.animateShift = () =>
           LayoutAnimation.configureNext({
-            duration: 340,
+            duration: 250,
             update: {
               delay: 10,
               type: 'easeInEaseOut',
@@ -726,10 +726,15 @@ class RecyclerAssetList extends Component {
         }, 10);
         setTimeout(() => {
           layoutItemAnimator.animateShift = () =>
-            LayoutAnimation.configureNext(
-              LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-            );
-        }, 350);
+            LayoutAnimation.configureNext({
+              duration: 200,
+              update: {
+                initialVelocity: 0,
+                springDamping: 1,
+                type: LayoutAnimation.Types.spring,
+              },
+            });
+        }, 250);
       }
     }
   }
