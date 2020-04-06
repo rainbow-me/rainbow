@@ -23,6 +23,7 @@ import {
   withCoinCurrentAction,
   withEditOptions,
   withOpenBalances,
+  withAccountSettings,
 } from '../../hoc';
 import CoinDividerEditButton from './CoinDividerEditButton';
 import withCoinListEdited from '../../hoc/withCoinListEdited';
@@ -117,6 +118,7 @@ class CoinDivider extends PureComponent {
       setOpenSmallBalances,
       openSmallBalances,
       currentAction,
+      nativeCurrencySymbol,
       isSticky,
       onEndEdit,
     } = this.props;
@@ -243,7 +245,7 @@ class CoinDivider extends PureComponent {
                 size="lmedium"
                 style={{ paddingBottom: 1 }}
               >
-                {balancesSum}
+                {`${nativeCurrencySymbol}${Number(balancesSum).toFixed(2)}`}
               </Text>
             </OpacityToggler>
           </View>
@@ -278,6 +280,7 @@ class CoinDivider extends PureComponent {
 }
 
 export default compose(
+  withAccountSettings,
   withEditOptions,
   withOpenBalances,
   withCoinCurrentAction,

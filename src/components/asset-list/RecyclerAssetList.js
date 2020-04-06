@@ -963,7 +963,7 @@ class RecyclerAssetList extends Component {
       return (
         <CoinDivider
           assetsAmount={item.assetsAmount}
-          balancesSum="$20.12"
+          balancesSum={item.value}
           isCoinListEdited={isCoinListEdited}
         />
       );
@@ -1003,7 +1003,7 @@ class RecyclerAssetList extends Component {
       {this.state.showCoinListEditor ? (
         <CoinDivider
           assetsAmount={this.renderList.length}
-          balancesSum="$20.12"
+          balancesSum={0}
           isSticky
           onEndEdit={() => {
             this.setState({ showCoinListEditor: false });

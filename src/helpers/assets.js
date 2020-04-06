@@ -26,6 +26,7 @@ export const buildCoinsList = assets => {
     assets: [],
     smallBalancesContainer: true,
   };
+  let smallBalancesValue = 0;
   for (let i = 0; i < assets.length; i++) {
     if (hiddenCoins.includes(assets[i].uniqueId)) {
       hiddenAssets.push({
@@ -48,6 +49,7 @@ export const buildCoinsList = assets => {
     ) {
       standardAssets.push({ isCoin: true, isSmall: false, ...assets[i] });
     } else {
+      smallBalancesValue += Number(get(assets[i], 'native.balance.amount', 0));
       smallBalances.assets.push({ isCoin: true, isSmall: true, ...assets[i] });
     }
   }
@@ -84,6 +86,7 @@ export const buildCoinsList = assets => {
     allAssets.push({
       assetsAmount: smallBalances.assets.length,
       coinDivider: true,
+      value: smallBalancesValue,
     });
     allAssets.push(smallBalances);
   }
