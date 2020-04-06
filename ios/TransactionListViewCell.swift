@@ -63,17 +63,17 @@ class TransactionListViewCell: TransactionListBaseCell {
      }
 
     // Savings Overrides
-    if (transaction.status.lowercased() ==  "deposited" || transaction.status.lowercased() == "withdrew") {
+    if (transaction.status?.lowercased() ==  "deposited" || transaction.status?.lowercased() == "withdrew") {
       transactionIcon.image = UIImage.init(named: "sunflower")
     }
     
     // Swap Overrides
-    if transaction.type.lowercased() == "trade" && transaction.status.lowercased() == "sent" {
+    if transaction.type?.lowercased() == "trade" && transaction.status?.lowercased() == "sent" {
         transactionIcon.image = UIImage.init(named: "swapped")
     }
     
     // Authorize Overrides
-    if transaction.type.lowercased() == "authorize" && transaction.status.lowercased() == "approved" {
+    if transaction.type?.lowercased() == "authorize" && transaction.status?.lowercased() == "approved" {
       transactionIcon.image = UIImage.init(named: "self")
     }
     
