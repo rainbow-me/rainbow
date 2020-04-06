@@ -16,6 +16,7 @@ import {
   withOpenFamilyTabs,
   withOpenInvestmentCards,
   withOpenSavings,
+  withAccountSettings,
 } from '../../hoc';
 import { colors } from '../../styles';
 import {
@@ -965,6 +966,7 @@ class RecyclerAssetList extends Component {
           assetsAmount={item.assetsAmount}
           balancesSum={item.value}
           isCoinListEdited={isCoinListEdited}
+          currencySymbol={this.props.nativeCurrencySymbol}
         />
       );
     }
@@ -1008,6 +1010,7 @@ class RecyclerAssetList extends Component {
           onEndEdit={() => {
             this.setState({ showCoinListEditor: false });
           }}
+          currencySymbol={this.props.nativeCurrencySymbol}
         />
       ) : null}
     </>
@@ -1073,5 +1076,6 @@ export default compose(
   withOpenFamilyTabs,
   withOpenInvestmentCards,
   withOpenBalances,
-  withOpenSavings
+  withOpenSavings,
+  withAccountSettings
 )(RecyclerAssetList);
