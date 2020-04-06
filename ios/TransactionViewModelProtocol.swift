@@ -35,7 +35,7 @@ extension TransactionSectionProtocol {
       } else if calendar.isDateInYesterday(date) {
         return "Yesterday"
       } else if calendar.isDate(date, equalTo: Date(), toGranularity: .month) {
-        return "This month"
+        return "This Month"
       } else if calendar.isDate(date, equalTo: Date(), toGranularity: .year) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMMM"

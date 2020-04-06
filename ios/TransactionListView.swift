@@ -29,6 +29,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var accountAddress: String? = nil {
     didSet {
       header.accountAddress.text = accountAddress
+      header.accountAddress.addCharacterSpacing(kernValue: 0.5)
     }
   }
   @objc var accountColor: UIColor? = nil {
@@ -71,18 +72,13 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       }
     }
   }
-  
   @objc func onPressInAvatar(_ sender: UIButton) {
-    header.accountView.animateTapStart(scale: 0.89)
+    header.accountView.animateTapStart(scale: 0.9)
   }
-
   @objc func onPressOutAvatar(_ sender: UIButton) {
-    header.accountView.animateTapStart(scale: 1.0)
+    header.accountView.animateTapEnd()
   }
   
-  @objc func onReceivePressed(_ sender: UIButton) {
-    self.onReceivePress([:])
-  }
   @objc func onCopyAddressPressed(_ sender: UIButton) {
     let rect = sender.convert(sender.frame, to: self)
     self.onCopyAddressPress([
@@ -91,6 +87,22 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       "width": sender.frame.width,
       "height": sender.frame.height
     ])
+  }
+  @objc func onPressInCopyAddress(_ sender: UIButton) {
+    header.copyAddress.animateTapStart(scale: 0.86)
+  }
+  @objc func onPressOutCopyAddress(_ sender: UIButton) {
+    header.copyAddress.animateTapEnd()
+  }
+
+  @objc func onReceivePressed(_ sender: UIButton) {
+    self.onReceivePress([:])
+  }
+  @objc func onPressInReceive(_ sender: UIButton) {
+    header.receive.animateTapStart(scale: 0.86)
+  }
+  @objc func onPressOutReceive(_ sender: UIButton) {
+    header.receive.animateTapEnd()
   }
   
   var sections: [TransactionSectionProtocol] = [TransactionSectionProtocol]()
@@ -120,8 +132,24 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchCancel)
     header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchUpOutside)
     
-    header.receive.addTarget(self, action: #selector(onReceivePressed(_:)), for: .touchUpInside)
     header.copyAddress.addTarget(self, action: #selector(onCopyAddressPressed(_:)), for: .touchUpInside)
+    header.copyAddress.addTarget(self, action: #selector(onPressInCopyAddress(_:)), for: .touchDown)
+    header.copyAddress.addTarget(self, action: #selector(onPressInCopyAddress(_:)), for: .touchDragInside)
+    header.copyAddress.addTarget(self, action: #selector(onPressOutCopyAddress(_:)), for: .touchUpInside)
+    header.copyAddress.addTarget(self, action: #selector(onPressOutCopyAddress(_:)), for: .touchDragOutside)
+    header.copyAddress.addTarget(self, action: #selector(onPressOutCopyAddress(_:)), for: .touchCancel)
+    header.copyAddress.addTarget(self, action: #selector(onPressOutCopyAddress(_:)), for: .touchUpOutside)
+    
+    header.receive.addTarget(self, action: #selector(onReceivePressed(_:)), for: .touchUpInside)
+    header.receive.addTarget(self, action: #selector(onPressInReceive(_:)), for: .touchDown)
+    header.receive.addTarget(self, action: #selector(onPressInReceive(_:)), for: .touchDragInside)
+    header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchUpInside)
+    header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchDragOutside)
+    header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchCancel)
+    header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchUpOutside)
+    
+    header.copyAddress.titleLabel?.addCharacterSpacing(kernValue: 0.5)
+    header.receive.titleLabel?.addCharacterSpacing(kernValue: 0.5)
     
     headerSeparator.backgroundColor = UIColor(red:0.24, green:0.26, blue:0.32, alpha:0.02)
     tableView.tableHeaderView = header
@@ -135,12 +163,12 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   /// React Native is known to re-render only first-level subviews. Since our tableView is a custom view that we add as a second-level subview, we need to relayout it manually
   override func layoutSubviews() {
     tableView.frame = self.bounds
-    header.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 200)
-    headerSeparator.frame = CGRect(x: 20, y: header.frame.size.height - 2, width: tableView.bounds.width - 20, height: 2)
+    header.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 185)
+    headerSeparator.frame = CGRect(x: 19, y: header.frame.size.height - 2, width: tableView.bounds.width - 19, height: 2)
   }
   
   func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-    return 60
+    return 56
   }
   
   func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
