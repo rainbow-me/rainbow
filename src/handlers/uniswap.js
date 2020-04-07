@@ -186,6 +186,7 @@ export const executeSwap = async (
     gasPrice: gasPrice ? toHex(gasPrice) : undefined,
     value,
   };
+
   switch (methodName) {
     case 'ethToTokenSwapInput':
       return exchange.ethToTokenSwapInput(
@@ -391,12 +392,12 @@ export const calculateTradeDetails = (
   const isOutputEth = outputAddress === 'eth';
 
   const rawInputAmount = convertAmountToRawAmount(
-    parseFloat(inputAmount) || 0,
+    inputAmount || 0,
     inputDecimals
   );
 
   const rawOutputAmount = convertAmountToRawAmount(
-    parseFloat(outputAmount) || 0,
+    outputAmount || 0,
     outputDecimals
   );
 
