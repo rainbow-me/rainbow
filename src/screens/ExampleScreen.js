@@ -4,16 +4,17 @@ import { compose } from 'recompact';
 import Button from '../components/buttons/Button';
 import { Centered, Page } from '../components/layout';
 import { withGas, withUniswapAllowances, withRaps } from '../hoc';
+import { loadWallet } from '../model/wallet';
 import { colors, position } from '../styles';
 import unlockAndSwap from '../raps/unlockAndSwap';
-import { loadWallet } from '../model/wallet';
+import { logger } from '../utils';
 
 class ExampleScreen extends PureComponent {
   componentDidMount = async () => {
     try {
       await this.props.rapsRemove();
     } catch (error) {
-      console.log('lol error on ExampleScreen like a n00b: ', error);
+      logger.log('lol error on ExampleScreen like a n00b: ', error);
     }
   };
 
@@ -45,14 +46,14 @@ class ExampleScreen extends PureComponent {
         inputAsExactAmount
       );
 
-      console.log('SWAP EXECUTED!', swap.hash);
+      logger.log('SWAP EXECUTED!', swap.hash);
       await swap.wait();
       rap.transactions.swap.confirmed = true;
       rap.transactions.completed_at = new Date().getTime();
       this.props.rapsAddOrUpdate(rap.id, rap);
-      console.log('SWAP CONFIRMED');
+      logger.log('SWAP CONFIRMED');
     } catch (e) {
-      console.log('SWAP FAILED', e);
+      logger.log('SWAP FAILED', e);
     }
   };
 

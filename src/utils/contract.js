@@ -3,6 +3,7 @@ import { toHex, web3Provider } from '../handlers/web3';
 import { convertRawAmountToDecimalFormat } from '../helpers/utilities';
 import { loadWallet } from '../model/wallet';
 import erc20ABI from '../references/erc20-abi.json';
+import { logger } from '../utils';
 
 const estimateApproveWithExchange = async (spender, exchange) => {
   try {
@@ -12,7 +13,7 @@ const estimateApproveWithExchange = async (spender, exchange) => {
     );
     return gasLimit ? gasLimit.toString() : null;
   } catch (error) {
-    console.log('error estimating approval', error);
+    logger.log('error estimating approval', error);
     return null;
   }
 };

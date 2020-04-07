@@ -1,4 +1,5 @@
 import XHRInterceptor from 'react-native/Libraries/Network/XHRInterceptor';
+import { logger } from '../utils';
 
 let internalCounter = 0;
 
@@ -23,10 +24,10 @@ export default function monitorNetwork(
   };
 
   const emptyLine = () => {
-    console.log('');
+    logger.log('');
   };
   const separator = () => {
-    console.log(`----------------------------------------`);
+    logger.log(`----------------------------------------`);
   };
 
   if (showNetworkRequests) {
@@ -37,23 +38,23 @@ export default function monitorNetwork(
 
         separator();
         emptyLine();
-        console.log(
+        logger.log(
           `${PREFIX} ➡️  REQUEST #${xhr._trackingName} -  ${xhr._method} ${xhr._url}`
         );
         emptyLine();
         if (data) {
           emptyLine();
-          console.log(' PARAMETERS: ');
+          logger.log(' PARAMETERS: ');
           emptyLine();
           try {
             const dataObj = JSON.parse(data);
-            console.log(' {');
+            logger.log(' {');
             Object.keys(dataObj).forEach(key => {
-              console.log(`   ${key} : `, dataObj[key]);
+              logger.log(`   ${key} : `, dataObj[key]);
             });
-            console.log(' }');
+            logger.log(' }');
           } catch (e) {
-            console.log(data);
+            logger.log(data);
           }
         }
         emptyLine();
@@ -80,37 +81,37 @@ export default function monitorNetwork(
 
           separator();
           emptyLine();
-          console.log(
+          logger.log(
             `${PREFIX} ${getEmojiForStatusCode(status)}  RESPONSE #${rid} -  ${
               xhr._method
             } ${url}`
           );
           emptyLine();
           if (timeout && status > 400) {
-            console.log(` ⚠️ ⚠️  TIMEOUT!  ⚠️ ⚠️ `);
+            logger.log(` ⚠️ ⚠️  TIMEOUT!  ⚠️ ⚠️ `);
           }
 
           if (status) {
-            console.log(` Status:  ${status}`);
+            logger.log(` Status:  ${status}`);
           }
 
           if (time) {
-            console.log(` Completed in:  ${time / 1000} s`);
+            logger.log(` Completed in:  ${time / 1000} s`);
           }
 
           if (response) {
             emptyLine();
-            console.log(' RESPONSE: ');
+            logger.log(' RESPONSE: ');
             emptyLine();
             try {
               const responseObj = JSON.parse(response);
-              console.log(' {');
+              logger.log(' {');
               Object.keys(responseObj).forEach(key => {
-                console.log(`   ${key} : `, responseObj[key]);
+                logger.log(`   ${key} : `, responseObj[key]);
               });
-              console.log(' }');
+              logger.log(' }');
             } catch (e) {
-              console.log(response);
+              logger.log(response);
             }
           }
           emptyLine();

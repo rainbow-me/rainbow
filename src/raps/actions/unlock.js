@@ -9,7 +9,7 @@ import transactionTypes from '../../helpers/transactionTypes';
 import store from '../../redux/store';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
-import { contractUtils, gasUtils } from '../../utils';
+import { contractUtils, gasUtils, logger } from '../../utils';
 
 const NOOP = () => undefined;
 
@@ -23,13 +23,13 @@ const unlock = async (wallet, currentRap, index, parameters) => {
     override,
   } = parameters;
   const _amount = override || amount;
-  console.log(
+  logger.log(
     '[unlock] begin unlock rap for',
     assetToUnlock,
     'on',
     contractAddress
   );
-  console.log('[unlock]', amount, override, _amount);
+  logger.log('[unlock]', amount, override, _amount);
 
   const needsUnlocking = await assetNeedsUnlocking(
     accountAddress,
@@ -38,12 +38,12 @@ const unlock = async (wallet, currentRap, index, parameters) => {
     contractAddress
   );
 
-  console.log('[unlock] does this thing need unlocking?', needsUnlocking);
+  logger.log('[unlock] does this thing need unlocking?', needsUnlocking);
   currentRap.actions[index].transaction.confirmed = true;
   dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
   if (!needsUnlocking) return _amount;
 
-  console.log('[unlock] unlock needed');
+  logger.log('[unlock] unlock needed');
   const { gasPrices } = store.getState().gas;
   const { address: assetAddress } = assetToUnlock;
 
@@ -64,10 +64,10 @@ const unlock = async (wallet, currentRap, index, parameters) => {
 
   // update rap for hash
   currentRap.actions[index].transaction.hash = approval.hash;
-  console.log('[unlock] adding a new txn for the approval', approval.hash);
+  logger.log('[unlock] adding a new txn for the approval', approval.hash);
   dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
 
-  console.log('[unlock] add a new txn');
+  logger.log('[unlock] add a new txn');
   dispatch(
     dataAddNewTransaction({
       amount: 0,
@@ -80,30 +80,30 @@ const unlock = async (wallet, currentRap, index, parameters) => {
       type: transactionTypes.authorize,
     })
   );
-  console.log('[unlock] calling callback');
+  logger.log('[unlock] calling callback');
   currentRap.callback();
   currentRap.callback = NOOP;
 
-  console.log('[unlock] APPROVAL SUBMITTED, HASH', approval.hash);
-  console.log('[unlock] WAITING TO BE MINED...');
+  logger.log('[unlock] APPROVAL SUBMITTED, HASH', approval.hash);
+  logger.log('[unlock] WAITING TO BE MINED...');
   try {
     const receipt = await wallet.provider.waitForTransaction(approval.hash);
     if (!isZero(receipt.status)) {
       // update rap for confirmed status
       currentRap.actions[index].transaction.confirmed = true;
       dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
-      console.log('[unlock] APPROVED');
+      logger.log('[unlock] APPROVED');
     } else {
-      console.log('[unlock] error waiting for approval');
+      logger.log('[unlock] error waiting for approval');
       currentRap.actions[index].transaction.confirmed = false;
       dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
     }
   } catch (error) {
-    console.log('[unlock] approval status not success', error);
+    logger.log('[unlock] approval status not success', error);
     currentRap.actions[index].transaction.confirmed = false;
     dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
   }
-  console.log('[unlock] completed', currentRap, approval);
+  logger.log('[unlock] completed', currentRap, approval);
   return _amount;
 };
 
@@ -116,7 +116,7 @@ const assetNeedsUnlocking = async (
   const { address } = assetToUnlock;
   const _address = toLower(_address);
   const _contractAddress = toLower(_contractAddress);
-  console.log('checking asset needs unlocking');
+  logger.log('checking asset needs unlocking');
   const isInputEth = address === 'eth';
   if (isInputEth) {
     return false;
