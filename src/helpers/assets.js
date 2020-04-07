@@ -130,6 +130,7 @@ export const buildUniqueTokenList = uniqueTokens => {
     '0x06012c8cf97bead5deae237070f9587f8e7a266d_1368227',
     '0xcfbc9103362aec4ce3089f155c2da2eea1cb7602_8372',
     '0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85_114250019769840285307462738976463004196063698158466201044175195562450754683663',
+    '0x06012c8cf97bead5deae237070f9587f8e7a266d_1115873',
   ];
 
   let rows = [];
@@ -176,7 +177,7 @@ export const buildUniqueTokenList = uniqueTokens => {
       bundledShowcaseTokens.push([showcaseTokens[i]]);
     }
   }
-  if (families.length > 0) {
+  if (showcaseTokens.length > 0) {
     rows = [
       {
         childrenAmount: showcaseTokens.length,

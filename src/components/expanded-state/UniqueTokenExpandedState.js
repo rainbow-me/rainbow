@@ -92,7 +92,7 @@ const UniqueTokenExpandedState = ({
         </Centered>
       )}
       <AssetPanel onLayout={onLayout}>
-        <AssetPanelHeader subtitle={subtitle} title={title} />
+        <AssetPanelHeader subtitle={subtitle} title={title} asset={asset} />
         {asset.isSendable && (
           <AssetPanelAction
             icon="send"
