@@ -35,6 +35,7 @@ const getBalanceAmount = async (
     if (!onchain) {
       amount = get(selected, 'balance.amount', 0);
     } else {
+      console.log('Querying onchain...');
       try {
         const tokenContract = new ethers.Contract(
           selected.address,
