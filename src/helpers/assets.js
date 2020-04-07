@@ -1,4 +1,4 @@
-import { compact, forEach, get, groupBy, sortBy } from 'lodash';
+import { compact, forEach, get, groupBy, includes, sortBy } from 'lodash';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 import { add } from './utilities';
 
@@ -126,6 +126,12 @@ export const buildCoinsList = (
 };
 
 export const buildUniqueTokenList = uniqueTokens => {
+  const selectedShowcaseTokens = [
+    '0x06012c8cf97bead5deae237070f9587f8e7a266d_1368227',
+    '0xcfbc9103362aec4ce3089f155c2da2eea1cb7602_8372',
+    '0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85_114250019769840285307462738976463004196063698158466201044175195562450754683663',
+  ];
+
   let rows = [];
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
@@ -136,11 +142,17 @@ export const buildUniqueTokenList = uniqueTokens => {
   for (let i = 0; i < families.length; i++) {
     const tokensRow = [];
     for (let j = 0; j < grouped[families[i]].length; j += 2) {
-      if (grouped[families[i]][j + 1]) {
+      if (includes(selectedShowcaseTokens, grouped[families[i]][j].uniqueId)) {
         showcaseTokens.push(grouped[families[i]][j]);
+      }
+      if (grouped[families[i]][j + 1]) {
+        if (
+          includes(selectedShowcaseTokens, grouped[families[i]][j + 1].uniqueId)
+        ) {
+          showcaseTokens.push(grouped[families[i]][j + 1]);
+        }
         tokensRow.push([grouped[families[i]][j], grouped[families[i]][j + 1]]);
       } else {
-        showcaseTokens.push(grouped[families[i]][j]);
         tokensRow.push([grouped[families[i]][j]]);
       }
     }
@@ -167,12 +179,12 @@ export const buildUniqueTokenList = uniqueTokens => {
   if (families.length > 0) {
     rows = [
       {
-        childrenAmount: 1,
-        familyImage: 'asdf',
+        childrenAmount: showcaseTokens.length,
+        familyImage: 'showcase_trophy',
         familyName: 'Showcase',
-        stableId: 'plplpplplplplp',
+        stableId: 'showcase_stable_id',
         tokens: bundledShowcaseTokens,
-        uniqueId: 'jhghjkiuhybnijhbnjihnkmijnklkj',
+        uniqueId: 'showcase_unique_id',
       },
     ].concat(rows);
   }
