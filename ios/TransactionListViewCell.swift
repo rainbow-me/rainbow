@@ -98,7 +98,7 @@ class TransactionListViewCell: TransactionListBaseCell {
       } else {
         color = transactionColors.appleBlue
       }
-    } else if transaction.type == "trade" && transaction.status.lowercased() == "sent" {
+    } else if transaction.isSwapped() {
       color = transactionColors.swapPurple
       transactionType.text = "Swapped"
       transactionType.addCharacterSpacing(kernValue: 0.5)

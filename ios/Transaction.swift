@@ -41,4 +41,8 @@ import Foundation
   var type: String!
   var pending: Bool = false
   var minedAt: Date!
+  
+  func isSwapped() -> Bool {
+    return type == "trade" && status.lowercased() == "sent"
+  }
 }
