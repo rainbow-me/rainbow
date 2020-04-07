@@ -49,8 +49,8 @@ export const ViewTypes = {
   COIN_ROW: 3,
   COIN_ROW_LAST: 4,
   COIN_SMALL_BALANCES: 5,
-  COIN_SAVINGS: 6,
-  COIN_DIVIDER: 7,
+  COIN_DIVIDER: 6,
+  COIN_SAVINGS: 7,
   UNISWAP_ROW: 8,
   UNISWAP_ROW_LAST: 9,
   UNISWAP_ROW_CLOSED: 10,
@@ -920,6 +920,10 @@ class RecyclerAssetList extends Component {
 
     const { item = {}, renderItem } = data;
     const { hideHeader, sections, isCoinListEdited } = this.props;
+
+    if (isCoinListEdited && !(type < 7)) {
+      return null;
+    }
 
     if (type === ViewTypes.HEADER || type === ViewTypes.HEADER_FIRST) {
       return hideHeader ? null : (
