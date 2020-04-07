@@ -3,6 +3,7 @@ import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
 import { savingsAssetsListByUnderlying } from '../references';
 import { logger } from '../utils';
+import { assetNeedsUnlocking } from './actions/unlock';
 import { createNewAction, createNewRap, RapActionTypes } from './common';
 
 const createSwapAndDepositCompoundRap = ({
@@ -24,15 +25,23 @@ const createSwapAndDepositCompoundRap = ({
     logger.log(
       '[swap and deposit] inputCurr is not the same as the output currency'
     );
-    // create unlock for swap rap
-    const unlock = createNewAction(RapActionTypes.unlock, {
+    const swapAssetNeedsUnlocking = assetNeedsUnlocking(
       accountAddress,
-      amount: inputAmount,
-      assetToUnlock: inputCurrency,
-      contractAddress: inputCurrency.exchangeAddress,
-    });
-    actions = concat(actions, unlock);
-    logger.log('[swap and deposit] making unlock for swap func');
+      inputAmount,
+      inputCurrency,
+      inputCurrency.exchangeAddress
+    );
+    if (swapAssetNeedsUnlocking) {
+      // create unlock for swap rap
+      const unlock = createNewAction(RapActionTypes.unlock, {
+        accountAddress,
+        amount: inputAmount,
+        assetToUnlock: inputCurrency,
+        contractAddress: inputCurrency.exchangeAddress,
+      });
+      actions = concat(actions, unlock);
+      logger.log('[swap and deposit] making unlock for swap func');
+    }
 
     // create a swap rap
     const swap = createNewAction(RapActionTypes.swap, {
@@ -58,14 +67,22 @@ const createSwapAndDepositCompoundRap = ({
   logger.log('ctokencontract', cTokenContract);
 
   // create unlock token on Compound rap
-  logger.log('[swap and deposit] making unlock token func');
-  const unlockTokenToDeposit = createNewAction(RapActionTypes.unlock, {
+  const depositAssetNeedsUnlocking = assetNeedsUnlocking(
     accountAddress,
-    amount: requiresSwap ? outputAmount : inputAmount,
-    assetToUnlock: tokenToDeposit,
-    contractAddress: cTokenContract,
-  });
-  actions = concat(actions, unlockTokenToDeposit);
+    requiresSwap ? outputAmount : inputAmount,
+    tokenToDeposit,
+    cTokenContract
+  );
+  if (depositAssetNeedsUnlocking) {
+    logger.log('[swap and deposit] making unlock token func');
+    const unlockTokenToDeposit = createNewAction(RapActionTypes.unlock, {
+      accountAddress,
+      amount: requiresSwap ? outputAmount : inputAmount,
+      assetToUnlock: tokenToDeposit,
+      contractAddress: cTokenContract,
+    });
+    actions = concat(actions, unlockTokenToDeposit);
+  }
 
   // create a deposit rap
   logger.log('[swap and deposit] making deposit func');

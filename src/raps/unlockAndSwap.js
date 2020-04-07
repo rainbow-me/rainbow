@@ -1,5 +1,7 @@
+import { concat } from 'lodash';
 import store from '../redux/store';
 import { rapsAddOrUpdate } from '../redux/raps';
+import { assetNeedsUnlocking } from './actions/unlock';
 import { createNewAction, createNewRap, RapActionTypes } from './common';
 
 const createUnlockAndSwapRap = ({
@@ -15,12 +17,24 @@ const createUnlockAndSwapRap = ({
 }) => {
   // create unlock rap
   const { accountAddress, chainId } = store.getState().settings;
-  const unlock = createNewAction(RapActionTypes.unlock, {
+
+  let actions = [];
+
+  const swapAssetNeedsUnlocking = assetNeedsUnlocking(
     accountAddress,
-    amount: inputAmount,
-    assetToUnlock: inputCurrency,
-    contractAddress: inputCurrency.exchangeAddress,
-  });
+    inputAmount,
+    inputCurrency,
+    inputCurrency.exchangeAddress
+  );
+  if (swapAssetNeedsUnlocking) {
+    const unlock = createNewAction(RapActionTypes.unlock, {
+      accountAddress,
+      amount: inputAmount,
+      assetToUnlock: inputCurrency,
+      contractAddress: inputCurrency.exchangeAddress,
+    });
+    actions = concat(actions, unlock);
+  }
 
   // create a swap rap
   const swap = createNewAction(RapActionTypes.swap, {
@@ -35,9 +49,10 @@ const createUnlockAndSwapRap = ({
     outputReserve,
     selectedGasPrice,
   });
+  actions = concat(actions, swap);
 
   // create the overall rap
-  const newRap = createNewRap([unlock, swap], callback);
+  const newRap = createNewRap(actions, callback);
 
   // update the rap store
   const { dispatch } = store;
