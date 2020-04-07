@@ -1,5 +1,6 @@
+import { ethers } from 'ethers';
 import { find, get, isEmpty, replace, toLower } from 'lodash';
-import chains from '../references/chains.json';
+import { web3Provider } from '../handlers/web3';
 import networkTypes from '../helpers/networkTypes';
 import {
   add,
@@ -7,14 +8,21 @@ import {
   fromWei,
   greaterThan,
   subtract,
+  convertRawAmountToDecimalFormat,
 } from '../helpers/utilities';
+import { erc20ABI, chains } from '../references';
 
 const getEthPriceUnit = assets => {
   const ethAsset = getAsset(assets);
   return get(ethAsset, 'price.value', 0);
 };
 
-const getBalanceAmount = (selectedGasPrice, selected) => {
+const getBalanceAmount = async (
+  selectedGasPrice,
+  selected,
+  onchain = false,
+  accountAddress = null
+) => {
   let amount = '';
   if (selected.address === 'eth' && !isEmpty(selectedGasPrice)) {
     const balanceAmount = get(selected, 'balance.amount', 0);
@@ -23,7 +31,20 @@ const getBalanceAmount = (selectedGasPrice, selected) => {
     const remaining = subtract(balanceAmount, txFeeAmount);
     amount = convertNumberToString(greaterThan(remaining, 0) ? remaining : 0);
   } else {
-    amount = get(selected, 'balance.amount', 0);
+    if (!onchain) {
+      amount = get(selected, 'balance.amount', 0);
+    } else {
+      const tokenContract = new ethers.Contract(
+        selected.address,
+        erc20ABI,
+        web3Provider
+      );
+      const onchainAmount = await tokenContract.balanceOf(accountAddress);
+      amount = convertRawAmountToDecimalFormat(
+        onchainAmount,
+        selected.decimals
+      );
+    }
   }
   return amount;
 };

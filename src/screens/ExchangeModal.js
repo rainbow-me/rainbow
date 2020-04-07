@@ -466,9 +466,11 @@ const ExchangeModal = ({
       setSlippage(slippage);
 
       // update sufficient balance
-      const inputBalance = ethereumUtils.getBalanceAmount(
+      const inputBalance = await ethereumUtils.getBalanceAmount(
         selectedGasPrice,
-        inputCurrency
+        inputCurrency,
+        true,
+        accountAddress
       );
 
       const isSufficientBalance =
@@ -586,14 +588,16 @@ const ExchangeModal = ({
     return lastFocusedInput.current;
   };
 
-  const handlePressMaxBalance = () => {
+  const handlePressMaxBalance = async () => {
     let maxBalance;
     if (isWithdrawal) {
       maxBalance = supplyBalanceUnderlying;
     } else {
-      maxBalance = ethereumUtils.getBalanceAmount(
+      maxBalance = await ethereumUtils.getBalanceAmount(
         selectedGasPrice,
-        inputCurrency
+        inputCurrency,
+        true,
+        accountAddress
       );
     }
 
@@ -741,32 +745,38 @@ const ExchangeModal = ({
         }
         setNativeAmount(newNativeAmount);
 
-        // update sufficient balance
-        if (inputCurrency) {
-          const inputBalance = ethereumUtils.getBalanceAmount(
-            selectedGasPrice,
-            inputCurrency
-          );
+        const checkSufficientBalance = async () => {
+          // update sufficient balance
+          if (inputCurrency) {
+            const inputBalance = await ethereumUtils.getBalanceAmount(
+              selectedGasPrice,
+              inputCurrency,
+              true,
+              accountAddress
+            );
 
-          const isSufficientBalance =
-            !newInputAmount ||
-            (isWithdrawal
-              ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
-              : greaterThanOrEqualTo(inputBalance, newInputAmount));
-          setIsSufficientBalance(isSufficientBalance);
-        }
+            const isSufficientBalance =
+              !newInputAmount ||
+              (isWithdrawal
+                ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
+                : greaterThanOrEqualTo(inputBalance, newInputAmount));
+            setIsSufficientBalance(isSufficientBalance);
+          }
 
-        if (newAmountDisplay) {
-          analytics.track('Updated input amount', {
-            category: isDeposit ? 'savings' : 'swap',
-            defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
-            type,
-            value: Number(newAmountDisplay.toString()),
-          });
-        }
+          if (newAmountDisplay) {
+            analytics.track('Updated input amount', {
+              category: isDeposit ? 'savings' : 'swap',
+              defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+              type,
+              value: Number(newAmountDisplay.toString()),
+            });
+          }
+        };
+        checkSufficientBalance();
       }
     },
     [
+      accountAddress,
       defaultInputAsset,
       getMarketPrice,
       inputCurrency,
