@@ -3,13 +3,14 @@ import React from 'react';
 import { css } from 'styled-components/primitives';
 import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
-import { Monospace } from '../text';
+import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
 const containerStyles = css`
+  padding-bottom: 18;
   padding-left: 15;
-  padding-top: 17;
+  padding-top: 6;
 `;
 
 const selectedHeight = 78;
@@ -25,9 +26,9 @@ const BottomRow = ({
     balance: { display: balanceNativeValue },
   },
 }) => (
-  <Monospace color={colors.alpha(colors.blueGreyDark, 0.6)} size="smedium">
+  <Text color={colors.alpha(colors.blueGreyDark, 0.5)} size="smedium">
     {balanceDisplay} ≈ {balanceNativeValue}
-  </Monospace>
+  </Text>
 );
 
 BottomRow.propTypes = {
@@ -42,7 +43,7 @@ TopRow.propTypes = {
 };
 
 const SendSavingsCoinRow = ({ item, onPress, selected, ...props }) => (
-  <ButtonPressAnimation onPress={onPress} scaleTo={1.01}>
+  <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
     <CoinRow
       {...item}
       {...props}

@@ -41,12 +41,13 @@ const CoinRow = enhance(
     contentStyles,
     highlight,
     symbol,
+    address,
     topRowRender,
     ...props
   }) => (
     <Container align="center" css={containerStyles}>
       <CoinRowHighlight visible={highlight} />
-      {createElement(coinIconRender, { symbol, ...props })}
+      {createElement(coinIconRender, { address, symbol, ...props })}
       <Content css={contentStyles}>
         <Row align="center" justify="space-between">
           {topRowRender({ symbol, ...props })}
@@ -63,6 +64,7 @@ const CoinRow = enhance(
 );
 
 CoinRow.propTypes = {
+  address: PropTypes.string,
   bottomRowRender: PropTypes.func,
   children: PropTypes.node,
   coinIconRender: PropTypes.func,
