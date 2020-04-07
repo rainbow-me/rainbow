@@ -22,7 +22,7 @@ import useLoadAccountData from './useLoadAccountData';
 import useHideSplashScreen from './useHideSplashScreen';
 import useInitializeAccountData from './useInitializeAccountData';
 
-import { sentryUtils } from '../utils';
+import { logger } from '../utils';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
@@ -37,7 +37,7 @@ export default function useInitializeWallet() {
         const ethBalance = await hasEthBalance(walletAddress);
         dispatch(setIsWalletEthZero(!ethBalance));
       } catch (error) {
-        console.log('Error: Checking eth balance', error);
+        logger.log('Error: Checking eth balance', error);
       }
     },
     [dispatch]
@@ -48,7 +48,7 @@ export default function useInitializeWallet() {
   const initializeWallet = useCallback(
     async seedPhrase => {
       try {
-        sentryUtils.addInfoBreadcrumb('Start wallet setup');
+        logger.sentry('Start wallet setup');
         // Load the network first
         await dispatch(settingsLoadNetwork());
 
@@ -87,7 +87,7 @@ export default function useInitializeWallet() {
           await loadAccountData();
         }
         onHideSplashScreen();
-        sentryUtils.addInfoBreadcrumb('Hide splash screen');
+        logger.sentry('Hide splash screen');
         initializeAccountData();
         return walletAddress;
       } catch (error) {

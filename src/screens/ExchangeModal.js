@@ -58,7 +58,7 @@ import { loadWallet } from '../model/wallet';
 import { executeRap } from '../raps/common';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
-import { ethereumUtils, backgroundTask } from '../utils';
+import { backgroundTask, ethereumUtils, logger } from '../utils';
 import { CurrencySelectionTypes } from './CurrencySelectModal';
 import SwapInfo from '../components/exchange/SwapInfo';
 
@@ -406,7 +406,7 @@ const ExchangeModal = ({
 
   const calculateOutputGivenInputChange = useCallback(
     (tradeDetails, isInputEmpty, isInputZero, outputDecimals) => {
-      console.log('calculate OUTPUT given INPUT change');
+      logger.log('calculate OUTPUT given INPUT change');
       if (
         (isInputEmpty || isInputZero) &&
         outputFieldRef &&
@@ -527,7 +527,7 @@ const ExchangeModal = ({
         dispatch(gasUpdateTxFee(ethUnits.basic_swap));
       }
     } catch (error) {
-      console.log('error getting market details', error);
+      logger.log('error getting market details', error);
     }
   }, [
     accountAddress,
@@ -635,9 +635,9 @@ const ExchangeModal = ({
           outputReserve,
           selectedGasPrice: null,
         });
-        console.log('[exchange - handle submit] rap', rap);
+        logger.log('[exchange - handle submit] rap', rap);
         await executeRap(wallet, rap);
-        console.log('[exchange - handle submit] executed rap!');
+        logger.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
           category: isDeposit || isWithdrawal ? 'savings' : 'swap',
           defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
@@ -645,7 +645,7 @@ const ExchangeModal = ({
         });
       } catch (error) {
         setIsAuthorizing(false);
-        console.log('[exchange - handle submit] error submitting swap', error);
+        logger.log('[exchange - handle submit] error submitting swap', error);
         navigation.setParams({ focused: false });
         navigation.navigate('WalletScreen');
       }
@@ -692,7 +692,7 @@ const ExchangeModal = ({
   };
 
   const navigateToSelectOutputCurrency = () => {
-    console.log('[nav to select output curr]', inputCurrency);
+    logger.log('[nav to select output curr]', inputCurrency);
     InteractionManager.runAfterInteractions(() => {
       navigation.setParams({ focused: false });
       navigation.navigate('CurrencySelectScreen', {
@@ -784,19 +784,19 @@ const ExchangeModal = ({
   }, [updateInputAmount]);
 
   const updateInputCurrency = (newInputCurrency, userSelected = true) => {
-    console.log(
+    logger.log(
       '[update input curr] new input curr, user selected?',
       newInputCurrency,
       userSelected
     );
 
-    console.log('[update input curr] prev input curr', previousInputCurrency);
+    logger.log('[update input curr] prev input curr', previousInputCurrency);
     if (!isSameAsset(newInputCurrency, previousInputCurrency)) {
-      console.log('[update input curr] clear form');
+      logger.log('[update input curr] clear form');
       clearForm();
     }
 
-    console.log('[update input curr] setting input curr', newInputCurrency);
+    logger.log('[update input curr] setting input curr', newInputCurrency);
     setInputCurrency(newInputCurrency);
     setShowConfirmButton(
       isDeposit || isWithdrawal
@@ -807,7 +807,7 @@ const ExchangeModal = ({
     dispatch(uniswapUpdateInputCurrency(newInputCurrency));
 
     if (userSelected && isSameAsset(newInputCurrency, outputCurrency)) {
-      console.log('[update input curr] setting output curr to prev input curr');
+      logger.log('[update input curr] setting output curr to prev input curr');
       if (isDeposit || isWithdrawal) {
         updateOutputCurrency(null, false);
       } else {
@@ -836,7 +836,7 @@ const ExchangeModal = ({
   };
 
   const updateNativeAmount = nativeAmount => {
-    console.log('update native amount', nativeAmount);
+    logger.log('update native amount', nativeAmount);
     let inputAmount = null;
     let inputAmountDisplay = null;
 
@@ -887,12 +887,12 @@ const ExchangeModal = ({
   );
 
   const updateOutputCurrency = (newOutputCurrency, userSelected = true) => {
-    console.log(
+    logger.log(
       '[update output curr] new output curr, user selected?',
       newOutputCurrency,
       userSelected
     );
-    console.log(
+    logger.log(
       '[update output curr] input currency at the moment',
       inputCurrency
     );
@@ -906,22 +906,19 @@ const ExchangeModal = ({
         : !!inputCurrency && !!newOutputCurrency
     );
 
-    console.log(
-      '[update output curr] prev output curr',
-      previousOutputCurrency
-    );
+    logger.log('[update output curr] prev output curr', previousOutputCurrency);
     const existsInWallet = find(
       uniswapAssetsInWallet,
       asset => get(asset, 'address') === get(previousOutputCurrency, 'address')
     );
     if (userSelected && isSameAsset(inputCurrency, newOutputCurrency)) {
       if (existsInWallet) {
-        console.log(
+        logger.log(
           '[update output curr] updating input curr with prev output curr'
         );
         updateInputCurrency(previousOutputCurrency, false);
       } else {
-        console.log('[update output curr] updating input curr with nothing');
+        logger.log('[update output curr] updating input curr with nothing');
         updateInputCurrency(null, false);
       }
     }

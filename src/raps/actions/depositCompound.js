@@ -12,14 +12,14 @@ import {
   compoundCERC20ABI,
   savingsAssetsListByUnderlying,
 } from '../../references';
-import { gasUtils } from '../../utils';
+import { gasUtils, logger } from '../../utils';
 
 const NOOP = () => undefined;
 const SAVINGS_ERC20_DEPOSIT_GAS_LIMIT = 350000;
 const SAVINGS_ETH_DEPOSIT_GAS_LIMIT = 200000;
 
 const depositCompound = async (wallet, currentRap, index, parameters) => {
-  console.log('[deposit]');
+  logger.log('[deposit]');
   const {
     accountAddress,
     inputAmount,
@@ -31,24 +31,24 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
   const { dispatch } = store;
   const { gasPrices } = store.getState().gas;
   const _inputAmount = override || inputAmount;
-  console.log('[deposit]', inputAmount, override, _inputAmount);
+  logger.log('[deposit]', inputAmount, override, _inputAmount);
   const rawInputAmount = convertAmountToRawAmount(
     _inputAmount,
     inputCurrency.decimals
   );
-  console.log('[deposit] raw input amount', rawInputAmount);
+  logger.log('[deposit] raw input amount', rawInputAmount);
 
-  console.log('[deposit] execute the deposit');
+  logger.log('[deposit] execute the deposit');
   let gasPrice = get(selectedGasPrice, 'value.amount');
   if (!gasPrice) {
     gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
   }
-  console.log('[deposit] gas price', gasPrice);
+  logger.log('[deposit] gas price', gasPrice);
 
   const cTokenContract =
     savingsAssetsListByUnderlying[network][inputCurrency.address]
       .contractAddress;
-  console.log('ctokencontract', cTokenContract);
+  logger.log('ctokencontract', cTokenContract);
 
   const compound = new ethers.Contract(
     cTokenContract,
@@ -64,9 +64,9 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
     gasPrice: gasPrice ? toHex(gasPrice) : undefined,
     value: toHex(0),
   };
-  console.log('[deposit] txn params', transactionParams);
+  logger.log('[deposit] txn params', transactionParams);
   const deposit = await compound.mint(rawInputAmount, transactionParams);
-  console.log('[deposit] minted - result', deposit);
+  logger.log('[deposit] minted - result', deposit);
 
   currentRap.actions[index].transaction.hash = deposit.hash;
 
@@ -80,34 +80,34 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
     to: get(deposit, 'to'),
     type: TransactionTypes.deposit,
   };
-  console.log('[deposit] adding new txn', newTransaction);
+  logger.log('[deposit] adding new txn', newTransaction);
   // Disable the txn watcher because Compound can silently fail
   dispatch(dataAddNewTransaction(newTransaction, true));
-  console.log('[deposit] calling the callback');
+  logger.log('[deposit] calling the callback');
   currentRap.callback();
   currentRap.callback = NOOP;
 
   // wait for it to complete
   currentRap.actions[index].transaction.hash = deposit.hash;
   try {
-    console.log('[deposit] waiting for the deposit to go thru', deposit.hash);
+    logger.log('[deposit] waiting for the deposit to go thru', deposit.hash);
     const receipt = await wallet.provider.waitForTransaction(deposit.hash);
-    console.log('[deposit] receipt:', receipt);
+    logger.log('[deposit] receipt:', receipt);
     if (!isZero(receipt.status)) {
       currentRap.actions[index].transaction.confirmed = true;
       dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
-      console.log('[deposit] updated raps');
+      logger.log('[deposit] updated raps');
     } else {
-      console.log('[deposit] status not success');
+      logger.log('[deposit] status not success');
       currentRap.actions[index].transaction.confirmed = false;
       dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
     }
   } catch (error) {
-    console.log('[deposit] error waiting for deposit', error);
+    logger.log('[deposit] error waiting for deposit', error);
     currentRap.actions[index].transaction.confirmed = false;
     dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
   }
-  console.log('[deposit] completed');
+  logger.log('[deposit] completed');
   return null;
 };
 

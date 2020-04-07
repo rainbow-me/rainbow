@@ -12,7 +12,7 @@ import {
   compoundCERC20ABI,
   savingsAssetsListByUnderlying,
 } from '../../references';
-import { gasUtils } from '../../utils';
+import { logger, gasUtils } from '../../utils';
 
 const NOOP = () => undefined;
 
@@ -20,7 +20,7 @@ const CTOKEN_DECIMALS = 8;
 const SAVINGS_ERC20_WITHDRAW_GAS_LIMIT = 500000;
 
 const withdrawCompound = async (wallet, currentRap, index, parameters) => {
-  console.log('[withdraw]');
+  logger.log('[withdraw]');
   const {
     accountAddress,
     inputAmount,
@@ -35,16 +35,16 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     inputAmount,
     isMax ? CTOKEN_DECIMALS : inputCurrency.decimals
   );
-  console.log('[withdraw] is max', isMax);
-  console.log('[withdraw] raw input amount', rawInputAmount);
+  logger.log('[withdraw] is max', isMax);
+  logger.log('[withdraw] raw input amount', rawInputAmount);
 
-  console.log('[withdraw] execute the withdraw');
+  logger.log('[withdraw] execute the withdraw');
   let gasPrice = get(selectedGasPrice, 'value.amount');
   if (!gasPrice) {
     gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
   }
 
-  console.log('[withdraw] gas price', gasPrice);
+  logger.log('[withdraw] gas price', gasPrice);
   const cTokenContract =
     savingsAssetsListByUnderlying[network][inputCurrency.address]
       .contractAddress;
@@ -60,11 +60,11 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     gasPrice: gasPrice ? toHex(gasPrice) : undefined,
     value: toHex(0),
   };
-  console.log('[withdraw] txn params', transactionParams);
+  logger.log('[withdraw] txn params', transactionParams);
   const withdraw = isMax
     ? await compound.redeem(rawInputAmount, transactionParams)
     : await compound.redeemUnderlying(rawInputAmount, transactionParams);
-  console.log('[withdraw] redeemed - result', withdraw);
+  logger.log('[withdraw] redeemed - result', withdraw);
 
   currentRap.actions[index].transaction.hash = withdraw.hash;
 
@@ -79,36 +79,36 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     type: TransactionTypes.withdraw,
   };
 
-  console.log('[withdraw] adding new txn', newTransaction);
+  logger.log('[withdraw] adding new txn', newTransaction);
   // Disable the txn watcher because Compound can silently fail
   dispatch(dataAddNewTransaction(newTransaction, true));
 
-  console.log('[withdraw] calling the callback');
+  logger.log('[withdraw] calling the callback');
   currentRap.callback();
   currentRap.callback = NOOP;
 
   // wait for it to complete
   currentRap.actions[index].transaction.hash = withdraw.hash;
   try {
-    console.log('[withdraw] waiting for the withdraw to go thru');
+    logger.log('[withdraw] waiting for the withdraw to go thru');
     const receipt = await wallet.provider.waitForTransaction(withdraw.hash);
-    console.log('[withdraw] withdrawal completed! Receipt:', receipt);
+    logger.log('[withdraw] withdrawal completed! Receipt:', receipt);
     if (!isZero(receipt.status)) {
       currentRap.actions[index].transaction.confirmed = true;
-      console.log('[withdraw] updated txn confirmed to true');
+      logger.log('[withdraw] updated txn confirmed to true');
       dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
-      console.log('[withdraw] updated raps');
+      logger.log('[withdraw] updated raps');
     } else {
-      console.log('[withdraw] status not success');
+      logger.log('[withdraw] status not success');
       currentRap.actions[index].transaction.confirmed = false;
       dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
     }
   } catch (error) {
-    console.log('[withdraw] error waiting for withdraw', error);
+    logger.log('[withdraw] error waiting for withdraw', error);
     currentRap.actions[index].transaction.confirmed = false;
     dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
   }
-  console.log('[withdraw] complete!');
+  logger.log('[withdraw] complete!');
   return null;
 };
 

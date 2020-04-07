@@ -10,14 +10,14 @@ import { settingsLoadState } from '../redux/settings';
 import { uniswapLoadState } from '../redux/uniswap';
 import { uniqueTokensLoadState } from '../redux/uniqueTokens';
 import { walletConnectLoadState } from '../redux/walletconnect';
-import { promiseUtils, sentryUtils } from '../utils';
+import { logger, promiseUtils } from '../utils';
 
 export default function useLoadAccountData() {
   const dispatch = useDispatch();
   const { network } = useAccountSettings();
 
   const loadAccountData = useCallback(async () => {
-    sentryUtils.addInfoBreadcrumb('Load wallet data');
+    logger.sentry('Load wallet data');
     await dispatch(openStateSettingsLoadState());
     const promises = [];
     const p1 = dispatch(settingsLoadState());

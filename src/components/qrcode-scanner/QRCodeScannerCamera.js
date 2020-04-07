@@ -5,6 +5,7 @@ import React, { PureComponent } from 'react';
 import { Dimensions, InteractionManager, StyleSheet } from 'react-native';
 import ReactNativeQRCodeScanner from 'react-native-qrcode-scanner';
 import { position } from '../../styles';
+import { logger } from '../../utils';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
 
 const sx = StyleSheet.create({
@@ -55,14 +56,14 @@ class QRCodeScannerCamera extends PureComponent {
 
   handleDisableScanner = () => {
     if (this.scannerRef && isFunction(this.scannerRef.disable)) {
-      console.log('📠🚫 Disabling QR Code Scanner');
+      logger.log('📠🚫 Disabling QR Code Scanner');
       this.scannerRef.disable();
     }
   };
 
   handleEnableScanner = () => {
     if (this.scannerRef && isFunction(this.scannerRef.enable)) {
-      console.log('📠✅ Enabling QR Code Scanner');
+      logger.log('📠✅ Enabling QR Code Scanner');
       this.scannerRef.enable();
     }
   };

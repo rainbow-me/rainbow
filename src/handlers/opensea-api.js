@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { logger } from '../utils';
 import { parseAccountUniqueTokens } from '../parsers/uniqueTokens';
 
 /**
@@ -25,7 +26,7 @@ export const apiGetAccountUniqueTokens = async (address = '') => {
     );
     return parseAccountUniqueTokens(data);
   } catch (error) {
-    console.log('Error getting unique tokens', error);
+    logger.log('Error getting unique tokens', error);
     throw error;
   }
 };
