@@ -127,6 +127,8 @@ export const buildCoinsList = (
 
 export const buildUniqueTokenList = uniqueTokens => {
   let rows = [];
+  const showcaseTokens = [];
+  const bundledShowcaseTokens = [];
 
   const grouped = groupBy(uniqueTokens, token => token.asset_contract.name);
   const families = Object.keys(grouped);
@@ -135,8 +137,10 @@ export const buildUniqueTokenList = uniqueTokens => {
     const tokensRow = [];
     for (let j = 0; j < grouped[families[i]].length; j += 2) {
       if (grouped[families[i]][j + 1]) {
+        showcaseTokens.push(grouped[families[i]][j]);
         tokensRow.push([grouped[families[i]][j], grouped[families[i]][j + 1]]);
       } else {
+        showcaseTokens.push(grouped[families[i]][j]);
         tokensRow.push([grouped[families[i]][j]]);
       }
     }
@@ -152,6 +156,27 @@ export const buildUniqueTokenList = uniqueTokens => {
   }
 
   rows = sortBy(rows, ['familyName']);
+
+  for (let i = 0; i < showcaseTokens.length; i += 2) {
+    if (showcaseTokens[i + 1]) {
+      bundledShowcaseTokens.push([showcaseTokens[i], showcaseTokens[i + 1]]);
+    } else {
+      bundledShowcaseTokens.push([showcaseTokens[i]]);
+    }
+  }
+  if (families.length > 0) {
+    rows = [
+      {
+        childrenAmount: 1,
+        familyImage: 'asdf',
+        familyName: 'Showcase',
+        stableId: 'plplpplplplplp',
+        tokens: bundledShowcaseTokens,
+        uniqueId: 'jhghjkiuhybnijhbnjihnkmijnklkj',
+      },
+    ].concat(rows);
+  }
+
   rows.forEach((row, i) => {
     row.familyId = i;
     row.tokens[0][0].rowNumber = i;
