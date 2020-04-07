@@ -18,7 +18,6 @@ export const buildAssetUniqueIdentifier = item => {
 };
 
 export const buildCoinsList = assets => {
-  assets.splice(6);
   let standardAssets = [],
     pinnedAssets = [],
     hiddenAssets = [];
