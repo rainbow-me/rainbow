@@ -162,6 +162,7 @@ const ExchangeModal = ({
   const [outputAmount, setOutputAmount] = useState(null);
   const [outputAmountDisplay, setOutputAmountDisplay] = useState(null);
   const [outputCurrency, setOutputCurrency] = useState(null);
+  const [inputBalance, setInputBalance] = useState(null);
   const [showConfirmButton, setShowConfirmButton] = useState(
     isDeposit || isWithdrawal ? true : false
   );
@@ -368,13 +369,7 @@ const ExchangeModal = ({
   ]);
 
   const calculateInputGivenOutputChange = useCallback(
-    (
-      tradeDetails,
-      isOutputEmpty,
-      isOutputZero,
-      inputDecimals,
-      inputBalance
-    ) => {
+    (tradeDetails, isOutputEmpty, isOutputZero, inputDecimals) => {
       if (isOutputEmpty || isOutputZero) {
         updateInputAmount();
         setIsSufficientBalance(true);
@@ -402,7 +397,7 @@ const ExchangeModal = ({
         );
       }
     },
-    [inputAsExactAmount, inputCurrency, updateInputAmount]
+    [inputAsExactAmount, inputBalance, inputCurrency, updateInputAmount]
   );
 
   const calculateOutputGivenInputChange = useCallback(
@@ -465,14 +460,6 @@ const ExchangeModal = ({
       );
       setSlippage(slippage);
 
-      // update sufficient balance
-      const inputBalance = await ethereumUtils.getBalanceAmount(
-        selectedGasPrice,
-        inputCurrency,
-        true,
-        accountAddress
-      );
-
       const isSufficientBalance =
         !inputAmount || greaterThanOrEqualTo(inputBalance, inputAmount);
       setIsSufficientBalance(isSufficientBalance);
@@ -514,8 +501,7 @@ const ExchangeModal = ({
           tradeDetails,
           isOutputEmpty,
           isOutputZero,
-          inputDecimals,
-          inputBalance
+          inputDecimals
         );
       }
 
@@ -541,13 +527,13 @@ const ExchangeModal = ({
     gasUpdateTxFee,
     inputAmount,
     inputAsExactAmount,
+    inputBalance,
     inputCurrency,
     inputReserve,
     nativeAmount,
     outputAmount,
     outputCurrency,
     outputReserve,
-    selectedGasPrice,
     updateExtraTradeDetails,
     updateTradeDetails,
   ]);
@@ -593,12 +579,7 @@ const ExchangeModal = ({
     if (isWithdrawal) {
       maxBalance = supplyBalanceUnderlying;
     } else {
-      maxBalance = await ethereumUtils.getBalanceAmount(
-        selectedGasPrice,
-        inputCurrency,
-        true,
-        accountAddress
-      );
+      maxBalance = inputBalance;
     }
 
     analytics.track('Selected max balance', {
@@ -745,44 +726,32 @@ const ExchangeModal = ({
         }
         setNativeAmount(newNativeAmount);
 
-        const checkSufficientBalance = async () => {
-          // update sufficient balance
-          if (inputCurrency) {
-            const inputBalance = await ethereumUtils.getBalanceAmount(
-              selectedGasPrice,
-              inputCurrency,
-              true,
-              accountAddress
-            );
+        if (inputCurrency) {
+          const isSufficientBalance =
+            !newInputAmount ||
+            (isWithdrawal
+              ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
+              : greaterThanOrEqualTo(inputBalance, newInputAmount));
+          setIsSufficientBalance(isSufficientBalance);
+        }
+      }
 
-            const isSufficientBalance =
-              !newInputAmount ||
-              (isWithdrawal
-                ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
-                : greaterThanOrEqualTo(inputBalance, newInputAmount));
-            setIsSufficientBalance(isSufficientBalance);
-          }
-
-          if (newAmountDisplay) {
-            analytics.track('Updated input amount', {
-              category: isDeposit ? 'savings' : 'swap',
-              defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
-              type,
-              value: Number(newAmountDisplay.toString()),
-            });
-          }
-        };
-        checkSufficientBalance();
+      if (newAmountDisplay) {
+        analytics.track('Updated input amount', {
+          category: isDeposit ? 'savings' : 'swap',
+          defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+          type,
+          value: Number(newAmountDisplay.toString()),
+        });
       }
     },
     [
-      accountAddress,
       defaultInputAsset,
       getMarketPrice,
+      inputBalance,
       inputCurrency,
       isDeposit,
       isWithdrawal,
-      selectedGasPrice,
       supplyBalanceUnderlying,
       type,
     ]
@@ -797,7 +766,7 @@ const ExchangeModal = ({
     updateInputAmount();
   }, [updateInputAmount]);
 
-  const updateInputCurrency = (newInputCurrency, userSelected = true) => {
+  const updateInputCurrency = async (newInputCurrency, userSelected = true) => {
     logger.log(
       '[update input curr] new input curr, user selected?',
       newInputCurrency,
@@ -839,6 +808,15 @@ const ExchangeModal = ({
       );
       updateOutputCurrency(newDepositOutput, false);
     }
+
+    // Update current balance
+    const inputBalance = await ethereumUtils.getBalanceAmount(
+      selectedGasPrice,
+      newInputCurrency,
+      true,
+      accountAddress
+    );
+    setInputBalance(inputBalance);
 
     analytics.track('Switched input asset', {
       category: isDeposit ? 'savings' : 'swap',
