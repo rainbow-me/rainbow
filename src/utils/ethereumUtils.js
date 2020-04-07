@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { ethers } from 'ethers';
 import { find, get, isEmpty, replace, toLower } from 'lodash';
 import { web3Provider } from '../handlers/web3';
@@ -34,16 +35,23 @@ const getBalanceAmount = async (
     if (!onchain) {
       amount = get(selected, 'balance.amount', 0);
     } else {
-      const tokenContract = new ethers.Contract(
-        selected.address,
-        erc20ABI,
-        web3Provider
-      );
-      const onchainAmount = await tokenContract.balanceOf(accountAddress);
-      amount = convertRawAmountToDecimalFormat(
-        onchainAmount,
-        selected.decimals
-      );
+      try {
+        const tokenContract = new ethers.Contract(
+          selected.address,
+          erc20ABI,
+          web3Provider
+        );
+        const onchainAmount = await tokenContract.balanceOf(accountAddress);
+        amount = convertRawAmountToDecimalFormat(
+          onchainAmount,
+          selected.decimals
+        );
+      } catch (e) {
+        // Default to current balance
+        // if something goes wrong
+        captureException(e);
+        amount = get(selected, 'balance.amount', 0);
+      }
     }
   }
   return amount;
