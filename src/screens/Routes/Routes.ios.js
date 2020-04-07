@@ -7,6 +7,7 @@ import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
 // eslint-disable-next-line import/no-unresolved
 import { enableScreens } from 'react-native-screens';
 import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
+import createBottomSheetStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 import { createStackNavigator } from 'react-navigation-stack';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import {
@@ -165,18 +166,6 @@ const MainNavigator = createStackNavigator(
       },
       screen: SavingsSheet,
     },
-    SettingsModal: {
-      navigationOptions: {
-        ...expandedPreset,
-        gesturesEnabled: false,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: SettingsModal,
-      transparentCard: true,
-    },
     SwipeLayout: {
       navigationOptions: {
         ...backgroundPreset,
@@ -210,6 +199,20 @@ const MainNavigator = createStackNavigator(
     headerMode: 'none',
     initialRouteName: 'SwipeLayout',
     mode: 'modal',
+  }
+);
+
+const MainNativeNavigation = createBottomSheetStackNavigator(
+  {
+    MainNavigator,
+    SettingsModal,
+  },
+  {
+    defaultNavigationOptions: {
+      customStack: true,
+    },
+    customStack: true,
+    mode: 'modal'
   }
 );
 
@@ -261,7 +264,7 @@ const nativeStackWrapperRoutes = {
           />
         );
       },
-      MainNavigator,
+      MainNativeNavigation,
       SendSheetNavigator: isNativeStackAvailable
         ? createStackNavigator(sendFlowRoutes, {
             defaultNavigationOptions: {
@@ -279,7 +282,7 @@ const nativeStackWrapperRoutes = {
         onAppear: () => appearListener && appearListener(),
       },
       headerMode: 'none',
-      initialRouteName: 'MainNavigator',
+      initialRouteName: 'MainNativeNavigation',
       mode: 'modal',
     }
   ),

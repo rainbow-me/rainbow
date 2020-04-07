@@ -174,6 +174,7 @@ PODS:
   - OpenSSL-Universal (1.0.2.19):
     - OpenSSL-Universal/Static (= 1.0.2.19)
   - OpenSSL-Universal/Static (1.0.2.19)
+  - PanModal (1.2.5)
   - Permission-Camera (2.0.10):
     - RNPermissions
   - Permission-FaceID (2.0.10):
@@ -442,6 +443,9 @@ PODS:
     - React
   - RNCMaskedView (0.1.7):
     - React
+  - RNCoolModals (0.0.3):
+    - PanModal
+    - React
   - RNCPushNotificationIOS (1.1.0):
     - React
   - RNDeviceInfo (5.3.1):
@@ -496,6 +500,7 @@ PODS:
   - Sentry (4.4.3):
     - Sentry/Core (= 4.4.3)
   - Sentry/Core (4.4.3)
+  - SocketRocket (0.5.1)
   - SRSRadialGradient (1.0.6):
     - React
   - SSZipArchive (2.2.2)
@@ -565,6 +570,7 @@ DEPENDENCIES:
   - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
+  - RNCoolModals (from `../node_modules/react-native-cool-modals`)
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
@@ -583,6 +589,7 @@ DEPENDENCIES:
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNStoreReview (from `../node_modules/react-native-store-review/ios`)
   - RNSVG (from `../node_modules/react-native-svg`)
+  - SocketRocket (from `../node_modules/detox/ios_src/SocketRocket`)
   - SRSRadialGradient (from `../node_modules/react-native-radial-gradient/ios`)
   - TcpSockets (from `../node_modules/react-native-tcp`)
   - ToolTipMenu (from `../node_modules/react-native-tooltip`)
@@ -621,6 +628,7 @@ SPEC REPOS:
     - libwebp
     - nanopb
     - OpenSSL-Universal
+    - PanModal
     - Protobuf
     - SDWebImage
     - SDWebImageWebPCoder
@@ -721,6 +729,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/async-storage"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
+  RNCoolModals:
+    :path: "../node_modules/react-native-cool-modals"
   RNCPushNotificationIOS:
     :path: "../node_modules/@react-native-community/push-notification-ios"
   RNDeviceInfo:
@@ -757,6 +767,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-store-review/ios"
   RNSVG:
     :path: "../node_modules/react-native-svg"
+  SocketRocket:
+    :path: "../node_modules/detox/ios_src/SocketRocket"
   SRSRadialGradient:
     :path: "../node_modules/react-native-radial-gradient/ios"
   TcpSockets:
@@ -807,6 +819,7 @@ SPEC CHECKSUMS:
   lottie-react-native: 2a1a82bb326ae51331a5520de0cf706733c6db69
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
+  PanModal: 7c5af3ad4fe22b91508040965bebffb89fb607ae
   Permission-Camera: a8f6007d17b02ed8a2d6bac1c37c2fd5df9b4e8a
   Permission-FaceID: cb03a979336319d837a4e5e867306345297c5230
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
@@ -845,6 +858,7 @@ SPEC CHECKSUMS:
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 44395cb9c7c1523104c2b499eb426ef7aff82bca
   RNCMaskedView: 76c40a1d41c3e2535df09246a2b5487f04de0814
+  RNCoolModals: 8caecca1a2e71162cc954b59c9d82bd8d1bb9abb
   RNCPushNotificationIOS: ec3e8c17cda6a92a0bb97a53ec5ecf5771d94d21
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNFastImage: 9b0c22643872bb7494c8d87bbbb66cc4c0d9e7a2
@@ -866,6 +880,7 @@ SPEC CHECKSUMS:
   SDWebImage: 4d5c027c935438f341ed33dbac53ff9f479922ca
   SDWebImageWebPCoder: 947093edd1349d820c40afbd9f42acb6cdecd987
   Sentry: 14bdd673870e8cf64932b149fad5bbbf39a9b390
+  SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SRSRadialGradient: 77bcb1ae812d0c77560e54ed9e52166df032db1d
   SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
@@ -875,4 +890,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 9b67a38bec877427026ceec99753a1ddd49ea3a9
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.8.4
