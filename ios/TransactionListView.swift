@@ -191,6 +191,23 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     return view
   }
   
+  func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    let item = sections[indexPath.section]
+    
+    if item.type == .transactions {
+      let section = sections[indexPath.section]
+      
+      if section.data.indices.contains(indexPath.row + 1) {
+        let nextTransaction = section.data[indexPath.row + 1] as! Transaction
+        if nextTransaction.isSwapped() {
+          return 56.0
+        }
+      }
+    }
+    
+    return 70.0
+  }
+  
   func numberOfSections(in tableView: UITableView) -> Int {
     return sections.count
   }
