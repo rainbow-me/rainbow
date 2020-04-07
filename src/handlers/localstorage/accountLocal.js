@@ -23,6 +23,7 @@ const PURCHASE_TRANSACTIONS = 'purchaseTransactions';
 const SMALL_BALANCE_TOGGLE = 'smallBalanceToggle';
 const SAVINGS = 'savings';
 const SAVINGS_TOGGLE = 'savingsToggle';
+const SHOWCASE_TOKENS = 'showcaseTokens';
 const TRANSACTIONS = 'transactions';
 const UNIQUE_TOKENS = 'uniquetokens';
 const WALLET_EMPTY = 'iswalletempty';
@@ -449,3 +450,30 @@ export const getHiddenCoins = (accountAddress, network) =>
  */
 export const saveHiddenCoins = (hiddenCoins, accountAddress, network) =>
   saveAccountLocal(HIDDEN_COINS, hiddenCoins, accountAddress, network);
+
+/**
+ * @desc get profile info
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getShowcaseTokens = (accountAddress, network) =>
+  getAccountLocal(SHOWCASE_TOKENS, accountAddress, network, {});
+
+/**
+ * @desc save profile info
+ * @param  {String}   [address]
+ * @param  {Array}    [Showcase tokens]
+ * @param  {String}   [network]
+ */
+export const saveShowcaseTokens = (showcaseTokens, accountAddress, network) =>
+  saveAccountLocal(SHOWCASE_TOKENS, showcaseTokens, accountAddress, network);
+
+/**
+ * @desc remove profile info
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const removeShowcaseTokens = (accountAddress, network) =>
+  removeAccountLocal(SHOWCASE_TOKENS, accountAddress, network);
