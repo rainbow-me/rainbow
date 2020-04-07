@@ -15,13 +15,7 @@ const NOOP = () => undefined;
 
 const unlock = async (wallet, currentRap, index, parameters) => {
   const { dispatch } = store;
-  const {
-    accountAddress,
-    amount,
-    assetToUnlock,
-    contractAddress,
-    override,
-  } = parameters;
+  const { amount, assetToUnlock, contractAddress, override } = parameters;
   const _amount = override || amount;
   logger.log(
     '[unlock] begin unlock rap for',
@@ -31,19 +25,6 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   );
   logger.log('[unlock]', amount, override, _amount);
 
-  const needsUnlocking = await assetNeedsUnlocking(
-    accountAddress,
-    _amount,
-    assetToUnlock,
-    contractAddress
-  );
-
-  logger.log('[unlock] does this thing need unlocking?', needsUnlocking);
-  currentRap.actions[index].transaction.confirmed = true;
-  dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
-  if (!needsUnlocking) return _amount;
-
-  logger.log('[unlock] unlock needed');
   const { gasPrices } = store.getState().gas;
   const { address: assetAddress } = assetToUnlock;
 
@@ -107,7 +88,7 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   return _amount;
 };
 
-const assetNeedsUnlocking = async (
+export const assetNeedsUnlocking = async (
   accountAddress,
   amount,
   assetToUnlock,
