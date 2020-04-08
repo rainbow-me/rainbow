@@ -15,7 +15,7 @@ const sx = StyleSheet.create({
     backgroundColor: colors.swapPurple,
     borderRadius: ButtonBorderRadius,
     height: 30,
-    paddingBottom: 2,
+    paddingBottom: 1,
     paddingRight: 2,
     width: 97,
   },

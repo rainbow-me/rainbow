@@ -18,6 +18,7 @@ const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => (
     <DollarFigure value={balance} decimals={2} />
     <RowWithMargins align="center" margin={4} marginTop={1}>
       <Text
+        align="center"
         color={colors.green}
         letterSpacing="roundedTight"
         size="large"
