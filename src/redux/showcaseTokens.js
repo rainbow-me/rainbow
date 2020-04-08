@@ -1,6 +1,9 @@
 import { remove } from 'lodash';
 import produce from 'immer';
-import { getShowcaseTokens } from '../handlers/localstorage/accountLocal';
+import {
+  getShowcaseTokens,
+  saveShowcaseTokens,
+} from '../handlers/localstorage/accountLocal';
 
 // -- Constants --------------------------------------- //
 const SHOWCASE_TOKENS_LOAD_SUCCESS =
@@ -24,11 +27,17 @@ export const showcaseTokensLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const pushShowcaseToken = payload => dispatch =>
+export const pushShowcaseToken = payload => async (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
   dispatch({
-    payload,
+    payload: {
+      accountAddress,
+      network,
+      uniqueId: payload,
+    },
     type: PUSH_SHOWCASE_TOKEN,
   });
+};
 
 export const popShowcaseToken = payload => dispatch =>
   dispatch({
@@ -44,10 +53,17 @@ const INITIAL_STATE = {
 export default (state = INITIAL_STATE, action) =>
   produce(state, draft => {
     if (action.type === PUSH_SHOWCASE_TOKEN) {
-      draft.showcaseTokens.push(action.payload);
+      draft.showcaseTokens.push(action.payload.uniqueId);
+      saveShowcaseTokens(
+        draft.showcaseTokens,
+        action.payload.accountAddress,
+        action.payload.network
+      );
     } else if (action.type === POP_SHOWCASE_TOKEN) {
       remove(draft.showcaseTokens, token => {
         return token === action.payload;
       });
+    } else if (action.type === SHOWCASE_TOKENS_LOAD_SUCCESS) {
+      draft.showcaseTokens = action.payload.length > 0 ? action.payload : [];
     }
   });
