@@ -1,10 +1,70 @@
-import { concat } from 'lodash';
+import { concat, reduce } from 'lodash';
+import {
+  calculateTradeDetails,
+  estimateSwapGasLimit,
+} from '../handlers/uniswap';
+import { add } from '../helpers/utilities';
 import store from '../redux/store';
 import { rapsAddOrUpdate } from '../redux/raps';
+import { ethUnits } from '../references';
+import { contractUtils } from '../utils';
+import { isValidSwapInput } from './actions/swap';
 import { assetNeedsUnlocking } from './actions/unlock';
 import { createNewAction, createNewRap, RapActionTypes } from './common';
 
-const createUnlockAndSwapRap = ({
+export const estimateUnlockAndSwap = async ({
+  inputAmount,
+  inputCurrency,
+  inputReserve,
+  outputAmount,
+  outputCurrency,
+  outputReserve,
+}) => {
+  const isValid = isValidSwapInput({
+    inputAmount,
+    inputCurrency,
+    inputReserve,
+    outputAmount,
+    outputCurrency,
+    outputReserve,
+  });
+
+  if (!isValid) return ethUnits.basic_swap;
+
+  const { accountAddress, chainId } = store.getState().settings;
+  let gasLimits = [];
+
+  const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
+    accountAddress,
+    inputAmount,
+    inputCurrency,
+    inputCurrency.exchangeAddress
+  );
+  if (swapAssetNeedsUnlocking) {
+    const unlockGasLimit = await contractUtils.estimateApprove(
+      inputCurrency.address,
+      inputCurrency.exchangeAddress
+    );
+    gasLimits = concat(gasLimits, unlockGasLimit);
+  }
+
+  const tradeDetails = calculateTradeDetails(
+    chainId,
+    inputAmount,
+    inputCurrency,
+    inputReserve,
+    outputAmount,
+    outputCurrency,
+    outputReserve,
+    true
+  );
+  const swapGasLimit = await estimateSwapGasLimit(accountAddress, tradeDetails);
+  gasLimits = concat(gasLimits, swapGasLimit);
+
+  return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
+};
+
+const createUnlockAndSwapRap = async ({
   callback,
   inputAmount,
   inputAsExactAmount,
@@ -20,7 +80,7 @@ const createUnlockAndSwapRap = ({
 
   let actions = [];
 
-  const swapAssetNeedsUnlocking = assetNeedsUnlocking(
+  const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
     accountAddress,
     inputAmount,
     inputCurrency,

@@ -117,11 +117,7 @@ export const gasUpdateGasPriceOption = newGasPriceOption => (
     },
     type: GAS_UPDATE_GAS_PRICE_OPTION,
   });
-  const nextSpeedGweiValue = get(
-    gasPrices,
-    `[${newGasPriceOption}].value.display`
-  );
-  analytics.track('Updated Gas Price', { gasPrice: nextSpeedGweiValue });
+  analytics.track('Updated Gas Price', { gasPriceOption: newGasPriceOption });
 };
 
 export const gasUpdateDefaultGasLimit = (
