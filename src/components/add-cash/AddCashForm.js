@@ -3,8 +3,10 @@ import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useState } from 'react';
 import Animated from 'react-native-reanimated';
+import { useSelector } from 'react-redux';
 import { useDimensions } from '../../hooks';
 import { padding } from '../../styles';
+import { Alert } from '../alerts';
 import { runSpring } from '../animations';
 import { Centered, ColumnWithMargins } from '../layout';
 import { Numpad, NumpadValue } from '../numpad';
@@ -14,7 +16,6 @@ import AddCashSelector from './AddCashSelector';
 const { Clock } = Animated;
 
 const currencies = ['DAI', 'ETH'];
-const initialCurrencyIndex = 0;
 
 const AddCashForm = ({
   limitDaily,
@@ -24,8 +25,14 @@ const AddCashForm = ({
   onShake,
   shakeAnim,
 }) => {
+  const isWalletEthZero = useSelector(
+    ({ isWalletEthZero: { isWalletEthZero } }) => isWalletEthZero
+  );
+
   const { isNarrowPhone, isSmallPhone, isTinyPhone } = useDimensions();
   const [scaleAnim, setScaleAnim] = useState(1);
+
+  const initialCurrencyIndex = isWalletEthZero ? 1 : 0;
   const [currency, setCurrency] = useState(currencies[initialCurrencyIndex]);
   const [value, setValue] = useState(null);
 
@@ -101,13 +108,29 @@ const AddCashForm = ({
     [limitDaily, onClearError, onLimitExceeded, onShake]
   );
 
-  const onCurrencyChange = useCallback(val => {
-    setCurrency(val);
-    analytics.track('Switched currency to purchase', {
-      category: 'add cash',
-      label: val,
-    });
-  }, []);
+  const onCurrencyChange = useCallback(
+    val => {
+      if (isWalletEthZero) {
+        Alert({
+          buttons: [{ text: 'Okay' }],
+          message:
+            'Before you can purchase DAI you must have some ETH in your wallet!',
+          title: `You don't have any ETH!`,
+        });
+        analytics.track('Tried to purchase DAI but doesnt own any ETH', {
+          category: 'add cash',
+          label: val,
+        });
+      } else {
+        setCurrency(val);
+        analytics.track('Switched currency to purchase', {
+          category: 'add cash',
+          label: val,
+        });
+      }
+    },
+    [isWalletEthZero]
+  );
 
   return (
     <Fragment>
@@ -124,6 +147,7 @@ const AddCashForm = ({
             currencies={currencies}
             initialCurrencyIndex={initialCurrencyIndex}
             onSelect={onCurrencyChange}
+            isWalletEthZero={isWalletEthZero}
           />
         </ColumnWithMargins>
       </Centered>
