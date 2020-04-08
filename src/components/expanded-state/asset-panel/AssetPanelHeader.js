@@ -9,6 +9,8 @@ import { Text, TruncatedText } from '../../text';
 import FloatingPanel from '../FloatingPanel';
 import ContextMenu from '../../ContextMenu';
 import { withShowcaseTokens } from '../../../hoc';
+import store from '../../../redux/store';
+import { uniqueTokensRefreshState } from '../../../redux/uniqueTokens';
 
 const Container = styled(ColumnWithMargins).attrs({
   justify: 'start',
@@ -86,6 +88,7 @@ const AssetPanelHeader = ({
               } else {
                 pushShowcaseToken(asset.uniqueId);
               }
+              store.dispatch(uniqueTokensRefreshState());
             }
           }}
           options={

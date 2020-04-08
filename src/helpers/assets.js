@@ -180,7 +180,9 @@ export const buildUniqueTokenList = uniqueTokens => {
         familyName: 'Showcase',
         stableId: 'showcase_stable_id',
         tokens: bundledShowcaseTokens,
-        uniqueId: 'showcase_unique_id',
+        uniqueId: `sc_${showcaseTokens
+          .map(({ uniqueId }) => uniqueId)
+          .join('__')}`,
       },
     ].concat(rows);
   }
