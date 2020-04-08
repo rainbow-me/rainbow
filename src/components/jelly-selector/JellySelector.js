@@ -42,6 +42,7 @@ const calculatePosition = () => {
 };
 
 const JellySelector = ({
+  disableSelection,
   height,
   initialCurrencyIndex,
   items,
@@ -112,8 +113,10 @@ const JellySelector = ({
               enableHapticFeedback={false}
               key={index}
               onPress={() => {
-                animateTransition(index);
-                setSelected(index);
+                if (!disableSelection) {
+                  animateTransition(index);
+                  setSelected(index);
+                }
                 onSelect(items[index]);
               }}
               scaleTo={0.94}
@@ -132,6 +135,7 @@ const JellySelector = ({
 };
 
 JellySelector.propTypes = {
+  disableSelection: PropTypes.bool,
   height: PropTypes.number.isRequired,
   initialCurrencyIndex: PropTypes.number,
   items: PropTypes.array,
