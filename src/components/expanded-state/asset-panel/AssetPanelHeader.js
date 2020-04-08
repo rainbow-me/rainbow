@@ -1,12 +1,14 @@
+import { includes } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { onlyUpdateForPropTypes, withProps } from 'recompact';
+import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../../../styles';
 import { ColumnWithMargins, Row, Column } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import FloatingPanel from '../FloatingPanel';
 import ContextMenu from '../../ContextMenu';
+import { withShowcaseTokens } from '../../../hoc';
 
 const Container = styled(ColumnWithMargins).attrs({
   justify: 'start',
@@ -40,7 +42,14 @@ const Title = styled(TruncatedText).attrs(HeadingTextStyles)`
   padding-right: ${({ paddingRight }) => paddingRight};
 `;
 
-const AssetPanelHeader = ({ asset, price, priceLabel, subtitle, title }) => (
+const AssetPanelHeader = ({
+  asset,
+  price,
+  priceLabel,
+  subtitle,
+  title,
+  showcaseTokens,
+}) => (
   <Container>
     <Row style={{ justifyContent: 'space-between' }}>
       <Column flex={1}>
@@ -67,10 +76,15 @@ const AssetPanelHeader = ({ asset, price, priceLabel, subtitle, title }) => (
       {asset ? (
         <ContextMenu
           css={padding(0, 0, 3, 16)}
+          destructiveButtonIndex={includes(showcaseTokens, asset.uniqueId) && 0}
           onPressActionSheet={() => {
-            console.log(asset.uniqueId);
+            console.log(includes(showcaseTokens, asset.uniqueId));
           }}
-          options={['Add to Showcase', 'Cancel']}
+          options={
+            includes(showcaseTokens, asset.uniqueId)
+              ? ['Remove from Showcase', 'Cancel']
+              : ['Add to Showcase', 'Cancel']
+          }
         />
       ) : null}
     </Row>
@@ -84,4 +98,4 @@ AssetPanelHeader.propTypes = {
   title: PropTypes.string,
 };
 
-export default onlyUpdateForPropTypes(AssetPanelHeader);
+export default compose(withShowcaseTokens)(AssetPanelHeader);
