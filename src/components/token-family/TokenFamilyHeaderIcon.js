@@ -2,10 +2,22 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ShadowStack from 'react-native-shadow-stack';
 import stylePropType from 'react-style-proptype';
+import styled from 'styled-components/primitives';
 import { FallbackIcon } from 'react-coin-icon';
 import { borders, colors } from '../../styles';
 import { initials } from '../../utils';
 import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
+import { Text } from '../text';
+
+const Container = styled(Text)`
+  height: 32;
+  width: 30;
+  text-align-vertical: center;
+  text-align: center;
+  margin-right: 8;
+  margin-left: 2;
+  font-size: 16px;
+`;
 
 const TokenFamilyHeaderIcon = ({
   familyImage,
@@ -14,7 +26,9 @@ const TokenFamilyHeaderIcon = ({
   style,
 }) => {
   const size = borders.buildCircleAsObject(isCoinRow ? 40 : 32);
-  return (
+  return familyName === 'Showcase' ? (
+    <Container>🏆</Container>
+  ) : (
     <ShadowStack
       {...size}
       backgroundColor={familyImage ? colors.white : colors.purpleLight}

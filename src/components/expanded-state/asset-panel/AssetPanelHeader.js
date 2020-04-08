@@ -49,6 +49,8 @@ const AssetPanelHeader = ({
   subtitle,
   title,
   showcaseTokens,
+  pushShowcaseToken,
+  popShowcaseToken,
 }) => (
   <Container>
     <Row style={{ justifyContent: 'space-between' }}>
@@ -77,8 +79,14 @@ const AssetPanelHeader = ({
         <ContextMenu
           css={padding(0, 0, 3, 16)}
           destructiveButtonIndex={includes(showcaseTokens, asset.uniqueId) && 0}
-          onPressActionSheet={() => {
-            console.log(includes(showcaseTokens, asset.uniqueId));
+          onPressActionSheet={index => {
+            if (index === 0) {
+              if (includes(showcaseTokens, asset.uniqueId)) {
+                popShowcaseToken(asset.uniqueId);
+              } else {
+                pushShowcaseToken(asset.uniqueId);
+              }
+            }
           }}
           options={
             includes(showcaseTokens, asset.uniqueId)

@@ -177,7 +177,6 @@ export const buildUniqueTokenList = uniqueTokens => {
     rows = [
       {
         childrenAmount: showcaseTokens.length,
-        familyImage: 'showcase_trophy',
         familyName: 'Showcase',
         stableId: 'showcase_stable_id',
         tokens: bundledShowcaseTokens,
