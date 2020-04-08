@@ -20,3 +20,4 @@ export { default as safeAreaInsetValues } from './safeAreaInsetValues';
 export { default as sentryUtils } from './sentry';
 export { default as statusBar } from './statusBar';
 export { default as magicMemo } from './magicMemo';
+export { default as logger } from './logger';

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { get, mapKeys, toLower } from 'lodash';
+import { logger } from '../utils';
 
 /**
  * Configuration for api
@@ -24,7 +25,7 @@ export const apiGetTokenOverrides = async () => {
     const overrides = get(data, 'data') || {};
     return mapKeys(overrides, (value, address) => toLower(address));
   } catch (error) {
-    console.log('Error getting token overrides', error);
+    logger.log('Error getting token overrides', error);
     throw error;
   }
 };

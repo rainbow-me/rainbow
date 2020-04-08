@@ -16,7 +16,7 @@ import {
 } from '../helpers/wyreStatusTypes';
 import { dataAddNewPurchaseTransaction } from '../redux/data';
 import { AddCashCurrencies, AddCashCurrencyInfo } from '../references';
-import { ethereumUtils, sentryUtils } from '../utils';
+import { ethereumUtils, logger } from '../utils';
 import useAccountData from './useAccountData';
 import useTimeout from './useTimeout';
 
@@ -144,7 +144,7 @@ export default function useWyreApplePay() {
 
         if (!isPaymentComplete) {
           if (isFailed) {
-            sentryUtils.addDataBreadcrumb('Wyre order data', data);
+            logger.sentry('Wyre order data', data);
             captureMessage(`Wyre final check - order status failed`);
             analytics.track('Purchase failed', {
               category: 'add cash',
@@ -160,7 +160,7 @@ export default function useWyreApplePay() {
             paymentResponse.complete('success');
             handlePaymentCallback();
           } else if (!isChecking) {
-            sentryUtils.addDataBreadcrumb('Wyre order data', data);
+            logger.sentry('Wyre order data', data);
             captureMessage(`Wyre final check - order status unknown`);
           }
         }

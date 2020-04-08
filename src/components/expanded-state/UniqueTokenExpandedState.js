@@ -14,8 +14,8 @@ import { colors } from '../../styles';
 import {
   deviceUtils,
   dimensionsPropType,
+  logger,
   safeAreaInsetValues,
-  sentryUtils,
 } from '../../utils';
 import { Centered } from '../layout';
 import { Pager } from '../pager';
@@ -182,10 +182,7 @@ export default compose(
       });
     },
     onPressView: ({ asset }) => () => {
-      sentryUtils.addDataBreadcrumb(
-        'UniqueTokenExpandedState press view on OpenSea',
-        asset
-      );
+      logger.sentry('UniqueTokenExpandedState press view on OpenSea', asset);
       const { permalink } = asset;
       permalink && Linking.openURL(permalink);
     },

@@ -4,6 +4,7 @@ import { web3Provider } from '../handlers/web3';
 import networkInfo from '../helpers/networkInfo';
 import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
 import testnetAssets from '../references/testnet-assets.json';
+import { logger } from '../utils';
 import { addressAssetsReceived } from './data';
 import { setIsWalletEthZero } from './isWalletEthZero';
 
@@ -20,7 +21,7 @@ const fetchAssetPrices = async (coingecko_ids, nativeCurrency) => {
     );
     return priceRequest.json();
   } catch (e) {
-    console.log(`Error trying to fetch ${coingecko_ids} prices`, e);
+    logger.log(`Error trying to fetch ${coingecko_ids} prices`, e);
   }
 };
 
@@ -43,7 +44,7 @@ const fetchAssetBalances = async (tokens, address, network) => {
     });
     return balances[address];
   } catch (e) {
-    console.log(
+    logger.log(
       'Error fetching balances from balanceCheckerContract',
       network,
       e

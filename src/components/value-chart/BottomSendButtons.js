@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { colors, fonts } from '../../styles';
 import { Icon } from '../icons';
-import { ShadowStack } from '../shadow-stack';
 import { ButtonPressAnimation } from '../animations';
 import { deviceUtils } from '../../utils';
 
@@ -46,7 +46,6 @@ const BottomSendButtons = ({ onPressSend, onPressSwap }) => (
         borderRadius={26}
         width={buttonWidth}
         shadows={FabShadow}
-        shadowProps={{ opacity: 1 }}
       >
         <Button backgroundColor={colors.swapPurple}>
           <Icon height={22} marginBottom={4} name="swap" width={23} />
@@ -61,7 +60,6 @@ const BottomSendButtons = ({ onPressSend, onPressSwap }) => (
         borderRadius={26}
         width={buttonWidth}
         shadows={FabShadow}
-        shadowProps={{ opacity: 1 }}
       >
         <Button backgroundColor={colors.paleBlue}>
           <Icon height={22} marginBottom={4} name="send" width={23} />
