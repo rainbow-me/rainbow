@@ -105,6 +105,15 @@ export const feeCalculation = (amount, percentFee, fixedFee) =>
  */
 export const greaterThanOrEqual = (numberOne, numberTwo) =>
   BigNumber(`${numberOne}`).comparedTo(BigNumber(`${numberTwo}`)) >= 0;
+
+/**
+ * @desc compares if numberOne is equal to numberTwo
+ * @param  {Number}   numberOne
+ * @param  {Number}   numberTwo
+ * @return {String}
+ */
+export const isEqual = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`).comparedTo(BigNumber(`${numberTwo}`)) === 0;
 /**
  * @desc real floor divides two numbers
  * @param  {Number}   numberOne
