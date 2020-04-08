@@ -3,25 +3,25 @@ import { sentryUtils } from './';
 export default class Logger {
   static log(...args) {
     if (__DEV__) {
-      console.log.apply(null, args);
+      console.log(...args);
     }
   }
 
   static debug(...args) {
     if (__DEV__) {
-      console.debug.apply(null, args);
+      console.debug(...args);
     }
   }
 
   static warn(...args) {
     if (__DEV__) {
-      console.warn.apply(null, args);
+      console.warn(...args);
     }
   }
 
   static error(...args) {
     if (__DEV__) {
-      console.error.apply(null, args);
+      console.error(...args);
     }
   }
 
