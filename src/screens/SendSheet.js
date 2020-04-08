@@ -32,6 +32,7 @@ import { checkIsValidAddress } from '../helpers/validators';
 import {
   useAccountAssets,
   useAccountSettings,
+  useGas,
   usePrevious,
   useRefreshAccountData,
   useSendableUniqueTokens,
@@ -74,13 +75,13 @@ const SendSheet = ({
   gasUpdateTxFee,
   isSufficientGas,
   removeContact,
-  selectedGasPrice,
   setAppearListener,
   sortedContacts,
   txFees,
   ...props
 }) => {
   const { allAssets } = useAccountAssets();
+  const { selectedGasPrice } = useGas();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     accountAddress,
@@ -120,7 +121,7 @@ const SendSheet = ({
   }, []);
 
   const sendUpdateAssetAmount = useCallback(
-    newAssetAmount => {
+    async newAssetAmount => {
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
@@ -137,9 +138,11 @@ const SendSheet = ({
           _assetAmount
         );
       }
-      const balanceAmount = ethereumUtils.getBalanceAmount(
+      const balanceAmount = await ethereumUtils.getBalanceAmount(
         selectedGasPrice,
-        selected
+        selected,
+        true,
+        accountAddress
       );
       const _isSufficientBalance =
         Number(_assetAmount) <= Number(balanceAmount);
@@ -149,7 +152,7 @@ const SendSheet = ({
         nativeAmount: _nativeAmount,
       });
     },
-    [nativeCurrency, selected, selectedGasPrice]
+    [accountAddress, nativeCurrency, selected, selectedGasPrice]
   );
 
   const sendUpdateSelected = useCallback(
@@ -177,7 +180,7 @@ const SendSheet = ({
   }, []);
 
   const onChangeNativeAmount = useCallback(
-    newNativeAmount => {
+    async newNativeAmount => {
       if (!isString(newNativeAmount)) return;
       const _nativeAmount = newNativeAmount.replace(/[^0-9.]/g, '');
       let _assetAmount = '';
@@ -191,9 +194,11 @@ const SendSheet = ({
         _assetAmount = formatInputDecimals(convertedAssetAmount, _nativeAmount);
       }
 
-      const balanceAmount = ethereumUtils.getBalanceAmount(
+      const balanceAmount = await ethereumUtils.getBalanceAmount(
         selectedGasPrice,
-        selected
+        selected,
+        true,
+        accountAddress
       );
       const _isSufficientBalance =
         Number(_assetAmount) <= Number(balanceAmount);
@@ -205,16 +210,18 @@ const SendSheet = ({
       });
       analytics.track('Changed native currency input in Send flow');
     },
-    [selected, selectedGasPrice]
+    [accountAddress, selected, selectedGasPrice]
   );
 
-  const sendMaxBalance = useCallback(() => {
-    const balanceAmount = ethereumUtils.getBalanceAmount(
+  const sendMaxBalance = useCallback(async () => {
+    const balanceAmount = await ethereumUtils.getBalanceAmount(
       selectedGasPrice,
-      selected
+      selected,
+      true,
+      accountAddress
     );
     sendUpdateAssetAmount(balanceAmount);
-  }, [selected, selectedGasPrice, sendUpdateAssetAmount]);
+  }, [accountAddress, selected, selectedGasPrice, sendUpdateAssetAmount]);
 
   const onChangeAssetAmount = useCallback(
     newAssetAmount => {
@@ -469,7 +476,6 @@ SendSheet.propTypes = {
   gasUpdateTxFee: PropTypes.func.isRequired,
   isSufficientGas: PropTypes.bool.isRequired,
   removeContact: PropTypes.func.isRequired,
-  selectedGasPrice: PropTypes.object,
   setAppearListener: PropTypes.func,
   sortedContacts: PropTypes.array,
   txFees: PropTypes.object.isRequired,
@@ -478,7 +484,6 @@ SendSheet.propTypes = {
 const arePropsEqual = (prev, next) =>
   prev.isSufficientGas === next.isSufficientGas &&
   prev.gasLimit === next.gasLimit &&
-  prev.selectedGasPrice === next.selectedGasPrice &&
   prev.txFees === next.txFees &&
   prev.gasPrices === next.gasPrices &&
   prev.allAssets === next.allAssets;

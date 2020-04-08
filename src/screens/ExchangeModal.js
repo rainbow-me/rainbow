@@ -107,7 +107,6 @@ const ExchangeModal = ({
   isTransitioning,
   navigation,
   createRap,
-  selectedGasPrice,
   showOutputField,
   supplyBalanceUnderlying,
   tabPosition,
@@ -120,6 +119,7 @@ const ExchangeModal = ({
   const dispatch = useDispatch();
   const { allAssets } = useAccountAssets();
   const {
+    selectedGasPrice,
     gasPricesStartPolling,
     gasPricesStopPolling,
     gasUpdateDefaultGasLimit,
@@ -196,17 +196,23 @@ const ExchangeModal = ({
       dispatch(gasPricesStopPolling());
       dispatch(web3ListenerStop());
     };
-  }, [
-    dispatch,
-    gasPricesStartPolling,
-    gasPricesStopPolling,
-    gasUpdateDefaultGasLimit,
-    isDeposit,
-    isWithdrawal,
-    uniswapClearCurrenciesAndReserves,
-    web3ListenerInit,
-    web3ListenerStop,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const updateInputBalance = async () => {
+      // Update current balance
+      const inputBalance = await ethereumUtils.getBalanceAmount(
+        selectedGasPrice,
+        inputCurrency,
+        true,
+        accountAddress
+      );
+      setInputBalance(inputBalance);
+    };
+
+    updateInputBalance();
+  }, [accountAddress, inputCurrency, selectedGasPrice]);
 
   const inputCurrencyUniqueId = get(inputCurrency, 'uniqueId');
   const outputCurrencyUniqueId = get(outputCurrency, 'uniqueId');
@@ -1035,7 +1041,6 @@ ExchangeModal.propTypes = {
   defaultInputAddress: PropTypes.string,
   inputHeaderTitle: PropTypes.string,
   navigation: PropTypes.object,
-  selectedGasPrice: PropTypes.object,
   supplyBalanceUnderlying: PropTypes.string,
   tabPosition: PropTypes.object, // animated value
   tradeDetails: PropTypes.object,
