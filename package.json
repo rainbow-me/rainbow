@@ -14,7 +14,7 @@
     "start": "react-native start",
     "start:clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && react-native start -- --reset-cache",
     "test": "jest test.js",
-    "install-pods": "cd ios && pod install && cd ..",
+    "install-pods": "cd ios && pod install --repo-update && cd ..",
     "ios": "react-native run-ios --simulator='iPhone X'",
     "lint": "eslint --ext '.js,.jsx' .",
     "nodeify": "./node_modules/.bin/rn-nodeify --install \"crypto\" --hack",
