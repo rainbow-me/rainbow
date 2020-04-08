@@ -18,7 +18,7 @@ import {
   TRANSFER_EVENT_TOPIC_LENGTH,
   TRANSFER_EVENT_KECCAK,
 } from '../../references';
-import { gasUtils, ethereumUtils } from '../../utils';
+import { ethereumUtils, gasUtils, logger } from '../../utils';
 
 const NOOP = () => undefined;
 
@@ -46,7 +46,7 @@ export const findSwapOutputAmount = (receipt, accountAddress) => {
 };
 
 const swap = async (wallet, currentRap, index, parameters) => {
-  console.log('[swap] swap on uniswap!');
+  logger.log('[swap] swap on uniswap!');
   const {
     accountAddress,
     chainId,
@@ -61,7 +61,7 @@ const swap = async (wallet, currentRap, index, parameters) => {
   } = parameters;
   const { dispatch } = store;
   const { gasPrices } = store.getState().gas;
-  console.log('[swap] calculating trade details');
+  logger.log('[swap] calculating trade details');
 
   // Get Trade Details
   const tradeDetails = calculateTradeDetails(
@@ -76,7 +76,7 @@ const swap = async (wallet, currentRap, index, parameters) => {
   );
 
   // Execute Swap
-  console.log('[swap] execute the swap');
+  logger.log('[swap] execute the swap');
   let gasPrice = get(selectedGasPrice, 'value.amount');
 
   // if swap is not the final action, use fast gas
@@ -86,7 +86,7 @@ const swap = async (wallet, currentRap, index, parameters) => {
 
   const gasLimit = await estimateSwapGasLimit(accountAddress, tradeDetails);
 
-  console.log('[swap] About to execute swap with', {
+  logger.log('[swap] About to execute swap with', {
     gasLimit,
     gasPrice,
     tradeDetails,
@@ -94,10 +94,10 @@ const swap = async (wallet, currentRap, index, parameters) => {
   });
 
   const swap = await executeSwap(tradeDetails, gasLimit, gasPrice, wallet);
-  console.log('[swap] response', swap);
+  logger.log('[swap] response', swap);
   currentRap.actions[index].transaction.hash = swap.hash;
   dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
-  console.log('[swap] adding a new swap txn to pending', swap.hash);
+  logger.log('[swap] adding a new swap txn to pending', swap.hash);
   const newTransaction = {
     amount: inputAmount,
     asset: inputCurrency,
@@ -108,35 +108,35 @@ const swap = async (wallet, currentRap, index, parameters) => {
     to: get(swap, 'to'),
     type: transactionTypes.swap,
   };
-  console.log('[swap] adding new txn', newTransaction);
+  logger.log('[swap] adding new txn', newTransaction);
   dispatch(dataAddNewTransaction(newTransaction, true));
-  console.log('[swap] calling the callback');
+  logger.log('[swap] calling the callback');
   currentRap.callback();
   currentRap.callback = NOOP;
 
   try {
-    console.log('[swap] waiting for the swap to go thru');
+    logger.log('[swap] waiting for the swap to go thru');
     const receipt = await wallet.provider.waitForTransaction(swap.hash);
-    console.log('[swap] receipt:', receipt);
+    logger.log('[swap] receipt:', receipt);
     if (!isZero(receipt.status)) {
       currentRap.actions[index].transaction.confirmed = true;
       dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
       const rawReceivedAmount = findSwapOutputAmount(receipt, accountAddress);
-      console.log('[swap] raw received amount', rawReceivedAmount);
-      console.log('[swap] updated raps');
+      logger.log('[swap] raw received amount', rawReceivedAmount);
+      logger.log('[swap] updated raps');
       const convertedOutput = convertRawAmountToDecimalFormat(
         rawReceivedAmount
       );
-      console.log('[swap] updated raps', convertedOutput);
+      logger.log('[swap] updated raps', convertedOutput);
       return convertedOutput;
     } else {
-      console.log('[swap] status not success');
+      logger.log('[swap] status not success');
       currentRap.actions[index].transaction.confirmed = false;
       dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
       return null;
     }
   } catch (error) {
-    console.log('[swap] error waiting for swap', error);
+    logger.log('[swap] error waiting for swap', error);
     currentRap.actions[index].transaction.confirmed = false;
     dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
     return null;

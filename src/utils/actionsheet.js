@@ -1,10 +1,11 @@
 import { ActionSheetIOS, Platform } from 'react-native';
+import { logger } from '../utils';
 
 export function showActionSheetWithOptions(...args) {
   if (Platform.OS === 'ios') {
     ActionSheetIOS.showActionSheetWithOptions(...args);
   } else {
-    console.log('Actionsheet not implemented for:', Platform.OS);
+    logger.log('Actionsheet not implemented for:', Platform.OS);
   }
 }
 

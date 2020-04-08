@@ -24,6 +24,7 @@ import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { colors, padding, shadow, borders } from '../styles';
 import { isValidSeed as validateSeed } from '../helpers/validators';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { logger } from '../utils';
 
 const keyboardVerticalOffset =
   Platform.OS === 'android'
@@ -176,7 +177,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
           })
           .catch(error => {
             toggleImporting(false);
-            console.error('error importing seed phrase: ', error);
+            logger.error('error importing seed phrase: ', error);
           });
       }, 50);
 

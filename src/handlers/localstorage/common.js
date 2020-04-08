@@ -1,5 +1,6 @@
 /*global storage*/
 import { map, toLower } from 'lodash';
+import { logger } from '../../utils';
 
 const defaultVersion = '0.1.0';
 
@@ -25,7 +26,7 @@ export const saveLocal = async (
       key,
     });
   } catch (error) {
-    console.log('Storage: error saving to local for key', key);
+    logger.log('Storage: error saving to local for key', key);
   }
 };
 
@@ -50,7 +51,7 @@ export const getLocal = async (key = '', version = defaultVersion) => {
     }
     return null;
   } catch (error) {
-    console.log('Storage: error getting from local for key', key);
+    logger.log('Storage: error getting from local for key', key);
     return null;
   }
 };
@@ -64,7 +65,7 @@ export const removeLocal = (key = '') => {
   try {
     storage.remove({ key });
   } catch (error) {
-    console.log('Storage: error removing local with key', key);
+    logger.log('Storage: error removing local with key', key);
   }
 };
 
@@ -72,7 +73,7 @@ export const removeMultiLocal = async keys => {
   try {
     await storage.multiRemove(keys);
   } catch (error) {
-    console.log('Storage: error removing multiple keys', keys);
+    logger.log('Storage: error removing multiple keys', keys);
   }
 };
 

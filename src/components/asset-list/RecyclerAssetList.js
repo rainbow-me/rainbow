@@ -551,7 +551,8 @@ class RecyclerAssetList extends Component {
             balancesHeight += CoinRow.height * (balances.data.length - 1);
             if (
               balances.data[balances.data.length - 1].smallBalancesContainer ||
-              balances.data[balances.data.length - 2].smallBalancesContainer
+              (balances.data[balances.data.length - 2] &&
+                balances.data[balances.data.length - 2].smallBalancesContainer)
             ) {
               balancesHeight +=
                 CoinDivider.height +
@@ -638,14 +639,16 @@ class RecyclerAssetList extends Component {
 
     if (
       shouldAutoscrollBack ||
-      (openSmallBalances === false && prevProps.openSmallBalances === true)
+      (openSmallBalances === false && prevProps.openSmallBalances === true) ||
+      (openSavings === false && prevProps.openSavings === true)
     ) {
       let balancesHeight = 0;
       if (balances.data) {
         balancesHeight += CoinRow.height * (balances.data.length - 1);
         if (
           balances.data[balances.data.length - 1].smallBalancesContainer ||
-          balances.data[balances.data.length - 2].smallBalancesContainer
+          (balances.data[balances.data.length - 2] &&
+            balances.data[balances.data.length - 2].smallBalancesContainer)
         ) {
           balancesHeight +=
             CoinDivider.height +
@@ -668,6 +671,8 @@ class RecyclerAssetList extends Component {
           if (openSavings) {
             balancesHeight +=
               61 * balances.data[balances.data.length - 1].assets.length - 1;
+          } else {
+            balancesHeight -= ListFooter.height;
           }
         }
       }
@@ -701,28 +706,35 @@ class RecyclerAssetList extends Component {
           }
         }
       }
-      const renderSize =
-        balancesHeight +
-        investmentHeight +
-        collectiblesHeight +
-        ListFooter.height;
+      const renderSize = balancesHeight + investmentHeight + collectiblesHeight;
       const deviceDimensions =
         deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 240 : 360);
       if (
-        this.position + deviceDimensions > renderSize &&
+        this.position + deviceDimensions - 20 > renderSize &&
         renderSize > deviceDimensions
       ) {
         layoutItemAnimator.animateShift = () =>
-          LayoutAnimation.configureNext(
-            LayoutAnimation.create(310, 'easeInEaseOut', 'opacity')
-          );
-        this.scrollToOffset(renderSize - deviceDimensions, true);
+          LayoutAnimation.configureNext({
+            duration: 250,
+            update: {
+              delay: 10,
+              type: 'easeInEaseOut',
+            },
+          });
+        setTimeout(() => {
+          this.rlv.scrollToEnd({ animated: true });
+        }, 10);
         setTimeout(() => {
           layoutItemAnimator.animateShift = () =>
-            LayoutAnimation.configureNext(
-              LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-            );
-        }, 300);
+            LayoutAnimation.configureNext({
+              duration: 200,
+              update: {
+                initialVelocity: 0,
+                springDamping: 1,
+                type: LayoutAnimation.Types.spring,
+              },
+            });
+        }, 250);
       }
     }
   }
