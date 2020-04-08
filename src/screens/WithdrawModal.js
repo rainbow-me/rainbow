@@ -1,6 +1,8 @@
 import React from 'react';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
-import createWithdrawFromCompoundRap from '../raps/withdrawFromCompound';
+import createWithdrawFromCompoundRap, {
+  estimateWithdrawFromCompound,
+} from '../raps/withdrawFromCompound';
 import ExchangeModalWithData from './ExchangeModalWithData';
 
 const WithdrawModal = ({ navigation, ...props }) => {
@@ -16,6 +18,7 @@ const WithdrawModal = ({ navigation, ...props }) => {
       createRap={createWithdrawFromCompoundRap}
       cTokenBalance={cTokenBalance}
       defaultInputAsset={defaultInputAsset}
+      estimateRap={estimateWithdrawFromCompound}
       inputHeaderTitle={`Withdraw ${defaultInputAsset.symbol}`}
       showOutputField={false}
       type={ExchangeModalTypes.withdrawal}

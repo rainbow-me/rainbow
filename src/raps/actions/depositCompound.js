@@ -10,13 +10,17 @@ import store from '../../redux/store';
 import {
   compoundCETHABI,
   compoundCERC20ABI,
+  ethUnits,
   savingsAssetsListByUnderlying,
 } from '../../references';
 import { gasUtils, logger } from '../../utils';
 
 const NOOP = () => undefined;
-const SAVINGS_ERC20_DEPOSIT_GAS_LIMIT = 350000;
-const SAVINGS_ETH_DEPOSIT_GAS_LIMIT = 200000;
+
+export const getDepositGasLimit = inputCurrency =>
+  inputCurrency.address === 'eth'
+    ? ethUnits.basic_deposit_eth
+    : ethUnits.basic_deposit;
 
 const depositCompound = async (wallet, currentRap, index, parameters) => {
   logger.log('[deposit]');
@@ -57,10 +61,7 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
   );
 
   const transactionParams = {
-    gasLimit:
-      inputCurrency.address === 'eth'
-        ? SAVINGS_ETH_DEPOSIT_GAS_LIMIT
-        : SAVINGS_ERC20_DEPOSIT_GAS_LIMIT,
+    gasLimit: getDepositGasLimit(inputCurrency),
     gasPrice: gasPrice ? toHex(gasPrice) : undefined,
     value: toHex(0),
   };

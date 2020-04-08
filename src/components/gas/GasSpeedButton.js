@@ -1,7 +1,7 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { LayoutAnimation } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { withProps } from 'recompact';
@@ -66,7 +66,7 @@ const GasSpeedButton = ({ type }) => {
   const estimatedTimeValue = estimatedTime[0] || 0;
   const price = isNaN(gasPrice) ? '0.00' : gasPrice;
 
-  const handlePress = () => {
+  const handlePress = useCallback(() => {
     LayoutAnimation.easeInEaseOut();
 
     const currentSpeedIndex = gasUtils.GasSpeedOrder.indexOf(
@@ -78,18 +78,24 @@ const GasSpeedButton = ({ type }) => {
     const nextSpeed = gasUtils.GasSpeedOrder[nextSpeedIndex];
 
     dispatch(gasUpdateGasPriceOption(nextSpeed));
-  };
+  }, [dispatch, gasUpdateGasPriceOption, selectedGasPriceOption]);
 
-  const formatAnimatedGasPrice = animatedPrice => {
-    const formattedPrice = parseFloat(animatedPrice).toFixed(3);
-    return `${nativeCurrencySymbol}${formattedPrice}`;
-  };
+  const formatAnimatedGasPrice = useCallback(
+    animatedPrice => {
+      const formattedPrice = parseFloat(animatedPrice).toFixed(3);
+      return `${nativeCurrencySymbol}${formattedPrice}`;
+    },
+    [nativeCurrencySymbol]
+  );
 
-  const formatAnimatedEstimatedTime = estimatedTime => {
-    const actionLabel = getActionLabel(type);
-    const time = parseFloat(estimatedTime || 0).toFixed(0);
-    return `${actionLabel} ~ ${time} ${estimatedTimeUnit}`;
-  };
+  const formatAnimatedEstimatedTime = useCallback(
+    estimatedTime => {
+      const actionLabel = getActionLabel(type);
+      const time = parseFloat(estimatedTime || 0).toFixed(0);
+      return `${actionLabel} ~ ${time} ${estimatedTimeUnit}`;
+    },
+    [estimatedTimeUnit, type]
+  );
 
   return (
     <ButtonPressAnimation

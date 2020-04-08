@@ -1,8 +1,9 @@
 {
-  "basic_deposit": 300000,
+  "basic_deposit": 350000,
+  "basic_deposit_eth": 200000,
   "basic_swap": 80000,
   "basic_tx": 21000,
-  "basic_withdrawal": 90000,
+  "basic_withdrawal": 550000,
   "noether": 0,
   "wei": 1,
   "kwei": 1000,

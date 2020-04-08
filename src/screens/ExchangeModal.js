@@ -26,10 +26,7 @@ import {
 import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
-import {
-  calculateTradeDetails,
-  estimateSwapGasLimit,
-} from '../handlers/uniswap';
+import { calculateTradeDetails } from '../handlers/uniswap';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
 import {
   convertAmountFromNativeValue,
@@ -79,7 +76,7 @@ const isSameAsset = (a, b) => {
 
 const getNativeTag = field => get(field, '_inputRef._nativeTag');
 
-const createMissingWithdrawalAsset = (asset, underlyingPrice, priceOfEther) => {
+const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
   const { address, decimals, name, symbol } = asset;
   const priceInUSD = multiply(priceOfEther, underlyingPrice);
 
@@ -104,6 +101,7 @@ const createMissingWithdrawalAsset = (asset, underlyingPrice, priceOfEther) => {
 const ExchangeModal = ({
   cTokenBalance,
   defaultInputAsset,
+  estimateRap,
   inputHeaderTitle,
   isTransitioning,
   navigation,
@@ -138,19 +136,34 @@ const ExchangeModal = ({
   const { accountAddress, chainId, nativeCurrency } = useAccountSettings();
 
   const defaultInputAddress = get(defaultInputAsset, 'address');
-  let defaultInputItem = ethereumUtils.getAsset(allAssets, defaultInputAddress);
-  if (!defaultInputItem && isWithdrawal) {
+  let defaultInputItemInWallet = ethereumUtils.getAsset(
+    allAssets,
+    defaultInputAddress
+  );
+
+  let defaultChosenInputItem = defaultInputItemInWallet;
+  if (!defaultChosenInputItem) {
     const eth = ethereumUtils.getAsset(allAssets);
     const priceOfEther = get(eth, 'native.price.amount', null);
-    defaultInputItem = createMissingWithdrawalAsset(
+    defaultChosenInputItem = createMissingAsset(
       defaultInputAsset,
       underlyingPrice,
       priceOfEther
     );
-  } else if (!defaultInputItem) {
-    defaultInputItem = ethereumUtils.getAsset(allAssets);
   }
-  const [inputCurrency, setInputCurrency] = useState(defaultInputItem);
+  if (!defaultInputItemInWallet && isWithdrawal) {
+    defaultInputItemInWallet = defaultChosenInputItem;
+  } else if (!defaultInputItemInWallet) {
+    defaultInputItemInWallet = ethereumUtils.getAsset(allAssets);
+  }
+
+  let defaultOutputItem = null;
+
+  if (isDeposit && defaultInputItemInWallet.address !== defaultInputAddress) {
+    defaultOutputItem = defaultChosenInputItem;
+  }
+
+  const [inputCurrency, setInputCurrency] = useState(defaultInputItemInWallet);
   const [isMax, setIsMax] = useState(false);
   const [inputAmount, setInputAmount] = useState(null);
   const [inputAmountDisplay, setInputAmountDisplay] = useState(null);
@@ -162,7 +175,7 @@ const ExchangeModal = ({
   const [nativeAmount, setNativeAmount] = useState(null);
   const [outputAmount, setOutputAmount] = useState(null);
   const [outputAmountDisplay, setOutputAmountDisplay] = useState(null);
-  const [outputCurrency, setOutputCurrency] = useState(null);
+  const [outputCurrency, setOutputCurrency] = useState(defaultOutputItem);
   const [inputBalance, setInputBalance] = useState(null);
   const [showConfirmButton, setShowConfirmButton] = useState(
     isDeposit || isWithdrawal ? true : false
@@ -180,7 +193,58 @@ const ExchangeModal = ({
   const [createRefocusInteraction] = useInteraction();
   const isScreenFocused = useIsFocused();
 
+  const updateGasLimit = useCallback(
+    async ({
+      inputAmount,
+      inputCurrency,
+      inputReserve,
+      outputAmount,
+      outputCurrency,
+      outputReserve,
+    }) => {
+      try {
+        const gasLimit = await estimateRap({
+          inputAmount,
+          inputCurrency,
+          inputReserve,
+          outputAmount,
+          outputCurrency,
+          outputReserve,
+        });
+        dispatch(gasUpdateTxFee(gasLimit));
+      } catch (error) {
+        const defaultGasLimit = isDeposit
+          ? ethUnits.basic_deposit
+          : isWithdrawal
+          ? ethUnits.basic_withdrawal
+          : ethUnits.basic_swap;
+        dispatch(gasUpdateTxFee(defaultGasLimit));
+      }
+    },
+    [dispatch, estimateRap, gasUpdateTxFee, isDeposit, isWithdrawal]
+  );
+
   useEffect(() => {
+    updateGasLimit({
+      inputAmount,
+      inputCurrency,
+      inputReserve,
+      outputAmount,
+      outputCurrency,
+      outputReserve,
+    });
+  }, [
+    inputAmount,
+    inputCurrency,
+    inputReserve,
+    outputAmount,
+    outputCurrency,
+    outputReserve,
+    updateGasLimit,
+  ]);
+
+  useEffect(() => {
+    logger.log('[exchange] - effect - default gas limit');
     dispatch(
       gasUpdateDefaultGasLimit(
         isDeposit
@@ -527,27 +591,13 @@ const ExchangeModal = ({
           inputDecimals
         );
       }
-
-      // update gas fee estimate
-      try {
-        const gasLimit = await estimateSwapGasLimit(
-          accountAddress,
-          tradeDetails
-        );
-        dispatch(gasUpdateTxFee(gasLimit));
-      } catch (error) {
-        dispatch(gasUpdateTxFee(ethUnits.basic_swap));
-      }
     } catch (error) {
       logger.log('error getting market details', error);
     }
   }, [
-    accountAddress,
     calculateInputGivenOutputChange,
     calculateOutputGivenInputChange,
     clearForm,
-    dispatch,
-    gasUpdateTxFee,
     inputAmount,
     inputAsExactAmount,
     inputBalance,
@@ -632,7 +682,7 @@ const ExchangeModal = ({
           navigation.setParams({ focused: false });
           navigation.navigate('ProfileScreen');
         };
-        const rap = createRap({
+        const rap = await createRap({
           callback,
           inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
           inputAsExactAmount,
@@ -821,15 +871,12 @@ const ExchangeModal = ({
       }
     }
 
-    if (
-      (isDeposit || isWithdrawal) &&
-      newInputCurrency.address !== defaultInputAddress
-    ) {
-      const newDepositOutput = ethereumUtils.getAsset(
-        allAssets,
-        defaultInputAddress
+    if (isDeposit && newInputCurrency.address !== defaultInputAddress) {
+      logger.log(
+        '[update input curr] new deposit output for deposit or withdraw',
+        defaultChosenInputItem
       );
-      updateOutputCurrency(newDepositOutput, false);
+      updateOutputCurrency(defaultChosenInputItem, false);
     }
 
     // Update current balance
@@ -1056,6 +1103,7 @@ ExchangeModal.propTypes = {
   createRap: PropTypes.func,
   cTokenBalance: PropTypes.string,
   defaultInputAddress: PropTypes.string,
+  estimateRap: PropTypes.func,
   inputHeaderTitle: PropTypes.string,
   navigation: PropTypes.object,
   supplyBalanceUnderlying: PropTypes.string,

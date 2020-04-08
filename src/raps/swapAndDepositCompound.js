@@ -1,12 +1,100 @@
-import { concat } from 'lodash';
+import { concat, reduce } from 'lodash';
+import {
+  calculateTradeDetails,
+  estimateSwapGasLimit,
+} from '../handlers/uniswap';
+import { add } from '../helpers/utilities';
 import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
-import { savingsAssetsListByUnderlying } from '../references';
-import { logger } from '../utils';
+import { ethUnits, savingsAssetsListByUnderlying } from '../references';
+import { contractUtils, logger } from '../utils';
+import { getDepositGasLimit } from './actions/depositCompound';
+import { isValidSwapInput } from './actions/swap';
 import { assetNeedsUnlocking } from './actions/unlock';
 import { createNewAction, createNewRap, RapActionTypes } from './common';
 
-const createSwapAndDepositCompoundRap = ({
+export const estimateSwapAndDepositCompound = async ({
+  inputAmount,
+  inputCurrency,
+  inputReserve,
+  outputAmount,
+  outputCurrency,
+  outputReserve,
+}) => {
+  const { accountAddress, chainId, network } = store.getState().settings;
+  const requiresSwap = !!outputCurrency;
+  let gasLimits = [];
+  if (requiresSwap) {
+    const isValid = isValidSwapInput({
+      inputAmount,
+      inputCurrency,
+      inputReserve,
+      outputAmount,
+      outputCurrency,
+      outputReserve,
+    });
+    if (!isValid) return ethUnits.basic_deposit;
+
+    const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
+      accountAddress,
+      inputAmount,
+      inputCurrency,
+      inputCurrency.exchangeAddress
+    );
+    if (swapAssetNeedsUnlocking) {
+      const unlockGasLimit = await contractUtils.estimateApprove(
+        inputCurrency.address,
+        inputCurrency.exchangeAddress
+      );
+      gasLimits = concat(gasLimits, unlockGasLimit);
+    }
+
+    const tradeDetails = calculateTradeDetails(
+      chainId,
+      inputAmount,
+      inputCurrency,
+      inputReserve,
+      outputAmount,
+      outputCurrency,
+      outputReserve,
+      true
+    );
+    const swapGasLimit = await estimateSwapGasLimit(
+      accountAddress,
+      tradeDetails
+    );
+    gasLimits = concat(gasLimits, swapGasLimit);
+    logger.log('[swap and deposit] making swap func');
+  }
+  const tokenToDeposit = requiresSwap ? outputCurrency : inputCurrency;
+  const cTokenContract =
+    savingsAssetsListByUnderlying[network][tokenToDeposit.address]
+      .contractAddress;
+  const amountToDeposit = requiresSwap ? outputAmount : inputAmount;
+
+  if (!amountToDeposit) return ethUnits.basic_deposit;
+
+  const depositAssetNeedsUnlocking = await assetNeedsUnlocking(
+    accountAddress,
+    amountToDeposit,
+    tokenToDeposit,
+    cTokenContract
+  );
+
+  if (depositAssetNeedsUnlocking) {
+    const depositGasLimit = await contractUtils.estimateApprove(
+      tokenToDeposit.address,
+      cTokenContract
+    );
+    gasLimits = concat(gasLimits, depositGasLimit);
+  }
+
+  const depositGasLimit = getDepositGasLimit(inputCurrency);
+  gasLimits = concat(gasLimits, depositGasLimit);
+  return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
+};
+
+const createSwapAndDepositCompoundRap = async ({
   callback,
   inputAmount,
   inputCurrency,
@@ -25,7 +113,7 @@ const createSwapAndDepositCompoundRap = ({
     logger.log(
       '[swap and deposit] inputCurr is not the same as the output currency'
     );
-    const swapAssetNeedsUnlocking = assetNeedsUnlocking(
+    const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
       accountAddress,
       inputAmount,
       inputCurrency,
@@ -48,7 +136,7 @@ const createSwapAndDepositCompoundRap = ({
       accountAddress,
       chainId,
       inputAmount,
-      inputAsExactAmount: false,
+      inputAsExactAmount: true,
       inputCurrency,
       inputReserve,
       outputAmount,
@@ -67,7 +155,7 @@ const createSwapAndDepositCompoundRap = ({
   logger.log('ctokencontract', cTokenContract);
 
   // create unlock token on Compound rap
-  const depositAssetNeedsUnlocking = assetNeedsUnlocking(
+  const depositAssetNeedsUnlocking = await assetNeedsUnlocking(
     accountAddress,
     requiresSwap ? outputAmount : inputAmount,
     tokenToDeposit,
