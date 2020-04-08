@@ -8928,10 +8928,10 @@ react-native-code-push@osdnk/react-native-code-push#patch-1:
     semver "^7.1.1"
     xcode "1.0.0"
 
-react-native-cool-modals@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/react-native-cool-modals/-/react-native-cool-modals-0.0.3.tgz#2ffec4e34b065bd48e08b6c8fda8a98853bb3ae5"
-  integrity sha512-ZnotHkVKh6YJprv/Rj4epdokIG+QmBPnqlp26K/5Yk+2zypt3eDJqwb8fWZ2XQ7KEJvs5do3LNwKfHekD6r/8w==
+react-native-cool-modals@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/react-native-cool-modals/-/react-native-cool-modals-0.0.5.tgz#d8cc62329e3397761ab04b39cc3b40be70ee11aa"
+  integrity sha512-4+CHbaUJBcmQmWrL7lpQryYu25CqvT9skVMgCJuSqNbuhz6K5lkFTVmYU8a2yBj/QsIGt55XsNZcm+XF/hKuJA==
   dependencies:
     debounce "^1.2.0"
 
