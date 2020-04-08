@@ -39,6 +39,7 @@ import {
   convertRawAmountToDecimalFormat,
   divide,
   greaterThanOrEqualTo,
+  isEqual,
   isZero,
   multiply,
   updatePrecisionToDisplay,
@@ -211,8 +212,24 @@ const ExchangeModal = ({
       setInputBalance(inputBalance);
     };
 
+    // we should recalculate the input amount value every time
+    // the max available changes(due to selectedGasPrice changing)
+    const isDifferent = !isEqual(inputBalance, inputAmount);
+
+    if (isMax && isDifferent) {
+      updateInputAmount(inputBalance, inputBalance, true, true);
+    }
+
     updateInputBalance();
-  }, [accountAddress, inputCurrency, selectedGasPrice]);
+  }, [
+    accountAddress,
+    inputAmount,
+    inputBalance,
+    inputCurrency,
+    isMax,
+    selectedGasPrice,
+    updateInputAmount,
+  ]);
 
   const inputCurrencyUniqueId = get(inputCurrency, 'uniqueId');
   const outputCurrencyUniqueId = get(outputCurrency, 'uniqueId');
