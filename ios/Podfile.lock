@@ -443,7 +443,7 @@ PODS:
     - React
   - RNCMaskedView (0.1.7):
     - React
-  - RNCoolModals (0.0.5):
+  - RNCoolModals (0.0.6):
     - PanModal
     - React
   - RNCPushNotificationIOS (1.1.1):
@@ -501,7 +501,6 @@ PODS:
   - Sentry (4.4.3):
     - Sentry/Core (= 4.4.3)
   - Sentry/Core (4.4.3)
-  - SocketRocket (0.5.1)
   - SRSRadialGradient (1.0.6):
     - React
   - SSZipArchive (2.2.2)
@@ -590,7 +589,6 @@ DEPENDENCIES:
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNStoreReview (from `../node_modules/react-native-store-review/ios`)
   - RNSVG (from `../node_modules/react-native-svg`)
-  - SocketRocket (from `../node_modules/detox/ios_src/SocketRocket`)
   - SRSRadialGradient (from `../node_modules/react-native-radial-gradient/ios`)
   - TcpSockets (from `../node_modules/react-native-tcp`)
   - ToolTipMenu (from `../node_modules/react-native-tooltip`)
@@ -768,8 +766,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-store-review/ios"
   RNSVG:
     :path: "../node_modules/react-native-svg"
-  SocketRocket:
-    :path: "../node_modules/detox/ios_src/SocketRocket"
   SRSRadialGradient:
     :path: "../node_modules/react-native-radial-gradient/ios"
   TcpSockets:
@@ -859,7 +855,7 @@ SPEC CHECKSUMS:
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 44395cb9c7c1523104c2b499eb426ef7aff82bca
   RNCMaskedView: 76c40a1d41c3e2535df09246a2b5487f04de0814
-  RNCoolModals: b3c5ad30909caa52e3a972b66b42ae8a124cd493
+  RNCoolModals: 70d2de4be7439bcc7f9f7a236e570118ae99a2d5
   RNCPushNotificationIOS: a0b6894f4ad9b93d9dac467fdf4d055660ac8a0d
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNFastImage: 9b0c22643872bb7494c8d87bbbb66cc4c0d9e7a2
@@ -881,7 +877,6 @@ SPEC CHECKSUMS:
   SDWebImage: a99471f452bdfa0ca52ddf5b1adf2b61cab1d1eb
   SDWebImageWebPCoder: 947093edd1349d820c40afbd9f42acb6cdecd987
   Sentry: 14bdd673870e8cf64932b149fad5bbbf39a9b390
-  SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SRSRadialGradient: 77bcb1ae812d0c77560e54ed9e52166df032db1d
   SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
