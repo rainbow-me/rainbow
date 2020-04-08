@@ -27,7 +27,7 @@ export const showcaseTokensLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const pushShowcaseToken = payload => async (dispatch, getState) => {
+export const pushShowcaseToken = payload => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   dispatch({
     payload: {
@@ -39,11 +39,17 @@ export const pushShowcaseToken = payload => async (dispatch, getState) => {
   });
 };
 
-export const popShowcaseToken = payload => dispatch =>
+export const popShowcaseToken = payload => (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
   dispatch({
-    payload,
+    payload: {
+      accountAddress,
+      network,
+      uniqueId: payload,
+    },
     type: POP_SHOWCASE_TOKEN,
   });
+};
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
@@ -61,8 +67,13 @@ export default (state = INITIAL_STATE, action) =>
       );
     } else if (action.type === POP_SHOWCASE_TOKEN) {
       remove(draft.showcaseTokens, token => {
-        return token === action.payload;
+        return token === action.payload.uniqueId;
       });
+      saveShowcaseTokens(
+        draft.showcaseTokens,
+        action.payload.accountAddress,
+        action.payload.network
+      );
     } else if (action.type === SHOWCASE_TOKENS_LOAD_SUCCESS) {
       draft.showcaseTokens = action.payload.length > 0 ? action.payload : [];
     }
