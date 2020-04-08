@@ -8,6 +8,7 @@
 
 class TransactionListRequestViewCell: TransactionListBaseCell {
   @IBOutlet weak var openButton: UIButton!
+  @IBOutlet weak var requestIcon: UILabel!
   @IBOutlet weak var transactionType: UILabel!
   @IBOutlet weak var walletName: UILabel!
   @IBOutlet weak var walletImage: CoinIconWithProgressBar!
@@ -26,6 +27,7 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
   override func awakeFromNib() {
     super.awakeFromNib()
     addShadowLayer(walletImage)
+    requestIcon.frame = requestIcon.frame.offsetBy(dx: CGFloat(0), dy: CGFloat(-0.25))
   }
   
   func set(request: TransactionRequest) {
@@ -33,11 +35,13 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
     
     let minutes = expirationTime.minutes(from: Date())
     self.transactionType.text = "Expires in \(minutes) min"
+    self.transactionType.addCharacterSpacing(kernValue: 0.5)
     
     timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true, block: { _ in
       let currentTime = Date()
       let minutes = expirationTime.minutes(from: currentTime)
       self.transactionType.text = "Expires in \(minutes) min"
+      self.transactionType.addCharacterSpacing(kernValue: 0.5)
       let progress = CGFloat(
         (expirationTime.timeIntervalSince1970 - currentTime.timeIntervalSince1970) / self.timeout
       )
@@ -49,6 +53,8 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
     })
     
     walletName.text = request.dappName
+    walletName.addCharacterSpacing(kernValue: 0.5)
+    walletName.setLineSpacing(lineHeightMultiple: 1.1)
     walletImage.image = generateTextImage(String(request.dappName.prefix(2).uppercased()))
     walletImage.layer.cornerRadius = walletImage.frame.width * 0.5
     

@@ -32,7 +32,7 @@ class CoinIconWithProgressBar : UIImageView {
     let lineWidth: CGFloat = 2.0
     let circularPath = UIBezierPath(
       arcCenter: CGPoint(x: bounds.midX, y: bounds.midY),
-      radius: frame.width / 2.0,
+      radius: (frame.width + 6) / 2.0,
       startAngle: -CGFloat.pi / 2,
       endAngle: 2 * CGFloat.pi - CGFloat.pi / 2,
       clockwise: true

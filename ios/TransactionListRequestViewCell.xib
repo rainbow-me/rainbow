@@ -7,9 +7,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
-        <array key="SF-Pro-Rounded-Regular.otf">
-            <string>SFRounded-Regular</string>
-        </array>
         <array key="SF-Pro-Rounded-Semibold.otf">
             <string>SFRounded-Semibold</string>
         </array>
@@ -25,10 +22,10 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="walletName" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="JT6-R8-Hin">
-                        <rect key="frame" x="69" y="29" width="226" height="19"/>
+                        <rect key="frame" x="73" y="28" width="226" height="19"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" name="SFRounded-Regular" family="SF Pro Rounded" pointSize="16"/>
-                        <color key="textColor" red="0.1450980392" green="0.16078431369999999" blue="0.18039215689999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <fontDescription key="fontDescription" name="SFRounded-Semibold" family="SF Pro Rounded" pointSize="16"/>
+                        <color key="textColor" red="0.054901960784313725" green="0.46274509803921571" blue="0.99215686274509807" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView autoresizesSubviews="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="aJu-zS-tdo" customClass="CoinIconWithProgressBar" customModule="Rainbow" customModuleProvider="target">
@@ -36,16 +33,27 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" layoutMarginsFollowReadableWidth="YES" text="transactionType" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="42z-gY-4oM">
-                        <rect key="frame" x="69" y="9" width="206" height="17"/>
+                        <rect key="frame" x="91.5" y="9" width="206" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" name="SFRounded-Semibold" family="SF Pro Rounded" pointSize="14"/>
-                        <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="textColor" red="0.054901960784313725" green="0.46274509803921571" blue="0.99215686274509807" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="🕓" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wMu-59-CMj">
+                        <rect key="frame" x="73" y="10.5" width="16" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <accessibility key="accessibilityConfiguration">
+                            <accessibilityTraits key="traits" image="YES"/>
+                        </accessibility>
+                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                        <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
             </tableViewCellContentView>
             <connections>
                 <outlet property="openButton" destination="5uf-jg-44s" id="l29-46-LhL"/>
+                <outlet property="requestIcon" destination="wMu-59-CMj" id="SIp-ns-KT5"/>
                 <outlet property="transactionType" destination="42z-gY-4oM" id="2kV-kc-JzU"/>
                 <outlet property="walletImage" destination="aJu-zS-tdo" id="r5S-1L-Mr0"/>
                 <outlet property="walletName" destination="JT6-R8-Hin" id="3Z1-3Q-VCG"/>
