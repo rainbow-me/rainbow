@@ -109,7 +109,6 @@ const AddCashSheet = () => {
           ) : (
             <AddCashForm
               limitDaily={cashLimitDaily}
-              limitYearly={cashLimitYearly}
               onClearError={onClearError}
               onLimitExceeded={onLimitExceeded}
               onPurchase={onPurchase}

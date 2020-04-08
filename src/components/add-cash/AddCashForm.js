@@ -18,7 +18,6 @@ const initialCurrencyIndex = 0;
 
 const AddCashForm = ({
   limitDaily,
-  limitYearly,
   onClearError,
   onLimitExceeded,
   onPurchase,
@@ -45,9 +44,6 @@ const AddCashForm = ({
         const isExceedingDailyLimit =
           parseFloat(prevValue + `${parseFloat(newValue)}`) > limitDaily;
 
-        const isExceedingYearlyLimit =
-          parseFloat(prevValue + `${parseFloat(newValue)}`) > limitYearly;
-
         const isInvalidFirstEntry =
           !prevValue &&
           (newValue === '0' || newValue === '.' || newValue === 'back');
@@ -62,13 +58,11 @@ const AddCashForm = ({
 
         if (
           isExceedingDailyLimit ||
-          isExceedingYearlyLimit ||
           isInvalidFirstEntry ||
           isMaxDecimalCount ||
           isMaxDecimalLength
         ) {
           if (isExceedingDailyLimit) onLimitExceeded('daily');
-          if (isExceedingYearlyLimit) onLimitExceeded('yearly');
           onShake();
           return prevValue;
         }
@@ -104,7 +98,7 @@ const AddCashForm = ({
         category: 'add cash',
       });
     },
-    [limitDaily, limitYearly, onClearError, onLimitExceeded, onShake]
+    [limitDaily, onClearError, onLimitExceeded, onShake]
   );
 
   const onCurrencyChange = useCallback(val => {
@@ -152,7 +146,6 @@ const AddCashForm = ({
 
 AddCashForm.propTypes = {
   limitDaily: PropTypes.number,
-  limitYearly: PropTypes.number,
   onClearError: PropTypes.func,
   onLimitExceeded: PropTypes.func,
   onPurchase: PropTypes.func,
