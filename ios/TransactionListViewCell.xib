@@ -25,14 +25,14 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="coinName" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="bix-L2-MQi">
-                        <rect key="frame" x="69" y="29" width="226" height="19"/>
+                        <rect key="frame" x="69" y="28" width="226" height="19"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" name="SFRounded-Regular" family="SF Pro Rounded" pointSize="16"/>
                         <color key="textColor" red="0.14509803921568626" green="0.16078431372549018" blue="0.1803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="right" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" text="native.display" textAlignment="right" lineBreakMode="clip" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wjn-0q-0mt">
-                        <rect key="frame" x="411" y="29" width="120" height="19"/>
+                        <rect key="frame" x="411" y="28" width="120" height="19"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" name="SFRounded-Regular" family="SF Pro Rounded" pointSize="16"/>
                         <color key="textColor" red="0.23529411764705882" green="0.25882352941176467" blue="0.32156862745098036" alpha="0.5" colorSpace="custom" customColorSpace="sRGB"/>
@@ -43,14 +43,14 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="right" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" text="balance.display" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1V8-g7-TeW">
-                        <rect key="frame" x="304" y="9" width="227" height="17"/>
+                        <rect key="frame" x="304" y="9" width="227" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" name="SFRounded-Regular" family="SF Pro Rounded" pointSize="14"/>
                         <color key="textColor" red="0.23529411764705882" green="0.25882352941176467" blue="0.32156862745098036" alpha="0.5" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" layoutMarginsFollowReadableWidth="YES" text="transactionType" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Fc7-NQ-tMz">
-                        <rect key="frame" x="83" y="9" width="206" height="17"/>
+                        <rect key="frame" x="81" y="9" width="206" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" name="SFRounded-Semibold" family="SF Pro Rounded" pointSize="14"/>
                         <color key="textColor" red="0.23529411764705882" green="0.25882352941176467" blue="0.32156862745098036" alpha="0.70023544520547942" colorSpace="custom" customColorSpace="sRGB"/>

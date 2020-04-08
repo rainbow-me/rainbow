@@ -17,7 +17,7 @@ const StatusProps = {
   },
   [TransactionStatusTypes.deposited]: {
     name: 'sunflower',
-    style: { fontSize: 12, marginBottom: 2, marginRight: 2 },
+    style: { fontSize: 11, left: -1.3, marginBottom: 1.5, marginRight: 1 },
   },
   [TransactionStatusTypes.depositing]: {
     marginRight: 4,
@@ -69,7 +69,7 @@ const StatusProps = {
   },
   [TransactionStatusTypes.withdrew]: {
     name: 'sunflower',
-    style: { fontSize: 12, marginBottom: 2, marginRight: 2 },
+    style: { fontSize: 11, left: -1.3, marginBottom: 1.5, marginRight: 1 },
   },
 };
 
