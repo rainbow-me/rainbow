@@ -166,6 +166,13 @@ export const buildUniqueTokenList = uniqueTokens => {
 
   rows = sortBy(rows, ['familyName']);
 
+  showcaseTokens.sort(function(a, b) {
+    return (
+      selectedShowcaseTokens.indexOf(a.uniqueId) -
+      selectedShowcaseTokens.indexOf(b.uniqueId)
+    );
+  });
+
   for (let i = 0; i < showcaseTokens.length; i += 2) {
     if (showcaseTokens[i + 1]) {
       bundledShowcaseTokens.push([showcaseTokens[i], showcaseTokens[i + 1]]);
