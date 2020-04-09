@@ -265,82 +265,78 @@ export const addressAssetsReceived = (
 
 const subscribeToMissingPrices = addresses => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  const { assets, uniswapPricesSubscription } = getState().data;
-  if (uniswapPricesSubscription) {
-    uniswapPricesSubscription.refetch({ addresses });
+  const { assets, uniswapPricesQuery } = getState().data;
+  if (uniswapPricesQuery) {
+    uniswapPricesQuery.refetch({ addresses });
   } else {
-    const newSubscription = uniswapClient
-      .watchQuery({
-        fetchPolicy: 'network-only',
-        pollInterval: 15000, // 15 seconds
-        query: UNISWAP_PRICES_QUERY,
-        variables: {
-          addresses,
-        },
-      })
-      .subscribe({
-        next: async ({ data }) => {
-          if (data && data.exchanges) {
-            const nativePriceOfEth = ethereumUtils.getEthPriceUnit(assets);
-            const exchangeAddresses = map(data.exchanges, property('id'));
+    const newQuery = uniswapClient.watchQuery({
+      fetchPolicy: 'network-only',
+      pollInterval: 15000, // 15 seconds
+      query: UNISWAP_PRICES_QUERY,
+      variables: {
+        addresses,
+      },
+    });
 
-            const yesterday = getUnixTime(subDays(new Date(), 1));
-            const historicalPriceCalls = map(exchangeAddresses, address =>
-              get24HourPrice(address, yesterday)
-            );
-            const historicalPriceResults = await Promise.all(
-              historicalPriceCalls
-            );
-            const mappedHistoricalData = keyBy(
-              historicalPriceResults,
-              'exchangeAddress'
-            );
-            const missingHistoricalPrices = mapValues(
-              mappedHistoricalData,
-              value => divide(nativePriceOfEth, value.price)
-            );
+    const newSubscription = newQuery.subscribe({
+      next: async ({ data }) => {
+        if (data && data.exchanges) {
+          const nativePriceOfEth = ethereumUtils.getEthPriceUnit(assets);
+          const exchangeAddresses = map(data.exchanges, property('id'));
 
-            const mappedPricingData = keyBy(data.exchanges, 'id');
-            const missingPrices = mapValues(mappedPricingData, value =>
-              divide(nativePriceOfEth, value.price)
-            );
-            const missingPriceInfo = mapValues(
-              missingPrices,
-              (currentPrice, key) => {
-                const historicalPrice = get(
-                  missingHistoricalPrices,
-                  `[${key}]`
-                );
-                const tokenAddress = get(
-                  mappedPricingData,
-                  `[${key}].tokenAddress`
-                );
-                const relativePriceChange = historicalPrice
-                  ? ((currentPrice - historicalPrice) / currentPrice) * 100
-                  : 0;
-                return {
-                  price: currentPrice,
-                  relativePriceChange,
-                  tokenAddress,
-                };
-              }
-            );
-            const tokenPricingInfo = mapKeys(missingPriceInfo, 'tokenAddress');
+          const yesterday = getUnixTime(subDays(new Date(), 1));
+          const historicalPriceCalls = map(exchangeAddresses, address =>
+            get24HourPrice(address, yesterday)
+          );
+          const historicalPriceResults = await Promise.all(
+            historicalPriceCalls
+          );
+          const mappedHistoricalData = keyBy(
+            historicalPriceResults,
+            'exchangeAddress'
+          );
+          const missingHistoricalPrices = mapValues(
+            mappedHistoricalData,
+            value => divide(nativePriceOfEth, value.price)
+          );
 
-            saveAssetPricesFromUniswap(
-              tokenPricingInfo,
-              accountAddress,
-              network
-            );
-            dispatch({
-              payload: tokenPricingInfo,
-              type: DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP,
-            });
-          }
-        },
-      });
+          const mappedPricingData = keyBy(data.exchanges, 'id');
+          const missingPrices = mapValues(mappedPricingData, value =>
+            divide(nativePriceOfEth, value.price)
+          );
+          const missingPriceInfo = mapValues(
+            missingPrices,
+            (currentPrice, key) => {
+              const historicalPrice = get(missingHistoricalPrices, `[${key}]`);
+              const tokenAddress = get(
+                mappedPricingData,
+                `[${key}].tokenAddress`
+              );
+              const relativePriceChange = historicalPrice
+                ? ((currentPrice - historicalPrice) / currentPrice) * 100
+                : 0;
+              return {
+                price: currentPrice,
+                relativePriceChange,
+                tokenAddress,
+              };
+            }
+          );
+          const tokenPricingInfo = mapKeys(missingPriceInfo, 'tokenAddress');
+
+          saveAssetPricesFromUniswap(tokenPricingInfo, accountAddress, network);
+          dispatch({
+            payload: tokenPricingInfo,
+            type: DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP,
+          });
+        }
+      },
+    });
     dispatch({
-      payload: newSubscription,
+      payload: {
+        uniswapPricesQuery: newQuery,
+        uniswapPricesSubscription: newSubscription,
+      },
       type: DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION,
     });
   }
@@ -493,13 +489,18 @@ const INITIAL_STATE = {
   purchaseTransactions: [],
   tokenOverrides: loweredTokenOverridesFallback,
   transactions: [],
+  uniswapPricesQuery: null,
   uniswapPricesSubscription: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION:
-      return { ...state, uniswapPricesSubscription: action.payload };
+      return {
+        ...state,
+        uniswapPricesQuery: action.payload.uniswapPricesQuery,
+        uniswapPricesSubscription: action.payload.uniswapPricesSubscription,
+      };
     case DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP:
       return { ...state, assetPricesFromUniswap: action.payload };
     case DATA_UPDATE_ASSETS:
