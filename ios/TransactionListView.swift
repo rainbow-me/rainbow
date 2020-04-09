@@ -40,7 +40,8 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   }
   @objc var accountColor: UIColor? = nil {
     didSet {
-      header.accountView.backgroundColor = accountColor
+      header.accountBackground.backgroundColor = accountColor
+      shadowLayer.shadowColor = accountColor?.cgColor
     }
   }
   @objc var accountName: String? = nil {
@@ -115,7 +116,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     self.onAddCashPress([:])
   }
   @objc func onPressInAddCash(_ sender: UIButton) {
-    header.addCash.animateTapStart(scale: 0.86)
+    header.addCash.animateTapStart(scale: 0.9)
   }
   @objc func onPressOutAddCash(_ sender: UIButton) {
     header.addCash.animateTapEnd()
@@ -126,6 +127,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   let tableView = UITableView()
   let header: TransactionListViewHeader = TransactionListViewHeader.fromNib()
   let headerSeparator = UIView()
+  let shadowLayer = CAShapeLayer()
   
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -176,6 +178,26 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.receive.titleLabel?.addCharacterSpacing(kernValue: 0.5)
     header.addCashLabel.titleLabel?.addCharacterSpacing(kernValue: 0.4)
     header.addCashLabel.titleLabel?.textAlignment = .center
+    
+    let secondShadowLayer = CAShapeLayer()
+    let radius = header.accountBackground.frame.width / 2.0
+    let circle = UIBezierPath(arcCenter: header.accountBackground.center, radius: radius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
+
+    shadowLayer.shadowOffset = CGSize(width: 0, height: 6)
+    shadowLayer.shadowOpacity = 0.25
+    shadowLayer.shadowPath = circle.cgPath
+    shadowLayer.shadowRadius = 5
+    shadowLayer.zPosition = -1
+
+    secondShadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
+    secondShadowLayer.shadowOffset = CGSize(width: 0, height: 2)
+    secondShadowLayer.shadowOpacity = 0.2
+    secondShadowLayer.shadowPath = circle.cgPath
+    secondShadowLayer.shadowRadius = 2.5
+    secondShadowLayer.zPosition = -2
+
+    header.accountView.layer.addSublayer(shadowLayer)
+    header.accountView.layer.addSublayer(secondShadowLayer)
     
     headerSeparator.backgroundColor = UIColor(red:0.24, green:0.26, blue:0.32, alpha:0.02)
     tableView.tableHeaderView = header

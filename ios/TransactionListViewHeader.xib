@@ -96,7 +96,7 @@
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="a0n-Oe-SxC">
-                            <rect key="frame" x="24" y="16" width="127" height="20"/>
+                            <rect key="frame" x="23" y="16" width="127" height="20"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
                             <fontDescription key="fontDescription" name="SFRounded-Semibold" family="SF Pro Rounded" pointSize="16"/>
                             <color key="tintColor" red="0.054901960784313725" green="0.46274509803921571" blue="0.99215686274509807" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -107,7 +107,7 @@
                             </state>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="bT8-DB-DfA">
-                            <rect key="frame" x="170" y="16" width="81" height="20"/>
+                            <rect key="frame" x="169" y="16" width="81" height="20"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
                             <fontDescription key="fontDescription" name="SFRounded-Semibold" family="SF Pro Rounded" pointSize="16"/>
                             <color key="tintColor" red="0.054901960784313725" green="0.46274509803921571" blue="0.99215686274509807" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -123,6 +123,16 @@
                     <rect key="frame" x="155" y="2" width="65" height="65"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
                     <subviews>
+                        <view userInteractionEnabled="NO" contentMode="scaleToFill" id="vIa-ep-cV9" userLabel="Account Background">
+                            <rect key="frame" x="0.0" y="0.0" width="65" height="65"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" systemColor="systemGreenColor" red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                    <real key="value" value="32.5"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </view>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="A" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ocF-Nb-nBA">
                             <rect key="frame" x="0.0" y="0.0" width="65" height="65"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
@@ -131,15 +141,9 @@
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" systemColor="systemGreenColor" red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration">
                         <accessibilityTraits key="traits" button="YES"/>
                     </accessibility>
-                    <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                            <real key="value" value="32.5"/>
-                        </userDefinedRuntimeAttribute>
-                    </userDefinedRuntimeAttributes>
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0xDEADBEEF123Ab28Dfe3" textAlignment="center" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LxS-BQ-P6T">
                     <rect key="frame" x="63" y="81" width="249" height="27"/>
@@ -155,6 +159,7 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
                 <outlet property="accountAddress" destination="LxS-BQ-P6T" id="8DP-PZ-Bwv"/>
+                <outlet property="accountBackground" destination="vIa-ep-cV9" id="Rwv-Kq-Iqj"/>
                 <outlet property="accountName" destination="ocF-Nb-nBA" id="BwB-OR-r28"/>
                 <outlet property="accountView" destination="Hor-dz-ni1" id="cir-Qv-c3R"/>
                 <outlet property="addCash" destination="Od7-jd-22B" id="Q30-A3-u1M"/>
