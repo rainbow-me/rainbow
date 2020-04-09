@@ -9,6 +9,7 @@ import {
   SwapDetailsState,
   TokenExpandedState,
   UniqueTokenExpandedState,
+  SupportedCountriesExpandedState,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
@@ -18,6 +19,7 @@ import { padding } from '../styles';
 const ScreenTypes = {
   chart: ChartExpandedState,
   contact: AddContactState,
+  supported_countries: SupportedCountriesExpandedState,
   swap_details: SwapDetailsState,
   token: TokenExpandedState,
   unique_token: UniqueTokenExpandedState,
