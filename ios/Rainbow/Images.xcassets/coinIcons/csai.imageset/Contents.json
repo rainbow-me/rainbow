@@ -1,21 +1,23 @@
 {
   "images" : [
     {
+      "filename" : "csai.png",
       "idiom" : "universal",
-      "filename" : "csai.pdf",
       "scale" : "1x"
     },
     {
+      "filename" : "csai@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "csai@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }

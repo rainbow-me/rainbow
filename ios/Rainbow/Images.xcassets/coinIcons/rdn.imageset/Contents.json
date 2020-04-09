@@ -1,21 +1,23 @@
 {
   "images" : [
     {
+      "filename" : "rdn.png",
       "idiom" : "universal",
-      "filename" : "rdn.pdf",
       "scale" : "1x"
     },
     {
+      "filename" : "rdn@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "rdn@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }
