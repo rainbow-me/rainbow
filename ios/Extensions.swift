@@ -201,3 +201,25 @@ extension CALayer {
         self.beginTime = timeSincePause
     }
 }
+
+@IBDesignable class AddCashGradient: UIView {
+    @IBInspectable var innerColor: UIColor = UIColor.red
+    @IBInspectable var middleColor: UIColor = UIColor.green
+    @IBInspectable var outerColor: UIColor = UIColor.blue
+    @IBInspectable var cornerRadius: CGFloat = 0
+
+    override func draw(_ rect: CGRect) {
+        let path = UIBezierPath(roundedRect: rect, cornerRadius: cornerRadius)
+        path.addClip()
+      
+        let colors = [innerColor.cgColor, middleColor.cgColor, outerColor.cgColor] as CFArray
+        let endRadius = frame.width
+        let center = CGPoint(x: bounds.size.width, y: bounds.size.height / 2)
+        let locations = [CGFloat(0), CGFloat(0.635483871), CGFloat(1)]
+        let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors, locations: locations)
+        let context = UIGraphicsGetCurrentContext()
+        let options: CGGradientDrawingOptions = [.drawsBeforeStartLocation, .drawsAfterEndLocation]
+
+        context?.drawRadialGradient(gradient!, startCenter: center, startRadius: 0.0, endCenter: center, endRadius: endRadius, options: options)
+    }
+}

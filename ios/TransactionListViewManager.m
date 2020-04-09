@@ -18,9 +18,11 @@ RCT_EXPORT_VIEW_PROPERTY(onTransactionPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(accountColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(accountName, NSString)
 RCT_EXPORT_VIEW_PROPERTY(transformOrigin, CGPoint)
-RCT_EXPORT_VIEW_PROPERTY(onReceivePress, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAddCashPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onAvatarPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onCopyAddressPress, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onReceivePress, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(addCashButtonAvailable, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(isAvatarPickerAvailable, BOOL)
 
 @end

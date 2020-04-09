@@ -14,7 +14,14 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var onReceivePress: RCTBubblingEventBlock = { _ in }
   @objc var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
   @objc var onAvatarPress: RCTBubblingEventBlock = { _ in }
+  @objc var onAddCashPress: RCTBubblingEventBlock = { _ in }
   @objc var duration: TimeInterval = 0.16
+  @objc var addCashButtonAvailable: Bool = true {
+    didSet {
+      header.addCash.isHidden = addCashButtonAvailable
+      header.addCash.isHidden = !addCashButtonAvailable
+    }
+  }
   @objc var isAvatarPickerAvailable: Bool = true {
     didSet {
       header.avatarView.isHidden = isAvatarPickerAvailable
@@ -105,6 +112,16 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.receive.animateTapEnd()
   }
   
+  @objc func onAddCashPressed(_ sender: UIButton) {
+    self.onAddCashPress([:])
+  }
+  @objc func onPressInAddCash(_ sender: UIButton) {
+    header.addCash.animateTapStart(scale: 0.86)
+  }
+  @objc func onPressOutAddCash(_ sender: UIButton) {
+    header.addCash.animateTapEnd()
+  }
+  
   var sections: [TransactionSectionProtocol] = [TransactionSectionProtocol]()
   
   let tableView = UITableView()
@@ -148,8 +165,18 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchCancel)
     header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchUpOutside)
     
+    header.addCash.addTarget(self, action: #selector(onAddCashPressed(_:)), for: .touchUpInside)
+    header.addCash.addTarget(self, action: #selector(onPressInAddCash(_:)), for: .touchDown)
+    header.addCash.addTarget(self, action: #selector(onPressInAddCash(_:)), for: .touchDragInside)
+    header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchUpInside)
+    header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchDragOutside)
+    header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchCancel)
+    header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchUpOutside)
+    
     header.copyAddress.titleLabel?.addCharacterSpacing(kernValue: 0.5)
     header.receive.titleLabel?.addCharacterSpacing(kernValue: 0.5)
+    header.addCashLabel.titleLabel?.addCharacterSpacing(kernValue: 0.4)
+    header.addCashLabel.titleLabel?.textAlignment = .center
     
     headerSeparator.backgroundColor = UIColor(red:0.24, green:0.26, blue:0.32, alpha:0.02)
     tableView.tableHeaderView = header
@@ -163,7 +190,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   /// React Native is known to re-render only first-level subviews. Since our tableView is a custom view that we add as a second-level subview, we need to relayout it manually
   override func layoutSubviews() {
     tableView.frame = self.bounds
-    header.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 185)
+    header.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: addCashButtonAvailable ? 260 : 185)
     headerSeparator.frame = CGRect(x: 19, y: header.frame.size.height - 2, width: tableView.bounds.width - 19, height: 2)
   }
   

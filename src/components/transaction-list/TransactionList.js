@@ -1,9 +1,13 @@
+import analytics from '@segment/analytics-react-native';
 import React from 'react';
+import { requireNativeComponent, Clipboard, Linking, View } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers, withState } from 'recompact';
-import { requireNativeComponent, Clipboard, Linking, View } from 'react-native';
+import {
+  addCashButtonAvailable,
+  isAvatarPickerAvailable,
+} from '../../config/experimental';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import { isAvatarPickerAvailable } from '../../config/experimental';
 import {
   withAccountInfo,
   withAccountSettings,
@@ -12,9 +16,9 @@ import {
   withContacts,
 } from '../../hoc';
 import { removeRequest } from '../../redux/requests';
+import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
-import { colors } from '../../styles';
 import LoadingState from '../activity-list/LoadingState';
 import { FloatingEmojis } from '../floating-emojis';
 
@@ -47,20 +51,27 @@ class TransactionList extends React.PureComponent {
     return (
       <View style={this.props.style}>
         <NativeTransactionListView
-          data={data}
           accountAddress={this.props.accountAddress}
           accountColor={colors.avatarColor[this.props.accountColor]}
           accountName={this.props.accountName}
-          onReceivePress={this.props.onReceivePress}
+          addCashButtonAvailable={addCashButtonAvailable}
+          data={data}
+          isAvatarPickerAvailable={isAvatarPickerAvailable}
+          onAddCashPress={this.props.onAddCashPress}
           onAvatarPress={this.props.onAvatarPress}
           onCopyAddressPress={this.onCopyAddressPress}
-          onRequestPress={this.props.onRequestPress}
+          onReceivePress={this.props.onReceivePress}
           onRequestExpire={this.props.onRequestExpire}
+          onRequestPress={this.props.onRequestPress}
           onTransactionPress={this.props.onTransactionPress}
           style={this.props.style}
-          isAvatarPickerAvailable={isAvatarPickerAvailable}
         />
         <FloatingEmojis
+          distance={250}
+          duration={500}
+          fadeOut={false}
+          scaleTo={0}
+          size={50}
           style={{
             height: 0,
             left: this.props.tapTarget[0] - 24,
@@ -68,6 +79,7 @@ class TransactionList extends React.PureComponent {
             top: this.props.tapTarget[1] - this.props.tapTarget[3],
             width: this.props.tapTarget[2],
           }}
+          wiggleFactor={0}
         >
           {({ onNewEmoji }) => {
             if (!this.onNewEmoji) {
@@ -90,6 +102,12 @@ export default compose(
   withContacts,
   withState('tapTarget', 'setTapTarget', [0, 0, 0, 0]),
   withHandlers({
+    onAddCashPress: ({ navigation }) => () => {
+      navigation.navigate('AddCashSheet');
+      analytics.track('Tapped Add Cash', {
+        category: 'add cash',
+      });
+    },
     onAvatarPress: ({ navigation, accountColor, accountName }) => () => {
       navigation.navigate('AvatarBuilder', {
         accountColor,
