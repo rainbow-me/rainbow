@@ -15,7 +15,6 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
   @objc var onAvatarPress: RCTBubblingEventBlock = { _ in }
   @objc var onAddCashPress: RCTBubblingEventBlock = { _ in }
-  @objc var duration: TimeInterval = 0.16
   @objc var addCashButtonAvailable: Bool = true {
     didSet {
       header.addCash.isHidden = addCashButtonAvailable

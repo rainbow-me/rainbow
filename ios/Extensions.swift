@@ -42,7 +42,7 @@ extension UIView {
   }
   
   func animateTapStart(
-    duration: TimeInterval = 0.1,
+    duration: TimeInterval = 0.16,
     scale: CGFloat = 0.97,
     transformOrigin: CGPoint = .init(x: 0.5, y: 0.5),
     useHaptic: String? = nil
@@ -65,7 +65,7 @@ extension UIView {
   }
   
   func animateTapEnd(
-    duration: TimeInterval = 0.1,
+    duration: TimeInterval = 0.16,
     pressOutDuration: TimeInterval = -1,
     useHaptic: String? = nil
   ) {

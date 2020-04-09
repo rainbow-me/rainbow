@@ -14,7 +14,7 @@ class Button : RCTView {
       isUserInteractionEnabled = !disabled
     }
   }
-  @objc var duration: TimeInterval = 0.1
+  @objc var duration: TimeInterval = 0.16
   @objc var pressOutDuration: TimeInterval = -1
   @objc var scaleTo: CGFloat = 0.97
   @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5)

@@ -8,7 +8,6 @@
 import Foundation
 
 class TransactionListBaseCell : UITableViewCell {
-  internal let duration = 0.16
   internal let hapticType = "select"
   
   var onItemPress: (Dictionary<AnyHashable, Any>) -> Void = { _ in }
@@ -40,21 +39,18 @@ class TransactionListBaseCell : UITableViewCell {
   }
 
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapStart(
-      duration: duration,
-      scale: scaleTo
-    )
+    animateTapStart(scale: scaleTo)
   }
   
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration, useHaptic: "selection")
+    animateTapEnd(useHaptic: "selection")
     if row != nil {
       onItemPress(["index":row!])
     }
   }
   
   override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration)
+    animateTapEnd()
   }
   
   func generateTextImage(_ text: String) -> UIImage? {
