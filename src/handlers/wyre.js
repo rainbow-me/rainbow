@@ -100,7 +100,7 @@ export const requestWyreApplePay = (
         destCurrency
       )
         .then(orderId => {
-          trackOrder(destCurrency, orderId, paymentResponse);
+          trackOrder(destCurrency, orderId, paymentResponse, sourceAmount);
         })
         .catch(error => {
           logger.sentry('processWyrePayment - catch');

@@ -43,8 +43,8 @@ export default function useWyreApplePay() {
   }, [startPaymentCompleteTimeout]);
 
   const getTransferHash = useCallback(
-    async transferId => {
-      const retry = () => getTransferHash(transferId);
+    async (transferId, sourceAmount) => {
+      const retry = () => getTransferHash(transferId, sourceAmount);
 
       try {
         const {
@@ -71,7 +71,9 @@ export default function useWyreApplePay() {
             from: null,
             hash: transferHash,
             nonce: null,
+            sourceAmount,
             status: TransactionStatusTypes.purchasing,
+            timestamp: Date.now(),
             to: accountAddress,
             type: TransactionTypes.purchase,
           };
@@ -118,9 +120,9 @@ export default function useWyreApplePay() {
   );
 
   const getOrderStatus = useCallback(
-    async (destCurrency, orderId, paymentResponse) => {
+    async (destCurrency, orderId, paymentResponse, sourceAmount) => {
       const retry = () =>
-        getOrderStatus(destCurrency, orderId, paymentResponse);
+        getOrderStatus(destCurrency, orderId, paymentResponse, sourceAmount);
 
       try {
         if (!isPaymentComplete && isEmpty(orderId)) {
@@ -166,7 +168,7 @@ export default function useWyreApplePay() {
         }
 
         if (transferId) {
-          getTransferHash(transferId);
+          getTransferHash(transferId, sourceAmount);
         } else if (!isFailed) {
           retryOrderStatusTimeout(retry, 1000);
         }
