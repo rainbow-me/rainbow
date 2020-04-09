@@ -53,6 +53,7 @@ const AssetPanelHeader = ({
   showcaseTokens,
   pushShowcaseToken,
   popShowcaseToken,
+  navigation,
 }) => (
   <Container>
     <Row style={{ justifyContent: 'space-between' }}>
@@ -89,6 +90,9 @@ const AssetPanelHeader = ({
                 pushShowcaseToken(asset.uniqueId);
               }
               store.dispatch(uniqueTokensRefreshState());
+              if (navigation) {
+                navigation.pop();
+              }
             }
           }}
           options={

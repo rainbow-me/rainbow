@@ -40,7 +40,7 @@ export default compose(
         actionType,
         fabDropped,
         family,
-        familyId,
+        familyName,
         highlight,
         onPressSend,
         setOpenFamilyTabs,
@@ -55,7 +55,7 @@ export default compose(
         if (++openFamilyCheck === 1) {
           openFamilyTabsHandle = setTimeout(() => {
             if (family) {
-              setOpenFamilyTabs({ index: familyId, state: true });
+              setOpenFamilyTabs({ index: familyName, state: true });
             }
           }, 300);
         }

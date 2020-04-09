@@ -356,7 +356,11 @@ class RecyclerAssetList extends Component {
         if (collectiblesIndex > -1) {
           if (index > headersIndices[collectiblesIndex]) {
             const familyIndex = index - headersIndices[collectiblesIndex] - 1;
-            if (openFamilyTabs[familyIndex]) {
+            if (
+              openFamilyTabs[
+                sections[collectiblesIndex].data[familyIndex].familyName
+              ]
+            ) {
               if (
                 get(
                   sections,
@@ -565,10 +569,16 @@ class RecyclerAssetList extends Component {
     if (openFamilyTabs !== prevProps.openFamilyTabs && collectibles.data) {
       let i = 0;
       while (i < collectibles.data.length) {
-        if (openFamilyTabs[i] === true && !prevProps.openFamilyTabs[i]) {
+        if (
+          openFamilyTabs[collectibles.data[i].familyName] === true &&
+          !prevProps.openFamilyTabs[collectibles.data[i].familyName]
+        ) {
           let collectiblesHeight = 0;
           for (let j = 0; j < i; j++) {
-            if (openFamilyTabs[j] && collectibles.data[j].tokens) {
+            if (
+              openFamilyTabs[collectibles.data[j].familyName] &&
+              collectibles.data[j].tokens
+            ) {
               collectiblesHeight +=
                 TokenFamilyHeader.height +
                 collectibles.data[j].tokens.length * UniqueTokenRow.height +
@@ -661,8 +671,8 @@ class RecyclerAssetList extends Component {
     if (collectibles.data) {
       for (let i = 0; i < collectibles.data.length; i++) {
         if (
-          openFamilyTabs[i] === false &&
-          prevProps.openFamilyTabs[i] === true
+          openFamilyTabs[collectibles.data[i].familyName] === false &&
+          prevProps.openFamilyTabs[collectibles.data[i].familyName] === true
         ) {
           shouldAutoscrollBack = true;
           break;
@@ -739,7 +749,10 @@ class RecyclerAssetList extends Component {
         collectiblesHeight =
           collectibles.data.length > 0 ? AssetListHeader.height : 0;
         for (let j = 0; j < collectibles.data.length; j++) {
-          if (openFamilyTabs[j] && collectibles.data[j].tokens) {
+          if (
+            openFamilyTabs[collectibles.data[j].familyName] &&
+            collectibles.data[j].tokens
+          ) {
             collectiblesHeight +=
               TokenFamilyHeader.height +
               collectibles.data[j].tokens.length * UniqueTokenRow.height +

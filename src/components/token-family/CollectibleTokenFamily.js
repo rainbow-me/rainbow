@@ -15,13 +15,13 @@ const CollectibleTokenFamily = ({
   const dispatch = useDispatch();
 
   const isFamilyOpen = useSelector(
-    ({ openStateSettings }) => openStateSettings.openFamilyTabs[familyId]
+    ({ openStateSettings }) => openStateSettings.openFamilyTabs[familyName]
   );
 
   const handleToggle = useCallback(
     () =>
-      dispatch(setOpenFamilyTabs({ index: familyId, state: !isFamilyOpen })),
-    [dispatch, familyId, isFamilyOpen]
+      dispatch(setOpenFamilyTabs({ index: familyName, state: !isFamilyOpen })),
+    [dispatch, familyName, isFamilyOpen]
   );
 
   const renderChild = useCallback(
