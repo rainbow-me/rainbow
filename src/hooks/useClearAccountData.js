@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import { addCashClearState } from '../redux/addCash';
 import { dataClearState } from '../redux/data';
 import { explorerClearState } from '../redux/explorer';
 import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
@@ -24,6 +25,7 @@ export default function useClearAccountData() {
     const p6 = dispatch(nonceClearState());
     const p7 = dispatch(requestsClearState());
     const p8 = dispatch(uniswapClearState());
+    const p9 = dispatch(addCashClearState());
     await promiseUtils.PromiseAllWithFails([
       p0,
       p1,
@@ -34,6 +36,7 @@ export default function useClearAccountData() {
       p6,
       p7,
       p8,
+      p9,
     ]);
   }, [dispatch]);
 
