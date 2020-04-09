@@ -11,11 +11,13 @@ import {
   WYRE_ENDPOINT_TEST,
 } from 'react-native-dotenv';
 import { add, feeCalculation } from '../helpers/utilities';
+import { WYRE_SUPPORTED_COUNTRIES_ISO } from '../references';
 import { logger } from '../utils';
 
 const WYRE_PERCENT_FEE = 4;
 const WYRE_FLAT_FEE_USD = 0.3;
 const SOURCE_CURRENCY_USD = 'USD';
+const PAYMENT_PROCESSOR_COUNTRY_CODE = 'US';
 
 const wyreApi = axios.create({
   baseURL: __DEV__ ? WYRE_ENDPOINT_TEST : WYRE_ENDPOINT,
@@ -57,12 +59,12 @@ export const requestWyreApplePay = (
   const methodData = [
     {
       data: {
-        countryCode: 'US',
+        countryCode: PAYMENT_PROCESSOR_COUNTRY_CODE,
         currencyCode: SOURCE_CURRENCY_USD,
         merchantIdentifier: __DEV__
           ? RAINBOW_WYRE_MERCHANT_ID_TEST
           : RAINBOW_WYRE_MERCHANT_ID,
-        supportedCountries: ['US'],
+        supportedCountries: WYRE_SUPPORTED_COUNTRIES_ISO,
         supportedNetworks: ['visa', 'mastercard', 'amex'],
       },
       supportedMethods: ['apple-pay'],
