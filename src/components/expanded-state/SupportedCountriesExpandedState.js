@@ -1,7 +1,9 @@
 import React from 'react';
+import { values } from 'lodash';
 import { StyleSheet, Text } from 'react-native';
 import FloatingPanels from './FloatingPanels';
 import { AssetPanel } from './asset-panel';
+import { supportedCountries } from '../../references/wyre/supportedCountries';
 import { Centered } from '../layout';
 import { padding } from '../../styles';
 import { deviceUtils } from '../../utils';
@@ -20,19 +22,16 @@ const sx = StyleSheet.create({
   },
 });
 
+const countries = values(supportedCountries).map(c => c.name);
+const countriesList = `${countries.join(', ')}.`;
+
 const SupportCountriesExpandedState = () => {
   return (
     <FloatingPanels maxWidth={deviceUtils.dimensions.width - 110}>
       <AssetPanel>
         <Centered css={padding(24, 25)} direction="column">
           <Text style={sx.title}>List of supported countries</Text>
-          <Text style={sx.text}>
-            Australia, Austria, Belgium, Canada, Czech Republic, Denmark,
-            Estonia, Finland, France, Germany, Greece, Hong Kong, Ireland,
-            Italy, Latvia, Lithuania, Luxembourg, Mexico, The Netherlands, New
-            Zealand, Norway, Poland, Portugal, Slovakia, Slovenia, Spain,
-            Sweden, Switzerland, United States.
-          </Text>
+          <Text style={sx.text}>{countriesList}</Text>
         </Centered>
       </AssetPanel>
     </FloatingPanels>
