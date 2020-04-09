@@ -147,6 +147,7 @@ const AddCashForm = ({
             currencies={currencies}
             initialCurrencyIndex={initialCurrencyIndex}
             onSelect={onCurrencyChange}
+            isWalletEthZero={isWalletEthZero}
           />
         </ColumnWithMargins>
       </Centered>
