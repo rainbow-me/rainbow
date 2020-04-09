@@ -1,6 +1,7 @@
 export { default as useAccountData } from './useAccountData';
 export { default as useAccountAssets } from './useAccountAssets';
 export { default as useAccountSettings } from './useAccountSettings';
+export { default as useAddCashLimits } from './useAddCashLimits';
 export { default as useAppState } from './useAppState';
 export { default as useBiometryType, BiometryTypes } from './useBiometryType';
 export { default as useBlockPolling } from './useBlockPolling';

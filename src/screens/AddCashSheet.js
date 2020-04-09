@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -12,6 +12,7 @@ import {
 } from '../components/sheet';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import {
+  useAddCashLimits,
   useDimensions,
   useShakeAnimation,
   useTimeout,
@@ -35,14 +36,6 @@ const SheetContainer = styled(Column)`
   width: 100%;
 `;
 
-const cashLimitYearly = 1500;
-const cashLimitDaily = 250;
-
-const cashLimits = {
-  daily: `Up to $${cashLimitDaily} daily`,
-  yearly: `Up to $${cashLimitYearly} yearly`,
-};
-
 const SubtitleInterval = 3000;
 
 const AddCashSheet = () => {
@@ -54,6 +47,16 @@ const AddCashSheet = () => {
 
   const [errorIndex, setErrorIndex] = useState(null);
   const onClearError = useCallback(() => setErrorIndex(null), []);
+
+  const { dailyRemainingLimit, yearlyRemainingLimit } = useAddCashLimits();
+
+  const cashLimits = useMemo(
+    () => ({
+      daily: `$${dailyRemainingLimit} remaining today`,
+      yearly: `$${yearlyRemainingLimit} left this year`,
+    }),
+    [dailyRemainingLimit, yearlyRemainingLimit]
+  );
 
   const {
     isPaymentComplete,
@@ -69,7 +72,7 @@ const AddCashSheet = () => {
       setErrorIndex(Object.keys(cashLimits).indexOf(limit));
       startErrorTimeout(() => onClearError(), SubtitleInterval);
     },
-    [startErrorTimeout, stopErrorTimeout, onClearError]
+    [stopErrorTimeout, cashLimits, startErrorTimeout, onClearError]
   );
 
   return (
@@ -108,7 +111,7 @@ const AddCashSheet = () => {
             />
           ) : (
             <AddCashForm
-              limitDaily={cashLimitDaily}
+              limitDaily={dailyRemainingLimit}
               onClearError={onClearError}
               onLimitExceeded={onLimitExceeded}
               onPurchase={onPurchase}

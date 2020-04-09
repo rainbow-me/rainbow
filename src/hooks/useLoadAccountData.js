@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import networkTypes from '../helpers/networkTypes';
 import { useAccountSettings } from '../hooks';
+import { addCashLoadState } from '../redux/addCash';
 import { dataLoadState } from '../redux/data';
 import { contactsLoadState } from '../redux/contacts';
 import { openStateSettingsLoadState } from '../redux/openStateSettings';
@@ -34,7 +35,8 @@ export default function useLoadAccountData() {
 
     const p6 = dispatch(uniswapLoadState());
     const p7 = dispatch(contactsLoadState());
-    promises.push(p6, p7);
+    const p8 = dispatch(addCashLoadState());
+    promises.push(p6, p7, p8);
 
     return promiseUtils.PromiseAllWithFails(promises);
   }, [dispatch, network]);

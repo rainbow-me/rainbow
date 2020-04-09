@@ -14,7 +14,8 @@ import {
   WYRE_ORDER_STATUS_TYPES,
   WYRE_TRANSFER_STATUS_TYPES,
 } from '../helpers/wyreStatusTypes';
-import { dataAddNewPurchaseTransaction } from '../redux/data';
+import { addCashNewPurchaseTransaction } from '../redux/addCash';
+import { dataAddNewTransaction } from '../redux/data';
 import { AddCashCurrencies, AddCashCurrencyInfo } from '../references';
 import { ethereumUtils, logger } from '../utils';
 import useAccountData from './useAccountData';
@@ -77,7 +78,8 @@ export default function useWyreApplePay() {
             to: accountAddress,
             type: TransactionTypes.purchase,
           };
-          dispatch(dataAddNewPurchaseTransaction(txDetails));
+          dispatch(addCashNewPurchaseTransaction(txDetails));
+          dispatch(dataAddNewTransaction(txDetails));
           getTransferStatus(transferId);
         } else {
           retryTransferHashTimeout(retry, 1000);
@@ -202,7 +204,6 @@ export default function useWyreApplePay() {
     onPurchase,
     orderCurrency,
     orderStatus,
-    transferHash,
     transferStatus,
   };
 }
