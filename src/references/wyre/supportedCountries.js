@@ -1,5 +1,5 @@
 /* eslint-disable sort-keys */
-export const supportedCurrencies = {
+export const supportedCountries = {
   AU: {
     emojiName: 'flag-au',
     name: 'Australia',
