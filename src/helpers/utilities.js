@@ -48,7 +48,7 @@ export const convertNumberToString = value => BigNumber(`${value}`).toFixed();
  * @return {String}
  */
 export const greaterThan = (numberOne, numberTwo) =>
-  BigNumber(`${numberOne}`).gt(BigNumber(`${numberTwo}`));
+  BigNumber(`${numberOne}`).gt(numberTwo);
 
 /**
  * @desc compares if numberOne is greater than or equal to numberTwo
@@ -57,7 +57,16 @@ export const greaterThan = (numberOne, numberTwo) =>
  * @return {String}
  */
 export const greaterThanOrEqualTo = (numberOne, numberTwo) =>
-  BigNumber(`${numberOne}`).gte(BigNumber(`${numberTwo}`));
+  BigNumber(`${numberOne}`).gte(numberTwo);
+
+/**
+ * @desc compares if numberOne is equal to numberTwo
+ * @param  {Number}   numberOne
+ * @param  {Number}   numberTwo
+ * @return {String}
+ */
+export const isEqual = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`).eq(numberTwo);
 
 /**
  * @desc format fixed number of decimals
@@ -97,23 +106,6 @@ export const feeCalculation = (amount, percentFee, fixedFee) =>
     .plus(fixedFee)
     .toFixed(2, BigNumber.ROUND_HALF_UP);
 
-/**
- * @desc compares if numberOne is greater than or equal to numberTwo
- * @param  {Number}   numberOne
- * @param  {Number}   numberTwo
- * @return {String}
- */
-export const greaterThanOrEqual = (numberOne, numberTwo) =>
-  BigNumber(`${numberOne}`).comparedTo(BigNumber(`${numberTwo}`)) >= 0;
-
-/**
- * @desc compares if numberOne is equal to numberTwo
- * @param  {Number}   numberOne
- * @param  {Number}   numberTwo
- * @return {String}
- */
-export const isEqual = (numberOne, numberTwo) =>
-  BigNumber(`${numberOne}`).comparedTo(BigNumber(`${numberTwo}`)) === 0;
 /**
  * @desc real floor divides two numbers
  * @param  {Number}   numberOne
@@ -256,7 +248,7 @@ export const convertStringToNumber = value => BigNumber(`${value}`).toNumber();
  * @return {String}
  */
 export const smallerThan = (numberOne, numberTwo) =>
-  BigNumber(`${numberOne}`).comparedTo(BigNumber(`${numberTwo}`)) === -1;
+  BigNumber(`${numberOne}`).lt(numberTwo);
 
 /**
  * @desc handle signficant decimals
