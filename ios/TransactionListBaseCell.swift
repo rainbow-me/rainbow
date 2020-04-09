@@ -56,13 +56,26 @@ class TransactionListBaseCell : UITableViewCell {
   func generateTextImage(_ text: String) -> UIImage? {
     let frame = CGRect(x: 0, y: 0, width: 120, height: 120)
     
+    var fallbackFontSize = 11 * 3
+    if text.count == 0 {
+      fallbackFontSize = 0
+    } else if text.count > 4 {
+      fallbackFontSize = 8 * 3
+    } else if text.count == 4 {
+      fallbackFontSize = 10 * 3
+    } else if (text.count == 1 || text.count == 2) {
+      fallbackFontSize = 13 * 3
+    }
+    let fallbackLetterSpacing = 0.4 * 3
+    
     let nameLabel = MyBoundedLabel(frame: frame)
     nameLabel.textAlignment = .center
-    nameLabel.backgroundColor = UIColor(red: 0.23, green: 0.24, blue: 0.32, alpha: 1.0)
+    nameLabel.backgroundColor = UIColor.RainbowTheme.Transactions.blueGreyDark
     nameLabel.textColor = .white
-    nameLabel.font = .systemFont(ofSize: 42, weight: .regular)
-    nameLabel.text = text
-    nameLabel.adjustsFontSizeToFitWidth = true
+    nameLabel.font = UIFont(name: "SFRounded-Semibold", size: CGFloat(fallbackFontSize))
+    nameLabel.text = String(text.prefix(5))
+    nameLabel.addCharacterSpacing(kernValue: fallbackLetterSpacing)
+    nameLabel.setLineSpacing(lineHeightMultiple: 1.05)
     
     UIGraphicsBeginImageContext(frame.size)
     if let currentContext = UIGraphicsGetCurrentContext() {

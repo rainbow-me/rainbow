@@ -36,19 +36,20 @@ const CoinIconFallback = fallbackProps => {
     return (
       <FallbackIcon
         {...fallbackProps}
-        textStyles={fallbackTextStyles}
+        bgColor={colors.blueGreyDark}
         symbol={symbol || ''}
+        textStyles={fallbackTextStyles}
       />
     );
   } else if (remoteIconUrl) {
     return (
       <FastImage
         {...fallbackProps}
-        style={{ height, width }}
-        source={{ uri: remoteIconUrl }}
         onError={() => {
           setIconNotAvailable(true);
         }}
+        source={{ uri: remoteIconUrl }}
+        style={{ height, width }}
       />
     );
   }
@@ -71,21 +72,21 @@ const CoinIcon = enhance(
         shouldRasterizeIOS
       >
         <ReactCoinIcon
+          address={address || ''}
           bgColor={bgColor}
           fallbackRenderer={CoinIconFallback}
           size={size}
           symbol={symbol || ''}
-          address={address || ''}
         />
       </ShadowStack>
     ) : (
       <ReactCoinIcon
         {...props}
+        address={address || ''}
         bgColor={bgColor}
         fallbackRenderer={CoinIconFallback}
         size={size}
         symbol={symbol}
-        address={address || ''}
       />
     )
 );

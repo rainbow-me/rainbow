@@ -199,7 +199,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.accountView.layer.addSublayer(shadowLayer)
     header.accountView.layer.addSublayer(secondShadowLayer)
     
-    headerSeparator.backgroundColor = UIColor(red:0.24, green:0.26, blue:0.32, alpha:0.02)
+    headerSeparator.backgroundColor = UIColor.RainbowTheme.Transactions.rowDividerLight
     tableView.tableHeaderView = header
     addSubview(tableView)
   }
