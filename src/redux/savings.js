@@ -78,94 +78,97 @@ export const savingsClearState = () => (dispatch, getState) => {
 const subscribeToCompoundData = async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { tokenOverrides } = getState().data;
-  const { savingsSubscription } = getState().savings;
+  const { savingsQuery } = getState().savings;
 
-  if (savingsSubscription) {
-    savingsSubscription.resetLastResults();
-    savingsSubscription.refetch();
+  if (savingsQuery) {
+    savingsQuery.resetLastResults();
+    savingsQuery.refetch();
   } else {
     // First read from localstorage
     let savingsAccountLocal = accountAddress
       ? await getSavings(accountAddress, network)
       : [];
 
-    const newSubscription = compoundClient
-      .watchQuery({
-        fetchPolicy: 'network-only',
-        pollInterval: COMPOUND_QUERY_INTERVAL, // 15 seconds
-        query: COMPOUND_ACCOUNT_AND_MARKET_QUERY,
-        skip: !toLower(accountAddress),
-        variables: { id: toLower(accountAddress) },
-      })
-      .subscribe({
-        next: async ({ data }) => {
-          let savingsAccountData = [];
-          const markets = keyBy(get(data, 'markets', []), property('id'));
+    const newQuery = compoundClient.watchQuery({
+      fetchPolicy: 'network-only',
+      pollInterval: COMPOUND_QUERY_INTERVAL, // 15 seconds
+      query: COMPOUND_ACCOUNT_AND_MARKET_QUERY,
+      skip: !toLower(accountAddress),
+      variables: { id: toLower(accountAddress) },
+    });
 
-          let accountTokens = get(data, 'account.tokens', []);
+    const newSubscription = newQuery.subscribe({
+      next: async ({ data }) => {
+        let savingsAccountData = [];
+        const markets = keyBy(get(data, 'markets', []), property('id'));
 
-          accountTokens = accountTokens.map(token => {
-            const [cTokenAddress] = token.id.split('-');
-            const marketData = markets[cTokenAddress] || {};
+        let accountTokens = get(data, 'account.tokens', []);
 
-            const {
-              cToken,
-              exchangeRate,
-              supplyRate,
-              underlying,
-              underlyingPrice,
-            } = getMarketData(marketData, tokenOverrides);
+        accountTokens = accountTokens.map(token => {
+          const [cTokenAddress] = token.id.split('-');
+          const marketData = markets[cTokenAddress] || {};
 
-            const ethPrice = multiply(
-              underlyingPrice,
-              token.supplyBalanceUnderlying
-            );
+          const {
+            cToken,
+            exchangeRate,
+            supplyRate,
+            underlying,
+            underlyingPrice,
+          } = getMarketData(marketData, tokenOverrides);
 
-            const {
-              cTokenBalance,
-              lifetimeSupplyInterestAccrued,
-              supplyBalanceUnderlying,
-            } = token;
-
-            return {
-              cToken,
-              cTokenBalance,
-              ethPrice,
-              exchangeRate,
-              lifetimeSupplyInterestAccrued,
-              supplyBalanceUnderlying,
-              supplyRate,
-              type: assetTypes.cToken,
-              underlying,
-              underlyingPrice,
-            };
-          });
-
-          accountTokens = orderBy(accountTokens, ['ethPrice'], ['desc']);
-
-          if (accountTokens.length) {
-            saveSavings(accountTokens, accountAddress, network);
-            savingsAccountData = accountTokens;
-          } else {
-            savingsAccountData = savingsAccountLocal;
-          }
-
-          const daiMarketData = getMarketData(
-            markets[CDAI_CONTRACT],
-            tokenOverrides
+          const ethPrice = multiply(
+            underlyingPrice,
+            token.supplyBalanceUnderlying
           );
 
-          dispatch({
-            payload: {
-              accountTokens: savingsAccountData,
-              daiMarketData: daiMarketData,
-            },
-            type: SAVINGS_UPDATE_COMPOUND_DATA,
-          });
-        },
-      });
+          const {
+            cTokenBalance,
+            lifetimeSupplyInterestAccrued,
+            supplyBalanceUnderlying,
+          } = token;
+
+          return {
+            cToken,
+            cTokenBalance,
+            ethPrice,
+            exchangeRate,
+            lifetimeSupplyInterestAccrued,
+            supplyBalanceUnderlying,
+            supplyRate,
+            type: assetTypes.cToken,
+            underlying,
+            underlyingPrice,
+          };
+        });
+
+        accountTokens = orderBy(accountTokens, ['ethPrice'], ['desc']);
+
+        if (accountTokens.length) {
+          saveSavings(accountTokens, accountAddress, network);
+          savingsAccountData = accountTokens;
+        } else {
+          savingsAccountData = savingsAccountLocal;
+        }
+
+        const daiMarketData = getMarketData(
+          markets[CDAI_CONTRACT],
+          tokenOverrides
+        );
+
+        dispatch({
+          payload: {
+            accountTokens: savingsAccountData,
+            daiMarketData: daiMarketData,
+          },
+          type: SAVINGS_UPDATE_COMPOUND_DATA,
+        });
+      },
+    });
     dispatch({
-      payload: newSubscription,
+      payload: {
+        savingsQuery: newQuery,
+        savingsSubscription: newSubscription,
+      },
       type: SAVINGS_UPDATE_COMPOUND_SUBSCRIPTION,
     });
   }
@@ -175,13 +178,18 @@ const subscribeToCompoundData = async (dispatch, getState) => {
 const INITIAL_STATE = {
   accountTokens: [],
   daiMarketData: {},
+  savingsQuery: null,
   savingsSubscription: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case SAVINGS_UPDATE_COMPOUND_SUBSCRIPTION:
-      return { ...state, savingsSubscription: action.payload };
+      return {
+        ...state,
+        savingsQuery: action.payload.savingsQuery,
+        savingsSubscription: action.payload.savingsSubscription,
+      };
     case SAVINGS_UPDATE_COMPOUND_DATA:
       return {
         ...state,
