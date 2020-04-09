@@ -8,6 +8,7 @@ import {
   get,
   includes,
   isEmpty,
+  map,
   partition,
   pick,
   reverse,
@@ -52,6 +53,7 @@ export const parseTransactions = (
   network,
   appended = false
 ) => {
+  const purchaseTransactionHashes = map(purchaseTransactions, 'hash');
   const data = appended
     ? dataFromLastTxHash(transactionData, existingTransactions)
     : transactionData;
@@ -62,7 +64,7 @@ export const parseTransactions = (
         accountAddress,
         nativeCurrency,
         tokenOverrides,
-        purchaseTransactions,
+        purchaseTransactionHashes,
         network
       )
     )
