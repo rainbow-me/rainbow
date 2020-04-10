@@ -41,7 +41,6 @@ const ProfileScreen = ({
   const addCashInProdNetworks = !__DEV__ && network === NetworkTypes.mainnet;
   const addCashAvailable =
     Platform.OS === 'ios' && (addCashInDevNetworks || addCashInProdNetworks);
-  console.log('add cash avail?', addCashAvailable);
 
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>
