@@ -144,7 +144,7 @@ const parseTransaction = (
     (txn.type === TransactionTypes.deposit ||
       txn.type === TransactionTypes.withdraw)
   ) {
-    transaction.status = 'failed';
+    transaction.status = TransactionStatusTypes.failed;
     const asset = savingsAssetsList[network][toLower(transaction.to)];
 
     const assetInternalTransaction = {
@@ -158,7 +158,7 @@ const parseTransaction = (
 
   if (
     isEmpty(changes) &&
-    txn.status === 'failed' &&
+    txn.status === TransactionStatusTypes.failed &&
     txn.type === TransactionTypes.execution &&
     txn.direction === 'out'
   ) {
@@ -231,6 +231,10 @@ const parseTransaction = (
       nativeCurrency
     );
 
+    if (includes(purchaseTransactions, toLower(transaction.hash))) {
+      transaction.type = TransactionTypes.purchase;
+    }
+
     const status = getTransactionLabel(
       accountAddress,
       internalTxn.address_from,
@@ -238,7 +242,6 @@ const parseTransaction = (
       transaction.status,
       internalTxn.address_to,
       transaction.hash,
-      purchaseTransactions,
       transaction.type
     );
 
@@ -292,13 +295,10 @@ const getTransactionLabel = (
   status,
   to,
   hash,
-  purchaseTransactions,
   type
 ) => {
-  if (includes(purchaseTransactions, toLower(hash))) {
-    if (pending) return TransactionStatusTypes.purchasing;
-    if (status !== 'failed') return TransactionStatusTypes.purchased;
-  }
+  if (pending && type === TransactionTypes.purchase)
+    return TransactionStatusTypes.purchasing;
 
   const isFromAccount = isLowerCaseMatch(from, accountAddress);
   const isToAccount = isLowerCaseMatch(to, accountAddress);
@@ -313,8 +313,11 @@ const getTransactionLabel = (
   if (pending && isFromAccount) return TransactionStatusTypes.sending;
   if (pending && isToAccount) return TransactionStatusTypes.receiving;
 
-  if (status === 'failed') return TransactionStatusTypes.failed;
+  if (status === TransactionStatusTypes.failed)
+    return TransactionStatusTypes.failed;
 
+  if (type === TransactionTypes.purchase)
+    return TransactionStatusTypes.purchased;
   if (type === TransactionTypes.deposit)
     return TransactionStatusTypes.deposited;
   if (type === TransactionTypes.withdraw)
