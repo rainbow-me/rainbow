@@ -248,7 +248,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       if section.data.indices.contains(indexPath.row + 1) {
         let nextTransaction = section.data[indexPath.row + 1] as! Transaction
         if nextTransaction.isSwapped() {
-          return 56.0
+          return 52.0
         }
       }
     }
