@@ -1,6 +1,7 @@
 import { includes } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { LayoutAnimation } from 'react-native';
 import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../../../styles';
@@ -93,6 +94,14 @@ const AssetPanelHeader = ({
               if (navigation) {
                 navigation.pop();
               }
+              LayoutAnimation.configureNext({
+                duration: 200,
+                update: {
+                  initialVelocity: 0,
+                  springDamping: 1,
+                  type: LayoutAnimation.Types.spring,
+                },
+              });
             }
           }}
           options={
