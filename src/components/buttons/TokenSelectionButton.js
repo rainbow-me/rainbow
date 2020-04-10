@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
+import ShadowStack from 'react-native-shadow-stack';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { colors, margin, padding, position } from '../../styles';
 import { isNewValueForObjectPaths } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, Row } from '../layout';
-import { ShadowStack } from '../shadow-stack';
 import { Text } from '../text';
 
 const TokenSelectionButton = ({ borderRadius, onPress, shadows, symbol }) => {

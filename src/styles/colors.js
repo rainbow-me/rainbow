@@ -10,6 +10,7 @@ let base = {
   blueGreyDark50: '#9DA0A8', // '60, 66, 82, 0.5'
   blueGreyDarker: '#0F0F11', // '15, 15, 17'
   blueGreyDarkLight: '#F3F4F5', // '243, 244, 245'
+  chartGreen: '#66d28f', // '102, 210, 143'
   dark: '#25292E', // '37, 41, 46'
   darkerGrey: '#9DA0A8', //	157, 160, 168
   darkGrey: '#71778A', // '113, 119, 138'

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import { pure } from 'recompose';
+import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import AssetTypes from '../../helpers/assetTypes';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
@@ -11,7 +12,6 @@ import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
 import SendSavingsCoinRow from '../coin-row/SendSavingsCoinRow';
 import { Icon } from '../icons';
 import { Column, ColumnWithMargins } from '../layout';
-import { ShadowStack } from '../shadow-stack';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
 

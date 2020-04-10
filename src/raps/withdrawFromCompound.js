@@ -1,6 +1,10 @@
 import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
+import { ethUnits } from '../references';
+import { logger } from '../utils';
 import { createNewAction, createNewRap, RapActionTypes } from './common';
+
+export const estimateWithdrawFromCompound = () => ethUnits.basic_withdrawal;
 
 const createWithdrawFromCompoundRap = ({
   inputCurrency,
@@ -9,11 +13,11 @@ const createWithdrawFromCompoundRap = ({
   selectedGasPrice,
   callback,
 }) => {
-  console.log('[withdraw rap] withdraw', inputCurrency);
+  logger.log('[withdraw rap] withdraw', inputCurrency);
   const { accountAddress, network } = store.getState().settings;
 
   // create a withdraw rap
-  console.log('[withdraw rap] making redeem func');
+  logger.log('[withdraw rap] making redeem func');
   const withdraw = createNewAction(RapActionTypes.withdrawCompound, {
     accountAddress,
     inputAmount,
@@ -30,7 +34,7 @@ const createWithdrawFromCompoundRap = ({
   // update the rap store
   const { dispatch } = store;
   dispatch(rapsAddOrUpdate(newRap.id, newRap));
-  console.log('[withdraw rap] new rap!', newRap);
+  logger.log('[withdraw rap] new rap!', newRap);
   return newRap;
 };
 

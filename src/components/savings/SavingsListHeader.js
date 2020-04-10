@@ -111,6 +111,8 @@ SavingsListHeader.propTypes = {
 
 SavingsListHeader.defaultProps = {
   emoji: 'sunflower',
+  savingsSumValue: 0,
+  showSumValue: false,
 };
 
 export default compose(withOpenSavings)(SavingsListHeader);

@@ -2,9 +2,10 @@ import { captureException } from '@sentry/react-native';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { explorerInit } from '../redux/explorer';
+import { savingsLoadState } from '../redux/savings';
 import { uniswapGetAllExchanges, uniswapPairsInit } from '../redux/uniswap';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
-import { sentryUtils } from '../utils';
+import { logger } from '../utils';
 import { InteractionManager } from 'react-native';
 
 export default function useInitializeAccountData() {
@@ -13,7 +14,7 @@ export default function useInitializeAccountData() {
   const initializeAccountData = useCallback(async () => {
     try {
       InteractionManager.runAfterInteractions(() => {
-        sentryUtils.addInfoBreadcrumb('Initialize account data');
+        logger.sentry('Initialize account data');
         dispatch(explorerInit());
       });
 
@@ -23,11 +24,12 @@ export default function useInitializeAccountData() {
       });
 
       InteractionManager.runAfterInteractions(async () => {
+        await dispatch(savingsLoadState());
         await dispatch(uniqueTokensRefreshState());
       });
     } catch (error) {
       // TODO error state
-      console.log('Error initializing account data: ', error);
+      logger.log('Error initializing account data: ', error);
       captureException(error);
     }
   }, [dispatch]);

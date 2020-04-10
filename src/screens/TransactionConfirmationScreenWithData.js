@@ -16,7 +16,7 @@ import {
   sendTransaction,
 } from '../model/wallet';
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
-import { gasUtils } from '../utils';
+import { gasUtils, logger } from '../utils';
 import {
   isMessageDisplayType,
   isSignFirstParamType,
@@ -93,7 +93,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
         const rawGasLimit = await estimateGas(txPayload);
         gasLimit = toHex(rawGasLimit);
       } catch (error) {
-        console.log('error estimating gas', error);
+        logger.log('error estimating gas', error);
       }
     }
 
@@ -206,7 +206,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
         method === SEND_TRANSACTION ? 'transaction' : 'signature';
       analytics.track(`Rejected WalletConnect ${rejectionType} request`);
     } catch (error) {
-      console.log('error while handling cancel request', error);
+      logger.log('error while handling cancel request', error);
       this.closeScreen();
       Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
     }

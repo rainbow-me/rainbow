@@ -265,11 +265,11 @@ export const addressAssetsReceived = (
 
 const subscribeToMissingPrices = addresses => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  const { assets, uniswapPricesSubscription } = getState().data;
-  if (uniswapPricesSubscription) {
-    uniswapPricesSubscription.refetch({ addresses });
+  const { assets, uniswapPricesQuery } = getState().data;
+  if (uniswapPricesQuery) {
+    uniswapPricesQuery.refetch({ addresses });
   } else {
-    const newSubscription = uniswapClient.watchQuery({
+    const newQuery = uniswapClient.watchQuery({
       fetchPolicy: 'network-only',
       pollInterval: 15000, // 15 seconds
       query: UNISWAP_PRICES_QUERY,
@@ -278,7 +278,7 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
       },
     });
 
-    newSubscription.subscribe({
+    const newSubscription = newQuery.subscribe({
       next: async ({ data }) => {
         if (data && data.exchanges) {
           const nativePriceOfEth = ethereumUtils.getEthPriceUnit(assets);
@@ -333,7 +333,10 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
       },
     });
     dispatch({
-      payload: newSubscription,
+      payload: {
+        uniswapPricesQuery: newQuery,
+        uniswapPricesSubscription: newSubscription,
+      },
       type: DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION,
     });
   }
@@ -486,13 +489,18 @@ const INITIAL_STATE = {
   purchaseTransactions: [],
   tokenOverrides: loweredTokenOverridesFallback,
   transactions: [],
+  uniswapPricesQuery: null,
   uniswapPricesSubscription: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION:
-      return { ...state, uniswapPricesSubscription: action.payload };
+      return {
+        ...state,
+        uniswapPricesQuery: action.payload.uniswapPricesQuery,
+        uniswapPricesSubscription: action.payload.uniswapPricesSubscription,
+      };
     case DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP:
       return { ...state, assetPricesFromUniswap: action.payload };
     case DATA_UPDATE_ASSETS:

@@ -7,29 +7,31 @@ import { contactsLoadState } from '../redux/contacts';
 import { openStateSettingsLoadState } from '../redux/openStateSettings';
 import { coinListLoadState } from '../redux/editOptions';
 import { requestsLoadState } from '../redux/requests';
+import { savingsLoadState } from '../redux/savings';
 import { settingsLoadState } from '../redux/settings';
 import { uniswapLoadState } from '../redux/uniswap';
 import { uniqueTokensLoadState } from '../redux/uniqueTokens';
 import { walletConnectLoadState } from '../redux/walletconnect';
-import { promiseUtils, sentryUtils } from '../utils';
+import { logger, promiseUtils } from '../utils';
 
 export default function useLoadAccountData() {
   const dispatch = useDispatch();
   const { network } = useAccountSettings();
 
   const loadAccountData = useCallback(async () => {
-    sentryUtils.addInfoBreadcrumb('Load wallet data');
+    logger.sentry('Load wallet data');
     await dispatch(openStateSettingsLoadState());
     await dispatch(coinListLoadState());
     const promises = [];
     const p1 = dispatch(settingsLoadState());
     promises.push(p1);
     if (network === networkTypes.mainnet) {
-      const p2 = dispatch(dataLoadState());
-      const p3 = dispatch(uniqueTokensLoadState());
-      const p4 = dispatch(walletConnectLoadState());
-      const p5 = dispatch(requestsLoadState());
-      promises.push(p2, p3, p4, p5);
+      const p2 = dispatch(savingsLoadState());
+      const p3 = dispatch(dataLoadState());
+      const p4 = dispatch(uniqueTokensLoadState());
+      const p5 = dispatch(walletConnectLoadState());
+      const p6 = dispatch(requestsLoadState());
+      promises.push(p2, p3, p4, p5, p6);
     }
 
     const p6 = dispatch(uniswapLoadState());

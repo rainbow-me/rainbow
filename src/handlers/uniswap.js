@@ -24,6 +24,7 @@ import {
 } from '../helpers/utilities';
 import { loadWallet } from '../model/wallet';
 import { erc20ABI, exchangeABI, uniswapTestnetAssets } from '../references';
+import { logger } from '../utils';
 import { toHex, web3Provider } from './web3';
 
 const uniswapPairsEndpoint = axios.create({
@@ -45,7 +46,7 @@ export const getUniswapPairs = async tokenOverrides => {
       ...tokenOverrides[key],
     }));
   } catch (error) {
-    console.log('Error getting uniswap pairs', error);
+    logger.log('Error getting uniswap pairs', error);
     throw error;
   }
 };
@@ -58,7 +59,7 @@ export const getTestnetUniswapPairs = async network => {
       ...value,
     }));
   } catch (error) {
-    console.log('Error getting uniswap testnet pairs', error);
+    logger.log('Error getting uniswap testnet pairs', error);
     throw error;
   }
 };
@@ -185,6 +186,7 @@ export const executeSwap = async (
     gasPrice: gasPrice ? toHex(gasPrice) : undefined,
     value,
   };
+
   switch (methodName) {
     case 'ethToTokenSwapInput':
       return exchange.ethToTokenSwapInput(
@@ -272,7 +274,7 @@ export const getLiquidityInfo = async (
         } catch (error) {
           name = get(contractMap, `[${tokenAddress}].name`, '');
           if (!name) {
-            console.log(
+            logger.log(
               'error getting name for token: ',
               tokenAddress,
               ' Error = ',
@@ -286,7 +288,7 @@ export const getLiquidityInfo = async (
           symbol = await tokenContract.symbol().catch();
         } catch (error) {
           if (!symbol) {
-            console.log(
+            logger.log(
               'error getting symbol for token: ',
               tokenAddress,
               ' Error = ',
@@ -321,7 +323,7 @@ export const getLiquidityInfo = async (
         uniqueId: `uniswap_${tokenAddress}`,
       };
     } catch (error) {
-      console.log('error getting uniswap info', error);
+      logger.log('error getting uniswap info', error);
       return {};
     }
   });
@@ -353,7 +355,7 @@ export const getAllExchanges = async (tokenOverrides, excluded = []) => {
       }
     }
   } catch (err) {
-    console.log('error: ', err);
+    logger.log('error: ', err);
   }
   data.forEach(exchange => {
     const tokenAddress = toLower(exchange.tokenAddress);
@@ -390,12 +392,12 @@ export const calculateTradeDetails = (
   const isOutputEth = outputAddress === 'eth';
 
   const rawInputAmount = convertAmountToRawAmount(
-    parseFloat(inputAmount) || 0,
+    inputAmount || 0,
     inputDecimals
   );
 
   const rawOutputAmount = convertAmountToRawAmount(
-    parseFloat(outputAmount) || 0,
+    outputAmount || 0,
     outputDecimals
   );
 

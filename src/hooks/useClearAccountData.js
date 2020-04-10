@@ -6,6 +6,7 @@ import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
 import { nonceClearState } from '../redux/nonce';
 import { clearOpenStateSettings } from '../redux/openStateSettings';
 import { requestsClearState } from '../redux/requests';
+import { savingsClearState } from '../redux/savings';
 import { uniswapClearState } from '../redux/uniswap';
 import { uniqueTokensClearState } from '../redux/uniqueTokens';
 import { walletConnectClearState } from '../redux/walletconnect';
@@ -24,6 +25,7 @@ export default function useClearAccountData() {
     const p6 = dispatch(nonceClearState());
     const p7 = dispatch(requestsClearState());
     const p8 = dispatch(uniswapClearState());
+    const p9 = dispatch(savingsClearState());
     await promiseUtils.PromiseAllWithFails([
       p0,
       p1,
@@ -34,6 +36,7 @@ export default function useClearAccountData() {
       p6,
       p7,
       p8,
+      p9,
     ]);
   }, [dispatch]);
 

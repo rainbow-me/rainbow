@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
+import ShadowStack from 'react-native-shadow-stack';
 import { compose, withHandlers } from 'recompact';
 import { borders, colors, position } from '../../styles';
 import Icon from '../icons/Icon';
 import { Centered } from '../layout';
-import { ShadowStack } from '../shadow-stack';
 import HeaderButton from './HeaderButton';
 import withCoinListEdited from '../../hoc/withCoinListEdited';
 import { OpacityToggler } from '../animations';

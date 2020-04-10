@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import { transformOrigin } from 'react-native-redash';
+import ShadowStack from 'react-native-shadow-stack';
 import { onlyUpdateForKeys } from 'recompact';
 import { borders, colors, position } from '../../styles';
 import { Icon } from '../icons';
-import { ShadowStack } from '../shadow-stack';
 import FloatingActionButton from './FloatingActionButton';
 
 const size = 34;

@@ -21,4 +21,20 @@ shadow.build = (
   shadow-radius: ${addUnitToNumberValues(radius / 2)};
 `;
 
+shadow.buildAsObject = (
+  x,
+  y,
+  radius,
+  color = shadow.color,
+  opacity = shadow.opacity
+) => ({
+  shadowColor: color,
+  shadowOffset: {
+    height: y,
+    width: x,
+  },
+  shadowOpacity: opacity,
+  shadowRadius: radius,
+});
+
 export default shadow;

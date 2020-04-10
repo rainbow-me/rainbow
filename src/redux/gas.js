@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
 import { apiGetGasPrices } from '../handlers/gasPrices';
@@ -116,6 +117,7 @@ export const gasUpdateGasPriceOption = newGasPriceOption => (
     },
     type: GAS_UPDATE_GAS_PRICE_OPTION,
   });
+  analytics.track('Updated Gas Price', { gasPriceOption: newGasPriceOption });
 };
 
 export const gasUpdateDefaultGasLimit = (

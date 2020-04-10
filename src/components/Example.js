@@ -2,6 +2,7 @@ import React from 'react';
 import { COMPOUND_ACCOUNT_TOKEN_QUERY } from '../apollo/queries';
 import { compoundClient } from '../apollo/client';
 import { Text } from '../components/text';
+import { logger } from '../utils';
 
 const Example = () => {
   const address = '0x00000000af5a61acaf76190794e3fdf1289288a1';
@@ -9,20 +10,20 @@ const Example = () => {
   const exchangeData = () => {
     let data = [];
     const userAddr = `${cDaiAddress}-${address}`;
-    console.log('addr ', userAddr);
+    logger.log('addr ', userAddr);
     const response = compoundClient.query({
       fetchPolicy: 'cache-first',
       query: COMPOUND_ACCOUNT_TOKEN_QUERY,
     });
-    console.log('res ', response);
+    logger.log('res ', response);
     if (!response.data) return;
-    console.log('success!');
+    logger.log('success!');
 
     return data;
   };
 
   const final = exchangeData();
-  console.log('data dump ', final);
+  logger.log('data dump ', final);
 
   return (
     <>

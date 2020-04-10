@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import networkTypes from '../helpers/networkTypes';
 import { uniswapUpdateState } from '../redux/uniswap';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
+import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
 
 export default function useRefreshAccountData() {
@@ -27,7 +28,7 @@ export default function useRefreshAccountData() {
         getUniqueTokens,
       ]);
     } catch (error) {
-      console.log('Error refreshing data', error);
+      logger.log('Error refreshing data', error);
       captureException(error);
       throw error;
     }

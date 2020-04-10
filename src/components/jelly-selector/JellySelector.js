@@ -4,12 +4,12 @@ import React, { createElement, Fragment, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
+import ShadowStack from 'react-native-shadow-stack';
 import { useDimensions } from '../../hooks';
 import { colors } from '../../styles';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { RowWithMargins } from '../layout';
-import { ShadowStack } from '../shadow-stack';
 
 const AnimatedShadowStack = Animated.createAnimatedComponent(ShadowStack);
 

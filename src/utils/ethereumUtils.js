@@ -1,5 +1,7 @@
+import { captureException } from '@sentry/react-native';
+import { ethers } from 'ethers';
 import { find, get, isEmpty, replace, toLower } from 'lodash';
-import chains from '../references/chains.json';
+import { web3Provider } from '../handlers/web3';
 import networkTypes from '../helpers/networkTypes';
 import {
   add,
@@ -7,23 +9,56 @@ import {
   fromWei,
   greaterThan,
   subtract,
+  convertRawAmountToDecimalFormat,
 } from '../helpers/utilities';
+import { erc20ABI, chains } from '../references';
 
 const getEthPriceUnit = assets => {
   const ethAsset = getAsset(assets);
   return get(ethAsset, 'price.value', 0);
 };
 
-const getBalanceAmount = (selectedGasPrice, selected) => {
+const getOnChainBalance = async (selected, accountAddress) => {
+  try {
+    let onChainBalance = 0;
+    if (selected.address === 'eth') {
+      onChainBalance = await web3Provider.getBalance(accountAddress);
+    } else {
+      const tokenContract = new ethers.Contract(
+        selected.address,
+        erc20ABI,
+        web3Provider
+      );
+      onChainBalance = await tokenContract.balanceOf(accountAddress);
+    }
+    return convertRawAmountToDecimalFormat(onChainBalance, selected.decimals);
+  } catch (e) {
+    // Default to current balance
+    // if something goes wrong
+    captureException(e);
+    return get(selected, 'balance.amount', 0);
+  }
+};
+
+const getBalanceAmount = async (
+  selectedGasPrice,
+  selected,
+  onchain = false,
+  accountAddress = null
+) => {
   let amount = '';
-  if (selected.address === 'eth' && !isEmpty(selectedGasPrice)) {
-    const balanceAmount = get(selected, 'balance.amount', 0);
-    const txFeeRaw = get(selectedGasPrice, 'txFee.value.amount');
-    const txFeeAmount = fromWei(txFeeRaw);
-    const remaining = subtract(balanceAmount, txFeeAmount);
-    amount = convertNumberToString(greaterThan(remaining, 0) ? remaining : 0);
+  if (onchain) {
+    amount = getOnChainBalance(selected, accountAddress);
   } else {
     amount = get(selected, 'balance.amount', 0);
+  }
+  if (selected.address === 'eth') {
+    if (!isEmpty(selectedGasPrice)) {
+      const txFeeRaw = get(selectedGasPrice, 'txFee.value.amount');
+      const txFeeAmount = fromWei(txFeeRaw);
+      const remaining = subtract(amount, txFeeAmount);
+      amount = convertNumberToString(greaterThan(remaining, 0) ? remaining : 0);
+    }
   }
   return amount;
 };
