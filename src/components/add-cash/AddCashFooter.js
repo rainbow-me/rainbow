@@ -9,8 +9,7 @@ import { Emoji, Text } from '../text';
 import ApplePayButton from './ApplePayButton';
 
 const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
-  const { isTallPhone } = useDimensions();
-  const { isTinyPhone } = useDimensions();
+  const { isTallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
   const onSupportedGeoPress = useCallback(() => {
     navigate('OverlayExpandedSupportedCountries', {
