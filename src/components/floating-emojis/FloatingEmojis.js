@@ -5,6 +5,7 @@ import { position } from '../../styles';
 import FloatingEmoji from './FloatingEmoji';
 
 const EMPTY_ARRAY = [];
+const getEmoji = emoji => Math.floor(Math.random() * emoji.length);
 const getRandomNumber = (min, max) => Math.random() * (max - min) + min;
 
 const FloatingEmojis = ({
@@ -46,7 +47,11 @@ const FloatingEmojis = ({
         const newEmoji = {
           // if a user has smashed the button 7 times, they deserve a 🌈 rainbow
           emojiToRender:
-            (existingEmojis.length + 1) % 7 === 0 ? 'rainbow' : emoji,
+            (existingEmojis.length + 1) % 7 === 0
+              ? 'rainbow'
+              : emoji.length === 1
+              ? emoji[0]
+              : emoji[getEmoji(emoji)],
           x: x ? x - getRandomNumber(-20, 20) : getRandomNumber(...range) + '%',
           y: y || 0,
         };
@@ -98,7 +103,7 @@ FloatingEmojis.propTypes = {
   disableVerticalMovement: PropTypes.bool,
   distance: PropTypes.number,
   duration: PropTypes.number,
-  emoji: PropTypes.string.isRequired,
+  emoji: PropTypes.arrayOf(PropTypes.string).isRequired,
   fadeOut: PropTypes.bool,
   marginTop: PropTypes.number,
   opacity: PropTypes.oneOfType([PropTypes.number, PropTypes.object]),
@@ -116,7 +121,7 @@ FloatingEmojis.defaultProps = {
   // To view complete list of emojis compatible with this component,
   // head to https://unicodey.com/emoji-data/table.htm and reference the
   // table's "Short Name" column.
-  emoji: '+1',
+  emoji: ['+1'],
   fadeOut: true,
   opacity: 1,
   range: [0, 80],

@@ -96,6 +96,25 @@ const sendFlowRoutes = {
   },
 };
 
+const addCashFlowRoutes = {
+  AddCashSheet: {
+    navigationOptions: {
+      ...sheetPreset,
+      onTransitionStart: props => {
+        expandedPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
+    },
+    screen: function AddCashSheetWrapper(...props) {
+      return <AddCashSheet {...props} setAppearListener={setListener} />;
+    },
+  },
+  OverlayExpandedSupportedCountries: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ExpandedAssetScreenWithData,
+  },
+};
+
 const MainNavigator = createStackNavigator(
   {
     AvatarBuilder: {
@@ -250,9 +269,17 @@ const savingsModalsRoutes = {
 const nativeStackWrapperRoutes = {
   NativeStack: createNativeStackNavigator(
     {
-      AddCashSheet: function AddCashSheetWrapper(...props) {
-        return <AddCashSheet {...props} />;
-      },
+      AddCashSheetNavigator: isNativeStackAvailable
+        ? createStackNavigator(addCashFlowRoutes, {
+            defaultNavigationOptions: {
+              onTransitionEnd,
+              onTransitionStart,
+            },
+            headerMode: 'none',
+            initialRouteName: 'AddCashSheet',
+            mode: 'modal',
+          })
+        : () => null,
       ImportSeedPhraseSheet: function ImportSeedPhraseSheetWrapper(...props) {
         return (
           <ImportSeedPhraseSheetWithData
@@ -319,6 +346,10 @@ const routesWithNativeStack = {
   },
   MainNavigator,
   OverlayExpandedAssetScreen: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ExpandedAssetScreenWithData,
+  },
+  OverlayExpandedSupportedCountries: {
     navigationOptions: overlayExpandedPreset,
     screen: ExpandedAssetScreenWithData,
   },

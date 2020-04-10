@@ -3,8 +3,10 @@ import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useState } from 'react';
 import Animated from 'react-native-reanimated';
+import { useSelector } from 'react-redux';
 import { useDimensions } from '../../hooks';
 import { padding } from '../../styles';
+import { Alert } from '../alerts';
 import { runSpring } from '../animations';
 import { Centered, ColumnWithMargins } from '../layout';
 import { Numpad, NumpadValue } from '../numpad';
@@ -14,19 +16,23 @@ import AddCashSelector from './AddCashSelector';
 const { Clock } = Animated;
 
 const currencies = ['DAI', 'ETH'];
-const initialCurrencyIndex = 0;
 
 const AddCashForm = ({
   limitDaily,
-  limitYearly,
   onClearError,
   onLimitExceeded,
   onPurchase,
   onShake,
   shakeAnim,
 }) => {
-  const { isNarrowPhone, isSmallPhone, isTinyPhone } = useDimensions();
+  const isWalletEthZero = useSelector(
+    ({ isWalletEthZero: { isWalletEthZero } }) => isWalletEthZero
+  );
+
+  const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
   const [scaleAnim, setScaleAnim] = useState(1);
+
+  const initialCurrencyIndex = isWalletEthZero ? 1 : 0;
   const [currency, setCurrency] = useState(currencies[initialCurrencyIndex]);
   const [value, setValue] = useState(null);
 
@@ -45,9 +51,6 @@ const AddCashForm = ({
         const isExceedingDailyLimit =
           parseFloat(prevValue + `${parseFloat(newValue)}`) > limitDaily;
 
-        const isExceedingYearlyLimit =
-          parseFloat(prevValue + `${parseFloat(newValue)}`) > limitYearly;
-
         const isInvalidFirstEntry =
           !prevValue &&
           (newValue === '0' || newValue === '.' || newValue === 'back');
@@ -62,13 +65,11 @@ const AddCashForm = ({
 
         if (
           isExceedingDailyLimit ||
-          isExceedingYearlyLimit ||
           isInvalidFirstEntry ||
           isMaxDecimalCount ||
           isMaxDecimalLength
         ) {
           if (isExceedingDailyLimit) onLimitExceeded('daily');
-          if (isExceedingYearlyLimit) onLimitExceeded('yearly');
           onShake();
           return prevValue;
         }
@@ -104,16 +105,32 @@ const AddCashForm = ({
         category: 'add cash',
       });
     },
-    [limitDaily, limitYearly, onClearError, onLimitExceeded, onShake]
+    [limitDaily, onClearError, onLimitExceeded, onShake]
   );
 
-  const onCurrencyChange = useCallback(val => {
-    setCurrency(val);
-    analytics.track('Switched currency to purchase', {
-      category: 'add cash',
-      label: val,
-    });
-  }, []);
+  const onCurrencyChange = useCallback(
+    val => {
+      if (isWalletEthZero) {
+        Alert({
+          buttons: [{ text: 'Okay' }],
+          message:
+            'Before you can purchase DAI you must have some ETH in your wallet!',
+          title: `You don't have any ETH!`,
+        });
+        analytics.track('Tried to purchase DAI but doesnt own any ETH', {
+          category: 'add cash',
+          label: val,
+        });
+      } else {
+        setCurrency(val);
+        analytics.track('Switched currency to purchase', {
+          category: 'add cash',
+          label: val,
+        });
+      }
+    },
+    [isWalletEthZero]
+  );
 
   return (
     <Fragment>
@@ -122,7 +139,7 @@ const AddCashForm = ({
           align="center"
           css={padding(0, 24, isNarrowPhone ? 12 : 24)}
           justify="center"
-          margin={isSmallPhone ? -2 : 8}
+          margin={isSmallPhone ? 0 : 8}
           width="100%"
         >
           <NumpadValue scale={scaleAnim} translateX={shakeAnim} value={value} />
@@ -130,10 +147,11 @@ const AddCashForm = ({
             currencies={currencies}
             initialCurrencyIndex={initialCurrencyIndex}
             onSelect={onCurrencyChange}
+            isWalletEthZero={isWalletEthZero}
           />
         </ColumnWithMargins>
       </Centered>
-      <ColumnWithMargins align="center" margin={isTinyPhone ? 15 : 27}>
+      <ColumnWithMargins align="center" margin={isTallPhone ? 27 : 12}>
         <Centered maxWidth={313}>
           <Numpad
             onPress={handleNumpadPress}
@@ -152,7 +170,6 @@ const AddCashForm = ({
 
 AddCashForm.propTypes = {
   limitDaily: PropTypes.number,
-  limitYearly: PropTypes.number,
   onClearError: PropTypes.func,
   onLimitExceeded: PropTypes.func,
   onPurchase: PropTypes.func,

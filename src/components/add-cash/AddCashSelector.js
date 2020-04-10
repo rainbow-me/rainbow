@@ -1,6 +1,7 @@
 import { toLower, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { colors } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { RowWithMargins } from '../layout';
@@ -11,6 +12,10 @@ const CurrencyItemHeight = 40;
 
 const CurrencyItem = ({ item, isSelected }) => {
   const label = item === 'ETH' ? 'Ethereum' : item;
+  const isWalletEthZero = useSelector(
+    ({ isWalletEthZero: { isWalletEthZero } }) => isWalletEthZero
+  );
+
   return (
     <RowWithMargins
       align="center"
@@ -18,6 +23,7 @@ const CurrencyItem = ({ item, isSelected }) => {
       margin={6}
       paddingLeft={7}
       paddingRight={11}
+      opacity={isWalletEthZero && item !== 'ETH' ? 0.5 : 1}
     >
       <CoinIcon size={26} symbol={item} />
       <Text
@@ -33,8 +39,14 @@ const CurrencyItem = ({ item, isSelected }) => {
   );
 };
 
-const AddCashSelector = ({ currencies, initialCurrencyIndex, onSelect }) => (
+const AddCashSelector = ({
+  currencies,
+  initialCurrencyIndex,
+  isWalletEthZero,
+  onSelect,
+}) => (
   <JellySelector
+    disableSelection={isWalletEthZero}
     height={CurrencyItemHeight}
     initialCurrencyIndex={initialCurrencyIndex}
     items={currencies}

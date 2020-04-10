@@ -48,15 +48,6 @@ export const saveSavings = (savings, accountAddress, network) =>
   saveAccountLocal(SAVINGS, savings, accountAddress, network, savingsVersion);
 
 /**
- * @desc remove savings
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const removeSavings = (accountAddress, network) =>
-  removeAccountLocal(SAVINGS, accountAddress, network);
-
-/**
  * @desc get assets
  * @param  {String}   [address]
  * @param  {String}   [network]
@@ -159,15 +150,6 @@ export const savePurchaseTransactions = (
     network,
     purchaseTransactionsVersion
   );
-
-/**
- * @desc remove purchase transactions
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const removePurchaseTransactions = (accountAddress, network) =>
-  removeAccountLocal(PURCHASE_TRANSACTIONS, accountAddress, network);
 
 /**
  * @desc get transactions
