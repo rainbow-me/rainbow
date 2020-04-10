@@ -13,6 +13,7 @@ import { Text } from '../text';
 import { AssetPanel } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
 
+const modalWidth = Math.min(270, deviceUtils.dimensions.width - 100);
 const sx = StyleSheet.create({
   body: {
     color: colors.alpha(colors.blueGreyDark, 0.6),
@@ -41,37 +42,7 @@ const countries = values(supportedCountries).map(c =>
     : c.name.replace(/ /g, '\xa0')
 );
 const countriesList = `${countries.join(', ')}`;
-
-const emojiArray = [
-  'flag-ch',
-  'flag-at',
-  'flag-be',
-  'flag-ca',
-  'flag-cz',
-  'flag-dk',
-  'flag-ee',
-  'flag-fi',
-  'fr',
-  'de',
-  'flag-gr',
-  'flag-hk',
-  'flag-ie',
-  'it',
-  'flag-lv',
-  'flag-lt',
-  'flag-lu',
-  'flag-mx',
-  'flag-nl',
-  'flag-nz',
-  'flag-no',
-  'flag-pl',
-  'flag-pt',
-  'flag-sk',
-  'flag-si',
-  'es',
-  'flag-au',
-  'us',
-];
+const emojiArray = values(supportedCountries).map(c => c.emojiName);
 
 const SupportCountriesExpandedState = () => {
   const { isTallPhone } = useDimensions();
@@ -79,10 +50,7 @@ const SupportCountriesExpandedState = () => {
     (isTallPhone ? 90 : 45) + (isNativeStackAvailable ? 10 : 0);
 
   return (
-    <FloatingPanels
-      marginBottom={modalMargin}
-      maxWidth={Math.min(270, deviceUtils.dimensions.width - 100)}
-    >
+    <FloatingPanels marginBottom={modalMargin} maxWidth={modalWidth}>
       <FloatingEmojis
         distance={500}
         duration={500}
