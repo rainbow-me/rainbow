@@ -346,13 +346,13 @@ PODS:
     - React
   - react-native-blur (0.8.0):
     - React
-  - react-native-camera (3.22.0):
+  - react-native-camera (3.22.1):
     - React
-    - react-native-camera/RCT (= 3.22.0)
-    - react-native-camera/RN (= 3.22.0)
-  - react-native-camera/RCT (3.22.0):
+    - react-native-camera/RCT (= 3.22.1)
+    - react-native-camera/RN (= 3.22.1)
+  - react-native-camera/RCT (3.22.1):
     - React
-  - react-native-camera/RN (3.22.0):
+  - react-native-camera/RN (3.22.1):
     - React
   - react-native-mail (4.1.0):
     - React
@@ -481,7 +481,7 @@ PODS:
     - React
   - RNScreens (2.2.0):
     - React
-  - RNSentry (1.3.6):
+  - RNSentry (1.3.7):
     - React
     - Sentry (~> 4.4.0)
   - RNStoreReview (0.1.5):
@@ -822,7 +822,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 512e560d0e985d0e8c479a54a4e5c147a9c83493
   react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: 33db8f7b774b32f3583be9376d05ed583154815b
+  react-native-camera: a49f960eb362b9fbff87667c0ce639eef1161530
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-netinfo: becc6dd2bb2335aa85a8adbaefc8e206125e6177
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
@@ -861,7 +861,7 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
-  RNSentry: d892cbdee165cc6159d71e2a7954efdb8a361918
+  RNSentry: 370623102247ebea20191b5fb549ecc7a275b324
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: 82d44baa568873faae1a9929dd30d29db8f06732
   SDWebImage: a99471f452bdfa0ca52ddf5b1adf2b61cab1d1eb
