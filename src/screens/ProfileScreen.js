@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
+import { Platform } from 'react-native';
 import { ActivityList } from '../components/activity-list';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
 import { BackButton, Header, HeaderButton } from '../components/header';
@@ -8,7 +9,7 @@ import { FlexItem, Page } from '../components/layout';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
-import networkTypes from '../helpers/networkTypes';
+import NetworkTypes from '../helpers/networkTypes';
 import { colors, position } from '../styles';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
@@ -34,6 +35,13 @@ const ProfileScreen = ({
 
   const onPressBackButton = () => navigation.navigate('WalletScreen');
   const onPressSettings = () => navigation.navigate('SettingsModal');
+  const addCashInDevNetworks =
+    __DEV__ &&
+    (network === NetworkTypes.kovan || network === NetworkTypes.mainnet);
+  const addCashInProdNetworks = !__DEV__ && network === NetworkTypes.mainnet;
+  const addCashAvailable =
+    Platform.OS === 'ios' && (addCashInDevNetworks || addCashInProdNetworks);
+  console.log('add cash avail?', addCashAvailable);
 
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>
@@ -57,6 +65,7 @@ const ProfileScreen = ({
               accountAddress={accountAddress}
               accountColor={accountColor}
               accountName={accountName}
+              addCashAvailable={addCashAvailable}
               navigation={navigation}
               showBottomDivider={!isEmpty}
             />
@@ -67,6 +76,7 @@ const ProfileScreen = ({
           accountAddress={accountAddress}
           accountColor={accountColor}
           accountName={accountName}
+          addCashAvailable={addCashAvailable}
           navigation={navigation}
           initialized={activityListInitialized}
           header={
@@ -74,6 +84,7 @@ const ProfileScreen = ({
               accountAddress={accountAddress}
               accountColor={accountColor}
               accountName={accountName}
+              addCashAvailable={addCashAvailable}
               navigation={navigation}
               showBottomDivider={!isEmpty}
             />
@@ -86,7 +97,7 @@ const ProfileScreen = ({
         />
       )}
       {/* Show the interstitial only for mainnet */}
-      {isEmpty && network === networkTypes.mainnet && (
+      {isEmpty && network === NetworkTypes.mainnet && (
         <AddFundsInterstitial network={network} />
       )}
     </Page>

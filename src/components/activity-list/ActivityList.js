@@ -17,6 +17,7 @@ const ActivityList = ({
   accountAddress,
   accountColor,
   accountName,
+  addCashAvailable,
   header,
   isEmpty,
   navigation,
@@ -28,6 +29,7 @@ const ActivityList = ({
       accountAddress={accountAddress}
       accountColor={accountColor}
       accountName={accountName}
+      addCashAvailable={addCashAvailable}
       navigation={navigation}
       isEmpty={isEmpty}
       header={header}
@@ -42,6 +44,7 @@ ActivityList.propTypes = {
   accountAddress: PropTypes.string,
   accountColor: PropTypes.number,
   accountName: PropTypes.string,
+  addCashAvailable: PropTypes.bool,
   header: PropTypes.node,
   isEmpty: PropTypes.bool,
   navigation: PropTypes.object,
