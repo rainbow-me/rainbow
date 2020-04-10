@@ -77,7 +77,7 @@ const ExchangeCoinRow = ({
         {showFavoriteButton && (
           <FloatingEmojis
             centerVertically
-            emoji="star2"
+            emoji={['star2']}
             disableHorizontalMovement
             disableVerticalMovement
             distance={70}
