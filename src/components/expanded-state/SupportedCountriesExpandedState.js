@@ -1,39 +1,79 @@
-import React from 'react';
 import { values } from 'lodash';
-import { StyleSheet, Text } from 'react-native';
-import FloatingPanels from './FloatingPanels';
-import { AssetPanel } from './asset-panel';
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import { useDimensions } from '../../hooks';
+import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { supportedCountries } from '../../references/wyre/supportedCountries';
-import { Centered } from '../layout';
-import { padding } from '../../styles';
+import { colors, fonts, padding } from '../../styles';
 import { deviceUtils } from '../../utils';
+import { ButtonPressAnimation } from '../animations';
+import { FloatingEmojis, FloatingEmojisTapHandler } from '../floating-emojis';
+import { Centered } from '../layout';
+import { Text } from '../text';
+import { AssetPanel } from './asset-panel';
+import FloatingPanels from './FloatingPanels';
 
+const modalWidth = Math.min(270, deviceUtils.dimensions.width - 100);
 const sx = StyleSheet.create({
-  text: {
-    fontSize: 13,
-    fontWeight: 'normal',
-    lineHeight: 20,
+  body: {
+    color: colors.alpha(colors.blueGreyDark, 0.6),
+    fontSize: parseFloat(fonts.size.smedium),
+    lineHeight: 22,
+    textAlign: 'center',
+  },
+
+  footer: {
+    fontSize: parseFloat(fonts.size.smedium),
+    marginTop: 12,
     textAlign: 'center',
   },
 
   title: {
+    fontSize: parseFloat(fonts.size.large),
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10,
+    textAlign: 'center',
   },
 });
 
-const countries = values(supportedCountries).map(c => c.name);
-const countriesList = `${countries.join(', ')}.`;
+const countries = values(supportedCountries).map(c =>
+  c.name == 'United States'
+    ? 'United\xa0States (except CT, HI, NC, NH, NY, VA, VT)'
+    : c.name.replace(/ /g, '\xa0')
+);
+const countriesList = `${countries.join(', ')}`;
+const emojiArray = values(supportedCountries).map(c => c.emojiName);
 
 const SupportCountriesExpandedState = () => {
+  const { isTallPhone } = useDimensions();
+  const modalMargin =
+    (isTallPhone ? 90 : 45) + (isNativeStackAvailable ? 10 : 0);
+
   return (
-    <FloatingPanels maxWidth={deviceUtils.dimensions.width - 110}>
-      <AssetPanel>
-        <Centered css={padding(24, 25)} direction="column">
-          <Text style={sx.title}>List of supported countries</Text>
-          <Text style={sx.text}>{countriesList}</Text>
-        </Centered>
-      </AssetPanel>
+    <FloatingPanels marginBottom={modalMargin} maxWidth={modalWidth}>
+      <FloatingEmojis
+        distance={500}
+        duration={500}
+        emoji={emojiArray}
+        opacityThreshold={0.75}
+        scaleTo={0.5}
+        size={40}
+        wiggleFactor={0}
+      >
+        {({ onNewEmoji }) => (
+          <FloatingEmojisTapHandler onNewEmoji={onNewEmoji}>
+            <ButtonPressAnimation scaleTo={1.01}>
+              <AssetPanel>
+                <Centered css={padding(19, 30, 24)} direction="column">
+                  <Text style={sx.title}>Supported Countries</Text>
+                  <Text style={sx.body}>{countriesList}</Text>
+                  <Text style={sx.footer}>🔜 🌍🌎🌏</Text>
+                </Centered>
+              </AssetPanel>
+            </ButtonPressAnimation>
+          </FloatingEmojisTapHandler>
+        )}
+      </FloatingEmojis>
     </FloatingPanels>
   );
 };

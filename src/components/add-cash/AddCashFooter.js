@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
+import { useNavigation } from 'react-navigation-hooks';
 import { useDimensions } from '../../hooks';
 import { colors } from '../../styles';
+import { ButtonPressAnimation } from '../animations';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import ApplePayButton from './ApplePayButton';
-import { ButtonPressAnimation } from '../animations';
-import { useNavigation } from 'react-navigation-hooks';
 
 const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
-  const { isTinyPhone } = useDimensions();
+  const { isTallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
   const onSupportedGeoPress = useCallback(() => {
     navigate('OverlayExpandedSupportedCountries', {
@@ -33,9 +33,13 @@ const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
         />
       </Row>
       {!isTinyPhone && (
-        <ButtonPressAnimation onPress={onSupportedGeoPress}>
-          <RowWithMargins align="center" margin={4}>
-            <Centered marginTop={1}>
+        <ButtonPressAnimation
+          onPress={onSupportedGeoPress}
+          paddingBottom={isTallPhone ? 10 : 15}
+          scaleTo={0.96}
+        >
+          <RowWithMargins align="center" margin={3}>
+            <Centered marginBottom={0.5}>
               <Emoji name="earth_americas" size="medium" />
             </Centered>
             <Text
@@ -44,7 +48,7 @@ const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
               size="lmedium"
               weight="semibold"
             >
-              Available in 20+ countries
+              Available in over 20 countries
             </Text>
           </RowWithMargins>
         </ButtonPressAnimation>

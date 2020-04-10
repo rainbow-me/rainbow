@@ -82,7 +82,7 @@ const AddCashSheet = () => {
         align="center"
         height={isNativeStackAvailable ? sheetHeight : '100%'}
         justify="end"
-        paddingBottom={isNarrowPhone ? 15 : insets.bottom + 21}
+        paddingBottom={isNarrowPhone ? 15 : insets.bottom + 11}
       >
         <Column align="center" paddingVertical={6}>
           <SheetHandle />
