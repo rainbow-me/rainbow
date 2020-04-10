@@ -29,7 +29,7 @@ const AddCashForm = ({
     ({ isWalletEthZero: { isWalletEthZero } }) => isWalletEthZero
   );
 
-  const { isNarrowPhone, isSmallPhone, isTinyPhone } = useDimensions();
+  const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
   const [scaleAnim, setScaleAnim] = useState(1);
 
   const initialCurrencyIndex = isWalletEthZero ? 1 : 0;
@@ -139,7 +139,7 @@ const AddCashForm = ({
           align="center"
           css={padding(0, 24, isNarrowPhone ? 12 : 24)}
           justify="center"
-          margin={isSmallPhone ? -2 : 8}
+          margin={isSmallPhone ? 0 : 8}
           width="100%"
         >
           <NumpadValue scale={scaleAnim} translateX={shakeAnim} value={value} />
@@ -151,7 +151,7 @@ const AddCashForm = ({
           />
         </ColumnWithMargins>
       </Centered>
-      <ColumnWithMargins align="center" margin={isTinyPhone ? 15 : 27}>
+      <ColumnWithMargins align="center" margin={isTallPhone ? 27 : 12}>
         <Centered maxWidth={313}>
           <Numpad
             onPress={handleNumpadPress}
