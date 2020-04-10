@@ -12,6 +12,7 @@ import ContextMenu from '../../ContextMenu';
 import { withShowcaseTokens } from '../../../hoc';
 import store from '../../../redux/store';
 import { uniqueTokensRefreshState } from '../../../redux/uniqueTokens';
+import { setOpenFamilyTabs } from '../../../redux/openStateSettings';
 
 const Container = styled(ColumnWithMargins).attrs({
   justify: 'start',
@@ -91,6 +92,9 @@ const AssetPanelHeader = ({
                 pushShowcaseToken(asset.uniqueId);
               }
               store.dispatch(uniqueTokensRefreshState());
+              store.dispatch(
+                setOpenFamilyTabs({ index: 'Showcase', state: true })
+              );
               if (navigation) {
                 navigation.pop();
               }

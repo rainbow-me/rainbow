@@ -545,6 +545,8 @@ class RecyclerAssetList extends Component {
     let collectibles = {};
     let investments = {};
 
+    let prevCollectibles = {};
+
     sections.forEach(section => {
       if (section.balances) {
         balances = section;
@@ -552,6 +554,12 @@ class RecyclerAssetList extends Component {
         collectibles = section;
       } else if (section.investments) {
         investments = section;
+      }
+    });
+
+    prevProps.sections.forEach(section => {
+      if (section.collectibles) {
+        prevCollectibles = section;
       }
     });
 
@@ -564,6 +572,60 @@ class RecyclerAssetList extends Component {
       scrollingVelocity !== prevProps.scrollingVelocity
     ) {
       this.startScroll(scrollingVelocity);
+    }
+
+    if (
+      collectibles.data &&
+      prevCollectibles.data &&
+      collectibles.data[0].familyName === 'Showcase' &&
+      collectibles.data[0].childrenAmount !==
+        prevCollectibles.data[0].childrenAmount
+    ) {
+      let investmentHeight = 0;
+      if (investments.data) {
+        for (let k = 0; k < investments.data.length; k++) {
+          if (!openInvestmentCards[investments.data[k].uniqueId]) {
+            investmentHeight +=
+              UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
+          } else {
+            investmentHeight +=
+              InvestmentCardHeader.height + InvestmentCard.margin.vertical;
+          }
+        }
+      }
+      let balancesHeight = 0;
+      if (balances.data) {
+        balancesHeight += CoinRow.height * (balances.data.length - 1);
+        if (
+          balances.data[balances.data.length - 1].smallBalancesContainer ||
+          (balances.data[balances.data.length - 2] &&
+            balances.data[balances.data.length - 2].smallBalancesContainer)
+        ) {
+          balancesHeight +=
+            CoinDivider.height +
+            (balances.data[balances.data.length - 1].smallBalancesContainer
+              ? ListFooter.height + 4
+              : 20);
+          if (openSmallBalances) {
+            balancesHeight +=
+              CoinRow.height *
+              balances.data[
+                balances.data.length -
+                  (balances.data[balances.data.length - 1]
+                    .smallBalancesContainer
+                    ? 1
+                    : 2)
+              ].assets.length;
+          }
+        }
+        if (balances.data[balances.data.length - 1].savingsContainer) {
+          if (openSavings) {
+            balancesHeight +=
+              61 * balances.data[balances.data.length - 1].assets.length - 1;
+          }
+        }
+      }
+      this.scrollToOffset(balancesHeight + investmentHeight + 150, true);
     }
 
     if (openFamilyTabs !== prevProps.openFamilyTabs && collectibles.data) {
