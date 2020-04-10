@@ -42,6 +42,7 @@ import {
   shitcoinBlacklist,
 } from '../references';
 import { ethereumUtils, isLowerCaseMatch } from '../utils';
+import { addCashUpdatePurchases } from './addCash';
 import { uniswapUpdateLiquidityTokens } from './uniswap';
 
 let pendingTransactionsHandle = null;
@@ -175,6 +176,7 @@ export const transactionsReceived = (message, appended = false) => (
     payload: dedupedResults,
     type: DATA_UPDATE_TRANSACTIONS,
   });
+  updatePurchases(dedupedResults);
   saveLocalTransactions(dedupedResults, accountAddress, network);
 };
 
@@ -416,6 +418,7 @@ export const dataWatchPendingTransactions = () => async (
   );
 
   if (txStatusesDidChange) {
+    updatePurchases(updatedTransactions);
     const { accountAddress, network } = getState().settings;
     dispatch({
       payload: updatedTransactions,
@@ -430,6 +433,16 @@ export const dataWatchPendingTransactions = () => async (
   }
 
   return false;
+};
+
+const updatePurchases = updatedTransactions => dispatch => {
+  const confirmedPurchases = filter(updatedTransactions, txn => {
+    return (
+      txn.type === TransactionTypes.purchase &&
+      txn.status !== TransactionStatusTypes.purchasing
+    );
+  });
+  dispatch(addCashUpdatePurchases(confirmedPurchases));
 };
 
 const watchPendingTransactions = () => async dispatch => {

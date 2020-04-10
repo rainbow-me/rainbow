@@ -1,7 +1,9 @@
+import { map } from 'lodash';
 import {
   getPurchaseTransactions,
   savePurchaseTransactions,
 } from '../handlers/localstorage/accountLocal';
+import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 
 // -- Constants --------------------------------------- //
 const ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS =
@@ -24,6 +26,34 @@ export const addCashLoadState = () => async (dispatch, getState) => {
 
 export const addCashClearState = () => dispatch =>
   dispatch({ type: ADD_CASH_CLEAR_STATE });
+
+export const addCashUpdatePurchases = purchases => (dispatch, getState) => {
+  const { purchaseTransactions } = getState().addCash;
+  const { accountAddress, network } = getState().settings;
+
+  const updatedPurchases = map(purchaseTransactions, txn => {
+    if (txn.status === TransactionStatusTypes.purchasing) {
+      const updatedPurchase = find(
+        purchases,
+        purchase => purchase.hash === txn.hash
+      );
+      if (updatedPurchase) {
+        return {
+          ...txn,
+          status: updatedPurchase.status,
+        };
+      }
+      return txn;
+    }
+    return txn;
+  });
+
+  dispatch({
+    payload: updatedPurchases,
+    type: ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS,
+  });
+  savePurchaseTransactions(updatedPurchases, accountAddress, network);
+};
 
 export const addCashNewPurchaseTransaction = txDetails => (
   dispatch,
