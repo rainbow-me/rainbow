@@ -7,6 +7,12 @@
 
 import Foundation
 
+class TransitionListTableView: UITableView {
+  override func touchesShouldCancel(in view: UIView) -> Bool {
+    return true
+  }
+}
+
 class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var onTransactionPress: RCTBubblingEventBlock = { _ in }
   @objc var onRequestPress: RCTBubblingEventBlock = { _ in }
@@ -124,7 +130,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   
   var sections: [TransactionSectionProtocol] = [TransactionSectionProtocol]()
   
-  let tableView = UITableView()
+  let tableView = TransitionListTableView()
   let header: TransactionListViewHeader = TransactionListViewHeader.fromNib()
   let headerSeparator = UIView()
   let shadowLayer = CAShapeLayer()
@@ -139,6 +145,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     tableView.separatorStyle = .none
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
     tableView.register(UINib(nibName: "TransactionListRequestViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListRequestViewCell")
+    tableView.canCancelContentTouches = true
     
     header.addSubview(headerSeparator)
     
