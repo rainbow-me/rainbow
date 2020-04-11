@@ -45,6 +45,9 @@ static void InitializeFlipper(UIApplication *application) {
   
   [FIRApp configure];
   [application registerForRemoteNotifications];
+  // Define UNUserNotificationCenter
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  center.delegate = self;
   
   
 
@@ -92,6 +95,23 @@ static void InitializeFlipper(UIApplication *application) {
   #else
     return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
   #endif
+}
+
+//Called when a notification is delivered to a foreground app.
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+{
+  completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
+}
+
+// Required to register for notifications
+-(void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+  [RNCPushNotificationIOS didRegisterUserNotificationSettings:notificationSettings];
+}
+// Required for the register event.
+-(void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+  [RNCPushNotificationIOS didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
 
 // Required for the notification event. You must call the completion handler after handling the remote notification.
