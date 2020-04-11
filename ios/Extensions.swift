@@ -47,12 +47,10 @@ extension UIView {
     useHaptic: String? = nil
   ) -> UIViewPropertyAnimator {
     useHaptic.map(generateHapticFeedback)
-//    print("start")
     let animator = UIViewPropertyAnimator(duration: duration, controlPoint1: CGPoint(x: 0.25, y: 0.46), controlPoint2: CGPoint(x: 0.45, y: 0.94)) {
       self.transform = CGAffineTransform(scaleX: scale, y: scale)
     }
     animator.startAnimation()
-    
     return animator
   }
   
@@ -62,12 +60,10 @@ extension UIView {
     useHaptic: String? = nil
   ) -> UIViewPropertyAnimator {
     useHaptic.map(generateHapticFeedback)
-//    print("end")
     let animator = UIViewPropertyAnimator(duration: duration, controlPoint1: CGPoint(x: 0.25, y: 0.46), controlPoint2: CGPoint(x: 0.45, y: 0.94)) {
       self.transform = .identity
     }
     animator.startAnimation()
-    
     return animator
   }
 }
