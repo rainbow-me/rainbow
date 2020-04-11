@@ -44,7 +44,6 @@ extension UIView {
   func animateTapStart(
     duration: TimeInterval = 0.16,
     scale: CGFloat = 0.97,
-    transformOrigin: CGPoint = .init(x: 0.5, y: 0.5),
     useHaptic: String? = nil
   ) {
     if useHaptic != nil {
@@ -54,8 +53,6 @@ extension UIView {
     
     CATransaction.begin()
     CATransaction.setAnimationTimingFunction(timingFunction)
-    
-    self.setAnchorPoint(CGPoint(x: transformOrigin.x, y: transformOrigin.y))
     
     UIView.animate(withDuration: duration) {
       self.transform = CGAffineTransform(scaleX: scale, y: scale)

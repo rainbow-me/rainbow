@@ -17,7 +17,11 @@ class Button : RCTView {
   @objc var duration: TimeInterval = 0.16
   @objc var pressOutDuration: TimeInterval = -1
   @objc var scaleTo: CGFloat = 0.97
-  @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5)
+  @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5) {
+    didSet {
+      self.setAnchorPoint(CGPoint(x: transformOrigin.x, y: transformOrigin.y))
+    }
+  }
   @objc var enableHapticFeedback: Bool = true
   @objc var hapticType: String = "selection"
   @objc var useLateHaptic: Bool = true
@@ -65,7 +69,6 @@ class Button : RCTView {
     animateTapStart(
       duration: duration,
       scale: scaleTo,
-      transformOrigin: transformOrigin,
       useHaptic: useLateHaptic ? nil : hapticType
     )
     onPressStart([:])
@@ -79,8 +82,7 @@ class Button : RCTView {
       } else if touchInRange(location: location, tolerance: self.touchMoveTolerance * 0.8) {
         animateTapStart(
           duration: duration,
-          scale: scaleTo,
-          transformOrigin: transformOrigin
+          scale: scaleTo
         )
       }
     }
