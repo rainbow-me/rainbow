@@ -94,9 +94,6 @@ class Button : RCTView {
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
     if let touch = touches.first {
       let location = touch.location(in: self)
-      if animator?.isRunning ?? false {
-        return
-      }
       if touchInRange(location: location, tolerance: self.touchMoveTolerance * 0.8) {
           let useHaptic = useLateHaptic && enableHapticFeedback ? hapticType : nil
           animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration, useHaptic: useHaptic)
