@@ -439,6 +439,13 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
         StatusBar.setBarStyle('dark-content');
       }
 
+      if (
+        prevRouteName === 'AddCashSheet' &&
+        (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
+      ) {
+        StatusBar.setBarStyle('dark-content');
+      }
+
       if (routeName === 'SettingsModal') {
         let subRoute = get(params, 'section.title');
         if (subRoute === 'Settings') subRoute = null;
