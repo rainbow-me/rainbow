@@ -44,44 +44,27 @@ extension UIView {
   func animateTapStart(
     duration: TimeInterval = 0.16,
     scale: CGFloat = 0.97,
-    transformOrigin: CGPoint = .init(x: 0.5, y: 0.5),
     useHaptic: String? = nil
-  ) {
-    if useHaptic != nil {
-      generateHapticFeedback(useHaptic!)
-    }
-    let timingFunction = CAMediaTimingFunction(controlPoints: 0.25, 0.46, 0.45, 0.94)
-    
-    CATransaction.begin()
-    CATransaction.setAnimationTimingFunction(timingFunction)
-    
-    self.setAnchorPoint(CGPoint(x: transformOrigin.x, y: transformOrigin.y))
-    
-    UIView.animate(withDuration: duration) {
+  ) -> UIViewPropertyAnimator {
+    useHaptic.map(generateHapticFeedback)
+    let animator = UIViewPropertyAnimator(duration: duration, controlPoint1: CGPoint(x: 0.25, y: 0.46), controlPoint2: CGPoint(x: 0.45, y: 0.94)) {
       self.transform = CGAffineTransform(scaleX: scale, y: scale)
     }
-    
-    CATransaction.commit()
+    animator.startAnimation()
+    return animator
   }
   
   func animateTapEnd(
     duration: TimeInterval = 0.16,
     pressOutDuration: TimeInterval = -1,
     useHaptic: String? = nil
-  ) {
-    if useHaptic != nil {
-      generateHapticFeedback(useHaptic!)
-    }
-    let timingFunction = CAMediaTimingFunction(controlPoints: 0.25, 0.46, 0.45, 0.94)
-    
-    CATransaction.begin()
-    CATransaction.setAnimationTimingFunction(timingFunction)
-    
-    UIView.animate(withDuration: pressOutDuration == -1 ? duration : pressOutDuration) {
+  ) -> UIViewPropertyAnimator {
+    useHaptic.map(generateHapticFeedback)
+    let animator = UIViewPropertyAnimator(duration: duration, controlPoint1: CGPoint(x: 0.25, y: 0.46), controlPoint2: CGPoint(x: 0.45, y: 0.94)) {
       self.transform = .identity
     }
-    
-    CATransaction.commit()
+    animator.startAnimation()
+    return animator
   }
 }
 
