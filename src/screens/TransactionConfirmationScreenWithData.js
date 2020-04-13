@@ -12,6 +12,7 @@ import { withGas, withTransactionConfirmationScreen } from '../hoc';
 import {
   signMessage,
   signPersonalMessage,
+  signTypedDataMessage,
   signTransaction,
   sendTransaction,
 } from '../model/wallet';
@@ -22,6 +23,9 @@ import {
   isSignFirstParamType,
   isSignSecondParamType,
   SEND_TRANSACTION,
+  SIGN_TYPED_DATA,
+  SIGN,
+  PERSONAL_SIGN,
 } from '../utils/signingMethods';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
@@ -159,10 +163,19 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     let flatFormatSignature = null;
     if (isSignFirstParamType(method)) {
       message = get(params, '[0]');
-      flatFormatSignature = await signPersonalMessage(message);
     } else if (isSignSecondParamType(method)) {
       message = get(params, '[1]');
-      flatFormatSignature = await signMessage(message);
+    }
+
+    switch (method) {
+      case SIGN:
+        flatFormatSignature = await signMessage(message);
+        break;
+      case PERSONAL_SIGN:
+        flatFormatSignature = await signPersonalMessage(message);
+        break;
+      case SIGN_TYPED_DATA:
+        flatFormatSignature = await signTypedDataMessage(message, method);
     }
 
     if (flatFormatSignature) {
