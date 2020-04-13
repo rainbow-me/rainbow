@@ -1,5 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import { ethers } from 'ethers';
+import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
 import { find, get, isEmpty, replace, toLower } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import networkTypes from '../helpers/networkTypes';
@@ -153,6 +154,16 @@ const transactionData = (assets, assetAmount, gasPrice) => {
   };
 };
 
+/**
+ * @desc Checks if a string is a valid ethereum address
+ * @param  {String} str
+ * @return {Boolean}
+ */
+const isEthAddress = str => {
+  const withHexPrefix = addHexPrefix(str);
+  return isValidAddress(withHexPrefix);
+};
+
 export default {
   getAsset,
   getBalanceAmount,
@@ -161,6 +172,7 @@ export default {
   getEtherscanHostFromNetwork,
   getEthPriceUnit,
   getNetworkFromChainId,
+  isEthAddress,
   padLeft,
   removeHexPrefix,
   transactionData,
