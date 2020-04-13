@@ -41,13 +41,13 @@ const SwapDetailsState = ({
   inputCurrencySymbol,
   inputExecutionRate,
   inputNativePrice,
-  onRefocusInput,
   outputCurrencySymbol,
   outputExecutionRate,
   outputNativePrice,
+  restoreFocusOnSwapModal,
 }) => {
   const { goBack } = useNavigation();
-  useEffect(() => () => onRefocusInput(), [onRefocusInput]);
+  useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
 
   let emoji = ['unicorn_face'];
   if ([inputCurrencySymbol, outputCurrencySymbol].includes('FAME')) {

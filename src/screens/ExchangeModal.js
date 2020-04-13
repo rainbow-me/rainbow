@@ -104,7 +104,6 @@ const ExchangeModal = ({
   defaultInputAsset,
   estimateRap,
   inputHeaderTitle,
-  isTransitioning,
   navigation,
   createRap,
   showOutputField,
@@ -320,10 +319,10 @@ const ExchangeModal = ({
   ]);
 
   useEffect(() => {
-    if (!isTransitioning && isScreenFocused && !wasScreenFocused) {
+    if (isScreenFocused && !wasScreenFocused) {
       navigation.emit('refocus');
     }
-  }, [isScreenFocused, isTransitioning, navigation, wasScreenFocused]);
+  }, [isScreenFocused, navigation, wasScreenFocused]);
 
   useEffect(() => {
     if (
@@ -773,20 +772,13 @@ const ExchangeModal = ({
     navigation.navigate('SwapDetailsScreen', {
       ...extraTradeDetails,
       inputCurrencySymbol: get(inputCurrency, 'symbol'),
-      onRefocusInput: handleRefocusLastInput,
       outputCurrencySymbol: get(outputCurrency, 'symbol'),
       restoreFocusOnSwapModal: () => {
         navigation.setParams({ focused: true });
       },
       type: 'swap_details',
     });
-  }, [
-    extraTradeDetails,
-    handleRefocusLastInput,
-    inputCurrency,
-    navigation,
-    outputCurrency,
-  ]);
+  }, [extraTradeDetails, inputCurrency, navigation, outputCurrency]);
 
   const navigateToSelectInputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
