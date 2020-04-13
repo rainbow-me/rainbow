@@ -246,7 +246,6 @@ const ExchangeModal = ({
   ]);
 
   useEffect(() => {
-    logger.log('[exchange] - effect - default gas limit');
     dispatch(
       gasUpdateDefaultGasLimit(
         isDeposit
@@ -258,15 +257,11 @@ const ExchangeModal = ({
     );
     dispatch(gasPricesStartPolling());
     dispatch(web3ListenerInit());
-    const refocusListener = navigation.addListener('refocus', () => {
-      handleRefocusLastInput();
-    });
 
     return () => {
       dispatch(uniswapClearCurrenciesAndReserves());
       dispatch(gasPricesStopPolling());
       dispatch(web3ListenerStop());
-      refocusListener && refocusListener.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -307,6 +302,22 @@ const ExchangeModal = ({
 
   const inputReserveTokenAddress = get(inputReserve, 'token.address');
   const outputReserveTokenAddress = get(outputReserve, 'token.address');
+
+  useEffect(() => {
+    const refocusListener = navigation.addListener('refocus', () => {
+      handleRefocusLastInput();
+    });
+
+    return () => {
+      refocusListener && refocusListener.remove();
+    };
+  }, [
+    handleRefocusLastInput,
+    inputCurrency,
+    isScreenFocused,
+    navigation,
+    outputCurrency,
+  ]);
 
   useEffect(() => {
     if (!isTransitioning && isScreenFocused && !wasScreenFocused) {
