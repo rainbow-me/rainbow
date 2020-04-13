@@ -125,7 +125,7 @@ const SavingsSheet = () => {
             disableHorizontalMovement
             distance={600}
             duration={600}
-            emoji={['money_with_wings']}
+            emojis={['money_with_wings']}
             opacityThreshold={0.86}
             scaleTo={0.3}
             size={40}
