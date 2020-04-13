@@ -49,7 +49,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
     method: PropTypes.string,
     onCancel: PropTypes.func,
     onConfirm: PropTypes.func,
-    request: PropTypes.object,
+    request: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   };
 
   state = {
@@ -126,6 +126,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
         <MessageSigningSection
           message={request}
           sendButton={this.renderSendButton()}
+          method={method}
         />
       );
     }

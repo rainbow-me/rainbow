@@ -7,12 +7,13 @@ import TransactionMessage from '../TransactionMessage';
 import TransactionRow from '../TransactionRow';
 import TransactionSheet from '../TransactionSheet';
 
-const MessageSigningSection = ({ message, sendButton }) => (
+const MessageSigningSection = ({ message, method, sendButton }) => (
   <TransactionSheet sendButton={sendButton}>
     <TransactionRow title={lang.t('wallet.message_signing.message')}>
       <TransactionMessage
         maxHeight={deviceUtils.isSmallPhone ? 100 : 250}
         message={message}
+        method={method}
       />
     </TransactionRow>
   </TransactionSheet>
