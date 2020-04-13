@@ -1,5 +1,7 @@
 import { captureException } from '@sentry/react-native';
+import { toBuffer } from 'ethereumjs-util';
 import { ethers } from 'ethers';
+import { signTypedDataLegacy, signTypedData_v4 } from 'eth-sig-util';
 import lang from 'i18n-js';
 import { get, isEmpty, isNil } from 'lodash';
 import { Alert } from 'react-native';
@@ -143,6 +145,52 @@ export const signPersonalMessage = async (
       return await wallet.signMessage(
         isHexString(message) ? ethers.utils.arrayify(message) : message
       );
+    } catch (error) {
+      captureException(error);
+      return null;
+    }
+  } catch (error) {
+    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    captureException(error);
+    return null;
+  }
+};
+
+export const signTypedDataMessage = async (
+  message,
+  method,
+  authenticationPrompt = lang.t('wallet.authenticate.please')
+) => {
+  try {
+    const wallet = await loadWallet(authenticationPrompt);
+
+    try {
+      const pkeyBuffer = toBuffer(addHexPrefix(wallet.privateKey));
+      let parsedData = message;
+      try {
+        parsedData = JSON.parse(message);
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
+
+      // There are 3 types of messages
+      // v1 => basic data types
+      // v3 =>  has type / domain / primaryType
+      // v4 => same as v3 but also supports which supports arrays and recursive structs.
+      // Because v4 is backwards compatible with v3, we're supporting only v4
+
+      let version = 'v1';
+      if (parsedData.types || parsedData.primaryType || parsedData.domain) {
+        version = 'v4';
+      }
+
+      switch (version) {
+        case 'v4':
+          return await signTypedData_v4(pkeyBuffer, {
+            data: parsedData,
+          });
+        default:
+          return await signTypedDataLegacy(pkeyBuffer, { data: parsedData });
+      }
     } catch (error) {
       captureException(error);
       return null;
