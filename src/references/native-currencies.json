@@ -60,8 +60,8 @@
     "currency": "ETH",
     "decimals": 8,
     "label": "Ethereum",
-    "mask": "[99999999999]{.}[999999999999999999]{ ETH}",
-    "placeholder": "0 ETH",
+    "mask": "[09999999999]{.}[999999999999999999]",
+    "placeholder": "0",
     "symbol": "Ξ"
   }
 }
