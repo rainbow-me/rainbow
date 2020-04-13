@@ -193,6 +193,7 @@ const ExchangeModal = ({
   const [lastFocusedInput, handleFocus] = useMagicFocus(inputFieldRef.current);
   const [createRefocusInteraction] = useInteraction();
   const isScreenFocused = useIsFocused();
+  const wasScreenFocused = usePrevious(isScreenFocused && !wasScreenFocused);
 
   const updateGasLimit = useCallback(
     async ({
@@ -257,10 +258,15 @@ const ExchangeModal = ({
     );
     dispatch(gasPricesStartPolling());
     dispatch(web3ListenerInit());
+    const refocusListener = navigation.addListener('refocus', () => {
+      handleRefocusLastInput();
+    });
+
     return () => {
       dispatch(uniswapClearCurrenciesAndReserves());
       dispatch(gasPricesStopPolling());
       dispatch(web3ListenerStop());
+      refocusListener && refocusListener.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -303,10 +309,10 @@ const ExchangeModal = ({
   const outputReserveTokenAddress = get(outputReserve, 'token.address');
 
   useEffect(() => {
-    if (!isTransitioning) {
+    if (!isTransitioning && isScreenFocused && !wasScreenFocused) {
       navigation.emit('refocus');
     }
-  }, [isTransitioning, navigation]);
+  }, [isScreenFocused, isTransitioning, navigation]);
 
   useEffect(() => {
     if (
