@@ -5,17 +5,18 @@ import { position } from '../../styles';
 import FloatingEmoji from './FloatingEmoji';
 
 const EMPTY_ARRAY = [];
-const getEmoji = emoji => Math.floor(Math.random() * emoji.length);
+const getEmoji = emojis => Math.floor(Math.random() * emojis.length);
 const getRandomNumber = (min, max) => Math.random() * (max - min) + min;
 
 const FloatingEmojis = ({
   centerVertically,
   children,
   disableHorizontalMovement,
+  disableRainbow,
   disableVerticalMovement,
   distance,
   duration,
-  emoji,
+  emojis,
   fadeOut,
   marginTop,
   opacity,
@@ -26,7 +27,7 @@ const FloatingEmojis = ({
   wiggleFactor,
   ...props
 }) => {
-  const [emojis, setEmojis] = useState(EMPTY_ARRAY);
+  const [floatingEmojis, setEmojis] = useState(EMPTY_ARRAY);
 
   const timeout = useRef(undefined);
   useEffect(() => () => timeout.current && clearTimeout(timeout.current), []);
@@ -47,18 +48,18 @@ const FloatingEmojis = ({
         const newEmoji = {
           // if a user has smashed the button 7 times, they deserve a 🌈 rainbow
           emojiToRender:
-            (existingEmojis.length + 1) % 7 === 0
+            (existingEmojis.length + 1) % 7 === 0 && !disableRainbow
               ? 'rainbow'
-              : emoji.length === 1
-              ? emoji[0]
-              : emoji[getEmoji(emoji)],
+              : emojis.length === 1
+              ? emojis[0]
+              : emojis[getEmoji(emojis)],
           x: x ? x - getRandomNumber(-20, 20) : getRandomNumber(...range) + '%',
           y: y || 0,
         };
         return [...existingEmojis, newEmoji];
       });
     },
-    [clearEmojis, duration, emoji, range, timeout]
+    [clearEmojis, disableRainbow, duration, emojis, range]
   );
 
   return (
@@ -71,7 +72,7 @@ const FloatingEmojis = ({
           ...position.coverAsObject,
         }}
       >
-        {emojis.map(({ emojiToRender, x, y }, index) => (
+        {floatingEmojis.map(({ emojiToRender, x, y }, index) => (
           <FloatingEmoji
             centerVertically={centerVertically}
             disableHorizontalMovement={disableHorizontalMovement}
@@ -100,10 +101,11 @@ FloatingEmojis.propTypes = {
   centerVertically: PropTypes.bool,
   children: PropTypes.node,
   disableHorizontalMovement: PropTypes.bool,
+  disableRainbow: PropTypes.bool,
   disableVerticalMovement: PropTypes.bool,
   distance: PropTypes.number,
   duration: PropTypes.number,
-  emoji: PropTypes.arrayOf(PropTypes.string).isRequired,
+  emojis: PropTypes.arrayOf(PropTypes.string).isRequired,
   fadeOut: PropTypes.bool,
   marginTop: PropTypes.number,
   opacity: PropTypes.oneOfType([PropTypes.number, PropTypes.object]),
@@ -121,7 +123,7 @@ FloatingEmojis.defaultProps = {
   // To view complete list of emojis compatible with this component,
   // head to https://unicodey.com/emoji-data/table.htm and reference the
   // table's "Short Name" column.
-  emoji: ['+1'],
+  emojis: ['+1'],
   fadeOut: true,
   opacity: 1,
   range: [0, 80],

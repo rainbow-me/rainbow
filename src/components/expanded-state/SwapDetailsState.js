@@ -49,11 +49,11 @@ const SwapDetailsState = ({
   const { goBack } = useNavigation();
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
 
-  let emoji = ['unicorn_face'];
+  let emojis = ['unicorn_face'];
   if ([inputCurrencySymbol, outputCurrencySymbol].includes('FAME')) {
-    emoji = ['prayer_beads'];
+    emojis = ['prayer_beads'];
   } else if ([inputCurrencySymbol, outputCurrencySymbol].includes('SOCKS')) {
-    emoji = ['socks'];
+    emojis = ['socks'];
   }
 
   return (
@@ -63,7 +63,7 @@ const SwapDetailsState = ({
         <FloatingEmojis
           distance={350}
           duration={2000}
-          emoji={emoji}
+          emojis={emojis}
           opacity={FloatingEmojisOpacity}
           size={36}
           wiggleFactor={1}
