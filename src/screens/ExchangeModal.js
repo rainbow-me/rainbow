@@ -75,7 +75,7 @@ const isSameAsset = (a, b) => {
   return assetA === assetB;
 };
 
-const getNativeTag = field => get(field, '_inputRef._nativeTag');
+const getNativeTag = field => get(field, '_nativeTag');
 
 const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
   const { address, decimals, name, symbol } = asset;
@@ -193,7 +193,7 @@ const ExchangeModal = ({
   const [lastFocusedInput, handleFocus] = useMagicFocus(inputFieldRef.current);
   const [createRefocusInteraction] = useInteraction();
   const isScreenFocused = useIsFocused();
-  const wasScreenFocused = usePrevious(isScreenFocused && !wasScreenFocused);
+  const wasScreenFocused = usePrevious(isScreenFocused);
 
   const updateGasLimit = useCallback(
     async ({
@@ -312,7 +312,7 @@ const ExchangeModal = ({
     if (!isTransitioning && isScreenFocused && !wasScreenFocused) {
       navigation.emit('refocus');
     }
-  }, [isScreenFocused, isTransitioning, navigation]);
+  }, [isScreenFocused, isTransitioning, navigation, wasScreenFocused]);
 
   useEffect(() => {
     if (
