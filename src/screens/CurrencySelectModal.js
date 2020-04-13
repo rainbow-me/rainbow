@@ -36,6 +36,7 @@ export const CurrencySelectionTypes = {
 const CurrencySelectModal = ({
   headerTitle,
   navigation,
+  restoreFocusOnSwapModal,
   transitionPosition,
   type,
 }) => {
@@ -78,7 +79,7 @@ const CurrencySelectModal = ({
       handleWillBlur();
       InteractionManager.runAfterInteractions(() => {
         handleDidBlur();
-        navigation.state.params.restoreFocusOnSwapModal();
+        restoreFocusOnSwapModal();
       });
     }
   }, [
@@ -86,7 +87,7 @@ const CurrencySelectModal = ({
     handleWillBlur,
     handleWillFocus,
     isFocused,
-    navigation.state.params,
+    restoreFocusOnSwapModal,
     wasFocused,
   ]);
 
@@ -294,6 +295,11 @@ export default compose(
     ...props,
     headerTitle: get(navigation, 'state.params.headerTitle', null),
     navigation,
+    restoreFocusOnSwapModal: get(
+      navigation,
+      'state.params.restoreFocusOnSwapModal',
+      null
+    ),
     transitionPosition: get(navigation, 'state.params.position'),
     type: get(navigation, 'state.params.type', null),
   }))
