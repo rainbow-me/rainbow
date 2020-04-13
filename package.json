@@ -71,6 +71,8 @@
     "domain-browser": "^1.2.0",
     "emoji-datasource": "^4.1.0",
     "eth-contract-metadata": "^1.9.3",
+    "eth-sig-util": "^2.5.3",
+    "ethereumjs-util": "^6.2.0",
     "ethers": "^4.0.44",
     "events": "^1.1.1",
     "fbjs": "^1.0.0",
