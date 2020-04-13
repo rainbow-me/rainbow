@@ -268,13 +268,17 @@ const ExchangeModal = ({
   useEffect(() => {
     const updateInputBalance = async () => {
       // Update current balance
-      const inputBalance = await ethereumUtils.getBalanceAmount(
+      const newInputBalance = await ethereumUtils.getBalanceAmount(
         selectedGasPrice,
         inputCurrency,
         true,
         accountAddress
       );
-      setInputBalance(inputBalance);
+      InteractionManager.runAfterInteractions(() => {
+        if (!isEqual(inputBalance, newInputBalance)) {
+          setInputBalance(newInputBalance);
+        }
+      });
     };
 
     // we should recalculate the input amount value every time
