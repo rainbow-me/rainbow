@@ -176,7 +176,7 @@ const withBalanceSection = (
     nativeCurrency
   );
 
-  let balanceSectionData = [...buildCoinsList(allAssets)];
+  let balanceSectionData = [...buildCoinsList(allAssets, nativeCurrency)];
 
   if (networkTypes.mainnet === network) {
     balanceSectionData.push(savingsSection);

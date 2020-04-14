@@ -1,4 +1,5 @@
 import { compact, get, groupBy, sortBy } from 'lodash';
+import supportedNativeCurrencies from '../references/native-currencies.json';
 
 const amountOfShowedCoins = 5;
 
@@ -16,7 +17,7 @@ export const buildAssetUniqueIdentifier = item => {
   return compact([balance, nativePrice, uniqueId]).join('_');
 };
 
-export const buildCoinsList = assets => {
+export const buildCoinsList = (assets, nativeCurrency) => {
   const newAssets = [];
   const smallBalances = {
     assets: [],
@@ -24,7 +25,9 @@ export const buildCoinsList = assets => {
   };
   for (let i = 0; i < assets.length; i++) {
     if (
-      (assets[i].native && assets[i].native.balance.amount > 1) ||
+      (assets[i].native &&
+        assets[i].native.balance.amount >
+          supportedNativeCurrencies[nativeCurrency].smallThreshold) ||
       assets[i].address === 'eth' ||
       assets.length < 4
     ) {
