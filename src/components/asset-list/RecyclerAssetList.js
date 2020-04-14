@@ -277,7 +277,7 @@ class RecyclerAssetList extends Component {
             if (this.coinDividerIndex !== index) {
               this.coinDividerIndex = index;
               if (this.props.isCoinListEdited) {
-                this.checkEditStikyHeader();
+                this.checkEditStickyHeader();
               }
             }
             if (
@@ -800,7 +800,7 @@ class RecyclerAssetList extends Component {
   savingsList = [];
   savingsSumValue = 0;
 
-  checkEditStikyHeader = () => {
+  checkEditStickyHeader = () => {
     const offsetHeight = CoinRow.height * (this.coinDividerIndex - 1) + 5;
     if (this.props.isCoinListEdited && this.position > offsetHeight) {
       this.setState({ showCoinListEditor: true });
@@ -910,7 +910,7 @@ class RecyclerAssetList extends Component {
     }
 
     if (this.props.isCoinListEdited) {
-      this.checkEditStikyHeader();
+      this.checkEditStickyHeader();
     }
   };
 

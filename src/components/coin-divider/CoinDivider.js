@@ -145,9 +145,7 @@ class CoinDivider extends PureComponent {
         <Row>
           <View
             pointerEvents={
-              this.props.isCoinListEdited || assetsAmount === 0
-                ? 'none'
-                : 'auto'
+              isCoinListEdited || assetsAmount === 0 ? 'none' : 'auto'
             }
           >
             <ButtonPressAnimation
@@ -158,7 +156,7 @@ class CoinDivider extends PureComponent {
               <OpacityToggler
                 endingOpacity={0}
                 startingOpacity={1}
-                isVisible={this.props.isCoinListEdited || assetsAmount === 0}
+                isVisible={isCoinListEdited || assetsAmount === 0}
               >
                 <Row
                   align="center"
@@ -208,12 +206,12 @@ class CoinDivider extends PureComponent {
             </ButtonPressAnimation>
           </View>
           <Row
-            pointerEvents={this.props.isCoinListEdited ? 'auto' : 'none'}
+            pointerEvents={isCoinListEdited ? 'auto' : 'none'}
             style={{ position: 'absolute' }}
           >
             <CoinDividerEditButton
               onPress={setPinnedCoins}
-              isVisible={this.props.isCoinListEdited}
+              isVisible={isCoinListEdited}
               isActive={currentAction !== EditOptions.none}
               text={currentAction === EditOptions.unpin ? 'Unpin' : 'Pin'}
               shouldReloadList
@@ -221,7 +219,7 @@ class CoinDivider extends PureComponent {
             />
             <CoinDividerEditButton
               onPress={setHiddenCoins}
-              isVisible={this.props.isCoinListEdited}
+              isVisible={isCoinListEdited}
               isActive={currentAction !== EditOptions.none}
               text={currentAction === EditOptions.unhide ? 'Unhide' : 'Hide'}
               shouldReloadList
@@ -264,10 +262,10 @@ class CoinDivider extends PureComponent {
             <CoinDividerEditButton
               animationNode={this._node}
               onPress={() => {
-                if (this.props.isCoinListEdited && onEndEdit) {
+                if (isCoinListEdited && onEndEdit) {
                   onEndEdit();
                 }
-                setIsCoinListEdited(!this.props.isCoinListEdited);
+                setIsCoinListEdited(!isCoinListEdited);
                 LayoutAnimation.configureNext(
                   LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
                 );
