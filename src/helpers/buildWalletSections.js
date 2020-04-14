@@ -19,6 +19,7 @@ import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import { chartExpandedAvailable } from '../config/experimental';
+import EditOptions from '../helpers/editOptionTypes';
 import {
   add,
   multiply,
@@ -217,11 +218,11 @@ const withBalanceSection = (
                   .currentAction;
                 const isCoinListEdited = store.getState().editOptions
                   .isCoinListEdited;
-                return isCoinListEdited && currentAction !== 'none'
+                return isCoinListEdited && currentAction !== EditOptions.none
                   ? [
                       'Cancel',
-                      currentAction !== 'unpin' ? 'Pin' : 'Unpin',
-                      currentAction !== 'unhide' ? 'Hide' : 'Unhide',
+                      currentAction !== EditOptions.unpin ? 'Pin' : 'Unpin',
+                      currentAction !== EditOptions.unhide ? 'Hide' : 'Unhide',
                       'Finish',
                     ]
                   : ['Cancel', isCoinListEdited ? 'Finish' : 'Edit'];
@@ -231,7 +232,7 @@ const withBalanceSection = (
                   .currentAction;
                 const isCoinListEdited = store.getState().editOptions
                   .isCoinListEdited;
-                if (isCoinListEdited && currentAction !== 'none') {
+                if (isCoinListEdited && currentAction !== EditOptions.none) {
                   if (index === 3) {
                     store.dispatch(setIsCoinListEdited(!isCoinListEdited));
                   } else if (index === 1) {

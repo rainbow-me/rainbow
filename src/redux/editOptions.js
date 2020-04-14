@@ -1,18 +1,12 @@
 import produce from 'immer';
 import { isEmpty, union, without, difference } from 'lodash';
+import EditOptions from '../helpers/editOptionTypes';
 import {
   getHiddenCoins,
   getPinnedCoins,
   savePinnedCoins,
   saveHiddenCoins,
 } from '../handlers/localstorage/accountLocal';
-
-const ACTIONS = {
-  NONE: 'none',
-  STANDARD: 'standard',
-  UNHIDE: 'unhide',
-  UNPIN: 'unpin',
-};
 
 // -- Constants --------------------------------------- //
 const COIN_LIST_OPTIONS_LOAD_SUCCESS =
@@ -106,7 +100,7 @@ export const clearHiddenAndPinnedCoins = () => (dispatch, getState) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  currentAction: ACTIONS.NONE,
+  currentAction: EditOptions.none,
   hiddenCoins: [],
   isCoinListEdited: false,
   pinnedCoins: [],
@@ -123,7 +117,7 @@ export default (state = INITIAL_STATE, action) =>
     } else if (action.type === SET_IS_COIN_LIST_EDITED) {
       draft.isCoinListEdited = action.payload;
       if (!draft.isCoinListEdited) {
-        draft.currentAction = ACTIONS.NONE;
+        draft.currentAction = EditOptions.none;
         draft.selectedCoins = [];
       }
     } else if (action.type === CLEAR_SELECTED_COINS) {
@@ -143,26 +137,26 @@ export default (state = INITIAL_STATE, action) =>
         );
       }
       if (draft.selectedCoins.length == 0) {
-        draft.currentAction = ACTIONS.NONE;
+        draft.currentAction = EditOptions.none;
       } else if (
         draft.selectedCoins.length > 0 &&
         difference(draft.hiddenCoins, draft.selectedCoins).length ===
           draft.hiddenCoins.length - draft.selectedCoins.length
       ) {
-        draft.currentAction = ACTIONS.UNHIDE;
+        draft.currentAction = EditOptions.unhide;
       } else if (
         draft.selectedCoins.length > 0 &&
         difference(draft.pinnedCoins, draft.selectedCoins).length ===
           draft.pinnedCoins.length - draft.selectedCoins.length
       ) {
-        draft.currentAction = ACTIONS.UNPIN;
+        draft.currentAction = EditOptions.unpin;
       } else {
-        draft.currentAction = ACTIONS.STANDARD;
+        draft.currentAction = EditOptions.standard;
       }
     } else if (action.type === SET_PINNED_COINS) {
       if (
-        draft.currentAction === ACTIONS.STANDARD ||
-        draft.currentAction === ACTIONS.UNHIDE
+        draft.currentAction === EditOptions.standard ||
+        draft.currentAction === EditOptions.unhide
       ) {
         draft.hiddenCoins = without(draft.hiddenCoins, ...draft.selectedCoins);
         saveHiddenCoins(
@@ -171,18 +165,18 @@ export default (state = INITIAL_STATE, action) =>
           action.network
         );
         draft.pinnedCoins = union(draft.selectedCoins, draft.pinnedCoins);
-      } else if (draft.currentAction === ACTIONS.UNPIN) {
+      } else if (draft.currentAction === EditOptions.unpin) {
         draft.pinnedCoins = without(draft.pinnedCoins, ...draft.selectedCoins);
       }
-      draft.currentAction = ACTIONS.STANDARD;
+      draft.currentAction = EditOptions.standard;
       savePinnedCoins(draft.pinnedCoins, action.accountAddress, action.network);
       draft.selectedCoins = [];
-      draft.currentAction = ACTIONS.NONE;
+      draft.currentAction = EditOptions.none;
       draft.recentlyPinnedCount++;
     } else if (action.type === SET_HIDDEN_COINS) {
       if (
-        draft.currentAction === ACTIONS.STANDARD ||
-        draft.currentAction === ACTIONS.UNPIN
+        draft.currentAction === EditOptions.standard ||
+        draft.currentAction === EditOptions.unpin
       ) {
         draft.pinnedCoins = without(draft.pinnedCoins, ...draft.selectedCoins);
         savePinnedCoins(
@@ -191,13 +185,13 @@ export default (state = INITIAL_STATE, action) =>
           action.network
         );
         draft.hiddenCoins = union(draft.selectedCoins, draft.hiddenCoins);
-      } else if (draft.currentAction === ACTIONS.UNHIDE) {
+      } else if (draft.currentAction === EditOptions.unhide) {
         draft.hiddenCoins = without(draft.hiddenCoins, ...draft.selectedCoins);
       }
-      draft.currentAction = ACTIONS.STANDARD;
+      draft.currentAction = EditOptions.standard;
       saveHiddenCoins(draft.hiddenCoins, action.accountAddress, action.network);
       draft.selectedCoins = [];
-      draft.currentAction = ACTIONS.NONE;
+      draft.currentAction = EditOptions.none;
       draft.recentlyPinnedCount++;
     } else if (action.type === CLEAR_COINS) {
       draft.selectedCoins = [];

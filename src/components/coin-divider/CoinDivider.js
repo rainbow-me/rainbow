@@ -6,6 +6,7 @@ import FastImage from 'react-native-fast-image';
 import Animated from 'react-native-reanimated';
 import { compose } from 'recompact';
 import Caret from '../../assets/family-dropdown-arrow.png';
+import EditOptions from '../../helpers/editOptionTypes';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import {
   withCoinCurrentAction,
@@ -76,10 +77,15 @@ class CoinDivider extends PureComponent {
     balancesSum: PropTypes.string,
     currentAction: PropTypes.string,
     isCoinDivider: PropTypes.bool,
+    isCoinListEdited: PropTypes.bool,
+    isSticky: PropTypes.bool,
     nativeCurrency: PropTypes.string,
     onEndEdit: PropTypes.func,
     openSmallBalances: PropTypes.bool,
+    setHiddenCoins: PropTypes.func,
     setIsCoinListEdited: PropTypes.func,
+    setOpenSmallBalances: PropTypes.func,
+    setPinnedCoins: PropTypes.func,
   };
 
   componentWillMount() {
@@ -120,8 +126,8 @@ class CoinDivider extends PureComponent {
       openSmallBalances,
       setHiddenCoins,
       setIsCoinListEdited,
-      setPinnedCoins,
       setOpenSmallBalances,
+      setPinnedCoins,
     } = this.props;
 
     return (
@@ -208,16 +214,16 @@ class CoinDivider extends PureComponent {
             <CoinDividerEditButton
               onPress={setPinnedCoins}
               isVisible={this.props.isCoinListEdited}
-              isActive={currentAction !== 'none'}
-              text={currentAction === 'unpin' ? 'Unpin' : 'Pin'}
+              isActive={currentAction !== EditOptions.none}
+              text={currentAction === EditOptions.unpin ? 'Unpin' : 'Pin'}
               shouldReloadList
               style={{ marginRight: 10 }}
             />
             <CoinDividerEditButton
               onPress={setHiddenCoins}
               isVisible={this.props.isCoinListEdited}
-              isActive={currentAction !== 'none'}
-              text={currentAction === 'unhide' ? 'Unhide' : 'Hide'}
+              isActive={currentAction !== EditOptions.none}
+              text={currentAction === EditOptions.unhide ? 'Unhide' : 'Hide'}
               shouldReloadList
             />
           </Row>
