@@ -4,7 +4,15 @@ import React, { PureComponent } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Animated from 'react-native-reanimated';
+import { compose } from 'recompact';
 import Caret from '../../assets/family-dropdown-arrow.png';
+import { convertAmountToNativeDisplay } from '../../helpers/utilities';
+import {
+  withCoinCurrentAction,
+  withCoinListEdited,
+  withEditOptions,
+  withOpenBalances,
+} from '../../hoc';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import {
@@ -18,13 +26,6 @@ import Highlight from '../Highlight';
 import { Row } from '../layout';
 import { Text } from '../text';
 import CoinDividerButtonLabel from './CoinDividerButtonLabel';
-import { compose } from 'recompact';
-import {
-  withCoinCurrentAction,
-  withCoinListEdited,
-  withEditOptions,
-  withOpenBalances,
-} from '../../hoc';
 import CoinDividerEditButton from './CoinDividerEditButton';
 
 const {
@@ -75,6 +76,7 @@ class CoinDivider extends PureComponent {
     balancesSum: PropTypes.string,
     currentAction: PropTypes.string,
     isCoinDivider: PropTypes.bool,
+    nativeCurrency: PropTypes.string,
     onEndEdit: PropTypes.func,
     openSmallBalances: PropTypes.bool,
     setIsCoinListEdited: PropTypes.func,
@@ -109,17 +111,17 @@ class CoinDivider extends PureComponent {
     const {
       assetsAmount,
       balancesSum,
+      currentAction,
       isCoinDivider,
+      isCoinListEdited,
+      isSticky,
+      nativeCurrency,
+      onEndEdit,
+      openSmallBalances,
       setHiddenCoins,
       setIsCoinListEdited,
       setPinnedCoins,
-      isCoinListEdited,
       setOpenSmallBalances,
-      openSmallBalances,
-      currentAction,
-      currencySymbol,
-      isSticky,
-      onEndEdit,
     } = this.props;
 
     return (
@@ -243,7 +245,7 @@ class CoinDivider extends PureComponent {
                 size="lmedium"
                 style={{ paddingBottom: 1 }}
               >
-                {`${currencySymbol}${Number(balancesSum).toFixed(2)}`}
+                {convertAmountToNativeDisplay(balancesSum, nativeCurrency)}
               </Text>
             </OpacityToggler>
           </View>

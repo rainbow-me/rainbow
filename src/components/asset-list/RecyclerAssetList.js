@@ -196,6 +196,7 @@ class RecyclerAssetList extends Component {
     externalScrollView: PropTypes.any,
     fetchData: PropTypes.func,
     hideHeader: PropTypes.bool,
+    nativeCurrency: PropTypes.string,
     openFamilyTabs: PropTypes.object,
     openInvestmentCards: PropTypes.object,
     openSavings: PropTypes.bool,
@@ -978,7 +979,7 @@ class RecyclerAssetList extends Component {
           assetsAmount={item.assetsAmount}
           balancesSum={item.value}
           isCoinListEdited={isCoinListEdited}
-          currencySymbol={this.props.nativeCurrencySymbol}
+          nativeCurrency={this.props.nativeCurrency}
         />
       );
     }
@@ -1019,10 +1020,10 @@ class RecyclerAssetList extends Component {
           assetsAmount={this.renderList.length}
           balancesSum={0}
           isSticky
+          nativeCurrency={this.props.nativeCurrency}
           onEndEdit={() => {
             this.setState({ showCoinListEditor: false });
           }}
-          currencySymbol={this.props.nativeCurrencySymbol}
         />
       ) : null}
     </>
