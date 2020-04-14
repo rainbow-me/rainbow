@@ -2,7 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
 import { apiGetGasPrices } from '../handlers/gasPrices';
-import { fromWei } from '../helpers/utilities';
+import { fromWei, greaterThanOrEqualTo } from '../helpers/utilities';
 import {
   getFallbackGasPrices,
   parseGasPrices,
@@ -51,6 +51,7 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
   const { fallbackGasPrices, selectedGasPrice, txFees } = dispatch(
     getDefaultTxFees()
   );
+
   dispatch({
     payload: {
       gasPrices: fallbackGasPrices,
@@ -147,6 +148,7 @@ export const gasUpdateTxFee = (gasLimit, overrideGasOption) => (
     _gasLimit,
     nativeCurrency
   );
+
   const results = getSelectedGasPrice(
     assets,
     gasPrices,
@@ -172,9 +174,9 @@ const getSelectedGasPrice = (
   const txFee = txFees[selectedGasPriceOption];
   const ethAsset = ethereumUtils.getAsset(assets);
   const balanceAmount = get(ethAsset, 'balance.amount', 0);
-  const txFeeAmount = fromWei(get(txFee, 'value.amount', 0));
+  const txFeeAmount = fromWei(get(txFee, 'txFee.value.amount', 0));
   return {
-    isSufficientGas: Number(balanceAmount) > Number(txFeeAmount),
+    isSufficientGas: greaterThanOrEqualTo(balanceAmount, txFeeAmount),
     selectedGasPrice: {
       ...txFee,
       ...gasPrices[selectedGasPriceOption],
