@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, useState, useEffect } from 'react';
 import { View } from 'react-native';
@@ -188,7 +189,8 @@ export default compose(
     const isHidden = isNewValueForPath(props, nextProps, 'item.isHidden');
     const recentlyPinnedCount =
       isNewValueForPath(props, nextProps, 'recentlyPinnedCount') &&
-      (props.item.isPinned || props.item.isHidden);
+      (get(props, 'item.isPinned', false) ||
+        get(props, 'item.isHidden', false));
 
     return (
       isNewItem ||
