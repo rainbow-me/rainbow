@@ -1,4 +1,5 @@
 {
+  "basic_approval": 550000,
   "basic_deposit": 350000,
   "basic_deposit_eth": 200000,
   "basic_swap": 80000,

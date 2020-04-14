@@ -164,7 +164,7 @@ const AddCashStatus = ({ orderCurrency, orderStatus, transferStatus }) => {
       ) : (
         <FloatingEmojisTapper
           {...position.centeredAsObject}
-          emoji={['money_with_wings']}
+          emojis={['money_with_wings']}
           flex={1}
         >
           {status === WYRE_TRANSFER_STATUS_TYPES.success ? (

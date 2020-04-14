@@ -5,6 +5,8 @@ import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
 import { compose } from 'recompact';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
+import { convertAmountToNativeDisplay } from '../../helpers/utilities';
+import { useAccountData } from '../../hooks';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import Highlight from '../Highlight';
 import { Row, RowWithMargins } from '../layout';
@@ -27,6 +29,8 @@ const SavingsListHeader = ({
     duration: TokenFamilyHeaderAnimationDuration,
     easing: Easing.bezier(0.25, 0.1, 0.25, 1),
   });
+
+  const { nativeCurrency } = useAccountData();
 
   return (
     <ButtonPressAnimation
@@ -68,7 +72,7 @@ const SavingsListHeader = ({
               size="large"
               style={{ marginBottom: 1 }}
             >
-              ${Number(savingsSumValue).toFixed(2)}
+              {convertAmountToNativeDisplay(savingsSumValue, nativeCurrency)}
             </Text>
           </Animated.View>
           <AnimatedFastImage

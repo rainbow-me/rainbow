@@ -34,7 +34,7 @@ const calculateTimestampOfThisMonth = () => {
 
 const calculateTimestampOfThisYear = () => {
   var d = new Date();
-  d.setFullYear(d.getFullYear, 1, 1);
+  d.setFullYear(d.getFullYear(), 0, 1);
   d.setHours(0, 0, 0, 0);
   return d.getTime();
 };

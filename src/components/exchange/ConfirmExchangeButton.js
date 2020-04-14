@@ -15,6 +15,7 @@ const ConfirmExchangeButton = ({
   disabled,
   isAuthorizing,
   isSufficientBalance,
+  isSufficientGas,
   onSubmit,
   slippage,
   type,
@@ -28,15 +29,19 @@ const ConfirmExchangeButton = ({
       : 'Hold to Swap';
   if (!isSufficientBalance) {
     label = 'Insufficient Funds';
+  } else if (!isSufficientGas) {
+    label = 'Insufficient Gas';
   } else if (slippage > SlippageWarningTheshold) {
     label = 'Swap Anyway';
   } else if (disabled) {
     label = 'Enter an Amount';
   }
 
+  const isDisabled = disabled || !isSufficientBalance || !isSufficientGas;
+
   return (
     <HoldToAuthorizeButton
-      disabled={disabled || !isSufficientBalance}
+      disabled={isDisabled}
       disabledBackgroundColor={colors.grey20}
       flex={1}
       hideInnerBorder
@@ -55,6 +60,7 @@ ConfirmExchangeButton.propTypes = {
   isAuthorizing: PropTypes.bool,
   isDeposit: PropTypes.bool,
   isSufficientBalance: PropTypes.bool,
+  isSufficientGas: PropTypes.bool,
   onSubmit: PropTypes.func,
   slippage: PropTypes.number,
   type: PropTypes.oneOf(Object.values(ExchangeModalTypes)),

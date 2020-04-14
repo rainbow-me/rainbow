@@ -75,7 +75,7 @@ const isSameAsset = (a, b) => {
   return assetA === assetB;
 };
 
-const getNativeTag = field => get(field, '_inputRef._nativeTag');
+const getNativeTag = field => get(field, '_nativeTag');
 
 const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
   const { address, decimals, name, symbol } = asset;
@@ -104,7 +104,6 @@ const ExchangeModal = ({
   defaultInputAsset,
   estimateRap,
   inputHeaderTitle,
-  isTransitioning,
   navigation,
   createRap,
   showOutputField,
@@ -119,11 +118,12 @@ const ExchangeModal = ({
   const dispatch = useDispatch();
   const { allAssets } = useAccountAssets();
   const {
-    selectedGasPrice,
     gasPricesStartPolling,
     gasPricesStopPolling,
     gasUpdateDefaultGasLimit,
     gasUpdateTxFee,
+    isSufficientGas,
+    selectedGasPrice,
   } = useGas();
   const {
     inputReserve,
@@ -193,6 +193,7 @@ const ExchangeModal = ({
   const [lastFocusedInput, handleFocus] = useMagicFocus(inputFieldRef.current);
   const [createRefocusInteraction] = useInteraction();
   const isScreenFocused = useIsFocused();
+  const wasScreenFocused = usePrevious(isScreenFocused);
 
   const updateGasLimit = useCallback(
     async ({
@@ -245,7 +246,6 @@ const ExchangeModal = ({
   ]);
 
   useEffect(() => {
-    logger.log('[exchange] - effect - default gas limit');
     dispatch(
       gasUpdateDefaultGasLimit(
         isDeposit
@@ -257,6 +257,7 @@ const ExchangeModal = ({
     );
     dispatch(gasPricesStartPolling());
     dispatch(web3ListenerInit());
+
     return () => {
       dispatch(uniswapClearCurrenciesAndReserves());
       dispatch(gasPricesStopPolling());
@@ -268,13 +269,17 @@ const ExchangeModal = ({
   useEffect(() => {
     const updateInputBalance = async () => {
       // Update current balance
-      const inputBalance = await ethereumUtils.getBalanceAmount(
+      const newInputBalance = await ethereumUtils.getBalanceAmount(
         selectedGasPrice,
         inputCurrency,
         true,
         accountAddress
       );
-      setInputBalance(inputBalance);
+      InteractionManager.runAfterInteractions(() => {
+        if (!isEqual(inputBalance, newInputBalance)) {
+          setInputBalance(newInputBalance);
+        }
+      });
     };
 
     // we should recalculate the input amount value every time
@@ -303,10 +308,26 @@ const ExchangeModal = ({
   const outputReserveTokenAddress = get(outputReserve, 'token.address');
 
   useEffect(() => {
-    if (!isTransitioning) {
+    const refocusListener = navigation.addListener('refocus', () => {
+      handleRefocusLastInput();
+    });
+
+    return () => {
+      refocusListener && refocusListener.remove();
+    };
+  }, [
+    handleRefocusLastInput,
+    inputCurrency,
+    isScreenFocused,
+    navigation,
+    outputCurrency,
+  ]);
+
+  useEffect(() => {
+    if (isScreenFocused && !wasScreenFocused) {
       navigation.emit('refocus');
     }
-  }, [isTransitioning, navigation]);
+  }, [isScreenFocused, navigation, wasScreenFocused]);
 
   useEffect(() => {
     if (
@@ -480,9 +501,11 @@ const ExchangeModal = ({
           inputAsExactAmount
         );
 
-        setIsSufficientBalance(
-          greaterThanOrEqualTo(inputBalance, rawUpdatedInputAmount)
+        const isSufficientAmountToTrade = greaterThanOrEqualTo(
+          inputBalance,
+          rawUpdatedInputAmount
         );
+        setIsSufficientBalance(isSufficientAmountToTrade);
       }
     },
     [inputAsExactAmount, inputBalance, inputCurrency, updateInputAmount]
@@ -525,7 +548,7 @@ const ExchangeModal = ({
     [getMarketPrice, inputAsExactAmount, outputCurrency, updateOutputAmount]
   );
 
-  const getMarketDetails = useCallback(async () => {
+  const getMarketDetails = useCallback(() => {
     const isMissingCurrency = !inputCurrency || !outputCurrency;
     const isMissingReserves =
       (inputCurrency && inputCurrency.address !== 'eth' && !inputReserve) ||
@@ -550,6 +573,7 @@ const ExchangeModal = ({
 
       const isSufficientBalance =
         !inputAmount || greaterThanOrEqualTo(inputBalance, inputAmount);
+
       setIsSufficientBalance(isSufficientBalance);
 
       const isInputEmpty = !inputAmount;
@@ -756,20 +780,13 @@ const ExchangeModal = ({
     navigation.navigate('SwapDetailsScreen', {
       ...extraTradeDetails,
       inputCurrencySymbol: get(inputCurrency, 'symbol'),
-      onRefocusInput: handleRefocusLastInput,
       outputCurrencySymbol: get(outputCurrency, 'symbol'),
       restoreFocusOnSwapModal: () => {
         navigation.setParams({ focused: true });
       },
       type: 'swap_details',
     });
-  }, [
-    extraTradeDetails,
-    handleRefocusLastInput,
-    inputCurrency,
-    navigation,
-    outputCurrency,
-  ]);
+  }, [extraTradeDetails, inputCurrency, navigation, outputCurrency]);
 
   const navigateToSelectInputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -837,6 +854,7 @@ const ExchangeModal = ({
             (isWithdrawal
               ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
               : greaterThanOrEqualTo(inputBalance, newInputAmount));
+
           setIsSufficientBalance(isSufficientBalance);
         }
       }
@@ -1170,6 +1188,7 @@ const ExchangeModal = ({
                   isAuthorizing={isAuthorizing}
                   isDeposit={isDeposit}
                   isSufficientBalance={isSufficientBalance}
+                  isSufficientGas={isSufficientGas}
                   onSubmit={handleSubmit}
                   slippage={slippage}
                   type={type}

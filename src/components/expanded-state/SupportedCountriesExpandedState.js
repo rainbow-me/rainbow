@@ -52,9 +52,10 @@ const SupportCountriesExpandedState = () => {
   return (
     <FloatingPanels marginBottom={modalMargin} maxWidth={modalWidth}>
       <FloatingEmojis
-        distance={500}
-        duration={500}
-        emoji={emojiArray}
+        disableRainbow
+        distance={600}
+        duration={600}
+        emojis={emojiArray}
         opacityThreshold={0.75}
         scaleTo={0.5}
         size={40}

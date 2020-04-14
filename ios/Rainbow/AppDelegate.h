@@ -6,9 +6,13 @@
  */
 
 #import <React/RCTBridgeDelegate.h>
+#import <Firebase.h>
 #import <UIKit/UIKit.h>
+#import <UserNotifications/UserNotifications.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate>
+
+@interface AppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate, UNUserNotificationCenterDelegate, FIRMessagingDelegate>
+
 
 @property (nonatomic, strong) UIWindow *window;
 @property (nonatomic) BOOL isRapRunning;

@@ -115,9 +115,9 @@ export default class RecyclerActivityList extends PureComponent {
         } else if (type === ViewTypes.HEADER) {
           dim.height = 39;
         } else {
-          dim.height = props.isLoading
+          dim.height = this.props.isLoading
             ? deviceUtils.dimensions.height
-            : props.addCashAvailable
+            : this.props.addCashAvailable
             ? 278
             : 203;
         }

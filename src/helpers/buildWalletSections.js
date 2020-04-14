@@ -19,7 +19,11 @@ import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import { chartExpandedAvailable } from '../config/experimental';
-import { add, multiply, toFixedDecimals } from '../helpers/utilities';
+import {
+  add,
+  multiply,
+  convertAmountToNativeDisplay,
+} from '../helpers/utilities';
 import { buildUniqueTokenList, buildCoinsList } from './assets';
 import store from '../redux/store';
 import {
@@ -176,7 +180,11 @@ const withBalanceSection = (
     ? savingsSection.totalValue
     : 0;
   const totalAssetsValue = get(assetsTotal, 'amount', 0);
-  const totalValue = add(totalAssetsValue, totalSavingsValue);
+  const totalBalancesValue = add(totalAssetsValue, totalSavingsValue);
+  const totalValue = convertAmountToNativeDisplay(
+    totalBalancesValue,
+    nativeCurrency
+  );
 
   let balanceSectionData = [...buildCoinsList(allAssets)];
 
@@ -255,7 +263,7 @@ const withBalanceSection = (
           : undefined,
       title: lang.t('account.tab_balances'),
       totalItems: isLoadingBalances ? 1 : allAssetsCount,
-      totalValue: toFixedDecimals(totalValue, 2),
+      totalValue: totalValue,
     },
     name: 'balances',
     renderItem: isLoadingBalances
