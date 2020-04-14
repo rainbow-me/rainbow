@@ -2,12 +2,9 @@ import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { LayoutAnimation, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Animated from 'react-native-reanimated';
 import { compose } from 'recompact';
-import Caret from '../../assets/family-dropdown-arrow.png';
 import EditOptions from '../../helpers/editOptionTypes';
-import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import {
   withCoinCurrentAction,
   withCoinListEdited,
@@ -16,18 +13,12 @@ import {
 } from '../../hoc';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
-import {
-  ButtonPressAnimation,
-  interpolate,
-  OpacityToggler,
-  RotationArrow,
-  RoundButtonSizeToggler,
-} from '../animations';
+import { interpolate } from '../animations';
 import Highlight from '../Highlight';
 import { Row } from '../layout';
-import { Text } from '../text';
-import CoinDividerButtonLabel from './CoinDividerButtonLabel';
 import CoinDividerEditButton from './CoinDividerEditButton';
+import CoinDividerOpenButton from './CoinDividerOpenButton';
+import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 
 const {
   block,
@@ -148,62 +139,15 @@ class CoinDivider extends PureComponent {
               isCoinListEdited || assetsAmount === 0 ? 'none' : 'auto'
             }
           >
-            <ButtonPressAnimation
-              onPress={() => setOpenSmallBalances(!openSmallBalances)}
-              scaleTo={0.9}
-              style={{ width: openSmallBalances ? 80 : 52.5 }}
-            >
-              <OpacityToggler
-                endingOpacity={0}
-                startingOpacity={1}
-                isVisible={isCoinListEdited || assetsAmount === 0}
-              >
-                <Row
-                  align="center"
-                  borderRadius={RoundButtonSizeToggler.capSize / 2}
-                  height={CoinDividerHeight}
-                  justify="space-between"
-                  width={52.5}
-                  paddingHorizontal={10}
-                >
-                  <RoundButtonSizeToggler
-                    animationNode={this._node}
-                    endingWidth={28}
-                    isAbsolute
-                    reversed={!this._initialState}
-                    startingWidth={3}
-                    toggle={openSmallBalances}
-                  />
-                  <View>
-                    <CoinDividerButtonLabel
-                      isVisible={openSmallBalances}
-                      label="All"
-                      node={this._node}
-                      steps={[1, 0]}
-                    />
-                    <CoinDividerButtonLabel
-                      isVisible={openSmallBalances}
-                      label="Less"
-                      node={this._node}
-                      steps={[0, 1]}
-                    />
-                  </View>
-                  <View style={{ opacity: 0.6, paddingBottom: 1 }}>
-                    <RotationArrow
-                      endingOffset={20}
-                      endingPosition={-90}
-                      isOpen={openSmallBalances}
-                    >
-                      <FastImage
-                        source={Caret}
-                        style={{ height: 17, width: 9 }}
-                        tintColor={colors.blueGreyDark}
-                      />
-                    </RotationArrow>
-                  </View>
-                </Row>
-              </OpacityToggler>
-            </ButtonPressAnimation>
+            <CoinDividerOpenButton
+              assetsAmount={assetsAmount}
+              coinDividerHeight={CoinDividerHeight}
+              initialState={this._initialState}
+              isCoinListEdited={isCoinListEdited}
+              node={this._node}
+              openSmallBalances={openSmallBalances}
+              setOpenSmallBalances={setOpenSmallBalances}
+            />
           </View>
           <Row
             pointerEvents={isCoinListEdited ? 'auto' : 'none'}
@@ -233,26 +177,13 @@ class CoinDivider extends PureComponent {
             width: 100,
           }}
         >
-          <View
-            style={{
-              height: 30,
-              justifyContent: 'center',
-            }}
-          >
-            <OpacityToggler
-              isVisible={openSmallBalances || assetsAmount === 0}
-              animationNode={this._node}
-            >
-              <Text
-                align="right"
-                color={colors.alpha(colors.blueGreyDark, 0.6)}
-                size="lmedium"
-                style={{ paddingBottom: 1 }}
-              >
-                {convertAmountToNativeDisplay(balancesSum, nativeCurrency)}
-              </Text>
-            </OpacityToggler>
-          </View>
+          <CoinDividerAssetsValue
+            assetsAmount={assetsAmount}
+            balancesSum={balancesSum}
+            nativeCurrency={nativeCurrency}
+            node={this._node}
+            openSmallBalances={openSmallBalances}
+          />
           <View
             style={{ alignItems: 'flex-end', position: 'absolute', width: 64 }}
             pointerEvents={
