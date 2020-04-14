@@ -25,8 +25,14 @@ import SendFab from '../components/fab/SendFab';
 import { position } from '../styles';
 import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import networkInfo from '../helpers/networkInfo';
+import withCoinListEdited from '../hoc/withCoinListEdited';
 
-const WalletScreen = ({ navigation, scrollViewTracker, setKeyboardHeight }) => {
+const WalletScreen = ({
+  isCoinListEdited,
+  navigation,
+  scrollViewTracker,
+  setKeyboardHeight,
+}) => {
   const [initialized, setInitialized] = useState(false);
   const initializeWallet = useInitializeWallet();
   const refreshAccountData = useRefreshAccountData();
@@ -71,6 +77,7 @@ const WalletScreen = ({ navigation, scrollViewTracker, setKeyboardHeight }) => {
         fabs={fabs}
         scrollViewTracker={scrollViewTracker}
         sections={sections}
+        isCoinListEdited={isCoinListEdited}
       >
         <Header marginTop={5} justify="space-between">
           <ProfileHeaderButton navigation={navigation} />
@@ -91,6 +98,7 @@ const WalletScreen = ({ navigation, scrollViewTracker, setKeyboardHeight }) => {
 };
 
 WalletScreen.propTypes = {
+  isCoinListEdited: PropTypes.bool,
   navigation: PropTypes.object,
   scrollViewTracker: PropTypes.object,
   setKeyboardHeight: PropTypes.func,
@@ -100,5 +108,6 @@ export default compose(
   withSafeTimeout,
   withNavigation,
   withKeyboardHeight,
+  withCoinListEdited,
   withProps({ scrollViewTracker: new Animated.Value(0) })
 )(WalletScreen);
