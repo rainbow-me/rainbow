@@ -505,16 +505,10 @@ const ExchangeModal = ({
           inputBalance,
           rawUpdatedInputAmount
         );
-        setIsSufficientBalance(isSufficientAmountToTrade && isSufficientGas);
+        setIsSufficientBalance(isSufficientAmountToTrade);
       }
     },
-    [
-      inputAsExactAmount,
-      inputBalance,
-      inputCurrency,
-      isSufficientGas,
-      updateInputAmount,
-    ]
+    [inputAsExactAmount, inputBalance, inputCurrency, updateInputAmount]
   );
 
   const calculateOutputGivenInputChange = useCallback(
@@ -580,7 +574,7 @@ const ExchangeModal = ({
       const isSufficientBalance =
         !inputAmount || greaterThanOrEqualTo(inputBalance, inputAmount);
 
-      setIsSufficientBalance(isSufficientBalance && isSufficientGas);
+      setIsSufficientBalance(isSufficientBalance);
 
       const isInputEmpty = !inputAmount;
       const isNativeEmpty = !nativeAmount;
@@ -634,7 +628,6 @@ const ExchangeModal = ({
     inputBalance,
     inputCurrency,
     inputReserve,
-    isSufficientGas,
     nativeAmount,
     outputAmount,
     outputCurrency,
@@ -862,7 +855,7 @@ const ExchangeModal = ({
               ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
               : greaterThanOrEqualTo(inputBalance, newInputAmount));
 
-          setIsSufficientBalance(isSufficientBalance && isSufficientGas);
+          setIsSufficientBalance(isSufficientBalance);
         }
       }
 
@@ -881,7 +874,6 @@ const ExchangeModal = ({
       inputBalance,
       inputCurrency,
       isDeposit,
-      isSufficientGas,
       isWithdrawal,
       supplyBalanceUnderlying,
       type,
@@ -1196,6 +1188,7 @@ const ExchangeModal = ({
                   isAuthorizing={isAuthorizing}
                   isDeposit={isDeposit}
                   isSufficientBalance={isSufficientBalance}
+                  isSufficientGas={isSufficientGas}
                   onSubmit={handleSubmit}
                   slippage={slippage}
                   type={type}
