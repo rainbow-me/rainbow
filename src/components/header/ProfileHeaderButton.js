@@ -2,6 +2,7 @@ import GraphemeSplitter from 'grapheme-splitter';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View, Text } from 'react-native';
+import ShadowStack from 'react-native-shadow-stack';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { isAvatarPickerAvailable } from '../../config/experimental';
@@ -10,7 +11,6 @@ import { colors } from '../../styles';
 import Avatar from '../Avatar';
 import { Badge } from '../badge';
 import { Centered, InnerBorder } from '../layout';
-import { ShadowStack } from '../shadow-stack';
 import HeaderButton from './HeaderButton';
 
 const AvatarCircle = styled(View)`

@@ -26,6 +26,7 @@ const SavingsListWrapper = ({ assets, totalValue }) => {
         isOpen={openSavings}
         savingsSumValue={totalValue}
         onPress={onPress}
+        showSumValue
       />
       <View pointerEvents={openSavings ? 'auto' : 'none'}>
         <OpacityToggler
@@ -33,9 +34,16 @@ const SavingsListWrapper = ({ assets, totalValue }) => {
           isVisible={openSavings}
           startingOpacity={0}
         >
-          {assets.map(item => (
-            <SavingsListRowRenderer key={item.underlying.symbol} {...item} />
-          ))}
+          {assets.map(
+            item =>
+              item &&
+              item.underlying && (
+                <SavingsListRowRenderer
+                  key={item.underlying.symbol}
+                  {...item}
+                />
+              )
+          )}
         </OpacityToggler>
       </View>
     </React.Fragment>

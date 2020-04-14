@@ -7,6 +7,8 @@ import Text from './Text';
 
 const GradientText = ({
   angle,
+  angleCenter,
+  children,
   colors,
   end,
   renderer,
@@ -14,13 +16,15 @@ const GradientText = ({
   steps,
   ...props
 }) => {
-  const textElement = createElement(renderer, props);
+  const textElement = Array.isArray(children)
+    ? createElement(renderer, { ...props, children })
+    : children;
 
   return (
     <MaskedView maskElement={textElement}>
       <LinearGradient
         angle={angle}
-        angleCenter={{ x: 0.5, y: 0.5 }}
+        angleCenter={angleCenter}
         colors={colors}
         end={end}
         locations={steps}
@@ -35,12 +39,14 @@ const GradientText = ({
 
 GradientText.propTypes = {
   angle: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
+  children: PropTypes.node,
   colors: PropTypes.arrayOf(PropTypes.string),
   renderer: PropTypes.func,
   steps: PropTypes.arrayOf(PropTypes.number),
 };
 
 GradientText.defaultProps = {
+  angleCenter: { x: 0.5, y: 0.5 },
   colors: ['#2CCC00', '#FEBE44'],
   end: { x: 1, y: 0.5 },
   renderer: Text,

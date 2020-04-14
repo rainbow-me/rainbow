@@ -15,8 +15,7 @@ import {
   SEND_TRANSACTION,
   SIGN,
   SIGN_TRANSACTION,
-  SIGN_TYPED,
-  SIGN_TYPED_V3,
+  SIGN_TYPED_DATA,
 } from '../utils/signingMethods';
 
 export const getRequestDisplayDetails = (payload, assets, nativeCurrency) => {
@@ -52,10 +51,21 @@ export const getRequestDisplayDetails = (payload, assets, nativeCurrency) => {
     }
     return getMessageDisplayDetails(message, timestampInMs);
   }
-  if (payload.method === SIGN_TYPED || payload.method === SIGN_TYPED_V3) {
-    const request = get(payload, 'params[1]', null);
-    const jsonRequest = JSON.stringify(request.message);
-    return getMessageDisplayDetails(jsonRequest, timestampInMs);
+
+  // There's a lot of inconsistency in the parameter order for this method
+  // due to changing EIP-712 spec
+  // (eth_signTypedData => eth_signTypedData_v3 => eth_signTypedData_v4)
+  // Aside from expecting the address as the first parameter
+  // and data as the second one it's safer to verify that
+  // and switch order if needed to ensure max compatibility with dapps
+  if (payload.method === SIGN_TYPED_DATA) {
+    if (payload.params.length && payload.params[0]) {
+      let data = get(payload, 'params[0]', null);
+      if (ethereumUtils.isEthAddress(get(payload, 'params[0]', ''))) {
+        data = get(payload, 'params[1]', null);
+      }
+      return getMessageDisplayDetails(data, timestampInMs);
+    }
   }
   return {};
 };

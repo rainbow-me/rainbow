@@ -22,6 +22,23 @@ import { ethereumUtils, gasUtils, logger } from '../../utils';
 
 const NOOP = () => undefined;
 
+export const isValidSwapInput = ({
+  inputAmount,
+  inputCurrency,
+  inputReserve,
+  outputAmount,
+  outputCurrency,
+  outputReserve,
+}) => {
+  const isMissingAmounts = !inputAmount || !outputAmount;
+  const isMissingCurrency = !inputCurrency || !outputCurrency;
+  const isMissingReserves =
+    (inputCurrency && inputCurrency.address !== 'eth' && !inputReserve) ||
+    (outputCurrency && outputCurrency.address !== 'eth' && !outputReserve);
+
+  return !(isMissingAmounts || isMissingCurrency || isMissingReserves);
+};
+
 export const findSwapOutputAmount = (receipt, accountAddress) => {
   const { logs } = receipt;
   const transferLog = find(logs, log => {

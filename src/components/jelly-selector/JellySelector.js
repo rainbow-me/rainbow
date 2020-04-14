@@ -4,12 +4,12 @@ import React, { createElement, Fragment, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
+import ShadowStack from 'react-native-shadow-stack';
 import { useDimensions } from '../../hooks';
 import { colors } from '../../styles';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { RowWithMargins } from '../layout';
-import { ShadowStack } from '../shadow-stack';
 
 const AnimatedShadowStack = Animated.createAnimatedComponent(ShadowStack);
 
@@ -42,6 +42,7 @@ const calculatePosition = () => {
 };
 
 const JellySelector = ({
+  disableSelection,
   height,
   initialCurrencyIndex,
   items,
@@ -112,8 +113,10 @@ const JellySelector = ({
               enableHapticFeedback={false}
               key={index}
               onPress={() => {
-                animateTransition(index);
-                setSelected(index);
+                if (!disableSelection) {
+                  animateTransition(index);
+                  setSelected(index);
+                }
                 onSelect(items[index]);
               }}
               scaleTo={0.94}
@@ -132,6 +135,7 @@ const JellySelector = ({
 };
 
 JellySelector.propTypes = {
+  disableSelection: PropTypes.bool,
   height: PropTypes.number.isRequired,
   initialCurrencyIndex: PropTypes.number,
   items: PropTypes.array,

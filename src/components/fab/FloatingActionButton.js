@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { View } from 'react-primitives';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import ShadowStack from 'react-native-shadow-stack';
 import { borders, colors, position } from '../../styles';
 import { isNewValueForObjectPaths } from '../../utils';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { InnerBorder } from '../layout';
-import { ShadowStack } from '../shadow-stack';
 
 const FabSize = 56;
 const FabShadow = [
@@ -85,8 +85,8 @@ export default class FloatingActionButton extends Component {
       >
         <ShadowStack
           {...borders.buildCircleAsObject(size)}
+          hideShadow={isDisabled}
           shadows={shadows}
-          shadowProps={{ opacity: isDisabled ? 0 : 1 }}
         >
           <View
             {...position.centeredAsObject}

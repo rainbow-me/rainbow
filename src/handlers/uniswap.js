@@ -23,7 +23,12 @@ import {
   multiply,
 } from '../helpers/utilities';
 import { loadWallet } from '../model/wallet';
-import { erc20ABI, exchangeABI, uniswapTestnetAssets } from '../references';
+import {
+  erc20ABI,
+  ethUnits,
+  exchangeABI,
+  uniswapTestnetAssets,
+} from '../references';
 import { logger } from '../utils';
 import { toHex, web3Provider } from './web3';
 
@@ -138,9 +143,9 @@ export const estimateSwapGasLimit = async (accountAddress, tradeDetails) => {
       updatedMethodArgs,
       value
     );
-    return gasLimit ? gasLimit.toString() : null;
+    return gasLimit ? gasLimit.toString() : ethUnits.basic_swap;
   } catch (error) {
-    return null;
+    return ethUnits.basic_swap;
   }
 };
 
@@ -186,6 +191,7 @@ export const executeSwap = async (
     gasPrice: gasPrice ? toHex(gasPrice) : undefined,
     value,
   };
+
   switch (methodName) {
     case 'ethToTokenSwapInput':
       return exchange.ethToTokenSwapInput(
@@ -391,12 +397,12 @@ export const calculateTradeDetails = (
   const isOutputEth = outputAddress === 'eth';
 
   const rawInputAmount = convertAmountToRawAmount(
-    parseFloat(inputAmount) || 0,
+    inputAmount || 0,
     inputDecimals
   );
 
   const rawOutputAmount = convertAmountToRawAmount(
-    parseFloat(outputAmount) || 0,
+    outputAmount || 0,
     outputDecimals
   );
 

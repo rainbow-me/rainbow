@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import ShadowStack from 'react-native-shadow-stack';
 import { compose, onlyUpdateForPropTypes, withHandlers } from 'recompact';
 import { borders, colors, position } from '../../styles';
 import Icon from '../icons/Icon';
 import { Centered } from '../layout';
-import { ShadowStack } from '../shadow-stack';
 import HeaderButton from './HeaderButton';
 
 const CameraHeaderButton = ({ onPress }) => (

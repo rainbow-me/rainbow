@@ -20,7 +20,7 @@ import { useAccountSettings } from '../hooks';
 
 const SavingsSheet = () => {
   const { getParam, navigate } = useNavigation();
-  const { nativeCurrency } = useAccountSettings();
+  const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
   const cTokenBalance = getParam('cTokenBalance');
   const isEmpty = getParam('isEmpty');
   const underlyingBalanceNativeValue = getParam('underlyingBalanceNativeValue');
@@ -35,10 +35,7 @@ const SavingsSheet = () => {
   const supplyBalanceUnderlying = getParam('supplyBalanceUnderlying');
   const supplyRate = getParam('supplyRate');
 
-  const balance = convertAmountToNativeDisplay(
-    underlyingBalanceNativeValue,
-    nativeCurrency
-  );
+  const balance = nativeCurrencySymbol + underlyingBalanceNativeValue;
   const lifetimeAccruedInterest = convertAmountToNativeDisplay(
     lifetimeSupplyInterestAccruedNative,
     nativeCurrency
@@ -125,7 +122,7 @@ const SavingsSheet = () => {
             disableHorizontalMovement
             distance={600}
             duration={600}
-            emoji="money_with_wings"
+            emojis={['money_with_wings']}
             opacityThreshold={0.86}
             scaleTo={0.3}
             size={40}

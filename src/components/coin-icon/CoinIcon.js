@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { useState, useCallback } from 'react';
 import FastImage from 'react-native-fast-image';
+import ShadowStack from 'react-native-shadow-stack';
 import { css } from 'styled-components/primitives';
 import ReactCoinIcon, { FallbackIcon } from 'react-coin-icon';
 import { onlyUpdateForKeys } from 'recompact';
-import { ShadowStack } from '../shadow-stack';
 import { toChecksumAddress } from '../../handlers/web3';
 import { borders, colors, fonts } from '../../styles';
 const CoinIconSize = 40;

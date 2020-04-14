@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useWindowDimensions } from 'react-native';
+import ShadowStack from 'react-native-shadow-stack';
 import stylePropType from 'react-style-proptype';
 import { colors, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { InnerBorder, RowWithMargins } from '../layout';
-import { ShadowStack } from '../shadow-stack';
 import { Text } from '../text';
 
 const SheetActionButton = ({
