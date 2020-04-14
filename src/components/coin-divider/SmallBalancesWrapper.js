@@ -6,7 +6,6 @@ import React, { Fragment, PureComponent } from 'react';
 import { compose, withProps } from 'recompact';
 import {
   withAccountSettings,
-  withCoinListEdited,
   withOpenBalances,
   withEditOptions,
 } from '../../hoc';
@@ -15,7 +14,6 @@ import { OpacityToggler } from '../animations';
 class SmallBalancesWrapper extends PureComponent {
   static propTypes = {
     assets: PropTypes.array,
-    isCoinListEdited: PropTypes.bool,
     openSmallBalances: PropTypes.bool,
     setOpenSmallBalances: PropTypes.func,
   };
@@ -26,12 +24,7 @@ class SmallBalancesWrapper extends PureComponent {
     this.props.setOpenSmallBalances(!this.props.openSmallBalances);
 
   render = () => {
-    const {
-      assets,
-      checkList,
-      openSmallBalances,
-      isCoinListEdited,
-    } = this.props;
+    const { assets, openSmallBalances } = this.props;
 
     return (
       <Fragment>
@@ -51,15 +44,6 @@ class SmallBalancesWrapper extends PureComponent {
               }}
             >
               {assets}
-              <View
-                pointerEvents={isCoinListEdited ? 'auto' : 'none'}
-                style={{
-                  opacity: isCoinListEdited ? 1 : 0,
-                  position: 'absolute',
-                }}
-              >
-                {checkList}
-              </View>
             </View>
           </View>
         </OpacityToggler>
@@ -83,7 +67,6 @@ export default compose(
   withOpenBalances,
   withSafeTimeout,
   withEditOptions,
-  withCoinListEdited,
   withProps(({ assets, nativeCurrencySymbol }) => {
     const balance = assets.reduce(reduceBalances, 0);
     return isNumber(balance)
