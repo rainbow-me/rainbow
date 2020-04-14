@@ -1,9 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { LayoutAnimation, View } from 'react-native';
-import { getAssets } from '../../handlers/localstorage/accountLocal';
-import { dataUpdateAssets } from '../../redux/data';
-import store from '../../redux/store';
 import { colors } from '../../styles';
 import { OpacityToggler, ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
@@ -22,11 +19,6 @@ const CoinDividerEditButton = ({
       onPress={async () => {
         await onPress();
         if (shouldReloadList) {
-          const assets = await getAssets(
-            store.getState().settings.accountAddress,
-            store.getState().settings.network
-          );
-          store.dispatch(dataUpdateAssets(assets));
           LayoutAnimation.configureNext(
             LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
           );
