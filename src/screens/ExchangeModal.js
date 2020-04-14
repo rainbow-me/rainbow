@@ -118,11 +118,12 @@ const ExchangeModal = ({
   const dispatch = useDispatch();
   const { allAssets } = useAccountAssets();
   const {
-    selectedGasPrice,
     gasPricesStartPolling,
     gasPricesStopPolling,
     gasUpdateDefaultGasLimit,
     gasUpdateTxFee,
+    isSufficientGas,
+    selectedGasPrice,
   } = useGas();
   const {
     inputReserve,
@@ -500,12 +501,20 @@ const ExchangeModal = ({
           inputAsExactAmount
         );
 
-        setIsSufficientBalance(
-          greaterThanOrEqualTo(inputBalance, rawUpdatedInputAmount)
+        const isSufficientAmountToTrade = greaterThanOrEqualTo(
+          inputBalance,
+          rawUpdatedInputAmount
         );
+        setIsSufficientBalance(isSufficientAmountToTrade && isSufficientGas);
       }
     },
-    [inputAsExactAmount, inputBalance, inputCurrency, updateInputAmount]
+    [
+      inputAsExactAmount,
+      inputBalance,
+      inputCurrency,
+      isSufficientGas,
+      updateInputAmount,
+    ]
   );
 
   const calculateOutputGivenInputChange = useCallback(
@@ -545,7 +554,7 @@ const ExchangeModal = ({
     [getMarketPrice, inputAsExactAmount, outputCurrency, updateOutputAmount]
   );
 
-  const getMarketDetails = useCallback(async () => {
+  const getMarketDetails = useCallback(() => {
     const isMissingCurrency = !inputCurrency || !outputCurrency;
     const isMissingReserves =
       (inputCurrency && inputCurrency.address !== 'eth' && !inputReserve) ||
@@ -570,7 +579,8 @@ const ExchangeModal = ({
 
       const isSufficientBalance =
         !inputAmount || greaterThanOrEqualTo(inputBalance, inputAmount);
-      setIsSufficientBalance(isSufficientBalance);
+
+      setIsSufficientBalance(isSufficientBalance && isSufficientGas);
 
       const isInputEmpty = !inputAmount;
       const isNativeEmpty = !nativeAmount;
@@ -624,6 +634,7 @@ const ExchangeModal = ({
     inputBalance,
     inputCurrency,
     inputReserve,
+    isSufficientGas,
     nativeAmount,
     outputAmount,
     outputCurrency,
@@ -850,7 +861,8 @@ const ExchangeModal = ({
             (isWithdrawal
               ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
               : greaterThanOrEqualTo(inputBalance, newInputAmount));
-          setIsSufficientBalance(isSufficientBalance);
+
+          setIsSufficientBalance(isSufficientBalance && isSufficientGas);
         }
       }
 
@@ -869,6 +881,7 @@ const ExchangeModal = ({
       inputBalance,
       inputCurrency,
       isDeposit,
+      isSufficientGas,
       isWithdrawal,
       supplyBalanceUnderlying,
       type,
