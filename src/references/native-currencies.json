@@ -8,6 +8,7 @@
     "label": "United States Dollar",
     "mask": "[099999999999]{.}[00]",
     "placeholder": "0.00",
+    "smallThreshold": 1,
     "symbol": "$"
   },
   "EUR": {
@@ -19,6 +20,7 @@
     "label": "Euro",
     "mask": "[099999999999]{.}[00]",
     "placeholder": "0.00",
+    "smallThreshold": 1,
     "symbol": "€"
   },
   "CNY": {
@@ -30,6 +32,7 @@
     "label": "Chinese Yuan",
     "mask": "[099999999999]{.}[00]",
     "placeholder": "0.00",
+    "smallThreshold": 5,
     "symbol": "¥"
   },
   "KRW": {
@@ -41,6 +44,7 @@
     "label": "South Korean Won",
     "mask": "[099999999999]{.}[00]",
     "placeholder": "0.00",
+    "smallThreshold": 1000,
     "symbol": "₩"
   },
   "RUB": {
@@ -52,6 +56,7 @@
     "label": "Russian Ruble",
     "mask": "[099999999999]{.}[00]",
     "placeholder": "0.00",
+    "smallThreshold": 50,
     "symbol": "₽"
   }
 }
