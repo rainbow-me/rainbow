@@ -21,11 +21,11 @@ import CoinDividerButtonLabel from './CoinDividerButtonLabel';
 import { compose } from 'recompact';
 import {
   withCoinCurrentAction,
+  withCoinListEdited,
   withEditOptions,
   withOpenBalances,
 } from '../../hoc';
 import CoinDividerEditButton from './CoinDividerEditButton';
-import withCoinListEdited from '../../hoc/withCoinListEdited';
 
 const {
   block,

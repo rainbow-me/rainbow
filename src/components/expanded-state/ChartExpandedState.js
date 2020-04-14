@@ -10,7 +10,7 @@ import {
   withState,
 } from 'recompact';
 import styled from 'styled-components/primitives';
-import { withAccountData, withAccountSettings } from '../../hoc';
+import { withAccountData } from '../../hoc';
 import { ethereumUtils, deviceUtils } from '../../utils';
 import Chart from '../value-chart/Chart';
 import { BalanceCoinRow } from '../coin-row';
@@ -51,7 +51,7 @@ const Container = styled.View`
   align-items: center;
 `;
 
-const TokenExpandedState = ({ onPressSend, onPressSwap, selectedAsset }) => {
+const ChartExpandedState = ({ onPressSend, onPressSwap, selectedAsset }) => {
   return (
     <Container>
       <HandleIcon />
@@ -70,7 +70,7 @@ const TokenExpandedState = ({ onPressSend, onPressSwap, selectedAsset }) => {
   );
 };
 
-TokenExpandedState.propTypes = {
+ChartExpandedState.propTypes = {
   change: PropTypes.string,
   changeDirection: PropTypes.bool,
   isOpen: PropTypes.bool,
@@ -84,7 +84,6 @@ TokenExpandedState.propTypes = {
 
 export default compose(
   withAccountData,
-  withAccountSettings,
   withState('isOpen', 'setIsOpen', false),
   withProps(({ asset: { address, ...asset }, assets }) => {
     let selectedAsset = ethereumUtils.getAsset(assets, address);
@@ -117,4 +116,4 @@ export default compose(
     },
   }),
   onlyUpdateForKeys(['price', 'subtitle'])
-)(TokenExpandedState);
+)(ChartExpandedState);

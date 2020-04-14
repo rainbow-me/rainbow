@@ -27,9 +27,9 @@ const withUniswapAssetsInWallet = (
     ...uniswapPairs,
     ...uniswapAllPairs,
   };
-  const { allAssetsWithoutHidden } = assetData;
+  const { allAssets } = assetData;
   const availableAssets = filter(
-    allAssetsWithoutHidden,
+    allAssets,
     filterUniswapAssetsByAvailability(keys(uniswapCuratedAndGlobalPairs))
   );
   const uniswapAssetsInWallet = map(

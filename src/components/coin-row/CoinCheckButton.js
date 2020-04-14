@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components/primitives';
 import { View } from 'react-native';
-import { CoinIcon } from '../coin-icon';
-import { ButtonPressAnimation, OpacityToggler } from '../animations';
+import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
+import { ButtonPressAnimation, OpacityToggler } from '../animations';
+import { CoinIcon } from '../coin-icon';
 import { Icon } from '../icons';
 
 const CoinRowPaddingTop = 9;
@@ -64,8 +64,13 @@ const CoinCheckButton = ({ isAbsolute, onPress, toggle }) => (
 
 CoinCheckButton.propTypes = {
   isAbsolute: PropTypes.bool,
+  onPress: PropTypes.func,
+  toggle: PropTypes.bool,
 };
 
-CoinCheckButton.defaultProps = {};
+CoinCheckButton.defaultProps = {
+  isAbsolute: false,
+  toggle: false,
+};
 
 export default React.memo(CoinCheckButton);

@@ -7,7 +7,7 @@ import { borders, colors, position } from '../../styles';
 import Icon from '../icons/Icon';
 import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
-import withCoinListEdited from '../../hoc/withCoinListEdited';
+import { withCoinListEdited } from '../../hoc';
 import { OpacityToggler } from '../animations';
 
 const CameraHeaderButton = ({ onPress, isCoinListEdited }) => (

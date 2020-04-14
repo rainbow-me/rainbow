@@ -80,7 +80,7 @@ const SendSheet = ({
   txFees,
   ...props
 }) => {
-  const { allAssets, allAssetsWithoutHidden } = useAccountAssets();
+  const { allAssets } = useAccountAssets();
   const { selectedGasPrice } = useGas();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
@@ -422,7 +422,7 @@ const SendSheet = ({
           )}
           {showAssetList && (
             <SendAssetList
-              allAssets={allAssetsWithoutHidden}
+              allAssets={allAssets}
               fetchData={fetchData}
               onSelectAsset={sendUpdateSelected}
               savings={savings}

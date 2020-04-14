@@ -4,6 +4,7 @@ import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import {
   withAccountSettings,
+  withCoinListEdited,
   withFabSendAction,
   withEditOptions,
 } from '../../hoc';
@@ -11,7 +12,6 @@ import { padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import Highlight from '../Highlight';
 import { Column, Row } from '../layout';
-import withCoinListEdited from '../../hoc/withCoinListEdited';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;

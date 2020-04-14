@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { compose, shouldUpdate, withHandlers } from 'recompact';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import {
-  withAccountSettings,
+  withCoinListEdited,
   withOpenBalances,
   withEditOptions,
   withCoinRecentlyPinned,
@@ -16,7 +16,6 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import CoinCheckButton from './CoinCheckButton';
-import withCoinListEdited from '../../hoc/withCoinListEdited';
 import CoinRowInfo from './CoinRowInfo';
 
 const editTranslateOffset = 32;
@@ -53,7 +52,6 @@ const BalanceCoinRow = ({
   onPress,
   onPressSend,
   isCoinListEdited,
-  nativeCurrencySymbol,
   pushSelectedCoin,
   removeSelectedCoin,
   recentlyPinnedCount,
@@ -104,11 +102,7 @@ const BalanceCoinRow = ({
             />
           </View>
           <View position="absolute" right={3}>
-            <CoinRowInfo
-              isHidden={item.isHidden}
-              native={item.native}
-              nativeCurrencySymbol={nativeCurrencySymbol}
-            />
+            <CoinRowInfo isHidden={item.isHidden} native={item.native} />
           </View>
         </Row>
       </ButtonPressAnimation>
@@ -146,10 +140,7 @@ const BalanceCoinRow = ({
             />
           </View>
           <View position="absolute" right={3}>
-            <CoinRowInfo
-              native={item.native}
-              nativeCurrencySymbol={nativeCurrencySymbol}
-            />
+            <CoinRowInfo native={item.native} />
           </View>
         </Row>
       </ButtonPressAnimation>
@@ -163,14 +154,12 @@ const BalanceCoinRow = ({
 BalanceCoinRow.propTypes = {
   isFirstCoinRow: PropTypes.bool,
   item: PropTypes.object,
-  nativeCurrency: PropTypes.string.isRequired,
   onPress: PropTypes.func,
   onPressSend: PropTypes.func,
   openSmallBalances: PropTypes.bool,
 };
 
 export default compose(
-  withAccountSettings,
   withOpenBalances,
   withEditOptions,
   withCoinListEdited,
@@ -194,11 +183,6 @@ export default compose(
     const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.item);
 
     const isNewItem = itemIdentifier !== nextItemIdentifier;
-    const isNewNativeCurrency = isNewValueForPath(
-      props,
-      nextProps,
-      'nativeCurrency'
-    );
     const isEdited = isNewValueForPath(props, nextProps, 'isCoinListEdited');
     const isPinned = isNewValueForPath(props, nextProps, 'item.isPinned');
     const isHidden = isNewValueForPath(props, nextProps, 'item.isHidden');
@@ -208,7 +192,6 @@ export default compose(
 
     return (
       isNewItem ||
-      isNewNativeCurrency ||
       isChangeInOpenAssets ||
       isEdited ||
       isPinned ||

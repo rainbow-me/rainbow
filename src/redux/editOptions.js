@@ -1,11 +1,11 @@
 import produce from 'immer';
+import { isEmpty, union, without, difference } from 'lodash';
 import {
   getHiddenCoins,
   getPinnedCoins,
   savePinnedCoins,
   saveHiddenCoins,
 } from '../handlers/localstorage/accountLocal';
-import { union, without, difference } from 'lodash';
 
 const ACTIONS = {
   NONE: 'none',
@@ -34,7 +34,7 @@ export const coinListLoadState = () => async (dispatch, getState) => {
     const { accountAddress, network } = getState().settings;
     const hiddenCoins = await getHiddenCoins(accountAddress, network);
     let pinnedCoins = await getPinnedCoins(accountAddress, network);
-    if (!pinnedCoins) {
+    if (isEmpty(pinnedCoins)) {
       pinnedCoins = ['eth'];
     }
     dispatch({
@@ -118,8 +118,8 @@ const INITIAL_STATE = {
 export default (state = INITIAL_STATE, action) =>
   produce(state, draft => {
     if (action.type === COIN_LIST_OPTIONS_LOAD_SUCCESS) {
-      draft.pinnedCoins = action.payload.pinnedCoins || [];
-      draft.hiddenCoins = action.payload.hiddenCoins || [];
+      draft.pinnedCoins = action.payload.pinnedCoins;
+      draft.hiddenCoins = action.payload.hiddenCoins;
     } else if (action.type === SET_IS_COIN_LIST_EDITED) {
       draft.isCoinListEdited = action.payload;
       if (!draft.isCoinListEdited) {

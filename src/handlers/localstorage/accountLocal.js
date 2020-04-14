@@ -418,10 +418,10 @@ export const removeAccountInfo = (accountAddress, network) =>
  * @desc get pinned coins
  * @param  {String}   [address]
  * @param  {String}   [network]
- * @return {Object}
+ * @return {Array}
  */
 export const getPinnedCoins = (accountAddress, network) =>
-  getAccountLocal(PINNED_COINS, accountAddress, network, false);
+  getAccountLocal(PINNED_COINS, accountAddress, network, []);
 
 /**
  * @desc save pinned coins
@@ -433,22 +433,13 @@ export const savePinnedCoins = (pinnedCoins, accountAddress, network) =>
   saveAccountLocal(PINNED_COINS, pinnedCoins, accountAddress, network);
 
 /**
- * @desc remove pinned coins
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const removePinnedCoins = (accountAddress, network) =>
-  removeAccountLocal(PINNED_COINS, accountAddress, network);
-
-/**
  * @desc get hidden coins
  * @param  {String}   [address]
  * @param  {String}   [network]
- * @return {Object}
+ * @return {Array}
  */
 export const getHiddenCoins = (accountAddress, network) =>
-  getAccountLocal(HIDDEN_COINS, accountAddress, network, false);
+  getAccountLocal(HIDDEN_COINS, accountAddress, network, []);
 
 /**
  * @desc save hidden coins
@@ -458,12 +449,3 @@ export const getHiddenCoins = (accountAddress, network) =>
  */
 export const saveHiddenCoins = (hiddenCoins, accountAddress, network) =>
   saveAccountLocal(HIDDEN_COINS, hiddenCoins, accountAddress, network);
-
-/**
- * @desc remove hidden coins
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const removeHiddenCoins = (accountAddress, network) =>
-  removeAccountLocal(HIDDEN_COINS, accountAddress, network);

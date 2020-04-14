@@ -1,15 +1,14 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../../styles';
+import { withCoinListEdited } from '../../hoc';
 import { Row } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinRow from './CoinRow';
-import { compose } from 'recompact';
-import { withAccountSettings } from '../../hoc';
-import withCoinListEdited from '../../hoc/withCoinListEdited';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 9;
@@ -57,4 +56,4 @@ CoinRowInfo.propTypes = {
   native: PropTypes.object,
 };
 
-export default compose(withAccountSettings, withCoinListEdited)(CoinRowInfo);
+export default compose(withCoinListEdited)(CoinRowInfo);

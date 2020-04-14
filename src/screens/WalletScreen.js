@@ -13,7 +13,7 @@ import {
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
-import { withKeyboardHeight } from '../hoc';
+import { withCoinListEdited, withKeyboardHeight } from '../hoc';
 import {
   useAccountSettings,
   useInitializeWallet,
@@ -25,7 +25,6 @@ import SendFab from '../components/fab/SendFab';
 import { position } from '../styles';
 import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import networkInfo from '../helpers/networkInfo';
-import withCoinListEdited from '../hoc/withCoinListEdited';
 
 const WalletScreen = ({
   isCoinListEdited,

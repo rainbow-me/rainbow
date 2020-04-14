@@ -6,11 +6,11 @@ import React, { Fragment, PureComponent } from 'react';
 import { compose, withProps } from 'recompact';
 import {
   withAccountSettings,
+  withCoinListEdited,
   withOpenBalances,
   withEditOptions,
 } from '../../hoc';
 import { OpacityToggler } from '../animations';
-import withCoinListEdited from '../../hoc/withCoinListEdited';
 
 class SmallBalancesWrapper extends PureComponent {
   static propTypes = {

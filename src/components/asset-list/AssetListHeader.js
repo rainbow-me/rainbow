@@ -14,19 +14,19 @@ const enhance = onlyUpdateForKeys([
 
 const AssetListHeader = enhance(
   ({
-    title,
-    totalValue,
+    contextMenuOptions,
     isCoinListEdited,
     isSticky,
-    contextMenuOptions,
+    title,
+    totalValue,
     ...props
   }) => {
     return (
       <ListHeader
-        isSticky={isSticky}
-        isCoinListEdited={isCoinListEdited}
-        title={title}
         contextMenuOptions={contextMenuOptions}
+        isCoinListEdited={isCoinListEdited}
+        isSticky={isSticky}
+        title={title}
         {...props}
       >
         {totalValue ? (
@@ -40,6 +40,8 @@ const AssetListHeader = enhance(
 );
 
 AssetListHeader.propTypes = {
+  contextMenuOptions: PropTypes.object,
+  isCoinListEdited: PropTypes.bool,
   isSticky: PropTypes.bool,
   title: PropTypes.string,
   totalValue: PropTypes.string,

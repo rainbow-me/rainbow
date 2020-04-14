@@ -11,6 +11,7 @@ import {
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import {
+  withCoinListEdited,
   withFabSelection,
   withOpenBalances,
   withOpenFamilyTabs,
@@ -38,7 +39,6 @@ import { TokenFamilyHeader } from '../token-family';
 import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
-import withCoinListEdited from '../../hoc/withCoinListEdited';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 
 /* eslint-disable sort-keys */
