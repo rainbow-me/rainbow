@@ -1,13 +1,5 @@
 import lang from 'i18n-js';
-import {
-  compact,
-  flattenDeep,
-  get,
-  groupBy,
-  isEmpty,
-  map,
-  property,
-} from 'lodash';
+import { compact, flattenDeep, get, groupBy, map, property } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -177,17 +169,13 @@ const withBalanceSection = (
   nativeCurrency,
   network
 ) => {
-  const totalSavingsValue = !isEmpty(savingsSection)
-    ? savingsSection.totalValue
-    : 0;
-  const totalAssetsValue = get(assetsTotal, 'amount', 0);
-  const totalBalancesValue = add(totalAssetsValue, totalSavingsValue);
+  const { assets, totalBalancesValue } = buildCoinsList(allAssets);
+  let balanceSectionData = [...assets];
+
   const totalValue = convertAmountToNativeDisplay(
     totalBalancesValue,
     nativeCurrency
   );
-
-  let balanceSectionData = [...buildCoinsList(allAssets)];
 
   if (networkTypes.mainnet === network) {
     balanceSectionData.push(savingsSection);

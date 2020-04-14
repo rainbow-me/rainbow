@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { OpacityToggler, ButtonPressAnimation } from '../animations';
-import { Text } from '../text';
 import { LayoutAnimation, View } from 'react-native';
 import { getAssets } from '../../handlers/localstorage/accountLocal';
 import { dataUpdateAssets } from '../../redux/data';
 import store from '../../redux/store';
 import { colors } from '../../styles';
+import { OpacityToggler, ButtonPressAnimation } from '../animations';
+import { Text } from '../text';
 
 const CoinDividerEditButton = ({
   isActive,

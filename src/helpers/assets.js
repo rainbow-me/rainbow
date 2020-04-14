@@ -26,6 +26,7 @@ export const buildCoinsList = assets => {
     assets: [],
     smallBalancesContainer: true,
   };
+  let totalBalancesValue = 0;
   let smallBalancesValue = 0;
   for (let i = 0; i < assets.length; i++) {
     if (hiddenCoins.includes(assets[i].uniqueId)) {
@@ -36,6 +37,7 @@ export const buildCoinsList = assets => {
         ...assets[i],
       });
     } else if (pinnedCoins.includes(assets[i].uniqueId)) {
+      totalBalancesValue += Number(get(assets[i], 'native.balance.amount', 0));
       pinnedAssets.push({
         isCoin: true,
         isPinned: true,
@@ -47,8 +49,10 @@ export const buildCoinsList = assets => {
       assets[i].address === 'eth' ||
       assets.length <= amountOfShowedCoins
     ) {
+      totalBalancesValue += Number(get(assets[i], 'native.balance.amount', 0));
       standardAssets.push({ isCoin: true, isSmall: false, ...assets[i] });
     } else {
+      totalBalancesValue += Number(get(assets[i], 'native.balance.amount', 0));
       smallBalancesValue += Number(get(assets[i], 'native.balance.amount', 0));
       smallBalances.assets.push({ isCoin: true, isSmall: true, ...assets[i] });
     }
@@ -93,7 +97,7 @@ export const buildCoinsList = assets => {
     allAssets.push(smallBalances);
   }
 
-  return allAssets;
+  return { assets: allAssets, totalBalancesValue };
 };
 
 export const buildUniqueTokenList = uniqueTokens => {
