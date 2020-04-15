@@ -167,12 +167,12 @@ class TransactionListViewCell: TransactionListBaseCell {
         if let status = transaction.status {
           if (status.lowercased() == "depositing" || status.lowercased() == "withdrawing" || status.lowercased() == "sending") {
             transactionType.text = " \(status.capitalized)";
-            coinName.text = "\(transaction.symbol!)";
+            coinName.text = "\(transaction.coinName!)";
           } else if (status.lowercased() == "deposited" || status.lowercased() == "withdrew") {
             transactionType.text = " Savings";
-            coinName.text = "\(status.capitalized) \(transaction.symbol!)";
+            coinName.text = "\(status.capitalized) \(transaction.coinName!)";
           } else if (transaction.status.lowercased() == "failed") {
-            coinName.text = "\(type.lowercased() == "withdraw" ? "Withdrew" : "Deposited") \(transaction.symbol!)";
+            coinName.text = "\(type.lowercased() == "withdraw" ? "Withdrew" : "Deposited") \(transaction.coinName!)";
           }
         }
       }
