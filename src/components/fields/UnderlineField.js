@@ -54,15 +54,19 @@ export default class UnderlineField extends PureComponent {
     this.state = {
       isFocused: props.autoFocus,
       value: props.value,
+      wasButtonPressed: false,
     };
   }
 
   componentDidUpdate(prevProps) {
     const { value } = this.props;
 
-    if (value !== prevProps.value && !this.input.isFocused()) {
+    if (
+      value !== prevProps.value &&
+      (!this.input.isFocused() || this.state.wasButtonPressed)
+    ) {
       // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({ value });
+      this.setState({ value, wasButtonPressed: false });
     }
   }
 
@@ -111,6 +115,11 @@ export default class UnderlineField extends PureComponent {
     }
   };
 
+  handleButtonPress = () => {
+    this.setState({ wasButtonPressed: true });
+    this.props.onPressButton();
+  };
+
   handleRef = ref => {
     this.input = ref;
   };
@@ -121,7 +130,6 @@ export default class UnderlineField extends PureComponent {
       buttonText,
       keyboardType,
       maxLength,
-      onPressButton,
       placeholder,
       ...props
     } = this.props;
@@ -152,7 +160,7 @@ export default class UnderlineField extends PureComponent {
             <Button
               backgroundColor={colors.sendScreen.brightBlue}
               flex={0}
-              onPress={onPressButton}
+              onPress={this.handleButtonPress}
               size="small"
               type="pill"
             >
