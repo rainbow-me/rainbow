@@ -9,6 +9,7 @@ import { deviceUtils } from '../../utils';
 import { Column, ColumnWithMargins } from '../layout';
 import { UniqueTokenCard } from '../unique-token';
 import LinearGradient from 'react-native-linear-gradient';
+import { OpacityToggler } from '../animations';
 
 const enhance = compose(
   withImageDimensionsCache,
@@ -30,9 +31,20 @@ const enhance = compose(
       ? width
       : (width * imageDimensions.height) / imageDimensions.width;
 
-    if (height > deviceUtils.dimensions.height < 812 ? 350 : 375) {
-      height = deviceUtils.dimensions.height < 812 ? 350 : 375;
+    const calculatedHeight =
+      deviceUtils.dimensions.height -
+      (deviceUtils.dimensions.height < 812 ? 330 : 440);
+
+    if (height > calculatedHeight) {
+      height = calculatedHeight;
       width = (height * imageDimensions.width) / imageDimensions.height;
+
+      if (width > deviceUtils.dimensions.width - 30) {
+        width = deviceUtils.dimensions.width - 30;
+        height = !imageDimensions
+          ? width
+          : (width * imageDimensions.height) / imageDimensions.width;
+      }
     }
 
     return {
@@ -40,7 +52,7 @@ const enhance = compose(
       width,
     };
   }),
-  onlyUpdateForKeys(['containerWidth', 'height', 'width'])
+  onlyUpdateForKeys(['containerHeight', 'containerWidth', 'height', 'width'])
 );
 
 const SendAssetFormCollectible = enhance(
@@ -79,7 +91,7 @@ const SendAssetFormCollectible = enhance(
       <View
         width="100%"
         marginBottom={0}
-        height={200}
+        height={210}
         justifyContent="flex-end"
       >
         <ColumnWithMargins
@@ -89,19 +101,26 @@ const SendAssetFormCollectible = enhance(
           width="100%"
           marginBottom={29}
           paddingHorizontal={15}
+          paddingBottom={15}
         >
           {buttonRenderer}
           {txSpeedRenderer}
         </ColumnWithMargins>
-        <LinearGradient
-          borderRadius={19}
-          overflow="hidden"
-          colors={['#FAFAFA00', '#FAFAFAFF']}
-          end={{ x: 0.5, y: 0.4 }}
-          pointerEvents="none"
-          start={{ x: 0.5, y: 0 }}
+        <OpacityToggler
+          isVisible={containerHeight > 200}
           style={position.coverAsObject}
-        />
+          tension={500}
+        >
+          <LinearGradient
+            borderRadius={19}
+            overflow="hidden"
+            colors={['#FAFAFA00', '#FAFAFAFF']}
+            end={{ x: 0.5, y: deviceUtils.dimensions.height < 812 ? 0.4 : 0.2 }}
+            pointerEvents="none"
+            start={{ x: 0.5, y: 0 }}
+            style={position.coverAsObject}
+          />
+        </OpacityToggler>
       </View>
     </>
   )
