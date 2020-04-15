@@ -8,12 +8,7 @@ export { default as ethereumUtils } from './ethereumUtils';
 export { default as backgroundTask } from './backgroundTask';
 export { default as gasUtils } from './gas';
 export { default as haptics } from './haptics';
-export {
-  formatNumberWithCommaSeparators,
-  getFirstGrapheme,
-  initials,
-  removeLeadingZeros,
-} from './formatters';
+export { getFirstGrapheme, initials, removeLeadingZeros } from './formatters';
 export { default as isLowerCaseMatch } from './isLowerCaseMatch';
 export { default as isNewValueForObjectPaths } from './isNewValueForObjectPaths';
 export { default as isNewValueForPath } from './isNewValueForPath';

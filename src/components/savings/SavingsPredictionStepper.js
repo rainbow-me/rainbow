@@ -8,7 +8,7 @@ import {
 } from '../../helpers/savings';
 import { handleSignificantDecimals } from '../../helpers/utilities';
 import { colors, fonts, padding } from '../../styles';
-import { formatNumberWithCommaSeparators, magicMemo } from '../../utils';
+import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
@@ -55,10 +55,7 @@ const steps = {
 
 function useStepper(max, initial = 0) {
   const [step, setStep] = useState(initial);
-  const nextStep = useCallback(
-    () => setStep(p => (p + 1 === max ? 0 : p + 1)),
-    [max]
-  );
+  const nextStep = useCallback(() => setStep(p => (p + 1) % max), [max]);
   return [step, nextStep];
 }
 
@@ -74,8 +71,7 @@ const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
 
   const formatter = useCallback(
     value => {
-      const roundedValue = handleSignificantDecimals(value, decimals, 1);
-      const formattedValue = formatNumberWithCommaSeparators(roundedValue);
+      const formattedValue = handleSignificantDecimals(value, decimals, 1);
 
       return isSymbolStablecoin(symbol)
         ? `$${formattedValue}`
