@@ -1,4 +1,4 @@
-import { get, groupBy, isEmpty, isNil, map, toNumber, filter } from 'lodash';
+import { filter, get, groupBy, isEmpty, isNil, map, toNumber } from 'lodash';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import {
@@ -17,7 +17,7 @@ const assetsSelector = state => (state.data ? state.data.assets : state.assets);
 const nativeCurrencySelector = state =>
   state.settings ? state.settings.nativeCurrency : state.nativeCurrency;
 const hiddenCoinsSelector = state =>
-  state.editOptions ? state.editOptions.hiddenCoins : [];
+  state.editOptions ? state.editOptions.hiddenCoins : state.hiddenCoins;
 
 const sortAssetsByNativeAmount = (
   originalAssets,

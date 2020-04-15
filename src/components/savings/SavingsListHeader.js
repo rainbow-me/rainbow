@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import React from 'react';
 import FastImage from 'react-native-fast-image';
 import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
-import { useDispatch } from 'react-redux';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
-import { useAccountData, useOpenSavings } from '../../hooks';
+import { useAccountData } from '../../hooks';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import Highlight from '../Highlight';
 import { Row, RowWithMargins } from '../layout';
@@ -17,25 +16,24 @@ const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
 const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 44;
 
-const SavingsListHeader = ({ emoji, highlight, savingsSumValue }) => {
-  const animation = useTimingTransition(openSavings, {
+const SavingsListHeader = ({
+  emoji,
+  highlight,
+  isOpen,
+  onPress,
+  savingsSumValue,
+  showSumValue,
+}) => {
+  const { nativeCurrency } = useAccountData();
+
+  const animation = useTimingTransition(isOpen, {
     duration: TokenFamilyHeaderAnimationDuration,
     easing: Easing.bezier(0.25, 0.1, 0.25, 1),
   });
 
-  const { nativeCurrency } = useAccountData();
-  const { openSavings, setOpenSavings } = useOpenSavings();
-  const dispatch = useDispatch();
-
-  const onPress = useCallback(() => dispatch(setOpenSavings(!openSavings)), [
-    dispatch,
-    openSavings,
-    setOpenSavings,
-  ]);
-
   return (
     <ButtonPressAnimation
-      key={`${emoji}_${openSavings}`}
+      key={`${emoji}_${isOpen}`}
       onPress={onPress}
       scaleTo={1.05}
     >
@@ -59,23 +57,25 @@ const SavingsListHeader = ({ emoji, highlight, savingsSumValue }) => {
           </TruncatedText>
         </RowWithMargins>
         <RowWithMargins align="center" margin={13}>
-          <Animated.View
-            style={{
-              opacity: interpolate(animation, {
-                inputRange: [0, 1],
-                outputRange: [1, 0],
-              }),
-            }}
-          >
-            <Text
-              align="right"
-              color="dark"
-              size="large"
-              style={{ marginBottom: 1 }}
+          {showSumValue && (
+            <Animated.View
+              style={{
+                opacity: interpolate(animation, {
+                  inputRange: [0, 1],
+                  outputRange: [1, 0],
+                }),
+              }}
             >
-              {convertAmountToNativeDisplay(savingsSumValue, nativeCurrency)}
-            </Text>
-          </Animated.View>
+              <Text
+                align="right"
+                color="dark"
+                size="large"
+                style={{ marginBottom: 1 }}
+              >
+                {convertAmountToNativeDisplay(savingsSumValue, nativeCurrency)}
+              </Text>
+            </Animated.View>
+          )}
           <AnimatedFastImage
             resizeMode={FastImage.resizeMode.contain}
             source={CaretImageSource}
@@ -109,12 +109,16 @@ SavingsListHeader.height = TokenFamilyHeaderHeight;
 SavingsListHeader.propTypes = {
   emoji: PropTypes.string,
   highlight: PropTypes.bool,
-  savingsSumValue: PropTypes.number,
+  isOpen: PropTypes.bool,
+  onPress: PropTypes.func,
+  savingsSumValue: PropTypes.string,
+  showSumValue: PropTypes.bool,
 };
 
 SavingsListHeader.defaultProps = {
   emoji: 'sunflower',
-  savingsSumValue: 0,
+  highlight: false,
+  savingsSumValue: '0',
   showSumValue: false,
 };
 
