@@ -37,6 +37,11 @@ fileprivate func generateHapticFeedback(_ hapticEffect: String) {
 }
 
 extension UIView {
+  
+  open override var canBecomeFirstResponder: Bool {
+      return true
+  }
+  
   static func fromNib<T: UIView>() -> T {
     return Bundle(for: T.self).loadNibNamed(String(describing: T.self), owner: nil, options: nil)![0] as! T
   }
@@ -65,6 +70,25 @@ extension UIView {
     }
     animator.startAnimation()
     return animator
+  }
+  
+  func setAnchorPoint(_ point: CGPoint) {
+    var newPoint = CGPoint(x: bounds.size.width * point.x, y: bounds.size.height * point.y)
+    var oldPoint = CGPoint(x: bounds.size.width * layer.anchorPoint.x, y: bounds.size.height * layer.anchorPoint.y);
+    
+    newPoint = newPoint.applying(transform)
+    oldPoint = oldPoint.applying(transform)
+    
+    var position = layer.position
+    
+    position.x -= oldPoint.x
+    position.x += newPoint.x
+    
+    position.y -= oldPoint.y
+    position.y += newPoint.y
+    
+    layer.position = position
+    layer.anchorPoint = point
   }
 }
 
@@ -137,27 +161,6 @@ extension Date {
   
   func seconds(from date: Date) -> Int {
     return Calendar.current.dateComponents([.second], from: date, to: self).second ?? 0
-  }
-}
-
-extension UIView {
-  func setAnchorPoint(_ point: CGPoint) {
-    var newPoint = CGPoint(x: bounds.size.width * point.x, y: bounds.size.height * point.y)
-    var oldPoint = CGPoint(x: bounds.size.width * layer.anchorPoint.x, y: bounds.size.height * layer.anchorPoint.y);
-    
-    newPoint = newPoint.applying(transform)
-    oldPoint = oldPoint.applying(transform)
-    
-    var position = layer.position
-    
-    position.x -= oldPoint.x
-    position.x += newPoint.x
-    
-    position.y -= oldPoint.y
-    position.y += newPoint.y
-    
-    layer.position = position
-    layer.anchorPoint = point
   }
 }
 

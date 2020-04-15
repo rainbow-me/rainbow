@@ -63,7 +63,10 @@ const ProfileMasthead = ({
           style={{ ...borders.buildCircleAsObject(85) }}
         />
       )}
-      <CopyTooltip textToCopy={accountAddress} tooltipText="Copy Address">
+      <CopyTooltip
+        textToCopy={accountENS || accountAddress}
+        tooltipText="Copy Address"
+      >
         <AddressAbbreviation address={accountENS || accountAddress} />
       </CopyTooltip>
       <RowWithMargins align="center" margin={1}>
