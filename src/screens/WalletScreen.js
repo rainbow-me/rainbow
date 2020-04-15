@@ -1,41 +1,39 @@
-import { withSafeTimeout } from '@hocs/safe-timers';
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import Animated from 'react-native-reanimated';
-import { withNavigation } from 'react-navigation';
-import { compose, withProps } from 'recompact';
+import { useNavigation } from 'react-navigation-hooks';
+import { useValues } from 'react-native-redash';
 import { AssetList } from '../components/asset-list';
 import { FabWrapper } from '../components/fab';
+import ExchangeFab from '../components/fab/ExchangeFab';
+import SendFab from '../components/fab/SendFab';
 import {
   CameraHeaderButton,
   Header,
-  ProfileHeaderButton,
   HeaderGestureBlocker,
+  ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
-import { withCoinListEdited, withKeyboardHeight } from '../hoc';
+import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
+import networkInfo from '../helpers/networkInfo';
 import {
   useAccountSettings,
+  useCoinListEdited,
   useInitializeWallet,
+  useKeyboardHeight,
   useRefreshAccountData,
   useWalletSectionsData,
 } from '../hooks';
-import ExchangeFab from '../components/fab/ExchangeFab';
-import SendFab from '../components/fab/SendFab';
 import { position } from '../styles';
-import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
-import networkInfo from '../helpers/networkInfo';
 
-const WalletScreen = ({
-  isCoinListEdited,
-  navigation,
-  scrollViewTracker,
-  setKeyboardHeight,
-}) => {
+export default function WalletScreen() {
   const [initialized, setInitialized] = useState(false);
   const initializeWallet = useInitializeWallet();
+  const navigation = useNavigation();
   const refreshAccountData = useRefreshAccountData();
+  const { isCoinListEdited } = useCoinListEdited();
+  const { updateKeyboardHeight } = useKeyboardHeight();
+  const [scrollViewTracker] = useValues([0], []);
 
   useEffect(() => {
     if (!initialized) {
@@ -45,7 +43,7 @@ const WalletScreen = ({
           getKeyboardHeight()
             .then(keyboardHeight => {
               if (keyboardHeight) {
-                setKeyboardHeight(keyboardHeight);
+                updateKeyboardHeight(keyboardHeight);
               }
             })
             .catch(() => {
@@ -56,7 +54,7 @@ const WalletScreen = ({
           setInitialized(true);
         });
     }
-  }, [initializeWallet, initialized, setKeyboardHeight]);
+  }, [initializeWallet, initialized, updateKeyboardHeight]);
 
   const { network } = useAccountSettings();
   const { isEmpty, isWalletEthZero, sections } = useWalletSectionsData();
@@ -85,7 +83,6 @@ const WalletScreen = ({
             <CameraHeaderButton navigation={navigation} />
           </Header>
         </HeaderGestureBlocker>
-
         <AssetList
           fetchData={refreshAccountData}
           isEmpty={isEmpty}
@@ -97,19 +94,4 @@ const WalletScreen = ({
       </FabWrapper>
     </Page>
   );
-};
-
-WalletScreen.propTypes = {
-  isCoinListEdited: PropTypes.bool,
-  navigation: PropTypes.object,
-  scrollViewTracker: PropTypes.object,
-  setKeyboardHeight: PropTypes.func,
-};
-
-export default compose(
-  withSafeTimeout,
-  withNavigation,
-  withKeyboardHeight,
-  withCoinListEdited,
-  withProps({ scrollViewTracker: new Animated.Value(0) })
-)(WalletScreen);
+}
