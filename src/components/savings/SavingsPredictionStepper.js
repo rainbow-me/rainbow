@@ -2,8 +2,13 @@ import AnimatedNumber from '@rainbow-me/react-native-animated-number';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { calculateEarningsInDays } from '../../helpers/savings';
+import {
+  calculateEarningsInDays,
+  isSymbolStablecoin,
+} from '../../helpers/savings';
+import { handleSignificantDecimals } from '../../helpers/utilities';
 import { colors, fonts, padding } from '../../styles';
+import { formatNumberWithCommaSeparators, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
@@ -16,6 +21,9 @@ const sx = StyleSheet.create({
     fontSize: parseFloat(fonts.size.lmedium),
     fontWeight: fonts.weight.semibold,
     letterSpacing: fonts.letterSpacing.roundedTight,
+  },
+  emoji: {
+    marginBottom: 0.5,
   },
 });
 
@@ -45,42 +53,47 @@ const steps = {
 };
 /* eslint-enable sort-keys */
 
-const predictionFormatter = value => {
-  const val = Number(value).toFixed(2);
-  if (val === '0.00') {
-    return '< $0.01';
-  }
-
-  return `$${val.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
-};
-
-const SavingsPredictionStepper = ({ balance, interestRate }) => {
-  const [step, setStep] = useState(1);
-  const incrementStep = useCallback(
-    p => (p + 1 === Object.keys(steps).length ? 0 : p + 1),
-    []
+function useStepper(max, initial = 0) {
+  const [step, setStep] = useState(initial);
+  const nextStep = useCallback(
+    () => setStep(p => (p + 1 === max ? 0 : p + 1)),
+    [max]
   );
+  return [step, nextStep];
+}
 
-  const NUMBER = calculateEarningsInDays(
+const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
+  const [step, nextStep] = useStepper(Object.keys(steps).length, 1);
+  const { decimals, symbol } = asset;
+
+  const estimatedEarnings = calculateEarningsInDays(
     balance,
     interestRate,
     Object.values(steps)[step].days
   );
 
+  const formatter = useCallback(
+    value => {
+      const roundedValue = handleSignificantDecimals(value, decimals, 1);
+      const formattedValue = formatNumberWithCommaSeparators(roundedValue);
+
+      return isSymbolStablecoin(symbol)
+        ? `$${formattedValue}`
+        : `${formattedValue} ${symbol}`;
+    },
+    [decimals, symbol]
+  );
+
   return (
     <ButtonPressAnimation
       duration={120}
-      onPress={() => setStep(incrementStep)}
+      onPress={nextStep}
       scaleTo={1.04}
       width="100%"
     >
       <Row align="center" css={padding(15, 19, 19)}>
         <RowWithMargins align="center" margin={5}>
-          <Emoji
-            name="crystal_ball"
-            size="medium"
-            style={{ marginBottom: 0.5 }}
-          />
+          <Emoji name="crystal_ball" size="medium" style={sx.emoji} />
           <Text size="lmedium">
             {`Est. ${Object.keys(steps)[step]} Earnings`}
           </Text>
@@ -88,11 +101,11 @@ const SavingsPredictionStepper = ({ balance, interestRate }) => {
         <Row flex={1} justify="end">
           <AnimatedNumber
             disableTabularNums
-            formatter={predictionFormatter}
+            formatter={formatter}
             steps={9}
             style={sx.animatedNumber}
             time={8}
-            value={NUMBER}
+            value={estimatedEarnings}
           />
         </Row>
       </Row>
@@ -101,8 +114,12 @@ const SavingsPredictionStepper = ({ balance, interestRate }) => {
 };
 
 SavingsPredictionStepper.propTypes = {
+  asset: PropTypes.shape({
+    decimals: PropTypes.number,
+    symbol: PropTypes.string,
+  }),
   balance: PropTypes.string,
   interestRate: PropTypes.string,
 };
 
-export default React.memo(SavingsPredictionStepper);
+export default magicMemo(SavingsPredictionStepper, ['balance', 'interestRate']);
