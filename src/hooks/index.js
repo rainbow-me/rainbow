@@ -5,6 +5,7 @@ export { default as useAddCashLimits } from './useAddCashLimits';
 export { default as useAppState } from './useAppState';
 export { default as useBiometryType, BiometryTypes } from './useBiometryType';
 export { default as useBlockPolling } from './useBlockPolling';
+export { default as useCheckEthBalance } from './useCheckEthBalance';
 export { default as useClearAccountData } from './useClearAccountData';
 export { default as useClipboard } from './useClipboard';
 export { default as useDimensions } from './useDimensions';
