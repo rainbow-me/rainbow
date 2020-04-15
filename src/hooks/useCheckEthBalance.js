@@ -11,9 +11,11 @@ export default function useCheckEthBalance() {
 
   return useCallback(async () => {
     try {
-      const ethBalance = await hasEthBalance(accountAddress);
-      const isZero = !ethBalance;
-      dispatch(setIsWalletEthZero(isZero));
+      if (accountAddress) {
+        const ethBalance = await hasEthBalance(accountAddress);
+        const isZero = !ethBalance;
+        dispatch(setIsWalletEthZero(isZero));
+      }
     } catch (error) {
       logger.log('Error: Checking eth balance', error);
     }
