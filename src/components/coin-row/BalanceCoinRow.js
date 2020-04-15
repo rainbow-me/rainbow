@@ -12,7 +12,7 @@ import {
 } from '../../hoc';
 import { isNewValueForPath, deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { FlexItem, Row } from '../layout';
+import { Column, FlexItem, Row } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
@@ -112,12 +112,7 @@ const BalanceCoinRow = ({
       ) : null}
     </View>
   ) : (
-    <FlexItem
-      flex={1}
-      style={{
-        justifyContent: isFirstCoinRow ? 'flex-end' : 'flex-start',
-      }}
-    >
+    <Column flex={1} justify={isFirstCoinRow ? 'end' : 'start'}>
       <ButtonPressAnimation
         onPress={isCoinListEdited ? handlePress : onPress}
         scaleTo={0.96}
@@ -148,7 +143,7 @@ const BalanceCoinRow = ({
       {isCoinListEdited ? (
         <CoinCheckButton isAbsolute toggle={toggle} onPress={handlePress} />
       ) : null}
-    </FlexItem>
+    </Column>
   );
 };
 
