@@ -87,7 +87,7 @@ export default class UnderlineField extends PureComponent {
   onChange = event => {
     const { nativeEvent } = event;
 
-    const value = this.format(nativeEvent.text);
+    const value = this.format(nativeEvent.text).replace(',', '.');
 
     if (value !== this.props.value) {
       this.setState({ value });
