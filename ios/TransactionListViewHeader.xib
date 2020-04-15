@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16095" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment version="4352" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16084.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
@@ -145,8 +145,8 @@
                         <accessibilityTraits key="traits" button="YES"/>
                     </accessibility>
                 </view>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0xDEADBEEF123Ab28Dfe3" textAlignment="center" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LxS-BQ-P6T">
-                    <rect key="frame" x="63" y="81" width="249" height="27"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0xDEADBEEF123Ab28Dfe3" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LxS-BQ-P6T">
+                    <rect key="frame" x="47" y="81" width="280" height="27"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
                     <fontDescription key="fontDescription" name="SFRounded-Bold" family="SF Pro Rounded" pointSize="26"/>
                     <color key="textColor" red="0.14509803921568626" green="0.16078431372549018" blue="0.1803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
