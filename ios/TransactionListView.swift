@@ -19,6 +19,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var onRequestExpire: RCTBubblingEventBlock = { _ in }
   @objc var onReceivePress: RCTBubblingEventBlock = { _ in }
   @objc var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
+  @objc var onCopyTooltipPress: RCTBubblingEventBlock = { _ in }
   @objc var onAvatarPress: RCTBubblingEventBlock = { _ in }
   @objc var onAddCashPress: RCTBubblingEventBlock = { _ in }
   @objc var addCashButtonAvailable: Bool = true {
@@ -92,6 +93,23 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.accountView.animateTapEnd()
   }
   
+  @objc func onAccountAddressPressed(_ sender: UITapGestureRecognizer) {
+    
+    if let senderView = sender.view {
+      senderView.becomeFirstResponder()
+      
+      let copyMenuItem = UIMenuItem(title: "Copy Address", action: #selector(onCopyTooltipPressed))
+      UIMenuController.shared.menuItems = [copyMenuItem]
+      UIMenuController.shared.setTargetRect(senderView.frame, in: header)
+      UIMenuController.shared.setMenuVisible(true, animated: true)
+    }
+  }
+  
+  @objc func onCopyTooltipPressed() {
+    header.accountAddress.resignFirstResponder()
+    self.onCopyTooltipPress(nil);
+  }
+  
   @objc func onCopyAddressPressed(_ sender: UIButton) {
     let rect = sender.convert(sender.frame, to: self)
     self.onCopyAddressPress([
@@ -101,6 +119,8 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       "height": sender.frame.height
     ])
   }
+  
+  
   @objc func onPressInCopyAddress(_ sender: UIButton) {
     header.copyAddress.animateTapStart(scale: 0.86)
   }
@@ -156,6 +176,11 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchDragOutside)
     header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchCancel)
     header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchUpOutside)
+    
+    header.accountAddress.becomeFirstResponder();
+    let pressGR = UITapGestureRecognizer(target: self, action: #selector(onAccountAddressPressed))
+    header.accountAddress.isUserInteractionEnabled = true
+    header.accountAddress.addGestureRecognizer(pressGR)
     
     header.copyAddress.addTarget(self, action: #selector(onCopyAddressPressed(_:)), for: .touchUpInside)
     header.copyAddress.addTarget(self, action: #selector(onPressInCopyAddress(_:)), for: .touchDown)

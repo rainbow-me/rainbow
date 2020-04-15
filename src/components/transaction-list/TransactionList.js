@@ -39,6 +39,11 @@ class TransactionList extends React.PureComponent {
     Clipboard.setString(accountAddress);
   };
 
+  onCopyTooltipPress = () => {
+    const { accountENS, accountAddress } = this.props;
+    Clipboard.setString(accountENS || accountAddress);
+  };
+
   formatAddress = address => {
     if (address) {
       return abbreviations.address(
@@ -94,6 +99,7 @@ class TransactionList extends React.PureComponent {
           onAddCashPress={onAddCashPress}
           onAvatarPress={onAvatarPress}
           onCopyAddressPress={this.onCopyAddressPress}
+          onCopyTooltipPress={this.onCopyTooltipPress}
           onReceivePress={onReceivePress}
           onRequestExpire={onRequestExpire}
           onRequestPress={onRequestPress}
