@@ -5,12 +5,6 @@ const grapheme = new GraphemeSplitter();
 
 const firstCharacterOfString = n => n.charAt(0);
 
-export function formatNumberWithCommaSeparators(number) {
-  const parts = String(number).split('.');
-  const commaSeperated = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  return parts.length > 1 ? `${commaSeperated}.${parts[1]}` : commaSeperated;
-}
-
 export const getFirstGrapheme = string => grapheme.splitGraphemes(string)[0];
 
 export const initials = string =>
