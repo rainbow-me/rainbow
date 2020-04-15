@@ -41,7 +41,9 @@
     }
     transaction.from = data[@"from"];
     transaction.to = data[@"to"];
-    transaction.coinName = data[@"name"];
+    if (data[@"name"] != [NSNull null]) {
+      transaction.coinName = data[@"name"];
+    }
     transaction.nativeDisplay = data[@"native"][@"display"];
     transaction.balanceDisplay = data[@"balance"][@"display"];
     transaction.type = data[@"type"];
