@@ -22,7 +22,7 @@ const Container = styled(Column)`
   overflow: hidden;
 `;
 
-const nftPaddingBottom = safeAreaInsetValues.bottom + 39;
+const nftPaddingBottom = safeAreaInsetValues.bottom;
 const tokenPaddingBottom = sheetVerticalOffset + 19;
 
 const TransactionContainer = styled(Column).attrs({
@@ -30,7 +30,7 @@ const TransactionContainer = styled(Column).attrs({
   justify: 'space-between',
 })`
   ${({ isNft }) =>
-    padding(22, 15, isNft ? nftPaddingBottom : tokenPaddingBottom)};
+    padding(22, isNft ? 0 : 15, isNft ? nftPaddingBottom : tokenPaddingBottom)};
   background-color: ${colors.lighterGrey};
   flex: 1;
   width: 100%;
@@ -82,25 +82,31 @@ const SendAssetForm = ({
       </ShadowStack>
       <TransactionContainer isNft={isNft}>
         {isNft ? (
-          <SendAssetFormCollectible {...selected} />
-        ) : (
-          <SendAssetFormToken
-            {...props}
-            assetAmount={assetAmount}
-            nativeAmount={nativeAmount}
-            sendMaxBalance={sendMaxBalance}
-            selected={selected}
+          <SendAssetFormCollectible
+            {...selected}
+            buttonRenderer={buttonRenderer}
+            txSpeedRenderer={txSpeedRenderer}
           />
+        ) : (
+          <>
+            <SendAssetFormToken
+              {...props}
+              assetAmount={assetAmount}
+              nativeAmount={nativeAmount}
+              sendMaxBalance={sendMaxBalance}
+              selected={selected}
+            />
+            <ColumnWithMargins
+              flex={0}
+              margin={deviceUtils.dimensions.height < 812 ? 15.5 : 31}
+              style={{ zIndex: 3 }}
+              width="100%"
+            >
+              {buttonRenderer}
+              {txSpeedRenderer}
+            </ColumnWithMargins>
+          </>
         )}
-        <ColumnWithMargins
-          flex={0}
-          margin={deviceUtils.dimensions.height < 812 ? 15.5 : 31}
-          style={{ zIndex: 3 }}
-          width="100%"
-        >
-          {buttonRenderer}
-          {txSpeedRenderer}
-        </ColumnWithMargins>
       </TransactionContainer>
     </Container>
   );

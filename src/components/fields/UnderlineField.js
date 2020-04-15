@@ -60,7 +60,7 @@ export default class UnderlineField extends PureComponent {
   componentDidUpdate(prevProps) {
     const { value } = this.props;
 
-    if (value !== prevProps.value) {
+    if (value !== prevProps.value && !this.input.isFocused()) {
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ value });
     }
@@ -144,7 +144,7 @@ export default class UnderlineField extends PureComponent {
               placeholder={placeholder}
               ref={this.handleRef}
               size="h3"
-              value={this.format(String(this.props.value || ''))}
+              value={this.format(String(this.state.value || ''))}
               weight="medium"
             />
           </FlexItem>

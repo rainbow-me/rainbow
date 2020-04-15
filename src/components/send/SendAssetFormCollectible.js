@@ -1,12 +1,14 @@
 import withViewLayoutProps from '@hocs/with-view-layout-props';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { View } from 'react-native';
 import { compose, onlyUpdateForKeys, withProps } from 'recompact';
 import { withImageDimensionsCache } from '../../hoc';
-import { colors } from '../../styles';
+import { colors, position } from '../../styles';
 import { deviceUtils } from '../../utils';
-import { Column } from '../layout';
+import { Column, ColumnWithMargins } from '../layout';
 import { UniqueTokenCard } from '../unique-token';
+import LinearGradient from 'react-native-linear-gradient';
 
 const enhance = compose(
   withImageDimensionsCache,
@@ -19,7 +21,7 @@ const enhance = compose(
   withProps(({ image_preview_url, imageDimensionsCache }) => ({
     imageDimensions: imageDimensionsCache[image_preview_url],
   })),
-  withProps(({ containerHeight, imageDimensions }) => {
+  withProps(({ imageDimensions }) => {
     if (!imageDimensions) {
       imageDimensions = { height: 512, width: 512 };
     }
@@ -28,8 +30,8 @@ const enhance = compose(
       ? width
       : (width * imageDimensions.height) / imageDimensions.width;
 
-    if (height > containerHeight) {
-      height = containerHeight;
+    if (height > deviceUtils.dimensions.height < 812 ? 350 : 375) {
+      height = deviceUtils.dimensions.height < 812 ? 350 : 375;
       width = (height * imageDimensions.width) / imageDimensions.height;
     }
 
@@ -38,32 +40,70 @@ const enhance = compose(
       width,
     };
   }),
-  onlyUpdateForKeys(['containerHeight', 'containerWidth', 'height', 'width'])
+  onlyUpdateForKeys(['containerWidth', 'height', 'width'])
 );
 
 const SendAssetFormCollectible = enhance(
-  ({ containerHeight, containerWidth, height, onLayout, width, ...props }) => (
-    <Column align="center" flex={1} onLayout={onLayout} width="100%">
-      {!!containerHeight && !!containerWidth && (
-        <UniqueTokenCard
-          {...props}
-          borderEnabled={false}
-          enableHapticFeedback={false}
-          height={height}
-          item={props}
-          opacity={1}
-          scaleTo={1}
-          resizeMode="contain"
-          shadowStyle={{
-            shadowColor: colors.dark,
-            shadowOffset: { height: 10, width: 0 },
-            shadowOpacity: 0.4,
-            shadowRadius: 25,
-          }}
-          width={width}
+  ({
+    buttonRenderer,
+    containerHeight,
+    containerWidth,
+    height,
+    onLayout,
+    width,
+    txSpeedRenderer,
+    ...props
+  }) => (
+    <>
+      <Column align="center" flex={1} onLayout={onLayout} width="100%">
+        {!!containerHeight && !!containerWidth && (
+          <UniqueTokenCard
+            {...props}
+            borderEnabled={false}
+            enableHapticFeedback={false}
+            height={height}
+            item={props}
+            opacity={1}
+            scaleTo={1}
+            resizeMode="contain"
+            shadowStyle={{
+              shadowColor: colors.dark,
+              shadowOffset: { height: 10, width: 0 },
+              shadowOpacity: 0.4,
+              shadowRadius: 25,
+            }}
+            width={width}
+          />
+        )}
+      </Column>
+      <View
+        width="100%"
+        marginBottom={0}
+        height={200}
+        justifyContent="flex-end"
+      >
+        <ColumnWithMargins
+          flex={0}
+          margin={deviceUtils.dimensions.height < 812 ? 15.5 : 25}
+          style={{ zIndex: 3 }}
+          width="100%"
+          marginBottom={29}
+          paddingHorizontal={15}
+        >
+          {buttonRenderer}
+          {txSpeedRenderer}
+        </ColumnWithMargins>
+        <LinearGradient
+          borderRadius={19}
+          overflow="hidden"
+          colors={['#FAFAFA00', '#FAFAFAFF']}
+          end={{ x: 0.5, y: 0.4 }}
+          pointerEvents="none"
+          start={{ x: 0.5, y: 0 }}
+          style={position.coverAsObject}
         />
-      )}
-    </Column>
+      </View>
+    </>
   )
 );
 
