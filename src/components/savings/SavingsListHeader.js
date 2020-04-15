@@ -1,41 +1,42 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useCallback } from 'react';
 import FastImage from 'react-native-fast-image';
 import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
-import { compose } from 'recompact';
+import { useDispatch } from 'react-redux';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
-import { useAccountData } from '../../hooks';
+import { useAccountData, useOpenSavings } from '../../hooks';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import Highlight from '../Highlight';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
-import withOpenSavings from '../../hoc/withOpenSavings';
 
 const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
 
 const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 44;
 
-const SavingsListHeader = ({
-  emoji,
-  highlight,
-  openSavings,
-  savingsSumValue,
-  setOpenSavings,
-}) => {
+const SavingsListHeader = ({ emoji, highlight, savingsSumValue }) => {
   const animation = useTimingTransition(openSavings, {
     duration: TokenFamilyHeaderAnimationDuration,
     easing: Easing.bezier(0.25, 0.1, 0.25, 1),
   });
 
   const { nativeCurrency } = useAccountData();
+  const { openSavings, setOpenSavings } = useOpenSavings();
+  const dispatch = useDispatch();
+
+  const onPress = useCallback(() => dispatch(setOpenSavings(!openSavings)), [
+    dispatch,
+    openSavings,
+    setOpenSavings,
+  ]);
 
   return (
     <ButtonPressAnimation
       key={`${emoji}_${openSavings}`}
-      onPress={() => setOpenSavings(!openSavings)}
+      onPress={onPress}
       scaleTo={1.05}
     >
       <Row
@@ -108,9 +109,7 @@ SavingsListHeader.height = TokenFamilyHeaderHeight;
 SavingsListHeader.propTypes = {
   emoji: PropTypes.string,
   highlight: PropTypes.bool,
-  openSavings: PropTypes.bool,
   savingsSumValue: PropTypes.number,
-  setOpenSavings: PropTypes.func,
 };
 
 SavingsListHeader.defaultProps = {
@@ -119,4 +118,4 @@ SavingsListHeader.defaultProps = {
   showSumValue: false,
 };
 
-export default compose(withOpenSavings)(SavingsListHeader);
+export default SavingsListHeader;

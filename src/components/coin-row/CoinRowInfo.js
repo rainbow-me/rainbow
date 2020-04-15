@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
-import { colors, padding } from '../../styles';
 import { withCoinListEdited } from '../../hoc';
+import { colors, padding } from '../../styles';
 import { Row } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
@@ -23,20 +23,14 @@ const Container = styled(Row)`
   justify-content: space-between;
 `;
 
-const formatPercentageString = percentString =>
-  percentString
-    ? percentString
-        .split('-')
-        .join('- ')
-        .split('%')
-        .join('%')
-    : null;
+const spaceNegativePercentage = percentString =>
+  percentString ? percentString.split('-').join('- ') : null;
 
 const CoinRowInfo = ({ isHidden, native }) => {
   const nativeDisplay = get(native, 'balance.display');
 
   const percentChange = get(native, 'change');
-  const percentageChangeDisplay = formatPercentageString(percentChange);
+  const percentageChangeDisplay = spaceNegativePercentage(percentChange);
   const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
   return (
     <Container style={{ height: 59, opacity: isHidden ? 0.4 : 1 }}>
@@ -53,6 +47,7 @@ const CoinRowInfo = ({ isHidden, native }) => {
 };
 
 CoinRowInfo.propTypes = {
+  isHidden: PropTypes.bool,
   native: PropTypes.object,
 };
 
