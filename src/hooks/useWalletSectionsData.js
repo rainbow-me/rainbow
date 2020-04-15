@@ -4,6 +4,7 @@ import { buildWalletSectionsSelector } from '../helpers/buildWalletSections';
 import useAccountAssets from './useAccountAssets';
 import useAccountSettings from './useAccountSettings';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
+import useCoinListEditOptions from './useCoinListEditOptions';
 import { readableUniswapSelector } from '../hoc/uniswapLiquidityTokenInfoSelector';
 import useSavingsAccount from './useSavingsAccount';
 
@@ -19,18 +20,29 @@ export default function useWalletSectionsData() {
   const uniqueTokens = useSendableUniqueTokens();
   const uniswap = useSelector(readableUniswapSelector);
 
+  const {
+    currentAction,
+    hiddenCoins,
+    isCoinListEdited,
+    pinnedCoins,
+  } = useCoinListEditOptions();
+
   const accountSavings = useSavingsAccount(true);
 
   const walletSections = useMemo(() => {
     const accountInfo = {
+      currentAction,
+      hiddenCoins,
+      isCoinListEdited,
       language,
       nativeCurrency,
       network,
+      pinnedCoins,
+      savings: accountSavings,
       ...accountData,
       ...uniqueTokens,
       ...uniswap,
       ...isWalletEthZero,
-      savings: accountSavings,
     };
     const creation = buildWalletSectionsSelector(accountInfo);
     return {
@@ -40,10 +52,14 @@ export default function useWalletSectionsData() {
   }, [
     accountData,
     accountSavings,
+    currentAction,
+    hiddenCoins,
+    isCoinListEdited,
     isWalletEthZero,
     language,
     nativeCurrency,
     network,
+    pinnedCoins,
     uniqueTokens,
     uniswap,
   ]);

@@ -5,7 +5,7 @@ import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
-import { useAccountData } from '../../hooks';
+import { useAccountSettings } from '../../hooks';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import Highlight from '../Highlight';
 import { Row, RowWithMargins } from '../layout';
@@ -24,7 +24,7 @@ const SavingsListHeader = ({
   savingsSumValue,
   showSumValue,
 }) => {
-  const { nativeCurrency } = useAccountData();
+  const { nativeCurrency } = useAccountSettings();
 
   const animation = useTimingTransition(isOpen, {
     duration: TokenFamilyHeaderAnimationDuration,

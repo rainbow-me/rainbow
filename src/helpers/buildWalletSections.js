@@ -17,15 +17,17 @@ import {
   multiply,
   convertAmountToNativeDisplay,
 } from '../helpers/utilities';
-import { buildUniqueTokenList, buildCoinsList } from './assets';
+import {
+  amountOfShowedCoins,
+  buildUniqueTokenList,
+  buildCoinsList,
+} from './assets';
 import store from '../redux/store';
 import {
   setIsCoinListEdited,
   setPinnedCoins,
   setHiddenCoins,
 } from '../redux/editOptions';
-import { getAssets } from '../handlers/localstorage/accountLocal';
-import { dataUpdateAssets } from '../redux/data';
 import networkTypes from './networkTypes';
 import { ethereumUtils } from '../utils';
 import { setOpenSmallBalances } from '../redux/openStateSettings';
@@ -33,12 +35,16 @@ import { setOpenSmallBalances } from '../redux/openStateSettings';
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
 const assetsTotalSelector = state => state.assetsTotal;
-const savingsSelector = state => state.savings;
+const currentActionSelector = state => state.currentAction;
+const hiddenCoinsSelector = state => state.hiddenCoins;
 const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
+const isCoinListEditedSelector = state => state.isCoinListEdited;
 const isWalletEthZeroSelector = state => state.isWalletEthZero;
 const languageSelector = state => state.language;
 const networkSelector = state => state.network;
 const nativeCurrencySelector = state => state.nativeCurrency;
+const pinnedCoinsSelector = state => state.pinnedCoins;
+const savingsSelector = state => state.savings;
 const uniqueTokensSelector = state => state.uniqueTokens;
 const uniswapSelector = state => state.uniswap;
 const uniswapTotalSelector = state => state.uniswapTotal;
@@ -158,6 +164,65 @@ const withBalanceSavingsSection = (savings, priceOfEther) => {
   return savingsSection;
 };
 
+const coinEditContextMenu = (
+  allAssets,
+  balanceSectionData,
+  isCoinListEdited,
+  currentAction,
+  isLoadingBalances,
+  allAssetsCount,
+  totalValue
+) => {
+  const noSmallBalances = !(
+    balanceSectionData[balanceSectionData.length - 1].smallBalancesContainer ||
+    (balanceSectionData.length > 1 &&
+      balanceSectionData[balanceSectionData.length - 2].smallBalancesContainer)
+  );
+  return {
+    contextMenuOptions:
+      allAssets.length <= amountOfShowedCoins && noSmallBalances
+        ? {
+            cancelButtonIndex: 0,
+            dynamicOptions: () => {
+              return isCoinListEdited && currentAction !== EditOptions.none
+                ? [
+                    'Cancel',
+                    currentAction !== EditOptions.unpin ? 'Pin' : 'Unpin',
+                    currentAction !== EditOptions.unhide ? 'Hide' : 'Unhide',
+                    'Finish',
+                  ]
+                : ['Cancel', isCoinListEdited ? 'Finish' : 'Edit'];
+            },
+            onPressActionSheet: async index => {
+              if (isCoinListEdited && currentAction !== EditOptions.none) {
+                if (index === 3) {
+                  store.dispatch(setIsCoinListEdited(!isCoinListEdited));
+                } else if (index === 1) {
+                  store.dispatch(setPinnedCoins());
+                } else if (index === 2) {
+                  store.dispatch(setHiddenCoins());
+                  store.dispatch(setOpenSmallBalances(true));
+                }
+                LayoutAnimation.configureNext(
+                  LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+                );
+              } else {
+                if (index === 1) {
+                  store.dispatch(setIsCoinListEdited(!isCoinListEdited));
+                  LayoutAnimation.configureNext(
+                    LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+                  );
+                }
+              }
+            },
+          }
+        : undefined,
+    title: lang.t('account.tab_balances'),
+    totalItems: isLoadingBalances ? 1 : allAssetsCount,
+    totalValue: totalValue,
+  };
+};
+
 const withBalanceSection = (
   allAssets,
   allAssetsCount,
@@ -167,9 +232,18 @@ const withBalanceSection = (
   isWalletEthZero,
   language,
   nativeCurrency,
-  network
+  network,
+  isCoinListEdited,
+  pinnedCoins,
+  hiddenCoins,
+  currentAction
 ) => {
-  const { assets, totalBalancesValue } = buildCoinsList(allAssets);
+  const { assets, totalBalancesValue } = buildCoinsList(
+    allAssets,
+    isCoinListEdited,
+    pinnedCoins,
+    hiddenCoins
+  );
   let balanceSectionData = [...assets];
 
   const totalValue = convertAmountToNativeDisplay(
@@ -189,71 +263,15 @@ const withBalanceSection = (
   return {
     balances: true,
     data: balanceSectionData,
-    header: {
-      contextMenuOptions:
-        allAssets.length <= 5 &&
-        !(
-          balanceSectionData[balanceSectionData.length - 1]
-            .smallBalancesContainer ||
-          (balanceSectionData.length > 1 &&
-            balanceSectionData[balanceSectionData.length - 2]
-              .smallBalancesContainer)
-        )
-          ? {
-              cancelButtonIndex: 0,
-              dynamicOptions: () => {
-                const currentAction = store.getState().editOptions
-                  .currentAction;
-                const isCoinListEdited = store.getState().editOptions
-                  .isCoinListEdited;
-                return isCoinListEdited && currentAction !== EditOptions.none
-                  ? [
-                      'Cancel',
-                      currentAction !== EditOptions.unpin ? 'Pin' : 'Unpin',
-                      currentAction !== EditOptions.unhide ? 'Hide' : 'Unhide',
-                      'Finish',
-                    ]
-                  : ['Cancel', isCoinListEdited ? 'Finish' : 'Edit'];
-              },
-              onPressActionSheet: async index => {
-                const currentAction = store.getState().editOptions
-                  .currentAction;
-                const isCoinListEdited = store.getState().editOptions
-                  .isCoinListEdited;
-                if (isCoinListEdited && currentAction !== EditOptions.none) {
-                  if (index === 3) {
-                    store.dispatch(setIsCoinListEdited(!isCoinListEdited));
-                  } else if (index === 1) {
-                    store.dispatch(setPinnedCoins());
-                  } else if (index === 2) {
-                    store.dispatch(setHiddenCoins());
-                    store.dispatch(setOpenSmallBalances(true));
-                  }
-                  if (index === 2 || index === 1) {
-                    const assets = await getAssets(
-                      store.getState().settings.accountAddress,
-                      store.getState().settings.network
-                    );
-                    store.dispatch(dataUpdateAssets(assets));
-                  }
-                  LayoutAnimation.configureNext(
-                    LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-                  );
-                } else {
-                  if (index === 1) {
-                    store.dispatch(setIsCoinListEdited(!isCoinListEdited));
-                    LayoutAnimation.configureNext(
-                      LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-                    );
-                  }
-                }
-              },
-            }
-          : undefined,
-      title: lang.t('account.tab_balances'),
-      totalItems: isLoadingBalances ? 1 : allAssetsCount,
-      totalValue: totalValue,
-    },
+    header: coinEditContextMenu(
+      allAssets,
+      balanceSectionData,
+      isCoinListEdited,
+      currentAction,
+      isLoadingBalances,
+      allAssetsCount,
+      totalValue
+    ),
     name: 'balances',
     renderItem: isLoadingBalances
       ? balancesSkeletonRenderItem
@@ -356,6 +374,10 @@ const balanceSectionSelector = createSelector(
     languageSelector,
     nativeCurrencySelector,
     networkSelector,
+    isCoinListEditedSelector,
+    pinnedCoinsSelector,
+    hiddenCoinsSelector,
+    currentActionSelector,
   ],
   withBalanceSection
 );

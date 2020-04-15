@@ -1,7 +1,7 @@
-import { compact, get, groupBy, sortBy } from 'lodash';
-import store from '../redux/store';
+import { compact, forEach, get, groupBy, sortBy } from 'lodash';
+import { add } from './utilities';
 
-const amountOfShowedCoins = 5;
+export const amountOfShowedCoins = 5;
 
 export const buildAssetHeaderUniqueIdentifier = ({
   title,
@@ -17,49 +17,68 @@ export const buildAssetUniqueIdentifier = item => {
   return compact([balance, nativePrice, uniqueId]).join('_');
 };
 
-export const buildCoinsList = assets => {
+export const buildCoinsList = (
+  assets,
+  isCoinListEdited,
+  pinnedCoins,
+  hiddenCoins
+) => {
   let standardAssets = [],
     pinnedAssets = [],
     hiddenAssets = [];
-  const { pinnedCoins, hiddenCoins } = store.getState().editOptions;
   const smallBalances = {
     assets: [],
     smallBalancesContainer: true,
   };
+  const assetsLength = assets.length;
+
   let totalBalancesValue = 0;
   let smallBalancesValue = 0;
-  for (let i = 0; i < assets.length; i++) {
-    if (hiddenCoins.includes(assets[i].uniqueId)) {
+
+  const isShortList = assetsLength <= amountOfShowedCoins;
+
+  forEach(assets, asset => {
+    if (hiddenCoins.includes(asset.uniqueId)) {
       hiddenAssets.push({
         isCoin: true,
         isHidden: true,
         isSmall: true,
-        ...assets[i],
+        ...asset,
       });
-    } else if (pinnedCoins.includes(assets[i].uniqueId)) {
-      totalBalancesValue += Number(get(assets[i], 'native.balance.amount', 0));
+    } else if (pinnedCoins.includes(asset.uniqueId)) {
+      totalBalancesValue = add(
+        totalBalancesValue,
+        get(asset, 'native.balance.amount', 0)
+      );
       pinnedAssets.push({
         isCoin: true,
         isPinned: true,
         isSmall: false,
-        ...assets[i],
+        ...asset,
       });
     } else if (
-      (assets[i].native && assets[i].native.balance.amount > 1) ||
-      assets[i].address === 'eth' ||
-      assets.length <= amountOfShowedCoins
+      (asset.native && asset.native.balance.amount > 1) ||
+      asset.address === 'eth' ||
+      isShortList
     ) {
-      totalBalancesValue += Number(get(assets[i], 'native.balance.amount', 0));
-      standardAssets.push({ isCoin: true, isSmall: false, ...assets[i] });
+      totalBalancesValue = add(
+        totalBalancesValue,
+        get(asset, 'native.balance.amount', 0)
+      );
+      standardAssets.push({ isCoin: true, isSmall: false, ...asset });
     } else {
-      totalBalancesValue += Number(get(assets[i], 'native.balance.amount', 0));
-      smallBalancesValue += Number(get(assets[i], 'native.balance.amount', 0));
-      smallBalances.assets.push({ isCoin: true, isSmall: true, ...assets[i] });
+      smallBalancesValue = add(
+        smallBalancesValue,
+        get(asset, 'native.balance.amount', 0)
+      );
+      smallBalances.assets.push({ isCoin: true, isSmall: true, ...asset });
     }
-  }
+  });
 
-  if (store.getState().editOptions.isCoinListEdited) {
-    if (assets.length <= amountOfShowedCoins) {
+  totalBalancesValue = add(totalBalancesValue, smallBalancesValue);
+
+  if (isCoinListEdited) {
+    if (assetsLength <= amountOfShowedCoins) {
       standardAssets = standardAssets.concat(hiddenAssets);
     } else {
       smallBalances.assets = smallBalances.assets.concat(hiddenAssets);
@@ -67,27 +86,29 @@ export const buildCoinsList = assets => {
   }
 
   const allAssets = pinnedAssets.concat(standardAssets);
+  const allAssetsLength = allAssets.length;
+  const pinnedAssetsLength = pinnedAssets.length;
   if (
-    amountOfShowedCoins > pinnedAssets.length &&
-    allAssets.length > amountOfShowedCoins
+    amountOfShowedCoins > pinnedAssetsLength &&
+    allAssetsLength > amountOfShowedCoins
   ) {
     smallBalances.assets = allAssets
       .splice(amountOfShowedCoins)
       .concat(smallBalances.assets);
   } else if (
-    amountOfShowedCoins <= pinnedAssets.length &&
-    allAssets.length >= pinnedAssets.length
+    amountOfShowedCoins <= pinnedAssetsLength &&
+    allAssetsLength >= pinnedAssetsLength
   ) {
     smallBalances.assets = allAssets
-      .splice(pinnedAssets.length)
+      .splice(pinnedAssetsLength)
       .concat(smallBalances.assets);
   }
 
   if (
     smallBalances.assets.length > 0 ||
-    (hiddenAssets.length > 0 && assets.length > amountOfShowedCoins) ||
-    (pinnedAssets.length === allAssets.length &&
-      allAssets.length > amountOfShowedCoins)
+    (hiddenAssets.length > 0 && assetsLength > amountOfShowedCoins) ||
+    (pinnedAssetsLength === allAssetsLength &&
+      allAssetsLength > amountOfShowedCoins)
   ) {
     allAssets.push({
       assetsAmount: smallBalances.assets.length,
