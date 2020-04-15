@@ -119,11 +119,11 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   const [startFocusTimeout] = useTimeout();
   const [startAnalyticsTimeout] = useTimeout();
 
-  const isClipboardValidSeedPhrase = useMemo(() => {
+  const isClipboardValidSecret = useMemo(() => {
     return clipboard !== accountAddress && validateSeed(clipboard);
   }, [accountAddress, clipboard]);
 
-  const isSeedPhraseValid = useMemo(() => {
+  const isSecretValid = useMemo(() => {
     return seedPhrase !== accountAddress && validateSeed(seedPhrase);
   }, [accountAddress, seedPhrase]);
 
@@ -162,18 +162,18 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   );
 
   const onPressImportButton = useCallback(() => {
-    if (isSeedPhraseValid && seedPhrase) {
+    if (isSecretValid && seedPhrase) {
       return ConfirmImportAlert(() => toggleImporting(true));
     }
 
-    if (isClipboardValidSeedPhrase && clipboard) {
+    if (isClipboardValidSecret && clipboard) {
       return handleSetSeedPhrase(clipboard);
     }
   }, [
     clipboard,
     handleSetSeedPhrase,
-    isClipboardValidSeedPhrase,
-    isSeedPhraseValid,
+    isClipboardValidSecret,
+    isSecretValid,
     seedPhrase,
     toggleImporting,
   ]);
@@ -246,9 +246,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
         </Centered>
         <Row align="start" justify="end">
           <ImportButton
-            disabled={
-              seedPhrase ? !isSeedPhraseValid : !isClipboardValidSeedPhrase
-            }
+            disabled={seedPhrase ? !isSecretValid : !isClipboardValidSecret}
             onPress={onPressImportButton}
             seedPhrase={seedPhrase}
           />

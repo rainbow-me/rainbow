@@ -58,7 +58,7 @@ const isValidSeedPhrase = seedPhrase => {
  * @return {Boolean}
  */
 const isValidPrivateKey = key => {
-  return key.length >= 40 && isHexStringIgnorePrefix(key);
+  return key.length >= 64 && isHexStringIgnorePrefix(key);
 };
 
 /**
