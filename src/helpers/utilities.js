@@ -370,7 +370,7 @@ export const convertRawAmountToBalance = (value, asset, buffer) => {
 export const convertAmountToBalanceDisplay = (value, asset, buffer) => {
   const decimals = get(asset, 'decimals', 18);
   const display = handleSignificantDecimals(value, decimals, buffer);
-  return `${display} ${asset.symbol}`;
+  return `${display} ${get(asset, 'symbol', '')}`;
 };
 
 /**
