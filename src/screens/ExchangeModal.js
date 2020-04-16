@@ -586,7 +586,8 @@ const ExchangeModal = ({
         nativeFieldRef &&
         nativeFieldRef.current &&
         nativeFieldRef.current.isFocused() &&
-        isNativeEmpty
+        isNativeEmpty &&
+        !isMax
       ) {
         clearForm();
       }
@@ -627,6 +628,7 @@ const ExchangeModal = ({
     inputBalance,
     inputCurrency,
     inputReserve,
+    isMax,
     nativeAmount,
     outputAmount,
     outputCurrency,
