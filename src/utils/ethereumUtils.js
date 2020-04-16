@@ -53,7 +53,7 @@ const getBalanceAmount = async (
   } else {
     amount = get(selected, 'balance.amount', 0);
   }
-  if (selected.address === 'eth') {
+  if (selected && selected.address === 'eth') {
     if (!isEmpty(selectedGasPrice)) {
       const txFeeRaw = get(selectedGasPrice, 'txFee.value.amount');
       const txFeeAmount = fromWei(txFeeRaw);
