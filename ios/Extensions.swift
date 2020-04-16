@@ -46,6 +46,7 @@ extension UIView {
     return Bundle(for: T.self).loadNibNamed(String(describing: T.self), owner: nil, options: nil)![0] as! T
   }
   
+  @discardableResult
   func animateTapStart(
     duration: TimeInterval = 0.16,
     scale: CGFloat = 0.97,
@@ -59,6 +60,7 @@ extension UIView {
     return animator
   }
   
+  @discardableResult
   func animateTapEnd(
     duration: TimeInterval = 0.16,
     pressOutDuration: TimeInterval = -1,
