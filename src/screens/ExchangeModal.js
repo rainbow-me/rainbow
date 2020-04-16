@@ -286,7 +286,7 @@ const ExchangeModal = ({
     // the max available changes(due to selectedGasPrice changing)
     const isDifferent = !isEqual(inputBalance, inputAmount);
 
-    if (isMax && isDifferent) {
+    if (inputAmount && isMax && isDifferent) {
       updateInputAmount(inputBalance, inputBalance, true, true);
     }
 
@@ -494,7 +494,6 @@ const ExchangeModal = ({
           get(inputCurrency, 'price.value'),
           true
         );
-
         updateInputAmount(
           rawUpdatedInputAmount,
           updatedInputAmountDisplay,
@@ -686,7 +685,6 @@ const ExchangeModal = ({
       type,
       value: Number(maxBalance.toString()),
     });
-
     return updateInputAmount(maxBalance, maxBalance, true, true);
   }, [
     defaultInputAsset,
@@ -829,7 +827,7 @@ const ExchangeModal = ({
       setInputAmountDisplay(
         newAmountDisplay !== undefined ? newAmountDisplay : newInputAmount
       );
-      setIsMax(newIsMax);
+      setIsMax(newInputAmount && newIsMax);
 
       if (!nativeFieldRef.current.isFocused()) {
         let newNativeAmount = null;
