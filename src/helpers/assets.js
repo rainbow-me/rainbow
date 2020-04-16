@@ -1,4 +1,5 @@
 import { compact, forEach, get, groupBy, sortBy } from 'lodash';
+import supportedNativeCurrencies from '../references/native-currencies.json';
 import { add } from './utilities';
 
 export const amountOfShowedCoins = 5;
@@ -19,6 +20,7 @@ export const buildAssetUniqueIdentifier = item => {
 
 export const buildCoinsList = (
   assets,
+  nativeCurrency,
   isCoinListEdited,
   pinnedCoins,
   hiddenCoins
@@ -57,7 +59,9 @@ export const buildCoinsList = (
         ...asset,
       });
     } else if (
-      (asset.native && asset.native.balance.amount > 1) ||
+      (asset.native &&
+        asset.native.balance.amount >
+          supportedNativeCurrencies[nativeCurrency].smallThreshold) ||
       asset.address === 'eth' ||
       isShortList
     ) {

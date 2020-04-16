@@ -240,6 +240,7 @@ const withBalanceSection = (
 ) => {
   const { assets, totalBalancesValue } = buildCoinsList(
     allAssets,
+    nativeCurrency,
     isCoinListEdited,
     pinnedCoins,
     hiddenCoins

@@ -3,12 +3,8 @@ import { isNil } from 'lodash';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
-import {
-  getIsWalletEmpty,
-  getAccountInfo,
-} from '../handlers/localstorage/accountLocal';
-import { hasEthBalance } from '../handlers/web3';
-import { useAccountSettings } from '../hooks';
+import { getAccountInfo } from '../handlers/localstorage/accountLocal';
+import { useAccountSettings, useCheckEthBalance } from '../hooks';
 import { walletInit } from '../model/wallet';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import {
@@ -31,17 +27,7 @@ export default function useInitializeWallet() {
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
 
-  const checkEthBalance = useCallback(
-    async walletAddress => {
-      try {
-        const ethBalance = await hasEthBalance(walletAddress);
-        dispatch(setIsWalletEthZero(!ethBalance));
-      } catch (error) {
-        logger.log('Error: Checking eth balance', error);
-      }
-    },
-    [dispatch]
-  );
+  const checkEthBalance = useCheckEthBalance();
 
   const { network } = useAccountSettings();
 
@@ -78,12 +64,6 @@ export default function useInitializeWallet() {
             // eslint-disable-next-line no-empty
           } catch (error) {}
         } else {
-          const isWalletEmpty = await getIsWalletEmpty(walletAddress, network);
-          if (isNil(isWalletEmpty)) {
-            checkEthBalance(walletAddress);
-          } else {
-            dispatch(setIsWalletEthZero(isWalletEmpty));
-          }
           await loadAccountData();
         }
         onHideSplashScreen();

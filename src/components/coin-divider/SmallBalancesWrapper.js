@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { View } from 'react-native';
 import React, { Fragment, PureComponent } from 'react';
 import { compose, withProps } from 'recompact';
+import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import {
   withAccountSettings,
   withOpenBalances,
@@ -67,10 +68,15 @@ export default compose(
   withOpenBalances,
   withSafeTimeout,
   withEditOptions,
-  withProps(({ assets, nativeCurrencySymbol }) => {
+  withProps(({ assets, nativeCurrency }) => {
     const balance = assets.reduce(reduceBalances, 0);
     return isNumber(balance)
-      ? { balancesSum: `${nativeCurrencySymbol}${balance.toFixed(2)}` }
+      ? {
+          balancesSum: `${convertAmountToNativeDisplay(
+            balance,
+            nativeCurrency
+          )}`,
+        }
       : {};
   })
 )(SmallBalancesWrapper);
