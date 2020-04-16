@@ -5,10 +5,11 @@ import { View } from 'react-native';
 import Animated, { Easing } from 'react-native-reanimated';
 import { setSelectedInputId } from '../../redux/selectedInput';
 import store from '../../redux/store';
-import { colors, position } from '../../styles';
+import { colors, position, fonts } from '../../styles';
 import { Button } from '../buttons';
 import { Input } from '../inputs';
 import { Column, FlexItem, Row } from '../layout';
+import { ExchangeInput } from '../exchange';
 
 const Underline = styled(View)`
   ${position.cover};
@@ -63,7 +64,7 @@ export default class UnderlineField extends PureComponent {
 
     if (
       value !== prevProps.value &&
-      (!this.input.isFocused() || this.state.wasButtonPressed)
+      (!this.input.state.isFocused || this.state.wasButtonPressed)
     ) {
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ value, wasButtonPressed: false });
@@ -91,7 +92,7 @@ export default class UnderlineField extends PureComponent {
   onChange = event => {
     const { nativeEvent } = event;
 
-    const value = this.format(nativeEvent.text).replace(',', '.');
+    const value = this.format(nativeEvent.text);
 
     if (value !== this.props.value) {
       this.setState({ value });
@@ -110,7 +111,7 @@ export default class UnderlineField extends PureComponent {
     this.setState({ isFocused: true });
 
     if (this.props.onFocus) this.props.onFocus(...props);
-    if (this.input && this.input.isFocused()) {
+    if (this.input && this.input.state.isFocused) {
       store.dispatch(setSelectedInputId(this.input));
     }
   };
@@ -139,12 +140,18 @@ export default class UnderlineField extends PureComponent {
     return (
       <Column flex={1} {...props}>
         <Row align="center" justify="space-between" style={{ marginBottom: 8 }}>
-          <FlexItem style={{ paddingRight: 8 }}>
-            <Input
+          <FlexItem
+            style={{
+              height: 34,
+              paddingRight: 8,
+            }}
+          >
+            <ExchangeInput
               autoFocus={autoFocus}
               color={colors.dark}
               keyboardType={keyboardType}
-              letterSpacing="roundedTightest"
+              letterSpacing={fonts.letterSpacing.roundedTightest}
+              mask="[099999999999999999].[999999999999999999]"
               maxLength={maxLength}
               onBlur={this.onBlur}
               onChange={this.onChange}
