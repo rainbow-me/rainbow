@@ -544,7 +544,6 @@ class RecyclerAssetList extends Component {
     let balances = {};
     let collectibles = {};
     let investments = {};
-
     let prevCollectibles = {};
 
     sections.forEach(section => {
