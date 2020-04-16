@@ -944,7 +944,7 @@ const ExchangeModal = ({
       analytics.track('Switched input asset', {
         category: isDeposit ? 'savings' : 'swap',
         defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
-        from: previousInputCurrency.symbol,
+        from: (previousInputCurrency && previousInputCurrency.symbol) || '',
         label: newInputCurrency.symbol,
         type,
       });
