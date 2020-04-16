@@ -2,7 +2,7 @@ import withViewLayoutProps from '@hocs/with-view-layout-props';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
-import { compose, onlyUpdateForKeys, withProps } from 'recompact';
+import { compose, onlyUpdateForKeys, withProps, withState } from 'recompact';
 import { withImageDimensionsCache } from '../../hoc';
 import { colors, position } from '../../styles';
 import { deviceUtils } from '../../utils';
@@ -13,6 +13,8 @@ import { OpacityToggler } from '../animations';
 
 const enhance = compose(
   withImageDimensionsCache,
+  withState('previousContainerHeight', 'setPreviousContainerHeight', 0),
+  withState('isGradientVisible', 'setIsGradientVisible', false),
   withViewLayoutProps(
     ({ width: containerWidth, height: containerHeight, y }) => ({
       containerHeight: containerHeight - y * 2,
@@ -22,36 +24,52 @@ const enhance = compose(
   withProps(({ image_preview_url, imageDimensionsCache }) => ({
     imageDimensions: imageDimensionsCache[image_preview_url],
   })),
-  withProps(({ imageDimensions }) => {
-    if (!imageDimensions) {
-      imageDimensions = { height: 512, width: 512 };
-    }
-    let width = deviceUtils.dimensions.width - 30;
-    let height = !imageDimensions
-      ? width
-      : (width * imageDimensions.height) / imageDimensions.width;
-
-    const calculatedHeight =
-      deviceUtils.dimensions.height -
-      (deviceUtils.dimensions.height < 812 ? 330 : 440);
-
-    if (height > calculatedHeight) {
-      height = calculatedHeight;
-      width = (height * imageDimensions.width) / imageDimensions.height;
-
-      if (width > deviceUtils.dimensions.width - 30) {
-        width = deviceUtils.dimensions.width - 30;
-        height = !imageDimensions
-          ? width
-          : (width * imageDimensions.height) / imageDimensions.width;
+  withProps(
+    ({
+      containerHeight,
+      imageDimensions,
+      previousContainerHeight,
+      setIsGradientVisible,
+      setPreviousContainerHeight,
+    }) => {
+      if (!imageDimensions) {
+        imageDimensions = { height: 512, width: 512 };
       }
-    }
+      let width = deviceUtils.dimensions.width - 30;
+      let height = !imageDimensions
+        ? width
+        : (width * imageDimensions.height) / imageDimensions.width;
 
-    return {
-      height,
-      width,
-    };
-  }),
+      const calculatedHeight =
+        deviceUtils.dimensions.height -
+        (deviceUtils.dimensions.height < 812 ? 330 : 440);
+
+      if (containerHeight < previousContainerHeight) {
+        setPreviousContainerHeight(containerHeight);
+        setIsGradientVisible(true);
+      } else if (containerHeight > previousContainerHeight) {
+        setPreviousContainerHeight(containerHeight);
+        setIsGradientVisible(false);
+      }
+
+      if (height > calculatedHeight) {
+        height = calculatedHeight;
+        width = (height * imageDimensions.width) / imageDimensions.height;
+
+        if (width > deviceUtils.dimensions.width - 30) {
+          width = deviceUtils.dimensions.width - 30;
+          height = !imageDimensions
+            ? width
+            : (width * imageDimensions.height) / imageDimensions.width;
+        }
+      }
+
+      return {
+        height,
+        width,
+      };
+    }
+  ),
   onlyUpdateForKeys(['containerHeight', 'containerWidth', 'height', 'width'])
 );
 
@@ -61,6 +79,7 @@ const SendAssetFormCollectible = enhance(
     containerHeight,
     containerWidth,
     height,
+    isGradientVisible,
     onLayout,
     width,
     txSpeedRenderer,
@@ -107,7 +126,7 @@ const SendAssetFormCollectible = enhance(
           {txSpeedRenderer}
         </ColumnWithMargins>
         <OpacityToggler
-          isVisible={containerHeight > 200}
+          isVisible={isGradientVisible}
           style={position.coverAsObject}
           tension={500}
         >
