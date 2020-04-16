@@ -24,9 +24,11 @@ const CoinIconFallback = fallbackProps => {
     if (address) {
       const checksummedAddress = toChecksumAddress(address);
       const potentialIconUrl = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${checksummedAddress}/logo.png`;
-      setRemoteIconUrl(potentialIconUrl);
+      if (potentialIconUrl !== remoteIconUrl) {
+        setRemoteIconUrl(potentialIconUrl);
+      }
     }
-  }, [address]);
+  }, [address, remoteIconUrl]);
 
   if (!iconNotAvailable) {
     loadRemoteIcon();
