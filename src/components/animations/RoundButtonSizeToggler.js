@@ -31,7 +31,7 @@ const RoundButtonCap = styled(Animated.View)`
   background-color: ${({ color }) => color};
 `;
 
-function runTiming(clock, value, dest, friction, tension) {
+const runTiming = (clock, value, dest, friction, tension) => {
   const state = {
     finished: new Value(1),
     position: new Value(value),
@@ -57,7 +57,7 @@ function runTiming(clock, value, dest, friction, tension) {
     spring(clock, state, config),
     state.position,
   ]);
-}
+};
 
 export default class RoundButtonSizeToggler extends PureComponent {
   static propTypes = {

@@ -45,7 +45,7 @@ const {
   Value,
 } = Animated;
 
-function runSpring(clock, value, velocity, dest, wasRunSpring = false) {
+const runSpring = (clock, value, velocity, dest, wasRunSpring = false) => {
   const state = {
     finished: new Value(0),
     position: new Value(0),
@@ -75,7 +75,7 @@ function runSpring(clock, value, velocity, dest, wasRunSpring = false) {
     cond(state.finished, [stopClock(clock), set(wasRunSpring, 1)]),
     state.position,
   ];
-}
+};
 
 export const extraStates = {
   gestureInactive: -3,

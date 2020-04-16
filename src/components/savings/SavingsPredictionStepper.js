@@ -53,11 +53,11 @@ const steps = {
 };
 /* eslint-enable sort-keys */
 
-function useStepper(max, initial = 0) {
+const useStepper = (max, initial = 0) => {
   const [step, setStep] = useState(initial);
   const nextStep = useCallback(() => setStep(p => (p + 1) % max), [max]);
   return [step, nextStep];
-}
+};
 
 const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
   const [step, nextStep] = useStepper(Object.keys(steps).length, 1);

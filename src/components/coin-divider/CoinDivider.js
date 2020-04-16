@@ -33,7 +33,7 @@ const {
 
 const CoinDividerHeight = 30;
 
-function runTiming(clock, value, dest) {
+const runTiming = (clock, value, dest) => {
   const state = {
     finished: new Value(1),
     position: new Value(value),
@@ -59,7 +59,7 @@ function runTiming(clock, value, dest) {
     spring(clock, state, config),
     state.position,
   ]);
-}
+};
 
 export default class CoinDivider extends PureComponent {
   static propTypes = {

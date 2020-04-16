@@ -17,7 +17,7 @@ const {
   Value,
 } = Animated;
 
-function runTiming(clock, value, dest, friction, tension) {
+const runTiming = (clock, value, dest, friction, tension) => {
   const state = {
     finished: new Value(1),
     position: new Value(value),
@@ -43,7 +43,7 @@ function runTiming(clock, value, dest, friction, tension) {
     spring(clock, state, config),
     state.position,
   ]);
-}
+};
 
 export default class OpacityToggler extends Component {
   static propTypes = {
