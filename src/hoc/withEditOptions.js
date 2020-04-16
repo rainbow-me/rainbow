@@ -1,6 +1,5 @@
 import { connect } from 'react-redux';
 import {
-  clearSelectedCoins,
   pushSelectedCoin,
   removeSelectedCoin,
   setHiddenCoins,
@@ -10,7 +9,6 @@ import {
 
 export default Component =>
   connect(() => ({}), {
-    clearSelectedCoins,
     pushSelectedCoin,
     removeSelectedCoin,
     setHiddenCoins,

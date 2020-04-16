@@ -1,6 +1,5 @@
 import { useSelector } from 'react-redux';
 import {
-  clearSelectedCoins,
   pushSelectedCoin,
   removeSelectedCoin,
   setHiddenCoins,
@@ -26,7 +25,6 @@ export default function useCoinListEditOptions() {
   );
 
   return {
-    clearSelectedCoins,
     pushSelectedCoin,
     removeSelectedCoin,
     setHiddenCoins,

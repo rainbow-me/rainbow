@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { isEmpty, union, without, difference } from 'lodash';
+import { concat, difference, filter, isEmpty, union, without } from 'lodash';
 import EditOptions from '../helpers/editOptionTypes';
 import {
   getHiddenCoins,
@@ -13,14 +13,10 @@ const COIN_LIST_OPTIONS_LOAD_SUCCESS =
   'editOptions/COIN_LIST_OPTIONS_LOAD_SUCCESS';
 const COIN_LIST_OPTIONS_LOAD_FAILURE =
   'editOptions/COIN_LIST_OPTIONS_LOAD_FAILURE';
-
 const SET_IS_COIN_LIST_EDITED = 'editOptions/SET_IS_COIN_LIST_EDITED';
 const SET_PINNED_COINS = 'editOptions/SET_PINNED_COINS';
 const SET_HIDDEN_COINS = 'editOptions/SET_HIDDEN_COINS';
-const CLEAR_SELECTED_COINS = 'editOptions/CLEAR_SELECTED_COINS';
-const PUSH_SELECTED_COIN = 'editOptions/PUSH_SELECTED_COIN';
-const REMOVE_SELECTED_COIN = 'editOptions/REMOVE_SELECTED_COIN';
-const CLEAR_COINS = 'editOptions/CLEAR_COINS';
+const UPDATE_SELECTED_COIN = 'editOptions/UPDATE_SELECTED_COIN';
 
 // -- Actions --------------------------------------------------------------- //
 export const coinListLoadState = () => async (dispatch, getState) => {
@@ -43,58 +39,135 @@ export const coinListLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const setIsCoinListEdited = payload => dispatch => {
+export const setIsCoinListEdited = newIsCoinListEdited => (
+  dispatch,
+  getState
+) => {
+  const { currentAction, selectedCoins } = getState().editOptions;
+
   dispatch({
-    payload,
+    payload: {
+      currentAction: !newIsCoinListEdited ? EditOptions.none : currentAction,
+      isCoinListEdited: newIsCoinListEdited,
+      selectedCoins: !newIsCoinListEdited ? [] : selectedCoins,
+    },
     type: SET_IS_COIN_LIST_EDITED,
   });
 };
 
-export const clearSelectedCoins = payload => dispatch => {
-  dispatch({
-    payload,
-    type: CLEAR_SELECTED_COINS,
-  });
+export const pushSelectedCoin = selectedCoin => (dispatch, getState) => {
+  const { selectedCoins } = getState().editOptions;
+  const updatedSelectedCoins = concat(selectedCoins, selectedCoin);
+  dispatch(updateCurrentAction(updatedSelectedCoins));
 };
 
-export const pushSelectedCoin = payload => dispatch => {
-  dispatch({
-    payload,
-    type: PUSH_SELECTED_COIN,
-  });
+export const removeSelectedCoin = selectedCoin => (dispatch, getState) => {
+  const { selectedCoins } = getState().editOptions;
+  const updatedSelectedCoins = filter(
+    selectedCoins,
+    coin => coin !== selectedCoin
+  );
+  dispatch(updateCurrentAction(updatedSelectedCoins));
 };
 
-export const removeSelectedCoin = payload => dispatch => {
+const updateCurrentAction = newSelectedCoins => (dispatch, getState) => {
+  const { currentAction, hiddenCoins, pinnedCoins } = getState().editOptions;
+  const newSelectedCoinsLength = newSelectedCoins.length;
+  let newCurrentAction = currentAction;
+
+  if (newSelectedCoinsLength === 0) {
+    newCurrentAction = EditOptions.none;
+  } else if (
+    newSelectedCoinsLength > 0 &&
+    difference(hiddenCoins, newSelectedCoins).length ===
+      hiddenCoins.length - newSelectedCoinsLength
+  ) {
+    newCurrentAction = EditOptions.unhide;
+  } else if (
+    newSelectedCoinsLength > 0 &&
+    difference(pinnedCoins, newSelectedCoins).length ===
+      pinnedCoins.length - newSelectedCoinsLength
+  ) {
+    newCurrentAction = EditOptions.unpin;
+  } else {
+    newCurrentAction = EditOptions.standard;
+  }
   dispatch({
-    payload,
-    type: REMOVE_SELECTED_COIN,
+    payload: {
+      currentAction: newCurrentAction,
+      selectedCoins: newSelectedCoins,
+    },
+    type: UPDATE_SELECTED_COIN,
   });
 };
 
 export const setPinnedCoins = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
+  const {
+    currentAction,
+    hiddenCoins,
+    pinnedCoins,
+    recentlyPinnedCount,
+    selectedCoins,
+  } = getState().editOptions;
+  let updatedHiddenCoins = hiddenCoins;
+  let updatedPinnedCoins = pinnedCoins;
+
+  if (
+    currentAction === EditOptions.standard ||
+    currentAction === EditOptions.unhide
+  ) {
+    updatedHiddenCoins = without(hiddenCoins, ...selectedCoins);
+    saveHiddenCoins(updatedHiddenCoins, accountAddress, network);
+    updatedPinnedCoins = union(selectedCoins, pinnedCoins);
+  } else if (currentAction === EditOptions.unpin) {
+    updatedPinnedCoins = without(pinnedCoins, ...selectedCoins);
+  }
+  savePinnedCoins(updatedPinnedCoins, accountAddress, network);
+
   dispatch({
-    accountAddress,
-    network,
+    payload: {
+      currentAction: EditOptions.none,
+      hiddenCoins: updatedHiddenCoins,
+      pinnedCoins: updatedPinnedCoins,
+      recentlyPinnedCount: recentlyPinnedCount + 1,
+      selectedCoins: [],
+    },
     type: SET_PINNED_COINS,
   });
 };
 
 export const setHiddenCoins = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
+  const {
+    currentAction,
+    hiddenCoins,
+    pinnedCoins,
+    recentlyPinnedCount,
+    selectedCoins,
+  } = getState().editOptions;
+  let updatedPinnedCoins = pinnedCoins;
+  let updatedHiddenCoins = hiddenCoins;
+  if (
+    currentAction === EditOptions.standard ||
+    currentAction === EditOptions.unpin
+  ) {
+    updatedPinnedCoins = without(pinnedCoins, ...selectedCoins);
+    savePinnedCoins(updatedPinnedCoins, accountAddress, network);
+    updatedHiddenCoins = union(selectedCoins, hiddenCoins);
+  } else if (currentAction === EditOptions.unhide) {
+    updatedHiddenCoins = without(hiddenCoins, ...selectedCoins);
+  }
+  saveHiddenCoins(updatedHiddenCoins, accountAddress, network);
   dispatch({
-    accountAddress,
-    network,
+    payload: {
+      currentAction: EditOptions.none,
+      hiddenCoins: updatedHiddenCoins,
+      pinnedCoins: updatedPinnedCoins,
+      recentlyPinnedCount: recentlyPinnedCount + 1,
+      selectedCoins: [],
+    },
     type: SET_HIDDEN_COINS,
-  });
-};
-
-export const clearHiddenAndPinnedCoins = () => (dispatch, getState) => {
-  const { accountAddress, network } = getState().settings;
-  dispatch({
-    accountAddress,
-    network,
-    type: CLEAR_COINS,
   });
 };
 
@@ -108,95 +181,29 @@ const INITIAL_STATE = {
   selectedCoins: [],
 };
 
-// GOT TO CLEAN THAT ONE UP FROM REDUNDANT CODE
 export default (state = INITIAL_STATE, action) =>
   produce(state, draft => {
     if (action.type === COIN_LIST_OPTIONS_LOAD_SUCCESS) {
       draft.pinnedCoins = action.payload.pinnedCoins;
       draft.hiddenCoins = action.payload.hiddenCoins;
     } else if (action.type === SET_IS_COIN_LIST_EDITED) {
-      draft.isCoinListEdited = action.payload;
-      if (!draft.isCoinListEdited) {
-        draft.currentAction = EditOptions.none;
-        draft.selectedCoins = [];
-      }
-    } else if (action.type === CLEAR_SELECTED_COINS) {
-      draft.selectedCoins = [];
-    } else if (
-      action.type === PUSH_SELECTED_COIN ||
-      action.type === REMOVE_SELECTED_COIN
-    ) {
-      if (action.type === PUSH_SELECTED_COIN) {
-        draft.selectedCoins.push(action.payload);
-      }
-
-      if (action.type === REMOVE_SELECTED_COIN) {
-        draft.selectedCoins.splice(
-          draft.selectedCoins.indexOf(action.payload),
-          1
-        );
-      }
-      if (draft.selectedCoins.length == 0) {
-        draft.currentAction = EditOptions.none;
-      } else if (
-        draft.selectedCoins.length > 0 &&
-        difference(draft.hiddenCoins, draft.selectedCoins).length ===
-          draft.hiddenCoins.length - draft.selectedCoins.length
-      ) {
-        draft.currentAction = EditOptions.unhide;
-      } else if (
-        draft.selectedCoins.length > 0 &&
-        difference(draft.pinnedCoins, draft.selectedCoins).length ===
-          draft.pinnedCoins.length - draft.selectedCoins.length
-      ) {
-        draft.currentAction = EditOptions.unpin;
-      } else {
-        draft.currentAction = EditOptions.standard;
-      }
+      draft.currentAction = action.payload.currentAction;
+      draft.isCoinListEdited = action.payload.isCoinListEdited;
+      draft.selectedCoins = action.payload.selectedCoins;
+    } else if (action.type === UPDATE_SELECTED_COIN) {
+      draft.selectedCoins = action.payload.selectedCoins;
+      draft.currentAction = action.payload.currentAction;
     } else if (action.type === SET_PINNED_COINS) {
-      if (
-        draft.currentAction === EditOptions.standard ||
-        draft.currentAction === EditOptions.unhide
-      ) {
-        draft.hiddenCoins = without(draft.hiddenCoins, ...draft.selectedCoins);
-        saveHiddenCoins(
-          draft.hiddenCoins,
-          action.accountAddress,
-          action.network
-        );
-        draft.pinnedCoins = union(draft.selectedCoins, draft.pinnedCoins);
-      } else if (draft.currentAction === EditOptions.unpin) {
-        draft.pinnedCoins = without(draft.pinnedCoins, ...draft.selectedCoins);
-      }
-      draft.currentAction = EditOptions.standard;
-      savePinnedCoins(draft.pinnedCoins, action.accountAddress, action.network);
-      draft.selectedCoins = [];
-      draft.currentAction = EditOptions.none;
-      draft.recentlyPinnedCount++;
+      draft.currentAction = action.payload.currentAction;
+      draft.hiddenCoins = action.payload.hiddenCoins;
+      draft.pinnedCoins = action.payload.pinnedCoins;
+      draft.recentlyPinnedCount = action.payload.recentlyPinnedCount;
+      draft.selectedCoins = action.payload.selectedCoins;
     } else if (action.type === SET_HIDDEN_COINS) {
-      if (
-        draft.currentAction === EditOptions.standard ||
-        draft.currentAction === EditOptions.unpin
-      ) {
-        draft.pinnedCoins = without(draft.pinnedCoins, ...draft.selectedCoins);
-        savePinnedCoins(
-          draft.pinnedCoins,
-          action.accountAddress,
-          action.network
-        );
-        draft.hiddenCoins = union(draft.selectedCoins, draft.hiddenCoins);
-      } else if (draft.currentAction === EditOptions.unhide) {
-        draft.hiddenCoins = without(draft.hiddenCoins, ...draft.selectedCoins);
-      }
-      draft.currentAction = EditOptions.standard;
-      saveHiddenCoins(draft.hiddenCoins, action.accountAddress, action.network);
-      draft.selectedCoins = [];
-      draft.currentAction = EditOptions.none;
-      draft.recentlyPinnedCount++;
-    } else if (action.type === CLEAR_COINS) {
-      draft.selectedCoins = [];
-      draft.hiddenCoins = [];
-      draft.pinnedCoins = [];
-      draft.isCoinListEdited = false;
+      draft.currentAction = action.payload.currentAction;
+      draft.hiddenCoins = action.payload.hiddenCoins;
+      draft.pinnedCoins = action.payload.pinnedCoins;
+      draft.recentlyPinnedCount = action.payload.recentlyPinnedCount;
+      draft.selectedCoins = action.payload.selectedCoins;
     }
   });
