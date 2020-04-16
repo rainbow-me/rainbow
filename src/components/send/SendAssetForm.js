@@ -11,7 +11,7 @@ import { SendCoinRow } from '../coin-row';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
 import SendSavingsCoinRow from '../coin-row/SendSavingsCoinRow';
 import { Icon } from '../icons';
-import { Column, ColumnWithMargins } from '../layout';
+import { Column } from '../layout';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
 
@@ -92,19 +92,12 @@ const SendAssetForm = ({
             <SendAssetFormToken
               {...props}
               assetAmount={assetAmount}
+              buttonRenderer={buttonRenderer}
               nativeAmount={nativeAmount}
               sendMaxBalance={sendMaxBalance}
               selected={selected}
+              txSpeedRenderer={txSpeedRenderer}
             />
-            <ColumnWithMargins
-              flex={0}
-              margin={deviceUtils.dimensions.height < 812 ? 15.5 : 31}
-              style={{ zIndex: 3 }}
-              width="100%"
-            >
-              {buttonRenderer}
-              {txSpeedRenderer}
-            </ColumnWithMargins>
           </>
         )}
       </TransactionContainer>

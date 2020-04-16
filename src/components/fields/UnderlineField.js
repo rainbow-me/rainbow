@@ -64,7 +64,7 @@ export default class UnderlineField extends PureComponent {
 
     if (
       value !== prevProps.value &&
-      (!this.input.state.isFocused || this.state.wasButtonPressed)
+      (!this.input.isFocused() || this.state.wasButtonPressed)
     ) {
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ value, wasButtonPressed: false });
@@ -111,7 +111,7 @@ export default class UnderlineField extends PureComponent {
     this.setState({ isFocused: true });
 
     if (this.props.onFocus) this.props.onFocus(...props);
-    if (this.input && this.input.state.isFocused) {
+    if (this.input && this.input.isFocused()) {
       store.dispatch(setSelectedInputId(this.input));
     }
   };
@@ -157,10 +157,10 @@ export default class UnderlineField extends PureComponent {
               onChange={this.onChange}
               onFocus={this.onFocus}
               placeholder={placeholder}
-              ref={this.handleRef}
-              size="h3"
+              refInput={this.handleRef}
+              size={fonts.size.h3}
               value={this.format(String(this.state.value || ''))}
-              weight="medium"
+              weight={fonts.weight.medium}
             />
           </FlexItem>
           {showFieldButton && (
