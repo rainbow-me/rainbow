@@ -28,7 +28,7 @@ const convertProgress = proc(progress =>
   divide(multiply(360, min(100, max(0, progress))), 100)
 );
 
-function polarToCartesian(center, radius, angleInDegrees) {
+const polarToCartesian = (center, radius, angleInDegrees) => {
   const angleInRadians = divide(
     multiply(sub(angleInDegrees, 90), Math.PI),
     180
@@ -38,9 +38,9 @@ function polarToCartesian(center, radius, angleInDegrees) {
     x: concat(add(center, multiply(radius, cos(angleInRadians)))),
     y: concat(add(center, multiply(radius, sin(angleInRadians)))),
   };
-}
+};
 
-function circlePath(center, radius, startAngle, endAngle) {
+const circlePath = (center, radius, startAngle, endAngle) => {
   const start = polarToCartesian(center, radius, multiply(endAngle, 0.9999));
   const end = polarToCartesian(center, radius, startAngle);
   const largeArcFlag = cond(lessOrEq(sub(endAngle, startAngle), 180), 0, 1);
@@ -61,7 +61,7 @@ function circlePath(center, radius, startAngle, endAngle) {
 
   const pathWithSpaces = path.reduce((arr, p) => [...arr, p, ' '], []);
   return concat(...pathWithSpaces);
-}
+};
 
 const ProgressIcon = ({
   color,

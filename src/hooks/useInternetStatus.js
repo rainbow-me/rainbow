@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 export default function useInternetStatus() {
   const [isInternetReachable, setIsInternetReachable] = useState(true);
 
-  function onChange(newState) {
+  const onChange = newState => {
     const { isInternetReachable: newIsInternetReachable } = newState;
     if (!isNil(newIsInternetReachable)) {
       setIsInternetReachable(newIsInternetReachable);
@@ -16,7 +16,7 @@ export default function useInternetStatus() {
         analytics.track('Offline / lost connection');
       }
     }
-  }
+  };
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(onChange);
