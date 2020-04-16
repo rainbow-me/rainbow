@@ -48,7 +48,7 @@ const getBalanceAmount = async (
   accountAddress = null
 ) => {
   let amount = '';
-  if (onchain) {
+  if (onchain && selected && selected.address) {
     amount = await getOnChainBalance(selected, accountAddress);
   } else {
     amount = get(selected, 'balance.amount', 0);
