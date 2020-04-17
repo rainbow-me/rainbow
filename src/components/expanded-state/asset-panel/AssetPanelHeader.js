@@ -2,12 +2,11 @@ import { includes } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
-import { compose, withProps } from 'recompact';
+import { useDispatch } from 'react-redux';
+import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import { withShowcaseTokens } from '../../../hoc';
+import { useShowcaseTokens } from '../../../hooks';
 import { setOpenFamilyTabs } from '../../../redux/openStateSettings';
-import store from '../../../redux/store';
-import { uniqueTokensRefreshState } from '../../../redux/uniqueTokens';
 import { colors, padding } from '../../../styles';
 import ContextMenu from '../../ContextMenu';
 import { ColumnWithMargins, Row, Column } from '../../layout';
@@ -49,72 +48,80 @@ const AssetPanelHeader = ({
   priceLabel,
   subtitle,
   title,
-  showcaseTokens,
-  pushShowcaseToken,
-  popShowcaseToken,
   navigation,
-}) => (
-  <Container>
-    <Row style={{ justifyContent: 'space-between' }}>
-      <ColumnWithMargins flex={1} margin={3}>
-        <HeaderRow>
-          <Title
-            paddingRight={price ? FloatingPanel.padding.x * 1.25 : 0}
-            weight="bold"
-          >
-            {title}
-          </Title>
-          {price && (
-            <Price align="right" letterSpacing="roundedTight" weight="semibold">
-              {price}
-            </Price>
-          )}
-        </HeaderRow>
-        <HeaderRow style={{ opacity: 0.5 }}>
-          <Subtitle>{subtitle}</Subtitle>
-          {price && (
-            <Subtitle align="right">{priceLabel || 'Current Price'}</Subtitle>
-          )}
-        </HeaderRow>
-      </ColumnWithMargins>
-      {asset ? (
-        <ContextMenu
-          css={padding(10, 0)}
-          destructiveButtonIndex={includes(showcaseTokens, asset.uniqueId) && 0}
-          onPressActionSheet={index => {
-            if (index === 0) {
-              if (includes(showcaseTokens, asset.uniqueId)) {
-                popShowcaseToken(asset.uniqueId);
-              } else {
-                pushShowcaseToken(asset.uniqueId);
-              }
-              store.dispatch(uniqueTokensRefreshState());
-              store.dispatch(
-                setOpenFamilyTabs({ index: 'Showcase', state: true })
-              );
-              if (navigation) {
-                navigation.pop();
-              }
-              LayoutAnimation.configureNext({
-                duration: 200,
-                update: {
-                  initialVelocity: 0,
-                  springDamping: 1,
-                  type: LayoutAnimation.Types.spring,
-                },
-              });
+}) => {
+  const dispatch = useDispatch();
+  const {
+    popShowcaseToken,
+    pushShowcaseToken,
+    showcaseTokens,
+  } = useShowcaseTokens();
+  return (
+    <Container>
+      <Row style={{ justifyContent: 'space-between' }}>
+        <ColumnWithMargins flex={1} margin={3}>
+          <HeaderRow>
+            <Title
+              paddingRight={price ? FloatingPanel.padding.x * 1.25 : 0}
+              weight="bold"
+            >
+              {title}
+            </Title>
+            {price && (
+              <Price
+                align="right"
+                letterSpacing="roundedTight"
+                weight="semibold"
+              >
+                {price}
+              </Price>
+            )}
+          </HeaderRow>
+          <HeaderRow style={{ opacity: 0.5 }}>
+            <Subtitle>{subtitle}</Subtitle>
+            {price && (
+              <Subtitle align="right">{priceLabel || 'Current Price'}</Subtitle>
+            )}
+          </HeaderRow>
+        </ColumnWithMargins>
+        {asset ? (
+          <ContextMenu
+            css={padding(10, 0)}
+            destructiveButtonIndex={
+              includes(showcaseTokens, asset.uniqueId) && 0
             }
-          }}
-          options={
-            includes(showcaseTokens, asset.uniqueId)
-              ? ['Remove from Showcase', 'Cancel']
-              : ['Add to Showcase', 'Cancel']
-          }
-        />
-      ) : null}
-    </Row>
-  </Container>
-);
+            onPressActionSheet={index => {
+              if (index === 0) {
+                if (includes(showcaseTokens, asset.uniqueId)) {
+                  dispatch(popShowcaseToken(asset.uniqueId));
+                } else {
+                  dispatch(pushShowcaseToken(asset.uniqueId));
+                }
+                dispatch(setOpenFamilyTabs({ index: 'Showcase', state: true }));
+                if (navigation) {
+                  navigation.pop();
+                }
+                LayoutAnimation.configureNext({
+                  duration: 200,
+                  update: {
+                    initialVelocity: 0,
+                    springDamping: 1,
+                    type: LayoutAnimation.Types.spring,
+                  },
+                });
+              }
+            }}
+            options={
+              includes(showcaseTokens, asset.uniqueId)
+                ? ['Remove from Showcase', 'Cancel']
+                : ['Add to Showcase', 'Cancel']
+            }
+          />
+        ) : null}
+      </Row>
+    </Container>
+  );
+};
 
 AssetPanelHeader.propTypes = {
   price: PropTypes.string,
@@ -123,4 +130,4 @@ AssetPanelHeader.propTypes = {
   title: PropTypes.string,
 };
 
-export default compose(withShowcaseTokens)(AssetPanelHeader);
+export default AssetPanelHeader;

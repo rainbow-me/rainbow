@@ -410,7 +410,6 @@ export const saveAccountInfo = (profileInfo, accountAddress, network) =>
  * @desc remove profile info
  * @param  {String}   [address]
  * @param  {String}   [network]
- * @return {Object}
  */
 export const removeAccountInfo = (accountAddress, network) =>
   removeAccountLocal(ACCOUNT_INFO, accountAddress, network);
@@ -452,16 +451,16 @@ export const saveHiddenCoins = (hiddenCoins, accountAddress, network) =>
   saveAccountLocal(HIDDEN_COINS, hiddenCoins, accountAddress, network);
 
 /**
- * @desc get profile info
+ * @desc get showcase tokens
  * @param  {String}   [address]
  * @param  {String}   [network]
- * @return {Object}
+ * @return {Afray}
  */
 export const getShowcaseTokens = (accountAddress, network) =>
-  getAccountLocal(SHOWCASE_TOKENS, accountAddress, network, {});
+  getAccountLocal(SHOWCASE_TOKENS, accountAddress, network, []);
 
 /**
- * @desc save profile info
+ * @desc save showcase tokens
  * @param  {String}   [address]
  * @param  {Array}    [Showcase tokens]
  * @param  {String}   [network]
@@ -470,10 +469,9 @@ export const saveShowcaseTokens = (showcaseTokens, accountAddress, network) =>
   saveAccountLocal(SHOWCASE_TOKENS, showcaseTokens, accountAddress, network);
 
 /**
- * @desc remove profile info
+ * @desc remove showcase tokens
  * @param  {String}   [address]
  * @param  {String}   [network]
- * @return {Object}
  */
 export const removeShowcaseTokens = (accountAddress, network) =>
   removeAccountLocal(SHOWCASE_TOKENS, accountAddress, network);

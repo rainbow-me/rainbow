@@ -29,7 +29,6 @@ export { default as withRotationForDirection } from './withRotationForDirection'
 export { default as withSafeAreaViewInsetValues } from './withSafeAreaViewInsetValues';
 export { default as withSelectedInput } from './withSelectedInput';
 export { default as withSendFeedback } from './withSendFeedback';
-export { default as withShowcaseTokens } from './withShowcaseTokens';
 export { default as withStatusBarStyle } from './withStatusBarStyle';
 export { default as withTransactionConfirmationScreen } from './withTransactionConfirmationScreen';
 export { default as withTransitionProps } from './withTransitionProps';
