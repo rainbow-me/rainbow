@@ -98,7 +98,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     if let senderView = sender.view {
       senderView.becomeFirstResponder()
       
-      let copyMenuItem = UIMenuItem(title: "Copy Address", action: #selector(onCopyTooltipPressed))
+      let copyMenuItem = UIMenuItem(title: "Copy", action: #selector(onCopyTooltipPressed))
       UIMenuController.shared.menuItems = [copyMenuItem]
       UIMenuController.shared.setTargetRect(senderView.frame, in: header)
       UIMenuController.shared.setMenuVisible(true, animated: true)
@@ -208,8 +208,8 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     
     header.copyAddress.titleLabel?.addCharacterSpacing(kernValue: 0.5)
     header.receive.titleLabel?.addCharacterSpacing(kernValue: 0.5)
-    header.addCashLabel.titleLabel?.addCharacterSpacing(kernValue: 0.4)
     header.addCashLabel.titleLabel?.textAlignment = .center
+    header.addCashLabel.titleLabel?.addCharacterSpacing(kernValue: 0.4)
     
     let secondShadowLayer = CAShapeLayer()
     let radius = header.accountBackground.frame.width / 2.0
@@ -248,7 +248,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   }
   
   func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-    return 56
+    return 57
   }
   
   func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {

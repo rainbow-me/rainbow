@@ -74,7 +74,7 @@ const OuterGradient = withProps({
 
 const AddCashButton = ({ onPress }) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={0.9} zIndex={-1}>
-    <Row css={margin(15, 15, 30)} flex={0}>
+    <Row css={margin(16, 15, 30)} flex={0}>
       <Centered {...position.coverAsObject}>
         <FastImage
           resizeMode={FastImage.resizeMode.contain}
@@ -84,14 +84,13 @@ const AddCashButton = ({ onPress }) => (
       </Centered>
       <OuterGradient>
         <InnerGradient>
-          <RowWithMargins align="center" margin={-3} style={sx.content}>
+          <RowWithMargins align="center" margin={-2.5} style={sx.content}>
             <FastImage
               resizeMode={FastImage.resizeMode.contain}
               source={AddCashIconSource}
               style={sx.icon}
             />
             <Text
-              align="center"
               color="white"
               letterSpacing="roundedTight"
               size="larger"

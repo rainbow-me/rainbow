@@ -202,7 +202,7 @@ extension CALayer {
         let endRadius = frame.width
         let center = CGPoint(x: bounds.size.width, y: bounds.size.height / 2)
         let locations = [CGFloat(0), CGFloat(0.635483871), CGFloat(1)]
-        let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors, locations: locations)
+        let gradient = CGGradient(colorsSpace: nil, colors: colors, locations: locations)
         let context = UIGraphicsGetCurrentContext()
         let options: CGGradientDrawingOptions = [.drawsBeforeStartLocation, .drawsAfterEndLocation]
 
