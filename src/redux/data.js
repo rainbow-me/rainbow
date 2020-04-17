@@ -12,6 +12,7 @@ import {
   property,
   remove,
   uniqBy,
+  values,
 } from 'lodash';
 import { uniswapClient } from '../apollo/client';
 import {
@@ -209,7 +210,8 @@ export const addressAssetsReceived = (
   const { tokenOverrides } = getState().data;
   const { accountAddress, network } = getState().settings;
   const { uniqueTokens } = getState().uniqueTokens;
-  const assets = get(message, 'payload.assets', []);
+  const payload = get(message, 'payload.assets', {});
+  const assets = values(payload);
   const liquidityTokens = remove(assets, asset => {
     const symbol = get(asset, 'asset.symbol', '');
     return symbol === 'UNI' || symbol === 'uni-v1';
