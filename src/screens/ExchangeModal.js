@@ -37,7 +37,6 @@ import {
   convertRawAmountToDecimalFormat,
   divide,
   greaterThanOrEqualTo,
-  isEqual,
   isZero,
   multiply,
   updatePrecisionToDisplay,
@@ -135,6 +134,7 @@ const ExchangeModal = ({
   const { web3ListenerInit, web3ListenerStop } = useBlockPolling();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const { accountAddress, chainId, nativeCurrency } = useAccountSettings();
+  const prevSelectedGasPrice = usePrevious(selectedGasPrice);
 
   const defaultInputAddress = get(defaultInputAsset, 'address');
   let defaultInputItemInWallet = ethereumUtils.getAsset(
@@ -245,6 +245,17 @@ const ExchangeModal = ({
     updateGasLimit,
   ]);
 
+  const updateInputBalance = useCallback(async () => {
+    // Update current balance
+    const inputBalance = await ethereumUtils.getBalanceAmount(
+      selectedGasPrice,
+      inputCurrency,
+      true,
+      accountAddress
+    );
+    setInputBalance(inputBalance);
+  }, [accountAddress, inputCurrency, selectedGasPrice]);
+
   useEffect(() => {
     dispatch(
       gasUpdateDefaultGasLimit(
@@ -257,7 +268,6 @@ const ExchangeModal = ({
     );
     dispatch(gasPricesStartPolling());
     dispatch(web3ListenerInit());
-
     return () => {
       dispatch(uniswapClearCurrenciesAndReserves());
       dispatch(gasPricesStopPolling());
@@ -266,40 +276,28 @@ const ExchangeModal = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Recalculate balance when gas price changes
   useEffect(() => {
-    const updateInputBalance = async () => {
-      // Update current balance
-      const newInputBalance = await ethereumUtils.getBalanceAmount(
-        selectedGasPrice,
-        inputCurrency,
-        true,
-        accountAddress
-      );
-      InteractionManager.runAfterInteractions(() => {
-        if (!isEqual(inputBalance, newInputBalance)) {
-          setInputBalance(newInputBalance);
-        }
-      });
-    };
+    if (
+      inputCurrency.address === 'eth' &&
+      get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
+        get(selectedGasPrice, 'txFee.value.amount', 0)
+    ) {
+      updateInputBalance();
+    }
+  }, [
+    inputCurrency.address,
+    prevSelectedGasPrice,
+    selectedGasPrice,
+    updateInputBalance,
+  ]);
 
-    // we should recalculate the input amount value every time
-    // the max available changes(due to selectedGasPrice changing)
-    const isDifferent = !isEqual(inputBalance, inputAmount);
-
-    if (isMax && isDifferent) {
+  // Update input max is set and the balance changed
+  useEffect(() => {
+    if (isMax) {
       updateInputAmount(inputBalance, inputBalance, true, true);
     }
-
-    updateInputBalance();
-  }, [
-    accountAddress,
-    inputAmount,
-    inputBalance,
-    inputCurrency,
-    isMax,
-    selectedGasPrice,
-    updateInputAmount,
-  ]);
+  }, [inputBalance, isMax, updateInputAmount]);
 
   const inputCurrencyUniqueId = get(inputCurrency, 'uniqueId');
   const outputCurrencyUniqueId = get(outputCurrency, 'uniqueId');
@@ -494,7 +492,6 @@ const ExchangeModal = ({
           get(inputCurrency, 'price.value'),
           true
         );
-
         updateInputAmount(
           rawUpdatedInputAmount,
           updatedInputAmountDisplay,
@@ -587,7 +584,8 @@ const ExchangeModal = ({
         nativeFieldRef &&
         nativeFieldRef.current &&
         nativeFieldRef.current.isFocused() &&
-        isNativeEmpty
+        isNativeEmpty &&
+        !isMax
       ) {
         clearForm();
       }
@@ -628,6 +626,7 @@ const ExchangeModal = ({
     inputBalance,
     inputCurrency,
     inputReserve,
+    isMax,
     nativeAmount,
     outputAmount,
     outputCurrency,
@@ -679,14 +678,12 @@ const ExchangeModal = ({
     } else {
       maxBalance = inputBalance;
     }
-
     analytics.track('Selected max balance', {
       category: isDeposit || isWithdrawal ? 'savings' : 'swap',
       defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
       type,
       value: Number(maxBalance.toString()),
     });
-
     return updateInputAmount(maxBalance, maxBalance, true, true);
   }, [
     defaultInputAsset,
@@ -829,9 +826,9 @@ const ExchangeModal = ({
       setInputAmountDisplay(
         newAmountDisplay !== undefined ? newAmountDisplay : newInputAmount
       );
-      setIsMax(newIsMax);
+      setIsMax(newInputAmount && newIsMax);
 
-      if (!nativeFieldRef.current.isFocused()) {
+      if (!nativeFieldRef.current.isFocused() || newIsMax) {
         let newNativeAmount = null;
 
         const isInputZero = isZero(newInputAmount);
@@ -944,7 +941,7 @@ const ExchangeModal = ({
       analytics.track('Switched input asset', {
         category: isDeposit ? 'savings' : 'swap',
         defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
-        from: previousInputCurrency.symbol,
+        from: (previousInputCurrency && previousInputCurrency.symbol) || '',
         label: newInputCurrency.symbol,
         type,
       });

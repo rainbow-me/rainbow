@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import { get, toLower } from 'lodash';
 import {
   greaterThan,
@@ -9,7 +10,7 @@ import transactionTypes from '../../helpers/transactionTypes';
 import store from '../../redux/store';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
-import { contractUtils, gasUtils, logger } from '../../utils';
+import { AllowancesCache, contractUtils, gasUtils, logger } from '../../utils';
 
 const NOOP = () => undefined;
 
@@ -42,6 +43,10 @@ const unlock = async (wallet, currentRap, index, parameters) => {
     get(fastGasPrice, 'value.amount'),
     wallet
   );
+  // Cache the approved value
+  AllowancesCache.cache[
+    `${wallet.address}|${assetToUnlock}|${contractAddress}`
+  ] = ethers.constants.MaxUint256;
 
   // update rap for hash
   currentRap.actions[index].transaction.hash = approval.hash;
@@ -102,11 +107,29 @@ export const assetNeedsUnlocking = async (
   if (isInputEth) {
     return false;
   }
-  const allowance = await contractUtils.getAllowance(
-    accountAddress,
-    assetToUnlock,
-    contractAddress
-  );
+
+  let allowance;
+  // Check on cache first
+  if (
+    AllowancesCache.cache[
+      `${accountAddress}|${assetToUnlock}|${contractAddress}`
+    ]
+  ) {
+    allowance =
+      AllowancesCache.cache[
+        `${accountAddress}|${assetToUnlock}|${contractAddress}`
+      ];
+  } else {
+    allowance = await contractUtils.getAllowance(
+      accountAddress,
+      assetToUnlock,
+      contractAddress
+    );
+    // Cache that value
+    AllowancesCache.cache[
+      `${accountAddress}|${assetToUnlock}|${contractAddress}`
+    ] = allowance;
+  }
 
   const rawAmount = convertAmountToRawAmount(amount, assetToUnlock.decimals);
   return !greaterThan(allowance, rawAmount);

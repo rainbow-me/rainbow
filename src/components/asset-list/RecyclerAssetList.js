@@ -161,8 +161,8 @@ const hasRowChanged = (r1, r2) => {
       for (let i = 0; i < r2.item.assets.length; i++) {
         if (r1.item.assets[i].native && r2.item.assets[i].native) {
           if (
-            r1.item.assets[i].native.balance.display !==
-              r2.item.assets[i].native.balance.display ||
+            get(r1.item.assets[i].native, 'balance.display', null) !==
+              get(r2.item.assets[i].native, 'balance.display', null) ||
             r1.item.assets[i].isHidden !== r2.item.assets[i].isHidden
           ) {
             smallBalancedChanged = true;

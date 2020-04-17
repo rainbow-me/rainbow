@@ -48,12 +48,12 @@ const getBalanceAmount = async (
   accountAddress = null
 ) => {
   let amount = '';
-  if (onchain) {
+  if (onchain && selected && selected.address) {
     amount = await getOnChainBalance(selected, accountAddress);
   } else {
     amount = get(selected, 'balance.amount', 0);
   }
-  if (selected.address === 'eth') {
+  if (selected && selected.address === 'eth') {
     if (!isEmpty(selectedGasPrice)) {
       const txFeeRaw = get(selectedGasPrice, 'txFee.value.amount');
       const txFeeAmount = fromWei(txFeeRaw);

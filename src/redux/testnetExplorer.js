@@ -63,7 +63,10 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
   const fetchAssetsBalancesAndPrices = async () => {
     const { network } = getState().settings;
     const assets = testnetAssets[network];
-
+    if (!assets || !assets.length) {
+      testnetExplorerHandle = setTimeout(fetchAssetsBalancesAndPrices, 5000);
+      return;
+    }
     const prices = await fetchAssetPrices(
       assets.map(({ asset: { coingecko_id } }) => coingecko_id),
       formattedNativeCurrency
