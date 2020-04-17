@@ -103,6 +103,7 @@ const SendSheet = ({
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [selected, setSelected] = useState({});
+  const [balanceAmount, setBalanceAmount] = useState(0);
 
   const showEmptyState = !isValidAddress;
   const showAssetList = isValidAddress && isEmpty(selected);
@@ -120,8 +121,19 @@ const SendSheet = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const updateBalanceAmount = useCallback(async () => {
+    const currentBalanceAmount = await ethereumUtils.getBalanceAmount(
+      selectedGasPrice,
+      selected,
+      true,
+      accountAddress
+    );
+    setBalanceAmount(currentBalanceAmount);
+  }, [accountAddress, selected, selectedGasPrice]);
+
   const sendUpdateAssetAmount = useCallback(
-    async newAssetAmount => {
+    newAssetAmount => {
+      updateBalanceAmount();
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
@@ -138,12 +150,6 @@ const SendSheet = ({
           _assetAmount
         );
       }
-      const balanceAmount = await ethereumUtils.getBalanceAmount(
-        selectedGasPrice,
-        selected,
-        true,
-        accountAddress
-      );
       const _isSufficientBalance =
         Number(_assetAmount) <= Number(balanceAmount);
       setAmountDetails({
@@ -152,7 +158,7 @@ const SendSheet = ({
         nativeAmount: _nativeAmount,
       });
     },
-    [accountAddress, nativeCurrency, selected, selectedGasPrice]
+    [balanceAmount, nativeCurrency, selected, updateBalanceAmount]
   );
 
   const sendUpdateSelected = useCallback(
@@ -180,7 +186,8 @@ const SendSheet = ({
   }, []);
 
   const onChangeNativeAmount = useCallback(
-    async newNativeAmount => {
+    newNativeAmount => {
+      updateBalanceAmount();
       if (!isString(newNativeAmount)) return;
       const _nativeAmount = newNativeAmount.replace(/[^0-9.]/g, '');
       let _assetAmount = '';
@@ -194,12 +201,6 @@ const SendSheet = ({
         _assetAmount = formatInputDecimals(convertedAssetAmount, _nativeAmount);
       }
 
-      const balanceAmount = await ethereumUtils.getBalanceAmount(
-        selectedGasPrice,
-        selected,
-        true,
-        accountAddress
-      );
       const _isSufficientBalance =
         Number(_assetAmount) <= Number(balanceAmount);
 
@@ -210,7 +211,7 @@ const SendSheet = ({
       });
       analytics.track('Changed native currency input in Send flow');
     },
-    [accountAddress, selected, selectedGasPrice]
+    [balanceAmount, selected, updateBalanceAmount]
   );
 
   const sendMaxBalance = useCallback(async () => {
