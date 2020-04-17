@@ -831,7 +831,7 @@ const ExchangeModal = ({
       );
       setIsMax(newInputAmount && newIsMax);
 
-      if (!nativeFieldRef.current.isFocused()) {
+      if (!nativeFieldRef.current.isFocused() || newIsMax) {
         let newNativeAmount = null;
 
         const isInputZero = isZero(newInputAmount);
