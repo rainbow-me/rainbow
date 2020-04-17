@@ -141,9 +141,10 @@ export default class UnderlineField extends PureComponent {
       <Column flex={1} {...props}>
         <Row align="center" justify="space-between" style={{ marginBottom: 8 }}>
           <ExchangeInput
-            disableTabularNums
             autoFocus={autoFocus}
             color={colors.dark}
+            disableTabularNums
+            keyboardAppearance="light"
             keyboardType={keyboardType}
             letterSpacing={fonts.letterSpacing.roundedTightest}
             mask="[099999999999999999].[999999999999999999]"
@@ -151,12 +152,12 @@ export default class UnderlineField extends PureComponent {
             onBlur={this.onBlur}
             onChange={this.onChange}
             onFocus={this.onFocus}
+            paddingRight={8}
             placeholder={placeholder}
             refInput={this.handleRef}
             size={fonts.size.h3}
             value={this.format(String(this.state.value || ''))}
             weight={fonts.weight.medium}
-            paddingRight={8}
           />
           {showFieldButton && (
             <Button

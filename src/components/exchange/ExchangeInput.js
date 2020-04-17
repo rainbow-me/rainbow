@@ -10,9 +10,9 @@ export default class ExchangeInput extends Component {
   static propTypes = {
     color: PropTypes.string,
     disableTabularNums: PropTypes.bool,
-    fontFamily: PropTypes.string,
     fontSize: PropTypes.string,
     fontWeight: PropTypes.string,
+    keyboardAppearance: PropTypes.string,
     mask: PropTypes.string,
     onBlur: PropTypes.func,
     onChange: PropTypes.func,
@@ -29,6 +29,7 @@ export default class ExchangeInput extends Component {
     color: colors.dark,
     fontSize: fonts.size.h2,
     fontWeight: fonts.weight.medium,
+    keyboardAppearance: 'dark',
     mask: '[099999999999999999].[999999999999999999]',
     placeholder: '0',
     placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.3),
@@ -109,9 +110,9 @@ export default class ExchangeInput extends Component {
       color,
       disableTabularNums,
       editable,
-      fontFamily,
       fontSize,
       fontWeight,
+      keyboardAppearance,
       mask,
       placeholder,
       placeholderTextColor,
@@ -126,7 +127,7 @@ export default class ExchangeInput extends Component {
         allowFontScaling={false}
         editable={editable}
         flex={1}
-        keyboardAppearance="dark"
+        keyboardAppearance={keyboardAppearance}
         keyboardType="decimal-pad"
         mask={mask}
         onBlur={this.handleBlur}
@@ -140,7 +141,7 @@ export default class ExchangeInput extends Component {
         style={[
           {
             color,
-            fontFamily,
+            fontFamily: fonts.family.SFProRounded,
             fontSize: parseFloat(fontSize),
             fontVariant: disableTabularNums ? undefined : ['tabular-nums'],
             fontWeight,
