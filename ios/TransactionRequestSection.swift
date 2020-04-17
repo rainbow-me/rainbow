@@ -8,9 +8,10 @@
 import Foundation
 
 class TransactionRequestSection : TransactionSectionProtocol {
-  var date: Date = Date()
+  var date: Date? = Date()
   var data: [AnyObject]
   var type: TransactionSectionTypes = .requests
+  var name: String? = nil
   
   init(data: [TransactionRequest]) {
     self.data = data
