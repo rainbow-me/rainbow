@@ -88,7 +88,6 @@ const ExchangeOutputField = ({
         <ExchangeInput
           disableTabularNums
           editable={!!outputCurrencySymbol}
-          fontFamily={fonts.family.SFProRounded}
           height={40}
           letterSpacing={fonts.letterSpacing.roundedTightest}
           onBlur={onBlur}
