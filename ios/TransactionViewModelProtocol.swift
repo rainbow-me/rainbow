@@ -28,8 +28,8 @@ protocol TransactionSectionProtocol {
 extension TransactionSectionProtocol {
   var title: String {
     let calendar = Calendar.current
-    if name == "Pending" {
-      return "Pending"
+    if name != nil {
+      return name!
     } else if type == .requests {
       return "Requests"
     } else {

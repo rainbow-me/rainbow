@@ -21,7 +21,7 @@ class TransactionSection : TransactionSectionProtocol {
   /**
    Initializer for the cases when "date" doesn't really matter.
    For example, "Pending" transaction section should be always on top
-   and even though it assumes "date" to be ~now, we are not really that interested in it.
+   and even though it assumes "date" is ~now, we are not really interested in it.
    */
   init(name: String, data: [Transaction]) {
     self.name = name
