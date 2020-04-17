@@ -344,10 +344,13 @@ const SendSheet = ({
   }, [gasUpdateDefaultGasLimit]);
 
   useEffect(() => {
-    if (isValidAddress && showAssetList) {
+    if (
+      (isValidAddress && showAssetList) ||
+      (isValidAddress && showAssetForm && selected.type === AssetTypes.nft)
+    ) {
       Keyboard.dismiss();
     }
-  }, [isValidAddress, showAssetList]);
+  }, [isValidAddress, selected.type, showAssetForm, showAssetList]);
 
   const assetOverride = useNavigationParam('asset');
   const prevAssetOverride = usePrevious(assetOverride);
