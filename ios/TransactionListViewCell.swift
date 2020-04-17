@@ -176,9 +176,9 @@ class TransactionListViewCell: TransactionListBaseCell {
           }
         }
       }
-      coinName.addCharacterSpacing(kernValue: 0.5);
-      coinName.setLineSpacing(lineHeightMultiple: 1.1)
-      transactionType.addCharacterSpacing(kernValue: 0.5);
     }
+    coinName.addCharacterSpacing(kernValue: 0.5);
+    coinName.setLineSpacing(lineHeightMultiple: 1.1)
+    transactionType.addCharacterSpacing(kernValue: 0.5);
   }
 }
