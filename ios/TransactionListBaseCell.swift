@@ -37,7 +37,7 @@ class TransactionListBaseCell : UITableViewCell {
     layer.addSublayer(shadowLayer)
     layer.addSublayer(secondShadowLayer)
   }
-
+  
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     animateTapStart(scale: scaleTo)
   }

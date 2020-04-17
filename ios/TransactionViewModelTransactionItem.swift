@@ -14,10 +14,16 @@ class TransactionViewModelTransactionItem : TransactionViewModelProtocol {
 
   init(transactions: [Transaction]) {
     var groups: [Date: [Transaction]] = [:]
+    var pending: [Transaction] = []
     let calendar = Calendar.current
     
     for transaction in transactions {
       var date = groupByDate(transaction.minedAt)
+      
+      if (transaction.status?.lowercased() == "pending" || transaction.status?.lowercased() == "swapping") {
+        pending.append(transaction)
+        continue
+      }
       
       if calendar.isDateInToday(date) || calendar.isDateInYesterday(date) {
         if groups[date] == nil {
@@ -37,7 +43,10 @@ class TransactionViewModelTransactionItem : TransactionViewModelProtocol {
     }
     
     sections = groups.map(TransactionSection.init(date:data:))
-    sections.sort { (lhs, rhs) in lhs.date > rhs.date }
+    sections.sort { (lhs, rhs) in lhs.date! > rhs.date! }
+    if pending.count > 0 {
+      sections.insert(TransactionSection.init(name: "Pending", data: pending), at: 0)
+    }
   }
   
   private func groupByDate(_ date: Date) -> Date {
