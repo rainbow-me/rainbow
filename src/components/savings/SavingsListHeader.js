@@ -5,8 +5,7 @@ import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
-import { useAccountData } from '../../hooks';
-import { colors } from '../../styles';
+import { useAccountSettings } from '../../hooks';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import Highlight from '../Highlight';
 import { Row, RowWithMargins } from '../layout';
@@ -25,12 +24,12 @@ const SavingsListHeader = ({
   savingsSumValue,
   showSumValue,
 }) => {
+  const { nativeCurrency } = useAccountSettings();
+
   const animation = useTimingTransition(isOpen, {
     duration: TokenFamilyHeaderAnimationDuration,
     easing: Easing.bezier(0.25, 0.1, 0.25, 1),
   });
-
-  const { nativeCurrency } = useAccountData();
 
   return (
     <ButtonPressAnimation
@@ -40,7 +39,6 @@ const SavingsListHeader = ({
     >
       <Row
         align="center"
-        backgroundColor={colors.white}
         height={TokenFamilyHeaderHeight}
         justify="space-between"
         paddingHorizontal={19}
@@ -113,13 +111,14 @@ SavingsListHeader.propTypes = {
   highlight: PropTypes.bool,
   isOpen: PropTypes.bool,
   onPress: PropTypes.func,
-  savingsSumValue: PropTypes.number,
+  savingsSumValue: PropTypes.string,
   showSumValue: PropTypes.bool,
 };
 
 SavingsListHeader.defaultProps = {
   emoji: 'sunflower',
-  savingsSumValue: 0,
+  highlight: false,
+  savingsSumValue: '0',
   showSumValue: false,
 };
 

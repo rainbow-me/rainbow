@@ -6,6 +6,7 @@ import { addCashLoadState } from '../redux/addCash';
 import { dataLoadState } from '../redux/data';
 import { contactsLoadState } from '../redux/contacts';
 import { openStateSettingsLoadState } from '../redux/openStateSettings';
+import { coinListLoadState } from '../redux/editOptions';
 import { requestsLoadState } from '../redux/requests';
 import { savingsLoadState } from '../redux/savings';
 import { settingsLoadState } from '../redux/settings';
@@ -23,6 +24,7 @@ export default function useLoadAccountData() {
   const loadAccountData = useCallback(async () => {
     logger.sentry('Load wallet data');
     await dispatch(openStateSettingsLoadState());
+    await dispatch(coinListLoadState());
     const promises = [];
     const p1 = dispatch(settingsLoadState());
     promises.push(p1);

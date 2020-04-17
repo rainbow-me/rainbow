@@ -11,9 +11,10 @@ import {
   CameraHeaderButton,
   Header,
   ProfileHeaderButton,
+  HeaderGestureBlocker,
 } from '../components/header';
 import { Page } from '../components/layout';
-import { withKeyboardHeight } from '../hoc';
+import { withCoinListEdited, withKeyboardHeight } from '../hoc';
 import {
   useAccountSettings,
   useInitializeWallet,
@@ -26,7 +27,12 @@ import { position } from '../styles';
 import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import networkInfo from '../helpers/networkInfo';
 
-const WalletScreen = ({ navigation, scrollViewTracker, setKeyboardHeight }) => {
+const WalletScreen = ({
+  isCoinListEdited,
+  navigation,
+  scrollViewTracker,
+  setKeyboardHeight,
+}) => {
   const [initialized, setInitialized] = useState(false);
   const initializeWallet = useInitializeWallet();
   const refreshAccountData = useRefreshAccountData();
@@ -71,11 +77,14 @@ const WalletScreen = ({ navigation, scrollViewTracker, setKeyboardHeight }) => {
         fabs={fabs}
         scrollViewTracker={scrollViewTracker}
         sections={sections}
+        isCoinListEdited={isCoinListEdited}
       >
-        <Header marginTop={5} justify="space-between">
-          <ProfileHeaderButton navigation={navigation} />
-          <CameraHeaderButton navigation={navigation} />
-        </Header>
+        <HeaderGestureBlocker enabled={isCoinListEdited}>
+          <Header marginTop={5} justify="space-between">
+            <ProfileHeaderButton navigation={navigation} />
+            <CameraHeaderButton navigation={navigation} />
+          </Header>
+        </HeaderGestureBlocker>
 
         <AssetList
           fetchData={refreshAccountData}
@@ -91,6 +100,7 @@ const WalletScreen = ({ navigation, scrollViewTracker, setKeyboardHeight }) => {
 };
 
 WalletScreen.propTypes = {
+  isCoinListEdited: PropTypes.bool,
   navigation: PropTypes.object,
   scrollViewTracker: PropTypes.object,
   setKeyboardHeight: PropTypes.func,
@@ -100,5 +110,6 @@ export default compose(
   withSafeTimeout,
   withNavigation,
   withKeyboardHeight,
+  withCoinListEdited,
   withProps({ scrollViewTracker: new Animated.Value(0) })
 )(WalletScreen);

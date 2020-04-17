@@ -1,4 +1,3 @@
-export { default as withAccountAddress } from './withAccountAddress';
 export { default as withAccountInfo } from './withAccountInfo';
 export { default as withAccountData } from './withAccountData';
 export { default as withAccountSettings } from './withAccountSettings';
@@ -6,8 +5,12 @@ export { default as withAccountTransactions } from './withAccountTransactions';
 export { default as withActionSheetManager } from './withActionSheetManager';
 export { default as withAppState } from './withAppState';
 export { default as withBlockedHorizontalSwipe } from './withBlockedHorizontalSwipe';
+export { default as withCoinCurrentAction } from './withCoinCurrentAction';
+export { default as withCoinListEdited } from './withCoinListEdited';
+export { default as withCoinRecentlyPinned } from './withCoinRecentlyPinned';
 export { default as withContacts } from './withContacts';
 export { default as withDeepLink } from './withDeepLink';
+export { default as withEditOptions } from './withEditOptions';
 export { default as withFabSelection } from './withFabSelection';
 export { default as withFabSendAction } from './withFabSendAction';
 export { default as withGas } from './withGas';

@@ -7,7 +7,7 @@ import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
 import { isAvatarPickerAvailable } from '../../config/experimental';
-import { useAccountData, useClipboard } from '../../hooks';
+import { useAccountSettings, useClipboard } from '../../hooks';
 import { colors, borders } from '../../styles';
 import { abbreviations } from '../../utils';
 import CopyTooltip from '../copy-tooltip';
@@ -38,7 +38,7 @@ const ProfileMasthead = ({
   showBottomDivider,
   onPressAvatar,
 }) => {
-  const { accountENS } = useAccountData();
+  const { accountENS } = useAccountSettings();
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
 

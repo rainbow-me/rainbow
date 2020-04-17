@@ -2,7 +2,12 @@ import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import { withAccountSettings, withFabSendAction } from '../../hoc';
+import {
+  withAccountSettings,
+  withCoinListEdited,
+  withFabSendAction,
+  withEditOptions,
+} from '../../hoc';
 import { padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import Highlight from '../Highlight';
@@ -14,6 +19,10 @@ const CoinRowPaddingBottom = 10;
 const Container = styled(Row)`
   ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom, 19)}
   width: 100%;
+`;
+
+const OpacityWrapper = styled(Row)`
+  flex: 1;
 `;
 
 const Content = styled(Column).attrs({
@@ -30,7 +39,12 @@ const CoinRowHighlight = withProps({
   marginHorizontal: 8,
 })(Highlight);
 
-const enhance = compose(withAccountSettings, withFabSendAction);
+const enhance = compose(
+  withAccountSettings,
+  withFabSendAction,
+  withEditOptions,
+  withCoinListEdited
+);
 
 const CoinRow = enhance(
   ({
@@ -43,19 +57,31 @@ const CoinRow = enhance(
     symbol,
     address,
     topRowRender,
+    isCoinListEdited,
+    isHidden,
+    isPinned,
     ...props
   }) => (
     <Container align="center" css={containerStyles}>
       <CoinRowHighlight visible={highlight} />
-      {createElement(coinIconRender, { address, symbol, ...props })}
-      <Content css={contentStyles}>
-        <Row align="center" justify="space-between">
-          {topRowRender({ symbol, ...props })}
-        </Row>
-        <Row align="center" justify="space-between" marginBottom={0.5}>
-          {bottomRowRender({ symbol, ...props })}
-        </Row>
-      </Content>
+      {createElement(coinIconRender, {
+        address,
+        isCoinListEdited,
+        isHidden,
+        isPinned,
+        symbol,
+        ...props,
+      })}
+      <OpacityWrapper style={{ opacity: isHidden ? 0.4 : 1 }}>
+        <Content css={contentStyles}>
+          <Row align="center" justify="space-between">
+            {topRowRender({ symbol, ...props })}
+          </Row>
+          <Row align="center" justify="space-between" marginBottom={0.5}>
+            {bottomRowRender({ symbol, ...props })}
+          </Row>
+        </Content>
+      </OpacityWrapper>
       {typeof children === 'function'
         ? children({ symbol, ...props })
         : children}
@@ -71,6 +97,7 @@ CoinRow.propTypes = {
   containerStyles: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
   contentStyles: PropTypes.string,
   highlight: PropTypes.bool,
+  isCoinListEdited: PropTypes.bool,
   onPress: PropTypes.func,
   symbol: PropTypes.string,
   topRowRender: PropTypes.func,

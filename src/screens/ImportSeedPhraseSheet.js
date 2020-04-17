@@ -20,7 +20,7 @@ import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { Text } from '../components/text';
 import {
-  useAccountData,
+  useAccountSettings,
   useClipboard,
   useInitializeWallet,
   useTimeout,
@@ -110,7 +110,7 @@ const ImportButton = ({ disabled, onPress, seedPhrase }) => (
 );
 
 const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
-  const { accountAddress } = useAccountData();
+  const { accountAddress } = useAccountSettings();
   const { clipboard } = useClipboard();
   const { navigate, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();

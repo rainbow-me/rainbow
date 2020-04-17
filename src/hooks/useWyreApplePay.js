@@ -18,11 +18,13 @@ import { addCashNewPurchaseTransaction } from '../redux/addCash';
 import { dataAddNewTransaction } from '../redux/data';
 import { AddCashCurrencies, AddCashCurrencyInfo } from '../references';
 import { ethereumUtils, logger } from '../utils';
-import useAccountData from './useAccountData';
+import useAccountAssets from './useAccountAssets';
+import useAccountSettings from './useAccountSettings';
 import useTimeout from './useTimeout';
 
 export default function useWyreApplePay() {
-  const { accountAddress, assets, network } = useAccountData();
+  const { accountAddress, network } = useAccountSettings();
+  const { assets } = useAccountAssets();
 
   const [isPaymentComplete, setPaymentComplete] = useState(false);
   const [orderCurrency, setOrderCurrency] = useState(null);

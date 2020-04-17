@@ -11,7 +11,6 @@ import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
 import { Alert, Prompt } from '../components/alerts';
 import {
-  withAccountAddress,
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
 } from '../hoc';
@@ -20,7 +19,6 @@ import QRScannerScreen from './QRScannerScreen';
 
 class QRScannerScreenWithData extends Component {
   static propTypes = {
-    accountAddress: PropTypes.string,
     isFocused: PropTypes.bool,
     navigation: PropTypes.object,
     setSafeTimeout: PropTypes.func,
@@ -132,7 +130,6 @@ class QRScannerScreenWithData extends Component {
 export default compose(
   withNavigationFocus,
   withWalletConnectOnSessionRequest,
-  withAccountAddress,
   withSafeTimeout,
   withWalletConnectConnections
 )(QRScannerScreenWithData);

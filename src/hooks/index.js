@@ -1,4 +1,3 @@
-export { default as useAccountData } from './useAccountData';
 export { default as useAccountAssets } from './useAccountAssets';
 export { default as useAccountSettings } from './useAccountSettings';
 export { default as useAddCashLimits } from './useAddCashLimits';
@@ -8,6 +7,7 @@ export { default as useBlockPolling } from './useBlockPolling';
 export { default as useCheckEthBalance } from './useCheckEthBalance';
 export { default as useClearAccountData } from './useClearAccountData';
 export { default as useClipboard } from './useClipboard';
+export { default as useCoinListEditOptions } from './useCoinListEditOptions';
 export { default as useDimensions } from './useDimensions';
 export { default as useEmailRainbow } from './useEmailRainbow';
 export { default as useGas } from './useGas';

@@ -1,7 +1,8 @@
-import { compact, get, groupBy, sortBy } from 'lodash';
+import { compact, forEach, get, groupBy, sortBy } from 'lodash';
 import supportedNativeCurrencies from '../references/native-currencies.json';
+import { add } from './utilities';
 
-const amountOfShowedCoins = 5;
+export const amountOfShowedCoins = 5;
 
 export const buildAssetHeaderUniqueIdentifier = ({
   title,
@@ -17,37 +18,111 @@ export const buildAssetUniqueIdentifier = item => {
   return compact([balance, nativePrice, uniqueId]).join('_');
 };
 
-export const buildCoinsList = (assets, nativeCurrency) => {
-  const newAssets = [];
+export const buildCoinsList = (
+  assets,
+  nativeCurrency,
+  isCoinListEdited,
+  pinnedCoins,
+  hiddenCoins
+) => {
+  let standardAssets = [],
+    pinnedAssets = [],
+    hiddenAssets = [];
   const smallBalances = {
     assets: [],
     smallBalancesContainer: true,
   };
-  for (let i = 0; i < assets.length; i++) {
-    if (
-      (assets[i].native &&
-        assets[i].native.balance.amount >
+  const assetsLength = assets.length;
+
+  let totalBalancesValue = 0;
+  let smallBalancesValue = 0;
+
+  const isShortList = assetsLength <= amountOfShowedCoins;
+
+  forEach(assets, asset => {
+    if (hiddenCoins.includes(asset.uniqueId)) {
+      hiddenAssets.push({
+        isCoin: true,
+        isHidden: true,
+        isSmall: true,
+        ...asset,
+      });
+    } else if (pinnedCoins.includes(asset.uniqueId)) {
+      totalBalancesValue = add(
+        totalBalancesValue,
+        get(asset, 'native.balance.amount', 0)
+      );
+      pinnedAssets.push({
+        isCoin: true,
+        isPinned: true,
+        isSmall: false,
+        ...asset,
+      });
+    } else if (
+      (asset.native &&
+        asset.native.balance.amount >
           supportedNativeCurrencies[nativeCurrency].smallThreshold) ||
-      assets[i].address === 'eth' ||
-      assets.length < 4
+      asset.address === 'eth' ||
+      isShortList
     ) {
-      newAssets.push(assets[i]);
+      totalBalancesValue = add(
+        totalBalancesValue,
+        get(asset, 'native.balance.amount', 0)
+      );
+      standardAssets.push({ isCoin: true, isSmall: false, ...asset });
     } else {
-      smallBalances.assets.push(assets[i]);
+      smallBalancesValue = add(
+        smallBalancesValue,
+        get(asset, 'native.balance.amount', 0)
+      );
+      smallBalances.assets.push({ isCoin: true, isSmall: true, ...asset });
+    }
+  });
+
+  totalBalancesValue = add(totalBalancesValue, smallBalancesValue);
+
+  if (isCoinListEdited) {
+    if (assetsLength <= amountOfShowedCoins) {
+      standardAssets = standardAssets.concat(hiddenAssets);
+    } else {
+      smallBalances.assets = smallBalances.assets.concat(hiddenAssets);
     }
   }
 
-  if (newAssets.length > amountOfShowedCoins) {
-    smallBalances.assets = newAssets
+  const allAssets = pinnedAssets.concat(standardAssets);
+  const allAssetsLength = allAssets.length;
+  const pinnedAssetsLength = pinnedAssets.length;
+  if (
+    amountOfShowedCoins > pinnedAssetsLength &&
+    allAssetsLength > amountOfShowedCoins
+  ) {
+    smallBalances.assets = allAssets
       .splice(amountOfShowedCoins)
+      .concat(smallBalances.assets);
+  } else if (
+    amountOfShowedCoins <= pinnedAssetsLength &&
+    allAssetsLength >= pinnedAssetsLength
+  ) {
+    smallBalances.assets = allAssets
+      .splice(pinnedAssetsLength)
       .concat(smallBalances.assets);
   }
 
-  if (smallBalances.assets.length > 0) {
-    newAssets.push(smallBalances);
-    return newAssets;
+  if (
+    smallBalances.assets.length > 0 ||
+    (hiddenAssets.length > 0 && assetsLength > amountOfShowedCoins) ||
+    (pinnedAssetsLength === allAssetsLength &&
+      allAssetsLength > amountOfShowedCoins)
+  ) {
+    allAssets.push({
+      assetsAmount: smallBalances.assets.length,
+      coinDivider: true,
+      value: smallBalancesValue,
+    });
+    allAssets.push(smallBalances);
   }
-  return newAssets;
+
+  return { assets: allAssets, totalBalancesValue };
 };
 
 export const buildUniqueTokenList = uniqueTokens => {

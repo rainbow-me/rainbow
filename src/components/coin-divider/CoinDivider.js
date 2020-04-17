@@ -1,23 +1,24 @@
 import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { LayoutAnimation, View } from 'react-native';
 import Animated from 'react-native-reanimated';
-import Caret from '../../assets/family-dropdown-arrow.png';
+import { compose } from 'recompact';
+import EditOptions from '../../helpers/editOptionTypes';
+import {
+  withCoinCurrentAction,
+  withCoinListEdited,
+  withEditOptions,
+  withOpenBalances,
+} from '../../hoc';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
-import {
-  ButtonPressAnimation,
-  interpolate,
-  OpacityToggler,
-  RotationArrow,
-  RoundButtonSizeToggler,
-} from '../animations';
+import { interpolate } from '../animations';
 import Highlight from '../Highlight';
 import { Row } from '../layout';
-import { Text } from '../text';
-import CoinDividerButtonLabel from './CoinDividerButtonLabel';
+import CoinDividerEditButton from './CoinDividerEditButton';
+import CoinDividerOpenButton from './CoinDividerOpenButton';
+import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 
 const {
   block,
@@ -61,12 +62,21 @@ function runTiming(clock, value, dest) {
   ]);
 }
 
-export default class CoinDivider extends PureComponent {
+class CoinDivider extends PureComponent {
   static propTypes = {
+    assetsAmount: PropTypes.number,
     balancesSum: PropTypes.string,
+    currentAction: PropTypes.string,
     isCoinDivider: PropTypes.bool,
-    onPress: PropTypes.func,
+    isCoinListEdited: PropTypes.bool,
+    isSticky: PropTypes.bool,
+    nativeCurrency: PropTypes.string,
+    onEndEdit: PropTypes.func,
     openSmallBalances: PropTypes.bool,
+    setHiddenCoins: PropTypes.func,
+    setIsCoinListEdited: PropTypes.func,
+    setOpenSmallBalances: PropTypes.func,
+    setPinnedCoins: PropTypes.func,
   };
 
   componentWillMount() {
@@ -96,87 +106,116 @@ export default class CoinDivider extends PureComponent {
 
   render() {
     const {
+      assetsAmount,
       balancesSum,
+      currentAction,
       isCoinDivider,
-      onPress,
+      isCoinListEdited,
+      isSticky,
+      nativeCurrency,
+      onEndEdit,
       openSmallBalances,
+      setHiddenCoins,
+      setIsCoinListEdited,
+      setOpenSmallBalances,
+      setPinnedCoins,
     } = this.props;
 
     return (
       <Row
         align="center"
-        height={CoinDividerHeight}
+        height={CoinDividerHeight + 11}
         justify="space-between"
-        marginBottom={6}
-        marginTop={5}
+        paddingBottom={6}
+        paddingTop={5}
         paddingHorizontal={19}
         width={deviceUtils.dimensions.width}
+        backgroundColor={isSticky ? colors.white : colors.transparent}
       >
         <Highlight highlight={isCoinDivider} />
-        <ButtonPressAnimation
-          onPress={onPress}
-          scaleTo={0.9}
-          style={{ width: openSmallBalances ? 80 : 52.5 }}
-        >
-          <Row
-            align="center"
-            borderRadius={RoundButtonSizeToggler.capSize / 2}
-            height={CoinDividerHeight}
-            justify="space-between"
-            width={52.5}
-            paddingHorizontal={10}
+        <Row>
+          <View
+            pointerEvents={
+              isCoinListEdited || assetsAmount === 0 ? 'none' : 'auto'
+            }
           >
-            <RoundButtonSizeToggler
-              animationNode={this._node}
-              endingWidth={28}
-              isAbsolute
-              reversed={!this._initialState}
-              startingWidth={3}
-              toggle={openSmallBalances}
+            <CoinDividerOpenButton
+              assetsAmount={assetsAmount}
+              coinDividerHeight={CoinDividerHeight}
+              initialState={this._initialState}
+              isCoinListEdited={isCoinListEdited}
+              node={this._node}
+              openSmallBalances={openSmallBalances}
+              setOpenSmallBalances={setOpenSmallBalances}
             />
-            <View>
-              <CoinDividerButtonLabel
-                isVisible={openSmallBalances}
-                label="All"
-                node={this._node}
-                steps={[1, 0]}
-              />
-              <CoinDividerButtonLabel
-                isVisible={openSmallBalances}
-                label="Less"
-                node={this._node}
-                steps={[0, 1]}
-              />
-            </View>
-            <View style={{ opacity: 0.6, paddingBottom: 1 }}>
-              <RotationArrow
-                endingOffset={20}
-                endingPosition={-90}
-                isOpen={openSmallBalances}
-              >
-                <FastImage
-                  source={Caret}
-                  style={{ height: 17, width: 9 }}
-                  tintColor={colors.blueGreyDark}
-                />
-              </RotationArrow>
-            </View>
-          </Row>
-        </ButtonPressAnimation>
-        <OpacityToggler
-          isVisible={openSmallBalances}
-          animationNode={this._node}
-        >
-          <Text
-            align="right"
-            color={colors.alpha(colors.blueGreyDark, 0.6)}
-            size="lmedium"
-            style={{ paddingBottom: 1 }}
+          </View>
+          <Row
+            pointerEvents={isCoinListEdited ? 'auto' : 'none'}
+            style={{ position: 'absolute' }}
           >
-            {balancesSum}
-          </Text>
-        </OpacityToggler>
+            <CoinDividerEditButton
+              onPress={setPinnedCoins}
+              isVisible={isCoinListEdited}
+              isActive={currentAction !== EditOptions.none}
+              text={currentAction === EditOptions.unpin ? 'Unpin' : 'Pin'}
+              shouldReloadList
+              style={{ marginRight: 10 }}
+            />
+            <CoinDividerEditButton
+              onPress={setHiddenCoins}
+              isVisible={isCoinListEdited}
+              isActive={currentAction !== EditOptions.none}
+              text={currentAction === EditOptions.unhide ? 'Unhide' : 'Hide'}
+              shouldReloadList
+            />
+          </Row>
+        </Row>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            width: 100,
+          }}
+        >
+          <CoinDividerAssetsValue
+            assetsAmount={assetsAmount}
+            balancesSum={balancesSum}
+            nativeCurrency={nativeCurrency}
+            node={this._node}
+            openSmallBalances={openSmallBalances}
+          />
+          <View
+            style={{ alignItems: 'flex-end', position: 'absolute', width: 64 }}
+            pointerEvents={
+              openSmallBalances || assetsAmount === 0 ? 'auto' : 'none'
+            }
+          >
+            <CoinDividerEditButton
+              animationNode={this._node}
+              onPress={() => {
+                if (isCoinListEdited && onEndEdit) {
+                  onEndEdit();
+                }
+                setIsCoinListEdited(!isCoinListEdited);
+                LayoutAnimation.configureNext(
+                  LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+                );
+              }}
+              isVisible={openSmallBalances || assetsAmount === 0}
+              isActive={isCoinListEdited}
+              text={isCoinListEdited ? 'Done' : 'Edit'}
+              textOpacityAlwaysOn
+            />
+          </View>
+        </View>
       </Row>
     );
   }
 }
+
+export default compose(
+  withEditOptions,
+  withOpenBalances,
+  withCoinCurrentAction,
+  withCoinListEdited
+)(CoinDivider);
