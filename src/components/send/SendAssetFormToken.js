@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, withHandlers } from 'recompact';
 import { withAccountSettings } from '../../hoc';
+import { deviceUtils } from '../../utils';
 import { removeLeadingZeros } from '../../utils/formatters';
 import { ColumnWithMargins } from '../layout';
 import SendAssetFormField from './SendAssetFormField';
-import { deviceUtils } from '../../utils';
 
 const SendAssetFormToken = ({
   assetAmount,

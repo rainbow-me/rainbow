@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import styled from 'styled-components/primitives';
 import { View } from 'react-native';
 import Animated, { Easing } from 'react-native-reanimated';
+import styled from 'styled-components/primitives';
 import { setSelectedInputId } from '../../redux/selectedInput';
 import store from '../../redux/store';
 import { colors, position, fonts } from '../../styles';
 import { Button } from '../buttons';
-import { Input } from '../inputs';
-import { Column, FlexItem, Row } from '../layout';
 import { ExchangeInput } from '../exchange';
+import { Input } from '../inputs';
+import { Column, Row } from '../layout';
 
 const Underline = styled(View)`
   ${position.cover};
@@ -140,29 +140,24 @@ export default class UnderlineField extends PureComponent {
     return (
       <Column flex={1} {...props}>
         <Row align="center" justify="space-between" style={{ marginBottom: 8 }}>
-          <FlexItem
-            style={{
-              height: 34,
-              paddingRight: 8,
-            }}
-          >
-            <ExchangeInput
-              autoFocus={autoFocus}
-              color={colors.dark}
-              keyboardType={keyboardType}
-              letterSpacing={fonts.letterSpacing.roundedTightest}
-              mask="[099999999999999999].[999999999999999999]"
-              maxLength={maxLength}
-              onBlur={this.onBlur}
-              onChange={this.onChange}
-              onFocus={this.onFocus}
-              placeholder={placeholder}
-              refInput={this.handleRef}
-              size={fonts.size.h3}
-              value={this.format(String(this.state.value || ''))}
-              weight={fonts.weight.medium}
-            />
-          </FlexItem>
+          <ExchangeInput
+            disableTabularNums
+            autoFocus={autoFocus}
+            color={colors.dark}
+            keyboardType={keyboardType}
+            letterSpacing={fonts.letterSpacing.roundedTightest}
+            mask="[099999999999999999].[999999999999999999]"
+            maxLength={maxLength}
+            onBlur={this.onBlur}
+            onChange={this.onChange}
+            onFocus={this.onFocus}
+            placeholder={placeholder}
+            refInput={this.handleRef}
+            size={fonts.size.h3}
+            value={this.format(String(this.state.value || ''))}
+            weight={fonts.weight.medium}
+            paddingRight={8}
+          />
           {showFieldButton && (
             <Button
               backgroundColor={colors.sendScreen.brightBlue}

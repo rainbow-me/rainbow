@@ -2,14 +2,14 @@ import withViewLayoutProps from '@hocs/with-view-layout-props';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { compose, onlyUpdateForKeys, withProps, withState } from 'recompact';
 import { withImageDimensionsCache } from '../../hoc';
 import { colors, position } from '../../styles';
 import { deviceUtils } from '../../utils';
+import { OpacityToggler } from '../animations';
 import { Column, ColumnWithMargins } from '../layout';
 import { UniqueTokenCard } from '../unique-token';
-import LinearGradient from 'react-native-linear-gradient';
-import { OpacityToggler } from '../animations';
 
 const enhance = compose(
   withImageDimensionsCache,
