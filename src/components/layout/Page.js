@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { View } from 'react-primitives';
 import { useSafeArea } from 'react-native-safe-area-context';
+import { View } from 'react-primitives';
 import { colors, position } from '../../styles';
 
 const Page = ({

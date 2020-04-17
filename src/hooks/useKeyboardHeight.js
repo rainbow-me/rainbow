@@ -1,6 +1,6 @@
-import { useDispatch, useSelector } from 'react-redux';
 import { useCallback, useEffect, useState } from 'react';
 import { Keyboard } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { setKeyboardHeight as storeKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import { setKeyboardHeight } from '../redux/keyboardHeight';
 import useDimensions from './useDimensions';
