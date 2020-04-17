@@ -11,6 +11,7 @@ import {
   CameraHeaderButton,
   Header,
   ProfileHeaderButton,
+  HeaderGestureBlocker,
 } from '../components/header';
 import { Page } from '../components/layout';
 import { withCoinListEdited, withKeyboardHeight } from '../hoc';
@@ -78,10 +79,12 @@ const WalletScreen = ({
         sections={sections}
         isCoinListEdited={isCoinListEdited}
       >
-        <Header marginTop={5} justify="space-between">
-          <ProfileHeaderButton navigation={navigation} />
-          <CameraHeaderButton navigation={navigation} />
-        </Header>
+        <HeaderGestureBlocker enabled={isCoinListEdited}>
+          <Header marginTop={5} justify="space-between">
+            <ProfileHeaderButton navigation={navigation} />
+            <CameraHeaderButton navigation={navigation} />
+          </Header>
+        </HeaderGestureBlocker>
 
         <AssetList
           fetchData={refreshAccountData}
