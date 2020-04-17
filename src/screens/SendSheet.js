@@ -133,7 +133,6 @@ const SendSheet = ({
 
   const sendUpdateAssetAmount = useCallback(
     newAssetAmount => {
-      updateBalanceAmount();
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
@@ -158,7 +157,7 @@ const SendSheet = ({
         nativeAmount: _nativeAmount,
       });
     },
-    [balanceAmount, nativeCurrency, selected, updateBalanceAmount]
+    [balanceAmount, nativeCurrency, selected]
   );
 
   const sendUpdateSelected = useCallback(
@@ -221,17 +220,19 @@ const SendSheet = ({
       true,
       accountAddress
     );
+    setBalanceAmount(balanceAmount);
     sendUpdateAssetAmount(balanceAmount);
   }, [accountAddress, selected, selectedGasPrice, sendUpdateAssetAmount]);
 
   const onChangeAssetAmount = useCallback(
     newAssetAmount => {
       if (isString(newAssetAmount)) {
+        updateBalanceAmount();
         sendUpdateAssetAmount(newAssetAmount);
         analytics.track('Changed token input in Send flow');
       }
     },
-    [sendUpdateAssetAmount]
+    [sendUpdateAssetAmount, updateBalanceAmount]
   );
 
   const onSubmit = useCallback(async () => {
