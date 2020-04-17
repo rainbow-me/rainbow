@@ -108,6 +108,7 @@ const SendSheet = ({
   const showEmptyState = !isValidAddress;
   const showAssetList = isValidAddress && isEmpty(selected);
   const showAssetForm = isValidAddress && !isEmpty(selected);
+  const prevSelectedGasPrice = usePrevious(selectedGasPrice);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -121,15 +122,29 @@ const SendSheet = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const updateBalanceAmount = useCallback(async () => {
-    const currentBalanceAmount = await ethereumUtils.getBalanceAmount(
-      selectedGasPrice,
-      selected,
-      true,
-      accountAddress
-    );
-    setBalanceAmount(currentBalanceAmount);
-  }, [accountAddress, selected, selectedGasPrice]);
+  const updateBalanceAmount = useCallback(
+    async newSelected => {
+      const currentBalanceAmount = await ethereumUtils.getBalanceAmount(
+        selectedGasPrice,
+        newSelected,
+        true,
+        accountAddress
+      );
+      setBalanceAmount(currentBalanceAmount);
+    },
+    [accountAddress, selectedGasPrice]
+  );
+
+  // Recalculate balance when gas price changes
+  useEffect(() => {
+    if (
+      selected.address === 'eth' &&
+      get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
+        get(selectedGasPrice, 'txFee.value.amount', 0)
+    ) {
+      updateBalanceAmount(selected);
+    }
+  }, [prevSelectedGasPrice, selected, selectedGasPrice, updateBalanceAmount]);
 
   const sendUpdateAssetAmount = useCallback(
     newAssetAmount => {
@@ -162,6 +177,7 @@ const SendSheet = ({
 
   const sendUpdateSelected = useCallback(
     newSelected => {
+      updateBalanceAmount(newSelected);
       if (get(newSelected, 'type') === AssetTypes.nft) {
         setAmountDetails({
           assetAmount: '1',
@@ -177,7 +193,7 @@ const SendSheet = ({
         sendUpdateAssetAmount('');
       }
     },
-    [sendUpdateAssetAmount]
+    [sendUpdateAssetAmount, updateBalanceAmount]
   );
 
   const sendUpdateRecipient = useCallback(newRecipient => {
@@ -186,7 +202,6 @@ const SendSheet = ({
 
   const onChangeNativeAmount = useCallback(
     newNativeAmount => {
-      updateBalanceAmount();
       if (!isString(newNativeAmount)) return;
       const _nativeAmount = newNativeAmount.replace(/[^0-9.]/g, '');
       let _assetAmount = '';
@@ -210,7 +225,7 @@ const SendSheet = ({
       });
       analytics.track('Changed native currency input in Send flow');
     },
-    [balanceAmount, selected, updateBalanceAmount]
+    [balanceAmount, selected]
   );
 
   const sendMaxBalance = useCallback(async () => {
@@ -227,12 +242,11 @@ const SendSheet = ({
   const onChangeAssetAmount = useCallback(
     newAssetAmount => {
       if (isString(newAssetAmount)) {
-        updateBalanceAmount();
         sendUpdateAssetAmount(newAssetAmount);
         analytics.track('Changed token input in Send flow');
       }
     },
-    [sendUpdateAssetAmount, updateBalanceAmount]
+    [sendUpdateAssetAmount]
   );
 
   const onSubmit = useCallback(async () => {
