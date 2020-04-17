@@ -1,21 +1,36 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
-  State,
   PanGestureHandler,
+  State,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-import { deviceUtils } from '../utils';
+import { useDimensions } from '../hooks';
 
 const { call, cond, event, eq } = Animated;
 
-const { height } = deviceUtils.dimensions;
+const sx = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    width: '100%',
+    zIndex: 10,
+  },
+});
 
 const GestureBlocker = ({ type, onTouchEnd }) => {
-  const tab = React.useRef(null);
-  const pan = React.useRef(null);
+  const { height: screenHeight } = useDimensions();
+  const tab = useRef(null);
+  const pan = useRef(null);
+
+  const containerStyles = useMemo(
+    () => ({
+      height: screenHeight,
+      [type]: -screenHeight,
+    }),
+    [screenHeight, type]
+  );
 
   const onHandlerStateChange = event([
     {
@@ -26,26 +41,18 @@ const GestureBlocker = ({ type, onTouchEnd }) => {
   ]);
 
   return (
-    <View
-      style={{
-        height,
-        position: 'absolute',
-        [type]: -height,
-        width: '100%',
-        zIndex: 10,
-      }}
-    >
+    <View style={[containerStyles, sx.container]}>
       <PanGestureHandler
-        ref={pan}
-        simultaneousHandlers={tab}
         minDeltaX={1}
         minDeltaY={1}
+        ref={pan}
+        simultaneousHandlers={tab}
       >
         <Animated.View style={StyleSheet.absoluteFillObject}>
           <TapGestureHandler
+            onHandlerStateChange={onHandlerStateChange}
             ref={tab}
             simultaneousHandlers={pan}
-            onHandlerStateChange={onHandlerStateChange}
           >
             <Animated.View style={StyleSheet.absoluteFillObject} />
           </TapGestureHandler>
