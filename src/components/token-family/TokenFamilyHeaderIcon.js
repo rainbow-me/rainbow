@@ -1,22 +1,20 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { FallbackIcon } from 'react-coin-icon';
 import ShadowStack from 'react-native-shadow-stack';
 import stylePropType from 'react-style-proptype';
 import styled from 'styled-components/primitives';
-import { FallbackIcon } from 'react-coin-icon';
-import { borders, colors } from '../../styles';
+import { borders, colors, fonts } from '../../styles';
 import { initials } from '../../utils';
 import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
 import { Text } from '../text';
 
 const Container = styled(Text)`
-  height: 32;
-  width: 30;
+  font-size: ${fonts.size.medium};
+  height: 30;
+  margin-right: 4.5;
   text-align-vertical: center;
   text-align: center;
-  margin-right: 8;
-  margin-left: 2;
-  font-size: 16px;
 `;
 
 const TokenFamilyHeaderIcon = ({

@@ -4,20 +4,17 @@ import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
+import { withShowcaseTokens } from '../../../hoc';
+import { setOpenFamilyTabs } from '../../../redux/openStateSettings';
+import store from '../../../redux/store';
+import { uniqueTokensRefreshState } from '../../../redux/uniqueTokens';
 import { colors, padding } from '../../../styles';
+import ContextMenu from '../../ContextMenu';
 import { ColumnWithMargins, Row, Column } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import FloatingPanel from '../FloatingPanel';
-import ContextMenu from '../../ContextMenu';
-import { withShowcaseTokens } from '../../../hoc';
-import store from '../../../redux/store';
-import { uniqueTokensRefreshState } from '../../../redux/uniqueTokens';
-import { setOpenFamilyTabs } from '../../../redux/openStateSettings';
 
-const Container = styled(ColumnWithMargins).attrs({
-  justify: 'start',
-  margin: 4,
-})`
+const Container = styled(Column)`
   ${padding(15, FloatingPanel.padding.x)};
   height: 75;
 `;
@@ -59,7 +56,7 @@ const AssetPanelHeader = ({
 }) => (
   <Container>
     <Row style={{ justifyContent: 'space-between' }}>
-      <Column flex={1}>
+      <ColumnWithMargins flex={1} margin={3}>
         <HeaderRow>
           <Title
             paddingRight={price ? FloatingPanel.padding.x * 1.25 : 0}
@@ -79,10 +76,10 @@ const AssetPanelHeader = ({
             <Subtitle align="right">{priceLabel || 'Current Price'}</Subtitle>
           )}
         </HeaderRow>
-      </Column>
+      </ColumnWithMargins>
       {asset ? (
         <ContextMenu
-          css={padding(0, 0, 3, 16)}
+          css={padding(10, 0)}
           destructiveButtonIndex={includes(showcaseTokens, asset.uniqueId) && 0}
           onPressActionSheet={index => {
             if (index === 0) {

@@ -1,5 +1,5 @@
-import { remove } from 'lodash';
 import produce from 'immer';
+import { remove } from 'lodash';
 import {
   getShowcaseTokens,
   saveShowcaseTokens,
