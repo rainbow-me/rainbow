@@ -90,6 +90,16 @@ extension UIView {
     layer.position = position
     layer.anchorPoint = point
   }
+  
+  func roundLeftCorners(cornerRadius: CGFloat = 100) {
+      let maskPath = UIBezierPath(roundedRect: bounds,
+                                   byRoundingCorners: [.topLeft , .bottomLeft],
+                                   cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
+      let maskLayer = CAShapeLayer()
+      maskLayer.frame = bounds
+      maskLayer.path = maskPath.cgPath
+      layer.mask = maskLayer
+  }
 }
 
 extension UIImageView {

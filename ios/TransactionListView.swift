@@ -245,6 +245,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     tableView.frame = self.bounds
     header.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: addCashButtonAvailable ? 260 : 185)
     headerSeparator.frame = CGRect(x: 19, y: header.frame.size.height - 2, width: tableView.bounds.width - 19, height: 2)
+    headerSeparator.roundLeftCorners()
   }
   
   func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
