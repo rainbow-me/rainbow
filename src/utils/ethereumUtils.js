@@ -22,11 +22,13 @@ const getEthPriceUnit = assets => {
 const getOnChainBalance = async (selected, accountAddress) => {
   try {
     let onChainBalance = 0;
-    if (selected.address === 'eth') {
+    const selectedAddress = get(selected, 'address', null);
+    if (!selectedAddress) return 0;
+    if (selectedAddress === 'eth') {
       onChainBalance = await web3Provider.getBalance(accountAddress);
     } else {
       const tokenContract = new ethers.Contract(
-        selected.address,
+        selectedAddress,
         erc20ABI,
         web3Provider
       );
