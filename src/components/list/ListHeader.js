@@ -44,7 +44,7 @@ const ListHeader = pure(
       >
         <Row align="center">
           {createElement(titleRenderer, { children: title })}
-          <ContextMenu {...contextMenuOptions} />
+          <ContextMenu marginTop={1.25} {...contextMenuOptions} />
         </Row>
         {children}
       </Row>

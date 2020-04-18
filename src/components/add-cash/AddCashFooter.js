@@ -37,6 +37,7 @@ const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
         <ButtonPressAnimation
           onPress={onSupportedGeoPress}
           paddingBottom={isTallPhone ? 10 : 15}
+          paddingHorizontal={10}
           scaleTo={0.96}
         >
           <RowWithMargins align="center" margin={3}>
