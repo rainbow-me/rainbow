@@ -160,7 +160,11 @@ const ExchangeModal = ({
 
   let defaultOutputItem = null;
 
-  if (isDeposit && defaultInputItemInWallet.address !== defaultInputAddress) {
+  if (
+    isDeposit &&
+    (!defaultInputItemInWallet ||
+      defaultInputItemInWallet.address !== defaultInputAddress)
+  ) {
     defaultOutputItem = defaultChosenInputItem;
   }
 
