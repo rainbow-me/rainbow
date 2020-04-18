@@ -67,7 +67,7 @@ class ContextMenu extends PureComponent {
             onPress={this.showActionSheet}
           >
             <Centered
-              css={padding(2, 9, 0, 9)}
+              css={padding(0, 10)}
               height="100%"
               {...omit(this.props, ActionSheetProps)}
             >

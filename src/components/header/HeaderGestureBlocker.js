@@ -4,7 +4,7 @@ import { PanGestureHandler } from 'react-native-gesture-handler';
 
 const HeaderGestureBlocker = ({ children, enabled }) => (
   <PanGestureHandler enabled={enabled}>
-    <View>{children}</View>
+    <View zIndex={1}>{children}</View>
   </PanGestureHandler>
 );
 

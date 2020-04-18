@@ -66,7 +66,7 @@ SheetActionButton.propTypes = {
 
 SheetActionButton.defaultProps = {
   borderRadius: 50,
-  // color: 'pink',
+  color: 'appleBlue',
   shadows: [
     [0, 2, 5, colors.dark, 0.15],
     [0, 6, 10, colors.dark, 0.14],
