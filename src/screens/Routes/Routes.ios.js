@@ -435,7 +435,10 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
         StatusBar.setBarStyle('light-content');
       }
 
-      if (prevRouteName === 'SendSheet' && routeName === 'WalletScreen') {
+      if (
+        prevRouteName === 'SendSheet' &&
+        (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
+      ) {
         StatusBar.setBarStyle('dark-content');
       }
 
