@@ -6,6 +6,7 @@ import { addCashLoadState } from '../redux/addCash';
 import { dataLoadState } from '../redux/data';
 import { contactsLoadState } from '../redux/contacts';
 import { openStateSettingsLoadState } from '../redux/openStateSettings';
+import { coinListLoadState } from '../redux/editOptions';
 import { requestsLoadState } from '../redux/requests';
 import { savingsLoadState } from '../redux/savings';
 import { settingsLoadState } from '../redux/settings';
@@ -13,14 +14,17 @@ import { uniswapLoadState } from '../redux/uniswap';
 import { uniqueTokensLoadState } from '../redux/uniqueTokens';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { logger, promiseUtils } from '../utils';
+import useCheckEthBalance from './useCheckEthBalance';
 
 export default function useLoadAccountData() {
   const dispatch = useDispatch();
   const { network } = useAccountSettings();
+  const checkEthBalance = useCheckEthBalance();
 
   const loadAccountData = useCallback(async () => {
     logger.sentry('Load wallet data');
     await dispatch(openStateSettingsLoadState());
+    await dispatch(coinListLoadState());
     const promises = [];
     const p1 = dispatch(settingsLoadState());
     promises.push(p1);
@@ -36,10 +40,11 @@ export default function useLoadAccountData() {
     const p6 = dispatch(uniswapLoadState());
     const p7 = dispatch(contactsLoadState());
     const p8 = dispatch(addCashLoadState());
-    promises.push(p6, p7, p8);
+    const p9 = checkEthBalance();
+    promises.push(p6, p7, p8, p9);
 
     return promiseUtils.PromiseAllWithFails(promises);
-  }, [dispatch, network]);
+  }, [checkEthBalance, dispatch, network]);
 
   return loadAccountData;
 }

@@ -1,14 +1,15 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import styled from 'styled-components/primitives';
 import { View } from 'react-native';
 import Animated, { Easing } from 'react-native-reanimated';
+import styled from 'styled-components/primitives';
 import { setSelectedInputId } from '../../redux/selectedInput';
 import store from '../../redux/store';
-import { colors, position } from '../../styles';
+import { colors, position, fonts } from '../../styles';
 import { Button } from '../buttons';
+import { ExchangeInput } from '../exchange';
 import { Input } from '../inputs';
-import { Column, FlexItem, Row } from '../layout';
+import { Column, Row } from '../layout';
 
 const Underline = styled(View)`
   ${position.cover};
@@ -54,15 +55,19 @@ export default class UnderlineField extends PureComponent {
     this.state = {
       isFocused: props.autoFocus,
       value: props.value,
+      wasButtonPressed: false,
     };
   }
 
   componentDidUpdate(prevProps) {
     const { value } = this.props;
 
-    if (value !== prevProps.value) {
+    if (
+      value !== prevProps.value &&
+      (!this.input.isFocused() || this.state.wasButtonPressed)
+    ) {
       // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({ value });
+      this.setState({ value, wasButtonPressed: false });
     }
   }
 
@@ -111,6 +116,11 @@ export default class UnderlineField extends PureComponent {
     }
   };
 
+  handleButtonPress = () => {
+    this.setState({ wasButtonPressed: true });
+    this.props.onPressButton();
+  };
+
   handleRef = ref => {
     this.input = ref;
   };
@@ -121,7 +131,6 @@ export default class UnderlineField extends PureComponent {
       buttonText,
       keyboardType,
       maxLength,
-      onPressButton,
       placeholder,
       ...props
     } = this.props;
@@ -131,28 +140,30 @@ export default class UnderlineField extends PureComponent {
     return (
       <Column flex={1} {...props}>
         <Row align="center" justify="space-between" style={{ marginBottom: 8 }}>
-          <FlexItem style={{ paddingRight: 8 }}>
-            <Input
-              autoFocus={autoFocus}
-              color={colors.dark}
-              keyboardType={keyboardType}
-              letterSpacing="roundedTightest"
-              maxLength={maxLength}
-              onBlur={this.onBlur}
-              onChange={this.onChange}
-              onFocus={this.onFocus}
-              placeholder={placeholder}
-              ref={this.handleRef}
-              size="h3"
-              value={this.format(String(this.props.value || ''))}
-              weight="medium"
-            />
-          </FlexItem>
+          <ExchangeInput
+            autoFocus={autoFocus}
+            color={colors.dark}
+            disableTabularNums
+            keyboardAppearance="light"
+            keyboardType={keyboardType}
+            letterSpacing={fonts.letterSpacing.roundedTightest}
+            mask="[099999999999999999].[999999999999999999]"
+            maxLength={maxLength}
+            onBlur={this.onBlur}
+            onChange={this.onChange}
+            onFocus={this.onFocus}
+            paddingRight={8}
+            placeholder={placeholder}
+            refInput={this.handleRef}
+            size={fonts.size.h3}
+            value={this.format(String(this.state.value || ''))}
+            weight={fonts.weight.medium}
+          />
           {showFieldButton && (
             <Button
               backgroundColor={colors.sendScreen.brightBlue}
               flex={0}
-              onPress={onPressButton}
+              onPress={this.handleButtonPress}
               size="small"
               type="pill"
             >

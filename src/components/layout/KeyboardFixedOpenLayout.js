@@ -1,83 +1,49 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Keyboard, KeyboardAvoidingView } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { KeyboardAvoidingView, StyleSheet } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
-import { withKeyboardHeight } from '../../hoc';
-import { padding, position } from '../../styles';
-import { deviceUtils, safeAreaInsetValues } from '../../utils';
+import { useDimensions, useKeyboardHeight } from '../../hooks';
+import { position } from '../../styles';
+import { safeAreaInsetValues } from '../../utils';
 import Centered from './Centered';
-import { setKeyboardHeight as storeKeyboardHeight } from '../../handlers/localstorage/globalSettings';
-import { calculateKeyboardHeight } from '../../helpers/keyboardHeight';
 
-const deviceHeight = deviceUtils.dimensions.height;
-
-const FallbackKeyboardHeight = calculateKeyboardHeight(deviceHeight);
-
-const containerStyle = {
-  left: 0,
-  position: 'absolute',
-  right: 0,
-  top: 0,
-};
-
-const InnerWrapper = styled(Centered)`
-  ${padding(safeAreaInsetValues.top, 0, 10)};
-  ${position.size('100%')};
-`;
+const sx = StyleSheet.create({
+  container: {
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  innerWrapper: {
+    ...position.sizeAsObject('100%'),
+    paddingBottom: 10,
+    paddingTop: safeAreaInsetValues.top,
+  },
+});
 
 const transition = (
   <Transition.Change durationMs={150} interpolation="easeOut" />
 );
 
-const KeyboardFixedOpenLayout = ({
-  additionalPadding,
-  keyboardHeight,
-  setKeyboardHeight,
-  ...props
-}) => {
-  const ref = useRef();
-  const [didMeasure, setDidMeasure] = useState(false);
-  const resolvedKeyboardHeight = keyboardHeight || FallbackKeyboardHeight;
+const KeyboardFixedOpenLayout = ({ additionalPadding, ...props }) => {
+  const { height: screenHeight } = useDimensions();
+  const { keyboardHeight } = useKeyboardHeight();
+  const transitionRef = useRef();
 
-  const handleKeyboardWillShow = useCallback(
-    async ({ endCoordinates: { height } }) => {
-      if (height !== keyboardHeight) {
-        const newHeight = Math.floor(height);
-        setDidMeasure(true);
-        storeKeyboardHeight(newHeight);
-        setKeyboardHeight(newHeight);
-      }
-    },
-    [keyboardHeight, setKeyboardHeight]
-  );
-
+  const containerHeight = screenHeight - keyboardHeight - additionalPadding;
   useEffect(() => {
-    let listener = undefined;
-
-    if (!didMeasure) {
-      listener = Keyboard.addListener(
-        'keyboardWillShow',
-        handleKeyboardWillShow
-      );
-    }
-
-    return () => {
-      if (listener) {
-        listener.remove();
-      }
-    };
-  }, [didMeasure, handleKeyboardWillShow]);
+    transitionRef.current.animateNextTransition();
+  }, [containerHeight]);
 
   return (
     <Transitioning.View
-      ref={ref}
-      height={deviceHeight - resolvedKeyboardHeight - additionalPadding}
-      style={containerStyle}
+      height={containerHeight}
+      ref={transitionRef}
+      style={sx.container}
       transition={transition}
     >
       <KeyboardAvoidingView behavior="height" enabled={!keyboardHeight}>
-        <InnerWrapper {...props} />
+        <Centered {...props} style={sx.innerWrapper} />
       </KeyboardAvoidingView>
     </Transitioning.View>
   );
@@ -85,12 +51,10 @@ const KeyboardFixedOpenLayout = ({
 
 KeyboardFixedOpenLayout.propTypes = {
   additionalPadding: PropTypes.number,
-  keyboardHeight: PropTypes.number,
-  setKeyboardHeight: PropTypes.func,
 };
 
 KeyboardFixedOpenLayout.defaultProps = {
   additionalPadding: 0,
 };
 
-export default withKeyboardHeight(KeyboardFixedOpenLayout);
+export default React.memo(KeyboardFixedOpenLayout);

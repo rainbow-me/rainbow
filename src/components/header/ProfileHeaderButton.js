@@ -6,12 +6,13 @@ import ShadowStack from 'react-native-shadow-stack';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { isAvatarPickerAvailable } from '../../config/experimental';
-import { withRequests, withAccountInfo } from '../../hoc';
+import { withAccountInfo, withCoinListEdited, withRequests } from '../../hoc';
 import { colors } from '../../styles';
 import Avatar from '../Avatar';
 import { Badge } from '../badge';
 import { Centered, InnerBorder } from '../layout';
 import HeaderButton from './HeaderButton';
+import { OpacityToggler } from '../animations';
 
 const AvatarCircle = styled(View)`
   border-radius: 17px;
@@ -35,43 +36,52 @@ const ProfileHeaderButton = ({
   accountName,
   onPress,
   pendingRequestCount,
+  isCoinListEdited,
 }) => (
-  <HeaderButton
-    testID="goToProfile"
-    onPress={onPress}
-    shouldRasterizeIOS
-    transformOrigin="left"
+  <OpacityToggler
+    endingOpacity={0.4}
+    isVisible={isCoinListEdited}
+    startingOpacity={1}
   >
-    <Centered>
-      {isAvatarPickerAvailable ? (
-        <ShadowStack
-          backgroundColor={colors.avatarColor[accountColor]}
-          borderRadius={65}
-          height={34}
-          width={34}
-          shadows={[
-            [0, 2, 2.5, colors.dark, 0.08],
-            [0, 6, 5, colors.dark, 0.12],
-          ]}
-          shouldRasterizeIOS
-        >
-          <AvatarCircle
-            style={{ backgroundColor: colors.avatarColor[accountColor] }}
-          >
-            <FirstLetter>
-              {new GraphemeSplitter().splitGraphemes(accountName)[0]}
-            </FirstLetter>
-            <InnerBorder opacity={0.04} radius={34} />
-          </AvatarCircle>
-        </ShadowStack>
-      ) : (
-        <Avatar size={34} />
-      )}
-      {pendingRequestCount > 0 && (
-        <Badge delay={1500} value={pendingRequestCount} zIndex={1} />
-      )}
-    </Centered>
-  </HeaderButton>
+    <View pointerEvents={isCoinListEdited ? 'none' : 'auto'}>
+      <HeaderButton
+        testID="goToProfile"
+        onPress={onPress}
+        shouldRasterizeIOS
+        transformOrigin="left"
+      >
+        <Centered>
+          {isAvatarPickerAvailable ? (
+            <ShadowStack
+              backgroundColor={colors.avatarColor[accountColor]}
+              borderRadius={65}
+              height={34}
+              width={34}
+              shadows={[
+                [0, 2, 2.5, colors.dark, 0.08],
+                [0, 6, 5, colors.dark, 0.12],
+              ]}
+              shouldRasterizeIOS
+            >
+              <AvatarCircle
+                style={{ backgroundColor: colors.avatarColor[accountColor] }}
+              >
+                <FirstLetter>
+                  {new GraphemeSplitter().splitGraphemes(accountName)[0]}
+                </FirstLetter>
+                <InnerBorder opacity={0.04} radius={34} />
+              </AvatarCircle>
+            </ShadowStack>
+          ) : (
+            <Avatar size={34} />
+          )}
+          {pendingRequestCount > 0 && (
+            <Badge delay={1500} value={pendingRequestCount} zIndex={1} />
+          )}
+        </Centered>
+      </HeaderButton>
+    </View>
+  </OpacityToggler>
 );
 
 ProfileHeaderButton.propTypes = {
@@ -82,8 +92,14 @@ ProfileHeaderButton.propTypes = {
 export default compose(
   withAccountInfo,
   withRequests,
+  withCoinListEdited,
   withHandlers({
     onPress: ({ navigation }) => () => navigation.navigate('ProfileScreen'),
   }),
-  onlyUpdateForKeys(['pendingRequestCount', 'accountColor', 'accountName'])
+  onlyUpdateForKeys([
+    'pendingRequestCount',
+    'accountColor',
+    'accountName',
+    'isCoinListEdited',
+  ])
 )(ProfileHeaderButton);

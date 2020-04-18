@@ -52,7 +52,7 @@ const AddCashSheet = () => {
 
   const cashLimits = useMemo(
     () => ({
-      daily: `$${dailyRemainingLimit} remaining today`,
+      daily: `Up to $${dailyRemainingLimit} today`,
       yearly: `$${yearlyRemainingLimit} left this year`,
     }),
     [dailyRemainingLimit, yearlyRemainingLimit]

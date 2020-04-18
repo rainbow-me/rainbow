@@ -26,6 +26,8 @@ const SAVINGS_TOGGLE = 'savingsToggle';
 const TRANSACTIONS = 'transactions';
 const UNIQUE_TOKENS = 'uniquetokens';
 const WALLET_EMPTY = 'iswalletempty';
+const PINNED_COINS = 'pinnedCoins';
+const HIDDEN_COINS = 'hiddenCoins';
 
 /**
  * @desc get savings
@@ -411,3 +413,39 @@ export const saveAccountInfo = (profileInfo, accountAddress, network) =>
  */
 export const removeAccountInfo = (accountAddress, network) =>
   removeAccountLocal(ACCOUNT_INFO, accountAddress, network);
+
+/**
+ * @desc get pinned coins
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Array}
+ */
+export const getPinnedCoins = (accountAddress, network) =>
+  getAccountLocal(PINNED_COINS, accountAddress, network, []);
+
+/**
+ * @desc save pinned coins
+ * @param  {Array}    [pinned coins]
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const savePinnedCoins = (pinnedCoins, accountAddress, network) =>
+  saveAccountLocal(PINNED_COINS, pinnedCoins, accountAddress, network);
+
+/**
+ * @desc get hidden coins
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Array}
+ */
+export const getHiddenCoins = (accountAddress, network) =>
+  getAccountLocal(HIDDEN_COINS, accountAddress, network, []);
+
+/**
+ * @desc save hidden coins
+ * @param  {Array}    [hidden coins]
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const saveHiddenCoins = (hiddenCoins, accountAddress, network) =>
+  saveAccountLocal(HIDDEN_COINS, hiddenCoins, accountAddress, network);

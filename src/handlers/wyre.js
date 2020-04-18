@@ -65,7 +65,7 @@ export const requestWyreApplePay = (
           ? RAINBOW_WYRE_MERCHANT_ID_TEST
           : RAINBOW_WYRE_MERCHANT_ID,
         supportedCountries: WYRE_SUPPORTED_COUNTRIES_ISO,
-        supportedNetworks: ['visa', 'mastercard', 'amex'],
+        supportedNetworks: ['visa', 'mastercard', 'discover'],
       },
       supportedMethods: ['apple-pay'],
     },

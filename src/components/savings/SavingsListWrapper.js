@@ -52,11 +52,11 @@ const SavingsListWrapper = ({ assets, totalValue }) => {
 
 SavingsListWrapper.propTypes = {
   assets: PropTypes.array,
-  totalValue: PropTypes.number,
+  totalValue: PropTypes.string,
 };
 
 SavingsListWrapper.defaultProps = {
-  totalValue: 0,
+  totalValue: '0',
 };
 
 export default SavingsListWrapper;

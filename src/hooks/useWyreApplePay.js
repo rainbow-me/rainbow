@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureMessage, captureException } from '@sentry/react-native';
-import { isEmpty, toLower } from 'lodash';
+import { get, isEmpty, toLower } from 'lodash';
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
@@ -18,11 +18,13 @@ import { addCashNewPurchaseTransaction } from '../redux/addCash';
 import { dataAddNewTransaction } from '../redux/data';
 import { AddCashCurrencies, AddCashCurrencyInfo } from '../references';
 import { ethereumUtils, logger } from '../utils';
-import useAccountData from './useAccountData';
+import useAccountAssets from './useAccountAssets';
+import useAccountSettings from './useAccountSettings';
 import useTimeout from './useTimeout';
 
 export default function useWyreApplePay() {
-  const { accountAddress, assets, network } = useAccountData();
+  const { accountAddress, network } = useAccountSettings();
+  const { assets } = useAccountAssets();
 
   const [isPaymentComplete, setPaymentComplete] = useState(false);
   const [orderCurrency, setOrderCurrency] = useState(null);
@@ -130,7 +132,8 @@ export default function useWyreApplePay() {
         if (!isPaymentComplete && isEmpty(orderId)) {
           analytics.track('Purchase failed', {
             category: 'add cash',
-            error_type: 'no order id',
+            error_category: 'EARLY_FAILURE',
+            error_code: 'NO_ORDER_ID',
           });
           paymentResponse.complete('fail');
           handlePaymentCallback();
@@ -152,8 +155,8 @@ export default function useWyreApplePay() {
             captureMessage(`Wyre final check - order status failed`);
             analytics.track('Purchase failed', {
               category: 'add cash',
-              data,
-              error_type: 'other',
+              error_category: get(data, 'errorCategory', 'unknown'),
+              error_code: get(data, 'errorCode', 'unknown'),
             });
             paymentResponse.complete('fail');
             handlePaymentCallback();

@@ -16,6 +16,7 @@ const ListHeader = pure(
   ({
     children,
     contextMenuOptions,
+    isCoinListEdited,
     isSticky,
     showDivider,
     title,
@@ -43,7 +44,7 @@ const ListHeader = pure(
       >
         <Row align="center">
           {createElement(titleRenderer, { children: title })}
-          {contextMenuOptions && <ContextMenu {...contextMenuOptions} />}
+          <ContextMenu marginTop={1.25} {...contextMenuOptions} />
         </Row>
         {children}
       </Row>
@@ -52,7 +53,8 @@ const ListHeader = pure(
         <View
           style={{
             backgroundColor: colors.white,
-            height: deviceUtils.dimensions.height,
+            height: deviceUtils.dimensions.height + 100,
+            top: isCoinListEdited ? -40 : 0,
             width: deviceUtils.dimensions.width,
           }}
         />

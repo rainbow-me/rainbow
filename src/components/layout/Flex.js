@@ -1,33 +1,38 @@
-import omitProps from '@hocs/omit-props';
 import PropTypes from 'prop-types';
+import { createElement, useMemo } from 'react';
 import { View } from 'react-primitives';
-import { componentFromProp } from 'recompact';
-import styled from 'styled-components/primitives';
 
 export const getFlexStyleKeysFromShorthand = style =>
   style === 'end' || style === 'start' ? `flex-${style}` : style;
 
-const FlexPropBlacklist = [
-  'align',
-  'direction',
-  'flex',
-  'justify',
-  'self',
-  'wrap',
-];
-const FlexElement = omitProps(...FlexPropBlacklist)(
-  componentFromProp('component')
-);
+const Flex = ({
+  align,
+  component,
+  direction,
+  flex: flexProp,
+  justify,
+  self,
+  style,
+  wrap,
+  ...props
+}) => {
+  const flexStyles = useMemo(
+    () => ({
+      ...(self ? { alignSelf: getFlexStyleKeysFromShorthand(self) } : {}),
+      ...(flexProp ? { flex: flexProp } : {}),
+      alignItems: getFlexStyleKeysFromShorthand(align),
+      flexDirection: direction,
+      flexWrap: wrap ? 'wrap' : 'nowrap',
+      justifyContent: getFlexStyleKeysFromShorthand(justify),
+    }),
+    [align, direction, flexProp, justify, self, wrap]
+  );
 
-const Flex = styled(FlexElement)`
-  ${({ self }) =>
-    self ? `align-self: ${getFlexStyleKeysFromShorthand(self)};` : ''}
-  ${({ flex }) => (flex ? `flex: ${flex};` : '')}
-  align-items: ${({ align }) => getFlexStyleKeysFromShorthand(align)};
-  flex-direction: ${({ direction }) => direction};
-  flex-wrap: ${({ wrap }) => (wrap ? 'wrap' : 'nowrap')};
-  justify-content: ${({ justify }) => getFlexStyleKeysFromShorthand(justify)};
-`;
+  return createElement(component, {
+    ...props,
+    style: [flexStyles, style],
+  });
+};
 
 Flex.displayName = 'Flex';
 

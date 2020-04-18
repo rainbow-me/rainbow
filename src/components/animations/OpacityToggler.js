@@ -53,6 +53,7 @@ export default class OpacityToggler extends Component {
     friction: PropTypes.number,
     isVisible: PropTypes.bool,
     startingOpacity: PropTypes.number,
+    style: PropTypes.object,
     tension: PropTypes.number,
   };
 
@@ -60,6 +61,7 @@ export default class OpacityToggler extends Component {
     endingOpacity: 0,
     friction: 20,
     startingOpacity: 1,
+    style: {},
     tension: 200,
   };
 
@@ -105,6 +107,7 @@ export default class OpacityToggler extends Component {
       children,
       endingOpacity,
       startingOpacity,
+      style,
     } = this.props;
 
     let opacity = !this._isVisible ? startingOpacity : endingOpacity;
@@ -118,6 +121,8 @@ export default class OpacityToggler extends Component {
       opacity = this._opacity;
     }
 
-    return <Animated.View style={{ opacity }}>{children}</Animated.View>;
+    return (
+      <Animated.View style={[style, { opacity }]}>{children}</Animated.View>
+    );
   }
 }

@@ -147,6 +147,7 @@ const SavingsSheet = () => {
           </FloatingEmojis>
           <Divider color={colors.rowDividerLight} zIndex={0} />
           <SavingsPredictionStepper
+            asset={underlying}
             balance={underlyingBalanceNativeValue}
             interestRate={supplyRate}
           />

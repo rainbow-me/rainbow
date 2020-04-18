@@ -4,6 +4,7 @@ import actionSheetManager from './actionSheetManager';
 import addCash from './addCash';
 import contacts from './contacts';
 import data from './data';
+import editOptions from './editOptions';
 import explorer from './explorer';
 import gas from './gas';
 import imageDimensionsCache from './imageDimensionsCache';
@@ -28,6 +29,7 @@ export default combineReducers({
   addCash,
   contacts,
   data,
+  editOptions,
   explorer,
   gas,
   imageDimensionsCache,

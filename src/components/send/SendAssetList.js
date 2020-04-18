@@ -248,7 +248,6 @@ class SendAssetList extends React.Component {
   savingsRenderItem = item => (
     <View marginTop={10}>
       <SavingsListHeader
-        childrenAmount={item.data.length}
         isOpen={this.state.openSavings}
         onPress={() => {
           this.changeOpenSavings();

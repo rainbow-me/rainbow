@@ -22,11 +22,13 @@ const getEthPriceUnit = assets => {
 const getOnChainBalance = async (selected, accountAddress) => {
   try {
     let onChainBalance = 0;
-    if (selected.address === 'eth') {
+    const selectedAddress = get(selected, 'address', null);
+    if (!selectedAddress) return 0;
+    if (selectedAddress === 'eth') {
       onChainBalance = await web3Provider.getBalance(accountAddress);
     } else {
       const tokenContract = new ethers.Contract(
-        selected.address,
+        selectedAddress,
         erc20ABI,
         web3Provider
       );
@@ -48,12 +50,12 @@ const getBalanceAmount = async (
   accountAddress = null
 ) => {
   let amount = '';
-  if (onchain) {
+  if (onchain && selected && selected.address) {
     amount = await getOnChainBalance(selected, accountAddress);
   } else {
     amount = get(selected, 'balance.amount', 0);
   }
-  if (selected.address === 'eth') {
+  if (selected && selected.address === 'eth') {
     if (!isEmpty(selectedGasPrice)) {
       const txFeeRaw = get(selectedGasPrice, 'txFee.value.amount');
       const txFeeAmount = fromWei(txFeeRaw);

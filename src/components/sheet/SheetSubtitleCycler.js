@@ -34,7 +34,7 @@ const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
         color={bInterpolateColor(
           textColorAnimation,
           colors.blueGreyDark50,
-          colors.pink
+          colors.brightRed
         )}
         letterSpacing="uppercase"
         size="smedium"

@@ -2,12 +2,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, withHandlers } from 'recompact';
 import { withAccountSettings } from '../../hoc';
+import { deviceUtils } from '../../utils';
 import { removeLeadingZeros } from '../../utils/formatters';
 import { ColumnWithMargins } from '../layout';
 import SendAssetFormField from './SendAssetFormField';
 
 const SendAssetFormToken = ({
   assetAmount,
+  buttonRenderer,
   formatNativeInput,
   nativeAmount,
   nativeCurrency,
@@ -15,31 +17,44 @@ const SendAssetFormToken = ({
   onChangeNativeAmount,
   selected,
   sendMaxBalance,
+  txSpeedRenderer,
   ...props
 }) => (
-  <ColumnWithMargins {...props} flex={0} margin={18} width="100%">
-    <SendAssetFormField
-      format={removeLeadingZeros}
-      label={selected.symbol}
-      onChange={onChangeAssetAmount}
-      onPressButton={sendMaxBalance}
-      placeholder="0"
-      value={assetAmount}
-    />
-    <SendAssetFormField
-      autoFocus
-      format={formatNativeInput}
-      label={nativeCurrency}
-      onChange={onChangeNativeAmount}
-      onPressButton={sendMaxBalance}
-      placeholder="0.00"
-      value={nativeAmount}
-    />
-  </ColumnWithMargins>
+  <>
+    <ColumnWithMargins {...props} flex={0} margin={18} width="100%">
+      <SendAssetFormField
+        format={removeLeadingZeros}
+        label={selected.symbol}
+        onChange={onChangeAssetAmount}
+        onPressButton={sendMaxBalance}
+        placeholder="0"
+        value={assetAmount}
+      />
+      <SendAssetFormField
+        autoFocus
+        format={formatNativeInput}
+        label={nativeCurrency}
+        onChange={onChangeNativeAmount}
+        onPressButton={sendMaxBalance}
+        placeholder="0.00"
+        value={nativeAmount}
+      />
+    </ColumnWithMargins>
+    <ColumnWithMargins
+      flex={0}
+      margin={deviceUtils.dimensions.height < 812 ? 15.5 : 31}
+      style={{ zIndex: 3 }}
+      width="100%"
+    >
+      {buttonRenderer}
+      {txSpeedRenderer}
+    </ColumnWithMargins>
+  </>
 );
 
 SendAssetFormToken.propTypes = {
   assetAmount: PropTypes.string,
+  buttonRenderer: PropTypes.object,
   formatNativeInput: PropTypes.func,
   nativeAmount: PropTypes.string,
   nativeCurrency: PropTypes.string,
@@ -48,6 +63,7 @@ SendAssetFormToken.propTypes = {
   onResetAssetSelection: PropTypes.func,
   selected: PropTypes.object,
   sendMaxBalance: PropTypes.func,
+  txSpeedRenderer: PropTypes.object,
 };
 
 export default compose(

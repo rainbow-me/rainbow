@@ -80,8 +80,15 @@ export const removeWalletConnect = (accountAddress, network) =>
   removeAccountLocal(WALLETCONNECT, accountAddress, network);
 
 const isRequestStillValid = request => {
-  const createdAt = request.displayDetails.timestampInMs;
-  return differenceInMinutes(Date.now(), createdAt) < 60;
+  if (
+    request &&
+    request.displayDetails &&
+    request.displayDetails.timestampInMs
+  ) {
+    const createdAt = request.displayDetails.timestampInMs;
+    return differenceInMinutes(Date.now(), createdAt) < 60;
+  }
+  return false;
 };
 
 /**

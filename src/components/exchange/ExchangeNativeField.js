@@ -105,7 +105,6 @@ class ExchangeNativeField extends Component {
           <ExchangeInput
             color={color}
             disableTabularNums
-            fontFamily={fonts.family.SFProRounded}
             fontSize={fonts.size.large}
             fontWeight={fonts.weight.regular}
             letterSpacing={fonts.letterSpacing.roundedTight}

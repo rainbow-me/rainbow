@@ -1,4 +1,4 @@
-import { get, groupBy, isEmpty, isNil, map, toNumber } from 'lodash';
+import { filter, get, groupBy, isEmpty, isNil, map, toNumber } from 'lodash';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import {
@@ -16,11 +16,14 @@ const assetPricesFromUniswapSelector = state =>
 const assetsSelector = state => (state.data ? state.data.assets : state.assets);
 const nativeCurrencySelector = state =>
   state.settings ? state.settings.nativeCurrency : state.nativeCurrency;
+const hiddenCoinsSelector = state =>
+  state.editOptions ? state.editOptions.hiddenCoins : state.hiddenCoins;
 
 const sortAssetsByNativeAmount = (
   originalAssets,
   assetPricesFromUniswap,
-  nativeCurrency
+  nativeCurrency,
+  hiddenCoins
 ) => {
   let updatedAssets = originalAssets;
   if (!isEmpty(assetPricesFromUniswap)) {
@@ -68,10 +71,15 @@ const sortAssetsByNativeAmount = (
   );
   const sortedShitcoins = sortList(noValue, 'name', 'asc');
   const allAssets = sortedAssets.concat(sortedShitcoins);
+  const allAssetsWithoutHidden = filter(
+    allAssets,
+    asset => !hiddenCoins.includes(asset.uniqueId)
+  );
 
   return {
     allAssets,
     allAssetsCount: allAssets.length,
+    allAssetsWithoutHidden,
     assetPricesFromUniswap,
     assets: sortedAssets,
     assetsCount: sortedAssets.length,
@@ -129,6 +137,11 @@ const parseAssetsNative = (assets, nativeCurrency) => {
 };
 
 export const sortAssetsByNativeAmountSelector = createSelector(
-  [assetsSelector, assetPricesFromUniswapSelector, nativeCurrencySelector],
+  [
+    assetsSelector,
+    assetPricesFromUniswapSelector,
+    nativeCurrencySelector,
+    hiddenCoinsSelector,
+  ],
   sortAssetsByNativeAmount
 );

@@ -4,14 +4,17 @@ import PropTypes from 'prop-types';
 import { View } from 'react-native';
 import React, { Fragment, PureComponent } from 'react';
 import { compose, withProps } from 'recompact';
-import { withAccountSettings, withOpenBalances } from '../../hoc';
+import { convertAmountToNativeDisplay } from '../../helpers/utilities';
+import {
+  withAccountSettings,
+  withOpenBalances,
+  withEditOptions,
+} from '../../hoc';
 import { OpacityToggler } from '../animations';
-import CoinDivider from './CoinDivider';
 
 class SmallBalancesWrapper extends PureComponent {
   static propTypes = {
     assets: PropTypes.array,
-    balancesSum: PropTypes.string,
     openSmallBalances: PropTypes.bool,
     setOpenSmallBalances: PropTypes.func,
   };
@@ -22,24 +25,29 @@ class SmallBalancesWrapper extends PureComponent {
     this.props.setOpenSmallBalances(!this.props.openSmallBalances);
 
   render = () => {
-    const { assets, balancesSum, openSmallBalances } = this.props;
+    const { assets, openSmallBalances } = this.props;
 
     return (
       <Fragment>
-        <CoinDivider
-          balancesSum={balancesSum}
-          onPress={this.handlePress}
-          openSmallBalances={openSmallBalances}
-        />
-        <View pointerEvents={openSmallBalances ? 'auto' : 'none'}>
-          <OpacityToggler
-            endingOpacity={1}
-            isVisible={openSmallBalances}
-            startingOpacity={0}
+        <OpacityToggler
+          endingOpacity={1}
+          isVisible={openSmallBalances}
+          startingOpacity={0}
+        >
+          <View
+            marginTop={13}
+            pointerEvents={openSmallBalances ? 'auto' : 'none'}
           >
-            {assets}
-          </OpacityToggler>
-        </View>
+            <View
+              style={{
+                opacity: openSmallBalances ? 1 : 0,
+                position: 'absolute',
+              }}
+            >
+              {assets}
+            </View>
+          </View>
+        </OpacityToggler>
       </Fragment>
     );
   };
@@ -59,10 +67,16 @@ export default compose(
   withAccountSettings,
   withOpenBalances,
   withSafeTimeout,
-  withProps(({ assets, nativeCurrencySymbol }) => {
+  withEditOptions,
+  withProps(({ assets, nativeCurrency }) => {
     const balance = assets.reduce(reduceBalances, 0);
     return isNumber(balance)
-      ? { balancesSum: `${nativeCurrencySymbol}${balance.toFixed(2)}` }
+      ? {
+          balancesSum: `${convertAmountToNativeDisplay(
+            balance,
+            nativeCurrency
+          )}`,
+        }
       : {};
   })
 )(SmallBalancesWrapper);
