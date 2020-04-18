@@ -1,8 +1,8 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect, useCallback } from 'react';
 import { View } from 'react-native';
-import { compose, shouldUpdate, withHandlers } from 'recompact';
+import { compose } from 'recompact';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import {
   withCoinListEdited,
@@ -78,10 +78,18 @@ const BalanceCoinRow = ({
     setToggle(!toggle);
   };
 
+  const onPressHandler = useCallback(() => {
+    onPress && onPress(item);
+  }, [onPress, item]);
+
+  const onPressSendHandler = useCallback(() => {
+    onPressSend && onPressSend(item);
+  }, [onPressSend, item]);
+
   return item.isSmall ? (
     <View width={deviceUtils.dimensions.width}>
       <ButtonPressAnimation
-        onPress={isCoinListEdited ? handlePress : onPress}
+        onPress={isCoinListEdited ? handlePress : onPressHandler}
         scaleTo={0.96}
       >
         <Row>
@@ -94,8 +102,8 @@ const BalanceCoinRow = ({
             }
           >
             <CoinRow
-              onPress={onPress}
-              onPressSend={onPressSend}
+              onPress={onPressHandler}
+              onPressSend={onPressSendHandler}
               {...item}
               {...props}
               bottomRowRender={BottomRow}
@@ -114,7 +122,7 @@ const BalanceCoinRow = ({
   ) : (
     <Column flex={1} justify={isFirstCoinRow ? 'end' : 'start'}>
       <ButtonPressAnimation
-        onPress={isCoinListEdited ? handlePress : onPress}
+        onPress={isCoinListEdited ? handlePress : onPressHandler}
         scaleTo={0.96}
       >
         <Row>
@@ -127,8 +135,8 @@ const BalanceCoinRow = ({
             }
           >
             <CoinRow
-              onPress={onPress}
-              onPressSend={onPressSend}
+              onPress={onPressHandler}
+              onPressSend={onPressSendHandler}
               {...item}
               {...props}
               bottomRowRender={BottomRow}
@@ -155,45 +163,36 @@ BalanceCoinRow.propTypes = {
   openSmallBalances: PropTypes.bool,
 };
 
-export default compose(
-  withOpenBalances,
-  withEditOptions,
-  withCoinListEdited,
-  withCoinRecentlyPinned,
-  withHandlers({
-    onPress: ({ item, onPress }) => () => {
-      if (onPress) {
-        onPress(item);
-      }
-    },
-    onPressSend: ({ item, onPressSend }) => () => {
-      if (onPressSend) {
-        onPressSend(item);
-      }
-    },
-  }),
-  shouldUpdate((props, nextProps) => {
-    const isChangeInOpenAssets =
-      props.openSmallBalances !== nextProps.openSmallBalances;
-    const itemIdentifier = buildAssetUniqueIdentifier(props.item);
-    const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.item);
+const arePropsEqual = (props, nextProps) => {
+  const isChangeInOpenAssets =
+    props.openSmallBalances !== nextProps.openSmallBalances;
+  const itemIdentifier = buildAssetUniqueIdentifier(props.item);
+  const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.item);
 
-    const isNewItem = itemIdentifier !== nextItemIdentifier;
-    const isEdited = isNewValueForPath(props, nextProps, 'isCoinListEdited');
-    const isPinned = isNewValueForPath(props, nextProps, 'item.isPinned');
-    const isHidden = isNewValueForPath(props, nextProps, 'item.isHidden');
-    const recentlyPinnedCount =
-      isNewValueForPath(props, nextProps, 'recentlyPinnedCount') &&
-      (get(props, 'item.isPinned', false) ||
-        get(props, 'item.isHidden', false));
+  const isNewItem = itemIdentifier !== nextItemIdentifier;
+  const isEdited = isNewValueForPath(props, nextProps, 'isCoinListEdited');
+  const isPinned = isNewValueForPath(props, nextProps, 'item.isPinned');
+  const isHidden = isNewValueForPath(props, nextProps, 'item.isHidden');
+  const recentlyPinnedCount =
+    isNewValueForPath(props, nextProps, 'recentlyPinnedCount') &&
+    (get(props, 'item.isPinned', false) || get(props, 'item.isHidden', false));
 
-    return (
-      isNewItem ||
-      isChangeInOpenAssets ||
-      isEdited ||
-      isPinned ||
-      isHidden ||
-      recentlyPinnedCount
-    );
-  })
-)(BalanceCoinRow);
+  return (
+    isNewItem ||
+    isChangeInOpenAssets ||
+    isEdited ||
+    isPinned ||
+    isHidden ||
+    recentlyPinnedCount
+  );
+};
+
+export default React.memo(
+  compose(
+    withOpenBalances,
+    withEditOptions,
+    withCoinListEdited,
+    withCoinRecentlyPinned
+  )(BalanceCoinRow),
+  arePropsEqual
+);
