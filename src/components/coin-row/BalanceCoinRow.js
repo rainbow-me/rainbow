@@ -24,7 +24,7 @@ const editTranslateOffset = 32;
 const BottomRow = ({ balance }) => {
   return (
     <Fragment>
-      <BottomRowText>{balance.display}</BottomRowText>
+      <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
     </Fragment>
   );
 };
