@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { remove } from 'lodash';
+import { concat, without } from 'lodash';
 import {
   getShowcaseTokens,
   saveShowcaseTokens,
@@ -27,28 +27,29 @@ export const showcaseTokensLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const pushShowcaseToken = payload => (dispatch, getState) => {
+export const pushShowcaseToken = tokenId => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
+  const { showcaseTokens } = getState().showcaseTokens;
+  const updatedShowcaseTokens = concat(showcaseTokens, tokenId);
   dispatch({
-    payload: {
-      accountAddress,
-      network,
-      uniqueId: payload,
-    },
+    payload: updatedShowcaseTokens,
     type: PUSH_SHOWCASE_TOKEN,
   });
+  saveShowcaseTokens(updatedShowcaseTokens, accountAddress, network);
 };
 
-export const popShowcaseToken = payload => (dispatch, getState) => {
+export const popShowcaseToken = tokenId => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
+  const { showcaseTokens } = getState().showcaseTokens;
+
+  const updatedShowcaseTokens = without(showcaseTokens, tokenId);
+
   dispatch({
-    payload: {
-      accountAddress,
-      network,
-      uniqueId: payload,
-    },
+    payload: updatedShowcaseTokens,
     type: POP_SHOWCASE_TOKEN,
   });
+
+  saveShowcaseTokens(updatedShowcaseTokens, accountAddress, network);
 };
 
 // -- Reducer ----------------------------------------- //
@@ -59,22 +60,10 @@ const INITIAL_STATE = {
 export default (state = INITIAL_STATE, action) =>
   produce(state, draft => {
     if (action.type === PUSH_SHOWCASE_TOKEN) {
-      draft.showcaseTokens.push(action.payload.uniqueId);
-      saveShowcaseTokens(
-        draft.showcaseTokens,
-        action.payload.accountAddress,
-        action.payload.network
-      );
+      draft.showcaseTokens = action.payload;
     } else if (action.type === POP_SHOWCASE_TOKEN) {
-      remove(draft.showcaseTokens, token => {
-        return token === action.payload.uniqueId;
-      });
-      saveShowcaseTokens(
-        draft.showcaseTokens,
-        action.payload.accountAddress,
-        action.payload.network
-      );
+      draft.showcaseTokens = action.payload;
     } else if (action.type === SHOWCASE_TOKENS_LOAD_SUCCESS) {
-      draft.showcaseTokens = action.payload.length > 0 ? action.payload : [];
+      draft.showcaseTokens = action.payload;
     }
   });
