@@ -19,11 +19,8 @@ import {
   isValidMnemonic,
   web3Provider,
 } from '../handlers/web3';
-import { logger } from '../utils';
 import * as keychain from './keychain';
 
-const RAINBOW_KEYCHAIN_VERSION = '1.0.0';
-const keychainVersion = 'rainbowKeychainVersion';
 const seedPhraseKey = 'rainbowSeedPhrase';
 const privateKeyKey = 'rainbowPrivateKey';
 const addressKey = 'rainbowAddressKey';
@@ -52,16 +49,7 @@ export const walletInit = async (seedPhrase = null) => {
 };
 
 export const loadWallet = async () => {
-  const savedVersion = await loadKeychainVersion();
-  let privateKey = null;
-  if (!savedVersion || savedVersion !== RAINBOW_KEYCHAIN_VERSION) {
-    const seedPhrase = await loadSeedPhrase();
-    const wallet = await createWallet(seedPhrase);
-    privateKey = wallet.privateKey;
-    logger.sentry(`Upgrading keychain version to ${RAINBOW_KEYCHAIN_VERSION}`);
-  } else {
-    privateKey = await loadPrivateKey();
-  }
+  const privateKey = await loadPrivateKey();
   if (privateKey) {
     return new ethers.Wallet(privateKey, web3Provider);
   }
@@ -287,7 +275,6 @@ const saveWalletDetails = async (seedPhrase, privateKey, address) => {
   saveSeedPhrase(seedPhrase, privateAccessControlOptions);
   savePrivateKey(privateKey, privateAccessControlOptions);
   saveAddress(address, publicAccessControlOptions);
-  saveKeychainVersion(publicAccessControlOptions);
 };
 
 const saveSeedPhrase = async (seedPhrase, accessControlOptions = {}) => {
@@ -313,20 +300,4 @@ const loadPrivateKey = async (
 
 const saveAddress = async (address, accessControlOptions = {}) => {
   await keychain.saveString(addressKey, address, accessControlOptions);
-};
-
-const saveKeychainVersion = async (accessControlOptions = {}) => {
-  await keychain.saveString(
-    keychainVersion,
-    RAINBOW_KEYCHAIN_VERSION,
-    accessControlOptions
-  );
-};
-
-const loadKeychainVersion = async () => {
-  try {
-    return keychain.loadString(keychainVersion);
-  } catch (error) {
-    return null;
-  }
 };
