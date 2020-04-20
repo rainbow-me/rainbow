@@ -21,6 +21,7 @@ import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import LoadingState from '../activity-list/LoadingState';
 import { FloatingEmojis } from '../floating-emojis';
+import { toChecksumAddress } from '../../handlers/web3';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
@@ -55,6 +56,11 @@ class TransactionList extends React.PureComponent {
     return '';
   };
 
+  checksumAddress(transaction) {
+    transaction.address = toChecksumAddress(transaction.address);
+    return transaction;
+  }
+
   render() {
     const {
       header,
@@ -83,8 +89,8 @@ class TransactionList extends React.PureComponent {
     const addressOrEns = accountENS || this.formatAddress(accountAddress);
 
     const data = {
-      requests,
-      transactions,
+      requests: requests.map(this.checksumAddress),
+      transactions: transactions.map(this.checksumAddress),
     };
 
     return (

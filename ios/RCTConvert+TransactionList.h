@@ -40,6 +40,9 @@
     if (data[@"symbol"] != [NSNull null]) {
        transaction.symbol = data[@"symbol"];
     }
+    if (data[@"address"] != [NSNull null]) {
+      transaction.address = data[@"address"];
+    }
     if (data[@"asset"][@"icon_url"] != [NSNull null]) {
       transaction.coinImage = data[@"asset"][@"icon_url"];
     }
