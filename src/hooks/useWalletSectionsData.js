@@ -1,12 +1,13 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { buildWalletSectionsSelector } from '../helpers/buildWalletSections';
+import { readableUniswapSelector } from '../hoc/uniswapLiquidityTokenInfoSelector';
 import useAccountAssets from './useAccountAssets';
 import useAccountSettings from './useAccountSettings';
-import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useCoinListEditOptions from './useCoinListEditOptions';
-import { readableUniswapSelector } from '../hoc/uniswapLiquidityTokenInfoSelector';
 import useSavingsAccount from './useSavingsAccount';
+import useSendableUniqueTokens from './useSendableUniqueTokens';
+import useShowcaseTokens from './useShowcaseTokens';
 
 export default function useWalletSectionsData() {
   const isWalletEthZero = useSelector(
@@ -19,6 +20,7 @@ export default function useWalletSectionsData() {
   const { language, network, nativeCurrency } = useAccountSettings();
   const uniqueTokens = useSendableUniqueTokens();
   const uniswap = useSelector(readableUniswapSelector);
+  const { showcaseTokens } = useShowcaseTokens();
 
   const {
     currentAction,
@@ -43,6 +45,7 @@ export default function useWalletSectionsData() {
       ...uniqueTokens,
       ...uniswap,
       ...isWalletEthZero,
+      showcaseTokens,
     };
     const creation = buildWalletSectionsSelector(accountInfo);
     return {
@@ -60,6 +63,7 @@ export default function useWalletSectionsData() {
     nativeCurrency,
     network,
     pinnedCoins,
+    showcaseTokens,
     uniqueTokens,
     uniswap,
   ]);

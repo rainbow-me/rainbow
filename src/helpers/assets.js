@@ -1,5 +1,4 @@
 import { compact, forEach, get, groupBy, includes, sortBy } from 'lodash';
-import store from '../redux/store';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 import { add } from './utilities';
 
@@ -126,9 +125,7 @@ export const buildCoinsList = (
   return { assets: allAssets, totalBalancesValue };
 };
 
-export const buildUniqueTokenList = uniqueTokens => {
-  const selectedShowcaseTokens = store.getState().showcaseTokens.showcaseTokens;
-
+export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
   let rows = [];
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];

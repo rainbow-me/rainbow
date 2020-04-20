@@ -9,7 +9,6 @@ import { openStateSettingsLoadState } from '../redux/openStateSettings';
 import { coinListLoadState } from '../redux/editOptions';
 import { requestsLoadState } from '../redux/requests';
 import { savingsLoadState } from '../redux/savings';
-import { showcaseTokensLoadState } from '../redux/showcaseTokens';
 import { settingsLoadState } from '../redux/settings';
 import { showcaseTokensLoadState } from '../redux/showcaseTokens';
 import { uniqueTokensLoadState } from '../redux/uniqueTokens';
