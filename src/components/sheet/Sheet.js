@@ -3,8 +3,8 @@ import React from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useNavigation } from 'react-navigation-hooks';
 import { borders, colors } from '../../styles';
-import { Centered, Column } from '../layout';
 import TouchableBackdrop from '../TouchableBackdrop';
+import { Centered, Column } from '../layout';
 import SheetHandle from './SheetHandle';
 
 const Sheet = ({ children }) => {

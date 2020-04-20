@@ -1,10 +1,12 @@
 import { toLower } from 'lodash';
 import React from 'react';
-import { Share, Platform } from 'react-native';
+import { Platform, Share } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components/primitives';
 import Divider from '../components/Divider';
+import QRCodeDisplay from '../components/QRCodeDisplay';
+import { FloatingEmojis } from '../components/floating-emojis';
 import { Column } from '../components/layout';
 import {
   Modal,
@@ -12,8 +14,6 @@ import {
   ModalFooterButtonsRow,
   ModalHeader,
 } from '../components/modal';
-import QRCodeDisplay from '../components/QRCodeDisplay';
-import { FloatingEmojis } from '../components/floating-emojis';
 import { Br, Monospace, Text } from '../components/text';
 import { useClipboard } from '../hooks';
 import { colors } from '../styles';

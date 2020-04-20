@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { onlyUpdateForKeys } from 'recompact';
 import { View } from 'react-primitives';
+import { onlyUpdateForKeys } from 'recompact';
 import { colors, position } from '../styles';
 
 const Highlight = ({ backgroundColor, borderRadius, visible, ...props }) => (

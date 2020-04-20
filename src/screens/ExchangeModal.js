@@ -24,6 +24,7 @@ import {
   ExchangeOutputField,
   SlippageWarning,
 } from '../components/exchange';
+import SwapInfo from '../components/exchange/SwapInfo';
 import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
@@ -59,7 +60,6 @@ import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import { backgroundTask, ethereumUtils, logger } from '../utils';
 import { CurrencySelectionTypes } from './CurrencySelectModal';
-import SwapInfo from '../components/exchange/SwapInfo';
 
 export const exchangeModalBorderRadius = 30;
 

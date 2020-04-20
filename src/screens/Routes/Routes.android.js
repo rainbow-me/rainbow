@@ -2,40 +2,40 @@ import analytics from '@segment/analytics-react-native';
 import { get, omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import { createAppContainer, NavigationActions } from 'react-navigation';
-import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
-import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
 // eslint-disable-next-line import/no-unresolved
 import { enableScreens } from 'react-native-screens';
 import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
+import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
+import { createAppContainer, NavigationActions } from 'react-navigation';
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { ExchangeModalNavigator, Navigation } from '../../navigation';
-import { deviceUtils, sentryUtils } from '../../utils';
-import AddCashSheet from '../AddCashSheet';
-import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
-import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
-import ProfileScreenWithData from '../ProfileScreenWithData';
-import QRScannerScreenWithData from '../QRScannerScreenWithData';
-import ReceiveModal from '../ReceiveModal';
-import ExampleScreen from '../ExampleScreen';
-import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
-import SendSheetWithData from '../SendSheetWithData';
-import SettingsModal from '../SettingsModal';
-import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
-import WalletScreen from '../WalletScreen';
-import AvatarBuilder from '../AvatarBuilder';
+import createStackNavigator, {
+  onTransitionEnd,
+  onTransitionStart,
+} from '../../navigation/createStackNavigator';
 import {
-  emojiPreset,
   backgroundPreset,
+  emojiPreset,
   exchangePreset,
   expandedPreset,
   overlayExpandedPreset,
   sheetPreset,
 } from '../../navigation/transitions/effects';
-import createStackNavigator, {
-  onTransitionEnd,
-  onTransitionStart,
-} from '../../navigation/createStackNavigator';
+import { deviceUtils, sentryUtils } from '../../utils';
+import AddCashSheet from '../AddCashSheet';
+import AvatarBuilder from '../AvatarBuilder';
+import ExampleScreen from '../ExampleScreen';
+import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
+import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
+import ProfileScreenWithData from '../ProfileScreenWithData';
+import QRScannerScreenWithData from '../QRScannerScreenWithData';
+import ReceiveModal from '../ReceiveModal';
+import SendSheetWithData from '../SendSheetWithData';
+import SettingsModal from '../SettingsModal';
+import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
+import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
+import WalletScreen from '../WalletScreen';
 
 enableScreens();
 

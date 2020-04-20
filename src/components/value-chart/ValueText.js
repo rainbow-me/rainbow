@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components/primitives';
 import { View } from 'react-native';
+import { Transition, Transitioning } from 'react-native-reanimated';
+import styled from 'styled-components/primitives';
 import { colors, fonts } from '../../styles';
+import { deviceUtils } from '../../utils';
 import { TruncatedText } from '../text';
 import TrendIndicatorText from './TrendIndicatorText';
-import { deviceUtils } from '../../utils';
-import { Transition, Transitioning } from 'react-native-reanimated';
 
 const HeadingTextStyles = {
   color: colors.dark,

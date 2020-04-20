@@ -1,7 +1,6 @@
 /* eslint-disable sort-keys */
 /* eslint-disable react-native/no-unused-styles */
 import { BlurView } from '@react-native-community/blur';
-/* eslint-disable-next-line import/extensions */
 import emoji from 'emoji-datasource';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -16,9 +15,9 @@ import {
   View,
 } from 'react-native';
 import {
+  ScrollView,
   State,
   TapGestureHandler,
-  ScrollView,
 } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated from 'react-native-reanimated';

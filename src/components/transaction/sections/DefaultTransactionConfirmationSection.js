@@ -5,8 +5,8 @@ import { compose, mapProps, pure } from 'recompose';
 import { colors } from '../../../styles';
 import { Text, TruncatedAddress } from '../../text';
 import TransactionMessage from '../TransactionMessage';
-import TransactionSheet from '../TransactionSheet';
 import TransactionRow from '../TransactionRow';
+import TransactionSheet from '../TransactionSheet';
 
 const DefaultTransactionConfirmationSection = ({
   address,

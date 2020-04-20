@@ -1,11 +1,11 @@
+import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { debounce } from 'lodash';
 import { Linking } from 'react-native';
 import { compose, pure, withHandlers } from 'recompact';
 import { colors, padding } from '../../styles';
-import { ButtonPressAnimation } from '../animations';
 import Divider from '../Divider';
+import { ButtonPressAnimation } from '../animations';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
 

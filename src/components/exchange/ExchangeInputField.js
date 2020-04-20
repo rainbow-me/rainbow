@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
+import React, { useRef } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import { colors, fonts } from '../../styles';
 import { ButtonPressAnimation } from '../animations';

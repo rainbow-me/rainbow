@@ -1,15 +1,15 @@
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { get } from 'lodash';
 import { Linking } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { compose, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import networkTypes from '../helpers/networkTypes';
 import networkInfo from '../helpers/networkInfo';
+import networkTypes from '../helpers/networkTypes';
 import { colors, margin, padding } from '../styles';
-import { Button } from './buttons';
 import Divider from './Divider';
+import { Button } from './buttons';
 import { Centered } from './layout';
 import { Text } from './text';
 

@@ -8,8 +8,8 @@ import {
   transactionsRemoved,
 } from './data';
 import {
-  testnetExplorerInit,
   testnetExplorerClearState,
+  testnetExplorerInit,
 } from './testnetExplorer';
 
 // -- Constants --------------------------------------- //

@@ -4,8 +4,8 @@ import React from 'react';
 import { View } from 'react-primitives';
 import { onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
-import { Centered } from '../layout';
 import { borders, colors, padding } from '../../styles';
+import { Centered } from '../layout';
 
 const PagerPadding = 9;
 

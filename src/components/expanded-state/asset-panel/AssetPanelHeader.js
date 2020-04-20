@@ -9,7 +9,7 @@ import { useShowcaseTokens } from '../../../hooks';
 import { setOpenFamilyTabs } from '../../../redux/openStateSettings';
 import { colors, padding } from '../../../styles';
 import ContextMenu from '../../ContextMenu';
-import { ColumnWithMargins, Row, Column } from '../../layout';
+import { Column, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import FloatingPanel from '../FloatingPanel';
 

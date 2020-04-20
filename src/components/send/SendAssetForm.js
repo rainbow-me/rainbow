@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { pure } from 'recompose';
 import ShadowStack from 'react-native-shadow-stack';
+import { pure } from 'recompose';
 import styled from 'styled-components/primitives';
 import AssetTypes from '../../helpers/assetTypes';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';

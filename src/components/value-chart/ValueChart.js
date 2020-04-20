@@ -1,18 +1,17 @@
+import Spline from 'cubic-spline';
+import deepEqual from 'fbjs/lib/areEqual';
+import { maxBy, minBy } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
-import { maxBy, minBy } from 'lodash';
-import Svg, { Path, Circle } from 'react-native-svg';
+import { View } from 'react-native';
 import { State } from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
-import Spline from 'cubic-spline';
-import { contains, timing, delay } from 'react-native-redash';
-import { View } from 'react-native';
+import { contains, delay, timing } from 'react-native-redash';
+import Svg, { Circle, Path } from 'react-native-svg';
 import { deviceUtils } from '../../utils';
-import TimestampText from './TimestampText';
 import ActivityIndicator from '../ActivityIndicator';
 import GestureWrapper from './GestureWrapper';
-
-import deepEqual from 'fbjs/lib/areEqual';
+import TimestampText from './TimestampText';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);

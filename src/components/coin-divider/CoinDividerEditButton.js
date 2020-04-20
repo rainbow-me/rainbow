@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import { colors } from '../../styles';
-import { OpacityToggler, ButtonPressAnimation } from '../animations';
+import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { Text } from '../text';
 
 const CoinDividerEditButton = ({

@@ -4,21 +4,23 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useState,
   useRef,
+  useState,
 } from 'react';
-import { KeyboardAvoidingView, StatusBar, Platform } from 'react-native';
+import { KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import { Button } from '../components/buttons';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { Alert } from '../components/alerts';
+import { Button } from '../components/buttons';
 import { Icon } from '../components/icons';
 import { Input } from '../components/inputs';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { Text } from '../components/text';
+import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { isValidSeed as validateSeed } from '../helpers/validators';
 import {
   useAccountSettings,
   useClipboard,
@@ -26,9 +28,7 @@ import {
   useTimeout,
 } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/transitions/effects';
-import { colors, padding, shadow, borders } from '../styles';
-import { isValidSeed as validateSeed } from '../helpers/validators';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { borders, colors, padding, shadow } from '../styles';
 import { logger } from '../utils';
 
 const keyboardVerticalOffset =

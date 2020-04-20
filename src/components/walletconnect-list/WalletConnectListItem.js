@@ -3,11 +3,11 @@ import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, withHandlers } from 'recompact';
-import { RequestVendorLogoIcon } from '../coin-icon';
-import ContextMenu from '../ContextMenu';
 import { withWalletConnectConnections } from '../../hoc';
-import { Centered, ColumnWithMargins, FlexItem, Row } from '../layout';
 import { colors, padding } from '../../styles';
+import ContextMenu from '../ContextMenu';
+import { RequestVendorLogoIcon } from '../coin-icon';
+import { Centered, ColumnWithMargins, FlexItem, Row } from '../layout';
 import { TruncatedText } from '../text';
 
 const ContainerPadding = 15;

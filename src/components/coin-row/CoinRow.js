@@ -5,12 +5,12 @@ import styled from 'styled-components/primitives';
 import {
   withAccountSettings,
   withCoinListEdited,
-  withFabSendAction,
   withEditOptions,
+  withFabSendAction,
 } from '../../hoc';
 import { padding } from '../../styles';
-import { CoinIcon } from '../coin-icon';
 import Highlight from '../Highlight';
+import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
 
 const CoinRowPaddingTop = 9;

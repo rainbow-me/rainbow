@@ -1,9 +1,9 @@
 import { concat, find, isEmpty } from 'lodash';
 import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import useAppState from './useAppState';
+import { useDispatch, useSelector } from 'react-redux';
 import { savingsLoadState } from '../redux/savings';
 import { DAI_ADDRESS } from '../references';
+import useAppState from './useAppState';
 
 export default function useSavingsAccount(includeDefaultDai) {
   const { justBecameActive } = useAppState();

@@ -1,17 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import Caret from '../../assets/family-dropdown-arrow.png';
 import { colors } from '../../styles';
 import {
-  OpacityToggler,
   ButtonPressAnimation,
+  OpacityToggler,
   RotationArrow,
   RoundButtonSizeToggler,
 } from '../animations';
-import Caret from '../../assets/family-dropdown-arrow.png';
-import FastImage from 'react-native-fast-image';
-import CoinDividerButtonLabel from './CoinDividerButtonLabel';
 import { Row } from '../layout';
+import CoinDividerButtonLabel from './CoinDividerButtonLabel';
 
 const CoinDividerOpenButton = ({
   assetsAmount,

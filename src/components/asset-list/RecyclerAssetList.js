@@ -2,6 +2,7 @@ import { findIndex, get, has, isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { LayoutAnimation, RefreshControl, View } from 'react-native';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 import { compose, pure } from 'recompact';
 import {
   BaseItemAnimator,
@@ -11,13 +12,13 @@ import {
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import {
+  withAccountSettings,
   withCoinListEdited,
   withFabSelection,
   withOpenBalances,
   withOpenFamilyTabs,
   withOpenInvestmentCards,
   withOpenSavings,
-  withAccountSettings,
 } from '../../hoc';
 import { colors } from '../../styles';
 import {
@@ -30,8 +31,8 @@ import { CoinRow } from '../coin-row';
 import { FloatingActionButton } from '../fab';
 import {
   InvestmentCard,
-  UniswapInvestmentCard,
   InvestmentCardHeader,
+  UniswapInvestmentCard,
 } from '../investment-cards';
 import { ListFooter } from '../list';
 import SavingsListWrapper from '../savings/SavingsListWrapper';
@@ -39,7 +40,6 @@ import { TokenFamilyHeader } from '../token-family';
 import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
-import { PanGestureHandler } from 'react-native-gesture-handler';
 
 /* eslint-disable sort-keys */
 export const ViewTypes = {

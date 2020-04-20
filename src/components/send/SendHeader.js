@@ -1,15 +1,15 @@
 import { get, isEmpty, isNumber, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
-import styled from 'styled-components/primitives';
-import { Keyboard, Clipboard } from 'react-native';
+import { Clipboard, Keyboard } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
+import styled from 'styled-components/primitives';
 import { withNeverRerender, withSelectedInput } from '../../hoc';
 import { colors, padding } from '../../styles';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
-import { AddContactButton, PasteAddressButton } from '../buttons';
 import Divider from '../Divider';
+import { AddContactButton, PasteAddressButton } from '../buttons';
 import { AddressField } from '../fields';
 import { Icon } from '../icons';
 import { Row } from '../layout';

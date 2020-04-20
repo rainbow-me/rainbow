@@ -1,8 +1,8 @@
 import { get } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import Animated from 'react-native-reanimated';
-import { useNavigation } from 'react-navigation-hooks';
 import { useValues } from 'react-native-redash';
+import { useNavigation } from 'react-navigation-hooks';
 import { AssetList } from '../components/asset-list';
 import { FabWrapper } from '../components/fab';
 import ExchangeFab from '../components/fab/ExchangeFab';

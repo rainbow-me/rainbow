@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { position, colors } from '../../styles';
-import { ColumnWithMargins, Centered } from '../layout';
-import { Emoji, Br, Text } from '../text';
+import { StyleSheet, View } from 'react-native';
+import { colors, position } from '../../styles';
+import { Centered, ColumnWithMargins } from '../layout';
+import { Br, Emoji, Text } from '../text';
 
 const sx = StyleSheet.create({
   text: {

@@ -13,12 +13,12 @@ import {
 } from '../../hoc';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
-import { interpolate } from '../animations';
 import Highlight from '../Highlight';
+import { interpolate } from '../animations';
 import { Row } from '../layout';
+import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
-import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 
 const {
   block,

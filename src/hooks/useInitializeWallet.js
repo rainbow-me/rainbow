@@ -11,15 +11,14 @@ import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import {
   settingsLoadNetwork,
   settingsUpdateAccountAddress,
-  settingsUpdateAccountName,
   settingsUpdateAccountColor,
+  settingsUpdateAccountName,
 } from '../redux/settings';
+import { logger } from '../utils';
 import useClearAccountData from './useClearAccountData';
-import useLoadAccountData from './useLoadAccountData';
 import useHideSplashScreen from './useHideSplashScreen';
 import useInitializeAccountData from './useInitializeAccountData';
-
-import { logger } from '../utils';
+import useLoadAccountData from './useLoadAccountData';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();

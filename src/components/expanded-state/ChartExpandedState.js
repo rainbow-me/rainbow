@@ -11,13 +11,13 @@ import {
 } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withAccountData } from '../../hoc';
-import { ethereumUtils, deviceUtils } from '../../utils';
-import Chart from '../value-chart/Chart';
-import { BalanceCoinRow } from '../coin-row';
-import BottomSendButtons from '../value-chart/BottomSendButtons';
 import { colors } from '../../styles';
+import { deviceUtils, ethereumUtils } from '../../utils';
 import Divider from '../Divider';
+import { BalanceCoinRow } from '../coin-row';
 import { Icon } from '../icons';
+import BottomSendButtons from '../value-chart/BottomSendButtons';
+import Chart from '../value-chart/Chart';
 
 const HandleIcon = styled(Icon).attrs({
   color: '#C4C6CB',

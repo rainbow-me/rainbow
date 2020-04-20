@@ -1,12 +1,12 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
-import { isEmulatorSync } from 'react-native-device-info';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Platform, Vibration } from 'react-native';
-import { request, PERMISSIONS } from 'react-native-permissions';
+import { isEmulatorSync } from 'react-native-device-info';
+import { PERMISSIONS, request } from 'react-native-permissions';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
 import { Alert, Prompt } from '../components/alerts';

@@ -1,9 +1,11 @@
 import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
+import { ethers } from 'ethers';
 import { find, get, isEmpty, replace, toLower } from 'lodash';
 import networkTypes from '../helpers/networkTypes';
 import {
   add,
   convertNumberToString,
+  convertRawAmountToDecimalFormat,
   fromWei,
   greaterThan,
   subtract,

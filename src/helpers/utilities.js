@@ -1,5 +1,5 @@
-import { get } from 'lodash';
 import BigNumber from 'bignumber.js';
+import { get } from 'lodash';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 
 /**

@@ -1,6 +1,6 @@
 import React from 'react';
-import { COMPOUND_ACCOUNT_TOKEN_QUERY } from '../apollo/queries';
 import { compoundClient } from '../apollo/client';
+import { COMPOUND_ACCOUNT_TOKEN_QUERY } from '../apollo/queries';
 import { Text } from '../components/text';
 import { logger } from '../utils';
 

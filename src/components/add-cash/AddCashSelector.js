@@ -4,9 +4,9 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { colors } from '../../styles';
 import { CoinIcon } from '../coin-icon';
+import { JellySelector } from '../jelly-selector';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { JellySelector } from '../jelly-selector';
 
 const CurrencyItemHeight = 40;
 

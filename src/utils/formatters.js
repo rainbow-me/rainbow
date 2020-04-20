@@ -1,5 +1,5 @@
-import { isString } from 'lodash';
 import GraphemeSplitter from 'grapheme-splitter';
+import { isString } from 'lodash';
 
 const grapheme = new GraphemeSplitter();
 

@@ -3,8 +3,8 @@ import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
 import { init as initSentry, setRelease } from '@sentry/react-native';
 import { get, last } from 'lodash';
-import PropTypes from 'prop-types';
 import nanoid from 'nanoid/non-secure';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
   AppRegistry,
@@ -38,15 +38,15 @@ import {
 
 import monitorNetwork from './debugging/network';
 import {
+  withAccountSettings,
   withDeepLink,
   withWalletConnectOnSessionRequest,
-  withAccountSettings,
 } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { Navigation } from './navigation';
-import store from './redux/store';
 import { requestsForTopic } from './redux/requests';
+import store from './redux/store';
 import Routes from './screens/Routes';
 import { parseQueryParams } from './utils';
 

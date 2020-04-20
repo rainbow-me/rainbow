@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { ActivityList } from '../components/activity-list';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
+import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
 import { FlexItem, Page } from '../components/layout';
