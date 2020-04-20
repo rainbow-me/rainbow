@@ -414,39 +414,39 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
         prevRouteName !== 'QRScannerScreen' &&
         routeName === 'QRScannerScreen'
       ) {
-        StatusBar.setBarStyle('light-content');
+        StatusBar.setBarStyle('light-content', true);
       }
 
       if (
         prevRouteName === 'QRScannerScreen' &&
         routeName !== 'QRScannerScreen'
       ) {
-        StatusBar.setBarStyle('dark-content');
+        StatusBar.setBarStyle('dark-content', true);
       }
 
       if (
         prevRouteName === 'ImportSeedPhraseSheet' &&
         (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
       ) {
-        StatusBar.setBarStyle('dark-content');
+        StatusBar.setBarStyle('dark-content', true);
       }
 
       if (prevRouteName === 'WalletScreen' && routeName === 'SendSheet') {
-        StatusBar.setBarStyle('light-content');
+        StatusBar.setBarStyle('light-content', true);
       }
 
       if (
         prevRouteName === 'SendSheet' &&
         (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
       ) {
-        StatusBar.setBarStyle('dark-content');
+        StatusBar.setBarStyle('dark-content', true);
       }
 
       if (
         prevRouteName === 'AddCashSheet' &&
         (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
       ) {
-        StatusBar.setBarStyle('dark-content');
+        StatusBar.setBarStyle('dark-content', true);
       }
 
       if (routeName === 'SettingsModal') {
