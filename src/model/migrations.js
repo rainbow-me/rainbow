@@ -13,8 +13,8 @@ export default async function runMigrations() {
   const currentVersion = Number(await getMigrationVersion());
   const migrations = [];
 
-  /***** Migration v0 ends here  *****/
-  const v1 = async () => {
+  /***** Migration v0 starts here  *****/
+  const v0 = async () => {
     const walletAddress = await loadAddress();
     const publicAccessControlOptions = {
       accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
@@ -24,7 +24,7 @@ export default async function runMigrations() {
     }
   };
 
-  migrations.push(v1);
+  migrations.push(v0);
 
   /***** Migration v0 ends here  *****/
 
