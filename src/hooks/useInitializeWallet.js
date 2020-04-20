@@ -5,6 +5,7 @@ import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { getAccountInfo } from '../handlers/localstorage/accountLocal';
 import { useAccountSettings, useCheckEthBalance } from '../hooks';
+import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import {
@@ -66,6 +67,7 @@ export default function useInitializeWallet() {
         } else {
           await loadAccountData();
         }
+        await runMigrations();
         onHideSplashScreen();
         logger.sentry('Hide splash screen');
         initializeAccountData();
