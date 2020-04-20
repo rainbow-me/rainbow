@@ -79,6 +79,8 @@ target 'Rainbow' do
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
   pod 'Permission-FaceID', :path => "#{permissions_path}/FaceID.podspec"
 
+  pod "PanModal", :git => 'https://github.com/osdnk/PanModal', :commit => '016aaaed471fa6d8ab3eb4b011efa0a56e1e3363'
+
   use_native_modules!
 
   # Enables Flipper.
