@@ -46,11 +46,11 @@ export default class Input extends PureComponent {
         allowFontScaling={allowFontScaling}
         autoCapitalize={autoCapitalize}
         autoCorrect={autoCorrect}
-        css={buildTextStyles}
         keyboardType={keyboardType}
         placeholderTextColor={placeholderTextColor}
         ref={this.ref}
         spellCheck={spellCheck}
+        style={buildTextStyles(props)}
       />
     );
   };

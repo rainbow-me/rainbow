@@ -1,12 +1,18 @@
+import nodeEmoji from 'node-emoji';
 import PropTypes from 'prop-types';
 import React from 'react';
-import EmojiRenderer from 'react-native-emoji';
-import { buildTextStyles, fonts } from '../../styles';
+import { fonts } from '../../styles';
+import Text from './Text';
 
-const Emoji = props => <EmojiRenderer {...props} css={buildTextStyles} emoji />;
+const Emoji = ({ name, ...props }) => (
+  <Text {...props} emoji>
+    {nodeEmoji.get(name)}
+  </Text>
+);
 
 Emoji.propTypes = {
   lineHeight: PropTypes.oneOf(Object.keys(fonts.lineHeight)),
+  name: PropTypes.string,
   size: PropTypes.oneOf(Object.keys(fonts.size)),
 };
 
