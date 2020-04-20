@@ -10,13 +10,9 @@ import {
   withState,
 } from 'recompact';
 import styled from 'styled-components/primitives';
-import {
-  withAccountCharts,
-  withAccountData,
-  withAccountSettings,
-} from '../../hoc';
+import { withAccountCharts, withAccountSettings } from '../../hoc';
 import { colors } from '../../styles';
-import { deviceUtils, ethereumUtils } from '../../utils';
+import { deviceUtils } from '../../utils';
 import Divider from '../Divider';
 import { BalanceCoinRow } from '../coin-row';
 import { Icon } from '../icons';
@@ -93,27 +89,21 @@ ChartExpandedState.propTypes = {
 
 // TODO JIN make this better by just passing in chart
 export default compose(
-  withAccountData,
   withAccountCharts,
   withAccountSettings,
   withState('isOpen', 'setIsOpen', false),
-  withProps(
-    ({ asset: { address, ...asset }, charts, assets, fetchingCharts }) => {
-      let selectedAsset = ethereumUtils.getAsset(assets, address);
-      if (!selectedAsset) {
-        selectedAsset = asset;
-      }
-      const chart = reverse(get(charts, `${asset.address}`, []));
-      const hasChart = !isEmpty(chart);
-      return {
-        change: get(asset, 'native.change', '-'),
-        changeDirection: get(asset, 'price.relative_change_24h', 0) > 0,
-        chart,
-        hasChart,
-        isLoading: !hasChart && fetchingCharts,
-      };
-    }
-  ),
+  withProps(({ asset, charts, fetchingCharts }) => {
+    const chart = reverse(get(charts, `${asset.address}`, []));
+    const hasChart = !isEmpty(chart);
+    return {
+      change: get(asset, 'native.change', '-'),
+      changeDirection: get(asset, 'price.relative_change_24h', 0) > 0,
+      chart,
+      hasChart,
+      isLoading: !hasChart && fetchingCharts,
+      selectedAsset: asset,
+    };
+  }),
   withHandlers({
     onPressSend: ({ navigation, asset }) => () => {
       navigation.goBack();

@@ -1,6 +1,5 @@
 export { default as withAccountInfo } from './withAccountInfo';
 export { default as withAccountCharts } from './withAccountCharts';
-export { default as withAccountData } from './withAccountData';
 export { default as withAccountSettings } from './withAccountSettings';
 export { default as withAccountTransactions } from './withAccountTransactions';
 export { default as withActionSheetManager } from './withActionSheetManager';
