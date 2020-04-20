@@ -41,6 +41,7 @@ const UniqueTokenExpandedState = ({
   panelWidth,
   subtitle,
   title,
+  navigation,
 }) => {
   const PanelPages = [
     {
@@ -92,7 +93,12 @@ const UniqueTokenExpandedState = ({
         </Centered>
       )}
       <AssetPanel onLayout={onLayout}>
-        <AssetPanelHeader subtitle={subtitle} title={title} />
+        <AssetPanelHeader
+          subtitle={subtitle}
+          title={title}
+          asset={asset}
+          navigation={navigation}
+        />
         {asset.isSendable && (
           <AssetPanelAction
             icon="send"

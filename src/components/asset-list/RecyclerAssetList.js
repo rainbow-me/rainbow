@@ -356,7 +356,11 @@ class RecyclerAssetList extends Component {
         if (collectiblesIndex > -1) {
           if (index > headersIndices[collectiblesIndex]) {
             const familyIndex = index - headersIndices[collectiblesIndex] - 1;
-            if (openFamilyTabs[familyIndex]) {
+            if (
+              openFamilyTabs[
+                sections[collectiblesIndex].data[familyIndex].familyName
+              ]
+            ) {
               if (
                 get(
                   sections,
@@ -540,6 +544,7 @@ class RecyclerAssetList extends Component {
     let balances = {};
     let collectibles = {};
     let investments = {};
+    let prevCollectibles = {};
 
     sections.forEach(section => {
       if (section.balances) {
@@ -548,6 +553,12 @@ class RecyclerAssetList extends Component {
         collectibles = section;
       } else if (section.investments) {
         investments = section;
+      }
+    });
+
+    prevProps.sections.forEach(section => {
+      if (section.collectibles) {
+        prevCollectibles = section;
       }
     });
 
@@ -562,13 +573,86 @@ class RecyclerAssetList extends Component {
       this.startScroll(scrollingVelocity);
     }
 
+    if (
+      collectibles.data &&
+      prevCollectibles.data &&
+      collectibles.data[0].familyName === 'Showcase' &&
+      (collectibles.data[0].childrenAmount !==
+        prevCollectibles.data[0].childrenAmount ||
+        prevCollectibles.data[0].familyName !== 'Showcase')
+    ) {
+      let investmentHeight = 0;
+      if (investments.data) {
+        investmentHeight += AssetListHeader.height;
+        for (let k = 0; k < investments.data.length; k++) {
+          if (!openInvestmentCards[investments.data[k].uniqueId]) {
+            investmentHeight +=
+              UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
+          } else {
+            investmentHeight +=
+              InvestmentCardHeader.height + InvestmentCard.margin.vertical;
+          }
+        }
+        investmentHeight += ListFooter.height + 8;
+      }
+      let balancesHeight = 0;
+      if (balances.data) {
+        balancesHeight += AssetListHeader.height;
+
+        if (
+          balances.data[balances.data.length - 1].smallBalancesContainer ||
+          (balances.data[balances.data.length - 2] &&
+            balances.data[balances.data.length - 2].smallBalancesContainer)
+        ) {
+          balancesHeight +=
+            CoinDivider.height +
+            (balances.data[balances.data.length - 1].smallBalancesContainer
+              ? 4
+              : 20);
+          if (openSmallBalances) {
+            balancesHeight +=
+              CoinRow.height *
+              balances.data[
+                balances.data.length -
+                  (balances.data[balances.data.length - 1]
+                    .smallBalancesContainer
+                    ? 1
+                    : 2)
+              ].assets.length;
+          }
+        }
+
+        if (balances.data[balances.data.length - 1].savingsContainer) {
+          balancesHeight += openSavings
+            ? TokenFamilyHeader.height +
+              61 * balances.data[savingsIndex].assets.length -
+              4
+            : TokenFamilyHeader.height - 10;
+        }
+
+        balancesHeight +=
+          ListFooter.height + CoinRow.height * (balances.data.length - 1);
+      }
+
+      this.scrollToOffset(
+        balancesHeight + investmentHeight - AssetListHeader.height,
+        true
+      );
+    }
+
     if (openFamilyTabs !== prevProps.openFamilyTabs && collectibles.data) {
       let i = 0;
       while (i < collectibles.data.length) {
-        if (openFamilyTabs[i] === true && !prevProps.openFamilyTabs[i]) {
+        if (
+          openFamilyTabs[collectibles.data[i].familyName] === true &&
+          !prevProps.openFamilyTabs[collectibles.data[i].familyName]
+        ) {
           let collectiblesHeight = 0;
           for (let j = 0; j < i; j++) {
-            if (openFamilyTabs[j] && collectibles.data[j].tokens) {
+            if (
+              openFamilyTabs[collectibles.data[j].familyName] &&
+              collectibles.data[j].tokens
+            ) {
               collectiblesHeight +=
                 TokenFamilyHeader.height +
                 collectibles.data[j].tokens.length * UniqueTokenRow.height +
@@ -661,8 +745,8 @@ class RecyclerAssetList extends Component {
     if (collectibles.data) {
       for (let i = 0; i < collectibles.data.length; i++) {
         if (
-          openFamilyTabs[i] === false &&
-          prevProps.openFamilyTabs[i] === true
+          openFamilyTabs[collectibles.data[i].familyName] === false &&
+          prevProps.openFamilyTabs[collectibles.data[i].familyName] === true
         ) {
           shouldAutoscrollBack = true;
           break;
@@ -739,7 +823,10 @@ class RecyclerAssetList extends Component {
         collectiblesHeight =
           collectibles.data.length > 0 ? AssetListHeader.height : 0;
         for (let j = 0; j < collectibles.data.length; j++) {
-          if (openFamilyTabs[j] && collectibles.data[j].tokens) {
+          if (
+            openFamilyTabs[collectibles.data[j].familyName] &&
+            collectibles.data[j].tokens
+          ) {
             collectiblesHeight +=
               TokenFamilyHeader.height +
               collectibles.data[j].tokens.length * UniqueTokenRow.height +

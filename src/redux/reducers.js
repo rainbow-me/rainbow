@@ -20,6 +20,7 @@ import savings from './savings';
 import selectedInput from './selectedInput';
 import selectedWithFab from './selectedWithFab';
 import settings from './settings';
+import showcaseTokens from './showcaseTokens';
 import uniqueTokens from './uniqueTokens';
 import uniswap from './uniswap';
 import walletconnect from './walletconnect';
@@ -45,6 +46,7 @@ export default combineReducers({
   selectedInput,
   selectedWithFab,
   settings,
+  showcaseTokens,
   uniqueTokens,
   uniswap,
   walletconnect,

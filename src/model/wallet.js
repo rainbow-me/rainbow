@@ -19,11 +19,8 @@ import {
   isValidMnemonic,
   web3Provider,
 } from '../handlers/web3';
-import { logger } from '../utils';
 import * as keychain from './keychain';
 
-const RAINBOW_KEYCHAIN_VERSION = '1.0.0';
-const keychainVersion = 'rainbowKeychainVersion';
 const seedPhraseKey = 'rainbowSeedPhrase';
 const privateKeyKey = 'rainbowPrivateKey';
 const addressKey = 'rainbowAddressKey';
@@ -52,16 +49,7 @@ export const walletInit = async (seedPhrase = null) => {
 };
 
 export const loadWallet = async () => {
-  const savedVersion = await loadKeychainVersion();
-  let privateKey = null;
-  if (!savedVersion || savedVersion !== RAINBOW_KEYCHAIN_VERSION) {
-    const seedPhrase = await loadSeedPhrase();
-    const wallet = await createWallet(seedPhrase);
-    privateKey = wallet.privateKey;
-    logger.sentry(`Upgrading keychain version to ${RAINBOW_KEYCHAIN_VERSION}`);
-  } else {
-    privateKey = await loadPrivateKey();
-  }
+  const privateKey = await loadPrivateKey();
   if (privateKey) {
     return new ethers.Wallet(privateKey, web3Provider);
   }
@@ -265,7 +253,6 @@ const saveWalletDetails = async (seedPhrase, privateKey, address) => {
   const canAuthenticate = await canImplyAuthentication({
     authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
   });
-  let accessControlOptions = {};
 
   let isSimulator = false;
 
@@ -273,16 +260,21 @@ const saveWalletDetails = async (seedPhrase, privateKey, address) => {
     isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
   }
 
+  let privateAccessControlOptions = {};
   if (canAuthenticate && !isSimulator) {
-    accessControlOptions = {
+    privateAccessControlOptions = {
       accessControl: ACCESS_CONTROL.USER_PRESENCE,
-      accessible: ACCESSIBLE.WHEN_UNLOCKED,
+      accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
     };
   }
-  saveSeedPhrase(seedPhrase, accessControlOptions);
-  savePrivateKey(privateKey, accessControlOptions);
-  saveAddress(address);
-  saveKeychainVersion();
+
+  const publicAccessControlOptions = {
+    accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
+  };
+
+  saveSeedPhrase(seedPhrase, privateAccessControlOptions);
+  savePrivateKey(privateKey, privateAccessControlOptions);
+  saveAddress(address, publicAccessControlOptions);
 };
 
 const saveSeedPhrase = async (seedPhrase, accessControlOptions = {}) => {
@@ -306,18 +298,6 @@ const loadPrivateKey = async (
   }
 };
 
-const saveAddress = async address => {
-  await keychain.saveString(addressKey, address);
-};
-
-const saveKeychainVersion = async () => {
-  await keychain.saveString(keychainVersion, RAINBOW_KEYCHAIN_VERSION);
-};
-
-const loadKeychainVersion = async () => {
-  try {
-    return keychain.loadString(keychainVersion);
-  } catch (error) {
-    return null;
-  }
+const saveAddress = async (address, accessControlOptions = {}) => {
+  await keychain.saveString(addressKey, address, accessControlOptions);
 };

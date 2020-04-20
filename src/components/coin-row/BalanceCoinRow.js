@@ -177,7 +177,7 @@ const arePropsEqual = (props, nextProps) => {
     isNewValueForPath(props, nextProps, 'recentlyPinnedCount') &&
     (get(props, 'item.isPinned', false) || get(props, 'item.isHidden', false));
 
-  return (
+  return !(
     isNewItem ||
     isChangeInOpenAssets ||
     isEdited ||

@@ -37,24 +37,22 @@ export default function WalletScreen() {
 
   useEffect(() => {
     if (!initialized) {
-      initializeWallet()
-        .then(() => {
-          setInitialized(true);
-          getKeyboardHeight()
-            .then(keyboardHeight => {
-              if (keyboardHeight) {
-                updateKeyboardHeight(keyboardHeight);
-              }
-            })
-            .catch(() => {
-              setInitialized(true);
-            });
-        })
-        .catch(() => {
-          setInitialized(true);
-        });
+      initializeWallet();
+      setInitialized(true);
     }
-  }, [initializeWallet, initialized, updateKeyboardHeight]);
+  }, [initializeWallet, initialized]);
+
+  useEffect(() => {
+    if (initialized) {
+      getKeyboardHeight()
+        .then(keyboardHeight => {
+          if (keyboardHeight) {
+            updateKeyboardHeight(keyboardHeight);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [initialized, updateKeyboardHeight]);
 
   const { network } = useAccountSettings();
   const { isEmpty, isWalletEthZero, sections } = useWalletSectionsData();
