@@ -17,6 +17,7 @@ const uniqueTokensVersion = '0.2.0';
 const ACCOUNT_INFO = 'accountInfo';
 const ASSET_PRICES_FROM_UNISWAP = 'assetPricesFromUniswap';
 const ASSETS = 'assets';
+const CHARTS = 'charts';
 const OPEN_FAMILIES = 'openFamilies';
 const OPEN_INVESTMENT_CARDS = 'openInvestmentCards';
 const PURCHASE_TRANSACTIONS = 'purchaseTransactions';
@@ -59,8 +60,8 @@ export const getAssets = (accountAddress, network) =>
 
 /**
  * @desc save assets
- * @param  {String}   [address]
  * @param  {Array}    [assets]
+ * @param  {String}   [address]
  * @param  {String}   [network]
  */
 export const saveAssets = (assets, accountAddress, network) =>
@@ -151,6 +152,32 @@ export const savePurchaseTransactions = (
     network,
     purchaseTransactionsVersion
   );
+
+/**
+ * @desc get charts
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getCharts = (accountAddress, network) =>
+  getAccountLocal(CHARTS, accountAddress, network, {});
+
+/**
+ * @desc save charts data
+ * @param  {Object}   [charts]
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const saveCharts = (charts, accountAddress, network) =>
+  saveAccountLocal(CHARTS, charts, accountAddress, network);
+
+/**
+ * @desc remove charts data
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const removeCharts = (accountAddress, network) =>
+  removeAccountLocal(CHARTS, accountAddress, network);
 
 /**
  * @desc get transactions
