@@ -211,11 +211,14 @@ export const addressAssetsReceived = (
   const { accountAddress, network } = getState().settings;
   const { uniqueTokens } = getState().uniqueTokens;
   const payload = get(message, 'payload.assets', {});
-  const assets = values(payload);
-  const liquidityTokens = remove(assets, asset => {
-    const symbol = get(asset, 'asset.symbol', '');
-    return symbol === 'UNI' || symbol === 'uni-v1';
-  });
+  const assets = filter(
+    values(payload),
+    asset => asset.asset.type !== 'compound'
+  );
+  const liquidityTokens = remove(
+    assets,
+    asset => asset.asset.type === 'uniswap'
+  );
   dispatch(uniswapUpdateLiquidityTokens(liquidityTokens, append || change));
   let parsedAssets = parseAccountAssets(assets, uniqueTokens, tokenOverrides);
   if (append || change) {
