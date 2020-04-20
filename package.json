@@ -14,7 +14,7 @@
     "start": "react-native start",
     "start:clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && react-native start -- --reset-cache",
     "test": "jest test.js",
-    "install-all": "yarn && cd ios && bundle exec pod install --repo-update && cd ..",
+    "install-all": "yarn && yarn install-pods",
     "install-pods": "cd ios && bundle exec pod install --repo-update && cd ..",
     "install-bundle": "cd ios && bundle install && cd ..",
     "ios": "react-native run-ios --simulator='iPhone X'",
