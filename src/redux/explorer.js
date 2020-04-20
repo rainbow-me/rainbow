@@ -141,9 +141,6 @@ export const explorerInit = () => (dispatch, getState) => {
   });
 };
 
-// TODO JIN
-// create a function for updating the chart type subscription
-
 const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED, message => {
     dispatch(transactionsReceived(message));
@@ -175,14 +172,12 @@ const listenOnAddressMessages = socket => dispatch => {
 
   socket.on(messages.ADDRESS_CHARTS.APPENDED, message => {
     console.log('address charts appended', message);
-    // TODO JIN
-    // dispatch(addressChartsReceived(message, true));
+    dispatch(addressChartsReceived(message, true));
   });
 
   socket.on(messages.ADDRESS_CHARTS.CHANGED, message => {
     console.log('address charts changed', message);
-    // TODO JIN
-    // dispatch(addressChartsReceived(message, false, true));
+    dispatch(addressChartsReceived(message, false, true));
   });
 };
 

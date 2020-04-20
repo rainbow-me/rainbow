@@ -51,40 +51,40 @@ const Container = styled.View`
   align-items: center;
 `;
 
-const ChartExpandedState = ({ onPressSend, onPressSwap, selectedAsset }) => {
+const ChartExpandedState = ({
+  change,
+  hasChart,
+  onPressSend,
+  onPressSwap,
+  selectedAsset,
+}) => {
   return (
     <Container>
       <HandleIcon />
       <BottomContainer>
-        <BalanceCoinRow {...selectedAsset} />
+        <BalanceCoinRow item={selectedAsset} />
         <BottomSendButtons
           onPressSend={onPressSend}
           onPressSwap={onPressSwap}
         />
       </BottomContainer>
       <Divider />
-      <ChartContainer>
-        <Chart />
-      </ChartContainer>
+      {hasChart && (
+        <ChartContainer>
+          <Chart change={change} />
+        </ChartContainer>
+      )}
     </Container>
   );
 };
 
 ChartExpandedState.propTypes = {
-  asset: PropTypes.object,
-  change: PropTypes.string,
-  changeDirection: PropTypes.bool,
+  change: PropTypes.number,
   chart: PropTypes.array,
   chartsUpdateChartType: PropTypes.func,
-  fetchingCharts: PropTypes.bool,
   hasChart: PropTypes.bool,
-  isLoading: PropTypes.bool,
-  nativeCurrency: PropTypes.string,
   onPressSend: PropTypes.func,
   onPressSwap: PropTypes.func,
-  price: PropTypes.string,
-  subtitle: PropTypes.string,
-  title: PropTypes.string,
 };
 
 // TODO JIN make this better by just passing in chart
@@ -92,15 +92,14 @@ export default compose(
   withAccountCharts,
   withAccountSettings,
   withState('isOpen', 'setIsOpen', false),
-  withProps(({ asset, charts, fetchingCharts }) => {
+  withProps(({ asset, charts }) => {
     const chart = reverse(get(charts, `${asset.address}`, []));
     const hasChart = !isEmpty(chart);
+    console.log('selected asset', asset);
     return {
-      change: get(asset, 'native.change', '-'),
-      changeDirection: get(asset, 'price.relative_change_24h', 0) > 0,
+      change: get(asset, 'price.relative_change_24h', 0),
       chart,
       hasChart,
-      isLoading: !hasChart && fetchingCharts,
       selectedAsset: asset,
     };
   }),
@@ -120,5 +119,5 @@ export default compose(
       });
     },
   }),
-  onlyUpdateForKeys(['fetchingCharts', 'price', 'subtitle'])
+  onlyUpdateForKeys(['fetchingCharts', 'subtitle'])
 )(ChartExpandedState);
