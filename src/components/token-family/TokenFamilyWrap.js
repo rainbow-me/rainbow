@@ -29,7 +29,7 @@ const TokenFamilyWrap = ({
   ...props
 }) => {
   const transitionRef = useRef();
-  const [areChildrenVisible, setAreChildrenVisible] = useState(false);
+  const [areChildrenVisible, setAreChildrenVisible] = useState(isOpen);
 
   const timeoutHandle = useRef();
   const clearHandle = useCallback(

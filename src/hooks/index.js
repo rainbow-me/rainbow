@@ -28,6 +28,7 @@ export { default as useSavingsAccount } from './useSavingsAccount';
 export { default as useSendableUniqueTokens } from './useSendableUniqueTokens';
 export { default as useSendSavingsAccount } from './useSendSavingsAccount';
 export { default as useShakeAnimation } from './useShakeAnimation';
+export { default as useShowcaseTokens } from './useShowcaseTokens';
 export { default as useTimeout } from './useTimeout';
 export { default as useTransformOrigin } from './useTransformOrigin';
 export { default as useUniswapAllowances } from './useUniswapAllowances';

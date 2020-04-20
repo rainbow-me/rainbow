@@ -45,6 +45,7 @@ const networkSelector = state => state.network;
 const nativeCurrencySelector = state => state.nativeCurrency;
 const pinnedCoinsSelector = state => state.pinnedCoins;
 const savingsSelector = state => state.savings;
+const showcaseTokensSelector = state => state.showcaseTokens;
 const uniqueTokensSelector = state => state.uniqueTokens;
 const uniswapSelector = state => state.uniswap;
 const uniswapTotalSelector = state => state.uniswapTotal;
@@ -353,7 +354,7 @@ const withUniqueTokenFamiliesSection = (language, uniqueTokens, data) => {
 };
 
 const uniqueTokenDataSelector = createSelector(
-  [uniqueTokensSelector],
+  [uniqueTokensSelector, showcaseTokensSelector],
   buildUniqueTokenList
 );
 
