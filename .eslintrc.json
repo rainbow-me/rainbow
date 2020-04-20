@@ -7,6 +7,12 @@
     "__DEV__": true
   },
   "rules": {
+    "sort-imports": ["error", {
+      "ignoreCase": true,
+      "ignoreDeclarationSort": true,
+      "ignoreMemberSort": false,
+      "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
+    }],
     "sort-keys": ["error", "asc", { "caseSensitive": false, "natural": false }],
     "jest/no-truthy-falsy": 0,
     "react-native/no-inline-styles": 0,
