@@ -43,7 +43,7 @@ index 1c9caa1..7159401 100644
  {
    // when there is no change we return immediately
 diff --git a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-index eb127c3..7bc5a64 100644
+index eb127c3..d2bef8a 100644
 --- a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 +++ b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 @@ -1,6 +1,33 @@
@@ -149,15 +149,6 @@ index eb127c3..7bc5a64 100644
    func shouldPrioritize(panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
      let headerHeight: CGFloat = CGFloat(truncating: self.config?.value(forKey: "headerHeight") as! NSNumber)
      let location = panModalGestureRecognizer.location(in: view)
-@@ -120,7 +172,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
-   }
- 
-   var topOffset: CGFloat {
--    return topOffsetVal
-+    return 100
-   }
- 
-   var panScrollable: UIScrollView? {
 @@ -133,6 +185,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
  
    override func viewWillDisappear(_ animated: Bool) {
