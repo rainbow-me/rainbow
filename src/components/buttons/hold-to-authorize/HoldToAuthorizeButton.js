@@ -124,7 +124,7 @@ class HoldToAuthorizeButton extends PureComponent {
   };
 
   onLongPressChange = ({ nativeEvent: { state } }) => {
-    const { disabled, enableLongPress } = this.props;
+    const { disabled } = this.props;
 
     if (state === ACTIVE && !disabled) {
       haptics.notificationSuccess();
@@ -132,7 +132,7 @@ class HoldToAuthorizeButton extends PureComponent {
 
       animate(this.buttonScale, {
         toValue: 1,
-      }).start(() => this.setState({ isAuthorizing: enableLongPress }));
+      }).start(() => this.setState({ isAuthorizing: true }));
 
       this.handlePress();
     }
