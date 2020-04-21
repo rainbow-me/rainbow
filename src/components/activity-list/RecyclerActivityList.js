@@ -2,12 +2,14 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import {
-  RecyclerListView,
   DataProvider,
   LayoutProvider,
+  RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
+import transactionStatusTypes from '../../helpers/transactionStatusTypes';
+import transactionTypes from '../../helpers/transactionTypes';
 import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
 import {
   deviceUtils,
@@ -20,10 +22,8 @@ import {
   TransactionCoinRow,
 } from '../coin-row';
 import ListFooter from '../list/ListFooter';
-import ActivityListHeader from './ActivityListHeader';
-import transactionTypes from '../../helpers/transactionTypes';
-import transactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { ProfileMasthead } from '../profile';
+import ActivityListHeader from './ActivityListHeader';
 import LoadingState from './LoadingState';
 
 const ViewTypes = {

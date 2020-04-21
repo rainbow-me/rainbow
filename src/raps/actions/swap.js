@@ -1,8 +1,8 @@
 import { find, get, toLower } from 'lodash';
 import {
   calculateTradeDetails,
-  executeSwap,
   estimateSwapGasLimit,
+  executeSwap,
 } from '../../handlers/uniswap';
 import transactionStatusTypes from '../../helpers/transactionStatusTypes';
 import transactionTypes from '../../helpers/transactionTypes';
@@ -11,12 +11,12 @@ import {
   convertRawAmountToDecimalFormat,
   isZero,
 } from '../../helpers/utilities';
-import store from '../../redux/store';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
+import store from '../../redux/store';
 import {
-  TRANSFER_EVENT_TOPIC_LENGTH,
   TRANSFER_EVENT_KECCAK,
+  TRANSFER_EVENT_TOPIC_LENGTH,
 } from '../../references';
 import { ethereumUtils, gasUtils, logger } from '../../utils';
 

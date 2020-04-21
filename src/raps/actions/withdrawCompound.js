@@ -8,12 +8,12 @@ import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
 import store from '../../redux/store';
 import {
-  compoundCETHABI,
   compoundCERC20ABI,
+  compoundCETHABI,
   ethUnits,
   savingsAssetsListByUnderlying,
 } from '../../references';
-import { logger, gasUtils } from '../../utils';
+import { gasUtils, logger } from '../../utils';
 
 const NOOP = () => undefined;
 

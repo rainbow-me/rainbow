@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Animated from 'react-native-reanimated';
 import {
   PanGestureHandler,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
 
 const TimestampText = ({
   children,

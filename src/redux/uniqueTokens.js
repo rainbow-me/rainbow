@@ -1,11 +1,11 @@
 import { captureException } from '@sentry/react-native';
 import { without } from 'lodash';
-import { apiGetAccountUniqueTokens } from '../handlers/opensea-api';
 import {
   getUniqueTokens,
-  saveUniqueTokens,
   removeUniqueTokens,
+  saveUniqueTokens,
 } from '../handlers/localstorage/accountLocal';
+import { apiGetAccountUniqueTokens } from '../handlers/opensea-api';
 import networkTypes from '../helpers/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '../parsers/uniqueTokens';
 import { dataUpdateAssets } from './data';

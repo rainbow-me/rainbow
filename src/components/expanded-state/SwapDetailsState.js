@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import { swapDetailsTransitionPosition } from '../../navigation/transitions/effects';
 import { colors, padding, position } from '../../styles';
+import TouchableBackdrop from '../TouchableBackdrop';
 import { TouchableScale } from '../animations';
 import { FloatingEmojis, FloatingEmojisTapHandler } from '../floating-emojis';
 import {
@@ -12,9 +13,8 @@ import {
   RowWithMargins,
 } from '../layout';
 import { Emoji, Text } from '../text';
-import TouchableBackdrop from '../TouchableBackdrop';
-import { AssetPanel } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
+import { AssetPanel } from './asset-panel';
 
 const DetailsRow = ({ label, value, ...props }) => (
   <Row {...props} align="center" justify="space-between">

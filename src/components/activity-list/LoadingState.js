@@ -1,7 +1,7 @@
 import { times } from 'lodash';
 import React from 'react';
-import { Column } from '../layout';
 import { AssetListItemSkeleton } from '../asset-list';
+import { Column } from '../layout';
 
 const LoadingState = ({ children }) => (
   <Column flex={1}>

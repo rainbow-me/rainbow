@@ -3,8 +3,8 @@ import delay from 'delay';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import networkTypes from '../helpers/networkTypes';
-import { uniswapUpdateState } from '../redux/uniswap';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
+import { uniswapUpdateState } from '../redux/uniswap';
 import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
 

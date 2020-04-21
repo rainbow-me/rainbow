@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { createElement } from 'react';
+import Emoji from 'react-native-emoji';
 import Flex from '../layout/Flex';
 
 import ApplePayIcon from './svg/ApplePayIcon';
@@ -56,7 +57,6 @@ import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
 import WalletConnectIcon from './svg/WalletConnectIcon';
 import WarningIcon from './svg/WarningIcon';
-import Emoji from 'react-native-emoji';
 
 const Icon = ({ name, ...props }) =>
   createElement(Icon.IconTypes[name] || Flex, { name, ...props });

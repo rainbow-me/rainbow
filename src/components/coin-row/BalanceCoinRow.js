@@ -1,22 +1,22 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment, useState, useEffect, useCallback } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { compose } from 'recompact';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import {
   withCoinListEdited,
-  withOpenBalances,
-  withEditOptions,
   withCoinRecentlyPinned,
+  withEditOptions,
+  withOpenBalances,
 } from '../../hoc';
-import { isNewValueForPath, deviceUtils } from '../../utils';
+import { deviceUtils, isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Column, FlexItem, Row } from '../layout';
 import BottomRowText from './BottomRowText';
+import CoinCheckButton from './CoinCheckButton';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import CoinCheckButton from './CoinCheckButton';
 import CoinRowInfo from './CoinRowInfo';
 
 const editTranslateOffset = 32;

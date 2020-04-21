@@ -1,31 +1,31 @@
 import analytics from '@segment/analytics-react-native';
-import { isEmulatorSync } from 'react-native-device-info';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get, isNil, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Alert, InteractionManager, Vibration } from 'react-native';
+import { isEmulatorSync } from 'react-native-device-info';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
+import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
 import { withGas, withTransactionConfirmationScreen } from '../hoc';
 import {
+  sendTransaction,
   signMessage,
   signPersonalMessage,
-  signTypedDataMessage,
   signTransaction,
-  sendTransaction,
+  signTypedDataMessage,
 } from '../model/wallet';
-import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
 import { gasUtils, logger } from '../utils';
 import {
   isMessageDisplayType,
   isSignFirstParamType,
   isSignSecondParamType,
-  SEND_TRANSACTION,
-  SIGN_TYPED_DATA,
-  SIGN,
   PERSONAL_SIGN,
+  SEND_TRANSACTION,
+  SIGN,
+  SIGN_TYPED_DATA,
 } from '../utils/signingMethods';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 

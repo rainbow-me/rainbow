@@ -21,7 +21,7 @@ export default function useInternetStatus() {
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(onChange);
     return unsubscribe;
-  }, []);
+  }, [onChange]);
 
   return isInternetReachable;
 }

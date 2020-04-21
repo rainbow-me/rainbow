@@ -1,18 +1,18 @@
+import lang from 'i18n-js';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import lang from 'i18n-js';
 import { Animated } from 'react-native';
 import styled from 'styled-components';
 import { Button, HoldToAuthorizeButton } from '../components/buttons';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { Centered, Column } from '../components/layout';
+import { Text } from '../components/text';
 import {
   DefaultTransactionConfirmationSection,
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
-import { Text } from '../components/text';
 import { colors, position } from '../styles';
 import {
   isMessageDisplayType,

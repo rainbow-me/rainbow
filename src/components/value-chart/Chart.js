@@ -1,4 +1,6 @@
-import React, { useMemo, useState, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
+import { colors } from '../../styles';
+import TimespanSelector from './TimespanSelector';
 import ValueChart from './ValueChart';
 import ValueText from './ValueText';
 import {
@@ -10,8 +12,6 @@ import {
   dataColored2,
   dataColored3,
 } from './data';
-import TimespanSelector from './TimespanSelector';
-import { colors } from '../../styles';
 
 const dataColored = [dataColored1, dataColored2, dataColored3];
 const dataSwitching1 = [

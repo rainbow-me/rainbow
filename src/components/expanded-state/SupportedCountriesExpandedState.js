@@ -1,8 +1,8 @@
 import { values } from 'lodash';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { useDimensions } from '../../hooks';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
+import { useDimensions } from '../../hooks';
 import { supportedCountries } from '../../references/wyre/supportedCountries';
 import { colors, fonts, padding } from '../../styles';
 import { deviceUtils } from '../../utils';
@@ -10,8 +10,8 @@ import { ButtonPressAnimation } from '../animations';
 import { FloatingEmojis, FloatingEmojisTapHandler } from '../floating-emojis';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { AssetPanel } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
+import { AssetPanel } from './asset-panel';
 
 const modalWidth = Math.min(270, deviceUtils.dimensions.width - 100);
 const sx = StyleSheet.create({

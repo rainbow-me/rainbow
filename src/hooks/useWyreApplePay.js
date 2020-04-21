@@ -1,5 +1,5 @@
 import analytics from '@segment/analytics-react-native';
-import { captureMessage, captureException } from '@sentry/react-native';
+import { captureException, captureMessage } from '@sentry/react-native';
 import { get, isEmpty, toLower } from 'lodash';
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';

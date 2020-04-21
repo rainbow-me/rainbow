@@ -13,9 +13,9 @@ import {
 } from '../../helpers/wyreStatusTypes';
 import { useDimensions, useTimeout } from '../../hooks';
 import { position } from '../../styles';
-import { Centered } from '../layout';
 import { CoinIcon } from '../coin-icon';
 import { FloatingEmojisTapper } from '../floating-emojis';
+import { Centered } from '../layout';
 import { Br, Emoji, Text } from '../text';
 import NeedHelpButton from './NeedHelpButton';
 

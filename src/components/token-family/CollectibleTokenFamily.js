@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { UniqueTokenRow } from '../unique-token';
 import { setOpenFamilyTabs } from '../../redux/openStateSettings';
+import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyWrap from './TokenFamilyWrap';
 
 const CollectibleTokenFamily = ({

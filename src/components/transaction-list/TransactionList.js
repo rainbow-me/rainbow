@@ -1,19 +1,17 @@
+import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import React from 'react';
-import { requireNativeComponent, Clipboard, Linking, View } from 'react-native';
+import { Linking, requireNativeComponent, View } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers, withState } from 'recompact';
-import {
-  addCashButtonAvailable,
-  isAvatarPickerAvailable,
-} from '../../config/experimental';
+import { isAvatarPickerAvailable } from '../../config/experimental';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import {
   withAccountInfo,
   withAccountSettings,
   withAccountTransactions,
-  withRequests,
   withContacts,
+  withRequests,
 } from '../../hoc';
 import { removeRequest } from '../../redux/requests';
 import { colors } from '../../styles';
@@ -93,7 +91,7 @@ class TransactionList extends React.PureComponent {
           accountAddress={addressOrEns}
           accountColor={colors.avatarColor[accountColor]}
           accountName={accountName}
-          addCashButtonAvailable={addCashButtonAvailable}
+          addCashAvailable={addCashAvailable}
           data={data}
           isAvatarPickerAvailable={isAvatarPickerAvailable}
           onAddCashPress={onAddCashPress}

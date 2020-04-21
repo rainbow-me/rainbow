@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
+import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { colors } from '../../styles';
 import { OpacityToggler } from '../animations';
 import { Text } from '../text';
-import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 
 const CoinDividerAssetsValue = ({
   assetsAmount,

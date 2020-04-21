@@ -14,23 +14,23 @@ import { chartExpandedAvailable } from '../config/experimental';
 import EditOptions from '../helpers/editOptionTypes';
 import {
   add,
-  multiply,
   convertAmountToNativeDisplay,
+  multiply,
 } from '../helpers/utilities';
 import {
-  amountOfShowedCoins,
-  buildUniqueTokenList,
-  buildCoinsList,
-} from './assets';
-import store from '../redux/store';
-import {
+  setHiddenCoins,
   setIsCoinListEdited,
   setPinnedCoins,
-  setHiddenCoins,
 } from '../redux/editOptions';
-import networkTypes from './networkTypes';
-import { ethereumUtils } from '../utils';
 import { setOpenSmallBalances } from '../redux/openStateSettings';
+import store from '../redux/store';
+import { ethereumUtils } from '../utils';
+import {
+  amountOfShowedCoins,
+  buildCoinsList,
+  buildUniqueTokenList,
+} from './assets';
+import networkTypes from './networkTypes';
 
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;

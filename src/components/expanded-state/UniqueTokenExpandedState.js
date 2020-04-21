@@ -20,9 +20,9 @@ import {
 import { Centered } from '../layout';
 import { Pager } from '../pager';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
-import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
 import FloatingPanel from './FloatingPanel';
 import FloatingPanels from './FloatingPanels';
+import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
 
 const PagerControlsColorVariants = {
   dark: colors.dark,

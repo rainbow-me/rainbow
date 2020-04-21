@@ -1,7 +1,7 @@
 import { captureException } from '@sentry/react-native';
+import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { toBuffer } from 'ethereumjs-util';
 import { ethers } from 'ethers';
-import { signTypedDataLegacy, signTypedData_v4 } from 'eth-sig-util';
 import lang from 'i18n-js';
 import { get, isEmpty, isNil } from 'lodash';
 import { Alert } from 'react-native';

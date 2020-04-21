@@ -1,10 +1,10 @@
+import Clipboard from '@react-native-community/clipboard';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Clipboard } from 'react-native';
-import Button from './Button';
+import { checkIsValidAddress } from '../../helpers/validators';
 import { withAppState } from '../../hoc';
 import { colors } from '../../styles';
-import { checkIsValidAddress } from '../../helpers/validators';
+import Button from './Button';
 
 class PasteAddressButton extends PureComponent {
   static propTypes = {

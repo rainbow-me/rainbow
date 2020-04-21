@@ -5,9 +5,9 @@ import stylePropType from 'react-style-proptype';
 import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
 import { withFabSendAction } from '../../hoc';
 import { colors } from '../../styles';
+import Highlight from '../Highlight';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
-import Highlight from '../Highlight';
 import UniqueTokenImage from './UniqueTokenImage';
 
 const UniqueTokenCardBorderRadius = 18;

@@ -11,8 +11,8 @@ import {
   calculateCompoundInterestInDays,
   formatSavingsAmount,
 } from '../../helpers/savings';
-import { colors, padding, position } from '../../styles';
 import { useDimensions } from '../../hooks';
+import { colors, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, Row } from '../layout';

@@ -1,22 +1,22 @@
 import analytics from '@segment/analytics-react-native';
-import React, { Fragment, useEffect, useCallback } from 'react';
+import React, { Fragment, useCallback, useEffect } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
-import { Column, RowWithMargins } from '../components/layout';
-import { colors, padding } from '../styles';
+import Divider from '../components/Divider';
 import { SavingsCoinRow } from '../components/coin-row';
-import {
-  SavingsPredictionStepper,
-  SavingsSheetHeader,
-  SavingsSheetEmptyState,
-} from '../components/savings';
 import {
   FloatingEmojis,
   FloatingEmojisTapHandler,
 } from '../components/floating-emojis';
+import { Column, RowWithMargins } from '../components/layout';
+import {
+  SavingsPredictionStepper,
+  SavingsSheetEmptyState,
+  SavingsSheetHeader,
+} from '../components/savings';
 import { Sheet, SheetActionButton } from '../components/sheet';
-import Divider from '../components/Divider';
 import { convertAmountToNativeDisplay } from '../helpers/utilities';
 import { useAccountSettings } from '../hooks';
+import { colors, padding } from '../styles';
 
 const SavingsSheet = () => {
   const { getParam, navigate } = useNavigation();

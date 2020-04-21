@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { toLower, get } from 'lodash';
+import { get, toLower } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import networkInfo from '../helpers/networkInfo';
 import balanceCheckerContractAbi from '../references/balances-checker-abi.json';

@@ -1,6 +1,6 @@
 import { get, map } from 'lodash';
-import { convertAmountToNativeDisplay, multiply } from '../helpers/utilities';
 import { formatDepositAmount } from '../helpers/savings';
+import { convertAmountToNativeDisplay, multiply } from '../helpers/utilities';
 import {
   useAccountAssets,
   useAccountSettings,

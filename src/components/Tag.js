@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, onlyUpdateForKeys, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
+import { colors, padding } from '../styles';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';
-import { colors, padding } from '../styles';
 
 const TagBorderRadius = 7;
 

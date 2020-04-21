@@ -3,8 +3,8 @@ import React, { createElement } from 'react';
 import { onlyUpdateForKeys } from 'recompact';
 import { safeAreaInsetValues } from '../../utils';
 import { FlexItem, RowWithMargins } from '../layout';
-import SendFab from './SendFab';
 import ExchangeFab from './ExchangeFab';
+import SendFab from './SendFab';
 
 const bottomPosition = 21 + safeAreaInsetValues.bottom;
 

@@ -4,7 +4,7 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../../../styles';
-import { InnerBorder, Centered } from '../../layout';
+import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
 
 const ButtonSizeTypes = {

@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
 import { compose, lifecycle, omitProps, pure, withProps } from 'recompact';
 import { createSelector } from 'reselect';
+import { extraStates } from '../components/fab/MovableFabWrapper';
 import withFabSelection from './withFabSelection';
 import withOpenFamilyTabs from './withOpenFamilyTabs';
-import { extraStates } from '../components/fab/MovableFabWrapper';
 
 const mapStateToProps = ({ selectedWithFab: { actionType } }) => ({
   actionType,

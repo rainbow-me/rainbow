@@ -1,11 +1,11 @@
 import {
   getExecutionDetails,
   getTokenReserves,
-  tradeExactEthForTokensWithData,
   tradeEthForExactTokensWithData,
+  tradeExactEthForTokensWithData,
   tradeExactTokensForEthWithData,
-  tradeTokensForExactEthWithData,
   tradeExactTokensForTokensWithData,
+  tradeTokensForExactEthWithData,
   tradeTokensForExactTokensWithData,
 } from '@uniswap/sdk';
 import axios from 'axios';

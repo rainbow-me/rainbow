@@ -1,12 +1,12 @@
 import produce from 'immer';
 import { concat, difference, filter, isEmpty, union, without } from 'lodash';
-import EditOptions from '../helpers/editOptionTypes';
 import {
   getHiddenCoins,
   getPinnedCoins,
-  savePinnedCoins,
   saveHiddenCoins,
+  savePinnedCoins,
 } from '../handlers/localstorage/accountLocal';
+import EditOptions from '../helpers/editOptionTypes';
 
 // -- Constants --------------------------------------- //
 const COIN_LIST_OPTIONS_LOAD_SUCCESS =

@@ -1,18 +1,17 @@
-import { updateLanguage } from '../languages';
 import {
-  getLanguage,
-  getNetwork,
   getNativeCurrency,
+  getNetwork,
   saveLanguage,
   saveNativeCurrency,
   saveNetwork,
 } from '../handlers/localstorage/globalSettings';
-
-import { dataClearState } from './data';
-import { explorerInit } from './explorer';
-import { ethereumUtils } from '../utils';
 import { web3Provider, web3SetHttpProvider } from '../handlers/web3';
 import networkTypes from '../helpers/networkTypes';
+import { updateLanguage } from '../languages';
+
+import { ethereumUtils } from '../utils';
+import { dataClearState } from './data';
+import { explorerInit } from './explorer';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -39,15 +38,6 @@ const SETTINGS_UPDATE_NETWORK_FAILURE =
 
 // -- Actions --------------------------------------------------------------- //
 export const settingsLoadState = () => async dispatch => {
-  try {
-    const language = await getLanguage();
-    dispatch({
-      payload: language,
-      type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
-    });
-  } catch (error) {
-    dispatch({ type: SETTINGS_UPDATE_LANGUAGE_FAILURE });
-  }
   try {
     const nativeCurrency = await getNativeCurrency();
     dispatch({

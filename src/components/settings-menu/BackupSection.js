@@ -7,9 +7,9 @@ import SeedPhraseImageSource from '../../assets/seed-phrase-icon.png';
 import { loadSeedPhrase as loadSeedPhraseFromKeychain } from '../../model/wallet';
 import { colors, padding, position, shadow } from '../../styles';
 import { Button } from '../buttons';
+import CopyTooltip from '../copy-tooltip';
 import { Centered, Column } from '../layout';
 import { Br, Monospace, Text } from '../text';
-import CopyTooltip from '../copy-tooltip';
 
 const Content = styled(Centered)`
   margin-bottom: 34;
