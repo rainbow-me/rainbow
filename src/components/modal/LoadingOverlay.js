@@ -1,35 +1,42 @@
 import { BlurView } from '@react-native-community/blur';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Platform, View } from 'react-native';
-import styled from 'styled-components/primitives';
-import { colors, padding, position } from '../../styles';
+import { Platform, StyleSheet, View } from 'react-native';
+import { colors, position } from '../../styles';
 import ActivityIndicator from '../ActivityIndicator';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered } from '../layout';
 import { Text } from '../text';
 
-const Overlay = styled(Centered)`
-  ${padding(19, 19, 22)};
-  background-color: ${colors.alpha(colors.blueGreyDark, 0.15)};
-  border-radius: 20;
-  overflow: hidden;
-`;
-
-const Title = styled(Text).attrs({
-  color: 'blueGreyDark',
-  lineHeight: 'none',
-  size: 'large',
-  weight: 'semibold',
-})`
-  margin-left: 8;
-`;
+const sx = StyleSheet.create({
+  overlay: {
+    backgroundColor: colors.alpha(colors.blueGreyDark, 0.15),
+    borderRadius: 20,
+    overflow: 'hidden',
+    paddingBottom: 22,
+    paddingHorizontal: 19,
+    paddingTop: 19,
+  },
+  title: {
+    marginLeft: 8,
+  },
+});
 
 const Content = title => (
-  <Overlay>
+  <Centered style={sx.overlay}>
     <Centered zIndex={2}>
       <ActivityIndicator />
-      {title && <Title>{title}</Title>}
+      {title && (
+        <Text
+          color={colors.blueGreyDark}
+          lineHeight="none"
+          size="large"
+          style={sx.title}
+          weight="semibold"
+        >
+          {title}
+        </Text>
+      )}
     </Centered>
     <BlurView
       {...position.coverAsObject}
@@ -37,7 +44,7 @@ const Content = title => (
       blurType="light"
       zIndex={1}
     />
-  </Overlay>
+  </Centered>
 );
 
 const LoadingOverlay = ({ title, ...props }) =>
@@ -45,11 +52,9 @@ const LoadingOverlay = ({ title, ...props }) =>
     <View
       {...props}
       {...position.sizeAsObject('100%')}
+      alignSelf="center"
+      flex={1}
       zIndex={999}
-      style={{
-        alignSelf: 'center',
-        flex: 1,
-      }}
     >
       {Content(title)}
     </View>

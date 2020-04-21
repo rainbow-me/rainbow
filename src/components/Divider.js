@@ -1,9 +1,9 @@
 import { constant, isNil, isNumber, times } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { onlyUpdateForKeys } from 'recompact';
-import styled, { css } from 'styled-components/primitives';
+import React, { useMemo } from 'react';
+import { View } from 'react-primitives';
 import { borders, colors, position } from '../styles';
+import { magicMemo } from '../utils';
 
 const DefaultDividerSize = 2;
 
@@ -21,50 +21,51 @@ const buildInsetFromProps = inset => {
   ];
 };
 
-const horizontalBorderLineStyles = inset => css`
-  ${inset[3] ? borders.buildRadius('left', 2) : null}
-  ${inset[1] ? borders.buildRadius('right', 2) : null}
-  left: ${inset[3]};
-  right: ${inset[1]};
-`;
+const horizontalBorderLineStyles = inset => ({
+  ...(inset[3] ? borders.buildRadiusAsObject('left', 2) : {}),
+  ...(inset[1] ? borders.buildRadiusAsObject('right', 2) : {}),
+  left: inset[3],
+  right: inset[1],
+});
 
-const verticalBorderLineStyles = inset => css`
-  ${inset[2] ? borders.buildRadius('bottom', 2) : null}
-  ${inset[0] ? borders.buildRadius('top', 2) : null}
-  bottom: ${inset[2]};
-  top: ${inset[0]};
-`;
+const verticalBorderLineStyles = inset => ({
+  ...(inset[2] ? borders.buildRadiusAsObject('bottom', 2) : {}),
+  ...(inset[0] ? borders.buildRadiusAsObject('top', 2) : {}),
+  bottom: inset[2],
+  top: inset[0],
+});
 
-const BorderLine = styled.View`
-  ${position.cover};
-  ${({ horizontal, inset }) =>
-    horizontal
-      ? horizontalBorderLineStyles(inset)
-      : verticalBorderLineStyles(inset)};
-  background-color: ${({ color }) => color};
-  bottom: 0;
-  top: 0;
-`;
+const Divider = magicMemo(
+  ({ backgroundColor, color, horizontal, inset, size, ...props }) => {
+    const borderLineStyles = useMemo(() => {
+      const insetFromProps = buildInsetFromProps(inset);
+      return horizontal
+        ? horizontalBorderLineStyles(insetFromProps)
+        : verticalBorderLineStyles(insetFromProps);
+    }, [horizontal, inset]);
 
-const Container = styled.View`
-  background-color: ${({ backgroundColor }) => backgroundColor || colors.white};
-  flex-shrink: 0;
-  height: ${({ horizontal, size }) => (horizontal ? size : '100%')};
-  width: ${({ horizontal, size }) => (horizontal ? '100%' : size)};
-`;
+    return (
+      <View
+        backgroundColor={backgroundColor || colors.white}
+        flexShrink={0}
+        height={horizontal ? size : '100%'}
+        width={horizontal ? '100%' : size}
+        {...props}
+      >
+        <View
+          {...position.coverAsObject}
+          backgroundColor={color}
+          horizontal={horizontal}
+          style={borderLineStyles}
+          {...props}
+        />
+      </View>
+    );
+  },
+  ['color', 'inset']
+);
 
-const enhance = onlyUpdateForKeys(['color', 'inset']);
-
-const Divider = enhance(({ color, horizontal, inset, size, ...props }) => (
-  <Container {...props} horizontal={horizontal} size={size}>
-    <BorderLine
-      {...props}
-      color={color}
-      horizontal={horizontal}
-      inset={buildInsetFromProps(inset)}
-    />
-  </Container>
-));
+Divider.displayName = 'Divider';
 
 Divider.propTypes = {
   color: PropTypes.string,

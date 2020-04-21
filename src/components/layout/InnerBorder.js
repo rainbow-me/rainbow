@@ -6,13 +6,11 @@ import { colors, position } from '../../styles';
 const InnerBorder = ({ color, opacity, radius, width, ...props }) => (
   <View
     {...props}
-    css={`
-      ${position.cover}
-      border-color: ${color};
-      border-radius: ${radius};
-      border-width: ${width};
-      opacity: ${opacity};
-    `}
+    {...position.coverAsObject}
+    borderColor={color}
+    borderRadius={radius}
+    borderWidth={width}
+    opacity={opacity}
     pointerEvents="none"
   />
 );

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { createElement, forwardRef, useMemo } from 'react';
+import { createElement, forwardRef } from 'react';
 import { View } from 'react-primitives';
 
 export const getFlexStyleKeysFromShorthand = style =>
@@ -11,31 +11,27 @@ const Flex = forwardRef(
       align,
       component,
       direction,
-      flex: flexProp,
+      flex,
+      grow,
       justify,
       self,
-      style,
+      shrink,
       wrap,
       ...props
     },
     ref
   ) => {
-    const flexStyles = useMemo(
-      () => ({
-        ...(self ? { alignSelf: getFlexStyleKeysFromShorthand(self) } : {}),
-        ...(flexProp ? { flex: flexProp } : {}),
-        alignItems: getFlexStyleKeysFromShorthand(align),
-        flexDirection: direction,
-        flexWrap: wrap ? 'wrap' : 'nowrap',
-        justifyContent: getFlexStyleKeysFromShorthand(justify),
-      }),
-      [align, direction, flexProp, justify, self, wrap]
-    );
-
     return createElement(component, {
-      ref,
-      style: [flexStyles, style],
+      alignItems: getFlexStyleKeysFromShorthand(align),
+      alignSelf: getFlexStyleKeysFromShorthand(self),
+      flex,
+      flexDirection: direction,
+      flexGrow: grow,
+      flexShrink: shrink,
+      flexWrap: wrap ? 'wrap' : 'nowrap',
+      justifyContent: getFlexStyleKeysFromShorthand(justify),
       ...props,
+      ref,
     });
   }
 );
@@ -52,6 +48,7 @@ Flex.propTypes = {
     'row-reverse',
   ]),
   flex: PropTypes.number,
+  grow: PropTypes.number,
   justify: PropTypes.oneOf([
     'center',
     'end',
@@ -60,6 +57,7 @@ Flex.propTypes = {
     'start',
   ]),
   self: PropTypes.oneOf(['center', 'end', 'start', 'stretch']),
+  shrink: PropTypes.number,
   wrap: PropTypes.bool,
 };
 

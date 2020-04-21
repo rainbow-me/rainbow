@@ -1,7 +1,6 @@
-import { compose, setDisplayName, withProps } from 'recompact';
+import React from 'react';
 import Flex from './Flex';
 
-export default compose(
-  setDisplayName('Column'),
-  withProps({ direction: 'column' })
-)(Flex);
+const Column = (props, ref) => <Flex direction="column" ref={ref} {...props} />;
+
+export default React.forwardRef(Column);

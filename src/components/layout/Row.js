@@ -1,7 +1,6 @@
-import { compose, setDisplayName, withProps } from 'recompact';
+import React from 'react';
 import Flex from './Flex';
 
-export default compose(
-  setDisplayName('Row'),
-  withProps({ direction: 'row' })
-)(Flex);
+const Row = (props, ref) => <Flex direction="row" ref={ref} {...props} />;
+
+export default React.forwardRef(Row);

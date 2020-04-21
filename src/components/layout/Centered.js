@@ -1,7 +1,8 @@
-import { compose, setDisplayName, withProps } from 'recompact';
+import React from 'react';
 import Flex from './Flex';
 
-export default compose(
-  setDisplayName('Centered'),
-  withProps({ align: 'center', justify: 'center' })
-)(Flex);
+const Centered = (props, ref) => (
+  <Flex align="center" justify="center" ref={ref} {...props} />
+);
+
+export default React.forwardRef(Centered);

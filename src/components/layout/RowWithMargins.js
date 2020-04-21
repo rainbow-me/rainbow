@@ -1,11 +1,14 @@
-import { compose, defaultProps, setDisplayName, withProps } from 'recompact';
+import React from 'react';
 import LayoutWithMargins from './LayoutWithMargins';
 
-export default compose(
-  setDisplayName('RowWithMargins'),
-  defaultProps({
-    margin: 19,
-    marginKey: 'marginRight',
-  }),
-  withProps({ direction: 'row' })
-)(LayoutWithMargins);
+const RowWithMargins = ({ margin = 19, ...props }, ref) => (
+  <LayoutWithMargins
+    {...props}
+    direction="row"
+    margin={margin}
+    marginKey="marginRight"
+    ref={ref}
+  />
+);
+
+export default React.forwardRef(RowWithMargins);

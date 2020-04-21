@@ -1,13 +1,13 @@
-import { compose, setDisplayName, withProps } from 'recompact';
+import React from 'react';
 import LayoutWithDividers from './LayoutWithDividers';
 
-export default compose(
-  setDisplayName('RowWithDividers'),
-  withProps(({ dividerProps }) => ({
-    direction: 'row',
-    dividerProps: {
-      horizontal: false,
-      ...dividerProps,
-    },
-  }))
-)(LayoutWithDividers);
+const RowWithDividers = (props, ref) => (
+  <LayoutWithDividers
+    direction="row"
+    dividerHorizontal={false}
+    ref={ref}
+    {...props}
+  />
+);
+
+export default React.forwardRef(RowWithDividers);

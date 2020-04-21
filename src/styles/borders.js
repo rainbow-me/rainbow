@@ -46,4 +46,26 @@ border.buildRadius = (direction, value = border.radius) => {
   `;
 };
 
+border.buildRadiusAsObject = (direction, value = border.radius) => {
+  if (direction === 'bottom' || direction === 'top') {
+    return {
+      [`border${upperFirst(direction)}LeftRadius`]: value,
+      [`border${upperFirst(direction)}RightRadius`]: value,
+    };
+  }
+  if (direction === 'left' || direction === 'right') {
+    return {
+      [`borderBottom${upperFirst(direction)}Radius`]: value,
+      [`borderTop${upperFirst(direction)}Radius`]: value,
+    };
+  }
+
+  return {
+    borderBottomLeftRadius: value,
+    borderBottomRightRadius: value,
+    borderTopLeftRadius: value,
+    borderTopRightRadius: value,
+  };
+};
+
 export default border;

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { createElement } from 'react';
 import Emoji from 'react-native-emoji';
 import Flex from '../layout/Flex';
+import { Emoji } from '../text';
 
 import ApplePayIcon from './svg/ApplePayIcon';
 import ArrowBackIcon from './svg/ArrowBack';

@@ -1,38 +1,38 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 
-const ModalElement = styled(Column)`
-  background-color: ${colors.white};
-  border-radius: ${({ radius }) => radius || 12};
-  flex-shrink: 0;
-  height: ${({ height }) => height};
-  width: 100%;
-  margin-top: ${({ fixedToTop }) => (fixedToTop ? 91 : 0)};
-`;
-
 const Modal = ({
+  containerPadding,
+  fixedToTop,
   height,
   onCloseModal,
+  radius,
   statusBarStyle,
-  containerPadding,
   ...props
 }) => (
   <Centered
-    style={{ justifyContent: props.fixedToTop ? 'flex-start' : 'center' }}
     direction="column"
     height="100%"
+    justify={fixedToTop ? 'start' : 'center'}
     padding={containerPadding}
     width="100%"
   >
     <StatusBar barStyle={statusBarStyle} />
     <TouchableBackdrop onPress={onCloseModal} />
-    <ModalElement {...props} height={height} />
+    <Column
+      {...props}
+      backgroundColor={colors.white}
+      borderRadius={radius}
+      height={height}
+      marginTop={fixedToTop ? 91 : 0}
+      shrink={0}
+      width="100%"
+    />
   </Centered>
 );
 
@@ -41,6 +41,7 @@ Modal.propTypes = {
   fixedToTop: PropTypes.bool,
   height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   onCloseModal: PropTypes.func,
+  radius: PropTypes.number,
   statusBarStyle: PropTypes.oneOf(['default', 'light-content', 'dark-content']),
 };
 
@@ -49,6 +50,7 @@ Modal.defaultProps = {
   fixedToTop: false,
   height: deviceUtils.dimensions.height - 230,
   onCloseModal: () => null,
+  radius: 12,
   statusBarStyle: 'light-content',
 };
 
