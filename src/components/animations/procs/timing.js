@@ -1,20 +1,16 @@
-import Animated, { Easing } from 'react-native-reanimated';
+import Animated, {
+  Clock,
+  Easing,
+  timing,
+  Value,
+} from 'react-native-reanimated';
 import { updateState } from './updateState';
 
-const {
-  block,
-  Clock,
-  clockRunning,
-  cond,
-  set,
-  startClock,
-  stopClock,
-  Value,
-} = Animated;
+const { block, clockRunning, cond, set, startClock, stopClock } = Animated;
 
 const timingProc = Animated.proc(
   (clock, finished, position, time, frameTime, toValue, duration) =>
-    Animated.timing(
+    timing(
       clock,
       {
         finished,
@@ -41,7 +37,7 @@ const runTiming = (clock, state, config) =>
     config.duration
   );
 
-export default function timing(params) {
+export default function localTiming(params) {
   const { clock, duration, easing, from, to } = {
     clock: new Clock(),
     duration: 250,

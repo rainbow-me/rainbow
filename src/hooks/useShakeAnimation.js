@@ -1,8 +1,6 @@
 import { useCallback, useState } from 'react';
-import Animated from 'react-native-reanimated';
+import { Clock, Value } from 'react-native-reanimated';
 import { runSpring } from '../components/animations';
-
-const { Clock, Value } = Animated;
 
 const shake = () => runSpring(new Clock(), -10, 0, -1000, 5500, 35);
 

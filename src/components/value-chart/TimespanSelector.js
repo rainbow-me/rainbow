@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { spring, Value } from 'react-native-reanimated';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import ValueTime from './ValueTime';
@@ -21,8 +21,6 @@ const interval = {
   WEEK: 1,
   YEAR: 3,
 };
-
-const { Value } = Animated;
 
 const bottomSpaceWidth = deviceUtils.dimensions.width / (4 * 2);
 
@@ -44,7 +42,7 @@ class TimespanSelector extends React.Component {
   }
 
   animateTransition = index => {
-    Animated.spring(this.translateX, {
+    spring(this.translateX, {
       toValue: Math.floor(bottomSpaceWidth * (index * 2 - 3)),
       ...springConfig,
     }).start();

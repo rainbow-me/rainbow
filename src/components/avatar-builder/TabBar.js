@@ -47,6 +47,7 @@ const TabBar = ({ categoryKeys, activeCategory, onPress }) => {
           />
         </ButtonPressAnimation>
       );
+    return null;
   });
 };
 

@@ -6,7 +6,13 @@ import {
   State,
 } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import Animated, { clockRunning, Easing } from 'react-native-reanimated';
+import Animated, {
+  Clock,
+  clockRunning,
+  Easing,
+  timing,
+  Value,
+} from 'react-native-reanimated';
 import stylePropType from 'react-style-proptype';
 import { useMemoOne } from 'use-memo-one';
 import isNativeButtonAvailable from '../../../helpers/isNativeButtonAvailable';
@@ -19,7 +25,6 @@ const {
   and,
   block,
   call,
-  Clock,
   cond,
   createAnimatedComponent,
   eq,
@@ -31,8 +36,6 @@ const {
   proc,
   startClock,
   stopClock,
-  timing,
-  Value,
 } = Animated;
 
 const { ACTIVE, CANCELLED, END, UNDETERMINED } = State;
