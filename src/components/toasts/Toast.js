@@ -6,7 +6,7 @@ import styled from 'styled-components/primitives';
 import { colors, padding, shadow } from '../../styles';
 import { interpolate } from '../animations';
 import { Icon } from '../icons';
-import { Centered, RowWithMargins } from '../layout';
+import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 
 const springConfig = {

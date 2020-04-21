@@ -1,11 +1,17 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useRef, useState } from 'react';
-import { TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { colors, fonts } from '../../styles';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
+
+const sx = StyleSheet.create({
+  text: {
+    marginBottom: 0.5,
+  },
+});
 
 const ExchangeNativeField = ({
   assignNativeFieldRef,
@@ -64,7 +70,6 @@ const ExchangeNativeField = ({
     typeof nativeAmount === 'string' && nativeAmount.length > 0;
 
   let opacity = nativeAmountExists ? 0.5 : 0.3;
-
   if (isFocused) {
     opacity = 1;
   }
@@ -78,9 +83,10 @@ const ExchangeNativeField = ({
     <TouchableWithoutFeedback flex={0} onPress={focusNativeField}>
       <Row align="center" flex={1} height={height}>
         <Text
+          color={color}
           flex={0}
           size="large"
-          style={{ color, marginBottom: 0.5 }}
+          style={sx.text}
           weight="regular"
         >
           {symbol}

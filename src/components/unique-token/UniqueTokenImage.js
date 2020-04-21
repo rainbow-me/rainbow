@@ -3,6 +3,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { colors, position } from '../../styles';
+import { magicMemo } from '../../utils';
 import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
 import { Centered } from '../layout';
 import { Monospace } from '../text';
@@ -21,7 +22,7 @@ const UniqueTokenImage = ({ backgroundColor, imageUrl, item, resizeMode }) => {
   const source = useMemo(() => ({ uri: imageUrl }), [imageUrl]);
 
   return (
-    <Centered {...position.coverAsObject} backgroundColor={backgroundColor}>
+    <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
       {imageUrl && !error ? (
         <ImageWithCachedDimensions
           id={imageUrl}
@@ -47,6 +48,7 @@ const UniqueTokenImage = ({ backgroundColor, imageUrl, item, resizeMode }) => {
 UniqueTokenImage.propTypes = {
   backgroundColor: PropTypes.string,
   imageUrl: PropTypes.string,
+  item: PropTypes.object,
   resizeMode: PropTypes.oneOf(Object.values(FastImage.resizeMode)),
 };
 
@@ -55,6 +57,4 @@ UniqueTokenImage.defaultProps = {
   resizeMode: 'cover',
 };
 
-const arePropsEqual = (prev, next) => prev.imageUrl === next.imageUrl;
-
-export default React.memo(UniqueTokenImage, arePropsEqual);
+export default magicMemo(UniqueTokenImage, 'imageUrl');

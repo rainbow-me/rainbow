@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import stylePropType from 'react-style-proptype';
-import { pure } from 'recompact';
 import { colors, shadow } from '../../styles';
 import { Column } from '../layout';
 
@@ -12,23 +12,32 @@ export const FloatingPanelPadding = {
   y: 0,
 };
 
-const FloatingPanel = pure(
-  ({ color, height, hideShadow, style, radius, overflow, ...props }) => (
-    <Column
-      css={`
-      ${shadow.build(0, 10, 50, colors.dark, hideShadow ? 0 : 0.6)}
-      background-color: ${color};
-      border-radius: ${radius || FloatingPanelBorderRadius};
-      min-height: ${height || 'auto'};
-      opacity: 1;
-      overflow: ${overflow || 'hidden'};
-      padding-bottom: 0px;
-      z-index: 1;
-    `}
-      style={style}
-      {...props}
-    />
-  )
+const sx = StyleSheet.create({
+  container: {
+    opacity: 1,
+    paddingBottom: 0,
+    zIndex: 1,
+  },
+  shadow: shadow.buildAsObject(0, 10, 50, colors.dark, 0.6),
+});
+
+const FloatingPanel = ({
+  color,
+  height,
+  hideShadow,
+  overflow,
+  radius,
+  style,
+  ...props
+}) => (
+  <Column
+    backgroundColor={color}
+    borderRadius={radius || FloatingPanelBorderRadius}
+    minHeight={height || 'auto'}
+    overflow={overflow || 'hidden'}
+    style={[sx.container, hideShadow ? null : sx.shadow, style]}
+    {...props}
+  />
 );
 
 FloatingPanel.propTypes = {

@@ -1,26 +1,30 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { shouldUpdate } from 'recompact';
-import { css } from 'styled-components/primitives';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
-import { colors, padding } from '../../styles';
+import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import Text from '../text/Text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
-const containerStyles = css`
-  padding-left: 15;
-  padding-top: 17;
-`;
-
 const selectedHeight = 78;
 
-const selectedStyles = css`
-  ${padding(15, 15, 19, 15)};
-  height: ${selectedHeight};
-`;
+const sx = StyleSheet.create({
+  container: {
+    paddingLeft: 15,
+    paddingTop: 17,
+  },
+  containerSelected: {
+    height: selectedHeight,
+    paddingBottom: 19,
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingTop: 15,
+  },
+});
 
 const BottomRow = ({ balance, native, nativeCurrencySymbol }) => {
   const fiatValue =
@@ -60,7 +64,7 @@ const SendCoinRow = enhance(({ item, onPress, selected, ...props }) => (
     <CoinRow
       {...item}
       bottomRowRender={BottomRow}
-      containerStyles={selected ? selectedStyles : containerStyles}
+      containerStyles={selected ? sx.containerSelected : sx.container}
       selected={selected}
       topRowRender={TopRow}
       {...props}

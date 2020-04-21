@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { useRef } from 'react';
+import { StyleSheet } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
 import { withNeverRerender } from '../../hoc';
-import { colors, fonts, padding } from '../../styles';
+import { colors, fonts } from '../../styles';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
 import { EnDash } from '../html-entities';
@@ -11,31 +12,41 @@ import ExchangeInput from './ExchangeInput';
 
 const paddingValue = 15;
 
+const sx = StyleSheet.create({
+  container: {
+    backgroundColor: colors.white,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    overflow: 'hidden',
+    paddingBottom: 26,
+    paddingTop: 24 + paddingValue,
+    width: '100%',
+  },
+  fakeNotch: {
+    height: paddingValue,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: '100%',
+    zIndex: 0,
+  },
+});
+
+const FakeNotchShadow = [
+  [0, 0, 1, colors.dark, 0.01],
+  [0, 4, 12, colors.dark, 0.04],
+  [0, 8, 23, colors.dark, 0.05],
+];
+
 const FakeNotchThing = withNeverRerender(() => (
-  <ShadowStack
-    height={paddingValue}
-    shadows={[
-      [0, 0, 1, colors.dark, 0.01],
-      [0, 4, 12, colors.dark, 0.04],
-      [0, 8, 23, colors.dark, 0.05],
-    ]}
-    shouldRasterizeIOS
-    style={{
-      left: 0,
-      position: 'absolute',
-      right: 0,
-      top: 0,
-      zIndex: 0,
-    }}
-    width="100%"
-  />
+  <ShadowStack shadows={FakeNotchShadow} style={sx.fakeNotch} />
 ));
 
 const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
 const ExchangeOutputField = ({
   assignOutputFieldRef,
-  bottomRadius,
   onBlur,
   onFocus,
   onPressSelectOutputCurrency,
@@ -58,18 +69,7 @@ const ExchangeOutputField = ({
   };
 
   return (
-    <Row
-      align="center"
-      flex={0}
-      width="100%"
-      css={`
-        ${padding(24 + paddingValue, 0, 26)};
-        background-color: ${colors.white};
-        overflow: hidden;
-        border-bottom-left-radius: ${bottomRadius}px;
-        border-bottom-right-radius: ${bottomRadius}px;
-      `}
-    >
+    <Row align="center" flex={0} style={sx.container}>
       <FakeNotchThing />
       <RowWithMargins
         align="center"
@@ -79,10 +79,10 @@ const ExchangeOutputField = ({
         paddingLeft={paddingValue}
       >
         <CoinIcon
+          address={outputCurrencyAddress}
           bgColor={outputCurrencySymbol ? undefined : skeletonColor}
           flex={0}
           size={40}
-          address={outputCurrencyAddress}
           symbol={outputCurrencySymbol}
         />
         <ExchangeInput
@@ -111,7 +111,6 @@ const ExchangeOutputField = ({
 
 ExchangeOutputField.propTypes = {
   assignOutputFieldRef: PropTypes.func.isRequired,
-  bottomRadius: PropTypes.number,
   onBlur: PropTypes.func,
   onFocus: PropTypes.func,
   onPressSelectOutputCurrency: PropTypes.func,

@@ -1,31 +1,41 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
-import { View } from 'react-primitives';
-import { pure } from 'recompact';
+import { StyleSheet, View } from 'react-primitives';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { colors } from '../../styles';
 import { RotationArrow } from '../animations';
 import { Column, Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 
-const height = 49;
+const InvestmentCardHeaderHeight = 49;
 
-const InvestmentCardHeader = pure(
+const sx = StyleSheet.create({
+  caret: {
+    height: 17,
+    width: 9,
+  },
+  emoji: {
+    paddingBottom: 1.5,
+  },
+});
+
+// eslint-disable-next-line react/display-name
+const InvestmentCardHeader = React.memo(
   ({ collapsed, color, emoji, isCollapsible, title, titleColor, value }) => (
     <Row
       align="center"
-      height={height}
+      height={InvestmentCardHeaderHeight}
       justify="space-between"
       paddingHorizontal={15}
     >
       <RowWithMargins align="center" margin={3} paddingBottom={3}>
         <Column align="start" justify="center" width={24}>
           <Emoji
-            name={emoji}
             lineHeight="none"
-            style={{ paddingBottom: 1.5 }}
+            name={emoji}
             size="medium"
+            style={sx.emoji}
           />
         </Column>
         <Text
@@ -48,14 +58,8 @@ const InvestmentCardHeader = pure(
         </Text>
         {isCollapsible && (
           <View paddingLeft={12} paddingRight={4}>
-            <RotationArrow isOpen={!collapsed} endingPosition={90}>
-              <FastImage
-                source={Caret}
-                style={{
-                  height: 17,
-                  width: 9,
-                }}
-              />
+            <RotationArrow endingPosition={90} isOpen={!collapsed}>
+              <FastImage source={Caret} style={sx.caret} />
             </RotationArrow>
           </View>
         )}
@@ -79,6 +83,6 @@ InvestmentCardHeader.defaultProps = {
   isCollapsible: false,
 };
 
-InvestmentCardHeader.height = height;
+InvestmentCardHeader.height = InvestmentCardHeaderHeight;
 
 export default InvestmentCardHeader;

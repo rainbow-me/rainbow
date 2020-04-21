@@ -2,7 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import GraphemeSplitter from 'grapheme-splitter';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { Platform, Text } from 'react-native';
+import { Platform, StyleSheet, Text } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
@@ -22,6 +22,13 @@ import { TruncatedAddress } from '../text';
 import AddCashButton from './AddCashButton';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
+
+const sx = StyleSheet.create({
+  bottomDivider: {
+    bottom: 0,
+    position: 'absolute',
+  },
+});
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
@@ -86,7 +93,7 @@ const ProfileMasthead = ({
       ) : (
         <FastImage
           source={AvatarImageSource}
-          style={{ ...borders.buildCircleAsObject(85) }}
+          style={borders.buildCircleAsObject(85)}
         />
       )}
       <CopyTooltip
@@ -128,10 +135,7 @@ const ProfileMasthead = ({
       </RowWithMargins>
       {addCashAvailable && <AddCashButton onPress={onAddCash} />}
       {showBottomDivider && (
-        <Divider
-          color={colors.rowDividerLight}
-          style={{ bottom: 0, position: 'absolute' }}
-        />
+        <Divider color={colors.rowDividerLight} style={sx.bottomDivider} />
       )}
     </Column>
   );

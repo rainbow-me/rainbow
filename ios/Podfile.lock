@@ -129,9 +129,20 @@ PODS:
     - GoogleUtilities/Network (~> 6.0)
     - "GoogleUtilities/NSData+zlib (~> 6.0)"
     - nanopb (= 0.3.9011)
+<<<<<<< HEAD
   - GoogleDataTransport (6.1.1)
   - GoogleDataTransportCCTSupport (3.0.0):
     - GoogleDataTransport (~> 6.0)
+=======
+<<<<<<< HEAD
+  - GoogleDataTransport (5.1.0)
+  - GoogleDataTransportCCTSupport (2.0.1):
+=======
+  - GoogleDataTransport (5.1.1)
+  - GoogleDataTransportCCTSupport (2.0.3):
+>>>>>>> 380e84cb... Apply new layout patterns across components
+    - GoogleDataTransport (~> 5.1)
+>>>>>>> 51ed9411... Apply new layout patterns across components
     - nanopb (~> 0.3.901)
   - GoogleUtilities/AppDelegateSwizzler (6.6.0):
     - GoogleUtilities/Environment
@@ -175,10 +186,20 @@ PODS:
   - OpenSSL-Universal (1.0.2.19):
     - OpenSSL-Universal/Static (= 1.0.2.19)
   - OpenSSL-Universal/Static (1.0.2.19)
+<<<<<<< HEAD
   - PanModal (1.2.7)
+<<<<<<< HEAD
   - Permission-Camera (2.1.3):
     - RNPermissions
   - Permission-FaceID (2.1.3):
+=======
+  - Permission-Camera (2.1.1):
+=======
+  - Permission-Camera (2.1.2):
+>>>>>>> 380e84cb... Apply new layout patterns across components
+    - RNPermissions
+  - Permission-FaceID (2.1.2):
+>>>>>>> 51ed9411... Apply new layout patterns across components
     - RNPermissions
   - pop (1.0.12)
   - PromisesObjC (1.2.8)
@@ -482,7 +503,11 @@ PODS:
     - React
   - RNOS (1.2.8):
     - React
+<<<<<<< HEAD
   - RNPermissions (2.1.3):
+=======
+  - RNPermissions (2.1.2):
+>>>>>>> 51ed9411... Apply new layout patterns across components
     - React
   - RNReactNativeHapticFeedback (1.9.0):
     - React
@@ -849,21 +874,47 @@ SPEC CHECKSUMS:
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   GoogleAppMeasurement: dfe55efa543e899d906309eaaac6ca26d249862f
+<<<<<<< HEAD
   GoogleDataTransport: ad884314b81cdb808fb1d23787b367ff8da4e28a
   GoogleDataTransportCCTSupport: 0f39025e8cf51f168711bd3fb773938d7e62ddb5
   GoogleUtilities: 39530bc0ad980530298e9c4af8549e991fd033b1
+=======
+<<<<<<< HEAD
+  GoogleDataTransport: b29a21d813e906014ca16c00897827e40e4a24ab
+  GoogleDataTransportCCTSupport: 6f15a89b0ca35d6fa523e1f752ef818588885988
+=======
+  GoogleDataTransport: 6ffa4dd0b6d547f8d27b91bd92fa9e197a3f5f1f
+  GoogleDataTransportCCTSupport: 2d7e609f8c5af1a33d7d59053e6f8cba59365df5
+>>>>>>> 380e84cb... Apply new layout patterns across components
+  GoogleUtilities: ad0f3b691c67909d03a3327cc205222ab8f42e0e
+>>>>>>> 51ed9411... Apply new layout patterns across components
   JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   lottie-ios: 496ac5cea1bbf1a7bd1f1f472f3232eb1b8d744b
   lottie-react-native: 2a1a82bb326ae51331a5520de0cf706733c6db69
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
+<<<<<<< HEAD
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
+<<<<<<< HEAD
   Permission-Camera: cbbed5d193641837e9a32592dd71292eabd11827
   Permission-FaceID: bb11b645251e0986cbbcfdd7e258720e463ff692
   pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
   Protobuf: 2793fcd0622a00b546c60e7cbbcc493e043e9bb9
+=======
+  Permission-Camera: 01583e5864cb99d89cbfb3ec62cb83c78d8d227a
+  Permission-FaceID: fafd8c4809ad5be3547e1b66c2ce444c5abd92a6
+<<<<<<< HEAD
+  pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
+=======
+=======
+  Permission-Camera: ebdba00e6926aface672cc547b19fa317c3d956e
+  Permission-FaceID: 47e37e5acf891b4b7a8fd6736b422045d74db17c
+>>>>>>> 380e84cb... Apply new layout patterns across components
+>>>>>>> 5919024d... Apply new layout patterns across components
+  Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
+>>>>>>> 51ed9411... Apply new layout patterns across components
   RCTRequired: cec6a34b3ac8a9915c37e7e4ad3aa74726ce4035
   RCTTypeSafety: 93006131180074cffa227a1075802c89a49dd4ce
   React: 29a8b1a02bd764fb7644ef04019270849b9a7ac3
@@ -912,7 +963,11 @@ SPEC CHECKSUMS:
   RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
+<<<<<<< HEAD
   RNPermissions: 6772df08e03565f718f7e140d9fccae441b8ca8b
+=======
+  RNPermissions: a96580116f7894146552e92b000ac30bf1661947
+>>>>>>> 51ed9411... Apply new layout patterns across components
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5

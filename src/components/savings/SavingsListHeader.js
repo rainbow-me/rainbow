@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
@@ -15,6 +16,15 @@ const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
 
 const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 44;
+
+const sx = StyleSheet.create({
+  emoji: {
+    marginBottom: 3.5,
+  },
+  sumValue: {
+    marginBottom: 1,
+  },
+});
 
 const SavingsListHeader = ({
   emoji,
@@ -46,7 +56,7 @@ const SavingsListHeader = ({
       >
         <Highlight visible={highlight} />
         <RowWithMargins align="center" margin={emoji ? 3.5 : 9}>
-          <Emoji name={emoji} size="medium" style={{ marginBottom: 3.5 }} />
+          <Emoji name={emoji} size="medium" style={sx.emoji} />
           <TruncatedText
             letterSpacing="roundedMedium"
             lineHeight="normal"
@@ -66,12 +76,7 @@ const SavingsListHeader = ({
                 }),
               }}
             >
-              <Text
-                align="right"
-                color="dark"
-                size="large"
-                style={{ marginBottom: 1 }}
-              >
+              <Text align="right" color="dark" size="large" style={sx.sumValue}>
                 {convertAmountToNativeDisplay(savingsSumValue, nativeCurrency)}
               </Text>
             </Animated.View>

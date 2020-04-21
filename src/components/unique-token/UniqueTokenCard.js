@@ -1,16 +1,20 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import stylePropType from 'react-style-proptype';
 import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
 import { withFabSendAction } from '../../hoc';
-import { colors } from '../../styles';
+import { colors, shadow } from '../../styles';
 import Highlight from '../Highlight';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
 import UniqueTokenImage from './UniqueTokenImage';
 
 const UniqueTokenCardBorderRadius = 18;
+
+const sx = StyleSheet.create({
+  container: shadow.buildAsObject(0, 2, 3, colors.dark, 0.08),
+});
 
 const UniqueTokenCard = ({
   borderEnabled,
@@ -33,13 +37,7 @@ const UniqueTokenCard = ({
       enableHapticFeedback={enableHapticFeedback}
       onPress={onPress}
       scaleTo={scaleTo}
-      style={{
-        shadowColor: colors.dark,
-        shadowOffset: { height: 2, width: 0 },
-        shadowOpacity: 0.08,
-        shadowRadius: 3,
-        ...shadowStyle,
-      }}
+      style={[sx.container, shadowStyle]}
     >
       <View
         {...props}

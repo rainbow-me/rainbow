@@ -1,11 +1,11 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, StyleSheet } from 'react-native';
 import { useDimensions } from '../../hooks';
 import { haptics } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { CoinIcon } from '../coin-icon';
+import { CoinIconSize } from '../coin-icon';
 import { FloatingEmojis } from '../floating-emojis';
 import { Centered, ColumnWithMargins } from '../layout';
 import BalanceText from './BalanceText';
@@ -17,6 +17,18 @@ import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 const CoinRowPaddingTop = 11;
 const CoinRowPaddingBottom = 11;
 
+const sx = StyleSheet.create({
+  container: {
+    paddingBottom: CoinRowPaddingBottom,
+    paddingLeft: 15,
+    paddingRight: 0,
+    paddingTop: CoinRowPaddingTop,
+  },
+  containerWithFavorite: {
+    paddingRight: 38,
+  },
+});
+
 const BottomRow = ({ showBalance, symbol }) =>
   showBalance ? null : <BottomRowText>{symbol}</BottomRowText>;
 
@@ -26,7 +38,7 @@ BottomRow.propTypes = {
 };
 
 const TopRow = ({ name, showBalance }) => (
-  <Centered height={showBalance ? CoinIcon.size : null}>
+  <Centered height={showBalance ? CoinIconSize : null}>
     <CoinName>{name}</CoinName>
   </Centered>
 );
@@ -50,19 +62,17 @@ const ExchangeCoinRow = ({
   return (
     <ButtonPressAnimation
       {...props}
-      height={CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom}
+      height={CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom}
       onPress={() => onPress(item)}
       scaleTo={0.96}
     >
       <CoinRow
         {...item}
         bottomRowRender={BottomRow}
-        containerStyles={{
-          paddingBottom: CoinRowPaddingBottom,
-          paddingLeft: 15,
-          paddingRight: showFavoriteButton ? 38 : 0,
-          paddingTop: CoinRowPaddingTop,
-        }}
+        containerStyles={[
+          sx.container,
+          showFavoriteButton ? sx.containerWithFavorite : null,
+        ]}
         showBalance={showBalance}
         topRowRender={TopRow}
       >
@@ -77,11 +87,11 @@ const ExchangeCoinRow = ({
         {showFavoriteButton && (
           <FloatingEmojis
             centerVertically
-            emojis={['star2']}
             disableHorizontalMovement
             disableVerticalMovement
             distance={70}
             duration={400}
+            emojis={['star2']}
             fadeOut={false}
             left={width - 46}
             marginTop={11}

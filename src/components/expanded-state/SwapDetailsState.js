@@ -49,7 +49,7 @@ const SwapDetailsState = ({
   const { goBack } = useNavigation();
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
 
-  let emojis = ['unicorn_face'];
+  let emojis = ['unicorn'];
   if ([inputCurrencySymbol, outputCurrencySymbol].includes('FAME')) {
     emojis = ['prayer_beads'];
   } else if ([inputCurrencySymbol, outputCurrencySymbol].includes('SOCKS')) {
@@ -106,7 +106,7 @@ const SwapDetailsState = ({
                       <RowWithMargins align="center" margin={2}>
                         <Emoji
                           lineHeight="none"
-                          name="unicorn_face"
+                          name="unicorn"
                           size="lmedium"
                           weight="medium"
                         />

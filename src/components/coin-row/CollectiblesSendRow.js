@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import { compose, onlyUpdateForKeys, shouldUpdate, withProps } from 'recompact';
-import { css } from 'styled-components/primitives';
+import { StyleSheet } from 'react-native';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
-import { colors, padding } from '../../styles';
+import { colors } from '../../styles';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RequestVendorLogoIcon } from '../coin-icon';
@@ -15,10 +15,15 @@ import CoinRow from './CoinRow';
 const dividerHeight = 22;
 const selectedHeight = 78;
 
-const selectedStyles = css`
-  ${padding(17, 14, 19, 13)};
-  height: ${selectedHeight};
-`;
+const sx = StyleSheet.create({
+  selected: {
+    height: selectedHeight,
+    paddingBottom: 19,
+    paddingLeft: 13,
+    paddingRight: 14,
+    paddingTop: 17,
+  },
+});
 
 const BottomRow = ({ subtitle }) => (
   <TruncatedText color={colors.alpha(colors.blueGreyDark, 0.5)} size="smedium">
@@ -67,7 +72,7 @@ const UniqueTokenCoinIcon = enhanceUniqueTokenCoinIcon(
         shouldPrioritizeImageLoading={shouldPrioritizeImageLoading}
         {...props}
       />
-      <InnerBorder opacity={0.04} radius={8} style={{ zIndex: 2 }} />
+      <InnerBorder opacity={0.04} radius={8} zIndex={2} />
     </Centered>
   )
 );
@@ -99,7 +104,7 @@ const CollectiblesSendRow = enhance(
   ({ item, isFirstRow, onPress, selected, subtitle, ...props }) => (
     <Fragment>
       {isFirstRow && (
-        <Centered style={{ height: dividerHeight }}>
+        <Centered height={dividerHeight}>
           <Divider color={colors.rowDividerLight} />
         </Centered>
       )}
@@ -109,7 +114,7 @@ const CollectiblesSendRow = enhance(
           {...item}
           bottomRowRender={BottomRow}
           coinIconRender={UniqueTokenCoinIcon}
-          containerStyles={selected ? selectedStyles : null}
+          containerStyles={selected ? sx.selected : null}
           selected={selected}
           subtitle={subtitle}
           topRowRender={TopRow}

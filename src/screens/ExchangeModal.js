@@ -42,7 +42,7 @@ import { loadWallet } from '../model/wallet';
 import { executeRap } from '../raps/common';
 import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
-import { colors, padding, position } from '../styles';
+import { colors, position } from '../styles';
 import { backgroundTask, isNewValueForPath, logger } from '../utils';
 import Routes from './Routes/routesNames';
 
@@ -456,9 +456,9 @@ const ExchangeModal = ({
           }}
         >
           <FloatingPanel
-            radius={exchangeModalBorderRadius}
             overflow="visible"
-            style={{ paddingBottom: showOutputField ? 0 : 26 }}
+            paddingBottom={showOutputField ? 0 : 26}
+            radius={exchangeModalBorderRadius}
           >
             <ExchangeModalHeader
               onPressDetails={navigateToSwapDetailsModal}
@@ -466,14 +466,14 @@ const ExchangeModal = ({
               title={inputHeaderTitle}
             />
             <ExchangeInputField
+              assignInputFieldRef={assignInputFieldRef}
+              assignNativeFieldRef={assignNativeFieldRef}
               disableInputCurrencySelection={isWithdrawal}
               inputAmount={inputAmountDisplay}
               inputCurrencyAddress={get(inputCurrency, 'address', null)}
               inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
-              assignInputFieldRef={assignInputFieldRef}
               nativeAmount={nativeAmount}
               nativeCurrency={nativeCurrency}
-              assignNativeFieldRef={assignNativeFieldRef}
               onFocus={handleFocus}
               onPressMaxBalance={handlePressMaxBalance}
               onPressSelectInputCurrency={navigateToSelectInputCurrency}
@@ -482,27 +482,31 @@ const ExchangeModal = ({
             />
             {showOutputField && (
               <ExchangeOutputField
-                bottomRadius={exchangeModalBorderRadius}
+                assignOutputFieldRef={assignOutputFieldRef}
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
                 outputAmount={outputAmountDisplay}
                 outputCurrencyAddress={get(outputCurrency, 'address', null)}
                 outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
-                assignOutputFieldRef={assignOutputFieldRef}
                 setOutputAmount={updateOutputAmount}
               />
             )}
           </FloatingPanel>
           {isDeposit && (
             <SwapInfo
-              asset={outputCurrency}
               amount={(inputAmount > 0 && outputAmountDisplay) || null}
+              asset={outputCurrency}
             />
           )}
           {isSlippageWarningVisible && <SlippageWarning slippage={slippage} />}
           {showConfirmButton && (
             <Fragment>
-              <Centered css={padding(24, 15, 0)} flexShrink={0} width="100%">
+              <Centered
+                flexShrink={0}
+                paddingHorizontal={15}
+                paddingTop={24}
+                width="100%"
+              >
                 <ConfirmExchangeButton
                   disabled={!Number(inputAmountDisplay)}
                   isAuthorizing={isAuthorizing}

@@ -1,10 +1,9 @@
 import { compact, get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Linking } from 'react-native';
+import { Linking, StyleSheet } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { compose, mapProps, onlyUpdateForKeys, withHandlers } from 'recompact';
-import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import { withAccountSettings } from '../../hoc';
@@ -20,9 +19,11 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 
-const containerStyles = css`
-  padding-left: 19;
-`;
+const sx = StyleSheet.create({
+  container: {
+    paddingLeft: 19,
+  },
+});
 
 const rowRenderPropTypes = {
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
@@ -108,7 +109,7 @@ const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
       {...item}
       {...props}
       bottomRowRender={BottomRow}
-      containerStyles={containerStyles}
+      containerStyles={sx.container}
       shouldRasterizeIOS
       topRowRender={TopRow}
     />

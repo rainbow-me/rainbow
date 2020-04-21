@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useRef } from 'react';
-import { TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { colors, fonts } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { TokenSelectionButton } from '../buttons';
@@ -14,6 +14,15 @@ import ExchangeNativeField from './ExchangeNativeField';
 const BottomRowHeight = 32;
 const padding = 15;
 const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
+
+const sx = StyleSheet.create({
+  maxEmoji: {
+    marginTop: 0.5,
+  },
+  maxLabel: {
+    marginTop: 1,
+  },
+});
 
 const ExchangeInputField = ({
   assignInputFieldRef,
@@ -66,19 +75,19 @@ const ExchangeInputField = ({
             paddingRight={disableInputCurrencySelection ? padding : null}
           >
             <CoinIcon
+              address={inputCurrencyAddress}
               bgColor={inputCurrencySymbol ? undefined : skeletonColor}
               flex={0}
               size={40}
               symbol={inputCurrencySymbol}
-              address={inputCurrencyAddress}
             />
             <ExchangeInput
               disableTabularNums
               editable={!!inputCurrencySymbol}
               height={40}
               letterSpacing={fonts.letterSpacing.roundedTightest}
-              onChangeText={setInputAmount}
               onBlur={onBlur}
+              onChangeText={setInputAmount}
               onFocus={onFocus}
               placeholder={inputCurrencySymbol ? '0' : EnDash.unicode}
               placeholderTextColor={
@@ -126,14 +135,14 @@ const ExchangeInputField = ({
             <Emoji
               lineHeight="none"
               name="moneybag"
-              style={{ marginTop: 0.5 }}
               size="lmedium"
+              style={sx.maxEmoji}
             />
             <Text
               align="center"
               color="appleBlue"
               size="lmedium"
-              style={{ marginTop: 1 }}
+              style={sx.maxLabel}
               weight="semibold"
             >
               Max

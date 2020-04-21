@@ -5,7 +5,7 @@ import { Transition, Transitioning } from 'react-native-reanimated';
 import SimulatorFakeCameraImageSource from '../../assets/simulator-fake-camera-image.jpg';
 import { usePrevious } from '../../hooks';
 import { colors, position } from '../../styles';
-import { isNewValueForObjectPaths } from '../../utils';
+import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { ErrorText } from '../text';
 import QRCodeScannerCamera from './QRCodeScannerCamera';
@@ -103,13 +103,10 @@ QRCodeScanner.propTypes = {
   showCrosshairText: PropTypes.bool,
 };
 
-const arePropsEqual = (prev, next) =>
-  !isNewValueForObjectPaths(prev, next, [
-    'contentPositionBottom',
-    'enableCamera',
-    'enableScanning',
-    'isCameraAuthorized',
-    'showCrosshairText',
-  ]);
-
-export default React.memo(QRCodeScanner, arePropsEqual);
+export default magicMemo(QRCodeScanner, [
+  'contentPositionBottom',
+  'enableCamera',
+  'enableScanning',
+  'isCameraAuthorized',
+  'showCrosshairText',
+]);

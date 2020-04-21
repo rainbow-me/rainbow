@@ -2,7 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ShadowStack from 'react-native-shadow-stack';
 import { useNavigation } from 'react-navigation-hooks';
@@ -23,6 +23,34 @@ import SavingsListRowEmptyState from './SavingsListRowEmptyState';
 
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
 const ANIMATE_NUMBER_INTERVAL = 30;
+
+const SavingsListRowShadows = [
+  [0, 10, 30, colors.dark, 0.1],
+  [0, 5, 15, colors.dark, 0.04],
+];
+
+const sx = StyleSheet.create({
+  shadow: {
+    elevation: 15,
+  },
+});
+
+const neverRerender = () => true;
+// eslint-disable-next-line react/display-name
+const SavingsListRowGradient = React.memo(
+  () => (
+    <LinearGradient
+      borderRadius={49}
+      colors={['#FFFFFF', '#F7F9FA']}
+      end={{ x: 0.5, y: 1 }}
+      opacity={0.1}
+      pointerEvents="none"
+      start={{ x: 0.5, y: 0 }}
+      style={position.coverAsObject}
+    />
+  ),
+  neverRerender
+);
 
 const SavingsListRow = ({
   cTokenBalance,
@@ -114,24 +142,13 @@ const SavingsListRow = ({
     <ButtonPressAnimation onPress={onButtonPress} scaleTo={0.96}>
       <Centered direction="column" marginBottom={15}>
         <ShadowStack
-          height={49}
-          width={deviceWidth - 38}
           borderRadius={49}
-          shadows={[
-            [0, 10, 30, colors.dark, 0.1],
-            [0, 5, 15, colors.dark, 0.04],
-          ]}
-          style={{ elevation: 15 }}
+          height={49}
+          shadows={SavingsListRowShadows}
+          style={sx.shadow}
+          width={deviceWidth - 38}
         >
-          <LinearGradient
-            borderRadius={49}
-            colors={['#FFFFFF', '#F7F9FA']}
-            end={{ x: 0.5, y: 1 }}
-            opacity={0.1}
-            pointerEvents="none"
-            start={{ x: 0.5, y: 0 }}
-            style={position.coverAsObject}
-          />
+          <SavingsListRowGradient />
           <Row
             align="center"
             css={padding(9, 10, 10, 11)}

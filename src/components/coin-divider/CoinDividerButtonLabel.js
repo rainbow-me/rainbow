@@ -1,9 +1,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { onlyUpdateForKeys } from 'recompact';
+import { StyleSheet } from 'react-native';
 import { colors } from '../../styles';
 import { OpacityToggler } from '../animations';
 import { Text } from '../text';
+
+const sx = StyleSheet.create({
+  text: {
+    position: 'absolute',
+    top: -10.25,
+  },
+});
 
 const CoinDividerButtonLabel = ({ isVisible, label, node, steps }) => (
   <OpacityToggler
@@ -16,10 +23,7 @@ const CoinDividerButtonLabel = ({ isVisible, label, node, steps }) => (
       color={colors.alpha(colors.blueGreyDark, 0.6)}
       letterSpacing="roundedTight"
       size="lmedium"
-      style={{
-        position: 'absolute',
-        top: -10.25,
-      }}
+      style={sx.text}
       weight="semibold"
     >
       {label}
@@ -34,4 +38,5 @@ CoinDividerButtonLabel.propTypes = {
   steps: PropTypes.arrayOf(PropTypes.number),
 };
 
-export default onlyUpdateForKeys(['isVisible'])(CoinDividerButtonLabel);
+const arePropsEqual = (prev, next) => prev.isVisible === next.isVisible;
+export default React.memo(CoinDividerButtonLabel, arePropsEqual);

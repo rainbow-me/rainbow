@@ -13,7 +13,7 @@ import { withAccountSettings } from '../../hoc';
 import { ethereumUtils } from '../../utils/';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { ButtonPressAnimation } from '../animations';
-import { RequestVendorLogoIcon } from '../coin-icon';
+import { CoinIconSize, RequestVendorLogoIcon } from '../coin-icon';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
@@ -34,7 +34,7 @@ const TopRow = ({ status }) => <TransactionStatusBadge status={status} />;
 TopRow.propTypes = rowRenderPropTypes;
 
 const ContractInteractionVenderLogoIcon = withProps({
-  borderRadius: RequestVendorLogoIcon.size,
+  borderRadius: CoinIconSize,
 })(RequestVendorLogoIcon);
 
 const ContractInteractionCoinRow = ({ item, onPressTransaction, ...props }) => (

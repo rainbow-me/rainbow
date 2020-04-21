@@ -1,24 +1,28 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { css } from 'styled-components/primitives';
-import { colors, padding } from '../../styles';
+import { StyleSheet } from 'react-native';
+import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
-const containerStyles = css`
-  padding-bottom: 18;
-  padding-left: 15;
-  padding-top: 6;
-`;
-
 const selectedHeight = 78;
 
-const selectedStyles = css`
-  ${padding(15, 15, 19, 15)};
-  height: ${selectedHeight};
-`;
+const sx = StyleSheet.create({
+  container: {
+    paddingBottom: 18,
+    paddingLeft: 15,
+    paddingTop: 6,
+  },
+  containerSelected: {
+    height: selectedHeight,
+    paddingBottom: 19,
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingTop: 15,
+  },
+});
 
 const BottomRow = ({
   balance: { display: balanceDisplay },
@@ -48,7 +52,7 @@ const SendSavingsCoinRow = ({ item, onPress, selected, ...props }) => (
       {...item}
       {...props}
       bottomRowRender={BottomRow}
-      containerStyles={selected ? selectedStyles : containerStyles}
+      containerStyles={selected ? sx.containerSelected : sx.container}
       onPress={onPress}
       topRowRender={TopRow}
     />

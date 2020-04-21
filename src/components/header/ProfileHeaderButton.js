@@ -1,9 +1,7 @@
-import GraphemeSplitter from 'grapheme-splitter';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
-import styled from 'styled-components/primitives';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import {
   useAccountSettings,
@@ -11,29 +9,29 @@ import {
   useRequests,
 } from '../../hooks';
 import Routes from '../../screens/Routes/routesNames';
-import { colors } from '../../styles';
+import { borders, colors } from '../../styles';
+import { getFirstGrapheme } from '../../utils';
 import Avatar from '../Avatar';
 import { OpacityToggler } from '../animations';
 import { Badge } from '../badge';
 import { Centered, InnerBorder } from '../layout';
+import { Text } from '../text';
 import HeaderButton from './HeaderButton';
 
-const AvatarCircle = styled(View)`
-  border-radius: 17px;
-  height: 34px;
-  width: 34px;
-  z-index: 10;
-`;
+const sx = StyleSheet.create({
+  avatar: {
+    ...borders.buildCircleAsObject(34),
+    zIndex: 10,
+  },
+  firstLetter: {
+    width: '100%',
+  },
+});
 
-const FirstLetter = styled(Text)`
-  color: #fff;
-  font-size: 23;
-  font-weight: 400;
-  letter-spacing: -0.6;
-  line-height: 34;
-  text-align: center;
-  width: 100%;
-`;
+const shadows = [
+  [0, 2, 2.5, colors.dark, 0.08],
+  [0, 6, 5, colors.dark, 0.12],
+];
 
 const ProfileHeaderButton = ({ navigation }) => {
   const { pendingRequestCount } = useRequests();
@@ -55,7 +53,6 @@ const ProfileHeaderButton = ({ navigation }) => {
         <HeaderButton
           testID="goToProfile"
           onPress={onPress}
-          shouldRasterizeIOS
           transformOrigin="left"
         >
           <Centered>
@@ -64,21 +61,26 @@ const ProfileHeaderButton = ({ navigation }) => {
                 backgroundColor={colors.avatarColor[accountColor]}
                 borderRadius={65}
                 height={34}
+                shadows={shadows}
                 width={34}
-                shadows={[
-                  [0, 2, 2.5, colors.dark, 0.08],
-                  [0, 6, 5, colors.dark, 0.12],
-                ]}
-                shouldRasterizeIOS
               >
-                <AvatarCircle
-                  style={{ backgroundColor: colors.avatarColor[accountColor] }}
+                <View
+                  backgroundColor={colors.avatarColor[accountColor]}
+                  style={sx.avatar}
                 >
-                  <FirstLetter>
-                    {new GraphemeSplitter().splitGraphemes(accountName)[0]}
-                  </FirstLetter>
+                  <Text
+                    align="center"
+                    color={colors.white}
+                    letterSpacing={-0.6}
+                    lineHeight={34}
+                    size="big"
+                    style={sx.firstLetter}
+                    weight="regular"
+                  >
+                    {getFirstGrapheme(accountName)}
+                  </Text>
                   <InnerBorder opacity={0.04} radius={34} />
-                </AvatarCircle>
+                </View>
               </ShadowStack>
             ) : (
               <Avatar size={34} />
