@@ -6,22 +6,20 @@ import { useEffect, useState } from 'react';
 export default function useInternetStatus() {
   const [isInternetReachable, setIsInternetReachable] = useState(true);
 
-  function onChange(newState) {
-    const { isInternetReachable: newIsInternetReachable } = newState;
-    if (!isNil(newIsInternetReachable)) {
-      setIsInternetReachable(newIsInternetReachable);
-      if (!isInternetReachable && newIsInternetReachable) {
-        analytics.track('Reconnected after offline');
-      } else {
-        analytics.track('Offline / lost connection');
-      }
-    }
-  }
-
   useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener(onChange);
+    const unsubscribe = NetInfo.addEventListener(newState => {
+      const { isInternetReachable: newIsInternetReachable } = newState;
+      if (!isNil(newIsInternetReachable)) {
+        setIsInternetReachable(newIsInternetReachable);
+        if (!isInternetReachable && newIsInternetReachable) {
+          analytics.track('Reconnected after offline');
+        } else {
+          analytics.track('Offline / lost connection');
+        }
+      }
+    });
     return unsubscribe;
-  }, [onChange]);
+  });
 
   return isInternetReachable;
 }
