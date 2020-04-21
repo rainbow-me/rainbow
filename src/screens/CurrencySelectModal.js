@@ -24,14 +24,12 @@ import {
 } from '../hooks';
 import { position } from '../styles';
 import { filterList, filterScams } from '../utils/search';
-import { exchangeModalBorderRadius } from './ExchangeModal';
+import {
+  CurrencySelectionTypes,
+  exchangeModalBorderRadius,
+} from './ExchangeModal';
 
 const headerlessSection = data => [{ data, title: '' }];
-
-export const CurrencySelectionTypes = {
-  input: 'input',
-  output: 'output',
-};
 
 const CurrencySelectModal = ({
   headerTitle,
@@ -68,28 +66,6 @@ const CurrencySelectModal = ({
       searchQuery === '' ? 1 : 250
     );
   }, [searchQuery]);
-
-  const isFocused = useIsFocused();
-  const wasFocused = usePrevious(isFocused);
-
-  useEffect(() => {
-    if (!wasFocused && isFocused) {
-      handleWillFocus();
-    } else if (wasFocused && !isFocused) {
-      handleWillBlur();
-      InteractionManager.runAfterInteractions(() => {
-        handleDidBlur();
-        restoreFocusOnSwapModal();
-      });
-    }
-  }, [
-    handleDidBlur,
-    handleWillBlur,
-    handleWillFocus,
-    isFocused,
-    restoreFocusOnSwapModal,
-    wasFocused,
-  ]);
 
   const searchQueryExists = searchQuery.length > 0;
 
@@ -173,6 +149,28 @@ const CurrencySelectModal = ({
       searchInputRef.current.focus();
     }
   }, [dangerouslySetIsGestureBlocked, searchInputRef]);
+
+  const isFocused = useIsFocused();
+  const wasFocused = usePrevious(isFocused);
+
+  useEffect(() => {
+    if (!wasFocused && isFocused) {
+      handleWillFocus();
+    } else if (wasFocused && !isFocused) {
+      handleWillBlur();
+      InteractionManager.runAfterInteractions(() => {
+        handleDidBlur();
+        restoreFocusOnSwapModal();
+      });
+    }
+  }, [
+    handleDidBlur,
+    handleWillBlur,
+    handleWillFocus,
+    isFocused,
+    restoreFocusOnSwapModal,
+    wasFocused,
+  ]);
 
   if (type === null || type === undefined) {
     return null;
