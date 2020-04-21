@@ -17,9 +17,14 @@
     "jest/no-truthy-falsy": 0,
     "react-native/no-inline-styles": 0,
     "import/named": 0,
+    "import/no-named-as-default": 0,
     "import/order": [
       "error",
       {
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": false
+        },
         "groups": ["builtin", "external", "parent", "sibling", "index"],
         "pathGroups": [
           {
@@ -37,16 +42,12 @@
             "group": "parent",
             "position": "before"
           }
-        ],
-        "alphabetize": {
-          "order": "asc",
-          "caseInsensitive": false
-        }
+        ]
       }
     ],
     "react/display-name": 2,
-    "jest/no-test-prefixes": 0, //TODO
-    "jest/no-disabled-tests": 0 //TODO
+    "jest/no-test-prefixes": 0,
+    "jest/no-disabled-tests": 0
   },
   "env": { "browser": true, "node": true }
 }
