@@ -174,7 +174,7 @@ PODS:
   - OpenSSL-Universal (1.0.2.19):
     - OpenSSL-Universal/Static (= 1.0.2.19)
   - OpenSSL-Universal/Static (1.0.2.19)
-  - PanModal (1.2.5)
+  - PanModal (1.2.7)
   - Permission-Camera (2.0.10):
     - RNPermissions
   - Permission-FaceID (2.0.10):
@@ -530,6 +530,7 @@ DEPENDENCIES:
   - libwebp
   - lottie-ios (from `../node_modules/lottie-ios`)
   - lottie-react-native (from `../node_modules/lottie-react-native`)
+  - PanModal (from `https://github.com/osdnk/PanModal`, commit `25be2df9ccf997b62c39e1edb42857bab2d0cdab`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera.podspec`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -627,7 +628,6 @@ SPEC REPOS:
     - libwebp
     - nanopb
     - OpenSSL-Universal
-    - PanModal
     - Protobuf
     - SDWebImage
     - SDWebImageWebPCoder
@@ -654,6 +654,9 @@ EXTERNAL SOURCES:
     :path: "../node_modules/lottie-ios"
   lottie-react-native:
     :path: "../node_modules/lottie-react-native"
+  PanModal:
+    :commit: 25be2df9ccf997b62c39e1edb42857bab2d0cdab
+    :git: https://github.com/osdnk/PanModal
   Permission-Camera:
     :path: "../node_modules/react-native-permissions/ios/Camera.podspec"
   Permission-FaceID:
@@ -775,6 +778,11 @@ EXTERNAL SOURCES:
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
+CHECKOUT OPTIONS:
+  PanModal:
+    :commit: 25be2df9ccf997b62c39e1edb42857bab2d0cdab
+    :git: https://github.com/osdnk/PanModal
+
 SPEC CHECKSUMS:
   Analytics: f82f3cd6d3c8fbfd76ce25773199576656981a4a
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
@@ -816,7 +824,7 @@ SPEC CHECKSUMS:
   lottie-react-native: 2a1a82bb326ae51331a5520de0cf706733c6db69
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
-  PanModal: 7c5af3ad4fe22b91508040965bebffb89fb607ae
+  PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
   Permission-Camera: a8f6007d17b02ed8a2d6bac1c37c2fd5df9b4e8a
   Permission-FaceID: cb03a979336319d837a4e5e867306345297c5230
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
@@ -884,6 +892,6 @@ SPEC CHECKSUMS:
   Yoga: 9db9ff2025ad21d1ac0a8b3c85d5ac4e7c29d525
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 9b67a38bec877427026ceec99753a1ddd49ea3a9
+PODFILE CHECKSUM: 75d5a145b28ba82799bc833c33030091be693408
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.1
