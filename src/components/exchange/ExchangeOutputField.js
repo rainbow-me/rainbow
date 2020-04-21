@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
+import React, { useRef } from 'react';
 import ShadowStack from 'react-native-shadow-stack';
 import { withNeverRerender } from '../../hoc';
 import { colors, fonts, padding } from '../../styles';

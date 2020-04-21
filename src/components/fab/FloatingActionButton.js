@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { View } from 'react-primitives';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import ShadowStack from 'react-native-shadow-stack';
+import { View } from 'react-primitives';
 import { borders, colors, position } from '../../styles';
 import { isNewValueForObjectPaths } from '../../utils';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';

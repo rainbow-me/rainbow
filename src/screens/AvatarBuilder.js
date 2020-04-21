@@ -3,16 +3,16 @@ import Animated from 'react-native-reanimated';
 import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
+import TouchableBackdrop from '../components/TouchableBackdrop';
 import ColorCircle from '../components/avatar-builder/ColorCircle';
 import EmojiSelector from '../components/avatar-builder/EmojiSelector';
 import Header from '../components/header/Header';
 import { Column, Row } from '../components/layout';
-import TouchableBackdrop from '../components/TouchableBackdrop';
 import { saveAccountInfo } from '../handlers/localstorage/accountLocal';
 import { withAccountInfo, withAccountSettings } from '../hoc';
 import {
-  settingsUpdateAccountName,
   settingsUpdateAccountColor,
+  settingsUpdateAccountName,
 } from '../redux/settings';
 import store from '../redux/store';
 import { colors } from '../styles';

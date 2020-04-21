@@ -4,10 +4,10 @@ import { StyleSheet, View } from 'react-native';
 import { SectionList } from 'react-native-gesture-handler';
 import { usePrevious } from '../../hooks';
 import { exchangeModalBorderRadius } from '../../screens/ExchangeModal';
+import { colors, fonts } from '../../styles';
 import { isNewValueForObjectPaths } from '../../utils';
 import { CoinRow, ExchangeCoinRow } from '../coin-row';
 import { Text } from '../text';
-import { colors, fonts } from '../../styles';
 
 const styles = StyleSheet.create({
   headerStyle: {

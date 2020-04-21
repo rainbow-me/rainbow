@@ -5,14 +5,14 @@ import { forEach, mapValues, omitBy, pickBy, values } from 'lodash';
 import { Alert } from 'react-native';
 import {
   getAllValidWalletConnectSessions,
-  saveWalletConnectSession,
   removeWalletConnect,
   removeWalletConnectSessions,
+  saveWalletConnectSession,
 } from '../handlers/localstorage/walletconnect';
 import { sendRpcCall } from '../handlers/web3';
 import {
-  getFCMToken,
   checkPushNotificationPermissions,
+  getFCMToken,
 } from '../model/firebase';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';

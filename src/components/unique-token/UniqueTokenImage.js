@@ -10,9 +10,9 @@ import {
 } from 'recompact';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { colors, position } from '../../styles';
+import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
 import { Centered } from '../layout';
 import { Monospace } from '../text';
-import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
 
 const FallbackTextColorVariants = {
   dark: colors.alpha(colors.blueGreyDark, 0.5),

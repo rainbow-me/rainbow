@@ -1,9 +1,9 @@
 import { compact, get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, mapProps, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { Linking } from 'react-native';
 import { withNavigation } from 'react-navigation';
+import { compose, mapProps, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';

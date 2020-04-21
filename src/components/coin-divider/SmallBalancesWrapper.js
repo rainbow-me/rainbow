@@ -1,14 +1,14 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
 import { get, isNumber } from 'lodash';
 import PropTypes from 'prop-types';
-import { View } from 'react-native';
 import React, { Fragment, PureComponent } from 'react';
+import { View } from 'react-native';
 import { compose, withProps } from 'recompact';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import {
   withAccountSettings,
-  withOpenBalances,
   withEditOptions,
+  withOpenBalances,
 } from '../../hoc';
 import { OpacityToggler } from '../animations';
 

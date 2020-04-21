@@ -4,8 +4,8 @@ import {
   estimateSwapGasLimit,
 } from '../handlers/uniswap';
 import { add } from '../helpers/utilities';
-import store from '../redux/store';
 import { rapsAddOrUpdate } from '../redux/raps';
+import store from '../redux/store';
 import { ethUnits } from '../references';
 import { contractUtils } from '../utils';
 import { isValidSwapInput } from './actions/swap';

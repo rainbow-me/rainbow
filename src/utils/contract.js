@@ -2,8 +2,8 @@ import { ethers } from 'ethers';
 import { toHex, web3Provider } from '../handlers/web3';
 import { convertRawAmountToDecimalFormat } from '../helpers/utilities';
 import { loadWallet } from '../model/wallet';
-import erc20ABI from '../references/erc20-abi.json';
 import { ethUnits } from '../references';
+import erc20ABI from '../references/erc20-abi.json';
 import { logger } from '../utils';
 
 const estimateApproveWithExchange = async (spender, exchange) => {

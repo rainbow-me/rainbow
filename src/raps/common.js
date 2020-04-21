@@ -4,8 +4,8 @@ import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
 import { logger } from '../utils';
 import depositCompound from './actions/depositCompound';
-import unlock from './actions/unlock';
 import swap from './actions/swap';
+import unlock from './actions/unlock';
 import withdrawCompound from './actions/withdrawCompound';
 
 const NOOP = () => undefined;

@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
+import ReactCoinIcon, { FallbackIcon } from 'react-coin-icon';
 import FastImage from 'react-native-fast-image';
 import ShadowStack from 'react-native-shadow-stack';
-import styled, { css } from 'styled-components/primitives';
-import ReactCoinIcon, { FallbackIcon } from 'react-coin-icon';
 import { onlyUpdateForKeys } from 'recompact';
+import styled, { css } from 'styled-components/primitives';
 import { toChecksumAddress } from '../../handlers/web3';
 import { borders, colors, fonts } from '../../styles';
 import { Icon } from '../icons';

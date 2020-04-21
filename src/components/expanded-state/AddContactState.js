@@ -7,18 +7,18 @@ import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { withContacts } from '../../hoc';
 import { colors, margin, padding } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
+import Divider from '../Divider';
+import TouchableBackdrop from '../TouchableBackdrop';
 import { ButtonPressAnimation } from '../animations';
 import { Button } from '../buttons';
 import { ContactAvatar, showDeleteContactActionSheet } from '../contacts';
 import CopyTooltip from '../copy-tooltip';
-import Divider from '../Divider';
 import { Input } from '../inputs';
 import { Centered, KeyboardFixedOpenLayout } from '../layout';
 import { Text, TruncatedAddress } from '../text';
-import TouchableBackdrop from '../TouchableBackdrop';
-import { AssetPanel } from './asset-panel';
-import FloatingPanels from './FloatingPanels';
 import PlaceholderText from '../text/PlaceholderText';
+import FloatingPanels from './FloatingPanels';
+import { AssetPanel } from './asset-panel';
 
 const nativeStackAdditionalPadding = 80;
 

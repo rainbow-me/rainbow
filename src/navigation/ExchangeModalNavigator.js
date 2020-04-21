@@ -2,13 +2,13 @@ import { get } from 'lodash';
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
+import { withBlockedHorizontalSwipe } from '../hoc';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
+import ExpandedAssetScreenWithData from '../screens/ExpandedAssetScreenWithData';
 import SwapModal from '../screens/SwapModal';
 import { deviceUtils } from '../utils';
 import createStackNavigator from './createStackNavigator';
 import { swapDetailsPreset } from './transitions/effects';
-import ExpandedAssetScreenWithData from '../screens/ExpandedAssetScreenWithData';
-import { withBlockedHorizontalSwipe } from '../hoc';
 
 const ExchangeModalTabPosition = new Animated.Value(0);
 

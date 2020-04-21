@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { logger } from '../utils';
 import { parseAccountUniqueTokens } from '../parsers/uniqueTokens';
+import { logger } from '../utils';
 
 /**
  * Configuration for opensea api

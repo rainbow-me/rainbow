@@ -12,9 +12,9 @@ import {
   WalletConnectExplainer,
   WalletConnectList,
 } from '../components/walletconnect-list';
+import { discoverSheetAvailable } from '../config/experimental';
 import { colors, position } from '../styles';
 import { isNewValueForObjectPaths } from '../utils';
-import { discoverSheetAvailable } from '../config/experimental';
 
 const QRScannerScreen = ({
   enableScanning,

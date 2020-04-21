@@ -5,7 +5,7 @@ import Animated, { Easing } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { setSelectedInputId } from '../../redux/selectedInput';
 import store from '../../redux/store';
-import { colors, position, fonts } from '../../styles';
+import { colors, fonts, position } from '../../styles';
 import { Button } from '../buttons';
 import { ExchangeInput } from '../exchange';
 import { Input } from '../inputs';

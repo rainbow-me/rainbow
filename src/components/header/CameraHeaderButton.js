@@ -3,12 +3,12 @@ import React from 'react';
 import { View } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
 import { compose, withHandlers } from 'recompact';
+import { withCoinListEdited } from '../../hoc';
 import { borders, colors, position } from '../../styles';
+import { OpacityToggler } from '../animations';
 import Icon from '../icons/Icon';
 import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
-import { withCoinListEdited } from '../../hoc';
-import { OpacityToggler } from '../animations';
 
 const CameraHeaderButton = ({ onPress, isCoinListEdited }) => (
   <OpacityToggler

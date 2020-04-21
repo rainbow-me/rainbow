@@ -7,11 +7,11 @@ import networkInfo from '../../helpers/networkInfo';
 import {
   useAccountSettings,
   useClearAccountData,
-  useLoadAccountData,
   useInitializeAccountData,
+  useLoadAccountData,
 } from '../../hooks';
-import { RadioList, RadioListItem } from '../radio-list';
 import { settingsUpdateNetwork } from '../../redux/settings';
+import { RadioList, RadioListItem } from '../radio-list';
 
 const networks = values(networkInfo);
 

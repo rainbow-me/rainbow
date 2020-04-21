@@ -1,4 +1,4 @@
-import { get, keyBy, property, toLower, orderBy } from 'lodash';
+import { get, keyBy, orderBy, property, toLower } from 'lodash';
 import { compoundClient } from '../apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '../apollo/queries';
 import { getSavings, saveSavings } from '../handlers/localstorage/accountLocal';

@@ -3,7 +3,7 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import { InteractionManager, StatusBar } from 'react-native';
-import { request, PERMISSIONS } from 'react-native-permissions';
+import { PERMISSIONS, request } from 'react-native-permissions';
 import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
 import { Column } from '../components/layout';
 import { Modal, ModalHeader } from '../components/modal';

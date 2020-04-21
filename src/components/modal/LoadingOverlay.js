@@ -1,13 +1,13 @@
-import { Platform, View } from 'react-native';
 import { BlurView } from '@react-native-community/blur';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Platform, View } from 'react-native';
 import styled from 'styled-components/primitives';
 import { colors, padding, position } from '../../styles';
 import ActivityIndicator from '../ActivityIndicator';
+import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import TouchableBackdrop from '../TouchableBackdrop';
 
 const Overlay = styled(Centered)`
   ${padding(19, 19, 22)};

@@ -11,9 +11,9 @@ import {
 } from 'recompact';
 import { sortList } from '../../helpers/sortList';
 import { colors, margin, padding, position } from '../../styles';
+import Tag from '../Tag';
 import { Centered, FlexItem } from '../layout';
 import { PagerControls } from '../pager';
-import Tag from '../Tag';
 
 const AttributesPadding = 15;
 const scrollInsetBottom = AttributesPadding + PagerControls.padding * 4;

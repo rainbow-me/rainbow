@@ -2,36 +2,18 @@ import analytics from '@segment/analytics-react-native';
 import { get, omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import { createAppContainer, NavigationActions } from 'react-navigation';
-import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
 // eslint-disable-next-line import/no-unresolved
 import { enableScreens } from 'react-native-screens';
 import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
+import { createAppContainer, NavigationActions } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import {
   ExchangeModalNavigator,
   Navigation,
   SavingModalNavigator,
 } from '../../navigation';
-import { updateTransitionProps } from '../../redux/navigation';
-import store from '../../redux/store';
-import { deviceUtils, sentryUtils } from '../../utils';
-import AddCashSheet from '../AddCashSheet';
-import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
-import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
-import ProfileScreenWithData from '../ProfileScreenWithData';
-import QRScannerScreenWithData from '../QRScannerScreenWithData';
-import ReceiveModal from '../ReceiveModal';
-import WithdrawModal from '../WithdrawModal';
-import SavingsSheet from '../SavingsSheet';
-import ExampleScreen from '../ExampleScreen';
-import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
-import SendSheetWithData from '../SendSheetWithData';
-import SettingsModal from '../SettingsModal';
-import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
-import WalletScreen from '../WalletScreen';
-import AvatarBuilder from '../AvatarBuilder';
 import {
   backgroundPreset,
   emojiPreset,
@@ -41,6 +23,24 @@ import {
   savingsPreset,
   sheetPreset,
 } from '../../navigation/transitions/effects';
+import { updateTransitionProps } from '../../redux/navigation';
+import store from '../../redux/store';
+import { deviceUtils, sentryUtils } from '../../utils';
+import AddCashSheet from '../AddCashSheet';
+import AvatarBuilder from '../AvatarBuilder';
+import ExampleScreen from '../ExampleScreen';
+import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
+import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
+import ProfileScreenWithData from '../ProfileScreenWithData';
+import QRScannerScreenWithData from '../QRScannerScreenWithData';
+import ReceiveModal from '../ReceiveModal';
+import SavingsSheet from '../SavingsSheet';
+import SendSheetWithData from '../SendSheetWithData';
+import SettingsModal from '../SettingsModal';
+import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
+import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
+import WalletScreen from '../WalletScreen';
+import WithdrawModal from '../WithdrawModal';
 
 enableScreens();
 

@@ -5,9 +5,9 @@ import { View } from 'react-primitives';
 import { pure } from 'recompact';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { colors } from '../../styles';
+import { RotationArrow } from '../animations';
 import { Column, Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
-import { RotationArrow } from '../animations';
 
 const height = 49;
 

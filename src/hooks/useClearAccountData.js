@@ -8,8 +8,8 @@ import { nonceClearState } from '../redux/nonce';
 import { clearOpenStateSettings } from '../redux/openStateSettings';
 import { requestsClearState } from '../redux/requests';
 import { savingsClearState } from '../redux/savings';
-import { uniswapClearState } from '../redux/uniswap';
 import { uniqueTokensClearState } from '../redux/uniqueTokens';
+import { uniswapClearState } from '../redux/uniswap';
 import { walletConnectClearState } from '../redux/walletconnect';
 import { promiseUtils } from '../utils';
 

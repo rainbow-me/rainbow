@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { InteractionManager } from 'react-native';
 import TextInputMask from 'react-native-text-input-mask';
 import stylePropType from 'react-style-proptype';

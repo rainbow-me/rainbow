@@ -6,8 +6,8 @@ import {
   divide,
   multiply,
 } from '../helpers/utilities';
-import timeUnits from '../references/time-units.json';
 import ethUnits from '../references/ethereum-units.json';
+import timeUnits from '../references/time-units.json';
 import { gasUtils } from '../utils';
 
 /**

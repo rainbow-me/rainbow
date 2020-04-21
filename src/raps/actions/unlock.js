@@ -1,15 +1,15 @@
 import { ethers } from 'ethers';
 import { get, toLower } from 'lodash';
-import {
-  greaterThan,
-  isZero,
-  convertAmountToRawAmount,
-} from '../../helpers/utilities';
 import transactionStatusTypes from '../../helpers/transactionStatusTypes';
 import transactionTypes from '../../helpers/transactionTypes';
-import store from '../../redux/store';
+import {
+  convertAmountToRawAmount,
+  greaterThan,
+  isZero,
+} from '../../helpers/utilities';
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
+import store from '../../redux/store';
 import { AllowancesCache, contractUtils, gasUtils, logger } from '../../utils';
 
 const NOOP = () => undefined;
