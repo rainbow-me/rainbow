@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m b/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m
-index 1c9caa1..2e8253f 100644
+index 1c9caa1..de76477 100644
 --- a/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m
 +++ b/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m
-@@ -315,14 +315,27 @@ - (void)setModalViewControllers:(NSArray<UIViewController *> *)controllers
+@@ -315,14 +315,31 @@ - (void)setModalViewControllers:(NSArray<UIViewController *> *)controllers
    }
    if (presentedViewController != nil
        && ([_presentedModals containsObject:presentedViewController] )) {
@@ -15,19 +15,23 @@ index 1c9caa1..2e8253f 100644
    }
  }
 
-++ (void) dismissViewControllerWrapper:(UIViewController*) vc
-+                      animated:(BOOL) animated
-+                      completion:(void (^)(void))completion {
+++ (void)dismissViewControllerWrapper:(UIViewController*) vc
++                            animated:(BOOL) animated
++                          completion:(void (^)(void))completion {
 +  UIViewController* presentedViewController = vc.presentedViewController;
 +  RNCMScreenView* view = (RNCMScreenView *) presentedViewController.view;
-+  NSNumber* transitionDuration = view.transitionDuration;
-+  SEL selector = NSSelectorFromString(@"hide");
-+  [presentedViewController performSelector:selector];
-+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, transitionDuration.longValue * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-+    SEL unhackParent = NSSelectorFromString(@"unhackParent");
-+     [presentedViewController performSelector:unhackParent];
-+     [vc dismissViewControllerAnimated:NO completion:completion];
-+  });
++  if (view.customStack && animated) {
++    NSNumber* transitionDuration = view.transitionDuration;
++    SEL selector = NSSelectorFromString(@"hide");
++    [presentedViewController performSelector:selector];
++    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, transitionDuration.longValue * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
++      SEL unhackParent = NSSelectorFromString(@"unhackParent");
++      [presentedViewController performSelector:unhackParent];
++      [vc dismissViewControllerAnimated:NO completion:completion];
++    });
++  } else {
++    [vc dismissViewControllerAnimated:animated completion:completion];
++  }
 +}
 +
  - (void)setPushViewControllers:(NSArray<UIViewController *> *)controllers
