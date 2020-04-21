@@ -1,5 +1,61 @@
+diff --git a/node_modules/react-native-cool-modals/createNativeStackNavigator.js b/node_modules/react-native-cool-modals/createNativeStackNavigator.js
+index 61f229f..703c46e 100644
+--- a/node_modules/react-native-cool-modals/createNativeStackNavigator.js
++++ b/node_modules/react-native-cool-modals/createNativeStackNavigator.js
+@@ -64,6 +64,7 @@ class StackView extends React.Component {
+       allowsDragToDismiss,
+       allowsTapToDismiss,
+       anchorModaltoLongForm,
++      onWillDismiss,
+       backgroundOpacity,
+       cornerRadius,
+       headerHeight,
+@@ -92,6 +93,7 @@ class StackView extends React.Component {
+     const { screenProps } = this.props;
+     return (
+       <Screen
++        onWillDismiss={onWillDismiss}
+         allowsDragToDismiss={allowsDragToDismiss}
+         allowsTapToDismiss={allowsTapToDismiss}
+         anchorModaltoLongForm={anchorModaltoLongForm}
+diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreen.h b/node_modules/react-native-cool-modals/ios/RNCMScreen.h
+index 57c5ede..41295fb 100644
+--- a/node_modules/react-native-cool-modals/ios/RNCMScreen.h
++++ b/node_modules/react-native-cool-modals/ios/RNCMScreen.h
+@@ -43,6 +43,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
+
+ @property (nonatomic, copy) RCTDirectEventBlock onAppear;
+ @property (nonatomic, copy) RCTDirectEventBlock onDismissed;
++@property (nonatomic, copy) RCTDirectEventBlock onWillDismiss;
+ @property (weak, nonatomic) UIView *reactSuperview;
+ @property (nonatomic, retain) UIViewController *controller;
+ @property (nonatomic, readonly) BOOL dismissed;
+diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreen.m b/node_modules/react-native-cool-modals/ios/RNCMScreen.m
+index 31bd992..df07715 100644
+--- a/node_modules/react-native-cool-modals/ios/RNCMScreen.m
++++ b/node_modules/react-native-cool-modals/ios/RNCMScreen.m
+@@ -50,6 +50,10 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
+   return self;
+ }
+
++- (void)willDismiss {
++  _onWillDismiss(nil);
++}
++
+ - (void)reactSetFrame:(CGRect)frame
+ {
+   if (![self.reactViewController.parentViewController
+@@ -376,7 +380,7 @@ @implementation RNCMScreenManager
+ RCT_EXPORT_VIEW_PROPERTY(stackAnimation, RNSScreenStackAnimation)
+ RCT_EXPORT_VIEW_PROPERTY(onAppear, RCTDirectEventBlock);
+ RCT_EXPORT_VIEW_PROPERTY(onDismissed, RCTDirectEventBlock);
+-
++RCT_EXPORT_VIEW_PROPERTY(onWillDismiss, RCTDirectEventBlock);
+ RCT_EXPORT_VIEW_PROPERTY(springDamping, NSNumber)
+ RCT_EXPORT_VIEW_PROPERTY(transitionDuration, NSNumber)
+ RCT_EXPORT_VIEW_PROPERTY(backgroundOpacity, NSNumber)
 diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m b/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m
-index 1c9caa1..de76477 100644
+index 1c9caa1..26eb388 100644
 --- a/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m
 +++ b/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m
 @@ -315,14 +315,31 @@ - (void)setModalViewControllers:(NSArray<UIViewController *> *)controllers
@@ -24,7 +80,7 @@ index 1c9caa1..de76477 100644
 +    NSNumber* transitionDuration = view.transitionDuration;
 +    SEL selector = NSSelectorFromString(@"hide");
 +    [presentedViewController performSelector:selector];
-+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, transitionDuration.longValue * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
++    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (transitionDuration.longValue + 0.2) * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
 +      SEL unhackParent = NSSelectorFromString(@"unhackParent");
 +      [presentedViewController performSelector:unhackParent];
 +      [vc dismissViewControllerAnimated:NO completion:completion];
@@ -38,7 +94,7 @@ index 1c9caa1..de76477 100644
  {
    // when there is no change we return immediately
 diff --git a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-index eb127c3..0cb1bab 100644
+index eb127c3..5b270e8 100644
 --- a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 +++ b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 @@ -1,6 +1,33 @@
@@ -91,12 +147,13 @@ index eb127c3..0cb1bab 100644
    convenience init(_ viewControllerToPresent: UIViewController) {
      self.init(nibName: nil, bundle: nil)
 
-@@ -22,6 +51,19 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -22,6 +51,20 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      viewController = viewControllerToPresent
    }
 
 +  @objc func hide() {
 +    hiding = true
++    callWillDismiss()
 +    hackParent()
 +    panModalTransition(to: .hidden)
 +  }
@@ -111,7 +168,7 @@ index eb127c3..0cb1bab 100644
    override var bottomLayoutGuide: UILayoutSupport {
      get {
        if self.isViewLoaded {
-@@ -31,7 +73,12 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -31,7 +74,12 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      }
    }
 
@@ -125,10 +182,19 @@ index eb127c3..0cb1bab 100644
 
    var cornerRadius: CGFloat {
      get {
-@@ -69,6 +116,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -69,6 +117,19 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      }
    }
 
++  func panModalWillDismiss() {
++    callWillDismiss()
++  }
++
++  func callWillDismiss() {
++    let selector = NSSelectorFromString("willDismiss")
++    config?.perform(selector)
++  }
++
 +  func shouldRespond(to panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
 +    return !hiding
 +  }
@@ -136,7 +202,7 @@ index eb127c3..0cb1bab 100644
    var allowsDragToDismiss: Bool {
      return self.config?.value(forKey: "allowsDragToDismiss") as! Bool
    }
-@@ -86,6 +137,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -86,6 +147,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
 
    }
 
@@ -144,7 +210,7 @@ index eb127c3..0cb1bab 100644
    func shouldPrioritize(panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
      let headerHeight: CGFloat = CGFloat(truncating: self.config?.value(forKey: "headerHeight") as! NSNumber)
      let location = panModalGestureRecognizer.location(in: view)
-@@ -133,6 +185,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -133,6 +195,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
 
    override func viewWillDisappear(_ animated: Bool) {
      disappared = true

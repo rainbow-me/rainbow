@@ -2,10 +2,10 @@ import analytics from '@segment/analytics-react-native';
 import { get, omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
+import createBottomSheetStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 // eslint-disable-next-line import/no-unresolved
 import { enableScreens } from 'react-native-screens';
 import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
-import createBottomSheetStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 import { createAppContainer, NavigationActions } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
@@ -229,6 +229,9 @@ const MainNativeNavigation = createBottomSheetStackNavigator(
   {
     defaultNavigationOptions: {
       customStack: true,
+      onWillDismiss: () => {
+        sheetPreset.onTransitionStart({ closing: true });
+      },
       showDragIndicator: false,
       springDamping: 0.8,
       transitionDuration: 0.35,
@@ -413,6 +416,15 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
             params: { focused: false },
           })
         );
+      }
+
+      const oldMainStack = prevState.routes[prevState.index];
+      const newMainStack = currentState.routes[currentState.index];
+      const oldIndex = oldMainStack.routes[oldMainStack.index].index;
+      const newIndex = newMainStack.routes[newMainStack.index].index;
+
+      if (oldIndex !== newIndex) {
+        expandedPreset.onTransitionStart({ closing: !newIndex });
       }
 
       if (
