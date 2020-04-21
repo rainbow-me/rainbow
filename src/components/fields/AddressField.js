@@ -1,7 +1,8 @@
+import Clipboard from '@react-native-community/clipboard';
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Clipboard, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { withNavigation } from 'react-navigation';
 import styled from 'styled-components/primitives';
