@@ -1,12 +1,10 @@
 import { get, map } from 'lodash';
 import { formatDepositAmount } from '../helpers/savings';
 import { convertAmountToNativeDisplay, multiply } from '../helpers/utilities';
-import {
-  useAccountAssets,
-  useAccountSettings,
-  useSavingsAccount,
-} from '../hooks';
 import { ethereumUtils } from '../utils';
+import useAccountAssets from './useAccountAssets';
+import useAccountSettings from './useAccountSettings';
+import useSavingsAccount from './useSavingsAccount';
 
 export default function useSendSavingsAccount() {
   const { allAssets } = useAccountAssets();

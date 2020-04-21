@@ -1,4 +1,4 @@
-import { sentryUtils } from './';
+import sentryUtils from './sentry';
 
 export default class Logger {
   static log(...args) {

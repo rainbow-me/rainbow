@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Row } from '../layout';
-import { Text } from '../text';
+import Text from './Text';
 
 const sx = StyleSheet.create({
   cents: { top: 7 },

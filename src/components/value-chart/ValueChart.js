@@ -537,16 +537,17 @@ export default class Chart extends PureComponent {
 
     let returnPaths = [];
     let returnPoints = [];
-    for (let i = 0; i <= allSegmentDividers.length; i++) {
+    const localSegmentDividers = allSegmentDividers;
+    for (let i = 0; i <= localSegmentDividers.length; i++) {
       const animatedPath = concat(
         'M 0 0',
         ...splinePoints[0].flatMap(({ x }, index) => {
           if (i === 0) {
-            if (index <= allSegmentDividers[i]) {
+            if (index <= localSegmentDividers[i]) {
               return ['L', x, ' ', add(...allNodes(index))];
             }
           } else {
-            if (index === allSegmentDividers[i - 1]) {
+            if (index === localSegmentDividers[i - 1]) {
               sectionEndPoints.push({
                 index: segments.dividers[i - 1],
                 opacity: this.chartAnimationValues[segments.dividers[i - 1]],
@@ -555,14 +556,14 @@ export default class Chart extends PureComponent {
               });
               return ['M', x, ' ', add(...allNodes(index))];
             }
-            if (i === allSegmentDividers.length) {
-              if (index >= allSegmentDividers[i - 1]) {
+            if (i === localSegmentDividers.length) {
+              if (index >= localSegmentDividers[i - 1]) {
                 return ['L', x, ' ', add(...allNodes(index))];
               }
             } else {
               if (
-                index >= allSegmentDividers[i - 1] &&
-                index <= allSegmentDividers[i]
+                index >= localSegmentDividers[i - 1] &&
+                index <= localSegmentDividers[i]
               ) {
                 return ['L', x, ' ', add(...allNodes(index))];
               }
@@ -622,31 +623,33 @@ export default class Chart extends PureComponent {
       );
     }
 
-    let something = [0, 0, 0, 0];
+    let startingValues = [0, 0, 0, 0];
     sectionEndPoints.forEach(element => {
-      if (chartData[element.index].startSeparatator[something[element.index]]) {
+      if (
+        chartData[element.index].startSeparatator[startingValues[element.index]]
+      ) {
         returnPoints.push(
           <AnimatedCircle
             cx={element.x}
             cy={element.y}
             r={
               chartData[element.index].startSeparatator[
-                something[element.index]
+                startingValues[element.index]
               ].r
             }
             stroke={
               chartData[element.index].startSeparatator[
-                something[element.index]
+                startingValues[element.index]
               ].stroke
             }
             strokeWidth={
               chartData[element.index].startSeparatator[
-                something[element.index]
+                startingValues[element.index]
               ].strokeWidth
             }
             fill={
               chartData[element.index].startSeparatator[
-                something[element.index]++
+                startingValues[element.index]++
               ].fill
             }
             opacity={element.opacity}
