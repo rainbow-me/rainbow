@@ -20,6 +20,7 @@ import {
 import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import DeleteButton from './DeleteButton';
+import { extraStates } from './ExtraStates';
 
 const {
   abs,
@@ -73,13 +74,6 @@ function runSpring(clock, value, velocity, dest, wasRunSpring = false) {
     state.position,
   ];
 }
-
-export const extraStates = {
-  gestureInactive: -3,
-  nothing: -1,
-  notSendable: -4,
-  overX: -2,
-};
 
 class MovableFabWrapper extends PureComponent {
   static propTypes = {

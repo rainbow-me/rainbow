@@ -99,7 +99,7 @@ const JellySelector = ({
       >
         {items.map((item, index) => (
           <View
-            key={index}
+            key={`jellyViewKey${item}`}
             onLayout={({ nativeEvent }) => {
               itemWidths[index] = nativeEvent.layout.width;
               calculatedItemWidths++;
@@ -111,7 +111,7 @@ const JellySelector = ({
           >
             <ButtonPressAnimation
               enableHapticFeedback={false}
-              key={index}
+              key={`jellyButtonKey${item}`}
               onPress={() => {
                 if (!disableSelection) {
                   animateTransition(index);
