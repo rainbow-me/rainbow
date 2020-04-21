@@ -18,6 +18,7 @@ import {
   toUpper,
   uniqBy,
 } from 'lodash';
+import { toChecksumAddress } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
 import {
@@ -249,6 +250,7 @@ const parseTransaction = (
       ...transaction,
       address: updatedAsset.address,
       balance: convertRawAmountToBalance(valueUnit, updatedAsset),
+      checksumAddress: toChecksumAddress(updatedAsset.address),
       from: internalTxn.address_from,
       hash: `${transaction.hash}-${index}`,
       name: updatedAsset.name,

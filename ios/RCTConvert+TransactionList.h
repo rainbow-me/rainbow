@@ -43,6 +43,9 @@
     if (data[@"address"] != [NSNull null]) {
       transaction.address = data[@"address"];
     }
+    if (data[@"checksumAddress"] != [NSNull null]) {
+      transaction.checksumAddress = data[@"checksumAddress"];
+    }
     if (data[@"asset"][@"icon_url"] != [NSNull null]) {
       transaction.coinImage = data[@"asset"][@"icon_url"];
     }

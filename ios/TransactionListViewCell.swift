@@ -43,8 +43,8 @@ class TransactionListViewCell: TransactionListBaseCell {
     if transaction.symbol != nil {
       if let img = UIImage.init(named: transaction.symbol.lowercased()) {
         coinImage.image = img
-      } else if transaction.address != nil {
-        let url = URL(string: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/\(transaction.address!)/logo.png");
+      } else if transaction.checksumAddress != nil {
+        let url = URL(string: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/\(transaction.checksumAddress!)/logo.png");
         coinImage.sd_setImage(with: url)
       } else {
         coinImage.image = generateTextImage(transaction.symbol)

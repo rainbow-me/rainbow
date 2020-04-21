@@ -35,6 +35,7 @@ import Foundation
   var minedAt: Date!
   var pending: Bool = false
   var address: String?
+  var checksumAddress: String?
   var status: String!
   var symbol: String!
   var coinImage: String?
