@@ -2,6 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import { get, omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
+import createBottomSheetStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 // eslint-disable-next-line import/no-unresolved
 import { enableScreens } from 'react-native-screens';
 import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
@@ -184,18 +185,6 @@ const MainNavigator = createStackNavigator(
       },
       screen: SavingsSheet,
     },
-    SettingsModal: {
-      navigationOptions: {
-        ...expandedPreset,
-        gesturesEnabled: false,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: SettingsModal,
-      transparentCard: true,
-    },
     SwipeLayout: {
       navigationOptions: {
         ...backgroundPreset,
@@ -228,6 +217,25 @@ const MainNavigator = createStackNavigator(
     },
     headerMode: 'none',
     initialRouteName: 'SwipeLayout',
+    mode: 'modal',
+  }
+);
+
+const MainNativeNavigation = createBottomSheetStackNavigator(
+  {
+    MainNavigator,
+    SettingsModal,
+  },
+  {
+    defaultNavigationOptions: {
+      customStack: true,
+      onWillDismiss: () => {
+        sheetPreset.onTransitionStart({ closing: true });
+      },
+      showDragIndicator: false,
+      springDamping: 0.8,
+      transitionDuration: 0.35,
+    },
     mode: 'modal',
   }
 );
@@ -288,7 +296,7 @@ const nativeStackWrapperRoutes = {
           />
         );
       },
-      MainNavigator,
+      MainNativeNavigation,
       SendSheetNavigator: isNativeStackAvailable
         ? createStackNavigator(sendFlowRoutes, {
             defaultNavigationOptions: {
@@ -306,7 +314,7 @@ const nativeStackWrapperRoutes = {
         onAppear: () => appearListener && appearListener(),
       },
       headerMode: 'none',
-      initialRouteName: 'MainNavigator',
+      initialRouteName: 'MainNativeNavigation',
       mode: 'modal',
     }
   ),
@@ -408,6 +416,15 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
             params: { focused: false },
           })
         );
+      }
+
+      const oldMainStack = prevState.routes[prevState.index];
+      const newMainStack = currentState.routes[currentState.index];
+      const oldIndex = oldMainStack.routes[oldMainStack.index].index;
+      const newIndex = newMainStack.routes[newMainStack.index].index;
+
+      if (oldIndex !== newIndex) {
+        expandedPreset.onTransitionStart({ closing: !newIndex });
       }
 
       if (

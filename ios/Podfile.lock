@@ -46,7 +46,7 @@ PODS:
     - FirebaseCoreDiagnosticsInterop (~> 1.0)
     - GoogleUtilities/Environment (~> 6.2)
     - GoogleUtilities/Logger (~> 6.2)
-  - FirebaseCoreDiagnostics (1.2.3):
+  - FirebaseCoreDiagnostics (1.2.2):
     - FirebaseCoreDiagnosticsInterop (~> 1.2)
     - GoogleDataTransportCCTSupport (~> 2.0)
     - GoogleUtilities/Environment (~> 6.5)
@@ -129,8 +129,8 @@ PODS:
     - GoogleUtilities/Network (~> 6.0)
     - "GoogleUtilities/NSData+zlib (~> 6.0)"
     - nanopb (= 0.3.9011)
-  - GoogleDataTransport (5.1.1)
-  - GoogleDataTransportCCTSupport (2.0.2):
+  - GoogleDataTransport (5.1.0)
+  - GoogleDataTransportCCTSupport (2.0.1):
     - GoogleDataTransport (~> 5.1)
     - nanopb (~> 0.3.901)
   - GoogleUtilities/AppDelegateSwizzler (6.5.2):
@@ -174,6 +174,7 @@ PODS:
   - OpenSSL-Universal (1.0.2.19):
     - OpenSSL-Universal/Static (= 1.0.2.19)
   - OpenSSL-Universal/Static (1.0.2.19)
+  - PanModal (1.2.7)
   - Permission-Camera (2.1.1):
     - RNPermissions
   - Permission-FaceID (2.1.1):
@@ -444,6 +445,9 @@ PODS:
     - React
   - RNCMaskedView (0.1.9):
     - React
+  - RNCoolModals (0.0.7):
+    - PanModal
+    - React
   - RNCPushNotificationIOS (1.1.1):
     - React
   - RNDeviceInfo (5.3.1):
@@ -490,9 +494,9 @@ PODS:
     - React
   - RNSVG (12.1.0):
     - React
-  - SDWebImage (5.7.2):
-    - SDWebImage/Core (= 5.7.2)
-  - SDWebImage/Core (5.7.2)
+  - SDWebImage (5.7.0):
+    - SDWebImage/Core (= 5.7.0)
+  - SDWebImage/Core (5.7.0)
   - SDWebImageWebPCoder (0.2.5):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.0)
@@ -542,6 +546,7 @@ DEPENDENCIES:
   - libwebp
   - lottie-ios (from `../node_modules/lottie-ios`)
   - lottie-react-native (from `../node_modules/lottie-react-native`)
+  - PanModal (from `https://github.com/osdnk/PanModal`, commit `25be2df9ccf997b62c39e1edb42857bab2d0cdab`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera.podspec`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -583,6 +588,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
+  - RNCoolModals (from `../node_modules/react-native-cool-modals`)
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
@@ -665,6 +671,9 @@ EXTERNAL SOURCES:
     :path: "../node_modules/lottie-ios"
   lottie-react-native:
     :path: "../node_modules/lottie-react-native"
+  PanModal:
+    :commit: 25be2df9ccf997b62c39e1edb42857bab2d0cdab
+    :git: https://github.com/osdnk/PanModal
   Permission-Camera:
     :path: "../node_modules/react-native-permissions/ios/Camera.podspec"
   Permission-FaceID:
@@ -741,6 +750,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/clipboard"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
+  RNCoolModals:
+    :path: "../node_modules/react-native-cool-modals"
   RNCPushNotificationIOS:
     :path: "../node_modules/@react-native-community/push-notification-ios"
   RNDeviceInfo:
@@ -786,6 +797,11 @@ EXTERNAL SOURCES:
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
+CHECKOUT OPTIONS:
+  PanModal:
+    :commit: 25be2df9ccf997b62c39e1edb42857bab2d0cdab
+    :git: https://github.com/osdnk/PanModal
+
 SPEC CHECKSUMS:
   Analytics: f82f3cd6d3c8fbfd76ce25773199576656981a4a
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
@@ -803,7 +819,7 @@ SPEC CHECKSUMS:
   FirebaseAnalytics: 45f36d9c429fc91d206283900ab75390cd05ee8a
   FirebaseAnalyticsInterop: 3f86269c38ae41f47afeb43ebf32a001f58fcdae
   FirebaseCore: 307ea2508df730c5865334e41965bd9ea344b0e5
-  FirebaseCoreDiagnostics: 13a6564cd6d5375066bbc8940cc1753af24497f3
+  FirebaseCoreDiagnostics: e9b4cd8ba60dee0f2d13347332e4b7898cca5b61
   FirebaseCoreDiagnosticsInterop: 296e2c5f5314500a850ad0b83e9e7c10b011a850
   FirebaseInstanceID: ebd2ea79ee38db0cb5f5167b17a0d387e1cc7b6e
   FirebaseMessaging: 089b7a4991425783384acc8bcefcd78c0af913bd
@@ -818,8 +834,8 @@ SPEC CHECKSUMS:
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   GoogleAppMeasurement: dfe55efa543e899d906309eaaac6ca26d249862f
-  GoogleDataTransport: 6ffa4dd0b6d547f8d27b91bd92fa9e197a3f5f1f
-  GoogleDataTransportCCTSupport: 12f02e5c8f09c055615de90bcd5ba2c375546051
+  GoogleDataTransport: b29a21d813e906014ca16c00897827e40e4a24ab
+  GoogleDataTransportCCTSupport: 6f15a89b0ca35d6fa523e1f752ef818588885988
   GoogleUtilities: ad0f3b691c67909d03a3327cc205222ab8f42e0e
   JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
@@ -827,6 +843,7 @@ SPEC CHECKSUMS:
   lottie-react-native: 2a1a82bb326ae51331a5520de0cf706733c6db69
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
+  PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
   Permission-Camera: 01583e5864cb99d89cbfb3ec62cb83c78d8d227a
   Permission-FaceID: fafd8c4809ad5be3547e1b66c2ce444c5abd92a6
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
@@ -866,6 +883,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 44395cb9c7c1523104c2b499eb426ef7aff82bca
   RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
   RNCMaskedView: 71fc32d971f03b7f03d6ab6b86b730c4ee64f5b6
+  RNCoolModals: 101e6048991c708be5f6486186ddbb8f23b20d78
   RNCPushNotificationIOS: a0b6894f4ad9b93d9dac467fdf4d055660ac8a0d
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNFastImage: 9b0c22643872bb7494c8d87bbbb66cc4c0d9e7a2
@@ -884,7 +902,7 @@ SPEC CHECKSUMS:
   RNSentry: 370623102247ebea20191b5fb549ecc7a275b324
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
-  SDWebImage: d9ea4959d99c52276dfada481987018fcaea3d58
+  SDWebImage: a99471f452bdfa0ca52ddf5b1adf2b61cab1d1eb
   SDWebImageWebPCoder: 947093edd1349d820c40afbd9f42acb6cdecd987
   Sentry: 14bdd673870e8cf64932b149fad5bbbf39a9b390
   SRSRadialGradient: 77bcb1ae812d0c77560e54ed9e52166df032db1d
@@ -894,6 +912,6 @@ SPEC CHECKSUMS:
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: bc052b48a806dd7d5e76f576e13efa971eabc808
+PODFILE CHECKSUM: 83684de3969b44377a61e17ecbb99f936d354493
 
 COCOAPODS: 1.9.1

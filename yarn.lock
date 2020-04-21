@@ -9139,6 +9139,13 @@ react-native-code-push@osdnk/react-native-code-push#patch-1:
     semver "^7.1.1"
     xcode "1.0.0"
 
+react-native-cool-modals@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/react-native-cool-modals/-/react-native-cool-modals-0.0.7.tgz#bf023c35f848ad6723e6aa8e4afc3579932c5738"
+  integrity sha512-MvkppPxJlK8RIOr4zaKJ7rSmFwaZfiLS0krRPMbN02nVZ1YCbYC3N+Sn+FrPaEyjn62uT3m0ikkTmRtpGcLT7g==
+  dependencies:
+    debounce "^1.2.0"
+
 react-native-crypto@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/react-native-crypto/-/react-native-crypto-2.2.0.tgz#c999ed7c96064f830e1f958687f53d0c44025770"
