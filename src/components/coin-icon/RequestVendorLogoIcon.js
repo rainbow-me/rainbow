@@ -45,10 +45,10 @@ export default class RequestVendorLogoIcon extends PureComponent {
 
   handleError = error => this.setState({ error });
 
-  renderFallbackText = () => (
+  renderFallbackText = bg => (
     <Text
       align="center"
-      color={colors.getFallbackTextColor(this.props.backgroundColor)}
+      color={colors.getFallbackTextColor(bg)}
       size="smedium"
       weight="semibold"
     >
@@ -80,19 +80,23 @@ export default class RequestVendorLogoIcon extends PureComponent {
       ...props
     } = this.props;
 
+    // When dapps have no icon the bg is transparent
+    const bg =
+      backgroundColor === 'transparent' ? colors.white : backgroundColor;
+
     return (
       <ShadowStack
         {...props}
         {...position.sizeAsObject(size)}
-        backgroundColor={backgroundColor}
+        backgroundColor={bg}
         borderRadius={borderRadius}
         shadows={RVLIShadows[showLargeShadow ? 'large' : 'default']}
         shouldRasterizeIOS
       >
-        <Centered style={{ ...position.sizeAsObject(size), backgroundColor }}>
+        <Centered style={{ ...position.sizeAsObject(size), bg }}>
           {imageUrl && !this.state.error
             ? this.renderImage()
-            : this.renderFallbackText()}
+            : this.renderFallbackText(bg)}
         </Centered>
       </ShadowStack>
     );

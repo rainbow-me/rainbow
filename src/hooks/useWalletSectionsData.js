@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { buildWalletSectionsSelector } from '../helpers/buildWalletSections';
+import { readableUniswapSelector } from '../hoc/uniswapLiquidityTokenInfoSelector';
 import useAccountAssets from './useAccountAssets';
 import useAccountSettings from './useAccountSettings';
-import useSendableUniqueTokens from './useSendableUniqueTokens';
-import { readableUniswapSelector } from '../hoc/uniswapLiquidityTokenInfoSelector';
+import useCoinListEditOptions from './useCoinListEditOptions';
 import useSavingsAccount from './useSavingsAccount';
+import useSendableUniqueTokens from './useSendableUniqueTokens';
+import useShowcaseTokens from './useShowcaseTokens';
 
 export default function useWalletSectionsData() {
   const isWalletEthZero = useSelector(
@@ -18,19 +20,32 @@ export default function useWalletSectionsData() {
   const { language, network, nativeCurrency } = useAccountSettings();
   const uniqueTokens = useSendableUniqueTokens();
   const uniswap = useSelector(readableUniswapSelector);
+  const { showcaseTokens } = useShowcaseTokens();
+
+  const {
+    currentAction,
+    hiddenCoins,
+    isCoinListEdited,
+    pinnedCoins,
+  } = useCoinListEditOptions();
 
   const accountSavings = useSavingsAccount(true);
 
   const walletSections = useMemo(() => {
     const accountInfo = {
+      currentAction,
+      hiddenCoins,
+      isCoinListEdited,
       language,
       nativeCurrency,
       network,
+      pinnedCoins,
+      savings: accountSavings,
       ...accountData,
       ...uniqueTokens,
       ...uniswap,
       ...isWalletEthZero,
-      savings: accountSavings,
+      showcaseTokens,
     };
     const creation = buildWalletSectionsSelector(accountInfo);
     return {
@@ -40,10 +55,15 @@ export default function useWalletSectionsData() {
   }, [
     accountData,
     accountSavings,
+    currentAction,
+    hiddenCoins,
+    isCoinListEdited,
     isWalletEthZero,
     language,
     nativeCurrency,
     network,
+    pinnedCoins,
+    showcaseTokens,
     uniqueTokens,
     uniswap,
   ]);

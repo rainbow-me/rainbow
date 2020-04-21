@@ -1,10 +1,10 @@
 import { get, pick } from 'lodash';
+import { getTransactionCount } from '../handlers/web3';
+import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
 } from '../helpers/utilities';
-import { getTransactionCount } from '../handlers/web3';
-import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 
 /**
  * @desc parse transactions from native prices

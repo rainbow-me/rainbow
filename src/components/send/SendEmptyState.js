@@ -1,10 +1,10 @@
 import React, { useRef } from 'react';
-import { Transition, Transitioning } from 'react-native-reanimated';
 import { Platform, View } from 'react-native';
-import { Icon } from '../icons';
-import { Centered } from '../layout';
+import { Transition, Transitioning } from 'react-native-reanimated';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import { colors } from '../../styles';
+import { Icon } from '../icons';
+import { Centered } from '../layout';
 
 const duration = 200;
 const transition = (

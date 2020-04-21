@@ -20,9 +20,9 @@ import {
 import { Centered } from '../layout';
 import { Pager } from '../pager';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
-import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
 import FloatingPanel from './FloatingPanel';
 import FloatingPanels from './FloatingPanels';
+import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
 
 const PagerControlsColorVariants = {
   dark: colors.dark,
@@ -41,6 +41,7 @@ const UniqueTokenExpandedState = ({
   panelWidth,
   subtitle,
   title,
+  navigation,
 }) => {
   const PanelPages = [
     {
@@ -92,7 +93,12 @@ const UniqueTokenExpandedState = ({
         </Centered>
       )}
       <AssetPanel onLayout={onLayout}>
-        <AssetPanelHeader subtitle={subtitle} title={title} />
+        <AssetPanelHeader
+          subtitle={subtitle}
+          title={title}
+          asset={asset}
+          navigation={navigation}
+        />
         {asset.isSendable && (
           <AssetPanelAction
             icon="send"

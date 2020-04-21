@@ -1,4 +1,6 @@
 import { captureException } from '@sentry/react-native';
+import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
+import { toBuffer } from 'ethereumjs-util';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get, isEmpty, isNil } from 'lodash';
@@ -10,7 +12,6 @@ import {
   AUTHENTICATION_TYPE,
   canImplyAuthentication,
 } from 'react-native-keychain';
-import * as keychain from './keychain';
 import {
   addHexPrefix,
   isHexString,
@@ -18,6 +19,7 @@ import {
   isValidMnemonic,
   web3Provider,
 } from '../handlers/web3';
+import * as keychain from './keychain';
 
 const seedPhraseKey = 'rainbowSeedPhrase';
 const privateKeyKey = 'rainbowPrivateKey';
@@ -32,13 +34,15 @@ export const walletInit = async (seedPhrase = null) => {
   let isImported = false;
   let isNew = false;
   if (!isEmpty(seedPhrase)) {
-    walletAddress = await createWallet(seedPhrase);
+    const wallet = await createWallet(seedPhrase);
+    walletAddress = wallet.address;
     isImported = !isNil(walletAddress);
     return { isImported, isNew, walletAddress };
   }
   walletAddress = await loadAddress();
   if (!walletAddress) {
-    walletAddress = await createWallet();
+    const wallet = await createWallet();
+    walletAddress = wallet.address;
     isNew = true;
   }
   return { isImported, isNew, walletAddress };
@@ -97,7 +101,7 @@ export const signTransaction = async ({ transaction }) => {
     const wallet = await loadWallet();
     if (!wallet) return null;
     try {
-      return await wallet.sign(transaction);
+      return wallet.sign(transaction);
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
       captureException(error);
@@ -121,7 +125,7 @@ export const signMessage = async (
       const sigParams = await signingKey.signDigest(
         ethers.utils.arrayify(message)
       );
-      return await ethers.utils.joinSignature(sigParams);
+      return ethers.utils.joinSignature(sigParams);
     } catch (error) {
       captureException(error);
       return null;
@@ -140,9 +144,55 @@ export const signPersonalMessage = async (
   try {
     const wallet = await loadWallet(authenticationPrompt);
     try {
-      return await wallet.signMessage(
+      return wallet.signMessage(
         isHexString(message) ? ethers.utils.arrayify(message) : message
       );
+    } catch (error) {
+      captureException(error);
+      return null;
+    }
+  } catch (error) {
+    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    captureException(error);
+    return null;
+  }
+};
+
+export const signTypedDataMessage = async (
+  message,
+  method,
+  authenticationPrompt = lang.t('wallet.authenticate.please')
+) => {
+  try {
+    const wallet = await loadWallet(authenticationPrompt);
+
+    try {
+      const pkeyBuffer = toBuffer(addHexPrefix(wallet.privateKey));
+      let parsedData = message;
+      try {
+        parsedData = JSON.parse(message);
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
+
+      // There are 3 types of messages
+      // v1 => basic data types
+      // v3 =>  has type / domain / primaryType
+      // v4 => same as v3 but also supports which supports arrays and recursive structs.
+      // Because v4 is backwards compatible with v3, we're supporting only v4
+
+      let version = 'v1';
+      if (parsedData.types || parsedData.primaryType || parsedData.domain) {
+        version = 'v4';
+      }
+
+      switch (version) {
+        case 'v4':
+          return signTypedData_v4(pkeyBuffer, {
+            data: parsedData,
+          });
+        default:
+          return signTypedDataLegacy(pkeyBuffer, { data: parsedData });
+      }
     } catch (error) {
       captureException(error);
       return null;
@@ -165,7 +215,7 @@ export const loadSeedPhrase = async (
 
 export const loadAddress = async () => {
   try {
-    return await keychain.loadString(addressKey);
+    return keychain.loadString(addressKey);
   } catch (error) {
     captureException(error);
     return null;
@@ -190,7 +240,7 @@ const createWallet = async seed => {
     }
     if (wallet) {
       saveWalletDetails(walletSeed, wallet.privateKey, wallet.address);
-      return wallet.address;
+      return wallet;
     }
     return null;
   } catch (error) {
@@ -203,7 +253,6 @@ const saveWalletDetails = async (seedPhrase, privateKey, address) => {
   const canAuthenticate = await canImplyAuthentication({
     authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
   });
-  let accessControlOptions = {};
 
   let isSimulator = false;
 
@@ -211,15 +260,21 @@ const saveWalletDetails = async (seedPhrase, privateKey, address) => {
     isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
   }
 
+  let privateAccessControlOptions = {};
   if (canAuthenticate && !isSimulator) {
-    accessControlOptions = {
+    privateAccessControlOptions = {
       accessControl: ACCESS_CONTROL.USER_PRESENCE,
       accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
     };
   }
-  saveSeedPhrase(seedPhrase, accessControlOptions);
-  savePrivateKey(privateKey, accessControlOptions);
-  saveAddress(address);
+
+  const publicAccessControlOptions = {
+    accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
+  };
+
+  saveSeedPhrase(seedPhrase, privateAccessControlOptions);
+  savePrivateKey(privateKey, privateAccessControlOptions);
+  saveAddress(address, publicAccessControlOptions);
 };
 
 const saveSeedPhrase = async (seedPhrase, accessControlOptions = {}) => {
@@ -234,16 +289,15 @@ const loadPrivateKey = async (
   authenticationPrompt = lang.t('wallet.authenticate.please')
 ) => {
   try {
-    const privateKey = await keychain.loadString(privateKeyKey, {
+    return keychain.loadString(privateKeyKey, {
       authenticationPrompt,
     });
-    return privateKey;
   } catch (error) {
     captureException(error);
     return null;
   }
 };
 
-const saveAddress = async address => {
-  await keychain.saveString(addressKey, address);
+const saveAddress = async (address, accessControlOptions = {}) => {
+  await keychain.saveString(addressKey, address, accessControlOptions);
 };

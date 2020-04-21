@@ -1,13 +1,13 @@
 import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { withNavigation } from 'react-navigation';
+import { compose } from 'recompose';
 import {
   DataProvider,
   LayoutProvider,
   RecyclerListView,
 } from 'recyclerlistview';
-import { withNavigation } from 'react-navigation';
-import { compose } from 'recompose';
 import { withSelectedInput } from '../../hoc';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import { deviceUtils } from '../../utils';

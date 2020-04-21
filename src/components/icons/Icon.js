@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { createElement } from 'react';
+import Emoji from 'react-native-emoji';
 import Flex from '../layout/Flex';
 
 import ApplePayIcon from './svg/ApplePayIcon';
@@ -33,12 +34,14 @@ import EmojiTravelIcon from './svg/EmojiTravelIcon';
 import FaceIdIcon from './svg/FaceIdIcon';
 import GearIcon from './svg/GearIcon';
 import HandleIcon from './svg/HandleIcon';
+import HiddenIcon from './svg/HiddenIcon';
 import InboxIcon from './svg/InboxIcon';
 import InfoIcon from './svg/InfoIcon';
 import LockIcon from './svg/LockIcon';
 import MinusCircledIcon from './svg/MinusCircledIcon';
 import OfflineIcon from './svg/OfflineIcon';
 import PasscodeIcon from './svg/PasscodeIcon';
+import PinIcon from './svg/PinIcon';
 import PlusCircledIcon from './svg/PlusCircledIcon';
 import ProgressIcon from './svg/ProgressIcon';
 import QRCodeIcon from './svg/QRCodeIcon';
@@ -54,7 +57,6 @@ import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
 import WalletConnectIcon from './svg/WalletConnectIcon';
 import WarningIcon from './svg/WarningIcon';
-import Emoji from 'react-native-emoji';
 
 const Icon = ({ name, ...props }) =>
   createElement(Icon.IconTypes[name] || Flex, { name, ...props });
@@ -91,12 +93,14 @@ Icon.IconTypes = {
   faceid: FaceIdIcon,
   gear: GearIcon,
   handle: HandleIcon,
+  hidden: HiddenIcon,
   inbox: InboxIcon,
   info: InfoIcon,
   lock: LockIcon,
   minusCircled: MinusCircledIcon,
   offline: OfflineIcon,
   passcode: PasscodeIcon,
+  pin: PinIcon,
   plusCircled: PlusCircledIcon,
   progress: ProgressIcon,
   qrCode: QRCodeIcon,

@@ -1,20 +1,21 @@
+import Clipboard from '@react-native-community/clipboard';
 import React from 'react';
+import { Linking, requireNativeComponent, View } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers, withState } from 'recompact';
-import { requireNativeComponent, Clipboard, Linking, View } from 'react-native';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { isAvatarPickerAvailable } from '../../config/experimental';
+import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import {
   withAccountInfo,
   withAccountSettings,
   withAccountTransactions,
-  withRequests,
   withContacts,
+  withRequests,
 } from '../../hoc';
 import { removeRequest } from '../../redux/requests';
+import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
-import { colors } from '../../styles';
 import LoadingState from '../activity-list/LoadingState';
 import { FloatingEmojis } from '../floating-emojis';
 

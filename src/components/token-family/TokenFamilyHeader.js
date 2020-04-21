@@ -5,8 +5,8 @@ import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { colors } from '../../styles';
-import { ButtonPressAnimation, interpolate } from '../animations';
 import Highlight from '../Highlight';
+import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
@@ -26,7 +26,7 @@ const TokenFamilyHeader = ({
   onPress,
   title,
 }) => {
-  const animation = useTimingTransition(isOpen, {
+  const animation = useTimingTransition(!isOpen, {
     duration: TokenFamilyHeaderAnimationDuration,
     easing: Easing.bezier(0.25, 0.1, 0.25, 1),
   });
@@ -69,10 +69,7 @@ const TokenFamilyHeader = ({
         <RowWithMargins align="center" margin={13}>
           <Animated.View
             style={{
-              opacity: interpolate(animation, {
-                inputRange: [0, 1],
-                outputRange: [1, 0],
-              }),
+              opacity: animation,
             }}
           >
             <Text
@@ -97,7 +94,7 @@ const TokenFamilyHeader = ({
                   rotate: toRad(
                     interpolate(animation, {
                       inputRange: [0, 1],
-                      outputRange: [0, 90],
+                      outputRange: [90, 0],
                     })
                   ),
                 },

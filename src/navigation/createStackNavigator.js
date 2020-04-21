@@ -1,6 +1,6 @@
 import { createStackNavigator } from 'react-navigation-stack';
-import store from '../redux/store';
 import { updateTransitionProps } from '../redux/navigation';
+import store from '../redux/store';
 
 export const onTransitionEnd = () =>
   store.dispatch(updateTransitionProps({ isTransitioning: false }));

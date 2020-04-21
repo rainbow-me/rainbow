@@ -2,40 +2,51 @@ import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import networkTypes from '../helpers/networkTypes';
 import { useAccountSettings } from '../hooks';
-import { dataLoadState } from '../redux/data';
+import { addCashLoadState } from '../redux/addCash';
 import { contactsLoadState } from '../redux/contacts';
+import { dataLoadState } from '../redux/data';
+import { coinListLoadState } from '../redux/editOptions';
 import { openStateSettingsLoadState } from '../redux/openStateSettings';
 import { requestsLoadState } from '../redux/requests';
+import { savingsLoadState } from '../redux/savings';
 import { settingsLoadState } from '../redux/settings';
-import { uniswapLoadState } from '../redux/uniswap';
+import { showcaseTokensLoadState } from '../redux/showcaseTokens';
 import { uniqueTokensLoadState } from '../redux/uniqueTokens';
+import { uniswapLoadState } from '../redux/uniswap';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { logger, promiseUtils } from '../utils';
+import useCheckEthBalance from './useCheckEthBalance';
 
 export default function useLoadAccountData() {
   const dispatch = useDispatch();
   const { network } = useAccountSettings();
+  const checkEthBalance = useCheckEthBalance();
 
   const loadAccountData = useCallback(async () => {
     logger.sentry('Load wallet data');
     await dispatch(openStateSettingsLoadState());
+    await dispatch(coinListLoadState());
+    await dispatch(showcaseTokensLoadState());
     const promises = [];
     const p1 = dispatch(settingsLoadState());
     promises.push(p1);
     if (network === networkTypes.mainnet) {
-      const p2 = dispatch(dataLoadState());
-      const p3 = dispatch(uniqueTokensLoadState());
-      const p4 = dispatch(walletConnectLoadState());
-      const p5 = dispatch(requestsLoadState());
-      promises.push(p2, p3, p4, p5);
+      const p2 = dispatch(savingsLoadState());
+      const p3 = dispatch(dataLoadState());
+      const p4 = dispatch(uniqueTokensLoadState());
+      const p5 = dispatch(walletConnectLoadState());
+      const p6 = dispatch(requestsLoadState());
+      promises.push(p2, p3, p4, p5, p6);
     }
 
     const p6 = dispatch(uniswapLoadState());
     const p7 = dispatch(contactsLoadState());
-    promises.push(p6, p7);
+    const p8 = dispatch(addCashLoadState());
+    const p9 = checkEthBalance();
+    promises.push(p6, p7, p8, p9);
 
     return promiseUtils.PromiseAllWithFails(promises);
-  }, [dispatch, network]);
+  }, [checkEthBalance, dispatch, network]);
 
   return loadAccountData;
 }

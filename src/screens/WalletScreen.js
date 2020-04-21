@@ -1,56 +1,58 @@
-import { withSafeTimeout } from '@hocs/safe-timers';
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import Animated from 'react-native-reanimated';
-import { withNavigation } from 'react-navigation';
-import { compose, withProps } from 'recompact';
+import { useValues } from 'react-native-redash';
+import { useNavigation } from 'react-navigation-hooks';
 import { AssetList } from '../components/asset-list';
 import { FabWrapper } from '../components/fab';
+import ExchangeFab from '../components/fab/ExchangeFab';
+import SendFab from '../components/fab/SendFab';
 import {
   CameraHeaderButton,
   Header,
+  HeaderGestureBlocker,
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
-import { withKeyboardHeight } from '../hoc';
+import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
+import networkInfo from '../helpers/networkInfo';
 import {
   useAccountSettings,
+  useCoinListEdited,
   useInitializeWallet,
+  useKeyboardHeight,
   useRefreshAccountData,
   useWalletSectionsData,
 } from '../hooks';
-import ExchangeFab from '../components/fab/ExchangeFab';
-import SendFab from '../components/fab/SendFab';
 import { position } from '../styles';
-import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
-import networkInfo from '../helpers/networkInfo';
 
-const WalletScreen = ({ navigation, scrollViewTracker, setKeyboardHeight }) => {
+export default function WalletScreen() {
   const [initialized, setInitialized] = useState(false);
   const initializeWallet = useInitializeWallet();
+  const navigation = useNavigation();
   const refreshAccountData = useRefreshAccountData();
+  const { isCoinListEdited } = useCoinListEdited();
+  const { updateKeyboardHeight } = useKeyboardHeight();
+  const [scrollViewTracker] = useValues([0], []);
 
   useEffect(() => {
     if (!initialized) {
-      initializeWallet()
-        .then(() => {
-          setInitialized(true);
-          getKeyboardHeight()
-            .then(keyboardHeight => {
-              if (keyboardHeight) {
-                setKeyboardHeight(keyboardHeight);
-              }
-            })
-            .catch(() => {
-              setInitialized(true);
-            });
-        })
-        .catch(() => {
-          setInitialized(true);
-        });
+      initializeWallet();
+      setInitialized(true);
     }
-  }, [initializeWallet, initialized, setKeyboardHeight]);
+  }, [initializeWallet, initialized]);
+
+  useEffect(() => {
+    if (initialized) {
+      getKeyboardHeight()
+        .then(keyboardHeight => {
+          if (keyboardHeight) {
+            updateKeyboardHeight(keyboardHeight);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [initialized, updateKeyboardHeight]);
 
   const { network } = useAccountSettings();
   const { isEmpty, isWalletEthZero, sections } = useWalletSectionsData();
@@ -71,12 +73,14 @@ const WalletScreen = ({ navigation, scrollViewTracker, setKeyboardHeight }) => {
         fabs={fabs}
         scrollViewTracker={scrollViewTracker}
         sections={sections}
+        isCoinListEdited={isCoinListEdited}
       >
-        <Header marginTop={5} justify="space-between">
-          <ProfileHeaderButton navigation={navigation} />
-          <CameraHeaderButton navigation={navigation} />
-        </Header>
-
+        <HeaderGestureBlocker enabled={isCoinListEdited}>
+          <Header marginTop={5} justify="space-between">
+            <ProfileHeaderButton navigation={navigation} />
+            <CameraHeaderButton navigation={navigation} />
+          </Header>
+        </HeaderGestureBlocker>
         <AssetList
           fetchData={refreshAccountData}
           isEmpty={isEmpty}
@@ -88,17 +92,4 @@ const WalletScreen = ({ navigation, scrollViewTracker, setKeyboardHeight }) => {
       </FabWrapper>
     </Page>
   );
-};
-
-WalletScreen.propTypes = {
-  navigation: PropTypes.object,
-  scrollViewTracker: PropTypes.object,
-  setKeyboardHeight: PropTypes.func,
-};
-
-export default compose(
-  withSafeTimeout,
-  withNavigation,
-  withKeyboardHeight,
-  withProps({ scrollViewTracker: new Animated.Value(0) })
-)(WalletScreen);
+}

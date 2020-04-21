@@ -32,6 +32,7 @@ import { checkIsValidAddress } from '../helpers/validators';
 import {
   useAccountAssets,
   useAccountSettings,
+  useGas,
   usePrevious,
   useRefreshAccountData,
   useSendableUniqueTokens,
@@ -74,13 +75,13 @@ const SendSheet = ({
   gasUpdateTxFee,
   isSufficientGas,
   removeContact,
-  selectedGasPrice,
   setAppearListener,
   sortedContacts,
   txFees,
   ...props
 }) => {
   const { allAssets } = useAccountAssets();
+  const { selectedGasPrice } = useGas();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     accountAddress,
@@ -102,10 +103,12 @@ const SendSheet = ({
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [selected, setSelected] = useState({});
+  const [balanceAmount, setBalanceAmount] = useState(0);
 
   const showEmptyState = !isValidAddress;
   const showAssetList = isValidAddress && isEmpty(selected);
   const showAssetForm = isValidAddress && !isEmpty(selected);
+  const prevSelectedGasPrice = usePrevious(selectedGasPrice);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -118,6 +121,28 @@ const SendSheet = ({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const updateBalanceAmount = useCallback(
+    async newSelected => {
+      const currentBalanceAmount = await ethereumUtils.getBalanceAmount(
+        selectedGasPrice,
+        newSelected
+      );
+      setBalanceAmount(currentBalanceAmount);
+    },
+    [selectedGasPrice]
+  );
+
+  // Recalculate balance when gas price changes
+  useEffect(() => {
+    if (
+      selected.address === 'eth' &&
+      get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
+        get(selectedGasPrice, 'txFee.value.amount', 0)
+    ) {
+      updateBalanceAmount(selected);
+    }
+  }, [prevSelectedGasPrice, selected, selectedGasPrice, updateBalanceAmount]);
 
   const sendUpdateAssetAmount = useCallback(
     newAssetAmount => {
@@ -137,10 +162,6 @@ const SendSheet = ({
           _assetAmount
         );
       }
-      const balanceAmount = ethereumUtils.getBalanceAmount(
-        selectedGasPrice,
-        selected
-      );
       const _isSufficientBalance =
         Number(_assetAmount) <= Number(balanceAmount);
       setAmountDetails({
@@ -149,11 +170,12 @@ const SendSheet = ({
         nativeAmount: _nativeAmount,
       });
     },
-    [nativeCurrency, selected, selectedGasPrice]
+    [balanceAmount, nativeCurrency, selected]
   );
 
   const sendUpdateSelected = useCallback(
     newSelected => {
+      updateBalanceAmount(newSelected);
       if (get(newSelected, 'type') === AssetTypes.nft) {
         setAmountDetails({
           assetAmount: '1',
@@ -169,7 +191,7 @@ const SendSheet = ({
         sendUpdateAssetAmount('');
       }
     },
-    [sendUpdateAssetAmount]
+    [sendUpdateAssetAmount, updateBalanceAmount]
   );
 
   const sendUpdateRecipient = useCallback(newRecipient => {
@@ -191,10 +213,6 @@ const SendSheet = ({
         _assetAmount = formatInputDecimals(convertedAssetAmount, _nativeAmount);
       }
 
-      const balanceAmount = ethereumUtils.getBalanceAmount(
-        selectedGasPrice,
-        selected
-      );
       const _isSufficientBalance =
         Number(_assetAmount) <= Number(balanceAmount);
 
@@ -205,14 +223,15 @@ const SendSheet = ({
       });
       analytics.track('Changed native currency input in Send flow');
     },
-    [selected, selectedGasPrice]
+    [balanceAmount, selected]
   );
 
-  const sendMaxBalance = useCallback(() => {
-    const balanceAmount = ethereumUtils.getBalanceAmount(
+  const sendMaxBalance = useCallback(async () => {
+    const balanceAmount = await ethereumUtils.getBalanceAmount(
       selectedGasPrice,
       selected
     );
+    setBalanceAmount(balanceAmount);
     sendUpdateAssetAmount(balanceAmount);
   }, [selected, selectedGasPrice, sendUpdateAssetAmount]);
 
@@ -335,10 +354,13 @@ const SendSheet = ({
   }, [gasUpdateDefaultGasLimit]);
 
   useEffect(() => {
-    if (isValidAddress && showAssetList) {
+    if (
+      (isValidAddress && showAssetList) ||
+      (isValidAddress && showAssetForm && selected.type === AssetTypes.nft)
+    ) {
       Keyboard.dismiss();
     }
-  }, [isValidAddress, showAssetList]);
+  }, [isValidAddress, selected.type, showAssetForm, showAssetList]);
 
   const assetOverride = useNavigationParam('asset');
   const prevAssetOverride = usePrevious(assetOverride);
@@ -469,7 +491,6 @@ SendSheet.propTypes = {
   gasUpdateTxFee: PropTypes.func.isRequired,
   isSufficientGas: PropTypes.bool.isRequired,
   removeContact: PropTypes.func.isRequired,
-  selectedGasPrice: PropTypes.object,
   setAppearListener: PropTypes.func,
   sortedContacts: PropTypes.array,
   txFees: PropTypes.object.isRequired,
@@ -478,7 +499,6 @@ SendSheet.propTypes = {
 const arePropsEqual = (prev, next) =>
   prev.isSufficientGas === next.isSufficientGas &&
   prev.gasLimit === next.gasLimit &&
-  prev.selectedGasPrice === next.selectedGasPrice &&
   prev.txFees === next.txFees &&
   prev.gasPrices === next.gasPrices &&
   prev.allAssets === next.allAssets;

@@ -3,9 +3,9 @@ import { DefaultUniswapFavorites } from '../../references';
 import {
   getAccountLocal,
   getGlobal,
+  removeAccountLocal,
   saveAccountLocal,
   saveGlobal,
-  removeAccountLocal,
 } from './common';
 
 const ASSETS = 'uniswapassets';

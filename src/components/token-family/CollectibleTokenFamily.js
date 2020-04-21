@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { UniqueTokenRow } from '../unique-token';
 import { setOpenFamilyTabs } from '../../redux/openStateSettings';
+import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyWrap from './TokenFamilyWrap';
 
 const CollectibleTokenFamily = ({
@@ -15,13 +15,13 @@ const CollectibleTokenFamily = ({
   const dispatch = useDispatch();
 
   const isFamilyOpen = useSelector(
-    ({ openStateSettings }) => openStateSettings.openFamilyTabs[familyId]
+    ({ openStateSettings }) => openStateSettings.openFamilyTabs[familyName]
   );
 
   const handleToggle = useCallback(
     () =>
-      dispatch(setOpenFamilyTabs({ index: familyId, state: !isFamilyOpen })),
-    [dispatch, familyId, isFamilyOpen]
+      dispatch(setOpenFamilyTabs({ index: familyName, state: !isFamilyOpen })),
+    [dispatch, familyName, isFamilyOpen]
   );
 
   const renderChild = useCallback(

@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import { toHex, web3Provider } from '../handlers/web3';
 import { convertRawAmountToDecimalFormat } from '../helpers/utilities';
 import { loadWallet } from '../model/wallet';
+import { ethUnits } from '../references';
 import erc20ABI from '../references/erc20-abi.json';
 import { logger } from '../utils';
 
@@ -11,10 +12,10 @@ const estimateApproveWithExchange = async (spender, exchange) => {
       spender,
       ethers.constants.MaxUint256
     );
-    return gasLimit ? gasLimit.toString() : null;
+    return gasLimit ? gasLimit.toString() : ethUnits.basic_approval;
   } catch (error) {
     logger.log('error estimating approval', error);
-    return null;
+    return ethUnits.basic_approval;
   }
 };
 

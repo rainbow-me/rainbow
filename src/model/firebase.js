@@ -6,8 +6,11 @@ import { getLocal, saveLocal } from '../handlers/localstorage/common';
 import { logger } from '../utils';
 
 export const getFCMToken = async () => {
+  await messaging().registerDeviceForRemoteMessages();
   const fcmTokenLocal = await getLocal('rainbowFcmToken');
+
   const fcmToken = get(fcmTokenLocal, 'data', null);
+
   if (!fcmToken) {
     throw new Error('Push notification token unavailable.');
   }
@@ -30,9 +33,9 @@ export const hasPermission = () => messaging().hasPermission();
 export const requestPermission = () => messaging().requestPermission();
 
 export const checkPushNotificationPermissions = async () => {
-  const arePushNotificationsAuthorized = await hasPermission();
+  const permissionStatus = await hasPermission();
 
-  if (!arePushNotificationsAuthorized) {
+  if (permissionStatus !== messaging.AuthorizationStatus.AUTHORIZED) {
     Alert({
       buttons: [
         {

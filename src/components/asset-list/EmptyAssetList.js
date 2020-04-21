@@ -1,8 +1,8 @@
 import lang from 'i18n-js';
-import stylePropType from 'react-style-proptype';
 import { times } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import stylePropType from 'react-style-proptype';
 import { position } from '../../styles';
 import AddFundsInterstitial from '../AddFundsInterstitial';
 import { FabWrapper } from '../fab';

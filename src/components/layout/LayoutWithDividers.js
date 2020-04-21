@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Children, cloneElement, createElement, Fragment } from 'react';
-import Flex from './Flex';
 import Divider from '../Divider';
+import Flex from './Flex';
 
 const LayoutWithDividers = ({
   children,

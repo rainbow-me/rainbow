@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import { swapDetailsTransitionPosition } from '../../navigation/transitions/effects';
 import { colors, padding, position } from '../../styles';
+import TouchableBackdrop from '../TouchableBackdrop';
 import { TouchableScale } from '../animations';
 import { FloatingEmojis, FloatingEmojisTapHandler } from '../floating-emojis';
 import {
@@ -12,9 +13,8 @@ import {
   RowWithMargins,
 } from '../layout';
 import { Emoji, Text } from '../text';
-import TouchableBackdrop from '../TouchableBackdrop';
-import { AssetPanel } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
+import { AssetPanel } from './asset-panel';
 
 const DetailsRow = ({ label, value, ...props }) => (
   <Row {...props} align="center" justify="space-between">
@@ -41,19 +41,19 @@ const SwapDetailsState = ({
   inputCurrencySymbol,
   inputExecutionRate,
   inputNativePrice,
-  onRefocusInput,
   outputCurrencySymbol,
   outputExecutionRate,
   outputNativePrice,
+  restoreFocusOnSwapModal,
 }) => {
   const { goBack } = useNavigation();
-  useEffect(() => () => onRefocusInput(), [onRefocusInput]);
+  useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
 
-  let emoji = 'unicorn_face';
+  let emojis = ['unicorn_face'];
   if ([inputCurrencySymbol, outputCurrencySymbol].includes('FAME')) {
-    emoji = 'prayer_beads';
+    emojis = ['prayer_beads'];
   } else if ([inputCurrencySymbol, outputCurrencySymbol].includes('SOCKS')) {
-    emoji = 'socks';
+    emojis = ['socks'];
   }
 
   return (
@@ -63,7 +63,7 @@ const SwapDetailsState = ({
         <FloatingEmojis
           distance={350}
           duration={2000}
-          emoji={emoji}
+          emojis={emojis}
           opacity={FloatingEmojisOpacity}
           size={36}
           wiggleFactor={1}

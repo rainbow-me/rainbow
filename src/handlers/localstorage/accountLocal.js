@@ -23,9 +23,12 @@ const PURCHASE_TRANSACTIONS = 'purchaseTransactions';
 const SMALL_BALANCE_TOGGLE = 'smallBalanceToggle';
 const SAVINGS = 'savings';
 const SAVINGS_TOGGLE = 'savingsToggle';
+const SHOWCASE_TOKENS = 'showcaseTokens';
 const TRANSACTIONS = 'transactions';
 const UNIQUE_TOKENS = 'uniquetokens';
 const WALLET_EMPTY = 'iswalletempty';
+const PINNED_COINS = 'pinnedCoins';
+const HIDDEN_COINS = 'hiddenCoins';
 
 /**
  * @desc get savings
@@ -44,15 +47,6 @@ export const getSavings = (accountAddress, network) =>
  */
 export const saveSavings = (savings, accountAddress, network) =>
   saveAccountLocal(SAVINGS, savings, accountAddress, network, savingsVersion);
-
-/**
- * @desc remove savings
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const removeSavings = (accountAddress, network) =>
-  removeAccountLocal(SAVINGS, accountAddress, network);
 
 /**
  * @desc get assets
@@ -157,15 +151,6 @@ export const savePurchaseTransactions = (
     network,
     purchaseTransactionsVersion
   );
-
-/**
- * @desc remove purchase transactions
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const removePurchaseTransactions = (accountAddress, network) =>
-  removeAccountLocal(PURCHASE_TRANSACTIONS, accountAddress, network);
 
 /**
  * @desc get transactions
@@ -425,7 +410,68 @@ export const saveAccountInfo = (profileInfo, accountAddress, network) =>
  * @desc remove profile info
  * @param  {String}   [address]
  * @param  {String}   [network]
- * @return {Object}
  */
 export const removeAccountInfo = (accountAddress, network) =>
   removeAccountLocal(ACCOUNT_INFO, accountAddress, network);
+
+/**
+ * @desc get pinned coins
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Array}
+ */
+export const getPinnedCoins = (accountAddress, network) =>
+  getAccountLocal(PINNED_COINS, accountAddress, network, []);
+
+/**
+ * @desc save pinned coins
+ * @param  {Array}    [pinned coins]
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const savePinnedCoins = (pinnedCoins, accountAddress, network) =>
+  saveAccountLocal(PINNED_COINS, pinnedCoins, accountAddress, network);
+
+/**
+ * @desc get hidden coins
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Array}
+ */
+export const getHiddenCoins = (accountAddress, network) =>
+  getAccountLocal(HIDDEN_COINS, accountAddress, network, []);
+
+/**
+ * @desc save hidden coins
+ * @param  {Array}    [hidden coins]
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const saveHiddenCoins = (hiddenCoins, accountAddress, network) =>
+  saveAccountLocal(HIDDEN_COINS, hiddenCoins, accountAddress, network);
+
+/**
+ * @desc get showcase tokens
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Afray}
+ */
+export const getShowcaseTokens = (accountAddress, network) =>
+  getAccountLocal(SHOWCASE_TOKENS, accountAddress, network, []);
+
+/**
+ * @desc save showcase tokens
+ * @param  {String}   [address]
+ * @param  {Array}    [Showcase tokens]
+ * @param  {String}   [network]
+ */
+export const saveShowcaseTokens = (showcaseTokens, accountAddress, network) =>
+  saveAccountLocal(SHOWCASE_TOKENS, showcaseTokens, accountAddress, network);
+
+/**
+ * @desc remove showcase tokens
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const removeShowcaseTokens = (accountAddress, network) =>
+  removeAccountLocal(SHOWCASE_TOKENS, accountAddress, network);

@@ -8,8 +8,8 @@ import {
   transactionsRemoved,
 } from './data';
 import {
-  testnetExplorerInit,
   testnetExplorerClearState,
+  testnetExplorerInit,
 } from './testnetExplorer';
 
 // -- Constants --------------------------------------- //
@@ -39,8 +39,11 @@ const messages = {
 
 // -- Actions ---------------------------------------- //
 const createSocket = endpoint =>
-  io(`wss://api.zerion.io/${endpoint}?api_token=${DATA_API_KEY}`, {
+  io(`wss://api-v4.zerion.io/${endpoint}`, {
     extraHeaders: { origin: DATA_ORIGIN },
+    query: {
+      api_token: `${DATA_API_KEY}`,
+    },
     transports: ['websocket'],
   });
 

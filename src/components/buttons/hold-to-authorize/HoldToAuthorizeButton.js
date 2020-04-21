@@ -10,7 +10,7 @@ import Animated, { Easing } from 'react-native-reanimated';
 import ShadowStack from 'react-native-shadow-stack';
 import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import { useBiometryType, BiometryTypes } from '../../../hooks';
+import { BiometryTypes, useBiometryType } from '../../../hooks';
 import { colors, padding } from '../../../styles';
 import { haptics } from '../../../utils';
 import { Centered, InnerBorder } from '../../layout';
@@ -19,7 +19,7 @@ import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
 
 const { divide, multiply, proc, timing, Value } = Animated;
 
-const { ACTIVE, BEGAN, END } = State;
+const { ACTIVE, BEGAN, END, FAILED } = State;
 
 const ButtonBorderRadius = 30;
 const ButtonHeight = 59;
@@ -124,9 +124,9 @@ class HoldToAuthorizeButton extends PureComponent {
   };
 
   onLongPressChange = ({ nativeEvent: { state } }) => {
-    const { disabled, enableLongPress } = this.props;
+    const { disabled } = this.props;
 
-    if (state === ACTIVE && !disabled && enableLongPress) {
+    if (state === ACTIVE && !disabled) {
       haptics.notificationSuccess();
       Keyboard.dismiss();
 
@@ -161,7 +161,7 @@ class HoldToAuthorizeButton extends PureComponent {
             toValue: 100,
           }).start();
         }
-      } else if (state === END) {
+      } else if (state === END || state === FAILED) {
         animate(this.buttonScale, { toValue: 1 }).start();
         if (enableLongPress) {
           animate(this.longPressProgress, {

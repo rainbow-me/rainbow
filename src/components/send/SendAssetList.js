@@ -1,5 +1,16 @@
 import React, { Fragment } from 'react';
+import { LayoutAnimation } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import { View } from 'react-primitives';
 import { onlyUpdateForKeys } from 'recompact';
+import {
+  DataProvider,
+  LayoutProvider,
+  RecyclerListView,
+} from 'recyclerlistview';
+import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
+import { sheetVerticalOffset } from '../../navigation/transitions/effects';
+import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
 import {
@@ -7,19 +18,8 @@ import {
   SendCoinRow,
   SendSavingsCoinRow,
 } from '../coin-row';
-import { View } from 'react-primitives';
-import {
-  DataProvider,
-  LayoutProvider,
-  RecyclerListView,
-} from 'recyclerlistview';
-import { LayoutAnimation } from 'react-native';
 import SavingsListHeader from '../savings/SavingsListHeader';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
-import { sheetVerticalOffset } from '../../navigation/transitions/effects';
-import FastImage from 'react-native-fast-image';
-import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import { colors } from '../../styles';
 
 const dividerHeight = 18;
 const familyHeaderHeight = 62;
@@ -248,7 +248,6 @@ class SendAssetList extends React.Component {
   savingsRenderItem = item => (
     <View marginTop={10}>
       <SavingsListHeader
-        childrenAmount={item.data.length}
         isOpen={this.state.openSavings}
         onPress={() => {
           this.changeOpenSavings();

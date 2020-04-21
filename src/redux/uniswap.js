@@ -25,8 +25,8 @@ import {
   getAllExchanges,
   getLiquidityInfo,
   getReserve,
-  getUniswapPairs,
   getTestnetUniswapPairs,
+  getUniswapPairs,
 } from '../handlers/uniswap';
 import networkTypes from '../helpers/networkTypes';
 import {

@@ -4,8 +4,8 @@ import { StatusBar } from 'react-native';
 import styled from 'styled-components';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
-import { Centered, Column } from '../layout';
 import TouchableBackdrop from '../TouchableBackdrop';
+import { Centered, Column } from '../layout';
 
 const ModalElement = styled(Column)`
   background-color: ${colors.white};

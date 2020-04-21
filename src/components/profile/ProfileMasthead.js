@@ -1,21 +1,17 @@
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useNavigation } from 'react-navigation-hooks';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
-import {
-  addCashButtonAvailable,
-  isAvatarPickerAvailable,
-} from '../../config/experimental';
-import { useAccountData, useClipboard } from '../../hooks';
-import { colors, borders } from '../../styles';
+import { isAvatarPickerAvailable } from '../../config/experimental';
+import { useAccountSettings, useClipboard } from '../../hooks';
+import { borders, colors } from '../../styles';
 import { abbreviations } from '../../utils';
-import CopyTooltip from '../copy-tooltip';
 import Divider from '../Divider';
+import CopyTooltip from '../copy-tooltip';
 import { FloatingEmojis } from '../floating-emojis';
 import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress } from '../text';
@@ -38,10 +34,11 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
 
 const ProfileMasthead = ({
   accountAddress,
+  addCashAvailable,
   showBottomDivider,
   onPressAvatar,
 }) => {
-  const { accountENS } = useAccountData();
+  const { accountENS } = useAccountSettings();
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
 
@@ -55,7 +52,7 @@ const ProfileMasthead = ({
   return (
     <Column
       align="center"
-      height={Platform.OS === 'ios' && addCashButtonAvailable ? 260 : 185}
+      height={addCashAvailable ? 260 : 185}
       marginBottom={24}
     >
       {isAvatarPickerAvailable ? (
@@ -97,9 +94,7 @@ const ProfileMasthead = ({
           text="Receive"
         />
       </RowWithMargins>
-      {Platform.OS === 'ios' && addCashButtonAvailable && (
-        <AddCashButton onPress={onAddCash} />
-      )}
+      {addCashAvailable && <AddCashButton onPress={onAddCash} />}
       {showBottomDivider && (
         <Divider
           color={colors.rowDividerLight}
@@ -112,6 +107,7 @@ const ProfileMasthead = ({
 
 ProfileMasthead.propTypes = {
   accountAddress: PropTypes.string,
+  addCashAvailable: PropTypes.bool,
   showBottomDivider: PropTypes.bool,
 };
 

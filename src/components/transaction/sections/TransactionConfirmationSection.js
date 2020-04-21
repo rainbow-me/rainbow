@@ -1,8 +1,8 @@
+import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
-import lang from 'i18n-js';
-import styled from 'styled-components';
 import { withProps } from 'recompact';
+import styled from 'styled-components';
 import { colors, fonts, padding } from '../../../styles';
 import { CoinIcon } from '../../coin-icon';
 import { Nbsp } from '../../html-entities';

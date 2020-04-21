@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { toLower, get } from 'lodash';
+import { get, toLower } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import networkInfo from '../helpers/networkInfo';
 import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
@@ -63,7 +63,10 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
   const fetchAssetsBalancesAndPrices = async () => {
     const { network } = getState().settings;
     const assets = testnetAssets[network];
-
+    if (!assets || !assets.length) {
+      testnetExplorerHandle = setTimeout(fetchAssetsBalancesAndPrices, 5000);
+      return;
+    }
     const prices = await fetchAssetPrices(
       assets.map(({ asset: { coingecko_id } }) => coingecko_id),
       formattedNativeCurrency

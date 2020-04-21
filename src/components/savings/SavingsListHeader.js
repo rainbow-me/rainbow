@@ -4,9 +4,10 @@ import FastImage from 'react-native-fast-image';
 import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
-import { colors } from '../../styles';
-import { ButtonPressAnimation, interpolate } from '../animations';
+import { convertAmountToNativeDisplay } from '../../helpers/utilities';
+import { useAccountSettings } from '../../hooks';
 import Highlight from '../Highlight';
+import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
 
@@ -21,7 +22,10 @@ const SavingsListHeader = ({
   isOpen,
   onPress,
   savingsSumValue,
+  showSumValue,
 }) => {
+  const { nativeCurrency } = useAccountSettings();
+
   const animation = useTimingTransition(isOpen, {
     duration: TokenFamilyHeaderAnimationDuration,
     easing: Easing.bezier(0.25, 0.1, 0.25, 1),
@@ -35,7 +39,6 @@ const SavingsListHeader = ({
     >
       <Row
         align="center"
-        backgroundColor={colors.white}
         height={TokenFamilyHeaderHeight}
         justify="space-between"
         paddingHorizontal={19}
@@ -54,7 +57,7 @@ const SavingsListHeader = ({
           </TruncatedText>
         </RowWithMargins>
         <RowWithMargins align="center" margin={13}>
-          {savingsSumValue && (
+          {showSumValue && (
             <Animated.View
               style={{
                 opacity: interpolate(animation, {
@@ -69,7 +72,7 @@ const SavingsListHeader = ({
                 size="large"
                 style={{ marginBottom: 1 }}
               >
-                ${Number(savingsSumValue).toFixed(2)}
+                {convertAmountToNativeDisplay(savingsSumValue, nativeCurrency)}
               </Text>
             </Animated.View>
           )}
@@ -108,11 +111,15 @@ SavingsListHeader.propTypes = {
   highlight: PropTypes.bool,
   isOpen: PropTypes.bool,
   onPress: PropTypes.func,
-  savingsSumValue: PropTypes.number,
+  savingsSumValue: PropTypes.string,
+  showSumValue: PropTypes.bool,
 };
 
 SavingsListHeader.defaultProps = {
   emoji: 'sunflower',
+  highlight: false,
+  savingsSumValue: '0',
+  showSumValue: false,
 };
 
 export default SavingsListHeader;

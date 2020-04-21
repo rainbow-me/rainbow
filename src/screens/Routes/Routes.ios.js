@@ -2,37 +2,19 @@ import analytics from '@segment/analytics-react-native';
 import { get, omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import { createAppContainer, NavigationActions } from 'react-navigation';
-import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
 // eslint-disable-next-line import/no-unresolved
 import { enableScreens } from 'react-native-screens';
 import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
 import createBottomSheetStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
+import { createAppContainer, NavigationActions } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import {
   ExchangeModalNavigator,
   Navigation,
   SavingModalNavigator,
 } from '../../navigation';
-import { updateTransitionProps } from '../../redux/navigation';
-import store from '../../redux/store';
-import { deviceUtils, sentryUtils } from '../../utils';
-import AddCashSheet from '../AddCashSheet';
-import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
-import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
-import ProfileScreenWithData from '../ProfileScreenWithData';
-import QRScannerScreenWithData from '../QRScannerScreenWithData';
-import ReceiveModal from '../ReceiveModal';
-import WithdrawModal from '../WithdrawModal';
-import SavingsSheet from '../SavingsSheet';
-import ExampleScreen from '../ExampleScreen';
-import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
-import SendSheetWithData from '../SendSheetWithData';
-import SettingsModal from '../SettingsModal';
-import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
-import WalletScreen from '../WalletScreen';
-import AvatarBuilder from '../AvatarBuilder';
 import {
   backgroundPreset,
   emojiPreset,
@@ -42,6 +24,24 @@ import {
   savingsPreset,
   sheetPreset,
 } from '../../navigation/transitions/effects';
+import { updateTransitionProps } from '../../redux/navigation';
+import store from '../../redux/store';
+import { deviceUtils, sentryUtils } from '../../utils';
+import AddCashSheet from '../AddCashSheet';
+import AvatarBuilder from '../AvatarBuilder';
+import ExampleScreen from '../ExampleScreen';
+import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
+import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
+import ProfileScreenWithData from '../ProfileScreenWithData';
+import QRScannerScreenWithData from '../QRScannerScreenWithData';
+import ReceiveModal from '../ReceiveModal';
+import SavingsSheet from '../SavingsSheet';
+import SendSheetWithData from '../SendSheetWithData';
+import SettingsModal from '../SettingsModal';
+import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
+import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
+import WalletScreen from '../WalletScreen';
+import WithdrawModal from '../WithdrawModal';
 
 enableScreens();
 
@@ -94,6 +94,25 @@ const sendFlowRoutes = {
     screen: function SendSheetWrapper(...props) {
       return <SendSheetWithData {...props} setAppearListener={setListener} />;
     },
+  },
+};
+
+const addCashFlowRoutes = {
+  AddCashSheet: {
+    navigationOptions: {
+      ...sheetPreset,
+      onTransitionStart: props => {
+        expandedPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
+    },
+    screen: function AddCashSheetWrapper(...props) {
+      return <AddCashSheet {...props} setAppearListener={setListener} />;
+    },
+  },
+  OverlayExpandedSupportedCountries: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ExpandedAssetScreenWithData,
   },
 };
 
@@ -255,9 +274,17 @@ const savingsModalsRoutes = {
 const nativeStackWrapperRoutes = {
   NativeStack: createNativeStackNavigator(
     {
-      AddCashSheet: function AddCashSheetWrapper(...props) {
-        return <AddCashSheet {...props} />;
-      },
+      AddCashSheetNavigator: isNativeStackAvailable
+        ? createStackNavigator(addCashFlowRoutes, {
+            defaultNavigationOptions: {
+              onTransitionEnd,
+              onTransitionStart,
+            },
+            headerMode: 'none',
+            initialRouteName: 'AddCashSheet',
+            mode: 'modal',
+          })
+        : () => null,
       ImportSeedPhraseSheet: function ImportSeedPhraseSheetWrapper(...props) {
         return (
           <ImportSeedPhraseSheetWithData
@@ -327,6 +354,10 @@ const routesWithNativeStack = {
     navigationOptions: overlayExpandedPreset,
     screen: ExpandedAssetScreenWithData,
   },
+  OverlayExpandedSupportedCountries: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ExpandedAssetScreenWithData,
+  },
   SendSheet: {
     navigationOptions: {
       ...omit(sheetPreset, 'gestureResponseDistance'),
@@ -388,29 +419,39 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
         prevRouteName !== 'QRScannerScreen' &&
         routeName === 'QRScannerScreen'
       ) {
-        StatusBar.setBarStyle('light-content');
+        StatusBar.setBarStyle('light-content', true);
       }
 
       if (
         prevRouteName === 'QRScannerScreen' &&
         routeName !== 'QRScannerScreen'
       ) {
-        StatusBar.setBarStyle('dark-content');
+        StatusBar.setBarStyle('dark-content', true);
       }
 
       if (
         prevRouteName === 'ImportSeedPhraseSheet' &&
         (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
       ) {
-        StatusBar.setBarStyle('dark-content');
+        StatusBar.setBarStyle('dark-content', true);
       }
 
       if (prevRouteName === 'WalletScreen' && routeName === 'SendSheet') {
-        StatusBar.setBarStyle('light-content');
+        StatusBar.setBarStyle('light-content', true);
       }
 
-      if (prevRouteName === 'SendSheet' && routeName === 'WalletScreen') {
-        StatusBar.setBarStyle('dark-content');
+      if (
+        prevRouteName === 'SendSheet' &&
+        (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
+      ) {
+        StatusBar.setBarStyle('dark-content', true);
+      }
+
+      if (
+        prevRouteName === 'AddCashSheet' &&
+        (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
+      ) {
+        StatusBar.setBarStyle('dark-content', true);
       }
 
       if (routeName === 'SettingsModal') {

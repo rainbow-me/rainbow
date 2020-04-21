@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { TouchableWithoutFeedback, Animated } from 'react-native';
+import { Animated, TouchableWithoutFeedback } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import stylePropType from 'react-style-proptype';
 

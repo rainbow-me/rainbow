@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { withAccountSettings } from '../../hoc';
+import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { CoinIcon } from '../coin-icon';
 import { RadioList, RadioListItem } from '../radio-list';
-import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { Emoji } from '../text';
 
 const currencyListItems = Object.values(supportedNativeCurrencies).map(

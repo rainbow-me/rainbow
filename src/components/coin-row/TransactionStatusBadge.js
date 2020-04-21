@@ -5,9 +5,9 @@ import { onlyUpdateForPropTypes } from 'recompact';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import { colors, position } from '../../styles';
+import Spinner from '../Spinner';
 import Icon from '../icons/Icon';
 import { Row } from '../layout';
-import Spinner from '../Spinner';
 import { Text } from '../text';
 
 const StatusProps = {

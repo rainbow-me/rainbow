@@ -3,9 +3,9 @@ import React from 'react';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { colors, fonts } from '../../styles';
-import { Icon } from '../icons';
-import { ButtonPressAnimation } from '../animations';
 import { deviceUtils } from '../../utils';
+import { ButtonPressAnimation } from '../animations';
+import { Icon } from '../icons';
 
 const buttonWidth = (deviceUtils.dimensions.width - 45) / 2;
 

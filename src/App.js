@@ -1,9 +1,10 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
 import { init as initSentry, setRelease } from '@sentry/react-native';
 import { get, last } from 'lodash';
-import PropTypes from 'prop-types';
 import nanoid from 'nanoid/non-secure';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
   AppRegistry,
@@ -34,19 +35,22 @@ import {
   showNetworkRequests,
   showNetworkResponses,
 } from './config/debug';
+
 import monitorNetwork from './debugging/network';
 import {
+  withAccountSettings,
   withDeepLink,
   withWalletConnectOnSessionRequest,
-  withAccountSettings,
 } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { Navigation } from './navigation';
-import store from './redux/store';
 import { requestsForTopic } from './redux/requests';
+import store from './redux/store';
 import Routes from './screens/Routes';
 import { parseQueryParams } from './utils';
+
+const WALLETCONNECT_SYNC_DELAY = 500;
 
 if (__DEV__) {
   console.disableYellowBox = reactNativeDisableYellowBox;
@@ -82,29 +86,37 @@ class App extends Component {
     await this.handleInitializeAnalytics();
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
-    PushNotificationIOS.addEventListener(
-      'notification',
+
+    this.foregroundNotificationListener = messaging().onMessage(
       this.onRemoteNotification
+    );
+
+    this.backgroundNotificationListener = messaging().onNotificationOpenedApp(
+      remoteMessage => {
+        setTimeout(() => {
+          const topic = get(remoteMessage, 'data.topic');
+          this.onPushNotificationOpened(topic, true);
+        }, WALLETCONNECT_SYNC_DELAY);
+      }
     );
   }
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
     Linking.removeEventListener('url', this.handleOpenLinkingURL);
-    PushNotificationIOS.removeEventListener(
-      'notification',
-      this.onRemoteNotification
-    );
     this.onTokenRefreshListener();
+    this.foregroundNotificationListener();
+    this.backgroundNotificationListener();
   }
 
   onRemoteNotification = notification => {
     const { appState } = this.state;
-    const topic = get(notification, '_data.topic');
-    notification.finish(PushNotificationIOS.FetchResult.NoData);
-    const shouldOpenAutomatically =
-      appState === 'active' || appState === 'inactive';
-    this.onPushNotificationOpened(topic, shouldOpenAutomatically);
+    const topic = get(notification, 'data.topic');
+    setTimeout(() => {
+      const shouldOpenAutomatically =
+        appState === 'active' || appState === 'inactive';
+      this.onPushNotificationOpened(topic, shouldOpenAutomatically);
+    }, WALLETCONNECT_SYNC_DELAY);
   };
 
   handleOpenLinkingURL = ({ url }) => {

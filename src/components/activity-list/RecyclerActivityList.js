@@ -1,15 +1,15 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Platform } from 'react-native';
 import {
-  RecyclerListView,
   DataProvider,
   LayoutProvider,
+  RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import { addCashButtonAvailable } from '../../config/experimental';
+import transactionStatusTypes from '../../helpers/transactionStatusTypes';
+import transactionTypes from '../../helpers/transactionTypes';
 import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
 import {
   deviceUtils,
@@ -22,10 +22,8 @@ import {
   TransactionCoinRow,
 } from '../coin-row';
 import ListFooter from '../list/ListFooter';
-import ActivityListHeader from './ActivityListHeader';
-import transactionTypes from '../../helpers/transactionTypes';
-import transactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { ProfileMasthead } from '../profile';
+import ActivityListHeader from './ActivityListHeader';
 import LoadingState from './LoadingState';
 
 const ViewTypes = {
@@ -65,6 +63,7 @@ const hasRowChanged = (r1, r2) => {
 
 export default class RecyclerActivityList extends PureComponent {
   static propTypes = {
+    addCashAvailable: PropTypes.bool,
     header: PropTypes.node,
     isLoading: PropTypes.bool,
     sections: PropTypes.arrayOf(
@@ -75,8 +74,8 @@ export default class RecyclerActivityList extends PureComponent {
     ),
   };
 
-  constructor(args) {
-    super(args);
+  constructor(props) {
+    super(props);
 
     this.state = {
       dataProvider: new DataProvider(hasRowChanged, this.getStableId),
@@ -118,7 +117,7 @@ export default class RecyclerActivityList extends PureComponent {
         } else {
           dim.height = this.props.isLoading
             ? deviceUtils.dimensions.height
-            : Platform.OS === 'ios' && addCashButtonAvailable
+            : this.props.addCashAvailable
             ? 278
             : 203;
         }
@@ -181,6 +180,7 @@ export default class RecyclerActivityList extends PureComponent {
           accountAddress={this.props.accountAddress}
           accountColor={this.props.accountColor}
           accountName={this.props.accountName}
+          addCashAvailable={this.props.addCashAvailable}
           navigation={this.props.navigation}
           showBottomDivider={!this.props.isEmpty}
           recyclerListRef={this.rlv}

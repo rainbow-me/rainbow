@@ -1,6 +1,8 @@
-import { compact, get, groupBy, sortBy } from 'lodash';
+import { compact, forEach, get, groupBy, includes, sortBy } from 'lodash';
+import supportedNativeCurrencies from '../references/native-currencies.json';
+import { add } from './utilities';
 
-const amountOfShowedCoins = 5;
+export const amountOfShowedCoins = 5;
 
 export const buildAssetHeaderUniqueIdentifier = ({
   title,
@@ -16,39 +18,117 @@ export const buildAssetUniqueIdentifier = item => {
   return compact([balance, nativePrice, uniqueId]).join('_');
 };
 
-export const buildCoinsList = assets => {
-  const newAssets = [];
+export const buildCoinsList = (
+  assets,
+  nativeCurrency,
+  isCoinListEdited,
+  pinnedCoins,
+  hiddenCoins
+) => {
+  let standardAssets = [],
+    pinnedAssets = [],
+    hiddenAssets = [];
   const smallBalances = {
     assets: [],
     smallBalancesContainer: true,
   };
-  for (let i = 0; i < assets.length; i++) {
-    if (
-      (assets[i].native && assets[i].native.balance.amount > 1) ||
-      assets[i].address === 'eth' ||
-      assets.length < 4
+  const assetsLength = assets.length;
+
+  let totalBalancesValue = 0;
+  let smallBalancesValue = 0;
+
+  const isShortList = assetsLength <= amountOfShowedCoins;
+
+  forEach(assets, asset => {
+    if (hiddenCoins.includes(asset.uniqueId)) {
+      hiddenAssets.push({
+        isCoin: true,
+        isHidden: true,
+        isSmall: true,
+        ...asset,
+      });
+    } else if (pinnedCoins.includes(asset.uniqueId)) {
+      totalBalancesValue = add(
+        totalBalancesValue,
+        get(asset, 'native.balance.amount', 0)
+      );
+      pinnedAssets.push({
+        isCoin: true,
+        isPinned: true,
+        isSmall: false,
+        ...asset,
+      });
+    } else if (
+      (asset.native &&
+        asset.native.balance.amount >
+          supportedNativeCurrencies[nativeCurrency].smallThreshold) ||
+      asset.address === 'eth' ||
+      isShortList
     ) {
-      newAssets.push(assets[i]);
+      totalBalancesValue = add(
+        totalBalancesValue,
+        get(asset, 'native.balance.amount', 0)
+      );
+      standardAssets.push({ isCoin: true, isSmall: false, ...asset });
     } else {
-      smallBalances.assets.push(assets[i]);
+      smallBalancesValue = add(
+        smallBalancesValue,
+        get(asset, 'native.balance.amount', 0)
+      );
+      smallBalances.assets.push({ isCoin: true, isSmall: true, ...asset });
+    }
+  });
+
+  totalBalancesValue = add(totalBalancesValue, smallBalancesValue);
+
+  if (isCoinListEdited) {
+    if (assetsLength <= amountOfShowedCoins) {
+      standardAssets = standardAssets.concat(hiddenAssets);
+    } else {
+      smallBalances.assets = smallBalances.assets.concat(hiddenAssets);
     }
   }
 
-  if (newAssets.length > amountOfShowedCoins) {
-    smallBalances.assets = newAssets
+  const allAssets = pinnedAssets.concat(standardAssets);
+  const allAssetsLength = allAssets.length;
+  const pinnedAssetsLength = pinnedAssets.length;
+  if (
+    amountOfShowedCoins > pinnedAssetsLength &&
+    allAssetsLength > amountOfShowedCoins
+  ) {
+    smallBalances.assets = allAssets
       .splice(amountOfShowedCoins)
+      .concat(smallBalances.assets);
+  } else if (
+    amountOfShowedCoins <= pinnedAssetsLength &&
+    allAssetsLength >= pinnedAssetsLength
+  ) {
+    smallBalances.assets = allAssets
+      .splice(pinnedAssetsLength)
       .concat(smallBalances.assets);
   }
 
-  if (smallBalances.assets.length > 0) {
-    newAssets.push(smallBalances);
-    return newAssets;
+  if (
+    smallBalances.assets.length > 0 ||
+    (hiddenAssets.length > 0 && assetsLength > amountOfShowedCoins) ||
+    (pinnedAssetsLength === allAssetsLength &&
+      allAssetsLength > amountOfShowedCoins)
+  ) {
+    allAssets.push({
+      assetsAmount: smallBalances.assets.length,
+      coinDivider: true,
+      value: smallBalancesValue,
+    });
+    allAssets.push(smallBalances);
   }
-  return newAssets;
+
+  return { assets: allAssets, totalBalancesValue };
 };
 
-export const buildUniqueTokenList = uniqueTokens => {
+export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
   let rows = [];
+  const showcaseTokens = [];
+  const bundledShowcaseTokens = [];
 
   const grouped = groupBy(uniqueTokens, token => token.asset_contract.name);
   const families = Object.keys(grouped);
@@ -56,7 +136,15 @@ export const buildUniqueTokenList = uniqueTokens => {
   for (let i = 0; i < families.length; i++) {
     const tokensRow = [];
     for (let j = 0; j < grouped[families[i]].length; j += 2) {
+      if (includes(selectedShowcaseTokens, grouped[families[i]][j].uniqueId)) {
+        showcaseTokens.push(grouped[families[i]][j]);
+      }
       if (grouped[families[i]][j + 1]) {
+        if (
+          includes(selectedShowcaseTokens, grouped[families[i]][j + 1].uniqueId)
+        ) {
+          showcaseTokens.push(grouped[families[i]][j + 1]);
+        }
         tokensRow.push([grouped[families[i]][j], grouped[families[i]][j + 1]]);
       } else {
         tokensRow.push([grouped[families[i]][j]]);
@@ -74,6 +162,35 @@ export const buildUniqueTokenList = uniqueTokens => {
   }
 
   rows = sortBy(rows, ['familyName']);
+
+  showcaseTokens.sort(function(a, b) {
+    return (
+      selectedShowcaseTokens.indexOf(a.uniqueId) -
+      selectedShowcaseTokens.indexOf(b.uniqueId)
+    );
+  });
+
+  for (let i = 0; i < showcaseTokens.length; i += 2) {
+    if (showcaseTokens[i + 1]) {
+      bundledShowcaseTokens.push([showcaseTokens[i], showcaseTokens[i + 1]]);
+    } else {
+      bundledShowcaseTokens.push([showcaseTokens[i]]);
+    }
+  }
+  if (showcaseTokens.length > 0) {
+    rows = [
+      {
+        childrenAmount: showcaseTokens.length,
+        familyName: 'Showcase',
+        stableId: 'showcase_stable_id',
+        tokens: bundledShowcaseTokens,
+        uniqueId: `sc_${showcaseTokens
+          .map(({ uniqueId }) => uniqueId)
+          .join('__')}`,
+      },
+    ].concat(rows);
+  }
+
   rows.forEach((row, i) => {
     row.familyId = i;
     row.tokens[0][0].rowNumber = i;

@@ -11,8 +11,8 @@ import {
   mapValues,
   property,
   remove,
-  toLower,
   uniqBy,
+  values,
 } from 'lodash';
 import { uniswapClient } from '../apollo/client';
 import {
@@ -23,16 +23,12 @@ import {
   getAssetPricesFromUniswap,
   getAssets,
   getLocalTransactions,
-  getPurchaseTransactions,
   removeAssetPricesFromUniswap,
   removeAssets,
   removeLocalTransactions,
-  removePurchaseTransactions,
-  removeSavings,
   saveAssetPricesFromUniswap,
   saveAssets,
   saveLocalTransactions,
-  savePurchaseTransactions,
 } from '../handlers/localstorage/accountLocal';
 import { apiGetTokenOverrides } from '../handlers/tokenOverrides';
 import { getTransactionReceipt } from '../handlers/web3';
@@ -47,6 +43,7 @@ import {
   shitcoinBlacklist,
 } from '../references';
 import { ethereumUtils, isLowerCaseMatch } from '../utils';
+import { addCashUpdatePurchases } from './addCash';
 import { uniswapUpdateLiquidityTokens } from './uniswap';
 
 let pendingTransactionsHandle = null;
@@ -56,8 +53,6 @@ let pendingTransactionsHandle = null;
 const DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP =
   'data/DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP';
 const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
-const DATA_UPDATE_PURCHASE_TRANSACTIONS =
-  'data/DATA_UPDATE_PURCHASE_TRANSACTIONS';
 const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
 const DATA_UPDATE_TOKEN_OVERRIDES = 'data/DATA_UPDATE_TOKEN_OVERRIDES';
 const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
@@ -113,14 +108,6 @@ export const dataLoadState = () => async (dispatch, getState) => {
   } catch (error) {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
   }
-  try {
-    const purchases = await getPurchaseTransactions(accountAddress, network);
-    dispatch({
-      payload: purchases,
-      type: DATA_UPDATE_PURCHASE_TRANSACTIONS,
-    });
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
 };
 
 export const dataTokenOverridesInit = () => async dispatch => {
@@ -138,10 +125,8 @@ export const dataClearState = () => (dispatch, getState) => {
     uniswapPricesSubscription.unsubscribe &&
     uniswapPricesSubscription.unsubscribe();
   removeAssets(accountAddress, network);
-  removeSavings(accountAddress, network);
   removeAssetPricesFromUniswap(accountAddress, network);
   removeLocalTransactions(accountAddress, network);
-  removePurchaseTransactions(accountAddress, network);
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
@@ -175,11 +160,8 @@ export const transactionsReceived = (message, appended = false) => (
   const transactionData = get(message, 'payload.transactions', []);
   if (!transactionData.length) return;
   const { accountAddress, nativeCurrency, network } = getState().settings;
-  const {
-    purchaseTransactions,
-    transactions,
-    tokenOverrides,
-  } = getState().data;
+  const { purchaseTransactions } = getState().addCash;
+  const { transactions, tokenOverrides } = getState().data;
   if (!transactionData.length) return;
   const dedupedResults = parseTransactions(
     transactionData,
@@ -195,6 +177,7 @@ export const transactionsReceived = (message, appended = false) => (
     payload: dedupedResults,
     type: DATA_UPDATE_TRANSACTIONS,
   });
+  updatePurchases(dedupedResults);
   saveLocalTransactions(dedupedResults, accountAddress, network);
 };
 
@@ -227,11 +210,15 @@ export const addressAssetsReceived = (
   const { tokenOverrides } = getState().data;
   const { accountAddress, network } = getState().settings;
   const { uniqueTokens } = getState().uniqueTokens;
-  const assets = get(message, 'payload.assets', []);
-  const liquidityTokens = remove(assets, asset => {
-    const symbol = get(asset, 'asset.symbol', '');
-    return symbol === 'UNI' || symbol === 'uni-v1';
-  });
+  const payload = get(message, 'payload.assets', {});
+  const assets = filter(
+    values(payload),
+    asset => asset.asset.type !== 'compound'
+  );
+  const liquidityTokens = remove(
+    assets,
+    asset => asset.asset.type === 'uniswap'
+  );
   dispatch(uniswapUpdateLiquidityTokens(liquidityTokens, append || change));
   let parsedAssets = parseAccountAssets(assets, uniqueTokens, tokenOverrides);
   if (append || change) {
@@ -265,11 +252,11 @@ export const addressAssetsReceived = (
 
 const subscribeToMissingPrices = addresses => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  const { assets, uniswapPricesSubscription } = getState().data;
-  if (uniswapPricesSubscription) {
-    uniswapPricesSubscription.refetch({ addresses });
+  const { assets, uniswapPricesQuery } = getState().data;
+  if (uniswapPricesQuery) {
+    uniswapPricesQuery.refetch({ addresses });
   } else {
-    const newSubscription = uniswapClient.watchQuery({
+    const newQuery = uniswapClient.watchQuery({
       fetchPolicy: 'network-only',
       pollInterval: 15000, // 15 seconds
       query: UNISWAP_PRICES_QUERY,
@@ -278,7 +265,7 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
       },
     });
 
-    newSubscription.subscribe({
+    const newSubscription = newQuery.subscribe({
       next: async ({ data }) => {
         if (data && data.exchanges) {
           const nativePriceOfEth = ethereumUtils.getEthPriceUnit(assets);
@@ -333,7 +320,10 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
       },
     });
     dispatch({
-      payload: newSubscription,
+      payload: {
+        uniswapPricesQuery: newQuery,
+        uniswapPricesSubscription: newSubscription,
+      },
       type: DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION,
     });
   }
@@ -356,22 +346,6 @@ export const dataUpdateTokenOverrides = tokenOverrides => dispatch =>
     payload: tokenOverrides,
     type: DATA_UPDATE_TOKEN_OVERRIDES,
   });
-
-export const dataAddNewPurchaseTransaction = txDetails => (
-  dispatch,
-  getState
-) => {
-  const purchaseHash = txDetails.hash;
-  const { purchaseTransactions } = getState().data;
-  const { accountAddress, network } = getState().settings;
-  const updatedPurchases = [toLower(purchaseHash), ...purchaseTransactions];
-  dispatch({
-    payload: updatedPurchases,
-    type: DATA_UPDATE_PURCHASE_TRANSACTIONS,
-  });
-  savePurchaseTransactions(updatedPurchases, accountAddress, network);
-  dispatch(dataAddNewTransaction(txDetails));
-};
 
 export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
   dispatch,
@@ -449,6 +423,7 @@ export const dataWatchPendingTransactions = () => async (
   );
 
   if (txStatusesDidChange) {
+    updatePurchases(updatedTransactions);
     const { accountAddress, network } = getState().settings;
     dispatch({
       payload: updatedTransactions,
@@ -463,6 +438,16 @@ export const dataWatchPendingTransactions = () => async (
   }
 
   return false;
+};
+
+const updatePurchases = updatedTransactions => dispatch => {
+  const confirmedPurchases = filter(updatedTransactions, txn => {
+    return (
+      txn.type === TransactionTypes.purchase &&
+      txn.status !== TransactionStatusTypes.purchasing
+    );
+  });
+  dispatch(addCashUpdatePurchases(confirmedPurchases));
 };
 
 const watchPendingTransactions = () => async dispatch => {
@@ -483,16 +468,20 @@ const INITIAL_STATE = {
   assets: [],
   loadingAssets: false,
   loadingTransactions: false,
-  purchaseTransactions: [],
   tokenOverrides: loweredTokenOverridesFallback,
   transactions: [],
+  uniswapPricesQuery: null,
   uniswapPricesSubscription: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION:
-      return { ...state, uniswapPricesSubscription: action.payload };
+      return {
+        ...state,
+        uniswapPricesQuery: action.payload.uniswapPricesQuery,
+        uniswapPricesSubscription: action.payload.uniswapPricesSubscription,
+      };
     case DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP:
       return { ...state, assetPricesFromUniswap: action.payload };
     case DATA_UPDATE_ASSETS:
@@ -537,11 +526,6 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         loadingAssets: false,
-      };
-    case DATA_UPDATE_PURCHASE_TRANSACTIONS:
-      return {
-        ...state,
-        purchaseTransactions: action.payload,
       };
     case DATA_ADD_NEW_TRANSACTION_SUCCESS:
       return {

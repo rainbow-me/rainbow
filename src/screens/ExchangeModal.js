@@ -7,6 +7,7 @@ import React, {
   Fragment,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -23,13 +24,11 @@ import {
   ExchangeOutputField,
   SlippageWarning,
 } from '../components/exchange';
+import SwapInfo from '../components/exchange/SwapInfo';
 import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
-import {
-  calculateTradeDetails,
-  estimateSwapGasLimit,
-} from '../handlers/uniswap';
+import { calculateTradeDetails } from '../handlers/uniswap';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
 import {
   convertAmountFromNativeValue,
@@ -56,11 +55,11 @@ import {
 } from '../hooks';
 import { loadWallet } from '../model/wallet';
 import { executeRap } from '../raps/common';
+import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import { backgroundTask, ethereumUtils, logger } from '../utils';
 import { CurrencySelectionTypes } from './CurrencySelectModal';
-import SwapInfo from '../components/exchange/SwapInfo';
 
 export const exchangeModalBorderRadius = 30;
 
@@ -75,9 +74,9 @@ const isSameAsset = (a, b) => {
   return assetA === assetB;
 };
 
-const getNativeTag = field => get(field, '_inputRef._nativeTag');
+const getNativeTag = field => get(field, '_nativeTag');
 
-const createMissingWithdrawalAsset = (asset, underlyingPrice, priceOfEther) => {
+const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
   const { address, decimals, name, symbol } = asset;
   const priceInUSD = multiply(priceOfEther, underlyingPrice);
 
@@ -102,11 +101,10 @@ const createMissingWithdrawalAsset = (asset, underlyingPrice, priceOfEther) => {
 const ExchangeModal = ({
   cTokenBalance,
   defaultInputAsset,
+  estimateRap,
   inputHeaderTitle,
-  isTransitioning,
   navigation,
   createRap,
-  selectedGasPrice,
   showOutputField,
   supplyBalanceUnderlying,
   tabPosition,
@@ -123,6 +121,8 @@ const ExchangeModal = ({
     gasPricesStopPolling,
     gasUpdateDefaultGasLimit,
     gasUpdateTxFee,
+    isSufficientGas,
+    selectedGasPrice,
   } = useGas();
   const {
     inputReserve,
@@ -133,22 +133,42 @@ const ExchangeModal = ({
   } = useUniswapAllowances();
   const { web3ListenerInit, web3ListenerStop } = useBlockPolling();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
-  const { accountAddress, chainId, nativeCurrency } = useAccountSettings();
+  const { chainId, nativeCurrency } = useAccountSettings();
+  const prevSelectedGasPrice = usePrevious(selectedGasPrice);
 
   const defaultInputAddress = get(defaultInputAsset, 'address');
-  let defaultInputItem = ethereumUtils.getAsset(allAssets, defaultInputAddress);
-  if (!defaultInputItem && isWithdrawal) {
+  let defaultInputItemInWallet = ethereumUtils.getAsset(
+    allAssets,
+    defaultInputAddress
+  );
+
+  let defaultChosenInputItem = defaultInputItemInWallet;
+  if (!defaultChosenInputItem) {
     const eth = ethereumUtils.getAsset(allAssets);
     const priceOfEther = get(eth, 'native.price.amount', null);
-    defaultInputItem = createMissingWithdrawalAsset(
+    defaultChosenInputItem = createMissingAsset(
       defaultInputAsset,
       underlyingPrice,
       priceOfEther
     );
-  } else if (!defaultInputItem) {
-    defaultInputItem = ethereumUtils.getAsset(allAssets);
   }
-  const [inputCurrency, setInputCurrency] = useState(defaultInputItem);
+  if (!defaultInputItemInWallet && isWithdrawal) {
+    defaultInputItemInWallet = defaultChosenInputItem;
+  } else if (!defaultInputItemInWallet) {
+    defaultInputItemInWallet = ethereumUtils.getAsset(allAssets);
+  }
+
+  let defaultOutputItem = null;
+
+  if (
+    isDeposit &&
+    (!defaultInputItemInWallet ||
+      defaultInputItemInWallet.address !== defaultInputAddress)
+  ) {
+    defaultOutputItem = defaultChosenInputItem;
+  }
+
+  const [inputCurrency, setInputCurrency] = useState(defaultInputItemInWallet);
   const [isMax, setIsMax] = useState(false);
   const [inputAmount, setInputAmount] = useState(null);
   const [inputAmountDisplay, setInputAmountDisplay] = useState(null);
@@ -160,7 +180,8 @@ const ExchangeModal = ({
   const [nativeAmount, setNativeAmount] = useState(null);
   const [outputAmount, setOutputAmount] = useState(null);
   const [outputAmountDisplay, setOutputAmountDisplay] = useState(null);
-  const [outputCurrency, setOutputCurrency] = useState(null);
+  const [outputCurrency, setOutputCurrency] = useState(defaultOutputItem);
+  const [inputBalance, setInputBalance] = useState(null);
   const [showConfirmButton, setShowConfirmButton] = useState(
     isDeposit || isWithdrawal ? true : false
   );
@@ -176,6 +197,66 @@ const ExchangeModal = ({
   const [lastFocusedInput, handleFocus] = useMagicFocus(inputFieldRef.current);
   const [createRefocusInteraction] = useInteraction();
   const isScreenFocused = useIsFocused();
+  const wasScreenFocused = usePrevious(isScreenFocused);
+
+  const updateGasLimit = useCallback(
+    async ({
+      inputAmount,
+      inputCurrency,
+      inputReserve,
+      outputAmount,
+      outputCurrency,
+      outputReserve,
+    }) => {
+      try {
+        const gasLimit = await estimateRap({
+          inputAmount,
+          inputCurrency,
+          inputReserve,
+          outputAmount,
+          outputCurrency,
+          outputReserve,
+        });
+        dispatch(gasUpdateTxFee(gasLimit));
+      } catch (error) {
+        const defaultGasLimit = isDeposit
+          ? ethUnits.basic_deposit
+          : isWithdrawal
+          ? ethUnits.basic_withdrawal
+          : ethUnits.basic_swap;
+        dispatch(gasUpdateTxFee(defaultGasLimit));
+      }
+    },
+    [dispatch, estimateRap, gasUpdateTxFee, isDeposit, isWithdrawal]
+  );
+
+  useEffect(() => {
+    updateGasLimit({
+      inputAmount,
+      inputCurrency,
+      inputReserve,
+      outputAmount,
+      outputCurrency,
+      outputReserve,
+    });
+  }, [
+    inputAmount,
+    inputCurrency,
+    inputReserve,
+    outputAmount,
+    outputCurrency,
+    outputReserve,
+    updateGasLimit,
+  ]);
+
+  const updateInputBalance = useCallback(async () => {
+    // Update current balance
+    const inputBalance = await ethereumUtils.getBalanceAmount(
+      selectedGasPrice,
+      inputCurrency
+    );
+    setInputBalance(inputBalance);
+  }, [inputCurrency, selectedGasPrice]);
 
   useEffect(() => {
     dispatch(
@@ -194,17 +275,31 @@ const ExchangeModal = ({
       dispatch(gasPricesStopPolling());
       dispatch(web3ListenerStop());
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Recalculate balance when gas price changes
+  useEffect(() => {
+    if (
+      inputCurrency.address === 'eth' &&
+      get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
+        get(selectedGasPrice, 'txFee.value.amount', 0)
+    ) {
+      updateInputBalance();
+    }
   }, [
-    dispatch,
-    gasPricesStartPolling,
-    gasPricesStopPolling,
-    gasUpdateDefaultGasLimit,
-    isDeposit,
-    isWithdrawal,
-    uniswapClearCurrenciesAndReserves,
-    web3ListenerInit,
-    web3ListenerStop,
+    inputCurrency.address,
+    prevSelectedGasPrice,
+    selectedGasPrice,
+    updateInputBalance,
   ]);
+
+  // Update input max is set and the balance changed
+  useEffect(() => {
+    if (isMax) {
+      updateInputAmount(inputBalance, inputBalance, true, true);
+    }
+  }, [inputBalance, isMax, updateInputAmount]);
 
   const inputCurrencyUniqueId = get(inputCurrency, 'uniqueId');
   const outputCurrencyUniqueId = get(outputCurrency, 'uniqueId');
@@ -213,10 +308,26 @@ const ExchangeModal = ({
   const outputReserveTokenAddress = get(outputReserve, 'token.address');
 
   useEffect(() => {
-    if (!isTransitioning) {
+    const refocusListener = navigation.addListener('refocus', () => {
+      handleRefocusLastInput();
+    });
+
+    return () => {
+      refocusListener && refocusListener.remove();
+    };
+  }, [
+    handleRefocusLastInput,
+    inputCurrency,
+    isScreenFocused,
+    navigation,
+    outputCurrency,
+  ]);
+
+  useEffect(() => {
+    if (isScreenFocused && !wasScreenFocused) {
       navigation.emit('refocus');
     }
-  }, [isTransitioning, navigation]);
+  }, [isScreenFocused, navigation, wasScreenFocused]);
 
   useEffect(() => {
     if (
@@ -367,13 +478,7 @@ const ExchangeModal = ({
   ]);
 
   const calculateInputGivenOutputChange = useCallback(
-    (
-      tradeDetails,
-      isOutputEmpty,
-      isOutputZero,
-      inputDecimals,
-      inputBalance
-    ) => {
+    (tradeDetails, isOutputEmpty, isOutputZero, inputDecimals) => {
       if (isOutputEmpty || isOutputZero) {
         updateInputAmount();
         setIsSufficientBalance(true);
@@ -389,19 +494,20 @@ const ExchangeModal = ({
           get(inputCurrency, 'price.value'),
           true
         );
-
         updateInputAmount(
           rawUpdatedInputAmount,
           updatedInputAmountDisplay,
           inputAsExactAmount
         );
 
-        setIsSufficientBalance(
-          greaterThanOrEqualTo(inputBalance, rawUpdatedInputAmount)
+        const isSufficientAmountToTrade = greaterThanOrEqualTo(
+          inputBalance,
+          rawUpdatedInputAmount
         );
+        setIsSufficientBalance(isSufficientAmountToTrade);
       }
     },
-    [inputAsExactAmount, inputCurrency, updateInputAmount]
+    [inputAsExactAmount, inputBalance, inputCurrency, updateInputAmount]
   );
 
   const calculateOutputGivenInputChange = useCallback(
@@ -441,7 +547,7 @@ const ExchangeModal = ({
     [getMarketPrice, inputAsExactAmount, outputCurrency, updateOutputAmount]
   );
 
-  const getMarketDetails = useCallback(async () => {
+  const getMarketDetails = useCallback(() => {
     const isMissingCurrency = !inputCurrency || !outputCurrency;
     const isMissingReserves =
       (inputCurrency && inputCurrency.address !== 'eth' && !inputReserve) ||
@@ -464,14 +570,9 @@ const ExchangeModal = ({
       );
       setSlippage(slippage);
 
-      // update sufficient balance
-      const inputBalance = ethereumUtils.getBalanceAmount(
-        selectedGasPrice,
-        inputCurrency
-      );
-
       const isSufficientBalance =
         !inputAmount || greaterThanOrEqualTo(inputBalance, inputAmount);
+
       setIsSufficientBalance(isSufficientBalance);
 
       const isInputEmpty = !inputAmount;
@@ -485,7 +586,8 @@ const ExchangeModal = ({
         nativeFieldRef &&
         nativeFieldRef.current &&
         nativeFieldRef.current.isFocused() &&
-        isNativeEmpty
+        isNativeEmpty &&
+        !isMax
       ) {
         clearForm();
       }
@@ -511,57 +613,43 @@ const ExchangeModal = ({
           tradeDetails,
           isOutputEmpty,
           isOutputZero,
-          inputDecimals,
-          inputBalance
+          inputDecimals
         );
-      }
-
-      // update gas fee estimate
-      try {
-        const gasLimit = await estimateSwapGasLimit(
-          accountAddress,
-          tradeDetails
-        );
-        dispatch(gasUpdateTxFee(gasLimit));
-      } catch (error) {
-        dispatch(gasUpdateTxFee(ethUnits.basic_swap));
       }
     } catch (error) {
       logger.log('error getting market details', error);
     }
   }, [
-    accountAddress,
     calculateInputGivenOutputChange,
     calculateOutputGivenInputChange,
     clearForm,
-    dispatch,
-    gasUpdateTxFee,
     inputAmount,
     inputAsExactAmount,
+    inputBalance,
     inputCurrency,
     inputReserve,
+    isMax,
     nativeAmount,
     outputAmount,
     outputCurrency,
     outputReserve,
-    selectedGasPrice,
     updateExtraTradeDetails,
     updateTradeDetails,
   ]);
 
-  const assignInputFieldRef = ref => {
+  const assignInputFieldRef = useCallback(ref => {
     inputFieldRef.current = ref;
-  };
+  }, []);
 
-  const assignNativeFieldRef = ref => {
+  const assignNativeFieldRef = useCallback(ref => {
     nativeFieldRef.current = ref;
-  };
+  }, []);
 
-  const assignOutputFieldRef = ref => {
+  const assignOutputFieldRef = useCallback(ref => {
     outputFieldRef.current = ref;
-  };
+  }, []);
 
-  const findNextFocused = () => {
+  const findNextFocused = useCallback(() => {
     const inputRefTag = getNativeTag(inputFieldRef.current);
     const nativeInputRefTag = getNativeTag(nativeFieldRef.current);
     const outputRefTag = getNativeTag(outputFieldRef.current);
@@ -583,30 +671,33 @@ const ExchangeModal = ({
     }
 
     return lastFocusedInput.current;
-  };
+  }, [inputCurrency, lastFocusedInput, outputCurrency]);
 
-  const handlePressMaxBalance = () => {
+  const handlePressMaxBalance = useCallback(async () => {
     let maxBalance;
     if (isWithdrawal) {
       maxBalance = supplyBalanceUnderlying;
     } else {
-      maxBalance = ethereumUtils.getBalanceAmount(
-        selectedGasPrice,
-        inputCurrency
-      );
+      maxBalance = inputBalance;
     }
-
     analytics.track('Selected max balance', {
       category: isDeposit || isWithdrawal ? 'savings' : 'swap',
       defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
       type,
       value: Number(maxBalance.toString()),
     });
-
     return updateInputAmount(maxBalance, maxBalance, true, true);
-  };
+  }, [
+    defaultInputAsset,
+    inputBalance,
+    isDeposit,
+    isWithdrawal,
+    supplyBalanceUnderlying,
+    type,
+    updateInputAmount,
+  ]);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {
       analytics.track(`Submitted ${type}`, {
         category: isDeposit || isWithdrawal ? 'savings' : 'swap',
@@ -623,7 +714,7 @@ const ExchangeModal = ({
           navigation.setParams({ focused: false });
           navigation.navigate('ProfileScreen');
         };
-        const rap = createRap({
+        const rap = await createRap({
           callback,
           inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
           inputAsExactAmount,
@@ -637,6 +728,9 @@ const ExchangeModal = ({
         });
         logger.log('[exchange - handle submit] rap', rap);
         await executeRap(wallet, rap);
+        if (isDeposit || isWithdrawal) {
+          dispatch(savingsLoadState());
+        }
         logger.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
           category: isDeposit || isWithdrawal ? 'savings' : 'swap',
@@ -650,17 +744,34 @@ const ExchangeModal = ({
         navigation.navigate('WalletScreen');
       }
     });
-  };
+  }, [
+    cTokenBalance,
+    createRap,
+    defaultInputAsset,
+    dispatch,
+    inputAmount,
+    inputAsExactAmount,
+    inputCurrency,
+    inputReserve,
+    isDeposit,
+    isMax,
+    isWithdrawal,
+    navigation,
+    outputAmount,
+    outputCurrency,
+    outputReserve,
+    type,
+  ]);
 
-  const handleRefocusLastInput = () => {
+  const handleRefocusLastInput = useCallback(() => {
     createRefocusInteraction(() => {
       if (isScreenFocused) {
         TextInput.State.focusTextInput(findNextFocused());
       }
     });
-  };
+  }, [createRefocusInteraction, findNextFocused, isScreenFocused]);
 
-  const navigateToSwapDetailsModal = () => {
+  const navigateToSwapDetailsModal = useCallback(() => {
     inputFieldRef.current.blur();
     outputFieldRef.current.blur();
     nativeFieldRef.current.blur();
@@ -668,16 +779,15 @@ const ExchangeModal = ({
     navigation.navigate('SwapDetailsScreen', {
       ...extraTradeDetails,
       inputCurrencySymbol: get(inputCurrency, 'symbol'),
-      onRefocusInput: handleRefocusLastInput,
       outputCurrencySymbol: get(outputCurrency, 'symbol'),
       restoreFocusOnSwapModal: () => {
         navigation.setParams({ focused: true });
       },
       type: 'swap_details',
     });
-  };
+  }, [extraTradeDetails, inputCurrency, navigation, outputCurrency]);
 
-  const navigateToSelectInputCurrency = () => {
+  const navigateToSelectInputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
       navigation.setParams({ focused: false });
       navigation.navigate('CurrencySelectScreen', {
@@ -689,9 +799,9 @@ const ExchangeModal = ({
         type: CurrencySelectionTypes.input,
       });
     });
-  };
+  }, [inputHeaderTitle, navigation, updateInputCurrency]);
 
-  const navigateToSelectOutputCurrency = () => {
+  const navigateToSelectOutputCurrency = useCallback(() => {
     logger.log('[nav to select output curr]', inputCurrency);
     InteractionManager.runAfterInteractions(() => {
       navigation.setParams({ focused: false });
@@ -704,7 +814,7 @@ const ExchangeModal = ({
         type: CurrencySelectionTypes.output,
       });
     });
-  };
+  }, [inputCurrency, navigation, updateOutputCurrency]);
 
   const updateInputAmount = useCallback(
     (
@@ -718,9 +828,9 @@ const ExchangeModal = ({
       setInputAmountDisplay(
         newAmountDisplay !== undefined ? newAmountDisplay : newInputAmount
       );
-      setIsMax(newIsMax);
+      setIsMax(newInputAmount && newIsMax);
 
-      if (!nativeFieldRef.current.isFocused()) {
+      if (!nativeFieldRef.current.isFocused() || newIsMax) {
         let newNativeAmount = null;
 
         const isInputZero = isZero(newInputAmount);
@@ -737,38 +847,33 @@ const ExchangeModal = ({
         }
         setNativeAmount(newNativeAmount);
 
-        // update sufficient balance
         if (inputCurrency) {
-          const inputBalance = ethereumUtils.getBalanceAmount(
-            selectedGasPrice,
-            inputCurrency
-          );
-
           const isSufficientBalance =
             !newInputAmount ||
             (isWithdrawal
               ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
               : greaterThanOrEqualTo(inputBalance, newInputAmount));
+
           setIsSufficientBalance(isSufficientBalance);
         }
+      }
 
-        if (newAmountDisplay) {
-          analytics.track('Updated input amount', {
-            category: isDeposit ? 'savings' : 'swap',
-            defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
-            type,
-            value: Number(newAmountDisplay.toString()),
-          });
-        }
+      if (newAmountDisplay) {
+        analytics.track('Updated input amount', {
+          category: isDeposit ? 'savings' : 'swap',
+          defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+          type,
+          value: Number(newAmountDisplay.toString()),
+        });
       }
     },
     [
       defaultInputAsset,
       getMarketPrice,
+      inputBalance,
       inputCurrency,
       isDeposit,
       isWithdrawal,
-      selectedGasPrice,
       supplyBalanceUnderlying,
       type,
     ]
@@ -783,89 +888,115 @@ const ExchangeModal = ({
     updateInputAmount();
   }, [updateInputAmount]);
 
-  const updateInputCurrency = (newInputCurrency, userSelected = true) => {
-    logger.log(
-      '[update input curr] new input curr, user selected?',
-      newInputCurrency,
-      userSelected
-    );
-
-    logger.log('[update input curr] prev input curr', previousInputCurrency);
-    if (!isSameAsset(newInputCurrency, previousInputCurrency)) {
-      logger.log('[update input curr] clear form');
-      clearForm();
-    }
-
-    logger.log('[update input curr] setting input curr', newInputCurrency);
-    setInputCurrency(newInputCurrency);
-    setShowConfirmButton(
-      isDeposit || isWithdrawal
-        ? !!newInputCurrency
-        : !!newInputCurrency && !!outputCurrency
-    );
-
-    dispatch(uniswapUpdateInputCurrency(newInputCurrency));
-
-    if (userSelected && isSameAsset(newInputCurrency, outputCurrency)) {
-      logger.log('[update input curr] setting output curr to prev input curr');
-      if (isDeposit || isWithdrawal) {
-        updateOutputCurrency(null, false);
-      } else {
-        updateOutputCurrency(previousInputCurrency, false);
-      }
-    }
-
-    if (
-      (isDeposit || isWithdrawal) &&
-      newInputCurrency.address !== defaultInputAddress
-    ) {
-      const newDepositOutput = ethereumUtils.getAsset(
-        allAssets,
-        defaultInputAddress
+  const updateInputCurrency = useCallback(
+    async (newInputCurrency, userSelected = true) => {
+      logger.log(
+        '[update input curr] new input curr, user selected?',
+        newInputCurrency,
+        userSelected
       );
-      updateOutputCurrency(newDepositOutput, false);
-    }
 
-    analytics.track('Switched input asset', {
-      category: isDeposit ? 'savings' : 'swap',
-      defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
-      from: previousInputCurrency.symbol,
-      label: newInputCurrency.symbol,
+      logger.log('[update input curr] prev input curr', previousInputCurrency);
+      if (!isSameAsset(newInputCurrency, previousInputCurrency)) {
+        logger.log('[update input curr] clear form');
+        clearForm();
+      }
+
+      logger.log('[update input curr] setting input curr', newInputCurrency);
+      setInputCurrency(newInputCurrency);
+      setShowConfirmButton(
+        isDeposit || isWithdrawal
+          ? !!newInputCurrency
+          : !!newInputCurrency && !!outputCurrency
+      );
+
+      dispatch(uniswapUpdateInputCurrency(newInputCurrency));
+
+      if (userSelected && isSameAsset(newInputCurrency, outputCurrency)) {
+        logger.log(
+          '[update input curr] setting output curr to prev input curr'
+        );
+        if (isDeposit || isWithdrawal) {
+          updateOutputCurrency(null, false);
+        } else {
+          updateOutputCurrency(previousInputCurrency, false);
+        }
+      }
+
+      if (isDeposit && newInputCurrency.address !== defaultInputAddress) {
+        logger.log(
+          '[update input curr] new deposit output for deposit or withdraw',
+          defaultChosenInputItem
+        );
+        updateOutputCurrency(defaultChosenInputItem, false);
+      }
+
+      // Update current balance
+      const inputBalance = await ethereumUtils.getBalanceAmount(
+        selectedGasPrice,
+        newInputCurrency
+      );
+      setInputBalance(inputBalance);
+
+      analytics.track('Switched input asset', {
+        category: isDeposit ? 'savings' : 'swap',
+        defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+        from: (previousInputCurrency && previousInputCurrency.symbol) || '',
+        label: newInputCurrency.symbol,
+        type,
+      });
+    },
+    [
+      clearForm,
+      defaultChosenInputItem,
+      defaultInputAddress,
+      defaultInputAsset,
+      dispatch,
+      isDeposit,
+      isWithdrawal,
+      outputCurrency,
+      previousInputCurrency,
+      selectedGasPrice,
       type,
-    });
-  };
+      uniswapUpdateInputCurrency,
+      updateOutputCurrency,
+    ]
+  );
 
-  const updateNativeAmount = nativeAmount => {
-    logger.log('update native amount', nativeAmount);
-    let inputAmount = null;
-    let inputAmountDisplay = null;
+  const updateNativeAmount = useCallback(
+    nativeAmount => {
+      logger.log('update native amount', nativeAmount);
+      let inputAmount = null;
+      let inputAmountDisplay = null;
 
-    const isNativeZero = isZero(nativeAmount);
-    setNativeAmount(nativeAmount);
+      const isNativeZero = isZero(nativeAmount);
+      setNativeAmount(nativeAmount);
 
-    setIsMax(false);
+      setIsMax(false);
 
-    if (nativeAmount && !isNativeZero) {
-      let nativePrice = get(inputCurrency, 'native.price.amount', null);
-      if (isNil(nativePrice)) {
-        nativePrice = getMarketPrice();
+      if (nativeAmount && !isNativeZero) {
+        let nativePrice = get(inputCurrency, 'native.price.amount', null);
+        if (isNil(nativePrice)) {
+          nativePrice = getMarketPrice();
+        }
+        inputAmount = convertAmountFromNativeValue(
+          nativeAmount,
+          nativePrice,
+          inputCurrency.decimals
+        );
+        inputAmountDisplay = updatePrecisionToDisplay(
+          inputAmount,
+          nativePrice,
+          true
+        );
       }
-      inputAmount = convertAmountFromNativeValue(
-        nativeAmount,
-        nativePrice,
-        inputCurrency.decimals
-      );
-      inputAmountDisplay = updatePrecisionToDisplay(
-        inputAmount,
-        nativePrice,
-        true
-      );
-    }
 
-    setInputAmount(inputAmount);
-    setInputAmountDisplay(inputAmountDisplay);
-    setInputAsExactAmount(true);
-  };
+      setInputAmount(inputAmount);
+      setInputAmountDisplay(inputAmountDisplay);
+      setInputAsExactAmount(true);
+    },
+    [getMarketPrice, inputCurrency]
+  );
 
   const updateOutputAmount = useCallback(
     (newOutputAmount, newAmountDisplay, newInputAsExactAmount = false) => {
@@ -886,51 +1017,69 @@ const ExchangeModal = ({
     [defaultInputAsset, isDeposit, isWithdrawal, type]
   );
 
-  const updateOutputCurrency = (newOutputCurrency, userSelected = true) => {
-    logger.log(
-      '[update output curr] new output curr, user selected?',
-      newOutputCurrency,
-      userSelected
-    );
-    logger.log(
-      '[update output curr] input currency at the moment',
-      inputCurrency
-    );
-    dispatch(uniswapUpdateOutputCurrency(newOutputCurrency));
+  const updateOutputCurrency = useCallback(
+    (newOutputCurrency, userSelected = true) => {
+      logger.log(
+        '[update output curr] new output curr, user selected?',
+        newOutputCurrency,
+        userSelected
+      );
+      logger.log(
+        '[update output curr] input currency at the moment',
+        inputCurrency
+      );
+      dispatch(uniswapUpdateOutputCurrency(newOutputCurrency));
 
-    setInputAsExactAmount(true);
-    setOutputCurrency(newOutputCurrency);
-    setShowConfirmButton(
-      isDeposit || isWithdrawal
-        ? !!inputCurrency
-        : !!inputCurrency && !!newOutputCurrency
-    );
+      setInputAsExactAmount(true);
+      setOutputCurrency(newOutputCurrency);
+      setShowConfirmButton(
+        isDeposit || isWithdrawal
+          ? !!inputCurrency
+          : !!inputCurrency && !!newOutputCurrency
+      );
 
-    logger.log('[update output curr] prev output curr', previousOutputCurrency);
-    const existsInWallet = find(
-      uniswapAssetsInWallet,
-      asset => get(asset, 'address') === get(previousOutputCurrency, 'address')
-    );
-    if (userSelected && isSameAsset(inputCurrency, newOutputCurrency)) {
-      if (existsInWallet) {
-        logger.log(
-          '[update output curr] updating input curr with prev output curr'
-        );
-        updateInputCurrency(previousOutputCurrency, false);
-      } else {
-        logger.log('[update output curr] updating input curr with nothing');
-        updateInputCurrency(null, false);
+      logger.log(
+        '[update output curr] prev output curr',
+        previousOutputCurrency
+      );
+      const existsInWallet = find(
+        uniswapAssetsInWallet,
+        asset =>
+          get(asset, 'address') === get(previousOutputCurrency, 'address')
+      );
+      if (userSelected && isSameAsset(inputCurrency, newOutputCurrency)) {
+        if (existsInWallet) {
+          logger.log(
+            '[update output curr] updating input curr with prev output curr'
+          );
+          updateInputCurrency(previousOutputCurrency, false);
+        } else {
+          logger.log('[update output curr] updating input curr with nothing');
+          updateInputCurrency(null, false);
+        }
       }
-    }
 
-    analytics.track('Switched output asset', {
-      category: isWithdrawal || isDeposit ? 'savings' : 'swap',
-      defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
-      from: (previousOutputCurrency && previousOutputCurrency.symbol) || null,
-      label: newOutputCurrency.symbol,
+      analytics.track('Switched output asset', {
+        category: isWithdrawal || isDeposit ? 'savings' : 'swap',
+        defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+        from: (previousOutputCurrency && previousOutputCurrency.symbol) || null,
+        label: newOutputCurrency.symbol,
+        type,
+      });
+    },
+    [
+      defaultInputAsset,
+      dispatch,
+      inputCurrency,
+      isDeposit,
+      isWithdrawal,
+      previousOutputCurrency,
       type,
-    });
-  };
+      uniswapAssetsInWallet,
+      uniswapUpdateOutputCurrency,
+      updateInputCurrency,
+    ]
+  );
 
   const isSlippageWarningVisible =
     isSufficientBalance && !!inputAmount && !!outputAmount;
@@ -942,16 +1091,28 @@ const ExchangeModal = ({
     outputNativePrice,
   } = extraTradeDetails;
 
-  const showDetailsButton =
-    !(isDeposit || isWithdrawal) &&
-    get(inputCurrency, 'symbol') &&
-    get(outputCurrency, 'symbol') &&
-    inputExecutionRate !== 'NaN' &&
-    inputExecutionRate &&
-    inputNativePrice &&
-    outputExecutionRate !== 'NaN' &&
-    outputExecutionRate &&
-    outputNativePrice;
+  const showDetailsButton = useMemo(() => {
+    return (
+      !(isDeposit || isWithdrawal) &&
+      get(inputCurrency, 'symbol') &&
+      get(outputCurrency, 'symbol') &&
+      inputExecutionRate !== 'NaN' &&
+      inputExecutionRate &&
+      inputNativePrice &&
+      outputExecutionRate !== 'NaN' &&
+      outputExecutionRate &&
+      outputNativePrice
+    );
+  }, [
+    inputCurrency,
+    inputExecutionRate,
+    inputNativePrice,
+    isDeposit,
+    isWithdrawal,
+    outputCurrency,
+    outputExecutionRate,
+    outputNativePrice,
+  ]);
 
   return (
     <KeyboardFixedOpenLayout>
@@ -1023,6 +1184,7 @@ const ExchangeModal = ({
                   isAuthorizing={isAuthorizing}
                   isDeposit={isDeposit}
                   isSufficientBalance={isSufficientBalance}
+                  isSufficientGas={isSufficientGas}
                   onSubmit={handleSubmit}
                   slippage={slippage}
                   type={type}
@@ -1041,9 +1203,9 @@ ExchangeModal.propTypes = {
   createRap: PropTypes.func,
   cTokenBalance: PropTypes.string,
   defaultInputAddress: PropTypes.string,
+  estimateRap: PropTypes.func,
   inputHeaderTitle: PropTypes.string,
   navigation: PropTypes.object,
-  selectedGasPrice: PropTypes.object,
   supplyBalanceUnderlying: PropTypes.string,
   tabPosition: PropTypes.object, // animated value
   tradeDetails: PropTypes.object,

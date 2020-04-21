@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useRef } from 'react';
 import Animated, {
   Easing,
-  Transitioning,
   Transition,
+  Transitioning,
 } from 'react-native-reanimated';
 import { useTimingTransition } from 'react-native-redash';
 import { withProps } from 'recompact';

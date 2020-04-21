@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForKeys } from 'recompact';
+import { colors } from '../../styles';
 import { OpacityToggler } from '../animations';
 import { Text } from '../text';
 
@@ -12,11 +13,10 @@ const CoinDividerButtonLabel = ({ isVisible, label, node, steps }) => (
     startingOpacity={steps[0]}
   >
     <Text
-      color="blueGreyDark"
+      color={colors.alpha(colors.blueGreyDark, 0.6)}
       letterSpacing="roundedTight"
       size="lmedium"
       style={{
-        opacity: 0.6,
         position: 'absolute',
         top: -10.25,
       }}

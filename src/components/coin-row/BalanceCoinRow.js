@@ -1,70 +1,43 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
-import { compose, shouldUpdate, withHandlers } from 'recompact';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import { View } from 'react-native';
+import { compose } from 'recompact';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
-import { withAccountSettings, withOpenBalances } from '../../hoc';
-import { colors } from '../../styles';
-import { isNewValueForPath } from '../../utils';
+import {
+  withCoinListEdited,
+  withCoinRecentlyPinned,
+  withEditOptions,
+  withOpenBalances,
+} from '../../hoc';
+import { deviceUtils, isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { FlexItem, Row } from '../layout';
-import BalanceText from './BalanceText';
+import { Column, FlexItem, Row } from '../layout';
 import BottomRowText from './BottomRowText';
+import CoinCheckButton from './CoinCheckButton';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import CoinRowInfo from './CoinRowInfo';
 
-const formatPercentageString = percentString =>
-  percentString
-    ? percentString
-        .split('-')
-        .join('- ')
-        .split('%')
-        .join('%')
-    : '-';
+const editTranslateOffset = 32;
 
-const BottomRow = ({ balance, native }) => {
-  const percentChange = get(native, 'change');
-  const percentageChangeDisplay = formatPercentageString(percentChange);
-  const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
-
+const BottomRow = ({ balance }) => {
   return (
     <Fragment>
-      <BottomRowText>{balance.display}</BottomRowText>
-      <BottomRowText
-        align="right"
-        color={
-          isPositive
-            ? colors.green
-            : !percentChange
-            ? colors.alpha(colors.blueGreyDark, 0.2)
-            : null
-        }
-      >
-        {percentageChangeDisplay}
-      </BottomRowText>
+      <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
     </Fragment>
   );
 };
 
 BottomRow.propTypes = {
   balance: PropTypes.shape({ display: PropTypes.string }),
-  native: PropTypes.object,
 };
 
-const TopRow = ({ name, native, nativeCurrencySymbol }) => {
-  const nativeDisplay = get(native, 'balance.display');
-
+const TopRow = ({ name }) => {
   return (
     <Row align="center" justify="space-between">
       <FlexItem flex={1}>
         <CoinName>{name}</CoinName>
-      </FlexItem>
-      <FlexItem flex={0}>
-        <BalanceText
-          color={nativeDisplay ? null : colors.alpha(colors.blueGreyDark, 0.5)}
-        >
-          {nativeDisplay || `${nativeCurrencySymbol}0.00`}
-        </BalanceText>
       </FlexItem>
     </Row>
   );
@@ -72,8 +45,6 @@ const TopRow = ({ name, native, nativeCurrencySymbol }) => {
 
 TopRow.propTypes = {
   name: PropTypes.string,
-  native: PropTypes.object,
-  nativeCurrencySymbol: PropTypes.string,
 };
 
 const BalanceCoinRow = ({
@@ -81,76 +52,147 @@ const BalanceCoinRow = ({
   item,
   onPress,
   onPressSend,
+  isCoinListEdited,
+  pushSelectedCoin,
+  removeSelectedCoin,
+  recentlyPinnedCount,
   ...props
-}) =>
-  isFirstCoinRow ? (
-    <FlexItem
-      flex={1}
-      style={{
-        justifyContent: 'flex-end',
-      }}
-    >
-      <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
-        <CoinRow
-          onPress={onPress}
-          onPressSend={onPressSend}
-          {...item}
-          {...props}
-          bottomRowRender={BottomRow}
-          topRowRender={TopRow}
-        />
+}) => {
+  const [toggle, setToggle] = useState(false);
+  const [previousPinned, setPreviousPinned] = useState(0);
+
+  useEffect(() => {
+    if (toggle && (recentlyPinnedCount > previousPinned || !isCoinListEdited)) {
+      setPreviousPinned(recentlyPinnedCount);
+      setToggle(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCoinListEdited, recentlyPinnedCount]);
+
+  const handlePress = () => {
+    if (toggle) {
+      removeSelectedCoin(item.uniqueId);
+    } else {
+      pushSelectedCoin(item.uniqueId);
+    }
+    setToggle(!toggle);
+  };
+
+  const onPressHandler = useCallback(() => {
+    onPress && onPress(item);
+  }, [onPress, item]);
+
+  const onPressSendHandler = useCallback(() => {
+    onPressSend && onPressSend(item);
+  }, [onPressSend, item]);
+
+  return item.isSmall ? (
+    <View width={deviceUtils.dimensions.width}>
+      <ButtonPressAnimation
+        onPress={isCoinListEdited ? handlePress : onPressHandler}
+        scaleTo={0.96}
+      >
+        <Row>
+          <View
+            left={isCoinListEdited ? editTranslateOffset : 0}
+            width={
+              deviceUtils.dimensions.width -
+              80 -
+              (isCoinListEdited ? editTranslateOffset : 0)
+            }
+          >
+            <CoinRow
+              onPress={onPressHandler}
+              onPressSend={onPressSendHandler}
+              {...item}
+              {...props}
+              bottomRowRender={BottomRow}
+              topRowRender={TopRow}
+            />
+          </View>
+          <View position="absolute" right={3}>
+            <CoinRowInfo isHidden={item.isHidden} native={item.native} />
+          </View>
+        </Row>
       </ButtonPressAnimation>
-    </FlexItem>
+      {isCoinListEdited ? (
+        <CoinCheckButton isAbsolute toggle={toggle} onPress={handlePress} />
+      ) : null}
+    </View>
   ) : (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
-      <CoinRow
-        onPress={onPress}
-        onPressSend={onPressSend}
-        {...item}
-        {...props}
-        bottomRowRender={BottomRow}
-        topRowRender={TopRow}
-      />
-    </ButtonPressAnimation>
+    <Column flex={1} justify={isFirstCoinRow ? 'end' : 'start'}>
+      <ButtonPressAnimation
+        onPress={isCoinListEdited ? handlePress : onPressHandler}
+        scaleTo={0.96}
+      >
+        <Row>
+          <View
+            left={isCoinListEdited ? editTranslateOffset : 0}
+            width={
+              deviceUtils.dimensions.width -
+              80 -
+              (isCoinListEdited ? editTranslateOffset : 0)
+            }
+          >
+            <CoinRow
+              onPress={onPressHandler}
+              onPressSend={onPressSendHandler}
+              {...item}
+              {...props}
+              bottomRowRender={BottomRow}
+              topRowRender={TopRow}
+            />
+          </View>
+          <View position="absolute" right={3}>
+            <CoinRowInfo native={item.native} />
+          </View>
+        </Row>
+      </ButtonPressAnimation>
+      {isCoinListEdited ? (
+        <CoinCheckButton isAbsolute toggle={toggle} onPress={handlePress} />
+      ) : null}
+    </Column>
   );
+};
 
 BalanceCoinRow.propTypes = {
   isFirstCoinRow: PropTypes.bool,
   item: PropTypes.object,
-  nativeCurrency: PropTypes.string.isRequired,
   onPress: PropTypes.func,
   onPressSend: PropTypes.func,
   openSmallBalances: PropTypes.bool,
 };
 
-export default compose(
-  withAccountSettings,
-  withOpenBalances,
-  withHandlers({
-    onPress: ({ item, onPress }) => () => {
-      if (onPress) {
-        onPress(item);
-      }
-    },
-    onPressSend: ({ item, onPressSend }) => () => {
-      if (onPressSend) {
-        onPressSend(item);
-      }
-    },
-  }),
-  shouldUpdate((props, nextProps) => {
-    const isChangeInOpenAssets =
-      props.openSmallBalances !== nextProps.openSmallBalances;
-    const itemIdentifier = buildAssetUniqueIdentifier(props.item);
-    const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.item);
+const arePropsEqual = (props, nextProps) => {
+  const isChangeInOpenAssets =
+    props.openSmallBalances !== nextProps.openSmallBalances;
+  const itemIdentifier = buildAssetUniqueIdentifier(props.item);
+  const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.item);
 
-    const isNewItem = itemIdentifier !== nextItemIdentifier;
-    const isNewNativeCurrency = isNewValueForPath(
-      props,
-      nextProps,
-      'nativeCurrency'
-    );
+  const isNewItem = itemIdentifier !== nextItemIdentifier;
+  const isEdited = isNewValueForPath(props, nextProps, 'isCoinListEdited');
+  const isPinned = isNewValueForPath(props, nextProps, 'item.isPinned');
+  const isHidden = isNewValueForPath(props, nextProps, 'item.isHidden');
+  const recentlyPinnedCount =
+    isNewValueForPath(props, nextProps, 'recentlyPinnedCount') &&
+    (get(props, 'item.isPinned', false) || get(props, 'item.isHidden', false));
 
-    return isNewItem || isNewNativeCurrency || isChangeInOpenAssets;
-  })
-)(BalanceCoinRow);
+  return !(
+    isNewItem ||
+    isChangeInOpenAssets ||
+    isEdited ||
+    isPinned ||
+    isHidden ||
+    recentlyPinnedCount
+  );
+};
+
+export default React.memo(
+  compose(
+    withOpenBalances,
+    withEditOptions,
+    withCoinListEdited,
+    withCoinRecentlyPinned
+  )(BalanceCoinRow),
+  arePropsEqual
+);

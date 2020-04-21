@@ -1,29 +1,31 @@
+import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
+import { ethers } from 'ethers';
 import { find, get, isEmpty, replace, toLower } from 'lodash';
-import chains from '../references/chains.json';
 import networkTypes from '../helpers/networkTypes';
 import {
   add,
   convertNumberToString,
+  convertRawAmountToDecimalFormat,
   fromWei,
   greaterThan,
   subtract,
 } from '../helpers/utilities';
+import { chains } from '../references';
 
 const getEthPriceUnit = assets => {
   const ethAsset = getAsset(assets);
   return get(ethAsset, 'price.value', 0);
 };
 
-const getBalanceAmount = (selectedGasPrice, selected) => {
-  let amount = '';
-  if (selected.address === 'eth' && !isEmpty(selectedGasPrice)) {
-    const balanceAmount = get(selected, 'balance.amount', 0);
-    const txFeeRaw = get(selectedGasPrice, 'txFee.value.amount');
-    const txFeeAmount = fromWei(txFeeRaw);
-    const remaining = subtract(balanceAmount, txFeeAmount);
-    amount = convertNumberToString(greaterThan(remaining, 0) ? remaining : 0);
-  } else {
-    amount = get(selected, 'balance.amount', 0);
+const getBalanceAmount = async (selectedGasPrice, selected) => {
+  let amount = get(selected, 'balance.amount', 0);
+  if (selected && selected.address === 'eth') {
+    if (!isEmpty(selectedGasPrice)) {
+      const txFeeRaw = get(selectedGasPrice, 'txFee.value.amount');
+      const txFeeAmount = fromWei(txFeeRaw);
+      const remaining = subtract(amount, txFeeAmount);
+      amount = greaterThan(remaining, 0) ? remaining : '0';
+    }
   }
   return amount;
 };
@@ -118,6 +120,16 @@ const transactionData = (assets, assetAmount, gasPrice) => {
   };
 };
 
+/**
+ * @desc Checks if a string is a valid ethereum address
+ * @param  {String} str
+ * @return {Boolean}
+ */
+const isEthAddress = str => {
+  const withHexPrefix = addHexPrefix(str);
+  return isValidAddress(withHexPrefix);
+};
+
 export default {
   getAsset,
   getBalanceAmount,
@@ -126,6 +138,7 @@ export default {
   getEtherscanHostFromNetwork,
   getEthPriceUnit,
   getNetworkFromChainId,
+  isEthAddress,
   padLeft,
   removeHexPrefix,
   transactionData,

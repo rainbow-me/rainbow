@@ -8,6 +8,15 @@ import { NavigationEvents } from 'react-navigation';
 import { useIsFocused } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import { compose, mapProps } from 'recompact';
+import GestureBlocker from '../components/GestureBlocker';
+import { interpolate } from '../components/animations';
+import {
+  CurrencySelectionList,
+  CurrencySelectModalHeader,
+  ExchangeSearch,
+} from '../components/exchange';
+import { Column, KeyboardFixedOpenLayout } from '../components/layout';
+import { Modal } from '../components/modal';
 import {
   usePrevious,
   useUniswapAssets,
@@ -15,15 +24,6 @@ import {
 } from '../hooks';
 import { position } from '../styles';
 import { filterList, filterScams } from '../utils/search';
-import { interpolate } from '../components/animations';
-import {
-  CurrencySelectionList,
-  CurrencySelectModalHeader,
-  ExchangeSearch,
-} from '../components/exchange';
-import GestureBlocker from '../components/GestureBlocker';
-import { Column, KeyboardFixedOpenLayout } from '../components/layout';
-import { Modal } from '../components/modal';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 
 const headerlessSection = data => [{ data, title: '' }];
@@ -36,6 +36,7 @@ export const CurrencySelectionTypes = {
 const CurrencySelectModal = ({
   headerTitle,
   navigation,
+  restoreFocusOnSwapModal,
   transitionPosition,
   type,
 }) => {
@@ -78,7 +79,7 @@ const CurrencySelectModal = ({
       handleWillBlur();
       InteractionManager.runAfterInteractions(() => {
         handleDidBlur();
-        navigation.state.params.restoreFocusOnSwapModal();
+        restoreFocusOnSwapModal();
       });
     }
   }, [
@@ -86,7 +87,7 @@ const CurrencySelectModal = ({
     handleWillBlur,
     handleWillFocus,
     isFocused,
-    navigation.state.params,
+    restoreFocusOnSwapModal,
     wasFocused,
   ]);
 
@@ -294,6 +295,11 @@ export default compose(
     ...props,
     headerTitle: get(navigation, 'state.params.headerTitle', null),
     navigation,
+    restoreFocusOnSwapModal: get(
+      navigation,
+      'state.params.restoreFocusOnSwapModal',
+      null
+    ),
     transitionPosition: get(navigation, 'state.params.position'),
     type: get(navigation, 'state.params.type', null),
   }))

@@ -10,14 +10,14 @@ import {
   withOpenInvestmentCards,
 } from '../../hoc';
 import { deviceUtils } from '../../utils';
+import { CoinDivider } from '../coin-divider';
 import { CoinRow } from '../coin-row';
-import { ListFooter } from '../list';
 import {
   InvestmentCard,
   InvestmentCardHeader,
   UniswapInvestmentCard,
 } from '../investment-cards';
-import { CoinDivider } from '../coin-divider';
+import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import DeleteButton from './DeleteButton';
 

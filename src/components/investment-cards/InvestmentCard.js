@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import LinearGradient from 'react-native-linear-gradient';
 import { View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { compose, withHandlers } from 'recompact';
 import { withOpenInvestmentCards } from '../../hoc';
 import { colors, position } from '../../styles';

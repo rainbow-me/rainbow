@@ -3,10 +3,10 @@ import { Text, View } from 'react-native';
 import { compose } from 'recompact';
 import Button from '../components/buttons/Button';
 import { Centered, Page } from '../components/layout';
-import { withGas, withUniswapAllowances, withRaps } from '../hoc';
+import { withGas, withRaps, withUniswapAllowances } from '../hoc';
 import { loadWallet } from '../model/wallet';
-import { colors, position } from '../styles';
 import unlockAndSwap from '../raps/unlockAndSwap';
+import { colors, position } from '../styles';
 import { logger } from '../utils';
 
 class ExampleScreen extends PureComponent {

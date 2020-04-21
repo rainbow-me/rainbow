@@ -1,36 +1,36 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { createElement } from 'react';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { View } from 'react-primitives';
-import { componentFromProp } from 'recompact';
-import styled from 'styled-components/primitives';
-import { withSafeAreaViewInsetValues } from '../../hoc';
 import { colors, position } from '../../styles';
 
-const Container = styled(componentFromProp('component'))`
-  ${position.size('100%')}
-  background-color: ${({ color }) => color};
-`;
+const Page = ({
+  color,
+  component,
+  showBottomInset,
+  showTopInset,
+  ...props
+}) => {
+  const insets = useSafeArea();
 
-const SafeArea = styled.View`
-  background-color: ${({ color }) => color};
-  padding-bottom: ${({ bottomInset }) => bottomInset};
-  padding-top: ${({ topInset }) => topInset};
-`;
-
-const Page = ({ safeAreaInset, showBottomInset, showTopInset, ...props }) => (
-  <SafeArea
-    {...props}
-    bottomInset={showBottomInset ? safeAreaInset.bottom : 0}
-    topInset={showTopInset ? safeAreaInset.top : 0}
-  >
-    <Container {...props} />
-  </SafeArea>
-);
+  return (
+    <View
+      {...props}
+      paddingBottom={showBottomInset ? insets.bottom : 0}
+      paddingTop={showTopInset ? insets.top : 0}
+    >
+      {createElement(component, {
+        ...props,
+        ...position.sizeAsObject('100%'),
+        backgroundColor: color,
+      })}
+    </View>
+  );
+};
 
 Page.propTypes = {
   color: PropTypes.string,
   component: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
-  safeAreaInset: PropTypes.shape({ top: PropTypes.number }),
   showBottomInset: PropTypes.bool,
   showTopInset: PropTypes.bool,
 };
@@ -40,4 +40,4 @@ Page.defaultProps = {
   component: View,
 };
 
-export default withSafeAreaViewInsetValues(Page);
+export default Page;

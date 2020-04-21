@@ -53,9 +53,18 @@ const isValidSeedPhrase = seedPhrase => {
 };
 
 /**
+ * @desc validate private key string
+ * @param  {String} private key string
+ * @return {Boolean}
+ */
+const isValidPrivateKey = key => {
+  return key.length >= 64 && isHexStringIgnorePrefix(key);
+};
+
+/**
  * @desc validate seed phrase mnemonic or private key
  * @param  {String} seed phrase mnemonic or private key
  * @return {Boolean}
  */
 export const isValidSeed = seed =>
-  isHexStringIgnorePrefix(seed) || isValidSeedPhrase(seed);
+  seed && (isValidPrivateKey(seed) || isValidSeedPhrase(seed));

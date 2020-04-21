@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Linking } from 'react-native';
 import {
   compose,
   mapProps,
@@ -7,16 +8,15 @@ import {
   withHandlers,
   withProps,
 } from 'recompact';
-import { Linking } from 'react-native';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import { withAccountSettings } from '../../hoc';
 import { ethereumUtils } from '../../utils/';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { ButtonPressAnimation } from '../animations';
+import { RequestVendorLogoIcon } from '../coin-icon';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
-import { RequestVendorLogoIcon } from '../coin-icon';
-import { withAccountSettings } from '../../hoc';
 
 const rowRenderPropTypes = {
   // eslint-disable-next-line react/no-unused-prop-types

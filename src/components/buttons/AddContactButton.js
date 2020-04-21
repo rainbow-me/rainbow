@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useRef } from 'react';
 import FastImage from 'react-native-fast-image';
-import { Transitioning, Transition } from 'react-native-reanimated';
+import { Transition, Transitioning } from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import { compose, setPropTypes } from 'recompact';
 import AddContactIcon from '../../assets/addContactIcon.png';

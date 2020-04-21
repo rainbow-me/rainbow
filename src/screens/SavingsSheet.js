@@ -1,26 +1,26 @@
 import analytics from '@segment/analytics-react-native';
-import React, { Fragment, useEffect, useCallback } from 'react';
+import React, { Fragment, useCallback, useEffect } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
-import { Column, RowWithMargins } from '../components/layout';
-import { colors, padding } from '../styles';
+import Divider from '../components/Divider';
 import { SavingsCoinRow } from '../components/coin-row';
-import {
-  SavingsPredictionStepper,
-  SavingsSheetHeader,
-  SavingsSheetEmptyState,
-} from '../components/savings';
 import {
   FloatingEmojis,
   FloatingEmojisTapHandler,
 } from '../components/floating-emojis';
+import { Column, RowWithMargins } from '../components/layout';
+import {
+  SavingsPredictionStepper,
+  SavingsSheetEmptyState,
+  SavingsSheetHeader,
+} from '../components/savings';
 import { Sheet, SheetActionButton } from '../components/sheet';
-import Divider from '../components/Divider';
 import { convertAmountToNativeDisplay } from '../helpers/utilities';
 import { useAccountSettings } from '../hooks';
+import { colors, padding } from '../styles';
 
 const SavingsSheet = () => {
   const { getParam, navigate } = useNavigation();
-  const { nativeCurrency } = useAccountSettings();
+  const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
   const cTokenBalance = getParam('cTokenBalance');
   const isEmpty = getParam('isEmpty');
   const underlyingBalanceNativeValue = getParam('underlyingBalanceNativeValue');
@@ -35,10 +35,7 @@ const SavingsSheet = () => {
   const supplyBalanceUnderlying = getParam('supplyBalanceUnderlying');
   const supplyRate = getParam('supplyRate');
 
-  const balance = convertAmountToNativeDisplay(
-    underlyingBalanceNativeValue,
-    nativeCurrency
-  );
+  const balance = nativeCurrencySymbol + underlyingBalanceNativeValue;
   const lifetimeAccruedInterest = convertAmountToNativeDisplay(
     lifetimeSupplyInterestAccruedNative,
     nativeCurrency
@@ -125,7 +122,7 @@ const SavingsSheet = () => {
             disableHorizontalMovement
             distance={600}
             duration={600}
-            emoji="money_with_wings"
+            emojis={['money_with_wings']}
             opacityThreshold={0.86}
             scaleTo={0.3}
             size={40}
@@ -150,6 +147,7 @@ const SavingsSheet = () => {
           </FloatingEmojis>
           <Divider color={colors.rowDividerLight} zIndex={0} />
           <SavingsPredictionStepper
+            asset={underlying}
             balance={underlyingBalanceNativeValue}
             interestRate={supplyRate}
           />

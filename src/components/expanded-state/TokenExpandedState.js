@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useAccountAssets } from '../../hooks';
 import { ethereumUtils } from '../../utils';
-import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
+import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
 
 const TokenExpandedState = ({ asset, navigation }) => {
   const { address, name, symbol } = asset;

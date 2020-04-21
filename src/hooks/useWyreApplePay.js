@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
-import { captureMessage, captureException } from '@sentry/react-native';
-import { isEmpty, toLower } from 'lodash';
+import { captureException, captureMessage } from '@sentry/react-native';
+import { get, isEmpty, toLower } from 'lodash';
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
@@ -14,14 +14,17 @@ import {
   WYRE_ORDER_STATUS_TYPES,
   WYRE_TRANSFER_STATUS_TYPES,
 } from '../helpers/wyreStatusTypes';
-import { dataAddNewPurchaseTransaction } from '../redux/data';
+import { addCashNewPurchaseTransaction } from '../redux/addCash';
+import { dataAddNewTransaction } from '../redux/data';
 import { AddCashCurrencies, AddCashCurrencyInfo } from '../references';
 import { ethereumUtils, logger } from '../utils';
-import useAccountData from './useAccountData';
+import useAccountAssets from './useAccountAssets';
+import useAccountSettings from './useAccountSettings';
 import useTimeout from './useTimeout';
 
 export default function useWyreApplePay() {
-  const { accountAddress, assets, network } = useAccountData();
+  const { accountAddress, network } = useAccountSettings();
+  const { assets } = useAccountAssets();
 
   const [isPaymentComplete, setPaymentComplete] = useState(false);
   const [orderCurrency, setOrderCurrency] = useState(null);
@@ -43,8 +46,8 @@ export default function useWyreApplePay() {
   }, [startPaymentCompleteTimeout]);
 
   const getTransferHash = useCallback(
-    async transferId => {
-      const retry = () => getTransferHash(transferId);
+    async (transferId, sourceAmount) => {
+      const retry = () => getTransferHash(transferId, sourceAmount);
 
       try {
         const {
@@ -71,11 +74,14 @@ export default function useWyreApplePay() {
             from: null,
             hash: transferHash,
             nonce: null,
+            sourceAmount,
             status: TransactionStatusTypes.purchasing,
+            timestamp: Date.now(),
             to: accountAddress,
             type: TransactionTypes.purchase,
           };
-          dispatch(dataAddNewPurchaseTransaction(txDetails));
+          dispatch(addCashNewPurchaseTransaction(txDetails));
+          dispatch(dataAddNewTransaction(txDetails));
           getTransferStatus(transferId);
         } else {
           retryTransferHashTimeout(retry, 1000);
@@ -118,15 +124,16 @@ export default function useWyreApplePay() {
   );
 
   const getOrderStatus = useCallback(
-    async (destCurrency, orderId, paymentResponse) => {
+    async (destCurrency, orderId, paymentResponse, sourceAmount) => {
       const retry = () =>
-        getOrderStatus(destCurrency, orderId, paymentResponse);
+        getOrderStatus(destCurrency, orderId, paymentResponse, sourceAmount);
 
       try {
         if (!isPaymentComplete && isEmpty(orderId)) {
           analytics.track('Purchase failed', {
             category: 'add cash',
-            error_type: 'no order id',
+            error_category: 'EARLY_FAILURE',
+            error_code: 'NO_ORDER_ID',
           });
           paymentResponse.complete('fail');
           handlePaymentCallback();
@@ -148,8 +155,8 @@ export default function useWyreApplePay() {
             captureMessage(`Wyre final check - order status failed`);
             analytics.track('Purchase failed', {
               category: 'add cash',
-              data,
-              error_type: 'other',
+              error_category: get(data, 'errorCategory', 'unknown'),
+              error_code: get(data, 'errorCode', 'unknown'),
             });
             paymentResponse.complete('fail');
             handlePaymentCallback();
@@ -166,7 +173,7 @@ export default function useWyreApplePay() {
         }
 
         if (transferId) {
-          getTransferHash(transferId);
+          getTransferHash(transferId, sourceAmount);
         } else if (!isFailed) {
           retryOrderStatusTimeout(retry, 1000);
         }
@@ -200,7 +207,6 @@ export default function useWyreApplePay() {
     onPurchase,
     orderCurrency,
     orderStatus,
-    transferHash,
     transferStatus,
   };
 }

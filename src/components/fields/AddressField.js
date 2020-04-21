@@ -1,12 +1,13 @@
+import Clipboard from '@react-native-community/clipboard';
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components/primitives';
-import { withNavigation } from 'react-navigation';
+import { Platform } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { Clipboard, Platform } from 'react-native';
-import { checkIsValidAddress } from '../../helpers/validators';
+import { withNavigation } from 'react-navigation';
+import styled from 'styled-components/primitives';
 import { isHexString } from '../../handlers/web3';
+import { checkIsValidAddress } from '../../helpers/validators';
 import { colors } from '../../styles';
 import { abbreviations, addressUtils, isNewValueForPath } from '../../utils';
 import { Input } from '../inputs';

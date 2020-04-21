@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   createNativeWrapper,
   PureNativeButton,
@@ -9,11 +9,11 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { clockRunning, Easing } from 'react-native-reanimated';
 import stylePropType from 'react-style-proptype';
 import { useMemoOne } from 'use-memo-one';
+import isNativeButtonAvailable from '../../../helpers/isNativeButtonAvailable';
 import { useInteraction, useTransformOrigin } from '../../../hooks';
 import { animations } from '../../../styles';
 import { directionPropType } from '../../../utils';
 import Button from '../../native-button';
-import isNativeButtonAvailable from '../../../helpers/isNativeButtonAvailable';
 
 const {
   and,
