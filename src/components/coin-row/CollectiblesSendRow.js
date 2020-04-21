@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
-import { compose, onlyUpdateForKeys, shouldUpdate, withProps } from 'recompact';
 import { StyleSheet } from 'react-native';
+import { compose, onlyUpdateForKeys, shouldUpdate, withProps } from 'recompact';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { colors } from '../../styles';
 import Divider from '../Divider';

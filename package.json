@@ -194,7 +194,7 @@
     "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/runtime": "^7.7.2",
     "babel-core": "7.0.0-bridge.0",
-    "babel-eslint": "^10.0.3",
+    "babel-eslint": "^10.1.0",
     "babel-jest": "^24.9.0",
     "babel-plugin-date-fns": "^2.0.0",
     "babel-plugin-graphql-tag": "^2.5.0",
@@ -203,7 +203,7 @@
     "babel-plugin-styled-components": "^1.10.7",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "detox": "^16.5.0",
-    "eslint": "^6.6.0",
+    "eslint": "^6.8.0",
     "eslint-config-satya164": "^3.1.6",
     "eslint-plugin-import": "^2.20.2",
     "jest": "^24.9.0",
@@ -214,7 +214,7 @@
     "schedule": "0.5.0"
   },
   "resolutions": {
-    "**/eslint-plugin-import": "2.14.0",
+    "**/eslint-plugin-import": "2.20.2",
     "**/resolve": "1.8.1"
   },
   "jest": {
