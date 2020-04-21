@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Component } from 'react';
 import Animated, {
   Clock,
-  Component,
   spring,
   SpringUtils,
   Value,
