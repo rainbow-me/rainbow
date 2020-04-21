@@ -208,9 +208,9 @@ const MainNativeNavigation = createBottomSheetStackNavigator(
     SettingsModal,
   },
   {
-    customStack: true,
     defaultNavigationOptions: {
       customStack: true,
+      showDragIndicator: false,
     },
     mode: 'modal',
   }
