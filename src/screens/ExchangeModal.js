@@ -133,7 +133,7 @@ const ExchangeModal = ({
   } = useUniswapAllowances();
   const { web3ListenerInit, web3ListenerStop } = useBlockPolling();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
-  const { accountAddress, chainId, nativeCurrency } = useAccountSettings();
+  const { chainId, nativeCurrency } = useAccountSettings();
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
 
   const defaultInputAddress = get(defaultInputAsset, 'address');
@@ -253,12 +253,10 @@ const ExchangeModal = ({
     // Update current balance
     const inputBalance = await ethereumUtils.getBalanceAmount(
       selectedGasPrice,
-      inputCurrency,
-      true,
-      accountAddress
+      inputCurrency
     );
     setInputBalance(inputBalance);
-  }, [accountAddress, inputCurrency, selectedGasPrice]);
+  }, [inputCurrency, selectedGasPrice]);
 
   useEffect(() => {
     dispatch(
@@ -936,9 +934,7 @@ const ExchangeModal = ({
       // Update current balance
       const inputBalance = await ethereumUtils.getBalanceAmount(
         selectedGasPrice,
-        newInputCurrency,
-        true,
-        accountAddress
+        newInputCurrency
       );
       setInputBalance(inputBalance);
 
@@ -951,7 +947,6 @@ const ExchangeModal = ({
       });
     },
     [
-      accountAddress,
       clearForm,
       defaultChosenInputItem,
       defaultInputAddress,

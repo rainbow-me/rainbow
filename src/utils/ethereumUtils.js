@@ -1,8 +1,5 @@
-import { captureException } from '@sentry/react-native';
-import { ethers } from 'ethers';
 import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
 import { find, get, isEmpty, replace, toLower } from 'lodash';
-import { web3Provider } from '../handlers/web3';
 import networkTypes from '../helpers/networkTypes';
 import {
   add,
@@ -10,57 +7,22 @@ import {
   fromWei,
   greaterThan,
   subtract,
-  convertRawAmountToDecimalFormat,
 } from '../helpers/utilities';
-import { erc20ABI, chains } from '../references';
+import { chains } from '../references';
 
 const getEthPriceUnit = assets => {
   const ethAsset = getAsset(assets);
   return get(ethAsset, 'price.value', 0);
 };
 
-const getOnChainBalance = async (selected, accountAddress) => {
-  try {
-    let onChainBalance = 0;
-    const selectedAddress = get(selected, 'address', null);
-    if (!selectedAddress) return 0;
-    if (selectedAddress === 'eth') {
-      onChainBalance = await web3Provider.getBalance(accountAddress);
-    } else {
-      const tokenContract = new ethers.Contract(
-        selectedAddress,
-        erc20ABI,
-        web3Provider
-      );
-      onChainBalance = await tokenContract.balanceOf(accountAddress);
-    }
-    return convertRawAmountToDecimalFormat(onChainBalance, selected.decimals);
-  } catch (e) {
-    // Default to current balance
-    // if something goes wrong
-    captureException(e);
-    return get(selected, 'balance.amount', 0);
-  }
-};
-
-const getBalanceAmount = async (
-  selectedGasPrice,
-  selected,
-  onchain = false,
-  accountAddress = null
-) => {
-  let amount = '';
-  if (onchain && selected && selected.address) {
-    amount = await getOnChainBalance(selected, accountAddress);
-  } else {
-    amount = get(selected, 'balance.amount', 0);
-  }
+const getBalanceAmount = async (selectedGasPrice, selected) => {
+  let amount = get(selected, 'balance.amount', 0);
   if (selected && selected.address === 'eth') {
     if (!isEmpty(selectedGasPrice)) {
       const txFeeRaw = get(selectedGasPrice, 'txFee.value.amount');
       const txFeeAmount = fromWei(txFeeRaw);
       const remaining = subtract(amount, txFeeAmount);
-      amount = convertNumberToString(greaterThan(remaining, 0) ? remaining : 0);
+      amount = greaterThan(remaining, 0) ? remaining : '0';
     }
   }
   return amount;

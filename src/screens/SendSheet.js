@@ -126,13 +126,11 @@ const SendSheet = ({
     async newSelected => {
       const currentBalanceAmount = await ethereumUtils.getBalanceAmount(
         selectedGasPrice,
-        newSelected,
-        true,
-        accountAddress
+        newSelected
       );
       setBalanceAmount(currentBalanceAmount);
     },
-    [accountAddress, selectedGasPrice]
+    [selectedGasPrice]
   );
 
   // Recalculate balance when gas price changes
@@ -231,13 +229,11 @@ const SendSheet = ({
   const sendMaxBalance = useCallback(async () => {
     const balanceAmount = await ethereumUtils.getBalanceAmount(
       selectedGasPrice,
-      selected,
-      true,
-      accountAddress
+      selected
     );
     setBalanceAmount(balanceAmount);
     sendUpdateAssetAmount(balanceAmount);
-  }, [accountAddress, selected, selectedGasPrice, sendUpdateAssetAmount]);
+  }, [selected, selectedGasPrice, sendUpdateAssetAmount]);
 
   const onChangeAssetAmount = useCallback(
     newAssetAmount => {
