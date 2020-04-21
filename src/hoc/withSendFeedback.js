@@ -1,5 +1,5 @@
+import Clipboard from '@react-native-community/clipboard';
 import { debounce } from 'lodash';
-import { Clipboard } from 'react-native';
 import Mailer from 'react-native-mail';
 import { withHandlers } from 'recompact';
 import { Alert } from '../components/alerts';
