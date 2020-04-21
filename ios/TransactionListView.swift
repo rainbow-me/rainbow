@@ -22,10 +22,10 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var onCopyTooltipPress: RCTBubblingEventBlock = { _ in }
   @objc var onAvatarPress: RCTBubblingEventBlock = { _ in }
   @objc var onAddCashPress: RCTBubblingEventBlock = { _ in }
-  @objc var addCashButtonAvailable: Bool = true {
+  @objc var addCashAvailable: Bool = true {
     didSet {
-      header.addCash.isHidden = addCashButtonAvailable
-      header.addCash.isHidden = !addCashButtonAvailable
+      header.addCash.isHidden = addCashAvailable
+      header.addCash.isHidden = !addCashAvailable
     }
   }
   @objc var isAvatarPickerAvailable: Bool = true {
@@ -243,7 +243,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   /// React Native is known to re-render only first-level subviews. Since our tableView is a custom view that we add as a second-level subview, we need to relayout it manually
   override func layoutSubviews() {
     tableView.frame = self.bounds
-    header.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: addCashButtonAvailable ? 260 : 185)
+    header.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: addCashAvailable ? 260 : 185)
     headerSeparator.frame = CGRect(x: 19, y: header.frame.size.height - 2, width: tableView.bounds.width - 19, height: 2)
     headerSeparator.roundLeftCorners()
   }

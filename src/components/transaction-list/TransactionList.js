@@ -64,6 +64,7 @@ class TransactionList extends React.PureComponent {
       accountColor,
       accountENS,
       accountName,
+      addCashAvailable,
       onAddCashPress,
       onAvatarPress,
       onReceivePress,

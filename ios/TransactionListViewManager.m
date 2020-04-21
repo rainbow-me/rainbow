@@ -23,7 +23,7 @@ RCT_EXPORT_VIEW_PROPERTY(onAvatarPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onCopyAddressPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onCopyTooltipPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onReceivePress, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(addCashButtonAvailable, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(addCashAvailable, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(isAvatarPickerAvailable, BOOL)
 
 @end
