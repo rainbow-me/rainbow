@@ -45,10 +45,14 @@ class TransactionListViewCell: TransactionListBaseCell {
         coinImage.image = img
       } else if transaction.address != nil {
         let url = URL(string: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/\(transaction.address!)/logo.png");
-        coinImage.sd_setImage(with: url)
-      } else {
-        coinImage.image = generateTextImage(transaction.symbol)
-        coinImage.layer.cornerRadius = coinImage.frame.width * 0.5
+        coinImage.sd_setImage(with: url) { (image, error, cache, urls) in
+          if (error != nil) {
+            self.coinImage.image = self.generateTextImage(transaction.symbol)
+            self.coinImage.layer.cornerRadius = self.coinImage.frame.width * 0.5
+          } else {
+            self.coinImage.image = image
+          }
+        }
       }
     }
   }
