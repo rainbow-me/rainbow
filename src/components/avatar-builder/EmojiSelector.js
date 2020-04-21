@@ -20,7 +20,7 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated from 'react-native-reanimated';
+import Animated, { Value } from 'react-native-reanimated';
 import {
   DataProvider,
   LayoutProvider,
@@ -101,8 +101,8 @@ const HEADER_ROW = 2;
 const OVERLAY = 3;
 
 let currentIndex = 0;
-let scrollPosition = new Animated.Value(0);
-let nextCategoryOffset = new Animated.Value(1);
+let scrollPosition = new Value(0);
+let nextCategoryOffset = new Value(1);
 let blockCategories = true;
 
 export default class EmojiSelector extends PureComponent {
@@ -120,7 +120,7 @@ export default class EmojiSelector extends PureComponent {
       searchQuery: '',
     };
 
-    nextCategoryOffset = new Animated.Value(1);
+    nextCategoryOffset = new Value(1);
     this.contacts = {};
 
     this._layoutProvider = new LayoutProvider(

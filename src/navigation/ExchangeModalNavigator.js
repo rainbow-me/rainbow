@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import React from 'react';
-import Animated from 'react-native-reanimated';
+import { Value } from 'react-native-reanimated';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { withBlockedHorizontalSwipe } from '../hoc';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
@@ -10,7 +10,7 @@ import { deviceUtils } from '../utils';
 import createStackNavigator from './createStackNavigator';
 import { swapDetailsPreset } from './transitions/effects';
 
-const ExchangeModalTabPosition = new Animated.Value(0);
+const ExchangeModalTabPosition = new Value(0);
 
 const ExchangeModalNavigator = createMaterialTopTabNavigator(
   {

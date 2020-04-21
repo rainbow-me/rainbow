@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { View } from 'react-native';
 import { State } from 'react-native-gesture-handler';
-import Animated, { Easing } from 'react-native-reanimated';
+import Animated, { Clock, Easing, Value } from 'react-native-reanimated';
 import { contains, delay, timing } from 'react-native-redash';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { deviceUtils } from '../../utils';
@@ -23,8 +23,6 @@ const {
   add,
   sub,
   onChange,
-  Value,
-  Clock,
   block,
   event,
   concat,
@@ -409,10 +407,12 @@ export default class Chart extends PureComponent {
     }
     if (currentInterval !== this.currentInterval) {
       setTimeout(async () => {
+        // eslint-disable-next-line import/no-named-as-default-member
         Animated.timing(
           this.chartAnimationValues[this.currentInterval],
           this._configDown
         ).start();
+        // eslint-disable-next-line import/no-named-as-default-member
         Animated.timing(
           this.chartAnimationValues[currentInterval],
           this._configUp
@@ -750,10 +750,7 @@ export default class Chart extends PureComponent {
                     opacity: this.opacity,
                     transform: [
                       {
-                        translateX: Animated.add(
-                          this.touchX,
-                          new Animated.Value(-1.5)
-                        ),
+                        translateX: Animated.add(this.touchX, new Value(-1.5)),
                       },
                     ],
                   },

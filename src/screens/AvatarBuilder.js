@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import Animated from 'react-native-reanimated';
+import Animated, { spring, Value } from 'react-native-reanimated';
 import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
@@ -17,8 +17,6 @@ import {
 import store from '../redux/store';
 import { colors } from '../styles';
 import { deviceUtils } from '../utils';
-
-const { Value } = Animated;
 
 const springConfig = {
   damping: 38,
@@ -71,7 +69,7 @@ class AvatarBuilder extends PureComponent {
       isSelected={index - 4 === 0}
       onPressColor={() => {
         let destination = (index - 4) * 39;
-        Animated.spring(this.springAnim, {
+        spring(this.springAnim, {
           toValue: destination,
           ...springConfig,
         }).start();
