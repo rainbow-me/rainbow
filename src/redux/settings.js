@@ -1,5 +1,4 @@
 import {
-  getLanguage,
   getNativeCurrency,
   getNetwork,
   saveLanguage,
@@ -39,15 +38,6 @@ const SETTINGS_UPDATE_NETWORK_FAILURE =
 
 // -- Actions --------------------------------------------------------------- //
 export const settingsLoadState = () => async dispatch => {
-  try {
-    const language = await getLanguage();
-    dispatch({
-      payload: language,
-      type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
-    });
-  } catch (error) {
-    dispatch({ type: SETTINGS_UPDATE_LANGUAGE_FAILURE });
-  }
   try {
     const nativeCurrency = await getNativeCurrency();
     dispatch({

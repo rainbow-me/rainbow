@@ -1,5 +1,6 @@
+import Clipboard from '@react-native-community/clipboard';
 import React from 'react';
-import { Clipboard, Linking, requireNativeComponent, View } from 'react-native';
+import { Linking, requireNativeComponent, View } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers, withState } from 'recompact';
 import { isAvatarPickerAvailable } from '../../config/experimental';

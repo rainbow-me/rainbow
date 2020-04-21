@@ -1,7 +1,8 @@
+import Clipboard from '@react-native-community/clipboard';
 import { get, isEmpty, isNumber, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
-import { Clipboard, Keyboard } from 'react-native';
+import { Keyboard } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
