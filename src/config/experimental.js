@@ -8,4 +8,4 @@ export const discoverSheetAvailable = false;
 export const chartExpandedAvailable = false;
 export const nativeTransactionListAvailable = false;
 export const nativeButtonPressAnimationAvailable = true;
-export const isAvatarPickerAvailable = false;
+export const isAvatarPickerAvailable = true;

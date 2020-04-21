@@ -147,8 +147,8 @@ export default class EmojiSelector extends PureComponent {
     }
     return (
       <View>
-        {categoryEmojis.map(({ rowContent, touchableNet }, categoryIndex) => (
-          <View key={`categoryEmoji${categoryIndex}`}>
+        {categoryEmojis.map(({ rowContent, touchableNet }) => (
+          <View key={`categoryEmoji${rowContent[0]}`}>
             <Text
               style={{
                 marginHorizontal: 10,
@@ -168,9 +168,9 @@ export default class EmojiSelector extends PureComponent {
                 position: 'absolute',
               }}
             >
-              {touchableNet.map((singleLine, index) => (
+              {touchableNet.map(singleLine => (
                 <TouchableOpacity
-                  key={`categoryEmojiTouchableOpacity${categoryIndex}${index}`}
+                  key={`categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`}
                   activeOpacity={0.5}
                   style={{
                     height: (width - 21) / this.props.columns,
@@ -330,9 +330,9 @@ export default class EmojiSelector extends PureComponent {
   prerenderEmojis(emojisRows) {
     return (
       <View style={{ marginTop: 34 }}>
-        {emojisRows.map((emojis, i) => (
+        {emojisRows.map(emojis => (
           <Text
-            key={`emojiRow${i}`}
+            key={`emojiRow${emojis[0]}`}
             style={{
               marginHorizontal: 10,
               fontSize: Math.floor(this.state.colSize) - 15,

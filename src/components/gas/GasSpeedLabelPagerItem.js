@@ -102,7 +102,10 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
     >
       <Animated.View style={{ opacity, transform: [{ translateX }] }}>
         <Row align="end" height={GasSpeedLabelPagerItemHeight} justify="end">
-          <GasSpeedEmoji label={label} />
+          <GasSpeedEmoji
+            containerHeight={GasSpeedLabelPagerItemHeight}
+            label={label}
+          />
           <GasSpeedLabel style={{ marginBottom: 3 }}>
             {upperFirst(label)}
           </GasSpeedLabel>
