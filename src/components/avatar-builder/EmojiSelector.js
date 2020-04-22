@@ -20,7 +20,7 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated from 'react-native-reanimated';
+import Animated, { Value } from 'react-native-reanimated';
 import {
   DataProvider,
   LayoutProvider,
@@ -31,60 +31,10 @@ import 'string.fromcodepoint';
 import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
 import { colors, fonts, position } from '../../styles';
 import { deviceUtils } from '../../utils';
+import { Categories } from './Categories';
 import TabBar from './TabBar';
 
 // TODO width attribute is temporary solution that will be removed as soon as I figure out why proper scaling does not work
-
-export const Categories = {
-  people: {
-    icon: 'emojiSmileys',
-    index: 0,
-    name: 'Smileys & People',
-    width: 138,
-  },
-  nature: {
-    icon: 'emojiAnimals',
-    index: 1,
-    name: 'Animals & Nature',
-    width: 143,
-  },
-  food: {
-    icon: 'emojiFood',
-    index: 2,
-    name: 'Food & Drink',
-    width: 109,
-  },
-  activities: {
-    icon: 'emojiActivities',
-    index: 3,
-    name: 'Activities',
-    width: 87,
-  },
-  places: {
-    icon: 'emojiTravel',
-    index: 4,
-    name: 'Travel & Places',
-    width: 132,
-  },
-  objects: {
-    icon: 'emojiObjects',
-    index: 5,
-    name: 'Objects',
-    width: 75,
-  },
-  icons: {
-    icon: 'emojiSymbols',
-    index: 6,
-    name: 'Symbols',
-    width: 79,
-  },
-  flags: {
-    icon: 'emojiFlags',
-    index: 7,
-    name: 'Flags',
-    width: 57,
-  },
-};
 
 const charFromUtf16 = utf16 =>
   String.fromCodePoint(...utf16.split('-').map(u => '0x' + u));
@@ -101,8 +51,8 @@ const HEADER_ROW = 2;
 const OVERLAY = 3;
 
 let currentIndex = 0;
-let scrollPosition = new Animated.Value(0);
-let nextCategoryOffset = new Animated.Value(1);
+let scrollPosition = new Value(0);
+let nextCategoryOffset = new Value(1);
 let blockCategories = true;
 
 export default class EmojiSelector extends PureComponent {
@@ -120,7 +70,7 @@ export default class EmojiSelector extends PureComponent {
       searchQuery: '',
     };
 
-    nextCategoryOffset = new Animated.Value(1);
+    nextCategoryOffset = new Value(1);
     this.contacts = {};
 
     this._layoutProvider = new LayoutProvider(
@@ -197,8 +147,8 @@ export default class EmojiSelector extends PureComponent {
     }
     return (
       <View>
-        {categoryEmojis.map(({ rowContent, touchableNet }, categoryIndex) => (
-          <View key={`categoryEmoji${categoryIndex}`}>
+        {categoryEmojis.map(({ rowContent, touchableNet }) => (
+          <View key={`categoryEmoji${rowContent[0]}`}>
             <Text
               style={{
                 marginHorizontal: 10,
@@ -218,9 +168,9 @@ export default class EmojiSelector extends PureComponent {
                 position: 'absolute',
               }}
             >
-              {touchableNet.map((singleLine, index) => (
+              {touchableNet.map(singleLine => (
                 <TouchableOpacity
-                  key={`categoryEmojiTouchableOpacity${categoryIndex}${index}`}
+                  key={`categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`}
                   activeOpacity={0.5}
                   style={{
                     height: (width - 21) / this.props.columns,
@@ -276,6 +226,7 @@ export default class EmojiSelector extends PureComponent {
         emojiCategory[1].offset = offset;
         allEmojiList = allEmojiList.concat(emojiCategory);
       }
+      return true;
     });
 
     allEmojiList.push({ overlay: true });
@@ -379,9 +330,9 @@ export default class EmojiSelector extends PureComponent {
   prerenderEmojis(emojisRows) {
     return (
       <View style={{ marginTop: 34 }}>
-        {emojisRows.map((emojis, i) => (
+        {emojisRows.map(emojis => (
           <Text
-            key={`emojiRow${i}`}
+            key={`emojiRow${emojis[0]}`}
             style={{
               marginHorizontal: 10,
               fontSize: Math.floor(this.state.colSize) - 15,

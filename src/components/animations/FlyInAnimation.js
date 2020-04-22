@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import Animated, { Easing } from 'react-native-reanimated';
+import Animated, { Easing, timing, Value } from 'react-native-reanimated';
 import { interpolate } from './procs';
 
 const buildAnimation = (value, toValue) =>
-  Animated.timing(value, {
+  timing(value, {
     duration: 175,
     easing: Easing.bezier(0.165, 0.84, 0.44, 1),
     isInteraction: false,
@@ -22,7 +22,7 @@ export default class FlyInAnimation extends PureComponent {
 
   componentWillUnmount = () => buildAnimation(this.animation, 0);
 
-  animation = new Animated.Value(0);
+  animation = new Value(0);
 
   buildInterpolation = outputRange =>
     interpolate(this.animation, {

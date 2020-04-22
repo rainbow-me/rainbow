@@ -1,6 +1,6 @@
-import Animated from 'react-native-reanimated';
+import Animated, { Value } from 'react-native-reanimated';
 
-const { eq, or, proc, Value } = Animated;
+const { eq, or, proc } = Animated;
 
 const containsProc = proc((acc, value, v) => or(acc, eq(value, v)));
 

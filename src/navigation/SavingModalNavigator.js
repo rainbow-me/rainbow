@@ -1,12 +1,12 @@
 import { get } from 'lodash';
 import React from 'react';
-import Animated from 'react-native-reanimated';
+import { Value } from 'react-native-reanimated';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
 import DepositModal from '../screens/DepositModal';
 import { deviceUtils } from '../utils';
 
-const ExchangeModalTabPosition = new Animated.Value(0);
+const ExchangeModalTabPosition = new Value(0);
 
 const SavingModalNavigator = createMaterialTopTabNavigator(
   {

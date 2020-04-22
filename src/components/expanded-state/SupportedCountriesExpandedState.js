@@ -37,7 +37,7 @@ const sx = StyleSheet.create({
 });
 
 const countries = values(supportedCountries).map(c =>
-  c.name == 'United States'
+  c.name === 'United States'
     ? 'United\xa0States (except CT, HI, NC, NH, NY, VA, VT)'
     : c.name.replace(/ /g, '\xa0')
 );

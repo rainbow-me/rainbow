@@ -3,14 +3,14 @@ import './global';
 import './shim';
 
 import lang from 'i18n-js';
-import RNLanguages from 'react-native-languages';
+import { language } from 'react-native-languages';
 // eslint-disable-next-line no-unused-vars,import/default
 import App from './src/App';
 import { resources } from './src/languages';
 
 // Languages (i18n)
 lang.defaultLocale = 'en';
-lang.locale = RNLanguages.language;
+lang.locale = language;
 lang.fallbacks = true;
 
 lang.translations = Object.assign(

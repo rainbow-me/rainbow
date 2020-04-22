@@ -2,7 +2,12 @@ import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { LayoutAnimation, View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, {
+  Clock,
+  spring,
+  SpringUtils,
+  Value,
+} from 'react-native-reanimated';
 import { compose } from 'recompact';
 import EditOptions from '../../helpers/editOptionTypes';
 import {
@@ -20,17 +25,7 @@ import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
 
-const {
-  block,
-  Clock,
-  clockRunning,
-  cond,
-  set,
-  spring,
-  SpringUtils,
-  startClock,
-  Value,
-} = Animated;
+const { block, clockRunning, cond, set, startClock } = Animated;
 
 const CoinDividerHeight = 30;
 

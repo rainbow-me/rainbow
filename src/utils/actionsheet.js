@@ -1,5 +1,5 @@
 import { ActionSheetIOS, Platform } from 'react-native';
-import { logger } from '../utils';
+import logger from './logger';
 
 export function showActionSheetWithOptions(...args) {
   if (Platform.OS === 'ios') {

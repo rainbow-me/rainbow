@@ -1,6 +1,6 @@
-import Animated from 'react-native-reanimated';
+import Animated, { spring, Value } from 'react-native-reanimated';
 
-const { block, clockRunning, cond, set, spring, startClock, Value } = Animated;
+const { block, clockRunning, cond, set, startClock } = Animated;
 
 export default function runSpring(
   clock,

@@ -7,9 +7,7 @@ import { withOpenInvestmentCards } from '../../hoc';
 import { colors, position } from '../../styles';
 import { ButtonPressAnimation, SizeToggler } from '../animations';
 import { Column, InnerBorder } from '../layout';
-import InvestmentCardWrap from './InvestmentCard';
 import InvestmentCardHeader from './InvestmentCardHeader';
-import UniswapInvestmentCard from './UniswapInvestmentCard';
 
 const InvestmentCardBorderRadius = 24.5;
 
@@ -50,10 +48,7 @@ const InvestmentCard = enhance(
     <View
       style={
         headerProps.isCollapsible && {
-          height:
-            UniswapInvestmentCard.height +
-            2 * InvestmentCardWrap.margin.vertical +
-            20,
+          height: containerHeight + 2 * InvestmentCardMargin.vertical + 20,
         }
       }
     >

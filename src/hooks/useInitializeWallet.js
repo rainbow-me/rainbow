@@ -4,7 +4,6 @@ import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { getAccountInfo } from '../handlers/localstorage/accountLocal';
-import { useAccountSettings, useCheckEthBalance } from '../hooks';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
@@ -15,6 +14,8 @@ import {
   settingsUpdateAccountName,
 } from '../redux/settings';
 import { logger } from '../utils';
+import useAccountSettings from './useAccountSettings';
+import useCheckEthBalance from './useCheckEthBalance';
 import useClearAccountData from './useClearAccountData';
 import useHideSplashScreen from './useHideSplashScreen';
 import useInitializeAccountData from './useInitializeAccountData';

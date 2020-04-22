@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { TouchableScale } from '../animations';
-import { FloatingEmojis, FloatingEmojisTapHandler } from '../floating-emojis';
+import FloatingEmojis from './FloatingEmojis';
+import FloatingEmojisTapHandler from './FloatingEmojisTapHandler';
 
 const FloatingEmojisTapper = ({ activeScale, children, ...props }) => (
   <FloatingEmojis

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { View } from 'react-native';
-import Animated, { Easing } from 'react-native-reanimated';
+import Animated, { Easing, timing, Value } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { setSelectedInputId } from '../../redux/selectedInput';
 import store from '../../redux/store';
@@ -71,12 +71,12 @@ export default class UnderlineField extends PureComponent {
     }
   }
 
-  animation = new Animated.Value(0);
+  animation = new Value(0);
 
   format = string => (this.props.format ? this.props.format(string) : string);
 
   onBlur = (...props) => {
-    Animated.timing(this.animation, {
+    timing(this.animation, {
       duration: 1,
       easing: Easing.linear,
       toValue: 0,
@@ -102,7 +102,7 @@ export default class UnderlineField extends PureComponent {
   };
 
   onFocus = (...props) => {
-    Animated.timing(this.animation, {
+    timing(this.animation, {
       duration: 150,
       easing: Easing.ease,
       toValue: 1,

@@ -1,9 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { SpringUtils } from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
-
-const { SpringUtils } = Animated;
 
 const discoverSheetSpring = SpringUtils.makeConfigFromBouncinessAndSpeed({
   ...SpringUtils.makeDefaultConfig(),

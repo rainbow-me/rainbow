@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import analytics from '@segment/analytics-react-native';
 import { getMarketDetails as getUniswapMarketDetails } from '@uniswap/sdk';
 import BigNumber from 'bignumber.js';
@@ -59,9 +60,13 @@ import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import { backgroundTask, ethereumUtils, logger } from '../utils';
-import { CurrencySelectionTypes } from './CurrencySelectModal';
 
 export const exchangeModalBorderRadius = 30;
+
+export const CurrencySelectionTypes = {
+  input: 'input',
+  output: 'output',
+};
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(
   toClass(FloatingPanels)

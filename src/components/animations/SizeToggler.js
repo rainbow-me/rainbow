@@ -1,21 +1,9 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Clock, Component, spring, SpringUtils, Value } from 'react';
 import Animated from 'react-native-reanimated';
 import { interpolate } from './procs';
 
-const {
-  add,
-  block,
-  Clock,
-  clockRunning,
-  cond,
-  multiply,
-  set,
-  spring,
-  SpringUtils,
-  startClock,
-  Value,
-} = Animated;
+const { add, block, clockRunning, cond, multiply, set, startClock } = Animated;
 
 function runTiming(clock, value, dest, friction, tension) {
   const state = {
@@ -25,7 +13,7 @@ function runTiming(clock, value, dest, friction, tension) {
     velocity: new Value(0),
   };
 
-  const config = Animated.SpringUtils.makeConfigFromOrigamiTensionAndFriction({
+  const config = SpringUtils.makeConfigFromOrigamiTensionAndFriction({
     ...SpringUtils.makeDefaultConfig(),
     friction,
     tension,

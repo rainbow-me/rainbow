@@ -1,7 +1,12 @@
 import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import Animated from 'react-native-reanimated';
+import Animated, {
+  Clock,
+  spring,
+  SpringUtils,
+  Value,
+} from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import styled from 'styled-components/primitives';
 import { borders, colors, position } from '../../styles';
@@ -10,17 +15,13 @@ import { interpolate } from './procs';
 const {
   add,
   block,
-  Clock,
   clockRunning,
   cond,
   divide,
   multiply,
   set,
-  spring,
-  SpringUtils,
   startClock,
   sub,
-  Value,
 } = Animated;
 
 const RoundButtonCapSize = 30;

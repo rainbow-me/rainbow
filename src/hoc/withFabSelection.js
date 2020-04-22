@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
-import { extraStates } from '../components/fab/MovableFabWrapper';
+import { extraStates } from '../components/fab/ExtraStates';
 import {
   setActionType,
   setScrollingVelocity,
