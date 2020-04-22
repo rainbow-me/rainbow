@@ -174,11 +174,15 @@ const coinEditContextMenu = (
   allAssetsCount,
   totalValue
 ) => {
-  const noSmallBalances = !(
-    balanceSectionData[balanceSectionData.length - 1].smallBalancesContainer ||
-    (balanceSectionData.length > 1 &&
-      balanceSectionData[balanceSectionData.length - 2].smallBalancesContainer)
-  );
+  const noSmallBalances =
+    !balanceSectionData.length ||
+    !(
+      balanceSectionData[balanceSectionData.length - 1]
+        .smallBalancesContainer ||
+      (balanceSectionData.length > 1 &&
+        balanceSectionData[balanceSectionData.length - 2]
+          .smallBalancesContainer)
+    );
   return {
     contextMenuOptions:
       allAssets.length <= amountOfShowedCoins && noSmallBalances
