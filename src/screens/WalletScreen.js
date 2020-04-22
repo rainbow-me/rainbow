@@ -69,7 +69,7 @@ export default function WalletScreen() {
       reattaching of react subviews */}
       <Animated.Code exec={scrollViewTracker} />
       <FabWrapper
-        disabled={isWalletEthZero}
+        disabled={isEmpty}
         fabs={fabs}
         scrollViewTracker={scrollViewTracker}
         sections={sections}
