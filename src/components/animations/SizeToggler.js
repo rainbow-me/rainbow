@@ -1,6 +1,11 @@
 import PropTypes from 'prop-types';
-import React, { Clock, Component, spring, SpringUtils, Value } from 'react';
-import Animated from 'react-native-reanimated';
+import React, { Component } from 'react';
+import Animated, {
+  Clock,
+  spring,
+  SpringUtils,
+  Value,
+} from 'react-native-reanimated';
 import { interpolate } from './procs';
 
 const { add, block, clockRunning, cond, multiply, set, startClock } = Animated;
