@@ -15,7 +15,6 @@ export { default as withFabSendAction } from './withFabSendAction';
 export { default as withGas } from './withGas';
 export { default as withImageDimensionsCache } from './withImageDimensionsCache';
 export { default as withIsWalletEmpty } from './withIsWalletEmpty';
-export { default as withIsWalletEthZero } from './withIsWalletEthZero';
 export { default as withMessageSigningScreen } from './withMessageSigningScreen';
 export { default as withNeverRerender } from './withNeverRerender';
 export { default as withOpenFamilyTabs } from './withOpenFamilyTabs';
