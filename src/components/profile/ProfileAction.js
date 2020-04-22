@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { colors, padding, position } from '../../styles';
+import { colors, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
@@ -11,15 +11,24 @@ const ProfileAction = ({ icon, iconSize, onPress, text, ...props }) => (
     <RowWithMargins
       align="center"
       backgroundColor={colors.transparent}
-      css={padding(6, 9, 9)}
+      height={34}
+      justify="flex-start"
       margin={6}
+      paddingBottom={2}
     >
       <Icon
         color={colors.appleBlue}
+        marginTop={0.5}
         name={icon}
         style={position.sizeAsObject(iconSize)}
       />
-      <Text color="appleBlue" lineHeight={19} size="lmedium" weight="semibold">
+      <Text
+        color="appleBlue"
+        letterSpacing="roundedMedium"
+        lineHeight={19}
+        size="lmedium"
+        weight="semibold"
+      >
         {text}
       </Text>
     </RowWithMargins>

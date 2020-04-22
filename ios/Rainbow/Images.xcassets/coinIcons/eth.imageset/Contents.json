@@ -1,21 +1,23 @@
 {
   "images" : [
     {
+      "filename" : "eth.png",
       "idiom" : "universal",
-      "filename" : "eth.pdf",
       "scale" : "1x"
     },
     {
+      "filename" : "eth@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "eth@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }

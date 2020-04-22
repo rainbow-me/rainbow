@@ -1,21 +1,23 @@
 {
   "images" : [
     {
+      "filename" : "wck.png",
       "idiom" : "universal",
-      "filename" : "wck.pdf",
       "scale" : "1x"
     },
     {
+      "filename" : "wck@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "wck@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }

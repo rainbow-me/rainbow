@@ -1,21 +1,23 @@
 {
   "images" : [
     {
+      "filename" : "gno.png",
       "idiom" : "universal",
-      "filename" : "gno.pdf",
       "scale" : "1x"
     },
     {
+      "filename" : "gno@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "gno@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }

@@ -34,18 +34,40 @@
   for (id t in json) {
     NSDictionary *data = [self NSDictionary:t];
     Transaction *transaction = [[Transaction alloc] init];
-    transaction.status = [data[@"status"] capitalizedString];
-    transaction.symbol = data[@"symbol"];
+    if (data[@"status"] != [NSNull null]) {
+       transaction.status = [data[@"status"] capitalizedString];
+    }
+    if (data[@"symbol"] != [NSNull null]) {
+       transaction.symbol = data[@"symbol"];
+    }
+    if (data[@"address"] != [NSNull null]) {
+      transaction.address = data[@"address"];
+    }
     if (data[@"asset"][@"icon_url"] != [NSNull null]) {
       transaction.coinImage = data[@"asset"][@"icon_url"];
     }
-    transaction.from = data[@"from"];
-    transaction.to = data[@"to"];
-    transaction.coinName = data[@"name"];
-    transaction.nativeDisplay = data[@"native"][@"display"];
-    transaction.balanceDisplay = data[@"balance"][@"display"];
-    transaction.type = data[@"type"];
-    transaction.pending = [[data valueForKey:@"pending"] boolValue];
+    if (data[@"from"] != [NSNull null]) {
+      transaction.from = data[@"from"];
+    }
+    if (data[@"to"] != [NSNull null]) {
+      transaction.to = data[@"to"];
+    }
+    if (data[@"name"] != [NSNull null]) {
+      transaction.coinName = data[@"name"];
+    }
+    if(data[@"native"][@"display"]){
+      transaction.nativeDisplay = data[@"native"][@"display"];
+    }
+    if(data[@"balance"][@"display"]){
+      transaction.balanceDisplay = data[@"balance"][@"display"];
+    }
+    if (data[@"type"] != [NSNull null]) {
+      transaction.type = data[@"type"];
+    }
+    if ([data valueForKey:@"pending"] != [NSNull null]) {
+      transaction.pending = [[data valueForKey:@"pending"] boolValue];
+    }
+    
     if (data[@"minedAt"] != [NSNull null]) {
       transaction.minedAt = [NSDate dateWithTimeIntervalSince1970: [data[@"minedAt"] doubleValue]];
     } else {

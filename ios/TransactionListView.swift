@@ -7,14 +7,27 @@
 
 import Foundation
 
+class TransitionListTableView: UITableView {
+  override func touchesShouldCancel(in view: UIView) -> Bool {
+    return true
+  }
+}
+
 class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var onTransactionPress: RCTBubblingEventBlock = { _ in }
   @objc var onRequestPress: RCTBubblingEventBlock = { _ in }
   @objc var onRequestExpire: RCTBubblingEventBlock = { _ in }
   @objc var onReceivePress: RCTBubblingEventBlock = { _ in }
   @objc var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
+  @objc var onCopyTooltipPress: RCTBubblingEventBlock = { _ in }
   @objc var onAvatarPress: RCTBubblingEventBlock = { _ in }
-  @objc var duration: TimeInterval = 0.15
+  @objc var onAddCashPress: RCTBubblingEventBlock = { _ in }
+  @objc var addCashAvailable: Bool = true {
+    didSet {
+      header.addCash.isHidden = addCashAvailable
+      header.addCash.isHidden = !addCashAvailable
+    }
+  }
   @objc var isAvatarPickerAvailable: Bool = true {
     didSet {
       header.avatarView.isHidden = isAvatarPickerAvailable
@@ -29,11 +42,13 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var accountAddress: String? = nil {
     didSet {
       header.accountAddress.text = accountAddress
+      header.accountAddress.addCharacterSpacing(kernValue: 0.5)
     }
   }
   @objc var accountColor: UIColor? = nil {
     didSet {
-      header.accountView.backgroundColor = accountColor
+      header.accountBackground.backgroundColor = accountColor
+      shadowLayer.shadowColor = accountColor?.cgColor
     }
   }
   @objc var accountName: String? = nil {
@@ -71,18 +86,30 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       }
     }
   }
-  
   @objc func onPressInAvatar(_ sender: UIButton) {
-    header.accountView.animateTapStart(scale: 0.89)
+    header.accountView.animateTapStart(scale: 0.9)
   }
-
   @objc func onPressOutAvatar(_ sender: UIButton) {
-    header.accountView.animateTapStart(scale: 1.0)
+    header.accountView.animateTapEnd()
   }
   
-  @objc func onReceivePressed(_ sender: UIButton) {
-    self.onReceivePress([:])
+  @objc func onAccountAddressPressed(_ sender: UITapGestureRecognizer) {
+    
+    if let senderView = sender.view {
+      senderView.becomeFirstResponder()
+      
+      let copyMenuItem = UIMenuItem(title: "Copy", action: #selector(onCopyTooltipPressed))
+      UIMenuController.shared.menuItems = [copyMenuItem]
+      UIMenuController.shared.setTargetRect(senderView.frame, in: header)
+      UIMenuController.shared.setMenuVisible(true, animated: true)
+    }
   }
+  
+  @objc func onCopyTooltipPressed() {
+    header.accountAddress.resignFirstResponder()
+    self.onCopyTooltipPress(nil);
+  }
+  
   @objc func onCopyAddressPressed(_ sender: UIButton) {
     let rect = sender.convert(sender.frame, to: self)
     self.onCopyAddressPress([
@@ -93,22 +120,52 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     ])
   }
   
+  
+  @objc func onPressInCopyAddress(_ sender: UIButton) {
+    header.copyAddress.animateTapStart(scale: 0.86)
+  }
+  @objc func onPressOutCopyAddress(_ sender: UIButton) {
+    header.copyAddress.animateTapEnd()
+  }
+
+  @objc func onReceivePressed(_ sender: UIButton) {
+    self.onReceivePress([:])
+  }
+  @objc func onPressInReceive(_ sender: UIButton) {
+    header.receive.animateTapStart(scale: 0.86)
+  }
+  @objc func onPressOutReceive(_ sender: UIButton) {
+    header.receive.animateTapEnd()
+  }
+  
+  @objc func onAddCashPressed(_ sender: UIButton) {
+    self.onAddCashPress([:])
+  }
+  @objc func onPressInAddCash(_ sender: UIButton) {
+    header.addCash.animateTapStart(scale: 0.9)
+  }
+  @objc func onPressOutAddCash(_ sender: UIButton) {
+    header.addCash.animateTapEnd()
+  }
+  
   var sections: [TransactionSectionProtocol] = [TransactionSectionProtocol]()
   
-  let tableView = UITableView()
+  let tableView = TransitionListTableView()
   let header: TransactionListViewHeader = TransactionListViewHeader.fromNib()
   let headerSeparator = UIView()
+  let shadowLayer = CAShapeLayer()
   
   override init(frame: CGRect) {
     super.init(frame: frame)
     
     tableView.dataSource = self
     tableView.delegate = self
-    tableView.rowHeight = 60
+    tableView.rowHeight = 70
     tableView.delaysContentTouches = false
     tableView.separatorStyle = .none
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
     tableView.register(UINib(nibName: "TransactionListRequestViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListRequestViewCell")
+    tableView.canCancelContentTouches = true
     
     header.addSubview(headerSeparator)
     
@@ -120,10 +177,61 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchCancel)
     header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchUpOutside)
     
-    header.receive.addTarget(self, action: #selector(onReceivePressed(_:)), for: .touchUpInside)
-    header.copyAddress.addTarget(self, action: #selector(onCopyAddressPressed(_:)), for: .touchUpInside)
+    header.accountAddress.becomeFirstResponder();
+    let pressGR = UITapGestureRecognizer(target: self, action: #selector(onAccountAddressPressed))
+    header.accountAddress.isUserInteractionEnabled = true
+    header.accountAddress.addGestureRecognizer(pressGR)
     
-    headerSeparator.backgroundColor = UIColor(red:0.40, green:0.42, blue:0.45, alpha:0.05)
+    header.copyAddress.addTarget(self, action: #selector(onCopyAddressPressed(_:)), for: .touchUpInside)
+    header.copyAddress.addTarget(self, action: #selector(onPressInCopyAddress(_:)), for: .touchDown)
+    header.copyAddress.addTarget(self, action: #selector(onPressInCopyAddress(_:)), for: .touchDragInside)
+    header.copyAddress.addTarget(self, action: #selector(onPressOutCopyAddress(_:)), for: .touchUpInside)
+    header.copyAddress.addTarget(self, action: #selector(onPressOutCopyAddress(_:)), for: .touchDragOutside)
+    header.copyAddress.addTarget(self, action: #selector(onPressOutCopyAddress(_:)), for: .touchCancel)
+    header.copyAddress.addTarget(self, action: #selector(onPressOutCopyAddress(_:)), for: .touchUpOutside)
+    
+    header.receive.addTarget(self, action: #selector(onReceivePressed(_:)), for: .touchUpInside)
+    header.receive.addTarget(self, action: #selector(onPressInReceive(_:)), for: .touchDown)
+    header.receive.addTarget(self, action: #selector(onPressInReceive(_:)), for: .touchDragInside)
+    header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchUpInside)
+    header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchDragOutside)
+    header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchCancel)
+    header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchUpOutside)
+    
+    header.addCash.addTarget(self, action: #selector(onAddCashPressed(_:)), for: .touchUpInside)
+    header.addCash.addTarget(self, action: #selector(onPressInAddCash(_:)), for: .touchDown)
+    header.addCash.addTarget(self, action: #selector(onPressInAddCash(_:)), for: .touchDragInside)
+    header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchUpInside)
+    header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchDragOutside)
+    header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchCancel)
+    header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchUpOutside)
+    
+    header.copyAddress.titleLabel?.addCharacterSpacing(kernValue: 0.5)
+    header.receive.titleLabel?.addCharacterSpacing(kernValue: 0.5)
+    header.addCashLabel.titleLabel?.textAlignment = .center
+    header.addCashLabel.titleLabel?.addCharacterSpacing(kernValue: 0.4)
+    
+    let secondShadowLayer = CAShapeLayer()
+    let radius = header.accountBackground.frame.width / 2.0
+    let circle = UIBezierPath(arcCenter: header.accountBackground.center, radius: radius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
+
+    shadowLayer.shadowOffset = CGSize(width: 0, height: 6)
+    shadowLayer.shadowOpacity = 0.25
+    shadowLayer.shadowPath = circle.cgPath
+    shadowLayer.shadowRadius = 5
+    shadowLayer.zPosition = -1
+
+    secondShadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
+    secondShadowLayer.shadowOffset = CGSize(width: 0, height: 2)
+    secondShadowLayer.shadowOpacity = 0.2
+    secondShadowLayer.shadowPath = circle.cgPath
+    secondShadowLayer.shadowRadius = 2.5
+    secondShadowLayer.zPosition = -2
+
+    header.accountView.layer.addSublayer(shadowLayer)
+    header.accountView.layer.addSublayer(secondShadowLayer)
+    
+    headerSeparator.backgroundColor = UIColor.RainbowTheme.Transactions.rowDividerLight
     tableView.tableHeaderView = header
     addSubview(tableView)
   }
@@ -135,17 +243,18 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   /// React Native is known to re-render only first-level subviews. Since our tableView is a custom view that we add as a second-level subview, we need to relayout it manually
   override func layoutSubviews() {
     tableView.frame = self.bounds
-    header.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 200)
-    headerSeparator.frame = CGRect(x: 20, y: header.frame.size.height - 2, width: tableView.bounds.width - 20, height: 2)
+    header.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: addCashAvailable ? 260 : 185)
+    headerSeparator.frame = CGRect(x: 19, y: header.frame.size.height - 2, width: tableView.bounds.width - 19, height: 2)
+    headerSeparator.roundLeftCorners()
   }
   
   func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-    return 60
+    return 57
   }
   
   func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     let view = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: 40))
-    let label = UILabel(frame: CGRect(x: 20, y: 20, width: view.frame.width, height: view.frame.height))
+    let label = UILabel(frame: CGRect(x: 19, y: 19, width: view.frame.width, height: view.frame.height))
     
     if sections.count == 0 {
       return nil
@@ -154,11 +263,30 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     let section = sections[section]
     
     label.text = section.title
-    label.font = .systemFont(ofSize: 18.0, weight: .semibold)
+    label.font = UIFont(name: "SFRounded-Bold", size: 20)
+    label.textColor = UIColor.RainbowTheme.Transactions.dark
+    label.addCharacterSpacing()
     view.backgroundColor = .white
     view.addSubview(label)
     
     return view
+  }
+  
+  func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    let item = sections[indexPath.section]
+    
+    if item.type == .transactions {
+      let section = sections[indexPath.section]
+      
+      if section.data.indices.contains(indexPath.row + 1) {
+        let nextTransaction = section.data[indexPath.row + 1] as! Transaction
+        if nextTransaction.isSwapped() {
+          return 52.0
+        }
+      }
+    }
+    
+    return 70.0
   }
   
   func numberOfSections(in tableView: UITableView) -> Int {

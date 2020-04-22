@@ -1,21 +1,23 @@
 {
   "images" : [
     {
+      "filename" : "nexo.png",
       "idiom" : "universal",
-      "filename" : "nexo.pdf",
       "scale" : "1x"
     },
     {
+      "filename" : "nexo@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "nexo@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }

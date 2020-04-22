@@ -1,21 +1,23 @@
 {
   "images" : [
     {
+      "filename" : "salt.png",
       "idiom" : "universal",
-      "filename" : "salt.pdf",
       "scale" : "1x"
     },
     {
+      "filename" : "salt@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "salt@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }

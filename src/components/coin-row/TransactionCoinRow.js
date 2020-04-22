@@ -94,7 +94,7 @@ const TopRow = ({ balance, pending, status, type }) => (
   <RowWithMargins align="center" justify="space-between" margin={19}>
     <TransactionStatusBadge pending={pending} status={status} type={type} />
     <Row align="center" flex={1} justify="end">
-      <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
+      <BottomRowText align="right">{get(balance, 'display', '')}</BottomRowText>
     </Row>
   </RowWithMargins>
 );
