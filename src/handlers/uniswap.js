@@ -262,23 +262,38 @@ export const getLiquidityInfo = async (
         erc20ABI,
         web3Provider
       );
+
       const token = get(pairs, `[${toLower(tokenAddress)}]`);
 
-      let decimals = 18;
+      let decimals = '';
       let name = '';
       let symbol = '';
+
       if (token) {
         name = token.name;
         symbol = token.symbol;
         decimals = token.decimals;
       } else {
-        decimals = await tokenContract.decimals();
+        decimals = get(contractMap, `[${tokenAddress}].decimals`, '');
+        if (!decimals) {
+          try {
+            decimals = await tokenContract.decimals().catch();
+          } catch (error) {
+            decimals = 18;
+            logger.log(
+              'error getting decimals for token: ',
+              tokenAddress,
+              ' Error = ',
+              error
+            );
+          }
+        }
 
-        try {
-          name = await tokenContract.name().catch();
-        } catch (error) {
-          name = get(contractMap, `[${tokenAddress}].name`, '');
-          if (!name) {
+        name = get(contractMap, `[${tokenAddress}].name`, '');
+        if (!name) {
+          try {
+            name = await tokenContract.name().catch();
+          } catch (error) {
             logger.log(
               'error getting name for token: ',
               tokenAddress,
@@ -288,11 +303,11 @@ export const getLiquidityInfo = async (
           }
         }
 
-        let symbol = get(contractMap, `[${tokenAddress}].symbol`, '');
-        try {
-          symbol = await tokenContract.symbol().catch();
-        } catch (error) {
-          if (!symbol) {
+        symbol = get(contractMap, `[${tokenAddress}].symbol`, '');
+        if (!symbol) {
+          try {
+            symbol = await tokenContract.symbol().catch();
+          } catch (error) {
             logger.log(
               'error getting symbol for token: ',
               tokenAddress,
