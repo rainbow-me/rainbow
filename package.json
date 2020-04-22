@@ -17,7 +17,7 @@
     "install-all": "yarn && yarn install-pods",
     "install-pods": "cd ios && bundle exec pod install --repo-update && cd ..",
     "install-bundle": "cd ios && bundle install && cd ..",
-    "ios": "react-native run-ios --simulator='iPhone X'",
+    "ios": "react-native run-ios --simulator='iPhone 11'",
     "lint": "eslint --ext '.js,.jsx' .",
     "nodeify": "./node_modules/.bin/rn-nodeify --install \"crypto\" --hack",
     "postinstall": "patch-package && rn-nodeify --install --hack"
