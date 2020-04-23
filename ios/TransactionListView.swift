@@ -90,7 +90,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.accountView.animateTapStart(scale: 0.9)
   }
   @objc func onPressOutAvatar(_ sender: UIButton) {
-    header.accountView.animateTapEnd()
+    header.accountView.animateTapEnd(useHaptic: "selection")
   }
   
   @objc func onAccountAddressPressed(_ sender: UITapGestureRecognizer) {
@@ -124,7 +124,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.copyAddress.animateTapStart(scale: 0.86)
   }
   @objc func onPressOutCopyAddress(_ sender: UIButton) {
-    header.copyAddress.animateTapEnd()
+    header.copyAddress.animateTapEnd(useHaptic: "selection")
   }
 
   @objc func onReceivePressed(_ sender: UIButton) {
@@ -134,7 +134,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.receive.animateTapStart(scale: 0.86)
   }
   @objc func onPressOutReceive(_ sender: UIButton) {
-    header.receive.animateTapEnd()
+    header.receive.animateTapEnd(useHaptic: "selection")
   }
   
   @objc func onAddCashPressed(_ sender: UIButton) {
@@ -144,7 +144,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.addCash.animateTapStart(scale: 0.9)
   }
   @objc func onPressOutAddCash(_ sender: UIButton) {
-    header.addCash.animateTapEnd()
+    header.addCash.animateTapEnd(useHaptic: "selection")
   }
   
   var sections: [TransactionSectionProtocol] = [TransactionSectionProtocol]()
