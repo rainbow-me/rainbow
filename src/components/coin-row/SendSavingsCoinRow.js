@@ -18,8 +18,7 @@ const sx = StyleSheet.create({
   containerSelected: {
     height: selectedHeight,
     paddingBottom: 19,
-    paddingLeft: 15,
-    paddingRight: 15,
+    paddingHorizontal: 15,
     paddingTop: 15,
   },
 });

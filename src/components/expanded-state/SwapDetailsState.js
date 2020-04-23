@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import { swapDetailsTransitionPosition } from '../../navigation/transitions/effects';
-import { colors, padding, position } from '../../styles';
+import { colors } from '../../styles';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { TouchableScale } from '../animations';
 import { FloatingEmojis, FloatingEmojisTapHandler } from '../floating-emojis';
@@ -73,9 +73,9 @@ const SwapDetailsState = ({
               <TouchableScale activeScale={1.01}>
                 <AssetPanel overflow="visible" radius={20}>
                   <ColumnWithMargins
-                    {...position.centeredAsObject}
-                    css={padding(24, 19)}
                     margin={24}
+                    paddingHorizontal={19}
+                    paddingVertical={24}
                   >
                     {inputCurrencySymbol && inputExecutionRate && (
                       <DetailsRow
@@ -112,7 +112,7 @@ const SwapDetailsState = ({
                         />
                         <Text
                           align="right"
-                          color="#E540F1"
+                          color="flamingo"
                           letterSpacing="roundedTight"
                           size="lmedium"
                           weight="semibold"
