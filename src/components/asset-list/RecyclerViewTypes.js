@@ -1,4 +1,5 @@
 /* eslint-disable sort-keys */
+import { CoinDivider } from '../coin-divider';
 import { CoinRow } from '../coin-row';
 import { FloatingActionButton } from '../fab';
 import {
@@ -20,22 +21,18 @@ export const ViewTypes = {
     index: 0,
   },
 
-  COIN_ROW_FIRST: {
-    calculateHeight: () => CoinRow.height + firstCoinRowMarginTop,
-    index: 2,
-  },
   COIN_ROW: {
-    calculateHeight: () => CoinRow.height,
-    index: 3,
-  },
-  COIN_ROW_LAST: {
-    calculateHeight: areSmallCollectibles =>
-      areSmallCollectibles
-        ? CoinRow.height
-        : CoinRow.height + ListFooter.height + 1,
-    index: 4,
+    calculateHeight: ({ isFirst, isLast, areSmallCollectibles }) =>
+      CoinRow.height +
+      (isFirst ? firstCoinRowMarginTop : 0) +
+      (isLast && !areSmallCollectibles ? ListFooter.height + 1 : 0),
+    index: 1,
   },
 
+  COIN_DIVIDER: {
+    calculateHeight: () => CoinDivider.height,
+    index: 2,
+  },
   COIN_SMALL_BALANCES: {
     calculateHeight: ({ isOpen, smallBalancesLength, isCoinListEdited }) =>
       isOpen
@@ -43,11 +40,7 @@ export const ViewTypes = {
           15 +
           (isCoinListEdited ? 100 : 0)
         : 13,
-    index: 5,
-  },
-  COIN_DIVIDER: {
-    calculateHeight: () => CoinRow.height,
-    index: 6,
+    index: 3,
   },
 
   COIN_SAVINGS: {
@@ -62,7 +55,7 @@ export const ViewTypes = {
         ? TokenFamilyHeaderHeight + ListFooter.height + 61 * amountOfRows - 4
         : TokenFamilyHeaderHeight + ListFooter.height - 10;
     },
-    index: 7,
+    index: 4,
   },
 
   UNISWAP_ROW: {
@@ -70,7 +63,7 @@ export const ViewTypes = {
       (isOpen ? UniswapInvestmentCard.height : InvestmentCardHeader.height) +
       InvestmentCard.margin.vertical +
       (isLast ? ListFooter.height + 8 : 0),
-    index: 8,
+    index: 5,
   },
 
   UNIQUE_TOKEN_ROW: {
@@ -99,12 +92,12 @@ export const ViewTypes = {
           : 0);
       return height;
     },
-    index: 10,
+    index: 6,
   },
 
   FOOTER: {
     calculateHeight: () => 0,
-    index: 12,
+    index: 7,
   },
   UNKNOWN: {
     calculateHeight: () => 0,
