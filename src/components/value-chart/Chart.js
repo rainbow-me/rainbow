@@ -1,25 +1,10 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { Fragment, useMemo, useRef, useState } from 'react';
+import { greaterThan, toFixedDecimals } from '../../helpers/utilities';
 import { colors } from '../../styles';
 import TimespanSelector from './TimespanSelector';
 import ValueChart from './ValueChart';
 import ValueText from './ValueText';
-import {
-  data1,
-  data2,
-  data3,
-  data4,
-  dataColored1,
-  dataColored2,
-  dataColored3,
-} from './data';
-
-const dataColored = [dataColored1, dataColored2, dataColored3];
-const dataSwitching1 = [
-  dataColored,
-  [dataColored1, dataColored2],
-  [dataColored2, dataColored3],
-  [data4],
-];
+import { data1, data2, data3, dataColored2, dataColored3 } from './data';
 
 const dataSwitching2 = [
   [data2],
@@ -45,40 +30,8 @@ const colorsArray = [
 
 let colorIndex = 0;
 
-export default function Chart() {
+export default function Chart({ change }) {
   const textInputRef = useRef(null);
-
-  // eslint-disable-next-line no-unused-vars
-  const data1 = useMemo(() => {
-    colorIndex = 0;
-    return dataSwitching1.map((sectionsData, index) => {
-      return {
-        name: index,
-        segments: sectionsData.map((data, i) => {
-          return {
-            color: colorsArray[colorIndex++],
-            line: i * 5,
-            points: data.map(values => {
-              return {
-                isImportant: Math.random() < 0.05 ? true : false,
-                x: values.timestamp,
-                y: values.value,
-              };
-            }),
-            renderStartSeparator:
-              colorIndex % 2 !== 0
-                ? {
-                    fill: colorsArray[colorIndex],
-                    r: 7,
-                    stroke: 'white',
-                    strokeWidth: colorIndex + 2,
-                  }
-                : undefined,
-          };
-        }),
-      };
-    });
-  }, []);
 
   const data2 = useMemo(() => {
     colorIndex = 0;
@@ -90,7 +43,7 @@ export default function Chart() {
             color: colorsArray[colorIndex++],
             line: i * 5,
             points: data.map(values => {
-              return { x: values.timestamp, y: values.value };
+              return { x: values[0], y: values[1] };
             }),
             renderStartSeparator:
               colorIndex % 2 !== 0
@@ -108,14 +61,15 @@ export default function Chart() {
   }, []);
 
   const [currentChart, setCurrentChart] = useState(0);
-  const change = currentChart % 2 === 0 ? 20 : -20; // placeholder
+
+  const positiveChange = greaterThan(change, 0);
 
   return (
-    <>
+    <Fragment>
       <ValueText
         headerText="PRICE"
-        direction={change > 0}
-        change={change.toFixed(2)}
+        direction={positiveChange}
+        change={toFixedDecimals(change, 2)}
         ref={textInputRef}
       />
       <ValueChart
@@ -127,15 +81,15 @@ export default function Chart() {
         currentDataSource={currentChart}
         amountOfPathPoints={100}
         data={data2}
-        barColor={change > 0 ? colors.green : colors.red}
+        barColor={positiveChange ? colors.green : colors.red}
         stroke={{ detailed: 1.5, simplified: 3 }}
         importantPointsIndexInterval={25}
       />
       <TimespanSelector
         reloadChart={setCurrentChart}
-        color={change > 0 ? colors.green : colors.red}
+        color={positiveChange ? colors.green : colors.red}
         isLoading={false}
       />
-    </>
+    </Fragment>
   );
 }

@@ -45,7 +45,7 @@ export const convertNumberToString = value => BigNumber(`${value}`).toFixed();
  * @desc compares if numberOne is greater than numberTwo
  * @param  {Number}   numberOne
  * @param  {Number}   numberTwo
- * @return {String}
+ * @return {Boolean}
  */
 export const greaterThan = (numberOne, numberTwo) =>
   BigNumber(`${numberOne}`).gt(numberTwo);
@@ -54,7 +54,7 @@ export const greaterThan = (numberOne, numberTwo) =>
  * @desc compares if numberOne is greater than or equal to numberTwo
  * @param  {Number}   numberOne
  * @param  {Number}   numberTwo
- * @return {String}
+ * @return {Boolean}
  */
 export const greaterThanOrEqualTo = (numberOne, numberTwo) =>
   BigNumber(`${numberOne}`).gte(numberTwo);

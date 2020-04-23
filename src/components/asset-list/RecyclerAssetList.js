@@ -1,6 +1,6 @@
 import { findIndex, get, has, isNil } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { LayoutAnimation, RefreshControl, View } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { compose, pure } from 'recompact';
@@ -1100,7 +1100,7 @@ class RecyclerAssetList extends Component {
   };
 
   stickyRowRenderer = (_, data) => (
-    <>
+    <Fragment>
       <AssetListHeaderRenderer {...data} isSticky />
       {this.state.showCoinListEditor ? (
         <CoinDivider
@@ -1113,7 +1113,7 @@ class RecyclerAssetList extends Component {
           }}
         />
       ) : null}
-    </>
+    </Fragment>
   );
 
   render() {

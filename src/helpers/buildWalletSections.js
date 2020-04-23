@@ -71,12 +71,11 @@ const UniswapCardItem = enhanceRenderItem(UniswapInvestmentCard);
 const balancesSkeletonRenderItem = item => (
   <AssetListItemSkeleton animated descendingOpacity={false} {...item} />
 );
+
 const balancesRenderItem = item => (
-  <TokenItem
-    {...item}
-    assetType={item.item.price && chartExpandedAvailable ? 'chart' : 'token'}
-  />
+  <TokenItem {...item} assetType={chartExpandedAvailable ? 'chart' : 'token'} />
 );
+
 const tokenFamilyItem = item => (
   <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
 );
