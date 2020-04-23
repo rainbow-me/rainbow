@@ -76,7 +76,7 @@ const ProfileScreen = ({ navigation }) => {
           onPress={onPressBackButton}
         />
       </Header>
-      {nativeTransactionListAvailable ? (
+      {network === NetworkTypes.mainnet && nativeTransactionListAvailable ? (
         <TransactionList
           accountAddress={accountAddress}
           accountColor={accountColor}
