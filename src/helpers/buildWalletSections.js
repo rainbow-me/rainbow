@@ -10,6 +10,7 @@ import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
+import { chartExpandedAvailable } from '../config/experimental';
 import EditOptions from '../helpers/editOptionTypes';
 import {
   add,
@@ -71,7 +72,9 @@ const balancesSkeletonRenderItem = item => (
   <AssetListItemSkeleton animated descendingOpacity={false} {...item} />
 );
 
-const balancesRenderItem = item => <TokenItem {...item} assetType="chart" />;
+const balancesRenderItem = item => (
+  <TokenItem {...item} assetType={chartExpandedAvailable ? 'chart' : 'token'} />
+);
 
 const tokenFamilyItem = item => (
   <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />

@@ -1,6 +1,7 @@
 import { isNil, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
+import { chartExpandedAvailable } from '../config/experimental';
 import NetworkTypes from '../helpers/networkTypes';
 import { addressChartsReceived } from './charts';
 import {
@@ -95,14 +96,16 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
     addressSocket.emit(
       ...addressSubscription(accountAddress, nativeCurrency, 'unsubscribe')
     );
-    addressSocket.emit(
-      ...chartsSubscription(
-        accountAddress,
-        nativeCurrency,
-        chartType,
-        'unsubscribe'
-      )
-    );
+    if (chartExpandedAvailable) {
+      addressSocket.emit(
+        ...chartsSubscription(
+          accountAddress,
+          nativeCurrency,
+          chartType,
+          'unsubscribe'
+        )
+      );
+    }
     addressSocket.close();
   }
 };
@@ -134,9 +137,11 @@ export const explorerInit = () => (dispatch, getState) => {
   });
   addressSocket.on(messages.CONNECT, () => {
     addressSocket.emit(...addressSubscription(accountAddress, nativeCurrency));
-    addressSocket.emit(
-      ...chartsSubscription(accountAddress, nativeCurrency, chartType)
-    );
+    if (chartExpandedAvailable) {
+      addressSocket.emit(
+        ...chartsSubscription(accountAddress, nativeCurrency, chartType)
+      );
+    }
     dispatch(listenOnAddressMessages(addressSocket));
   });
 };
