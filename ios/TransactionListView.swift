@@ -120,7 +120,6 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     ])
   }
   
-  
   @objc func onPressInCopyAddress(_ sender: UIButton) {
     header.copyAddress.animateTapStart(scale: 0.86)
   }
@@ -166,6 +165,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
     tableView.register(UINib(nibName: "TransactionListRequestViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListRequestViewCell")
     tableView.canCancelContentTouches = true
+    tableView.scrollIndicatorInsets.bottom = 0.0000000001
     
     header.addSubview(headerSeparator)
     
