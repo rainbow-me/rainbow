@@ -1,16 +1,10 @@
 import { get, isEmpty, reverse } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
-import {
-  compose,
-  onlyUpdateForKeys,
-  withHandlers,
-  withProps,
-  withState,
-} from 'recompact';
 import styled from 'styled-components/primitives';
-import { withAccountCharts, withAccountSettings } from '../../hoc';
+import { chartExpandedAvailable } from '../../config/experimental';
+import { useCharts } from '../../hooks';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import Divider from '../Divider';
@@ -51,18 +45,34 @@ const Container = styled.View`
   align-items: center;
 `;
 
-const ChartExpandedState = ({
-  change,
-  hasChart,
-  onPressSend,
-  onPressSwap,
-  selectedAsset,
-}) => {
+const ChartExpandedState = ({ asset, navigation }) => {
+  const { charts } = useCharts();
+
+  const chart = reverse(get(charts, `${asset.address}`, []));
+  const hasChart = chartExpandedAvailable || !isEmpty(chart);
+  const change = get(asset, 'price.relative_change_24h', 0);
+
+  const onPressSend = useCallback(() => {
+    navigation.goBack();
+
+    InteractionManager.runAfterInteractions(() => {
+      navigation.navigate('SendSheet', { asset });
+    });
+  }, [asset, navigation]);
+
+  const onPressSwap = useCallback(() => {
+    navigation.goBack();
+
+    InteractionManager.runAfterInteractions(() => {
+      navigation.navigate('ExchangeModal', { asset });
+    });
+  }, [asset, navigation]);
+
   return (
     <Container>
       <HandleIcon />
       <BottomContainer>
-        <BalanceCoinRow item={selectedAsset} />
+        <BalanceCoinRow item={asset} />
         <BottomSendButtons
           onPressSend={onPressSend}
           onPressSwap={onPressSwap}
@@ -79,45 +89,8 @@ const ChartExpandedState = ({
 };
 
 ChartExpandedState.propTypes = {
-  change: PropTypes.number,
-  chart: PropTypes.array,
-  chartsUpdateChartType: PropTypes.func,
-  hasChart: PropTypes.bool,
-  onPressSend: PropTypes.func,
-  onPressSwap: PropTypes.func,
+  asset: PropTypes.object,
+  navigation: PropTypes.object,
 };
 
-// TODO JIN make this better by just passing in chart
-export default compose(
-  withAccountCharts,
-  withAccountSettings,
-  withState('isOpen', 'setIsOpen', false),
-  withProps(({ asset, charts }) => {
-    const chart = reverse(get(charts, `${asset.address}`, []));
-    const hasChart = !isEmpty(chart);
-    console.log('selected asset', asset);
-    return {
-      change: get(asset, 'price.relative_change_24h', 0),
-      chart,
-      hasChart,
-      selectedAsset: asset,
-    };
-  }),
-  withHandlers({
-    onPressSend: ({ navigation, asset }) => () => {
-      navigation.goBack();
-
-      InteractionManager.runAfterInteractions(() => {
-        navigation.navigate('SendSheet', { asset });
-      });
-    },
-    onPressSwap: ({ navigation, asset }) => () => {
-      navigation.goBack();
-
-      InteractionManager.runAfterInteractions(() => {
-        navigation.navigate('ExchangeModal', { asset });
-      });
-    },
-  }),
-  onlyUpdateForKeys(['fetchingCharts', 'subtitle'])
-)(ChartExpandedState);
+export default ChartExpandedState;

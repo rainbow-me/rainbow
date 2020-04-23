@@ -176,12 +176,10 @@ const listenOnAddressMessages = socket => dispatch => {
   });
 
   socket.on(messages.ADDRESS_CHARTS.APPENDED, message => {
-    console.log('address charts appended', message);
     dispatch(addressChartsReceived(message, true));
   });
 
   socket.on(messages.ADDRESS_CHARTS.CHANGED, message => {
-    console.log('address charts changed', message);
     dispatch(addressChartsReceived(message, false, true));
   });
 };

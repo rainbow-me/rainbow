@@ -1,10 +1,10 @@
 import { concat, forEach, get } from 'lodash';
-import ChartTypes from '../helpers/chartTypes';
 import {
   getCharts,
   removeCharts,
   saveCharts,
 } from '../handlers/localstorage/accountLocal';
+import ChartTypes from '../helpers/chartTypes';
 
 // -- Constants --------------------------------------- //
 const CHARTS_UPDATE_CHART_TYPE = 'charts/CHARTS_UPDATE_CHART_TYPE';
@@ -45,15 +45,13 @@ export const chartsUpdateChartType = chartType => dispatch =>
 
 export const addressChartsReceived = (
   message,
-  append = false,
-  change = false
+  append = false
+  // change = false // TODO JIN handle change
 ) => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { chartType } = getState().charts;
   const charts = get(message, 'payload.charts', {}); // or payload.points if append?
   let updatedCharts = charts;
-  // TODO JIN handle change
-  console.log('address chart change', change);
   if (append) {
     const { charts: existingCharts } = getState().charts;
     const appendedChartPoints = get(message, 'payload.points', {});

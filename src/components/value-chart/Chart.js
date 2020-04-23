@@ -63,7 +63,6 @@ export default function Chart({ change }) {
   const [currentChart, setCurrentChart] = useState(0);
 
   const positiveChange = greaterThan(change, 0);
-  console.log('change', change);
 
   return (
     <Fragment>
