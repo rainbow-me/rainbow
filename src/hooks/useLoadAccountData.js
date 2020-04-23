@@ -15,12 +15,10 @@ import { uniswapLoadState } from '../redux/uniswap';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { logger, promiseUtils } from '../utils';
 import useAccountSettings from './useAccountSettings';
-import useCheckEthBalance from './useCheckEthBalance';
 
 export default function useLoadAccountData() {
   const dispatch = useDispatch();
   const { network } = useAccountSettings();
-  const checkEthBalance = useCheckEthBalance();
 
   const loadAccountData = useCallback(async () => {
     logger.sentry('Load wallet data');
@@ -42,11 +40,10 @@ export default function useLoadAccountData() {
     const p6 = dispatch(uniswapLoadState());
     const p7 = dispatch(contactsLoadState());
     const p8 = dispatch(addCashLoadState());
-    const p9 = checkEthBalance();
-    promises.push(p6, p7, p8, p9);
+    promises.push(p6, p7, p8);
 
     return promiseUtils.PromiseAllWithFails(promises);
-  }, [checkEthBalance, dispatch, network]);
+  }, [dispatch, network]);
 
   return loadAccountData;
 }

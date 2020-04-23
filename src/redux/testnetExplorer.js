@@ -6,7 +6,6 @@ import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
 import testnetAssets from '../references/testnet-assets.json';
 import { logger } from '../utils';
 import { addressAssetsReceived } from './data';
-import { setIsWalletEthZero } from './isWalletEthZero';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -54,11 +53,7 @@ const fetchAssetBalances = async (tokens, address, network) => {
 };
 
 export const testnetExplorerInit = () => async (dispatch, getState) => {
-  const {
-    accountAddress,
-    nativeCurrency,
-    isWalletEthZero,
-  } = getState().settings;
+  const { accountAddress, nativeCurrency } = getState().settings;
   const formattedNativeCurrency = toLower(nativeCurrency);
   const fetchAssetsBalancesAndPrices = async () => {
     const { network } = getState().settings;
@@ -110,11 +105,6 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
         }
         total = total.add(balances[key]);
       });
-
-      const isNowZero = total.isZero();
-      if (isWalletEthZero !== isNowZero) {
-        dispatch(setIsWalletEthZero(isNowZero));
-      }
     }
 
     dispatch(

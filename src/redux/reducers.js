@@ -9,7 +9,6 @@ import editOptions from './editOptions';
 import explorer from './explorer';
 import gas from './gas';
 import imageDimensionsCache from './imageDimensionsCache';
-import isWalletEthZero from './isWalletEthZero';
 import keyboardHeight from './keyboardHeight';
 import navigation from './navigation';
 import nonce from './nonce';
@@ -35,7 +34,6 @@ export default combineReducers({
   explorer,
   gas,
   imageDimensionsCache,
-  isWalletEthZero,
   keyboardHeight,
   navigation,
   nonce,

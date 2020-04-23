@@ -3,8 +3,7 @@ import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useState } from 'react';
 import { Clock } from 'react-native-reanimated';
-import { useSelector } from 'react-redux';
-import { useDimensions } from '../../hooks';
+import { useDimensions, useIsWalletEthZero } from '../../hooks';
 import { padding } from '../../styles';
 import { Alert } from '../alerts';
 import { runSpring } from '../animations';
@@ -23,9 +22,7 @@ const AddCashForm = ({
   onShake,
   shakeAnim,
 }) => {
-  const isWalletEthZero = useSelector(
-    ({ isWalletEthZero: { isWalletEthZero } }) => isWalletEthZero
-  );
+  const isWalletEthZero = useIsWalletEthZero();
 
   const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
   const [scaleAnim, setScaleAnim] = useState(1);

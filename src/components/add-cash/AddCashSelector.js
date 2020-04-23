@@ -1,7 +1,6 @@
 import { toLower, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { colors } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { JellySelector } from '../jelly-selector';
@@ -10,11 +9,8 @@ import { Text } from '../text';
 
 const CurrencyItemHeight = 40;
 
-const CurrencyItem = ({ item, isSelected }) => {
+const CurrencyItem = isWalletEthZero => ({ item, isSelected }) => {
   const label = item === 'ETH' ? 'Ethereum' : item;
-  const isWalletEthZero = useSelector(
-    ({ isWalletEthZero: { isWalletEthZero } }) => isWalletEthZero
-  );
 
   return (
     <RowWithMargins
@@ -51,7 +47,7 @@ const AddCashSelector = ({
     initialCurrencyIndex={initialCurrencyIndex}
     items={currencies}
     onSelect={onSelect}
-    renderItem={CurrencyItem}
+    renderItem={CurrencyItem(isWalletEthZero)}
   />
 );
 

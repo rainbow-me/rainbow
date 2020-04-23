@@ -6,7 +6,6 @@ import { useDispatch } from 'react-redux';
 import { getAccountInfo } from '../handlers/localstorage/accountLocal';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
-import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import {
   settingsLoadNetwork,
   settingsUpdateAccountAddress,
@@ -15,7 +14,6 @@ import {
 } from '../redux/settings';
 import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
-import useCheckEthBalance from './useCheckEthBalance';
 import useClearAccountData from './useClearAccountData';
 import useHideSplashScreen from './useHideSplashScreen';
 import useInitializeAccountData from './useInitializeAccountData';
@@ -27,8 +25,6 @@ export default function useInitializeWallet() {
   const clearAccountData = useClearAccountData();
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
-
-  const checkEthBalance = useCheckEthBalance();
 
   const { network } = useAccountSettings();
 
@@ -57,14 +53,7 @@ export default function useInitializeWallet() {
           await clearAccountData();
         }
         dispatch(settingsUpdateAccountAddress(walletAddress));
-        if (isNew) {
-          dispatch(setIsWalletEthZero(true));
-        } else if (isImported) {
-          try {
-            await checkEthBalance(walletAddress);
-            // eslint-disable-next-line no-empty
-          } catch (error) {}
-        } else {
+        if (!(isNew || isImported)) {
           await loadAccountData();
         }
         await runMigrations();
@@ -81,7 +70,6 @@ export default function useInitializeWallet() {
       }
     },
     [
-      checkEthBalance,
       clearAccountData,
       dispatch,
       initializeAccountData,
