@@ -38,6 +38,31 @@ class TransactionListBaseCell : UITableViewCell {
     layer.addSublayer(secondShadowLayer)
   }
   
+  func addRequestShadowLayer(_ view: UIView) {
+    let shadowLayer = CAShapeLayer()
+    let secondShadowLayer = CAShapeLayer()
+    let rect = CGRect(x: view.frame.minX, y: view.frame.minY, width: 40, height: 40)
+    let roundedRect = UIBezierPath(roundedRect: rect, cornerRadius: 12)
+    
+    shadowLayer.fillColor = UIColor.white.cgColor
+    shadowLayer.path = roundedRect.cgPath
+    shadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
+    shadowLayer.shadowOffset = CGSize(width: 0, height: 4)
+    shadowLayer.shadowOpacity = 0.04
+    shadowLayer.shadowRadius = 3
+    shadowLayer.zPosition = -1
+    
+    secondShadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
+    secondShadowLayer.shadowOffset = CGSize(width: 0, height: 1)
+    secondShadowLayer.shadowOpacity = 0.08
+    secondShadowLayer.shadowPath = roundedRect.cgPath
+    secondShadowLayer.shadowRadius = 1.5
+    secondShadowLayer.zPosition = -2
+    
+    layer.addSublayer(shadowLayer)
+    layer.addSublayer(secondShadowLayer)
+  }
+  
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     animateTapStart(scale: scaleTo)
   }
