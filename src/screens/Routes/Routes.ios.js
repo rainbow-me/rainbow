@@ -411,8 +411,16 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
 
       const oldMainStack = prevState.routes[prevState.index];
       const newMainStack = currentState.routes[currentState.index];
-      const oldIndex = oldMainStack.routes[oldMainStack.index].index;
-      const newIndex = newMainStack.routes[newMainStack.index].index;
+      const oldIndex = get(
+        oldMainStack,
+        `routes[${oldMainStack.index}].index`,
+        null
+      );
+      const newIndex = get(
+        newMainStack,
+        `routes[${newMainStack.index}].index`,
+        null
+      );
 
       if (oldIndex !== newIndex) {
         expandedPreset.onTransitionStart({ closing: !newIndex });
