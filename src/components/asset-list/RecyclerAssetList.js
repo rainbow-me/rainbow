@@ -389,6 +389,11 @@ class RecyclerAssetList extends Component {
             };
           }
         }
+
+        return {
+          height: ViewTypes.UNKNOWN.calculateHeight(),
+          index: ViewTypes.UNKNOWN.index,
+        };
       },
       (type, dim) => {
         dim.width = deviceUtils.dimensions.width;
