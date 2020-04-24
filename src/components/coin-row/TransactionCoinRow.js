@@ -138,7 +138,9 @@ export default compose(
       network,
     }) => async () => {
       const { from, to, status } = item;
+      const isPurchasing = status === TransactionStatusTypes.purchasing;
       const isSent = status === TransactionStatusTypes.sent;
+
       const headerInfo = {
         address: '',
         divider: isSent ? 'to' : 'from',
@@ -151,24 +153,27 @@ export default compose(
       if (contact) {
         headerInfo.address = contact.nickname;
         contactColor = contact.color;
-      } else {
+      } else if (!isPurchasing) {
         headerInfo.address = abbreviations.address(contactAddress, 4, 10);
         contactColor = Math.floor(Math.random() * colors.avatarColor.length);
       }
 
       if (hash) {
+        let buttons = ['View on Etherscan', 'Cancel'];
+        if (!isPurchasing) {
+          buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
+        }
+
         showActionSheetWithOptions(
           {
-            cancelButtonIndex: 2,
-            options: [
-              contact ? 'View Contact' : 'Add to Contacts',
-              'View on Etherscan',
-              'Cancel',
-            ],
-            title: `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
+            cancelButtonIndex: isPurchasing ? 1 : 2,
+            options: buttons,
+            title: isPurchasing
+              ? headerInfo.type
+              : `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
           },
           buttonIndex => {
-            if (buttonIndex === 0) {
+            if (!isPurchasing && buttonIndex === 0) {
               navigation.navigate('ExpandedAssetScreen', {
                 address: contactAddress,
                 asset: item,
@@ -176,7 +181,10 @@ export default compose(
                 contact,
                 type: 'contact',
               });
-            } else if (buttonIndex === 1) {
+            } else if (
+              (isPurchasing && buttonIndex === 0) ||
+              (!isPurchasing && buttonIndex === 1)
+            ) {
               const normalizedHash = hash.replace(/-.*/g, '');
               const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
                 network
