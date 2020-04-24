@@ -148,7 +148,7 @@ const ExchangeModal = ({
   );
 
   let defaultChosenInputItem = defaultInputItemInWallet;
-  if (!defaultChosenInputItem) {
+  if (!defaultChosenInputItem && defaultInputAsset) {
     const eth = ethereumUtils.getAsset(allAssets);
     const priceOfEther = get(eth, 'native.price.amount', null);
     defaultChosenInputItem = createMissingAsset(
