@@ -470,6 +470,70 @@ class RecyclerAssetList extends Component {
       }
     });
 
+    if (openFamilyTabs !== prevProps.openFamilyTabs && collectibles.data) {
+      let i = 0;
+      while (i < collectibles.data.length) {
+        if (
+          openFamilyTabs[collectibles.data[i].familyName] === true &&
+          !prevProps.openFamilyTabs[collectibles.data[i].familyName]
+        ) {
+          const headerHeaight = deviceUtils.isSmallPhone ? 210 : 148;
+          const deviceDimensions =
+            deviceUtils.dimensions.height - headerHeaight;
+
+          const familyIndex = findIndex(this.state.dataProvider._data, function(
+            data
+          ) {
+            return data.item?.familyName === collectibles.data[i].familyName;
+          });
+
+          const focusedFamilyItem = this.state.dataProvider._data[familyIndex]
+            .item;
+          const focusedFamilyHeight = ViewTypes.UNIQUE_TOKEN_ROW.calculateHeight(
+            {
+              amountOfRows: Math.ceil(
+                Number(focusedFamilyItem.childrenAmount) / 2
+              ),
+              isFirst: false,
+              isLast: false,
+              isOpen: true,
+              paddingBottom: this.props.paddingBottom,
+            }
+          );
+
+          const startOfDesiredComponent =
+            this.rlv.getLayout(familyIndex).y - AssetListHeader.height;
+
+          if (focusedFamilyHeight < deviceDimensions) {
+            const endOfDesiredComponent =
+              startOfDesiredComponent + focusedFamilyHeight;
+
+            const bottomHorizonOfScreen =
+              this.rlv.getCurrentScrollOffset() + deviceDimensions;
+
+            const scrollFixedBonusOffset = AssetListHeader.height;
+
+            if (
+              endOfDesiredComponent + scrollFixedBonusOffset >
+              bottomHorizonOfScreen
+            ) {
+              this.scrollToOffset(
+                endOfDesiredComponent +
+                  scrollFixedBonusOffset -
+                  deviceDimensions,
+                true
+              );
+            }
+          } else {
+            this.scrollToOffset(startOfDesiredComponent, true);
+          }
+
+          break;
+        }
+        i++;
+      }
+    }
+
     if (scrollingVelocity === 0) {
       clearTimeout(this.scrollHandle);
     }
@@ -546,107 +610,6 @@ class RecyclerAssetList extends Component {
         balancesHeight + investmentHeight - AssetListHeader.height,
         true
       );
-    }
-
-    if (openFamilyTabs !== prevProps.openFamilyTabs && collectibles.data) {
-      let i = 0;
-      while (i < collectibles.data.length) {
-        if (
-          openFamilyTabs[collectibles.data[i].familyName] === true &&
-          !prevProps.openFamilyTabs[collectibles.data[i].familyName]
-        ) {
-          let collectiblesHeight = 0;
-          for (let j = 0; j < i; j++) {
-            if (
-              openFamilyTabs[collectibles.data[j].familyName] &&
-              collectibles.data[j].tokens
-            ) {
-              collectiblesHeight +=
-                TokenFamilyHeader.height +
-                collectibles.data[j].tokens.length * UniqueTokenRow.height +
-                TokenFamilyWrapPaddingTop -
-                2;
-            } else {
-              collectiblesHeight += TokenFamilyHeader.height;
-            }
-          }
-          let investmentHeight = 0;
-          if (investments.data) {
-            for (let k = 0; k < investments.data.length; k++) {
-              if (!openInvestmentCards[investments.data[k].uniqueId]) {
-                investmentHeight +=
-                  UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
-              } else {
-                investmentHeight +=
-                  InvestmentCardHeader.height + InvestmentCard.margin.vertical;
-              }
-            }
-          }
-          let balancesHeight = 0;
-          if (balances.data) {
-            balancesHeight += CoinRow.height * (balances.data.length - 1);
-            if (
-              balances.data[balances.data.length - 1].smallBalancesContainer ||
-              (balances.data[balances.data.length - 2] &&
-                balances.data[balances.data.length - 2].smallBalancesContainer)
-            ) {
-              balancesHeight += balances.data[balances.data.length - 1]
-                .smallBalancesContainer
-                ? ListFooter.height + 4
-                : 20;
-              if (openSmallBalances) {
-                balancesHeight +=
-                  CoinRow.height *
-                  balances.data[
-                    balances.data.length -
-                      (balances.data[balances.data.length - 1]
-                        .smallBalancesContainer
-                        ? 1
-                        : 2)
-                  ].assets.length;
-              }
-            }
-            if (balances.data[balances.data.length - 1].savingsContainer) {
-              if (openSavings) {
-                balancesHeight +=
-                  61 * balances.data[balances.data.length - 1].assets.length -
-                  1;
-              } else {
-                balancesHeight -= ListFooter.height;
-              }
-            }
-          }
-          const verticalOffset = 10;
-          const deviceDimensions =
-            deviceUtils.dimensions.height -
-            (deviceUtils.isSmallPhone ? 210 : 235);
-          const sectionBeforeCollectibles =
-            AssetListHeader.height * (sections.length - 1) +
-            ListFooter.height * (sections.length - 1) +
-            balancesHeight +
-            investmentHeight;
-          const sectionsHeight = sectionBeforeCollectibles + collectiblesHeight;
-          const renderSize =
-            collectibles.data[i].tokens.length * UniqueTokenRow.height +
-            TokenFamilyWrapPaddingTop;
-
-          if (renderSize >= deviceDimensions) {
-            const scrollDistance = sectionsHeight - this.position;
-            this.scrollToOffset(
-              this.position + scrollDistance - verticalOffset,
-              true
-            );
-          } else {
-            const diff = this.position - sectionsHeight + deviceDimensions;
-            if (renderSize > diff) {
-              const scrollDistance = renderSize - diff;
-              this.scrollToOffset(this.position + scrollDistance, true);
-            }
-          }
-          break;
-        }
-        i++;
-      }
     }
 
     let shouldAutoscrollBack = false;
@@ -745,6 +708,7 @@ class RecyclerAssetList extends Component {
           }
         }
       }
+      // console.log(this.rlv.getContentDimension());
       const renderSize = balancesHeight + investmentHeight + collectiblesHeight;
       const deviceDimensions =
         deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 240 : 360);
