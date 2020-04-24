@@ -28,16 +28,7 @@ import {
 } from '../../utils';
 import { CoinDivider, SmallBalancesWrapper } from '../coin-divider';
 import { CoinRow } from '../coin-row';
-import {
-  InvestmentCard,
-  InvestmentCardHeader,
-  UniswapInvestmentCard,
-} from '../investment-cards';
-import { ListFooter } from '../list';
 import SavingsListWrapper from '../savings/SavingsListWrapper';
-import { TokenFamilyHeader } from '../token-family';
-import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
-import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
 import { ViewTypes } from './RecyclerViewTypes';
 
@@ -61,11 +52,8 @@ class LayoutItemAnimator extends BaseItemAnimator {
 
 const layoutItemAnimator = new LayoutItemAnimator();
 
-const reloadHeightOffsetTop = -60;
-const reloadHeightOffsetBottom = -62;
 let smallBalancedChanged = false;
 let smallBalancesIndex = 0;
-let savingsIndex = 0;
 
 const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
 
@@ -267,7 +255,7 @@ class RecyclerAssetList extends Component {
               if (this.coinDividerIndex !== index) {
                 this.coinDividerIndex = index;
                 if (this.props.isCoinListEdited) {
-                  this.checkEditStickyHeader();
+                  this.checkEditStickyHeader(this.rlv.getCurrentScrollOffset());
                 }
               }
               if (
@@ -304,7 +292,6 @@ class RecyclerAssetList extends Component {
                 sections[balancesIndex].data[lastBalanceIndex - 1]
                   .savingsContainer
               ) {
-                savingsIndex = index - 1;
                 return {
                   height: ViewTypes.COIN_SAVINGS.calculateHeight({
                     amountOfRows:
@@ -396,6 +383,7 @@ class RecyclerAssetList extends Component {
         };
       },
       (type, dim) => {
+        // TODO Set height 0 for selected indexes when isCoinListEdited
         dim.width = deviceUtils.dimensions.width;
         dim.height = type.height;
       }
@@ -440,27 +428,29 @@ class RecyclerAssetList extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    const {
-      openFamilyTabs,
-      openInvestmentCards,
-      openSavings,
-      openSmallBalances,
-      scrollingVelocity,
-      sections,
-    } = this.props;
+    // Movable FAB Logic
 
-    let balances = {};
+    // const { openFamilyTabs, sections, scrollingVelocity } = this.props;
+
+    // if (scrollingVelocity === 0) {
+    //   clearTimeout(this.scrollHandle);
+    // }
+
+    // if (
+    //   scrollingVelocity &&
+    //   scrollingVelocity !== prevProps.scrollingVelocity
+    // ) {
+    //   this.startScroll(scrollingVelocity);
+    // }
+
+    const { openFamilyTabs, sections } = this.props;
+
     let collectibles = {};
-    let investments = {};
     let prevCollectibles = {};
 
     sections.forEach(section => {
-      if (section.balances) {
-        balances = section;
-      } else if (section.collectibles) {
+      if (section.collectibles) {
         collectibles = section;
-      } else if (section.investments) {
-        investments = section;
       }
     });
 
@@ -470,6 +460,11 @@ class RecyclerAssetList extends Component {
       }
     });
 
+    const headerHeaight = deviceUtils.isSmallPhone ? 210 : 148;
+    const deviceDimensions = deviceUtils.dimensions.height - headerHeaight;
+    const bottomHorizonOfScreen =
+      this.rlv.getCurrentScrollOffset() + deviceDimensions;
+
     if (openFamilyTabs !== prevProps.openFamilyTabs && collectibles.data) {
       let i = 0;
       while (i < collectibles.data.length) {
@@ -477,10 +472,6 @@ class RecyclerAssetList extends Component {
           openFamilyTabs[collectibles.data[i].familyName] === true &&
           !prevProps.openFamilyTabs[collectibles.data[i].familyName]
         ) {
-          const headerHeaight = deviceUtils.isSmallPhone ? 210 : 148;
-          const deviceDimensions =
-            deviceUtils.dimensions.height - headerHeaight;
-
           const familyIndex = findIndex(this.state.dataProvider._data, function(
             data
           ) {
@@ -508,9 +499,6 @@ class RecyclerAssetList extends Component {
             const endOfDesiredComponent =
               startOfDesiredComponent + focusedFamilyHeight;
 
-            const bottomHorizonOfScreen =
-              this.rlv.getCurrentScrollOffset() + deviceDimensions;
-
             const scrollFixedBonusOffset = AssetListHeader.height;
 
             if (
@@ -534,15 +522,32 @@ class RecyclerAssetList extends Component {
       }
     }
 
-    if (scrollingVelocity === 0) {
-      clearTimeout(this.scrollHandle);
-    }
-
     if (
-      scrollingVelocity &&
-      scrollingVelocity !== prevProps.scrollingVelocity
+      this.rlv.getContentDimension().height < bottomHorizonOfScreen &&
+      this.rlv.getCurrentScrollOffset() > 0
     ) {
-      this.startScroll(scrollingVelocity);
+      layoutItemAnimator.animateShift = () =>
+        LayoutAnimation.configureNext({
+          duration: 250,
+          update: {
+            delay: 10,
+            type: 'easeInEaseOut',
+          },
+        });
+      setTimeout(() => {
+        this.rlv.scrollToEnd({ animated: true });
+      }, 10);
+      setTimeout(() => {
+        layoutItemAnimator.animateShift = () =>
+          LayoutAnimation.configureNext({
+            duration: 200,
+            update: {
+              initialVelocity: 0,
+              springDamping: 1,
+              type: LayoutAnimation.Types.spring,
+            },
+          });
+      }, 250);
     }
 
     if (
@@ -553,192 +558,15 @@ class RecyclerAssetList extends Component {
         prevCollectibles.data[0].childrenAmount ||
         prevCollectibles.data[0].familyName !== 'Showcase')
     ) {
-      let investmentHeight = 0;
-      if (investments.data) {
-        investmentHeight += AssetListHeader.height;
-        for (let k = 0; k < investments.data.length; k++) {
-          if (!openInvestmentCards[investments.data[k].uniqueId]) {
-            investmentHeight +=
-              UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
-          } else {
-            investmentHeight +=
-              InvestmentCardHeader.height + InvestmentCard.margin.vertical;
-          }
-        }
-        investmentHeight += ListFooter.height + 8;
-      }
-      let balancesHeight = 0;
-      if (balances.data) {
-        balancesHeight += AssetListHeader.height;
-
-        if (
-          balances.data[balances.data.length - 1].smallBalancesContainer ||
-          (balances.data[balances.data.length - 2] &&
-            balances.data[balances.data.length - 2].smallBalancesContainer)
-        ) {
-          balancesHeight +=
-            CoinDivider.height +
-            (balances.data[balances.data.length - 1].smallBalancesContainer
-              ? 4
-              : 20);
-          if (openSmallBalances) {
-            balancesHeight +=
-              CoinRow.height *
-              balances.data[
-                balances.data.length -
-                  (balances.data[balances.data.length - 1]
-                    .smallBalancesContainer
-                    ? 1
-                    : 2)
-              ].assets.length;
-          }
-        }
-
-        if (balances.data[balances.data.length - 1].savingsContainer) {
-          balancesHeight += openSavings
-            ? TokenFamilyHeader.height +
-              61 * balances.data[savingsIndex].assets.length -
-              4
-            : TokenFamilyHeader.height - 10;
-        }
-
-        balancesHeight +=
-          ListFooter.height + CoinRow.height * (balances.data.length - 1);
-      }
-
-      this.scrollToOffset(
-        balancesHeight + investmentHeight - AssetListHeader.height,
-        true
-      );
-    }
-
-    let shouldAutoscrollBack = false;
-    if (collectibles.data) {
-      for (let i = 0; i < collectibles.data.length; i++) {
-        if (
-          openFamilyTabs[collectibles.data[i].familyName] === false &&
-          prevProps.openFamilyTabs[collectibles.data[i].familyName] === true
-        ) {
-          shouldAutoscrollBack = true;
-          break;
-        }
-      }
-    }
-
-    if (investments.data && !shouldAutoscrollBack) {
-      for (let i = 0; i < investments.data.length; i++) {
-        if (
-          openInvestmentCards[investments.data[i].uniqueId] === true &&
-          prevProps.openInvestmentCards[investments.data[i].uniqueId] === false
-        ) {
-          shouldAutoscrollBack = true;
-          break;
-        }
-      }
-    }
-
-    if (
-      shouldAutoscrollBack ||
-      (openSmallBalances === false && prevProps.openSmallBalances === true) ||
-      (openSavings === false && prevProps.openSavings === true)
-    ) {
-      let balancesHeight = 0;
-      if (balances.data) {
-        balancesHeight += CoinRow.height * (balances.data.length - 1);
-        if (
-          balances.data[balances.data.length - 1].smallBalancesContainer ||
-          (balances.data[balances.data.length - 2] &&
-            balances.data[balances.data.length - 2].smallBalancesContainer)
-        ) {
-          balancesHeight += balances.data[balances.data.length - 1]
-            .smallBalancesContainer
-            ? ListFooter.height + 4
-            : 20;
-          if (openSmallBalances) {
-            balancesHeight +=
-              CoinRow.height *
-              balances.data[
-                balances.data.length -
-                  (balances.data[balances.data.length - 1]
-                    .smallBalancesContainer
-                    ? 1
-                    : 2)
-              ].assets.length;
-          }
-        }
-        if (balances.data[balances.data.length - 1].savingsContainer) {
-          if (openSavings) {
-            balancesHeight +=
-              61 * balances.data[balances.data.length - 1].assets.length - 1;
-          } else {
-            balancesHeight -= ListFooter.height;
-          }
-        }
-      }
-
-      let investmentHeight = 0;
-      if (investments.data) {
-        for (let k = 0; k < investments.data.length; k++) {
-          if (!openInvestmentCards[investments.data[k].uniqueId]) {
-            investmentHeight +=
-              UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
-          } else {
-            investmentHeight +=
-              InvestmentCardHeader.height + InvestmentCard.margin.vertical;
-          }
-        }
-      }
-
-      let collectiblesHeight = 0;
-      if (collectibles.data) {
-        collectiblesHeight =
-          collectibles.data.length > 0 ? AssetListHeader.height : 0;
-        for (let j = 0; j < collectibles.data.length; j++) {
-          if (
-            openFamilyTabs[collectibles.data[j].familyName] &&
-            collectibles.data[j].tokens
-          ) {
-            collectiblesHeight +=
-              TokenFamilyHeader.height +
-              collectibles.data[j].tokens.length * UniqueTokenRow.height +
-              TokenFamilyWrapPaddingTop -
-              2;
-          } else {
-            collectiblesHeight += TokenFamilyHeader.height;
-          }
-        }
-      }
-      // console.log(this.rlv.getContentDimension());
-      const renderSize = balancesHeight + investmentHeight + collectiblesHeight;
-      const deviceDimensions =
-        deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 240 : 360);
-      if (
-        this.position + deviceDimensions - 20 > renderSize &&
-        renderSize > deviceDimensions
+      const familyIndex = findIndex(this.state.dataProvider._data, function(
+        data
       ) {
-        layoutItemAnimator.animateShift = () =>
-          LayoutAnimation.configureNext({
-            duration: 250,
-            update: {
-              delay: 10,
-              type: 'easeInEaseOut',
-            },
-          });
-        setTimeout(() => {
-          this.rlv.scrollToEnd({ animated: true });
-        }, 10);
-        setTimeout(() => {
-          layoutItemAnimator.animateShift = () =>
-            LayoutAnimation.configureNext({
-              duration: 200,
-              update: {
-                initialVelocity: 0,
-                springDamping: 1,
-                type: LayoutAnimation.Types.spring,
-              },
-            });
-        }, 250);
-      }
+        return data.item?.familyName === 'Showcase';
+      });
+
+      const startOfDesiredComponent =
+        this.rlv.getLayout(familyIndex).y - AssetListHeader.height;
+      this.scrollToOffset(startOfDesiredComponent, true);
     }
   }
 
@@ -759,23 +587,25 @@ class RecyclerAssetList extends Component {
   savingsList = [];
   savingsSumValue = 0;
 
-  checkEditStickyHeader = () => {
+  checkEditStickyHeader = offsetY => {
     const offsetHeight = CoinRow.height * (this.coinDividerIndex - 1) + 5;
-    if (this.props.isCoinListEdited && this.position > offsetHeight) {
+    if (this.props.isCoinListEdited && offsetY > offsetHeight) {
       this.setState({ showCoinListEditor: true });
     } else if (
-      (this.position < offsetHeight || !this.props.isCoinListEdited) &&
+      (offsetY < offsetHeight || !this.props.isCoinListEdited) &&
       this.state.showCoinListEditor === true
     ) {
       this.setState({ showCoinListEditor: false });
     }
   };
 
-  startScroll = scrollingVelocity => {
-    clearTimeout(this.scrollHandle);
-    this.rlv.scrollToOffset(0, this.position + scrollingVelocity * 10);
-    this.scrollHandle = setTimeout(this.startScroll, 30);
-  };
+  // Movable FAB Logic
+
+  // startScroll = scrollingVelocity => {
+  //   clearTimeout(this.scrollHandle);
+  //   this.rlv.scrollToOffset(0, this.position + scrollingVelocity * 10);
+  //   this.scrollHandle = setTimeout(this.startScroll, 30);
+  // };
 
   scrollToOffset = (position, animated) => {
     setTimeout(() => {
@@ -845,31 +675,31 @@ class RecyclerAssetList extends Component {
     });
   };
 
-  handleScroll = ({ nativeEvent }, _, offsetY) => {
-    const { contentSize, layoutMeasurement } = nativeEvent;
+  handleScroll = (_nativeEventObject, _, offsetY) => {
+    // Movable FAB Logic
 
-    this.position = offsetY;
+    // const { contentSize, layoutMeasurement } = nativeEvent;
 
-    if (this.contentSize !== contentSize.height) {
-      this.contentSize = contentSize.height;
-    }
+    // if (this.contentSize !== contentSize.height) {
+    //   this.contentSize = contentSize.height;
+    // }
 
-    if (this.layoutMeasurement !== layoutMeasurement.height) {
-      this.layoutMeasurement = layoutMeasurement.height;
-    }
+    // if (this.layoutMeasurement !== layoutMeasurement.height) {
+    //   this.layoutMeasurement = layoutMeasurement.height;
+    // }
 
-    if (
-      ((contentSize.height - layoutMeasurement.height >= offsetY &&
-        offsetY >= 0) ||
-        (offsetY < reloadHeightOffsetTop &&
-          offsetY > reloadHeightOffsetBottom)) &&
-      this.props.scrollViewTracker
-    ) {
-      this.props.scrollViewTracker.setValue(offsetY);
-    }
+    // if (
+    //   ((contentSize.height - layoutMeasurement.height >= offsetY &&
+    //     offsetY >= 0) ||
+    //     (offsetY < reloadHeightOffsetTop &&
+    //       offsetY > reloadHeightOffsetBottom)) &&
+    //   this.props.scrollViewTracker
+    // ) {
+    //   this.props.scrollViewTracker.setValue(offsetY);
+    // }
 
     if (this.props.isCoinListEdited) {
-      this.checkEditStickyHeader();
+      this.checkEditStickyHeader(offsetY);
     }
   };
 
@@ -889,7 +719,7 @@ class RecyclerAssetList extends Component {
     const { item = {}, renderItem } = data;
     const { hideHeader, sections, isCoinListEdited } = this.props;
 
-    if (isCoinListEdited && !(type < 7)) {
+    if (isCoinListEdited && !(type.index < 4)) {
       return null;
     }
 
@@ -943,27 +773,27 @@ class RecyclerAssetList extends Component {
       );
     }
 
-    const isNotUniqueToken =
-      type.index === ViewTypes.COIN_ROW.index ||
-      type.index === ViewTypes.UNISWAP_ROW.index ||
-      type === ViewTypes.FOOTER;
-
     const isFirstCoinRow = type.isFirst;
 
-    // TODO sections
-    return isNotUniqueToken
-      ? renderItem({ isFirstCoinRow, item })
-      : renderItem({
-          childrenAmount: item.childrenAmount,
-          familyId: item.familyId,
-          familyImage: item.familyImage,
-          familyName: item.familyName,
-          isFirst: type.isFirst,
-          item: item.tokens,
-          shouldPrioritizeImageLoading:
-            index < get(sections, '[0].data.length', 0) + 9,
-          uniqueId: item.uniqueId,
-        });
+    if (
+      type.index === ViewTypes.COIN_ROW.index ||
+      type.index === ViewTypes.UNISWAP_ROW.index
+    ) {
+      return renderItem({ isFirstCoinRow, item });
+    }
+    if (type.index === ViewTypes.UNIQUE_TOKEN_ROW.index) {
+      return renderItem({
+        childrenAmount: item.childrenAmount,
+        familyId: item.familyId,
+        familyImage: item.familyImage,
+        familyName: item.familyName,
+        isFirst: type.isFirst,
+        item: item.tokens,
+        shouldPrioritizeImageLoading:
+          index < get(sections, '[0].data.length', 0) + 9,
+        uniqueId: item.uniqueId,
+      });
+    }
   };
 
   stickyRowRenderer = (_, data) => (
