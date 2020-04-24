@@ -1,6 +1,7 @@
 import { toLower } from 'lodash';
 import React from 'react';
 import { Platform, Share } from 'react-native';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useNavigation } from 'react-navigation-hooks';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components/primitives';
@@ -19,6 +20,7 @@ import { useClipboard } from '../hooks';
 import { colors } from '../styles';
 import { haptics } from '../utils';
 
+const statusBarHeight = getStatusBarHeight(true);
 const QRCodeSize = Platform.OS === 'ios' ? 180 : 190;
 
 const AddressText = styled(Monospace).attrs({
@@ -39,7 +41,7 @@ const ReceiveModal = () => {
   );
 
   return (
-    <Modal height={472} onCloseModal={goBack}>
+    <Modal height={472} marginBottom={statusBarHeight} onCloseModal={goBack}>
       <ModalHeader onPressClose={goBack} title="Receive" />
       <Divider inset={[0, 16]} />
       <Column align="center" flex={1} justify="start" padding={25}>
