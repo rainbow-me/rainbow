@@ -28,6 +28,7 @@ export { default as useOpenSavings } from './useOpenSavings';
 export { default as usePrevious } from './usePrevious';
 export { default as useRefreshAccountData } from './useRefreshAccountData';
 export { default as useRequests } from './useRequests';
+export { default as useResetAccountState } from './useResetAccountState';
 export { default as useSavingsAccount } from './useSavingsAccount';
 export { default as useSendableUniqueTokens } from './useSendableUniqueTokens';
 export { default as useSendSavingsAccount } from './useSendSavingsAccount';

@@ -131,6 +131,14 @@ export const dataClearState = () => (dispatch, getState) => {
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
+export const dataResetState = () => (dispatch, getState) => {
+  const { uniswapPricesSubscription } = getState().data;
+  uniswapPricesSubscription &&
+    uniswapPricesSubscription.unsubscribe &&
+    uniswapPricesSubscription.unsubscribe();
+  dispatch({ type: DATA_CLEAR_STATE });
+};
+
 export const dataUpdateAssets = assets => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   if (assets.length) {

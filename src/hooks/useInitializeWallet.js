@@ -54,7 +54,7 @@ export default function useInitializeWallet() {
         }
         dispatch(settingsUpdateAccountAddress(walletAddress));
         if (!(isNew || isImported)) {
-          await loadAccountData();
+          await loadAccountData(network);
         }
         await runMigrations();
         onHideSplashScreen();
