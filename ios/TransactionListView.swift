@@ -26,6 +26,8 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     didSet {
       header.addCash.isHidden = addCashAvailable
       header.addCash.isHidden = !addCashAvailable
+      header.frame.size.height = addCashAvailable ? 260 : 185
+      headerSeparator.frame.origin.y = header.frame.size.height - 2
     }
   }
   @objc var isAvatarPickerAvailable: Bool = true {
@@ -90,7 +92,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.accountView.animateTapStart(scale: 0.9)
   }
   @objc func onPressOutAvatar(_ sender: UIButton) {
-    header.accountView.animateTapEnd()
+    header.accountView.animateTapEnd(useHaptic: "selection")
   }
   
   @objc func onAccountAddressPressed(_ sender: UITapGestureRecognizer) {
@@ -120,12 +122,11 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     ])
   }
   
-  
   @objc func onPressInCopyAddress(_ sender: UIButton) {
     header.copyAddress.animateTapStart(scale: 0.86)
   }
   @objc func onPressOutCopyAddress(_ sender: UIButton) {
-    header.copyAddress.animateTapEnd()
+    header.copyAddress.animateTapEnd(useHaptic: "selection")
   }
 
   @objc func onReceivePressed(_ sender: UIButton) {
@@ -135,7 +136,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.receive.animateTapStart(scale: 0.86)
   }
   @objc func onPressOutReceive(_ sender: UIButton) {
-    header.receive.animateTapEnd()
+    header.receive.animateTapEnd(useHaptic: "selection")
   }
   
   @objc func onAddCashPressed(_ sender: UIButton) {
@@ -145,7 +146,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.addCash.animateTapStart(scale: 0.9)
   }
   @objc func onPressOutAddCash(_ sender: UIButton) {
-    header.addCash.animateTapEnd()
+    header.addCash.animateTapEnd(useHaptic: "selection")
   }
   
   var sections: [TransactionSectionProtocol] = [TransactionSectionProtocol]()
@@ -166,6 +167,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
     tableView.register(UINib(nibName: "TransactionListRequestViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListRequestViewCell")
     tableView.canCancelContentTouches = true
+    tableView.scrollIndicatorInsets.bottom = 0.0000000001
     
     header.addSubview(headerSeparator)
     
