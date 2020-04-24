@@ -10,8 +10,8 @@ import networkTypes from '../helpers/networkTypes';
 import { updateLanguage } from '../languages';
 
 import { ethereumUtils } from '../utils';
-import { dataClearState } from './data';
-import { explorerInit } from './explorer';
+import { dataResetState } from './data';
+import { explorerClearState, explorerInit } from './explorer';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -124,7 +124,8 @@ export const settingsChangeLanguage = language => dispatch => {
 };
 
 export const settingsChangeNativeCurrency = nativeCurrency => dispatch => {
-  dispatch(dataClearState());
+  dispatch(dataResetState());
+  dispatch(explorerClearState());
   saveNativeCurrency(nativeCurrency)
     .then(() => {
       dispatch({
