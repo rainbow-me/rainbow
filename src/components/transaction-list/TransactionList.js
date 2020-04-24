@@ -1,5 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
+import PropTypes from 'prop-types';
 import React, { useRef, useState } from 'react';
 import { Linking, requireNativeComponent, View } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -24,6 +25,7 @@ const TransactionList = ({
   contacts,
   header,
   initialized,
+  isLoading,
   navigation,
   network,
   requests,
@@ -156,7 +158,7 @@ const TransactionList = ({
     return '';
   };
 
-  if (!initialized && !navigation.isFocused()) {
+  if ((!initialized && !navigation.isFocused()) || isLoading) {
     return <LoadingState>{header}</LoadingState>;
   }
 
@@ -210,6 +212,23 @@ const TransactionList = ({
       </FloatingEmojis>
     </View>
   );
+};
+
+TransactionList.propTypes = {
+  accountAddress: PropTypes.string,
+  accountColor: PropTypes.number,
+  accountENS: PropTypes.string,
+  accountName: PropTypes.string,
+  addCashAvailable: PropTypes.bool,
+  contacts: PropTypes.array,
+  header: PropTypes.node,
+  initialized: PropTypes.bool,
+  isLoading: PropTypes.bool,
+  navigation: PropTypes.object,
+  network: PropTypes.string,
+  requests: PropTypes.array,
+  style: PropTypes.object,
+  transactions: PropTypes.array,
 };
 
 TransactionList.defaultProps = {

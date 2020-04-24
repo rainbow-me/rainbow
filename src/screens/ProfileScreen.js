@@ -26,10 +26,12 @@ const ProfileScreen = ({ navigation }) => {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
 
-  const { sections, transactions, transactionsCount } = useAccountTransactions(
-    activityListInitialized,
-    isFocused
-  );
+  const {
+    isLoadingTransactions: isLoading,
+    sections,
+    transactions,
+    transactionsCount,
+  } = useAccountTransactions(activityListInitialized, isFocused);
   const { contacts } = useContacts();
   const { pendingRequestCount, requests } = useRequests();
   const {
@@ -90,10 +92,11 @@ const ProfileScreen = ({ navigation }) => {
               accountName={accountName}
               addCashAvailable={addCashAvailable}
               navigation={navigation}
-              showBottomDivider={!isEmpty}
+              showBottomDivider={!isEmpty || isLoading}
             />
           }
           initialized={activityListInitialized}
+          isLoading={isLoading}
           navigation={navigation}
           network={network}
           requests={requests}
@@ -113,17 +116,18 @@ const ProfileScreen = ({ navigation }) => {
               accountName={accountName}
               addCashAvailable={addCashAvailable}
               navigation={navigation}
-              showBottomDivider={!isEmpty}
+              showBottomDivider={!isEmpty || isLoading}
             />
           }
           isEmpty={isEmpty}
+          isLoading={isLoading}
           navigation={navigation}
           network={network}
           sections={sections}
         />
       )}
       {/* Show the interstitial only for mainnet */}
-      {isEmpty && network === NetworkTypes.mainnet && (
+      {isEmpty && !isLoading && network === NetworkTypes.mainnet && (
         <AddFundsInterstitial network={network} />
       )}
     </Page>

@@ -31,7 +31,7 @@ import {
   saveLocalTransactions,
 } from '../handlers/localstorage/accountLocal';
 import { apiGetTokenOverrides } from '../handlers/tokenOverrides';
-import { getTransactionReceipt, hasEthBalance } from '../handlers/web3';
+import { getTransactionReceipt } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
 import { divide, isZero } from '../helpers/utilities';
@@ -44,7 +44,6 @@ import {
 } from '../references';
 import { ethereumUtils, isLowerCaseMatch } from '../utils';
 import { addCashUpdatePurchases } from './addCash';
-import { setIsWalletEthZero } from './isWalletEthZero';
 import { uniswapUpdateLiquidityTokens } from './uniswap';
 
 let pendingTransactionsHandle = null;
@@ -74,6 +73,7 @@ const DATA_ADD_NEW_TRANSACTION_SUCCESS =
   'data/DATA_ADD_NEW_TRANSACTION_SUCCESS';
 
 const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
+const DATA_RESET_STATE = 'data/DATA_RESET_STATE';
 
 // -- Actions ---------------------------------------- //
 export const dataLoadState = () => async (dispatch, getState) => {
@@ -136,7 +136,7 @@ export const dataResetState = () => (dispatch, getState) => {
   uniswapPricesSubscription &&
     uniswapPricesSubscription.unsubscribe &&
     uniswapPricesSubscription.unsubscribe();
-  dispatch({ type: DATA_CLEAR_STATE });
+  dispatch({ type: DATA_RESET_STATE });
 };
 
 export const dataUpdateAssets = assets => (dispatch, getState) => {
@@ -187,13 +187,6 @@ export const transactionsReceived = (message, appended = false) => async (
     type: DATA_UPDATE_TRANSACTIONS,
   });
   updatePurchases(dedupedResults);
-
-  const { isWalletEthZero } = getState().isWalletEthZero;
-  if (isWalletEthZero) {
-    const ethBalance = await hasEthBalance(accountAddress);
-    dispatch(setIsWalletEthZero(!ethBalance));
-  }
-
   saveLocalTransactions(dedupedResults, accountAddress, network);
 };
 
@@ -482,8 +475,8 @@ const watchPendingTransactions = () => async dispatch => {
 const INITIAL_STATE = {
   assetPricesFromUniswap: {},
   assets: [],
-  loadingAssets: false,
-  loadingTransactions: false,
+  isLoadingAssets: true,
+  isLoadingTransactions: true,
   tokenOverrides: loweredTokenOverridesFallback,
   transactions: [],
   uniswapPricesQuery: null,
@@ -505,27 +498,31 @@ export default (state = INITIAL_STATE, action) => {
     case DATA_UPDATE_TOKEN_OVERRIDES:
       return { ...state, tokenOverrides: action.payload };
     case DATA_UPDATE_TRANSACTIONS:
-      return { ...state, transactions: action.payload };
+      return {
+        ...state,
+        isLoadingTransactions: false,
+        transactions: action.payload,
+      };
     case DATA_LOAD_TRANSACTIONS_REQUEST:
       return {
         ...state,
-        loadingTransactions: true,
+        isLoadingTransactions: true,
       };
     case DATA_LOAD_TRANSACTIONS_SUCCESS:
       return {
         ...state,
-        loadingTransactions: false,
+        isLoadingTransactions: false,
         transactions: action.payload,
       };
     case DATA_LOAD_TRANSACTIONS_FAILURE:
       return {
         ...state,
-        loadingTransactions: false,
+        isLoadingTransactions: false,
       };
     case DATA_LOAD_ASSETS_REQUEST:
       return {
         ...state,
-        loadingAssets: true,
+        isLoadingAssets: true,
       };
     case DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS:
       return {
@@ -536,12 +533,12 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         assets: action.payload,
-        loadingAssets: false,
+        isLoadingAssets: false,
       };
     case DATA_LOAD_ASSETS_FAILURE:
       return {
         ...state,
-        loadingAssets: false,
+        isLoadingAssets: false,
       };
     case DATA_ADD_NEW_TRANSACTION_SUCCESS:
       return {
@@ -552,6 +549,12 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         ...INITIAL_STATE,
+      };
+    case DATA_RESET_STATE:
+      return {
+        ...state,
+        ...INITIAL_STATE,
+        isLoadingTransactions: true,
       };
     default:
       return state;

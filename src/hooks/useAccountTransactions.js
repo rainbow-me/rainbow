@@ -5,9 +5,12 @@ import useContacts from './useContacts';
 import useRequests from './useRequests';
 
 export default function useAccountTransactions(initialized, isFocused) {
-  const { transactions } = useSelector(({ data: { transactions } }) => ({
-    transactions,
-  }));
+  const { isLoadingTransactions, transactions } = useSelector(
+    ({ data: { isLoadingTransactions, transactions } }) => ({
+      isLoadingTransactions,
+      transactions,
+    })
+  );
 
   const transactionsCount = useMemo(() => {
     return transactions.length;
@@ -27,6 +30,7 @@ export default function useAccountTransactions(initialized, isFocused) {
   const { sections } = buildTransactionsSectionsSelector(accountState);
 
   return {
+    isLoadingTransactions,
     sections,
     transactions,
     transactionsCount,

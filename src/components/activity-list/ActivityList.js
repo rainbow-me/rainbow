@@ -11,6 +11,7 @@ const ActivityList = ({
   addCashAvailable,
   header,
   isEmpty,
+  isLoading,
   navigation,
   network,
   sections,
@@ -24,7 +25,7 @@ const ActivityList = ({
       navigation={navigation}
       isEmpty={isEmpty}
       header={header}
-      isLoading={!isEmpty && !sections.length}
+      isLoading={isLoading}
       sections={sections}
     />
   ) : (
@@ -38,6 +39,7 @@ ActivityList.propTypes = {
   addCashAvailable: PropTypes.bool,
   header: PropTypes.node,
   isEmpty: PropTypes.bool,
+  isLoading: PropTypes.bool,
   navigation: PropTypes.object,
   network: PropTypes.string,
   sections: PropTypes.arrayOf(
