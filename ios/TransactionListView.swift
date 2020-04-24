@@ -26,6 +26,8 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     didSet {
       header.addCash.isHidden = addCashAvailable
       header.addCash.isHidden = !addCashAvailable
+      header.frame.size.height = addCashAvailable ? 260 : 185
+      headerSeparator.frame.origin.y = header.frame.size.height - 2
     }
   }
   @objc var isAvatarPickerAvailable: Bool = true {
