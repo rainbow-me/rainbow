@@ -47,11 +47,7 @@ export default function useWalletSectionsData() {
       ...isWalletEthZero,
       showcaseTokens,
     };
-    const creation = buildWalletSectionsSelector(accountInfo);
-    return {
-      ...accountInfo,
-      ...creation,
-    };
+    return buildWalletSectionsSelector(accountInfo);
   }, [
     accountData,
     accountSavings,
