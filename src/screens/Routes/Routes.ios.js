@@ -20,7 +20,7 @@ import AvatarBuilder from '../AvatarBuilder';
 import ExampleScreen from '../ExampleScreen';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
-import ProfileScreenWithData from '../ProfileScreenWithData';
+import ProfileScreen from '../ProfileScreen';
 import QRScannerScreenWithData from '../QRScannerScreenWithData';
 import ReceiveModal from '../ReceiveModal';
 import SavingsSheet from '../SavingsSheet';
@@ -48,7 +48,7 @@ import { onNavigationStateChange } from './onNavigationStateChange.ios';
 import Routes from './routesNames';
 
 const routesForSwipeStack = {
-  [Routes.PROFILE_SCREEN]: ProfileScreenWithData,
+  [Routes.PROFILE_SCREEN]: ProfileScreen,
   [Routes.WALLET_SCREEN]: WalletScreen,
   [Routes.QR_SCANNER_SCREEN]: QRScannerScreenWithData,
 };

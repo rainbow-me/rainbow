@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
+import { useIsFocused } from 'react-navigation-hooks';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
 import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
@@ -10,32 +11,52 @@ import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
+import {
+  useAccountSettings,
+  useAccountTransactions,
+  useContacts,
+  useRequests,
+} from '../hooks';
 import { colors, position } from '../styles';
 import Routes from './Routes/routesNames';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 
-const ProfileScreen = ({
-  accountColor,
-  accountName,
-  accountAddress,
-  isEmpty,
-  nativeCurrency,
-  navigation,
-  network,
-  requests,
-  transactions,
-  transactionsCount,
-}) => {
+const ProfileScreen = ({ navigation }) => {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
+  const isFocused = useIsFocused();
+
+  const { sections, transactions, transactionsCount } = useAccountTransactions(
+    activityListInitialized,
+    isFocused
+  );
+  const { contacts } = useContacts();
+  const { pendingRequestCount, requests } = useRequests();
+  const {
+    accountAddress,
+    accountColor,
+    accountName,
+    network,
+  } = useAccountSettings();
+
+  const isEmpty = !transactionsCount && !pendingRequestCount;
+
   useEffect(() => {
     setTimeout(() => {
       setActivityListInitialized(true);
     }, ACTIVITY_LIST_INITIALIZATION_DELAY);
   }, []);
 
-  const onPressBackButton = () => navigation.navigate(Routes.WALLET_SCREEN);
-  const onPressSettings = () => navigation.navigate(Routes.SETTINGS_MODAL);
+  const onPressBackButton = useCallback(
+    () => navigation.navigate(Routes.WALLET_SCREEN),
+    [navigation]
+  );
+
+  const onPressSettings = useCallback(
+    () => navigation.navigate(Routes.SETTINGS_MODAL),
+    [navigation]
+  );
+
   const addCashInDevNetworks =
     __DEV__ &&
     (network === NetworkTypes.kovan || network === NetworkTypes.mainnet);
@@ -57,7 +78,11 @@ const ProfileScreen = ({
       </Header>
       {nativeTransactionListAvailable ? (
         <TransactionList
+          accountAddress={accountAddress}
+          accountColor={accountColor}
+          accountName={accountName}
           addCashAvailable={addCashAvailable}
+          contacts={contacts}
           header={
             <ProfileMasthead
               accountAddress={accountAddress}
@@ -70,7 +95,10 @@ const ProfileScreen = ({
           }
           initialized={activityListInitialized}
           navigation={navigation}
+          network={network}
+          requests={requests}
           style={{ flex: 1 }}
+          transactions={transactions}
         />
       ) : (
         <ActivityList
@@ -88,13 +116,10 @@ const ProfileScreen = ({
               showBottomDivider={!isEmpty}
             />
           }
-          initialized={activityListInitialized}
           isEmpty={isEmpty}
-          nativeCurrency={nativeCurrency}
           navigation={navigation}
-          requests={requests}
-          transactions={transactions}
-          transactionsCount={transactionsCount}
+          network={network}
+          sections={sections}
         />
       )}
       {/* Show the interstitial only for mainnet */}
@@ -106,14 +131,7 @@ const ProfileScreen = ({
 };
 
 ProfileScreen.propTypes = {
-  accountAddress: PropTypes.string,
-  isEmpty: PropTypes.bool,
-  nativeCurrency: PropTypes.string,
   navigation: PropTypes.object,
-  network: PropTypes.string,
-  requests: PropTypes.array,
-  transactions: PropTypes.array,
-  transactionsCount: PropTypes.number,
 };
 
 export default ProfileScreen;
