@@ -77,7 +77,7 @@ const routesForMainNavigator = {
     screen: ExpandedAssetScreenWithData,
   },
   [ROUTES.RECEIVE_MODAL]: {
-    navigationOptions: expandedPreset,
+    navigationOptions: expandedPresetWithTransitions,
     screen: ReceiveModal,
   },
   [ROUTES.SETTINGS_MODAL]: {
