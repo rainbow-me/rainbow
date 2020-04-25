@@ -20,7 +20,7 @@ import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
 import ProfileScreen from '../ProfileScreen';
 import QRScannerScreenWithData from '../QRScannerScreenWithData';
 import ReceiveModal from '../ReceiveModal';
-import SendSheetWithData from '../SendSheetWithData';
+import SendSheet from '../SendSheet';
 import SettingsModal from '../SettingsModal';
 import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
 import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
@@ -127,7 +127,7 @@ const routesForStack = {
         sheetPreset.onTransitionStart(props);
       },
     },
-    screen: SendSheetWithData,
+    screen: SendSheet,
   },
 };
 const Stack = createStackNavigator(routesForStack, {

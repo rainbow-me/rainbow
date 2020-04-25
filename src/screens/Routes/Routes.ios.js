@@ -24,7 +24,7 @@ import ProfileScreen from '../ProfileScreen';
 import QRScannerScreenWithData from '../QRScannerScreenWithData';
 import ReceiveModal from '../ReceiveModal';
 import SavingsSheet from '../SavingsSheet';
-import SendSheetWithData from '../SendSheetWithData';
+import SendSheet from '../SendSheet';
 import SettingsModal from '../SettingsModal';
 import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
 import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
@@ -203,7 +203,7 @@ const routesForNativeStackFallback = {
         onTransitionStart();
       },
     },
-    screen: SendSheetWithData,
+    screen: SendSheet,
   },
   ...routesForSavingsModals,
 };
