@@ -17,6 +17,7 @@ import { Sheet, SheetActionButton } from '../components/sheet';
 import { convertAmountToNativeDisplay } from '../helpers/utilities';
 import { useAccountSettings } from '../hooks';
 import { colors, padding } from '../styles';
+import { ROUTES } from './Routes/routesNames';
 
 const SavingsSheet = () => {
   const { getParam, navigate } = useNavigation();
@@ -53,7 +54,7 @@ const SavingsSheet = () => {
   }, []);
 
   const onWithdraw = useCallback(() => {
-    navigate('SavingsWithdrawModal', {
+    navigate(ROUTES.SAVINGS_WITHDRAW_MODAL, {
       cTokenBalance,
       defaultInputAsset: underlying,
       supplyBalanceUnderlying,
@@ -73,7 +74,7 @@ const SavingsSheet = () => {
   ]);
 
   const onDeposit = useCallback(() => {
-    navigate('SavingsDepositModal', {
+    navigate(ROUTES.SAVINGS_DEPOSIT_MODAL, {
       defaultInputAsset: underlying,
     });
 

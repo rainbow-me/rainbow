@@ -7,7 +7,7 @@ import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ExpandedAssetScreenWithData from '../screens/ExpandedAssetScreenWithData';
 import SwapModal from '../screens/SwapModal';
 import { deviceUtils } from '../utils';
-import createStackNavigator from './createStackNavigator';
+import { createStackNavigator } from './../screens/Routes/helpers';
 import { swapDetailsPreset } from './transitions/effects';
 
 const ExchangeModalTabPosition = new Value(0);
