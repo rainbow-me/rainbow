@@ -494,7 +494,7 @@ export default (state = INITIAL_STATE, action) => {
     case DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP:
       return { ...state, assetPricesFromUniswap: action.payload };
     case DATA_UPDATE_ASSETS:
-      return { ...state, assets: action.payload };
+      return { ...state, assets: action.payload, isLoadingAssets: false };
     case DATA_UPDATE_TOKEN_OVERRIDES:
       return { ...state, tokenOverrides: action.payload };
     case DATA_UPDATE_TRANSACTIONS:

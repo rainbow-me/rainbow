@@ -95,11 +95,11 @@ export const settingsUpdateNetwork = network => async dispatch => {
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
   await web3SetHttpProvider(network);
   try {
-    await saveNetwork(network);
     dispatch({
       payload: { chainId, network },
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
     });
+    saveNetwork(network);
   } catch (error) {
     dispatch({
       type: SETTINGS_UPDATE_NETWORK_FAILURE,

@@ -40,7 +40,7 @@ const currentActionSelector = state => state.currentAction;
 const hiddenCoinsSelector = state => state.hiddenCoins;
 const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
 const isCoinListEditedSelector = state => state.isCoinListEdited;
-const isWalletEthZeroSelector = state => state.isWalletEthZero;
+const isLoadingAssetsSelector = state => state.isLoadingAssets;
 const languageSelector = state => state.language;
 const networkSelector = state => state.network;
 const nativeCurrencySelector = state => state.nativeCurrency;
@@ -170,7 +170,7 @@ const coinEditContextMenu = (
   balanceSectionData,
   isCoinListEdited,
   currentAction,
-  isLoadingBalances,
+  isLoadingAssets,
   allAssetsCount,
   totalValue
 ) => {
@@ -223,7 +223,7 @@ const coinEditContextMenu = (
           }
         : undefined,
     title: lang.t('account.tab_balances'),
-    totalItems: isLoadingBalances ? 1 : allAssetsCount,
+    totalItems: isLoadingAssets ? 1 : allAssetsCount,
     totalValue: totalValue,
   };
 };
@@ -234,7 +234,7 @@ const withBalanceSection = (
   assetsTotal,
   savingsSection,
   isBalancesSectionEmpty,
-  isWalletEthZero,
+  isLoadingAssets,
   language,
   nativeCurrency,
   network,
@@ -261,8 +261,7 @@ const withBalanceSection = (
     balanceSectionData.push(savingsSection);
   }
 
-  const isLoadingBalances = !isWalletEthZero && isBalancesSectionEmpty;
-  if (isLoadingBalances) {
+  if (isLoadingAssets) {
     balanceSectionData = [{ item: { uniqueId: 'skeleton0' } }];
   }
 
@@ -274,12 +273,12 @@ const withBalanceSection = (
       balanceSectionData,
       isCoinListEdited,
       currentAction,
-      isLoadingBalances,
+      isLoadingAssets,
       allAssetsCount,
       totalValue
     ),
     name: 'balances',
-    renderItem: isLoadingBalances
+    renderItem: isLoadingAssets
       ? balancesSkeletonRenderItem
       : balancesRenderItem,
   };
@@ -376,7 +375,7 @@ const balanceSectionSelector = createSelector(
     assetsTotalSelector,
     balanceSavingsSectionSelector,
     isBalancesSectionEmptySelector,
-    isWalletEthZeroSelector,
+    isLoadingAssetsSelector,
     languageSelector,
     nativeCurrencySelector,
     networkSelector,
