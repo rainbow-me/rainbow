@@ -26,7 +26,7 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
   
   override func awakeFromNib() {
     super.awakeFromNib()
-    addShadowLayer(walletImage)
+    addRequestShadowLayer(walletImage)
     requestIcon.frame = requestIcon.frame.offsetBy(dx: CGFloat(0), dy: CGFloat(-0.25))
   }
   
@@ -56,7 +56,7 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
     walletName.addCharacterSpacing(kernValue: 0.5)
     walletName.setLineSpacing(lineHeightMultiple: 1.1)
     walletImage.image = generateTextImage(String(request.dappName.prefix(2).uppercased()))
-    walletImage.layer.cornerRadius = walletImage.frame.width * 0.5
+    walletImage.layer.cornerRadius = 12
     
     if request.imageUrl != nil {
       let url = URL(string: request.imageUrl!)

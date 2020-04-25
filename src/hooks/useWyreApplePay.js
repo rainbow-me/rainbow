@@ -137,6 +137,7 @@ export default function useWyreApplePay() {
           });
           paymentResponse.complete('fail');
           handlePaymentCallback();
+          return;
         }
 
         setOrderCurrency(destCurrency);

@@ -51,6 +51,7 @@ class TransactionListViewCell: TransactionListBaseCell {
             self.coinImage.layer.cornerRadius = self.coinImage.frame.width * 0.5
           } else {
             self.coinImage.image = image
+            self.coinImage.layer.backgroundColor = UIColor.white.cgColor
           }
         }
       }
