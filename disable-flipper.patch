@@ -1,0 +1,56 @@
+diff --git a/ios/Podfile b/ios/Podfile
+index b3cdf0cb..a7987778 100644
+--- a/ios/Podfile
++++ b/ios/Podfile
+@@ -105,13 +105,4 @@ target 'Rainbow' do
+   pod "PanModal", :git => 'https://github.com/osdnk/PanModal', :commit => '25be2df9ccf997b62c39e1edb42857bab2d0cdab'
+ 
+   use_native_modules!
+-
+-  # Enables Flipper.
+-  #
+-  # Note that if you have use_frameworks! enabled, Flipper will not work and
+-  # you should disable these next few lines.
+-  use_flipper!
+-  post_install do |installer|
+-    flipper_post_install(installer)
+-  end
+ end
+diff --git a/ios/Rainbow/AppDelegate.m b/ios/Rainbow/AppDelegate.m
+index ff181084..ed9ae5a8 100644
+--- a/ios/Rainbow/AppDelegate.m
++++ b/ios/Rainbow/AppDelegate.m
+@@ -15,33 +15,11 @@
+ #import <Sentry/Sentry.h>
+ #import "RNSplashScreen.h"
+ 
+-#if DEBUG
+-#import <FlipperKit/FlipperClient.h>
+-#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
+-#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
+-#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
+-#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
+-#import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
+-
+-static void InitializeFlipper(UIApplication *application) {
+-  FlipperClient *client = [FlipperClient sharedClient];
+-  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+-  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:application withDescriptorMapper:layoutDescriptorMapper]];
+-  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
+-  [client addPlugin:[FlipperKitReactPlugin new]];
+-  [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
+-  [client start];
+-}
+-#endif
+-
+ 
+ @implementation AppDelegate
+ 
+ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+ {
+-  #if DEBUG
+-    InitializeFlipper(application);
+-  #endif
+   
+   [FIRApp configure];
+   [application registerForRemoteNotifications];
