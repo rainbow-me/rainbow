@@ -1,5 +1,5 @@
 import analytics from '@segment/analytics-react-native';
-import React, { Fragment, useCallback, useEffect } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import Divider from '../components/Divider';
 import { SavingsCoinRow } from '../components/coin-row';
@@ -14,9 +14,20 @@ import {
   SavingsSheetHeader,
 } from '../components/savings';
 import { Sheet, SheetActionButton } from '../components/sheet';
+import { isSymbolStablecoin } from '../helpers/savings';
 import { convertAmountToNativeDisplay } from '../helpers/utilities';
 import { useAccountSettings } from '../hooks';
 import { colors, padding } from '../styles';
+
+const DepositButtonShadows = [
+  [0, 7, 21, colors.dark, 0.25],
+  [0, 3.5, 10.5, colors.swapPurple, 0.35],
+];
+
+const WithdrawButtonShadows = [
+  [0, 7, 21, colors.dark, 0.25],
+  [0, 3.5, 10.5, colors.dark, 0.35],
+];
 
 const SavingsSheet = () => {
   const { getParam, navigate } = useNavigation();
@@ -39,6 +50,23 @@ const SavingsSheet = () => {
   const lifetimeAccruedInterest = convertAmountToNativeDisplay(
     lifetimeSupplyInterestAccruedNative,
     nativeCurrency
+  );
+
+  const savingsRowItem = useMemo(
+    () => ({
+      lifetimeSupplyInterestAccrued,
+      name: underlying.name,
+      supplyBalanceUnderlying,
+      supplyRate,
+      symbol: underlying.symbol,
+    }),
+    [
+      lifetimeSupplyInterestAccrued,
+      supplyBalanceUnderlying,
+      supplyRate,
+      underlying.name,
+      underlying.symbol,
+    ]
   );
 
   useEffect(() => {
@@ -102,19 +130,13 @@ const SavingsSheet = () => {
               color={colors.dark}
               label="􀁏 Withdraw"
               onPress={onWithdraw}
-              shadows={[
-                [0, 7, 21, colors.dark, 0.25],
-                [0, 3.5, 10.5, colors.dark, 0.35],
-              ]}
+              shadows={WithdrawButtonShadows}
             />
             <SheetActionButton
               color={colors.swapPurple}
               label="􀁍 Deposit"
               onPress={onDeposit}
-              shadows={[
-                [0, 7, 21, colors.dark, 0.25],
-                [0, 3.5, 10.5, colors.swapPurple, 0.35],
-              ]}
+              shadows={DepositButtonShadows}
             />
           </RowWithMargins>
           <Divider zIndex={0} />
@@ -132,13 +154,7 @@ const SavingsSheet = () => {
               <FloatingEmojisTapHandler onNewEmoji={onNewEmoji}>
                 <Column paddingBottom={9} paddingTop={4}>
                   <SavingsCoinRow
-                    item={{
-                      lifetimeSupplyInterestAccrued,
-                      name: underlying.name,
-                      supplyBalanceUnderlying,
-                      supplyRate,
-                      symbol: underlying.symbol,
-                    }}
+                    item={savingsRowItem}
                     key={underlying.address}
                   />
                 </Column>
@@ -148,7 +164,11 @@ const SavingsSheet = () => {
           <Divider color={colors.rowDividerLight} zIndex={0} />
           <SavingsPredictionStepper
             asset={underlying}
-            balance={underlyingBalanceNativeValue}
+            balance={
+              isSymbolStablecoin(underlying.symbol)
+                ? underlyingBalanceNativeValue
+                : supplyBalanceUnderlying
+            }
             interestRate={supplyRate}
           />
         </Fragment>
