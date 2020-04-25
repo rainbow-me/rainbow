@@ -167,11 +167,9 @@ export const transactionsReceived = (message, appended = false) => async (
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
   const transactionData = get(message, 'payload.transactions', []);
-  if (!transactionData.length) return;
   const { accountAddress, nativeCurrency, network } = getState().settings;
   const { purchaseTransactions } = getState().addCash;
   const { transactions, tokenOverrides } = getState().data;
-  if (!transactionData.length) return;
   const dedupedResults = parseTransactions(
     transactionData,
     accountAddress,
