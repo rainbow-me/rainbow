@@ -1,11 +1,10 @@
 import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { createElement } from 'react';
+import React, { createElement, useCallback } from 'react';
 import { InteractionManager, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { PERMISSIONS, request } from 'react-native-permissions';
-import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
 import { Column } from '../components/layout';
 import { Modal, ModalHeader } from '../components/modal';
 import { AnimatedPager } from '../components/pager';
@@ -54,16 +53,34 @@ const requestFaceIDPermission = () =>
       captureException(error);
     });
 
-const SettingsModal = ({
-  currentSettingsPage,
-  navigation,
-  onCloseModal,
-  onPressBack,
-  onPressImportSeedPhrase,
-  onPressSection,
-}) => {
+const SettingsModal = ({ navigation }) => {
+  const currentSettingsPage = get(
+    navigation,
+    'state.params.section',
+    SettingsPages.default
+  );
+
   const { component, title } = currentSettingsPage;
   const isDefaultPage = title === SettingsPages.default.title;
+
+  const onCloseModal = useCallback(() => navigation.goBack(), [navigation]);
+
+  const onPressBack = useCallback(
+    () => navigation.setParams({ section: SettingsPages.default }),
+    [navigation]
+  );
+
+  const onPressImportSeedPhrase = useCallback(() => {
+    InteractionManager.runAfterInteractions(() => {
+      navigation.navigate(Routes.IMPORT_SEED_PHRASE_SHEET);
+      StatusBar.setBarStyle('light-content');
+    });
+  }, [navigation]);
+
+  const onPressSection = useCallback(
+    section => () => navigation.setParams({ section }),
+    [navigation]
+  );
 
   return (
     <Modal
@@ -99,34 +116,7 @@ const SettingsModal = ({
 };
 
 SettingsModal.propTypes = {
-  currentSettingsPage: PropTypes.oneOf(Object.values(SettingsPages)),
   navigation: PropTypes.object,
-  onCloseModal: PropTypes.func,
-  onPressBack: PropTypes.func,
-  onPressImportSeedPhrase: PropTypes.func,
-  onPressSection: PropTypes.func,
 };
 
-export default compose(
-  withProps(({ navigation }) => ({
-    currentSettingsPage: get(
-      navigation,
-      'state.params.section',
-      SettingsPages.default
-    ),
-  })),
-  withHandlers({
-    onCloseModal: ({ navigation }) => () => navigation.goBack(),
-    onPressBack: ({ navigation }) => () =>
-      navigation.setParams({ section: SettingsPages.default }),
-    onPressImportSeedPhrase: ({ navigation }) => () => {
-      InteractionManager.runAfterInteractions(() => {
-        navigation.navigate(Routes.IMPORT_SEED_PHRASE_SHEET);
-        StatusBar.setBarStyle('light-content');
-      });
-    },
-    onPressSection: ({ navigation }) => section => () =>
-      navigation.setParams({ section }),
-  }),
-  onlyUpdateForKeys(['currentSettingsPage'])
-)(SettingsModal);
+export default SettingsModal;
