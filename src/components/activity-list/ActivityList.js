@@ -1,15 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withNavigationFocus } from 'react-navigation';
-import { compose, onlyUpdateForKeys, withProps } from 'recompact';
 import networkTypes from '../../helpers/networkTypes';
-import { buildTransactionsSectionsSelector } from '../../helpers/transactions';
-import {
-  withAccountSettings,
-  withAccountTransactions,
-  withContacts,
-  withRequests,
-} from '../../hoc';
 import RecyclerActivityList from './RecyclerActivityList';
 import TestnetEmptyState from './TestnetEmptyState';
 
@@ -21,8 +12,8 @@ const ActivityList = ({
   header,
   isEmpty,
   navigation,
-  sections,
   network,
+  sections,
 }) =>
   network === networkTypes.mainnet || sections.length ? (
     <RecyclerActivityList
@@ -48,6 +39,7 @@ ActivityList.propTypes = {
   header: PropTypes.node,
   isEmpty: PropTypes.bool,
   navigation: PropTypes.object,
+  network: PropTypes.string,
   sections: PropTypes.arrayOf(
     PropTypes.shape({
       data: PropTypes.array,
@@ -57,24 +49,4 @@ ActivityList.propTypes = {
   ),
 };
 
-export default compose(
-  withAccountSettings,
-  withAccountSettings,
-  withAccountTransactions,
-  withContacts,
-  withNavigationFocus,
-  withRequests,
-  withProps(buildTransactionsSectionsSelector),
-  onlyUpdateForKeys([
-    'initialized',
-    'isFocused',
-    'network',
-    'contacts',
-    'isEmpty',
-    'nativeCurrency',
-    'pendingTransactionsCount',
-    'sections',
-    'accountName',
-    'accountColor',
-  ])
-)(ActivityList);
+export default ActivityList;
