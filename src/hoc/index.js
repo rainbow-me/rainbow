@@ -1,6 +1,5 @@
 export { default as withAccountInfo } from './withAccountInfo';
 export { default as withAccountSettings } from './withAccountSettings';
-export { default as withAccountTransactions } from './withAccountTransactions';
 export { default as withActionSheetManager } from './withActionSheetManager';
 export { default as withAppState } from './withAppState';
 export { default as withBlockedHorizontalSwipe } from './withBlockedHorizontalSwipe';
@@ -21,7 +20,6 @@ export { default as withOpenInvestmentCards } from './withOpenInvestmentCards';
 export { default as withOpenBalances } from './withOpenBalances';
 export { default as withRaps } from './withRaps';
 export { default as withOpenSavings } from './withOpenSavings';
-export { default as withRequests } from './withRequests';
 export { default as withRotationForDirection } from './withRotationForDirection';
 export { default as withSafeAreaViewInsetValues } from './withSafeAreaViewInsetValues';
 export { default as withSelectedInput } from './withSelectedInput';
