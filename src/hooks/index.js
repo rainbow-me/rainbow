@@ -34,6 +34,7 @@ export { default as useSendSavingsAccount } from './useSendSavingsAccount';
 export { default as useShakeAnimation } from './useShakeAnimation';
 export { default as useShowcaseTokens } from './useShowcaseTokens';
 export { default as useTimeout } from './useTimeout';
+export { default as useTransactionConfirmation } from './useTransactionConfirmation';
 export { default as useTransformOrigin } from './useTransformOrigin';
 export { default as useUniswapAllowances } from './useUniswapAllowances';
 export { default as useUniswapAssets } from './useUniswapAssets';
