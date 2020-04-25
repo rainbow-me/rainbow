@@ -35,7 +35,6 @@ import {
   createStackNavigator,
   exchangePresetWithTransitions,
   expandedPresetWithTransitions,
-  ifThen,
   onTransitionEnd,
   onTransitionStart,
   sheetPresetWithTransitions,
@@ -125,7 +124,7 @@ const routesForMainNavigator = {
     navigationOptions: expandedPresetWithTransitions,
     screen: WalletConnectConfirmationModal,
   },
-  ...ifThen(isNativeStackAvailable, {
+  ...(isNativeStackAvailable && {
     [ROUTES.OVERLAY_EXPANDED_ASSET_SCREEN]: {
       navigationOptions: overlayExpandedPreset,
       screen: ExpandedAssetScreenWithData,
@@ -158,7 +157,7 @@ const AddCashFlowNavigator = createStackNavigator(routesForAddCash, {
 
 const routesForNativeStack = {
   [ROUTES.IMPORT_SEED_PHRASE_SHEET]: ImportSeedPhraseSheetWrapper,
-  ...ifThen(isNativeStackAvailable, {
+  ...(isNativeStackAvailable && {
     [ROUTES.SEND_SHEET_NAVIGATOR]: SendFlowNavigator,
     [ROUTES.ADD_CASH_SCREEN_NAVIGATOR]: AddCashFlowNavigator,
   }),

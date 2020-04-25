@@ -42,10 +42,6 @@ export const exchangePresetWithTransitions = presetWithTransition(
   exchangePreset
 );
 
-export function ifThen(condition, obj) {
-  return condition ? obj : {};
-}
-
 export function createStackNavigator(routes, config = {}) {
   return oldCreateStackNavigator(routes, {
     headerMode: 'none',
