@@ -4,7 +4,7 @@ import { StatusBar } from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import { Navigation } from '../../navigation';
 import { sentryUtils } from '../../utils';
-import { ROUTES } from './routesNames';
+import ROUTES from './routesNames';
 
 export function onNavigationStateChange(prevState, currentState) {
   const { params, routeName } = Navigation.getActiveRoute(currentState);

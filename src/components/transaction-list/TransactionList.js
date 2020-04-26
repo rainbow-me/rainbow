@@ -14,7 +14,7 @@ import {
   withRequests,
 } from '../../hoc';
 import { removeRequest } from '../../redux/requests';
-import { ROUTES } from '../../screens/Routes/routesNames';
+import ROUTES from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';

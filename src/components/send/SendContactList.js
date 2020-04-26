@@ -10,7 +10,7 @@ import {
 } from 'recyclerlistview';
 import { withSelectedInput } from '../../hoc';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
-import { ROUTES } from '../../screens/Routes/routesNames';
+import ROUTES from '../../screens/Routes/routesNames';
 import { deviceUtils } from '../../utils';
 import { filterList } from '../../utils/search';
 import { FlyInAnimation } from '../animations';

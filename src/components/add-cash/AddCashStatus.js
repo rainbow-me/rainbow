@@ -12,7 +12,7 @@ import {
   WYRE_TRANSFER_STATUS_TYPES,
 } from '../../helpers/wyreStatusTypes';
 import { useDimensions, useTimeout } from '../../hooks';
-import { ROUTES } from '../../screens/Routes/routesNames';
+import ROUTES from '../../screens/Routes/routesNames';
 import { position } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { FloatingEmojisTapper } from '../floating-emojis';

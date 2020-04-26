@@ -24,7 +24,7 @@ import {
 } from '../redux/editOptions';
 import { setOpenSmallBalances } from '../redux/openStateSettings';
 import store from '../redux/store';
-import { ROUTES } from '../screens/Routes/routesNames';
+import ROUTES from '../screens/Routes/routesNames';
 import { ethereumUtils } from '../utils';
 import {
   amountOfShowedCoins,

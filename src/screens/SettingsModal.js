@@ -16,7 +16,7 @@ import {
   NetworkSection,
   SettingsSection,
 } from '../components/settings-menu';
-import { ROUTES } from './Routes/routesNames';
+import ROUTES from './Routes/routesNames';
 
 const statusBarHeight = getStatusBarHeight(true);
 

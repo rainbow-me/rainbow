@@ -7,7 +7,7 @@ import { compose, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
-import { ROUTES } from '../screens/Routes/routesNames';
+import ROUTES from '../screens/Routes/routesNames';
 import { colors, margin, padding } from '../styles';
 import Divider from './Divider';
 import { Button } from './buttons';

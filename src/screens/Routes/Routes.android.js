@@ -33,7 +33,7 @@ import {
   sheetPresetWithTransitions,
 } from './helpers';
 import { onNavigationStateChange } from './onNavigationStateChange';
-import { ROUTES } from './routesNames';
+import ROUTES from './routesNames';
 
 const routesForSwipeStack = {
   [ROUTES.PROFILE_SCREEN]: ProfileScreenWithData,

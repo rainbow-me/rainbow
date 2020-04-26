@@ -30,7 +30,7 @@ import {
 import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { borders, colors, padding, shadow } from '../styles';
 import { logger } from '../utils';
-import { ROUTES } from './Routes/routesNames';
+import ROUTES from './Routes/routesNames';
 
 const keyboardVerticalOffset =
   Platform.OS === 'android'

@@ -46,7 +46,7 @@ import {
   SendSheetWrapper,
 } from './nativeStackWrappers';
 import { onNavigationStateChange } from './onNavigationStateChange.ios';
-import { ROUTES } from './routesNames';
+import ROUTES from './routesNames';
 
 const routesForSwipeStack = {
   [ROUTES.PROFILE_SCREEN]: ProfileScreenWithData,

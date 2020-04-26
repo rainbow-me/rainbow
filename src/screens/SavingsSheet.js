@@ -18,7 +18,7 @@ import { isSymbolStablecoin } from '../helpers/savings';
 import { convertAmountToNativeDisplay } from '../helpers/utilities';
 import { useAccountSettings } from '../hooks';
 import { colors, padding } from '../styles';
-import { ROUTES } from './Routes/routesNames';
+import ROUTES from './Routes/routesNames';
 
 const DepositButtonShadows = [
   [0, 7, 21, colors.dark, 0.25],

@@ -7,7 +7,7 @@ import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import { withAccountInfo, withCoinListEdited, withRequests } from '../../hoc';
-import { ROUTES } from '../../screens/Routes/routesNames';
+import ROUTES from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import Avatar from '../Avatar';
 import { OpacityToggler } from '../animations';

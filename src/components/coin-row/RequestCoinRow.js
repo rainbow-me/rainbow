@@ -5,7 +5,7 @@ import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
 import { compose, onlyUpdateForKeys, withProps } from 'recompact';
 import { removeRequest } from '../../redux/requests';
-import { ROUTES } from '../../screens/Routes/routesNames';
+import ROUTES from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { RequestCoinIcon } from '../coin-icon';

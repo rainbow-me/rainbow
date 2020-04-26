@@ -7,7 +7,7 @@ import {
 } from '../../navigation/transitions/effects';
 import { updateTransitionProps } from '../../redux/navigation';
 import store from '../../redux/store';
-import { ROUTES } from './routesNames';
+import ROUTES from './routesNames';
 
 export const onTransitionEnd = () =>
   store.dispatch(

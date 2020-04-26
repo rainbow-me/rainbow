@@ -41,7 +41,7 @@ import {
 import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
 import { deviceUtils, ethereumUtils, gasUtils } from '../utils';
-import { ROUTES } from './Routes/routesNames';
+import ROUTES from './Routes/routesNames';
 
 const sheetHeight = deviceUtils.dimensions.height - 10;
 

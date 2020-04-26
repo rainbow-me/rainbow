@@ -60,7 +60,7 @@ import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import { backgroundTask, ethereumUtils, logger } from '../utils';
-import { ROUTES } from './Routes/routesNames';
+import ROUTES from './Routes/routesNames';
 
 export const exchangeModalBorderRadius = 30;
 

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import { calculateAPY } from '../../helpers/savings';
-import { ROUTES } from '../../screens/Routes/routesNames';
+import ROUTES from '../../screens/Routes/routesNames';
 import { colors, fonts, padding } from '../../styles';
 import Divider from '../Divider';
 import { CoinIcon } from '../coin-icon';

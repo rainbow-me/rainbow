@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
-import { ROUTES } from '../../screens/Routes/routesNames';
+import ROUTES from '../../screens/Routes/routesNames';
 import { position } from '../../styles';
 import { deviceUtils, isNewValueForPath } from '../../utils';
 import { Row } from '../layout';

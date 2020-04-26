@@ -11,7 +11,7 @@ import TransactionList from '../components/transaction-list/TransactionList';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
 import { colors, position } from '../styles';
-import { ROUTES } from './Routes/routesNames';
+import ROUTES from './Routes/routesNames';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 

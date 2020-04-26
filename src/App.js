@@ -47,7 +47,7 @@ import { Navigation } from './navigation';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import Routes from './screens/Routes';
-import { ROUTES } from './screens/Routes/routesNames';
+import ROUTES from './screens/Routes/routesNames';
 import { parseQueryParams } from './utils';
 
 const WALLETCONNECT_SYNC_DELAY = 500;

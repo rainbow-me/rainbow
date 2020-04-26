@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import { useDimensions } from '../../hooks';
-import { ROUTES } from '../../screens/Routes/routesNames';
+import ROUTES from '../../screens/Routes/routesNames';
 import { colors, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';

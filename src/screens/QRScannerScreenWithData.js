@@ -16,7 +16,7 @@ import {
 } from '../hoc';
 import { addressUtils } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
-import { ROUTES } from './Routes/routesNames';
+import ROUTES from './Routes/routesNames';
 
 class QRScannerScreenWithData extends Component {
   static propTypes = {

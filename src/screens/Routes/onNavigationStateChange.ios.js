@@ -6,7 +6,7 @@ import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { Navigation } from '../../navigation';
 import { expandedPreset } from '../../navigation/transitions/effects';
 import { sentryUtils } from '../../utils';
-import { ROUTES } from './routesNames';
+import ROUTES from './routesNames';
 
 const routesForNativeStackFallback = {
   [ROUTES.ADD_CASH_SHEET]: true,

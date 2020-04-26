@@ -5,7 +5,7 @@ import { compose, onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { withContacts } from '../../hoc';
-import { ROUTES } from '../../screens/Routes/routesNames';
+import ROUTES from '../../screens/Routes/routesNames';
 import { colors, margin, padding } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
 import Divider from '../Divider';

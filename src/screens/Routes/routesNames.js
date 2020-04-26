@@ -1,4 +1,4 @@
-export const ROUTES = {
+const ROUTES = {
   ADD_CASH_SCREEN_NAVIGATOR: 'AddCashSheetNavigator',
   ADD_CASH_SHEET: 'AddCashSheet',
   AVATAR_BUILDER: 'AvatarBuilder',
@@ -26,3 +26,5 @@ export const ROUTES = {
   WALLET_CONNECT_CONFIRMATION_MODAL: 'WalletConnectConfirmationModal',
   WALLET_SCREEN: 'WalletScreen',
 };
+
+export default ROUTES;

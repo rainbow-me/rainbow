@@ -8,7 +8,7 @@ import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import { useAccountSettings, useClipboard } from '../../hooks';
-import { ROUTES } from '../../screens/Routes/routesNames';
+import ROUTES from '../../screens/Routes/routesNames';
 import { borders, colors } from '../../styles';
 import { abbreviations } from '../../utils';
 import Divider from '../Divider';
