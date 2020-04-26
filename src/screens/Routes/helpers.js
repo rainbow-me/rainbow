@@ -7,7 +7,7 @@ import {
 } from '../../navigation/transitions/effects';
 import { updateTransitionProps } from '../../redux/navigation';
 import store from '../../redux/store';
-import ROUTES from './routesNames';
+import Routes from './routesNames';
 
 export const onTransitionEnd = () =>
   store.dispatch(
@@ -49,7 +49,7 @@ export const exchangePresetWithTransitions = presetWithTransition(
 export function createStackNavigator(routes, config = {}) {
   return oldCreateStackNavigator(routes, {
     headerMode: 'none',
-    initialRouteName: ROUTES.SWIPE_LAYOUT,
+    initialRouteName: Routes.SWIPE_LAYOUT,
     keyboardHandlingEnabled: Platform.OS === 'ios',
     mode: 'modal',
     ...config,

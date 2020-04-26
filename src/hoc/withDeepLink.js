@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
 import { Navigation } from '../navigation';
 import { getRequestDisplayDetails } from '../parsers/requests';
-import ROUTES from '../screens/Routes/routesNames';
+import Routes from '../screens/Routes/routesNames';
 import { parseObjectToUrlQueryString } from '../utils';
 import {
   PERSONAL_SIGN,
@@ -128,7 +128,7 @@ export default Component =>
             openAutomatically: true,
             transactionDetails: request,
           },
-          routeName: ROUTES.CONFIRM_REQUEST,
+          routeName: Routes.CONFIRM_REQUEST,
         });
       },
     })

@@ -3,7 +3,7 @@ import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { withFabSelection } from '../../hoc';
-import ROUTES from '../../screens/Routes/routesNames';
+import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { Icon } from '../icons';
 import FloatingActionButton from './FloatingActionButton';
@@ -35,7 +35,7 @@ export default compose(
   withNavigation,
   withHandlers({
     onPress: ({ navigation }) => () => {
-      navigation.navigate(ROUTES.EXCHANGE_MODAL);
+      navigation.navigate(Routes.EXCHANGE_MODAL);
     },
   }),
   onlyUpdateForKeys(['disabled'])

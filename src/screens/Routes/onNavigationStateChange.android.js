@@ -4,7 +4,7 @@ import { StatusBar } from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import { Navigation } from '../../navigation';
 import { sentryUtils } from '../../utils';
-import ROUTES from './routesNames';
+import Routes from './routesNames';
 
 export function onNavigationStateChange(prevState, currentState) {
   const { params, routeName } = Navigation.getActiveRoute(currentState);
@@ -28,36 +28,36 @@ export function onNavigationStateChange(prevState, currentState) {
   }
 
   if (
-    prevRouteName !== ROUTES.QR_SCANNER_SCREEN &&
-    routeName === ROUTES.QR_SCANNER_SCREEN
+    prevRouteName !== Routes.QR_SCANNER_SCREEN &&
+    routeName === Routes.QR_SCANNER_SCREEN
   ) {
     StatusBar.setBarStyle('light-content');
   }
 
   if (
-    prevRouteName === ROUTES.QR_SCANNER_SCREEN &&
-    routeName !== ROUTES.QR_SCANNER_SCREEN
+    prevRouteName === Routes.QR_SCANNER_SCREEN &&
+    routeName !== Routes.QR_SCANNER_SCREEN
   ) {
     StatusBar.setBarStyle('dark-content');
   }
 
   if (
-    prevRouteName === ROUTES.IMPORT_SEED_PHRASE_SHEET &&
-    (routeName === ROUTES.PROFILE_SCREEN || routeName === ROUTES.WALLET_SCREEN)
+    prevRouteName === Routes.IMPORT_SEED_PHRASE_SHEET &&
+    (routeName === Routes.PROFILE_SCREEN || routeName === Routes.WALLET_SCREEN)
   ) {
     StatusBar.setBarStyle('dark-content');
   }
 
   if (
-    prevRouteName === ROUTES.WALLET_SCREEN &&
-    routeName === ROUTES.SEND_SHEET
+    prevRouteName === Routes.WALLET_SCREEN &&
+    routeName === Routes.SEND_SHEET
   ) {
     StatusBar.setBarStyle('light-content');
   }
 
   if (
-    prevRouteName === ROUTES.SEND_SHEET &&
-    routeName === ROUTES.WALLET_SCREEN
+    prevRouteName === Routes.SEND_SHEET &&
+    routeName === Routes.WALLET_SCREEN
   ) {
     StatusBar.setBarStyle('dark-content');
   }
@@ -71,7 +71,7 @@ export function onNavigationStateChange(prevState, currentState) {
   if (routeName !== prevRouteName) {
     let paramsToTrack = {};
 
-    if (routeName === ROUTES.EXPANDED_ASSET_SCREEN) {
+    if (routeName === Routes.EXPANDED_ASSET_SCREEN) {
       const { asset, type } = params;
       paramsToTrack = {
         assetContractAddress:

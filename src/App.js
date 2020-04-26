@@ -46,8 +46,8 @@ import * as keychain from './model/keychain';
 import { Navigation } from './navigation';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
-import Routes from './screens/Routes';
-import ROUTES from './screens/Routes/routesNames';
+import RoutesComponent from './screens/Routes';
+import Routes from './screens/Routes/routesNames';
 import { parseQueryParams } from './utils';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
@@ -142,7 +142,7 @@ class App extends Component {
     if (openAutomatically && requests) {
       return Navigation.handleAction({
         params: { openAutomatically, transactionDetails: last(requests) },
-        routeName: ROUTES.CONFIRM_REQUEST,
+        routeName: Routes.CONFIRM_REQUEST,
       });
     }
 
@@ -150,11 +150,11 @@ class App extends Component {
       const request = requests[0];
       return Navigation.handleAction({
         params: { openAutomatically, transactionDetails: request },
-        routeName: ROUTES.CONFIRM_REQUEST,
+        routeName: Routes.CONFIRM_REQUEST,
       });
     }
 
-    return Navigation.handleAction({ routeName: ROUTES.PROFILE_SCREEN });
+    return Navigation.handleAction({ routeName: Routes.PROFILE_SCREEN });
   };
 
   handleInitializeAnalytics = async () => {
@@ -201,7 +201,7 @@ class App extends Component {
     <SafeAreaProvider>
       <Provider store={store}>
         <FlexItem>
-          <Routes ref={this.handleNavigatorRef} />
+          <RoutesComponent ref={this.handleNavigatorRef} />
           <OfflineToast />
           <TestnetToast network={this.props.network} />
         </FlexItem>

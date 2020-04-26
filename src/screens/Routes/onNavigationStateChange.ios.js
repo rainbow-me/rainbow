@@ -6,18 +6,18 @@ import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { Navigation } from '../../navigation';
 import { expandedPreset } from '../../navigation/transitions/effects';
 import { sentryUtils } from '../../utils';
-import ROUTES from './routesNames';
+import Routes from './routesNames';
 
 const routesForNativeStackFallback = {
-  [ROUTES.ADD_CASH_SHEET]: true,
-  [ROUTES.IMPORT_SEED_PHRASE_SHEET]: true,
-  [ROUTES.MAIN_NAVIGATOR]: true,
-  [ROUTES.OVERLAY_EXPANDED_ASSET_SCREEN]: true,
-  [ROUTES.OVERLAY_EXPANDED_SUPPORTED_COUNTRIES]: true,
-  [ROUTES.SEND_SHEET]: true,
-  [ROUTES.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR]: true,
-  [ROUTES.SAVINGS_DEPOSIT_MODAL]: true,
-  [ROUTES.SAVINGS_DEPOSIT_MODAL]: true,
+  [Routes.ADD_CASH_SHEET]: true,
+  [Routes.IMPORT_SEED_PHRASE_SHEET]: true,
+  [Routes.MAIN_NAVIGATOR]: true,
+  [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: true,
+  [Routes.OVERLAY_EXPANDED_SUPPORTED_COUNTRIES]: true,
+  [Routes.SEND_SHEET]: true,
+  [Routes.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR]: true,
+  [Routes.SAVINGS_DEPOSIT_MODAL]: true,
+  [Routes.SAVINGS_DEPOSIT_MODAL]: true,
 };
 
 export function onNavigationStateChange(prevState, currentState) {
@@ -55,40 +55,40 @@ export function onNavigationStateChange(prevState, currentState) {
   }
 
   if (
-    prevRouteName !== ROUTES.QR_SCANNER_SCREEN &&
-    routeName === ROUTES.QR_SCANNER_SCREEN
+    prevRouteName !== Routes.QR_SCANNER_SCREEN &&
+    routeName === Routes.QR_SCANNER_SCREEN
   ) {
     StatusBar.setBarStyle('light-content', true);
   }
 
   if (
-    prevRouteName === ROUTES.QR_SCANNER_SCREEN &&
-    routeName !== ROUTES.QR_SCANNER_SCREEN
+    prevRouteName === Routes.QR_SCANNER_SCREEN &&
+    routeName !== Routes.QR_SCANNER_SCREEN
   ) {
     StatusBar.setBarStyle('dark-content', true);
   }
 
   if (
-    prevRouteName === ROUTES.IMPORT_SEED_PHRASE_SHEET &&
-    (routeName === ROUTES.PROFILE_SCREEN || routeName === ROUTES.WALLET_SCREEN)
+    prevRouteName === Routes.IMPORT_SEED_PHRASE_SHEET &&
+    (routeName === Routes.PROFILE_SCREEN || routeName === Routes.WALLET_SCREEN)
   ) {
     StatusBar.setBarStyle('dark-content', true);
   }
 
-  if (prevRouteName === ROUTES.WALLET_SCREEN && routeName === 'SendSheet') {
+  if (prevRouteName === Routes.WALLET_SCREEN && routeName === 'SendSheet') {
     StatusBar.setBarStyle('light-content', true);
   }
 
   if (
-    prevRouteName === ROUTES.SEND_SHEET &&
-    (routeName === ROUTES.PROFILE_SCREEN || routeName === ROUTES.WALLET_SCREEN)
+    prevRouteName === Routes.SEND_SHEET &&
+    (routeName === Routes.PROFILE_SCREEN || routeName === Routes.WALLET_SCREEN)
   ) {
     StatusBar.setBarStyle('dark-content', true);
   }
 
   if (
-    prevRouteName === ROUTES.ADD_CASH_SHEET &&
-    (routeName === ROUTES.PROFILE_SCREEN || routeName === ROUTES.WALLET_SCREEN)
+    prevRouteName === Routes.ADD_CASH_SHEET &&
+    (routeName === Routes.PROFILE_SCREEN || routeName === Routes.WALLET_SCREEN)
   ) {
     StatusBar.setBarStyle('dark-content', true);
   }
@@ -102,7 +102,7 @@ export function onNavigationStateChange(prevState, currentState) {
   if (routeName !== prevRouteName) {
     let paramsToTrack = null;
 
-    if (routeName === ROUTES.EXPANDED_ASSET_SCREEN) {
+    if (routeName === Routes.EXPANDED_ASSET_SCREEN) {
       const { asset, type } = params;
       paramsToTrack = {
         assetContractAddress:

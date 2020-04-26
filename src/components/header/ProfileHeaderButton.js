@@ -7,7 +7,7 @@ import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import { withAccountInfo, withCoinListEdited, withRequests } from '../../hoc';
-import ROUTES from '../../screens/Routes/routesNames';
+import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import Avatar from '../Avatar';
 import { OpacityToggler } from '../animations';
@@ -96,7 +96,7 @@ export default compose(
   withCoinListEdited,
   withHandlers({
     onPress: ({ navigation }) => () =>
-      navigation.navigate(ROUTES.PROFILE_SCREEN),
+      navigation.navigate(Routes.PROFILE_SCREEN),
   }),
   onlyUpdateForKeys([
     'pendingRequestCount',

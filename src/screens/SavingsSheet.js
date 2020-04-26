@@ -18,7 +18,7 @@ import { isSymbolStablecoin } from '../helpers/savings';
 import { convertAmountToNativeDisplay } from '../helpers/utilities';
 import { useAccountSettings } from '../hooks';
 import { colors, padding } from '../styles';
-import ROUTES from './Routes/routesNames';
+import Routes from './Routes/routesNames';
 
 const DepositButtonShadows = [
   [0, 7, 21, colors.dark, 0.25],
@@ -82,7 +82,7 @@ const SavingsSheet = () => {
   }, []);
 
   const onWithdraw = useCallback(() => {
-    navigate(ROUTES.SAVINGS_WITHDRAW_MODAL, {
+    navigate(Routes.SAVINGS_WITHDRAW_MODAL, {
       cTokenBalance,
       defaultInputAsset: underlying,
       supplyBalanceUnderlying,
@@ -102,7 +102,7 @@ const SavingsSheet = () => {
   ]);
 
   const onDeposit = useCallback(() => {
-    navigate(ROUTES.SAVINGS_DEPOSIT_MODAL, {
+    navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
       defaultInputAsset: underlying,
     });
 

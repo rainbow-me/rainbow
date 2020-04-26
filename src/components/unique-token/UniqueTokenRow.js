@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
-import ROUTES from '../../screens/Routes/routesNames';
+import Routes from '../../screens/Routes/routesNames';
 import { position } from '../../styles';
 import { deviceUtils, isNewValueForPath } from '../../utils';
 import { Row } from '../layout';
@@ -31,7 +31,7 @@ const UniqueTokenRow = React.memo(({ item }) => {
 
   const handleItemPress = useCallback(
     asset =>
-      navigate(ROUTES.EXPANDED_ASSET_SCREEN, { asset, type: 'unique_token' }),
+      navigate(Routes.EXPANDED_ASSET_SCREEN, { asset, type: 'unique_token' }),
     [navigate]
   );
 

@@ -30,7 +30,7 @@ import {
 import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { borders, colors, padding, shadow } from '../styles';
 import { logger } from '../utils';
-import ROUTES from './Routes/routesNames';
+import Routes from './Routes/routesNames';
 
 const keyboardVerticalOffset =
   Platform.OS === 'android'
@@ -189,7 +189,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
               analytics.track('Imported seed phrase', {
                 hadPreviousAddressWithValue: isEmpty,
               });
-              navigate(ROUTES.WALLET_SCREEN);
+              navigate(Routes.WALLET_SCREEN);
             } else {
               toggleImporting(false);
             }

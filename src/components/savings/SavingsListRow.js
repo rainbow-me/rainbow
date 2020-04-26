@@ -12,7 +12,7 @@ import {
   formatSavingsAmount,
 } from '../../helpers/savings';
 import { useDimensions } from '../../hooks';
-import ROUTES from '../../screens/Routes/routesNames';
+import Routes from '../../screens/Routes/routesNames';
 import { colors, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
@@ -46,7 +46,7 @@ const SavingsListRow = ({
     : Math.floor(apy * 10) / 10;
 
   const onButtonPress = useCallback(() => {
-    navigate(ROUTES.SAVINGS_SHEET, {
+    navigate(Routes.SAVINGS_SHEET, {
       cTokenBalance,
       isEmpty: !supplyBalanceUnderlying,
       lifetimeSupplyInterestAccrued,

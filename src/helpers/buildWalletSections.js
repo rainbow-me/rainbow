@@ -24,7 +24,7 @@ import {
 } from '../redux/editOptions';
 import { setOpenSmallBalances } from '../redux/openStateSettings';
 import store from '../redux/store';
-import ROUTES from '../screens/Routes/routesNames';
+import Routes from '../screens/Routes/routesNames';
 import { ethereumUtils } from '../utils';
 import {
   amountOfShowedCoins,
@@ -55,13 +55,13 @@ const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
     onPress: ({ assetType, navigation }) => item => {
-      navigation.navigate(ROUTES.EXPANDED_ASSET_SCREEN, {
+      navigation.navigate(Routes.EXPANDED_ASSET_SCREEN, {
         asset: item,
         type: assetType,
       });
     },
     onPressSend: ({ navigation }) => asset => {
-      navigation.navigate(ROUTES.SEND_SHEET, { asset });
+      navigation.navigate(Routes.SEND_SHEET, { asset });
     },
   })
 );

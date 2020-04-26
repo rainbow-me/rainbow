@@ -5,7 +5,7 @@ import { compose, onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { withContacts } from '../../hoc';
-import ROUTES from '../../screens/Routes/routesNames';
+import Routes from '../../screens/Routes/routesNames';
 import { colors, margin, padding } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
 import Divider from '../Divider';
@@ -137,7 +137,7 @@ class AddContactState extends PureComponent {
 
     const additionalPadding =
       navigation.dangerouslyGetParent().state.routeName ===
-        ROUTES.SEND_SHEET_NAVIGATOR && isNativeStackAvailable
+        Routes.SEND_SHEET_NAVIGATOR && isNativeStackAvailable
         ? nativeStackAdditionalPadding
         : 0;
 

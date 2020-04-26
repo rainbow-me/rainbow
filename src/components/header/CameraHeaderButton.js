@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
 import { compose, withHandlers } from 'recompact';
 import { withCoinListEdited } from '../../hoc';
-import ROUTES from '../../screens/Routes/routesNames';
+import Routes from '../../screens/Routes/routesNames';
 import { borders, colors, position } from '../../styles';
 import { OpacityToggler } from '../animations';
 import Icon from '../icons/Icon';
@@ -52,7 +52,7 @@ CameraHeaderButton.propTypes = {
 export default compose(
   withHandlers({
     onPress: ({ navigation }) => () =>
-      navigation.navigate(ROUTES.QR_SCANNER_SCREEN),
+      navigation.navigate(Routes.QR_SCANNER_SCREEN),
   }),
   withCoinListEdited
 )(CameraHeaderButton);
