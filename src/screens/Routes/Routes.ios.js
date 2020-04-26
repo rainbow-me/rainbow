@@ -156,6 +156,7 @@ const AddCashFlowNavigator = createStackNavigator(routesForAddCash, {
 });
 
 const routesForNativeStack = {
+  [ROUTES.MAIN_NAVIGATOR]: MainNavigator,
   [ROUTES.IMPORT_SEED_PHRASE_SHEET]: ImportSeedPhraseSheetWrapper,
   ...(isNativeStackAvailable && {
     [ROUTES.SEND_SHEET_NAVIGATOR]: SendFlowNavigator,
@@ -168,7 +169,7 @@ const NativeStack = createNativeStackNavigator(routesForNativeStack, {
     onAppear: () => appearListener.current && appearListener.current(),
   },
   headerMode: 'none',
-  initialRouteName: ROUTES.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR,
+  initialRouteName: ROUTES.MAIN_NAVIGATOR,
   mode: 'modal',
 });
 
