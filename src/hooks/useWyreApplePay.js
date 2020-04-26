@@ -193,12 +193,13 @@ export default function useWyreApplePay() {
 
   const onPurchase = useCallback(
     ({ currency, value }) => {
-      return requestWyreApplePay(
-        accountAddress,
-        currency,
-        value,
-        getOrderStatus
-      );
+      const result = requestWyreApplePay(accountAddress, currency, value);
+      if (result) {
+        const { orderId, paymentResponse } = result;
+        if (orderId) {
+          getOrderStatus(currency, orderId, paymentResponse, value);
+        }
+      }
     },
     [accountAddress, getOrderStatus]
   );

@@ -43,11 +43,8 @@ class WyreAPIException extends Error {
 export const requestWyreApplePay = async (
   accountAddress,
   destCurrency,
-  sourceAmount,
-  trackOrder
+  sourceAmount
 ) => {
-  const destAddress = `ethereum:${accountAddress}`;
-
   const feeAmount = feeCalculation(
     sourceAmount,
     WYRE_PERCENT_FEE,
@@ -98,18 +95,20 @@ export const requestWyreApplePay = async (
       const orderId = processWyrePayment(
         paymentResponse,
         totalAmount,
-        destAddress,
+        accountAddress,
         destCurrency
       );
-      trackOrder(destCurrency, orderId, paymentResponse, sourceAmount);
+      return { orderId, paymentResponse };
     } catch (wyreError) {
       logger.sentry('processWyrePayment - catch');
       captureException(wyreError);
       paymentResponse.complete('fail');
+      return null;
     }
   } catch (error) {
     logger.sentry('Apple Pay - Show payment request catch');
     captureException(error);
+    return null;
   }
 };
 
@@ -156,9 +155,11 @@ export const trackWyreTransfer = async transferId => {
 const processWyrePayment = async (
   paymentResponse,
   amount,
-  dest,
+  accountAddress,
   destCurrency
 ) => {
+  const dest = `ethereum:${accountAddress}`;
+
   const data = createPayload(paymentResponse, amount, dest, destCurrency);
   try {
     const response = await wyreApi.post('/v3/apple-pay/process/partner', data);
