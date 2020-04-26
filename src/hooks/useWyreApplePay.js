@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException, captureMessage } from '@sentry/react-native';
-import { get, isEmpty, toLower } from 'lodash';
+import { get, toLower } from 'lodash';
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
@@ -147,19 +147,6 @@ export default function useWyreApplePay() {
         );
 
       try {
-        if (!isPaymentComplete && isEmpty(orderId)) {
-          analytics.track('Purchase failed', {
-            category: 'add cash',
-            error_category: 'EARLY_FAILURE',
-            error_code: 'NO_ORDER_ID',
-          });
-          paymentResponse.complete('fail');
-          handlePaymentCallback();
-          return;
-        }
-
-        setOrderCurrency(destCurrency);
-
         const { data, orderStatus, transferId } = await trackWyreOrder(
           referenceInfo,
           orderId
@@ -174,7 +161,9 @@ export default function useWyreApplePay() {
         if (!isPaymentComplete) {
           if (isFailed) {
             logger.sentry('Wyre order data failed', data);
-            captureMessage(`Wyre final check - order status failed`);
+            captureMessage(
+              `Wyre final check - order status failed - ${referenceInfo.referenceId}`
+            );
             analytics.track('Purchase failed', {
               category: 'add cash',
               error_category: get(data, 'errorCategory', 'unknown'),
@@ -190,7 +179,9 @@ export default function useWyreApplePay() {
             handlePaymentCallback();
           } else if (!isChecking) {
             logger.sentry('Wyre order data', data);
-            captureMessage(`Wyre final check - order status unknown`);
+            captureMessage(
+              `Wyre final check - order status unknown - ${referenceInfo.referenceId}`
+            );
           }
         }
 
@@ -226,6 +217,8 @@ export default function useWyreApplePay() {
         value
       );
 
+      setOrderCurrency(currency);
+
       if (applePayResponse) {
         const { paymentResponse, totalAmount } = applePayResponse;
         const orderId = await getOrderId(
@@ -244,10 +237,18 @@ export default function useWyreApplePay() {
             paymentResponse,
             value
           );
+        } else {
+          analytics.track('Purchase failed', {
+            category: 'add cash',
+            error_category: 'EARLY_FAILURE',
+            error_code: 'NO_ORDER_ID',
+          });
+          paymentResponse.complete('fail');
+          handlePaymentCallback();
         }
       }
     },
-    [accountAddress, getOrderStatus]
+    [accountAddress, getOrderStatus, handlePaymentCallback]
   );
 
   return {

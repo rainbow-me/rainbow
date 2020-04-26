@@ -49,9 +49,8 @@ class WyreException extends Error {
 }
 
 export const getReferenceId = accountAddress => {
-  const addressLength = accountAddress.length;
   const lowered = toLower(accountAddress);
-  return lowered.substring(addressLength - 12, addressLength);
+  return lowered.substr(-12);
 };
 
 export const showApplePayRequest = async (
