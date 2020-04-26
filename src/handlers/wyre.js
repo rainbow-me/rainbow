@@ -40,7 +40,7 @@ class WyreAPIException extends Error {
   }
 }
 
-export const requestWyreApplePay = (
+export const requestWyreApplePay = async (
   accountAddress,
   destCurrency,
   sourceAmount,
@@ -92,28 +92,25 @@ export const requestWyreApplePay = (
 
   logger.sentry('Apple Pay - Show payment request');
 
-  paymentRequest
-    .show()
-    .then(paymentResponse => {
-      processWyrePayment(
+  try {
+    const paymentResponse = paymentRequest.show();
+    try {
+      const orderId = processWyrePayment(
         paymentResponse,
         totalAmount,
         destAddress,
         destCurrency
-      )
-        .then(orderId => {
-          trackOrder(destCurrency, orderId, paymentResponse, sourceAmount);
-        })
-        .catch(error => {
-          logger.sentry('processWyrePayment - catch');
-          captureException(error);
-          paymentResponse.complete('fail');
-        });
-    })
-    .catch(error => {
-      logger.sentry('Apple Pay - Show payment request catch');
-      captureException(error);
-    });
+      );
+      trackOrder(destCurrency, orderId, paymentResponse, sourceAmount);
+    } catch (wyreError) {
+      logger.sentry('processWyrePayment - catch');
+      captureException(wyreError);
+      paymentResponse.complete('fail');
+    }
+  } catch (error) {
+    logger.sentry('Apple Pay - Show payment request catch');
+    captureException(error);
+  }
 };
 
 export const trackWyreOrder = async orderId => {
