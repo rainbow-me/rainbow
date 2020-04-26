@@ -5,6 +5,7 @@ import { InteractionManager } from 'react-native';
 import styled from 'styled-components/primitives';
 import { chartExpandedAvailable } from '../../config/experimental';
 import { useCharts } from '../../hooks';
+import ROUTES from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import Divider from '../Divider';
@@ -56,7 +57,7 @@ const ChartExpandedState = ({ asset, navigation }) => {
     navigation.goBack();
 
     InteractionManager.runAfterInteractions(() => {
-      navigation.navigate('SendSheet', { asset });
+      navigation.navigate(ROUTES.SEND_SHEET, { asset });
     });
   }, [asset, navigation]);
 
@@ -64,7 +65,7 @@ const ChartExpandedState = ({ asset, navigation }) => {
     navigation.goBack();
 
     InteractionManager.runAfterInteractions(() => {
-      navigation.navigate('ExchangeModal', { asset });
+      navigation.navigate(ROUTES.EXCHANGE_MODAL, { asset });
     });
   }, [asset, navigation]);
 

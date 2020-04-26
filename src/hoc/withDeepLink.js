@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
 import { Navigation } from '../navigation';
 import { getRequestDisplayDetails } from '../parsers/requests';
-// eslint-disable-next-line import/default
-import parseObjectToUrlQueryString from '../utils';
+import ROUTES from '../screens/Routes/routesNames';
+import { parseObjectToUrlQueryString } from '../utils';
 import {
   PERSONAL_SIGN,
   SEND_TRANSACTION,
@@ -128,7 +128,7 @@ export default Component =>
             openAutomatically: true,
             transactionDetails: request,
           },
-          routeName: 'ConfirmRequest',
+          routeName: ROUTES.CONFIRM_REQUEST,
         });
       },
     })

@@ -60,6 +60,7 @@ import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import { backgroundTask, ethereumUtils, logger } from '../utils';
+import ROUTES from './Routes/routesNames';
 
 export const exchangeModalBorderRadius = 30;
 
@@ -717,7 +718,7 @@ const ExchangeModal = ({
         setIsAuthorizing(false);
         const callback = () => {
           navigation.setParams({ focused: false });
-          navigation.navigate('ProfileScreen');
+          navigation.navigate(ROUTES.PROFILE_SCREEN);
         };
         const rap = await createRap({
           callback,
@@ -746,7 +747,7 @@ const ExchangeModal = ({
         setIsAuthorizing(false);
         logger.log('[exchange - handle submit] error submitting swap', error);
         navigation.setParams({ focused: false });
-        navigation.navigate('WalletScreen');
+        navigation.navigate(ROUTES.WALLET_SCREEN);
       }
     });
   }, [

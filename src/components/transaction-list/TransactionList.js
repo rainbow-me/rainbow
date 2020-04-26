@@ -14,6 +14,7 @@ import {
   withRequests,
 } from '../../hoc';
 import { removeRequest } from '../../redux/requests';
+import ROUTES from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
@@ -142,19 +143,19 @@ export default compose(
   withState('tapTarget', 'setTapTarget', [0, 0, 0, 0]),
   withHandlers({
     onAddCashPress: ({ navigation }) => () => {
-      navigation.navigate('AddCashSheet');
+      navigation.navigate(ROUTES.ADD_CASH_SHEET);
       analytics.track('Tapped Add Cash', {
         category: 'add cash',
       });
     },
     onAvatarPress: ({ navigation, accountColor, accountName }) => () => {
-      navigation.navigate('AvatarBuilder', {
+      navigation.navigate(ROUTES.AVATAR_BUILDER, {
         accountColor,
         accountName,
       });
     },
     onReceivePress: ({ navigation }) => () => {
-      navigation.navigate('ReceiveModal');
+      navigation.navigate(ROUTES.RECEIVE_MODAL);
     },
     onRequestExpire: ({ requests, removeExpiredRequest }) => e => {
       const { index } = e.nativeEvent;
@@ -166,7 +167,7 @@ export default compose(
       const item = requests[index];
       navigation.navigate({
         params: { transactionDetails: item },
-        routeName: 'ConfirmRequest',
+        routeName: ROUTES.CONFIRM_REQUEST,
       });
       return;
     },
@@ -217,7 +218,7 @@ export default compose(
           },
           buttonIndex => {
             if (!isPurchasing && buttonIndex === 0) {
-              navigation.navigate('ExpandedAssetScreen', {
+              navigation.navigate(ROUTES.EXPANDED_ASSET_SCREEN, {
                 address: contactAddress,
                 asset: item,
                 color: contactColor,

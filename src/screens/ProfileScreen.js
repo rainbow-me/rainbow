@@ -11,6 +11,7 @@ import TransactionList from '../components/transaction-list/TransactionList';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
 import { colors, position } from '../styles';
+import ROUTES from './Routes/routesNames';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 
@@ -33,8 +34,8 @@ const ProfileScreen = ({
     }, ACTIVITY_LIST_INITIALIZATION_DELAY);
   }, []);
 
-  const onPressBackButton = () => navigation.navigate('WalletScreen');
-  const onPressSettings = () => navigation.navigate('SettingsModal');
+  const onPressBackButton = () => navigation.navigate(ROUTES.WALLET_SCREEN);
+  const onPressSettings = () => navigation.navigate(ROUTES.SETTINGS_MODAL);
   const addCashInDevNetworks =
     __DEV__ &&
     (network === NetworkTypes.kovan || network === NetworkTypes.mainnet);

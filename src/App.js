@@ -22,7 +22,6 @@ import {
 // eslint-disable-next-line import/default
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-// eslint-disable-next-line import/no-unresolved
 import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
@@ -48,6 +47,7 @@ import { Navigation } from './navigation';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import Routes from './screens/Routes';
+import ROUTES from './screens/Routes/routesNames';
 import { parseQueryParams } from './utils';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
@@ -142,7 +142,7 @@ class App extends Component {
     if (openAutomatically && requests) {
       return Navigation.handleAction({
         params: { openAutomatically, transactionDetails: last(requests) },
-        routeName: 'ConfirmRequest',
+        routeName: ROUTES.CONFIRM_REQUEST,
       });
     }
 
@@ -150,11 +150,11 @@ class App extends Component {
       const request = requests[0];
       return Navigation.handleAction({
         params: { openAutomatically, transactionDetails: request },
-        routeName: 'ConfirmRequest',
+        routeName: ROUTES.CONFIRM_REQUEST,
       });
     }
 
-    return Navigation.handleAction({ routeName: 'ProfileScreen' });
+    return Navigation.handleAction({ routeName: ROUTES.PROFILE_SCREEN });
   };
 
   handleInitializeAnalytics = async () => {

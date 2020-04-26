@@ -16,6 +16,7 @@ import {
   NetworkSection,
   SettingsSection,
 } from '../components/settings-menu';
+import ROUTES from './Routes/routesNames';
 
 const statusBarHeight = getStatusBarHeight(true);
 
@@ -120,7 +121,7 @@ export default compose(
       navigation.setParams({ section: SettingsPages.default }),
     onPressImportSeedPhrase: ({ navigation }) => () => {
       InteractionManager.runAfterInteractions(() => {
-        navigation.navigate('ImportSeedPhraseSheet');
+        navigation.navigate(ROUTES.IMPORT_SEED_PHRASE_SHEET);
         StatusBar.setBarStyle('light-content');
       });
     },

@@ -8,6 +8,7 @@ import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import { withAccountSettings } from '../../hoc';
+import ROUTES from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
@@ -174,7 +175,7 @@ export default compose(
           },
           buttonIndex => {
             if (!isPurchasing && buttonIndex === 0) {
-              navigation.navigate('ExpandedAssetScreen', {
+              navigation.navigate(ROUTES.EXPANDED_ASSET_SCREEN, {
                 address: contactAddress,
                 asset: item,
                 color: contactColor,

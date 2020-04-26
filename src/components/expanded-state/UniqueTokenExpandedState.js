@@ -10,6 +10,7 @@ import {
 } from 'recompact';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { withImageDimensionsCache } from '../../hoc';
+import ROUTES from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import {
   deviceUtils,
@@ -179,7 +180,7 @@ export default compose(
   withProps(buildPanelDimensions),
   withHandlers({
     onPressSend: ({ navigation, asset }) => () => {
-      navigation.navigate('SendSheet', { asset });
+      navigation.navigate(ROUTES.SEND_SHEET, { asset });
     },
     onPressShare: ({ asset: { name, permalink } }) => () => {
       Share.share({

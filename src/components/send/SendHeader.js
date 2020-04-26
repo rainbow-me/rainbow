@@ -7,6 +7,7 @@ import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withNeverRerender, withSelectedInput } from '../../hoc';
+import ROUTES from '../../screens/Routes/routesNames';
 import { colors, padding } from '../../styles';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import Divider from '../Divider';
@@ -148,7 +149,7 @@ class SendHeader extends PureComponent {
     }
 
     Keyboard.dismiss();
-    navigation.navigate('OverlayExpandedAssetScreen', {
+    navigation.navigate(ROUTES.OVERLAY_EXPANDED_ASSET_SCREEN, {
       address: recipient,
       asset: {},
       color,

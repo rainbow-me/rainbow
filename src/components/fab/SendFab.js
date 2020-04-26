@@ -4,6 +4,7 @@ import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { withFabSelection, withTransitionProps } from '../../hoc';
+import ROUTES from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
@@ -76,7 +77,7 @@ export default compose(
   withNavigation,
   withTransitionProps,
   withHandlers({
-    onPress: ({ navigation }) => () => navigation.navigate('SendSheet'),
+    onPress: ({ navigation }) => () => navigation.navigate(ROUTES.SEND_SHEET),
   }),
   onlyUpdateForKeys(['disabled', 'sections'])
   // withProps({

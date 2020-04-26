@@ -1,7 +1,12 @@
 {
   "extends": "satya164",
   "settings": {
-    "react": { "version": "16" }
+    "react": { "version": "16" },
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".ios.js", ".android.js", ".native.js"]
+      }
+    }
   },
   "globals": {
     "__DEV__": true

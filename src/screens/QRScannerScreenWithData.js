@@ -16,6 +16,7 @@ import {
 } from '../hoc';
 import { addressUtils } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
+import ROUTES from './Routes/routesNames';
 
 class QRScannerScreenWithData extends Component {
   static propTypes = {
@@ -60,7 +61,8 @@ class QRScannerScreenWithData extends Component {
 
   handlePastedUri = async uri => this.props.walletConnectOnSessionRequest(uri);
 
-  handlePressBackButton = () => this.props.navigation.navigate('WalletScreen');
+  handlePressBackButton = () =>
+    this.props.navigation.navigate(ROUTES.WALLET_SCREEN);
 
   handlePressPasteSessionUri = () => {
     Prompt({
@@ -90,8 +92,8 @@ class QRScannerScreenWithData extends Component {
 
     if (address) {
       analytics.track('Scanned address QR code');
-      navigation.navigate('WalletScreen');
-      navigation.navigate('SendSheet', { address });
+      navigation.navigate(ROUTES.WALLET_SCREEN);
+      navigation.navigate(ROUTES.SEND_SHEET, { address });
       return setSafeTimeout(this.handleReenableScanning, 1000);
     }
 
