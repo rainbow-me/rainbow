@@ -1,7 +1,7 @@
 import { PaymentRequest } from '@rainbow-me/react-native-payments';
 import { captureException } from '@sentry/react-native';
 import axios from 'axios';
-import { get, last, split } from 'lodash';
+import { get, join, last, split, toLower, values } from 'lodash';
 import {
   RAINBOW_WYRE_MERCHANT_ID,
   RAINBOW_WYRE_MERCHANT_ID_TEST,
@@ -33,14 +33,29 @@ const wyreApi = axios.create({
   },
 });
 
-class WyreAPIException extends Error {
-  constructor(errorID, message) {
-    super(`${errorID}:${message}`);
-    this.name = 'WyreAPIException';
+const WyreExceptionTypes = {
+  CREATE_ORDER: 'WyreCreateOrderException',
+  TRACK_ORDER: 'WyreTrackOrderException',
+  TRACK_TRANSFER: 'WyreTrackTransferException',
+};
+
+class WyreException extends Error {
+  constructor(name, referenceInfo, errorId, message) {
+    const referenceInfoIds = values(referenceInfo);
+    const referenceId = join(referenceInfoIds, ':');
+    super(`${referenceId}:${errorId}:${message}`);
+    this.name = name;
   }
 }
 
-export const requestWyreApplePay = async (
+export const getReferenceId = accountAddress => {
+  const addressLength = accountAddress.length;
+  const lowered = toLower(accountAddress);
+  return lowered.substring(addressLength - 12, addressLength);
+};
+
+export const showApplePayRequest = async (
+  referenceInfo,
   accountAddress,
   destCurrency,
   sourceAmount
@@ -87,32 +102,23 @@ export const requestWyreApplePay = async (
     paymentOptions
   );
 
-  logger.sentry('Apple Pay - Show payment request');
+  logger.sentry(
+    `Apple Pay - Show payment request - ${referenceInfo.referenceId}`
+  );
 
   try {
-    const paymentResponse = paymentRequest.show();
-    try {
-      const orderId = processWyrePayment(
-        paymentResponse,
-        totalAmount,
-        accountAddress,
-        destCurrency
-      );
-      return { orderId, paymentResponse };
-    } catch (wyreError) {
-      logger.sentry('processWyrePayment - catch');
-      captureException(wyreError);
-      paymentResponse.complete('fail');
-      return null;
-    }
+    const paymentResponse = await paymentRequest.show();
+    return { paymentResponse, totalAmount };
   } catch (error) {
-    logger.sentry('Apple Pay - Show payment request catch');
+    logger.sentry(
+      `Apple Pay - Show payment request catch - ${referenceInfo.referenceId}`
+    );
     captureException(error);
     return null;
   }
 };
 
-export const trackWyreOrder = async orderId => {
+export const trackWyreOrder = async (referenceInfo, orderId) => {
   try {
     const response = await wyreApi.get(`/v3/orders/${orderId}`);
     if (response.status >= 200 && response.status < 300) {
@@ -124,14 +130,18 @@ export const trackWyreOrder = async orderId => {
       data: { exceptionId, message },
     } = response;
 
-    throw new WyreAPIException(exceptionId, message);
+    throw new WyreException(
+      WyreExceptionTypes.TRACK_ORDER,
+      referenceInfo,
+      exceptionId,
+      message
+    );
   } catch (error) {
-    captureException(error);
     throw error;
   }
 };
 
-export const trackWyreTransfer = async transferId => {
+export const trackWyreTransfer = async (referenceInfo, transferId) => {
   try {
     const response = await wyreApi.get(`/v2/transfer/${transferId}/track`);
     if (response.status >= 200 && response.status < 300) {
@@ -145,39 +155,56 @@ export const trackWyreTransfer = async transferId => {
     const {
       data: { exceptionId, message },
     } = response;
-    throw new WyreAPIException(exceptionId, message);
+    throw new WyreException(
+      WyreExceptionTypes.TRACK_TRANSFER,
+      referenceInfo,
+      exceptionId,
+      message
+    );
   } catch (error) {
-    captureException(error);
     throw error;
   }
 };
 
-const processWyrePayment = async (
+export const getOrderId = async (
+  referenceInfo,
   paymentResponse,
   amount,
   accountAddress,
   destCurrency
 ) => {
-  const dest = `ethereum:${accountAddress}`;
-
-  const data = createPayload(paymentResponse, amount, dest, destCurrency);
+  const data = createPayload(
+    paymentResponse,
+    amount,
+    accountAddress,
+    destCurrency
+  );
   try {
     const response = await wyreApi.post('/v3/apple-pay/process/partner', data);
 
     if (response.status >= 200 && response.status < 300) {
       return get(response, 'data.id', null);
     }
-    logger.sentry(
-      'WYRE - processWyrePayment response - was not 200',
-      response.data
-    );
+    logger.sentry('WYRE - getOrderId response - was not 200', response.data);
     const {
       data: { exceptionId, message },
     } = response;
-    captureException(new WyreAPIException(exceptionId, message));
+    captureException(
+      new WyreException(
+        WyreExceptionTypes.CREATE_ORDER,
+        referenceInfo,
+        exceptionId,
+        message
+      )
+    );
+    paymentResponse.complete('fail');
     return null;
   } catch (error) {
+    logger.sentry(
+      `WYRE - getOrderId response catch - ${referenceInfo.referenceId}`
+    );
     captureException(error);
+    paymentResponse.complete('fail');
     return null;
   }
 };
@@ -205,7 +232,14 @@ const getWyrePaymentDetails = (
   },
 });
 
-const createPayload = (paymentResponse, amount, dest, destCurrency) => {
+const createPayload = (
+  paymentResponse,
+  amount,
+  accountAddress,
+  destCurrency
+) => {
+  const dest = `ethereum:${accountAddress}`;
+
   const {
     details: {
       billingContact: billingInfo,

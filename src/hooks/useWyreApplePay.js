@@ -4,7 +4,9 @@ import { get, isEmpty, toLower } from 'lodash';
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
-  requestWyreApplePay,
+  getOrderId,
+  getReferenceId,
+  showApplePayRequest,
   trackWyreOrder,
   trackWyreTransfer,
 } from '../handlers/wyre';
@@ -46,11 +48,14 @@ export default function useWyreApplePay() {
   }, [startPaymentCompleteTimeout]);
 
   const getTransferStatus = useCallback(
-    async transferId => {
-      const retry = () => getTransferStatus(transferId);
+    async (referenceInfo, transferId) => {
+      const retry = () => getTransferStatus(referenceInfo, transferId);
 
       try {
-        const { transferStatus } = await trackWyreTransfer(transferId);
+        const { transferStatus } = await trackWyreTransfer(
+          referenceInfo,
+          transferId
+        );
         setTransferStatus(transferStatus);
         if (
           transferStatus === WYRE_TRANSFER_STATUS_TYPES.success ||
@@ -69,8 +74,9 @@ export default function useWyreApplePay() {
   );
 
   const getTransferHash = useCallback(
-    async (transferId, sourceAmount) => {
-      const retry = () => getTransferHash(transferId, sourceAmount);
+    async (referenceInfo, transferId, sourceAmount) => {
+      const retry = () =>
+        getTransferHash(referenceInfo, transferId, sourceAmount);
 
       try {
         const {
@@ -78,7 +84,7 @@ export default function useWyreApplePay() {
           destCurrency,
           transferHash,
           transferStatus,
-        } = await trackWyreTransfer(transferId);
+        } = await trackWyreTransfer(referenceInfo, transferId);
 
         setTransferStatus(transferStatus);
         const destAssetAddress = toLower(
@@ -105,7 +111,7 @@ export default function useWyreApplePay() {
           };
           dispatch(addCashNewPurchaseTransaction(txDetails));
           dispatch(dataAddNewTransaction(txDetails));
-          getTransferStatus(transferId);
+          getTransferStatus(referenceInfo, transferId);
         } else {
           retryTransferHashTimeout(retry, 1000);
         }
@@ -124,9 +130,21 @@ export default function useWyreApplePay() {
   );
 
   const getOrderStatus = useCallback(
-    async (destCurrency, orderId, paymentResponse, sourceAmount) => {
+    async (
+      referenceInfo,
+      destCurrency,
+      orderId,
+      paymentResponse,
+      sourceAmount
+    ) => {
       const retry = () =>
-        getOrderStatus(destCurrency, orderId, paymentResponse, sourceAmount);
+        getOrderStatus(
+          referenceInfo,
+          destCurrency,
+          orderId,
+          paymentResponse,
+          sourceAmount
+        );
 
       try {
         if (!isPaymentComplete && isEmpty(orderId)) {
@@ -142,7 +160,10 @@ export default function useWyreApplePay() {
 
         setOrderCurrency(destCurrency);
 
-        const { data, orderStatus, transferId } = await trackWyreOrder(orderId);
+        const { data, orderStatus, transferId } = await trackWyreOrder(
+          referenceInfo,
+          orderId
+        );
         setOrderStatus(orderStatus);
 
         const isFailed = orderStatus === WYRE_ORDER_STATUS_TYPES.failed;
@@ -152,7 +173,7 @@ export default function useWyreApplePay() {
 
         if (!isPaymentComplete) {
           if (isFailed) {
-            logger.sentry('Wyre order data', data);
+            logger.sentry('Wyre order data failed', data);
             captureMessage(`Wyre final check - order status failed`);
             analytics.track('Purchase failed', {
               category: 'add cash',
@@ -174,7 +195,8 @@ export default function useWyreApplePay() {
         }
 
         if (transferId) {
-          getTransferHash(transferId, sourceAmount);
+          referenceInfo.transferId = transferId;
+          getTransferHash(referenceInfo, transferId, sourceAmount);
         } else if (!isFailed) {
           retryOrderStatusTimeout(retry, 1000);
         }
@@ -192,12 +214,36 @@ export default function useWyreApplePay() {
   );
 
   const onPurchase = useCallback(
-    ({ currency, value }) => {
-      const result = requestWyreApplePay(accountAddress, currency, value);
-      if (result) {
-        const { orderId, paymentResponse } = result;
+    async ({ currency, value }) => {
+      const referenceInfo = {
+        referenceId: getReferenceId(accountAddress),
+      };
+
+      const applePayResponse = await showApplePayRequest(
+        referenceInfo,
+        accountAddress,
+        currency,
+        value
+      );
+
+      if (applePayResponse) {
+        const { paymentResponse, totalAmount } = applePayResponse;
+        const orderId = await getOrderId(
+          referenceInfo,
+          paymentResponse,
+          totalAmount,
+          accountAddress,
+          currency
+        );
         if (orderId) {
-          getOrderStatus(currency, orderId, paymentResponse, value);
+          referenceInfo.orderId = orderId;
+          getOrderStatus(
+            referenceInfo,
+            currency,
+            orderId,
+            paymentResponse,
+            value
+          );
         }
       }
     },
