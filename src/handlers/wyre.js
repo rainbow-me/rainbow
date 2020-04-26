@@ -174,6 +174,7 @@ export const getOrderId = async (
   destCurrency
 ) => {
   const data = createPayload(
+    referenceInfo,
     paymentResponse,
     amount,
     accountAddress,
@@ -233,6 +234,7 @@ const getWyrePaymentDetails = (
 });
 
 const createPayload = (
+  referenceInfo,
   paymentResponse,
   amount,
   accountAddress,
@@ -256,13 +258,17 @@ const createPayload = (
     phoneNumber: shippingInfo.phoneNumber,
   };
 
+  const partnerId = __DEV__ ? WYRE_ACCOUNT_ID_TEST : WYRE_ACCOUNT_ID;
+
   return {
-    partnerId: __DEV__ ? WYRE_ACCOUNT_ID_TEST : WYRE_ACCOUNT_ID,
+    partnerId,
     payload: {
       orderRequest: {
         amount,
         dest,
         destCurrency,
+        referenceId: referenceInfo.referenceId,
+        referrerAccountId: partnerId,
         sourceCurrency: SOURCE_CURRENCY_USD,
       },
       paymentObject: {
