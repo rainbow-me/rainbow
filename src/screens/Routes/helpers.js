@@ -22,11 +22,15 @@ function presetWithTransition(preset) {
   return {
     ...preset,
     onTransitionEnd: props => {
-      preset.onTransitionEnd(props);
+      if (preset.onTransitionEnd) {
+        preset.onTransitionEnd(props);
+      }
       onTransitionEnd();
     },
     onTransitionStart: props => {
-      preset.onTransitionStart(props);
+      if (preset.onTransitionStart) {
+        preset.onTransitionStart(props);
+      }
       onTransitionStart();
     },
   };
