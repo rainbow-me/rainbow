@@ -12,7 +12,7 @@ import {
   WYRE_TRANSFER_STATUS_TYPES,
 } from '../../helpers/wyreStatusTypes';
 import { useDimensions, useTimeout } from '../../hooks';
-import ROUTES from '../../screens/Routes/routesNames';
+import Routes from '../../screens/Routes/routesNames';
 import { position } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { FloatingEmojisTapper } from '../floating-emojis';
@@ -122,7 +122,7 @@ const AddCashSuccess = ({ currency }) => {
   const { navigate } = useNavigation();
   const [startTimeout] = useTimeout();
 
-  startTimeout(() => navigate(ROUTES.WALLET_SCREEN), 2696.9);
+  startTimeout(() => navigate(Routes.WALLET_SCREEN), 2696.9);
 
   return (
     <Content>

@@ -33,54 +33,54 @@ import {
   sheetPresetWithTransitions,
 } from './helpers';
 import { onNavigationStateChange } from './onNavigationStateChange';
-import ROUTES from './routesNames';
+import Routes from './routesNames';
 
 const routesForSwipeStack = {
-  [ROUTES.PROFILE_SCREEN]: ProfileScreenWithData,
-  [ROUTES.WALLET_SCREEN]: WalletScreen,
-  [ROUTES.QR_SCANNER_SCREEN]: QRScannerScreenWithData,
+  [Routes.PROFILE_SCREEN]: ProfileScreenWithData,
+  [Routes.WALLET_SCREEN]: WalletScreen,
+  [Routes.QR_SCANNER_SCREEN]: QRScannerScreenWithData,
 };
 
 const SwipeStack = createMaterialTopTabNavigator(routesForSwipeStack, {
   headerMode: 'none',
   initialLayout: deviceUtils.dimensions,
-  initialRouteName: ROUTES.WALLET_SCREEN,
+  initialRouteName: Routes.WALLET_SCREEN,
   pagerComponent: ViewPagerAdapter,
   swipeEnabled: true,
   tabBarComponent: null,
 });
 
 const routesForMainNavigator = {
-  [ROUTES.AVATAR_BUILDER]: {
+  [Routes.AVATAR_BUILDER]: {
     navigationOptions: emojiPreset,
     screen: AvatarBuilder,
     transparentCard: true,
   },
-  [ROUTES.CONFIRM_REQUEST]: {
+  [Routes.CONFIRM_REQUEST]: {
     navigationOptions: sheetPresetWithTransitions,
     screen: TransactionConfirmationScreenWithData,
   },
-  [ROUTES.EXAMPLE_SCREEN]: ExampleScreen,
-  [ROUTES.EXCHANGE_MODAL]: {
+  [Routes.EXAMPLE_SCREEN]: ExampleScreen,
+  [Routes.EXCHANGE_MODAL]: {
     navigationOptions: exchangePresetWithTransitions,
     params: {
       isGestureBlocked: false,
     },
     screen: ExchangeModalNavigator,
   },
-  [ROUTES.EXPANDED_ASSET_SCREEN]: {
+  [Routes.EXPANDED_ASSET_SCREEN]: {
     navigationOptions: expandedPreset,
     screen: ExpandedAssetScreenWithData,
   },
-  [ROUTES.OVERLAY_EXPANDED_ASSET_SCREEN]: {
+  [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: {
     navigationOptions: overlayExpandedPreset,
     screen: ExpandedAssetScreenWithData,
   },
-  [ROUTES.RECEIVE_MODAL]: {
+  [Routes.RECEIVE_MODAL]: {
     navigationOptions: expandedPresetWithTransitions,
     screen: ReceiveModal,
   },
-  [ROUTES.SETTINGS_MODAL]: {
+  [Routes.SETTINGS_MODAL]: {
     navigationOptions: expandedPresetWithTransitions,
     screen: SettingsModal,
     transparentCard: true,

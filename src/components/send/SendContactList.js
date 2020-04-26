@@ -10,7 +10,7 @@ import {
 } from 'recyclerlistview';
 import { withSelectedInput } from '../../hoc';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
-import ROUTES from '../../screens/Routes/routesNames';
+import Routes from '../../screens/Routes/routesNames';
 import { deviceUtils } from '../../utils';
 import { filterList } from '../../utils/search';
 import { FlyInAnimation } from '../animations';
@@ -109,7 +109,7 @@ class SendContactList extends Component {
     const refocusCallback =
       this.props.selectedInputId && this.props.selectedInputId.focus;
 
-    navigation.navigate(ROUTES.OVERLAY_EXPANDED_ASSET_SCREEN, {
+    navigation.navigate(Routes.OVERLAY_EXPANDED_ASSET_SCREEN, {
       address,
       asset: {},
       color,

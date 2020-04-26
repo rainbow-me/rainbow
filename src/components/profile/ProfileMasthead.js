@@ -8,7 +8,7 @@ import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import { useAccountSettings, useClipboard } from '../../hooks';
-import ROUTES from '../../screens/Routes/routesNames';
+import Routes from '../../screens/Routes/routesNames';
 import { borders, colors } from '../../styles';
 import { abbreviations } from '../../utils';
 import Divider from '../Divider';
@@ -45,7 +45,7 @@ const ProfileMasthead = ({
   const { navigate } = useNavigation();
 
   const onAddCash = useCallback(() => {
-    navigate(ROUTES.ADD_CASH_SHEET);
+    navigate(Routes.ADD_CASH_SHEET);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
@@ -92,7 +92,7 @@ const ProfileMasthead = ({
         </FloatingEmojis>
         <ProfileAction
           icon="qrCode"
-          onPress={() => navigate(ROUTES.RECEIVE_MODAL)}
+          onPress={() => navigate(Routes.RECEIVE_MODAL)}
           scaleTo={0.88}
           text="Receive"
           width={81}
@@ -130,7 +130,7 @@ export default compose(
       recyclerListRef.scrollToTop(true);
       setTimeout(
         () => {
-          navigation.navigate(ROUTES.AVATAR_BUILDER, {
+          navigation.navigate(Routes.AVATAR_BUILDER, {
             accountColor: accountColor,
             accountName: accountName,
           });
