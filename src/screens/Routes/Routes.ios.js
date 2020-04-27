@@ -142,7 +142,7 @@ const routesForSavingsModals = {
     },
     screen: SavingModalNavigator,
   },
-  [Routes.SAVINGS_DEPOSIT_MODAL]: {
+  [Routes.SAVINGS_WITHDRAW_MODAL]: {
     navigationOptions: expandedPresetWithTransitions,
     params: {
       isGestureBlocked: false,
