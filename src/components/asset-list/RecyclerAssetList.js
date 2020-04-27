@@ -35,7 +35,10 @@ const NOOP = () => undefined;
 
 class LayoutItemAnimator extends BaseItemAnimator {
   animateDidMount = NOOP;
-  animateShift = () =>
+  animateShift = NOOP;
+  animateWillMount = NOOP;
+  animateWillUnmount = NOOP;
+  animateWillUpdate = () => {
     LayoutAnimation.configureNext({
       duration: 200,
       update: {
@@ -44,9 +47,7 @@ class LayoutItemAnimator extends BaseItemAnimator {
         type: LayoutAnimation.Types.spring,
       },
     });
-  animateWillMount = NOOP;
-  animateWillUnmount = NOOP;
-  animateWillUpdate = NOOP;
+  };
 }
 
 const layoutItemAnimator = new LayoutItemAnimator();
