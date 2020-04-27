@@ -3,10 +3,11 @@ import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get, isNil, omit } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import { Alert, Animated, InteractionManager, Vibration } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, InteractionManager, Vibration } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import { withNavigationFocus } from 'react-navigation';
+import { useDispatch } from 'react-redux';
 import { compose } from 'recompact';
 import styled from 'styled-components';
 import { Button, HoldToAuthorizeButton } from '../components/buttons';
@@ -19,7 +20,7 @@ import {
   TransactionConfirmationSection,
 } from '../components/transaction';
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
-import { withGas, withTransactionConfirmationScreen } from '../hoc';
+import { useGas, useTransactionConfirmation } from '../hooks';
 import {
   sendTransaction,
   signMessage,
@@ -62,58 +63,85 @@ const TransactionType = styled(Text).attrs({ size: 'h5' })`
   margin-top: 6;
 `;
 
-class TransactionConfirmationScreen extends PureComponent {
-  static propTypes = {
-    dataAddNewTransaction: PropTypes.func,
-    gasPrices: PropTypes.object,
-    gasPricesStartPolling: PropTypes.func,
-    gasPricesStopPolling: PropTypes.func,
-    navigation: PropTypes.any,
-    removeRequest: PropTypes.func,
-    transactionCountNonce: PropTypes.number,
-    updateTransactionCountNonce: PropTypes.func,
-    walletConnectSendStatus: PropTypes.func,
-  };
+const TransactionConfirmationScreen = ({ navigation }) => {
+  const [isAuthorizing, setIsAuthorizing] = useState(false);
 
-  state = {
-    isAuthorizing: false,
-    sendLongPressProgress: new Animated.Value(0),
-  };
+  const { gasPrices, gasPricesStartPolling, gasPricesStopPolling } = useGas();
+  const dispatch = useDispatch();
 
-  componentDidMount() {
-    const { navigation } = this.props;
+  const {
+    dataAddNewTransaction,
+    removeRequest,
+    transactionCountNonce,
+    updateTransactionCountNonce,
+    walletConnectSendStatus,
+  } = useTransactionConfirmation();
+
+  const {
+    callback,
+    transactionDetails: {
+      dappName,
+      displayDetails,
+      imageUrl,
+      payload: { method, params },
+      peerId,
+      requestId,
+    },
+  } = navigation.state.params;
+
+  const request = displayDetails.request;
+
+  useEffect(() => {
     const openAutomatically = get(navigation, 'state.params.openAutomatically');
     if (openAutomatically && !isEmulatorSync()) {
       Vibration.vibrate();
     }
 
     InteractionManager.runAfterInteractions(() => {
-      this.props.gasPricesStartPolling();
+      dispatch(gasPricesStartPolling());
     });
-  }
+  }, [dispatch, gasPricesStartPolling, navigation]);
 
-  componentWillUnmount() {
-    this.state.sendLongPressProgress.stopAnimation();
-  }
+  const closeScreen = useCallback(() => {
+    navigation.popToTop();
+    dispatch(gasPricesStopPolling());
+  }, [dispatch, gasPricesStopPolling, navigation]);
 
-  handleConfirmTransaction = async () => {
-    const {
-      callback,
-      transactionDetails: {
-        dappName,
-        displayDetails,
-        payload: { method, params },
-        peerId,
-        requestId,
-      },
-    } = this.props.navigation.state.params;
+  const onCancel = useCallback(async () => {
+    try {
+      closeScreen();
+      if (callback) {
+        callback({ error: 'User cancelled the request' });
+      }
+      if (requestId) {
+        await dispatch(walletConnectSendStatus(peerId, requestId, null));
+        dispatch(removeRequest(requestId));
+      }
+      const rejectionType =
+        method === SEND_TRANSACTION ? 'transaction' : 'signature';
+      analytics.track(`Rejected WalletConnect ${rejectionType} request`);
+    } catch (error) {
+      logger.log('error while handling cancel request', error);
+      closeScreen();
+      Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
+    }
+  }, [
+    callback,
+    closeScreen,
+    dispatch,
+    method,
+    peerId,
+    removeRequest,
+    requestId,
+    walletConnectSendStatus,
+  ]);
 
+  const handleConfirmTransaction = useCallback(async () => {
     const sendInsteadOfSign = method === SEND_TRANSACTION;
     const txPayload = get(params, '[0]');
     let { gasLimit, gasPrice } = txPayload;
 
     if (isNil(gasPrice)) {
-      const { gasPrices } = this.props;
       const rawGasPrice = get(gasPrices, `${gasUtils.NORMAL}.value.amount`);
       if (rawGasPrice) {
         gasPrice = toHex(rawGasPrice);
@@ -130,10 +158,7 @@ class TransactionConfirmationScreen extends PureComponent {
     }
 
     const web3TxnCount = await getTransactionCount(txPayload.from);
-    const maxTxnCount = Math.max(
-      this.props.transactionCountNonce,
-      web3TxnCount
-    );
+    const maxTxnCount = Math.max(transactionCountNonce, web3TxnCount);
     const nonce = ethers.utils.hexlify(maxTxnCount);
     let txPayloadLatestNonce = { ...txPayload, gasLimit, gasPrice, nonce };
     txPayloadLatestNonce = omit(txPayloadLatestNonce, 'from');
@@ -153,7 +178,7 @@ class TransactionConfirmationScreen extends PureComponent {
         callback({ result });
       }
       if (sendInsteadOfSign) {
-        this.props.updateTransactionCountNonce(maxTxnCount + 1);
+        dispatch(updateTransactionCountNonce(maxTxnCount + 1));
         const txDetails = {
           amount: get(displayDetails, 'request.value'),
           asset: get(displayDetails, 'request.asset'),
@@ -165,28 +190,37 @@ class TransactionConfirmationScreen extends PureComponent {
           nonce,
           to: get(displayDetails, 'request.to'),
         };
-        this.props.dataAddNewTransaction(txDetails);
+        dispatch(dataAddNewTransaction(txDetails));
       }
       analytics.track('Approved WalletConnect transaction request');
       if (requestId) {
-        this.props.removeRequest(requestId);
-        await this.props.walletConnectSendStatus(peerId, requestId, result);
+        dispatch(removeRequest(requestId));
+        await dispatch(walletConnectSendStatus(peerId, requestId, result));
       }
-      this.closeScreen();
+      closeScreen();
     } else {
-      await this.handleCancelRequest();
+      await onCancel();
     }
-  };
+  }, [
+    callback,
+    closeScreen,
+    dappName,
+    dataAddNewTransaction,
+    dispatch,
+    displayDetails,
+    gasPrices,
+    method,
+    onCancel,
+    params,
+    peerId,
+    removeRequest,
+    requestId,
+    transactionCountNonce,
+    updateTransactionCountNonce,
+    walletConnectSendStatus,
+  ]);
 
-  handleSignMessage = async () => {
-    const {
-      callback,
-      transactionDetails: {
-        payload: { method, params },
-        peerId,
-        requestId,
-      },
-    } = this.props.navigation.state.params;
+  const handleSignMessage = useCallback(async () => {
     let message = null;
     let flatFormatSignature = null;
     if (isSignFirstParamType(method)) {
@@ -212,144 +246,70 @@ class TransactionConfirmationScreen extends PureComponent {
     if (flatFormatSignature) {
       analytics.track('Approved WalletConnect signature request');
       if (requestId) {
-        this.props.removeRequest(requestId);
-        await this.props.walletConnectSendStatus(
-          peerId,
-          requestId,
-          flatFormatSignature
+        dispatch(removeRequest(requestId));
+        await dispatch(
+          walletConnectSendStatus(peerId, requestId, flatFormatSignature)
         );
       }
       if (callback) {
         callback({ sig: flatFormatSignature });
       }
-      this.closeScreen();
+      closeScreen();
     } else {
-      await this.handleCancelRequest();
+      await onCancel();
     }
-  };
+  }, [
+    callback,
+    closeScreen,
+    dispatch,
+    method,
+    onCancel,
+    params,
+    peerId,
+    removeRequest,
+    requestId,
+    walletConnectSendStatus,
+  ]);
 
-  onConfirm = async () => {
-    const {
-      transactionDetails: {
-        payload: { method },
-      },
-    } = this.props.navigation.state.params;
+  const onConfirm = useCallback(async () => {
     if (isMessageDisplayType(method)) {
-      return this.handleSignMessage();
+      return handleSignMessage();
     }
-    return this.handleConfirmTransaction();
-  };
+    return handleConfirmTransaction();
+  }, [handleConfirmTransaction, handleSignMessage, method]);
 
-  closeScreen = () => {
-    this.props.navigation.popToTop();
-    this.props.gasPricesStopPolling();
-  };
-
-  onCancel = async () => {
+  const onLongPressSend = useCallback(async () => {
+    setIsAuthorizing(true);
     try {
-      this.closeScreen();
-      const {
-        callback,
-        transactionDetails: {
-          payload: { method },
-          peerId,
-          requestId,
-        },
-      } = this.props.navigation.state.params;
-      if (callback) {
-        callback({ error: 'User cancelled the request' });
-      }
-      if (requestId) {
-        await this.props.walletConnectSendStatus(peerId, requestId, null);
-        this.props.removeRequest(requestId);
-      }
-      const rejectionType =
-        method === SEND_TRANSACTION ? 'transaction' : 'signature';
-      analytics.track(`Rejected WalletConnect ${rejectionType} request`);
+      await onConfirm();
+      setIsAuthorizing(false);
     } catch (error) {
-      logger.log('error while handling cancel request', error);
-      this.closeScreen();
-      Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
+      setIsAuthorizing(false);
     }
-  };
+  }, [onConfirm]);
 
-  onPressSend = () => {
-    const { sendLongPressProgress } = this.state;
-
-    Animated.timing(sendLongPressProgress, {
-      duration: 800,
-      toValue: 100,
-    }).start();
-  };
-
-  onReleaseSend = () => {
-    const { sendLongPressProgress } = this.state;
-
-    Animated.timing(sendLongPressProgress, {
-      duration: (sendLongPressProgress._value / 100) * 800,
-      toValue: 0,
-    }).start();
-  };
-
-  onLongPressSend = async () => {
-    const { sendLongPressProgress } = this.state;
-
-    this.setState({ isAuthorizing: true });
-    Animated.timing(sendLongPressProgress, {
-      duration: (sendLongPressProgress._value / 100) * 800,
-      toValue: 0,
-    }).start();
-
-    try {
-      await this.onConfirm();
-      this.setState({ isAuthorizing: false });
-    } catch (error) {
-      this.setState({ isAuthorizing: false });
-    }
-  };
-
-  renderSendButton = () => {
-    const {
-      transactionDetails: {
-        payload: { method },
-      },
-    } = this.props.navigation.state.params;
-    const { isAuthorizing } = this.state;
+  const renderSendButton = useCallback(() => {
     const label = `Hold to ${method === SEND_TRANSACTION ? 'Send' : 'Sign'}`;
 
     return (
       <HoldToAuthorizeButton
         isAuthorizing={isAuthorizing}
         label={label}
-        onLongPress={this.onLongPressSend}
+        onLongPress={onLongPressSend}
       />
     );
-  };
+  }, [isAuthorizing, method, onLongPressSend]);
 
-  requestHeader = () => {
-    const {
-      transactionDetails: {
-        payload: { method },
-      },
-    } = this.props.navigation.state.params;
-    return isMessageDisplayType(method)
-      ? lang.t('wallet.message_signing.request')
-      : lang.t('wallet.transaction.request');
-  };
+  const requestHeader = isMessageDisplayType(method)
+    ? lang.t('wallet.message_signing.request')
+    : lang.t('wallet.transaction.request');
 
-  renderTransactionSection = () => {
-    const {
-      transactionDetails: {
-        displayDetails: { request },
-        payload: { method },
-      },
-    } = this.props.navigation.state.params;
-
+  const renderTransactionSection = useCallback(() => {
     if (isMessageDisplayType(method)) {
       return (
         <MessageSigningSection
           message={request}
-          sendButton={this.renderSendButton()}
+          sendButton={renderSendButton()}
           method={method}
         />
       );
@@ -365,7 +325,7 @@ class TransactionConfirmationScreen extends PureComponent {
             nativeAmountDisplay: get(request, 'nativeAmountDisplay'),
             symbol: get(request, 'asset.symbol', 'N/A'),
           }}
-          sendButton={this.renderSendButton()}
+          sendButton={renderSendButton()}
         />
       );
     }
@@ -377,55 +337,49 @@ class TransactionConfirmationScreen extends PureComponent {
           data: get(request, 'data'),
           value: get(request, 'value'),
         }}
-        sendButton={this.renderSendButton()}
+        sendButton={renderSendButton()}
       />
     );
-  };
+  }, [method, renderSendButton, request]);
 
-  render = () => {
-    const {
-      transactionDetails: { dappName, imageUrl },
-    } = this.props.navigation.state.params;
-
-    return (
-      <Container>
-        <Masthead>
-          <RequestVendorLogoIcon
-            backgroundColor="transparent"
-            dappName={dappName || ''}
-            imageUrl={imageUrl || ''}
-            size={60}
-            style={{ marginBottom: 24 }}
-          />
-          <Text
-            color="white"
-            letterSpacing="roundedMedium"
-            size="h4"
-            weight="semibold"
+  return (
+    <Container>
+      <Masthead>
+        <RequestVendorLogoIcon
+          backgroundColor="transparent"
+          dappName={dappName || ''}
+          imageUrl={imageUrl || ''}
+          size={60}
+          style={{ marginBottom: 24 }}
+        />
+        <Text
+          color="white"
+          letterSpacing="roundedMedium"
+          size="h4"
+          weight="semibold"
+        >
+          {dappName}
+        </Text>
+        <TransactionType>{requestHeader}</TransactionType>
+        <CancelButtonContainer>
+          <Button
+            backgroundColor={colors.alpha(colors.grey, 0.4)}
+            onPress={onCancel}
+            showShadow={false}
+            size="small"
+            textProps={{ color: colors.black, size: 'lmedium' }}
           >
-            {dappName}
-          </Text>
-          <TransactionType>{this.requestHeader()}</TransactionType>
-          <CancelButtonContainer>
-            <Button
-              backgroundColor={colors.alpha(colors.grey, 0.4)}
-              onPress={this.onCancel}
-              showShadow={false}
-              size="small"
-              textProps={{ color: colors.black, size: 'lmedium' }}
-            >
-              {lang.t('wallet.action.reject')}
-            </Button>
-          </CancelButtonContainer>
-        </Masthead>
-        {this.renderTransactionSection()}
-      </Container>
-    );
-  };
-}
+            {lang.t('wallet.action.reject')}
+          </Button>
+        </CancelButtonContainer>
+      </Masthead>
+      {renderTransactionSection()}
+    </Container>
+  );
+};
 
-export default compose(
-  withGas,
-  withNavigationFocus,
-  withTransactionConfirmationScreen
-)(TransactionConfirmationScreen);
+TransactionConfirmationScreen.propTypes = {
+  navigation: PropTypes.any,
+};
+
+export default compose(withNavigationFocus)(TransactionConfirmationScreen);
