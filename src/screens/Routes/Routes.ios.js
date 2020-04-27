@@ -142,6 +142,7 @@ const routesForSavingsModals = {
     screen: SavingModalNavigator,
   },
   [Routes.SAVINGS_WITHDRAW_MODAL]: {
+    navigationOptions: exchangePresetWithTransitions,
     params: {
       isGestureBlocked: false,
     },
