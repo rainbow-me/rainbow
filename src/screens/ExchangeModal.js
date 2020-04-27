@@ -265,6 +265,12 @@ const ExchangeModal = ({
   }, [inputCurrency, selectedGasPrice]);
 
   useEffect(() => {
+    if (inputCurrency) {
+      updateInputBalance();
+    }
+  }, [inputCurrency, updateInputBalance]);
+
+  useEffect(() => {
     dispatch(
       gasUpdateDefaultGasLimit(
         isDeposit
@@ -287,6 +293,7 @@ const ExchangeModal = ({
   // Recalculate balance when gas price changes
   useEffect(() => {
     if (
+      inputCurrency &&
       inputCurrency.address === 'eth' &&
       get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
         get(selectedGasPrice, 'txFee.value.amount', 0)
@@ -294,7 +301,7 @@ const ExchangeModal = ({
       updateInputBalance();
     }
   }, [
-    inputCurrency.address,
+    inputCurrency,
     prevSelectedGasPrice,
     selectedGasPrice,
     updateInputBalance,
@@ -576,10 +583,10 @@ const ExchangeModal = ({
       );
       setSlippage(slippage);
 
-      const isSufficientBalance =
+      const newIsSufficientBalance =
         !inputAmount || greaterThanOrEqualTo(inputBalance, inputAmount);
 
-      setIsSufficientBalance(isSufficientBalance);
+      setIsSufficientBalance(newIsSufficientBalance);
 
       const isInputEmpty = !inputAmount;
       const isNativeEmpty = !nativeAmount;
@@ -854,13 +861,13 @@ const ExchangeModal = ({
         setNativeAmount(newNativeAmount);
 
         if (inputCurrency) {
-          const isSufficientBalance =
+          const newIsSufficientBalance =
             !newInputAmount ||
             (isWithdrawal
               ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
               : greaterThanOrEqualTo(inputBalance, newInputAmount));
 
-          setIsSufficientBalance(isSufficientBalance);
+          setIsSufficientBalance(newIsSufficientBalance);
         }
       }
 
