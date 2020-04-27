@@ -1,5 +1,7 @@
+import { pick } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment, useCallback } from 'react';
+import React, { Fragment } from 'react';
+import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { deviceUtils } from '../../utils';
 import { removeLeadingZeros } from '../../utils/formatters';
 import { ColumnWithMargins } from '../layout';
@@ -17,19 +19,10 @@ const SendAssetFormToken = ({
   txSpeedRenderer,
   ...props
 }) => {
-  const formatNativeInput = useCallback(
-    (value = '') => {
-      const nativeCurrencyDecimals = nativeCurrency !== 'ETH' ? 2 : 18;
-      const formattedValue = removeLeadingZeros(value);
-      const parts = formattedValue.split('.');
-      const decimals = parts[1] || '';
-
-      return decimals.length > nativeCurrencyDecimals
-        ? `${parts[0]}.${decimals.substring(0, nativeCurrencyDecimals)}`
-        : formattedValue;
-    },
-    [nativeCurrency]
-  );
+  const {
+    mask: nativeMask,
+    placeholder: nativePlaceholder,
+  } = pick(supportedNativeCurrencies[nativeCurrency], ['mask', 'placeholder']);
 
   return (
     <Fragment>
@@ -44,11 +37,11 @@ const SendAssetFormToken = ({
         />
         <SendAssetFormField
           autoFocus
-          format={formatNativeInput}
           label={nativeCurrency}
+          mask={nativeMask}
           onChange={onChangeNativeAmount}
           onPressButton={sendMaxBalance}
-          placeholder="0.00"
+          placeholder={nativePlaceholder}
           value={nativeAmount}
         />
       </ColumnWithMargins>

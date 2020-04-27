@@ -11,6 +11,7 @@ const SendAssetFormField = ({
   format,
   label,
   labelMaxLength,
+  mask,
   onChange,
   onPressButton,
   placeholder,
@@ -29,6 +30,7 @@ const SendAssetFormField = ({
       buttonText="Max"
       format={format}
       keyboardType="decimal-pad"
+      mask={mask}
       onChange={onChange}
       onPressButton={onPressButton}
       placeholder={placeholder}
@@ -48,6 +50,7 @@ SendAssetFormField.propTypes = {
   format: PropTypes.func,
   label: PropTypes.string,
   labelMaxLength: PropTypes.number,
+  mask: PropTypes.string,
   onChange: PropTypes.func,
   onPressButton: PropTypes.func,
   placeholder: PropTypes.string,
