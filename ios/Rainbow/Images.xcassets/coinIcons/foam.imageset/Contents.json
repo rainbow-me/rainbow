@@ -1,21 +1,23 @@
 {
   "images" : [
     {
+      "filename" : "foam.png",
       "idiom" : "universal",
-      "filename" : "foam.pdf",
       "scale" : "1x"
     },
     {
+      "filename" : "foam@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "foam@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }

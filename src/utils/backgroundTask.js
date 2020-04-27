@@ -1,6 +1,6 @@
 import { NativeModules, Platform } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
-import { logger } from '../utils';
+import logger from './logger';
 
 let NotificationManager =
   Platform.OS === 'ios' ? NativeModules.NotificationManager : null;

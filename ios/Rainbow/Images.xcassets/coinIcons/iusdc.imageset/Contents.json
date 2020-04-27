@@ -1,21 +1,23 @@
 {
   "images" : [
     {
+      "filename" : "iusdc.png",
       "idiom" : "universal",
-      "filename" : "iusdc.pdf",
       "scale" : "1x"
     },
     {
+      "filename" : "iusdc@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "iusdc@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }

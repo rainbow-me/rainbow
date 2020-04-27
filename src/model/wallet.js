@@ -298,6 +298,6 @@ const loadPrivateKey = async (
   }
 };
 
-const saveAddress = async (address, accessControlOptions = {}) => {
+export const saveAddress = async (address, accessControlOptions = {}) => {
   await keychain.saveString(addressKey, address, accessControlOptions);
 };

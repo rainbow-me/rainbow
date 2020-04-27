@@ -1,32 +1,20 @@
-import analytics from '@segment/analytics-react-native';
-import { get, omit } from 'lodash';
+import { omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import createBottomSheetStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
-// eslint-disable-next-line import/no-unresolved
-import { enableScreens } from 'react-native-screens';
-import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
-import { createAppContainer, NavigationActions } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
+import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import {
-  ExchangeModalNavigator,
-  Navigation,
-  SavingModalNavigator,
-} from '../../navigation';
+import { ExchangeModalNavigator, SavingModalNavigator } from '../../navigation';
 import {
   backgroundPreset,
   emojiPreset,
-  exchangePreset,
   expandedPreset,
   overlayExpandedPreset,
   savingsPreset,
   sheetPreset,
 } from '../../navigation/transitions/effects';
-import { updateTransitionProps } from '../../redux/navigation';
-import store from '../../redux/store';
-import { deviceUtils, sentryUtils } from '../../utils';
+import { deviceUtils } from '../../utils';
 import AddCashSheet from '../AddCashSheet';
 import AvatarBuilder from '../AvatarBuilder';
 import ExampleScreen from '../ExampleScreen';
@@ -42,190 +30,216 @@ import TransactionConfirmationScreenWithData from '../TransactionConfirmationScr
 import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
 import WalletScreen from '../WalletScreen';
 import WithdrawModal from '../WithdrawModal';
+import {
+  createStackNavigator,
+  exchangePresetWithTransitions,
+  expandedPresetWithTransitions,
+  onTransitionEnd,
+  onTransitionStart,
+  sheetPresetWithTransitions,
+} from './helpers';
+import {
+  AddCashSheetWrapper,
+  appearListener,
+  ImportSeedPhraseSheetWrapper,
+  SendSheetWrapper,
+} from './nativeStackWrappers';
+import { onNavigationStateChange } from './onNavigationStateChange.ios';
+import Routes from './routesNames';
 
-enableScreens();
+const routesForSwipeStack = {
+  [Routes.PROFILE_SCREEN]: ProfileScreenWithData,
+  [Routes.WALLET_SCREEN]: WalletScreen,
+  [Routes.QR_SCANNER_SCREEN]: QRScannerScreenWithData,
+};
 
-const onTransitionEnd = () =>
-  store.dispatch(
-    updateTransitionProps({ date: Date.now(), isTransitioning: false })
-  );
-const onTransitionStart = () =>
-  store.dispatch(
-    updateTransitionProps({ date: Date.now(), isTransitioning: true })
-  );
-
-const SwipeStack = createMaterialTopTabNavigator(
-  {
-    ProfileScreen: {
-      name: 'ProfileScreen',
-      screen: ProfileScreenWithData,
-    },
-    WalletScreen: {
-      name: 'WalletScreen',
-      screen: WalletScreen,
-    },
-    // eslint-disable-next-line sort-keys
-    QRScannerScreen: {
-      name: 'QRScannerScreen',
-      screen: QRScannerScreenWithData,
-    },
-  },
-  {
-    headerMode: 'none',
-    initialLayout: deviceUtils.dimensions,
-    initialRouteName: 'WalletScreen',
-    tabBarComponent: null,
-  }
-);
+const SwipeStack = createMaterialTopTabNavigator(routesForSwipeStack, {
+  headerMode: 'none',
+  initialLayout: deviceUtils.dimensions,
+  initialRouteName: Routes.WALLET_SCREEN,
+  tabBarComponent: null,
+});
 
 const sendFlowRoutes = {
-  OverlayExpandedAssetScreen: {
+  [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: {
     navigationOptions: overlayExpandedPreset,
     screen: ExpandedAssetScreenWithData,
   },
-  SendSheet: {
-    navigationOptions: {
-      ...sheetPreset,
-      onTransitionStart: props => {
-        expandedPreset.onTransitionStart(props);
-        onTransitionStart();
-      },
-    },
-    screen: function SendSheetWrapper(...props) {
-      return <SendSheetWithData {...props} setAppearListener={setListener} />;
-    },
+  [Routes.SEND_SHEET]: {
+    navigationOptions: sheetPresetWithTransitions,
+    screen: SendSheetWrapper,
   },
 };
 
-const addCashFlowRoutes = {
-  AddCashSheet: {
-    navigationOptions: {
-      ...sheetPreset,
-      onTransitionStart: props => {
-        expandedPreset.onTransitionStart(props);
-        onTransitionStart();
-      },
-    },
-    screen: function AddCashSheetWrapper(...props) {
-      return <AddCashSheet {...props} setAppearListener={setListener} />;
-    },
+const SendFlowNavigator = createStackNavigator(sendFlowRoutes, {
+  initialRouteName: Routes.SEND_SHEET,
+});
+
+const routesForAddCash = {
+  [Routes.ADD_CASH_SHEET]: {
+    navigationOptions: sheetPresetWithTransitions,
+    screen: AddCashSheetWrapper,
   },
-  OverlayExpandedSupportedCountries: {
+  [Routes.OVERLAY_EXPANDED_SUPPORTED_COUNTRIES]: {
     navigationOptions: overlayExpandedPreset,
     screen: ExpandedAssetScreenWithData,
   },
 };
 
-const MainNavigator = createStackNavigator(
-  {
-    AvatarBuilder: {
-      navigationOptions: {
-        ...emojiPreset,
-      },
-      screen: AvatarBuilder,
-      transparentCard: true,
+const routesForMainNavigator = {
+  [Routes.AVATAR_BUILDER]: {
+    navigationOptions: emojiPreset,
+    screen: AvatarBuilder,
+    transparentCard: true,
+  },
+  [Routes.CONFIRM_REQUEST]: {
+    navigationOptions: sheetPresetWithTransitions,
+    screen: TransactionConfirmationScreenWithData,
+  },
+  [Routes.EXAMPLE_SCREEN]: {
+    navigationOptions: expandedPresetWithTransitions,
+    screen: ExampleScreen,
+  },
+  [Routes.EXCHANGE_MODAL]: {
+    navigationOptions: exchangePresetWithTransitions,
+    params: {
+      isGestureBlocked: false,
     },
-    ConfirmRequest: {
-      navigationOptions: {
-        ...sheetPreset,
-        onTransitionStart: props => {
-          sheetPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: TransactionConfirmationScreenWithData,
-    },
-    ExampleScreen: {
-      navigationOptions: {
-        ...expandedPreset,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: ExampleScreen,
-    },
-    ExchangeModal: {
-      navigationOptions: {
-        ...exchangePreset,
-        onTransitionEnd,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      params: {
-        isGestureBlocked: false,
-      },
-      screen: ExchangeModalNavigator,
-    },
-    ExpandedAssetScreen: {
-      navigationOptions: {
-        ...expandedPreset,
-        // onTransitionStart: props => {
-        //   expandedPreset.onTransitionStart(props);
-        //   onTransitionStart();
-        // },
-      },
+    screen: ExchangeModalNavigator,
+  },
+  [Routes.EXPANDED_ASSET_SCREEN]: {
+    navigationOptions: expandedPreset,
+    screen: ExpandedAssetScreenWithData,
+  },
+  [Routes.SAVINGS_SHEET]: {
+    navigationOptions: savingsPreset,
+    screen: SavingsSheet,
+  },
+  [Routes.SWIPE_LAYOUT]: {
+    navigationOptions: backgroundPreset,
+    screen: SwipeStack,
+  },
+  [Routes.WALLET_CONNECT_CONFIRMATION_MODAL]: {
+    navigationOptions: expandedPresetWithTransitions,
+    screen: WalletConnectConfirmationModal,
+  },
+  ...(isNativeStackAvailable && {
+    [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: {
+      navigationOptions: overlayExpandedPreset,
       screen: ExpandedAssetScreenWithData,
     },
-    ReceiveModal: {
-      navigationOptions: {
-        ...expandedPreset,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: ReceiveModal,
-    },
-    SavingsSheet: {
-      navigationOptions: {
-        ...savingsPreset,
-      },
-      screen: SavingsSheet,
-    },
-    SwipeLayout: {
-      navigationOptions: {
-        ...backgroundPreset,
-      },
-      screen: SwipeStack,
-    },
-    WalletConnectConfirmationModal: {
-      navigationOptions: {
-        ...expandedPreset,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: WalletConnectConfirmationModal,
-    },
-    ...(isNativeStackAvailable
-      ? {}
-      : {
-          OverlayExpandedAssetScreen: {
-            navigationOptions: overlayExpandedPreset,
-            screen: ExpandedAssetScreenWithData,
-          },
-        }),
-  },
-  {
-    defaultNavigationOptions: {
-      onTransitionEnd,
-      onTransitionStart,
-    },
-    headerMode: 'none',
-    initialRouteName: 'SwipeLayout',
-    mode: 'modal',
-  }
-);
+  }),
+};
 
-const MainNativeNavigation = createBottomSheetStackNavigator(
-  {
-    MainNavigator,
-    SettingsModal,
+const MainNavigator = createStackNavigator(routesForMainNavigator);
+
+const routesForSavingsModals = {
+  [Routes.SAVINGS_DEPOSIT_MODAL]: {
+    navigationOptions: expandedPresetWithTransitions,
+    params: {
+      isGestureBlocked: false,
+    },
+    screen: SavingModalNavigator,
   },
+  [Routes.SAVINGS_WITHDRAW_MODAL]: {
+    navigationOptions: expandedPresetWithTransitions,
+    params: {
+      isGestureBlocked: false,
+    },
+    screen: WithdrawModal,
+  },
+};
+
+const AddCashFlowNavigator = createStackNavigator(routesForAddCash, {
+  initialRouteName: Routes.ADD_CASH_SHEET,
+});
+
+const routesForNativeStack = {
+  [Routes.MAIN_NAVIGATOR]: MainNavigator,
+  ...(isNativeStackAvailable && {
+    [Routes.SEND_SHEET_NAVIGATOR]: SendFlowNavigator,
+    [Routes.ADD_CASH_SCREEN_NAVIGATOR]: AddCashFlowNavigator,
+  }),
+};
+
+const NativeStack = createBottomSheetStackNavigator(routesForNativeStack, {
+  defaultNavigationOptions: {
+    onAppear: () => appearListener.current && appearListener.current(),
+  },
+  headerMode: 'none',
+  initialRouteName: Routes.MAIN_NAVIGATOR,
+  mode: 'modal',
+});
+
+const routesForNativeStackWrapper = {
+  [Routes.NATIVE_STACK]: NativeStack,
+  ...routesForSavingsModals,
+};
+
+const NativeStackWrapper = createStackNavigator(routesForNativeStackWrapper, {
+  initialRouteName: Routes.NATIVE_STACK,
+});
+
+const routesForNativeStackFallback = {
+  [Routes.ADD_CASH_SHEET]: {
+    navigationOptions: sheetPresetWithTransitions,
+    screen: AddCashSheet,
+  },
+  [Routes.IMPORT_SEED_PHRASE_SHEET]: {
+    navigationOptions: {
+      ...sheetPreset,
+      onTransitionStart: () => {
+        StatusBar.setBarStyle('light-content');
+      },
+    },
+    screen: ImportSeedPhraseSheetWithData,
+  },
+  [Routes.MAIN_NAVIGATOR]: MainNavigator,
+  [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ExpandedAssetScreenWithData,
+  },
+  [Routes.OVERLAY_EXPANDED_SUPPORTED_COUNTRIES]: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ExpandedAssetScreenWithData,
+  },
+  [Routes.SEND_SHEET]: {
+    navigationOptions: {
+      ...omit(sheetPreset, 'gestureResponseDistance'),
+      onTransitionStart: () => {
+        StatusBar.setBarStyle('light-content');
+        onTransitionStart();
+      },
+    },
+    screen: SendSheetWithData,
+  },
+  ...routesForSavingsModals,
+};
+
+const NativeStackFallback = createStackNavigator(routesForNativeStackFallback, {
+  defaultNavigationOptions: {
+    onTransitionEnd,
+    onTransitionStart,
+  },
+  headerMode: 'none',
+  initialRouteName: Routes.MAIN_NAVIGATOR,
+  mode: 'modal',
+});
+
+const Stack = isNativeStackAvailable ? NativeStackWrapper : NativeStackFallback;
+
+const routesForBottomSheetStack = {
+  [Routes.STACK]: Stack,
+  [Routes.RECEIVE_MODAL]: ReceiveModal,
+  [Routes.SETTINGS_MODAL]: SettingsModal,
+  [Routes.IMPORT_SEED_PHRASE_SHEET]: {
+    navigationOptions: { customStack: false },
+    screen: ImportSeedPhraseSheetWrapper,
+  },
+};
+
+const MainNativeBottomSheetNavigation = createBottomSheetStackNavigator(
+  routesForBottomSheetStack,
   {
     defaultNavigationOptions: {
       customStack: true,
@@ -240,275 +254,12 @@ const MainNativeNavigation = createBottomSheetStackNavigator(
   }
 );
 
-let appearListener = null;
-const setListener = listener => (appearListener = listener);
+const AppContainer = createAppContainer(MainNativeBottomSheetNavigation);
 
-const savingsModalsRoutes = {
-  SavingsDepositModal: {
-    navigationOptions: {
-      ...exchangePreset,
-      onTransitionEnd,
-      onTransitionStart: props => {
-        expandedPreset.onTransitionStart(props);
-        onTransitionStart();
-      },
-    },
-    params: {
-      isGestureBlocked: false,
-    },
-    screen: SavingModalNavigator,
-  },
-  SavingsWithdrawModal: {
-    navigationOptions: {
-      ...exchangePreset,
-      onTransitionEnd,
-      onTransitionStart: props => {
-        expandedPreset.onTransitionStart(props);
-        onTransitionStart();
-      },
-    },
-    params: {
-      isGestureBlocked: false,
-    },
-    screen: WithdrawModal,
-  },
-};
-
-const nativeStackWrapperRoutes = {
-  NativeStack: createNativeStackNavigator(
-    {
-      AddCashSheetNavigator: isNativeStackAvailable
-        ? createStackNavigator(addCashFlowRoutes, {
-            defaultNavigationOptions: {
-              onTransitionEnd,
-              onTransitionStart,
-            },
-            headerMode: 'none',
-            initialRouteName: 'AddCashSheet',
-            mode: 'modal',
-          })
-        : () => null,
-      ImportSeedPhraseSheet: function ImportSeedPhraseSheetWrapper(...props) {
-        return (
-          <ImportSeedPhraseSheetWithData
-            {...props}
-            setAppearListener={setListener}
-          />
-        );
-      },
-      MainNativeNavigation,
-      SendSheetNavigator: isNativeStackAvailable
-        ? createStackNavigator(sendFlowRoutes, {
-            defaultNavigationOptions: {
-              onTransitionEnd,
-              onTransitionStart,
-            },
-            headerMode: 'none',
-            initialRouteName: 'SendSheet',
-            mode: 'modal',
-          })
-        : () => null,
-    },
-    {
-      defaultNavigationOptions: {
-        onAppear: () => appearListener && appearListener(),
-      },
-      headerMode: 'none',
-      initialRouteName: 'MainNativeNavigation',
-      mode: 'modal',
-    }
-  ),
-  ...savingsModalsRoutes,
-};
-
-const NativeStackWrapper = createStackNavigator(nativeStackWrapperRoutes, {
-  defaultNavigationOptions: {
-    onTransitionEnd,
-    onTransitionStart,
-  },
-  headerMode: 'none',
-  initialRouteName: 'NativeStack',
-  mode: 'modal',
-});
-
-const routesWithNativeStack = {
-  AddCashSheet: {
-    navigationOptions: {
-      ...sheetPreset,
-      onTransitionStart: props => {
-        StatusBar.setBarStyle('light-content');
-        onTransitionStart(props);
-        sheetPreset.onTransitionStart(props);
-      },
-    },
-    screen: AddCashSheet,
-  },
-  ImportSeedPhraseSheet: {
-    navigationOptions: {
-      ...sheetPreset,
-      onTransitionStart: () => {
-        StatusBar.setBarStyle('light-content');
-      },
-    },
-    screen: ImportSeedPhraseSheetWithData,
-  },
-  MainNavigator,
-  OverlayExpandedAssetScreen: {
-    navigationOptions: overlayExpandedPreset,
-    screen: ExpandedAssetScreenWithData,
-  },
-  OverlayExpandedSupportedCountries: {
-    navigationOptions: overlayExpandedPreset,
-    screen: ExpandedAssetScreenWithData,
-  },
-  SendSheet: {
-    navigationOptions: {
-      ...omit(sheetPreset, 'gestureResponseDistance'),
-      onTransitionStart: () => {
-        StatusBar.setBarStyle('light-content');
-        onTransitionStart();
-      },
-    },
-    screen: SendSheetWithData,
-  },
-  ...savingsModalsRoutes,
-};
-
-const NativeStackFallback = createStackNavigator(routesWithNativeStack, {
-  defaultNavigationOptions: {
-    onTransitionEnd,
-    onTransitionStart,
-  },
-  headerMode: 'none',
-  initialRouteName: 'MainNavigator',
-  mode: 'modal',
-});
-
-const Stack = isNativeStackAvailable ? NativeStackWrapper : NativeStackFallback;
-
-const AppContainer = createAppContainer(Stack);
-
-// eslint-disable-next-line react/display-name
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
-  <AppContainer
-    onNavigationStateChange={(prevState, currentState) => {
-      const { params, routeName } = Navigation.getActiveRoute(currentState);
-      const prevRouteName = Navigation.getActiveRouteName(prevState);
-      // native stack rn does not support onTransitionEnd and onTransitionStart
-      // Set focus manually on route changes
-
-      if (
-        prevRouteName !== routeName &&
-        isNativeStackAvailable &&
-        (routesWithNativeStack[prevRouteName] ||
-          routesWithNativeStack[routeName])
-      ) {
-        Navigation.handleAction(
-          NavigationActions.setParams({
-            key: routeName,
-            params: { focused: true },
-          })
-        );
-
-        Navigation.handleAction(
-          NavigationActions.setParams({
-            key: prevRouteName,
-            params: { focused: false },
-          })
-        );
-      }
-
-      const oldMainStack = prevState.routes[prevState.index];
-      const newMainStack = currentState.routes[currentState.index];
-      const oldIndex = oldMainStack.routes[oldMainStack.index].index;
-      const newIndex = newMainStack.routes[newMainStack.index].index;
-
-      if (oldIndex !== newIndex) {
-        expandedPreset.onTransitionStart({ closing: !newIndex });
-      }
-
-      if (
-        prevRouteName !== 'QRScannerScreen' &&
-        routeName === 'QRScannerScreen'
-      ) {
-        StatusBar.setBarStyle('light-content', true);
-      }
-
-      if (
-        prevRouteName === 'QRScannerScreen' &&
-        routeName !== 'QRScannerScreen'
-      ) {
-        StatusBar.setBarStyle('dark-content', true);
-      }
-
-      if (
-        prevRouteName === 'ImportSeedPhraseSheet' &&
-        (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
-      ) {
-        StatusBar.setBarStyle('dark-content', true);
-      }
-
-      if (prevRouteName === 'WalletScreen' && routeName === 'SendSheet') {
-        StatusBar.setBarStyle('light-content', true);
-      }
-
-      if (
-        prevRouteName === 'SendSheet' &&
-        (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
-      ) {
-        StatusBar.setBarStyle('dark-content', true);
-      }
-
-      if (
-        prevRouteName === 'AddCashSheet' &&
-        (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
-      ) {
-        StatusBar.setBarStyle('dark-content', true);
-      }
-
-      if (routeName === 'SettingsModal') {
-        let subRoute = get(params, 'section.title');
-        if (subRoute === 'Settings') subRoute = null;
-        return analytics.screen(
-          `${routeName}${subRoute ? `>${subRoute}` : ''}`
-        );
-      }
-
-      if (routeName !== prevRouteName) {
-        let paramsToTrack = null;
-
-        if (
-          prevRouteName === 'MainExchangeScreen' &&
-          routeName === 'WalletScreen'
-        ) {
-          // store.dispatch(updateTransitionProps({ blurColor: null }));
-        } else if (
-          prevRouteName === 'WalletScreen' &&
-          routeName === 'MainExchangeScreen'
-        ) {
-          // store.dispatch(
-          //   updateTransitionProps({
-          //     blurColor: colors.alpha(colors.black, 0.9),
-          //   })
-          // );
-        }
-
-        if (routeName === 'ExpandedAssetScreen') {
-          const { asset, type } = params;
-          paramsToTrack = {
-            assetContractAddress:
-              asset.address || get(asset, 'asset_contract.address'),
-            assetName: asset.name,
-            assetSymbol: asset.symbol || get(asset, 'asset_contract.symbol'),
-            assetType: type,
-          };
-        }
-        sentryUtils.addNavBreadcrumb(prevRouteName, routeName, paramsToTrack);
-        return analytics.screen(routeName, paramsToTrack);
-      }
-    }}
-    ref={ref}
-  />
+  <AppContainer ref={ref} onNavigationStateChange={onNavigationStateChange} />
 ));
+
+AppContainerWithAnalytics.displayName = 'AppContainerWithAnalytics';
 
 export default React.memo(AppContainerWithAnalytics);

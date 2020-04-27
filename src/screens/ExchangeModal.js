@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import analytics from '@segment/analytics-react-native';
 import { getMarketDetails as getUniswapMarketDetails } from '@uniswap/sdk';
 import BigNumber from 'bignumber.js';
@@ -59,9 +60,14 @@ import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import { backgroundTask, ethereumUtils, logger } from '../utils';
-import { CurrencySelectionTypes } from './CurrencySelectModal';
+import Routes from './Routes/routesNames';
 
 export const exchangeModalBorderRadius = 30;
+
+export const CurrencySelectionTypes = {
+  input: 'input',
+  output: 'output',
+};
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(
   toClass(FloatingPanels)
@@ -143,7 +149,7 @@ const ExchangeModal = ({
   );
 
   let defaultChosenInputItem = defaultInputItemInWallet;
-  if (!defaultChosenInputItem) {
+  if (!defaultChosenInputItem && defaultInputAsset) {
     const eth = ethereumUtils.getAsset(allAssets);
     const priceOfEther = get(eth, 'native.price.amount', null);
     defaultChosenInputItem = createMissingAsset(
@@ -259,6 +265,12 @@ const ExchangeModal = ({
   }, [inputCurrency, selectedGasPrice]);
 
   useEffect(() => {
+    if (inputCurrency) {
+      updateInputBalance();
+    }
+  }, [inputCurrency, updateInputBalance]);
+
+  useEffect(() => {
     dispatch(
       gasUpdateDefaultGasLimit(
         isDeposit
@@ -281,6 +293,7 @@ const ExchangeModal = ({
   // Recalculate balance when gas price changes
   useEffect(() => {
     if (
+      inputCurrency &&
       inputCurrency.address === 'eth' &&
       get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
         get(selectedGasPrice, 'txFee.value.amount', 0)
@@ -288,7 +301,7 @@ const ExchangeModal = ({
       updateInputBalance();
     }
   }, [
-    inputCurrency.address,
+    inputCurrency,
     prevSelectedGasPrice,
     selectedGasPrice,
     updateInputBalance,
@@ -570,10 +583,10 @@ const ExchangeModal = ({
       );
       setSlippage(slippage);
 
-      const isSufficientBalance =
+      const newIsSufficientBalance =
         !inputAmount || greaterThanOrEqualTo(inputBalance, inputAmount);
 
-      setIsSufficientBalance(isSufficientBalance);
+      setIsSufficientBalance(newIsSufficientBalance);
 
       const isInputEmpty = !inputAmount;
       const isNativeEmpty = !nativeAmount;
@@ -712,7 +725,7 @@ const ExchangeModal = ({
         setIsAuthorizing(false);
         const callback = () => {
           navigation.setParams({ focused: false });
-          navigation.navigate('ProfileScreen');
+          navigation.navigate(Routes.PROFILE_SCREEN);
         };
         const rap = await createRap({
           callback,
@@ -741,7 +754,7 @@ const ExchangeModal = ({
         setIsAuthorizing(false);
         logger.log('[exchange - handle submit] error submitting swap', error);
         navigation.setParams({ focused: false });
-        navigation.navigate('WalletScreen');
+        navigation.navigate(Routes.WALLET_SCREEN);
       }
     });
   }, [
@@ -848,13 +861,13 @@ const ExchangeModal = ({
         setNativeAmount(newNativeAmount);
 
         if (inputCurrency) {
-          const isSufficientBalance =
+          const newIsSufficientBalance =
             !newInputAmount ||
             (isWithdrawal
               ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
               : greaterThanOrEqualTo(inputBalance, newInputAmount));
 
-          setIsSufficientBalance(isSufficientBalance);
+          setIsSufficientBalance(newIsSufficientBalance);
         }
       }
 

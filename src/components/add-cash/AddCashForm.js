@@ -2,7 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useState } from 'react';
-import Animated from 'react-native-reanimated';
+import { Clock } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import { useDimensions } from '../../hooks';
 import { padding } from '../../styles';
@@ -12,8 +12,6 @@ import { Centered, ColumnWithMargins } from '../layout';
 import { Numpad, NumpadValue } from '../numpad';
 import AddCashFooter from './AddCashFooter';
 import AddCashSelector from './AddCashSelector';
-
-const { Clock } = Animated;
 
 const currencies = ['DAI', 'ETH'];
 
@@ -94,7 +92,7 @@ const AddCashForm = ({
           setScaleAnim(
             runSpring(new Clock(), prevPosition, characterCount, 0, 400, 40)
           );
-        } else if (nextValue.length == 3) {
+        } else if (nextValue.length === 3) {
           setScaleAnim(runSpring(new Clock(), prevPosition, 1, 0, 400, 40));
         }
 

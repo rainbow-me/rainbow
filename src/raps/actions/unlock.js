@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { get, toLower } from 'lodash';
+import { get } from 'lodash';
 import transactionStatusTypes from '../../helpers/transactionStatusTypes';
 import transactionTypes from '../../helpers/transactionTypes';
 import {
@@ -100,8 +100,6 @@ export const assetNeedsUnlocking = async (
   contractAddress
 ) => {
   const { address } = assetToUnlock;
-  const _address = toLower(_address);
-  const _contractAddress = toLower(_contractAddress);
   logger.log('checking asset needs unlocking');
   const isInputEth = address === 'eth';
   if (isInputEth) {

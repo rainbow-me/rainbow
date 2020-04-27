@@ -11,6 +11,7 @@ import TransactionList from '../components/transaction-list/TransactionList';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
 import { colors, position } from '../styles';
+import Routes from './Routes/routesNames';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 
@@ -33,8 +34,8 @@ const ProfileScreen = ({
     }, ACTIVITY_LIST_INITIALIZATION_DELAY);
   }, []);
 
-  const onPressBackButton = () => navigation.navigate('WalletScreen');
-  const onPressSettings = () => navigation.navigate('SettingsModal');
+  const onPressBackButton = () => navigation.navigate(Routes.WALLET_SCREEN);
+  const onPressSettings = () => navigation.navigate(Routes.SETTINGS_MODAL);
   const addCashInDevNetworks =
     __DEV__ &&
     (network === NetworkTypes.kovan || network === NetworkTypes.mainnet);
@@ -56,9 +57,7 @@ const ProfileScreen = ({
       </Header>
       {nativeTransactionListAvailable ? (
         <TransactionList
-          initialized={activityListInitialized}
-          navigation={navigation}
-          style={{ flex: 1 }}
+          addCashAvailable={addCashAvailable}
           header={
             <ProfileMasthead
               accountAddress={accountAddress}
@@ -69,6 +68,9 @@ const ProfileScreen = ({
               showBottomDivider={!isEmpty}
             />
           }
+          initialized={activityListInitialized}
+          navigation={navigation}
+          style={{ flex: 1 }}
         />
       ) : (
         <ActivityList
@@ -76,8 +78,6 @@ const ProfileScreen = ({
           accountColor={accountColor}
           accountName={accountName}
           addCashAvailable={addCashAvailable}
-          navigation={navigation}
-          initialized={activityListInitialized}
           header={
             <ProfileMasthead
               accountAddress={accountAddress}
@@ -88,8 +88,10 @@ const ProfileScreen = ({
               showBottomDivider={!isEmpty}
             />
           }
+          initialized={activityListInitialized}
           isEmpty={isEmpty}
           nativeCurrency={nativeCurrency}
+          navigation={navigation}
           requests={requests}
           transactions={transactions}
           transactionsCount={transactionsCount}

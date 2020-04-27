@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import networkTypes from '../helpers/networkTypes';
-import { useAccountSettings } from '../hooks';
 import { addCashLoadState } from '../redux/addCash';
 import { contactsLoadState } from '../redux/contacts';
 import { dataLoadState } from '../redux/data';
@@ -15,6 +14,7 @@ import { uniqueTokensLoadState } from '../redux/uniqueTokens';
 import { uniswapLoadState } from '../redux/uniswap';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { logger, promiseUtils } from '../utils';
+import useAccountSettings from './useAccountSettings';
 import useCheckEthBalance from './useCheckEthBalance';
 
 export default function useLoadAccountData() {

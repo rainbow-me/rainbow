@@ -8,6 +8,7 @@ import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import { withAccountSettings } from '../../hoc';
+import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
@@ -94,7 +95,7 @@ const TopRow = ({ balance, pending, status, type }) => (
   <RowWithMargins align="center" justify="space-between" margin={19}>
     <TransactionStatusBadge pending={pending} status={status} type={type} />
     <Row align="center" flex={1} justify="end">
-      <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
+      <BottomRowText align="right">{get(balance, 'display', '')}</BottomRowText>
     </Row>
   </RowWithMargins>
 );
@@ -138,7 +139,9 @@ export default compose(
       network,
     }) => async () => {
       const { from, to, status } = item;
+      const isPurchasing = status === TransactionStatusTypes.purchasing;
       const isSent = status === TransactionStatusTypes.sent;
+
       const headerInfo = {
         address: '',
         divider: isSent ? 'to' : 'from',
@@ -151,32 +154,38 @@ export default compose(
       if (contact) {
         headerInfo.address = contact.nickname;
         contactColor = contact.color;
-      } else {
+      } else if (!isPurchasing) {
         headerInfo.address = abbreviations.address(contactAddress, 4, 10);
         contactColor = Math.floor(Math.random() * colors.avatarColor.length);
       }
 
       if (hash) {
+        let buttons = ['View on Etherscan', 'Cancel'];
+        if (!isPurchasing) {
+          buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
+        }
+
         showActionSheetWithOptions(
           {
-            cancelButtonIndex: 2,
-            options: [
-              contact ? 'View Contact' : 'Add to Contacts',
-              'View on Etherscan',
-              'Cancel',
-            ],
-            title: `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
+            cancelButtonIndex: isPurchasing ? 1 : 2,
+            options: buttons,
+            title: isPurchasing
+              ? headerInfo.type
+              : `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
           },
           buttonIndex => {
-            if (buttonIndex === 0) {
-              navigation.navigate('ExpandedAssetScreen', {
+            if (!isPurchasing && buttonIndex === 0) {
+              navigation.navigate(Routes.EXPANDED_ASSET_SCREEN, {
                 address: contactAddress,
                 asset: item,
                 color: contactColor,
                 contact,
                 type: 'contact',
               });
-            } else if (buttonIndex === 1) {
+            } else if (
+              (isPurchasing && buttonIndex === 0) ||
+              (!isPurchasing && buttonIndex === 1)
+            ) {
               const normalizedHash = hash.replace(/-.*/g, '');
               const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
                 network

@@ -11,6 +11,7 @@ const LayoutWithDividers = ({
 }) => (
   <Flex {...props}>
     {Children.toArray(children).map((child, index, array) => (
+      // eslint-disable-next-line react/no-array-index-key
       <Fragment key={index}>
         {cloneElement(child)}
         {index < array.length - 1

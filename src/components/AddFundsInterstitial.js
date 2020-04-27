@@ -7,6 +7,7 @@ import { compose, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
+import Routes from '../screens/Routes/routesNames';
 import { colors, margin, padding } from '../styles';
 import Divider from './Divider';
 import { Button } from './buttons';
@@ -126,9 +127,9 @@ export default compose(
   withNavigation,
   withHandlers({
     onPressAddFunds: ({ navigation }) => () => {
-      navigation.navigate('ReceiveModal');
+      navigation.navigate(Routes.RECEIVE_MODAL);
     },
     onPressImportWallet: ({ navigation }) => () =>
-      navigation.navigate('ImportSeedPhraseSheet'),
+      navigation.navigate(Routes.IMPORT_SEED_PHRASE_SHEET),
   })
 )(AddFundsInterstitial);

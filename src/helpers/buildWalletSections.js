@@ -24,6 +24,7 @@ import {
 } from '../redux/editOptions';
 import { setOpenSmallBalances } from '../redux/openStateSettings';
 import store from '../redux/store';
+import Routes from '../screens/Routes/routesNames';
 import { ethereumUtils } from '../utils';
 import {
   amountOfShowedCoins,
@@ -54,13 +55,13 @@ const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
     onPress: ({ assetType, navigation }) => item => {
-      navigation.navigate('ExpandedAssetScreen', {
+      navigation.navigate(Routes.EXPANDED_ASSET_SCREEN, {
         asset: item,
         type: assetType,
       });
     },
     onPressSend: ({ navigation }) => asset => {
-      navigation.navigate('SendSheet', { asset });
+      navigation.navigate(Routes.SEND_SHEET, { asset });
     },
   })
 );
@@ -71,12 +72,11 @@ const UniswapCardItem = enhanceRenderItem(UniswapInvestmentCard);
 const balancesSkeletonRenderItem = item => (
   <AssetListItemSkeleton animated descendingOpacity={false} {...item} />
 );
+
 const balancesRenderItem = item => (
-  <TokenItem
-    {...item}
-    assetType={item.item.price && chartExpandedAvailable ? 'chart' : 'token'}
-  />
+  <TokenItem {...item} assetType={chartExpandedAvailable ? 'chart' : 'token'} />
 );
+
 const tokenFamilyItem = item => (
   <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
 );

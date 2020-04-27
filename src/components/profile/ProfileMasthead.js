@@ -8,6 +8,7 @@ import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import { useAccountSettings, useClipboard } from '../../hooks';
+import Routes from '../../screens/Routes/routesNames';
 import { borders, colors } from '../../styles';
 import { abbreviations } from '../../utils';
 import Divider from '../Divider';
@@ -27,9 +28,10 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
   truncationLength: 4,
   weight: 'bold',
 })`
-  margin-bottom: 2;
-  margin-top: ${isAvatarPickerAvailable ? 0 : -2};
-  width: 100%;
+  height: 33;
+  margin-top: ${isAvatarPickerAvailable ? 0 : -6};
+  padding-left: 24;
+  padding-right: 24;
 `;
 
 const ProfileMasthead = ({
@@ -43,7 +45,7 @@ const ProfileMasthead = ({
   const { navigate } = useNavigation();
 
   const onAddCash = useCallback(() => {
-    navigate('AddCashSheet');
+    navigate(Routes.ADD_CASH_SHEET);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
@@ -63,10 +65,10 @@ const ProfileMasthead = ({
           style={{ ...borders.buildCircleAsObject(85) }}
         />
       )}
-      <CopyTooltip textToCopy={accountAddress} tooltipText="Copy Address">
+      <CopyTooltip textToCopy={accountENS || accountAddress} tooltipText="Copy">
         <AddressAbbreviation address={accountENS || accountAddress} />
       </CopyTooltip>
-      <RowWithMargins align="center" margin={1}>
+      <RowWithMargins align="center" margin={19}>
         <FloatingEmojis
           distance={250}
           duration={500}
@@ -84,14 +86,16 @@ const ProfileMasthead = ({
               }}
               scaleTo={0.88}
               text="Copy Address"
+              width={127}
             />
           )}
         </FloatingEmojis>
         <ProfileAction
           icon="qrCode"
-          onPress={() => navigate('ReceiveModal')}
+          onPress={() => navigate(Routes.RECEIVE_MODAL)}
           scaleTo={0.88}
           text="Receive"
+          width={81}
         />
       </RowWithMargins>
       {addCashAvailable && <AddCashButton onPress={onAddCash} />}
@@ -126,7 +130,7 @@ export default compose(
       recyclerListRef.scrollToTop(true);
       setTimeout(
         () => {
-          navigation.navigate('AvatarBuilder', {
+          navigation.navigate(Routes.AVATAR_BUILDER, {
             accountColor: accountColor,
             accountName: accountName,
           });

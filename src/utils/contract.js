@@ -4,7 +4,7 @@ import { convertRawAmountToDecimalFormat } from '../helpers/utilities';
 import { loadWallet } from '../model/wallet';
 import { ethUnits } from '../references';
 import erc20ABI from '../references/erc20-abi.json';
-import { logger } from '../utils';
+import logger from './logger';
 
 const estimateApproveWithExchange = async (spender, exchange) => {
   try {

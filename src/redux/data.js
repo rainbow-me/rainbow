@@ -31,7 +31,7 @@ import {
   saveLocalTransactions,
 } from '../handlers/localstorage/accountLocal';
 import { apiGetTokenOverrides } from '../handlers/tokenOverrides';
-import { getTransactionReceipt } from '../handlers/web3';
+import { getTransactionReceipt, hasEthBalance } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
 import { divide, isZero } from '../helpers/utilities';
@@ -44,6 +44,7 @@ import {
 } from '../references';
 import { ethereumUtils, isLowerCaseMatch } from '../utils';
 import { addCashUpdatePurchases } from './addCash';
+import { setIsWalletEthZero } from './isWalletEthZero';
 import { uniswapUpdateLiquidityTokens } from './uniswap';
 
 let pendingTransactionsHandle = null;
@@ -151,7 +152,7 @@ const checkMeta = message => (dispatch, getState) => {
   );
 };
 
-export const transactionsReceived = (message, appended = false) => (
+export const transactionsReceived = (message, appended = false) => async (
   dispatch,
   getState
 ) => {
@@ -178,6 +179,13 @@ export const transactionsReceived = (message, appended = false) => (
     type: DATA_UPDATE_TRANSACTIONS,
   });
   updatePurchases(dedupedResults);
+
+  const { isWalletEthZero } = getState().isWalletEthZero;
+  if (isWalletEthZero) {
+    const ethBalance = await hasEthBalance(accountAddress);
+    dispatch(setIsWalletEthZero(!ethBalance));
+  }
+
   saveLocalTransactions(dedupedResults, accountAddress, network);
 };
 

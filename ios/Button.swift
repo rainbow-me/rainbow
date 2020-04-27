@@ -14,10 +14,14 @@ class Button : RCTView {
       isUserInteractionEnabled = !disabled
     }
   }
-  @objc var duration: TimeInterval = 0.1
+  @objc var duration: TimeInterval = 0.16
   @objc var pressOutDuration: TimeInterval = -1
   @objc var scaleTo: CGFloat = 0.97
-  @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5)
+  @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5) {
+    didSet {
+      self.setAnchorPoint(CGPoint(x: transformOrigin.x, y: transformOrigin.y))
+    }
+  }
   @objc var enableHapticFeedback: Bool = true
   @objc var hapticType: String = "selection"
   @objc var useLateHaptic: Bool = true
@@ -41,6 +45,7 @@ class Button : RCTView {
   
   var longPress: UILongPressGestureRecognizer? = nil
   var tapLocation: CGPoint? = nil
+  var animator: UIViewPropertyAnimator? = nil
   let touchMoveTolerance: CGFloat = 80.0
   
   override init(frame: CGRect) {
@@ -61,11 +66,9 @@ class Button : RCTView {
     if let touch = touches.first {
       self.tapLocation = touch.location(in: self)
     }
-    
-    animateTapStart(
+    animator = animateTapStart(
       duration: duration,
       scale: scaleTo,
-      transformOrigin: transformOrigin,
       useHaptic: useLateHaptic ? nil : hapticType
     )
     onPressStart([:])
@@ -74,13 +77,15 @@ class Button : RCTView {
   override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
     if let touch = touches.first {
       let location = touch.location(in: self)
+      if animator?.isRunning ?? false {
+        return
+      }
       if !touchInRange(location: location, tolerance: self.touchMoveTolerance) {
-        animateTapEnd(duration: duration)
+        animator = animateTapEnd(duration: duration)
       } else if touchInRange(location: location, tolerance: self.touchMoveTolerance * 0.8) {
-        animateTapStart(
+        animator = animateTapStart(
           duration: duration,
-          scale: scaleTo,
-          transformOrigin: transformOrigin
+          scale: scaleTo
         )
       }
     }
@@ -91,7 +96,7 @@ class Button : RCTView {
       let location = touch.location(in: self)
       if touchInRange(location: location, tolerance: self.touchMoveTolerance * 0.8) {
           let useHaptic = useLateHaptic && enableHapticFeedback ? hapticType : nil
-          animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration, useHaptic: useHaptic)
+          animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration, useHaptic: useHaptic)
           onPress([:])
       } else {
         self.touchesCancelled(touches, with: event)
@@ -100,7 +105,7 @@ class Button : RCTView {
   }
   
   override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
+    animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
   }
   
   private func touchInRange(location: CGPoint, tolerance: CGFloat) -> Bool {

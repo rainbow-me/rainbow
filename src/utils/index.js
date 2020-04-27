@@ -1,3 +1,9 @@
+/* eslint-disable import/no-cycle */
+
+// disabled because cycle is created by outside files that import files from
+// this folder - it wouldn't make sense to separate them there
+// and break imports concept just to remove eslint error here
+
 export { default as abbreviations } from './abbreviations';
 export { default as addressUtils } from './address';
 export { default as AllowancesCache } from './allowancesCache';

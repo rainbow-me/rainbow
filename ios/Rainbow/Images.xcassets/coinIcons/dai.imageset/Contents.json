@@ -1,21 +1,23 @@
 {
   "images" : [
     {
+      "filename" : "dai.png",
       "idiom" : "universal",
-      "filename" : "dai.pdf",
       "scale" : "1x"
     },
     {
+      "filename" : "dai@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "dai@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }

@@ -45,6 +45,29 @@ export default function useWyreApplePay() {
     startPaymentCompleteTimeout(() => setPaymentComplete(true), 1500);
   }, [startPaymentCompleteTimeout]);
 
+  const getTransferStatus = useCallback(
+    async transferId => {
+      const retry = () => getTransferStatus(transferId);
+
+      try {
+        const { transferStatus } = await trackWyreTransfer(transferId);
+        setTransferStatus(transferStatus);
+        if (
+          transferStatus === WYRE_TRANSFER_STATUS_TYPES.success ||
+          transferStatus === WYRE_TRANSFER_STATUS_TYPES.failed
+        ) {
+          setTransferHash(transferHash);
+          setTransferStatus(transferStatus);
+        } else {
+          retryTransferStatusTimeout(retry, 10000);
+        }
+      } catch (error) {
+        retryTransferStatusTimeout(retry, 1000);
+      }
+    },
+    [retryTransferStatusTimeout, transferHash]
+  );
+
   const getTransferHash = useCallback(
     async (transferId, sourceAmount) => {
       const retry = () => getTransferHash(transferId, sourceAmount);
@@ -100,29 +123,6 @@ export default function useWyreApplePay() {
     ]
   );
 
-  const getTransferStatus = useCallback(
-    async transferId => {
-      const retry = () => getTransferStatus(transferId);
-
-      try {
-        const { transferStatus } = await trackWyreTransfer(transferId);
-        setTransferStatus(transferStatus);
-        if (
-          transferStatus === WYRE_TRANSFER_STATUS_TYPES.success ||
-          transferStatus === WYRE_TRANSFER_STATUS_TYPES.failed
-        ) {
-          setTransferHash(transferHash);
-          setTransferStatus(transferStatus);
-        } else {
-          retryTransferStatusTimeout(retry, 10000);
-        }
-      } catch (error) {
-        retryTransferStatusTimeout(retry, 1000);
-      }
-    },
-    [retryTransferStatusTimeout, transferHash]
-  );
-
   const getOrderStatus = useCallback(
     async (destCurrency, orderId, paymentResponse, sourceAmount) => {
       const retry = () =>
@@ -137,6 +137,7 @@ export default function useWyreApplePay() {
           });
           paymentResponse.complete('fail');
           handlePaymentCallback();
+          return;
         }
 
         setOrderCurrency(destCurrency);

@@ -10,8 +10,22 @@ import {
 import supportedNativeCurrencies from '../references/native-currencies.json';
 
 const mapStateToProps = ({
-  settings: { accountAddress, chainId, language, nativeCurrency, network },
-}) => ({ accountAddress, chainId, language, nativeCurrency, network });
+  settings: {
+    accountAddress,
+    accountENS,
+    chainId,
+    language,
+    nativeCurrency,
+    network,
+  },
+}) => ({
+  accountAddress,
+  accountENS,
+  chainId,
+  language,
+  nativeCurrency,
+  network,
+});
 
 const languageSelector = state => state.language;
 const nativeCurrencySelector = state => state.nativeCurrency;

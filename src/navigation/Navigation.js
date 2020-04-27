@@ -1,9 +1,9 @@
 import { get } from 'lodash';
-import Animated from 'react-native-reanimated';
+import { Value } from 'react-native-reanimated';
 import { StackActions } from 'react-navigation';
 
 let TopLevelNavigationRef = null;
-const transitionPosition = new Animated.Value(0);
+const transitionPosition = new Value(0);
 
 function getActiveRoute(navigationState) {
   navigationState = navigationState || get(TopLevelNavigationRef, 'state.nav');

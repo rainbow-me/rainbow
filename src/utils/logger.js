@@ -1,9 +1,26 @@
-import { sentryUtils } from './';
+import sentryUtils from './sentry';
 
 export default class Logger {
   static log(...args) {
     if (__DEV__) {
       console.log(...args);
+    }
+  }
+
+  static prettyLog() {
+    if (__DEV__) {
+      const allArgs = Array.prototype.slice.call(arguments).map(arg => {
+        try {
+          if (typeof arg === 'object') {
+            return JSON.stringify(arg, null, 2);
+          } else {
+            return arg;
+          }
+        } catch (e) {
+          return arg;
+        }
+      });
+      console.log(allArgs.length > 0 ? allArgs : allArgs[0]);
     }
   }
 

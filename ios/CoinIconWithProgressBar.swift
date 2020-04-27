@@ -30,15 +30,10 @@ class CoinIconWithProgressBar : UIImageView {
   private func setup() {
     let shapeView = UIView()
     let lineWidth: CGFloat = 2.0
-    let circularPath = UIBezierPath(
-      arcCenter: CGPoint(x: bounds.midX, y: bounds.midY),
-      radius: frame.width / 2.0,
-      startAngle: -CGFloat.pi / 2,
-      endAngle: 2 * CGFloat.pi - CGFloat.pi / 2,
-      clockwise: true
-    )
-    shape.path = circularPath.cgPath
-    shape.strokeColor = UIColor.RainbowTheme.Transactions.primaryBlue.cgColor
+    let rect = CGRect(x: -3, y: -3, width: 46, height: 46)
+    let roundedRect = UIBezierPath(roundedRect: rect, cornerRadius: 15)
+    shape.path = roundedRect.cgPath
+    shape.strokeColor = UIColor.RainbowTheme.Transactions.appleBlue.cgColor
     shape.lineWidth = lineWidth
     shape.lineCap = .round
     shape.fillColor = .none

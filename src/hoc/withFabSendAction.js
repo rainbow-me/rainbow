@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { compose, lifecycle, omitProps, pure, withProps } from 'recompact';
 import { createSelector } from 'reselect';
-import { extraStates } from '../components/fab/MovableFabWrapper';
+import { extraStates } from '../components/fab/ExtraStates';
 import withFabSelection from './withFabSelection';
 import withOpenFamilyTabs from './withOpenFamilyTabs';
 

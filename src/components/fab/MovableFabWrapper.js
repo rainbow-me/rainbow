@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
-import Animated from 'react-native-reanimated';
+import Animated, { Clock, spring, Value } from 'react-native-reanimated';
 import { compose, withProps } from 'recompact';
 import {
   withFabSelection,
@@ -20,6 +20,7 @@ import {
 import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import DeleteButton from './DeleteButton';
+import { extraStates } from './ExtraStates';
 
 const {
   abs,
@@ -27,7 +28,6 @@ const {
   and,
   block,
   call,
-  Clock,
   clockRunning,
   cond,
   eq,
@@ -39,10 +39,8 @@ const {
   onChange,
   or,
   set,
-  spring,
   startClock,
   stopClock,
-  Value,
 } = Animated;
 
 function runSpring(clock, value, velocity, dest, wasRunSpring = false) {
@@ -77,13 +75,6 @@ function runSpring(clock, value, velocity, dest, wasRunSpring = false) {
   ];
 }
 
-export const extraStates = {
-  gestureInactive: -3,
-  nothing: -1,
-  notSendable: -4,
-  overX: -2,
-};
-
 class MovableFabWrapper extends PureComponent {
   static propTypes = {
     actionType: PropTypes.string,
@@ -98,43 +89,43 @@ class MovableFabWrapper extends PureComponent {
   };
 
   static defaultProps = {
-    scrollOffset: new Animated.Value(0),
+    scrollOffset: new Value(0),
   };
 
-  absoluteX = new Animated.Value(0);
+  absoluteX = new Value(0);
 
-  absoluteY = new Animated.Value(0);
+  absoluteY = new Value(0);
 
   clockX = new Clock();
 
   clockY = new Clock();
 
-  dragX = new Animated.Value(0);
+  dragX = new Value(0);
 
-  dragY = new Animated.Value(0);
+  dragY = new Value(0);
 
-  dragVX = new Animated.Value(0);
+  dragVX = new Value(0);
 
-  dragVY = new Animated.Value(0);
+  dragVY = new Value(0);
 
-  gestureState = new Animated.Value(0);
+  gestureState = new Value(0);
 
   isOverDeleteButtonBoundary = position =>
     greaterThan(abs(position), DeleteButton.size * 2);
 
   key = 0;
 
-  selectedIndex = new Animated.Value(0);
+  selectedIndex = new Value(0);
 
-  springOffsetX = new Animated.Value(0);
+  springOffsetX = new Value(0);
 
-  springOffsetY = new Animated.Value(0);
+  springOffsetY = new Value(0);
 
   translateX = add(this.dragX, this.springOffsetX);
 
   translateY = add(this.dragY, this.springOffsetY);
 
-  wasRunSpring = new Animated.Value(0);
+  wasRunSpring = new Value(0);
 
   xClockHide = new Clock();
 

@@ -41,6 +41,7 @@ import {
 import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
 import { deviceUtils, ethereumUtils, gasUtils } from '../utils';
+import Routes from './Routes/routesNames';
 
 const sheetHeight = deviceUtils.dimensions.height - 10;
 
@@ -303,7 +304,7 @@ const SendSheet = ({
         isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
       });
       if (submitSuccessful) {
-        navigate('ProfileScreen');
+        navigate(Routes.PROFILE_SCREEN);
       }
     } catch (error) {
       setIsAuthorizing(false);

@@ -176,6 +176,9 @@ class TransactionConfirmationScreenWithData extends PureComponent {
         break;
       case SIGN_TYPED_DATA:
         flatFormatSignature = await signTypedDataMessage(message, method);
+        break;
+      default:
+        break;
     }
 
     if (flatFormatSignature) {

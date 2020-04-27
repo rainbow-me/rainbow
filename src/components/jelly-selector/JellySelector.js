@@ -2,7 +2,7 @@ import { sum } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { createElement, Fragment, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { spring } from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
 import ShadowStack from 'react-native-shadow-stack';
 import { useDimensions } from '../../hooks';
@@ -17,7 +17,7 @@ const horizontalMargin = 8;
 const maxWidth = 300;
 
 const springTo = (node, toValue) =>
-  Animated.spring(node, {
+  spring(node, {
     damping: 38,
     mass: 1,
     overshootClamping: false,
@@ -99,7 +99,7 @@ const JellySelector = ({
       >
         {items.map((item, index) => (
           <View
-            key={index}
+            key={`jellyViewKey${item}`}
             onLayout={({ nativeEvent }) => {
               itemWidths[index] = nativeEvent.layout.width;
               calculatedItemWidths++;
@@ -111,7 +111,7 @@ const JellySelector = ({
           >
             <ButtonPressAnimation
               enableHapticFeedback={false}
-              key={index}
+              key={`jellyButtonKey${item}`}
               onPress={() => {
                 if (!disableSelection) {
                   animateTransition(index);

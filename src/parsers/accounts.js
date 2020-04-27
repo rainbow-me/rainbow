@@ -19,6 +19,7 @@ export const parseAccountAssets = (data, uniqueTokens, tokenOverrides) => {
   });
 };
 
+// eslint-disable-next-line no-useless-escape
 const sanitize = s => s.replace(/[^a-z0-9áéíóúñü \.,_@:-]/gim, '');
 
 export const parseAssetName = (name, address, overrides) => {

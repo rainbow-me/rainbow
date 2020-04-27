@@ -1,21 +1,23 @@
 {
   "images" : [
     {
+      "filename" : "bnt.png",
       "idiom" : "universal",
-      "filename" : "bnt.pdf",
       "scale" : "1x"
     },
     {
+      "filename" : "bnt@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "bnt@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }

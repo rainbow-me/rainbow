@@ -2,6 +2,7 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useAccountAssets } from '../../hooks';
+import Routes from '../../screens/Routes/routesNames';
 import { ethereumUtils } from '../../utils';
 import FloatingPanels from './FloatingPanels';
 import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
@@ -14,7 +15,7 @@ const TokenExpandedState = ({ asset, navigation }) => {
   const subtitle = get(selectedAsset, 'balance.display', symbol);
 
   const onPressSend = useCallback(() => {
-    navigation.navigate('SendSheet', { asset });
+    navigation.navigate(Routes.SEND_SHEET, { asset });
   }, [asset, navigation]);
 
   return (

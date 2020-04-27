@@ -3,7 +3,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { colors, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
-import { Categories } from './EmojiSelector';
+import { Categories } from './Categories';
 
 const TabBar = ({ categoryKeys, activeCategory, onPress }) => {
   return categoryKeys.map(c => {
@@ -47,6 +47,7 @@ const TabBar = ({ categoryKeys, activeCategory, onPress }) => {
           />
         </ButtonPressAnimation>
       );
+    return null;
   });
 };
 

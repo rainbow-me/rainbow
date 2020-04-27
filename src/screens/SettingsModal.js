@@ -3,6 +3,7 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import { InteractionManager, StatusBar } from 'react-native';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
 import { Column } from '../components/layout';
@@ -15,6 +16,9 @@ import {
   NetworkSection,
   SettingsSection,
 } from '../components/settings-menu';
+import Routes from './Routes/routesNames';
+
+const statusBarHeight = getStatusBarHeight(true);
 
 const SettingsPages = {
   backup: {
@@ -62,7 +66,11 @@ const SettingsModal = ({
   const isDefaultPage = title === SettingsPages.default.title;
 
   return (
-    <Modal minHeight={580} onCloseModal={onCloseModal}>
+    <Modal
+      marginBottom={statusBarHeight}
+      minHeight={580}
+      onCloseModal={onCloseModal}
+    >
       <Column flex={1}>
         <ModalHeader
           onPressBack={onPressBack}
@@ -113,7 +121,7 @@ export default compose(
       navigation.setParams({ section: SettingsPages.default }),
     onPressImportSeedPhrase: ({ navigation }) => () => {
       InteractionManager.runAfterInteractions(() => {
-        navigation.navigate('ImportSeedPhraseSheet');
+        navigation.navigate(Routes.IMPORT_SEED_PHRASE_SHEET);
         StatusBar.setBarStyle('light-content');
       });
     },

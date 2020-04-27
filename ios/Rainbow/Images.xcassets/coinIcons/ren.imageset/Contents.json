@@ -1,21 +1,23 @@
 {
   "images" : [
     {
+      "filename" : "ren.png",
       "idiom" : "universal",
-      "filename" : "ren.pdf",
       "scale" : "1x"
     },
     {
+      "filename" : "ren@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "ren@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }

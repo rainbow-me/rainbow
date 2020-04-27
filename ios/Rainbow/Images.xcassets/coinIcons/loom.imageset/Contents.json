@@ -1,21 +1,23 @@
 {
   "images" : [
     {
+      "filename" : "loom.png",
       "idiom" : "universal",
-      "filename" : "loom.pdf",
       "scale" : "1x"
     },
     {
+      "filename" : "loom@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "loom@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }

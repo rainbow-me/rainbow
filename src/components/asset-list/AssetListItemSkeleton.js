@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated, { Easing } from 'react-native-reanimated';
+import Animated, {
+  Clock,
+  Easing,
+  timing,
+  Value,
+} from 'react-native-reanimated';
 import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, padding, position } from '../../styles';
@@ -12,16 +17,7 @@ import { interpolate } from '../animations';
 import { CoinRow } from '../coin-row';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
 
-const {
-  block,
-  Clock,
-  cond,
-  set,
-  startClock,
-  stopClock,
-  timing,
-  Value,
-} = Animated;
+const { block, cond, set, startClock, stopClock } = Animated;
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 

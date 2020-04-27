@@ -57,19 +57,20 @@ const CoinIconFallback = fallbackProps => {
     return (
       <FallbackIcon
         {...fallbackProps}
-        textStyles={fallbackTextStyles}
+        bgColor={colors.blueGreyDark}
         symbol={symbol || ''}
+        textStyles={fallbackTextStyles}
       />
     );
   } else if (remoteIconUrl) {
     return (
       <FastImage
         {...fallbackProps}
-        style={{ height, width }}
-        source={{ uri: remoteIconUrl }}
         onError={() => {
           setIconNotAvailable(true);
         }}
+        source={{ uri: remoteIconUrl }}
+        style={{ height, width }}
       />
     );
   }
@@ -101,11 +102,11 @@ const CoinIcon = enhance(
         {(isPinned || isHidden) && isCoinListEdited ? (
           <IndicatorIcon>
             <Icon
+              color={colors.white}
+              height={isPinned ? 13 : 10}
               marginTop={isPinned ? 1 : 0}
               name={isPinned ? 'pin' : 'hidden'}
               width={isPinned ? 8 : 14}
-              height={isPinned ? 13 : 10}
-              color={colors.white}
             />
           </IndicatorIcon>
         ) : null}
@@ -113,30 +114,30 @@ const CoinIcon = enhance(
           {...props}
           {...borders.buildCircleAsObject(size)}
           backgroundColor={bgColor}
+          opacity={isHidden ? 0.4 : 1}
           shadows={[
             [0, 4, 6, colors.dark, 0.04],
             [0, 1, 3, colors.dark, 0.08],
           ]}
           shouldRasterizeIOS
-          opacity={isHidden ? 0.4 : 1}
         >
           <ReactCoinIcon
+            address={address || ''}
             bgColor={bgColor}
             fallbackRenderer={CoinIconFallback}
             size={size}
             symbol={symbol || ''}
-            address={address || ''}
           />
         </ShadowStack>
       </>
     ) : (
       <ReactCoinIcon
         {...props}
+        address={address || ''}
         bgColor={bgColor}
         fallbackRenderer={CoinIconFallback}
         size={size}
         symbol={symbol}
-        address={address || ''}
       />
     )
 );
