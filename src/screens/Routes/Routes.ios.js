@@ -26,7 +26,7 @@ import ReceiveModal from '../ReceiveModal';
 import SavingsSheet from '../SavingsSheet';
 import SendSheet from '../SendSheet';
 import SettingsModal from '../SettingsModal';
-import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
+import TransactionConfirmationScreen from '../TransactionConfirmationScreen';
 import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
 import WalletScreen from '../WalletScreen';
 import WithdrawModal from '../WithdrawModal';
@@ -94,7 +94,7 @@ const routesForMainNavigator = {
   },
   [Routes.CONFIRM_REQUEST]: {
     navigationOptions: sheetPresetWithTransitions,
-    screen: TransactionConfirmationScreenWithData,
+    screen: TransactionConfirmationScreen,
   },
   [Routes.EXAMPLE_SCREEN]: {
     navigationOptions: expandedPresetWithTransitions,

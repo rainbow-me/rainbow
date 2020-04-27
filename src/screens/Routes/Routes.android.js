@@ -22,7 +22,7 @@ import QRScannerScreenWithData from '../QRScannerScreenWithData';
 import ReceiveModal from '../ReceiveModal';
 import SendSheet from '../SendSheet';
 import SettingsModal from '../SettingsModal';
-import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
+import TransactionConfirmationScreen from '../TransactionConfirmationScreen';
 import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
 import WalletScreen from '../WalletScreen';
 import {
@@ -58,7 +58,7 @@ const routesForMainNavigator = {
   },
   [Routes.CONFIRM_REQUEST]: {
     navigationOptions: sheetPresetWithTransitions,
-    screen: TransactionConfirmationScreenWithData,
+    screen: TransactionConfirmationScreen,
   },
   [Routes.EXAMPLE_SCREEN]: ExampleScreen,
   [Routes.EXCHANGE_MODAL]: {
