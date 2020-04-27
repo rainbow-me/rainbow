@@ -26,9 +26,8 @@ import {
   isNewValueForPath,
   safeAreaInsetValues,
 } from '../../utils';
-import { CoinDivider, SmallBalancesWrapper } from '../coin-divider';
+import { CoinDivider } from '../coin-divider';
 import { CoinRow } from '../coin-row';
-import SavingsListWrapper from '../savings/SavingsListWrapper';
 import AssetListHeader from './AssetListHeader';
 import { ViewTypes } from './RecyclerViewTypes';
 
@@ -214,6 +213,7 @@ class RecyclerAssetList extends Component {
               hideHeader: this.props.hideHeader,
             }),
             index: ViewTypes.HEADER.index,
+            renderComponent: ViewTypes.HEADER.renderComponent,
           };
         }
 
@@ -263,6 +263,7 @@ class RecyclerAssetList extends Component {
                 return {
                   height: ViewTypes.COIN_DIVIDER.calculateHeight(),
                   index: ViewTypes.COIN_DIVIDER.index,
+                  renderComponent: ViewTypes.COIN_DIVIDER.renderComponent,
                 };
               }
             }
@@ -282,6 +283,8 @@ class RecyclerAssetList extends Component {
                         .length,
                   }),
                   index: ViewTypes.COIN_SMALL_BALANCES.index,
+                  renderComponent:
+                    ViewTypes.COIN_SMALL_BALANCES.renderComponent,
                 };
               }
             }
@@ -299,6 +302,7 @@ class RecyclerAssetList extends Component {
                     paddingBottom: this.props.paddingBottom,
                   }),
                   index: ViewTypes.COIN_SAVINGS.index,
+                  renderComponent: ViewTypes.COIN_SAVINGS.renderComponent,
                 };
               }
               this.lastAssetIndex = index;
@@ -319,6 +323,7 @@ class RecyclerAssetList extends Component {
                 index === firstBalanceIndex &&
                 !sections[balancesIndex].data[firstBalanceIndex - 1]
                   .smallBalancesContainer,
+              renderComponent: ViewTypes.COIN_ROW.renderComponent,
             };
           }
         }
@@ -348,6 +353,7 @@ class RecyclerAssetList extends Component {
                 isOpen,
               }),
               index: ViewTypes.UNISWAP_ROW.index,
+              renderComponent: ViewTypes.UNISWAP_ROW.renderComponent,
             };
           }
         }
@@ -371,6 +377,7 @@ class RecyclerAssetList extends Component {
                 paddingBottom: this.props.paddingBottom,
               }),
               index: ViewTypes.UNIQUE_TOKEN_ROW.index,
+              renderComponent: ViewTypes.UNIQUE_TOKEN_ROW.renderComponent,
             };
           }
         }
@@ -669,82 +676,27 @@ class RecyclerAssetList extends Component {
       return null;
     }
 
-    const { item = {}, renderItem } = data;
-    const { hideHeader, sections, isCoinListEdited } = this.props;
+    const {
+      hideHeader,
+      sections,
+      isCoinListEdited,
+      nativeCurrency,
+    } = this.props;
 
     if (isCoinListEdited && !(type.index < 4)) {
       return null;
     }
 
-    if (type.index === ViewTypes.HEADER.index) {
-      return hideHeader ? null : (
-        <AssetListHeaderRenderer
-          {...data}
-          isCoinListEdited={this.props.isCoinListEdited}
-        />
-      );
-    }
-
-    if (type.index === ViewTypes.COIN_SAVINGS.index) {
-      return (
-        <SavingsListWrapper assets={item.assets} totalValue={item.totalValue} />
-      );
-    }
-
-    if (type.index === ViewTypes.COIN_SMALL_BALANCES.index) {
-      if (
-        this.renderList.length !== item.assets.length ||
-        smallBalancedChanged
-      ) {
-        smallBalancedChanged = false;
-        const renderList = [];
-        for (let i = 0; i < item.assets.length; i++) {
-          renderList.push(
-            renderItem({
-              item: {
-                ...item.assets[i],
-                isSmall: true,
-              },
-              key: `CoinSmallBalances${item.assets[i].symbol}`,
-            })
-          );
-        }
-        this.renderList = renderList;
-      }
-
-      return <SmallBalancesWrapper assets={this.renderList} />;
-    }
-
-    if (type.index === ViewTypes.COIN_DIVIDER.index) {
-      return (
-        <CoinDivider
-          assetsAmount={item.assetsAmount}
-          balancesSum={item.value}
-          isCoinListEdited={isCoinListEdited}
-          nativeCurrency={this.props.nativeCurrency}
-        />
-      );
-    }
-
-    const isFirstCoinRow = type.isFirst;
-
-    if (
-      type.index === ViewTypes.COIN_ROW.index ||
-      type.index === ViewTypes.UNISWAP_ROW.index
-    ) {
-      return renderItem({ isFirstCoinRow, item });
-    }
-    if (type.index === ViewTypes.UNIQUE_TOKEN_ROW.index) {
-      return renderItem({
-        childrenAmount: item.childrenAmount,
-        familyId: item.familyId,
-        familyImage: item.familyImage,
-        familyName: item.familyName,
-        isFirst: type.isFirst,
-        item: item.tokens,
-        shouldPrioritizeImageLoading:
-          index < get(sections, '[0].data.length', 0) + 9,
-        uniqueId: item.uniqueId,
+    if (type.renderComponent && type) {
+      return type.renderComponent({
+        data,
+        hideHeader,
+        index,
+        isCoinListEdited,
+        nativeCurrency,
+        sections,
+        smallBalancedChanged,
+        type,
       });
     }
   };

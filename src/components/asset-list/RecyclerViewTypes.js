@@ -1,5 +1,8 @@
+/* eslint-disable react/display-name */
 /* eslint-disable sort-keys */
-import { CoinDivider } from '../coin-divider';
+import { get } from 'lodash';
+import React from 'react';
+import { CoinDivider, SmallBalancesWrapper } from '../coin-divider';
 import { CoinRow } from '../coin-row';
 import { FloatingActionButton } from '../fab';
 import {
@@ -8,17 +11,22 @@ import {
   UniswapInvestmentCard,
 } from '../investment-cards';
 import { ListFooter } from '../list';
+import SavingsListWrapper from '../savings/SavingsListWrapper';
 import { TokenFamilyHeader } from '../token-family';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
 
 const firstCoinRowMarginTop = 6;
+let lastRenderList = [];
 
 export const ViewTypes = {
   HEADER: {
     calculateHeight: ({ hideHeader }) =>
       hideHeader ? 0 : AssetListHeader.height,
     index: 0,
+    renderComponent: ({ data, isCoinListEdited }) => {
+      return <AssetListHeader {...data} isCoinListEdited={isCoinListEdited} />;
+    },
   },
 
   COIN_ROW: {
@@ -27,11 +35,26 @@ export const ViewTypes = {
       (isFirst ? firstCoinRowMarginTop : 0) +
       (isLast && !areSmallCollectibles ? ListFooter.height + 1 : 0),
     index: 1,
+    renderComponent: ({ type, data }) => {
+      const { item = {}, renderItem } = data;
+      return renderItem({ isFirstCoinRow: type.isFirst, item });
+    },
   },
 
   COIN_DIVIDER: {
     calculateHeight: () => CoinDivider.height,
     index: 2,
+    renderComponent: ({ data, isCoinListEdited, nativeCurrency }) => {
+      const { item = {} } = data;
+      return (
+        <CoinDivider
+          assetsAmount={item.assetsAmount}
+          balancesSum={item.value}
+          isCoinListEdited={isCoinListEdited}
+          nativeCurrency={nativeCurrency}
+        />
+      );
+    },
   },
   COIN_SMALL_BALANCES: {
     calculateHeight: ({ isOpen, smallBalancesLength, isCoinListEdited }) =>
@@ -41,6 +64,30 @@ export const ViewTypes = {
           (isCoinListEdited ? 100 : 0)
         : 13,
     index: 3,
+    renderComponent: ({ data, smallBalancedChanged }) => {
+      const { item = {}, renderItem } = data;
+
+      if (
+        lastRenderList.length !== item.assets.length ||
+        smallBalancedChanged
+      ) {
+        smallBalancedChanged = false;
+        const renderList = [];
+        for (let i = 0; i < item.assets.length; i++) {
+          renderList.push(
+            renderItem({
+              item: {
+                ...item.assets[i],
+                isSmall: true,
+              },
+              key: `CoinSmallBalances${item.assets[i].symbol}`,
+            })
+          );
+        }
+        lastRenderList = renderList;
+      }
+      return <SmallBalancesWrapper assets={lastRenderList} />;
+    },
   },
 
   COIN_SAVINGS: {
@@ -56,6 +103,12 @@ export const ViewTypes = {
         : TokenFamilyHeaderHeight + ListFooter.height - 10;
     },
     index: 4,
+    renderComponent: ({ data }) => {
+      const { item = {} } = data;
+      return (
+        <SavingsListWrapper assets={item.assets} totalValue={item.totalValue} />
+      );
+    },
   },
 
   UNISWAP_ROW: {
@@ -64,6 +117,10 @@ export const ViewTypes = {
       InvestmentCard.margin.vertical +
       (isLast ? ListFooter.height + 8 : 0),
     index: 5,
+    renderComponent: ({ type, data }) => {
+      const { item = {}, renderItem } = data;
+      return renderItem({ isFirstCoinRow: type.isFirst, item });
+    },
   },
 
   UNIQUE_TOKEN_ROW: {
@@ -93,6 +150,20 @@ export const ViewTypes = {
       return height;
     },
     index: 6,
+    renderComponent: ({ type, data, index, sections }) => {
+      const { item = {}, renderItem } = data;
+      return renderItem({
+        childrenAmount: item.childrenAmount,
+        familyId: item.familyId,
+        familyImage: item.familyImage,
+        familyName: item.familyName,
+        isFirst: type.isFirst,
+        item: item.tokens,
+        shouldPrioritizeImageLoading:
+          index < get(sections, '[0].data.length', 0) + 9,
+        uniqueId: item.uniqueId,
+      });
+    },
   },
 
   FOOTER: {
