@@ -287,6 +287,7 @@ const ExchangeModal = ({
   // Recalculate balance when gas price changes
   useEffect(() => {
     if (
+      inputCurrency &&
       inputCurrency.address === 'eth' &&
       get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
         get(selectedGasPrice, 'txFee.value.amount', 0)
@@ -294,7 +295,7 @@ const ExchangeModal = ({
       updateInputBalance();
     }
   }, [
-    inputCurrency.address,
+    inputCurrency,
     prevSelectedGasPrice,
     selectedGasPrice,
     updateInputBalance,
