@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { createElement } from 'react';
+import React, { createElement, Fragment } from 'react';
 import ShadowStack from 'react-native-shadow-stack';
 import { pure } from 'recompose';
 import styled from 'styled-components/primitives';
@@ -41,6 +41,9 @@ const SendAssetForm = ({
   assetAmount,
   buttonRenderer,
   nativeAmount,
+  nativeCurrency,
+  onChangeAssetAmount,
+  onChangeNativeAmount,
   onResetAssetSelection,
   selected,
   sendMaxBalance,
@@ -88,17 +91,20 @@ const SendAssetForm = ({
             txSpeedRenderer={txSpeedRenderer}
           />
         ) : (
-          <>
+          <Fragment>
             <SendAssetFormToken
               {...props}
               assetAmount={assetAmount}
               buttonRenderer={buttonRenderer}
               nativeAmount={nativeAmount}
-              sendMaxBalance={sendMaxBalance}
+              nativeCurrency={nativeCurrency}
+              onChangeAssetAmount={onChangeAssetAmount}
+              onChangeNativeAmount={onChangeNativeAmount}
               selected={selected}
+              sendMaxBalance={sendMaxBalance}
               txSpeedRenderer={txSpeedRenderer}
             />
-          </>
+          </Fragment>
         )}
       </TransactionContainer>
     </Container>
@@ -109,8 +115,13 @@ SendAssetForm.propTypes = {
   allAssets: PropTypes.array,
   assetAmount: PropTypes.string,
   buttonRenderer: PropTypes.node,
+  nativeAmount: PropTypes.string,
+  nativeCurrency: PropTypes.string,
+  onChangeAssetAmount: PropTypes.func,
+  onChangeNativeAmount: PropTypes.func,
   onResetAssetSelection: PropTypes.func,
   selected: PropTypes.object,
+  sendMaxBalance: PropTypes.func,
   txSpeedRenderer: PropTypes.node,
 };
 

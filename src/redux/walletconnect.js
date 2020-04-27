@@ -128,6 +128,10 @@ export const walletConnectClearState = () => (dispatch, getState) => {
   dispatch({ type: WALLETCONNECT_CLEAR_STATE });
 };
 
+export const walletConnectResetState = () => dispatch => {
+  dispatch({ type: WALLETCONNECT_CLEAR_STATE });
+};
+
 export const walletConnectLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   let walletConnectors = {};

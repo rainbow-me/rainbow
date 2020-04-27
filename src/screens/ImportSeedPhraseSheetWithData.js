@@ -1,13 +1,9 @@
 import { get } from 'lodash';
-import { compose, pure } from 'recompact';
-import { withIsWalletEmpty } from '../hoc';
+import { pure } from 'recompact';
 import { deviceUtils } from '../utils';
 import ImportSeedPhraseSheet from './ImportSeedPhraseSheet';
 
-const ImportSeedPhraseSheetWithData = compose(
-  withIsWalletEmpty,
-  pure
-)(ImportSeedPhraseSheet);
+const ImportSeedPhraseSheetWithData = pure(ImportSeedPhraseSheet);
 
 ImportSeedPhraseSheetWithData.navigationOptions = ({ navigation }) => ({
   gestureEnabled: get(navigation, 'state.params.gestureEnabled', true),

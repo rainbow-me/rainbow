@@ -1,10 +1,7 @@
 import {
   getAccountLocal,
-  getKey,
-  getLocal,
   removeAccountLocal,
   saveAccountLocal,
-  saveLocal,
 } from './common';
 
 const assetPricesFromUniswapVersion = '0.1.0';
@@ -27,7 +24,6 @@ const SAVINGS_TOGGLE = 'savingsToggle';
 const SHOWCASE_TOKENS = 'showcaseTokens';
 const TRANSACTIONS = 'transactions';
 const UNIQUE_TOKENS = 'uniquetokens';
-const WALLET_EMPTY = 'iswalletempty';
 const PINNED_COINS = 'pinnedCoins';
 const HIDDEN_COINS = 'hiddenCoins';
 
@@ -217,38 +213,6 @@ export const saveLocalTransactions = (transactions, accountAddress, network) =>
  */
 export const removeLocalTransactions = (accountAddress, network) =>
   removeAccountLocal(TRANSACTIONS, accountAddress, network);
-
-/**
- * @desc get is wallet empty
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Boolean}
- */
-export const getIsWalletEmpty = async (accountAddress, network) =>
-  await getLocal(getKey(WALLET_EMPTY, accountAddress, network));
-
-/**
- * @desc save is wallet empty
- * @param  {String}   [address]
- * @param  {Boolean}   [isWalletEmpty]
- * @param  {String}   [network]
- */
-export const saveIsWalletEmpty = async (
-  accountAddress,
-  isWalletEmpty,
-  network
-) => {
-  await saveLocal(getKey(WALLET_EMPTY, accountAddress, network), isWalletEmpty);
-};
-
-/**
- * @desc remove is wallet empty
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const removeIsWalletEmpty = (accountAddress, network) =>
-  removeAccountLocal(WALLET_EMPTY, accountAddress, network);
 
 /**
  * @desc get unique tokens

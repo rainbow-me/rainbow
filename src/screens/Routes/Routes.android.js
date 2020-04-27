@@ -17,12 +17,12 @@ import AvatarBuilder from '../AvatarBuilder';
 import ExampleScreen from '../ExampleScreen';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
-import ProfileScreenWithData from '../ProfileScreenWithData';
+import ProfileScreen from '../ProfileScreen';
 import QRScannerScreenWithData from '../QRScannerScreenWithData';
 import ReceiveModal from '../ReceiveModal';
-import SendSheetWithData from '../SendSheetWithData';
+import SendSheet from '../SendSheet';
 import SettingsModal from '../SettingsModal';
-import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
+import TransactionConfirmationScreen from '../TransactionConfirmationScreen';
 import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
 import WalletScreen from '../WalletScreen';
 import {
@@ -36,7 +36,7 @@ import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 
 const routesForSwipeStack = {
-  [Routes.PROFILE_SCREEN]: ProfileScreenWithData,
+  [Routes.PROFILE_SCREEN]: ProfileScreen,
   [Routes.WALLET_SCREEN]: WalletScreen,
   [Routes.QR_SCANNER_SCREEN]: QRScannerScreenWithData,
 };
@@ -58,7 +58,7 @@ const routesForMainNavigator = {
   },
   [Routes.CONFIRM_REQUEST]: {
     navigationOptions: sheetPresetWithTransitions,
-    screen: TransactionConfirmationScreenWithData,
+    screen: TransactionConfirmationScreen,
   },
   [Routes.EXAMPLE_SCREEN]: ExampleScreen,
   [Routes.EXCHANGE_MODAL]: {
@@ -127,7 +127,7 @@ const routesForStack = {
         sheetPreset.onTransitionStart(props);
       },
     },
-    screen: SendSheetWithData,
+    screen: SendSheet,
   },
 };
 const Stack = createStackNavigator(routesForStack, {

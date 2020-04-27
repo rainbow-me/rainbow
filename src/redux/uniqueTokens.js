@@ -51,6 +51,11 @@ export const uniqueTokensClearState = () => (dispatch, getState) => {
   dispatch({ type: UNIQUE_TOKENS_CLEAR_STATE });
 };
 
+export const uniqueTokensResetState = () => dispatch => {
+  clearTimeout(uniqueTokensHandle);
+  dispatch({ type: UNIQUE_TOKENS_CLEAR_STATE });
+};
+
 export const uniqueTokensRefreshState = () => async (dispatch, getState) => {
   const { network } = getState().settings;
 

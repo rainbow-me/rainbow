@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import { compose } from 'recompact';
 import Button from '../components/buttons/Button';
 import { Centered, Page } from '../components/layout';
-import { withGas, withRaps, withUniswapAllowances } from '../hoc';
+import { withRaps, withUniswapAllowances } from '../hoc';
 import { loadWallet } from '../model/wallet';
 import unlockAndSwap from '../raps/unlockAndSwap';
 import { colors, position } from '../styles';
@@ -76,4 +76,4 @@ class ExampleScreen extends PureComponent {
   );
 }
 
-export default compose(withUniswapAllowances, withGas, withRaps)(ExampleScreen);
+export default compose(withUniswapAllowances, withRaps)(ExampleScreen);

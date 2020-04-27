@@ -124,6 +124,11 @@ export const clearOpenStateSettings = () => (dispatch, getState) => {
   });
 };
 
+export const resetOpenStateSettings = () => dispatch =>
+  dispatch({
+    type: CLEAR_OPEN_STATE_SETTINGS,
+  });
+
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_STATE = {
   openFamilyTabs: {},
