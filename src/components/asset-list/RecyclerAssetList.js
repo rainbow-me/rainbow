@@ -169,8 +169,6 @@ class RecyclerAssetList extends Component {
     openSmallBalances: PropTypes.bool,
     paddingBottom: PropTypes.number,
     renderAheadOffset: PropTypes.number,
-    scrollingVelocity: PropTypes.number,
-    scrollViewTracker: PropTypes.object,
     sections: PropTypes.arrayOf(
       PropTypes.shape({
         balances: PropTypes.bool,
@@ -428,21 +426,6 @@ class RecyclerAssetList extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    // Movable FAB Logic
-
-    // const { openFamilyTabs, sections, scrollingVelocity } = this.props;
-
-    // if (scrollingVelocity === 0) {
-    //   clearTimeout(this.scrollHandle);
-    // }
-
-    // if (
-    //   scrollingVelocity &&
-    //   scrollingVelocity !== prevProps.scrollingVelocity
-    // ) {
-    //   this.startScroll(scrollingVelocity);
-    // }
-
     const { openFamilyTabs, sections } = this.props;
 
     let collectibles = {};
@@ -599,14 +582,6 @@ class RecyclerAssetList extends Component {
     }
   };
 
-  // Movable FAB Logic
-
-  // startScroll = scrollingVelocity => {
-  //   clearTimeout(this.scrollHandle);
-  //   this.rlv.scrollToOffset(0, this.position + scrollingVelocity * 10);
-  //   this.scrollHandle = setTimeout(this.startScroll, 30);
-  // };
-
   scrollToOffset = (position, animated) => {
     setTimeout(() => {
       this.rlv.scrollToOffset(0, position, animated);
@@ -676,28 +651,6 @@ class RecyclerAssetList extends Component {
   };
 
   handleScroll = (_nativeEventObject, _, offsetY) => {
-    // Movable FAB Logic
-
-    // const { contentSize, layoutMeasurement } = nativeEvent;
-
-    // if (this.contentSize !== contentSize.height) {
-    //   this.contentSize = contentSize.height;
-    // }
-
-    // if (this.layoutMeasurement !== layoutMeasurement.height) {
-    //   this.layoutMeasurement = layoutMeasurement.height;
-    // }
-
-    // if (
-    //   ((contentSize.height - layoutMeasurement.height >= offsetY &&
-    //     offsetY >= 0) ||
-    //     (offsetY < reloadHeightOffsetTop &&
-    //       offsetY > reloadHeightOffsetBottom)) &&
-    //   this.props.scrollViewTracker
-    // ) {
-    //   this.props.scrollViewTracker.setValue(offsetY);
-    // }
-
     if (this.props.isCoinListEdited) {
       this.checkEditStickyHeader(offsetY);
     }
