@@ -2,7 +2,6 @@ import { omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import createBottomSheetStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
-import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
@@ -157,14 +156,13 @@ const AddCashFlowNavigator = createStackNavigator(routesForAddCash, {
 
 const routesForNativeStack = {
   [Routes.MAIN_NAVIGATOR]: MainNavigator,
-  [Routes.IMPORT_SEED_PHRASE_SHEET]: ImportSeedPhraseSheetWrapper,
   ...(isNativeStackAvailable && {
     [Routes.SEND_SHEET_NAVIGATOR]: SendFlowNavigator,
     [Routes.ADD_CASH_SCREEN_NAVIGATOR]: AddCashFlowNavigator,
   }),
 };
 
-const NativeStack = createNativeStackNavigator(routesForNativeStack, {
+const NativeStack = createBottomSheetStackNavigator(routesForNativeStack, {
   defaultNavigationOptions: {
     onAppear: () => appearListener.current && appearListener.current(),
   },
@@ -234,6 +232,10 @@ const routesForBottomSheetStack = {
   [Routes.STACK]: Stack,
   [Routes.RECEIVE_MODAL]: ReceiveModal,
   [Routes.SETTINGS_MODAL]: SettingsModal,
+  [Routes.IMPORT_SEED_PHRASE_SHEET]: {
+    navigationOptions: { customStack: false },
+    screen: ImportSeedPhraseSheetWrapper,
+  },
 };
 
 const MainNativeBottomSheetNavigation = createBottomSheetStackNavigator(
