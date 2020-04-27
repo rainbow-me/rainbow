@@ -135,14 +135,14 @@ const MainNavigator = createStackNavigator(routesForMainNavigator);
 
 const routesForSavingsModals = {
   [Routes.SAVINGS_DEPOSIT_MODAL]: {
-    navigationOptions: expandedPresetWithTransitions,
+    navigationOptions: exchangePresetWithTransitions,
     params: {
       isGestureBlocked: false,
     },
     screen: SavingModalNavigator,
   },
   [Routes.SAVINGS_WITHDRAW_MODAL]: {
-    navigationOptions: expandedPresetWithTransitions,
+    navigationOptions: exchangePresetWithTransitions,
     params: {
       isGestureBlocked: false,
     },
