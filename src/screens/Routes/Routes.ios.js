@@ -155,7 +155,6 @@ const AddCashFlowNavigator = createStackNavigator(routesForAddCash, {
 });
 
 const routesForNativeStack = {
-  [Routes.MAIN_NAVIGATOR]: MainNavigator,
   [Routes.IMPORT_SEED_PHRASE_SHEET]: ImportSeedPhraseSheetWrapper,
   [Routes.SEND_SHEET_NAVIGATOR]: SendFlowNavigator,
   [Routes.ADD_CASH_SCREEN_NAVIGATOR]: AddCashFlowNavigator,
