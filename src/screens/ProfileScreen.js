@@ -37,6 +37,7 @@ const ProfileScreen = ({ navigation }) => {
   const {
     accountAddress,
     accountColor,
+    accountENS,
     accountName,
     network,
   } = useAccountSettings();
@@ -82,6 +83,7 @@ const ProfileScreen = ({ navigation }) => {
         <TransactionList
           accountAddress={accountAddress}
           accountColor={accountColor}
+          accountENS={accountENS}
           accountName={accountName}
           addCashAvailable={addCashAvailable}
           contacts={contacts}
@@ -90,6 +92,7 @@ const ProfileScreen = ({ navigation }) => {
               accountAddress={accountAddress}
               accountColor={accountColor}
               accountName={accountName}
+              accountENS={accountENS}
               addCashAvailable={addCashAvailable}
               navigation={navigation}
               showBottomDivider={!isEmpty || isLoading}
