@@ -32,15 +32,39 @@ import AssetListHeader from './AssetListHeader';
 import { ViewTypes } from './RecyclerViewTypes';
 
 const NOOP = () => undefined;
-let scrollAnimatorFired = false;
+let globalDeviceDimensions = 0;
 
 class LayoutItemAnimator extends BaseItemAnimator {
+  constructor(rlv) {
+    super();
+    this.rlv = rlv;
+  }
+
   animateDidMount = NOOP;
   animateShift = NOOP;
   animateWillMount = NOOP;
   animateWillUnmount = NOOP;
   animateWillUpdate = () => {
-    if (!scrollAnimatorFired) {
+    console.log(
+      this.rlv.getContentDimension().height,
+      this.rlv.getCurrentScrollOffset(),
+      globalDeviceDimensions + 55
+    );
+    if (
+      this.rlv.getContentDimension().height <
+        this.rlv.getCurrentScrollOffset() + globalDeviceDimensions + 55 &&
+      this.rlv.getCurrentScrollOffset() > 0
+    ) {
+      console.log('slow speed');
+      LayoutAnimation.configureNext({
+        duration: 250,
+        update: {
+          delay: 10,
+          type: 'easeInEaseOut',
+        },
+      });
+    } else {
+      console.log('normal speed');
       LayoutAnimation.configureNext({
         duration: 200,
         update: {
@@ -49,19 +73,9 @@ class LayoutItemAnimator extends BaseItemAnimator {
           type: LayoutAnimation.Types.spring,
         },
       });
-    } else {
-      LayoutAnimation.configureNext({
-        duration: 250,
-        update: {
-          delay: 10,
-          type: 'easeInEaseOut',
-        },
-      });
     }
   };
 }
-
-const layoutItemAnimator = new LayoutItemAnimator();
 
 let smallBalancedChanged = false;
 let smallBalancesIndex = 0;
@@ -237,8 +251,9 @@ class RecyclerAssetList extends Component {
 
         if (balancesIndex > -1) {
           if (
-            index <= headersIndices[collectiblesIndex] &&
-            index <= headersIndices[investmentsIndex]
+            (index <= headersIndices[collectiblesIndex] ||
+              collectiblesIndex < 0) &&
+            (index <= headersIndices[investmentsIndex] || investmentsIndex < 0)
           ) {
             const balanceItemsCount = get(
               sections,
@@ -429,6 +444,8 @@ class RecyclerAssetList extends Component {
 
   componentDidMount = () => {
     this.isCancelled = false;
+    const headerHeaight = deviceUtils.isSmallPhone ? 210 : 148;
+    globalDeviceDimensions = deviceUtils.dimensions.height - headerHeaight;
   };
 
   componentDidUpdate(prevProps) {
@@ -521,13 +538,9 @@ class RecyclerAssetList extends Component {
       this.rlv.getCurrentScrollOffset() > 0 &&
       !this.props.isCoinListEdited
     ) {
-      scrollAnimatorFired = true;
       setTimeout(() => {
         this.rlv.scrollToEnd({ animated: true });
       }, 10);
-      setTimeout(() => {
-        scrollAnimatorFired = false;
-      }, 250);
     }
 
     if (
@@ -756,7 +769,7 @@ class RecyclerAssetList extends Component {
               disableRecycling
               extendedState={{ headersIndices }}
               externalScrollView={externalScrollView}
-              itemAnimator={layoutItemAnimator}
+              itemAnimator={new LayoutItemAnimator(this.rlv)}
               layoutProvider={this.layoutProvider}
               onScroll={this.handleScroll}
               ref={this.handleListRef}
