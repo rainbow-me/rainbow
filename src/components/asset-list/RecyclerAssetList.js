@@ -45,17 +45,11 @@ class LayoutItemAnimator extends BaseItemAnimator {
   animateWillMount = NOOP;
   animateWillUnmount = NOOP;
   animateWillUpdate = () => {
-    console.log(
-      this.rlv.getContentDimension().height,
-      this.rlv.getCurrentScrollOffset(),
-      globalDeviceDimensions + 55
-    );
     if (
       this.rlv.getContentDimension().height <
         this.rlv.getCurrentScrollOffset() + globalDeviceDimensions + 55 &&
       this.rlv.getCurrentScrollOffset() > 0
     ) {
-      console.log('slow speed');
       LayoutAnimation.configureNext({
         duration: 250,
         update: {
@@ -64,7 +58,6 @@ class LayoutItemAnimator extends BaseItemAnimator {
         },
       });
     } else {
-      console.log('normal speed');
       LayoutAnimation.configureNext({
         duration: 200,
         update: {
