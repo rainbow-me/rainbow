@@ -77,14 +77,7 @@ const hasRowChanged = (r1, r2) => {
   let isNewAssetBalance = false;
 
   let savingsSectionChanged = false;
-  if (
-    r1.item &&
-    r2.item &&
-    r1.item.assets &&
-    r2.item.assets &&
-    r1.item.savingsContainer &&
-    r2.item.savingsContainer
-  ) {
+  if (r1?.item?.savingsContainer && r2?.item?.savingsContainer) {
     if (r1.item.assets.length !== r2.item.assets.length) {
       savingsSectionChanged = true;
     } else if (r2.item.assets.length > 0) {
@@ -113,14 +106,7 @@ const hasRowChanged = (r1, r2) => {
     );
   }
 
-  if (
-    r1.item &&
-    r2.item &&
-    r1.item.assets &&
-    r2.item.assets &&
-    r1.item.smallBalancesContainer &&
-    r2.item.smallBalancesContainer
-  ) {
+  if (r1?.item?.smallBalancesContainer && r2?.item?.smallBalancesContainer) {
     if (r1.item.assets.length !== r2.item.assets.length) {
       smallBalancedChanged = true;
     } else if (r2.item.assets.length > 0) {
@@ -214,7 +200,6 @@ class RecyclerAssetList extends Component {
               hideHeader: this.props.hideHeader,
             }),
             index: ViewTypes.HEADER.index,
-            renderComponent: ViewTypes.HEADER.renderComponent,
           };
         }
 
@@ -264,7 +249,6 @@ class RecyclerAssetList extends Component {
                 return {
                   height: ViewTypes.COIN_DIVIDER.calculateHeight(),
                   index: ViewTypes.COIN_DIVIDER.index,
-                  renderComponent: ViewTypes.COIN_DIVIDER.renderComponent,
                 };
               }
             }
@@ -284,8 +268,6 @@ class RecyclerAssetList extends Component {
                         .length,
                   }),
                   index: ViewTypes.COIN_SMALL_BALANCES.index,
-                  renderComponent:
-                    ViewTypes.COIN_SMALL_BALANCES.renderComponent,
                 };
               }
             }
@@ -303,7 +285,6 @@ class RecyclerAssetList extends Component {
                     paddingBottom: this.props.paddingBottom,
                   }),
                   index: ViewTypes.COIN_SAVINGS.index,
-                  renderComponent: ViewTypes.COIN_SAVINGS.renderComponent,
                 };
               }
               this.lastAssetIndex = index;
@@ -324,7 +305,6 @@ class RecyclerAssetList extends Component {
                 index === firstBalanceIndex &&
                 !sections[balancesIndex].data[firstBalanceIndex - 1]
                   .smallBalancesContainer,
-              renderComponent: ViewTypes.COIN_ROW.renderComponent,
             };
           }
         }
@@ -354,7 +334,6 @@ class RecyclerAssetList extends Component {
                 isOpen,
               }),
               index: ViewTypes.UNISWAP_ROW.index,
-              renderComponent: ViewTypes.UNISWAP_ROW.renderComponent,
             };
           }
         }
@@ -378,7 +357,6 @@ class RecyclerAssetList extends Component {
                 paddingBottom: this.props.paddingBottom,
               }),
               index: ViewTypes.UNIQUE_TOKEN_ROW.index,
-              renderComponent: ViewTypes.UNIQUE_TOKEN_ROW.renderComponent,
             };
           }
         }
@@ -454,7 +432,7 @@ class RecyclerAssetList extends Component {
     const headerHeaight = deviceUtils.isSmallPhone ? 210 : 148;
     const deviceDimensions = deviceUtils.dimensions.height - headerHeaight;
     const bottomHorizonOfScreen =
-      this.rlv.getCurrentScrollOffset() + deviceDimensions;
+      this.rlv.getCurrentScrollOffset() + deviceDimensions + 55;
 
     if (openFamilyTabs !== prevProps.openFamilyTabs && collectibles.data) {
       let i = 0;
@@ -463,10 +441,15 @@ class RecyclerAssetList extends Component {
           openFamilyTabs[collectibles.data[i].familyName] === true &&
           !prevProps.openFamilyTabs[collectibles.data[i].familyName]
         ) {
+          const safeIndex = i;
+          const safeCollectibles = collectibles;
           const familyIndex = findIndex(this.state.dataProvider._data, function(
             data
           ) {
-            return data.item?.familyName === collectibles.data[i].familyName;
+            return (
+              data.item?.familyName ===
+              safeCollectibles.data[safeIndex].familyName
+            );
           });
 
           const focusedFamilyItem = this.state.dataProvider._data[familyIndex]
@@ -488,7 +471,9 @@ class RecyclerAssetList extends Component {
 
           if (focusedFamilyHeight < deviceDimensions) {
             const endOfDesiredComponent =
-              startOfDesiredComponent + focusedFamilyHeight;
+              startOfDesiredComponent +
+              focusedFamilyHeight +
+              AssetListHeader.height;
 
             const scrollFixedBonusOffset = AssetListHeader.height;
 
@@ -497,9 +482,7 @@ class RecyclerAssetList extends Component {
               bottomHorizonOfScreen
             ) {
               this.scrollToOffset(
-                endOfDesiredComponent +
-                  scrollFixedBonusOffset -
-                  deviceDimensions,
+                endOfDesiredComponent - deviceDimensions,
                 true
               );
             }
@@ -517,7 +500,7 @@ class RecyclerAssetList extends Component {
       this.rlv.getContentDimension().height < bottomHorizonOfScreen &&
       this.rlv.getCurrentScrollOffset() > 0
     ) {
-      layoutItemAnimator.animateShift = () =>
+      layoutItemAnimator.animateWillUpdate = () =>
         LayoutAnimation.configureNext({
           duration: 250,
           update: {
@@ -529,7 +512,7 @@ class RecyclerAssetList extends Component {
         this.rlv.scrollToEnd({ animated: true });
       }, 10);
       setTimeout(() => {
-        layoutItemAnimator.animateShift = () =>
+        layoutItemAnimator.animateWillUpdate = () =>
           LayoutAnimation.configureNext({
             duration: 200,
             update: {
@@ -538,7 +521,7 @@ class RecyclerAssetList extends Component {
               type: LayoutAnimation.Types.spring,
             },
           });
-      }, 250);
+      }, 270);
     }
 
     if (
@@ -563,7 +546,6 @@ class RecyclerAssetList extends Component {
 
   componentWillUnmount = () => {
     this.isCancelled = true;
-    clearTimeout(this.scrollHandle);
   };
 
   rlv = React.createRef();
@@ -677,26 +659,47 @@ class RecyclerAssetList extends Component {
       return null;
     }
 
-    const {
-      hideHeader,
-      sections,
-      isCoinListEdited,
-      nativeCurrency,
-    } = this.props;
+    const { sections, isCoinListEdited, nativeCurrency } = this.props;
 
     if (isCoinListEdited && !(type.index < 4)) {
       return null;
     }
 
-    if (type.renderComponent && type) {
-      return type.renderComponent({
+    if (type.index === ViewTypes.HEADER.index) {
+      return ViewTypes.HEADER.renderComponent({
         data,
-        hideHeader,
-        index,
+        isCoinListEdited,
+      });
+    } else if (type.index === ViewTypes.COIN_ROW.index) {
+      return ViewTypes.COIN_ROW.renderComponent({
+        data,
+        type,
+      });
+    } else if (type.index === ViewTypes.COIN_DIVIDER.index) {
+      return ViewTypes.COIN_DIVIDER.renderComponent({
+        data,
         isCoinListEdited,
         nativeCurrency,
-        sections,
+      });
+    } else if (type.index === ViewTypes.COIN_SMALL_BALANCES.index) {
+      return ViewTypes.COIN_SMALL_BALANCES.renderComponent({
+        data,
         smallBalancedChanged,
+      });
+    } else if (type.index === ViewTypes.COIN_SAVINGS.index) {
+      return ViewTypes.COIN_SAVINGS.renderComponent({
+        data,
+      });
+    } else if (type.index === ViewTypes.UNISWAP_ROW.index) {
+      return ViewTypes.UNISWAP_ROW.renderComponent({
+        data,
+        type,
+      });
+    } else if (type.index === ViewTypes.UNIQUE_TOKEN_ROW.index) {
+      return ViewTypes.UNIQUE_TOKEN_ROW.renderComponent({
+        data,
+        index,
+        sections,
         type,
       });
     }
