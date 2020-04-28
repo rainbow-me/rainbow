@@ -200,6 +200,7 @@ class RecyclerAssetList extends Component {
               hideHeader: this.props.hideHeader,
             }),
             index: ViewTypes.HEADER.index,
+            visibleDuringCoinEdit: ViewTypes.HEADER.visibleDuringCoinEdit,
           };
         }
 
@@ -249,6 +250,8 @@ class RecyclerAssetList extends Component {
                 return {
                   height: ViewTypes.COIN_DIVIDER.calculateHeight(),
                   index: ViewTypes.COIN_DIVIDER.index,
+                  visibleDuringCoinEdit:
+                    ViewTypes.COIN_DIVIDER.visibleDuringCoinEdit,
                 };
               }
             }
@@ -268,6 +271,8 @@ class RecyclerAssetList extends Component {
                         .length,
                   }),
                   index: ViewTypes.COIN_SMALL_BALANCES.index,
+                  visibleDuringCoinEdit:
+                    ViewTypes.COIN_SMALL_BALANCES.visibleDuringCoinEdit,
                 };
               }
             }
@@ -305,6 +310,7 @@ class RecyclerAssetList extends Component {
                 index === firstBalanceIndex &&
                 !sections[balancesIndex].data[firstBalanceIndex - 1]
                   .smallBalancesContainer,
+              visibleDuringCoinEdit: ViewTypes.COIN_ROW.visibleDuringCoinEdit,
             };
           }
         }
@@ -367,9 +373,12 @@ class RecyclerAssetList extends Component {
         };
       },
       (type, dim) => {
-        // TODO Set height 0 for selected indexes when isCoinListEdited
         dim.width = deviceUtils.dimensions.width;
-        dim.height = type.height;
+        if (this.props.isCoinListEdited && !type.visibleDuringCoinEdit) {
+          dim.height = 0;
+        } else {
+          dim.height = type.height;
+        }
       }
     );
   }
@@ -498,7 +507,8 @@ class RecyclerAssetList extends Component {
 
     if (
       this.rlv.getContentDimension().height < bottomHorizonOfScreen &&
-      this.rlv.getCurrentScrollOffset() > 0
+      this.rlv.getCurrentScrollOffset() > 0 &&
+      !this.props.isCoinListEdited
     ) {
       layoutItemAnimator.animateWillUpdate = () =>
         LayoutAnimation.configureNext({

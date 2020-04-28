@@ -27,6 +27,7 @@ export const ViewTypes = {
     renderComponent: ({ data, isCoinListEdited }) => {
       return <AssetListHeader {...data} isCoinListEdited={isCoinListEdited} />;
     },
+    visibleDuringCoinEdit: true,
   },
 
   COIN_ROW: {
@@ -39,6 +40,7 @@ export const ViewTypes = {
       const { item = {}, renderItem } = data;
       return renderItem({ isFirstCoinRow: type.isFirst, item });
     },
+    visibleDuringCoinEdit: true,
   },
 
   COIN_DIVIDER: {
@@ -55,6 +57,7 @@ export const ViewTypes = {
         />
       );
     },
+    visibleDuringCoinEdit: true,
   },
   COIN_SMALL_BALANCES: {
     calculateHeight: ({ isOpen, smallBalancesLength, isCoinListEdited }) =>
@@ -88,6 +91,7 @@ export const ViewTypes = {
       }
       return <SmallBalancesWrapper assets={lastRenderList} />;
     },
+    visibleDuringCoinEdit: true,
   },
 
   COIN_SAVINGS: {
