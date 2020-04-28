@@ -32,6 +32,7 @@ import AssetListHeader from './AssetListHeader';
 import { ViewTypes } from './RecyclerViewTypes';
 
 const NOOP = () => undefined;
+let scrollAnimatorFired = false;
 
 class LayoutItemAnimator extends BaseItemAnimator {
   animateDidMount = NOOP;
@@ -39,14 +40,24 @@ class LayoutItemAnimator extends BaseItemAnimator {
   animateWillMount = NOOP;
   animateWillUnmount = NOOP;
   animateWillUpdate = () => {
-    LayoutAnimation.configureNext({
-      duration: 200,
-      update: {
-        initialVelocity: 0,
-        springDamping: 1,
-        type: LayoutAnimation.Types.spring,
-      },
-    });
+    if (!scrollAnimatorFired) {
+      LayoutAnimation.configureNext({
+        duration: 200,
+        update: {
+          initialVelocity: 0,
+          springDamping: 1,
+          type: LayoutAnimation.Types.spring,
+        },
+      });
+    } else {
+      LayoutAnimation.configureNext({
+        duration: 250,
+        update: {
+          delay: 10,
+          type: 'easeInEaseOut',
+        },
+      });
+    }
   };
 }
 
@@ -510,28 +521,13 @@ class RecyclerAssetList extends Component {
       this.rlv.getCurrentScrollOffset() > 0 &&
       !this.props.isCoinListEdited
     ) {
-      layoutItemAnimator.animateWillUpdate = () =>
-        LayoutAnimation.configureNext({
-          duration: 250,
-          update: {
-            delay: 10,
-            type: 'easeInEaseOut',
-          },
-        });
+      scrollAnimatorFired = true;
       setTimeout(() => {
         this.rlv.scrollToEnd({ animated: true });
       }, 10);
       setTimeout(() => {
-        layoutItemAnimator.animateWillUpdate = () =>
-          LayoutAnimation.configureNext({
-            duration: 200,
-            update: {
-              initialVelocity: 0,
-              springDamping: 1,
-              type: LayoutAnimation.Types.spring,
-            },
-          });
-      }, 270);
+        scrollAnimatorFired = false;
+      }, 250);
     }
 
     if (
