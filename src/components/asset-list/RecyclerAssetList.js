@@ -510,12 +510,7 @@ class RecyclerAssetList extends Component {
               focusedFamilyHeight +
               AssetListHeader.height;
 
-            const scrollFixedBonusOffset = AssetListHeader.height;
-
-            if (
-              endOfDesiredComponent + scrollFixedBonusOffset >
-              bottomHorizonOfScreen
-            ) {
+            if (endOfDesiredComponent > bottomHorizonOfScreen) {
               this.scrollToOffset(
                 endOfDesiredComponent - globalDeviceDimensions,
                 true
