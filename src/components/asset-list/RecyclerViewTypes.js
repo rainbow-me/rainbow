@@ -38,7 +38,11 @@ export const ViewTypes = {
     index: 1,
     renderComponent: ({ type, data }) => {
       const { item = {}, renderItem } = data;
-      return renderItem({ isFirstCoinRow: type.isFirst, item });
+      return renderItem({
+        firstCoinRowMarginTop: firstCoinRowMarginTop,
+        isFirstCoinRow: type.isFirst,
+        item,
+      });
     },
     visibleDuringCoinEdit: true,
   },
