@@ -44,6 +44,8 @@ import {
 } from '../references';
 import { ethereumUtils, isLowerCaseMatch } from '../utils';
 import { addCashUpdatePurchases } from './addCash';
+/* eslint-disable-next-line import/no-cycle */
+import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswap';
 
 let pendingTransactionsHandle = null;
@@ -170,7 +172,7 @@ export const transactionsReceived = (message, appended = false) => async (
   const { accountAddress, nativeCurrency, network } = getState().settings;
   const { purchaseTransactions } = getState().addCash;
   const { transactions, tokenOverrides } = getState().data;
-  const dedupedResults = parseTransactions(
+  const { dedupedResults, potentialNftTransaction } = parseTransactions(
     transactionData,
     accountAddress,
     nativeCurrency,
@@ -180,6 +182,11 @@ export const transactionsReceived = (message, appended = false) => async (
     network,
     appended
   );
+  if (appended && potentialNftTransaction) {
+    setTimeout(() => {
+      dispatch(uniqueTokensRefreshState());
+    }, 60000);
+  }
   dispatch({
     payload: dedupedResults,
     type: DATA_UPDATE_TRANSACTIONS,

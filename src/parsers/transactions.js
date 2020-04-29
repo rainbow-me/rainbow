@@ -86,7 +86,21 @@ export const parseTransactions = (
         remainingTransactions
       )
     : concat(updatedPendingTransactions, parsedNewTransactions);
-  return uniqBy(updatedResults, txn => txn.hash);
+
+  const potentialNftTransaction = appended
+    ? find(parsedNewTransactions, txn => {
+        return (
+          !txn.protocol &&
+          (txn.type === 'send' || txn.type === 'receive') &&
+          txn.symbol !== 'ETH'
+        );
+      })
+    : null;
+
+  return {
+    dedupedResults: uniqBy(updatedResults, txn => txn.hash),
+    potentialNftTransaction,
+  };
 };
 
 const transformUniswapRefund = internalTransactions => {
