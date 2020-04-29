@@ -99,12 +99,8 @@ export const ViewTypes = {
   },
 
   COIN_SAVINGS: {
-    calculateHeight: ({ isOpen, amountOfRows, isLast, paddingBottom }) => {
-      const fabPositionBottom = isLast
-        ? paddingBottom - FloatingActionButton.size / 2
-        : 0;
-      const TokenFamilyHeaderHeight =
-        TokenFamilyHeader.height + fabPositionBottom;
+    calculateHeight: ({ isOpen, amountOfRows }) => {
+      const TokenFamilyHeaderHeight = TokenFamilyHeader.height;
 
       return isOpen
         ? TokenFamilyHeaderHeight + ListFooter.height + 61 * amountOfRows - 4
@@ -132,18 +128,8 @@ export const ViewTypes = {
   },
 
   UNIQUE_TOKEN_ROW: {
-    calculateHeight: ({
-      amountOfRows,
-      isFirst,
-      isLast,
-      isOpen,
-      paddingBottom,
-    }) => {
-      const fabPositionBottom = isLast
-        ? paddingBottom - FloatingActionButton.size / 2
-        : 0;
-      const TokenFamilyHeaderHeight =
-        TokenFamilyHeader.height + fabPositionBottom;
+    calculateHeight: ({ amountOfRows, isFirst, isOpen }) => {
+      const TokenFamilyHeaderHeight = TokenFamilyHeader.height;
       const firstRowExtraTopPadding = isFirst ? 4 : 0;
       const heightOfRows = amountOfRows * UniqueTokenRow.cardSize;
       const heightOfRowMargins = UniqueTokenRow.cardMargin * (amountOfRows - 1);
@@ -175,7 +161,8 @@ export const ViewTypes = {
   },
 
   FOOTER: {
-    calculateHeight: () => 0,
+    calculateHeight: ({ paddingBottom }) =>
+      paddingBottom - FloatingActionButton.size / 2,
     index: 7,
   },
   UNKNOWN: {

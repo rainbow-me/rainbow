@@ -47,7 +47,7 @@ class LayoutItemAnimator extends BaseItemAnimator {
   animateWillUpdate = () => {
     if (
       this.rlv.getContentDimension().height <
-        this.rlv.getCurrentScrollOffset() + globalDeviceDimensions &&
+        this.rlv.getCurrentScrollOffset() + globalDeviceDimensions + 46 &&
       this.rlv.getCurrentScrollOffset() > 0
     ) {
       LayoutAnimation.configureNext({
@@ -232,7 +232,11 @@ class RecyclerAssetList extends Component {
 
         if (index === this.state.itemsCount - 1) {
           return {
-            height: ViewTypes.FOOTER.calculateHeight(),
+            height: ViewTypes.FOOTER.calculateHeight({
+              paddingBottom: this.props.paddingBottom
+                ? this.props.paddingBottom
+                : 0,
+            }),
             index: ViewTypes.FOOTER.index,
           };
         }
@@ -312,9 +316,7 @@ class RecyclerAssetList extends Component {
                 height: ViewTypes.COIN_SAVINGS.calculateHeight({
                   amountOfRows:
                     sections[balancesIndex].data[index - 1].assets.length,
-                  isLast: index === this.state.itemsCount - 2,
                   isOpen: this.props.openSavings,
-                  paddingBottom: this.props.paddingBottom,
                 }),
                 index: ViewTypes.COIN_SAVINGS.index,
               };
@@ -381,12 +383,10 @@ class RecyclerAssetList extends Component {
                   []
                 ).length,
                 isFirst: index === headersIndices[collectiblesIndex] + 1,
-                isLast: index === this.state.itemsCount - 2,
                 isOpen:
                   openFamilyTabs[
                     sections[collectiblesIndex].data[familyIndex].familyName
                   ],
-                paddingBottom: this.props.paddingBottom,
               }),
               index: ViewTypes.UNIQUE_TOKEN_ROW.index,
             };
@@ -532,8 +532,10 @@ class RecyclerAssetList extends Component {
     }
 
     // Auto-scroll to end of the list if something was closed/disappeared 👇
+    console.log('conten height: ', this.rlv.getContentDimension().height);
+    console.log('current bottom: ', bottomHorizonOfScreen);
     if (
-      this.rlv.getContentDimension().height < bottomHorizonOfScreen &&
+      this.rlv.getContentDimension().height < bottomHorizonOfScreen + 46 &&
       this.rlv.getCurrentScrollOffset() > 0 &&
       !this.props.isCoinListEdited
     ) {
@@ -644,14 +646,12 @@ class RecyclerAssetList extends Component {
     // set globalDeviceDimensions
     // used in LayoutItemAnimator and auto-scroll logic above 👇
     const topMargin = nativeEvent.layout.y;
-    const additionalPaddingForRoundedScreens = deviceUtils.isSmallPhone
-      ? 0
-      : 10;
+    const additionalPadding = 10;
     globalDeviceDimensions =
       deviceUtils.dimensions.height -
       topMargin -
       AssetListHeader.height -
-      additionalPaddingForRoundedScreens;
+      additionalPadding;
   };
 
   handleRefresh = () => {
