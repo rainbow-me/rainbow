@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { concat, isEmpty, without } from 'lodash';
 import {
   getUniqueTokens,
@@ -6,10 +7,12 @@ import {
 } from '../handlers/localstorage/accountLocal';
 import {
   apiGetAccountUniqueTokens,
-  UNIQUE_TOKENS_LIMIT,
+  UNIQUE_TOKENS_LIMIT_PER_PAGE,
+  UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '../handlers/opensea-api';
 import networkTypes from '../helpers/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '../parsers/uniqueTokens';
+/* eslint-disable-next-line import/no-cycle */
 import { dataUpdateAssets } from './data';
 
 // -- Constants ------------------------------------------------------------- //
@@ -82,8 +85,10 @@ const fetchUniqueTokens = () => async (dispatch, getState) => {
         accountAddress,
         page
       );
-      shouldStopFetching = newPageResults.length < UNIQUE_TOKENS_LIMIT;
       uniqueTokens = concat(uniqueTokens, newPageResults);
+      shouldStopFetching =
+        newPageResults.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
+        uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL;
       page += 1;
       if (shouldUpdateInBatches) {
         dispatch({
@@ -110,6 +115,7 @@ const fetchUniqueTokens = () => async (dispatch, getState) => {
     saveUniqueTokens(uniqueTokens, accountAddress, network);
   } catch (error) {
     dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE });
+    captureException(error);
   }
 };
 
