@@ -2,10 +2,8 @@ import axios from 'axios';
 import { parseAccountUniqueTokens } from '../parsers/uniqueTokens';
 import { logger } from '../utils';
 
-/**
- * Configuration for opensea api
- * @type axios instance
- */
+export const UNIQUE_TOKENS_LIMIT = 50;
+
 const api = axios.create({
   baseURL: 'https://api.opensea.io/api/v1',
   headers: {
@@ -14,15 +12,11 @@ const api = axios.create({
   timeout: 20000, // 20 secs
 });
 
-/**
- * @desc get opensea unique tokens
- * @param  {String}   [address='']
- * @return {Promise}
- */
-export const apiGetAccountUniqueTokens = async (address = '') => {
+export const apiGetAccountUniqueTokens = async (address, page) => {
   try {
+    const offset = page * UNIQUE_TOKENS_LIMIT;
     const data = await api.get(
-      `/assets?exclude_currencies=true&owner=${address}&limit=300`
+      `/assets?exclude_currencies=true&owner=${address}&limit=${UNIQUE_TOKENS_LIMIT}&offset=${offset}`
     );
     return parseAccountUniqueTokens(data);
   } catch (error) {

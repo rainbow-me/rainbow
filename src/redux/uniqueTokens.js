@@ -1,11 +1,13 @@
-import { captureException } from '@sentry/react-native';
-import { without } from 'lodash';
+import { concat, isEmpty, without } from 'lodash';
 import {
   getUniqueTokens,
   removeUniqueTokens,
   saveUniqueTokens,
 } from '../handlers/localstorage/accountLocal';
-import { apiGetAccountUniqueTokens } from '../handlers/opensea-api';
+import {
+  apiGetAccountUniqueTokens,
+  UNIQUE_TOKENS_LIMIT,
+} from '../handlers/opensea-api';
 import networkTypes from '../helpers/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '../parsers/uniqueTokens';
 import { dataUpdateAssets } from './data';
@@ -28,8 +30,6 @@ const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE =
 const UNIQUE_TOKENS_CLEAR_STATE = 'uniqueTokens/UNIQUE_TOKENS_CLEAR_STATE';
 
 // -- Actions --------------------------------------------------------------- //
-let uniqueTokensHandle = null;
-
 export const uniqueTokensLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   dispatch({ type: UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST });
@@ -47,12 +47,10 @@ export const uniqueTokensLoadState = () => async (dispatch, getState) => {
 export const uniqueTokensClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   removeUniqueTokens(accountAddress, network);
-  clearTimeout(uniqueTokensHandle);
   dispatch({ type: UNIQUE_TOKENS_CLEAR_STATE });
 };
 
 export const uniqueTokensResetState = () => dispatch => {
-  clearTimeout(uniqueTokensHandle);
   dispatch({ type: UNIQUE_TOKENS_CLEAR_STATE });
 };
 
@@ -64,7 +62,7 @@ export const uniqueTokensRefreshState = () => async (dispatch, getState) => {
     return;
   }
 
-  dispatch(watchUniqueTokens());
+  dispatch(fetchUniqueTokens());
 };
 
 const fetchUniqueTokens = () => async (dispatch, getState) => {
@@ -72,8 +70,35 @@ const fetchUniqueTokens = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { assets } = getState().data;
   const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
+  const shouldUpdateInBatches = isEmpty(existingUniqueTokens);
+
+  let shouldStopFetching = false;
+  let page = 0;
+  let uniqueTokens = [];
+
   try {
-    const uniqueTokens = await apiGetAccountUniqueTokens(accountAddress);
+    while (!shouldStopFetching) {
+      const newPageResults = await apiGetAccountUniqueTokens(
+        accountAddress,
+        page
+      );
+      shouldStopFetching = newPageResults.length < UNIQUE_TOKENS_LIMIT;
+      uniqueTokens = concat(uniqueTokens, newPageResults);
+      page += 1;
+      if (shouldUpdateInBatches) {
+        dispatch({
+          payload: uniqueTokens,
+          type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
+        });
+      }
+    }
+
+    if (!shouldUpdateInBatches) {
+      dispatch({
+        payload: uniqueTokens,
+        type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
+      });
+    }
     const existingFamilies = getFamilies(existingUniqueTokens);
     const newFamilies = getFamilies(uniqueTokens);
     const incomingFamilies = without(newFamilies, ...existingFamilies);
@@ -81,29 +106,10 @@ const fetchUniqueTokens = () => async (dispatch, getState) => {
       const dedupedAssets = dedupeAssetsWithFamilies(assets, incomingFamilies);
       dispatch(dataUpdateAssets(dedupedAssets));
     }
+
     saveUniqueTokens(uniqueTokens, accountAddress, network);
-    dispatch({
-      payload: uniqueTokens,
-      type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
-    });
   } catch (error) {
     dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE });
-    captureException(error);
-  }
-};
-
-const watchUniqueTokens = () => async dispatch => {
-  try {
-    await dispatch(fetchUniqueTokens());
-    uniqueTokensHandle && clearTimeout(uniqueTokensHandle);
-    uniqueTokensHandle = setTimeout(() => {
-      dispatch(watchUniqueTokens());
-    }, 15000); // 15 secs
-  } catch (error) {
-    uniqueTokensHandle && clearTimeout(uniqueTokensHandle);
-    uniqueTokensHandle = setTimeout(() => {
-      dispatch(watchUniqueTokens());
-    }, 15000); // 15 secs
   }
 };
 
