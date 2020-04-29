@@ -11,6 +11,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 ### Removed
 
 ### Changed
+* Paging for OpenSea requests to fetch more NFTs
+
+## [1.2.11](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.11)
+### Changed
+* Update navigation structure
+* Improve Wyre error tracking
+* More hookified components and fixes for wallet empty state behavior
+
+
+## [1.2.10](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.10)
+### Added
+* Turn on native activity list
+
+## [1.2.9](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.9)
+### Added
+* Token blacklist
+* Trophy case
 
 ## [1.2.4-5](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.4-5)
 ### Changed
