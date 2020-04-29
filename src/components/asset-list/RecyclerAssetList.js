@@ -47,7 +47,7 @@ class LayoutItemAnimator extends BaseItemAnimator {
   animateWillUpdate = () => {
     if (
       this.rlv.getContentDimension().height <
-        this.rlv.getCurrentScrollOffset() + globalDeviceDimensions + 55 &&
+        this.rlv.getCurrentScrollOffset() + globalDeviceDimensions &&
       this.rlv.getCurrentScrollOffset() > 0
     ) {
       LayoutAnimation.configureNext({
@@ -209,6 +209,14 @@ class RecyclerAssetList extends Component {
 
     this.layoutProvider = new LayoutProvider(
       index => {
+        // Main list logic 👇
+        // Every component to render properly should return object
+        // containing at least height and index
+
+        // Height should be calculated via calculateHeight func from ViewTypes object
+
+        // Index is type index not some single row index so should describle one kind of objects
+
         const { openFamilyTabs, openInvestmentCards, sections } = this.props;
 
         const { headersIndices } = this.state;
@@ -242,96 +250,95 @@ class RecyclerAssetList extends Component {
           ({ name }) => name === 'investments'
         );
 
-        if (balancesIndex > -1) {
-          if (
-            (index <= headersIndices[collectiblesIndex] ||
-              collectiblesIndex < 0) &&
-            (index <= headersIndices[investmentsIndex] || investmentsIndex < 0)
-          ) {
-            const balanceItemsCount = get(
-              sections,
-              `[${balancesIndex}].data.length`,
-              0
-            );
-            const lastBalanceIndex =
-              headersIndices[balancesIndex] + balanceItemsCount;
-            if (index === lastBalanceIndex - 2) {
-              if (this.coinDividerIndex !== index) {
-                this.coinDividerIndex = index;
-                if (this.props.isCoinListEdited) {
-                  this.checkEditStickyHeader(this.rlv.getCurrentScrollOffset());
-                }
-              }
-              if (
-                sections[balancesIndex].data[lastBalanceIndex - 2]
-                  .smallBalancesContainer
-              ) {
-                return {
-                  height: ViewTypes.COIN_DIVIDER.calculateHeight(),
-                  index: ViewTypes.COIN_DIVIDER.index,
-                  visibleDuringCoinEdit:
-                    ViewTypes.COIN_DIVIDER.visibleDuringCoinEdit,
-                };
+        if (
+          balancesIndex > -1 &&
+          (index <= headersIndices[collectiblesIndex] ||
+            collectiblesIndex < 0) &&
+          (index <= headersIndices[investmentsIndex] || investmentsIndex < 0)
+        ) {
+          const balanceItemsCount = get(
+            sections,
+            `[${balancesIndex}].data.length`,
+            0
+          );
+          const lastBalanceIndex =
+            headersIndices[balancesIndex] + balanceItemsCount;
+          if (index === lastBalanceIndex - 2) {
+            if (this.coinDividerIndex !== index) {
+              this.coinDividerIndex = index;
+              if (this.props.isCoinListEdited) {
+                this.checkEditStickyHeader(this.rlv.getCurrentScrollOffset());
               }
             }
-            if (index === lastBalanceIndex - 1) {
-              if (
-                sections[balancesIndex].data[lastBalanceIndex - 2] &&
-                sections[balancesIndex].data[lastBalanceIndex - 2]
-                  .smallBalancesContainer
-              ) {
-                smallBalancesIndex = index - 1;
-                return {
-                  height: ViewTypes.COIN_SMALL_BALANCES.calculateHeight({
-                    isCoinListEdited: this.props.isCoinListEdited,
-                    isOpen: this.props.openSmallBalances,
-                    smallBalancesLength:
-                      sections[balancesIndex].data[smallBalancesIndex].assets
-                        .length,
-                  }),
-                  index: ViewTypes.COIN_SMALL_BALANCES.index,
-                  visibleDuringCoinEdit:
-                    ViewTypes.COIN_SMALL_BALANCES.visibleDuringCoinEdit,
-                };
-              }
+            if (
+              sections[balancesIndex].data[lastBalanceIndex - 2]
+                .smallBalancesContainer
+            ) {
+              return {
+                height: ViewTypes.COIN_DIVIDER.calculateHeight(),
+                index: ViewTypes.COIN_DIVIDER.index,
+                visibleDuringCoinEdit:
+                  ViewTypes.COIN_DIVIDER.visibleDuringCoinEdit,
+              };
             }
-            if (index === lastBalanceIndex) {
-              if (
-                sections[balancesIndex].data[lastBalanceIndex - 1]
-                  .savingsContainer
-              ) {
-                return {
-                  height: ViewTypes.COIN_SAVINGS.calculateHeight({
-                    amountOfRows:
-                      sections[balancesIndex].data[index - 1].assets.length,
-                    isLast: index === this.state.itemsCount - 2,
-                    isOpen: this.props.openSavings,
-                    paddingBottom: this.props.paddingBottom,
-                  }),
-                  index: ViewTypes.COIN_SAVINGS.index,
-                };
-              }
-              this.lastAssetIndex = index;
+          }
+          if (index === lastBalanceIndex - 1) {
+            if (
+              sections[balancesIndex].data[lastBalanceIndex - 2] &&
+              sections[balancesIndex].data[lastBalanceIndex - 2]
+                .smallBalancesContainer
+            ) {
+              smallBalancesIndex = index - 1;
+              return {
+                height: ViewTypes.COIN_SMALL_BALANCES.calculateHeight({
+                  isCoinListEdited: this.props.isCoinListEdited,
+                  isOpen: this.props.openSmallBalances,
+                  smallBalancesLength:
+                    sections[balancesIndex].data[smallBalancesIndex].assets
+                      .length,
+                }),
+                index: ViewTypes.COIN_SMALL_BALANCES.index,
+                visibleDuringCoinEdit:
+                  ViewTypes.COIN_SMALL_BALANCES.visibleDuringCoinEdit,
+              };
             }
-            const firstBalanceIndex = headersIndices[balancesIndex] + 1;
+          }
+          if (index === lastBalanceIndex) {
+            if (
+              sections[balancesIndex].data[lastBalanceIndex - 1]
+                .savingsContainer
+            ) {
+              return {
+                height: ViewTypes.COIN_SAVINGS.calculateHeight({
+                  amountOfRows:
+                    sections[balancesIndex].data[index - 1].assets.length,
+                  isLast: index === this.state.itemsCount - 2,
+                  isOpen: this.props.openSavings,
+                  paddingBottom: this.props.paddingBottom,
+                }),
+                index: ViewTypes.COIN_SAVINGS.index,
+              };
+            }
+            this.lastAssetIndex = index;
+          }
+          const firstBalanceIndex = headersIndices[balancesIndex] + 1;
 
-            return {
-              height: ViewTypes.COIN_ROW.calculateHeight({
-                areSmallCollectibles: this.state.areSmallCollectibles,
-                isFirst:
-                  index === firstBalanceIndex &&
-                  !sections[balancesIndex].data[firstBalanceIndex - 1]
-                    .smallBalancesContainer,
-                isLast: index === lastBalanceIndex,
-              }),
-              index: ViewTypes.COIN_ROW.index,
+          return {
+            height: ViewTypes.COIN_ROW.calculateHeight({
+              areSmallCollectibles: this.state.areSmallCollectibles,
               isFirst:
                 index === firstBalanceIndex &&
                 !sections[balancesIndex].data[firstBalanceIndex - 1]
                   .smallBalancesContainer,
-              visibleDuringCoinEdit: ViewTypes.COIN_ROW.visibleDuringCoinEdit,
-            };
-          }
+              isLast: index === lastBalanceIndex,
+            }),
+            index: ViewTypes.COIN_ROW.index,
+            isFirst:
+              index === firstBalanceIndex &&
+              !sections[balancesIndex].data[firstBalanceIndex - 1]
+                .smallBalancesContainer,
+            visibleDuringCoinEdit: ViewTypes.COIN_ROW.visibleDuringCoinEdit,
+          };
         }
 
         if (investmentsIndex > -1) {
@@ -392,6 +399,7 @@ class RecyclerAssetList extends Component {
         };
       },
       (type, dim) => {
+        // Set height of element using object created above 👇
         dim.width = deviceUtils.dimensions.width;
         if (this.props.isCoinListEdited && !type.visibleDuringCoinEdit) {
           dim.height = 0;
@@ -437,8 +445,6 @@ class RecyclerAssetList extends Component {
 
   componentDidMount = () => {
     this.isCancelled = false;
-    const headerHeaight = deviceUtils.isSmallPhone ? 210 : 148;
-    globalDeviceDimensions = deviceUtils.dimensions.height - headerHeaight;
   };
 
   componentDidUpdate(prevProps) {
@@ -459,11 +465,10 @@ class RecyclerAssetList extends Component {
       }
     });
 
-    const headerHeaight = deviceUtils.isSmallPhone ? 210 : 148;
-    const deviceDimensions = deviceUtils.dimensions.height - headerHeaight;
     const bottomHorizonOfScreen =
-      this.rlv.getCurrentScrollOffset() + deviceDimensions + 55;
+      this.rlv.getCurrentScrollOffset() + globalDeviceDimensions;
 
+    // Auto-scroll to opened family logic 👇
     if (openFamilyTabs !== prevProps.openFamilyTabs && collectibles.data) {
       let i = 0;
       while (i < collectibles.data.length) {
@@ -499,7 +504,7 @@ class RecyclerAssetList extends Component {
           const startOfDesiredComponent =
             this.rlv.getLayout(familyIndex).y - AssetListHeader.height;
 
-          if (focusedFamilyHeight < deviceDimensions) {
+          if (focusedFamilyHeight < globalDeviceDimensions) {
             const endOfDesiredComponent =
               startOfDesiredComponent +
               focusedFamilyHeight +
@@ -512,7 +517,7 @@ class RecyclerAssetList extends Component {
               bottomHorizonOfScreen
             ) {
               this.scrollToOffset(
-                endOfDesiredComponent - deviceDimensions,
+                endOfDesiredComponent - globalDeviceDimensions,
                 true
               );
             }
@@ -526,6 +531,7 @@ class RecyclerAssetList extends Component {
       }
     }
 
+    // Auto-scroll to end of the list if something was closed/disappeared 👇
     if (
       this.rlv.getContentDimension().height < bottomHorizonOfScreen &&
       this.rlv.getCurrentScrollOffset() > 0 &&
@@ -536,6 +542,7 @@ class RecyclerAssetList extends Component {
       }, 10);
     }
 
+    // Auto-scroll to showcase family if something was added/removed 👇
     if (
       collectibles.data &&
       prevCollectibles.data &&
@@ -631,6 +638,20 @@ class RecyclerAssetList extends Component {
 
   handleListRef = ref => {
     this.rlv = ref;
+  };
+
+  handleOnLayout = ({ nativeEvent }) => {
+    // set globalDeviceDimensions
+    // used in LayoutItemAnimator and auto-scroll logic above 👇
+    const topMargin = nativeEvent.layout.y;
+    const additionalPaddingForRoundedScreens = deviceUtils.isSmallPhone
+      ? 0
+      : 10;
+    globalDeviceDimensions =
+      deviceUtils.dimensions.height -
+      topMargin -
+      AssetListHeader.height -
+      additionalPaddingForRoundedScreens;
   };
 
   handleRefresh = () => {
@@ -749,7 +770,12 @@ class RecyclerAssetList extends Component {
     } = this.state;
 
     return (
-      <View backgroundColor={colors.white} flex={1} overflow="hidden">
+      <View
+        backgroundColor={colors.white}
+        flex={1}
+        overflow="hidden"
+        onLayout={this.handleOnLayout}
+      >
         <PanGestureHandler enabled={isCoinListEdited}>
           <StickyContainer
             overrideRowRenderer={this.stickyRowRenderer}
