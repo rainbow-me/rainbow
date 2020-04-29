@@ -527,8 +527,6 @@ class RecyclerAssetList extends Component {
     }
 
     // Auto-scroll to end of the list if something was closed/disappeared 👇
-    console.log('conten height: ', this.rlv.getContentDimension().height);
-    console.log('current bottom: ', bottomHorizonOfScreen);
     if (
       this.rlv.getContentDimension().height < bottomHorizonOfScreen + 46 &&
       this.rlv.getCurrentScrollOffset() > 0 &&
