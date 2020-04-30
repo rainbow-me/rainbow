@@ -3,7 +3,6 @@ import { useDispatch } from 'react-redux';
 import { addCashClearState } from '../redux/addCash';
 import { dataClearState } from '../redux/data';
 import { explorerClearState } from '../redux/explorer';
-import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
 import { nonceClearState } from '../redux/nonce';
 import { clearOpenStateSettings } from '../redux/openStateSettings';
 import { requestsClearState } from '../redux/requests';
@@ -19,15 +18,14 @@ export default function useClearAccountData() {
   const clearAccountData = useCallback(async () => {
     const p0 = dispatch(explorerClearState());
     const p1 = dispatch(dataClearState());
-    const p2 = dispatch(clearIsWalletEmpty());
-    const p3 = dispatch(uniqueTokensClearState());
-    const p4 = dispatch(clearOpenStateSettings());
-    const p5 = dispatch(walletConnectClearState());
-    const p6 = dispatch(nonceClearState());
-    const p7 = dispatch(requestsClearState());
-    const p8 = dispatch(uniswapClearState());
-    const p9 = dispatch(savingsClearState());
-    const p10 = dispatch(addCashClearState());
+    const p2 = dispatch(uniqueTokensClearState());
+    const p3 = dispatch(clearOpenStateSettings());
+    const p4 = dispatch(walletConnectClearState());
+    const p5 = dispatch(nonceClearState());
+    const p6 = dispatch(requestsClearState());
+    const p7 = dispatch(uniswapClearState());
+    const p8 = dispatch(savingsClearState());
+    const p9 = dispatch(addCashClearState());
     await promiseUtils.PromiseAllWithFails([
       p0,
       p1,
@@ -39,7 +37,6 @@ export default function useClearAccountData() {
       p7,
       p8,
       p9,
-      p10,
     ]);
   }, [dispatch]);
 

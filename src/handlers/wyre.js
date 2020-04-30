@@ -1,7 +1,7 @@
 import { PaymentRequest } from '@rainbow-me/react-native-payments';
 import { captureException } from '@sentry/react-native';
 import axios from 'axios';
-import { get, last, split } from 'lodash';
+import { get, join, last, split, toLower, values } from 'lodash';
 import {
   RAINBOW_WYRE_MERCHANT_ID,
   RAINBOW_WYRE_MERCHANT_ID_TEST,
@@ -33,21 +33,32 @@ const wyreApi = axios.create({
   },
 });
 
-class WyreAPIException extends Error {
-  constructor(errorID, message) {
-    super(`${errorID}:${message}`);
-    this.name = 'WyreAPIException';
+const WyreExceptionTypes = {
+  CREATE_ORDER: 'WyreCreateOrderException',
+  TRACK_ORDER: 'WyreTrackOrderException',
+  TRACK_TRANSFER: 'WyreTrackTransferException',
+};
+
+class WyreException extends Error {
+  constructor(name, referenceInfo, errorId, message) {
+    const referenceInfoIds = values(referenceInfo);
+    const referenceId = join(referenceInfoIds, ':');
+    super(`${referenceId}:${errorId}:${message}`);
+    this.name = name;
   }
 }
 
-export const requestWyreApplePay = (
+export const getReferenceId = accountAddress => {
+  const lowered = toLower(accountAddress);
+  return lowered.substr(-12);
+};
+
+export const showApplePayRequest = async (
+  referenceInfo,
   accountAddress,
   destCurrency,
-  sourceAmount,
-  trackOrder
+  sourceAmount
 ) => {
-  const destAddress = `ethereum:${accountAddress}`;
-
   const feeAmount = feeCalculation(
     sourceAmount,
     WYRE_PERCENT_FEE,
@@ -90,33 +101,23 @@ export const requestWyreApplePay = (
     paymentOptions
   );
 
-  logger.sentry('Apple Pay - Show payment request');
+  logger.sentry(
+    `Apple Pay - Show payment request - ${referenceInfo.referenceId}`
+  );
 
-  paymentRequest
-    .show()
-    .then(paymentResponse => {
-      processWyrePayment(
-        paymentResponse,
-        totalAmount,
-        destAddress,
-        destCurrency
-      )
-        .then(orderId => {
-          trackOrder(destCurrency, orderId, paymentResponse, sourceAmount);
-        })
-        .catch(error => {
-          logger.sentry('processWyrePayment - catch');
-          captureException(error);
-          paymentResponse.complete('fail');
-        });
-    })
-    .catch(error => {
-      logger.sentry('Apple Pay - Show payment request catch');
-      captureException(error);
-    });
+  try {
+    const paymentResponse = await paymentRequest.show();
+    return { paymentResponse, totalAmount };
+  } catch (error) {
+    logger.sentry(
+      `Apple Pay - Show payment request catch - ${referenceInfo.referenceId}`
+    );
+    captureException(error);
+    return null;
+  }
 };
 
-export const trackWyreOrder = async orderId => {
+export const trackWyreOrder = async (referenceInfo, orderId) => {
   try {
     const response = await wyreApi.get(`/v3/orders/${orderId}`);
     if (response.status >= 200 && response.status < 300) {
@@ -128,14 +129,18 @@ export const trackWyreOrder = async orderId => {
       data: { exceptionId, message },
     } = response;
 
-    throw new WyreAPIException(exceptionId, message);
+    throw new WyreException(
+      WyreExceptionTypes.TRACK_ORDER,
+      referenceInfo,
+      exceptionId,
+      message
+    );
   } catch (error) {
-    captureException(error);
     throw error;
   }
 };
 
-export const trackWyreTransfer = async transferId => {
+export const trackWyreTransfer = async (referenceInfo, transferId) => {
   try {
     const response = await wyreApi.get(`/v2/transfer/${transferId}/track`);
     if (response.status >= 200 && response.status < 300) {
@@ -149,37 +154,57 @@ export const trackWyreTransfer = async transferId => {
     const {
       data: { exceptionId, message },
     } = response;
-    throw new WyreAPIException(exceptionId, message);
+    throw new WyreException(
+      WyreExceptionTypes.TRACK_TRANSFER,
+      referenceInfo,
+      exceptionId,
+      message
+    );
   } catch (error) {
-    captureException(error);
     throw error;
   }
 };
 
-const processWyrePayment = async (
+export const getOrderId = async (
+  referenceInfo,
   paymentResponse,
   amount,
-  dest,
+  accountAddress,
   destCurrency
 ) => {
-  const data = createPayload(paymentResponse, amount, dest, destCurrency);
+  const data = createPayload(
+    referenceInfo,
+    paymentResponse,
+    amount,
+    accountAddress,
+    destCurrency
+  );
   try {
     const response = await wyreApi.post('/v3/apple-pay/process/partner', data);
 
     if (response.status >= 200 && response.status < 300) {
       return get(response, 'data.id', null);
     }
-    logger.sentry(
-      'WYRE - processWyrePayment response - was not 200',
-      response.data
-    );
+    logger.sentry('WYRE - getOrderId response - was not 200', response.data);
     const {
       data: { exceptionId, message },
     } = response;
-    captureException(new WyreAPIException(exceptionId, message));
+    captureException(
+      new WyreException(
+        WyreExceptionTypes.CREATE_ORDER,
+        referenceInfo,
+        exceptionId,
+        message
+      )
+    );
+    paymentResponse.complete('fail');
     return null;
   } catch (error) {
+    logger.sentry(
+      `WYRE - getOrderId response catch - ${referenceInfo.referenceId}`
+    );
     captureException(error);
+    paymentResponse.complete('fail');
     return null;
   }
 };
@@ -207,7 +232,15 @@ const getWyrePaymentDetails = (
   },
 });
 
-const createPayload = (paymentResponse, amount, dest, destCurrency) => {
+const createPayload = (
+  referenceInfo,
+  paymentResponse,
+  amount,
+  accountAddress,
+  destCurrency
+) => {
+  const dest = `ethereum:${accountAddress}`;
+
   const {
     details: {
       billingContact: billingInfo,
@@ -224,13 +257,17 @@ const createPayload = (paymentResponse, amount, dest, destCurrency) => {
     phoneNumber: shippingInfo.phoneNumber,
   };
 
+  const partnerId = __DEV__ ? WYRE_ACCOUNT_ID_TEST : WYRE_ACCOUNT_ID;
+
   return {
-    partnerId: __DEV__ ? WYRE_ACCOUNT_ID_TEST : WYRE_ACCOUNT_ID,
+    partnerId,
     payload: {
       orderRequest: {
         amount,
         dest,
         destCurrency,
+        referenceId: referenceInfo.referenceId,
+        referrerAccountId: partnerId,
         sourceCurrency: SOURCE_CURRENCY_USD,
       },
       paymentObject: {

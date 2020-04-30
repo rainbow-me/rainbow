@@ -36,6 +36,7 @@ export default class UnderlineField extends PureComponent {
     buttonText: PropTypes.string,
     format: PropTypes.func,
     keyboardType: Input.propTypes.keyboardType,
+    mask: PropTypes.string,
     maxLength: PropTypes.number,
     onBlur: PropTypes.func,
     onChange: PropTypes.func,
@@ -130,6 +131,7 @@ export default class UnderlineField extends PureComponent {
       autoFocus,
       buttonText,
       keyboardType,
+      mask,
       maxLength,
       placeholder,
       ...props
@@ -147,7 +149,7 @@ export default class UnderlineField extends PureComponent {
             keyboardAppearance="light"
             keyboardType={keyboardType}
             letterSpacing={fonts.letterSpacing.roundedTightest}
-            mask="[099999999999999999].[999999999999999999]"
+            mask={mask}
             maxLength={maxLength}
             onBlur={this.onBlur}
             onChange={this.onChange}

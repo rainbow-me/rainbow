@@ -300,6 +300,7 @@ export const exchangePreset = {
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
+  onTransitionStart,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 

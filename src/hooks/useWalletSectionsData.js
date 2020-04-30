@@ -5,18 +5,15 @@ import { readableUniswapSelector } from '../hoc/uniswapLiquidityTokenInfoSelecto
 import useAccountAssets from './useAccountAssets';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
+import useIsWalletEthZero from './useIsWalletEthZero';
 import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 
 export default function useWalletSectionsData() {
-  const isWalletEthZero = useSelector(
-    ({ isWalletEthZero: { isWalletEthZero } }) => ({
-      isWalletEthZero,
-    })
-  );
-
   const accountData = useAccountAssets();
+  const isWalletEthZero = useIsWalletEthZero();
+
   const { language, network, nativeCurrency } = useAccountSettings();
   const uniqueTokens = useSendableUniqueTokens();
   const uniswap = useSelector(readableUniswapSelector);
@@ -47,10 +44,12 @@ export default function useWalletSectionsData() {
       ...isWalletEthZero,
       showcaseTokens,
     };
-    const creation = buildWalletSectionsSelector(accountInfo);
+
+    const sectionsData = buildWalletSectionsSelector(accountInfo);
+
     return {
-      ...accountInfo,
-      ...creation,
+      isWalletEthZero,
+      ...sectionsData,
     };
   }, [
     accountData,

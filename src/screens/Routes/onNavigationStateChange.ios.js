@@ -47,11 +47,19 @@ export function onNavigationStateChange(prevState, currentState) {
     );
   }
 
-  const oldBottomSheetStackindex = prevState.index;
-  const newBottomSheetStackIndex = currentState.index;
+  const oldBottomSheetStackRoute = prevState.routes[prevState.index].routeName;
+  const newBottomSheetStackRoute =
+    currentState.routes[currentState.index].routeName;
 
-  if (oldBottomSheetStackindex !== newBottomSheetStackIndex) {
-    expandedPreset.onTransitionStart({ closing: !newBottomSheetStackIndex });
+  const wasCustomSlackOpen =
+    oldBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
+    oldBottomSheetStackRoute === Routes.SETTINGS_MODAL;
+  const isCustomSlackOpen =
+    newBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
+    newBottomSheetStackRoute === Routes.SETTINGS_MODAL;
+
+  if (wasCustomSlackOpen !== isCustomSlackOpen) {
+    expandedPreset.onTransitionStart({ closing: wasCustomSlackOpen });
   }
 
   if (

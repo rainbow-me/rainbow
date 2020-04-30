@@ -176,6 +176,9 @@ export const uniswapClearState = () => (dispatch, getState) => {
   dispatch({ type: UNISWAP_CLEAR_STATE });
 };
 
+export const uniswapResetState = () => dispatch =>
+  dispatch({ type: UNISWAP_CLEAR_STATE });
+
 export const uniswapUpdateFavorites = (assetAddress, add = true) => (
   dispatch,
   getState

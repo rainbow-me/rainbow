@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
 import {
@@ -32,11 +33,13 @@ import { checkIsValidAddress } from '../helpers/validators';
 import {
   useAccountAssets,
   useAccountSettings,
+  useContacts,
   useGas,
   usePrevious,
   useRefreshAccountData,
   useSendableUniqueTokens,
   useSendSavingsAccount,
+  useTransactionConfirmation,
 } from '../hooks';
 import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
@@ -64,25 +67,23 @@ const SheetContainer = isNativeStackAvailable
       top: ${statusBarHeight};
     `;
 
-const SendSheet = ({
-  contacts,
-  dataAddNewTransaction,
-  gasLimit,
-  gasPrices,
-  gasPricesStartPolling,
-  gasPricesStopPolling,
-  gasUpdateDefaultGasLimit,
-  gasUpdateGasPriceOption,
-  gasUpdateTxFee,
-  isSufficientGas,
-  removeContact,
-  setAppearListener,
-  sortedContacts,
-  txFees,
-  ...props
-}) => {
+const SendSheet = ({ setAppearListener, ...props }) => {
+  const dispatch = useDispatch();
+  const { dataAddNewTransaction } = useTransactionConfirmation();
   const { allAssets } = useAccountAssets();
-  const { selectedGasPrice } = useGas();
+  const {
+    gasLimit,
+    gasPrices,
+    gasPricesStartPolling,
+    gasPricesStopPolling,
+    gasUpdateDefaultGasLimit,
+    gasUpdateGasPriceOption,
+    gasUpdateTxFee,
+    isSufficientGas,
+    selectedGasPrice,
+    txFees,
+  } = useGas();
+  const { contacts, removeContact, sortedContacts } = useContacts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     accountAddress,
@@ -113,11 +114,11 @@ const SendSheet = ({
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      gasPricesStartPolling();
+      dispatch(gasPricesStartPolling());
     });
     return () => {
       InteractionManager.runAfterInteractions(() => {
-        gasPricesStopPolling();
+        dispatch(gasPricesStopPolling());
       });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -271,7 +272,7 @@ const SendSheet = ({
       if (!isEmpty(txHash)) {
         submitSuccess = true;
         txDetails.hash = txHash;
-        await dataAddNewTransaction(txDetails);
+        await dispatch(dataAddNewTransaction(txDetails));
       }
     } catch (error) {
       submitSuccess = false;
@@ -284,6 +285,7 @@ const SendSheet = ({
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
     dataAddNewTransaction,
+    dispatch,
     gasLimit,
     isAuthorizing,
     isSufficientGas,
@@ -323,11 +325,11 @@ const SendSheet = ({
       gasUtils.showTransactionSpeedOptions(
         gasPrices,
         txFees,
-        gasUpdateGasPriceOption,
+        gasPriceOption => dispatch(gasUpdateGasPriceOption(gasPriceOption)),
         onSuccess
       );
     },
-    [gasPrices, gasUpdateGasPriceOption, txFees]
+    [dispatch, gasPrices, gasUpdateGasPriceOption, txFees]
   );
 
   const onLongPressSend = useCallback(() => {
@@ -351,8 +353,8 @@ const SendSheet = ({
   }, []);
 
   useEffect(() => {
-    gasUpdateDefaultGasLimit();
-  }, [gasUpdateDefaultGasLimit]);
+    dispatch(gasUpdateDefaultGasLimit());
+  }, [dispatch, gasUpdateDefaultGasLimit]);
 
   useEffect(() => {
     if (
@@ -398,15 +400,16 @@ const SendSheet = ({
         recipient,
       })
         .then(gasLimit => {
-          gasUpdateTxFee(gasLimit);
+          dispatch(gasUpdateTxFee(gasLimit));
         })
         .catch(() => {
-          gasUpdateTxFee(null);
+          dispatch(gasUpdateTxFee(null));
         });
     }
   }, [
     accountAddress,
     amountDetails.assetAmount,
+    dispatch,
     gasUpdateTxFee,
     isValidAddress,
     recipient,
@@ -426,14 +429,14 @@ const SendSheet = ({
             onChangeAddressInput={onChangeInput}
             onPressPaste={sendUpdateRecipient}
             recipient={recipient}
-            removeContact={removeContact}
+            removeContact={contact => dispatch(removeContact(contact))}
           />
           {showEmptyState && (
             <SendContactList
               allAssets={sortedContacts}
               currentInput={currentInput}
               onPressContact={sendUpdateRecipient}
-              removeContact={removeContact}
+              removeContact={contact => dispatch(removeContact(contact))}
             />
           )}
           {showAssetList && (
@@ -461,6 +464,7 @@ const SendSheet = ({
                 />
               }
               nativeAmount={amountDetails.nativeAmount}
+              nativeCurrency={nativeCurrency}
               onChangeAssetAmount={onChangeAssetAmount}
               onChangeNativeAmount={onChangeNativeAmount}
               onResetAssetSelection={onResetAssetSelection}
@@ -484,23 +488,7 @@ const SendSheet = ({
 };
 
 SendSheet.propTypes = {
-  dataAddNewTransaction: PropTypes.func.isRequired,
-  gasLimit: PropTypes.number,
-  gasPrices: PropTypes.object,
-  gasUpdateDefaultGasLimit: PropTypes.func.isRequired,
-  gasUpdateGasPriceOption: PropTypes.func.isRequired,
-  gasUpdateTxFee: PropTypes.func.isRequired,
-  isSufficientGas: PropTypes.bool.isRequired,
-  removeContact: PropTypes.func.isRequired,
   setAppearListener: PropTypes.func,
-  sortedContacts: PropTypes.array,
-  txFees: PropTypes.object.isRequired,
 };
 
-const arePropsEqual = (prev, next) =>
-  prev.isSufficientGas === next.isSufficientGas &&
-  prev.gasLimit === next.gasLimit &&
-  prev.txFees === next.txFees &&
-  prev.gasPrices === next.gasPrices &&
-  prev.allAssets === next.allAssets;
-export default React.memo(SendSheet, arePropsEqual);
+export default SendSheet;

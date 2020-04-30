@@ -10,8 +10,8 @@ import networkTypes from '../helpers/networkTypes';
 import { updateLanguage } from '../languages';
 
 import { ethereumUtils } from '../utils';
-import { dataClearState } from './data';
-import { explorerInit } from './explorer';
+import { dataResetState } from './data';
+import { explorerClearState, explorerInit } from './explorer';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -95,11 +95,11 @@ export const settingsUpdateNetwork = network => async dispatch => {
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
   await web3SetHttpProvider(network);
   try {
-    await saveNetwork(network);
     dispatch({
       payload: { chainId, network },
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
     });
+    saveNetwork(network);
   } catch (error) {
     dispatch({
       type: SETTINGS_UPDATE_NETWORK_FAILURE,
@@ -124,7 +124,8 @@ export const settingsChangeLanguage = language => dispatch => {
 };
 
 export const settingsChangeNativeCurrency = nativeCurrency => dispatch => {
-  dispatch(dataClearState());
+  dispatch(dataResetState());
+  dispatch(explorerClearState());
   saveNativeCurrency(nativeCurrency)
     .then(() => {
       dispatch({

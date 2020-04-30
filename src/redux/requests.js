@@ -68,6 +68,9 @@ export const requestsClearState = () => (dispatch, getState) => {
   dispatch({ type: REQUESTS_CLEAR_STATE });
 };
 
+export const requestsResetState = () => dispatch =>
+  dispatch({ type: REQUESTS_CLEAR_STATE });
+
 export const removeRequest = requestId => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { requests } = getState().requests;

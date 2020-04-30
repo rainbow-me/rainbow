@@ -6,6 +6,7 @@ import {
   convertNumberToString,
   fromWei,
   greaterThan,
+  isZero,
   subtract,
 } from '../helpers/utilities';
 import { chains } from '../references';
@@ -30,6 +31,12 @@ const getBalanceAmount = async (selectedGasPrice, selected) => {
 
 const getAsset = (assets, address = 'eth') =>
   find(assets, asset => asset.address === address);
+
+export const checkWalletEthZero = assets => {
+  const ethAsset = find(assets, asset => asset.address === 'eth');
+  let amount = get(ethAsset, 'balance.amount', 0);
+  return isZero(amount);
+};
 
 /**
  * @desc remove hex prefix

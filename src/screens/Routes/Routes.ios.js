@@ -1,7 +1,7 @@
 import { omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import createBottomSheetStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
+import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
@@ -20,13 +20,13 @@ import AvatarBuilder from '../AvatarBuilder';
 import ExampleScreen from '../ExampleScreen';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
-import ProfileScreenWithData from '../ProfileScreenWithData';
+import ProfileScreen from '../ProfileScreen';
 import QRScannerScreenWithData from '../QRScannerScreenWithData';
 import ReceiveModal from '../ReceiveModal';
 import SavingsSheet from '../SavingsSheet';
-import SendSheetWithData from '../SendSheetWithData';
+import SendSheet from '../SendSheet';
 import SettingsModal from '../SettingsModal';
-import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
+import TransactionConfirmationScreen from '../TransactionConfirmationScreen';
 import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
 import WalletScreen from '../WalletScreen';
 import WithdrawModal from '../WithdrawModal';
@@ -48,7 +48,7 @@ import { onNavigationStateChange } from './onNavigationStateChange.ios';
 import Routes from './routesNames';
 
 const routesForSwipeStack = {
-  [Routes.PROFILE_SCREEN]: ProfileScreenWithData,
+  [Routes.PROFILE_SCREEN]: ProfileScreen,
   [Routes.WALLET_SCREEN]: WalletScreen,
   [Routes.QR_SCANNER_SCREEN]: QRScannerScreenWithData,
 };
@@ -94,7 +94,7 @@ const routesForMainNavigator = {
   },
   [Routes.CONFIRM_REQUEST]: {
     navigationOptions: sheetPresetWithTransitions,
-    screen: TransactionConfirmationScreenWithData,
+    screen: TransactionConfirmationScreen,
   },
   [Routes.EXAMPLE_SCREEN]: {
     navigationOptions: expandedPresetWithTransitions,
@@ -135,14 +135,14 @@ const MainNavigator = createStackNavigator(routesForMainNavigator);
 
 const routesForSavingsModals = {
   [Routes.SAVINGS_DEPOSIT_MODAL]: {
-    navigationOptions: expandedPresetWithTransitions,
+    navigationOptions: exchangePresetWithTransitions,
     params: {
       isGestureBlocked: false,
     },
     screen: SavingModalNavigator,
   },
   [Routes.SAVINGS_WITHDRAW_MODAL]: {
-    navigationOptions: expandedPresetWithTransitions,
+    navigationOptions: exchangePresetWithTransitions,
     params: {
       isGestureBlocked: false,
     },
@@ -155,30 +155,22 @@ const AddCashFlowNavigator = createStackNavigator(routesForAddCash, {
 });
 
 const routesForNativeStack = {
-  [Routes.MAIN_NAVIGATOR]: MainNavigator,
-  ...(isNativeStackAvailable && {
-    [Routes.SEND_SHEET_NAVIGATOR]: SendFlowNavigator,
-    [Routes.ADD_CASH_SCREEN_NAVIGATOR]: AddCashFlowNavigator,
-  }),
+  [Routes.IMPORT_SEED_PHRASE_SHEET]: ImportSeedPhraseSheetWrapper,
+  [Routes.SEND_SHEET_NAVIGATOR]: SendFlowNavigator,
+  [Routes.ADD_CASH_SCREEN_NAVIGATOR]: AddCashFlowNavigator,
 };
 
-const NativeStack = createBottomSheetStackNavigator(routesForNativeStack, {
-  defaultNavigationOptions: {
-    onAppear: () => appearListener.current && appearListener.current(),
-  },
-  headerMode: 'none',
-  initialRouteName: Routes.MAIN_NAVIGATOR,
-  mode: 'modal',
-});
-
-const routesForNativeStackWrapper = {
-  [Routes.NATIVE_STACK]: NativeStack,
+const routesForMainNavigatorWrapper = {
+  [Routes.MAIN_NAVIGATOR]: MainNavigator,
   ...routesForSavingsModals,
 };
 
-const NativeStackWrapper = createStackNavigator(routesForNativeStackWrapper, {
-  initialRouteName: Routes.NATIVE_STACK,
-});
+const MainNavigationWrapper = createStackNavigator(
+  routesForMainNavigatorWrapper,
+  {
+    initialRouteName: Routes.MAIN_NAVIGATOR,
+  }
+);
 
 const routesForNativeStackFallback = {
   [Routes.ADD_CASH_SHEET]: {
@@ -211,7 +203,7 @@ const routesForNativeStackFallback = {
         onTransitionStart();
       },
     },
-    screen: SendSheetWithData,
+    screen: SendSheet,
   },
   ...routesForSavingsModals,
 };
@@ -226,23 +218,27 @@ const NativeStackFallback = createStackNavigator(routesForNativeStackFallback, {
   mode: 'modal',
 });
 
-const Stack = isNativeStackAvailable ? NativeStackWrapper : NativeStackFallback;
+const Stack = isNativeStackAvailable
+  ? MainNavigationWrapper
+  : NativeStackFallback;
+
+const withCustomStack = screen => ({
+  navigationOptions: { customStack: true, onAppear: null },
+  screen,
+});
 
 const routesForBottomSheetStack = {
   [Routes.STACK]: Stack,
-  [Routes.RECEIVE_MODAL]: ReceiveModal,
-  [Routes.SETTINGS_MODAL]: SettingsModal,
-  [Routes.IMPORT_SEED_PHRASE_SHEET]: {
-    navigationOptions: { customStack: false },
-    screen: ImportSeedPhraseSheetWrapper,
-  },
+  [Routes.RECEIVE_MODAL]: withCustomStack(ReceiveModal),
+  [Routes.SETTINGS_MODAL]: withCustomStack(SettingsModal),
+  ...(isNativeStackAvailable && routesForNativeStack),
 };
 
-const MainNativeBottomSheetNavigation = createBottomSheetStackNavigator(
+const MainNativeBottomSheetNavigation = createNativeStackNavigator(
   routesForBottomSheetStack,
   {
     defaultNavigationOptions: {
-      customStack: true,
+      onAppear: () => appearListener.current && appearListener.current(),
       onWillDismiss: () => {
         sheetPreset.onTransitionStart({ closing: true });
       },

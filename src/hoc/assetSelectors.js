@@ -12,16 +12,16 @@ import { isLowerCaseMatch } from '../utils';
 const EMPTY_ARRAY = [];
 
 const assetPricesFromUniswapSelector = state =>
-  state.data ? state.data.assetPricesFromUniswap : state.assetPricesFromUniswap;
-const assetsSelector = state => (state.data ? state.data.assets : state.assets);
-const nativeCurrencySelector = state =>
-  state.settings ? state.settings.nativeCurrency : state.nativeCurrency;
-const hiddenCoinsSelector = state =>
-  state.editOptions ? state.editOptions.hiddenCoins : state.hiddenCoins;
+  state.data.assetPricesFromUniswap;
+const assetsSelector = state => state.data.assets;
+const isLoadingAssetsSelector = state => state.data.isLoadingAssets;
+const nativeCurrencySelector = state => state.settings.nativeCurrency;
+const hiddenCoinsSelector = state => state.editOptions.hiddenCoins;
 
 const sortAssetsByNativeAmount = (
   originalAssets,
   assetPricesFromUniswap,
+  isLoadingAssets,
   nativeCurrency,
   hiddenCoins
 ) => {
@@ -85,6 +85,7 @@ const sortAssetsByNativeAmount = (
     assetsCount: sortedAssets.length,
     assetsTotal: total,
     isBalancesSectionEmpty: isEmpty(allAssets),
+    isLoadingAssets,
     nativeCurrency,
     shitcoins: sortedShitcoins,
     shitcoinsCount: sortedShitcoins.length,
@@ -140,6 +141,7 @@ export const sortAssetsByNativeAmountSelector = createSelector(
   [
     assetsSelector,
     assetPricesFromUniswapSelector,
+    isLoadingAssetsSelector,
     nativeCurrencySelector,
     hiddenCoinsSelector,
   ],
