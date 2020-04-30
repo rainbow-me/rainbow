@@ -89,12 +89,6 @@
     "decimals": 18,
     "exchangeAddress": "0x26Cc0EAb6Cb650B0Db4D0d0dA8cB5BF69F4ad692"
   },
-  "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942": {
-    "name": "Decentraland",
-    "symbol": "MANA",
-    "decimals": 18,
-    "exchangeAddress": "0xC6581Ce3A005e2801c1e0903281BBd318eC5B5C2"
-  },
   "0xe0b7927c4af23765cb51314a0e0521a9645f0e2a": {
     "name": "DigixDAO",
     "symbol": "DGD",
@@ -112,12 +106,6 @@
     "symbol": "FOAM",
     "decimals": 18,
     "exchangeAddress": "0xf79cb3BEA83BD502737586A6E8B133c378FD1fF2"
-  },
-  "0x14094949152eddbfcd073717200da82fed8dc960": {
-    "name": "Fulcrum Sai",
-    "symbol": "iSAI",
-    "decimals": 18,
-    "exchangeAddress": "0x81eed7f1ecbd7fa9978fcc7584296fb0c215dc5c"
   },
   "0x419D0d8BdD9aF5e606Ae2232ed285Aff190E711b": {
     "name": "FunFair",
@@ -299,11 +287,11 @@
     "decimals": 18,
     "exchangeAddress": "0xb944d13b2f4047fc7bd3f7013bcf01b115fb260d"
   },
-  "0x8dd5fbCe2F6a956C3022bA3663759011Dd51e73E": {
+  "0x0000000000085d4780b73119b644ae5ecd22b376": {
     "name": "TrueUSD",
     "symbol": "TUSD",
     "decimals": 18,
-    "exchangeAddress": "0x4F30E682D0541eAC91748bd38A648d759261b8f3"
+    "exchangeAddress": "0x5048b9d01097498fd72f3f14bc9bc74a5aac8fa7"
   },
   "0x23B608675a2B2fB1890d3ABBd85c5775c51691d5": {
     "symbol": "SOCKS",
