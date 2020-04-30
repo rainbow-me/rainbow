@@ -91,9 +91,7 @@ export default class UnderlineField extends PureComponent {
   };
 
   onChange = event => {
-    const { nativeEvent } = event;
-
-    const value = this.format(nativeEvent.text);
+    const value = this.format(event);
 
     if (value !== this.props.value) {
       this.setState({ value });
@@ -152,7 +150,7 @@ export default class UnderlineField extends PureComponent {
             mask={mask}
             maxLength={maxLength}
             onBlur={this.onBlur}
-            onChange={this.onChange}
+            onChangeText={this.onChange}
             onFocus={this.onFocus}
             paddingRight={8}
             placeholder={placeholder}
