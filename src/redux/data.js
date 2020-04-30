@@ -4,6 +4,7 @@ import {
   filter,
   get,
   includes,
+  isEmpty,
   isNil,
   keyBy,
   map,
@@ -35,7 +36,7 @@ import { getTransactionReceipt } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
 import { divide, isZero } from '../helpers/utilities';
-import { parseAccountAssets } from '../parsers/accounts';
+import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
 import {
@@ -55,6 +56,7 @@ let pendingTransactionsHandle = null;
 const DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP =
   'data/DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP';
 const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
+const DATA_UPDATE_GENERIC_ASSETS = 'data/DATA_UPDATE_GENERIC_ASSETS';
 const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
 const DATA_UPDATE_TOKEN_OVERRIDES = 'data/DATA_UPDATE_TOKEN_OVERRIDES';
 const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
@@ -361,6 +363,38 @@ export const dataUpdateTokenOverrides = tokenOverrides => dispatch =>
     type: DATA_UPDATE_TOKEN_OVERRIDES,
   });
 
+export const assetPricesReceived = message => (dispatch, getState) => {
+  const { tokenOverrides } = getState().data;
+  const assets = get(message, 'payload.prices', {});
+  if (isEmpty(assets)) return;
+  const parsedAssets = mapValues(assets, asset =>
+    parseAsset(asset, tokenOverrides)
+  );
+  dispatch({
+    payload: parsedAssets,
+    type: DATA_UPDATE_GENERIC_ASSETS,
+  });
+};
+
+export const assetPricesChanged = message => (dispatch, getState) => {
+  const price = get(message, 'payload.prices[0]');
+  const assetAddress = get(message, 'meta.asset_code');
+  if (isNil(price) || isNil(assetAddress)) return;
+  const { genericAssets } = getState().data;
+  const genericAsset = {
+    ...get(genericAssets, assetAddress),
+    price,
+  };
+  const updatedAssets = {
+    ...genericAssets,
+    [assetAddress]: genericAsset,
+  };
+  dispatch({
+    payload: updatedAssets,
+    type: DATA_UPDATE_GENERIC_ASSETS,
+  });
+};
+
 export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
   dispatch,
   getState
@@ -479,7 +513,8 @@ const watchPendingTransactions = () => async dispatch => {
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   assetPricesFromUniswap: {},
-  assets: [],
+  assets: [], // for account-specific assets
+  genericAssets: {},
   isLoadingAssets: true,
   isLoadingTransactions: true,
   tokenOverrides: loweredTokenOverridesFallback,
@@ -498,6 +533,8 @@ export default (state = INITIAL_STATE, action) => {
       };
     case DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP:
       return { ...state, assetPricesFromUniswap: action.payload };
+    case DATA_UPDATE_GENERIC_ASSETS:
+      return { ...state, genericAssets: action.payload };
     case DATA_UPDATE_ASSETS:
       return { ...state, assets: action.payload, isLoadingAssets: false };
     case DATA_UPDATE_TOKEN_OVERRIDES:

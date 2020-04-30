@@ -1,4 +1,4 @@
-import { isNil, toLower } from 'lodash';
+import { isNil, keys, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 import { chartExpandedAvailable } from '../config/experimental';
@@ -6,6 +6,8 @@ import NetworkTypes from '../helpers/networkTypes';
 import { addressChartsReceived } from './charts';
 import {
   addressAssetsReceived,
+  assetPricesChanged,
+  assetPricesReceived,
   transactionsReceived,
   transactionsRemoved,
 } from './data';
@@ -38,8 +40,8 @@ const messages = {
     REMOVED: 'removed address transactions',
   },
   ASSETS: {
-    CHANGED: 'changed price',
-    RECEIVED: 'received assets',
+    CHANGED: 'changed assets prices',
+    RECEIVED: 'received assets prices',
   },
   CONNECT: 'connect',
   DISCONNECT: 'disconnect',
@@ -69,6 +71,17 @@ const addressSubscription = (address, currency, action = 'subscribe') => [
   },
 ];
 
+const assetsSubscription = (assetCodes, currency, action = 'subscribe') => [
+  action,
+  {
+    payload: {
+      asset_codes: assetCodes,
+      currency: toLower(currency),
+    },
+    scope: ['prices'],
+  },
+];
+
 const chartsSubscription = (
   address,
   currency,
@@ -89,9 +102,10 @@ const chartsSubscription = (
 ];
 
 const explorerUnsubscribe = () => (dispatch, getState) => {
-  const { addressSocket } = getState().explorer;
+  const { addressSocket, assetsSocket } = getState().explorer;
   const { chartType } = getState().charts;
   const { accountAddress, nativeCurrency } = getState().settings;
+  const { pairs } = getState().uniswap;
   if (!isNil(addressSocket)) {
     addressSocket.emit(
       ...addressSubscription(accountAddress, nativeCurrency, 'unsubscribe')
@@ -108,6 +122,12 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
     }
     addressSocket.close();
   }
+  if (!isNil(assetsSocket)) {
+    assetsSocket.emit(
+      ...assetsSubscription(keys(pairs), nativeCurrency, 'unsubscribe')
+    );
+    assetsSocket.close();
+  }
 };
 
 export const explorerClearState = () => (dispatch, getState) => {
@@ -122,6 +142,7 @@ export const explorerClearState = () => (dispatch, getState) => {
 
 export const explorerInit = () => (dispatch, getState) => {
   const { network, accountAddress, nativeCurrency } = getState().settings;
+  const { pairs } = getState().uniswap;
   const { chartType } = getState().charts;
 
   // Fallback to the testnet data provider
@@ -131,8 +152,9 @@ export const explorerInit = () => (dispatch, getState) => {
   }
 
   const addressSocket = createSocket('address');
+  const assetsSocket = createSocket('assets');
   dispatch({
-    payload: addressSocket,
+    payload: { addressSocket, assetsSocket },
     type: EXPLORER_UPDATE_SOCKETS,
   });
   addressSocket.on(messages.CONNECT, () => {
@@ -143,6 +165,20 @@ export const explorerInit = () => (dispatch, getState) => {
       );
     }
     dispatch(listenOnAddressMessages(addressSocket));
+  });
+  assetsSocket.on(messages.CONNECT, () => {
+    assetsSocket.emit(...assetsSubscription(keys(pairs), nativeCurrency));
+    dispatch(listenOnAssetMessages(assetsSocket));
+  });
+};
+
+const listenOnAssetMessages = socket => dispatch => {
+  socket.on(messages.ASSETS.RECEIVED, message => {
+    dispatch(assetPricesReceived(message));
+  });
+
+  socket.on(messages.ASSETS.CHANGED, message => {
+    dispatch(assetPricesChanged(message));
   });
 };
 
@@ -187,6 +223,7 @@ const listenOnAddressMessages = socket => dispatch => {
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   addressSocket: null,
+  assetsSocket: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -194,7 +231,8 @@ export default (state = INITIAL_STATE, action) => {
     case EXPLORER_UPDATE_SOCKETS:
       return {
         ...state,
-        addressSocket: action.payload,
+        addressSocket: action.payload.addressSocket,
+        assetsSocket: action.payload.assetsSocket,
       };
     case EXPLORER_CLEAR_STATE:
       return {
