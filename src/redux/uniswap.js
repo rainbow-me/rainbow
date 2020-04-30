@@ -26,13 +26,9 @@ import {
   getLiquidityInfo,
   getReserve,
   getTestnetUniswapPairs,
-  getUniswapPairs,
 } from '../handlers/uniswap';
 import networkTypes from '../helpers/networkTypes';
-import {
-  cleanUniswapAssetsFallback,
-  DefaultUniswapFavorites,
-} from '../references';
+import { DefaultUniswapFavorites, uniswapPairs } from '../references';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';
@@ -118,12 +114,11 @@ export const uniswapGetAllExchanges = () => async (dispatch, getState) => {
 
 export const uniswapPairsInit = () => async (dispatch, getState) => {
   try {
-    const { tokenOverrides } = getState().data;
     const { network } = getState().settings;
     const pairs =
       network === networkTypes.mainnet
-        ? await getUniswapPairs(tokenOverrides)
-        : await getTestnetUniswapPairs(network);
+        ? uniswapPairs
+        : getTestnetUniswapPairs(network);
     dispatch({
       payload: pairs,
       type: UNISWAP_UPDATE_PAIRS,
@@ -276,7 +271,7 @@ export const INITIAL_UNISWAP_STATE = {
   loadingUniswap: false,
   outputCurrency: null,
   outputReserve: null,
-  pairs: cleanUniswapAssetsFallback,
+  pairs: uniswapPairs,
   uniswapLiquidityTokenInfo: {},
 };
 

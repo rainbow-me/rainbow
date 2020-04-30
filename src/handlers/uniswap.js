@@ -8,7 +8,6 @@ import {
   tradeTokensForExactEthWithData,
   tradeTokensForExactTokensWithData,
 } from '@uniswap/sdk';
-import axios from 'axios';
 import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
 import { get, map, mapKeys, mapValues, toLower, zipObject } from 'lodash';
@@ -32,41 +31,12 @@ import {
 import { logger } from '../utils';
 import { toHex, web3Provider } from './web3';
 
-const uniswapPairsEndpoint = axios.create({
-  baseURL:
-    'https://raw.githubusercontent.com/rainbow-me/asset-overrides/master/uniswap-pairs.json',
-  headers: {
-    Accept: 'application/json',
-  },
-  timeout: 20000, // 20 secs
-});
-
-export const getUniswapPairs = async tokenOverrides => {
-  try {
-    const data = await uniswapPairsEndpoint.get();
-    const pairs = get(data, 'data') || {};
-    const loweredPairs = mapKeys(pairs, (_, key) => toLower(key));
-    return mapValues(loweredPairs, (value, key) => ({
-      ...value,
-      ...tokenOverrides[key],
-    }));
-  } catch (error) {
-    logger.log('Error getting uniswap pairs', error);
-    throw error;
-  }
-};
-
-export const getTestnetUniswapPairs = async network => {
-  try {
-    const pairs = uniswapTestnetAssets[network];
-    const loweredPairs = mapKeys(pairs, (_, key) => toLower(key));
-    return mapValues(loweredPairs, value => ({
-      ...value,
-    }));
-  } catch (error) {
-    logger.log('Error getting uniswap testnet pairs', error);
-    throw error;
-  }
+export const getTestnetUniswapPairs = network => {
+  const pairs = get(uniswapTestnetAssets, network, {});
+  const loweredPairs = mapKeys(pairs, (_, key) => toLower(key));
+  return mapValues(loweredPairs, value => ({
+    ...value,
+  }));
 };
 
 const convertArgsForEthers = methodArguments =>
