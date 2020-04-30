@@ -1,7 +1,7 @@
 import { keys, mapKeys, mapValues, toLower } from 'lodash';
 import savingAssets from './compound/saving-assets.json';
-import tokenOverridesFallback from './token-overrides.json';
 import uniswapAssetsFallback from './uniswap/uniswap-pairs.json';
+import tokenOverridesData from './token-overrides.json';
 import { supportedCountries } from './wyre/supportedCountries';
 
 export { default as compoundCERC20ABI } from './compound/compound-cerc20-abi.json';
@@ -71,9 +71,8 @@ export const DefaultUniswapFavorites = {
   ],
 };
 
-export const loweredTokenOverridesFallback = mapKeys(
-  tokenOverridesFallback,
-  (_, address) => toLower(address)
+export const tokenOverrides = mapKeys(tokenOverridesData, (_, address) =>
+  toLower(address)
 );
 
 const loweredUniswapAssetsFallback = mapKeys(
@@ -85,7 +84,7 @@ export const cleanUniswapAssetsFallback = mapValues(
   loweredUniswapAssetsFallback,
   (value, key) => ({
     ...value,
-    ...loweredTokenOverridesFallback[key],
+    ...tokenOverrides[key],
   })
 );
 
