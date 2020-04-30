@@ -389,6 +389,7 @@ class RecyclerAssetList extends Component {
                   ],
               }),
               index: ViewTypes.UNIQUE_TOKEN_ROW.index,
+              isFirst: index === headersIndices[collectiblesIndex] + 1,
             };
           }
         }
