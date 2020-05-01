@@ -39,7 +39,6 @@ export default function useInitializeWallet() {
         }
         // Load the network first
         await dispatch(settingsLoadNetwork());
-
         const { isImported, isNew, walletAddress } = await walletInit(
           seedPhrase,
           color,
