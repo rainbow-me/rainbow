@@ -2,6 +2,27 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SpringUtils } from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
+import { useTopMovers } from '../../hooks';
+
+const styles = StyleSheet.create({
+  panelHandle: {
+    backgroundColor: '#3C4252',
+    borderRadius: 2.5,
+    height: 5,
+    marginBottom: 10,
+    opacity: 0.3,
+    width: 36,
+  },
+  panelHeader: {
+    alignItems: 'center',
+  },
+  panelTitle: {
+    fontSize: 27,
+    fontWeight: '700',
+    letterSpacing: -0.4,
+    marginBottom: 10,
+  },
+});
 
 const discoverSheetSpring = SpringUtils.makeConfigFromBouncinessAndSpeed({
   ...SpringUtils.makeDefaultConfig(),
@@ -357,47 +378,27 @@ const Lorem = () => (
     </Text>
   </View>
 );
-export default class DiscoverSheet extends React.Component {
-  renderInner = () => (
-    <View style={{ backgroundColor: 'white', paddingTop: 12 }}>
-      <View style={styles.header}>
-        <View style={styles.panelHeader}>
-          <View style={styles.panelHandle} />
-        </View>
+
+const renderInner = () => (
+  <View style={{ backgroundColor: 'white', paddingTop: 12 }}>
+    <View style={styles.header}>
+      <View style={styles.panelHeader}>
+        <View style={styles.panelHandle} />
       </View>
-      <Lorem />
     </View>
+    <Lorem />
+  </View>
+);
+
+export default function DiscoverSheet() {
+  const topMovers = useTopMovers();
+  return (
+    <BottomSheet
+      borderRadius={20}
+      renderContent={renderInner}
+      overdragResistanceFactor={0}
+      snapPoints={[300, 744]}
+      springConfig={discoverSheetSpring}
+    />
   );
-
-  render() {
-    return (
-      <BottomSheet
-        borderRadius={20}
-        renderContent={this.renderInner}
-        overdragResistanceFactor={0}
-        snapPoints={[300, 744]}
-        springConfig={discoverSheetSpring}
-      />
-    );
-  }
 }
-
-const styles = StyleSheet.create({
-  panelHandle: {
-    backgroundColor: '#3C4252',
-    borderRadius: 2.5,
-    height: 5,
-    marginBottom: 10,
-    opacity: 0.3,
-    width: 36,
-  },
-  panelHeader: {
-    alignItems: 'center',
-  },
-  panelTitle: {
-    fontSize: 27,
-    fontWeight: '700',
-    letterSpacing: -0.4,
-    marginBottom: 10,
-  },
-});
