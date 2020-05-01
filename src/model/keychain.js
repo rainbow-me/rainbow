@@ -32,9 +32,9 @@ export async function loadString(key, authenticationPrompt) {
   return null;
 }
 
-export async function saveObject(key, value) {
+export async function saveObject(key, value, accessControlOptions) {
   const jsonValue = JSON.stringify(value);
-  await saveString(key, jsonValue);
+  await saveString(key, jsonValue, accessControlOptions);
 }
 
 export async function loadObject(key) {
