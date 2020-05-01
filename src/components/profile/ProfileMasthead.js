@@ -1,6 +1,8 @@
 import analytics from '@segment/analytics-react-native';
+import GraphemeSplitter from 'grapheme-splitter';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
+import { Text } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useNavigation } from 'react-navigation-hooks';
 import { compose, withHandlers } from 'recompact';
@@ -8,6 +10,7 @@ import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import { useAccountSettings, useClipboard } from '../../hooks';
+import { DEFAULT_WALLET_NAME } from '../../model/wallet';
 import Routes from '../../screens/Routes/routesNames';
 import { borders, colors } from '../../styles';
 import { abbreviations } from '../../utils';
@@ -34,12 +37,26 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
   padding-right: 24;
 `;
 
+const FirstLetter = styled(Text)`
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 32.5;
+  line-height: 64;
+  padding-left: 0.5px;
+`;
+
 const ProfileMasthead = ({
   accountAddress,
+  accountColor,
+  accountName,
   addCashAvailable,
   showBottomDivider,
   onPressAvatar,
 }) => {
+  const name = accountName || DEFAULT_WALLET_NAME;
+  const color = accountColor || 0;
   const { accountENS } = useAccountSettings();
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
@@ -58,7 +75,14 @@ const ProfileMasthead = ({
       marginBottom={24}
     >
       {isAvatarPickerAvailable ? (
-        <AvatarCircle onPress={onPressAvatar} />
+        <AvatarCircle
+          onPress={onPressAvatar}
+          style={{ backgroundColor: colors.avatarColor[color] }}
+        >
+          <FirstLetter>
+            {new GraphemeSplitter().splitGraphemes(name)[0]}
+          </FirstLetter>
+        </AvatarCircle>
       ) : (
         <FastImage
           source={AvatarImageSource}
@@ -90,6 +114,7 @@ const ProfileMasthead = ({
             />
           )}
         </FloatingEmojis>
+
         <ProfileAction
           icon="qrCode"
           onPress={() => navigate(Routes.RECEIVE_MODAL)}
@@ -111,6 +136,8 @@ const ProfileMasthead = ({
 
 ProfileMasthead.propTypes = {
   accountAddress: PropTypes.string,
+  accountColor: PropTypes.number,
+  accountName: PropTypes.string,
   addCashAvailable: PropTypes.bool,
   showBottomDivider: PropTypes.bool,
 };
