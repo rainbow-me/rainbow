@@ -68,3 +68,14 @@ const isValidPrivateKey = key => {
  */
 export const isValidSeed = seed =>
   seed && (isValidPrivateKey(seed) || isValidSeedPhrase(seed));
+
+/**
+ * @desc validates the input required to create a new wallet
+ * @param  {String} seed, mnemonic, private key or address
+ * @return {Boolean}
+ */
+export const isValidWallet = seed =>
+  seed &&
+  (isValidPrivateKey(seed) ||
+    isValidSeedPhrase(seed) ||
+    checkIsValidAddress(seed));
