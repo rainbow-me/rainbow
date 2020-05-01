@@ -145,7 +145,7 @@ class SendHeader extends PureComponent {
 
     let color = get(contact, 'color');
     if (!isNumber(color)) {
-      color = Math.floor(Math.random() * colors.avatarColor.length);
+      color = colors.getRandomColor();
     }
 
     Keyboard.dismiss();
