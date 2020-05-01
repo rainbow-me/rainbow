@@ -5,6 +5,7 @@ import Header from '../../components/header/Header';
 import AvatarCircle from '../../components/profile/AvatarCircle';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
+import { transformOrigin } from './transformOriginAnimated';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
@@ -130,6 +131,47 @@ const savingsStyleInterpolator = ({
     overlayStyle: {
       backgroundColor: colors.dark,
       opacity: backgroundOpacity,
+    },
+  };
+};
+
+const changeWalletStyleInterpolator = targetOpacity => ({
+  current: { progress: current },
+  layouts: { screen },
+}) => {
+  const backgroundOpacity = current.interpolate({
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, targetOpacity, targetOpacity],
+  });
+
+  const cardOpacity = current.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.01, 1],
+  });
+
+  const scale = current.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.21, 1],
+  });
+
+  return {
+    cardStyle: {
+      opacity: cardOpacity,
+      transform: transformOrigin(
+        {
+          x: 0,
+          y: -(screen.height / 2) + statusBarHeight + 62,
+        },
+        { scale }
+      ),
+    },
+    overlayStyle: {
+      backgroundColor: '#141414',
+      opacity: backgroundOpacity,
+      shadowColor: colors.black,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.4,
+      shadowRadius: 25,
     },
   };
 };
@@ -336,6 +378,18 @@ export const savingsPreset = {
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+};
+
+export const expandedPresetReverse = {
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: changeWalletStyleInterpolator(0.7),
+  cardTransparent: true,
+  gestureDirection: 'vertical-inverted',
+  gestureResponseDistance,
+  onTransitionStart,
+  transitionSpec: { close: closeSpec, open: openSpec },
 };
 
 export const sheetPreset = {

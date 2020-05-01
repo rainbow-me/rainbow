@@ -42,6 +42,10 @@ export const expandedPresetWithTransitions = presetWithTransition(
   expandedPreset
 );
 
+export const expandedReversePresetWithTransitions = presetWithTransition(
+  expandedPreset
+);
+
 export const exchangePresetWithTransitions = presetWithTransition(
   exchangePreset
 );
