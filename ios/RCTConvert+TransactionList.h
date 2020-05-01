@@ -55,10 +55,10 @@
     if (data[@"name"] != [NSNull null]) {
       transaction.coinName = data[@"name"];
     }
-    if(data[@"native"][@"display"]){
+    if(data[@"native"] != [NSNull null] && data[@"native"][@"display"] != [NSNull null]){
       transaction.nativeDisplay = data[@"native"][@"display"];
     }
-    if(data[@"balance"][@"display"]){
+    if(data[@"balance"] != [NSNull null] && data[@"balance"][@"display"] != [NSNull null]){
       transaction.balanceDisplay = data[@"balance"][@"display"];
     }
     if (data[@"type"] != [NSNull null]) {
