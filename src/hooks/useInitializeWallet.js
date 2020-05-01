@@ -12,6 +12,7 @@ import {
   settingsUpdateAccountColor,
   settingsUpdateAccountName,
 } from '../redux/settings';
+import { walletsLoadState } from '../redux/wallets';
 import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
 import useClearAccountData from './useClearAccountData';
@@ -29,15 +30,24 @@ export default function useInitializeWallet() {
   const { network } = useAccountSettings();
 
   const initializeWallet = useCallback(
-    async seedPhrase => {
+    async (seedPhrase, color = null, name = null) => {
       try {
         logger.sentry('Start wallet setup');
+        if (!seedPhrase) {
+          await dispatch(walletsLoadState());
+          await runMigrations();
+        }
         // Load the network first
         await dispatch(settingsLoadNetwork());
-
         const { isImported, isNew, walletAddress } = await walletInit(
-          seedPhrase
+          seedPhrase,
+          color,
+          name
         );
+
+        if (seedPhrase || isNew) {
+          await dispatch(walletsLoadState());
+        }
         const info = await getAccountInfo(walletAddress, network);
         if (info.name && info.color) {
           dispatch(settingsUpdateAccountName(info.name));
@@ -56,12 +66,12 @@ export default function useInitializeWallet() {
         if (!(isNew || isImported)) {
           await loadAccountData(network);
         }
-        await runMigrations();
         onHideSplashScreen();
         logger.sentry('Hide splash screen');
         initializeAccountData();
         return walletAddress;
       } catch (error) {
+        logger.sentry('Error while initializing wallet');
         // TODO specify error states more granular
         onHideSplashScreen();
         captureException(error);
