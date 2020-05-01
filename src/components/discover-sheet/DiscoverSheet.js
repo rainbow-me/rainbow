@@ -391,6 +391,7 @@ const renderInner = () => (
 );
 
 export default function DiscoverSheet() {
+  // eslint-disable-next-line no-unused-vars
   const topMovers = useTopMovers();
   return (
     <BottomSheet
