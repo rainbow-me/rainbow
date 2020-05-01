@@ -38,7 +38,7 @@ import { divide, isZero } from '../helpers/utilities';
 import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
-import { shitcoinBlacklist, tokenOverrides } from '../references';
+import { tokenOverrides } from '../references';
 import { ethereumUtils, isLowerCaseMatch } from '../utils';
 import { addCashUpdatePurchases } from './addCash';
 /* eslint-disable-next-line import/no-cycle */
@@ -215,7 +215,10 @@ export const addressAssetsReceived = (
   const { accountAddress, network } = getState().settings;
   const { uniqueTokens } = getState().uniqueTokens;
   const payload = values(get(message, 'payload.assets', {}));
-  let assets = filter(payload, asset => asset.asset.type !== 'compound');
+  let assets = filter(
+    payload,
+    asset => asset.asset.type !== 'compound' && asset.asset.type !== 'trash'
+  );
 
   if (removed) {
     assets = map(payload, asset => {
@@ -243,10 +246,7 @@ export const addressAssetsReceived = (
   }
 
   parsedAssets = parsedAssets.filter(
-    asset =>
-      // Shitcoin filtering
-      shitcoinBlacklist[network].indexOf(get(asset, 'address')) === -1 &&
-      !!Number(get(asset, 'balance.amount'))
+    asset => !!Number(get(asset, 'balance.amount'))
   );
 
   saveAssets(parsedAssets, accountAddress, network);
