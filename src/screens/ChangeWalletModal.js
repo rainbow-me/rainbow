@@ -81,7 +81,7 @@ const ChangeWalletModal = () => {
       if (Object.keys(wallet).length > 1 && selectedWallet.id !== id) {
         isDeletable = true;
       }
-      navigate(Routes.EXPANDED_ASSET_SCREEN, {
+      navigate(Routes.MODAL_SCREEN, {
         address: undefined,
         asset: [],
         isDeletable,
@@ -117,7 +117,7 @@ const ChangeWalletModal = () => {
       if (accountAddress !== address) {
         isDeletable = true;
       }
-      navigate(Routes.EXPANDED_ASSET_SCREEN, {
+      navigate(Routes.MODAL_SCREEN, {
         address,
         asset: [],
         isDeletable,

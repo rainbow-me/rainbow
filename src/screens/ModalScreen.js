@@ -8,6 +8,7 @@ import {
   AddContactState,
   SupportedCountriesExpandedState,
   SwapDetailsState,
+  WalletProfileCreator,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import { padding, position } from '../styles';
@@ -16,6 +17,7 @@ const ModalTypes = {
   contact: AddContactState,
   supported_countries: SupportedCountriesExpandedState,
   swap_details: SwapDetailsState,
+  wallet_profile_creator: WalletProfileCreator,
 };
 
 const Container = styled(Centered).attrs({ direction: 'column' })`

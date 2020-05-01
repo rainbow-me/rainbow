@@ -5,25 +5,6 @@ import buildLayoutStyles from './buildLayoutStyles';
 
 const position = {};
 
-position.absCenter = css`
-  left: 50%;
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-`;
-
-position.absCenterHorizontal = css`
-  left: 50%;
-  position: absolute;
-  transform: translateX(-50%);
-`;
-
-position.absCenterVertical = css`
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-`;
-
 position.cover = css`
   bottom: 0;
   left: 0;
