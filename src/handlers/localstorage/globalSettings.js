@@ -24,10 +24,7 @@ export const getKeyboardHeight = () => getGlobal(KEYBOARD_HEIGHT, null);
 
 export const setKeyboardHeight = height => saveGlobal(KEYBOARD_HEIGHT, height);
 
-export const getNativeCurrency = async () => {
-  const savedNativeCurrency = await getGlobal(NATIVE_CURRENCY, 'USD');
-  return savedNativeCurrency === 'ETH' ? 'USD' : savedNativeCurrency;
-};
+export const getNativeCurrency = () => getGlobal(NATIVE_CURRENCY, 'USD');
 
 export const saveNativeCurrency = nativeCurrency =>
   saveGlobal(NATIVE_CURRENCY, nativeCurrency);
