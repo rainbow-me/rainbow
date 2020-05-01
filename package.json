@@ -30,9 +30,8 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,json}": [
-      "eslint --ext '.js,.jsx,.json' -c .eslintrc.json",
-      "git add"
+    "*.{js,jsx}": [
+      "eslint --ext '.js,.jsx' -c .eslintrc.json"
     ]
   },
   "dependencies": {
