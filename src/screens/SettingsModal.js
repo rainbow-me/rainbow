@@ -2,7 +2,6 @@ import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { createElement, useCallback } from 'react';
-import { InteractionManager, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { Column } from '../components/layout';
@@ -15,7 +14,6 @@ import {
   NetworkSection,
   SettingsSection,
 } from '../components/settings-menu';
-import Routes from './Routes/routesNames';
 
 const statusBarHeight = getStatusBarHeight(true);
 
@@ -70,13 +68,6 @@ const SettingsModal = ({ navigation }) => {
     [navigation]
   );
 
-  const onPressImportSeedPhrase = useCallback(() => {
-    InteractionManager.runAfterInteractions(() => {
-      navigation.navigate(Routes.IMPORT_SEED_PHRASE_SHEET);
-      StatusBar.setBarStyle('light-content');
-    });
-  }, [navigation]);
-
   const onPressSection = useCallback(
     section => () => navigation.setParams({ section }),
     [navigation]
@@ -104,7 +95,6 @@ const SettingsModal = ({ navigation }) => {
             onPressBackup={onPressSection(SettingsPages.backup)}
             onPressCurrency={onPressSection(SettingsPages.currency)}
             onPressHiddenFeature={requestFaceIDPermission}
-            onPressImportSeedPhrase={onPressImportSeedPhrase}
             onPressLanguage={onPressSection(SettingsPages.language)}
             onPressNetwork={onPressSection(SettingsPages.network)}
           />
