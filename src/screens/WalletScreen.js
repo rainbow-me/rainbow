@@ -16,12 +16,14 @@ import {
 import { Page } from '../components/layout';
 import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import networkInfo from '../helpers/networkInfo';
+import WalletTypes from '../helpers/walletTypes';
 import {
   useAccountSettings,
   useCoinListEdited,
   useInitializeWallet,
   useKeyboardHeight,
   useRefreshAccountData,
+  useWallets,
   useWalletSectionsData,
 } from '../hooks';
 import { position } from '../styles';
@@ -34,6 +36,7 @@ export default function WalletScreen() {
   const { isCoinListEdited } = useCoinListEdited();
   const { updateKeyboardHeight } = useKeyboardHeight();
   const [scrollViewTracker] = useValues([0], []);
+  const { selected: selectedWallet = {} } = useWallets();
 
   useEffect(() => {
     if (!initialized) {
@@ -74,6 +77,7 @@ export default function WalletScreen() {
         scrollViewTracker={scrollViewTracker}
         sections={sections}
         isCoinListEdited={isCoinListEdited}
+        isReadOnlyWallet={selectedWallet.type === WalletTypes.readOnly}
       >
         <HeaderGestureBlocker enabled={isCoinListEdited}>
           <Header marginTop={5} justify="space-between">

@@ -1,22 +1,32 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { useAccountAssets } from '../../hooks';
+import { Alert } from 'react-native';
+import { useNavigation } from 'react-navigation-hooks';
+import WalletTypes from '../../helpers/walletTypes';
+import { useAccountAssets, useWallets } from '../../hooks';
 import Routes from '../../screens/Routes/routesNames';
 import { ethereumUtils } from '../../utils';
 import FloatingPanels from './FloatingPanels';
 import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
 
-const TokenExpandedState = ({ asset, navigation }) => {
+const TokenExpandedState = ({ asset }) => {
+  const { navigate, goBack } = useNavigation();
   const { address, name, symbol } = asset;
   const { assets } = useAccountAssets();
+  const { selected: selectedWallet = {} } = useWallets();
   const selectedAsset = ethereumUtils.getAsset(assets, address);
   const price = get(selectedAsset, 'native.price.display', null);
   const subtitle = get(selectedAsset, 'balance.display', symbol);
 
   const onPressSend = useCallback(() => {
-    navigation.navigate(Routes.SEND_SHEET, { asset });
-  }, [asset, navigation]);
+    if (selectedWallet.type !== WalletTypes.readOnly) {
+      navigate(Routes.SEND_SHEET, { asset });
+    } else {
+      goBack();
+      Alert.alert(`You need to import the wallet in order to do this`);
+    }
+  }, [asset, goBack, navigate, selectedWallet.type]);
 
   return (
     <FloatingPanels width={100}>
@@ -34,7 +44,6 @@ const TokenExpandedState = ({ asset, navigation }) => {
 
 TokenExpandedState.propTypes = {
   asset: PropTypes.object,
-  navigation: PropTypes.object,
 };
 
 export default TokenExpandedState;

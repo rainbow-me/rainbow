@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import { withNavigation } from 'react-navigation';
-import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
+import React, { useCallback } from 'react';
+import { Alert } from 'react-native';
+import { useNavigation } from 'react-navigation-hooks';
+import { compose } from 'recompact';
+import { onlyUpdateForKeys } from 'recompose';
 import { withFabSelection } from '../../hoc';
 import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
@@ -13,30 +15,35 @@ const FabShadow = [
   [0, 5, 15, colors.swapPurple, 0.5],
 ];
 
-const ExchangeFab = ({ disabled, onPress, ...props }) => (
-  <FloatingActionButton
-    {...props}
-    backgroundColor={colors.swapPurple}
-    disabled={disabled}
-    onPress={onPress}
-    shadows={FabShadow}
-  >
-    <Icon height={21} marginBottom={2} name="swap" width={26} />
-  </FloatingActionButton>
-);
+const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
+  const { navigate } = useNavigation();
+  const onPress = useCallback(() => {
+    if (!isReadOnlyWallet) {
+      navigate(Routes.EXCHANGE_MODAL);
+    } else {
+      Alert.alert(`You need to import the wallet in order to do this`);
+    }
+  }, [navigate, isReadOnlyWallet]);
+
+  return (
+    <FloatingActionButton
+      {...props}
+      backgroundColor={colors.swapPurple}
+      disabled={disabled}
+      onPress={onPress}
+      shadows={FabShadow}
+    >
+      <Icon height={21} marginBottom={2} name="swap" width={26} />
+    </FloatingActionButton>
+  );
+};
 
 ExchangeFab.propTypes = {
   disabled: PropTypes.bool,
-  onPress: PropTypes.func,
+  isReadOnlyWallet: PropTypes.bool,
 };
 
 export default compose(
   withFabSelection,
-  withNavigation,
-  withHandlers({
-    onPress: ({ navigation }) => () => {
-      navigation.navigate(Routes.EXCHANGE_MODAL);
-    },
-  }),
-  onlyUpdateForKeys(['disabled'])
+  onlyUpdateForKeys(['disabled', 'isReadOnlyWallet'])
 )(ExchangeFab);
