@@ -2,13 +2,17 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../styles';
+<<<<<<< HEAD
 import { getFontSize } from '../../styles/fonts';
+=======
+>>>>>>> mutiwallet UI
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 
 const sx = StyleSheet.create({
   container: {
     alignItems: 'center',
+<<<<<<< HEAD
     borderColor: colors.lightestGrey,
     borderTopWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
@@ -49,6 +53,43 @@ const WalletOption = ({ editMode, icon, label, onPress }) => (
         <Text style={[sx.text, editMode ? sx.textDisabled : null]}>
           {label}
         </Text>
+=======
+    flexDirection: 'row',
+    paddingHorizontal: 7.5,
+    paddingVertical: 10,
+  },
+  iconWrapper: {
+    alignItems: 'center',
+    backgroundColor: colors.skeleton,
+    borderRadius: 14,
+    height: 30,
+    justifyContent: 'center',
+    marginLeft: 8,
+    marginRight: 9,
+    width: 30,
+  },
+  nickname: {
+    color: colors.dark,
+    fontFamily: fonts.family.SFProText,
+    fontSize: Number(fonts.size.smedium.replace('px', '')),
+    fontWeight: fonts.weight.medium,
+  },
+});
+
+const WalletOption = ({ icon, label, onPress }) => (
+  <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
+    <View style={sx.container}>
+      <View style={sx.iconWrapper}>
+        <Icon
+          color={colors.blueGreyDark50}
+          height={15}
+          width={15}
+          name={icon}
+        />
+      </View>
+      <View>
+        <Text style={sx.nickname}>{label}</Text>
+>>>>>>> mutiwallet UI
       </View>
     </View>
   </ButtonPressAnimation>
