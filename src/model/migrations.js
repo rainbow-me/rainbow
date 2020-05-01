@@ -3,9 +3,12 @@ import {
   getMigrationVersion,
   setMigrationVersion,
 } from '../handlers/localstorage/migrations';
+import WalletTypes from '../helpers/walletTypes';
+import { DEFAULT_WALLET_NAME, loadAddress, saveAddress } from '../model/wallet';
+import store from '../redux/store';
 
-import { loadAddress, saveAddress } from '../model/wallet';
-
+import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
+import { colors } from '../styles';
 import { logger } from '../utils';
 
 export default async function runMigrations() {
@@ -20,13 +23,51 @@ export default async function runMigrations() {
       accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
     };
     if (walletAddress) {
-      saveAddress(walletAddress, publicAccessControlOptions);
+      await saveAddress(walletAddress, publicAccessControlOptions);
     }
   };
 
   migrations.push(v0);
 
   /***** Migration v0 ends here  *****/
+
+  /***** Migration v1 starts here  *****/
+  const v1 = async () => {
+    const { selected } = store.getState().wallets;
+
+    if (!selected) {
+      // Read from the old wallet data
+      const address = await loadAddress();
+      if (address) {
+        const id = `wallet_${new Date().getTime()}`;
+        const currentWallet = {
+          addresses: [
+            {
+              address,
+              color: colors.getRandomColor(),
+              index: 0,
+              label: '',
+              visible: true,
+            },
+          ],
+          color: 0,
+          id,
+          imported: false,
+          name: DEFAULT_WALLET_NAME,
+          type: WalletTypes.mnemonic,
+        };
+
+        const wallets = { [id]: currentWallet };
+
+        store.dispatch(walletsUpdate(wallets));
+        store.dispatch(walletsSetSelected(currentWallet));
+      }
+    }
+  };
+
+  migrations.push(v1);
+
+  /***** Migration v1 ends here  *****/
 
   logger.log(
     'Migrations: ready to run migrations starting on number',
