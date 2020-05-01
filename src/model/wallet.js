@@ -502,6 +502,70 @@ export const getSeedPhrase = async (
 };
 
 export const setSelectedWallet = async wallet => {
+  };
+
+  await keychain.saveObject(key, val, privateAccessControlOptions);
+};
+
+export const getPrivateKey = async (
+  address,
+  authenticationPrompt = lang.t('wallet.authenticate.please')
+) => {
+  try {
+    const key = `${address}_${privateKeyKey}`;
+    return keychain.loadObject(key, {
+      authenticationPrompt,
+    });
+  } catch (error) {
+    captureException(error);
+    return null;
+  }
+};
+
+export const saveSeedPhrase = async (seedphrase, keychain_id = null) => {
+  let privateAccessControlOptions = {};
+  const canAuthenticate = await canImplyAuthentication({
+    authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
+  });
+
+  let isSimulator = false;
+
+  if (canAuthenticate) {
+    isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
+  }
+  if (canAuthenticate && !isSimulator) {
+    privateAccessControlOptions = {
+      accessControl: ACCESS_CONTROL.USER_PRESENCE,
+      accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+    };
+  }
+
+  const key = `${keychain_id}_${seedPhraseKey}`;
+  const val = {
+    id: keychain_id,
+    seedphrase,
+    version: seedPhraseVersion,
+  };
+
+  await keychain.saveObject(key, val, privateAccessControlOptions);
+};
+
+export const getSeedPhrase = async (
+  id,
+  authenticationPrompt = lang.t('wallet.authenticate.please')
+) => {
+  try {
+    const key = `${id}_${seedPhraseKey}`;
+    return keychain.loadObject(key, {
+      authenticationPrompt,
+    });
+  } catch (error) {
+    captureException(error);
+    return null;
+  }
+};
+
+export const setSelectedWallet = async wallet => {
   const val = {
     version: selectedWalletVersion,
     wallet,
