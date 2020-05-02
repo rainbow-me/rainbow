@@ -26,6 +26,7 @@ const messages = {
     APPENDED: 'appended address assets',
     CHANGED: 'changed address assets',
     RECEIVED: 'received address assets',
+    REMOVED: 'removed address assets',
   },
   ADDRESS_CHARTS: {
     APPENDED: 'appended chart points',
@@ -169,6 +170,10 @@ const listenOnAddressMessages = socket => dispatch => {
 
   socket.on(messages.ADDRESS_ASSETS.CHANGED, message => {
     dispatch(addressAssetsReceived(message, false, true));
+  });
+
+  socket.on(messages.ADDRESS_ASSETS.REMOVED, message => {
+    dispatch(addressAssetsReceived(message, false, false, true));
   });
 
   socket.on(messages.ADDRESS_CHARTS.RECEIVED, message => {

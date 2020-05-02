@@ -216,7 +216,8 @@ export const transactionsRemoved = message => (dispatch, getState) => {
 export const addressAssetsReceived = (
   message,
   append = false,
-  change = false
+  change = false,
+  removed = false
 ) => (dispatch, getState) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
@@ -224,18 +225,27 @@ export const addressAssetsReceived = (
   const { tokenOverrides } = getState().data;
   const { accountAddress, network } = getState().settings;
   const { uniqueTokens } = getState().uniqueTokens;
-  const payload = get(message, 'payload.assets', {});
-  const assets = filter(
-    values(payload),
-    asset => asset.asset.type !== 'compound'
-  );
+  const payload = values(get(message, 'payload.assets', {}));
+  let assets = filter(payload, asset => asset.asset.type !== 'compound');
+
+  if (removed) {
+    assets = map(payload, asset => {
+      return {
+        ...asset,
+        quantity: 0,
+      };
+    });
+  }
+
   const liquidityTokens = remove(
     assets,
     asset => asset.asset.type === 'uniswap'
   );
-  dispatch(uniswapUpdateLiquidityTokens(liquidityTokens, append || change));
+  dispatch(
+    uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
+  );
   let parsedAssets = parseAccountAssets(assets, uniqueTokens, tokenOverrides);
-  if (append || change) {
+  if (append || change || removed) {
     const { assets: existingAssets } = getState().data;
     parsedAssets = uniqBy(
       concat(parsedAssets, existingAssets),
