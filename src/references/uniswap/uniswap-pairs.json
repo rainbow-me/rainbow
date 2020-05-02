@@ -173,12 +173,6 @@
     "decimals": 18,
     "exchangeAddress": "0x2C4Bd064b998838076fa341A83d007FC2FA50957"
   },
-  "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0": {
-    "name": "Matic Network",
-    "symbol": "MATIC",
-    "decimals": 18,
-    "exchangeAddress": "0x9a7A75E66B325a3BD46973B2b57c9b8d9D26a621"
-  },
   "0xec67005c4E498Ec7f55E092bd1d35cbC47C91892": {
     "name": "Melon",
     "symbol": "MLN",
@@ -298,12 +292,6 @@
     "name": "Unisocks Edition 0",
     "decimals": 18,
     "exchangeAddress": "0x22d8432cc7aA4f8712a655fC4cdfB1baEC29FCA9"
-  },
-  "0x09cabEC1eAd1c0Ba254B09efb3EE13841712bE14": {
-    "name": "Uniswap V1",
-    "symbol": "UNI-V1:SAI",
-    "decimals": 18,
-    "exchangeAddress": "0x601c32E0580D3aef9437dB52D09f5a5D7E60eC22"
   },
   "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48": {
     "name": "USD Coin",

@@ -30,7 +30,6 @@ import {
   saveAssets,
   saveLocalTransactions,
 } from '../handlers/localstorage/accountLocal';
-import { apiGetTokenOverrides } from '../handlers/tokenOverrides';
 import { getTransactionReceipt } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
@@ -38,10 +37,7 @@ import { divide, isZero } from '../helpers/utilities';
 import { parseAccountAssets } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
-import {
-  loweredTokenOverridesFallback,
-  shitcoinBlacklist,
-} from '../references';
+import { shitcoinBlacklist, tokenOverrides } from '../references';
 import { ethereumUtils, isLowerCaseMatch } from '../utils';
 import { addCashUpdatePurchases } from './addCash';
 /* eslint-disable-next-line import/no-cycle */
@@ -56,7 +52,6 @@ const DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP =
   'data/DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP';
 const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
 const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
-const DATA_UPDATE_TOKEN_OVERRIDES = 'data/DATA_UPDATE_TOKEN_OVERRIDES';
 const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
   'data/DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION';
 
@@ -111,14 +106,6 @@ export const dataLoadState = () => async (dispatch, getState) => {
   } catch (error) {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
   }
-};
-
-export const dataTokenOverridesInit = () => async dispatch => {
-  try {
-    const tokenOverrides = await apiGetTokenOverrides();
-    dispatch(dataUpdateTokenOverrides(tokenOverrides));
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
 };
 
 export const dataClearState = () => (dispatch, getState) => {
@@ -365,12 +352,6 @@ const get24HourPrice = async (exchangeAddress, yesterday) => {
   return get(result, 'data.exchangeHistoricalDatas[0]');
 };
 
-export const dataUpdateTokenOverrides = tokenOverrides => dispatch =>
-  dispatch({
-    payload: tokenOverrides,
-    type: DATA_UPDATE_TOKEN_OVERRIDES,
-  });
-
 export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
   dispatch,
   getState
@@ -492,7 +473,7 @@ const INITIAL_STATE = {
   assets: [],
   isLoadingAssets: true,
   isLoadingTransactions: true,
-  tokenOverrides: loweredTokenOverridesFallback,
+  tokenOverrides: tokenOverrides,
   transactions: [],
   uniswapPricesQuery: null,
   uniswapPricesSubscription: null,
@@ -510,8 +491,6 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, assetPricesFromUniswap: action.payload };
     case DATA_UPDATE_ASSETS:
       return { ...state, assets: action.payload, isLoadingAssets: false };
-    case DATA_UPDATE_TOKEN_OVERRIDES:
-      return { ...state, tokenOverrides: action.payload };
     case DATA_UPDATE_TRANSACTIONS:
       return {
         ...state,
