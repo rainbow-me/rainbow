@@ -223,7 +223,7 @@ export const uniswapUpdateLiquidityTokens = (
   if (appendOrChange) {
     const { liquidityTokens: existingLiquidityTokens } = getState().uniswap;
     updatedLiquidityTokens = uniq(
-      concat(existingLiquidityTokens, ...updatedLiquidityTokens),
+      concat(updatedLiquidityTokens, existingLiquidityTokens),
       getAssetCode
     );
   }
