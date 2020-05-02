@@ -223,6 +223,7 @@ const ExchangeModal = ({
           outputCurrency,
           outputReserve,
         });
+
         dispatch(gasUpdateTxFee(gasLimit));
       } catch (error) {
         const defaultGasLimit = isDeposit
@@ -727,6 +728,16 @@ const ExchangeModal = ({
           navigation.setParams({ focused: false });
           navigation.navigate(Routes.PROFILE_SCREEN);
         };
+
+        await updateGasLimit({
+          inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
+          inputCurrency,
+          inputReserve,
+          outputAmount,
+          outputCurrency,
+          outputReserve,
+        });
+
         const rap = await createRap({
           callback,
           inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
@@ -740,6 +751,7 @@ const ExchangeModal = ({
           selectedGasPrice: null,
         });
         logger.log('[exchange - handle submit] rap', rap);
+
         await executeRap(wallet, rap);
         if (isDeposit || isWithdrawal) {
           dispatch(savingsLoadState());
@@ -774,6 +786,7 @@ const ExchangeModal = ({
     outputCurrency,
     outputReserve,
     type,
+    updateGasLimit,
   ]);
 
   const handleRefocusLastInput = useCallback(() => {
