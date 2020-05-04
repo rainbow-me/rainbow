@@ -177,7 +177,7 @@
   "0xdac17f958d2ee523a2206206994597c13d831ec7": {
     "name": "Tether"
   },
-  "0x8dd5fbCe2F6a956C3022bA3663759011Dd51e73E": {
+  "0x0000000000085d4780b73119b644ae5ecd22b376": {
     "name": "TrueUSD"
   },
   "0x23B608675a2B2fB1890d3ABBd85c5775c51691d5": {
@@ -192,6 +192,9 @@
   },
   "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599": {
     "name": "Wrapped Bitcoin"
+  },
+  "0x09fE5f0236F0Ea5D930197DCE254d77B04128075": {
+    "name": "Wrapped CryptoKitties"
   },
   "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": {
     "name": "Wrapped Ether"
