@@ -449,7 +449,13 @@ class RecyclerAssetList extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    const { openFamilyTabs, sections } = this.props;
+    const { openFamilyTabs, nativeCurrency, sections } = this.props;
+
+    if (nativeCurrency !== prevProps.nativeCurrency) {
+      setTimeout(() => {
+        this.rlv.scrollToTop(false);
+      }, 200);
+    }
 
     let collectibles = {};
     let prevCollectibles = {};
