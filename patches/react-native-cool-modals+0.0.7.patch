@@ -31,7 +31,7 @@ index 57c5ede..41295fb 100644
  @property (nonatomic, retain) UIViewController *controller;
  @property (nonatomic, readonly) BOOL dismissed;
 diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreen.m b/node_modules/react-native-cool-modals/ios/RNCMScreen.m
-index 31bd992..df07715 100644
+index 31bd992..4967c90 100644
 --- a/node_modules/react-native-cool-modals/ios/RNCMScreen.m
 +++ b/node_modules/react-native-cool-modals/ios/RNCMScreen.m
 @@ -50,6 +50,10 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -45,6 +45,15 @@ index 31bd992..df07715 100644
  - (void)reactSetFrame:(CGRect)frame
  {
    if (![self.reactViewController.parentViewController
+@@ -352,7 +356,7 @@ - (void)viewDidDisappear:(BOOL)animated
+ - (void)viewDidAppear:(BOOL)animated
+ {
+   [super viewDidAppear:animated];
+-  [((RNCMScreenView *)self.view) notifyAppear];
++  // [((RNCMScreenView *)self.view) notifyAppear];
+ }
+
+ - (void)notifyFinishTransitioning
 @@ -376,7 +380,7 @@ @implementation RNCMScreenManager
  RCT_EXPORT_VIEW_PROPERTY(stackAnimation, RNSScreenStackAnimation)
  RCT_EXPORT_VIEW_PROPERTY(onAppear, RCTDirectEventBlock);
@@ -94,7 +103,7 @@ index 1c9caa1..26eb388 100644
  {
    // when there is no change we return immediately
 diff --git a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-index eb127c3..5b270e8 100644
+index eb127c3..cf234a8 100644
 --- a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 +++ b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 @@ -1,6 +1,33 @@
@@ -210,8 +219,15 @@ index eb127c3..5b270e8 100644
    func shouldPrioritize(panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
      let headerHeight: CGFloat = CGFloat(truncating: self.config?.value(forKey: "headerHeight") as! NSNumber)
      let location = panModalGestureRecognizer.location(in: view)
-@@ -133,6 +195,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -131,8 +193,14 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+     return .contentHeight(UIScreen.main.bounds.height)
+   }
 
++  override func viewDidAppear(_ animated: Bool) {
++    let selector = NSSelectorFromString("notifyAppear")
++    viewController?.view.perform(selector)
++  }
++
    override func viewWillDisappear(_ animated: Bool) {
      disappared = true
 +    super.viewWillDisappear(animated)
