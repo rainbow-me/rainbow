@@ -5,6 +5,7 @@ import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { colors } from '../../styles';
+import { deviceUtils } from '../../utils';
 import Highlight from '../Highlight';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
@@ -15,6 +16,7 @@ const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
 
 const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 50;
+const TokenFamilyHeaderTextSafeArea = 130;
 
 const TokenFamilyHeader = ({
   childrenAmount,
@@ -46,7 +48,11 @@ const TokenFamilyHeader = ({
         width="100%"
       >
         <Highlight visible={highlight} />
-        <RowWithMargins align="center" margin={emoji ? 5 : 9}>
+        <RowWithMargins
+          align="center"
+          margin={emoji ? 5 : 9}
+          width={deviceUtils.dimensions.width - TokenFamilyHeaderTextSafeArea}
+        >
           {emoji ? (
             <Emoji size="lmedium" name={emoji} />
           ) : (
