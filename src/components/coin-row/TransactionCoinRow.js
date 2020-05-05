@@ -175,7 +175,7 @@ export default compose(
           },
           buttonIndex => {
             if (!isPurchasing && buttonIndex === 0) {
-              navigation.navigate(Routes.EXPANDED_ASSET_SHEET, {
+              navigation.navigate(Routes.MODAL_SCREEN, {
                 address: contactAddress,
                 asset: item,
                 color: contactColor,
