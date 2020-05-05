@@ -1,0 +1,176 @@
+diff --git a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
+index c4ad7e5..4ebddb4 100644
+--- a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
++++ b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
+@@ -223,25 +223,27 @@ - (void)insertKeychainEntry:(NSDictionary *)attributes withOptions:(NSDictionary
+   });
+ }
+ 
+-- (OSStatus)deletePasswordsForService:(NSString *)service
++- (OSStatus)deletePasswordsForService:(NSString *)service withOptions:(NSDictionary * __nullable)options
+ {
+   NSDictionary *query = @{
+     (__bridge NSString *)kSecClass: (__bridge id)(kSecClassGenericPassword),
+     (__bridge NSString *)kSecAttrService: service,
+     (__bridge NSString *)kSecReturnAttributes: (__bridge id)kCFBooleanTrue,
+-    (__bridge NSString *)kSecReturnData: (__bridge id)kCFBooleanFalse
++    (__bridge NSString *)kSecReturnData: (__bridge id)kCFBooleanFalse,
++    (__bridge NSString *)kSecAttrSynchronizable: (__bridge id)(options[@"synchronizable"] ? kCFBooleanTrue : kCFBooleanFalse)
+   };
+ 
+   return SecItemDelete((__bridge CFDictionaryRef) query);
+ }
+ 
+-- (OSStatus)deleteCredentialsForServer:(NSString *)server
++- (OSStatus)deleteCredentialsForServer:(NSString *)server withOptions:(NSDictionary * __nullable)options
+ {
+   NSDictionary *query = @{
+     (__bridge NSString *)kSecClass: (__bridge id)(kSecClassInternetPassword),
+     (__bridge NSString *)kSecAttrServer: server,
+     (__bridge NSString *)kSecReturnAttributes: (__bridge id)kCFBooleanTrue,
+-    (__bridge NSString *)kSecReturnData: (__bridge id)kCFBooleanFalse
++    (__bridge NSString *)kSecReturnData: (__bridge id)kCFBooleanFalse,
++    (__bridge NSString *)kSecAttrSynchronizable: (__bridge id)(options[@"synchronizable"] ? kCFBooleanTrue : kCFBooleanFalse)
+   };
+ 
+   return SecItemDelete((__bridge CFDictionaryRef) query);
+@@ -292,10 +294,11 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
+     (__bridge NSString *)kSecClass: (__bridge id)(kSecClassGenericPassword),
+     (__bridge NSString *)kSecAttrService: service,
+     (__bridge NSString *)kSecAttrAccount: username,
++    (__bridge NSString *)kSecAttrSynchronizable: (__bridge id)(options[@"synchronizable"] ? kCFBooleanTrue : kCFBooleanFalse),
+     (__bridge NSString *)kSecValueData: [password dataUsingEncoding:NSUTF8StringEncoding]
+   };
+ 
+-  [self deletePasswordsForService:service];
++    [self deletePasswordsForService:service withOptions:options];
+ 
+   [self insertKeychainEntry:attributes withOptions:options resolver:resolve rejecter:reject];
+ }
+@@ -314,6 +317,7 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
+     (__bridge NSString *)kSecReturnAttributes: (__bridge id)kCFBooleanTrue,
+     (__bridge NSString *)kSecReturnData: (__bridge id)kCFBooleanTrue,
+     (__bridge NSString *)kSecMatchLimit: (__bridge NSString *)kSecMatchLimitOne,
++    (__bridge NSString *)kSecAttrSynchronizable: (__bridge id)(options[@"synchronizable"] ? kCFBooleanTrue : kCFBooleanFalse),
+     (__bridge NSString *)kSecUseOperationPrompt: authenticationPrompt
+   };
+ 
+@@ -349,7 +353,7 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
+ {
+   NSString *service = serviceValue(options);
+ 
+-  OSStatus osStatus = [self deletePasswordsForService:service];
++  OSStatus osStatus = [self deletePasswordsForService:service withOptions:options];
+ 
+   if (osStatus != noErr && osStatus != errSecItemNotFound) {
+     NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:osStatus userInfo:nil];
+@@ -361,12 +365,13 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
+ 
+ RCT_EXPORT_METHOD(setInternetCredentialsForServer:(NSString *)server withUsername:(NSString*)username withPassword:(NSString*)password withSecurityLevel:(__unused NSString *)level withOptions:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+ {
+-  [self deleteCredentialsForServer:server];
++  [self deleteCredentialsForServer:server withOptions:options];
+ 
+   NSDictionary *attributes = @{
+     (__bridge NSString *)kSecClass: (__bridge id)(kSecClassInternetPassword),
+     (__bridge NSString *)kSecAttrServer: server,
+     (__bridge NSString *)kSecAttrAccount: username,
++    (__bridge NSString *)kSecAttrSynchronizable: (__bridge id)(options[@"synchronizable"] ? kCFBooleanTrue : kCFBooleanFalse),
+     (__bridge NSString *)kSecValueData: [password dataUsingEncoding:NSUTF8StringEncoding]
+   };
+ 
+@@ -407,6 +412,7 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
+   NSDictionary *query = @{
+     (__bridge NSString *)kSecClass: (__bridge id)(kSecClassInternetPassword),
+     (__bridge NSString *)kSecAttrServer: server,
++    (__bridge NSString *)kSecAttrSynchronizable: (__bridge id)(options[@"synchronizable"] ? kCFBooleanTrue : kCFBooleanFalse),
+     (__bridge NSString *)kSecReturnAttributes: (__bridge id)kCFBooleanTrue,
+     (__bridge NSString *)kSecReturnData: (__bridge id)kCFBooleanTrue,
+     (__bridge NSString *)kSecMatchLimit: (__bridge NSString *)kSecMatchLimitOne
+@@ -440,9 +446,54 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
+ 
+ }
+ 
++RCT_EXPORT_METHOD(getAllInternetCredentialsForServer:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
++{
++  NSDictionary *query = @{
++    (__bridge NSString *)kSecClass: (__bridge id)(kSecClassInternetPassword),
++    (__bridge NSString *)kSecReturnAttributes: (__bridge id)kCFBooleanTrue,
++    (__bridge NSString *)kSecReturnData: (__bridge id)kCFBooleanTrue,
++    (__bridge NSString *)kSecMatchLimit: (__bridge NSString *)kSecMatchLimitAll
++  };
++
++  // Look up server in the keychain
++  NSArray *found = nil;
++  CFTypeRef foundTypeRef = NULL;
++  OSStatus osStatus = SecItemCopyMatching((__bridge CFDictionaryRef) query, (CFTypeRef*)&foundTypeRef);
++
++  if (osStatus != noErr && osStatus != errSecItemNotFound) {
++    NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:osStatus userInfo:nil];
++    return rejectWithError(reject, error);
++  }
++
++  found = (__bridge NSArray*)(foundTypeRef);
++  if (!found) {
++    return resolve(@(NO));
++  }
++    
++  NSMutableArray *results = [@[] mutableCopy];
++    
++
++    for(int i=0; i< found.count; i++){
++        NSDictionary *item  = found[i];
++        NSString *server = (NSString *) [item objectForKey:(__bridge id)(kSecAttrServer)];
++        NSString *username = (NSString *) [item objectForKey:(__bridge id)(kSecAttrAccount)];
++        NSString *password = [[NSString alloc] initWithData:[item objectForKey:(__bridge id)(kSecValueData)] encoding:NSUTF8StringEncoding];
++        
++        [results addObject:@{@"username": username, @"password":password, @"server": server}];
++  }
++    
++  
++  CFRelease(foundTypeRef);
++    
++  return resolve(@{
++    @"results": results
++  });
++
++}
++
+ RCT_EXPORT_METHOD(resetInternetCredentialsForServer:(NSString *)server withOptions:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+ {
+-  OSStatus osStatus = [self deleteCredentialsForServer:server];
++  OSStatus osStatus = [self deleteCredentialsForServer:server withOptions:options];
+ 
+   if (osStatus != noErr && osStatus != errSecItemNotFound) {
+     NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:osStatus userInfo:nil];
+diff --git a/node_modules/react-native-keychain/index.js b/node_modules/react-native-keychain/index.js
+index af6c61e..248034d 100644
+--- a/node_modules/react-native-keychain/index.js
++++ b/node_modules/react-native-keychain/index.js
+@@ -56,6 +56,7 @@ export type Options = {
+   authenticationType?: LAPolicy,
+   service?: string,
+   securityLevel?: SecMinimumLevel,
++  synchronizable?: boolean,
+ };
+ 
+ /**
+@@ -144,6 +145,18 @@ export function getInternetCredentials(
+   return RNKeychainManager.getInternetCredentialsForServer(server, options);
+ }
+ 
++
++/**
++ * Fetches all the keychain entries for the app
++ * @param {object} options Keychain options, iOS only
++ * @return {Promise} Resolves to `{ server, username, password }` when successful
++ */
++export function getAllInternetCredentials(
++  options?: Options
++): Promise<false | UserCredentials> {
++  return RNKeychainManager.getAllInternetCredentialsForServer(options);
++}
++
+ /**
+  * Deletes all internet password keychain entries for `server`.
+  * @param {string} server URL to server.
