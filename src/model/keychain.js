@@ -102,13 +102,12 @@ export async function backupToIcloud() {
       ACCESSIBLE: ACCESSIBLE.WHEN_UNLOCKED,
       synchronizable: true,
     });
-    console.log('DONE BACKING UP TO ICLOUD');
   } catch (e) {
-    console.log('Error while backing up', e);
+    logger.log('Error while backing up', e);
   }
 }
 
-export async function restoreBackup() {
+export async function restoreIcloudBackup() {
   const results = await getInternetCredentials(RAINBOW_BACKUP_KEY, {
     synchronizable: true,
   });
@@ -138,8 +137,9 @@ export async function restoreBackup() {
   backedUpData.forEach(async item => {
     let accessControl = publicAccessControlOptions;
     if (
-      item.username.indexOf('rainbowSeedPhrase') !== -1 ||
-      item.username.indexOf('rainbowPrivateKey') !== -1
+      (item.username.indexOf('rainbowSeedPhrase') !== -1 ||
+        item.username.indexOf('rainbowPrivateKey') !== -1) &&
+      item.username !== 'rainbowSeedPhraseMigratedKey'
     ) {
       accessControl = privateAccessControlOptions;
     }
@@ -149,8 +149,14 @@ export async function restoreBackup() {
     } else {
       await saveObject(item.username, item.password, accessControl);
     }
-    console.log('RESTORED KEY ', item.username);
   });
 
   return results;
+}
+
+export async function reset() {
+  const results = await loadAllKeys();
+  results.forEach(async result => {
+    await resetInternetCredentials(result.username);
+  });
 }
