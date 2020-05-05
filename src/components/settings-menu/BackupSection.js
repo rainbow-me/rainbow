@@ -5,11 +5,12 @@ import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import SeedPhraseImageSource from '../../assets/seed-phrase-icon.png';
 import { useWallets } from '../../hooks';
+import * as keychain from '../../model/keychain';
 import { loadSeedPhraseAndMigrateIfNeeded } from '../../model/wallet';
 import { colors, padding, position, shadow } from '../../styles';
 import { Button } from '../buttons';
 import CopyTooltip from '../copy-tooltip';
-import { Centered, Column } from '../layout';
+import { Centered, Column, RowWithMargins } from '../layout';
 import { Br, Monospace, Text } from '../text';
 
 const Content = styled(Centered)`
@@ -25,11 +26,27 @@ const ToggleSeedPhraseButton = styled(Button)`
   width: 235;
 `;
 
+const BackupButton = styled(Button)`
+  ${shadow.build(0, 5, 15, colors.purple, 0.3)}
+  background-color: ${colors.appleBlue};
+  width: 235;
+`;
+
 const BackupSection = ({ navigation }) => {
   const [seedPhrase, setSeedPhrase] = useState(null);
   const { selected: selectedWallet = {} } = useWallets();
 
   const hideSeedPhrase = () => setSeedPhrase(null);
+
+  const icloudBackup = useCallback(async () => {
+    try {
+      await keychain.backupToIcloud();
+      const backup = await keychain.restoreBackup();
+      console.log('BACKUP', JSON.parse(backup.password));
+    } catch (e) {
+      console.log('Error while backing up', e);
+    }
+  }, []);
 
   const handlePressToggleSeedPhrase = useCallback(() => {
     if (!seedPhrase) {
@@ -87,6 +104,9 @@ const BackupSection = ({ navigation }) => {
       <ToggleSeedPhraseButton onPress={handlePressToggleSeedPhrase}>
         {seedPhrase ? 'Hide' : 'Show'} Private Key
       </ToggleSeedPhraseButton>
+      <RowWithMargins marginTop={20}>
+        <BackupButton onPress={icloudBackup}>iCloud Backup</BackupButton>
+      </RowWithMargins>
     </Column>
   );
 };
