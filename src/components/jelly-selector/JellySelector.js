@@ -1,20 +1,19 @@
-import { get, sum } from 'lodash';
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
-import { useDimensions } from '../../hooks';
-import { position } from '../../styles';
 import { magicMemo } from '../../utils';
-import { Centered, Row } from '../layout';
-import JellySelectorIndicator from './JellySelectorIndicator';
 import JellySelectorItem from './JellySelectorItem';
-
-const horizontalMargin = 100;
-const maxWidth = 300;
+import JellySelectorRow from './JellySelectorRow';
+import {
+  JellySelectorColorIndicator,
+  JellySelectorIndicator,
+} from './jelly-selector-indicator';
 
 const springTo = (node, toValue) =>
+  // eslint-disable-next-line import/no-named-as-default-member
   Animated.spring(node, {
     damping: 38,
     mass: 1,
@@ -29,6 +28,12 @@ let calculatedItemWidths = 0;
 let positions = [];
 let widths = [];
 
+function resetPositionCalculations() {
+  calculatedItemWidths = 0;
+  positions = [];
+  widths = [];
+}
+
 const JellySelector = ({
   backgroundColor,
   defaultIndex,
@@ -36,25 +41,23 @@ const JellySelector = ({
   height,
   items,
   onSelect,
+  renderIndicator,
   renderItem,
+  renderRow,
+  ...props
 }) => {
-  const { width: deviceWidth } = useDimensions();
   const [selected, setSelected] = useState(defaultIndex);
   const [translateX, width] = useValues([0, 0], []);
 
   useEffect(() => {
-    widths = [];
-    positions = [];
-
-    return () => {
-      calculatedItemWidths = 0;
-    };
+    resetPositionCalculations();
+    return () => resetPositionCalculations();
   }, []);
 
   const animateTransition = useCallback(
     (index, skipAnimation) => {
       const nextWidth = widths[index];
-      const nextX = positions[index]; // + widths[index] / 2;
+      const nextX = positions[index] + widths[index] / 2;
 
       if (skipAnimation) {
         translateX.setValue(nextX);
@@ -69,14 +72,11 @@ const JellySelector = ({
 
   const handleItemLayout = useCallback(
     (event, index) => {
-      console.log('happening', index, get(event, 'nativeEvent.layout'));
+      const itemWidth = get(event, 'nativeEvent.layout.width', 0);
+      const itemX = get(event, 'nativeEvent.layout.x', 0);
 
-      const itemWidth = get(event, 'nativeEvent.layout.width');
-      const itemX = get(event, 'nativeEvent.layout.x');
-
+      positions[index] = Math.floor(itemX) - Math.floor(itemWidth / 2);
       widths[index] = Math.floor(itemWidth);
-      positions[index] = Math.floor(itemWidth / 2 + itemX);
-
       calculatedItemWidths++;
 
       if (items.length === calculatedItemWidths) {
@@ -88,7 +88,6 @@ const JellySelector = ({
 
   const handleItemPress = useCallback(
     (event, index) => {
-      console.log('ITEM PRESS', index);
       if (!disableSelection) {
         animateTransition(index);
         setSelected(index);
@@ -98,42 +97,30 @@ const JellySelector = ({
     [animateTransition, disableSelection, items, onSelect]
   );
 
-  console.log(' ');
-  console.log('👋️');
-  console.log('widths', widths);
-  console.log('positions', positions);
-  console.log(' ');
-
   return (
-    <Centered width="100%" height={32} paddingHorizontal={15}>
+    <View {...props}>
       <JellySelectorIndicator
         backgroundColor={backgroundColor}
+        height={height}
+        renderIndicator={renderIndicator}
         translateX={translateX}
         width={width}
       />
-      <Row
-        justify="space-between"
-        left={15}
-        position="absolute"
-        right={15}
-        top={0}
-        width="100%"
-        zIndex={11}
-      >
+      <JellySelectorRow renderRow={renderRow}>
         {items.map((item, index) => (
           <JellySelectorItem
             index={index}
             isSelected={selected === index}
             item={item}
-            key={index}
+            key={item}
             onLayout={handleItemLayout}
             onPress={handleItemPress}
             renderItem={renderItem}
             width={widths[index]}
           />
         ))}
-      </Row>
-    </Centered>
+      </JellySelectorRow>
+    </View>
   );
 };
 
@@ -144,19 +131,19 @@ JellySelector.propTypes = {
   height: PropTypes.number.isRequired,
   items: PropTypes.array,
   onSelect: PropTypes.func,
+  renderIndicator: PropTypes.func,
   renderItem: PropTypes.func,
+  renderRow: PropTypes.func,
 };
 
 JellySelector.defaultProps = {
   defaultIndex: 0,
+  renderIndicator: JellySelectorColorIndicator,
 };
 
-export default JellySelector;
-
-
-// magicMemo(JellySelector, [
-//   'backgroundColor',
-//   'height',
-//   'defaultIndex',
-//   'items',
-// ]);
+export default magicMemo(JellySelector, [
+  'backgroundColor',
+  'defaultIndex',
+  'height',
+  'items',
+]);

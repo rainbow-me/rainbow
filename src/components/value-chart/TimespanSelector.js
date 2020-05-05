@@ -1,80 +1,55 @@
-import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
-import { StyleSheet } from 'react-native';
-import Animated, { spring } from 'react-native-reanimated';
-import { useValues } from 'react-native-redash';
+import React, { useCallback } from 'react';
+import styled from 'styled-components/primitives';
 import ChartTypes from '../../helpers/chartTypes';
-import { useDimensions } from '../../hooks';
-import { borders, colors, position } from '../../styles';
+import { colors, padding } from '../../styles';
+import { JellySelector } from '../jelly-selector';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
-import { JellySelector } from '../jelly-selector';
 
-const indicatorSize = 30;
-const sx = StyleSheet.create({
-  item: {
-    // ...position.sizeAsObject(30),
-    // overflow: 'hidden',
-    paddingHorizontal: 8,
-  },
-});
+const TimespanItemLabel = styled(Text).attrs({
+  align: 'center',
+  letterSpacing: 'roundedTightest',
+  size: 'smedium',
+  weight: 'semibold',
+})`
+  ${padding(0, 8)};
+  color: ${({ isSelected }) => (isSelected ? colors.dark : colors.grey)};
+`;
 
-const TimespanItem = ({ isSelected, item, ...props }) => {
-  // console.log('timespanitem props' , props);
+const TimespanItem = ({ isSelected, item, ...props }) => (
+  <Centered flexShrink={0} height={32} {...props}>
+    <TimespanItemLabel isSelected={isSelected}>
+      {ChartTypes[item] === ChartTypes.max
+        ? 'MAX'
+        : `1${item.charAt(0).toUpperCase()}`}
+    </TimespanItemLabel>
+  </Centered>
+);
 
-        // lineHeight={30}
-  return (
-    <Centered flexShrink={0} height={32} {...props}>
-      <Text
-        align="center"
-        color={isSelected ? colors.dark : colors.grey}
-        style={sx.item}
-        weight="semibold"
-      >
-        {ChartTypes[item] === ChartTypes.max ? 'MAX' : `1${item.charAt(0)}`}
-      </Text>
-    </Centered>
-  );
-}
+const TimespanItemRow = props => (
+  <Row justify="space-between" paddingHorizontal={15} {...props} />
+);
 
-const TimespanSelector = ({ color, defaultIndex, isLoading, reloadChart }) => {
-  const { width } = useDimensions();
-  const [timespan, setTimespan] = useState(defaultIndex);
-
-  const bottomSpaceWidth = width / 8;
-  const [translateX] = useValues([Math.round(-bottomSpaceWidth * 3)], []);
-
+const TimespanSelector = ({ color, defaultIndex = 0, reloadChart }) => {
   const handleSelect = useCallback(
-    newTimespan => {
-      console.log('NEW TIMESPAN', newTimespan);
-      setTimespan(ChartTypes[newTimespan]);
-      reloadChart(ChartTypes[newTimespan]);
-    },
+    newTimespan => reloadChart(ChartTypes[newTimespan]),
     [reloadChart]
   );
-
-  const items = Object.keys(ChartTypes);
-
-  // console.log('items', items);
 
   return (
     <Centered width="100%">
       <JellySelector
         backgroundColor={color}
-        defaultIndex={0}
+        defaultIndex={defaultIndex}
         height={32}
-        items={items}
+        items={Object.keys(ChartTypes)}
         onSelect={handleSelect}
         renderItem={TimespanItem}
+        renderRow={TimespanItemRow}
+        width="100%"
       />
     </Centered>
   );
 };
 
-TimespanSelector.propTypes = {
-  color: PropTypes.string,
-  isLoading: PropTypes.bool,
-  reloadChart: PropTypes.func,
-};
-
-export default TimespanSelector;
+export default React.memo(TimespanSelector);

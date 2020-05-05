@@ -1,22 +1,19 @@
-import PropTypes from 'prop-types';
 import React, { createElement, useCallback } from 'react';
-import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { Centered } from '../layout';
 
-const JellySelectorItem = ({
+export default function JellySelectorItem({
   index,
   isSelected,
   item,
   onLayout,
   onPress,
   renderItem,
+  style,
   width,
-}) => {
+}) {
   const handleLayout = useCallback(e => onLayout(e, index), [index, onLayout]);
   const handlePress = useCallback(e => onPress(e, index), [index, onPress]);
-//
-      // style={{ width }}
+
   return (
     <ButtonPressAnimation
       enableHapticFeedback={false}
@@ -24,6 +21,7 @@ const JellySelectorItem = ({
       onLayout={handleLayout}
       onPress={handlePress}
       scaleTo={0.94}
+      style={[{ width }, style]}
     >
       {createElement(renderItem, {
         isSelected,
@@ -31,9 +29,4 @@ const JellySelectorItem = ({
       })}
     </ButtonPressAnimation>
   );
-};
-
-export default JellySelectorItem;
-
-      // <Centered>
-      // </Centered>
+}
