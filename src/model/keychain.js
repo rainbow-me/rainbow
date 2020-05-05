@@ -1,5 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import DeviceInfo from 'react-native-device-info';
+import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import {
   ACCESS_CONTROL,
   ACCESSIBLE,
@@ -10,9 +11,11 @@ import {
   resetInternetCredentials,
   setInternetCredentials,
 } from 'react-native-keychain';
+import AesEncryptor from '../handlers/aesEncryption';
 import { logger } from '../utils';
 
 const RAINBOW_BACKUP_KEY = 'rainbowBackup';
+const encryptor = new AesEncryptor();
 
 // NOTE: implement access control for iOS keychain
 export async function saveString(key, value, accessControlOptions) {
@@ -97,8 +100,9 @@ export async function backupToIcloud() {
     };
   });
   const backup = JSON.stringify(parsedResults);
+  const encryptedBackup = await encryptor.encrypt(RAINBOW_MASTER_KEY, backup);
   try {
-    await saveString(RAINBOW_BACKUP_KEY, backup, {
+    await saveString(RAINBOW_BACKUP_KEY, encryptedBackup, {
       ACCESSIBLE: ACCESSIBLE.WHEN_UNLOCKED,
       synchronizable: true,
     });
@@ -112,7 +116,12 @@ export async function restoreIcloudBackup() {
     synchronizable: true,
   });
 
-  const backedUpData = JSON.parse(results.password);
+  const encryptedBackedUpData = results.password;
+  const backedUpDataStringified = await encryptor.decrypt(
+    RAINBOW_MASTER_KEY,
+    encryptedBackedUpData
+  );
+  const backedUpData = JSON.parse(backedUpDataStringified);
   const publicAccessControlOptions = {
     accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
   };
