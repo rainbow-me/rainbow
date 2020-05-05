@@ -22,16 +22,6 @@ import { useAccountSettings, useWallets } from '../hooks';
 import { colors, padding } from '../styles';
 import Routes from './Routes/routesNames';
 
-const DepositButtonShadows = [
-  [0, 7, 21, colors.dark, 0.25],
-  [0, 3.5, 10.5, colors.swapPurple, 0.35],
-];
-
-const WithdrawButtonShadows = [
-  [0, 7, 21, colors.dark, 0.25],
-  [0, 3.5, 10.5, colors.dark, 0.35],
-];
-
 const SavingsSheet = () => {
   const { getParam, navigate, goBack } = useNavigation();
   const { selected: selectedWallet = {} } = useWallets();
@@ -155,13 +145,11 @@ const SavingsSheet = () => {
               color={colors.dark}
               label="􀁏 Withdraw"
               onPress={onWithdraw}
-              shadows={WithdrawButtonShadows}
             />
             <SheetActionButton
               color={colors.swapPurple}
               label="􀁍 Deposit"
               onPress={onDeposit}
-              shadows={DepositButtonShadows}
             />
           </RowWithMargins>
           <Divider zIndex={0} />

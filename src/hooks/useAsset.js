@@ -5,8 +5,11 @@ import useAccountAssets from './useAccountAssets';
 export default function useAsset(asset) {
   const { allAssets } = useAccountAssets();
 
-  return useMemo(
-    () => ethereumUtils.getAsset(allAssets, asset.address) || asset,
-    [allAssets, asset]
-  );
+  return useMemo(() => {
+    if (asset.type === 'token') {
+      return ethereumUtils.getAsset(allAssets, asset.address) || asset;
+    }
+
+    return asset;
+  }, [allAssets, asset]);
 }

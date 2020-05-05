@@ -14,6 +14,7 @@ export { default as useCoinListEditOptions } from './useCoinListEditOptions';
 export { default as useContacts } from './useContacts';
 export { default as useDimensions } from './useDimensions';
 export { default as useEmailRainbow } from './useEmailRainbow';
+export { default as useExpandedStateNavigation } from './useExpandedStateNavigation';
 export { default as useGas } from './useGas';
 export { default as useHideSplashScreen } from './useHideSplashScreen';
 export { default as useInitializeAccountData } from './useInitializeAccountData';
