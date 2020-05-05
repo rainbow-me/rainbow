@@ -1,13 +1,18 @@
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
+import { Alert } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import SeedPhraseImageSource from '../../assets/seed-phrase-icon.png';
-import { useWallets } from '../../hooks';
+import { isMultiwalletAvailable } from '../../config/experimental';
+import { useInitializeWallet, useWallets } from '../../hooks';
 import * as keychain from '../../model/keychain';
 import { loadSeedPhraseAndMigrateIfNeeded } from '../../model/wallet';
+import { walletsLoadState } from '../../redux/wallets';
 import { colors, padding, position, shadow } from '../../styles';
+import { logger } from '../../utils';
 import { Button } from '../buttons';
 import CopyTooltip from '../copy-tooltip';
 import { Centered, Column, RowWithMargins } from '../layout';
@@ -34,19 +39,42 @@ const BackupButton = styled(Button)`
 
 const BackupSection = ({ navigation }) => {
   const [seedPhrase, setSeedPhrase] = useState(null);
+  const dispatch = useDispatch();
   const { selected: selectedWallet = {} } = useWallets();
+  const initializeWallet = useInitializeWallet();
 
   const hideSeedPhrase = () => setSeedPhrase(null);
 
   const icloudBackup = useCallback(async () => {
     try {
       await keychain.backupToIcloud();
-      const backup = await keychain.restoreBackup();
-      console.log('BACKUP', JSON.parse(backup.password));
+      Alert.alert('Your wallet has been backed up!');
     } catch (e) {
-      console.log('Error while backing up', e);
+      logger.log('Error while backing up', e);
     }
   }, []);
+
+  const restoreBackup = useCallback(async () => {
+    try {
+      await keychain.restoreIcloudBackup();
+      await initializeWallet();
+      dispatch(walletsLoadState());
+      Alert.alert('Your wallet has been restored!');
+    } catch (e) {
+      logger.log('Error while restoring backup', e);
+    }
+  }, [dispatch, initializeWallet]);
+
+  const resetKeychain = useCallback(async () => {
+    try {
+      await keychain.reset();
+      await initializeWallet();
+      dispatch(walletsLoadState());
+      Alert.alert('The keychain has been reset');
+    } catch (e) {
+      logger.log('Error while restoring backup', e);
+    }
+  }, [dispatch, initializeWallet]);
 
   const handlePressToggleSeedPhrase = useCallback(() => {
     if (!seedPhrase) {
@@ -104,9 +132,19 @@ const BackupSection = ({ navigation }) => {
       <ToggleSeedPhraseButton onPress={handlePressToggleSeedPhrase}>
         {seedPhrase ? 'Hide' : 'Show'} Private Key
       </ToggleSeedPhraseButton>
-      <RowWithMargins marginTop={20}>
-        <BackupButton onPress={icloudBackup}>iCloud Backup</BackupButton>
-      </RowWithMargins>
+      {__DEV__ && isMultiwalletAvailable && (
+        <React.Fragment>
+          <RowWithMargins marginTop={20}>
+            <BackupButton onPress={icloudBackup}>iCloud Backup</BackupButton>
+          </RowWithMargins>
+          <RowWithMargins marginTop={20}>
+            <BackupButton onPress={restoreBackup}>Restore backup</BackupButton>
+          </RowWithMargins>
+          <RowWithMargins marginTop={20}>
+            <BackupButton onPress={resetKeychain}>Reset keychain</BackupButton>
+          </RowWithMargins>
+        </React.Fragment>
+      )}
     </Column>
   );
 };
