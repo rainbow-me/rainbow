@@ -5,7 +5,6 @@ import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { colors } from '../../styles';
-import { deviceUtils } from '../../utils';
 import Highlight from '../Highlight';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
@@ -16,7 +15,6 @@ const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
 
 const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 50;
-const TokenFamilyHeaderTextSafeArea = 130;
 
 const TokenFamilyHeader = ({
   childrenAmount,
@@ -48,11 +46,7 @@ const TokenFamilyHeader = ({
         width="100%"
       >
         <Highlight visible={highlight} />
-        <RowWithMargins
-          align="center"
-          margin={emoji ? 5 : 9}
-          width={deviceUtils.dimensions.width - TokenFamilyHeaderTextSafeArea}
-        >
+        <RowWithMargins align="center" margin={emoji ? 5 : 9}>
           {emoji ? (
             <Emoji size="lmedium" name={emoji} />
           ) : (
@@ -62,16 +56,22 @@ const TokenFamilyHeader = ({
               isCoinRow={isCoinRow}
             />
           )}
-          <TruncatedText
-            letterSpacing="roundedMedium"
-            lineHeight="normal"
-            size="large"
-            style={{ marginBottom: 1 }}
-            weight="semibold"
-          >
-            {title}
-          </TruncatedText>
         </RowWithMargins>
+        <TruncatedText
+          letterSpacing="roundedMedium"
+          lineHeight="normal"
+          size="large"
+          style={{
+            flex: 1,
+            marginBottom: 1,
+            paddingLeft: title !== 'Showcase' ? 9 : 0,
+            paddingRight: 9,
+            textAlign: 'left',
+          }}
+          weight="semibold"
+        >
+          {title}
+        </TruncatedText>
         <RowWithMargins align="center" margin={13}>
           <Animated.View
             style={{
