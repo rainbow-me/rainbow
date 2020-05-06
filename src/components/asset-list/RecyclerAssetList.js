@@ -324,21 +324,19 @@ class RecyclerAssetList extends Component {
             this.lastAssetIndex = index;
           }
           const firstBalanceIndex = headersIndices[balancesIndex] + 1;
+          const isFirst =
+            index === firstBalanceIndex &&
+            !sections[balancesIndex].data[firstBalanceIndex - 1]
+              .smallBalancesContainer;
 
           return {
             height: ViewTypes.COIN_ROW.calculateHeight({
               areSmallCollectibles: this.state.areSmallCollectibles,
-              isFirst:
-                index === firstBalanceIndex &&
-                !sections[balancesIndex].data[firstBalanceIndex - 1]
-                  .smallBalancesContainer,
+              isFirst,
               isLast: index === lastBalanceIndex,
             }),
             index: ViewTypes.COIN_ROW.index,
-            isFirst:
-              index === firstBalanceIndex &&
-              !sections[balancesIndex].data[firstBalanceIndex - 1]
-                .smallBalancesContainer,
+            isFirst,
             visibleDuringCoinEdit: ViewTypes.COIN_ROW.visibleDuringCoinEdit,
           };
         }
@@ -502,9 +500,7 @@ class RecyclerAssetList extends Component {
                 Number(focusedFamilyItem.childrenAmount) / 2
               ),
               isFirst: false,
-              isLast: false,
               isOpen: true,
-              paddingBottom: this.props.paddingBottom,
             }
           );
 
