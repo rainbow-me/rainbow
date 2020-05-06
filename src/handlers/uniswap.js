@@ -8,11 +8,24 @@ import {
   tradeTokensForExactEthWithData,
   tradeTokensForExactTokensWithData,
 } from '@uniswap/sdk';
+import { getUnixTime, sub } from 'date-fns';
 import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
-import { get, map, mapKeys, mapValues, toLower, zipObject } from 'lodash';
+import {
+  findKey,
+  get,
+  map,
+  mapKeys,
+  mapValues,
+  toLower,
+  zipObject,
+} from 'lodash';
 import { uniswapClient } from '../apollo/client';
-import { UNISWAP_ALL_EXCHANGES_QUERY } from '../apollo/queries';
+import {
+  UNISWAP_ALL_EXCHANGES_QUERY,
+  UNISWAP_CHART_QUERY,
+} from '../apollo/queries';
+import ChartTypes from '../helpers/chartTypes';
 import {
   convertAmountToRawAmount,
   convertRawAmountToDecimalFormat,
@@ -320,6 +333,53 @@ export const getLiquidityInfo = async (
 
   const results = await Promise.all(promises);
   return zipObject(exchangeContracts, results);
+};
+
+export const getChart = async (exchangeAddress, timeframe) => {
+  const now = new Date();
+  const timeframeKey = findKey(ChartTypes, type => type === timeframe);
+  let startTime = getUnixTime(
+    sub(now, {
+      ...(timeframe === ChartTypes.max
+        ? { years: 2 }
+        : { [`${timeframeKey}s`]: 1 }),
+      seconds: 1, // -1 seconds because we filter on greater than in the query
+    })
+  );
+
+  let data = [];
+  try {
+    let dataEnd = false;
+    while (!dataEnd) {
+      const chartData = await uniswapClient
+        .query({
+          fetchPolicy: 'cache-first',
+          query: UNISWAP_CHART_QUERY,
+          variables: {
+            date: startTime,
+            exchangeAddress,
+          },
+        })
+        .then(({ data: { exchangeDayDatas } }) =>
+          exchangeDayDatas.map(({ date, tokenPriceUSD }) => [
+            date,
+            parseFloat(tokenPriceUSD),
+          ])
+        );
+
+      data = data.concat(chartData);
+
+      if (chartData.length !== 100) {
+        dataEnd = true;
+      } else {
+        startTime = chartData[chartData.length - 1][0];
+      }
+    }
+  } catch (err) {
+    logger.log('error: ', err);
+  }
+
+  return data;
 };
 
 export const getAllExchanges = async (tokenOverrides, excluded = []) => {

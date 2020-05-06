@@ -10,6 +10,7 @@ import { contains, delay, timing } from 'react-native-redash';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { deviceUtils } from '../../utils';
 import ActivityIndicator from '../ActivityIndicator';
+import { Centered, Row } from '../layout';
 import GestureWrapper from './GestureWrapper';
 import TimestampText from './TimestampText';
 
@@ -46,6 +47,7 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
   let dividers = [];
   let lastPoints = [];
   let createdLastPoints = [];
+
   if (data.segments.length > 0) {
     for (let i = 0; i < data.segments.length; i++) {
       allSegmentsPoints = allSegmentsPoints.concat(data.segments[i].points);
@@ -91,7 +93,7 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
       } else {
         finalValue = firstValue + secondValue;
       }
-      if (i * destMul > lastPoints[createdLastPoints.length]) {
+      if (indexPlace > lastPoints[createdLastPoints.length]) {
         createdLastPoints.push(newData.length);
       }
       newData.push({
@@ -111,7 +113,7 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
 
     allSegmentDividers = allSegmentDividers.concat(createdLastPoints);
 
-    let data = {
+    return {
       allPointsForData: allSegmentsPoints,
       colors,
       lastPoints: createdLastPoints,
@@ -119,8 +121,6 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
       points: newData,
       startSeparatator: dividers,
     };
-
-    return data;
   }
 };
 
@@ -249,7 +249,6 @@ export default class Chart extends PureComponent {
       animatedDividers: undefined,
       animatedPath: undefined,
       chartData: this.data,
-
       currentData: this.data[0],
       hideLoadingBar: false,
       isLoading: true,
@@ -293,7 +292,7 @@ export default class Chart extends PureComponent {
       new Value(0),
     ];
 
-    this.currentInterval = 1;
+    this.currentInterval = 0;
 
     this._configUp = {
       duration: 500,
@@ -351,7 +350,7 @@ export default class Chart extends PureComponent {
   }
 
   componentDidMount = () => {
-    this.reloadChart(1, true);
+    this.reloadChart(0, true);
   };
 
   getSnapshotBeforeUpdate(prevProps) {
@@ -368,7 +367,7 @@ export default class Chart extends PureComponent {
 
   componentWillUnmount = () => {
     if (this.timeoutHandle) {
-      clearTimeout(this.timeoutHandle)
+      clearTimeout(this.timeoutHandle);
     }
   };
 
@@ -414,6 +413,7 @@ export default class Chart extends PureComponent {
     }
     if (currentInterval !== this.currentInterval) {
       this.timeoutHandle = setTimeout(async () => {
+        // eslint-disable-next-line import/no-named-as-default-member
         Animated.timing(
           this.chartAnimationValues[this.currentInterval],
           this._configDown
@@ -544,6 +544,7 @@ export default class Chart extends PureComponent {
     let returnPaths = [];
     let returnPoints = [];
     const localSegmentDividers = allSegmentDividers;
+
     for (let i = 0; i <= localSegmentDividers.length; i++) {
       const animatedPath = concat(
         'M 0 0',
@@ -610,11 +611,14 @@ export default class Chart extends PureComponent {
 
       returnPaths.push(
         <AnimatedPath
-          key={i}
-          id="main-path"
+          d={animatedPath}
           fill="none"
+          id="main-path"
+          key={i}
           stroke={colorMatrix(0)}
           strokeDasharray={lineMatrix(0)}
+          strokeLinecap="round"
+          strokeLinejoin="round"
           strokeWidth={add(
             this.props.stroke.detailed,
             multiply(
@@ -622,9 +626,6 @@ export default class Chart extends PureComponent {
               sub(this.props.stroke.simplified, this.props.stroke.detailed)
             )
           )}
-          strokeLinejoin="round"
-          strokeLinecap="round"
-          d={animatedPath}
         />
       );
     }
@@ -682,21 +683,18 @@ export default class Chart extends PureComponent {
       maxValueDistance = 999,
       minValueDistance = 999;
 
-    if (currentData.points.length > 0) {
-      maxValue = maxBy(currentData.points, 'y');
-      minValue = minBy(currentData.points, 'y');
+    const points = currentData?.points;
+    if (points && points.length > 0) {
+      maxValue = maxBy(points, 'y');
+      minValue = minBy(points, 'y');
 
-      timePeriod =
-        currentData.points[currentData.points.length - 1].x -
-        currentData.points[0].x;
+      timePeriod = points[points.length - 1].x - points[0].x;
 
       maxValueDistance = this.checkValueBoundaries(
-        ((maxValue.x - currentData.points[0].x) / timePeriod) * width -
-          width / 2
+        ((maxValue.x - points[0].x) / timePeriod) * width - width / 2
       );
       minValueDistance = this.checkValueBoundaries(
-        ((minValue.x - currentData.points[0].x) / timePeriod) * width -
-          width / 2
+        ((minValue.x - points[0].x) / timePeriod) * width - width / 2
       );
     }
 
@@ -708,91 +706,72 @@ export default class Chart extends PureComponent {
           onPanGestureEvent={this.onPanGestureEvent}
           onHandlerStateChange={this.onHandlerStateChange}
         >
-          <Animated.View
-            style={{
-              justifyContent: 'flex-start',
-            }}
-          >
-            <Animated.View
-              style={{
-                opacity: this.loadingValue,
-              }}
+          <Animated.View style={{ opacity: this.loadingValue }}>
+            <TimestampText
+              style={{ transform: [{ translateX: maxValueDistance }] }}
             >
-              <TimestampText
-                style={{ transform: [{ translateX: maxValueDistance }] }}
+              ${Number(maxValue.y).toFixed(2)}
+            </TimestampText>
+          </Animated.View>
+          <Row>
+            <View height={200} width={width}>
+              <Svg
+                height={height}
+                preserveAspectRatio="none"
+                style={flipY}
+                viewBox={`2 ${height + chartPadding - width} ${width} ${width}`}
+                width={width + 2}
               >
-                ${Number(maxValue.y).toFixed(2)}
-              </TimestampText>
-            </Animated.View>
-            <View style={{ flexDirection: 'row' }}>
-              <View
-                style={{
-                  height: 200,
-                  width,
-                }}
-              >
-                <Svg
-                  height={width}
-                  width={width + 2}
-                  viewBox={`2 ${height +
-                    chartPadding -
-                    width} ${width} ${width}`}
-                  preserveAspectRatio="none"
-                  style={flipY}
-                >
-                  {this.state.animatedPath}
-                  {this.state.animatedDividers}
-                </Svg>
-              </View>
-              <Animated.View
-                style={[
-                  {
-                    backgroundColor: this.props.barColor,
-                    borderRadius: 2,
-                    height: 180,
-                    position: 'absolute',
-                    top: 10,
-                    width: 2,
-                    zIndex: 10,
-                  },
-                  {
-                    opacity: this.opacity,
-                    transform: [
-                      {
-                        translateX: Animated.add(this.touchX, new Value(-1.5)),
-                      },
-                    ],
-                  },
-                ]}
-              />
+                {this.state.animatedPath}
+                {this.state.animatedDividers}
+              </Svg>
             </View>
             <Animated.View
-              style={{
-                opacity: this.loadingValue,
-              }}
+              style={[
+                {
+                  backgroundColor: this.props.barColor,
+                  borderRadius: 2,
+                  height: 180,
+                  position: 'absolute',
+                  top: 10,
+                  width: 2,
+                  zIndex: 10,
+                },
+                {
+                  opacity: this.opacity,
+                  transform: [
+                    {
+                      translateX: Animated.add(this.touchX, new Value(-1.5)),
+                    },
+                  ],
+                },
+              ]}
+            />
+          </Row>
+          <Animated.View
+            style={{
+              opacity: this.loadingValue,
+            }}
+          >
+            <TimestampText
+              style={{ transform: [{ translateX: minValueDistance }] }}
             >
-              <TimestampText
-                style={{ transform: [{ translateX: minValueDistance }] }}
-              >
-                ${Number(minValue.y).toFixed(2)}
-              </TimestampText>
-            </Animated.View>
+              ${Number(minValue.y).toFixed(2)}
+            </TimestampText>
           </Animated.View>
         </GestureWrapper>
         {this.state.isLoading && (
-          <View
+          <Centered
             style={{
-              alignItems: 'center',
               backgroundColor: '#ffffffbb',
               height: 235,
-              justifyContent: 'center',
               position: 'absolute',
               top: 100,
               width: width,
             }}
           >
             <ActivityIndicator />
-          </View>
+          </Centered>
         )}
         <Animated.Code
           exec={block([
@@ -805,36 +784,42 @@ export default class Chart extends PureComponent {
               block([
                 set(this.shouldSpring, 0),
                 call([], () => {
-                  this.props.onValueUpdate(
-                    currentData.points[currentData.points.length - 1].y
-                  );
+                  // When user stops interacting with charts, reset the
+                  // "currently selected value" back to the newest possible price.
+                  // This is the value displayed in <ValueText />
+                  const points = currentData?.points;
+                  if (points) {
+                    this.props.onValueUpdate(points[points.length - 1].y);
+                  }
                 }),
               ]),
               onChange(
                 this.touchX,
                 call([this.touchX], ([x]) => {
-                  let curX = 0;
-                  if (x < (width / (amountOfPathPoints + 20)) * 10) {
-                    curX = 0;
-                  } else if (
-                    x >
-                    width - (width / (amountOfPathPoints + 20)) * 10
-                  ) {
-                    curX = width - (width / (amountOfPathPoints + 20)) * 10 - 1;
-                  } else {
-                    curX =
-                      x -
-                      (width / (amountOfPathPoints + 20)) * 10 +
-                      (x / width) * (width / (amountOfPathPoints + 20)) * 10;
+                  const points = currentData?.points;
+                  if (points) {
+                    let curX = 0;
+                    if (x < (width / (amountOfPathPoints + 20)) * 10) {
+                      curX = 0;
+                    } else if (
+                      x >
+                      width - (width / (amountOfPathPoints + 20)) * 10
+                    ) {
+                      curX =
+                        width - (width / (amountOfPathPoints + 20)) * 10 - 1;
+                    } else {
+                      curX =
+                        x -
+                        (width / (amountOfPathPoints + 20)) * 10 +
+                        (x / width) * (width / (amountOfPathPoints + 20)) * 10;
+                    }
+                    const calculatedIndex = Math.floor(
+                      curX /
+                        ((width - (width / (amountOfPathPoints + 20)) * 10) /
+                          points.length)
+                    );
+                    this.props.onValueUpdate(points[calculatedIndex].y);
                   }
-                  const calculatedIndex = Math.floor(
-                    curX /
-                      ((width - (width / (amountOfPathPoints + 20)) * 10) /
-                        currentData.points.length)
-                  );
-                  this.props.onValueUpdate(
-                    currentData.points[calculatedIndex].y
-                  );
                 })
               )
             ),

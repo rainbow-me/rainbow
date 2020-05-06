@@ -13,7 +13,7 @@ import {
 } from '../../hoc';
 import { useDimensions } from '../../hooks';
 import { colors } from '../../styles';
-import { isNewValueForPath } from '../../utils';
+import { isNewValueForObjectPaths, isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Column, FlexItem, Row } from '../layout';
 import BalanceText from './BalanceText';
@@ -121,7 +121,7 @@ const BalanceCoinRow = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCoinListEdited, recentlyPinnedCount]);
 
-  const handlePress = useCallback(() => {
+  const handleEditModePress = useCallback(() => {
     if (toggle) {
       removeSelectedCoin(item.uniqueId);
     } else {
@@ -130,11 +130,11 @@ const BalanceCoinRow = ({
     setToggle(!toggle);
   }, [item.uniqueId, pushSelectedCoin, removeSelectedCoin, setToggle, toggle]);
 
-  const onPressHandler = useCallback(() => {
+  const handlePress = useCallback(() => {
     onPress && onPress(item);
   }, [onPress, item]);
 
-  const onPressSendHandler = useCallback(() => {
+  const handlePressSend = useCallback(() => {
     onPressSend && onPressSend(item);
   }, [onPressSend, item]);
 
@@ -142,7 +142,7 @@ const BalanceCoinRow = ({
     <Column flex={1} justify={isFirstCoinRow ? 'end' : 'start'}>
       <ButtonPressAnimation
         disabled={isExpandedState}
-        onPress={isCoinListEdited ? handlePress : onPressHandler}
+        onPress={isCoinListEdited ? handleEditModePress : handlePress}
         scaleTo={0.96}
       >
         <View
@@ -154,8 +154,8 @@ const BalanceCoinRow = ({
               isExpandedState ? BalanceCoinRowExpandedStyles : containerStyles
             }
             isExpandedState={isExpandedState}
-            onPress={onPressHandler}
-            onPressSend={onPressSendHandler}
+            onPress={handlePress}
+            onPressSend={handlePressSend}
             bottomRowRender={BottomRow}
             topRowRender={TopRow}
             {...item}
@@ -164,7 +164,7 @@ const BalanceCoinRow = ({
         </View>
       </ButtonPressAnimation>
       {isCoinListEdited ? (
-        <CoinCheckButton toggle={toggle} onPress={handlePress} />
+        <CoinCheckButton toggle={toggle} onPress={handleEditModePress} />
       ) : null}
     </Column>
   );
@@ -180,29 +180,26 @@ BalanceCoinRow.propTypes = {
   openSmallBalances: PropTypes.bool,
 };
 
-const arePropsEqual = (props, nextProps) => {
-  const isChangeInOpenAssets =
-    props.openSmallBalances !== nextProps.openSmallBalances;
-  const itemIdentifier = buildAssetUniqueIdentifier(props.item);
-  const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.item);
+const arePropsEqual = (prev, next) => {
+  const itemIdentifier = buildAssetUniqueIdentifier(prev.item);
+  const nextItemIdentifier = buildAssetUniqueIdentifier(next.item);
 
-  const isNewItem = itemIdentifier !== nextItemIdentifier;
-  const isEdited = isNewValueForPath(props, nextProps, 'isCoinListEdited');
-  const isPinned = isNewValueForPath(props, nextProps, 'item.isPinned');
-  const isHidden = isNewValueForPath(props, nextProps, 'item.isHidden');
-  const isFirst = isNewValueForPath(props, nextProps, 'isFirstCoinRow');
+  const isNewItem = itemIdentifier === nextItemIdentifier;
+
   const recentlyPinnedCount =
-    isNewValueForPath(props, nextProps, 'recentlyPinnedCount') &&
-    (get(props, 'item.isPinned', false) || get(props, 'item.isHidden', false));
+    !isNewValueForPath(prev, next, 'recentlyPinnedCount') &&
+    (get(prev, 'item.isPinned', false) || get(prev, 'item.isHidden', false));
 
-  return !(
+  return (
     isNewItem ||
-    isChangeInOpenAssets ||
-    isEdited ||
-    isPinned ||
-    isHidden ||
-    isFirst ||
-    recentlyPinnedCount
+    recentlyPinnedCount ||
+    !isNewValueForObjectPaths(prev, next, [
+      'isCoinListEdited',
+      'isFirstCoinRow',
+      'item.isHidden',
+      'item.isPinned',
+      'openSmallBalances',
+    ])
   );
 };
 

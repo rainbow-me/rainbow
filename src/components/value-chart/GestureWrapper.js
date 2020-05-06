@@ -8,13 +8,13 @@ import Animated from 'react-native-reanimated';
 export default function GestureWrapper({
   children,
   enabled,
-  onTapGestureEvent,
-  onPanGestureEvent,
   onHandlerStateChange,
+  onPanGestureEvent,
+  onTapGestureEvent,
 }) {
   return enabled ? (
     <TapGestureHandler maxDeltaY={30} onHandlerStateChange={onTapGestureEvent}>
-      <Animated.View>
+      <Animated.View accessible justifyContent="flex-start">
         <PanGestureHandler
           failOffsetY={2}
           minDist={1}
@@ -22,7 +22,7 @@ export default function GestureWrapper({
           onHandlerStateChange={onHandlerStateChange}
           shouldActivateOnStart
         >
-          {children}
+          <Animated.View>{children}</Animated.View>
         </PanGestureHandler>
       </Animated.View>
     </TapGestureHandler>

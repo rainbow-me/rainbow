@@ -1,88 +1,62 @@
-import React, { Fragment, useCallback, useMemo, useRef, useState,  } from 'react';
+import { get, isEmpty } from 'lodash';
+import React, { useMemo, useState } from 'react';
+import { Easing } from 'react-native-reanimated';
+import {
+  bin,
+  bInterpolateColor,
+  useTimingTransition,
+} from 'react-native-redash';
+import ChartTypes from '../../helpers/chartTypes';
 import { greaterThan, toFixedDecimals } from '../../helpers/utilities';
+import { useCharts } from '../../hooks';
 import { colors } from '../../styles';
 import { Column } from '../layout';
 import TimespanSelector from './TimespanSelector';
 import ValueChart from './ValueChart';
 import ValueText from './ValueText';
-import { data1, data2, data3, dataColored2, dataColored3 } from './data';
-
-const dataSwitching2 = [
-  [data2],
-  [data1],
-  [dataColored2, dataColored3],
-  [data3],
-];
-
-const colorsArray = [
-  colors.red,
-  colors.grey,
-  colors.green,
-  colors.purple,
-  colors.red,
-  colors.green,
-  colors.red,
-  colors.purple,
-  colors.green,
-  colors.grey,
-  colors.green,
-  colors.purple,
-];
 
 const chartStroke = { detailed: 1.5, simplified: 3 };
 
-let colorIndex = 0;
+const Chart = ({ asset, ...props }) => {
+  const { chart, chartType, updateChartType } = useCharts(asset);
 
-const Chart = ({ change, ...props }) => {
-  const textInputRef = useRef(null);
+  const hasChart = !isEmpty(chart);
+  const change = get(asset, 'price.relative_change_24h', 0);
 
-  const data2 = useMemo(() => {
-    colorIndex = 0;
-    return dataSwitching2.map((sectionsData, index) => {
+  const chartData = useMemo(() => {
+    if (!chart || !hasChart) return [];
+    return [[chart, chart]].map((sectionsData, index) => {
       return {
         name: index,
-        segments: sectionsData.map((data, i) => {
-          return {
-            color: colorsArray[colorIndex++],
-            line: i * 5,
-            points: data.map(values => {
-              return { x: values[0], y: values[1] };
-            }),
-            renderStartSeparator:
-              colorIndex % 2 !== 0
-                ? {
-                    fill: colorsArray[colorIndex],
-                    r: 7,
-                    stroke: 'white',
-                    strokeWidth: colorIndex + 2,
-                  }
-                : undefined,
-          };
-        }),
+        segments: sectionsData.map((data, i) => ({
+          color: colors.green,
+          line: i * 5,
+          points: data.map(([x, y]) => ({ x, y })),
+          renderStartSeparator: undefined,
+        })),
       };
     });
-  }, []);
+  }, [chart, hasChart]);
 
-  const [currentChart, setCurrentChart] = useState(0);
-
+  const [currentPrice, setCurrentPrice] = useState(0);
   const positiveChange = greaterThan(change, 0);
 
-  const valueRef = useRef(null);
-  const [curVal, setCurVal] = useState(0);
+  const timespanIndicatorColorAnimation = useTimingTransition(
+    bin(positiveChange),
+    {
+      duration: 100,
+      ease: Easing.out(Easing.ease),
+    }
+  );
 
-  const handleValueUpdate = useCallback(v => {
-    // console.log('value update', v);
-    setCurVal(v);
-    // textInputRef.current = v;
-  }, [setCurVal]);
+  const timespanIndicatorColor = bInterpolateColor(
+    timespanIndicatorColorAnimation,
+    colors.red,
+    colors.chartGreen
+  );
 
-// lol => {
-//           lol = valueRef.current;
-//           console.log('lol', lol);
-//           return lol;
-//         }
-
-  console.log('HAPPENIGN');
+  const currentChartIndex = Object.values(ChartTypes).indexOf(chartType);
+  const amountOfPathPoints = 30;
 
   return (
     <Column
@@ -96,24 +70,24 @@ const Chart = ({ change, ...props }) => {
         change={toFixedDecimals(change, 2)}
         direction={positiveChange}
         headerText="PRICE"
-        ref={textInputRef}
-        value={curVal}
+        value={currentPrice}
       />
       <ValueChart
-        amountOfPathPoints={100}
+        amountOfPathPoints={amountOfPathPoints}
         barColor={positiveChange ? colors.chartGreen : colors.red}
-        currentDataSource={currentChart}
-        data={data2}
+        currentDataSource={0}
+        data={chartData}
         enableSelect
-        importantPointsIndexInterval={25}
+        importantPointsIndexInterval={amountOfPathPoints}
         mode="gesture-managed"
-        onValueUpdate={handleValueUpdate}
+        onValueUpdate={setCurrentPrice}
         stroke={chartStroke}
       />
       <TimespanSelector
-        color={positiveChange ? colors.chartGreen : colors.red}
+        color={timespanIndicatorColor}
+        defaultIndex={currentChartIndex}
         isLoading={false}
-        reloadChart={setCurrentChart}
+        reloadChart={updateChartType}
       />
     </Column>
   );
