@@ -221,7 +221,7 @@ export default function useWyreApplePay() {
 
       if (applePayResponse) {
         const { paymentResponse, totalAmount } = applePayResponse;
-        const orderId = await getOrderId(
+        const { orderId, errorCode, type } = await getOrderId(
           referenceInfo,
           paymentResponse,
           totalAmount,
@@ -240,8 +240,8 @@ export default function useWyreApplePay() {
         } else {
           analytics.track('Purchase failed', {
             category: 'add cash',
-            error_category: 'EARLY_FAILURE',
-            error_code: 'NO_ORDER_ID',
+            error_category: type,
+            error_code: errorCode,
           });
           paymentResponse.complete('fail');
           handlePaymentCallback();
