@@ -1,6 +1,6 @@
 import { get, isEmpty, map, slice } from 'lodash';
 import { useCallback } from 'react';
-import { useQuery } from 'react-query';
+import { queryCache, useQuery } from 'react-query';
 import { useSelector } from 'react-redux';
 import { saveTopMovers } from '../handlers/localstorage/topMovers';
 import { apiGetTopMovers } from '../handlers/topMovers';
@@ -54,7 +54,7 @@ export default function useTopMovers() {
     return { gainers, losers };
   }, [genericAssets, uniswapPairs]);
 
-  const { status, data } = useQuery(
+  const { data } = useQuery(
     !isEmpty(genericAssets) && ['topMovers'],
     fetchTopMovers,
     {
@@ -62,7 +62,13 @@ export default function useTopMovers() {
     }
   );
 
-  if ((status === 'success' || status === 'loading') && !data) {
+  const resultFromStorage = queryCache.getQueryData('topMoversFromStorage');
+
+  if (!data && !isEmpty(resultFromStorage)) {
+    return resultFromStorage;
+  }
+
+  if (!data) {
     return {};
   }
 
