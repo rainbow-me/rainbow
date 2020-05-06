@@ -246,6 +246,10 @@ export default function useWyreApplePay() {
           paymentResponse.complete('fail');
           handlePaymentCallback();
         }
+      } else {
+        analytics.track('Purchase incomplete', {
+          category: 'add cash',
+        });
       }
     },
     [accountAddress, getOrderStatus, handlePaymentCallback]
