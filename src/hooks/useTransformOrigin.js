@@ -1,19 +1,15 @@
 import { get } from 'lodash';
-import { useCallback, useMemo, useState } from 'react';
-import { useMemoOne } from 'use-memo-one';
+import { useCallback, useMemo } from 'react';
+import Animated, { Value } from 'react-native-reanimated';
 import {
   transformOrigin as transformOriginUtil,
   useValues,
 } from 'react-native-redash';
-import Animated from 'react-native-reanimated';
 
-const { floor, divide, multiply, Value } = Animated;
+const { floor, divide, multiply } = Animated;
 
 export default function useTransformOrigin(transformOrigin, onLayoutProp) {
   const [height, width] = useValues([0, 0], []);
-
-  // const [height, setHeight] = useState(0);
-  // const [width, setWidth] = useState(0);
 
   const onLayout = useCallback(
     event => {

@@ -64,7 +64,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
         )}
         {!!asset.asset_contract.description && (
           <ExpandedStateSection title={`About ${asset.asset_contract.name}`}>
-            <Column>
+            <Column align="start">
               <Text
                 color={colors.alpha(colors.blueGreyDark, 0.5)}
                 lineHeight={25}

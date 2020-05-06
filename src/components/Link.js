@@ -13,9 +13,9 @@ const formatURLForDisplay = url => {
     ? pretty.substring(0, pretty.length - 1)
     : pretty;
 };
-//  transformOrigin="left"
+
 const Link = ({ url }) => (
-  <ButtonPressAnimation scaleTo={1.1}>
+  <ButtonPressAnimation scaleTo={1.1} transformOrigin={[0, 0.5]}>
     <RowWithMargins align="center" margin={5} paddingVertical={11}>
       <Icon color={colors.appleBlue} name="compass" size={16} />
       <Text
@@ -31,7 +31,7 @@ const Link = ({ url }) => (
 );
 
 Link.propTypes = {
-  url: PropTypes.func,
+  url: PropTypes.string,
 };
 
 export default magicMemo(Link, 'url');
