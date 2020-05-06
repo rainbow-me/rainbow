@@ -41,13 +41,16 @@ const CheckmarkBackground = styled.View`
   width: 22;
 `;
 
-const CoinCheckButton = ({ isAbsolute, onPress, toggle }) => (
+const CoinCheckButton = ({ isAbsolute, onPress, toggle, style }) => (
   <View
-    style={{
-      height: CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom,
-      position: isAbsolute ? 'absolute' : 'relative',
-      width: 60,
-    }}
+    style={[
+      {
+        height: CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom,
+        position: isAbsolute ? 'absolute' : 'relative',
+        width: 60,
+      },
+      style,
+    ]}
   >
     <ButtonPressAnimation onPress={onPress}>
       <Centered>

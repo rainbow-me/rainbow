@@ -12,7 +12,7 @@ import {
 } from '../../hoc';
 import { deviceUtils, isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { Column, FlexItem, Row } from '../layout';
+import { FlexItem, Row } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinCheckButton from './CoinCheckButton';
 import CoinName from './CoinName';
@@ -49,6 +49,7 @@ TopRow.propTypes = {
 
 const BalanceCoinRow = ({
   isFirstCoinRow,
+  firstCoinRowMarginTop,
   item,
   onPress,
   onPressSend,
@@ -86,8 +87,11 @@ const BalanceCoinRow = ({
     onPressSend && onPressSend(item);
   }, [onPressSend, item]);
 
-  return item.isSmall ? (
-    <View width={deviceUtils.dimensions.width}>
+  return (
+    <View
+      width={deviceUtils.dimensions.width}
+      paddingTop={isFirstCoinRow ? firstCoinRowMarginTop : 0}
+    >
       <ButtonPressAnimation
         onPress={isCoinListEdited ? handlePress : onPressHandler}
         scaleTo={0.96}
@@ -116,42 +120,14 @@ const BalanceCoinRow = ({
         </Row>
       </ButtonPressAnimation>
       {isCoinListEdited ? (
-        <CoinCheckButton isAbsolute toggle={toggle} onPress={handlePress} />
+        <CoinCheckButton
+          isAbsolute
+          toggle={toggle}
+          onPress={handlePress}
+          style={{ top: isFirstCoinRow ? firstCoinRowMarginTop : 0 }}
+        />
       ) : null}
     </View>
-  ) : (
-    <Column flex={1} justify={isFirstCoinRow ? 'end' : 'start'}>
-      <ButtonPressAnimation
-        onPress={isCoinListEdited ? handlePress : onPressHandler}
-        scaleTo={0.96}
-      >
-        <Row>
-          <View
-            left={isCoinListEdited ? editTranslateOffset : 0}
-            width={
-              deviceUtils.dimensions.width -
-              80 -
-              (isCoinListEdited ? editTranslateOffset : 0)
-            }
-          >
-            <CoinRow
-              onPress={onPressHandler}
-              onPressSend={onPressSendHandler}
-              {...item}
-              {...props}
-              bottomRowRender={BottomRow}
-              topRowRender={TopRow}
-            />
-          </View>
-          <View position="absolute" right={3}>
-            <CoinRowInfo native={item.native} />
-          </View>
-        </Row>
-      </ButtonPressAnimation>
-      {isCoinListEdited ? (
-        <CoinCheckButton isAbsolute toggle={toggle} onPress={handlePress} />
-      ) : null}
-    </Column>
   );
 };
 
@@ -173,6 +149,7 @@ const arePropsEqual = (props, nextProps) => {
   const isEdited = isNewValueForPath(props, nextProps, 'isCoinListEdited');
   const isPinned = isNewValueForPath(props, nextProps, 'item.isPinned');
   const isHidden = isNewValueForPath(props, nextProps, 'item.isHidden');
+  const isFirst = isNewValueForPath(props, nextProps, 'isFirstCoinRow');
   const recentlyPinnedCount =
     isNewValueForPath(props, nextProps, 'recentlyPinnedCount') &&
     (get(props, 'item.isPinned', false) || get(props, 'item.isHidden', false));
@@ -183,6 +160,7 @@ const arePropsEqual = (props, nextProps) => {
     isEdited ||
     isPinned ||
     isHidden ||
+    isFirst ||
     recentlyPinnedCount
   );
 };

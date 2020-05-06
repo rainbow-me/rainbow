@@ -70,6 +70,19 @@ index 8da004f..8ec46b0 100644
          this._initParams();
          this._offsetY = offsetY;
          this.boundaryProcessing(offsetY, this.props.getDistanceFromWindow(), this._windowBound);
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/viewrenderer/BaseViewRenderer.js b/node_modules/recyclerlistview/dist/reactnative/core/viewrenderer/BaseViewRenderer.js
+index f584ea7..77e1275 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/viewrenderer/BaseViewRenderer.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/viewrenderer/BaseViewRenderer.js
+@@ -28,7 +28,7 @@ var BaseViewRenderer = /** @class */ (function (_super) {
+         var hasInternalSnapshotChanged = this.props.internalSnapshot !== newProps.internalSnapshot;
+         var hasDataChanged = (this.props.dataHasChanged && this.props.dataHasChanged(this.props.data, newProps.data));
+         var shouldUpdate = hasSizeChanged || hasDataChanged || hasExtendedStateChanged || hasInternalSnapshotChanged;
+-        if (shouldUpdate) {
++        if (hasSizeChanged) {
+             newProps.itemAnimator.animateWillUpdate(this.props.x, this.props.y, newProps.x, newProps.y, this.getRef(), newProps.index);
+         }
+         else if (hasMoved) {
 diff --git a/node_modules/recyclerlistview/dist/reactnative/utils/BinarySearch.js b/node_modules/recyclerlistview/dist/reactnative/utils/BinarySearch.js
 index 0ad973f..74f37c5 100644
 --- a/node_modules/recyclerlistview/dist/reactnative/utils/BinarySearch.js
