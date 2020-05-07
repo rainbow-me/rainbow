@@ -1,5 +1,8 @@
 import { getGlobal, saveGlobal } from './common';
 
+// Key used for loading the cache with data from storage
+export const TOP_MOVERS_FROM_STORAGE = 'topMoversFromStorage';
+
 const TOP_MOVERS = 'topMovers';
 
 const topMoversVersion = '0.1.0';

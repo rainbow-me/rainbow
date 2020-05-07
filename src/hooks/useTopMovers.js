@@ -2,7 +2,10 @@ import { get, isEmpty, map, slice } from 'lodash';
 import { useCallback } from 'react';
 import { queryCache, useQuery } from 'react-query';
 import { useSelector } from 'react-redux';
-import { saveTopMovers } from '../handlers/localstorage/topMovers';
+import {
+  saveTopMovers,
+  TOP_MOVERS_FROM_STORAGE,
+} from '../handlers/localstorage/topMovers';
 import { apiGetTopMovers } from '../handlers/topMovers';
 
 const TOP_MOVERS_PER_ROW_MAX = 5;
@@ -62,7 +65,7 @@ export default function useTopMovers() {
     }
   );
 
-  const resultFromStorage = queryCache.getQueryData('topMoversFromStorage');
+  const resultFromStorage = queryCache.getQueryData(TOP_MOVERS_FROM_STORAGE);
 
   if (!data && !isEmpty(resultFromStorage)) {
     return resultFromStorage;

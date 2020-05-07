@@ -1,7 +1,10 @@
 import { useCallback } from 'react';
 import { queryCache } from 'react-query';
 import { useDispatch } from 'react-redux';
-import { getTopMovers } from '../handlers/localstorage/topMovers';
+import {
+  getTopMovers,
+  TOP_MOVERS_FROM_STORAGE,
+} from '../handlers/localstorage/topMovers';
 import networkTypes from '../helpers/networkTypes';
 import { addCashLoadState } from '../redux/addCash';
 import { contactsLoadState } from '../redux/contacts';
@@ -18,7 +21,7 @@ import { walletConnectLoadState } from '../redux/walletconnect';
 import { logger, promiseUtils } from '../utils';
 
 const loadTopMoversToCache = () =>
-  queryCache.prefetchQuery('topMoversFromStorage', getTopMovers);
+  queryCache.prefetchQuery(TOP_MOVERS_FROM_STORAGE, getTopMovers);
 
 export default function useLoadAccountData() {
   const dispatch = useDispatch();
