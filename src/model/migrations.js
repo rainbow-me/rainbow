@@ -40,6 +40,7 @@ export default async function runMigrations() {
           addresses: [
             {
               address,
+              avatar: null,
               color: colors.getRandomColor(),
               index: 0,
               label: '',

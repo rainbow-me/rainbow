@@ -62,6 +62,7 @@ export const createAccountForWallet = id => async (dispatch, getState) => {
   const account = await generateAccount(id, newIndex);
   newWallets[id].addresses.push({
     address: account.address,
+    avatar: null,
     color: colors.getRandomColor(),
     index: newIndex,
     label: '',

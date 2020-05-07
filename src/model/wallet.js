@@ -348,6 +348,7 @@ export const createWallet = async (seed, color, name) => {
 
     addresses.push({
       address: wallet.address,
+      avatar: null,
       color: colors.getRandomColor(),
       index: 0,
       label: '',
@@ -371,6 +372,7 @@ export const createWallet = async (seed, color, name) => {
           await savePrivateKey(nextWallet.address, nextWallet.privateKey);
           addresses.push({
             address: nextWallet.address,
+            avatar: null,
             color: colors.getRandomColor(),
             index: index,
             label: '',
