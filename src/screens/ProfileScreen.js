@@ -66,7 +66,7 @@ const ProfileScreen = ({ navigation }) => {
   let accountColor = get(selectedWallet, 'color');
 
   const onPressProfileHeader = useCallback(() => {
-    navigate(Routes.CHANGE_WALLET_MODAL);
+    navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
   const addCashInDevNetworks =

@@ -369,7 +369,7 @@ export const overlayExpandedPreset = {
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 
-export const savingsPreset = {
+export const bottomSheetPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
