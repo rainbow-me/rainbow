@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import {
   getOrderId,
   getReferenceId,
+  PaymentRequestStatusTypes,
   showApplePayRequest,
   trackWyreOrder,
   trackWyreTransfer,
@@ -169,13 +170,13 @@ export default function useWyreApplePay() {
               error_category: get(data, 'errorCategory', 'unknown'),
               error_code: get(data, 'errorCode', 'unknown'),
             });
-            paymentResponse.complete('fail');
+            paymentResponse.complete(PaymentRequestStatusTypes.FAIL);
             handlePaymentCallback();
           } else if (isPending || isSuccess) {
             analytics.track('Purchase completed', {
               category: 'add cash',
             });
-            paymentResponse.complete('success');
+            paymentResponse.complete(PaymentRequestStatusTypes.SUCCESS);
             handlePaymentCallback();
           } else if (!isChecking) {
             logger.sentry('Wyre order data', data);
@@ -221,7 +222,7 @@ export default function useWyreApplePay() {
 
       if (applePayResponse) {
         const { paymentResponse, totalAmount } = applePayResponse;
-        const orderId = await getOrderId(
+        const { orderId, errorCode, type } = await getOrderId(
           referenceInfo,
           paymentResponse,
           totalAmount,
@@ -240,12 +241,16 @@ export default function useWyreApplePay() {
         } else {
           analytics.track('Purchase failed', {
             category: 'add cash',
-            error_category: 'EARLY_FAILURE',
-            error_code: 'NO_ORDER_ID',
+            error_category: type,
+            error_code: errorCode,
           });
-          paymentResponse.complete('fail');
+          paymentResponse.complete(PaymentRequestStatusTypes.FAIL);
           handlePaymentCallback();
         }
+      } else {
+        analytics.track('Purchase incomplete', {
+          category: 'add cash',
+        });
       }
     },
     [accountAddress, getOrderStatus, handlePaymentCallback]

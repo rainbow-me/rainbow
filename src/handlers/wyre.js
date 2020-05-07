@@ -19,6 +19,11 @@ const WYRE_FLAT_FEE_USD = 0.3;
 const SOURCE_CURRENCY_USD = 'USD';
 const PAYMENT_PROCESSOR_COUNTRY_CODE = 'US';
 
+export const PaymentRequestStatusTypes = {
+  FAIL: 'fail',
+  SUCCESS: 'success',
+};
+
 const wyreApi = axios.create({
   baseURL: __DEV__ ? WYRE_ENDPOINT_TEST : WYRE_ENDPOINT,
   headers: {
@@ -26,24 +31,17 @@ const wyreApi = axios.create({
     'Content-Type': 'application/json',
   },
   timeout: 30000, // 30 secs
-  validateStatus: function(status) {
-    // do not throw error so we can get
-    // exception ID and message from response
-    return status >= 200;
-  },
 });
 
 const WyreExceptionTypes = {
   CREATE_ORDER: 'WyreCreateOrderException',
-  TRACK_ORDER: 'WyreTrackOrderException',
-  TRACK_TRANSFER: 'WyreTrackTransferException',
 };
 
 class WyreException extends Error {
-  constructor(name, referenceInfo, errorId, message) {
+  constructor(name, referenceInfo, errorId, errorCode, message) {
     const referenceInfoIds = values(referenceInfo);
     const referenceId = join(referenceInfoIds, ':');
-    super(`${referenceId}:${errorId}:${message}`);
+    super(`${referenceId}:${errorId}:${errorCode}:${message}`);
     this.name = name;
   }
 }
@@ -120,21 +118,9 @@ export const showApplePayRequest = async (
 export const trackWyreOrder = async (referenceInfo, orderId) => {
   try {
     const response = await wyreApi.get(`/v3/orders/${orderId}`);
-    if (response.status >= 200 && response.status < 300) {
-      const orderStatus = get(response, 'data.status');
-      const transferId = get(response, 'data.transferId');
-      return { data: response.data, orderStatus, transferId };
-    }
-    const {
-      data: { exceptionId, message },
-    } = response;
-
-    throw new WyreException(
-      WyreExceptionTypes.TRACK_ORDER,
-      referenceInfo,
-      exceptionId,
-      message
-    );
+    const orderStatus = get(response, 'data.status');
+    const transferId = get(response, 'data.transferId');
+    return { data: response.data, orderStatus, transferId };
   } catch (error) {
     throw error;
   }
@@ -143,23 +129,12 @@ export const trackWyreOrder = async (referenceInfo, orderId) => {
 export const trackWyreTransfer = async (referenceInfo, transferId) => {
   try {
     const response = await wyreApi.get(`/v2/transfer/${transferId}/track`);
-    if (response.status >= 200 && response.status < 300) {
-      const transferHash = get(response, 'data.blockchainNetworkTx');
-      const destAmount = get(response, 'data.destAmount');
-      const destCurrency = get(response, 'data.destCurrency');
-      const statusTimeline = get(response, 'data.successTimeline', []);
-      const transferStatus = get(last(statusTimeline), 'state');
-      return { destAmount, destCurrency, transferHash, transferStatus };
-    }
-    const {
-      data: { exceptionId, message },
-    } = response;
-    throw new WyreException(
-      WyreExceptionTypes.TRACK_TRANSFER,
-      referenceInfo,
-      exceptionId,
-      message
-    );
+    const transferHash = get(response, 'data.blockchainNetworkTx');
+    const destAmount = get(response, 'data.destAmount');
+    const destCurrency = get(response, 'data.destCurrency');
+    const statusTimeline = get(response, 'data.successTimeline', []);
+    const transferStatus = get(last(statusTimeline), 'state');
+    return { destAmount, destCurrency, transferHash, transferStatus };
   } catch (error) {
     throw error;
   }
@@ -180,32 +155,40 @@ export const getOrderId = async (
     destCurrency
   );
   try {
-    const response = await wyreApi.post('/v3/apple-pay/process/partner', data);
+    const response = await wyreApi.post('/v3/apple-pay/process/partner', data, {
+      validateStatus: function(status) {
+        // do not throw error so we can get
+        // exception ID and message from response
+        return status >= 200;
+      },
+    });
 
     if (response.status >= 200 && response.status < 300) {
-      return get(response, 'data.id', null);
+      const orderId = get(response, 'data.id', null);
+      return { orderId };
     }
     logger.sentry('WYRE - getOrderId response - was not 200', response.data);
     const {
-      data: { exceptionId, message },
+      data: { errorCode, exceptionId, message, type },
     } = response;
     captureException(
       new WyreException(
         WyreExceptionTypes.CREATE_ORDER,
         referenceInfo,
         exceptionId,
+        errorCode,
         message
       )
     );
-    paymentResponse.complete('fail');
-    return null;
+    paymentResponse.complete(PaymentRequestStatusTypes.FAIL);
+    return { errorCode, type };
   } catch (error) {
     logger.sentry(
       `WYRE - getOrderId response catch - ${referenceInfo.referenceId}`
     );
     captureException(error);
-    paymentResponse.complete('fail');
-    return null;
+    paymentResponse.complete(PaymentRequestStatusTypes.FAIL);
+    return {};
   }
 };
 
