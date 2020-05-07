@@ -9,16 +9,16 @@ import { ExchangeModalNavigator, SavingModalNavigator } from '../../navigation';
 import { onDidPop, onWillPop } from '../../navigation/Navigation';
 import {
   backgroundPreset,
+  bottomSheetPreset,
   emojiPreset,
   expandedPreset,
   overlayExpandedPreset,
-  savingsPreset,
   sheetPreset,
 } from '../../navigation/transitions/effects';
 import { deviceUtils } from '../../utils';
 import AddCashSheet from '../AddCashSheet';
 import AvatarBuilder from '../AvatarBuilder';
-import ChangeWalletModal from '../ChangeWalletModal';
+import ChangeWalletSheet from '../ChangeWalletSheet';
 import ExampleScreen from '../ExampleScreen';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
@@ -36,7 +36,6 @@ import {
   createStackNavigator,
   exchangePresetWithTransitions,
   expandedPresetWithTransitions,
-  expandedReversePresetWithTransitions,
   onTransitionEnd,
   onTransitionStart,
   sheetPresetWithTransitions,
@@ -113,9 +112,9 @@ const routesForMainNavigator = {
     screen: AvatarBuilder,
     transparentCard: true,
   },
-  [Routes.CHANGE_WALLET_MODAL]: {
-    navigationOptions: expandedReversePresetWithTransitions,
-    screen: ChangeWalletModal,
+  [Routes.CHANGE_WALLET_SHEET]: {
+    navigationOptions: bottomSheetPreset,
+    screen: ChangeWalletSheet,
   },
   [Routes.CONFIRM_REQUEST]: {
     navigationOptions: sheetPresetWithTransitions,
@@ -137,7 +136,7 @@ const routesForMainNavigator = {
     screen: ExpandedAssetScreenWithData,
   },
   [Routes.SAVINGS_SHEET]: {
-    navigationOptions: savingsPreset,
+    navigationOptions: bottomSheetPreset,
     screen: SavingsSheet,
   },
   [Routes.SWIPE_LAYOUT]: {

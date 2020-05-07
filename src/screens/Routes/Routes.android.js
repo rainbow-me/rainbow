@@ -6,6 +6,7 @@ import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { ExchangeModalNavigator } from '../../navigation';
 import {
   backgroundPreset,
+  bottomSheetPreset,
   emojiPreset,
   expandedPreset,
   overlayExpandedPreset,
@@ -14,13 +15,14 @@ import {
 import { deviceUtils } from '../../utils';
 import AddCashSheet from '../AddCashSheet';
 import AvatarBuilder from '../AvatarBuilder';
-import ChangeWalletModal from '../ChangeWalletModal';
+import ChangeWalletSheet from '../ChangeWalletSheet';
 import ExampleScreen from '../ExampleScreen';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
 import ProfileScreen from '../ProfileScreen';
 import QRScannerScreenWithData from '../QRScannerScreenWithData';
 import ReceiveModal from '../ReceiveModal';
+import SavingsSheet from '../SavingsSheet';
 import SendSheet from '../SendSheet';
 import SettingsModal from '../SettingsModal';
 import TransactionConfirmationScreen from '../TransactionConfirmationScreen';
@@ -30,7 +32,6 @@ import {
   createStackNavigator,
   exchangePresetWithTransitions,
   expandedPresetWithTransitions,
-  expandedReversePresetWithTransitions,
   onTransitionStart,
   sheetPresetWithTransitions,
 } from './helpers';
@@ -58,9 +59,9 @@ const routesForMainNavigator = {
     screen: AvatarBuilder,
     transparentCard: true,
   },
-  [Routes.CHANGE_WALLET_MODAL]: {
-    navigationOptions: expandedReversePresetWithTransitions,
-    screen: ChangeWalletModal,
+  [Routes.CHANGE_WALLET_SHEET]: {
+    navigationOptions: bottomSheetPreset,
+    screen: ChangeWalletSheet,
   },
   [Routes.CONFIRM_REQUEST]: {
     navigationOptions: sheetPresetWithTransitions,
@@ -85,6 +86,10 @@ const routesForMainNavigator = {
   [Routes.RECEIVE_MODAL]: {
     navigationOptions: expandedPresetWithTransitions,
     screen: ReceiveModal,
+  },
+  [Routes.SAVINGS_SHEET]: {
+    navigationOptions: bottomSheetPreset,
+    screen: SavingsSheet,
   },
   [Routes.SETTINGS_MODAL]: {
     navigationOptions: expandedPresetWithTransitions,
