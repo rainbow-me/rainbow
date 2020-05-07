@@ -7,7 +7,7 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { withNavigation } from 'react-navigation';
 import styled from 'styled-components/primitives';
 import { isHexString } from '../../handlers/web3';
-import { checkIsValidAddress } from '../../helpers/validators';
+import { checkIsValidAddressOrENS } from '../../helpers/validators';
 import { colors } from '../../styles';
 import { abbreviations, addressUtils, isNewValueForPath } from '../../utils';
 import { Input } from '../inputs';
@@ -117,7 +117,7 @@ export default withNavigation(
     onChangeText = inputValue => this.setState({ inputValue });
 
     validateAddress = async address => {
-      const isValid = await checkIsValidAddress(address);
+      const isValid = await checkIsValidAddressOrENS(address);
       return this.setState({ isValid });
     };
 

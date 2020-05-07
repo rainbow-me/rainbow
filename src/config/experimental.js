@@ -9,4 +9,4 @@ export const chartExpandedAvailable = false;
 export const nativeTransactionListAvailable = true;
 export const nativeButtonPressAnimationAvailable = true;
 export const isAvatarPickerAvailable = false;
-export const isMultiwalletAvailable = true;
+export const isMultiwalletAvailable = false;

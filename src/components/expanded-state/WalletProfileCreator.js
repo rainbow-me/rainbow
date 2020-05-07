@@ -37,7 +37,6 @@ export default function WalletProfileCreator({
   isDeletable,
   onCloseModal,
   profile,
-  setIsLoading,
 }) {
   const { goBack } = useNavigation();
   const [color, setColor] = useState(
@@ -69,11 +68,8 @@ export default function WalletProfileCreator({
 
   const addProfileInfo = useCallback(async () => {
     goBack();
-    if (setIsLoading) {
-      setIsLoading(false);
-    }
     onCloseModal({ color, name: value });
-  }, [color, goBack, onCloseModal, setIsLoading, value]);
+  }, [color, goBack, onCloseModal, value]);
 
   const deleteProfile = useCallback(() => {
     showActionSheetWithOptions(
@@ -98,11 +94,8 @@ export default function WalletProfileCreator({
 
   const cancel = useCallback(() => {
     goBack();
-    if (setIsLoading) {
-      setIsLoading(false);
-    }
     onCloseModal();
-  }, [goBack, onCloseModal, setIsLoading]);
+  }, [goBack, onCloseModal]);
 
   const handleChange = useCallback(({ nativeEvent: { text: inputText } }) => {
     const value =
@@ -230,11 +223,9 @@ export default function WalletProfileCreator({
 WalletProfileCreator.propTypes = {
   actionType: PropTypes.string,
   address: PropTypes.string,
-  color: PropTypes.number,
   isCurrentProfile: PropTypes.bool,
   isDeletable: PropTypes.bool,
   isNewProfile: PropTypes.bool,
   onCloseModal: PropTypes.func,
   profile: PropTypes.object,
-  setIsLoading: PropTypes.func,
 };

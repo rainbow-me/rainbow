@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import {
   generateAccount,
   getAllWallets,
@@ -22,7 +23,7 @@ export const walletsLoadState = () => async dispatch => {
 
     dispatch({
       payload: {
-        selected: selected.wallet,
+        selected: get(selected, 'wallet', undefined),
         wallets,
       },
       type: WALLETS_LOAD,
@@ -52,13 +53,14 @@ export const addressSetSelected = address => () => {
 
 export const createAccountForWallet = id => async (dispatch, getState) => {
   const { wallets } = getState().wallets;
+  const newWallets = { ...wallets };
   let index = 0;
-  wallets[id].addresses.forEach(
+  newWallets[id].addresses.forEach(
     account => (index = Math.max(index, account.index))
   );
   const newIndex = index + 1;
   const account = await generateAccount(id, newIndex);
-  wallets[id].addresses.push({
+  newWallets[id].addresses.push({
     address: account.address,
     color: colors.getRandomColor(),
     index: newIndex,
@@ -67,14 +69,14 @@ export const createAccountForWallet = id => async (dispatch, getState) => {
   });
 
   // Save all the wallets
-  saveAllWallets(wallets);
+  saveAllWallets(newWallets);
   // Set the address selected (KEYCHAIN)
   await saveAddress(account.address);
-  // Set the wallet selected (REDUX)
-  await setSelectedWallet(wallets[id]);
+  // Set the wallet selected (KEYCHAIN)
+  await setSelectedWallet(newWallets[id]);
 
   dispatch({
-    payload: { selected: wallets[id], wallets },
+    payload: { selected: newWallets[id], wallets: newWallets },
     type: WALLETS_ADDED_ACCOUNT,
   });
 };

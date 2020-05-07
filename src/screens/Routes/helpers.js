@@ -3,6 +3,7 @@ import { createStackNavigator as oldCreateStackNavigator } from 'react-navigatio
 import {
   exchangePreset,
   expandedPreset,
+  expandedPresetReverse,
   sheetPreset,
 } from '../../navigation/transitions/effects';
 import { updateTransitionProps } from '../../redux/navigation';
@@ -43,7 +44,7 @@ export const expandedPresetWithTransitions = presetWithTransition(
 );
 
 export const expandedReversePresetWithTransitions = presetWithTransition(
-  expandedPreset
+  expandedPresetReverse
 );
 
 export const exchangePresetWithTransitions = presetWithTransition(

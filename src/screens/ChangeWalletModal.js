@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
@@ -13,6 +13,7 @@ import {
   walletsUpdate,
 } from '../redux/wallets';
 import { logger } from '../utils';
+import Routes from './Routes/routesNames';
 
 const walletRowHeight = 54;
 
@@ -23,29 +24,34 @@ const ChangeWalletModal = () => {
   const dispatch = useDispatch();
   const { accountAddress } = useAccountSettings();
   const initializeWallet = useInitializeWallet();
-  let rowsCount = 0;
-  if (wallets) {
-    Object.keys(wallets).forEach(key => {
-      // Wallet header
-      // If there's more than account we group them by wallet
-      if (wallets[key].addresses.length > 1) {
-        rowsCount += 1;
-      }
-      // Addresses
-      rowsCount += wallets[key].addresses.filter(account => account.visible)
-        .length;
+  const rowsCount = useMemo(() => {
+    let count = 0;
+    if (wallets) {
+      Object.keys(wallets).forEach(key => {
+        // Wallet header
+        // If there's more than account we group them by wallet
+        if (wallets[key].addresses.length > 1) {
+          count += 1;
+        }
+        // Addresses
+        count += wallets[key].addresses.filter(account => account.visible)
+          .length;
 
-      // Add account
-      if (
-        [WalletTypes.mnemonic, WalletTypes.seed].indexOf(wallets[key].type) !==
-        -1
-      ) {
-        rowsCount += 1;
-      }
-    });
-    // Import wallet
-    rowsCount += 1;
-  }
+        // Add account
+        if (
+          [WalletTypes.mnemonic, WalletTypes.seed].indexOf(
+            wallets[key].type
+          ) !== -1
+        ) {
+          count += 1;
+        }
+      });
+      // Import wallet
+      count += 1;
+    }
+    return count;
+  }, [wallets]);
+
   let listHeight = walletRowHeight * rowsCount;
   if (listHeight > 298) {
     listHeight = 298;
@@ -75,8 +81,7 @@ const ChangeWalletModal = () => {
       if (Object.keys(wallet).length > 1 && selectedWallet.id !== id) {
         isDeletable = true;
       }
-      navigate('ExpandedAssetScreen', {
-        actionType: 'Import',
+      navigate(Routes.EXPANDED_ASSET_SCREEN, {
         address: undefined,
         asset: [],
         isDeletable,
@@ -112,8 +117,7 @@ const ChangeWalletModal = () => {
       if (accountAddress !== address) {
         isDeletable = true;
       }
-      navigate('ExpandedAssetScreen', {
-        actionType: 'Import',
+      navigate(Routes.EXPANDED_ASSET_SCREEN, {
         address,
         asset: [],
         isDeletable,
@@ -171,7 +175,7 @@ const ChangeWalletModal = () => {
 
   const onPressImportSeedPhrase = useCallback(() => {
     goBack();
-    navigate('ImportSeedPhraseSheet');
+    navigate(Routes.IMPORT_SEED_PHRASE_SHEET);
   }, [goBack, navigate]);
 
   return (

@@ -29,7 +29,7 @@ import {
   convertAmountFromNativeValue,
   formatInputDecimals,
 } from '../helpers/utilities';
-import { checkIsValidAddress } from '../helpers/validators';
+import { checkIsValidAddressOrENS } from '../helpers/validators';
 import {
   useAccountAssets,
   useAccountSettings,
@@ -383,7 +383,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
   }, [recipient, recipientOverride, sendUpdateRecipient]);
 
   const checkAddress = useCallback(async () => {
-    const validAddress = await checkIsValidAddress(recipient);
+    const validAddress = await checkIsValidAddressOrENS(recipient);
     setIsValidAddress(validAddress);
   }, [recipient]);
 

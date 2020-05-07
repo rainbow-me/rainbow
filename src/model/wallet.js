@@ -40,6 +40,10 @@ const allWalletsVersion = 1.0;
 const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
+const publicAccessControlOptions = {
+  accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
+};
+
 export function generateSeedPhrase() {
   return ethers.utils.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
 }
@@ -54,7 +58,7 @@ export const walletInit = async (
   let isNew = false;
   // Importing a seedphrase
   if (!isEmpty(seedPhrase)) {
-    const wallet = await newCreateWallet(seedPhrase, color, name);
+    const wallet = await createWallet(seedPhrase, color, name);
     walletAddress = wallet.address;
     isImported = !isNil(walletAddress);
     return { isImported, isNew, walletAddress };
@@ -62,7 +66,7 @@ export const walletInit = async (
   walletAddress = await loadAddress();
   // First launch (no seed phrase)
   if (!walletAddress) {
-    const wallet = await newCreateWallet();
+    const wallet = await createWallet();
     walletAddress = wallet.address;
     isNew = true;
   }
@@ -76,22 +80,6 @@ export const loadWallet = async () => {
   }
   return null;
 };
-
-export const createTransaction = async (
-  to,
-  data,
-  value,
-  gasLimit,
-  gasPrice,
-  nonce = null
-) => ({
-  data,
-  gasLimit,
-  gasPrice,
-  nonce,
-  to,
-  value: ethers.utils.parseEther(value),
-});
 
 export const sendTransaction = async ({ transaction }) => {
   try {
@@ -220,7 +208,7 @@ export const signTypedDataMessage = async (
   }
 };
 
-export const loadSeedPhrase = async (
+export const oldLoadSeedPhrase = async (
   authenticationPrompt = lang.t('wallet.authenticate.please_seed_phrase')
 ) => {
   const seedPhrase = await keychain.loadString(seedPhraseKey, {
@@ -243,10 +231,7 @@ const loadPrivateKey = async (
 ) => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
-      seedPhraseMigratedKey,
-      {
-        authenticationPrompt,
-      }
+      seedPhraseMigratedKey
     );
 
     // We need to migrate the seedphrase & private key first
@@ -256,7 +241,7 @@ const loadPrivateKey = async (
       return privateKey;
     } else {
       const address = await loadAddress();
-      const { privateKey } = getPrivateKey(address, authenticationPrompt);
+      const { privateKey } = await getPrivateKey(address, authenticationPrompt);
       return privateKey;
     }
   } catch (error) {
@@ -265,7 +250,10 @@ const loadPrivateKey = async (
   }
 };
 
-export const saveAddress = async (address, accessControlOptions = {}) => {
+export const saveAddress = async (
+  address,
+  accessControlOptions = publicAccessControlOptions
+) => {
   await keychain.saveString(addressKey, address, accessControlOptions);
 };
 
@@ -290,7 +278,7 @@ export const identifyWalletType = walletSeed => {
   return type;
 };
 
-export const newCreateWallet = async (seed, color, name) => {
+export const createWallet = async (seed, color, name) => {
   const isImported = !!seed;
   const walletSeed = seed || generateSeedPhrase();
   let wallet = null;
@@ -330,7 +318,10 @@ export const newCreateWallet = async (seed, color, name) => {
       const alreadyExisting = Object.keys(allWallets).some(key => {
         const someWallet = allWallets[key];
         return someWallet.addresses.some(account => {
-          return account.address === wallet.address && account.type === type;
+          return (
+            toChecksumAddress(account.address) ===
+              toChecksumAddress(wallet.address) && someWallet.type === type
+          );
         });
       });
 
@@ -341,12 +332,9 @@ export const newCreateWallet = async (seed, color, name) => {
     }
 
     const id = `wallet_${new Date().getTime()}`;
-    const publicAccessControlOptions = {
-      accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
-    };
 
     // Save address
-    await saveAddress(wallet.address, publicAccessControlOptions);
+    await saveAddress(wallet.address);
     // Save private key
     await savePrivateKey(wallet.address, wallet.privateKey);
     // Save seed
@@ -398,10 +386,10 @@ export const newCreateWallet = async (seed, color, name) => {
     // if imported and we have only one account, we name it.
     // If we have more than one account, we name the wallet
     let walletName = DEFAULT_WALLET_NAME;
-    if (isImported) {
-      if (addresses.length > 1 && name) {
+    if (isImported && name) {
+      if (addresses.length > 1) {
         walletName = name;
-      } else if (name) {
+      } else {
         addresses[0].label = name;
       }
     }
@@ -515,10 +503,6 @@ export const getSeedPhrase = async (
 };
 
 export const setSelectedWallet = async wallet => {
-  const publicAccessControlOptions = {
-    accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
-  };
-
   const val = {
     version: selectedWalletVersion,
     wallet,
@@ -527,13 +511,9 @@ export const setSelectedWallet = async wallet => {
   await keychain.saveObject(selectedWalletKey, val, publicAccessControlOptions);
 };
 
-export const getSelectedWallet = async (
-  authenticationPrompt = lang.t('wallet.authenticate.please')
-) => {
+export const getSelectedWallet = async () => {
   try {
-    return keychain.loadObject(selectedWalletKey, {
-      authenticationPrompt,
-    });
+    return keychain.loadObject(selectedWalletKey);
   } catch (error) {
     captureException(error);
     return null;
@@ -541,10 +521,6 @@ export const getSelectedWallet = async (
 };
 
 export const saveAllWallets = async wallets => {
-  const publicAccessControlOptions = {
-    accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
-  };
-
   const val = {
     version: allWalletsVersion,
     wallets,
@@ -553,13 +529,9 @@ export const saveAllWallets = async wallets => {
   await keychain.saveObject(allWalletsKey, val, publicAccessControlOptions);
 };
 
-export const getAllWallets = async (
-  authenticationPrompt = lang.t('wallet.authenticate.please')
-) => {
+export const getAllWallets = async () => {
   try {
-    return keychain.loadObject(allWalletsKey, {
-      authenticationPrompt,
-    });
+    return keychain.loadObject(allWalletsKey);
   } catch (error) {
     captureException(error);
     return null;
@@ -568,12 +540,8 @@ export const getAllWallets = async (
 
 export const generateAccount = async (id, index) => {
   try {
-    const authenticationPrompt = lang.t('wallet.authenticate.please');
     const isSeedPhraseMigrated = await keychain.loadString(
-      seedPhraseMigratedKey,
-      {
-        authenticationPrompt,
-      }
+      seedPhraseMigratedKey
     );
     let seedPhrase, hdnode;
     // We need to migrate the seedphrase & private key first
@@ -612,10 +580,7 @@ export const generateAccount = async (id, index) => {
 
 export const migrateSecrets = async () => {
   try {
-    const publicAccessControlOptions = {
-      accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
-    };
-    const seedPhrase = await loadSeedPhrase();
+    const seedPhrase = await oldLoadSeedPhrase();
     const type = identifyWalletType(seedPhrase);
     if (!type) throw new Error('Unknown Wallet Type');
     let hdnode, node, existingAccount;
@@ -660,16 +625,10 @@ export const migrateSecrets = async () => {
   }
 };
 
-export const loadSeedPhraseAndMigrateIfNeeded = async (
-  id,
-  authenticationPrompt = lang.t('wallet.authenticate.please_seed_phrase')
-) => {
+export const loadSeedPhraseAndMigrateIfNeeded = async id => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
-      seedPhraseMigratedKey,
-      {
-        authenticationPrompt,
-      }
+      seedPhraseMigratedKey
     );
 
     // We need to migrate the seedphrase & private key first

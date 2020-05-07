@@ -105,11 +105,6 @@ const HeaderWalletInfo = ({ onPress }) => {
   );
 };
 
-HeaderWalletInfo.defaultProps = {
-  accountColor: 0,
-  accountName: '',
-};
-
 HeaderWalletInfo.propTypes = {
   onPress: PropTypes.func.isRequired,
 };

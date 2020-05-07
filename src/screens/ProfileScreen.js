@@ -2,7 +2,7 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { useIsFocused } from 'react-navigation-hooks';
+import { useIsFocused, useNavigation } from 'react-navigation-hooks';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
 import { ActivityList } from '../components/activity-list';
 import {
@@ -33,6 +33,7 @@ const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 const ProfileScreen = ({ navigation }) => {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
+  const { navigate } = useNavigation();
 
   const {
     isLoadingTransactions: isLoading,
@@ -53,22 +54,20 @@ const ProfileScreen = ({ navigation }) => {
     }, ACTIVITY_LIST_INITIALIZATION_DELAY);
   }, []);
 
-  const onPressBackButton = useCallback(
-    () => navigation.navigate(Routes.WALLET_SCREEN),
-    [navigation]
-  );
+  const onPressBackButton = useCallback(() => navigate(Routes.WALLET_SCREEN), [
+    navigate,
+  ]);
 
-  const onPressSettings = useCallback(
-    () => navigation.navigate(Routes.SETTINGS_MODAL),
-    [navigation]
-  );
+  const onPressSettings = useCallback(() => navigate(Routes.SETTINGS_MODAL), [
+    navigate,
+  ]);
 
   let accountName = get(selectedWallet, 'name');
   let accountColor = get(selectedWallet, 'color');
 
-  const onPressProfileHeader = async () => {
-    navigation.navigate(Routes.CHANGE_WALLET_MODAL);
-  };
+  const onPressProfileHeader = useCallback(() => {
+    navigate(Routes.CHANGE_WALLET_MODAL);
+  }, [navigate]);
 
   const addCashInDevNetworks =
     __DEV__ &&
@@ -88,9 +87,7 @@ const ProfileScreen = ({ navigation }) => {
             accountColor={accountColor}
             accountName={accountName}
             onPress={onPressProfileHeader}
-          >
-            <Icon name="gear" />
-          </HeaderWalletInfo>
+          />
         )}
         <BackButton
           color={colors.black}

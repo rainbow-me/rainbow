@@ -1,4 +1,3 @@
-import { ACCESSIBLE } from 'react-native-keychain';
 import {
   getMigrationVersion,
   setMigrationVersion,
@@ -19,11 +18,8 @@ export default async function runMigrations() {
   /***** Migration v0 starts here  *****/
   const v0 = async () => {
     const walletAddress = await loadAddress();
-    const publicAccessControlOptions = {
-      accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
-    };
     if (walletAddress) {
-      await saveAddress(walletAddress, publicAccessControlOptions);
+      await saveAddress(walletAddress);
     }
   };
 

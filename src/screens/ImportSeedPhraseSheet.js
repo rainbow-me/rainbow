@@ -87,7 +87,7 @@ const ConfirmImportAlert = (onSuccess, navigate) =>
     buttons: [
       {
         onPress: () =>
-          navigate('OverlayExpandedAssetScreen', {
+          navigate(Routes.OVERLAY_EXPANDED_ASSET_SCREEN, {
             actionType: 'Import',
             address: undefined,
             asset: [],
@@ -215,8 +215,13 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
         if (isENSAddressFormat(input)) {
           try {
             input = await web3Provider.resolveName(input);
+            if (!input) {
+              Alert.alert('This is not a valid ENS name');
+              return;
+            }
           } catch (e) {
-            Alert('This is not a valid ENS name');
+            Alert.alert('This is not a valid ENS name');
+            return;
           }
         }
 
