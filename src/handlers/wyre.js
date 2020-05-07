@@ -19,6 +19,11 @@ const WYRE_FLAT_FEE_USD = 0.3;
 const SOURCE_CURRENCY_USD = 'USD';
 const PAYMENT_PROCESSOR_COUNTRY_CODE = 'US';
 
+export const PaymentRequestStatusTypes = {
+  FAIL: 'fail',
+  SUCCESS: 'success',
+};
+
 const wyreApi = axios.create({
   baseURL: __DEV__ ? WYRE_ENDPOINT_TEST : WYRE_ENDPOINT,
   headers: {
@@ -175,14 +180,14 @@ export const getOrderId = async (
         message
       )
     );
-    paymentResponse.complete('fail');
+    paymentResponse.complete(PaymentRequestStatusTypes.FAIL);
     return { errorCode, type };
   } catch (error) {
     logger.sentry(
       `WYRE - getOrderId response catch - ${referenceInfo.referenceId}`
     );
     captureException(error);
-    paymentResponse.complete('fail');
+    paymentResponse.complete(PaymentRequestStatusTypes.FAIL);
     return {};
   }
 };

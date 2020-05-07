@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import {
   getOrderId,
   getReferenceId,
+  PaymentRequestStatusTypes,
   showApplePayRequest,
   trackWyreOrder,
   trackWyreTransfer,
@@ -169,13 +170,13 @@ export default function useWyreApplePay() {
               error_category: get(data, 'errorCategory', 'unknown'),
               error_code: get(data, 'errorCode', 'unknown'),
             });
-            paymentResponse.complete('fail');
+            paymentResponse.complete(PaymentRequestStatusTypes.FAIL);
             handlePaymentCallback();
           } else if (isPending || isSuccess) {
             analytics.track('Purchase completed', {
               category: 'add cash',
             });
-            paymentResponse.complete('success');
+            paymentResponse.complete(PaymentRequestStatusTypes.SUCCESS);
             handlePaymentCallback();
           } else if (!isChecking) {
             logger.sentry('Wyre order data', data);
@@ -243,7 +244,7 @@ export default function useWyreApplePay() {
             error_category: type,
             error_code: errorCode,
           });
-          paymentResponse.complete('fail');
+          paymentResponse.complete(PaymentRequestStatusTypes.FAIL);
           handlePaymentCallback();
         }
       } else {
