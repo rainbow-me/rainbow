@@ -1,9 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
-import { View } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import WalletList from '../components/change-wallet/WalletList';
-import { Modal } from '../components/modal';
+import { Sheet } from '../components/sheet';
 import WalletTypes from '../helpers/walletTypes';
 import { useAccountSettings, useInitializeWallet, useWallets } from '../hooks';
 import {
@@ -17,7 +16,7 @@ import Routes from './Routes/routesNames';
 
 const walletRowHeight = 54;
 
-const ChangeWalletModal = () => {
+const ChangeWalletSheet = () => {
   const { wallets, selected: selectedWallet } = useWallets();
 
   const { goBack, navigate } = useNavigation();
@@ -159,8 +158,6 @@ const ChangeWalletModal = () => {
     [accountAddress, dispatch, navigate, selectedWallet.id, wallets]
   );
 
-  const onCloseModal = useCallback(() => goBack(), [goBack]);
-
   const onPressAddAccount = useCallback(
     async wallet_id => {
       try {
@@ -179,27 +176,20 @@ const ChangeWalletModal = () => {
   }, [goBack, navigate]);
 
   return (
-    <View>
-      <Modal
-        fixedToTop
-        height={listHeight + 30}
-        onCloseModal={onCloseModal}
-        style={{ borderRadius: 18 }}
-      >
-        <WalletList
-          currentWallet={selectedWallet}
-          accountAddress={accountAddress}
-          allWallets={wallets}
-          height={listHeight}
-          onChangeAccount={onChangeAccount}
-          onEditAddress={onEditAddress}
-          onEditWallet={onEditWallet}
-          onPressImportSeedPhrase={onPressImportSeedPhrase}
-          onPressAddAccount={onPressAddAccount}
-        />
-      </Modal>
-    </View>
+    <Sheet>
+      <WalletList
+        currentWallet={selectedWallet}
+        accountAddress={accountAddress}
+        allWallets={wallets}
+        height={listHeight}
+        onChangeAccount={onChangeAccount}
+        onEditAddress={onEditAddress}
+        onEditWallet={onEditWallet}
+        onPressImportSeedPhrase={onPressImportSeedPhrase}
+        onPressAddAccount={onPressAddAccount}
+      />
+    </Sheet>
   );
 };
 
-export default ChangeWalletModal;
+export default ChangeWalletSheet;
