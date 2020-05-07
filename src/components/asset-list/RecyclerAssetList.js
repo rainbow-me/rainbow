@@ -9,6 +9,7 @@ import {
   DataProvider,
   LayoutProvider,
   RecyclerListView,
+  ProgressiveListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import {
@@ -41,10 +42,7 @@ class LayoutItemAnimator extends BaseItemAnimator {
   }
 
   animateDidMount = NOOP;
-  animateShift = NOOP;
-  animateWillMount = NOOP;
-  animateWillUnmount = NOOP;
-  animateWillUpdate = () => {
+  animateShift = () => {
     if (
       this.rlv.getContentDimension().height <
         this.rlv.getCurrentScrollOffset() + globalDeviceDimensions + 46 &&
@@ -67,6 +65,13 @@ class LayoutItemAnimator extends BaseItemAnimator {
         },
       });
     }
+  };
+  animateWillMount = NOOP;
+  animateWillUnmount = NOOP;
+  animateWillUpdate = () => {
+    // if (this.rlv._refreshViewability) {
+    //   console.log(this.rlv._refreshViewability());
+    // }
   };
 }
 
@@ -373,6 +378,9 @@ class RecyclerAssetList extends Component {
         if (collectiblesIndex > -1) {
           if (index > headersIndices[collectiblesIndex]) {
             const familyIndex = index - headersIndices[collectiblesIndex] - 1;
+            const isFirst = index === headersIndices[collectiblesIndex] + 1;
+            const isHeader =
+              sections[collectiblesIndex].data[familyIndex].isHeader;
             return {
               height: ViewTypes.UNIQUE_TOKEN_ROW.calculateHeight({
                 amountOfRows: get(
@@ -380,14 +388,16 @@ class RecyclerAssetList extends Component {
                   `[${collectiblesIndex}].data[${familyIndex}].tokens`,
                   []
                 ).length,
-                isFirst: index === headersIndices[collectiblesIndex] + 1,
+                isFirst,
+                isHeader,
                 isOpen:
                   openFamilyTabs[
                     sections[collectiblesIndex].data[familyIndex].familyName
                   ],
               }),
               index: ViewTypes.UNIQUE_TOKEN_ROW.index,
-              isFirst: index === headersIndices[collectiblesIndex] + 1,
+              isFirst,
+              isHeader,
             };
           }
         }
@@ -415,6 +425,7 @@ class RecyclerAssetList extends Component {
     const items = sections.reduce((ctx, section) => {
       headersIndices.push(ctx.length);
       stickyComponentsIndices.push(ctx.length);
+      console.log(ctx);
       return ctx
         .concat([
           {
@@ -779,16 +790,15 @@ class RecyclerAssetList extends Component {
               isCoinListEdited ? [0] : stickyComponentsIndices
             }
           >
-            <RecyclerListView
+            <ProgressiveListView
               dataProvider={dataProvider}
-              disableRecycling
               extendedState={{ headersIndices }}
               externalScrollView={externalScrollView}
               itemAnimator={new LayoutItemAnimator(this.rlv)}
               layoutProvider={this.layoutProvider}
               onScroll={this.handleScroll}
               ref={this.handleListRef}
-              renderAheadOffset={renderAheadOffset}
+              renderAheadOffset={50}
               rowRenderer={this.rowRenderer}
               scrollIndicatorInsets={{
                 bottom: safeAreaInsetValues.bottom,

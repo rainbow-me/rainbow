@@ -1,4 +1,4 @@
-import { compact, forEach, get, groupBy, includes, sortBy } from 'lodash';
+import { chunk, compact, forEach, get, groupBy, includes, sortBy } from 'lodash';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 import { add } from './utilities';
 
@@ -150,14 +150,18 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
         tokensRow.push([grouped[families[i]][j]]);
       }
     }
-    const tokens = compact(tokensRow);
-    rows.push({
-      childrenAmount: grouped[families[i]].length,
-      familyImage: get(tokensRow, '[0][0].familyImage', null),
-      familyName: families[i],
-      stableId: tokensRow[0].map(({ uniqueId }) => uniqueId).join('__'),
-      tokens,
-      uniqueId: tokensRow[0].map(({ uniqueId }) => uniqueId).join('__'),
+    let tokens = compact(tokensRow);
+    tokens = chunk(tokens, 4);
+    tokens.forEach((tokenChunk, index) => {
+      rows.push({
+        isHeader: index === 0,
+        childrenAmount: grouped[families[i]].length,
+        familyImage: get(tokensRow, '[0][0].familyImage', null),
+        familyName: families[i],
+        stableId: tokensRow[0].map(({ uniqueId }) => uniqueId).join(`__${index}`),
+        tokens: tokenChunk,
+        uniqueId: tokensRow[0].map(({ uniqueId }) => uniqueId).join(`__${index}`),
+      });
     });
   }
 
@@ -182,6 +186,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
       {
         childrenAmount: showcaseTokens.length,
         familyName: 'Showcase',
+        isHeader: true,
         stableId: 'showcase_stable_id',
         tokens: bundledShowcaseTokens,
         uniqueId: `sc_${showcaseTokens

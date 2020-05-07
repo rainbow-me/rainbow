@@ -49,16 +49,6 @@ const ListHeader = pure(
         {children}
       </Row>
       {showDivider && <Divider />}
-      {!isSticky && title !== 'Balances' && (
-        <View
-          style={{
-            backgroundColor: colors.white,
-            height: deviceUtils.dimensions.height + 100,
-            top: isCoinListEdited ? -40 : 0,
-            width: deviceUtils.dimensions.width,
-          }}
-        />
-      )}
     </Fragment>
   )
 );
