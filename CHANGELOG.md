@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 ### Added
+* Experimental multi wallet support
 
 ### Removed
 

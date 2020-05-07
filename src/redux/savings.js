@@ -79,11 +79,25 @@ const subscribeToCompoundData = async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { tokenOverrides } = getState().data;
   const { savingsQuery } = getState().savings;
-
+  let shouldRefetch = true;
   if (savingsQuery) {
+    if (
+      toLower(get(savingsQuery, 'variables.id', '')) !== toLower(accountAddress)
+    ) {
+      shouldRefetch = false;
+    }
+  }
+
+  if (savingsQuery && shouldRefetch) {
     savingsQuery.resetLastResults();
     savingsQuery.refetch();
   } else {
+    if (savingsQuery) {
+      const { savingsSubscription } = getState().savings;
+      savingsSubscription &&
+        savingsSubscription.unsubscribe &&
+        savingsSubscription.unsubscribe();
+    }
     // First read from localstorage
     let savingsAccountLocal = accountAddress
       ? await getSavings(accountAddress, network)

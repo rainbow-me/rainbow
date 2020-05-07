@@ -1,7 +1,7 @@
 import withViewLayoutProps from '@hocs/with-view-layout-props';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Linking, Share } from 'react-native';
+import { Alert, Linking, Share } from 'react-native';
 import {
   compose,
   onlyUpdateForPropTypes,
@@ -179,8 +179,13 @@ export default compose(
   })),
   withProps(buildPanelDimensions),
   withHandlers({
-    onPressSend: ({ navigation, asset }) => () => {
-      navigation.navigate(Routes.SEND_SHEET, { asset });
+    onPressSend: ({ navigation, asset, isReadOnlyWallet }) => () => {
+      if (!isReadOnlyWallet) {
+        navigation.navigate(Routes.SEND_SHEET, { asset });
+      } else {
+        navigation.goBack();
+        Alert.alert(`You need to import the wallet in order to do this`);
+      }
     },
     onPressShare: ({ asset: { name, permalink } }) => () => {
       Share.share({

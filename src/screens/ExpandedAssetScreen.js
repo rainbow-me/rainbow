@@ -11,6 +11,7 @@ import {
   SwapDetailsState,
   TokenExpandedState,
   UniqueTokenExpandedState,
+  WalletProfileCreator,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import { useDimensions } from '../hooks';
@@ -24,6 +25,7 @@ const ScreenTypes = {
   token: TokenExpandedState,
   unique_token: UniqueTokenExpandedState,
   uniswap: InvestmentExpandedState,
+  wallet_profile_creator: WalletProfileCreator,
 };
 
 const ExpandedAssetScreen = ({

@@ -4,7 +4,10 @@ import PropTypes from 'prop-types';
 import React, { useRef, useState } from 'react';
 import { Linking, requireNativeComponent, View } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { isAvatarPickerAvailable } from '../../config/experimental';
+import {
+  isAvatarPickerAvailable,
+  isMultiwalletAvailable,
+} from '../../config/experimental';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { removeRequest } from '../../redux/requests';
 import Routes from '../../screens/Routes/routesNames';
@@ -159,7 +162,11 @@ const TransactionList = ({
   };
 
   if ((!initialized && !navigation.isFocused()) || isLoading) {
-    return <LoadingState>{header}</LoadingState>;
+    return (
+      <View style={isMultiwalletAvailable ? { marginTop: 20 } : null}>
+        <LoadingState>{header}</LoadingState>
+      </View>
+    );
   }
 
   const addressOrEns = accountENS || formatAddress(accountAddress);

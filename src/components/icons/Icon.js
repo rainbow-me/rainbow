@@ -4,6 +4,7 @@ import Emoji from 'react-native-emoji';
 import Flex from '../layout/Flex';
 
 import ApplePayIcon from './svg/ApplePayIcon';
+import ArrowBackIcon from './svg/ArrowBack';
 import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import ArrowIcon from './svg/ArrowIcon';
 import AvatarIcon from './svg/AvatarIcon';
@@ -43,6 +44,7 @@ import OfflineIcon from './svg/OfflineIcon';
 import PasscodeIcon from './svg/PasscodeIcon';
 import PinIcon from './svg/PinIcon';
 import PlusCircledIcon from './svg/PlusCircledIcon';
+import PlusIcon from './svg/PlusIcon';
 import ProgressIcon from './svg/ProgressIcon';
 import QRCodeIcon from './svg/QRCodeIcon';
 import SearchIcon from './svg/SearchIcon';
@@ -64,6 +66,7 @@ const Icon = ({ name, ...props }) =>
 Icon.IconTypes = {
   applePay: ApplePayIcon,
   arrow: ArrowIcon,
+  arrowBack: ArrowBackIcon,
   arrowCircled: ArrowCircledIcon,
   avatar: AvatarIcon,
   backspace: BackspaceIcon,
@@ -101,6 +104,7 @@ Icon.IconTypes = {
   offline: OfflineIcon,
   passcode: PasscodeIcon,
   pin: PinIcon,
+  plus: PlusIcon,
   plusCircled: PlusCircledIcon,
   progress: ProgressIcon,
   qrCode: QRCodeIcon,

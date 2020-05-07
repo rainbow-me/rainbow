@@ -19,12 +19,14 @@ import { Input } from '../components/inputs';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { Text } from '../components/text';
+import { web3Provider } from '../handlers/web3';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-import { isValidSeed as validateSeed } from '../helpers/validators';
+import { isENSAddressFormat, isValidWallet } from '../helpers/validators';
 import {
   useAccountSettings,
   useClipboard,
   useInitializeWallet,
+  usePrevious,
   useTimeout,
 } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/transitions/effects';
@@ -80,11 +82,30 @@ const StyledInput = styled(Input)`
   min-height: 50;
 `;
 
-const ConfirmImportAlert = onSuccess =>
+const ConfirmImportAlert = (onSuccess, navigate) =>
   Alert({
     buttons: [
       {
-        onPress: onSuccess,
+        onPress: () =>
+          navigate(Routes.OVERLAY_EXPANDED_ASSET_SCREEN, {
+            actionType: 'Import',
+            address: undefined,
+            asset: [],
+            isCurrentProfile: false,
+            isNewProfile: true,
+            onCloseModal: args => {
+              if (args) {
+                onSuccess(args);
+              } else {
+                onSuccess({
+                  color: colors.getRandomColor(),
+                  name: 'Imported Wallet',
+                });
+              }
+            },
+            profile: {},
+            type: 'wallet_profile_creator',
+          }),
         text: 'Import Wallet',
       },
       {
@@ -93,8 +114,8 @@ const ConfirmImportAlert = onSuccess =>
       },
     ],
     message:
-      'This will replace your existing wallet.\n\nBefore continuing, please make sure you’ve backed up or emptied it!',
-    title: '🚨 Careful 🚨',
+      'You can switch between your existing wallets in the top navbar of the profile screen.',
+    title: 'Import new wallet',
   });
 
 const ImportButton = ({ disabled, onPress, seedPhrase }) => (
@@ -117,15 +138,18 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   const initializeWallet = useInitializeWallet();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
+  const [color, setColor] = useState(null);
+  const [name, setName] = useState(null);
   const [startFocusTimeout] = useTimeout();
   const [startAnalyticsTimeout] = useTimeout();
+  const wasImporting = usePrevious(isImporting);
 
   const isClipboardValidSecret = useMemo(() => {
-    return clipboard !== accountAddress && validateSeed(clipboard);
+    return clipboard !== accountAddress && isValidWallet(clipboard);
   }, [accountAddress, clipboard]);
 
   const isSecretValid = useMemo(() => {
-    return seedPhrase !== accountAddress && validateSeed(seedPhrase);
+    return seedPhrase !== accountAddress && isValidWallet(seedPhrase);
   }, [accountAddress, seedPhrase]);
 
   const inputRef = useRef(null);
@@ -164,7 +188,11 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
 
   const onPressImportButton = useCallback(() => {
     if (isSecretValid && seedPhrase) {
-      return ConfirmImportAlert(() => toggleImporting(true));
+      return ConfirmImportAlert(({ color, name }) => {
+        if (color) setColor(color);
+        if (name) setName(name);
+        toggleImporting(true);
+      }, navigate);
     }
 
     if (isClipboardValidSecret && clipboard) {
@@ -175,14 +203,29 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     handleSetSeedPhrase,
     isClipboardValidSecret,
     isSecretValid,
+    navigate,
     seedPhrase,
     toggleImporting,
   ]);
 
   useEffect(() => {
-    if (isImporting) {
-      startAnalyticsTimeout(() => {
-        initializeWallet(seedPhrase.trim())
+    if (!wasImporting && isImporting) {
+      startAnalyticsTimeout(async () => {
+        let input = seedPhrase.trim();
+        if (isENSAddressFormat(input)) {
+          try {
+            input = await web3Provider.resolveName(input);
+            if (!input) {
+              Alert.alert('This is not a valid ENS name');
+              return;
+            }
+          } catch (e) {
+            Alert.alert('This is not a valid ENS name');
+            return;
+          }
+        }
+
+        initializeWallet(input, color, name || 'Imported Wallet')
           .then(success => {
             if (success) {
               toggleImporting(false);
@@ -201,13 +244,16 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
       }, 50);
     }
   }, [
+    color,
     initializeWallet,
     isEmpty,
     isImporting,
+    name,
     navigate,
     seedPhrase,
     startAnalyticsTimeout,
     toggleImporting,
+    wasImporting,
   ]);
 
   return (
@@ -236,7 +282,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             numberOfLines={7}
             onChangeText={handleSetSeedPhrase}
             onSubmitEditing={onPressImportButton}
-            placeholder="Seed phrase or private key"
+            placeholder="Seed phrase, private key, Ethereum account or ENS name"
             ref={isNativeStackAvailable ? inputRef : inputRefListener}
             returnKeyType="done"
             size="large"

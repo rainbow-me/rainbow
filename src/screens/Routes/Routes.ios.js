@@ -17,6 +17,7 @@ import {
 import { deviceUtils } from '../../utils';
 import AddCashSheet from '../AddCashSheet';
 import AvatarBuilder from '../AvatarBuilder';
+import ChangeWalletModal from '../ChangeWalletModal';
 import ExampleScreen from '../ExampleScreen';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
@@ -34,6 +35,7 @@ import {
   createStackNavigator,
   exchangePresetWithTransitions,
   expandedPresetWithTransitions,
+  expandedReversePresetWithTransitions,
   onTransitionEnd,
   onTransitionStart,
   sheetPresetWithTransitions,
@@ -60,6 +62,17 @@ const SwipeStack = createMaterialTopTabNavigator(routesForSwipeStack, {
   tabBarComponent: null,
 });
 
+const importSeedPhraseFlowRoutes = {
+  [Routes.IMPORT_SEED_PHRASE_SHEET]: {
+    navigationOptions: sheetPresetWithTransitions,
+    screen: ImportSeedPhraseSheetWrapper,
+  },
+  [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ExpandedAssetScreenWithData,
+  },
+};
+
 const sendFlowRoutes = {
   [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: {
     navigationOptions: overlayExpandedPreset,
@@ -74,6 +87,13 @@ const sendFlowRoutes = {
 const SendFlowNavigator = createStackNavigator(sendFlowRoutes, {
   initialRouteName: Routes.SEND_SHEET,
 });
+
+const ImportSeedPhraseFlowNavigator = createStackNavigator(
+  importSeedPhraseFlowRoutes,
+  {
+    initialRouteName: Routes.IMPORT_SEED_PHRASE_SHEET,
+  }
+);
 
 const routesForAddCash = {
   [Routes.ADD_CASH_SHEET]: {
@@ -91,6 +111,10 @@ const routesForMainNavigator = {
     navigationOptions: emojiPreset,
     screen: AvatarBuilder,
     transparentCard: true,
+  },
+  [Routes.CHANGE_WALLET_MODAL]: {
+    navigationOptions: expandedReversePresetWithTransitions,
+    screen: ChangeWalletModal,
   },
   [Routes.CONFIRM_REQUEST]: {
     navigationOptions: sheetPresetWithTransitions,
@@ -155,7 +179,7 @@ const AddCashFlowNavigator = createStackNavigator(routesForAddCash, {
 });
 
 const routesForNativeStack = {
-  [Routes.IMPORT_SEED_PHRASE_SHEET]: ImportSeedPhraseSheetWrapper,
+  [Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR]: ImportSeedPhraseFlowNavigator,
   [Routes.SEND_SHEET_NAVIGATOR]: SendFlowNavigator,
   [Routes.ADD_CASH_SCREEN_NAVIGATOR]: AddCashFlowNavigator,
 };

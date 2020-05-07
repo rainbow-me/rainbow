@@ -23,6 +23,7 @@ import showcaseTokens from './showcaseTokens';
 import uniqueTokens from './uniqueTokens';
 import uniswap from './uniswap';
 import walletconnect from './walletconnect';
+import wallets from './wallets';
 
 export default combineReducers({
   actionSheetManager,
@@ -48,4 +49,5 @@ export default combineReducers({
   uniqueTokens,
   uniswap,
   walletconnect,
+  wallets,
 });

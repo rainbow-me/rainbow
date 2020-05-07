@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
+import { Alert } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import Divider from '../components/Divider';
 import { SavingsCoinRow } from '../components/coin-row';
@@ -16,7 +17,8 @@ import {
 import { Sheet, SheetActionButton } from '../components/sheet';
 import { isSymbolStablecoin } from '../helpers/savings';
 import { convertAmountToNativeDisplay } from '../helpers/utilities';
-import { useAccountSettings } from '../hooks';
+import WalletTypes from '../helpers/walletTypes';
+import { useAccountSettings, useWallets } from '../hooks';
 import { colors, padding } from '../styles';
 import Routes from './Routes/routesNames';
 
@@ -31,7 +33,8 @@ const WithdrawButtonShadows = [
 ];
 
 const SavingsSheet = () => {
-  const { getParam, navigate } = useNavigation();
+  const { getParam, navigate, goBack } = useNavigation();
+  const { selected: selectedWallet = {} } = useWallets();
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
   const cTokenBalance = getParam('cTokenBalance');
   const isEmpty = getParam('isEmpty');
@@ -82,36 +85,48 @@ const SavingsSheet = () => {
   }, []);
 
   const onWithdraw = useCallback(() => {
-    navigate(Routes.SAVINGS_WITHDRAW_MODAL, {
-      cTokenBalance,
-      defaultInputAsset: underlying,
-      supplyBalanceUnderlying,
-      underlyingPrice,
-    });
+    if (selectedWallet.type !== WalletTypes.readOnly) {
+      navigate(Routes.SAVINGS_WITHDRAW_MODAL, {
+        cTokenBalance,
+        defaultInputAsset: underlying,
+        supplyBalanceUnderlying,
+        underlyingPrice,
+      });
 
-    analytics.track('Navigated to SavingsWithdrawModal', {
-      category: 'savings',
-      label: underlying.symbol,
-    });
+      analytics.track('Navigated to SavingsWithdrawModal', {
+        category: 'savings',
+        label: underlying.symbol,
+      });
+    } else {
+      goBack();
+      Alert.alert(`You need to import the wallet in order to do this`);
+    }
   }, [
     cTokenBalance,
+    goBack,
     navigate,
+    selectedWallet.type,
     supplyBalanceUnderlying,
     underlying,
     underlyingPrice,
   ]);
 
   const onDeposit = useCallback(() => {
-    navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
-      defaultInputAsset: underlying,
-    });
+    if (selectedWallet.type !== WalletTypes.readOnly) {
+      navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
+        defaultInputAsset: underlying,
+      });
 
-    analytics.track('Navigated to SavingsDepositModal', {
-      category: 'savings',
-      empty: isEmpty,
-      label: underlying.symbol,
-    });
-  }, [isEmpty, navigate, underlying]);
+      analytics.track('Navigated to SavingsDepositModal', {
+        category: 'savings',
+        empty: isEmpty,
+        label: underlying.symbol,
+      });
+    } else {
+      goBack();
+      Alert.alert(`You need to import the wallet in order to do this`);
+    }
+  }, [goBack, isEmpty, navigate, selectedWallet.type, underlying]);
 
   return (
     <Sheet>
@@ -119,6 +134,7 @@ const SavingsSheet = () => {
         <SavingsSheetEmptyState
           supplyRate={supplyRate}
           underlying={underlying}
+          isReadOnlyWallet={selectedWallet.type === WalletTypes.readOnly}
         />
       ) : (
         <Fragment>

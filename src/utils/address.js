@@ -1,4 +1,4 @@
-import { checkIsValidAddress } from '../helpers/validators';
+import { checkIsValidAddressOrENS } from '../helpers/validators';
 
 /**
  * @desc get ethereum address from raw QR Code data
@@ -10,10 +10,10 @@ export const getEthereumAddressFromQRCodeData = async data => {
 
   const parts = data.split(':');
 
-  if (parts[0] === 'ethereum' && (await checkIsValidAddress(parts[1]))) {
+  if (parts[0] === 'ethereum' && (await checkIsValidAddressOrENS(parts[1]))) {
     return parts[1];
   }
-  if (await checkIsValidAddress(parts[0])) {
+  if (await checkIsValidAddressOrENS(parts[0])) {
     return parts[0];
   }
 

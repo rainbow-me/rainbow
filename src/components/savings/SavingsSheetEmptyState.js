@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import { Alert } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import { calculateAPY } from '../../helpers/savings';
 import Routes from '../../screens/Routes/routesNames';
@@ -17,10 +18,23 @@ const APYHeadingTextStyle = {
 
 const APYHeadingText = p => <Text {...p} style={APYHeadingTextStyle} />;
 
-const SavingsSheetEmptyState = ({ supplyRate, underlying }) => {
+const SavingsSheetEmptyState = ({
+  isReadOnlyWallet,
+  supplyRate,
+  underlying,
+}) => {
   const apy = useMemo(() => calculateAPY(supplyRate), [supplyRate]);
   const apyTruncated = Math.floor(apy * 10) / 10;
   const { navigate } = useNavigation();
+  const onDeposit = useCallback(() => {
+    if (!isReadOnlyWallet) {
+      navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
+        defaultInputAsset: underlying,
+      });
+    } else {
+      Alert.alert(`You need to import the wallet in order to do this`);
+    }
+  }, [isReadOnlyWallet, navigate, underlying]);
 
   return (
     <Centered direction="column" paddingTop={9}>
@@ -55,11 +69,7 @@ const SavingsSheetEmptyState = ({ supplyRate, underlying }) => {
         <SheetButton
           color={colors.swapPurple}
           label="􀁍 Deposit from Wallet"
-          onPress={() =>
-            navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
-              defaultInputAsset: underlying,
-            })
-          }
+          onPress={onDeposit}
         />
         {/*
           <SheetButton
@@ -75,9 +85,12 @@ const SavingsSheetEmptyState = ({ supplyRate, underlying }) => {
 };
 
 SavingsSheetEmptyState.propTypes = {
+  isReadOnlyWallet: PropTypes.bool,
   supplyRate: PropTypes.string,
   underlying: PropTypes.object,
 };
 
-const neverRerender = () => true;
-export default React.memo(SavingsSheetEmptyState, neverRerender);
+const arePropsEqual = (props, nextProps) => {
+  return props.isReadOnlyWallet === nextProps.isReadOnlyWallet;
+};
+export default React.memo(SavingsSheetEmptyState, arePropsEqual);

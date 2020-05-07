@@ -168,8 +168,12 @@ const getColorForString = (colorString = '') => {
   return isValidColorString ? colorString : colors[colorString];
 };
 
+const getRandomColor = () =>
+  Math.floor(Math.random() * colors.avatarColor.length);
+
 export default {
   ...colors,
   get: getColorForString,
+  getRandomColor,
   propType: PropTypes.oneOf([...Object.keys(colors), ...Object.values(colors)]),
 };

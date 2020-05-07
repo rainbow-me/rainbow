@@ -1,10 +1,12 @@
+import { isValidAddress } from 'ethereumjs-util';
 import {
-  isHexString,
   isHexStringIgnorePrefix,
   isValidMnemonic,
-  toChecksumAddress,
   web3Provider,
 } from '../handlers/web3';
+
+// Currently supported Top Level Domains from ENS
+const supportedTLDs = ['eth', 'test', 'xyz', 'luxe', 'kred', 'club', 'art'];
 
 /**
  * @desc validate email
@@ -16,14 +18,24 @@ export const isValidEmail = email =>
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   );
 
-export const isENSAddressFormat = address => address.match(/.+\..+/g);
+export const isENSAddressFormat = address => {
+  const parts = address && address.split('.');
+  if (
+    !parts ||
+    parts.length === 1 ||
+    !supportedTLDs.includes(parts[parts.length - 1])
+  ) {
+    return false;
+  }
+  return true;
+};
 
 /**
- * @desc validate ethereum address
+ * @desc validate ethereum address or ENS name
  * @param  {String} address or ENS
  * @return {Boolean}
  */
-export const checkIsValidAddress = async address => {
+export const checkIsValidAddressOrENS = async address => {
   if (isENSAddressFormat(address)) {
     try {
       const resolvedAddress = await web3Provider.resolveName(address);
@@ -32,14 +44,7 @@ export const checkIsValidAddress = async address => {
       return false;
     }
   }
-  if (!isHexString(address)) return false;
-  if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) return false;
-  if (
-    /^(0x)?[0-9a-f]{40}$/.test(address) ||
-    /^(0x)?[0-9A-F]{40}$/.test(address)
-  )
-    return true;
-  return address === toChecksumAddress(address);
+  return isValidAddress(address);
 };
 
 /**
@@ -68,3 +73,15 @@ const isValidPrivateKey = key => {
  */
 export const isValidSeed = seed =>
   seed && (isValidPrivateKey(seed) || isValidSeedPhrase(seed));
+
+/**
+ * @desc validates the input required to create a new wallet
+ * @param  {String} seed, mnemonic, private key, address or ENS name
+ * @return {Boolean}
+ */
+export const isValidWallet = seed =>
+  seed &&
+  (isValidPrivateKey(seed) ||
+    isValidSeedPhrase(seed) ||
+    isValidAddress(seed) ||
+    isENSAddressFormat(seed));

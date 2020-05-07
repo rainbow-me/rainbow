@@ -156,7 +156,7 @@ export default compose(
         contactColor = contact.color;
       } else if (!isPurchasing) {
         headerInfo.address = abbreviations.address(contactAddress, 4, 10);
-        contactColor = Math.floor(Math.random() * colors.avatarColor.length);
+        contactColor = colors.getRandomColor();
       }
 
       if (hash) {

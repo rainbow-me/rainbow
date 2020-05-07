@@ -8,29 +8,47 @@ import SendFab from './SendFab';
 
 const bottomPosition = 21 + safeAreaInsetValues.bottom;
 
-const enhance = onlyUpdateForKeys(['children', 'disabled', 'isCoinListEdited']);
+const enhance = onlyUpdateForKeys([
+  'children',
+  'disabled',
+  'isCoinListEdited',
+  'isReadOnlyWallet',
+]);
 const FabWrapper = enhance(
-  ({ children, disabled, fabs, isCoinListEdited, ...props }) => (
-    <FlexItem>
-      {children}
-      {!disabled && (
-        <RowWithMargins
-          bottom={isCoinListEdited ? -60 : bottomPosition}
-          css={`
-            position: absolute;
-            right: 15;
-            z-index: 2;
-          `}
-          direction="row-reverse"
-          margin={12}
-        >
-          {fabs.map((fab, id) =>
-            createElement(fab, { key: `fab-${id}`, ...props })
-          )}
-        </RowWithMargins>
-      )}
-    </FlexItem>
-  )
+  ({
+    children,
+    disabled,
+    fabs,
+    isCoinListEdited,
+    isReadOnlyWallet,
+    ...props
+  }) => {
+    return (
+      <FlexItem>
+        {children}
+        {!disabled && (
+          <RowWithMargins
+            bottom={isCoinListEdited ? -60 : bottomPosition}
+            css={`
+              position: absolute;
+              right: 15;
+              z-index: 2;
+            `}
+            direction="row-reverse"
+            margin={12}
+          >
+            {fabs.map((fab, id) =>
+              createElement(fab, {
+                isReadOnlyWallet,
+                key: `fab-${id}`,
+                ...props,
+              })
+            )}
+          </RowWithMargins>
+        )}
+      </FlexItem>
+    );
+  }
 );
 
 FabWrapper.propTypes = {
@@ -38,6 +56,7 @@ FabWrapper.propTypes = {
   disabled: PropTypes.bool,
   fabs: PropTypes.arrayOf(PropTypes.func).isRequired,
   isCoinListEdited: PropTypes.bool,
+  isReadOnlyWallet: PropTypes.bool,
   scrollViewTracker: PropTypes.object,
   sections: PropTypes.array,
 };

@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
+import WalletTypes from '../../helpers/walletTypes';
+import { useWallets } from '../../hooks';
 import Routes from '../../screens/Routes/routesNames';
 import { position } from '../../styles';
 import { deviceUtils, isNewValueForPath } from '../../utils';
@@ -27,12 +29,17 @@ const arePropsEqual = (...props) =>
 
 // eslint-disable-next-line react/display-name
 const UniqueTokenRow = React.memo(({ item }) => {
+  const { selected: selectedWallet = {} } = useWallets();
   const { navigate } = useNavigation();
 
   const handleItemPress = useCallback(
     asset =>
-      navigate(Routes.EXPANDED_ASSET_SCREEN, { asset, type: 'unique_token' }),
-    [navigate]
+      navigate(Routes.EXPANDED_ASSET_SCREEN, {
+        asset,
+        isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
+        type: 'unique_token',
+      }),
+    [navigate, selectedWallet.type]
   );
 
   return (
