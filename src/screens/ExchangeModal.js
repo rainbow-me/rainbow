@@ -10,7 +10,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, TextInput } from 'react-native';
+import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useIsFocused } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
@@ -44,10 +44,10 @@ import {
   useAccountSettings,
   useBlockPolling,
   useGas,
-  useInteraction,
   useMagicFocus,
   usePrevious,
   useSwapDetails,
+  useSwapRefocusInput,
   useUniswapAllowances,
   useUniswapAssetsInWallet,
   useUniswapMarketPrice,
@@ -77,8 +77,6 @@ const isSameAsset = (a, b) => {
   const assetB = toLower(get(b, 'address', ''));
   return assetA === assetB;
 };
-
-const getNativeTag = field => get(field, '_nativeTag');
 
 const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
   const { address, decimals, name, symbol } = asset;
@@ -205,9 +203,9 @@ const ExchangeModal = ({
   const outputFieldRef = useRef();
 
   const [lastFocusedInput, handleFocus] = useMagicFocus(inputFieldRef.current);
-  const [createRefocusInteraction] = useInteraction();
   const isScreenFocused = useIsFocused();
   const wasScreenFocused = usePrevious(isScreenFocused);
+  const { handleRefocusLastInput } = useSwapRefocusInput();
 
   const updateGasLimit = useCallback(
     async ({
@@ -326,7 +324,15 @@ const ExchangeModal = ({
 
   useEffect(() => {
     const refocusListener = navigation.addListener('refocus', () => {
-      handleRefocusLastInput();
+      handleRefocusLastInput({
+        inputCurrency,
+        inputFieldRef,
+        isScreenFocused,
+        lastFocusedInput,
+        nativeFieldRef,
+        outputCurrency,
+        outputFieldRef,
+      });
     });
 
     return () => {
@@ -336,6 +342,7 @@ const ExchangeModal = ({
     handleRefocusLastInput,
     inputCurrency,
     isScreenFocused,
+    lastFocusedInput,
     navigation,
     outputCurrency,
   ]);
@@ -614,30 +621,6 @@ const ExchangeModal = ({
     outputFieldRef.current = ref;
   }, []);
 
-  const findNextFocused = useCallback(() => {
-    const inputRefTag = getNativeTag(inputFieldRef.current);
-    const nativeInputRefTag = getNativeTag(nativeFieldRef.current);
-    const outputRefTag = getNativeTag(outputFieldRef.current);
-
-    const lastFocusedIsInputType =
-      lastFocusedInput &&
-      (lastFocusedInput.current === inputRefTag ||
-        lastFocusedInput.current === nativeInputRefTag);
-
-    const lastFocusedIsOutputType =
-      lastFocusedInput && lastFocusedInput.current === outputRefTag;
-
-    if (lastFocusedIsInputType && !inputCurrency) {
-      return outputRefTag;
-    }
-
-    if (lastFocusedIsOutputType && !outputCurrency) {
-      return inputRefTag;
-    }
-
-    return lastFocusedInput.current;
-  }, [inputCurrency, lastFocusedInput, outputCurrency]);
-
   const handlePressMaxBalance = useCallback(async () => {
     let maxBalance;
     if (isWithdrawal) {
@@ -727,14 +710,6 @@ const ExchangeModal = ({
     outputReserve,
     type,
   ]);
-
-  const handleRefocusLastInput = useCallback(() => {
-    createRefocusInteraction(() => {
-      if (isScreenFocused) {
-        TextInput.State.focusTextInput(findNextFocused());
-      }
-    });
-  }, [createRefocusInteraction, findNextFocused, isScreenFocused]);
 
   const navigateToSwapDetailsModal = useCallback(() => {
     inputFieldRef.current.blur();
