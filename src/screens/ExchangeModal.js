@@ -1,7 +1,6 @@
 /* eslint-disable no-use-before-define */
 import analytics from '@segment/analytics-react-native';
 import { getMarketDetails as getUniswapMarketDetails } from '@uniswap/sdk';
-import BigNumber from 'bignumber.js';
 import { find, get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, {
@@ -34,7 +33,6 @@ import ExchangeModalTypes from '../helpers/exchangeModalTypes';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
-  convertAmountToNativeDisplay,
   convertNumberToString,
   convertRawAmountToDecimalFormat,
   divide,
@@ -51,6 +49,7 @@ import {
   useInteraction,
   useMagicFocus,
   usePrevious,
+  useSwapDetails,
   useUniswapAllowances,
   useUniswapAssetsInWallet,
 } from '../hooks';
@@ -180,7 +179,12 @@ const ExchangeModal = ({
   const [inputAmountDisplay, setInputAmountDisplay] = useState(null);
   const [inputAsExactAmount, setInputAsExactAmount] = useState(true);
 
-  const [extraTradeDetails, setExtraTradeDetails] = useState({});
+  const {
+    areTradeDetailsValid,
+    extraTradeDetails,
+    updateExtraTradeDetails,
+  } = useSwapDetails();
+
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [isSufficientBalance, setIsSufficientBalance] = useState(true);
   const [nativeAmount, setNativeAmount] = useState(null);
@@ -409,49 +413,6 @@ const ExchangeModal = ({
     [allAssets, inputCurrency, inputReserve, outputCurrency, outputReserve]
   );
 
-  const updateExtraTradeDetails = useCallback(
-    tradeDetails => {
-      let inputExecutionRate = '';
-      let inputNativePrice = '';
-      let outputExecutionRate = '';
-      let outputNativePrice = '';
-
-      if (inputCurrency) {
-        const inputPriceValue = getMarketPrice();
-        inputExecutionRate = updatePrecisionToDisplay(
-          get(tradeDetails, 'executionRate.rate', BigNumber(0)),
-          inputPriceValue
-        );
-
-        inputNativePrice = convertAmountToNativeDisplay(
-          inputPriceValue,
-          nativeCurrency
-        );
-      }
-
-      if (outputCurrency) {
-        const outputPriceValue = getMarketPrice(false);
-        outputExecutionRate = updatePrecisionToDisplay(
-          get(tradeDetails, 'executionRate.rateInverted', BigNumber(0)),
-          outputPriceValue
-        );
-
-        outputNativePrice = convertAmountToNativeDisplay(
-          outputPriceValue,
-          nativeCurrency
-        );
-      }
-
-      setExtraTradeDetails({
-        inputExecutionRate,
-        inputNativePrice,
-        outputExecutionRate,
-        outputNativePrice,
-      });
-    },
-    [getMarketPrice, inputCurrency, nativeCurrency, outputCurrency]
-  );
-
   const updateTradeDetails = useCallback(() => {
     let updatedInputAmount = inputAmount;
     let updatedInputAsExactAmount = inputAsExactAmount;
@@ -569,7 +530,13 @@ const ExchangeModal = ({
 
     try {
       const tradeDetails = updateTradeDetails();
-      updateExtraTradeDetails(tradeDetails);
+      updateExtraTradeDetails({
+        getMarketPrice,
+        inputCurrency,
+        nativeCurrency,
+        outputCurrency,
+        tradeDetails,
+      });
 
       const isMissingAmounts = !inputAmount && !outputAmount;
       if (isMissingAmounts) return;
@@ -636,6 +603,8 @@ const ExchangeModal = ({
     calculateInputGivenOutputChange,
     calculateOutputGivenInputChange,
     clearForm,
+    getMarketPrice,
+    nativeCurrency,
     inputAmount,
     inputAsExactAmount,
     inputBalance,
@@ -1097,34 +1066,19 @@ const ExchangeModal = ({
   const isSlippageWarningVisible =
     isSufficientBalance && !!inputAmount && !!outputAmount;
 
-  const {
-    inputExecutionRate,
-    inputNativePrice,
-    outputExecutionRate,
-    outputNativePrice,
-  } = extraTradeDetails;
-
   const showDetailsButton = useMemo(() => {
     return (
       !(isDeposit || isWithdrawal) &&
       get(inputCurrency, 'symbol') &&
       get(outputCurrency, 'symbol') &&
-      inputExecutionRate !== 'NaN' &&
-      inputExecutionRate &&
-      inputNativePrice &&
-      outputExecutionRate !== 'NaN' &&
-      outputExecutionRate &&
-      outputNativePrice
+      areTradeDetailsValid
     );
   }, [
+    areTradeDetailsValid,
     inputCurrency,
-    inputExecutionRate,
-    inputNativePrice,
     isDeposit,
     isWithdrawal,
     outputCurrency,
-    outputExecutionRate,
-    outputNativePrice,
   ]);
 
   return (
