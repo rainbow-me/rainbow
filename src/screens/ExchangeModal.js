@@ -27,13 +27,10 @@ import SwapInfo from '../components/exchange/SwapInfo';
 import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
-import { calculateTradeDetails } from '../handlers/uniswap';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
-  convertNumberToString,
-  convertRawAmountToDecimalFormat,
   greaterThanOrEqualTo,
   isZero,
   multiply,
@@ -50,6 +47,7 @@ import {
   useSwapRefocusInput,
   useUniswapAllowances,
   useUniswapAssetsInWallet,
+  useUniswapMarketDetails,
   useUniswapMarketPrice,
 } from '../hooks';
 import { loadWallet } from '../model/wallet';
@@ -135,9 +133,10 @@ const ExchangeModal = ({
   } = useUniswapAllowances();
   const { web3ListenerInit, web3ListenerStop } = useBlockPolling();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
-  const { chainId, nativeCurrency } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
   const { getMarketPrice } = useUniswapMarketPrice();
+  const { getMarketDetails } = useUniswapMarketDetails();
 
   const defaultInputAddress = get(defaultInputAsset, 'address');
   let defaultInputItemInWallet = ethereumUtils.getAsset(
@@ -362,15 +361,45 @@ const ExchangeModal = ({
       return;
     const isNewNativeAmount = nativeFieldRef.current.isFocused();
     if (isNewNativeAmount) {
-      getMarketDetails();
+      getMarketDetails({
+        clearForm,
+        inputAmount,
+        inputAsExactAmount,
+        inputBalance,
+        inputCurrency,
+        inputFieldRef,
+        isMax,
+        nativeAmount,
+        nativeCurrency,
+        nativeFieldRef,
+        outputAmount,
+        outputCurrency,
+        outputFieldRef,
+        setIsSufficientBalance,
+        setSlippage,
+        updateExtraTradeDetails,
+        updateInputAmount,
+        updateOutputAmount,
+      });
     }
   }, [
+    clearForm,
     defaultInputAddress,
     getMarketDetails,
+    inputAmount,
+    inputAsExactAmount,
+    inputBalance,
     inputCurrency,
+    isMax,
     isDeposit,
     isWithdrawal,
     nativeAmount,
+    nativeCurrency,
+    outputAmount,
+    outputCurrency,
+    updateExtraTradeDetails,
+    updateInputAmount,
+    updateOutputAmount,
   ]);
 
   useEffect(() => {
@@ -380,233 +409,48 @@ const ExchangeModal = ({
       inputCurrency.address === defaultInputAddress
     )
       return;
-    getMarketDetails();
-  }, [
-    defaultInputAddress,
-    getMarketDetails,
-    inputAmount,
-    inputCurrency,
-    inputCurrencyUniqueId,
-    inputReserveTokenAddress,
-    isDeposit,
-    isWithdrawal,
-    outputAmount,
-    outputCurrencyUniqueId,
-    outputReserveTokenAddress,
-  ]);
-
-  const updateTradeDetails = useCallback(() => {
-    let updatedInputAmount = inputAmount;
-    let updatedInputAsExactAmount = inputAsExactAmount;
-    const isMissingAmounts = !inputAmount && !outputAmount;
-
-    if (isMissingAmounts) {
-      const DEFAULT_NATIVE_INPUT_AMOUNT = 50;
-      const inputNativePrice = getMarketPrice(inputCurrency, outputCurrency);
-      updatedInputAmount = convertAmountFromNativeValue(
-        DEFAULT_NATIVE_INPUT_AMOUNT,
-        inputNativePrice,
-        inputCurrency.decimals
-      );
-      updatedInputAsExactAmount = true;
-    }
-
-    return calculateTradeDetails(
-      chainId,
-      updatedInputAmount,
+    getMarketDetails({
+      clearForm,
+      inputAmount,
+      inputAsExactAmount,
+      inputBalance,
       inputCurrency,
-      inputReserve,
+      inputFieldRef,
+      isMax,
+      nativeAmount,
+      nativeCurrency,
+      nativeFieldRef,
       outputAmount,
       outputCurrency,
-      outputReserve,
-      updatedInputAsExactAmount
-    );
-  }, [
-    chainId,
-    getMarketPrice,
-    inputAmount,
-    inputAsExactAmount,
-    inputCurrency,
-    inputReserve,
-    outputAmount,
-    outputCurrency,
-    outputReserve,
-  ]);
-
-  const calculateInputGivenOutputChange = useCallback(
-    (tradeDetails, isOutputEmpty, isOutputZero, inputDecimals) => {
-      if (isOutputEmpty || isOutputZero) {
-        updateInputAmount();
-        setIsSufficientBalance(true);
-      } else {
-        const updatedInputAmount = get(tradeDetails, 'inputAmount.amount');
-        const rawUpdatedInputAmount = convertRawAmountToDecimalFormat(
-          updatedInputAmount,
-          inputDecimals
-        );
-
-        const updatedInputAmountDisplay = updatePrecisionToDisplay(
-          rawUpdatedInputAmount,
-          get(inputCurrency, 'price.value'),
-          true
-        );
-        updateInputAmount(
-          rawUpdatedInputAmount,
-          updatedInputAmountDisplay,
-          inputAsExactAmount
-        );
-
-        const isSufficientAmountToTrade = greaterThanOrEqualTo(
-          inputBalance,
-          rawUpdatedInputAmount
-        );
-        setIsSufficientBalance(isSufficientAmountToTrade);
-      }
-    },
-    [inputAsExactAmount, inputBalance, inputCurrency, updateInputAmount]
-  );
-
-  const calculateOutputGivenInputChange = useCallback(
-    (tradeDetails, isInputEmpty, isInputZero, outputDecimals) => {
-      logger.log('calculate OUTPUT given INPUT change');
-      if (
-        (isInputEmpty || isInputZero) &&
-        outputFieldRef &&
-        outputFieldRef.current &&
-        !outputFieldRef.current.isFocused()
-      ) {
-        updateOutputAmount(null, null, true);
-      } else {
-        const updatedOutputAmount = get(tradeDetails, 'outputAmount.amount');
-        const rawUpdatedOutputAmount = convertRawAmountToDecimalFormat(
-          updatedOutputAmount,
-          outputDecimals
-        );
-        if (rawUpdatedOutputAmount !== '0') {
-          let outputNativePrice = get(outputCurrency, 'price.value', null);
-          if (isNil(outputNativePrice)) {
-            outputNativePrice = getMarketPrice(
-              inputCurrency,
-              outputCurrency,
-              false
-            );
-          }
-          const updatedOutputAmountDisplay = updatePrecisionToDisplay(
-            rawUpdatedOutputAmount,
-            outputNativePrice
-          );
-
-          updateOutputAmount(
-            rawUpdatedOutputAmount,
-            updatedOutputAmountDisplay,
-            inputAsExactAmount
-          );
-        }
-      }
-    },
-    [
-      getMarketPrice,
-      inputAsExactAmount,
-      inputCurrency,
-      outputCurrency,
+      outputFieldRef,
+      setIsSufficientBalance,
+      setSlippage,
+      updateExtraTradeDetails,
+      updateInputAmount,
       updateOutputAmount,
-    ]
-  );
-
-  const getMarketDetails = useCallback(() => {
-    const isMissingCurrency = !inputCurrency || !outputCurrency;
-    const isMissingReserves =
-      (inputCurrency && inputCurrency.address !== 'eth' && !inputReserve) ||
-      (outputCurrency && outputCurrency.address !== 'eth' && !outputReserve);
-    if (isMissingCurrency || isMissingReserves) return;
-
-    try {
-      const tradeDetails = updateTradeDetails();
-      updateExtraTradeDetails({
-        inputCurrency,
-        nativeCurrency,
-        outputCurrency,
-        tradeDetails,
-      });
-
-      const isMissingAmounts = !inputAmount && !outputAmount;
-      if (isMissingAmounts) return;
-
-      const { decimals: inputDecimals } = inputCurrency;
-      const { decimals: outputDecimals } = outputCurrency;
-
-      // update slippage
-      const slippage = convertNumberToString(
-        get(tradeDetails, 'executionRateSlippage', 0)
-      );
-      setSlippage(slippage);
-
-      const newIsSufficientBalance =
-        !inputAmount || greaterThanOrEqualTo(inputBalance, inputAmount);
-
-      setIsSufficientBalance(newIsSufficientBalance);
-
-      const isInputEmpty = !inputAmount;
-      const isNativeEmpty = !nativeAmount;
-      const isOutputEmpty = !outputAmount;
-
-      const isInputZero = Number(inputAmount) === 0;
-      const isOutputZero = Number(outputAmount) === 0;
-
-      if (
-        nativeFieldRef &&
-        nativeFieldRef.current &&
-        nativeFieldRef.current.isFocused() &&
-        isNativeEmpty &&
-        !isMax
-      ) {
-        clearForm();
-      }
-
-      // update output amount given input amount changes
-      if (inputAsExactAmount) {
-        calculateOutputGivenInputChange(
-          tradeDetails,
-          isInputEmpty,
-          isInputZero,
-          outputDecimals
-        );
-      }
-
-      // update input amount given output amount changes
-      if (
-        !inputAsExactAmount &&
-        inputFieldRef &&
-        inputFieldRef.current &&
-        !inputFieldRef.current.isFocused()
-      ) {
-        calculateInputGivenOutputChange(
-          tradeDetails,
-          isOutputEmpty,
-          isOutputZero,
-          inputDecimals
-        );
-      }
-    } catch (error) {
-      logger.log('error getting market details', error);
-    }
+    });
   }, [
-    calculateInputGivenOutputChange,
-    calculateOutputGivenInputChange,
     clearForm,
-    nativeCurrency,
+    defaultInputAddress,
+    getMarketDetails,
     inputAmount,
     inputAsExactAmount,
     inputBalance,
     inputCurrency,
-    inputReserve,
+    inputCurrencyUniqueId,
+    inputReserveTokenAddress,
+    isDeposit,
     isMax,
+    isWithdrawal,
     nativeAmount,
+    nativeCurrency,
     outputAmount,
     outputCurrency,
-    outputReserve,
+    outputCurrencyUniqueId,
+    outputReserveTokenAddress,
     updateExtraTradeDetails,
-    updateTradeDetails,
+    updateInputAmount,
+    updateOutputAmount,
   ]);
 
   const assignInputFieldRef = useCallback(ref => {
