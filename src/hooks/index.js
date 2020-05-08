@@ -43,6 +43,7 @@ export { default as useTransformOrigin } from './useTransformOrigin';
 export { default as useUniswapAllowances } from './useUniswapAllowances';
 export { default as useUniswapAssets } from './useUniswapAssets';
 export { default as useUniswapAssetsInWallet } from './useUniswapAssetsInWallet';
+export { default as useUniswapCurrencies } from './useUniswapCurrencies';
 export { default as useUniswapMarketDetails } from './useUniswapMarketDetails';
 export { default as useUniswapMarketPrice } from './useUniswapMarketPrice';
 export { default as useWallets } from './useWallets';

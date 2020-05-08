@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
 import analytics from '@segment/analytics-react-native';
-import { find, get, isNil, toLower } from 'lodash';
+import { get, isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, {
   Fragment,
@@ -46,7 +46,7 @@ import {
   useSwapDetails,
   useSwapRefocusInput,
   useUniswapAllowances,
-  useUniswapAssetsInWallet,
+  useUniswapCurrencies,
   useUniswapMarketDetails,
   useUniswapMarketPrice,
 } from '../hooks';
@@ -68,13 +68,6 @@ export const CurrencySelectionTypes = {
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(
   toClass(FloatingPanels)
 );
-
-const isSameAsset = (a, b) => {
-  if (!a || !b) return false;
-  const assetA = toLower(get(a, 'address', ''));
-  const assetB = toLower(get(b, 'address', ''));
-  return assetA === assetB;
-};
 
 const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
   const { address, decimals, name, symbol } = asset;
@@ -128,16 +121,12 @@ const ExchangeModal = ({
     inputReserve,
     outputReserve,
     uniswapClearCurrenciesAndReserves,
-    uniswapUpdateInputCurrency,
-    uniswapUpdateOutputCurrency,
   } = useUniswapAllowances();
   const { web3ListenerInit, web3ListenerStop } = useBlockPolling();
-  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const { nativeCurrency } = useAccountSettings();
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
   const { getMarketPrice } = useUniswapMarketPrice();
   const { getMarketDetails } = useUniswapMarketDetails();
-
   const defaultInputAddress = get(defaultInputAsset, 'address');
   let defaultInputItemInWallet = ethereumUtils.getAsset(
     allAssets,
@@ -170,7 +159,6 @@ const ExchangeModal = ({
     defaultOutputItem = defaultChosenInputItem;
   }
 
-  const [inputCurrency, setInputCurrency] = useState(defaultInputItemInWallet);
   const [isMax, setIsMax] = useState(false);
   const [inputAmount, setInputAmount] = useState(null);
   const [inputAmountDisplay, setInputAmountDisplay] = useState(null);
@@ -187,15 +175,11 @@ const ExchangeModal = ({
   const [nativeAmount, setNativeAmount] = useState(null);
   const [outputAmount, setOutputAmount] = useState(null);
   const [outputAmountDisplay, setOutputAmountDisplay] = useState(null);
-  const [outputCurrency, setOutputCurrency] = useState(defaultOutputItem);
   const [inputBalance, setInputBalance] = useState(null);
   const [showConfirmButton, setShowConfirmButton] = useState(
     isDeposit || isWithdrawal ? true : false
   );
   const [slippage, setSlippage] = useState(null);
-
-  const previousInputCurrency = usePrevious(inputCurrency);
-  const previousOutputCurrency = usePrevious(outputCurrency);
 
   const inputFieldRef = useRef();
   const nativeFieldRef = useRef();
@@ -205,6 +189,100 @@ const ExchangeModal = ({
   const isScreenFocused = useIsFocused();
   const wasScreenFocused = usePrevious(isScreenFocused);
   const { handleRefocusLastInput } = useSwapRefocusInput();
+
+  const updateInputAmount = useCallback(
+    (
+      newInputAmount,
+      newAmountDisplay,
+      newInputAsExactAmount = true,
+      newIsMax = false
+    ) => {
+      setInputAmount(newInputAmount);
+      setInputAsExactAmount(newInputAsExactAmount);
+      setInputAmountDisplay(
+        newAmountDisplay !== undefined ? newAmountDisplay : newInputAmount
+      );
+      setIsMax(newInputAmount && newIsMax);
+
+      if (!nativeFieldRef.current.isFocused() || newIsMax) {
+        let newNativeAmount = null;
+
+        const isInputZero = isZero(newInputAmount);
+
+        if (newInputAmount && !isInputZero) {
+          let newNativePrice = get(inputCurrency, 'native.price.amount', null);
+          if (isNil(newNativePrice)) {
+            newNativePrice = getMarketPrice(inputCurrency, outputCurrency);
+          }
+          newNativeAmount = convertAmountToNativeAmount(
+            newInputAmount,
+            newNativePrice
+          );
+        }
+        setNativeAmount(newNativeAmount);
+
+        if (inputCurrency) {
+          const newIsSufficientBalance =
+            !newInputAmount ||
+            (isWithdrawal
+              ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
+              : greaterThanOrEqualTo(inputBalance, newInputAmount));
+
+          setIsSufficientBalance(newIsSufficientBalance);
+        }
+      }
+
+      if (newAmountDisplay) {
+        analytics.track('Updated input amount', {
+          category: isDeposit ? 'savings' : 'swap',
+          defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+          type,
+          value: Number(newAmountDisplay.toString()),
+        });
+      }
+    },
+    [
+      defaultInputAsset,
+      getMarketPrice,
+      inputBalance,
+      inputCurrency,
+      isDeposit,
+      isWithdrawal,
+      outputCurrency,
+      supplyBalanceUnderlying,
+      type,
+    ]
+  );
+
+  const clearForm = useCallback(() => {
+    if (inputFieldRef && inputFieldRef.current) inputFieldRef.current.clear();
+    if (nativeFieldRef && nativeFieldRef.current)
+      nativeFieldRef.current.clear();
+    if (outputFieldRef && outputFieldRef.current)
+      outputFieldRef.current.clear();
+    updateInputAmount();
+  }, [updateInputAmount]);
+
+  const {
+    inputCurrency,
+    outputCurrency,
+    updateInputCurrency,
+    updateOutputCurrency,
+  } = useUniswapCurrencies({
+    clearForm,
+    defaultChosenInputItem,
+    defaultInputAddress,
+    defaultInputAsset,
+    defaultInputItemInWallet,
+    defaultOutputItem,
+    isDeposit,
+    isWithdrawal,
+    selectedGasPrice,
+    setInputAsExactAmount,
+    setInputBalance,
+    setShowConfirmButton,
+    type,
+  });
 
   const updateGasLimit = useCallback(
     async ({
@@ -600,154 +678,6 @@ const ExchangeModal = ({
     });
   }, [inputCurrency, navigation, updateOutputCurrency]);
 
-  const updateInputAmount = useCallback(
-    (
-      newInputAmount,
-      newAmountDisplay,
-      newInputAsExactAmount = true,
-      newIsMax = false
-    ) => {
-      setInputAmount(newInputAmount);
-      setInputAsExactAmount(newInputAsExactAmount);
-      setInputAmountDisplay(
-        newAmountDisplay !== undefined ? newAmountDisplay : newInputAmount
-      );
-      setIsMax(newInputAmount && newIsMax);
-
-      if (!nativeFieldRef.current.isFocused() || newIsMax) {
-        let newNativeAmount = null;
-
-        const isInputZero = isZero(newInputAmount);
-
-        if (newInputAmount && !isInputZero) {
-          let newNativePrice = get(inputCurrency, 'native.price.amount', null);
-          if (isNil(newNativePrice)) {
-            newNativePrice = getMarketPrice(inputCurrency, outputCurrency);
-          }
-          newNativeAmount = convertAmountToNativeAmount(
-            newInputAmount,
-            newNativePrice
-          );
-        }
-        setNativeAmount(newNativeAmount);
-
-        if (inputCurrency) {
-          const newIsSufficientBalance =
-            !newInputAmount ||
-            (isWithdrawal
-              ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
-              : greaterThanOrEqualTo(inputBalance, newInputAmount));
-
-          setIsSufficientBalance(newIsSufficientBalance);
-        }
-      }
-
-      if (newAmountDisplay) {
-        analytics.track('Updated input amount', {
-          category: isDeposit ? 'savings' : 'swap',
-          defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
-          type,
-          value: Number(newAmountDisplay.toString()),
-        });
-      }
-    },
-    [
-      defaultInputAsset,
-      getMarketPrice,
-      inputBalance,
-      inputCurrency,
-      isDeposit,
-      isWithdrawal,
-      outputCurrency,
-      supplyBalanceUnderlying,
-      type,
-    ]
-  );
-
-  const clearForm = useCallback(() => {
-    if (inputFieldRef && inputFieldRef.current) inputFieldRef.current.clear();
-    if (nativeFieldRef && nativeFieldRef.current)
-      nativeFieldRef.current.clear();
-    if (outputFieldRef && outputFieldRef.current)
-      outputFieldRef.current.clear();
-    updateInputAmount();
-  }, [updateInputAmount]);
-
-  const updateInputCurrency = useCallback(
-    async (newInputCurrency, userSelected = true) => {
-      logger.log(
-        '[update input curr] new input curr, user selected?',
-        newInputCurrency,
-        userSelected
-      );
-
-      logger.log('[update input curr] prev input curr', previousInputCurrency);
-      if (!isSameAsset(newInputCurrency, previousInputCurrency)) {
-        logger.log('[update input curr] clear form');
-        clearForm();
-      }
-
-      logger.log('[update input curr] setting input curr', newInputCurrency);
-      setInputCurrency(newInputCurrency);
-      setShowConfirmButton(
-        isDeposit || isWithdrawal
-          ? !!newInputCurrency
-          : !!newInputCurrency && !!outputCurrency
-      );
-
-      dispatch(uniswapUpdateInputCurrency(newInputCurrency));
-
-      if (userSelected && isSameAsset(newInputCurrency, outputCurrency)) {
-        logger.log(
-          '[update input curr] setting output curr to prev input curr'
-        );
-        if (isDeposit || isWithdrawal) {
-          updateOutputCurrency(null, false);
-        } else {
-          updateOutputCurrency(previousInputCurrency, false);
-        }
-      }
-
-      if (isDeposit && newInputCurrency.address !== defaultInputAddress) {
-        logger.log(
-          '[update input curr] new deposit output for deposit or withdraw',
-          defaultChosenInputItem
-        );
-        updateOutputCurrency(defaultChosenInputItem, false);
-      }
-
-      // Update current balance
-      const inputBalance = await ethereumUtils.getBalanceAmount(
-        selectedGasPrice,
-        newInputCurrency
-      );
-      setInputBalance(inputBalance);
-
-      analytics.track('Switched input asset', {
-        category: isDeposit ? 'savings' : 'swap',
-        defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
-        from: (previousInputCurrency && previousInputCurrency.symbol) || '',
-        label: newInputCurrency.symbol,
-        type,
-      });
-    },
-    [
-      clearForm,
-      defaultChosenInputItem,
-      defaultInputAddress,
-      defaultInputAsset,
-      dispatch,
-      isDeposit,
-      isWithdrawal,
-      outputCurrency,
-      previousInputCurrency,
-      selectedGasPrice,
-      type,
-      uniswapUpdateInputCurrency,
-      updateOutputCurrency,
-    ]
-  );
-
   const updateNativeAmount = useCallback(
     nativeAmount => {
       logger.log('update native amount', nativeAmount);
@@ -800,70 +730,6 @@ const ExchangeModal = ({
       }
     },
     [defaultInputAsset, isDeposit, isWithdrawal, type]
-  );
-
-  const updateOutputCurrency = useCallback(
-    (newOutputCurrency, userSelected = true) => {
-      logger.log(
-        '[update output curr] new output curr, user selected?',
-        newOutputCurrency,
-        userSelected
-      );
-      logger.log(
-        '[update output curr] input currency at the moment',
-        inputCurrency
-      );
-      dispatch(uniswapUpdateOutputCurrency(newOutputCurrency));
-
-      setInputAsExactAmount(true);
-      setOutputCurrency(newOutputCurrency);
-      setShowConfirmButton(
-        isDeposit || isWithdrawal
-          ? !!inputCurrency
-          : !!inputCurrency && !!newOutputCurrency
-      );
-
-      logger.log(
-        '[update output curr] prev output curr',
-        previousOutputCurrency
-      );
-      const existsInWallet = find(
-        uniswapAssetsInWallet,
-        asset =>
-          get(asset, 'address') === get(previousOutputCurrency, 'address')
-      );
-      if (userSelected && isSameAsset(inputCurrency, newOutputCurrency)) {
-        if (existsInWallet) {
-          logger.log(
-            '[update output curr] updating input curr with prev output curr'
-          );
-          updateInputCurrency(previousOutputCurrency, false);
-        } else {
-          logger.log('[update output curr] updating input curr with nothing');
-          updateInputCurrency(null, false);
-        }
-      }
-
-      analytics.track('Switched output asset', {
-        category: isWithdrawal || isDeposit ? 'savings' : 'swap',
-        defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
-        from: (previousOutputCurrency && previousOutputCurrency.symbol) || null,
-        label: newOutputCurrency.symbol,
-        type,
-      });
-    },
-    [
-      defaultInputAsset,
-      dispatch,
-      inputCurrency,
-      isDeposit,
-      isWithdrawal,
-      previousOutputCurrency,
-      type,
-      uniswapAssetsInWallet,
-      uniswapUpdateOutputCurrency,
-      updateInputCurrency,
-    ]
   );
 
   const isSlippageWarningVisible =
