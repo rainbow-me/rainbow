@@ -8,6 +8,7 @@ import {
   map,
   toLower,
   uniq,
+  uniqBy,
   without,
 } from 'lodash';
 import {
@@ -217,7 +218,7 @@ export const uniswapUpdateLiquidityTokens = (
   let updatedLiquidityTokens = filter(liquidityTokens, hasTokenQuantity);
   if (appendOrChange) {
     const { liquidityTokens: existingLiquidityTokens } = getState().uniswap;
-    updatedLiquidityTokens = uniq(
+    updatedLiquidityTokens = uniqBy(
       concat(updatedLiquidityTokens, existingLiquidityTokens),
       getAssetCode
     );
