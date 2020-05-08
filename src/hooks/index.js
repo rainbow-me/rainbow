@@ -42,6 +42,7 @@ export { default as useTransformOrigin } from './useTransformOrigin';
 export { default as useUniswapAllowances } from './useUniswapAllowances';
 export { default as useUniswapAssets } from './useUniswapAssets';
 export { default as useUniswapAssetsInWallet } from './useUniswapAssetsInWallet';
+export { default as useUniswapMarketPrice } from './useUniswapMarketPrice';
 export { default as useWallets } from './useWallets';
 export { default as useWalletSectionsData } from './useWalletSectionsData';
 export { default as useWyreApplePay } from './useWyreApplePay';

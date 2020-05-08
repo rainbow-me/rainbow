@@ -5,25 +5,22 @@ import {
   convertAmountToNativeDisplay,
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
+import useUniswapMarketPrice from './useUniswapMarketPrice';
 
 export default function useSwapDetails() {
+  const { getMarketPrice } = useUniswapMarketPrice();
+
   const [extraTradeDetails, setExtraTradeDetails] = useState({});
 
   const updateExtraTradeDetails = useCallback(
-    ({
-      getMarketPrice,
-      inputCurrency,
-      nativeCurrency,
-      outputCurrency,
-      tradeDetails,
-    }) => {
+    ({ inputCurrency, nativeCurrency, outputCurrency, tradeDetails }) => {
       let inputExecutionRate = '';
       let inputNativePrice = '';
       let outputExecutionRate = '';
       let outputNativePrice = '';
 
       if (inputCurrency) {
-        const inputPriceValue = getMarketPrice();
+        const inputPriceValue = getMarketPrice(inputCurrency, outputCurrency);
         inputExecutionRate = updatePrecisionToDisplay(
           get(tradeDetails, 'executionRate.rate', BigNumber(0)),
           inputPriceValue
@@ -36,7 +33,11 @@ export default function useSwapDetails() {
       }
 
       if (outputCurrency) {
-        const outputPriceValue = getMarketPrice(false);
+        const outputPriceValue = getMarketPrice(
+          inputCurrency,
+          outputCurrency,
+          false
+        );
         outputExecutionRate = updatePrecisionToDisplay(
           get(tradeDetails, 'executionRate.rateInverted', BigNumber(0)),
           outputPriceValue
@@ -48,7 +49,6 @@ export default function useSwapDetails() {
         );
       }
 
-      // TODO JIN - swap details
       setExtraTradeDetails({
         inputExecutionRate,
         inputNativePrice,
@@ -56,8 +56,9 @@ export default function useSwapDetails() {
         outputNativePrice,
       });
     },
-    []
+    [getMarketPrice]
   );
+
   const areTradeDetailsValid = useMemo(() => {
     const {
       inputExecutionRate,

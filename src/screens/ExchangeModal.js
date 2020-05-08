@@ -1,6 +1,5 @@
 /* eslint-disable no-use-before-define */
 import analytics from '@segment/analytics-react-native';
-import { getMarketDetails as getUniswapMarketDetails } from '@uniswap/sdk';
 import { find, get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, {
@@ -35,7 +34,6 @@ import {
   convertAmountToNativeAmount,
   convertNumberToString,
   convertRawAmountToDecimalFormat,
-  divide,
   greaterThanOrEqualTo,
   isZero,
   multiply,
@@ -52,6 +50,7 @@ import {
   useSwapDetails,
   useUniswapAllowances,
   useUniswapAssetsInWallet,
+  useUniswapMarketPrice,
 } from '../hooks';
 import { loadWallet } from '../model/wallet';
 import { executeRap } from '../raps/common';
@@ -140,6 +139,7 @@ const ExchangeModal = ({
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const { chainId, nativeCurrency } = useAccountSettings();
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
+  const { getMarketPrice } = useUniswapMarketPrice();
 
   const defaultInputAddress = get(defaultInputAsset, 'address');
   let defaultInputItemInWallet = ethereumUtils.getAsset(
@@ -388,31 +388,6 @@ const ExchangeModal = ({
     outputReserveTokenAddress,
   ]);
 
-  const getMarketPrice = useCallback(
-    (useInputReserve = true) => {
-      const ethPrice = ethereumUtils.getEthPriceUnit(allAssets);
-      if (
-        (useInputReserve && inputCurrency && inputCurrency.address === 'eth') ||
-        (!useInputReserve && outputCurrency && outputCurrency.address === 'eth')
-      )
-        return ethPrice;
-
-      if (
-        (useInputReserve && !inputReserve) ||
-        (!useInputReserve && !outputReserve)
-      )
-        return 0;
-
-      const marketDetails = getUniswapMarketDetails(
-        undefined,
-        useInputReserve ? inputReserve : outputReserve
-      );
-      const assetToEthPrice = get(marketDetails, 'marketRate.rate');
-      return divide(ethPrice, assetToEthPrice) || 0;
-    },
-    [allAssets, inputCurrency, inputReserve, outputCurrency, outputReserve]
-  );
-
   const updateTradeDetails = useCallback(() => {
     let updatedInputAmount = inputAmount;
     let updatedInputAsExactAmount = inputAsExactAmount;
@@ -420,7 +395,7 @@ const ExchangeModal = ({
 
     if (isMissingAmounts) {
       const DEFAULT_NATIVE_INPUT_AMOUNT = 50;
-      const inputNativePrice = getMarketPrice();
+      const inputNativePrice = getMarketPrice(inputCurrency, outputCurrency);
       updatedInputAmount = convertAmountFromNativeValue(
         DEFAULT_NATIVE_INPUT_AMOUNT,
         inputNativePrice,
@@ -503,7 +478,11 @@ const ExchangeModal = ({
         if (rawUpdatedOutputAmount !== '0') {
           let outputNativePrice = get(outputCurrency, 'price.value', null);
           if (isNil(outputNativePrice)) {
-            outputNativePrice = getMarketPrice(false);
+            outputNativePrice = getMarketPrice(
+              inputCurrency,
+              outputCurrency,
+              false
+            );
           }
           const updatedOutputAmountDisplay = updatePrecisionToDisplay(
             rawUpdatedOutputAmount,
@@ -518,7 +497,13 @@ const ExchangeModal = ({
         }
       }
     },
-    [getMarketPrice, inputAsExactAmount, outputCurrency, updateOutputAmount]
+    [
+      getMarketPrice,
+      inputAsExactAmount,
+      inputCurrency,
+      outputCurrency,
+      updateOutputAmount,
+    ]
   );
 
   const getMarketDetails = useCallback(() => {
@@ -531,7 +516,6 @@ const ExchangeModal = ({
     try {
       const tradeDetails = updateTradeDetails();
       updateExtraTradeDetails({
-        getMarketPrice,
         inputCurrency,
         nativeCurrency,
         outputCurrency,
@@ -603,7 +587,6 @@ const ExchangeModal = ({
     calculateInputGivenOutputChange,
     calculateOutputGivenInputChange,
     clearForm,
-    getMarketPrice,
     nativeCurrency,
     inputAmount,
     inputAsExactAmount,
@@ -820,7 +803,7 @@ const ExchangeModal = ({
         if (newInputAmount && !isInputZero) {
           let newNativePrice = get(inputCurrency, 'native.price.amount', null);
           if (isNil(newNativePrice)) {
-            newNativePrice = getMarketPrice();
+            newNativePrice = getMarketPrice(inputCurrency, outputCurrency);
           }
           newNativeAmount = convertAmountToNativeAmount(
             newInputAmount,
@@ -856,6 +839,7 @@ const ExchangeModal = ({
       inputCurrency,
       isDeposit,
       isWithdrawal,
+      outputCurrency,
       supplyBalanceUnderlying,
       type,
     ]
@@ -959,7 +943,7 @@ const ExchangeModal = ({
       if (nativeAmount && !isNativeZero) {
         let nativePrice = get(inputCurrency, 'native.price.amount', null);
         if (isNil(nativePrice)) {
-          nativePrice = getMarketPrice();
+          nativePrice = getMarketPrice(inputCurrency, outputCurrency);
         }
         inputAmount = convertAmountFromNativeValue(
           nativeAmount,
@@ -977,7 +961,7 @@ const ExchangeModal = ({
       setInputAmountDisplay(inputAmountDisplay);
       setInputAsExactAmount(true);
     },
-    [getMarketPrice, inputCurrency]
+    [getMarketPrice, inputCurrency, outputCurrency]
   );
 
   const updateOutputAmount = useCallback(
