@@ -68,6 +68,12 @@ const ExchangeModal = ({
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
 
+  const defaultGasLimit = isDeposit
+    ? ethUnits.basic_deposit
+    : isWithdrawal
+    ? ethUnits.basic_withdrawal
+    : ethUnits.basic_swap;
+
   const dispatch = useDispatch();
   const {
     gasPricesStartPolling,
@@ -158,55 +164,36 @@ const ExchangeModal = ({
     type,
   });
 
-  const updateGasLimit = useCallback(
-    async ({
-      inputAmount,
-      inputCurrency,
-      inputReserve,
-      outputAmount,
-      outputCurrency,
-      outputReserve,
-    }) => {
-      try {
-        const gasLimit = await estimateRap({
-          inputAmount,
-          inputCurrency,
-          inputReserve,
-          outputAmount,
-          outputCurrency,
-          outputReserve,
-        });
-        dispatch(gasUpdateTxFee(gasLimit));
-      } catch (error) {
-        const defaultGasLimit = isDeposit
-          ? ethUnits.basic_deposit
-          : isWithdrawal
-          ? ethUnits.basic_withdrawal
-          : ethUnits.basic_swap;
-        dispatch(gasUpdateTxFee(defaultGasLimit));
-      }
-    },
-    [dispatch, estimateRap, gasUpdateTxFee, isDeposit, isWithdrawal]
-  );
-
-  useEffect(() => {
-    updateGasLimit({
-      inputAmount,
-      inputCurrency,
-      inputReserve,
-      outputAmount,
-      outputCurrency,
-      outputReserve,
-    });
+  const updateGasLimit = useCallback(async () => {
+    try {
+      const gasLimit = await estimateRap({
+        inputAmount,
+        inputCurrency,
+        inputReserve,
+        outputAmount,
+        outputCurrency,
+        outputReserve,
+      });
+      dispatch(gasUpdateTxFee(gasLimit));
+    } catch (error) {
+      dispatch(gasUpdateTxFee(defaultGasLimit));
+    }
   }, [
+    defaultGasLimit,
+    dispatch,
+    estimateRap,
+    gasUpdateTxFee,
     inputAmount,
     inputCurrency,
     inputReserve,
     outputAmount,
     outputCurrency,
     outputReserve,
-    updateGasLimit,
   ]);
+
+  useEffect(() => {
+    updateGasLimit();
+  }, [updateGasLimit]);
 
   const clearForm = useCallback(() => {
     logger.log('[exchange] - clear form');
