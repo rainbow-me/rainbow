@@ -1,23 +1,19 @@
 /* eslint-disable no-use-before-define */
 import analytics from '@segment/analytics-react-native';
-import { find, get, toLower } from 'lodash';
+import { find, get } from 'lodash';
 import { useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import { multiply } from '../helpers/utilities';
-import { ethereumUtils, logger } from '../utils';
+import { ethereumUtils, isNewValueForPath, logger } from '../utils';
 import useAccountAssets from './useAccountAssets';
 import usePrevious from './usePrevious';
 import useUniswapAllowances from './useUniswapAllowances';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 
-const isSameAsset = (a, b) => {
-  if (!a || !b) return false;
-  const assetA = toLower(get(a, 'address', ''));
-  const assetB = toLower(get(b, 'address', ''));
-  return assetA === assetB;
-};
+const isSameAsset = (newInputCurrency, previousInputCurrency) =>
+  !isNewValueForPath(newInputCurrency, previousInputCurrency, 'address');
 
 const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
   const { address, decimals, name, symbol } = asset;
@@ -48,10 +44,8 @@ export default function useUniswapCurrencies({
   isDeposit,
   isWithdrawal,
   navigation,
-  selectedGasPrice,
   setShowConfirmButton,
   setInputAsExactAmount,
-  setInputBalance,
   type,
   underlyingPrice,
 }) {
@@ -146,13 +140,6 @@ export default function useUniswapCurrencies({
         updateOutputCurrency(defaultChosenInputItem, false);
       }
 
-      // Update current balance
-      const inputBalance = await ethereumUtils.getBalanceAmount(
-        selectedGasPrice,
-        newInputCurrency
-      );
-      setInputBalance(inputBalance);
-
       analytics.track('Switched input asset', {
         category: isDeposit ? 'savings' : 'swap',
         defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
@@ -171,8 +158,6 @@ export default function useUniswapCurrencies({
       isWithdrawal,
       outputCurrency,
       previousInputCurrency,
-      selectedGasPrice,
-      setInputBalance,
       setShowConfirmButton,
       type,
       uniswapUpdateInputCurrency,
@@ -281,5 +266,6 @@ export default function useUniswapCurrencies({
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
     outputCurrency,
+    previousInputCurrency,
   };
 }

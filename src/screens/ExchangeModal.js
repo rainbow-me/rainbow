@@ -37,6 +37,7 @@ import {
   useAccountSettings,
   useBlockPolling,
   useGas,
+  useMaxInputBalance,
   usePrevious,
   useSwapDetails,
   useSwapInputRefs,
@@ -50,7 +51,7 @@ import { executeRap } from '../raps/common';
 import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
-import { backgroundTask, ethereumUtils, logger } from '../utils';
+import { backgroundTask, isNewValueForPath, logger } from '../utils';
 import Routes from './Routes/routesNames';
 
 export const exchangeModalBorderRadius = 30;
@@ -99,6 +100,7 @@ const ExchangeModal = ({
   const [inputAmount, setInputAmount] = useState(null);
   const [inputAmountDisplay, setInputAmountDisplay] = useState(null);
   const [inputAsExactAmount, setInputAsExactAmount] = useState(true);
+  const { inputBalance, updateInputBalance } = useMaxInputBalance();
 
   const {
     areTradeDetailsValid,
@@ -111,7 +113,6 @@ const ExchangeModal = ({
   const [nativeAmount, setNativeAmount] = useState(null);
   const [outputAmount, setOutputAmount] = useState(null);
   const [outputAmountDisplay, setOutputAmountDisplay] = useState(null);
-  const [inputBalance, setInputBalance] = useState(null);
   const [showConfirmButton, setShowConfirmButton] = useState(
     isDeposit || isWithdrawal ? true : false
   );
@@ -212,6 +213,7 @@ const ExchangeModal = ({
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
     outputCurrency,
+    previousInputCurrency,
   } = useUniswapCurrencies({
     clearForm,
     defaultInputAsset,
@@ -219,9 +221,7 @@ const ExchangeModal = ({
     isDeposit,
     isWithdrawal,
     navigation,
-    selectedGasPrice,
     setInputAsExactAmount,
-    setInputBalance,
     setShowConfirmButton,
     type,
     underlyingPrice,
@@ -277,20 +277,33 @@ const ExchangeModal = ({
     updateGasLimit,
   ]);
 
-  const updateInputBalance = useCallback(async () => {
-    // Update current balance
-    const inputBalance = await ethereumUtils.getBalanceAmount(
-      selectedGasPrice,
-      inputCurrency
-    );
-    setInputBalance(inputBalance);
-  }, [inputCurrency, selectedGasPrice]);
-
   useEffect(() => {
-    if (inputCurrency) {
-      updateInputBalance();
+    if (isNewValueForPath(inputCurrency, previousInputCurrency, 'address')) {
+      updateInputBalance(inputCurrency, selectedGasPrice);
     }
-  }, [inputCurrency, updateInputBalance]);
+  }, [
+    inputCurrency,
+    previousInputCurrency,
+    selectedGasPrice,
+    updateInputBalance,
+  ]);
+
+  // Recalculate balance when gas price changes
+  useEffect(() => {
+    if (
+      inputCurrency &&
+      inputCurrency.address === 'eth' &&
+      get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
+        get(selectedGasPrice, 'txFee.value.amount', 0)
+    ) {
+      updateInputBalance(inputCurrency, selectedGasPrice);
+    }
+  }, [
+    inputCurrency,
+    prevSelectedGasPrice,
+    selectedGasPrice,
+    updateInputBalance,
+  ]);
 
   useEffect(() => {
     dispatch(
@@ -311,23 +324,6 @@ const ExchangeModal = ({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Recalculate balance when gas price changes
-  useEffect(() => {
-    if (
-      inputCurrency &&
-      inputCurrency.address === 'eth' &&
-      get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
-        get(selectedGasPrice, 'txFee.value.amount', 0)
-    ) {
-      updateInputBalance();
-    }
-  }, [
-    inputCurrency,
-    prevSelectedGasPrice,
-    selectedGasPrice,
-    updateInputBalance,
-  ]);
 
   // Update input max is set and the balance changed
   useEffect(() => {
