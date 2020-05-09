@@ -115,6 +115,7 @@ const SavingsSheet = () => {
     if (selectedWallet.type !== WalletTypes.readOnly) {
       navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
         defaultInputAsset: underlying,
+        underlyingPrice,
       });
 
       analytics.track('Navigated to SavingsDepositModal', {
@@ -126,7 +127,14 @@ const SavingsSheet = () => {
       goBack();
       Alert.alert(`You need to import the wallet in order to do this`);
     }
-  }, [goBack, isEmpty, navigate, selectedWallet.type, underlying]);
+  }, [
+    goBack,
+    isEmpty,
+    navigate,
+    selectedWallet.type,
+    underlying,
+    underlyingPrice,
+  ]);
 
   return (
     <Sheet>
