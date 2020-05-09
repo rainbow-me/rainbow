@@ -17,6 +17,7 @@ import {
 } from '../components/exchange';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
+import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import {
   usePrevious,
   useUniswapAssets,
@@ -24,10 +25,7 @@ import {
 } from '../hooks';
 import { position } from '../styles';
 import { filterList, filterScams } from '../utils/search';
-import {
-  CurrencySelectionTypes,
-  exchangeModalBorderRadius,
-} from './ExchangeModal';
+import { exchangeModalBorderRadius } from './ExchangeModal';
 
 const headerlessSection = data => [{ data, title: '' }];
 

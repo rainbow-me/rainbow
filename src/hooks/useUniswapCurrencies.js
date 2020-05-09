@@ -2,7 +2,9 @@
 import analytics from '@segment/analytics-react-native';
 import { find, get, toLower } from 'lodash';
 import { useCallback, useState } from 'react';
+import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
+import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import { multiply } from '../helpers/utilities';
 import { ethereumUtils, logger } from '../utils';
 import useAccountAssets from './useAccountAssets';
@@ -42,8 +44,10 @@ const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
 export default function useUniswapCurrencies({
   clearForm,
   defaultInputAsset,
+  inputHeaderTitle,
   isDeposit,
   isWithdrawal,
+  navigation,
   selectedGasPrice,
   setShowConfirmButton,
   setInputAsExactAmount,
@@ -242,11 +246,40 @@ export default function useUniswapCurrencies({
     ]
   );
 
+  const navigateToSelectInputCurrency = useCallback(() => {
+    InteractionManager.runAfterInteractions(() => {
+      navigation.setParams({ focused: false });
+      navigation.navigate('CurrencySelectScreen', {
+        headerTitle: inputHeaderTitle,
+        onSelectCurrency: updateInputCurrency,
+        restoreFocusOnSwapModal: () => {
+          navigation.setParams({ focused: true });
+        },
+        type: CurrencySelectionTypes.input,
+      });
+    });
+  }, [inputHeaderTitle, navigation, updateInputCurrency]);
+
+  const navigateToSelectOutputCurrency = useCallback(() => {
+    logger.log('[nav to select output curr]', inputCurrency);
+    InteractionManager.runAfterInteractions(() => {
+      navigation.setParams({ focused: false });
+      navigation.navigate('CurrencySelectScreen', {
+        headerTitle: 'Receive',
+        onSelectCurrency: updateOutputCurrency,
+        restoreFocusOnSwapModal: () => {
+          navigation.setParams({ focused: true });
+        },
+        type: CurrencySelectionTypes.output,
+      });
+    });
+  }, [inputCurrency, navigation, updateOutputCurrency]);
+
   return {
     defaultInputAddress,
     inputCurrency,
+    navigateToSelectInputCurrency,
+    navigateToSelectOutputCurrency,
     outputCurrency,
-    updateInputCurrency,
-    updateOutputCurrency,
   };
 }

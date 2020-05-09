@@ -10,7 +10,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useIsFocused } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
@@ -57,11 +56,6 @@ import { backgroundTask, ethereumUtils, logger } from '../utils';
 import Routes from './Routes/routesNames';
 
 export const exchangeModalBorderRadius = 30;
-
-export const CurrencySelectionTypes = {
-  input: 'input',
-  output: 'output',
-};
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(
   toClass(FloatingPanels)
@@ -210,14 +204,16 @@ const ExchangeModal = ({
   const {
     defaultInputAddress,
     inputCurrency,
+    navigateToSelectInputCurrency,
+    navigateToSelectOutputCurrency,
     outputCurrency,
-    updateInputCurrency,
-    updateOutputCurrency,
   } = useUniswapCurrencies({
     clearForm,
     defaultInputAsset,
+    inputHeaderTitle,
     isDeposit,
     isWithdrawal,
+    navigation,
     selectedGasPrice,
     setInputAsExactAmount,
     setInputBalance,
@@ -590,35 +586,6 @@ const ExchangeModal = ({
       type: 'swap_details',
     });
   }, [extraTradeDetails, inputCurrency, navigation, outputCurrency]);
-
-  const navigateToSelectInputCurrency = useCallback(() => {
-    InteractionManager.runAfterInteractions(() => {
-      navigation.setParams({ focused: false });
-      navigation.navigate('CurrencySelectScreen', {
-        headerTitle: inputHeaderTitle,
-        onSelectCurrency: updateInputCurrency,
-        restoreFocusOnSwapModal: () => {
-          navigation.setParams({ focused: true });
-        },
-        type: CurrencySelectionTypes.input,
-      });
-    });
-  }, [inputHeaderTitle, navigation, updateInputCurrency]);
-
-  const navigateToSelectOutputCurrency = useCallback(() => {
-    logger.log('[nav to select output curr]', inputCurrency);
-    InteractionManager.runAfterInteractions(() => {
-      navigation.setParams({ focused: false });
-      navigation.navigate('CurrencySelectScreen', {
-        headerTitle: 'Receive',
-        onSelectCurrency: updateOutputCurrency,
-        restoreFocusOnSwapModal: () => {
-          navigation.setParams({ focused: true });
-        },
-        type: CurrencySelectionTypes.output,
-      });
-    });
-  }, [inputCurrency, navigation, updateOutputCurrency]);
 
   const updateNativeAmount = useCallback(
     nativeAmount => {
