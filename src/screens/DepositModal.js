@@ -7,6 +7,7 @@ import ExchangeModalWithData from './ExchangeModalWithData';
 
 const DepositModal = ({ navigation, ...props }) => {
   const defaultInputAsset = navigation.getParam('defaultInputAsset');
+  const underlyingPrice = navigation.getParam('underlyingPrice');
   return (
     <ExchangeModalWithData
       createRap={createSwapAndDepositCompoundRap}
@@ -15,6 +16,7 @@ const DepositModal = ({ navigation, ...props }) => {
       inputHeaderTitle="Deposit"
       showOutputField={false}
       type={ExchangeModalTypes.deposit}
+      underlyingPrice={underlyingPrice}
       {...props}
     />
   );
