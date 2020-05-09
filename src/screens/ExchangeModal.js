@@ -198,15 +198,6 @@ const ExchangeModal = ({
     ]
   );
 
-  const clearForm = useCallback(() => {
-    if (inputFieldRef && inputFieldRef.current) inputFieldRef.current.clear();
-    if (nativeFieldRef && nativeFieldRef.current)
-      nativeFieldRef.current.clear();
-    if (outputFieldRef && outputFieldRef.current)
-      outputFieldRef.current.clear();
-    updateInputAmount();
-  }, [inputFieldRef, nativeFieldRef, outputFieldRef, updateInputAmount]);
-
   const {
     defaultInputAddress,
     inputCurrency,
@@ -215,7 +206,6 @@ const ExchangeModal = ({
     outputCurrency,
     previousInputCurrency,
   } = useUniswapCurrencies({
-    clearForm,
     defaultInputAsset,
     inputHeaderTitle,
     isDeposit,
@@ -277,11 +267,23 @@ const ExchangeModal = ({
     updateGasLimit,
   ]);
 
+  const clearForm = useCallback(() => {
+    logger.log('[exchange] - clear form');
+    if (inputFieldRef && inputFieldRef.current) inputFieldRef.current.clear();
+    if (nativeFieldRef && nativeFieldRef.current)
+      nativeFieldRef.current.clear();
+    if (outputFieldRef && outputFieldRef.current)
+      outputFieldRef.current.clear();
+    updateInputAmount();
+  }, [inputFieldRef, nativeFieldRef, outputFieldRef, updateInputAmount]);
+
   useEffect(() => {
     if (isNewValueForPath(inputCurrency, previousInputCurrency, 'address')) {
+      clearForm();
       updateInputBalance(inputCurrency, selectedGasPrice);
     }
   }, [
+    clearForm,
     inputCurrency,
     previousInputCurrency,
     selectedGasPrice,

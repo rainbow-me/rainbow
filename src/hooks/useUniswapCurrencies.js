@@ -38,7 +38,6 @@ const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
 };
 
 export default function useUniswapCurrencies({
-  clearForm,
   defaultInputAsset,
   inputHeaderTitle,
   isDeposit,
@@ -106,12 +105,7 @@ export default function useUniswapCurrencies({
       );
 
       logger.log('[update input curr] prev input curr', previousInputCurrency);
-      if (!isSameAsset(newInputCurrency, previousInputCurrency)) {
-        logger.log('[update input curr] clear form');
-        clearForm();
-      }
 
-      logger.log('[update input curr] setting input curr', newInputCurrency);
       setInputCurrency(newInputCurrency);
       setShowConfirmButton(
         isDeposit || isWithdrawal
@@ -149,7 +143,6 @@ export default function useUniswapCurrencies({
       });
     },
     [
-      clearForm,
       defaultChosenInputItem,
       defaultInputAddress,
       defaultInputAsset,
