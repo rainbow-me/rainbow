@@ -378,16 +378,12 @@ const ExchangeModal = ({
     const isNewNativeAmount = nativeFieldRef.current.isFocused();
     if (isNewNativeAmount) {
       getMarketDetails({
-        clearForm,
         inputAmount,
         inputAsExactAmount,
         inputBalance,
         inputCurrency,
         inputFieldRef,
-        isMax,
-        nativeAmount,
         nativeCurrency,
-        nativeFieldRef,
         outputAmount,
         outputCurrency,
         outputFieldRef,
@@ -399,17 +395,14 @@ const ExchangeModal = ({
       });
     }
   }, [
-    clearForm,
     defaultInputAddress,
     getMarketDetails,
     inputAmount,
     inputAsExactAmount,
     inputBalance,
     inputCurrency,
-    isMax,
     isDeposit,
     isWithdrawal,
-    nativeAmount,
     nativeCurrency,
     outputAmount,
     outputCurrency,
@@ -426,16 +419,12 @@ const ExchangeModal = ({
     )
       return;
     getMarketDetails({
-      clearForm,
       inputAmount,
       inputAsExactAmount,
       inputBalance,
       inputCurrency,
       inputFieldRef,
-      isMax,
-      nativeAmount,
       nativeCurrency,
-      nativeFieldRef,
       outputAmount,
       outputCurrency,
       outputFieldRef,
@@ -446,7 +435,6 @@ const ExchangeModal = ({
       updateOutputAmount,
     });
   }, [
-    clearForm,
     defaultInputAddress,
     getMarketDetails,
     inputAmount,
@@ -456,9 +444,7 @@ const ExchangeModal = ({
     inputCurrencyUniqueId,
     inputReserveTokenAddress,
     isDeposit,
-    isMax,
     isWithdrawal,
-    nativeAmount,
     nativeCurrency,
     outputAmount,
     outputCurrency,

@@ -154,16 +154,12 @@ export default function useUniswapMarketDetails() {
 
   const getMarketDetails = useCallback(
     ({
-      clearForm,
       inputAmount,
       inputAsExactAmount,
       inputBalance,
       inputCurrency,
       inputFieldRef,
-      isMax,
-      nativeAmount,
       nativeCurrency,
-      nativeFieldRef,
       outputAmount,
       outputCurrency,
       outputFieldRef,
@@ -212,21 +208,10 @@ export default function useUniswapMarketDetails() {
         setIsSufficientBalance(newIsSufficientBalance);
 
         const isInputEmpty = !inputAmount;
-        const isNativeEmpty = !nativeAmount;
         const isOutputEmpty = !outputAmount;
 
         const isInputZero = Number(inputAmount) === 0;
         const isOutputZero = Number(outputAmount) === 0;
-
-        if (
-          nativeFieldRef &&
-          nativeFieldRef.current &&
-          nativeFieldRef.current.isFocused() &&
-          isNativeEmpty &&
-          !isMax
-        ) {
-          clearForm();
-        }
 
         // update output amount given input amount changes
         if (inputAsExactAmount) {
