@@ -30,6 +30,8 @@ export default function useSwapInputs({
   const [inputAsExactAmount, setInputAsExactAmount] = useState(true);
   const [isSufficientBalance, setIsSufficientBalance] = useState(true);
   const [nativeAmount, setNativeAmount] = useState(null);
+  const [outputAmount, setOutputAmount] = useState(null);
+  const [outputAmountDisplay, setOutputAmountDisplay] = useState(null);
 
   const updateInputAmount = useCallback(
     (
@@ -131,6 +133,25 @@ export default function useSwapInputs({
     [getMarketPrice, inputCurrency, outputCurrency]
   );
 
+  const updateOutputAmount = useCallback(
+    (newOutputAmount, newAmountDisplay, newInputAsExactAmount = false) => {
+      setInputAsExactAmount(newInputAsExactAmount);
+      setOutputAmount(newOutputAmount);
+      setOutputAmountDisplay(
+        newAmountDisplay !== undefined ? newAmountDisplay : newOutputAmount
+      );
+      if (newAmountDisplay) {
+        analytics.track('Updated output amount', {
+          category: isWithdrawal || isDeposit ? 'savings' : 'swap',
+          defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+          type,
+          value: Number(newAmountDisplay.toString()),
+        });
+      }
+    },
+    [defaultInputAsset, isDeposit, isWithdrawal, type]
+  );
+
   return {
     inputAmount,
     inputAmountDisplay,
@@ -138,9 +159,11 @@ export default function useSwapInputs({
     isMax,
     isSufficientBalance,
     nativeAmount,
-    setInputAsExactAmount,
+    outputAmount,
+    outputAmountDisplay,
     setIsSufficientBalance,
     updateInputAmount,
     updateNativeAmount,
+    updateOutputAmount,
   };
 }

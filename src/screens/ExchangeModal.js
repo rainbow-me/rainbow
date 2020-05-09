@@ -95,8 +95,6 @@ const ExchangeModal = ({
   } = useSwapDetails();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const [outputAmount, setOutputAmount] = useState(null);
-  const [outputAmountDisplay, setOutputAmountDisplay] = useState(null);
   const [showConfirmButton, setShowConfirmButton] = useState(
     isDeposit || isWithdrawal ? true : false
   );
@@ -142,10 +140,12 @@ const ExchangeModal = ({
     isMax,
     isSufficientBalance,
     nativeAmount,
-    setInputAsExactAmount,
+    outputAmount,
+    outputAmountDisplay,
     setIsSufficientBalance,
     updateInputAmount,
     updateNativeAmount,
+    updateOutputAmount,
   } = useSwapInputs({
     defaultInputAsset,
     inputBalance,
@@ -207,25 +207,6 @@ const ExchangeModal = ({
     outputReserve,
     updateGasLimit,
   ]);
-
-  const updateOutputAmount = useCallback(
-    (newOutputAmount, newAmountDisplay, newInputAsExactAmount = false) => {
-      setInputAsExactAmount(newInputAsExactAmount);
-      setOutputAmount(newOutputAmount);
-      setOutputAmountDisplay(
-        newAmountDisplay !== undefined ? newAmountDisplay : newOutputAmount
-      );
-      if (newAmountDisplay) {
-        analytics.track('Updated output amount', {
-          category: isWithdrawal || isDeposit ? 'savings' : 'swap',
-          defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
-          type,
-          value: Number(newAmountDisplay.toString()),
-        });
-      }
-    },
-    [defaultInputAsset, isDeposit, isWithdrawal, setInputAsExactAmount, type]
-  );
 
   const clearForm = useCallback(() => {
     logger.log('[exchange] - clear form');
