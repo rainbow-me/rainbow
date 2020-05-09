@@ -191,6 +191,7 @@ const ExchangeModal = ({
     outputReserve,
   ]);
 
+  // Update gas limit
   useEffect(() => {
     updateGasLimit();
   }, [updateGasLimit]);
@@ -205,6 +206,7 @@ const ExchangeModal = ({
     updateInputAmount();
   }, [inputFieldRef, nativeFieldRef, outputFieldRef, updateInputAmount]);
 
+  // Clear form and reset max input balance on new input currency
   useEffect(() => {
     if (isNewValueForPath(inputCurrency, previousInputCurrency, 'address')) {
       clearForm();
@@ -218,7 +220,7 @@ const ExchangeModal = ({
     updateInputBalance,
   ]);
 
-  // Recalculate balance when gas price changes
+  // Recalculate max input balance when gas price changes
   useEffect(() => {
     if (
       inputCurrency &&
@@ -235,6 +237,7 @@ const ExchangeModal = ({
     updateInputBalance,
   ]);
 
+  // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
     dispatch(
       gasUpdateDefaultGasLimit(
@@ -255,13 +258,14 @@ const ExchangeModal = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Update input max is set and the balance changed
+  // Update input amount when max is set and the max input balance changed
   useEffect(() => {
     if (isMax) {
       updateInputAmount(inputBalance, inputBalance, true, true);
     }
   }, [inputBalance, isMax, updateInputAmount]);
 
+  // Refocus listener
   useEffect(() => {
     const refocusListener = navigation.addListener('refocus', () => {
       handleRefocusLastInput({
@@ -286,12 +290,14 @@ const ExchangeModal = ({
     outputFieldRef,
   ]);
 
+  // Refocus when screen changes to focused
   useEffect(() => {
     if (isScreenFocused && !wasScreenFocused) {
       navigation.emit('refocus');
     }
   }, [isScreenFocused, navigation, wasScreenFocused]);
 
+  // Calculate market details
   useEffect(() => {
     if (
       (isDeposit || isWithdrawal) &&
