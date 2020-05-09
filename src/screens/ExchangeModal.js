@@ -262,12 +262,6 @@ const ExchangeModal = ({
     }
   }, [inputBalance, isMax, updateInputAmount]);
 
-  const inputCurrencyUniqueId = get(inputCurrency, 'uniqueId');
-  const outputCurrencyUniqueId = get(outputCurrency, 'uniqueId');
-
-  const inputReserveTokenAddress = get(inputReserve, 'token.address');
-  const outputReserveTokenAddress = get(outputReserve, 'token.address');
-
   useEffect(() => {
     const refocusListener = navigation.addListener('refocus', () => {
       handleRefocusLastInput({
@@ -305,53 +299,6 @@ const ExchangeModal = ({
       inputCurrency.address === defaultInputAddress
     )
       return;
-    const isNewNativeAmount = nativeFieldRef.current.isFocused();
-    if (isNewNativeAmount) {
-      getMarketDetails({
-        inputAmount,
-        inputAsExactAmount,
-        inputBalance,
-        inputCurrency,
-        inputFieldRef,
-        nativeCurrency,
-        outputAmount,
-        outputCurrency,
-        outputFieldRef,
-        setIsSufficientBalance,
-        setSlippage,
-        updateExtraTradeDetails,
-        updateInputAmount,
-        updateOutputAmount,
-      });
-    }
-  }, [
-    defaultInputAddress,
-    getMarketDetails,
-    inputAmount,
-    inputAsExactAmount,
-    inputBalance,
-    inputCurrency,
-    inputFieldRef,
-    isDeposit,
-    isWithdrawal,
-    nativeCurrency,
-    nativeFieldRef,
-    outputAmount,
-    outputCurrency,
-    outputFieldRef,
-    updateExtraTradeDetails,
-    setIsSufficientBalance,
-    updateInputAmount,
-    updateOutputAmount,
-  ]);
-
-  useEffect(() => {
-    if (
-      (isDeposit || isWithdrawal) &&
-      inputCurrency &&
-      inputCurrency.address === defaultInputAddress
-    )
-      return;
     getMarketDetails({
       inputAmount,
       inputAsExactAmount,
@@ -375,17 +322,13 @@ const ExchangeModal = ({
     inputAsExactAmount,
     inputBalance,
     inputCurrency,
-    inputCurrencyUniqueId,
     inputFieldRef,
-    inputReserveTokenAddress,
     isDeposit,
     isWithdrawal,
     nativeCurrency,
     outputAmount,
     outputCurrency,
-    outputCurrencyUniqueId,
     outputFieldRef,
-    outputReserveTokenAddress,
     setIsSufficientBalance,
     updateExtraTradeDetails,
     updateInputAmount,
