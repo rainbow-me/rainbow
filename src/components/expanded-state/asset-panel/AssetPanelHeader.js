@@ -14,7 +14,6 @@ import { Text, TruncatedText } from '../../text';
 import FloatingPanel from '../FloatingPanel';
 
 const Container = styled(Column)`
-  ${padding(15, FloatingPanel.padding.x)};
   height: 75;
 `;
 
@@ -50,6 +49,7 @@ const AssetPanelHeader = ({
   title,
   navigation,
 }) => {
+  const HeaderPaddingRight = asset ? 0 : FloatingPanel.padding.x;
   const dispatch = useDispatch();
   const {
     popShowcaseToken,
@@ -57,7 +57,9 @@ const AssetPanelHeader = ({
     showcaseTokens,
   } = useShowcaseTokens();
   return (
-    <Container>
+    <Container
+      css={padding(15, HeaderPaddingRight, 15, FloatingPanel.padding.x)}
+    >
       <Row style={{ justifyContent: 'space-between' }}>
         <ColumnWithMargins flex={1} margin={3}>
           <HeaderRow>
@@ -86,7 +88,7 @@ const AssetPanelHeader = ({
         </ColumnWithMargins>
         {asset ? (
           <ContextMenu
-            css={padding(10, 0)}
+            css={padding(20, 19)}
             destructiveButtonIndex={
               includes(showcaseTokens, asset.uniqueId) && 0
             }
