@@ -1,22 +1,34 @@
 import { get } from 'lodash';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { TextInput } from 'react-native';
 import useInteraction from './useInteraction';
+import useMagicFocus from './useMagicFocus';
 
 const getNativeTag = field => get(field, '_nativeTag');
 
-export default function useSwapRefocusInput() {
+export default function useSwapInputRefs() {
+  const inputFieldRef = useRef();
+  const nativeFieldRef = useRef();
+  const outputFieldRef = useRef();
+
+  const [lastFocusedInput, handleFocus] = useMagicFocus(inputFieldRef.current);
+
   const [createRefocusInteraction] = useInteraction();
 
+  const assignInputFieldRef = useCallback(ref => {
+    inputFieldRef.current = ref;
+  }, []);
+
+  const assignNativeFieldRef = useCallback(ref => {
+    nativeFieldRef.current = ref;
+  }, []);
+
+  const assignOutputFieldRef = useCallback(ref => {
+    outputFieldRef.current = ref;
+  }, []);
+
   const findNextFocused = useCallback(
-    ({
-      lastFocusedInput,
-      inputCurrency,
-      inputFieldRef,
-      nativeFieldRef,
-      outputFieldRef,
-      outputCurrency,
-    }) => {
+    ({ inputCurrency, outputCurrency }) => {
       const inputRefTag = getNativeTag(inputFieldRef.current);
       const nativeInputRefTag = getNativeTag(nativeFieldRef.current);
       const outputRefTag = getNativeTag(outputFieldRef.current);
@@ -39,29 +51,17 @@ export default function useSwapRefocusInput() {
 
       return lastFocusedInput.current;
     },
-    []
+    [lastFocusedInput]
   );
 
   const handleRefocusLastInput = useCallback(
-    ({
-      inputCurrency,
-      inputFieldRef,
-      isScreenFocused,
-      lastFocusedInput,
-      nativeFieldRef,
-      outputCurrency,
-      outputFieldRef,
-    }) => {
+    ({ inputCurrency, isScreenFocused, outputCurrency }) => {
       createRefocusInteraction(() => {
         if (isScreenFocused) {
           TextInput.State.focusTextInput(
             findNextFocused({
               inputCurrency,
-              inputFieldRef,
-              lastFocusedInput,
-              nativeFieldRef,
               outputCurrency,
-              outputFieldRef,
             })
           );
         }
@@ -71,6 +71,14 @@ export default function useSwapRefocusInput() {
   );
 
   return {
+    assignInputFieldRef,
+    assignNativeFieldRef,
+    assignOutputFieldRef,
+    handleFocus,
     handleRefocusLastInput,
+    inputFieldRef,
+    lastFocusedInput,
+    nativeFieldRef,
+    outputFieldRef,
   };
 }

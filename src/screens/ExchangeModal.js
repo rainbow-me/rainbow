@@ -7,7 +7,6 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import Animated from 'react-native-reanimated';
@@ -38,10 +37,9 @@ import {
   useAccountSettings,
   useBlockPolling,
   useGas,
-  useMagicFocus,
   usePrevious,
   useSwapDetails,
-  useSwapRefocusInput,
+  useSwapInputRefs,
   useUniswapAllowances,
   useUniswapCurrencies,
   useUniswapMarketDetails,
@@ -119,14 +117,20 @@ const ExchangeModal = ({
   );
   const [slippage, setSlippage] = useState(null);
 
-  const inputFieldRef = useRef();
-  const nativeFieldRef = useRef();
-  const outputFieldRef = useRef();
-
-  const [lastFocusedInput, handleFocus] = useMagicFocus(inputFieldRef.current);
   const isScreenFocused = useIsFocused();
   const wasScreenFocused = usePrevious(isScreenFocused);
-  const { handleRefocusLastInput } = useSwapRefocusInput();
+
+  const {
+    assignInputFieldRef,
+    assignNativeFieldRef,
+    assignOutputFieldRef,
+    handleFocus,
+    handleRefocusLastInput,
+    inputFieldRef,
+    lastFocusedInput,
+    nativeFieldRef,
+    outputFieldRef,
+  } = useSwapInputRefs();
 
   const updateInputAmount = useCallback(
     (
@@ -186,6 +190,7 @@ const ExchangeModal = ({
       inputCurrency,
       isDeposit,
       isWithdrawal,
+      nativeFieldRef,
       outputCurrency,
       supplyBalanceUnderlying,
       type,
@@ -199,7 +204,7 @@ const ExchangeModal = ({
     if (outputFieldRef && outputFieldRef.current)
       outputFieldRef.current.clear();
     updateInputAmount();
-  }, [updateInputAmount]);
+  }, [inputFieldRef, nativeFieldRef, outputFieldRef, updateInputAmount]);
 
   const {
     defaultInputAddress,
@@ -341,12 +346,8 @@ const ExchangeModal = ({
     const refocusListener = navigation.addListener('refocus', () => {
       handleRefocusLastInput({
         inputCurrency,
-        inputFieldRef,
         isScreenFocused,
-        lastFocusedInput,
-        nativeFieldRef,
         outputCurrency,
-        outputFieldRef,
       });
     });
 
@@ -356,10 +357,13 @@ const ExchangeModal = ({
   }, [
     handleRefocusLastInput,
     inputCurrency,
+    inputFieldRef,
     isScreenFocused,
     lastFocusedInput,
+    nativeFieldRef,
     navigation,
     outputCurrency,
+    outputFieldRef,
   ]);
 
   useEffect(() => {
@@ -401,11 +405,14 @@ const ExchangeModal = ({
     inputAsExactAmount,
     inputBalance,
     inputCurrency,
+    inputFieldRef,
     isDeposit,
     isWithdrawal,
     nativeCurrency,
+    nativeFieldRef,
     outputAmount,
     outputCurrency,
+    outputFieldRef,
     updateExtraTradeDetails,
     updateInputAmount,
     updateOutputAmount,
@@ -442,6 +449,7 @@ const ExchangeModal = ({
     inputBalance,
     inputCurrency,
     inputCurrencyUniqueId,
+    inputFieldRef,
     inputReserveTokenAddress,
     isDeposit,
     isWithdrawal,
@@ -449,23 +457,12 @@ const ExchangeModal = ({
     outputAmount,
     outputCurrency,
     outputCurrencyUniqueId,
+    outputFieldRef,
     outputReserveTokenAddress,
     updateExtraTradeDetails,
     updateInputAmount,
     updateOutputAmount,
   ]);
-
-  const assignInputFieldRef = useCallback(ref => {
-    inputFieldRef.current = ref;
-  }, []);
-
-  const assignNativeFieldRef = useCallback(ref => {
-    nativeFieldRef.current = ref;
-  }, []);
-
-  const assignOutputFieldRef = useCallback(ref => {
-    outputFieldRef.current = ref;
-  }, []);
 
   const handlePressMaxBalance = useCallback(async () => {
     let maxBalance;
@@ -571,7 +568,15 @@ const ExchangeModal = ({
       },
       type: 'swap_details',
     });
-  }, [extraTradeDetails, inputCurrency, navigation, outputCurrency]);
+  }, [
+    extraTradeDetails,
+    inputCurrency,
+    inputFieldRef,
+    nativeFieldRef,
+    navigation,
+    outputCurrency,
+    outputFieldRef,
+  ]);
 
   const updateNativeAmount = useCallback(
     nativeAmount => {
