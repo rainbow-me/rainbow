@@ -9,7 +9,6 @@ import React, {
   useState,
 } from 'react';
 import Animated from 'react-native-reanimated';
-import { useIsFocused } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import { toClass } from 'recompact';
 import { interpolate } from '../components/animations';
@@ -106,21 +105,6 @@ const ExchangeModal = ({
   );
   const [slippage, setSlippage] = useState(null);
 
-  const isScreenFocused = useIsFocused();
-  const wasScreenFocused = usePrevious(isScreenFocused);
-
-  const {
-    assignInputFieldRef,
-    assignNativeFieldRef,
-    assignOutputFieldRef,
-    handleFocus,
-    handleRefocusLastInput,
-    inputFieldRef,
-    lastFocusedInput,
-    nativeFieldRef,
-    outputFieldRef,
-  } = useSwapInputRefs();
-
   const {
     defaultInputAddress,
     inputCurrency,
@@ -138,6 +122,16 @@ const ExchangeModal = ({
     type,
     underlyingPrice,
   });
+
+  const {
+    assignInputFieldRef,
+    assignNativeFieldRef,
+    assignOutputFieldRef,
+    handleFocus,
+    inputFieldRef,
+    nativeFieldRef,
+    outputFieldRef,
+  } = useSwapInputRefs({ inputCurrency, outputCurrency });
 
   const {
     inputAmount,
@@ -264,38 +258,6 @@ const ExchangeModal = ({
       updateInputAmount(inputBalance, inputBalance, true, true);
     }
   }, [inputBalance, isMax, updateInputAmount]);
-
-  // Refocus listener
-  useEffect(() => {
-    const refocusListener = navigation.addListener('refocus', () => {
-      handleRefocusLastInput({
-        inputCurrency,
-        isScreenFocused,
-        outputCurrency,
-      });
-    });
-
-    return () => {
-      refocusListener && refocusListener.remove();
-    };
-  }, [
-    handleRefocusLastInput,
-    inputCurrency,
-    inputFieldRef,
-    isScreenFocused,
-    lastFocusedInput,
-    nativeFieldRef,
-    navigation,
-    outputCurrency,
-    outputFieldRef,
-  ]);
-
-  // Refocus when screen changes to focused
-  useEffect(() => {
-    if (isScreenFocused && !wasScreenFocused) {
-      navigation.emit('refocus');
-    }
-  }, [isScreenFocused, navigation, wasScreenFocused]);
 
   // Calculate market details
   useEffect(() => {

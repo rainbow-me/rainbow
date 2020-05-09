@@ -1,12 +1,17 @@
 import { get } from 'lodash';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { TextInput } from 'react-native';
+import { useIsFocused } from 'react-navigation-hooks';
 import useInteraction from './useInteraction';
 import useMagicFocus from './useMagicFocus';
+import usePrevious from './usePrevious';
 
 const getNativeTag = field => get(field, '_nativeTag');
 
-export default function useSwapInputRefs() {
+export default function useSwapInputRefs({ inputCurrency, outputCurrency }) {
+  const isScreenFocused = useIsFocused();
+  const wasScreenFocused = usePrevious(isScreenFocused);
+
   const inputFieldRef = useRef();
   const nativeFieldRef = useRef();
   const outputFieldRef = useRef();
@@ -54,30 +59,38 @@ export default function useSwapInputRefs() {
     [lastFocusedInput]
   );
 
-  const handleRefocusLastInput = useCallback(
-    ({ inputCurrency, isScreenFocused, outputCurrency }) => {
-      createRefocusInteraction(() => {
-        if (isScreenFocused) {
-          TextInput.State.focusTextInput(
-            findNextFocused({
-              inputCurrency,
-              outputCurrency,
-            })
-          );
-        }
-      });
-    },
-    [createRefocusInteraction, findNextFocused]
-  );
+  const handleRefocusLastInput = useCallback(() => {
+    createRefocusInteraction(() => {
+      if (isScreenFocused) {
+        TextInput.State.focusTextInput(
+          findNextFocused({
+            inputCurrency,
+            outputCurrency,
+          })
+        );
+      }
+    });
+  }, [
+    createRefocusInteraction,
+    findNextFocused,
+    inputCurrency,
+    isScreenFocused,
+    outputCurrency,
+  ]);
+
+  // Refocus when screen changes to focused
+  useEffect(() => {
+    if (isScreenFocused && !wasScreenFocused) {
+      handleRefocusLastInput();
+    }
+  }, [handleRefocusLastInput, isScreenFocused, wasScreenFocused]);
 
   return {
     assignInputFieldRef,
     assignNativeFieldRef,
     assignOutputFieldRef,
     handleFocus,
-    handleRefocusLastInput,
     inputFieldRef,
-    lastFocusedInput,
     nativeFieldRef,
     outputFieldRef,
   };
