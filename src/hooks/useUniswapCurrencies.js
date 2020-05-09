@@ -44,7 +44,6 @@ export default function useUniswapCurrencies({
   isWithdrawal,
   navigation,
   setShowConfirmButton,
-  setInputAsExactAmount,
   type,
   underlyingPrice,
 }) {
@@ -171,7 +170,6 @@ export default function useUniswapCurrencies({
       );
       dispatch(uniswapUpdateOutputCurrency(newOutputCurrency));
 
-      setInputAsExactAmount(true);
       setOutputCurrency(newOutputCurrency);
       setShowConfirmButton(
         isDeposit || isWithdrawal
@@ -215,7 +213,6 @@ export default function useUniswapCurrencies({
       isDeposit,
       isWithdrawal,
       previousOutputCurrency,
-      setInputAsExactAmount,
       setShowConfirmButton,
       type,
       uniswapAssetsInWallet,
