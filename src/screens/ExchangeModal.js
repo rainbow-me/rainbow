@@ -33,11 +33,9 @@ import {
   convertAmountToNativeAmount,
   greaterThanOrEqualTo,
   isZero,
-  multiply,
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
 import {
-  useAccountAssets,
   useAccountSettings,
   useBlockPolling,
   useGas,
@@ -69,28 +67,6 @@ const AnimatedFloatingPanels = Animated.createAnimatedComponent(
   toClass(FloatingPanels)
 );
 
-const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
-  const { address, decimals, name, symbol } = asset;
-  const priceInUSD = multiply(priceOfEther, underlyingPrice);
-
-  return {
-    address,
-    decimals,
-    name,
-    native: {
-      price: {
-        amount: priceInUSD,
-        display: '',
-      },
-    },
-    price: {
-      value: priceInUSD,
-    },
-    symbol,
-    uniqueId: address,
-  };
-};
-
 const ExchangeModal = ({
   cTokenBalance,
   defaultInputAsset,
@@ -108,7 +84,6 @@ const ExchangeModal = ({
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
 
   const dispatch = useDispatch();
-  const { allAssets } = useAccountAssets();
   const {
     gasPricesStartPolling,
     gasPricesStopPolling,
@@ -127,37 +102,6 @@ const ExchangeModal = ({
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
   const { getMarketPrice } = useUniswapMarketPrice();
   const { getMarketDetails } = useUniswapMarketDetails();
-  const defaultInputAddress = get(defaultInputAsset, 'address');
-  let defaultInputItemInWallet = ethereumUtils.getAsset(
-    allAssets,
-    defaultInputAddress
-  );
-
-  let defaultChosenInputItem = defaultInputItemInWallet;
-  if (!defaultChosenInputItem && defaultInputAsset) {
-    const eth = ethereumUtils.getAsset(allAssets);
-    const priceOfEther = get(eth, 'native.price.amount', null);
-    defaultChosenInputItem = createMissingAsset(
-      defaultInputAsset,
-      underlyingPrice,
-      priceOfEther
-    );
-  }
-  if (!defaultInputItemInWallet && isWithdrawal) {
-    defaultInputItemInWallet = defaultChosenInputItem;
-  } else if (!defaultInputItemInWallet) {
-    defaultInputItemInWallet = ethereumUtils.getAsset(allAssets);
-  }
-
-  let defaultOutputItem = null;
-
-  if (
-    isDeposit &&
-    (!defaultInputItemInWallet ||
-      defaultInputItemInWallet.address !== defaultInputAddress)
-  ) {
-    defaultOutputItem = defaultChosenInputItem;
-  }
 
   const [isMax, setIsMax] = useState(false);
   const [inputAmount, setInputAmount] = useState(null);
@@ -264,17 +208,14 @@ const ExchangeModal = ({
   }, [updateInputAmount]);
 
   const {
+    defaultInputAddress,
     inputCurrency,
     outputCurrency,
     updateInputCurrency,
     updateOutputCurrency,
   } = useUniswapCurrencies({
     clearForm,
-    defaultChosenInputItem,
-    defaultInputAddress,
     defaultInputAsset,
-    defaultInputItemInWallet,
-    defaultOutputItem,
     isDeposit,
     isWithdrawal,
     selectedGasPrice,
@@ -282,6 +223,7 @@ const ExchangeModal = ({
     setInputBalance,
     setShowConfirmButton,
     type,
+    underlyingPrice,
   });
 
   const updateGasLimit = useCallback(

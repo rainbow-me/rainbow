@@ -3,7 +3,9 @@ import analytics from '@segment/analytics-react-native';
 import { find, get, toLower } from 'lodash';
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { multiply } from '../helpers/utilities';
 import { ethereumUtils, logger } from '../utils';
+import useAccountAssets from './useAccountAssets';
 import usePrevious from './usePrevious';
 import useUniswapAllowances from './useUniswapAllowances';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
@@ -15,13 +17,31 @@ const isSameAsset = (a, b) => {
   return assetA === assetB;
 };
 
+const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
+  const { address, decimals, name, symbol } = asset;
+  const priceInUSD = multiply(priceOfEther, underlyingPrice);
+
+  return {
+    address,
+    decimals,
+    name,
+    native: {
+      price: {
+        amount: priceInUSD,
+        display: '',
+      },
+    },
+    price: {
+      value: priceInUSD,
+    },
+    symbol,
+    uniqueId: address,
+  };
+};
+
 export default function useUniswapCurrencies({
   clearForm,
-  defaultChosenInputItem,
-  defaultInputAddress,
   defaultInputAsset,
-  defaultInputItemInWallet,
-  defaultOutputItem,
   isDeposit,
   isWithdrawal,
   selectedGasPrice,
@@ -29,7 +49,42 @@ export default function useUniswapCurrencies({
   setInputAsExactAmount,
   setInputBalance,
   type,
+  underlyingPrice,
 }) {
+  const { allAssets } = useAccountAssets();
+  const defaultInputAddress = get(defaultInputAsset, 'address');
+  let defaultInputItemInWallet = ethereumUtils.getAsset(
+    allAssets,
+    defaultInputAddress
+  );
+
+  let defaultChosenInputItem = defaultInputItemInWallet;
+
+  if (!defaultChosenInputItem && defaultInputAsset) {
+    const eth = ethereumUtils.getAsset(allAssets);
+    const priceOfEther = get(eth, 'native.price.amount', null);
+    defaultChosenInputItem = createMissingAsset(
+      defaultInputAsset,
+      underlyingPrice,
+      priceOfEther
+    );
+  }
+  if (!defaultInputItemInWallet && isWithdrawal) {
+    defaultInputItemInWallet = defaultChosenInputItem;
+  } else if (!defaultInputItemInWallet) {
+    defaultInputItemInWallet = ethereumUtils.getAsset(allAssets);
+  }
+
+  let defaultOutputItem = null;
+
+  if (
+    isDeposit &&
+    (!defaultInputItemInWallet ||
+      defaultInputItemInWallet.address !== defaultInputAddress)
+  ) {
+    defaultOutputItem = defaultChosenInputItem;
+  }
+
   const [inputCurrency, setInputCurrency] = useState(defaultInputItemInWallet);
   const [outputCurrency, setOutputCurrency] = useState(defaultOutputItem);
 
@@ -188,6 +243,7 @@ export default function useUniswapCurrencies({
   );
 
   return {
+    defaultInputAddress,
     inputCurrency,
     outputCurrency,
     updateInputCurrency,
