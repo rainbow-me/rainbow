@@ -1,23 +1,27 @@
 import { useCallback, useState } from 'react';
 import { ethereumUtils } from '../utils';
+import useGas from './useGas';
 
 export default function useMaxInputBalance() {
-  const [inputBalance, setInputBalance] = useState(null);
+  const [maxInputBalance, setMaxInputBalance] = useState(0);
 
-  const updateInputBalance = useCallback(
-    async (inputCurrency, selectedGasPrice) => {
+  const { selectedGasPrice } = useGas();
+
+  const updateMaxInputBalance = useCallback(
+    async inputCurrency => {
       // Update current balance
       const newInputBalance = await ethereumUtils.getBalanceAmount(
         selectedGasPrice,
         inputCurrency
       );
-      setInputBalance(newInputBalance);
+      setMaxInputBalance(newInputBalance);
+      return newInputBalance;
     },
-    []
+    [selectedGasPrice]
   );
 
   return {
-    inputBalance,
-    updateInputBalance,
+    maxInputBalance,
+    updateMaxInputBalance,
   };
 }

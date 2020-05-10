@@ -13,10 +13,10 @@ import useUniswapMarketPrice from './useUniswapMarketPrice';
 
 export default function useSwapInputs({
   defaultInputAsset,
-  inputBalance,
   inputCurrency,
   isDeposit,
   isWithdrawal,
+  maxInputBalance,
   nativeFieldRef,
   outputCurrency,
   supplyBalanceUnderlying,
@@ -69,7 +69,7 @@ export default function useSwapInputs({
             !newInputAmount ||
             (isWithdrawal
               ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
-              : greaterThanOrEqualTo(inputBalance, newInputAmount));
+              : greaterThanOrEqualTo(maxInputBalance, newInputAmount));
 
           setIsSufficientBalance(newIsSufficientBalance);
         }
@@ -87,10 +87,10 @@ export default function useSwapInputs({
     [
       defaultInputAsset,
       getMarketPrice,
-      inputBalance,
       inputCurrency,
       isDeposit,
       isWithdrawal,
+      maxInputBalance,
       nativeFieldRef,
       outputCurrency,
       supplyBalanceUnderlying,

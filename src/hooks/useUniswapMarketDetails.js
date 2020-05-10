@@ -61,11 +61,11 @@ export default function useUniswapMarketDetails() {
   const calculateInputGivenOutputChange = useCallback(
     ({
       inputAsExactAmount,
-      inputBalance,
       inputCurrency,
       inputDecimals,
       isOutputEmpty,
       isOutputZero,
+      maxInputBalance,
       setIsSufficientBalance,
       tradeDetails,
       updateInputAmount,
@@ -92,7 +92,7 @@ export default function useUniswapMarketDetails() {
         );
 
         const isSufficientAmountToTrade = greaterThanOrEqualTo(
-          inputBalance,
+          maxInputBalance,
           rawUpdatedInputAmount
         );
         setIsSufficientBalance(isSufficientAmountToTrade);
@@ -156,9 +156,9 @@ export default function useUniswapMarketDetails() {
     ({
       inputAmount,
       inputAsExactAmount,
-      inputBalance,
       inputCurrency,
       inputFieldRef,
+      maxInputBalance,
       nativeCurrency,
       outputAmount,
       outputCurrency,
@@ -203,7 +203,7 @@ export default function useUniswapMarketDetails() {
         setSlippage(slippage);
 
         const newIsSufficientBalance =
-          !inputAmount || greaterThanOrEqualTo(inputBalance, inputAmount);
+          !inputAmount || greaterThanOrEqualTo(maxInputBalance, inputAmount);
 
         setIsSufficientBalance(newIsSufficientBalance);
 
@@ -237,11 +237,11 @@ export default function useUniswapMarketDetails() {
         ) {
           calculateInputGivenOutputChange({
             inputAsExactAmount,
-            inputBalance,
             inputCurrency,
             inputDecimals,
             isOutputEmpty,
             isOutputZero,
+            maxInputBalance,
             setIsSufficientBalance,
             tradeDetails,
             updateInputAmount,

@@ -91,7 +91,7 @@ const ExchangeModal = ({
   const { nativeCurrency } = useAccountSettings();
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
   const { getMarketDetails } = useUniswapMarketDetails();
-  const { inputBalance, updateInputBalance } = useMaxInputBalance();
+  const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
   const {
     areTradeDetailsValid,
@@ -148,10 +148,10 @@ const ExchangeModal = ({
     updateOutputAmount,
   } = useSwapInputs({
     defaultInputAsset,
-    inputBalance,
     inputCurrency,
     isDeposit,
     isWithdrawal,
+    maxInputBalance,
     nativeFieldRef,
     outputCurrency,
     supplyBalanceUnderlying,
@@ -204,17 +204,11 @@ const ExchangeModal = ({
   useEffect(() => {
     if (isNewValueForPath(inputCurrency, previousInputCurrency, 'address')) {
       clearForm();
-      updateInputBalance(inputCurrency, selectedGasPrice);
+      updateMaxInputBalance(inputCurrency);
     }
-  }, [
-    clearForm,
-    inputCurrency,
-    previousInputCurrency,
-    selectedGasPrice,
-    updateInputBalance,
-  ]);
+  }, [clearForm, inputCurrency, previousInputCurrency, updateMaxInputBalance]);
 
-  // Recalculate max input balance when gas price changes
+  // Recalculate max input balance when gas price changes if input currency is ETH
   useEffect(() => {
     if (
       inputCurrency &&
@@ -222,13 +216,13 @@ const ExchangeModal = ({
       get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
         get(selectedGasPrice, 'txFee.value.amount', 0)
     ) {
-      updateInputBalance(inputCurrency, selectedGasPrice);
+      updateMaxInputBalance(inputCurrency);
     }
   }, [
     inputCurrency,
     prevSelectedGasPrice,
     selectedGasPrice,
-    updateInputBalance,
+    updateMaxInputBalance,
   ]);
 
   // Liten to gas prices, Uniswap reserves updates
@@ -255,9 +249,9 @@ const ExchangeModal = ({
   // Update input amount when max is set and the max input balance changed
   useEffect(() => {
     if (isMax) {
-      updateInputAmount(inputBalance, inputBalance, true, true);
+      updateInputAmount(maxInputBalance, maxInputBalance, true, true);
     }
-  }, [inputBalance, isMax, updateInputAmount]);
+  }, [maxInputBalance, isMax, updateInputAmount]);
 
   // Calculate market details
   useEffect(() => {
@@ -270,9 +264,9 @@ const ExchangeModal = ({
     getMarketDetails({
       inputAmount,
       inputAsExactAmount,
-      inputBalance,
       inputCurrency,
       inputFieldRef,
+      maxInputBalance,
       nativeCurrency,
       outputAmount,
       outputCurrency,
@@ -288,11 +282,11 @@ const ExchangeModal = ({
     getMarketDetails,
     inputAmount,
     inputAsExactAmount,
-    inputBalance,
     inputCurrency,
     inputFieldRef,
     isDeposit,
     isWithdrawal,
+    maxInputBalance,
     nativeCurrency,
     outputAmount,
     outputCurrency,
@@ -308,7 +302,7 @@ const ExchangeModal = ({
     if (isWithdrawal) {
       maxBalance = supplyBalanceUnderlying;
     } else {
-      maxBalance = inputBalance;
+      maxBalance = maxInputBalance;
     }
     analytics.track('Selected max balance', {
       category: isDeposit || isWithdrawal ? 'savings' : 'swap',
@@ -319,9 +313,9 @@ const ExchangeModal = ({
     return updateInputAmount(maxBalance, maxBalance, true, true);
   }, [
     defaultInputAsset,
-    inputBalance,
     isDeposit,
     isWithdrawal,
+    maxInputBalance,
     supplyBalanceUnderlying,
     type,
     updateInputAmount,
