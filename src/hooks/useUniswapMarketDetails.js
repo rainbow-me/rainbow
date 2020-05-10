@@ -171,8 +171,8 @@ export default function useUniswapMarketDetails() {
     }) => {
       const isMissingCurrency = !inputCurrency || !outputCurrency;
       const isMissingReserves =
-        (inputCurrency && inputCurrency.address !== 'eth' && !inputReserve) ||
-        (outputCurrency && outputCurrency.address !== 'eth' && !outputReserve);
+        (get(inputCurrency, 'address') !== 'eth' && !inputReserve) ||
+        (get(outputCurrency, 'address') !== 'eth' && !outputReserve);
       if (isMissingCurrency || isMissingReserves) return;
 
       try {

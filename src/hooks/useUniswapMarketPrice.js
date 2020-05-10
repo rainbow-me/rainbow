@@ -15,8 +15,8 @@ export default function useUniswapMarketDetails() {
     (inputCurrency, outputCurrency, useInputReserve = true) => {
       const ethPrice = ethereumUtils.getEthPriceUnit(allAssets);
       if (
-        (useInputReserve && inputCurrency && inputCurrency.address === 'eth') ||
-        (!useInputReserve && outputCurrency && outputCurrency.address === 'eth')
+        (useInputReserve && get(inputCurrency, 'address') === 'eth') ||
+        (!useInputReserve && get(outputCurrency, 'address') === 'eth')
       )
         return ethPrice;
 

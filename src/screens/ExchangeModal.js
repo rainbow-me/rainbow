@@ -100,9 +100,6 @@ const ExchangeModal = ({
   } = useSwapDetails();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const [showConfirmButton, setShowConfirmButton] = useState(
-    isDeposit || isWithdrawal ? true : false
-  );
   const [slippage, setSlippage] = useState(null);
 
   const {
@@ -118,7 +115,6 @@ const ExchangeModal = ({
     isDeposit,
     isWithdrawal,
     navigation,
-    setShowConfirmButton,
     type,
     underlyingPrice,
   });
@@ -211,8 +207,7 @@ const ExchangeModal = ({
   // Recalculate max input balance when gas price changes if input currency is ETH
   useEffect(() => {
     if (
-      inputCurrency &&
-      inputCurrency.address === 'eth' &&
+      get(inputCurrency, 'address') === 'eth' &&
       get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
         get(selectedGasPrice, 'txFee.value.amount', 0)
     ) {
@@ -257,8 +252,7 @@ const ExchangeModal = ({
   useEffect(() => {
     if (
       (isDeposit || isWithdrawal) &&
-      inputCurrency &&
-      inputCurrency.address === defaultInputAddress
+      get(inputCurrency, 'address') === defaultInputAddress
     )
       return;
     getMarketDetails({
@@ -306,7 +300,7 @@ const ExchangeModal = ({
     }
     analytics.track('Selected max balance', {
       category: isDeposit || isWithdrawal ? 'savings' : 'swap',
-      defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+      defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
       type,
       value: Number(maxBalance.toString()),
     });
@@ -325,7 +319,7 @@ const ExchangeModal = ({
     backgroundTask.execute(async () => {
       analytics.track(`Submitted ${type}`, {
         category: isDeposit || isWithdrawal ? 'savings' : 'swap',
-        defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+        defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
         type,
       });
 
@@ -358,7 +352,7 @@ const ExchangeModal = ({
         logger.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
           category: isDeposit || isWithdrawal ? 'savings' : 'swap',
-          defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+          defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
           type,
         });
       } catch (error) {
@@ -428,6 +422,11 @@ const ExchangeModal = ({
     isWithdrawal,
     outputCurrency,
   ]);
+
+  const showConfirmButton =
+    isDeposit || isWithdrawal
+      ? !!inputCurrency
+      : !!inputCurrency && !!outputCurrency;
 
   return (
     <KeyboardFixedOpenLayout>

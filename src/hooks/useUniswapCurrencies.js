@@ -43,7 +43,6 @@ export default function useUniswapCurrencies({
   isDeposit,
   isWithdrawal,
   navigation,
-  setShowConfirmButton,
   type,
   underlyingPrice,
 }) {
@@ -75,8 +74,7 @@ export default function useUniswapCurrencies({
 
   if (
     isDeposit &&
-    (!defaultInputItemInWallet ||
-      defaultInputItemInWallet.address !== defaultInputAddress)
+    get(defaultInputItemInWallet, 'address') !== defaultInputAddress
   ) {
     defaultOutputItem = defaultChosenInputItem;
   }
@@ -106,11 +104,6 @@ export default function useUniswapCurrencies({
       logger.log('[update input curr] prev input curr', previousInputCurrency);
 
       setInputCurrency(newInputCurrency);
-      setShowConfirmButton(
-        isDeposit || isWithdrawal
-          ? !!newInputCurrency
-          : !!newInputCurrency && !!outputCurrency
-      );
 
       dispatch(uniswapUpdateInputCurrency(newInputCurrency));
 
@@ -125,7 +118,10 @@ export default function useUniswapCurrencies({
         }
       }
 
-      if (isDeposit && newInputCurrency.address !== defaultInputAddress) {
+      if (
+        isDeposit &&
+        get(newInputCurrency, 'address') !== defaultInputAddress
+      ) {
         logger.log(
           '[update input curr] new deposit output for deposit or withdraw',
           defaultChosenInputItem
@@ -135,9 +131,9 @@ export default function useUniswapCurrencies({
 
       analytics.track('Switched input asset', {
         category: isDeposit ? 'savings' : 'swap',
-        defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
-        from: (previousInputCurrency && previousInputCurrency.symbol) || '',
-        label: newInputCurrency.symbol,
+        defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
+        from: get(previousInputCurrency, 'symbol', ''),
+        label: get(newInputCurrency, 'symbol', ''),
         type,
       });
     },
@@ -150,7 +146,6 @@ export default function useUniswapCurrencies({
       isWithdrawal,
       outputCurrency,
       previousInputCurrency,
-      setShowConfirmButton,
       type,
       uniswapUpdateInputCurrency,
       updateOutputCurrency,
@@ -171,11 +166,6 @@ export default function useUniswapCurrencies({
       dispatch(uniswapUpdateOutputCurrency(newOutputCurrency));
 
       setOutputCurrency(newOutputCurrency);
-      setShowConfirmButton(
-        isDeposit || isWithdrawal
-          ? !!inputCurrency
-          : !!inputCurrency && !!newOutputCurrency
-      );
 
       logger.log(
         '[update output curr] prev output curr',
@@ -200,9 +190,9 @@ export default function useUniswapCurrencies({
 
       analytics.track('Switched output asset', {
         category: isWithdrawal || isDeposit ? 'savings' : 'swap',
-        defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
-        from: (previousOutputCurrency && previousOutputCurrency.symbol) || null,
-        label: newOutputCurrency.symbol,
+        defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
+        from: get(previousOutputCurrency, 'symbol', ''),
+        label: get(newOutputCurrency, 'symbol', ''),
         type,
       });
     },
@@ -213,7 +203,6 @@ export default function useUniswapCurrencies({
       isDeposit,
       isWithdrawal,
       previousOutputCurrency,
-      setShowConfirmButton,
       type,
       uniswapAssetsInWallet,
       uniswapUpdateOutputCurrency,
@@ -236,7 +225,6 @@ export default function useUniswapCurrencies({
   }, [inputHeaderTitle, navigation, updateInputCurrency]);
 
   const navigateToSelectOutputCurrency = useCallback(() => {
-    logger.log('[nav to select output curr]', inputCurrency);
     InteractionManager.runAfterInteractions(() => {
       navigation.setParams({ focused: false });
       navigation.navigate('CurrencySelectScreen', {
@@ -248,7 +236,7 @@ export default function useUniswapCurrencies({
         type: CurrencySelectionTypes.output,
       });
     });
-  }, [inputCurrency, navigation, updateOutputCurrency]);
+  }, [navigation, updateOutputCurrency]);
 
   return {
     defaultInputAddress,

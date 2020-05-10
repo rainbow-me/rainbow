@@ -33,8 +33,8 @@ export const isValidSwapInput = ({
   const isMissingAmounts = !inputAmount || !outputAmount;
   const isMissingCurrency = !inputCurrency || !outputCurrency;
   const isMissingReserves =
-    (inputCurrency && inputCurrency.address !== 'eth' && !inputReserve) ||
-    (outputCurrency && outputCurrency.address !== 'eth' && !outputReserve);
+    (get(inputCurrency, 'address') !== 'eth' && !inputReserve) ||
+    (get(outputCurrency, 'address') !== 'eth' && !outputReserve);
 
   return !(isMissingAmounts || isMissingCurrency || isMissingReserves);
 };
