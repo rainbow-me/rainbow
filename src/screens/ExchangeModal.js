@@ -244,9 +244,19 @@ const ExchangeModal = ({
   // Update input amount when max is set and the max input balance changed
   useEffect(() => {
     if (isMax) {
-      updateInputAmount(maxInputBalance, maxInputBalance, true, true);
+      let maxBalance = maxInputBalance;
+      if (isWithdrawal) {
+        maxBalance = supplyBalanceUnderlying;
+      }
+      updateInputAmount(maxBalance, maxBalance, true, true);
     }
-  }, [maxInputBalance, isMax, updateInputAmount]);
+  }, [
+    maxInputBalance,
+    isMax,
+    isWithdrawal,
+    supplyBalanceUnderlying,
+    updateInputAmount,
+  ]);
 
   // Calculate market details
   useEffect(() => {
@@ -292,11 +302,9 @@ const ExchangeModal = ({
   ]);
 
   const handlePressMaxBalance = useCallback(async () => {
-    let maxBalance;
+    let maxBalance = maxInputBalance;
     if (isWithdrawal) {
       maxBalance = supplyBalanceUnderlying;
-    } else {
-      maxBalance = maxInputBalance;
     }
     analytics.track('Selected max balance', {
       category: isDeposit || isWithdrawal ? 'savings' : 'swap',

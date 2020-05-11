@@ -44,7 +44,7 @@ export default function useSwapInputs({
       setInputAmount(newInputAmount);
       setInputAsExactAmount(newInputAsExactAmount);
       setInputAmountDisplay(newAmountDisplay || newInputAmount);
-      setIsMax(newInputAmount && newIsMax);
+      setIsMax(!!newInputAmount && newIsMax);
 
       if (
         (nativeFieldRef &&
