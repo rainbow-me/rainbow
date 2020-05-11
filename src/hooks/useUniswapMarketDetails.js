@@ -11,7 +11,7 @@ import {
 } from '../helpers/utilities';
 import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
-import useUniswapAllowances from './useUniswapAllowances';
+import useUniswapCurrencyReserves from './useUniswapCurrencyReserves';
 import useUniswapMarketPrice from './useUniswapMarketPrice';
 
 const DEFAULT_NATIVE_INPUT_AMOUNT = 50;
@@ -20,7 +20,7 @@ export default function useUniswapMarketDetails() {
   const { chainId } = useAccountSettings();
   const { getMarketPrice } = useUniswapMarketPrice();
 
-  const { inputReserve, outputReserve } = useUniswapAllowances();
+  const { inputReserve, outputReserve } = useUniswapCurrencyReserves();
 
   const updateTradeDetails = useCallback(
     ({

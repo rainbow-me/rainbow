@@ -34,8 +34,8 @@ import {
   useSwapDetails,
   useSwapInputRefs,
   useSwapInputs,
-  useUniswapAllowances,
   useUniswapCurrencies,
+  useUniswapCurrencyReserves,
   useUniswapMarketDetails,
 } from '../hooks';
 import { loadWallet } from '../model/wallet';
@@ -88,7 +88,7 @@ const ExchangeModal = ({
     inputReserve,
     outputReserve,
     uniswapClearCurrenciesAndReserves,
-  } = useUniswapAllowances();
+  } = useUniswapCurrencyReserves();
   const { web3ListenerInit, web3ListenerStop } = useBlockPolling();
   const { nativeCurrency } = useAccountSettings();
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);

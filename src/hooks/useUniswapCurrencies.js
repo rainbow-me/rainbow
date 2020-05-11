@@ -9,8 +9,8 @@ import { multiply } from '../helpers/utilities';
 import { ethereumUtils, isNewValueForPath, logger } from '../utils';
 import useAccountAssets from './useAccountAssets';
 import usePrevious from './usePrevious';
-import useUniswapAllowances from './useUniswapAllowances';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
+import useUniswapCurrencyReserves from './useUniswapCurrencyReserves';
 
 const isSameAsset = (newInputCurrency, previousInputCurrency) =>
   !isNewValueForPath(newInputCurrency, previousInputCurrency, 'address');
@@ -97,7 +97,7 @@ export default function useUniswapCurrencies({
   const {
     uniswapUpdateInputCurrency,
     uniswapUpdateOutputCurrency,
-  } = useUniswapAllowances();
+  } = useUniswapCurrencyReserves();
 
   const dispatch = useDispatch();
 

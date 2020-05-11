@@ -9,12 +9,11 @@ import {
 } from './common';
 
 const ASSETS = 'uniswapassets';
-const ALLOWANCES = 'uniswapallowances';
 const LIQUIDITY = 'uniswapliquidity';
 const LIQUIDITY_INFO = 'uniswap';
 const UNISWAP_FAVORITES = 'uniswapFavorites';
 
-const uniswapAccountLocalKeys = [ASSETS, ALLOWANCES, LIQUIDITY, LIQUIDITY_INFO];
+const uniswapAccountLocalKeys = [ASSETS, LIQUIDITY, LIQUIDITY_INFO];
 
 export const getUniswapFavorites = network =>
   getGlobal(UNISWAP_FAVORITES, DefaultUniswapFavorites[network]);
@@ -33,12 +32,6 @@ export const getLiquidity = (accountAddress, network) =>
 
 export const saveLiquidity = (liquidity, accountAddress, network) =>
   saveAccountLocal(LIQUIDITY, liquidity, accountAddress, network);
-
-export const getAllowances = (accountAddress, network) =>
-  getAccountLocal(ALLOWANCES, accountAddress, network, {});
-
-export const saveAllowances = (allowances, accountAddress, network) =>
-  saveAccountLocal(ALLOWANCES, allowances, accountAddress, network);
 
 export const getUniswapAssets = (accountAddress, network) =>
   getAccountLocal(ASSETS, accountAddress, network, {});
