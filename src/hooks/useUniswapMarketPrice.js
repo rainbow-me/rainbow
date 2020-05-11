@@ -31,7 +31,7 @@ export default function useUniswapMarketDetails() {
         useInputReserve ? inputReserve : outputReserve
       );
       const assetToEthPrice = get(marketDetails, 'marketRate.rate');
-      return divide(ethPrice, assetToEthPrice) || 0;
+      return divide(ethPrice, assetToEthPrice);
     },
     [allAssets, inputReserve, outputReserve]
   );

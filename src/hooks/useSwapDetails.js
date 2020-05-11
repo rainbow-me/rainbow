@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js';
 import { get } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
 import {
@@ -21,8 +20,9 @@ export default function useSwapDetails() {
 
       if (inputCurrency) {
         const inputPriceValue = getMarketPrice(inputCurrency, outputCurrency);
+
         inputExecutionRate = updatePrecisionToDisplay(
-          get(tradeDetails, 'executionRate.rate', BigNumber(0)),
+          get(tradeDetails, 'executionRate.rate', 0),
           inputPriceValue
         );
 
@@ -38,8 +38,9 @@ export default function useSwapDetails() {
           outputCurrency,
           false
         );
+
         outputExecutionRate = updatePrecisionToDisplay(
-          get(tradeDetails, 'executionRate.rateInverted', BigNumber(0)),
+          get(tradeDetails, 'executionRate.rateInverted', 0),
           outputPriceValue
         );
 
@@ -68,10 +69,8 @@ export default function useSwapDetails() {
     } = extraTradeDetails;
 
     return (
-      inputExecutionRate !== 'NaN' &&
       inputExecutionRate &&
       inputNativePrice &&
-      outputExecutionRate !== 'NaN' &&
       outputExecutionRate &&
       outputNativePrice
     );
