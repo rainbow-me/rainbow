@@ -142,7 +142,8 @@ const swap = async (wallet, currentRap, index, parameters) => {
       logger.log('[swap] raw received amount', rawReceivedAmount);
       logger.log('[swap] updated raps');
       const convertedOutput = convertRawAmountToDecimalFormat(
-        rawReceivedAmount
+        rawReceivedAmount,
+        outputCurrency.decimals
       );
       logger.log('[swap] updated raps', convertedOutput);
       return convertedOutput;
