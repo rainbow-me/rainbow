@@ -112,7 +112,11 @@ const ExchangeInputField = ({
           onFocus={onFocus}
           setNativeAmount={setNativeAmount}
         />
-        <ButtonPressAnimation marginRight={4} onPress={onPressMaxBalance}>
+        <ButtonPressAnimation
+          disabled={!inputCurrencySymbol}
+          marginRight={4}
+          onPress={onPressMaxBalance}
+        >
           <RowWithMargins
             align="center"
             height={BottomRowHeight}
