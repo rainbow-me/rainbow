@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
 import analytics from '@segment/analytics-react-native';
 import { find, get } from 'lodash';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
@@ -81,6 +81,14 @@ export default function useUniswapCurrencies({
 
   const [inputCurrency, setInputCurrency] = useState(defaultInputItemInWallet);
   const [outputCurrency, setOutputCurrency] = useState(defaultOutputItem);
+
+  useEffect(() => {
+    if (defaultOutputItem) {
+      dispatch(uniswapUpdateInputCurrency(defaultInputItemInWallet));
+      dispatch(uniswapUpdateOutputCurrency(defaultOutputItem));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const previousInputCurrency = usePrevious(inputCurrency);
   const previousOutputCurrency = usePrevious(outputCurrency);
