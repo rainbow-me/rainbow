@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
+  convertStringToNumber,
   greaterThanOrEqualTo,
   isZero,
   updatePrecisionToDisplay,
@@ -42,12 +43,15 @@ export default function useSwapInputs({
     ) => {
       setInputAmount(newInputAmount);
       setInputAsExactAmount(newInputAsExactAmount);
-      setInputAmountDisplay(
-        newAmountDisplay !== undefined ? newAmountDisplay : newInputAmount
-      );
+      setInputAmountDisplay(newAmountDisplay || newInputAmount);
       setIsMax(newInputAmount && newIsMax);
 
-      if (!nativeFieldRef.current.isFocused() || newIsMax) {
+      if (
+        (nativeFieldRef &&
+          nativeFieldRef.current &&
+          !nativeFieldRef.current.isFocused()) ||
+        newIsMax
+      ) {
         let newNativeAmount = null;
 
         const isInputZero = isZero(newInputAmount);
@@ -78,9 +82,9 @@ export default function useSwapInputs({
       if (newAmountDisplay) {
         analytics.track('Updated input amount', {
           category: isDeposit ? 'savings' : 'swap',
-          defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+          defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
           type,
-          value: Number(newAmountDisplay.toString()),
+          value: convertStringToNumber(newAmountDisplay),
         });
       }
     },
@@ -101,6 +105,9 @@ export default function useSwapInputs({
   const updateNativeAmount = useCallback(
     nativeAmount => {
       logger.log('update native amount', nativeAmount);
+
+      if (!inputCurrency) return;
+
       let inputAmount = null;
       let inputAmountDisplay = null;
 
@@ -137,15 +144,13 @@ export default function useSwapInputs({
     (newOutputAmount, newAmountDisplay, newInputAsExactAmount = false) => {
       setInputAsExactAmount(newInputAsExactAmount);
       setOutputAmount(newOutputAmount);
-      setOutputAmountDisplay(
-        newAmountDisplay !== undefined ? newAmountDisplay : newOutputAmount
-      );
+      setOutputAmountDisplay(newAmountDisplay || newOutputAmount);
       if (newAmountDisplay) {
         analytics.track('Updated output amount', {
           category: isWithdrawal || isDeposit ? 'savings' : 'swap',
-          defaultInputAsset: defaultInputAsset && defaultInputAsset.symbol,
+          defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
           type,
-          value: Number(newAmountDisplay.toString()),
+          value: convertStringToNumber(newAmountDisplay),
         });
       }
     },

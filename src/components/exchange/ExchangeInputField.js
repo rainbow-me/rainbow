@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import { colors, fonts } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
@@ -33,16 +33,19 @@ const ExchangeInputField = ({
 }) => {
   const inputFieldRef = useRef();
 
-  const handleFocusInputField = () => {
+  const handleFocusInputField = useCallback(() => {
     if (inputFieldRef && inputFieldRef.current) {
       inputFieldRef.current.focus();
     }
-  };
+  }, []);
 
-  const handleInputFieldRef = ref => {
-    inputFieldRef.current = ref;
-    assignInputFieldRef(ref);
-  };
+  const handleInputFieldRef = useCallback(
+    ref => {
+      inputFieldRef.current = ref;
+      assignInputFieldRef(ref);
+    },
+    [assignInputFieldRef]
+  );
 
   return (
     <ColumnWithMargins
@@ -100,10 +103,11 @@ const ExchangeInputField = ({
         paddingLeft={padding}
       >
         <ExchangeNativeField
+          assignNativeFieldRef={assignNativeFieldRef}
+          editable={!!inputCurrencySymbol}
           height={BottomRowHeight}
           nativeAmount={nativeAmount}
           nativeCurrency={nativeCurrency}
-          nativeFieldRef={assignNativeFieldRef}
           onBlur={onBlur}
           onFocus={onFocus}
           setNativeAmount={setNativeAmount}
