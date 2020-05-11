@@ -3,7 +3,7 @@ import ExchangeModalTypes from '../helpers/exchangeModalTypes';
 import createWithdrawFromCompoundRap, {
   estimateWithdrawFromCompound,
 } from '../raps/withdrawFromCompound';
-import ExchangeModalWithData from './ExchangeModalWithData';
+import ExchangeModal from './ExchangeModal';
 
 const WithdrawModal = ({ navigation, ...props }) => {
   const cTokenBalance = navigation.getParam('cTokenBalance');
@@ -14,12 +14,13 @@ const WithdrawModal = ({ navigation, ...props }) => {
   );
 
   return (
-    <ExchangeModalWithData
+    <ExchangeModal
       createRap={createWithdrawFromCompoundRap}
       cTokenBalance={cTokenBalance}
       defaultInputAsset={defaultInputAsset}
       estimateRap={estimateWithdrawFromCompound}
       inputHeaderTitle={`Withdraw ${defaultInputAsset.symbol}`}
+      navigation={navigation}
       showOutputField={false}
       type={ExchangeModalTypes.withdrawal}
       underlyingPrice={underlyingPrice}

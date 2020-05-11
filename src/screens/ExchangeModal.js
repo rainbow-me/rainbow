@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import Animated from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
-import { toClass } from 'recompact';
+import { compose, toClass } from 'recompact';
 import { interpolate } from '../components/animations';
 import {
   ConfirmExchangeButton,
@@ -24,6 +24,7 @@ import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
+import { withBlockedHorizontalSwipe } from '../hoc';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -52,20 +53,21 @@ const AnimatedFloatingPanels = Animated.createAnimatedComponent(
 );
 
 const ExchangeModal = ({
+  createRap,
   cTokenBalance,
   defaultInputAsset,
   estimateRap,
   inputHeaderTitle,
   navigation,
-  createRap,
   showOutputField,
   supplyBalanceUnderlying,
-  tabPosition,
   type,
   underlyingPrice,
 }) => {
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
+
+  const tabPosition = get(navigation, 'state.params.position');
 
   const defaultGasLimit = isDeposit
     ? ethUnits.basic_deposit
@@ -528,11 +530,10 @@ ExchangeModal.propTypes = {
   estimateRap: PropTypes.func,
   inputHeaderTitle: PropTypes.string,
   navigation: PropTypes.object,
+  showOutputField: PropTypes.bool,
   supplyBalanceUnderlying: PropTypes.string,
-  tabPosition: PropTypes.object, // animated value
-  tradeDetails: PropTypes.object,
   type: PropTypes.oneOf(Object.values(ExchangeModalTypes)),
   underlyingPrice: PropTypes.string,
 };
 
-export default ExchangeModal;
+export default compose(withBlockedHorizontalSwipe)(ExchangeModal);
