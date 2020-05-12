@@ -396,7 +396,7 @@ const ExchangeModal = ({
     outputFieldRef.current.blur();
     nativeFieldRef.current.blur();
     navigation.setParams({ focused: false });
-    navigation.navigate('SwapDetailsScreen', {
+    navigation.navigate(Routes.SWAP_DETAILS_SCREEN, {
       ...extraTradeDetails,
       inputCurrencySymbol: get(inputCurrency, 'symbol'),
       outputCurrencySymbol: get(outputCurrency, 'symbol'),

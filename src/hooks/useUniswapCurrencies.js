@@ -6,6 +6,7 @@ import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import { multiply } from '../helpers/utilities';
+import Routes from '../screens/Routes/routesNames';
 import { ethereumUtils, isNewValueForPath, logger } from '../utils';
 import useAccountAssets from './useAccountAssets';
 import usePrevious from './usePrevious';
@@ -221,7 +222,7 @@ export default function useUniswapCurrencies({
   const navigateToSelectInputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
       navigation.setParams({ focused: false });
-      navigation.navigate('CurrencySelectScreen', {
+      navigation.navigate(Routes.CURRENCY_SELECT_SCREEN, {
         headerTitle: inputHeaderTitle,
         onSelectCurrency: updateInputCurrency,
         restoreFocusOnSwapModal: () => {
@@ -235,7 +236,7 @@ export default function useUniswapCurrencies({
   const navigateToSelectOutputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
       navigation.setParams({ focused: false });
-      navigation.navigate('CurrencySelectScreen', {
+      navigation.navigate(Routes.CURRENCY_SELECT_SCREEN, {
         headerTitle: 'Receive',
         onSelectCurrency: updateOutputCurrency,
         restoreFocusOnSwapModal: () => {
