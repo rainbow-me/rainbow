@@ -10,6 +10,7 @@ import {
   map,
   mapKeys,
   mapValues,
+  partition,
   property,
   remove,
   uniqBy,
@@ -39,7 +40,7 @@ import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
 import { tokenOverrides } from '../references';
-import { ethereumUtils, isLowerCaseMatch } from '../utils';
+import { ethereumUtils, isLowerCaseMatch, logger } from '../utils';
 import { addCashUpdatePurchases } from './addCash';
 /* eslint-disable-next-line import/no-cycle */
 import { uniqueTokensRefreshState } from './uniqueTokens';
@@ -193,7 +194,9 @@ export const transactionsRemoved = message => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { transactions } = getState().data;
   const removeHashes = map(transactionData, txn => txn.hash);
-  remove(transactions, txn => includes(removeHashes, txn.hash));
+  remove(transactions, txn =>
+    includes(removeHashes, txn.hash.split('-').shift())
+  );
 
   dispatch({
     payload: transactions,
@@ -386,30 +389,29 @@ export const assetPricesChanged = message => (dispatch, getState) => {
   });
 };
 
-export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
-  dispatch,
-  getState
-) =>
-  new Promise((resolve, reject) => {
-    const { transactions } = getState().data;
-    const { accountAddress, nativeCurrency, network } = getState().settings;
-    parseNewTransaction(txDetails, nativeCurrency)
-      .then(parsedTransaction => {
-        const _transactions = [parsedTransaction, ...transactions];
-        dispatch({
-          payload: _transactions,
-          type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
-        });
-        saveLocalTransactions(_transactions, accountAddress, network);
-        if (!disableTxnWatcher) {
-          dispatch(watchPendingTransactions());
-        }
-        resolve(true);
-      })
-      .catch(error => {
-        reject(error);
-      });
-  });
+export const dataAddNewTransaction = (
+  txDetails,
+  disableTxnWatcher = false
+) => async (dispatch, getState) => {
+  const { transactions } = getState().data;
+  const { accountAddress, nativeCurrency, network } = getState().settings;
+  try {
+    const parsedTransaction = await parseNewTransaction(
+      txDetails,
+      nativeCurrency
+    );
+    const _transactions = [parsedTransaction, ...transactions];
+    dispatch({
+      payload: _transactions,
+      type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
+    });
+    saveLocalTransactions(_transactions, accountAddress, network);
+    if (!disableTxnWatcher) {
+      dispatch(watchPendingTransactions());
+    }
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
+};
 
 const getConfirmedState = type => {
   switch (type) {
@@ -433,13 +435,19 @@ export const dataWatchPendingTransactions = () => async (
   getState
 ) => {
   const { transactions } = getState().data;
-  if (!transactions.length) return false;
-  const updatedTransactions = [...transactions];
+  if (!transactions.length) return true;
   let txStatusesDidChange = false;
 
-  const pending = filter(transactions, ['pending', true]);
-  await Promise.all(
-    pending.map(async (tx, index) => {
+  const [pending, remainingTransactions] = partition(
+    transactions,
+    txn => txn.pending
+  );
+
+  if (isEmpty(pending)) return true;
+
+  const updatedPendingTransactions = await Promise.all(
+    pending.map(async tx => {
+      const updatedPending = { ...tx };
       const txHash = tx.hash.split('-').shift();
       try {
         const txObj = await getTransactionReceipt(txHash);
@@ -447,18 +455,23 @@ export const dataWatchPendingTransactions = () => async (
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
           if (!isZero(txObj.status)) {
-            updatedTransactions[index].status = getConfirmedState(
-              updatedTransactions[index].type
-            );
+            const newStatus = getConfirmedState(tx.type);
+            updatedPending.status = newStatus;
           } else {
-            updatedTransactions[index].status = TransactionStatusTypes.failed;
+            updatedPending.status = TransactionStatusTypes.failed;
           }
-          updatedTransactions[index].pending = false;
-          updatedTransactions[index].minedAt = minedAt;
+          updatedPending.pending = false;
+          updatedPending.minedAt = minedAt;
         }
-        // eslint-disable-next-line no-empty
-      } catch (error) {}
+        return updatedPending;
+      } catch (error) {
+        logger.log('Error watching pending txn', error);
+      }
     })
+  );
+  const updatedTransactions = concat(
+    updatedPendingTransactions,
+    remainingTransactions
   );
 
   if (txStatusesDidChange) {

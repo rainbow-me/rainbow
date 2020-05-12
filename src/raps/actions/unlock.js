@@ -57,7 +57,7 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
 
   logger.log('[unlock] add a new txn');
-  dispatch(
+  await dispatch(
     dataAddNewTransaction({
       amount: 0,
       asset: assetToUnlock,
