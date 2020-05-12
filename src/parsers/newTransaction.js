@@ -29,12 +29,14 @@ export const parseNewTransaction = async (
     get(txDetails, 'asset.price.value', 0),
     nativeCurrency
   );
-  let tx = pick(txDetails, ['dappName', 'from', 'hash', 'nonce', 'to', 'type']);
+  let tx = pick(txDetails, ['dappName', 'from', 'nonce', 'to', 'type']);
+  const hash = txDetails.hash ? `${txDetails.hash}-0` : null;
   const nonce = tx.nonce || (tx.from ? await getTransactionCount(tx.from) : '');
   const status = txDetails.status || TransactionStatusTypes.sending;
   tx = {
     ...tx,
     balance,
+    hash,
     minedAt: null,
     name: get(txDetails, 'asset.name'),
     native,
