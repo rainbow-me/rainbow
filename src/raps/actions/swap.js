@@ -126,7 +126,7 @@ const swap = async (wallet, currentRap, index, parameters) => {
     type: transactionTypes.swap,
   };
   logger.log('[swap] adding new txn', newTransaction);
-  dispatch(dataAddNewTransaction(newTransaction, true));
+  await dispatch(dataAddNewTransaction(newTransaction, true));
   logger.log('[swap] calling the callback');
   currentRap.callback();
   currentRap.callback = NOOP;
