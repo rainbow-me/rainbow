@@ -112,7 +112,8 @@ export const buildCoinsList = (
     smallBalances.assets.length > 0 ||
     (hiddenAssets.length > 0 && assetsLength > amountOfShowedCoins) ||
     (pinnedAssetsLength === allAssetsLength &&
-      allAssetsLength > amountOfShowedCoins)
+      allAssetsLength > amountOfShowedCoins) ||
+    isCoinListEdited
   ) {
     allAssets.push({
       assetsAmount: smallBalances.assets.length,
