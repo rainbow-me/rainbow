@@ -193,7 +193,9 @@ export const transactionsRemoved = message => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { transactions } = getState().data;
   const removeHashes = map(transactionData, txn => txn.hash);
-  remove(transactions, txn => includes(removeHashes, txn.hash));
+  remove(transactions, txn =>
+    includes(removeHashes, txn.hash.split('-').shift())
+  );
 
   dispatch({
     payload: transactions,
