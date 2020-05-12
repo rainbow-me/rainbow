@@ -139,6 +139,8 @@ export const updatePrecisionToDisplay = (
   nativePrice,
   roundUp = false
 ) => {
+  if (!amount) return 0;
+  if (!nativePrice) return amount;
   const roundingMode = roundUp ? BigNumber.ROUND_UP : BigNumber.ROUND_DOWN;
   const bnAmount = BigNumber(`${amount}`);
   const significantDigitsOfNativePriceInteger = BigNumber(`${nativePrice}`)
@@ -215,10 +217,12 @@ export const multiply = (numberOne, numberTwo) =>
  * @param  {Number}   numberTwo
  * @return {String}
  */
-export const divide = (numberOne, numberTwo) =>
-  BigNumber(`${numberOne}`)
+export const divide = (numberOne, numberTwo) => {
+  if (!(numberOne || numberTwo)) return '0';
+  return BigNumber(`${numberOne}`)
     .dividedBy(BigNumber(`${numberTwo}`))
     .toFixed();
+};
 
 /**
  * @desc convert to asset amount units from native price value units

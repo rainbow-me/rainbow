@@ -116,7 +116,7 @@ export const assetNeedsUnlocking = async (
   if (AllowancesCache.cache[cacheKey]) {
     allowance = AllowancesCache.cache[cacheKey];
   } else {
-    allowance = await contractUtils.getAllowance(
+    allowance = await contractUtils.getRawAllowance(
       accountAddress,
       assetToUnlock,
       contractAddress

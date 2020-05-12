@@ -33,8 +33,8 @@ export const isValidSwapInput = ({
   const isMissingAmounts = !inputAmount || !outputAmount;
   const isMissingCurrency = !inputCurrency || !outputCurrency;
   const isMissingReserves =
-    (inputCurrency && inputCurrency.address !== 'eth' && !inputReserve) ||
-    (outputCurrency && outputCurrency.address !== 'eth' && !outputReserve);
+    (get(inputCurrency, 'address') !== 'eth' && !inputReserve) ||
+    (get(outputCurrency, 'address') !== 'eth' && !outputReserve);
 
   return !(isMissingAmounts || isMissingCurrency || isMissingReserves);
 };
@@ -142,7 +142,8 @@ const swap = async (wallet, currentRap, index, parameters) => {
       logger.log('[swap] raw received amount', rawReceivedAmount);
       logger.log('[swap] updated raps');
       const convertedOutput = convertRawAmountToDecimalFormat(
-        rawReceivedAmount
+        rawReceivedAmount,
+        outputCurrency.decimals
       );
       logger.log('[swap] updated raps', convertedOutput);
       return convertedOutput;

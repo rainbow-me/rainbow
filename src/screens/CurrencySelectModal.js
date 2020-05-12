@@ -17,6 +17,7 @@ import {
 } from '../components/exchange';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
+import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import {
   usePrevious,
   useUniswapAssets,
@@ -24,10 +25,8 @@ import {
 } from '../hooks';
 import { position } from '../styles';
 import { filterList, filterScams } from '../utils/search';
-import {
-  CurrencySelectionTypes,
-  exchangeModalBorderRadius,
-} from './ExchangeModal';
+import { exchangeModalBorderRadius } from './ExchangeModal';
+import Routes from './Routes/routesNames';
 
 const headerlessSection = data => [{ data, title: '' }];
 
@@ -110,7 +109,7 @@ const CurrencySelectModal = ({
   };
 
   const handlePressBack = () => {
-    navigation.navigate('MainExchangeScreen');
+    navigation.navigate(Routes.MAIN_EXCHANGE_SCREEN);
   };
 
   const handleSelectAsset = item => {
@@ -119,7 +118,7 @@ const CurrencySelectModal = ({
     // but this small hack seems to be a legit workaround
     const onSelectCurrency = navigation.getParam('onSelectCurrency');
     onSelectCurrency(item);
-    navigation.navigate('MainExchangeScreen');
+    navigation.navigate(Routes.MAIN_EXCHANGE_SCREEN);
   };
 
   const handleChangeSearchQuery = newSearchQuery =>

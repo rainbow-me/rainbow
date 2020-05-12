@@ -1,8 +1,9 @@
-import { isNil, keys, toLower } from 'lodash';
+import { get, isNil, keys, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 import { chartExpandedAvailable } from '../config/experimental';
 import NetworkTypes from '../helpers/networkTypes';
+import { logger } from '../utils';
 import { addressChartsReceived } from './charts';
 import {
   addressAssetsReceived,
@@ -206,6 +207,7 @@ const listenOnAddressMessages = socket => dispatch => {
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.APPENDED, message => {
+    logger.log('txns appended', get(message, 'payload.transactions', []));
     dispatch(transactionsReceived(message, true));
   });
 

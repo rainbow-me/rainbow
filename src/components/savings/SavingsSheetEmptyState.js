@@ -75,7 +75,7 @@ const SavingsSheetEmptyState = ({
           <SheetButton
             color={colors.white}
             label="Deposit with Pay"
-            onPress={() => navigate('SavingsDepositModal')}
+            onPress={() => navigate(Routes.SAVINGS_DEPOSIT_MODAL)}
             textColor={colors.dark}
           />
         */}

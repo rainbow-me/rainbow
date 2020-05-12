@@ -35,6 +35,7 @@ import {
   useAccountSettings,
   useContacts,
   useGas,
+  useMaxInputBalance,
   usePrevious,
   useRefreshAccountData,
   useSendableUniqueTokens,
@@ -43,7 +44,7 @@ import {
 } from '../hooks';
 import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
-import { deviceUtils, ethereumUtils, gasUtils } from '../utils';
+import { deviceUtils, gasUtils } from '../utils';
 import Routes from './Routes/routesNames';
 
 const sheetHeight = deviceUtils.dimensions.height - 10;
@@ -105,7 +106,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [selected, setSelected] = useState({});
-  const [balanceAmount, setBalanceAmount] = useState(0);
+  const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
   const showEmptyState = !isValidAddress;
   const showAssetList = isValidAddress && isEmpty(selected);
@@ -124,17 +125,6 @@ const SendSheet = ({ setAppearListener, ...props }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const updateBalanceAmount = useCallback(
-    async newSelected => {
-      const currentBalanceAmount = await ethereumUtils.getBalanceAmount(
-        selectedGasPrice,
-        newSelected
-      );
-      setBalanceAmount(currentBalanceAmount);
-    },
-    [selectedGasPrice]
-  );
-
   // Recalculate balance when gas price changes
   useEffect(() => {
     if (
@@ -142,9 +132,9 @@ const SendSheet = ({ setAppearListener, ...props }) => {
       get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
         get(selectedGasPrice, 'txFee.value.amount', 0)
     ) {
-      updateBalanceAmount(selected);
+      updateMaxInputBalance(selected);
     }
-  }, [prevSelectedGasPrice, selected, selectedGasPrice, updateBalanceAmount]);
+  }, [prevSelectedGasPrice, selected, selectedGasPrice, updateMaxInputBalance]);
 
   const sendUpdateAssetAmount = useCallback(
     newAssetAmount => {
@@ -165,19 +155,19 @@ const SendSheet = ({ setAppearListener, ...props }) => {
         );
       }
       const _isSufficientBalance =
-        Number(_assetAmount) <= Number(balanceAmount);
+        Number(_assetAmount) <= Number(maxInputBalance);
       setAmountDetails({
         assetAmount: _assetAmount,
         isSufficientBalance: _isSufficientBalance,
         nativeAmount: _nativeAmount,
       });
     },
-    [balanceAmount, nativeCurrency, selected]
+    [maxInputBalance, nativeCurrency, selected]
   );
 
   const sendUpdateSelected = useCallback(
     newSelected => {
-      updateBalanceAmount(newSelected);
+      updateMaxInputBalance(newSelected);
       if (get(newSelected, 'type') === AssetTypes.nft) {
         setAmountDetails({
           assetAmount: '1',
@@ -193,7 +183,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
         sendUpdateAssetAmount('');
       }
     },
-    [sendUpdateAssetAmount, updateBalanceAmount]
+    [sendUpdateAssetAmount, updateMaxInputBalance]
   );
 
   const sendUpdateRecipient = useCallback(newRecipient => {
@@ -216,7 +206,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
       }
 
       const _isSufficientBalance =
-        Number(_assetAmount) <= Number(balanceAmount);
+        Number(_assetAmount) <= Number(maxInputBalance);
 
       setAmountDetails({
         assetAmount: _assetAmount,
@@ -225,17 +215,13 @@ const SendSheet = ({ setAppearListener, ...props }) => {
       });
       analytics.track('Changed native currency input in Send flow');
     },
-    [balanceAmount, selected]
+    [maxInputBalance, selected]
   );
 
   const sendMaxBalance = useCallback(async () => {
-    const balanceAmount = await ethereumUtils.getBalanceAmount(
-      selectedGasPrice,
-      selected
-    );
-    setBalanceAmount(balanceAmount);
-    sendUpdateAssetAmount(balanceAmount);
-  }, [selected, selectedGasPrice, sendUpdateAssetAmount]);
+    const newBalanceAmount = await updateMaxInputBalance(selected);
+    sendUpdateAssetAmount(newBalanceAmount);
+  }, [selected, sendUpdateAssetAmount, updateMaxInputBalance]);
 
   const onChangeAssetAmount = useCallback(
     newAssetAmount => {
