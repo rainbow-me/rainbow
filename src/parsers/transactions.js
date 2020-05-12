@@ -29,6 +29,7 @@ import { savingsAssetsList } from '../references';
 import { isLowerCaseMatch } from '../utils';
 
 const DIRECTION_OUT = 'out';
+const LAST_TXN_HASH_BUFFER = 20;
 
 const dataFromLastTxHash = (transactionData, transactions) => {
   const lastSuccessfulTxn = find(transactions, txn => txn.hash && !txn.pending);
@@ -38,7 +39,7 @@ const dataFromLastTxHash = (transactionData, transactions) => {
       lastTxHash.startsWith(txn.hash)
     );
     if (lastTxnHashIndex > -1) {
-      return slice(transactionData, 0, lastTxnHashIndex);
+      return slice(transactionData, 0, lastTxnHashIndex + LAST_TXN_HASH_BUFFER);
     }
   }
   return transactionData;
@@ -56,8 +57,9 @@ export const parseTransactions = (
 ) => {
   const purchaseTransactionHashes = map(purchaseTransactions, 'hash');
   const data = appended
-    ? dataFromLastTxHash(transactionData, existingTransactions)
-    : transactionData;
+    ? transactionData
+    : dataFromLastTxHash(transactionData, existingTransactions);
+
   const parsedNewTransactions = flatten(
     data.map(txn =>
       parseTransaction(
@@ -70,22 +72,23 @@ export const parseTransactions = (
       )
     )
   );
+
   const [pendingTransactions, remainingTransactions] = partition(
     existingTransactions,
     txn => txn.pending
   );
+
   const updatedPendingTransactions = dedupePendingTransactions(
     accountAddress,
     pendingTransactions,
     parsedNewTransactions
   );
-  const updatedResults = appended
-    ? concat(
-        updatedPendingTransactions,
-        parsedNewTransactions,
-        remainingTransactions
-      )
-    : concat(updatedPendingTransactions, parsedNewTransactions);
+
+  const updatedResults = concat(
+    updatedPendingTransactions,
+    parsedNewTransactions,
+    remainingTransactions
+  );
 
   const potentialNftTransaction = appended
     ? find(parsedNewTransactions, txn => {
