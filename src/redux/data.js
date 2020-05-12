@@ -162,7 +162,7 @@ export const transactionsReceived = (message, appended = false) => async (
   const { accountAddress, nativeCurrency, network } = getState().settings;
   const { purchaseTransactions } = getState().addCash;
   const { transactions, tokenOverrides } = getState().data;
-  const { dedupedResults, potentialNftTransaction } = parseTransactions(
+  const { parsedTransactions, potentialNftTransaction } = parseTransactions(
     transactionData,
     accountAddress,
     nativeCurrency,
@@ -178,11 +178,11 @@ export const transactionsReceived = (message, appended = false) => async (
     }, 60000);
   }
   dispatch({
-    payload: dedupedResults,
+    payload: parsedTransactions,
     type: DATA_UPDATE_TRANSACTIONS,
   });
-  updatePurchases(dedupedResults);
-  saveLocalTransactions(dedupedResults, accountAddress, network);
+  updatePurchases(parsedTransactions);
+  saveLocalTransactions(parsedTransactions, accountAddress, network);
 };
 
 export const transactionsRemoved = message => (dispatch, getState) => {
