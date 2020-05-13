@@ -5,7 +5,6 @@ import { StyleSheet } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import { colors, padding } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
-import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import Divider from '../Divider';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { ButtonPressAnimation } from '../animations';
@@ -32,9 +31,7 @@ const sx = StyleSheet.create({
 export default function WalletProfileCreator({
   actionType,
   address,
-  isCurrentProfile,
   isNewProfile,
-  isDeletable,
   onCloseModal,
   profile,
 }) {
@@ -70,27 +67,6 @@ export default function WalletProfileCreator({
     goBack();
     onCloseModal({ color, name: value });
   }, [color, goBack, onCloseModal, value]);
-
-  const deleteProfile = useCallback(() => {
-    showActionSheetWithOptions(
-      {
-        cancelButtonIndex: 1,
-        destructiveButtonIndex: 0,
-        message: `Are you sure that you want to delete this ${
-          address ? 'account' : 'wallet'
-        }?`,
-        options: [`Delete ${address ? 'Account' : 'Wallet'}`, 'Cancel'],
-      },
-      async buttonIndex => {
-        if (buttonIndex === 0) {
-          goBack();
-          onCloseModal({
-            isDeleted: true,
-          });
-        }
-      }
-    );
-  }, [address, goBack, onCloseModal]);
 
   const cancel = useCallback(() => {
     goBack();
@@ -133,21 +109,19 @@ export default function WalletProfileCreator({
             <ButtonPressAnimation onPress={handleChangeColor} scaleTo={0.96}>
               <ContactAvatar
                 color={color}
-                large
+                size="large"
                 marginBottom={19}
                 value={value}
               />
             </ButtonPressAnimation>
             <PlaceholderText ref={text} />
             <Input
-              autoCapitalize
               autoFocus
               letterSpacing={0.2}
               onChange={handleChange}
               onSubmitEditing={acceptAction}
               returnKeyType="done"
               size="big"
-              spellCheck="false"
               ref={inputRef}
               style={{ width: '100%' }}
               textAlign="center"
@@ -193,23 +167,14 @@ export default function WalletProfileCreator({
                 {isNewProfile ? `${actionType} Wallet` : 'Done'}
               </Text>
             </Button>
-            <ButtonPressAnimation
-              marginTop={11}
-              onPress={
-                isNewProfile || isCurrentProfile || !isDeletable
-                  ? cancel
-                  : deleteProfile
-              }
-            >
+            <ButtonPressAnimation marginTop={11} onPress={cancel}>
               <Centered backgroundColor={colors.white} css={padding(8, 9)}>
                 <Text
                   color={colors.alpha(colors.blueGreyDark, 0.4)}
                   size="lmedium"
                   weight="regular"
                 >
-                  {isNewProfile || isCurrentProfile || !isDeletable
-                    ? 'Cancel'
-                    : `Delete ${address ? 'Account' : 'Wallet'}`}
+                  Cancel
                 </Text>
               </Centered>
             </ButtonPressAnimation>
@@ -223,8 +188,6 @@ export default function WalletProfileCreator({
 WalletProfileCreator.propTypes = {
   actionType: PropTypes.string,
   address: PropTypes.string,
-  isCurrentProfile: PropTypes.bool,
-  isDeletable: PropTypes.bool,
   isNewProfile: PropTypes.bool,
   onCloseModal: PropTypes.func,
   profile: PropTypes.object,
