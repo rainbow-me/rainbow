@@ -189,7 +189,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   const onPressImportButton = useCallback(() => {
     if (isSecretValid && seedPhrase) {
       return ConfirmImportAlert(({ color, name }) => {
-        if (color) setColor(color);
+        if (color !== null) setColor(color);
         if (name) setName(name);
         toggleImporting(true);
       }, navigate);
