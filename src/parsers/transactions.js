@@ -9,6 +9,7 @@ import {
   includes,
   isEmpty,
   map,
+  orderBy,
   partition,
   pick,
   reverse,
@@ -100,8 +101,16 @@ export const parseTransactions = (
       })
     : null;
 
+  const dedupedResults = uniqBy(updatedResults, txn => txn.hash);
+
+  const orderedDedupedResults = orderBy(
+    dedupedResults,
+    ['minedAt', 'nonce'],
+    ['desc', 'desc']
+  );
+
   return {
-    dedupedResults: uniqBy(updatedResults, txn => txn.hash),
+    parsedTransactions: orderedDedupedResults,
     potentialNftTransaction,
   };
 };

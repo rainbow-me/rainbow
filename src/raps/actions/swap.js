@@ -4,8 +4,8 @@ import {
   estimateSwapGasLimit,
   executeSwap,
 } from '../../handlers/uniswap';
-import transactionStatusTypes from '../../helpers/transactionStatusTypes';
-import transactionTypes from '../../helpers/transactionTypes';
+import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import TransactionTypes from '../../helpers/transactionTypes';
 import {
   convertHexToString,
   convertRawAmountToDecimalFormat,
@@ -121,9 +121,9 @@ const swap = async (wallet, currentRap, index, parameters) => {
     from: accountAddress,
     hash: swap.hash,
     nonce: get(swap, 'nonce'),
-    status: transactionStatusTypes.swapping,
+    status: TransactionStatusTypes.swapping,
     to: get(swap, 'to'),
-    type: transactionTypes.swap,
+    type: TransactionTypes.trade,
   };
   logger.log('[swap] adding new txn', newTransaction);
   await dispatch(dataAddNewTransaction(newTransaction, true));
