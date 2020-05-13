@@ -5,17 +5,11 @@ import { Platform } from 'react-native';
 import { useIsFocused, useNavigation } from 'react-navigation-hooks';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
 import { ActivityList } from '../components/activity-list';
-import {
-  BackButton,
-  Header,
-  HeaderButton,
-  HeaderWalletInfo,
-} from '../components/header';
+import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
 import { FlexItem, Page } from '../components/layout';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
-import { isMultiwalletAvailable } from '../config/experimental';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
 import {
@@ -69,10 +63,6 @@ const ProfileScreen = ({ navigation }) => {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
-  const onPressProfileHeader = async () => {
-    navigation.navigate(Routes.CHANGE_WALLET_MODAL);
-  };
-
   const addCashInDevNetworks =
     __DEV__ &&
     (network === NetworkTypes.kovan || network === NetworkTypes.mainnet);
@@ -86,15 +76,6 @@ const ProfileScreen = ({ navigation }) => {
         <HeaderButton onPress={onPressSettings}>
           <Icon color={colors.black} name="gear" />
         </HeaderButton>
-        {isMultiwalletAvailable && (
-          <HeaderWalletInfo
-            accountColor={accountColor}
-            accountName={accountName}
-            onPress={onPressProfileHeader}
-          >
-            <Icon name="gear" />
-          </HeaderWalletInfo>
-        )}
         <BackButton
           color={colors.black}
           direction="right"
@@ -122,10 +103,7 @@ const ProfileScreen = ({ navigation }) => {
           navigation={navigation}
           network={network}
           requests={requests}
-          style={[
-            { flex: 1 },
-            isMultiwalletAvailable ? { marginTop: 10 } : null,
-          ]}
+          style={{ flex: 1 }}
           transactions={transactions}
         />
       ) : (

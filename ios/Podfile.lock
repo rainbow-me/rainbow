@@ -357,6 +357,8 @@ PODS:
     - React
   - react-native-camera/RN (3.23.0):
     - React
+  - react-native-cloud-fs (1.0.0):
+    - React
   - react-native-mail (4.1.0):
     - React
   - react-native-netinfo (5.7.1):
@@ -441,7 +443,7 @@ PODS:
   - RNAnalytics (1.1.0):
     - Analytics
     - React
-  - RNCAsyncStorage (1.9.0):
+  - RNCAsyncStorage (1.7.1):
     - React
   - RNCClipboard (1.2.2):
     - React
@@ -472,6 +474,8 @@ PODS:
     - Firebase/Messaging (~> 6.13.0)
     - React
     - RNFBApp
+  - RNFS (2.16.6):
+    - React
   - RNGestureHandler (1.6.0):
     - React
   - RNInputMask (4.1.0)
@@ -566,6 +570,7 @@ DEPENDENCIES:
   - react-native-background-timer (from `../node_modules/react-native-background-timer`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-camera (from `../node_modules/react-native-camera`)
+  - react-native-cloud-fs (from `../node_modules/react-native-cloud-fs`)
   - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
@@ -598,6 +603,7 @@ DEPENDENCIES:
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
+  - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNInputMask (from `../node_modules/react-native-text-input-mask/ios/InputMask`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
@@ -707,6 +713,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/blur"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
+  react-native-cloud-fs:
+    :path: "../node_modules/react-native-cloud-fs"
   react-native-mail:
     :path: "../node_modules/react-native-mail"
   react-native-netinfo:
@@ -769,6 +777,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/crashlytics"
   RNFBMessaging:
     :path: "../node_modules/@react-native-firebase/messaging"
+  RNFS:
+    :path: "../node_modules/react-native-fs"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNInputMask:
@@ -865,6 +875,7 @@ SPEC CHECKSUMS:
   react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: fc44e91dcf7420f21a10e653adc811efd1e78158
+  react-native-cloud-fs: 61da77476a51e59af2845093badc0c9eeb2edc56
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-netinfo: 4fa023c153d582aeae8435df95c9a975c5986449
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
@@ -886,7 +897,7 @@ SPEC CHECKSUMS:
   ReactCommon: ed4e11d27609d571e7eee8b65548efc191116eb3
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
-  RNCAsyncStorage: 453cd7c335ec9ba3b877e27d02238956b76f3268
+  RNCAsyncStorage: 44395cb9c7c1523104c2b499eb426ef7aff82bca
   RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
   RNCMaskedView: 71fc32d971f03b7f03d6ab6b86b730c4ee64f5b6
   RNCoolModals: 101e6048991c708be5f6486186ddbb8f23b20d78
@@ -896,6 +907,7 @@ SPEC CHECKSUMS:
   RNFBApp: 69781cf10ce41f6f6db789e6264dd80119ef2fb7
   RNFBCrashlytics: f6630b1cfa1fbac5348205232709ac779369d9e7
   RNFBMessaging: 805710731a2b616030514f6f416e8787de521f41
+  RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
   RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
@@ -918,6 +930,6 @@ SPEC CHECKSUMS:
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: d63d48d6a6fe47ccc6a1a89558100dd3c75b0127
+PODFILE CHECKSUM: cc4c9b51bf5efbd4ccabe0299c6f980e8d1a1cd4
 
 COCOAPODS: 1.9.1

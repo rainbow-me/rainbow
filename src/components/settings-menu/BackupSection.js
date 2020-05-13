@@ -6,7 +6,6 @@ import FastImage from 'react-native-fast-image';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import SeedPhraseImageSource from '../../assets/seed-phrase-icon.png';
-import { isMultiwalletAvailable } from '../../config/experimental';
 import { useInitializeWallet, useWallets } from '../../hooks';
 import * as keychain from '../../model/keychain';
 import { loadSeedPhraseAndMigrateIfNeeded } from '../../model/wallet';
@@ -47,8 +46,12 @@ const BackupSection = ({ navigation }) => {
 
   const icloudBackup = useCallback(async () => {
     try {
-      await keychain.backupToIcloud();
-      Alert.alert('Your wallet has been backed up!');
+      const success = await keychain.backupToCloud('PA$$WOOORD');
+      if (success) {
+        Alert.alert('Your wallet has been backed up!');
+      } else {
+        Alert.alert('Error while trying to backup');
+      }
     } catch (e) {
       logger.log('Error while backing up', e);
     }
@@ -56,10 +59,14 @@ const BackupSection = ({ navigation }) => {
 
   const restoreBackup = useCallback(async () => {
     try {
-      await keychain.restoreIcloudBackup();
-      await initializeWallet();
-      dispatch(walletsLoadState());
-      Alert.alert('Your wallet has been restored!');
+      const success = await keychain.restoreCloudBackup('PA$$WOOORD');
+      if (success) {
+        await initializeWallet();
+        dispatch(walletsLoadState());
+        Alert.alert('Your wallet has been restored!');
+      } else {
+        Alert.alert('Error while restoring your backup');
+      }
     } catch (e) {
       logger.log('Error while restoring backup', e);
     }
@@ -132,7 +139,7 @@ const BackupSection = ({ navigation }) => {
       <ToggleSeedPhraseButton onPress={handlePressToggleSeedPhrase}>
         {seedPhrase ? 'Hide' : 'Show'} Private Key
       </ToggleSeedPhraseButton>
-      {__DEV__ && isMultiwalletAvailable && (
+      {__DEV__ && (
         <React.Fragment>
           <RowWithMargins marginTop={20}>
             <BackupButton onPress={icloudBackup}>iCloud Backup</BackupButton>

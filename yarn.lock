@@ -1061,7 +1061,12 @@
     uuid "3.3.2"
     validator "^7.0.0"
 
-"@react-native-community/async-storage@^1.6.1", "@react-native-community/async-storage@^1.9.0":
+"@react-native-community/async-storage@1.7.1":
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/async-storage/-/async-storage-1.7.1.tgz#ef2104d865de61ad91bba66613e57e689ff4e6a1"
+  integrity sha512-/oX/x+EU4xNaqIaC/epVKzO8XghzImPA7l8cLz3USEFmtFiXFjBbTeeIFjjEm/u4/cv38Wi1xMEa10PHIWygRg==
+
+"@react-native-community/async-storage@^1.6.1":
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/async-storage/-/async-storage-1.9.0.tgz#af26a8879bd2987970fbbe81a9623851d29a56f1"
   integrity sha512-TlGMr02JcmY4huH1P7Mt7p6wJecosPpW+09+CwCFLn875IhpRqU2XiVA+BQppZOYfQdHUfUzIKyCBeXOlCEbEg==
@@ -1249,9 +1254,9 @@
     any-observable "^0.3.0"
 
 "@scarf/scarf@^1.0.0":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@scarf/scarf/-/scarf-1.0.4.tgz#d7c09e7d38428123df18a8d83a4bb5d09517d952"
-  integrity sha512-lkhjzeYyYAG4VvdrjvbZCOYzXH5vCwfzYj9xJ4zHDgyYIOzObZwcsbW6W1q5Z4tywrb14oG/tfsFAMMQPCTFqw==
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@scarf/scarf/-/scarf-1.0.5.tgz#accee0bce88a9047672f7c8faf3cada59c996b81"
+  integrity sha512-9WKaGVpQH905Aqkk+BczFEeLQxS07rl04afFRPUG9IcSlOwmo5EVVuuNu0d4M9LMYucObvK0LoAe+5HfMW2QhQ==
 
 "@segment/analytics-react-native@^1.1.0":
   version "1.1.0"
@@ -2428,6 +2433,11 @@ balanced-match@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
+
+base-64@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/base-64/-/base-64-0.1.0.tgz#780a99c84e7d600260361511c4877613bf24f6bb"
+  integrity sha1-eAqZyE59YAJgNhURxId2E78k9rs=
 
 base64-arraybuffer@0.1.5:
   version "0.1.5"
@@ -9096,6 +9106,10 @@ react-native-clean-project@^3.1.0:
   resolved "https://registry.yarnpkg.com/react-native-clean-project/-/react-native-clean-project-3.3.0.tgz#89974c4a291123e6d1f72c32185a012a649f1fa8"
   integrity sha512-IudFlNsaQd6QcgcbTZcNEXDlrJ9zzRspIUV7yvBX3bfB72Z9et9hIceH9+F+xYSlvwUSB4L/fvkIPosYKa+q9Q==
 
+react-native-cloud-fs@npomfret/react-native-cloud-fs#557925a48aee85b32bfab9b8b3d3d971e5f3eea7:
+  version "1.0.0"
+  resolved "https://codeload.github.com/npomfret/react-native-cloud-fs/tar.gz/557925a48aee85b32bfab9b8b3d3d971e5f3eea7"
+
 react-native-code-push@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/react-native-code-push/-/react-native-code-push-6.2.0.tgz#43274d9d01e998be1358b5bedc534e8edddb2dc2"
@@ -9154,6 +9168,14 @@ react-native-emoji@1.5.0:
 react-native-fast-image@andrewschenk-linx/react-native-fast-image#fix-ios-xcode-proj:
   version "7.0.2"
   resolved "https://codeload.github.com/andrewschenk-linx/react-native-fast-image/tar.gz/d19ae11a6469de94cb49211d00a7bc002ea76ff8"
+
+react-native-fs@^2.16.6:
+  version "2.16.6"
+  resolved "https://registry.yarnpkg.com/react-native-fs/-/react-native-fs-2.16.6.tgz#2901789a43210a35a0ef0a098019bbef3af395fd"
+  integrity sha512-ZWOooD1AuFoAGY3HS2GY7Qx2LZo4oIg6AK0wbC68detxwvX75R/q9lRqThXNKP6vIo2VHWa0fYUo/SrLw80E8w==
+  dependencies:
+    base-64 "^0.1.0"
+    utf8 "^3.0.0"
 
 react-native-gesture-handler@1.6.0:
   version "1.6.0"
@@ -9473,10 +9495,10 @@ react-primitives@^0.8.0:
     prop-types "^15.7.2"
     react-timer-mixin "^0.13.4"
 
-react-query@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/react-query/-/react-query-1.3.0.tgz#4ee11ed0abe3e21b79210d8e83e06083fd0c0f25"
-  integrity sha512-itSMBvP7s2D713ujt6tVIZjsk3mmKp9lvOFrfcyTdmlytCdlnNyWl/vNOHJAbMrkr+vT0lwj7vaTUGkGVaJ8Pg==
+react-query@^1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/react-query/-/react-query-1.4.3.tgz#3c921ebb182dc833526b3cff0418d0e31439a67e"
+  integrity sha512-BD6T8a7eKrc6OtVmAS/9cunT7mxLsjsgJ/tvLlUia8FhOuhZM7n+kUH+nNOBjW2ec3nuQQJhL7Q/3vnPi5s9oA==
   dependencies:
     "@scarf/scarf" "^1.0.0"
     ts-toolbelt "^6.4.2"
@@ -11421,9 +11443,9 @@ ts-object-utils@0.0.5:
   integrity sha1-lTYc3s1+UhZ8/F5jTHY0XpCiYHc=
 
 ts-toolbelt@^6.4.2:
-  version "6.6.2"
-  resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-6.6.2.tgz#2e1681ff654bf0ab24636d2ff1cbc802316b391f"
-  integrity sha512-P0fN4yv9rkTmKsu/Xew8heopmQ3fDnCF5tY4CV1ZMAUeBHJA6QsJhMEdxtWNdgV7dnKKAAw+A12azm2cONQ6NQ==
+  version "6.7.4"
+  resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-6.7.4.tgz#30e6999578a82ed4636563cb525bb3664a255760"
+  integrity sha512-cP8q7BnIyuevMyBpq+TVKf3NvSS70S+BLdhzHVeV/5WNPMoUxN5YWMKgUd54qAwWgk6n2USHi/2XFIxZJa+30g==
 
 tslib@^1.10.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
   version "1.11.1"
@@ -11695,6 +11717,11 @@ utf8-byte-length@^1.0.1:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/utf8-byte-length/-/utf8-byte-length-1.0.4.tgz#f45f150c4c66eee968186505ab93fcbb8ad6bf61"
   integrity sha1-9F8VDExm7uloGGUFq5P8u4rWv2E=
+
+utf8@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/utf8/-/utf8-3.0.0.tgz#f052eed1364d696e769ef058b183df88c87f69d1"
+  integrity sha512-E8VjFIQ/TyQgp+TZfS6l8yp/xWppSAHzidGiRrqe4bK4XP9pTRyKFgGJpO3SN7zdX4DeomTrwaseCHovfpFcqQ==
 
 util-deprecate@^1.0.1, util-deprecate@~1.0.1:
   version "1.0.2"

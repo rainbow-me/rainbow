@@ -84,6 +84,18 @@
 	<string>Rainbow</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Rainbow</string>
+	<key>NSUbiquitousContainers</key>
+	<dict>
+		<key>iCloud.me.rainbow</key>
+		<dict>
+			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
+			<true/>
+			<key>NSUbiquitousContainerSupportedFolderLevels</key>
+			<string>One</string>
+			<key>NSUbiquitousContainerName</key>
+			<string>me.rainbow</string>
+		</dict>
+	</dict>
 	<key>UIAppFonts</key>
 	<array>
 		<string>SFMono-Medium.otf</string>

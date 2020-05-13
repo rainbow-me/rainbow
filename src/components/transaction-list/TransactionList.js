@@ -5,10 +5,7 @@ import React, { useCallback, useRef, useState } from 'react';
 import { Linking, requireNativeComponent, View } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
-import {
-  isAvatarPickerAvailable,
-  isMultiwalletAvailable,
-} from '../../config/experimental';
+import { isAvatarPickerAvailable } from '../../config/experimental';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { useAccountProfile } from '../../hooks';
 import { removeRequest } from '../../redux/requests';
@@ -155,11 +152,7 @@ const TransactionList = ({
   }, [navigate]);
 
   if ((!initialized && !navigation.isFocused()) || isLoading) {
-    return (
-      <View style={isMultiwalletAvailable ? { marginTop: 20 } : null}>
-        <LoadingState>{header}</LoadingState>
-      </View>
-    );
+    return <LoadingState>{header}</LoadingState>;
   }
 
   const data = {
