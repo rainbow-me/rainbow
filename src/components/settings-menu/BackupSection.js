@@ -27,7 +27,7 @@ const ToggleSeedPhraseButton = styled(Button)`
 
 const BackupSection = ({ navigation }) => {
   const [seedPhrase, setSeedPhrase] = useState(null);
-  const { selected: selectedWallet = {} } = useWallets();
+  const { selectedWallet } = useWallets();
 
   const hideSeedPhrase = () => setSeedPhrase(null);
 

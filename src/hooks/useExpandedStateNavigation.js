@@ -1,21 +1,26 @@
 import { useCallback } from 'react';
-import { InteractionManager } from 'react-native';
+import { Alert, InteractionManager } from 'react-native';
 import { useNavigation, useNavigationState } from 'react-navigation-hooks';
 import useAsset from './useAsset';
+import useWallets from './useWallets';
 
 export default function useExpandedStateNavigation() {
   const { goBack, navigate } = useNavigation();
   const { params } = useNavigationState();
+  const { isReadOnlyWallet } = useWallets();
 
-  const selectedAsset = useAsset(params.asset);
+  const asset = useAsset(params.asset);
 
   return useCallback(
     route => {
       goBack();
-      return InteractionManager.runAfterInteractions(() => {
-        return navigate(route, { asset: selectedAsset });
-      });
+
+      return isReadOnlyWallet
+        ? Alert.alert(`You need to import the wallet in order to do this`)
+        : InteractionManager.runAfterInteractions(() =>
+            navigate(route, { asset })
+          );
     },
-    [goBack, navigate, selectedAsset]
+    [asset, goBack, isReadOnlyWallet, navigate]
   );
 }
