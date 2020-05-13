@@ -99,7 +99,7 @@ const ConfirmImportAlert = (onSuccess, navigate) =>
               } else {
                 onSuccess({
                   color: colors.getRandomColor(),
-                  name: 'Imported Wallet',
+                  name: '',
                 });
               }
             },
@@ -224,8 +224,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             return;
           }
         }
-
-        initializeWallet(input, color, name || 'Imported Wallet')
+        initializeWallet(input, color, name || '')
           .then(success => {
             if (success) {
               toggleImporting(false);
