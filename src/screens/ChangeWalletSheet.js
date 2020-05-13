@@ -5,13 +5,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { View } from 'react-native';
-import { Transition, Transitioning } from 'react-native-reanimated';
 import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import { withProps } from 'recompact';
 import { ButtonPressAnimation } from '../components/animations';
-import { EmptyAssetList } from '../components/asset-list';
 import WalletList from '../components/change-wallet/WalletList';
 import { Sheet } from '../components/sheet';
 import { Text } from '../components/text';
@@ -30,7 +27,7 @@ import {
   walletsUpdate,
 } from '../redux/wallets';
 
-import { colors, position } from '../styles';
+import { colors } from '../styles';
 import { abbreviations, logger } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 import Routes from './Routes/routesNames';
@@ -60,14 +57,6 @@ const EditButton = withProps({
     top: 26,
   },
 })(ButtonPressAnimation);
-
-const skeletonTransition = (
-  <Transition.Sequence>
-    <Transition.Out interpolation="easeOut" type="fade" />
-    <Transition.Change durationMs={0.001} interpolation="easeOut" />
-    <Transition.In durationMs={0.001} interpolation="easeOut" type="fade" />
-  </Transition.Sequence>
-);
 
 const ChangeWalletSheet = () => {
   const { wallets, selected: selectedWallet } = useWallets();
@@ -107,8 +96,6 @@ const ChangeWalletSheet = () => {
   if (listHeight > maxListHeight) {
     listHeight = maxListHeight;
   }
-  const skeletonHeight = listHeight + 55;
-
   const onChangeAccount = useCallback(
     async (wallet_id, address) => {
       if (editMode) return;
@@ -260,33 +247,18 @@ const ChangeWalletSheet = () => {
       <EditButton onPress={toggleEditMode}>
         <EditText>{editMode ? 'Done' : 'Edit'}</EditText>
       </EditButton>
-      {walletsWithBalancesAndNames ? (
-        <WalletList
-          editMode={editMode}
-          currentWallet={selectedWallet}
-          accountAddress={accountAddress}
-          allWallets={walletsWithBalancesAndNames}
-          height={listHeight}
-          onChangeAccount={onChangeAccount}
-          onEditWallet={onEditWallet}
-          onPressImportSeedPhrase={onPressImportSeedPhrase}
-          onPressAddAccount={onPressAddAccount}
-        />
-      ) : (
-        <View style={{ height: skeletonHeight, marginTop: 19 }}>
-          <Transitioning.View
-            flex={1}
-            ref={skeletonTransitionRef}
-            transition={skeletonTransition}
-          >
-            <EmptyAssetList
-              {...position.coverAsObject}
-              backgroundColor={colors.white}
-              pointerEvents="none"
-            />
-          </Transitioning.View>
-        </View>
-      )}
+
+      <WalletList
+        editMode={editMode}
+        currentWallet={selectedWallet}
+        accountAddress={accountAddress}
+        allWallets={walletsWithBalancesAndNames}
+        height={listHeight}
+        onChangeAccount={onChangeAccount}
+        onEditWallet={onEditWallet}
+        onPressImportSeedPhrase={onPressImportSeedPhrase}
+        onPressAddAccount={onPressAddAccount}
+      />
     </Sheet>
   );
 };

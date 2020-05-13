@@ -1,14 +1,23 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { StyleSheet, View } from 'react-native';
+import { Transition, Transitioning } from 'react-native-reanimated';
 import {
   DataProvider,
   LayoutProvider,
   RecyclerListView,
 } from 'recyclerlistview';
 import WalletTypes from '../../helpers/walletTypes';
+import { colors, position } from '../../styles';
 import { deviceUtils } from '../../utils';
+import { EmptyAssetList } from '../asset-list';
 import AddressOption from './AddressOption';
 import AddressRow from './AddressRow';
 import WalletDivider from './WalletDivider';
@@ -31,6 +40,14 @@ const sx = StyleSheet.create({
   },
 });
 
+const skeletonTransition = (
+  <Transition.Sequence>
+    <Transition.Out interpolation="easeOut" type="fade" />
+    <Transition.Change durationMs={0.001} interpolation="easeOut" />
+    <Transition.In durationMs={0.001} interpolation="easeOut" type="fade" />
+  </Transition.Sequence>
+);
+
 export function WalletList({
   accountAddress,
   allWallets,
@@ -43,10 +60,12 @@ export function WalletList({
   onChangeAccount,
 }) {
   const [rows, setRows] = useState([]);
+  const [ready, setReady] = useState(false);
   const [dataProvider, setDataProvider] = useState(null);
   const [layoutProvider, setLayoutProvider] = useState(null);
   const [doneScrolling, setDoneScrolling] = useState(false);
   const scrollView = useRef(null);
+  const skeletonTransitionRef = useRef();
 
   // Update the rows when allWallets changes
   useEffect(() => {
@@ -175,7 +194,14 @@ export function WalletList({
           scrollView.current.scrollToOffset(0, distanceToScroll, true);
       }, 300);
     }
-  }, [doneScrolling, height, rows]);
+  }, [doneScrolling, height, ready, rows]);
+
+  useEffect(() => {
+    if (layoutProvider && dataProvider && !ready) {
+      skeletonTransitionRef.current.animateNextTransition();
+      setReady(true);
+    }
+  }, [dataProvider, layoutProvider, ready]);
 
   const renderRow = useCallback(
     (_, data, index) => {
@@ -208,26 +234,41 @@ export function WalletList({
     },
     [editMode, onEditWallet, rows.length]
   );
-  if (!dataProvider) return null;
   return (
     <View style={sx.container}>
       <WalletDivider />
       <View style={{ height }}>
-        <RecyclerListView
-          style={{ flex: 1 }}
-          rowRenderer={renderRow}
-          dataProvider={dataProvider}
-          layoutProvider={layoutProvider}
-          optimizeForInsertDeleteAnimations
-          ref={scrollView}
-        />
+        <Transitioning.View
+          flex={1}
+          ref={skeletonTransitionRef}
+          transition={skeletonTransition}
+        >
+          {ready ? (
+            <Fragment>
+              <RecyclerListView
+                style={{ flex: 1 }}
+                rowRenderer={renderRow}
+                dataProvider={dataProvider}
+                layoutProvider={layoutProvider}
+                optimizeForInsertDeleteAnimations
+                ref={scrollView}
+              />
+              <WalletOption
+                icon="arrowBack"
+                label="Add an existing wallet"
+                onPress={onPressImportSeedPhrase}
+                editMode={editMode}
+              />
+            </Fragment>
+          ) : (
+            <EmptyAssetList
+              {...position.coverAsObject}
+              backgroundColor={colors.white}
+              pointerEvents="none"
+            />
+          )}
+        </Transitioning.View>
       </View>
-      <WalletOption
-        icon="arrowBack"
-        label="Add an existing wallet"
-        onPress={onPressImportSeedPhrase}
-        editMode={editMode}
-      />
     </View>
   );
 }
