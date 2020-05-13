@@ -1,7 +1,6 @@
 import { ethers } from 'ethers';
 import { get } from 'lodash';
 import { useEffect, useRef, useState } from 'react';
-import { InteractionManager } from 'react-native';
 import { web3Provider } from '../handlers/web3';
 import networkInfo from '../helpers/networkInfo';
 import {
@@ -90,7 +89,7 @@ export const useWalletsWithBalancesAndNames = wallets => {
       isMountedRef && setData(newWallets);
     };
 
-    if (!wallets) return;
+    if (!wallets) return {};
 
     // We already have the data for the selected account
     const updatedWallets = { ...wallets };
@@ -108,9 +107,7 @@ export const useWalletsWithBalancesAndNames = wallets => {
         }
       );
     });
-    InteractionManager.runAfterInteractions(() => {
-      isMountedRef && fetchBalancesAndNames(updatedWallets);
-    });
+    isMountedRef && fetchBalancesAndNames(updatedWallets);
   }, [accountAddress, accountENS, network, selectedAccountBalance, wallets]);
 
   return data;
