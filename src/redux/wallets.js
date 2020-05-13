@@ -1,8 +1,10 @@
+import { toChecksumAddress } from 'ethereumjs-util';
 import { get } from 'lodash';
 import {
   generateAccount,
   getAllWallets,
   getSelectedWallet,
+  loadAddress,
   saveAddress,
   saveAllWallets,
   setSelectedWallet,
@@ -20,10 +22,27 @@ export const walletsLoadState = () => async dispatch => {
   try {
     const { wallets } = await getAllWallets();
     const selected = await getSelectedWallet();
+    // Prevent irrecoverable state (no selected wallet)
+    let selectedWallet = get(selected, 'wallet', undefined);
+    if (!selectedWallet) {
+      const address = await loadAddress();
+      Object.keys(wallets).some(key => {
+        const someWallet = wallets[key];
+        const found = someWallet.addresses.some(account => {
+          return (
+            toChecksumAddress(account.address) === toChecksumAddress(address)
+          );
+        });
+        if (found) {
+          selectedWallet = someWallet;
+        }
+        return found;
+      });
+    }
 
     dispatch({
       payload: {
-        selected: get(selected, 'wallet', undefined),
+        selected: selectedWallet,
         wallets,
       },
       type: WALLETS_LOAD,
