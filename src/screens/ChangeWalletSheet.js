@@ -1,37 +1,91 @@
-import React, { useCallback, useMemo } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { View } from 'react-native';
+import { Transition, Transitioning } from 'react-native-reanimated';
 import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
+import { withProps } from 'recompact';
+import { ButtonPressAnimation } from '../components/animations';
+import { EmptyAssetList } from '../components/asset-list';
 import WalletList from '../components/change-wallet/WalletList';
 import { Sheet } from '../components/sheet';
+import { Text } from '../components/text';
 import WalletTypes from '../helpers/walletTypes';
-import { useAccountSettings, useInitializeWallet, useWallets } from '../hooks';
+import {
+  useAccountSettings,
+  useInitializeWallet,
+  usePrevious,
+  useWallets,
+} from '../hooks';
+import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
 import {
   addressSetSelected,
   createAccountForWallet,
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
-import { logger } from '../utils';
+
+import { colors, position } from '../styles';
+import { abbreviations, logger } from '../utils';
+import { showActionSheetWithOptions } from '../utils/actionsheet';
 import Routes from './Routes/routesNames';
 
-const walletRowHeight = 54;
+const walletRowHeight = 60;
+const titleHeight = 70;
+const footerHeight = 65;
+const maxListHeight = 360;
+const Title = withProps({
+  align: 'center',
+  size: 'large',
+  weight: 'bold',
+})(Text);
+
+const EditText = withProps({
+  align: 'center',
+  color: colors.appleBlue,
+  size: 'large',
+  weight: 'semibold',
+})(Text);
+
+const EditButton = withProps({
+  scaleTo: 0.9,
+  style: {
+    position: 'absolute',
+    right: 20,
+    top: 26,
+  },
+})(ButtonPressAnimation);
+
+const skeletonTransition = (
+  <Transition.Sequence>
+    <Transition.Out interpolation="easeOut" type="fade" />
+    <Transition.Change durationMs={0.001} interpolation="easeOut" />
+    <Transition.In durationMs={0.001} interpolation="easeOut" type="fade" />
+  </Transition.Sequence>
+);
 
 const ChangeWalletSheet = () => {
   const { wallets, selected: selectedWallet } = useWallets();
+  const [editMode, setEditMode] = useState(false);
 
   const { goBack, navigate } = useNavigation();
   const dispatch = useDispatch();
   const { accountAddress } = useAccountSettings();
   const initializeWallet = useInitializeWallet();
+  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames(wallets);
+  const prevWalletsWithBalancesAndNames = usePrevious(
+    walletsWithBalancesAndNames
+  );
+
   const rowsCount = useMemo(() => {
     let count = 0;
     if (wallets) {
       Object.keys(wallets).forEach(key => {
-        // Wallet header
-        // If there's more than account we group them by wallet
-        if (wallets[key].addresses.length > 1) {
-          count += 1;
-        }
         // Addresses
         count += wallets[key].addresses.filter(account => account.visible)
           .length;
@@ -45,19 +99,20 @@ const ChangeWalletSheet = () => {
           count += 1;
         }
       });
-      // Import wallet
-      count += 1;
     }
     return count;
   }, [wallets]);
 
-  let listHeight = walletRowHeight * rowsCount;
-  if (listHeight > 298) {
-    listHeight = 298;
+  let listHeight = walletRowHeight * rowsCount + titleHeight + footerHeight;
+  if (listHeight > maxListHeight) {
+    listHeight = maxListHeight;
   }
+  const skeletonHeight = listHeight + 55;
 
   const onChangeAccount = useCallback(
     async (wallet_id, address) => {
+      if (editMode) return;
+      if (address === accountAddress) return;
       try {
         const wallet = wallets[wallet_id];
         dispatch(walletsSetSelected(wallet));
@@ -68,58 +123,42 @@ const ChangeWalletSheet = () => {
         logger.log('error while switching account', e);
       }
     },
-    [dispatch, goBack, initializeWallet, wallets]
+    [accountAddress, dispatch, editMode, goBack, initializeWallet, wallets]
   );
 
-  const onEditWallet = useCallback(
-    id => {
-      const wallet = wallets[id];
-      if (!selectedWallet) return;
-
-      let isDeletable = false;
-      if (Object.keys(wallet).length > 1 && selectedWallet.id !== id) {
-        isDeletable = true;
-      }
-      navigate(Routes.EXPANDED_ASSET_SCREEN, {
-        address: undefined,
-        asset: [],
-        isDeletable,
-        onCloseModal: async args => {
-          if (args) {
-            const newWallets = { ...wallets };
-            if (args.name) {
-              newWallets[id].name = args.name;
-              newWallets[id].color = args.color;
-              if (selectedWallet.id === id) {
-                await dispatch(walletsSetSelected(newWallets[id]));
-              }
-            } else if (args.isDeleted) {
-              delete newWallets[id];
-            }
-            await dispatch(walletsUpdate(newWallets));
-          }
-        },
-        profile: { color: wallet.color, name: wallet.name },
-        type: 'wallet_profile_creator',
+  const deleteWallet = useCallback(
+    async (wallet_id, address) => {
+      const newWallets = { ...wallets };
+      // mark it as hidden
+      newWallets[wallet_id].addresses.some((account, index) => {
+        if (account.address === address) {
+          newWallets[wallet_id].addresses[index].visible = false;
+          return true;
+        }
+        return false;
       });
+      // if there are no visible wallets, then delete the wallet
+      const visibleAdddresses = newWallets[wallet_id].addresses.filter(
+        account => account.visible
+      );
+      if (visibleAdddresses.length === 0) {
+        delete newWallets[wallet_id];
+      }
+      await dispatch(walletsUpdate(newWallets));
     },
-    [dispatch, navigate, selectedWallet, wallets]
+    [dispatch, wallets]
   );
 
-  const onEditAddress = useCallback(
+  const renameWallet = useCallback(
     (wallet_id, address) => {
       const wallet = wallets[wallet_id];
       const account = wallet.addresses.find(
         account => account.address === address
       );
-      let isDeletable = false;
-      if (accountAddress !== address) {
-        isDeletable = true;
-      }
+
       navigate(Routes.EXPANDED_ASSET_SCREEN, {
         address,
         asset: [],
-        isDeletable,
         onCloseModal: async args => {
           if (args) {
             const newWallets = { ...wallets };
@@ -135,27 +174,55 @@ const ChangeWalletSheet = () => {
                 }
                 return false;
               });
-            } else if (args.isDeleted) {
-              newWallets[wallet_id].addresses.some((account, index) => {
-                if (account.address === address) {
-                  newWallets[wallet_id].addresses[index].visible = false;
-
-                  return true;
-                }
-                return false;
-              });
+              await dispatch(walletsUpdate(newWallets));
             }
-            await dispatch(walletsUpdate(newWallets));
           }
         },
         profile: {
           color: account.color,
-          name: account.label || `Account ${account.index + 1}`,
+          name: account.label || ``,
         },
         type: 'wallet_profile_creator',
       });
     },
-    [accountAddress, dispatch, navigate, selectedWallet.id, wallets]
+    [dispatch, navigate, selectedWallet.id, wallets]
+  );
+
+  const onEditWallet = useCallback(
+    (wallet_id, address, label) => {
+      const wallet = wallets[wallet_id];
+      if (!selectedWallet) return;
+
+      let isDeletable = false;
+      if (Object.keys(wallet).length > 1 && selectedWallet.id !== wallet_id) {
+        isDeletable = true;
+      }
+
+      const buttons = ['Rename Wallet'];
+      if (isDeletable) {
+        buttons.push('Delete Wallet');
+      }
+      buttons.push('Cancel');
+
+      showActionSheetWithOptions(
+        {
+          cancelButtonIndex: isDeletable ? 2 : 1,
+          destructiveButtonIndex: isDeletable ? 1 : null,
+          options: buttons,
+          title: `${label || abbreviations.address(address, 4, 6)}`,
+        },
+        buttonIndex => {
+          if (buttonIndex === 0) {
+            // Edit wallet
+            renameWallet(wallet_id, address);
+          } else if (isDeletable && buttonIndex === 1) {
+            // Delete wallet
+            deleteWallet(wallet_id, address);
+          }
+        }
+      );
+    },
+    [deleteWallet, renameWallet, selectedWallet, wallets]
   );
 
   const onPressAddAccount = useCallback(
@@ -175,19 +242,51 @@ const ChangeWalletSheet = () => {
     navigate(Routes.IMPORT_SEED_PHRASE_SHEET);
   }, [goBack, navigate]);
 
+  const skeletonTransitionRef = useRef();
+
+  const toggleEditMode = useCallback(() => {
+    setEditMode(!editMode);
+  }, [editMode]);
+
+  useEffect(() => {
+    skeletonTransitionRef &&
+      skeletonTransitionRef.current &&
+      skeletonTransitionRef.current.animateNextTransition();
+  }, [prevWalletsWithBalancesAndNames]);
+
   return (
     <Sheet>
-      <WalletList
-        currentWallet={selectedWallet}
-        accountAddress={accountAddress}
-        allWallets={wallets}
-        height={listHeight}
-        onChangeAccount={onChangeAccount}
-        onEditAddress={onEditAddress}
-        onEditWallet={onEditWallet}
-        onPressImportSeedPhrase={onPressImportSeedPhrase}
-        onPressAddAccount={onPressAddAccount}
-      />
+      <Title>Wallets</Title>
+      <EditButton onPress={toggleEditMode}>
+        <EditText>{editMode ? 'Done' : 'Edit'}</EditText>
+      </EditButton>
+      {walletsWithBalancesAndNames ? (
+        <WalletList
+          editMode={editMode}
+          currentWallet={selectedWallet}
+          accountAddress={accountAddress}
+          allWallets={walletsWithBalancesAndNames}
+          height={listHeight}
+          onChangeAccount={onChangeAccount}
+          onEditWallet={onEditWallet}
+          onPressImportSeedPhrase={onPressImportSeedPhrase}
+          onPressAddAccount={onPressAddAccount}
+        />
+      ) : (
+        <View style={{ height: skeletonHeight, marginTop: 19 }}>
+          <Transitioning.View
+            flex={1}
+            ref={skeletonTransitionRef}
+            transition={skeletonTransition}
+          >
+            <EmptyAssetList
+              {...position.coverAsObject}
+              backgroundColor={colors.white}
+              pointerEvents="none"
+            />
+          </Transitioning.View>
+        </View>
+      )}
     </Sheet>
   );
 };

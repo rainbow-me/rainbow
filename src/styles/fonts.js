@@ -64,3 +64,5 @@ font.weight = {
 };
 
 export default font;
+
+export const getFontSize = key => Number(key.replace('px', ''));

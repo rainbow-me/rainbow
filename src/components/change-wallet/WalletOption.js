@@ -2,47 +2,53 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../styles';
+import { getFontSize } from '../../styles/fonts';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 
 const sx = StyleSheet.create({
   container: {
     alignItems: 'center',
+    borderColor: colors.lightestGrey,
+    borderTopWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
-    paddingHorizontal: 7.5,
-    paddingVertical: 10,
+    marginLeft: 20,
+    paddingVertical: 25,
   },
   iconWrapper: {
     alignItems: 'center',
-    backgroundColor: colors.skeleton,
-    borderRadius: 14,
-    height: 30,
+    backgroundColor: colors.appleBlue,
+    borderRadius: 18,
+    height: 18,
     justifyContent: 'center',
-    marginLeft: 8,
+    marginLeft: 2,
     marginRight: 9,
-    width: 30,
+    width: 18,
   },
-  nickname: {
-    color: colors.dark,
+  iconWrapperDisabled: {
+    backgroundColor: colors.lightGrey,
+  },
+  text: {
+    color: colors.appleBlue,
     fontFamily: fonts.family.SFProText,
-    fontSize: Number(fonts.size.smedium.replace('px', '')),
-    fontWeight: fonts.weight.medium,
+    fontSize: getFontSize(fonts.size.lmedium),
+    fontWeight: fonts.weight.semibold,
+  },
+  textDisabled: {
+    color: colors.lightGrey,
   },
 });
 
-const WalletOption = ({ icon, label, onPress }) => (
-  <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
+const WalletOption = ({ editMode, icon, label, onPress }) => (
+  <ButtonPressAnimation disabled={editMode} scaleTo={0.96} onPress={onPress}>
     <View style={sx.container}>
-      <View style={sx.iconWrapper}>
-        <Icon
-          color={colors.blueGreyDark50}
-          height={15}
-          width={15}
-          name={icon}
-        />
+      <View style={[sx.iconWrapper, editMode ? sx.iconWrapperDisabled : null]}>
+        <Icon color={colors.white} height={11} width={11} name={icon} />
       </View>
       <View>
-        <Text style={sx.nickname}>{label}</Text>
+        <Text style={[sx.text, editMode ? sx.textDisabled : null]}>
+          {label}
+        </Text>
       </View>
     </View>
   </ButtonPressAnimation>

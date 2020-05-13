@@ -1,11 +1,8 @@
-import GraphemeSplitter from 'grapheme-splitter';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
-import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
-import { withAccountInfo } from '../../hoc';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
@@ -29,7 +26,7 @@ const FirstLetter = styled(Text)`
 
 const ProfileAction = ({
   accountColor,
-  accountName,
+  accountEmoji,
   onPress,
   overlayStyles,
 }) => {
@@ -61,9 +58,7 @@ const ProfileAction = ({
         shouldRasterizeIOS
       >
         <AvatarCircle backgroundColor={colors.avatarColor[accountColor]}>
-          <FirstLetter>
-            {new GraphemeSplitter().splitGraphemes(accountName)[0]}
-          </FirstLetter>
+          <FirstLetter>{accountEmoji}</FirstLetter>
           {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
         </AvatarCircle>
       </ShadowStack>
@@ -73,14 +68,14 @@ const ProfileAction = ({
 
 ProfileAction.propTypes = {
   accountColor: PropTypes.number,
-  accountName: PropTypes.string,
+  accountEmoji: PropTypes.string,
   onPress: PropTypes.func,
   overlayStyles: PropTypes.bool,
 };
 
 ProfileAction.defaultProps = {
   accountColor: 0,
-  accountName: '🤔',
+  accountEmoji: '🤔',
 };
 
-export default compose(withAccountInfo)(ProfileAction);
+export default ProfileAction;
