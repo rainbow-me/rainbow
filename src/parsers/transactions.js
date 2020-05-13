@@ -242,7 +242,8 @@ const parseTransaction = (
       symbol: toUpper(get(internalTxn, 'asset.symbol') || ''),
       ...tokenOverrides[address],
     };
-    const priceUnit = internalTxn.price || 0;
+    const priceUnit =
+      internalTxn.price || get(internalTxn, 'asset.price.value') || 0;
     const valueUnit = internalTxn.value || 0;
     const nativeDisplay = convertRawAmountToNativeDisplay(
       valueUnit,
