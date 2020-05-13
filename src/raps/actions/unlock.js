@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { get, toLower } from 'lodash';
-import transactionStatusTypes from '../../helpers/transactionStatusTypes';
-import transactionTypes from '../../helpers/transactionTypes';
+import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import TransactionTypes from '../../helpers/transactionTypes';
 import {
   convertAmountToRawAmount,
   greaterThan,
@@ -64,9 +64,9 @@ const unlock = async (wallet, currentRap, index, parameters) => {
       from: wallet.address,
       hash: approval.hash,
       nonce: get(approval, 'nonce'),
-      status: transactionStatusTypes.approving,
+      status: TransactionStatusTypes.approving,
       to: get(approval, 'to'),
-      type: transactionTypes.authorize,
+      type: TransactionTypes.authorize,
     })
   );
   logger.log('[unlock] calling callback');
