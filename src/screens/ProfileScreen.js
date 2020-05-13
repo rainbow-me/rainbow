@@ -5,17 +5,11 @@ import { Platform } from 'react-native';
 import { useIsFocused } from 'react-navigation-hooks';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
 import { ActivityList } from '../components/activity-list';
-import {
-  BackButton,
-  Header,
-  HeaderButton,
-  HeaderWalletInfo,
-} from '../components/header';
+import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
 import { FlexItem, Page } from '../components/layout';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
-import { isMultiwalletAvailable } from '../config/experimental';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
 import {
@@ -66,7 +60,7 @@ const ProfileScreen = ({ navigation }) => {
   let accountName = get(selectedWallet, 'name');
   let accountColor = get(selectedWallet, 'color');
 
-  const onPressProfileHeader = useCallback(() => {
+  const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
@@ -80,13 +74,6 @@ const ProfileScreen = ({ navigation }) => {
         <HeaderButton onPress={onPressSettings}>
           <Icon color={colors.black} name="gear" />
         </HeaderButton>
-        {isMultiwalletAvailable && (
-          <HeaderWalletInfo
-            accountColor={accountColor}
-            accountName={accountName}
-            onPress={onPressProfileHeader}
-          />
-        )}
         <BackButton
           color={colors.black}
           direction="right"
@@ -103,13 +90,10 @@ const ProfileScreen = ({ navigation }) => {
           contacts={contacts}
           header={
             <ProfileMasthead
-              accountAddress={accountAddress}
-              accountColor={accountColor}
-              accountName={accountName}
-              accountENS={accountENS}
               addCashAvailable={addCashAvailable}
               navigation={navigation}
               showBottomDivider={!isEmpty || isLoading}
+              onChangeWallet={onChangeWallet}
             />
           }
           initialized={activityListInitialized}
@@ -117,10 +101,7 @@ const ProfileScreen = ({ navigation }) => {
           navigation={navigation}
           network={network}
           requests={requests}
-          style={[
-            { flex: 1 },
-            isMultiwalletAvailable ? { marginTop: 10 } : null,
-          ]}
+          style={{ flex: 1 }}
           transactions={transactions}
         />
       ) : (
@@ -131,12 +112,10 @@ const ProfileScreen = ({ navigation }) => {
           addCashAvailable={addCashAvailable}
           header={
             <ProfileMasthead
-              accountAddress={accountAddress}
-              accountColor={accountColor}
-              accountName={accountName}
               addCashAvailable={addCashAvailable}
               navigation={navigation}
               showBottomDivider={!isEmpty || isLoading}
+              onChangeWallet={onChangeWallet}
             />
           }
           isEmpty={isEmpty}
