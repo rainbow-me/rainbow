@@ -153,7 +153,7 @@ class AddContactState extends PureComponent {
               >
                 <ContactAvatar
                   color={color}
-                  large
+                  size="large"
                   marginBottom={19}
                   value={value}
                 />

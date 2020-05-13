@@ -2,52 +2,77 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../styles';
+import { getFontSize } from '../../styles/fonts';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 
 const sx = StyleSheet.create({
+  borderBottom: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.lightestGrey,
+  },
   optionContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    paddingHorizontal: 7.5,
-    paddingVertical: 0,
+    paddingBottom: 17,
+    paddingTop: 12,
   },
   optionIconWrapper: {
     alignItems: 'center',
-    backgroundColor: colors.skeleton,
-    borderRadius: 14,
-    height: 22,
+    backgroundColor: colors.appleBlue,
+    borderRadius: 18,
+    height: 18,
     justifyContent: 'center',
-    marginLeft: 11,
-    marginRight: 17,
-    width: 22,
+    marginLeft: 2,
+    marginRight: 9,
+    width: 18,
+  },
+  optionIconWrapperDisabled: {
+    backgroundColor: colors.lightGrey,
   },
   optionText: {
-    color: colors.darkGrey,
-    fontFamily: fonts.family.SFProText,
-    fontSize: Number(fonts.size.small.replace('px', '')),
-    fontWeight: fonts.weight.smedium,
+    color: colors.appleBlue,
+    fontSize: getFontSize(fonts.size.lmedium),
+    fontWeight: fonts.weight.semibold,
+  },
+  optionTextDisabled: {
+    color: colors.lightGrey,
+  },
+  wrapper: {
+    marginLeft: 20,
   },
 });
 
-export default function AddressOption({ icon, label, onPress }) {
+export default function AddressOption({
+  borderBottom,
+  editMode,
+  icon,
+  label,
+  onPress,
+}) {
   return (
-    <View style={sx.subItem}>
-      <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
-        <View style={sx.optionContainer}>
-          <View style={sx.optionIconWrapper}>
-            <Icon
-              color={colors.blueGreyDark50}
-              height={15}
-              width={15}
-              name={icon}
-            />
+    <View style={sx.wrapper}>
+      <View style={[sx.subItem, borderBottom ? sx.borderBottom : null]}>
+        <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
+          <View style={sx.optionContainer}>
+            <View
+              style={[
+                sx.optionIconWrapper,
+                editMode ? sx.optionIconWrapperDisabled : null,
+              ]}
+            >
+              <Icon color={colors.white} height={12} width={12} name={icon} />
+            </View>
+            <View>
+              <Text
+                style={[sx.optionText, editMode ? sx.optionTextDisabled : null]}
+              >
+                {label}
+              </Text>
+            </View>
           </View>
-          <View>
-            <Text style={sx.optionText}>{label}</Text>
-          </View>
-        </View>
-      </ButtonPressAnimation>
+        </ButtonPressAnimation>
+      </View>
     </View>
   );
 }
