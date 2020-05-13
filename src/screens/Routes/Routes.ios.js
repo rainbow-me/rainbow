@@ -17,11 +17,7 @@ import {
 import { deviceUtils } from '../../utils';
 import AddCashSheet from '../AddCashSheet';
 import AvatarBuilder from '../AvatarBuilder';
-<<<<<<< HEAD
 import ChangeWalletSheet from '../ChangeWalletSheet';
-=======
-import ChangeWalletModal from '../ChangeWalletModal';
->>>>>>> update navigation
 import ExampleScreen from '../ExampleScreen';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
@@ -39,7 +35,6 @@ import {
   createStackNavigator,
   exchangePresetWithTransitions,
   expandedPresetWithTransitions,
-  expandedReversePresetWithTransitions,
   onTransitionEnd,
   onTransitionStart,
   sheetPresetWithTransitions,
@@ -116,15 +111,9 @@ const routesForMainNavigator = {
     screen: AvatarBuilder,
     transparentCard: true,
   },
-<<<<<<< HEAD
   [Routes.CHANGE_WALLET_SHEET]: {
     navigationOptions: bottomSheetPreset,
     screen: ChangeWalletSheet,
-=======
-  [Routes.CHANGE_WALLET_MODAL]: {
-    navigationOptions: expandedReversePresetWithTransitions,
-    screen: ChangeWalletModal,
->>>>>>> update navigation
   },
   [Routes.CONFIRM_REQUEST]: {
     navigationOptions: sheetPresetWithTransitions,

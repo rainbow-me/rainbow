@@ -69,9 +69,6 @@ const ProfileScreen = ({ navigation }) => {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
-  let accountName = get(selectedWallet, 'name');
-  let accountColor = get(selectedWallet, 'color');
-
   const onPressProfileHeader = async () => {
     navigation.navigate(Routes.CHANGE_WALLET_MODAL);
   };
