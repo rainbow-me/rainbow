@@ -1,4 +1,5 @@
 import { captureException } from '@sentry/react-native';
+import { sortBy } from 'lodash';
 import RNCloudFs from 'react-native-cloud-fs';
 import DeviceInfo from 'react-native-device-info';
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
@@ -144,9 +145,9 @@ export async function restoreCloudBackup(backupPassword) {
       return;
     }
 
-    const sortedBackups = backups.files.sort((a, b) =>
-      new Date(b.lastModified) > new Date(a.lastModified) ? 1 : -1
-    );
+    const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
+
+    console.log('sorted backups', sortedBackups);
 
     const lastBackup = sortedBackups[0];
     const documentUri = getICloudDocumentUrl(lastBackup.uri);
