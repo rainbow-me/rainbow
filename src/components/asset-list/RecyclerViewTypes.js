@@ -87,7 +87,7 @@ export const ViewTypes = {
                 ...item.assets[i],
                 isSmall: true,
               },
-              key: `CoinSmallBalances${item.assets[i].symbol}`,
+              key: `CoinSmallBalances${i}`,
             })
           );
         }

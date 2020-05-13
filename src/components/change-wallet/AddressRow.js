@@ -1,11 +1,15 @@
 /* eslint-disable sort-keys */
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 import { colors, fonts } from '../../styles';
-import { abbreviations } from '../../utils';
+import { getFontSize } from '../../styles/fonts';
 import { ButtonPressAnimation } from '../animations';
+import { BottomRowText } from '../coin-row';
 import CoinCheckButton from '../coin-row/CoinCheckButton';
+import { ContactAvatar } from '../contacts';
 import { Column, Row } from '../layout';
 import { TruncatedAddress } from '../text';
 
@@ -13,74 +17,171 @@ const sx = StyleSheet.create({
   accountLabel: {
     color: colors.dark,
     fontFamily: fonts.family.SFProText,
-    fontSize: Number(fonts.size.smedium.replace('px', '')),
+    fontSize: getFontSize(fonts.size.lmedium),
     fontWeight: fonts.weight.medium,
-  },
-  addressAbbreviation: {
-    fontFamily: fonts.family.SFProText,
-    opacity: 0.5,
-    textTransform: 'lowercase',
-    width: '100%',
+    paddingBottom: 5,
   },
   accountRow: {
-    marginLeft: 0,
+    flex: 1,
+    justifyContent: 'center',
+    marginLeft: 20,
   },
-  subItem: {
-    marginLeft: 15,
+  leftContent: {
+    flexDirection: 'row',
+    flex: 1,
   },
   rightContent: {
-    marginLeft: 60,
+    flex: 0,
+    marginRight: 19,
   },
   coinCheck: {
+    width: 30,
+    alignSelf: 'flex-end',
     marginTop: -15,
+    backgroundColor: 'red',
+    marginRight: 15,
   },
-  isOnlyAddress: {
-    paddingTop: 15,
+  borderBottom: {
+    marginLeft: 20,
+    paddingVertical: 10,
+    borderColor: colors.lightestGrey,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  readOnlyText: {
+    color: colors.mediumGrey,
+    fontWeight: fonts.weight.medium,
+  },
+  gradient: {
+    marginTop: 20,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    textAlign: 'center',
+    borderRadius: 30,
+    height: 25,
   },
 });
 
-export default function AddressRow({ data, onPress, onEditAddress }) {
-  const { address, index, isOnlyAddress, isSelected, label, wallet_id } = data;
+const gradientColors = [colors.lightGrey, colors.blueGreyDark];
+const gradientProps = {
+  pointerEvents: 'none',
+  style: sx.gradient,
+};
 
-  const onLongPress = useCallback(() => {
-    onEditAddress(wallet_id, address);
-  }, [address, onEditAddress, wallet_id]);
+const linearGradientProps = {
+  ...gradientProps,
+  end: { x: 1, y: 1 },
+  start: { x: 0, y: 0 },
+  colors: [
+    colors.alpha(gradientColors[0], 0.1),
+    colors.alpha(gradientColors[1], 0.08),
+  ],
+};
+
+const OptionsIcon = ({ onPress }) => (
+  <ButtonPressAnimation
+    onPress={onPress}
+    scaleTo={0.9}
+    style={{
+      width: 22,
+      height: 22,
+      alignSelf: 'flex-end',
+      justifyContent: 'center',
+    }}
+  >
+    <View
+      style={{
+        borderRadius: 22,
+        width: 22,
+        height: 22,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 45,
+      }}
+    >
+      <Text
+        style={{
+          color: colors.appleBlue,
+          fontFamily: fonts.family.SFProRounded,
+          fontSize: getFontSize(fonts.size.large),
+        }}
+      >
+        􀍡
+      </Text>
+    </View>
+  </ButtonPressAnimation>
+);
+
+export default function AddressRow({
+  borderBottom,
+  data,
+  editMode,
+  onPress,
+  onEditWallet,
+}) {
+  const {
+    address,
+    balance,
+    ens,
+    index,
+    isSelected,
+    isReadOnly,
+    label,
+    color: accountColor,
+    wallet_id,
+  } = data;
+
+  let cleanedUpLabel = null;
+  if (label) {
+    cleanedUpLabel = removeFirstEmojiFromString(label).join('');
+  }
+
+  const onOptionsPress = useCallback(() => {
+    onEditWallet(wallet_id, address, cleanedUpLabel);
+  }, [address, cleanedUpLabel, onEditWallet, wallet_id]);
 
   return (
-    <View
-      style={[
-        sx.subItem,
-        sx.accountRow,
-        isOnlyAddress ? sx.isOnlyAddress : null,
-      ]}
-    >
-      <ButtonPressAnimation scaleTo={0.98}>
-        <TouchableWithoutFeedback onPress={onPress} onLongPress={onLongPress}>
-          <Row>
-            <Column>
-              <View style={sx.coinCheck}>
+    <View style={[sx.accountRow, borderBottom ? sx.borderBottom : null]}>
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+        <Row>
+          <Column style={sx.leftContent}>
+            <ContactAvatar
+              color={accountColor}
+              marginRight={10}
+              size="medium"
+              value={label || ens || `${index + 1}`}
+            />
+            <View>
+              <View>
+                {cleanedUpLabel || ens ? (
+                  <Text style={sx.accountLabel}>{cleanedUpLabel || ens}</Text>
+                ) : (
+                  <TruncatedAddress
+                    firstSectionLength={6}
+                    size="smaller"
+                    truncationLength={4}
+                    weight="medium"
+                    address={address}
+                    style={sx.accountLabel}
+                  />
+                )}
+              </View>
+              <BottomRowText>{balance} ETH</BottomRowText>
+            </View>
+          </Column>
+          <Column style={sx.rightContent}>
+            <View style={sx.coinCheck}>
+              {!editMode && isSelected && (
                 <CoinCheckButton toggle={isSelected} isAbsolute />
-              </View>
-            </Column>
-            <Column>
-              <View style={sx.rightContent}>
-                <View>
-                  <Text style={sx.accountLabel}>
-                    {label || `Account ${index + 1}`}
-                  </Text>
-                </View>
-                <TruncatedAddress
-                  firstSectionLength={abbreviations.defaultNumCharsPerSection}
-                  size="smaller"
-                  truncationLength={4}
-                  weight="medium"
-                  address={address}
-                  style={sx.addressAbbreviation}
-                />
-              </View>
-            </Column>
-          </Row>
-        </TouchableWithoutFeedback>
+              )}
+            </View>
+            {editMode && <OptionsIcon onPress={onOptionsPress} />}
+            {!editMode && !isSelected && isReadOnly && (
+              <LinearGradient {...linearGradientProps} radius={81}>
+                <Text style={sx.readOnlyText}>Read Only</Text>
+              </LinearGradient>
+            )}
+          </Column>
+        </Row>
       </ButtonPressAnimation>
     </View>
   );
