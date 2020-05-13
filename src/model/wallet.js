@@ -349,7 +349,7 @@ export const createWallet = async (seed, color, name) => {
     addresses.push({
       address: wallet.address,
       avatar: null,
-      color: colors.getRandomColor(),
+      color: isNaN(color) ? colors.getRandomColor() : color,
       index: 0,
       label: '',
       visible: true,
