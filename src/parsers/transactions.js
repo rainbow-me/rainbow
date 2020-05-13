@@ -211,14 +211,7 @@ const parseTransaction = (
     };
     internalTransactions = [approveInternalTransaction];
   }
-  // logic below: prevent sending yourself money to be seen as a trade
-  if (
-    changes.length === 2 &&
-    get(changes, '[0].asset.asset_code') ===
-      get(changes, '[1].asset.asset_code')
-  ) {
-    internalTransactions = [changes[0]];
-  }
+
   // logic below: prevent sending a WalletConnect 0 amount to be seen as a Cancel
   if (isEmpty(internalTransactions) && transaction.type === 'cancel') {
     const ethInternalTransaction = {
