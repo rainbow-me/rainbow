@@ -1,6 +1,7 @@
+import { toLower } from 'lodash';
 import LottieView from 'lottie-react-native';
 import PropTypes from 'prop-types';
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { useNavigation } from 'react-navigation-hooks';
@@ -11,7 +12,7 @@ import {
   WYRE_ORDER_STATUS_TYPES,
   WYRE_TRANSFER_STATUS_TYPES,
 } from '../../helpers/wyreStatusTypes';
-import { useDimensions, useTimeout } from '../../hooks';
+import { useDimensions, usePrevious, useTimeout } from '../../hooks';
 import Routes from '../../screens/Routes/routesNames';
 import { position } from '../../styles';
 import { CoinIcon } from '../coin-icon';
@@ -136,27 +137,34 @@ const AddCashSuccess = ({ currency }) => {
 
 const AddCashStatus = ({ orderCurrency, orderStatus, transferStatus }) => {
   const ref = useRef();
-  const [status, setStatus] = useState(null);
 
-  useEffect(() => {
+  const status = useMemo(() => {
     if (
       orderStatus === WYRE_ORDER_STATUS_TYPES.success ||
       transferStatus === WYRE_TRANSFER_STATUS_TYPES.success
     ) {
-      setStatus(WYRE_TRANSFER_STATUS_TYPES.success);
-      if (ref.current) ref.current.animateNextTransition();
+      return WYRE_TRANSFER_STATUS_TYPES.success;
     }
 
     if (
       orderStatus === WYRE_ORDER_STATUS_TYPES.failed ||
       transferStatus === WYRE_TRANSFER_STATUS_TYPES.failed
     ) {
-      setStatus(WYRE_TRANSFER_STATUS_TYPES.failed);
-      if (ref.current) ref.current.animateNextTransition();
+      return WYRE_TRANSFER_STATUS_TYPES.failed;
     }
+
+    return WYRE_TRANSFER_STATUS_TYPES.pending;
   }, [orderStatus, transferStatus]);
 
-  const currency = (orderCurrency || 'ETH').toLowerCase();
+  const previousStatus = usePrevious(status);
+
+  useEffect(() => {
+    if (status !== previousStatus) {
+      if (ref.current) ref.current.animateNextTransition();
+    }
+  }, [previousStatus, status]);
+
+  const currency = toLower(orderCurrency || 'ETH');
 
   return (
     <Transitioning.View ref={ref} style={sx.container} transition={transition}>
