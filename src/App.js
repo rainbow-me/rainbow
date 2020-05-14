@@ -23,6 +23,7 @@ import {
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
+import SplashScreen from 'react-native-splash-screen';
 import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
@@ -81,6 +82,7 @@ class App extends Component {
   state = { appState: AppState.currentState };
 
   async componentDidMount() {
+    SplashScreen.hide();
     AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.handleInitializeAnalytics();

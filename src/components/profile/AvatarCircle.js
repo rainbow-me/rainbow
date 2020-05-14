@@ -8,7 +8,7 @@ import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
 import { Text } from '../text';
 
-const AvatarCircle = styled(View)`
+const AvatarCircleView = styled(View)`
   height: 65px;
   margin-bottom: 16px;
   width: 65px;
@@ -24,7 +24,7 @@ const FirstLetter = styled(Text)`
   width: 100%;
 `;
 
-const ProfileAction = ({
+const AvatarCircle = ({
   accountColor,
   accountEmoji,
   onPress,
@@ -57,25 +57,25 @@ const ProfileAction = ({
         shadows={AvatarCircleShadows[overlayStyles ? 'overlay' : 'default']}
         shouldRasterizeIOS
       >
-        <AvatarCircle backgroundColor={colors.avatarColor[accountColor]}>
+        <AvatarCircleView backgroundColor={colors.avatarColor[accountColor]}>
           <FirstLetter>{accountEmoji}</FirstLetter>
           {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
-        </AvatarCircle>
+        </AvatarCircleView>
       </ShadowStack>
     </ButtonPressAnimation>
   );
 };
 
-ProfileAction.propTypes = {
+AvatarCircle.propTypes = {
   accountColor: PropTypes.number,
   accountEmoji: PropTypes.string,
   onPress: PropTypes.func,
   overlayStyles: PropTypes.bool,
 };
 
-ProfileAction.defaultProps = {
+AvatarCircle.defaultProps = {
   accountColor: 0,
   accountEmoji: '🤔',
 };
 
-export default ProfileAction;
+export default AvatarCircle;

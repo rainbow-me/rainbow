@@ -17,6 +17,7 @@ import {
 import { deviceUtils } from '../../utils';
 import AddCashSheet from '../AddCashSheet';
 import AvatarBuilder from '../AvatarBuilder';
+import BackupSheet from '../BackupSheet';
 import ChangeWalletSheet from '../ChangeWalletSheet';
 import ExampleScreen from '../ExampleScreen';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
@@ -110,6 +111,10 @@ const routesForMainNavigator = {
     navigationOptions: emojiPreset,
     screen: AvatarBuilder,
     transparentCard: true,
+  },
+  [Routes.BACKUP_SHEET]: {
+    navigationOptions: bottomSheetPreset,
+    screen: BackupSheet,
   },
   [Routes.CHANGE_WALLET_SHEET]: {
     navigationOptions: bottomSheetPreset,

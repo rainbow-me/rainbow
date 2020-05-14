@@ -2,6 +2,7 @@ const Routes = {
   ADD_CASH_SCREEN_NAVIGATOR: 'AddCashSheetNavigator',
   ADD_CASH_SHEET: 'AddCashSheet',
   AVATAR_BUILDER: 'AvatarBuilder',
+  BACKUP_SHEET: 'BackupSheet',
   CHANGE_WALLET_SHEET: 'ChangeWalletSheet',
   CONFIRM_REQUEST: 'ConfirmRequest',
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',

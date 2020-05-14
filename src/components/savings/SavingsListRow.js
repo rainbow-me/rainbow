@@ -46,7 +46,7 @@ const SavingsListRow = ({
     : Math.floor(apy * 10) / 10;
 
   const onButtonPress = useCallback(() => {
-    navigate(Routes.SAVINGS_SHEET, {
+    navigate(Routes.BACKUP_SHEET, {
       cTokenBalance,
       isEmpty: !supplyBalanceUnderlying,
       lifetimeSupplyInterestAccrued,

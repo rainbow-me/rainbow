@@ -1,8 +1,6 @@
 import { NativeModules } from 'react-native';
 const AesEncryption = NativeModules.Aes;
 
-console.log('native modules', AesEncryption);
-
 export default class AesEncryptor {
   key = null;
 

@@ -43,7 +43,7 @@ const KeyboardFixedOpenLayout = ({ additionalPadding, ...props }) => {
       transition={transition}
     >
       <KeyboardAvoidingView behavior="height" enabled={!keyboardHeight}>
-        <Centered {...props} style={sx.innerWrapper} />
+        <Centered style={sx.innerWrapper} {...props} />
       </KeyboardAvoidingView>
     </Transitioning.View>
   );

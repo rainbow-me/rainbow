@@ -11,6 +11,7 @@ import { Text } from '../text';
 const SheetButton = ({
   borderRadius,
   color,
+  disabled,
   icon,
   label,
   onPress,
@@ -26,6 +27,7 @@ const SheetButton = ({
       scaleTo={0.96}
       style={[position.centeredAsObject, style]}
       width="100%"
+      disabled={disabled}
     >
       <ShadowStack
         {...position.coverAsObject}
@@ -70,6 +72,7 @@ SheetButton.propTypes = {
 
 SheetButton.defaultProps = {
   borderRadius: 50,
+  disabled: false,
   shadows: [
     [0, 10, 30, colors.dark, 0.2],
     [0, 5, 15, colors.swapPurple, 0.4],
