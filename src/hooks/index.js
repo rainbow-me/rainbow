@@ -27,6 +27,7 @@ export { default as useMagicFocus } from './useMagicFocus';
 export { default as useMaxInputBalance } from './useMaxInputBalance';
 export { default as useOpenSavings } from './useOpenSavings';
 export { default as usePrevious } from './usePrevious';
+export { default as usePurchaseTransactionStatus } from './usePurchaseTransactionStatus';
 export { default as useRefreshAccountData } from './useRefreshAccountData';
 export { default as useRequests } from './useRequests';
 export { default as useResetAccountState } from './useResetAccountState';

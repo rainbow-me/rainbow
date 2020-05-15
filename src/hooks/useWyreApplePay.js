@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException, captureMessage } from '@sentry/react-native';
-import { get, toLower } from 'lodash';
+import { get } from 'lodash';
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
@@ -9,37 +9,27 @@ import {
   PaymentRequestStatusTypes,
   showApplePayRequest,
   trackWyreOrder,
-  trackWyreTransfer,
 } from '../handlers/wyre';
-import TransactionStatusTypes from '../helpers/transactionStatusTypes';
-import TransactionTypes from '../helpers/transactionTypes';
-import {
-  WYRE_ORDER_STATUS_TYPES,
-  WYRE_TRANSFER_STATUS_TYPES,
-} from '../helpers/wyreStatusTypes';
-import { addCashNewPurchaseTransaction } from '../redux/addCash';
-import { dataAddNewTransaction } from '../redux/data';
-import { AddCashCurrencies, AddCashCurrencyInfo } from '../references';
-import { ethereumUtils, logger } from '../utils';
-import useAccountAssets from './useAccountAssets';
+import { WYRE_ORDER_STATUS_TYPES } from '../helpers/wyreStatusTypes';
+import { addCashGetTransferHash } from '../redux/addCash';
+import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
+import usePurchaseTransactionStatus from './usePurchaseTransactionStatus';
 import useTimeout from './useTimeout';
 
 export default function useWyreApplePay() {
   const { accountAddress, network } = useAccountSettings();
-  const { assets } = useAccountAssets();
 
   const [isPaymentComplete, setPaymentComplete] = useState(false);
   const [orderCurrency, setOrderCurrency] = useState(null);
   const [orderStatus, setOrderStatus] = useState(null);
-  const [transferHash, setTransferHash] = useState(null);
-  const [transferStatus, setTransferStatus] = useState(null);
+  const [transferId, setTransferId] = useState(null);
+
+  const transferStatus = usePurchaseTransactionStatus(transferId);
 
   const dispatch = useDispatch();
 
   const [retryOrderStatusTimeout] = useTimeout();
-  const [retryTransferHashTimeout] = useTimeout();
-  const [retryTransferStatusTimeout] = useTimeout();
   const [startPaymentCompleteTimeout] = useTimeout();
 
   const handlePaymentCallback = useCallback(() => {
@@ -47,89 +37,6 @@ export default function useWyreApplePay() {
     // animation, we need to artificially delay before marking a purchase as pending.
     startPaymentCompleteTimeout(() => setPaymentComplete(true), 1500);
   }, [startPaymentCompleteTimeout]);
-
-  const getTransferStatus = useCallback(
-    async (referenceInfo, transferId) => {
-      const retry = () => getTransferStatus(referenceInfo, transferId);
-
-      try {
-        const { transferStatus } = await trackWyreTransfer(
-          referenceInfo,
-          transferId,
-          network
-        );
-        setTransferStatus(transferStatus);
-        if (
-          transferStatus === WYRE_TRANSFER_STATUS_TYPES.success ||
-          transferStatus === WYRE_TRANSFER_STATUS_TYPES.failed
-        ) {
-          setTransferHash(transferHash);
-          setTransferStatus(transferStatus);
-        } else {
-          retryTransferStatusTimeout(retry, 10000);
-        }
-      } catch (error) {
-        retryTransferStatusTimeout(retry, 1000);
-      }
-    },
-    [network, retryTransferStatusTimeout, transferHash]
-  );
-
-  const getTransferHash = useCallback(
-    async (referenceInfo, transferId, sourceAmount) => {
-      const retry = () =>
-        getTransferHash(referenceInfo, transferId, sourceAmount);
-
-      try {
-        const {
-          destAmount,
-          destCurrency,
-          transferHash,
-          transferStatus,
-        } = await trackWyreTransfer(referenceInfo, transferId, network);
-
-        setTransferStatus(transferStatus);
-        const destAssetAddress = toLower(
-          AddCashCurrencies[network][destCurrency]
-        );
-
-        if (transferHash) {
-          setTransferHash(transferHash);
-          let asset = ethereumUtils.getAsset(assets, destAssetAddress);
-          if (!asset) {
-            asset = AddCashCurrencyInfo[network][destAssetAddress];
-          }
-          const txDetails = {
-            amount: destAmount,
-            asset,
-            from: null,
-            hash: transferHash,
-            nonce: null,
-            sourceAmount,
-            status: TransactionStatusTypes.purchasing,
-            timestamp: Date.now(),
-            to: accountAddress,
-            type: TransactionTypes.purchase,
-          };
-          dispatch(addCashNewPurchaseTransaction(txDetails));
-          dispatch(dataAddNewTransaction(txDetails));
-          getTransferStatus(referenceInfo, transferId);
-        } else {
-          retryTransferHashTimeout(retry, 1000);
-        }
-      } catch (error) {
-        retryTransferHashTimeout(retry, 1000);
-      }
-    },
-    [
-      accountAddress,
-      assets,
-      dispatch,
-      getTransferStatus,
-      network,
-      retryTransferHashTimeout,
-    ]
-  );
 
   const getOrderStatus = useCallback(
     async (
@@ -189,8 +96,11 @@ export default function useWyreApplePay() {
         }
 
         if (transferId) {
+          setTransferId(transferId);
           referenceInfo.transferId = transferId;
-          getTransferHash(referenceInfo, transferId, sourceAmount);
+          dispatch(
+            addCashGetTransferHash(referenceInfo, transferId, sourceAmount)
+          );
         } else if (!isFailed) {
           retryOrderStatusTimeout(retry, 1000);
         }
@@ -200,8 +110,8 @@ export default function useWyreApplePay() {
       }
     },
     [
+      dispatch,
       isPaymentComplete,
-      getTransferHash,
       handlePaymentCallback,
       network,
       retryOrderStatusTimeout,
@@ -235,6 +145,7 @@ export default function useWyreApplePay() {
           network
         );
         if (orderId) {
+          logger.log('Wyre order ID', orderId);
           referenceInfo.orderId = orderId;
           getOrderStatus(
             referenceInfo,

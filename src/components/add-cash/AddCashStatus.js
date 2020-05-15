@@ -8,6 +8,7 @@ import { useNavigation } from 'react-navigation-hooks';
 import { withProps } from 'recompact';
 import jumpingDaiAnimation from '../../assets/lottie/jumping-dai.json';
 import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';
+import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import {
   WYRE_ORDER_STATUS_TYPES,
   WYRE_TRANSFER_STATUS_TYPES,
@@ -141,14 +142,14 @@ const AddCashStatus = ({ orderCurrency, orderStatus, transferStatus }) => {
   const status = useMemo(() => {
     if (
       orderStatus === WYRE_ORDER_STATUS_TYPES.success ||
-      transferStatus === WYRE_TRANSFER_STATUS_TYPES.success
+      transferStatus === TransactionStatusTypes.purchased
     ) {
       return WYRE_TRANSFER_STATUS_TYPES.success;
     }
 
     if (
       orderStatus === WYRE_ORDER_STATUS_TYPES.failed ||
-      transferStatus === WYRE_TRANSFER_STATUS_TYPES.failed
+      transferStatus === TransactionStatusTypes.failed
     ) {
       return WYRE_TRANSFER_STATUS_TYPES.failed;
     }
