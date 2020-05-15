@@ -1,9 +1,15 @@
-import { map } from 'lodash';
+import { find, map, toLower } from 'lodash';
 import {
   getPurchaseTransactions,
   savePurchaseTransactions,
 } from '../handlers/localstorage/accountLocal';
+import { trackWyreTransfer } from '../handlers/wyre';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
+import TransactionTypes from '../helpers/transactionTypes';
+import { AddCashCurrencies, AddCashCurrencyInfo } from '../references';
+import { ethereumUtils, logger } from '../utils';
+/* eslint-disable-next-line import/no-cycle */
+import { dataAddNewTransaction } from './data';
 
 // -- Constants --------------------------------------- //
 const ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS =
@@ -40,7 +46,7 @@ export const addCashUpdatePurchases = purchases => (dispatch, getState) => {
       if (updatedPurchase) {
         return {
           ...txn,
-          status: updatedPurchase.status,
+          ...updatedPurchase,
         };
       }
       return txn;
@@ -67,6 +73,65 @@ export const addCashNewPurchaseTransaction = txDetails => (
     type: ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS,
   });
   savePurchaseTransactions(updatedPurchases, accountAddress, network);
+};
+
+export const addCashGetTransferHash = (
+  referenceInfo,
+  transferId,
+  sourceAmount
+) => async (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
+  const { assets } = getState().data;
+  const getTransferHash = async (referenceInfo, transferId, sourceAmount) => {
+    try {
+      const {
+        destAmount,
+        destCurrency,
+        transferHash,
+      } = await trackWyreTransfer(referenceInfo, transferId, network);
+
+      const destAssetAddress = toLower(
+        AddCashCurrencies[network][destCurrency]
+      );
+
+      if (transferHash) {
+        logger.log('Wyre transfer hash', transferHash);
+        let asset = ethereumUtils.getAsset(assets, destAssetAddress);
+        if (!asset) {
+          asset = AddCashCurrencyInfo[network][destAssetAddress];
+        }
+        const txDetails = {
+          amount: destAmount,
+          asset,
+          from: null,
+          hash: transferHash,
+          nonce: null,
+          sourceAmount,
+          status: TransactionStatusTypes.purchasing,
+          timestamp: Date.now(),
+          to: accountAddress,
+          transferId,
+          type: TransactionTypes.purchase,
+        };
+        const newTxDetails = await dispatch(
+          dataAddNewTransaction(txDetails),
+          false
+        );
+        dispatch(addCashNewPurchaseTransaction(newTxDetails));
+      } else {
+        setTimeout(
+          () => getTransferHash(referenceInfo, transferId, sourceAmount),
+          1000
+        );
+      }
+    } catch (error) {
+      setTimeout(
+        () => getTransferHash(referenceInfo, transferId, sourceAmount),
+        1000
+      );
+    }
+  };
+  await getTransferHash(referenceInfo, transferId, sourceAmount);
 };
 
 // -- Reducer ----------------------------------------- //

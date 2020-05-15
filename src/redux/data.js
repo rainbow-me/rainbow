@@ -41,6 +41,7 @@ import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
 import { tokenOverrides } from '../references';
 import { ethereumUtils, isLowerCaseMatch, logger } from '../utils';
+/* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
 /* eslint-disable-next-line import/no-cycle */
 import { uniqueTokensRefreshState } from './uniqueTokens';
@@ -181,7 +182,7 @@ export const transactionsReceived = (message, appended = false) => async (
     payload: parsedTransactions,
     type: DATA_UPDATE_TRANSACTIONS,
   });
-  updatePurchases(parsedTransactions);
+  dispatch(updatePurchases(parsedTransactions));
   saveLocalTransactions(parsedTransactions, accountAddress, network);
 };
 
@@ -409,6 +410,7 @@ export const dataAddNewTransaction = (
     if (!disableTxnWatcher) {
       dispatch(watchPendingTransactions());
     }
+    return parsedTransaction;
     // eslint-disable-next-line no-empty
   } catch (error) {}
 };
@@ -475,7 +477,7 @@ export const dataWatchPendingTransactions = () => async (
   );
 
   if (txStatusesDidChange) {
-    updatePurchases(updatedTransactions);
+    dispatch(updatePurchases(updatedTransactions));
     const { accountAddress, network } = getState().settings;
     dispatch({
       payload: updatedTransactions,

@@ -1,7 +1,7 @@
 import { PaymentRequest } from '@rainbow-me/react-native-payments';
 import { captureException } from '@sentry/react-native';
 import axios from 'axios';
-import { get, join, last, split, toLower, values } from 'lodash';
+import { get, join, split, toLower, values } from 'lodash';
 import {
   RAINBOW_WYRE_MERCHANT_ID,
   RAINBOW_WYRE_MERCHANT_ID_TEST,
@@ -143,9 +143,7 @@ export const trackWyreTransfer = async (referenceInfo, transferId, network) => {
     const transferHash = get(response, 'data.blockchainNetworkTx');
     const destAmount = get(response, 'data.destAmount');
     const destCurrency = get(response, 'data.destCurrency');
-    const statusTimeline = get(response, 'data.successTimeline', []);
-    const transferStatus = get(last(statusTimeline), 'state');
-    return { destAmount, destCurrency, transferHash, transferStatus };
+    return { destAmount, destCurrency, transferHash };
   } catch (error) {
     throw error;
   }
