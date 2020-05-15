@@ -58,6 +58,7 @@ import SwapIcon from './svg/SwapIcon';
 import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
 import WalletConnectIcon from './svg/WalletConnectIcon';
+import WarningCircledIcon from './svg/WarningCircledIcon';
 import WarningIcon from './svg/WarningIcon';
 
 const Icon = ({ name, ...props }) =>
@@ -121,6 +122,7 @@ Icon.IconTypes = {
   touchid: TouchIdIcon,
   walletConnect: WalletConnectIcon,
   warning: WarningIcon,
+  warningCircled: WarningCircledIcon,
 };
 
 Icon.propTypes = {

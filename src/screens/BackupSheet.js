@@ -15,16 +15,12 @@ const SavingsSheet = () => {
     setStep('manual');
   }, []);
 
-  const onPasswordSet = useCallback(() => {
-    console.log('do something');
-  }, []);
-
   const renderStep = useCallback(() => {
     switch (step) {
       case 'icloud':
         return <BackupIcloudStep />;
       case 'manual':
-        return <BackupManualStep onPasswordSet={onPasswordSet} />;
+        return <BackupManualStep />;
       default:
         return (
           <BackupSheetFirstStep
@@ -33,7 +29,7 @@ const SavingsSheet = () => {
           />
         );
     }
-  }, [onIcloudBackup, onManualBackup, onPasswordSet, step]);
+  }, [onIcloudBackup, onManualBackup, step]);
 
   const sheet = <Sheet>{renderStep()}</Sheet>;
   if (step === 'icloud') {

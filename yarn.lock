@@ -1061,15 +1061,17 @@
     uuid "3.3.2"
     validator "^7.0.0"
 
-"@react-native-community/async-storage@1.7.1":
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/async-storage/-/async-storage-1.7.1.tgz#ef2104d865de61ad91bba66613e57e689ff4e6a1"
-  integrity sha512-/oX/x+EU4xNaqIaC/epVKzO8XghzImPA7l8cLz3USEFmtFiXFjBbTeeIFjjEm/u4/cv38Wi1xMEa10PHIWygRg==
-
 "@react-native-community/async-storage@^1.6.1":
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/async-storage/-/async-storage-1.9.0.tgz#af26a8879bd2987970fbbe81a9623851d29a56f1"
   integrity sha512-TlGMr02JcmY4huH1P7Mt7p6wJecosPpW+09+CwCFLn875IhpRqU2XiVA+BQppZOYfQdHUfUzIKyCBeXOlCEbEg==
+  dependencies:
+    deep-assign "^3.0.0"
+
+"@react-native-community/async-storage@^1.9.0":
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/async-storage/-/async-storage-1.10.1.tgz#23902625cf146a25b2929d72558caa437c72c4a8"
+  integrity sha512-9wjW4lNAKkNgeQtj4dG2graKoJoiAELvh6QDXZ55ld5J58kOfJIe6ELaGBUtIAoXPpmjsddjpXrfV6af3mN2JA==
   dependencies:
     deep-assign "^3.0.0"
 
@@ -9495,10 +9497,10 @@ react-primitives@^0.8.0:
     prop-types "^15.7.2"
     react-timer-mixin "^0.13.4"
 
-react-query@^1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/react-query/-/react-query-1.4.3.tgz#3c921ebb182dc833526b3cff0418d0e31439a67e"
-  integrity sha512-BD6T8a7eKrc6OtVmAS/9cunT7mxLsjsgJ/tvLlUia8FhOuhZM7n+kUH+nNOBjW2ec3nuQQJhL7Q/3vnPi5s9oA==
+react-query@^1.3.0:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/react-query/-/react-query-1.4.4.tgz#81822983131f79f3e09b44669d78c8ec1e409347"
+  integrity sha512-WDjQp3ujw9KcbrwwDausMrjLMOv6j19qxfhnUXSf+N73ku28uwrKFPBGbKbmj3n/ybnSN//7KLey6LT76KtFxQ==
   dependencies:
     "@scarf/scarf" "^1.0.0"
     ts-toolbelt "^6.4.2"
@@ -12300,3 +12302,8 @@ zen-observable@^0.8.14:
   version "0.8.15"
   resolved "https://registry.yarnpkg.com/zen-observable/-/zen-observable-0.8.15.tgz#96415c512d8e3ffd920afd3889604e30b9eaac15"
   integrity sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==
+
+zxcvbn@^4.4.2:
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/zxcvbn/-/zxcvbn-4.4.2.tgz#28ec17cf09743edcab056ddd8b1b06262cc73c30"
+  integrity sha1-KOwXzwl0PtyrBW3dixsGJizHPDA=

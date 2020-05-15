@@ -206,7 +206,7 @@ export async function restoreCloudBackup(backupPassword) {
   }
 }
 
-// Attempts to fetch the password to decrypt the backup from the iCloud keychain
+// Attempts to save the password to decrypt the backup from the iCloud keychain
 export async function saveBackupPassword(password) {
   const encryptedPassword = await encryptor.encrypt(
     RAINBOW_MASTER_KEY,

@@ -6,6 +6,7 @@ const KEYBOARD_HEIGHT = 'keyboardHeight';
 const LANGUAGE = 'language';
 const NATIVE_CURRENCY = 'nativeCurrency';
 const NETWORK = 'network';
+const WALLET_BACKEDUP = 'walletBackedUp';
 
 export const getAppStoreReviewCount = () => getGlobal(APPSTORE_REVIEW_COUNT, 0);
 
@@ -28,3 +29,7 @@ export const getNativeCurrency = () => getGlobal(NATIVE_CURRENCY, 'USD');
 
 export const saveNativeCurrency = nativeCurrency =>
   saveGlobal(NATIVE_CURRENCY, nativeCurrency);
+
+export const saveWalletBackedUp = () => saveGlobal(WALLET_BACKEDUP, true);
+
+export const getWalletBackedUp = () => getGlobal(WALLET_BACKEDUP, false);
