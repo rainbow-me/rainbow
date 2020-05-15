@@ -56,9 +56,11 @@ const SettingsSection = ({
   onPressBackup,
   onPressCurrency,
   onPressHiddenFeature,
+  onPressIcloudBackup,
   onPressLanguage,
   onPressNetwork,
   onPressReview,
+  onPressShowSecret,
   onPressTwitter,
   onSendFeedback,
 }) => {
@@ -85,24 +87,10 @@ const SettingsSection = ({
         <ListItem
           icon={<SettingIcon source={BackupIcon} />}
           onPress={onPressBackup}
+          onPressIcloudBackup={onPressIcloudBackup}
+          onPressShowSecret={onPressShowSecret}
           label="Backup"
-        >
-          <ListItemArrowGroup>
-            {/*
-
-
-              XXX TODO: show this icon after a user has completed the "backup" user flow
-
-              <Centered>
-                <Icon
-                  color={colors.blueGreyDark}
-                  css={position.size(20)}
-                  name="checkmarkCircled"
-                />
-              </Centered>
-            */}
-          </ListItemArrowGroup>
-        </ListItem>
+        />
         <ListItem
           icon={<SettingIcon source={NetworkIcon} />}
           onPress={onPressNetwork}

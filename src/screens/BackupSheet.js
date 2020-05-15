@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import { useNavigation } from 'react-navigation-hooks';
 import BackupIcloudStep from '../components/backup/BackupIcloudStep';
 import BackupManualStep from '../components/backup/BackupManualStep';
 import BackupSheetFirstStep from '../components/backup/BackupSheetFirstStep';
@@ -6,7 +7,8 @@ import { KeyboardFixedOpenLayout } from '../components/layout';
 import { Sheet } from '../components/sheet';
 
 const SavingsSheet = () => {
-  const [step, setStep] = useState('first');
+  const { getParam } = useNavigation();
+  const [step, setStep] = useState(getParam('option', 'first'));
   const onIcloudBackup = useCallback(() => {
     setStep('icloud');
   }, []);

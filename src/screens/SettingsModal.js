@@ -1,7 +1,7 @@
 import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { createElement, useCallback } from 'react';
+import React, { createElement, useCallback, useEffect } from 'react';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { Column } from '../components/layout';
@@ -72,6 +72,13 @@ const SettingsModal = ({ navigation }) => {
     section => () => navigation.setParams({ section }),
     [navigation]
   );
+
+  useEffect(() => {
+    return () => {
+      navigation.setParams({ wallet_id: null });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Modal

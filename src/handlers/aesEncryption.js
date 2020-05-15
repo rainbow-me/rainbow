@@ -39,7 +39,6 @@ export default class AesEncryptor {
     const encryptedData = JSON.parse(encryptedString);
     const key = await this.keyFromPassword(password, encryptedData.salt);
     const data = await this.decryptWithKey(encryptedData, key);
-    console.log(typeof data);
     return data;
   };
 }

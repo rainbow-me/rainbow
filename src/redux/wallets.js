@@ -70,6 +70,20 @@ export const addressSetSelected = address => () => {
   saveAddress(address);
 };
 
+export const setWalletBackedUp = (wallet_id, method) => async getState => {
+  const { wallets, selected } = getState().wallets;
+  const newWallets = { ...wallets };
+  newWallets[wallet_id].backedUp = true;
+  newWallets[wallet_id].backupType = method;
+  walletsUpdate(newWallets);
+  if (selected.id === wallet_id) {
+    walletsSetSelected(newWallets[wallet_id]);
+  }
+};
+export const deleteCloudBackup = wallet_id => async () => {
+  throw new Error('I still need to code it!', wallet_id);
+};
+
 export const createAccountForWallet = id => async (dispatch, getState) => {
   const { wallets } = getState().wallets;
   const newWallets = { ...wallets };

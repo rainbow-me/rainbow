@@ -1,35 +1,19 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
-import { useNavigation } from 'react-navigation-hooks';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import WalletTypes from '../../helpers/walletTypes';
-import { useClipboard, useDimensions, useWallets } from '../../hooks';
+import WalletTypes from '../../../helpers/walletTypes';
+import { useClipboard, useDimensions, useWallets } from '../../../hooks';
 import {
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
-} from '../../model/wallet';
-import { setWalletBackedUp } from '../../redux/wallets';
-import { colors, padding, position } from '../../styles';
-import { ButtonPressAnimation } from '../animations';
-import { FloatingEmojis } from '../floating-emojis';
-import { Icon } from '../icons';
-import {
-  Centered,
-  Column,
-  ColumnWithMargins,
-  Row,
-  RowWithMargins,
-} from '../layout';
-import { SheetButton } from '../sheet';
-import { Text } from '../text';
+} from '../../../model/wallet';
+import { colors, position } from '../../../styles';
+import { ButtonPressAnimation } from '../../animations';
+import { FloatingEmojis } from '../../floating-emojis';
+import { Icon } from '../../icons';
+import { Centered, Column, Row, RowWithMargins } from '../../layout';
+import { Text } from '../../text';
 
-const Title = styled(Text).attrs({
-  size: 'big',
-  weight: 'bold',
-})`
-  margin-bottom: 12;
-`;
 const PrivateKeyText = styled(Text).attrs({
   align: 'center',
   color: 'dark',
@@ -41,13 +25,6 @@ const PrivateKeyText = styled(Text).attrs({
   padding-left: 30;
   padding-right: 30;
 `;
-
-const TopIcon = styled(Text).attrs({
-  align: 'center',
-  color: 'appleBlue',
-  size: 48,
-  weight: 'bold',
-})``;
 
 const SeedWordNumberText = styled(Text).attrs({
   align: 'left',
@@ -64,35 +41,17 @@ const SeedWordText = styled(Text).attrs({
   weight: 'bold',
 })``;
 
-const DescriptionText = styled(Text).attrs({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  lineHeight: 'looser',
-  size: 'large',
-})``;
-
-const ImportantText = styled(Text).attrs({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  lineHeight: 'looser',
-  size: 'large',
-  weight: '600',
-})``;
-
 const Shadow = styled(ShadowStack)`
   elevation: 15;
   margin-bottom: 85;
   margin-top: 19;
 `;
 
-const BackupManualStep = () => {
+const ShowSecretView = () => {
   const { setClipboard } = useClipboard();
-  const dispatch = useDispatch();
-  const { goBack } = useNavigation();
   const { wallets } = useWallets();
   const [seed, setSeed] = useState(null);
   const [type, setType] = useState(null);
-  const [walletId, setWalletId] = useState(null);
   const { width: deviceWidth } = useDimensions();
   let wordSectionHeight = 100;
 
@@ -103,18 +62,12 @@ const BackupManualStep = () => {
       );
       const s = await loadSeedPhraseAndMigrateIfNeeded(nonImportedWalletId);
       const walletType = identifyWalletType(s);
-      setWalletId(nonImportedWalletId);
       setType(walletType);
       setSeed(s);
     };
     loadSeed();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const onComplete = useCallback(async () => {
-    await dispatch(setWalletBackedUp(walletId, 'manual'));
-    goBack();
-  }, [dispatch, goBack, walletId]);
 
   let columns = [];
   let secretLayout = null;
@@ -146,24 +99,7 @@ const BackupManualStep = () => {
   }
 
   return (
-    <Centered direction="column" paddingTop={9} paddingBottom={15}>
-      <Row marginBottom={12} marginTop={15}>
-        <TopIcon>􀉆</TopIcon>
-      </Row>
-      <Title>Back up manually</Title>
-      <Row paddingBottom={65} paddingHorizontal={60}>
-        <DescriptionText>
-          <ImportantText>
-            {type === WalletTypes.privateKey
-              ? `This is the key to your wallet!`
-              : `These words are the keys to your wallet!`}
-          </ImportantText>
-          &nbsp;
-          {type === WalletTypes.privateKey
-            ? `Copy it and save it in your password manager, or in another secure spot.`
-            : `Write them down or save them in your password manager.`}
-        </DescriptionText>
-      </Row>
+    <Centered direction="column" paddingTop={90} paddingBottom={15}>
       <Row>
         <FloatingEmojis
           distance={250}
@@ -222,18 +158,8 @@ const BackupManualStep = () => {
           <Row margin={19}>{secretLayout}</Row>
         </Shadow>
       </Row>
-
-      <ColumnWithMargins css={padding(19, 15)} margin={19} width="100%">
-        <SheetButton
-          color={colors.appleBlue}
-          label={`􀁣 I’ve saved ${
-            type === WalletTypes.privateKey ? 'my key' : 'these words'
-          }`}
-          onPress={onComplete}
-        />
-      </ColumnWithMargins>
     </Centered>
   );
 };
 
-export default BackupManualStep;
+export default ShowSecretView;

@@ -147,8 +147,6 @@ export async function restoreCloudBackup(backupPassword) {
 
     const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
 
-    console.log('sorted backups', sortedBackups);
-
     const lastBackup = sortedBackups[0];
     const documentUri = getICloudDocumentUrl(lastBackup.uri);
     const response = await fetch(documentUri);

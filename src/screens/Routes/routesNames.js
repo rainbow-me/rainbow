@@ -3,6 +3,7 @@ const Routes = {
   ADD_CASH_SHEET: 'AddCashSheet',
   AVATAR_BUILDER: 'AvatarBuilder',
   BACKUP_SHEET: 'BackupSheet',
+  BACKUP_SHEET_TOP: 'BackupSheetTop',
   CHANGE_WALLET_SHEET: 'ChangeWalletSheet',
   CONFIRM_REQUEST: 'ConfirmRequest',
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',

@@ -2,10 +2,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Dimensions, View } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { useNavigation } from 'react-navigation-hooks';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
-import { saveWalletBackedUp } from '../../handlers/localstorage/globalSettings';
+import { useWallets } from '../../hooks';
 import * as keychain from '../../model/keychain';
+import { setWalletBackedUp } from '../../redux/wallets';
 import { colors, padding } from '../../styles';
 import { logger } from '../../utils';
 import { Icon } from '../icons';
@@ -114,7 +116,9 @@ const TopIcon = () => (
 );
 
 const BackupIcloudStep = () => {
-  const { goBack } = useNavigation();
+  const { goBack, getParam } = useNavigation();
+  const { wallets } = useWallets();
+  const dispatch = useDispatch();
   const [validPassword, setValidPassword] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
@@ -207,13 +211,17 @@ const BackupIcloudStep = () => {
     []
   );
   const onConfirmBackup = useCallback(async () => {
+    let wallet_id =
+      getParam('wallet_id', null) ||
+      Object.keys(wallets).find(key => wallets[key].imported === false);
+
     try {
       // 1 - store the password in the keychain with sync = 1
       await keychain.saveBackupPassword(password);
       // 2 - backup all the wallets encrypted in icloud
       const success = await keychain.backupToCloud(password);
       if (success) {
-        await saveWalletBackedUp();
+        await dispatch(setWalletBackedUp(wallet_id, 'cloud'));
         Alert.alert('Your wallet has been backed up!');
         goBack();
       } else {
@@ -222,7 +230,7 @@ const BackupIcloudStep = () => {
     } catch (e) {
       logger.log('Error while backing up', e);
     }
-  }, [goBack, password]);
+  }, [dispatch, getParam, goBack, password, wallets]);
 
   const onConfirmPasswordSubmit = useCallback(() => {
     validPassword && onConfirmBackup();
@@ -232,8 +240,14 @@ const BackupIcloudStep = () => {
     console.log('info');
   }, []);
 
+  const fromSettings = getParam('option', null);
+
   return (
-    <Centered direction="column" paddingTop={9} paddingBottom={0}>
+    <Centered
+      direction="column"
+      paddingTop={9}
+      paddingBottom={fromSettings ? 40 : 0}
+    >
       <Row marginBottom={12} marginTop={15}>
         <TopIcon />
       </Row>
