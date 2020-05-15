@@ -5,7 +5,7 @@ import { Centered, RowWithMargins } from '../layout';
 import { DollarFigure, Text } from '../text';
 
 const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => (
-  <Centered css={padding(9, 0, 3)} direction="column">
+  <Centered css={padding(17, 0, 3)} direction="column">
     <Text
       color={colors.alpha(colors.blueGreyDark, 0.5)}
       letterSpacing="uppercase"

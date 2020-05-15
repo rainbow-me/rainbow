@@ -28,33 +28,37 @@ import {
 } from '../redux/wallets';
 
 import { colors } from '../styles';
-import { abbreviations, logger } from '../utils';
+import { abbreviations, deviceUtils, logger } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 import Routes from './Routes/routesNames';
 
+const deviceHeight = deviceUtils.dimensions.height;
 const walletRowHeight = 60;
 const titleHeight = 70;
 const footerHeight = 65;
-const maxListHeight = 360;
+const maxListHeight = deviceHeight - 220;
 const Title = withProps({
   align: 'center',
+  letterSpacing: 'roundedMedium',
   size: 'large',
   weight: 'bold',
 })(Text);
 
 const EditText = withProps({
-  align: 'center',
+  align: 'right',
   color: colors.appleBlue,
+  letterSpacing: 'roundedMedium',
   size: 'large',
-  weight: 'semibold',
+  weight: 'medium',
 })(Text);
 
 const EditButton = withProps({
-  scaleTo: 0.9,
+  scaleTo: 0.96,
   style: {
+    padding: 10,
     position: 'absolute',
-    right: 20,
-    top: 26,
+    right: 9,
+    top: 8,
   },
 })(ButtonPressAnimation);
 
@@ -242,7 +246,7 @@ const ChangeWalletSheet = () => {
   }, [prevWalletsWithBalancesAndNames]);
 
   return (
-    <Sheet>
+    <Sheet borderRadius={30}>
       <Title>Wallets</Title>
       <EditButton onPress={toggleEditMode}>
         <EditText>{editMode ? 'Done' : 'Edit'}</EditText>
