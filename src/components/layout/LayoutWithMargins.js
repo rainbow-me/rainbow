@@ -1,11 +1,12 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Children, cloneElement } from 'react';
+import flattenChildren from 'react-flatten-children';
 import Flex from './Flex';
 
 const LayoutWithMargins = ({ children, margin, marginKey, ...props }) => (
   <Flex {...props}>
-    {Children.toArray(children).map((child, index, array) =>
+    {Children.toArray(flattenChildren(children)).map((child, index, array) =>
       cloneElement(child, {
         style: {
           ...get(child, 'props.style', {}),
