@@ -56,7 +56,7 @@ const Chart = ({ asset, ...props }) => {
   );
 
   const currentChartIndex = Object.values(ChartTypes).indexOf(chartType);
-  const amountOfPathPoints = 30;
+  const amountOfPathPoints = 30; // 👈️ TODO make this dynamic
 
   return (
     <Column

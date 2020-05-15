@@ -31,7 +31,7 @@ export default function SlackSheet({
   ...props
 }) {
   const insets = useSafeArea();
-  const bottomInset = (insets.bottom || 10) * (scrollEnabled ? 1 : 0.5);
+  const bottomInset = insets.bottom || 10;
 
   const contentContainerStyle = useMemo(
     () => ({
