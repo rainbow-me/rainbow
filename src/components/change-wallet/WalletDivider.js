@@ -4,20 +4,15 @@ import { colors } from '../../styles';
 
 const sx = StyleSheet.create({
   divider: {
-    backgroundColor: colors.blueGreyLighter,
+    backgroundColor: colors.rowDividerLight,
+    borderRadius: 1,
     height: 2,
+    marginLeft: 19,
     opacity: 1,
     width: '100%',
   },
-  dividerWrapper: {
-    paddingTop: 2,
-  },
 });
 
-const WalletDivider = () => (
-  <View style={sx.dividerWrapper}>
-    <View style={sx.divider} />
-  </View>
-);
+const WalletDivider = () => <View style={sx.divider} />;
 
 export default WalletDivider;

@@ -7,7 +7,7 @@ import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import SheetHandle from './SheetHandle';
 
-const Sheet = ({ children }) => {
+const Sheet = ({ borderRadius, children }) => {
   const { goBack } = useNavigation();
   const insets = useSafeArea();
 
@@ -16,10 +16,10 @@ const Sheet = ({ children }) => {
       <TouchableBackdrop onPress={goBack} />
       <Column
         backgroundColor={colors.white}
-        css={borders.buildRadius('top', 39)}
+        css={borders.buildRadius('top', borderRadius)}
         paddingBottom={insets.bottom}
       >
-        <Centered paddingBottom={15} paddingTop={6}>
+        <Centered paddingBottom={7} paddingTop={6}>
           <SheetHandle />
         </Centered>
         {children}
@@ -29,7 +29,12 @@ const Sheet = ({ children }) => {
 };
 
 Sheet.propTypes = {
+  borderRadius: PropTypes.number,
   children: PropTypes.node,
+};
+
+Sheet.defaultProps = {
+  borderRadius: 39,
 };
 
 export default Sheet;

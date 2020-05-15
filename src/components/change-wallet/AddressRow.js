@@ -16,15 +16,21 @@ import { TruncatedAddress } from '../text';
 const sx = StyleSheet.create({
   accountLabel: {
     color: colors.dark,
-    fontFamily: fonts.family.SFProText,
+    fontFamily: fonts.family.SFProRounded,
     fontSize: getFontSize(fonts.size.lmedium),
     fontWeight: fonts.weight.medium,
-    paddingBottom: 5,
+    letterSpacing: fonts.letterSpacing.roundedMedium,
+    marginBottom: 3,
   },
   accountRow: {
     flex: 1,
     justifyContent: 'center',
-    marginLeft: 20,
+    marginLeft: 19,
+  },
+  bottomRowText: {
+    color: colors.alpha(colors.blueGreyDark, 0.5),
+    fontWeight: fonts.weight.medium,
+    letterSpacing: fonts.letterSpacing.roundedMedium,
   },
   leftContent: {
     flexDirection: 'row',
@@ -35,33 +41,36 @@ const sx = StyleSheet.create({
     marginRight: 19,
   },
   coinCheck: {
-    width: 30,
     alignSelf: 'flex-end',
-    marginTop: -15,
     backgroundColor: 'red',
-    marginRight: 15,
+    marginRight: 19,
+    marginTop: -9,
+    width: 22,
   },
   borderBottom: {
-    marginLeft: 20,
-    paddingVertical: 10,
-    borderColor: colors.lightestGrey,
     borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.lightestGrey,
+    marginLeft: 19,
+    paddingVertical: 10,
   },
   readOnlyText: {
-    color: colors.mediumGrey,
-    fontWeight: fonts.weight.medium,
+    color: colors.alpha(colors.blueGreyDark, 0.5),
+    fontFamily: fonts.family.SFProRounded,
+    fontWeight: fonts.weight.semibold,
+    letterSpacing: fonts.letterSpacing.roundedTight,
+    paddingHorizontal: 6.5,
+    paddingVertical: 3,
+    textAlign: 'center',
   },
   gradient: {
-    marginTop: 20,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
+    borderRadius: 24,
+    height: 24,
+    marginTop: 19,
     textAlign: 'center',
-    borderRadius: 30,
-    height: 25,
   },
 });
 
-const gradientColors = [colors.lightGrey, colors.blueGreyDark];
+const gradientColors = ['#ECF1F5', '#DFE4EB'];
 const gradientProps = {
   pointerEvents: 'none',
   style: sx.gradient,
@@ -69,12 +78,12 @@ const gradientProps = {
 
 const linearGradientProps = {
   ...gradientProps,
+  colors: [
+    colors.alpha(gradientColors[0], 0.3),
+    colors.alpha(gradientColors[1], 0.5),
+  ],
   end: { x: 1, y: 1 },
   start: { x: 0, y: 0 },
-  colors: [
-    colors.alpha(gradientColors[0], 0.1),
-    colors.alpha(gradientColors[1], 0.08),
-  ],
 };
 
 const OptionsIcon = ({ onPress }) => (
@@ -103,6 +112,8 @@ const OptionsIcon = ({ onPress }) => (
           color: colors.appleBlue,
           fontFamily: fonts.family.SFProRounded,
           fontSize: getFontSize(fonts.size.large),
+          fontWeight: fonts.weight.medium,
+          textAlign: 'right',
         }}
       >
         􀍡
@@ -130,6 +141,11 @@ export default function AddressRow({
     wallet_id,
   } = data;
 
+  let cleanedUpBalance = balance;
+  if (balance === '0.00') {
+    cleanedUpBalance = '0';
+  }
+
   let cleanedUpLabel = null;
   if (label) {
     cleanedUpLabel = removeFirstEmojiFromString(label).join('');
@@ -156,16 +172,18 @@ export default function AddressRow({
                   <Text style={sx.accountLabel}>{cleanedUpLabel || ens}</Text>
                 ) : (
                   <TruncatedAddress
+                    address={address}
                     firstSectionLength={6}
                     size="smaller"
+                    style={sx.accountLabel}
                     truncationLength={4}
                     weight="medium"
-                    address={address}
-                    style={sx.accountLabel}
                   />
                 )}
               </View>
-              <BottomRowText>{balance} ETH</BottomRowText>
+              <BottomRowText style={sx.bottomRowText}>
+                {cleanedUpBalance} ETH
+              </BottomRowText>
             </View>
           </Column>
           <Column style={sx.rightContent}>
@@ -176,8 +194,8 @@ export default function AddressRow({
             </View>
             {editMode && <OptionsIcon onPress={onOptionsPress} />}
             {!editMode && !isSelected && isReadOnly && (
-              <LinearGradient {...linearGradientProps} radius={81}>
-                <Text style={sx.readOnlyText}>Read Only</Text>
+              <LinearGradient {...linearGradientProps} radius={77}>
+                <Text style={sx.readOnlyText}>Read only</Text>
               </LinearGradient>
             )}
           </Column>
