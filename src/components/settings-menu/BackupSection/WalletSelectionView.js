@@ -29,7 +29,7 @@ const WarningIcon = () => (
     <Icon color={colors.yellowOrange} name="warningCircled" size={40} />
   </IconWrapper>
 );
-const ChecmarkIcon = ({ color }) => (
+const CheckmarkIcon = ({ color }) => (
   <IconWrapper>
     <Icon color={color} name="checkmarkCircled" size={22} />
   </IconWrapper>
@@ -121,9 +121,9 @@ const WalletSelectionView = ({ navigation }) => {
             <Column style={sx.rightContent}>
               {wallet.isBackedUp ? (
                 wallet.backupType === 'cloud' ? (
-                  <ChecmarkIcon color={colors.green} />
+                  <CheckmarkIcon color={colors.green} />
                 ) : (
-                  <ChecmarkIcon color={colors.grey} />
+                  <CheckmarkIcon color={colors.grey} />
                 )
               ) : (
                 <WarningIcon />

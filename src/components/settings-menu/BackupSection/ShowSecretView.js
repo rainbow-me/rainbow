@@ -26,21 +26,6 @@ const PrivateKeyText = styled(Text).attrs({
   padding-right: 30;
 `;
 
-const SeedWordNumberText = styled(Text).attrs({
-  align: 'left',
-  color: 'appleBlue',
-  lineHeight: 'looser',
-  size: 'lmedium',
-})``;
-
-const SeedWordText = styled(Text).attrs({
-  align: 'left',
-  color: 'blueGreyDark',
-  lineHeight: 'looser',
-  size: 'lmedium',
-  weight: 'bold',
-})``;
-
 const Shadow = styled(ShadowStack)`
   elevation: 15;
   margin-bottom: 85;
@@ -85,10 +70,23 @@ const ShowSecretView = () => {
         {wordColumn.map((word, index) => (
           // eslint-disable-next-line react/no-array-index-key
           <RowWithMargins marginBottom={9} key={`word_${index}`}>
-            <SeedWordNumberText>
+            <Text
+              align="left"
+              color="appleBlue"
+              lineHeight="looser"
+              size="lmedium"
+            >
               {index + 1 + colIndex * wordColumn.length} &nbsp;
-              <SeedWordText>{word}</SeedWordText>
-            </SeedWordNumberText>
+              <Text
+                align="left"
+                color="blueGreyDark"
+                lineHeight="looser"
+                size="lmedium"
+                weight="bold"
+              >
+                {word}
+              </Text>
+            </Text>
           </RowWithMargins>
         ))}
       </Column>

@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { InteractionManager, Linking, ScrollView } from 'react-native';
+import React, { useMemo } from 'react';
+import { InteractionManager, Linking, ScrollView, View } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
@@ -19,9 +19,11 @@ import {
 } from '../../handlers/localstorage/globalSettings';
 import networkInfo from '../../helpers/networkInfo';
 import { withAccountSettings, withSendFeedback } from '../../hoc';
+import useWallets from '../../hooks/useAccountProfile';
 import { supportedLanguages } from '../../languages';
-import { position } from '../../styles';
+import { colors, position } from '../../styles';
 import AppVersionStamp from '../AppVersionStamp';
+import { Icon } from '../icons';
 import { Column, ColumnWithDividers } from '../layout';
 import {
   ListFooter,
@@ -49,6 +51,37 @@ const SettingIcon = styled(FastImage)`
 let versionPressHandle = null;
 let versionNumberOfTaps = 0;
 
+const IconWrapper = styled(View)`
+  height: 22;
+  margin-top: 2;
+  right: 8.7;
+  top: 0;
+  width: 22;
+`;
+
+const WarningIcon = () => (
+  <IconWrapper>
+    <Icon color={colors.yellowOrange} name="warningCircled" size={40} />
+  </IconWrapper>
+);
+const CheckmarkIcon = () => (
+  <IconWrapper>
+    <Icon color={colors.green} name="checkmarkCircled" size={22} />
+  </IconWrapper>
+);
+
+const checkIfAllWalletsBackedUp = wallets => {
+  if (!wallets) return false;
+  let backedUp = true;
+  Object.keys(wallets).forEach(key => {
+    if (wallets[key].backedUp === false && !wallets[key].imported) {
+      backedUp = false;
+    }
+  });
+  console.log('backedUp', backedUp);
+  return backedUp;
+};
+
 const SettingsSection = ({
   language,
   nativeCurrency,
@@ -64,6 +97,8 @@ const SettingsSection = ({
   onPressTwitter,
   onSendFeedback,
 }) => {
+  const { wallets } = useWallets();
+
   const handleVersionPress = () => {
     versionPressHandle && clearTimeout(versionPressHandle);
     versionNumberOfTaps++;
@@ -76,6 +111,10 @@ const SettingsSection = ({
       versionNumberOfTaps = 0;
     }, 3000);
   };
+
+  const allWalletsBackedUp = useMemo(() => checkIfAllWalletsBackedUp(wallets), [
+    wallets,
+  ]);
 
   return (
     <ScrollView
@@ -90,7 +129,11 @@ const SettingsSection = ({
           onPressIcloudBackup={onPressIcloudBackup}
           onPressShowSecret={onPressShowSecret}
           label="Backup"
-        />
+        >
+          <ListItemArrowGroup>
+            {allWalletsBackedUp ? <CheckmarkIcon /> : <WarningIcon />}
+          </ListItemArrowGroup>
+        </ListItem>
         <ListItem
           icon={<SettingIcon source={NetworkIcon} />}
           onPress={onPressNetwork}
