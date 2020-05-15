@@ -8,10 +8,10 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import * as StoreReview from 'react-native-store-review';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import BackupIcon from '../../assets/backup-icon.png';
-import CurrencyIcon from '../../assets/currency-icon.png';
-import LanguageIcon from '../../assets/language-icon.png';
-import NetworkIcon from '../../assets/network-icon.png';
+import BackupIcon from '../../assets/settingsBackup.png';
+import CurrencyIcon from '../../assets/settingsCurrency.png';
+import LanguageIcon from '../../assets/settingsLanguage.png';
+import NetworkIcon from '../../assets/settingsNetwork.png';
 // import SecurityIcon from '../../assets/security-icon.png';
 import {
   getAppStoreReviewCount,
