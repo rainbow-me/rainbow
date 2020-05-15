@@ -9,7 +9,7 @@ import { Text, TruncatedText } from '../text';
 const Subtitle = props => (
   <TruncatedText
     {...props}
-    color={colors.blueGreyLight}
+    color={colors.blueGreyDark50}
     letterSpacing="uppercase"
     size="smedium"
     weight="semibold"
@@ -58,9 +58,8 @@ const ValueText = ({ change, direction, headerText, value }) => {
             <Icon
               color={direction ? colors.chartGreen : colors.red}
               direction={direction ? 'right' : 'left'}
-              fat
               height={15}
-              name="arrow"
+              name="fatArrow"
               width={13}
             />
             <Text
