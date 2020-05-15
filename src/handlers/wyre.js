@@ -10,6 +10,7 @@ import {
   WYRE_ENDPOINT,
   WYRE_ENDPOINT_TEST,
 } from 'react-native-dotenv';
+import NetworkTypes from '../helpers/networkTypes';
 import { add, feeCalculation } from '../helpers/utilities';
 import { WYRE_SUPPORTED_COUNTRIES_ISO } from '../references';
 import { logger } from '../utils';
@@ -24,8 +25,10 @@ export const PaymentRequestStatusTypes = {
   SUCCESS: 'success',
 };
 
+const getBaseUrl = network =>
+  network === NetworkTypes.mainnet ? WYRE_ENDPOINT : WYRE_ENDPOINT_TEST;
+
 const wyreApi = axios.create({
-  baseURL: __DEV__ ? WYRE_ENDPOINT_TEST : WYRE_ENDPOINT,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
@@ -55,7 +58,8 @@ export const showApplePayRequest = async (
   referenceInfo,
   accountAddress,
   destCurrency,
-  sourceAmount
+  sourceAmount,
+  network
 ) => {
   const feeAmount = feeCalculation(
     sourceAmount,
@@ -65,14 +69,17 @@ export const showApplePayRequest = async (
 
   const totalAmount = add(sourceAmount, feeAmount);
 
+  const merchantIdentifier =
+    network === NetworkTypes.mainnet
+      ? RAINBOW_WYRE_MERCHANT_ID
+      : RAINBOW_WYRE_MERCHANT_ID_TEST;
+
   const methodData = [
     {
       data: {
         countryCode: PAYMENT_PROCESSOR_COUNTRY_CODE,
         currencyCode: SOURCE_CURRENCY_USD,
-        merchantIdentifier: __DEV__
-          ? RAINBOW_WYRE_MERCHANT_ID_TEST
-          : RAINBOW_WYRE_MERCHANT_ID,
+        merchantIdentifier,
         supportedCountries: WYRE_SUPPORTED_COUNTRIES_ISO,
         supportedNetworks: ['visa', 'mastercard', 'discover'],
       },
@@ -115,9 +122,10 @@ export const showApplePayRequest = async (
   }
 };
 
-export const trackWyreOrder = async (referenceInfo, orderId) => {
+export const trackWyreOrder = async (referenceInfo, orderId, network) => {
   try {
-    const response = await wyreApi.get(`/v3/orders/${orderId}`);
+    const baseUrl = getBaseUrl(network);
+    const response = await wyreApi.get(`${baseUrl}/v3/orders/${orderId}`);
     const orderStatus = get(response, 'data.status');
     const transferId = get(response, 'data.transferId');
     return { data: response.data, orderStatus, transferId };
@@ -126,9 +134,12 @@ export const trackWyreOrder = async (referenceInfo, orderId) => {
   }
 };
 
-export const trackWyreTransfer = async (referenceInfo, transferId) => {
+export const trackWyreTransfer = async (referenceInfo, transferId, network) => {
   try {
-    const response = await wyreApi.get(`/v2/transfer/${transferId}/track`);
+    const baseUrl = getBaseUrl(network);
+    const response = await wyreApi.get(
+      `${baseUrl}/v2/transfer/${transferId}/track`
+    );
     const transferHash = get(response, 'data.blockchainNetworkTx');
     const destAmount = get(response, 'data.destAmount');
     const destCurrency = get(response, 'data.destCurrency');
@@ -145,23 +156,30 @@ export const getOrderId = async (
   paymentResponse,
   amount,
   accountAddress,
-  destCurrency
+  destCurrency,
+  network
 ) => {
   const data = createPayload(
     referenceInfo,
     paymentResponse,
     amount,
     accountAddress,
-    destCurrency
+    destCurrency,
+    network
   );
   try {
-    const response = await wyreApi.post('/v3/apple-pay/process/partner', data, {
-      validateStatus: function(status) {
-        // do not throw error so we can get
-        // exception ID and message from response
-        return status >= 200;
-      },
-    });
+    const baseUrl = getBaseUrl(network);
+    const response = await wyreApi.post(
+      `${baseUrl}/v3/apple-pay/process/partner`,
+      data,
+      {
+        validateStatus: function(status) {
+          // do not throw error so we can get
+          // exception ID and message from response
+          return status >= 200;
+        },
+      }
+    );
 
     if (response.status >= 200 && response.status < 300) {
       const orderId = get(response, 'data.id', null);
@@ -220,7 +238,8 @@ const createPayload = (
   paymentResponse,
   amount,
   accountAddress,
-  destCurrency
+  destCurrency,
+  network
 ) => {
   const dest = `ethereum:${accountAddress}`;
 
@@ -240,8 +259,8 @@ const createPayload = (
     phoneNumber: shippingInfo.phoneNumber,
   };
 
-  const partnerId = __DEV__ ? WYRE_ACCOUNT_ID_TEST : WYRE_ACCOUNT_ID;
-
+  const partnerId =
+    network === NetworkTypes.mainnet ? WYRE_ACCOUNT_ID : WYRE_ACCOUNT_ID_TEST;
   return {
     partnerId,
     payload: {

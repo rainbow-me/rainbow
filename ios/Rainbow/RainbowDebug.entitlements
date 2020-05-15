@@ -11,6 +11,7 @@
 	<key>com.apple.developer.in-app-payments</key>
 	<array>
 		<string>merchant.me.rainbow.test</string>
+		<string>merchant.me.rainbow</string>
 	</array>
 </dict>
 </plist>

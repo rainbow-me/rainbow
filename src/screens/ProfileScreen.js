@@ -69,12 +69,9 @@ const ProfileScreen = ({ navigation }) => {
     navigate(Routes.CHANGE_WALLET_MODAL);
   }, [navigate]);
 
-  const addCashInDevNetworks =
-    __DEV__ &&
-    (network === NetworkTypes.kovan || network === NetworkTypes.mainnet);
-  const addCashInProdNetworks = !__DEV__ && network === NetworkTypes.mainnet;
-  const addCashAvailable =
-    Platform.OS === 'ios' && (addCashInDevNetworks || addCashInProdNetworks);
+  const addCashSupportedNetworks =
+    network === NetworkTypes.kovan || network === NetworkTypes.mainnet;
+  const addCashAvailable = Platform.OS === 'ios' && addCashSupportedNetworks;
 
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>

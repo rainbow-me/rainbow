@@ -55,7 +55,8 @@ export default function useWyreApplePay() {
       try {
         const { transferStatus } = await trackWyreTransfer(
           referenceInfo,
-          transferId
+          transferId,
+          network
         );
         setTransferStatus(transferStatus);
         if (
@@ -71,7 +72,7 @@ export default function useWyreApplePay() {
         retryTransferStatusTimeout(retry, 1000);
       }
     },
-    [retryTransferStatusTimeout, transferHash]
+    [network, retryTransferStatusTimeout, transferHash]
   );
 
   const getTransferHash = useCallback(
@@ -85,7 +86,7 @@ export default function useWyreApplePay() {
           destCurrency,
           transferHash,
           transferStatus,
-        } = await trackWyreTransfer(referenceInfo, transferId);
+        } = await trackWyreTransfer(referenceInfo, transferId, network);
 
         setTransferStatus(transferStatus);
         const destAssetAddress = toLower(
@@ -150,7 +151,8 @@ export default function useWyreApplePay() {
       try {
         const { data, orderStatus, transferId } = await trackWyreOrder(
           referenceInfo,
-          orderId
+          orderId,
+          network
         );
         setOrderStatus(orderStatus);
 
@@ -201,6 +203,7 @@ export default function useWyreApplePay() {
       isPaymentComplete,
       getTransferHash,
       handlePaymentCallback,
+      network,
       retryOrderStatusTimeout,
     ]
   );
@@ -215,7 +218,8 @@ export default function useWyreApplePay() {
         referenceInfo,
         accountAddress,
         currency,
-        value
+        value,
+        network
       );
 
       setOrderCurrency(currency);
@@ -227,7 +231,8 @@ export default function useWyreApplePay() {
           paymentResponse,
           totalAmount,
           accountAddress,
-          currency
+          currency,
+          network
         );
         if (orderId) {
           referenceInfo.orderId = orderId;
@@ -253,7 +258,7 @@ export default function useWyreApplePay() {
         });
       }
     },
-    [accountAddress, getOrderStatus, handlePaymentCallback]
+    [accountAddress, getOrderStatus, handlePaymentCallback, network]
   );
 
   return {
