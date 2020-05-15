@@ -4,7 +4,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../styles';
 import { getFontSize } from '../../styles/fonts';
 import { ButtonPressAnimation } from '../animations';
-import { Icon } from '../icons';
 
 const sx = StyleSheet.create({
   borderBottom: {
@@ -14,26 +13,15 @@ const sx = StyleSheet.create({
   optionContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    paddingBottom: 17,
+    paddingBottom: 19,
     paddingTop: 12,
-  },
-  optionIconWrapper: {
-    alignItems: 'center',
-    backgroundColor: colors.appleBlue,
-    borderRadius: 18,
-    height: 18,
-    justifyContent: 'center',
-    marginLeft: 2,
-    marginRight: 9,
-    width: 18,
-  },
-  optionIconWrapperDisabled: {
-    backgroundColor: colors.lightGrey,
   },
   optionText: {
     color: colors.appleBlue,
+    fontFamily: fonts.family.SFProRounded,
     fontSize: getFontSize(fonts.size.lmedium),
     fontWeight: fonts.weight.semibold,
+    letterSpacing: fonts.letterSpacing.roundedMedium,
   },
   optionTextDisabled: {
     color: colors.lightGrey,
@@ -46,7 +34,6 @@ const sx = StyleSheet.create({
 export default function AddressOption({
   borderBottom,
   editMode,
-  icon,
   label,
   onPress,
 }) {
@@ -55,14 +42,6 @@ export default function AddressOption({
       <View style={[sx.subItem, borderBottom ? sx.borderBottom : null]}>
         <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
           <View style={sx.optionContainer}>
-            <View
-              style={[
-                sx.optionIconWrapper,
-                editMode ? sx.optionIconWrapperDisabled : null,
-              ]}
-            >
-              <Icon color={colors.white} height={12} width={12} name={icon} />
-            </View>
             <View>
               <Text
                 style={[sx.optionText, editMode ? sx.optionTextDisabled : null]}
@@ -78,7 +57,6 @@ export default function AddressOption({
 }
 
 AddressOption.propTypes = {
-  icon: PropTypes.string,
   label: PropTypes.string,
   onPress: PropTypes.func,
 };

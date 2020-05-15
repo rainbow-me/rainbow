@@ -18,13 +18,14 @@ import WalletTypes from '../../helpers/walletTypes';
 import { colors, position } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { EmptyAssetList } from '../asset-list';
+import { Column } from '../layout';
 import AddressOption from './AddressOption';
 import AddressRow from './AddressRow';
 import WalletDivider from './WalletDivider';
 import WalletOption from './WalletOption';
 
-const rowHeight = 70;
-const optionRowHeight = 50;
+const rowHeight = 59;
+const optionRowHeight = 59;
 const lastRowPadding = 10;
 
 const RowTypes = {
@@ -36,7 +37,7 @@ const RowTypes = {
 
 const sx = StyleSheet.create({
   container: {
-    paddingTop: 0,
+    paddingTop: 14.5,
   },
 });
 
@@ -100,9 +101,8 @@ export function WalletList({
         newRows.push({
           editMode,
           height: optionRowHeight,
-          icon: 'plus',
           id: 'add_account',
-          label: 'Create a new wallet',
+          label: '􀁍 Create a new wallet',
           onPress: () => onPressAddAccount(wallet.id),
           rowType: RowTypes.ADDRESS_OPTION,
         });
@@ -210,13 +210,14 @@ export function WalletList({
       switch (data.rowType) {
         case RowTypes.ADDRESS_OPTION:
           return (
-            <AddressOption
-              icon={data.icon}
-              label={data.label}
-              onPress={data.onPress}
-              borderBottom={!isLastRow}
-              editMode={editMode}
-            />
+            <Column>
+              <AddressOption
+                label={data.label}
+                onPress={data.onPress}
+                editMode={editMode}
+              />
+              {!isLastRow && <WalletDivider />}
+            </Column>
           );
         case RowTypes.ADDRESS:
           return (
@@ -224,7 +225,6 @@ export function WalletList({
               data={data}
               onPress={data.onPress}
               onEditWallet={onEditWallet}
-              borderBottom={data.isOnlyAddress && data.isReadOnly && !isLastRow}
               editMode={editMode}
             />
           );
@@ -236,7 +236,6 @@ export function WalletList({
   );
   return (
     <View style={sx.container}>
-      <WalletDivider />
       <View style={{ height }}>
         <Transitioning.View
           flex={1}
@@ -255,7 +254,7 @@ export function WalletList({
               />
               <WalletOption
                 icon="arrowBack"
-                label="Add an existing wallet"
+                label="􀂍 Add an existing wallet"
                 onPress={onPressImportSeedPhrase}
                 editMode={editMode}
               />

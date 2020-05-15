@@ -4,58 +4,37 @@ import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../styles';
 import { getFontSize } from '../../styles/fonts';
 import { ButtonPressAnimation } from '../animations';
-import { Icon } from '../icons';
+import WalletDivider from './WalletDivider';
 
 const sx = StyleSheet.create({
   container: {
     alignItems: 'center',
-    borderColor: colors.lightestGrey,
-    borderTopWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
-    marginLeft: 20,
-    paddingVertical: 25,
-  },
-  iconWrapper: {
-    alignItems: 'center',
-    backgroundColor: colors.appleBlue,
-    borderRadius: 18,
-    height: 18,
-    justifyContent: 'center',
-    marginLeft: 2,
-    marginRight: 9,
-    width: 18,
-  },
-  iconWrapperDisabled: {
-    backgroundColor: colors.lightGrey,
+    marginLeft: 19,
+    paddingVertical: 19,
   },
   text: {
     color: colors.appleBlue,
-    fontFamily: fonts.family.SFProText,
+    fontFamily: fonts.family.SFProRounded,
     fontSize: getFontSize(fonts.size.lmedium),
     fontWeight: fonts.weight.semibold,
+    letterSpacing: fonts.letterSpacing.roundedMedium,
   },
   textDisabled: {
     color: colors.lightGrey,
   },
 });
 
-const WalletOption = ({ editMode, icon, label, onPress }) => (
+const WalletOption = ({ editMode, label, onPress }) => (
   <ButtonPressAnimation disabled={editMode} scaleTo={0.96} onPress={onPress}>
+    <WalletDivider />
     <View style={sx.container}>
-      <View style={[sx.iconWrapper, editMode ? sx.iconWrapperDisabled : null]}>
-        <Icon color={colors.white} height={11} width={11} name={icon} />
-      </View>
-      <View>
-        <Text style={[sx.text, editMode ? sx.textDisabled : null]}>
-          {label}
-        </Text>
-      </View>
+      <Text style={[sx.text, editMode ? sx.textDisabled : null]}>{label}</Text>
     </View>
   </ButtonPressAnimation>
 );
 
 WalletOption.propTypes = {
-  icon: PropTypes.string,
   label: PropTypes.string.isRequired,
   onPress: PropTypes.func,
 };
