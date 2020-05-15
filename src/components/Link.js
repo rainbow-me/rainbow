@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useCallback } from 'react';
+import { Linking } from 'react-native';
 import { colors } from '../styles';
 import { magicMemo } from '../utils';
 import { ButtonPressAnimation } from './animations';
@@ -14,21 +15,25 @@ const formatURLForDisplay = url => {
     : pretty;
 };
 
-const Link = ({ url }) => (
-  <ButtonPressAnimation scaleTo={1.1} transformOrigin={[0, 0.5]}>
-    <RowWithMargins align="center" margin={5} paddingVertical={11}>
-      <Icon color={colors.appleBlue} name="compass" size={16} />
-      <Text
-        color={colors.appleBlue}
-        lineHeight={17}
-        size="lmedium"
-        weight="medium"
-      >
-        {formatURLForDisplay(url)}
-      </Text>
-    </RowWithMargins>
-  </ButtonPressAnimation>
-);
+const Link = ({ url }) => {
+  const handlePress = useCallback(() => Linking.openURL(url), [url]);
+
+  return (
+    <ButtonPressAnimation onPress={handlePress} scaleTo={1.1}>
+      <RowWithMargins align="center" margin={5} paddingVertical={11}>
+        <Icon color={colors.appleBlue} name="compass" size={16} />
+        <Text
+          color={colors.appleBlue}
+          lineHeight={17}
+          size="lmedium"
+          weight="medium"
+        >
+          {formatURLForDisplay(url)}
+        </Text>
+      </RowWithMargins>
+    </ButtonPressAnimation>
+  );
+};
 
 Link.propTypes = {
   url: PropTypes.string,
