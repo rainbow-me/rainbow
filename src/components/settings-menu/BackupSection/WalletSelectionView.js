@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import Caret from '../../../assets/family-dropdown-arrow.png';
@@ -24,6 +24,33 @@ const IconWrapper = styled(View)`
   width: 22;
 `;
 
+const CaretIcon = styled(FastImage).attrs({
+  source: Caret,
+  tintColor: colors.blueGreyDark,
+})`
+  height: 17;
+  margin-top: 15;
+  width: 9;
+`;
+
+const Address = styled(TruncatedAddress).attrs({
+  color: colors.dark,
+  firstSectionLength: 6,
+  size: getFontSize(fonts.size.lmedium),
+  truncationLength: 4,
+  weight: 'medium',
+})`
+  padding-bottom: 5;
+`;
+
+const AccountLabel = styled(Text).attrs({
+  color: colors.dark,
+  weight: 'bold',
+})`
+  font-size: ${fonts.size.lmedium};
+  padding-bottom: 5;
+`;
+
 const WarningIcon = () => (
   <IconWrapper>
     <Icon color={colors.yellowOrange} name="warningCircled" size={40} />
@@ -34,29 +61,6 @@ const CheckmarkIcon = ({ color }) => (
     <Icon color={color} name="checkmarkCircled" size={22} />
   </IconWrapper>
 );
-
-const sx = StyleSheet.create({
-  accountLabel: {
-    color: colors.dark,
-    fontFamily: fonts.family.SFProText,
-    fontSize: getFontSize(fonts.size.lmedium),
-    fontWeight: fonts.weight.medium,
-    paddingBottom: 5,
-  },
-  accountRow: {
-    justifyContent: 'center',
-    marginLeft: 15,
-    marginTop: 22,
-  },
-  leftContent: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  rightContent: {
-    flex: 0,
-    marginRight: 19,
-  },
-});
 
 const WalletSelectionView = ({ navigation }) => {
   const { wallets } = useWallets();
@@ -81,7 +85,7 @@ const WalletSelectionView = ({ navigation }) => {
     const { color, label, index, address } = account;
 
     return (
-      <View style={sx.accountRow} key={key}>
+      <Column marginLeft={15} marginTop={22} key={key} justifyContent="center">
         <ButtonPressAnimation
           onPress={() =>
             onPress(key, label || abbreviations.address(address, 4, 6))
@@ -89,36 +93,29 @@ const WalletSelectionView = ({ navigation }) => {
           scaleTo={0.98}
         >
           <Row>
-            <Column style={sx.leftContent}>
+            <Row flex>
               <ContactAvatar
                 color={color}
                 marginRight={10}
                 size="medium"
                 value={label || `${index + 1}`}
               />
-              <View>
-                <View>
+              <Column>
+                <Row>
                   {label ? (
-                    <Text style={sx.accountLabel}>{label}</Text>
+                    <AccountLabel>{label}</AccountLabel>
                   ) : (
-                    <TruncatedAddress
-                      firstSectionLength={6}
-                      size="smaller"
-                      truncationLength={4}
-                      weight="medium"
-                      address={address}
-                      style={sx.accountLabel}
-                    />
+                    <Address address={address} />
                   )}
-                </View>
+                </Row>
                 {totalAccounts && (
                   <BottomRowText>
                     And {totalAccounts} more wallets
                   </BottomRowText>
                 )}
-              </View>
-            </Column>
-            <Column style={sx.rightContent}>
+              </Column>
+            </Row>
+            <Row marginRight={19}>
               {wallet.isBackedUp ? (
                 wallet.backupType === 'cloud' ? (
                   <CheckmarkIcon color={colors.green} />
@@ -129,19 +126,11 @@ const WalletSelectionView = ({ navigation }) => {
                 <WarningIcon />
               )}
 
-              <FastImage
-                source={Caret}
-                style={{
-                  height: 17,
-                  marginTop: 15,
-                  width: 9,
-                }}
-                tintColor={colors.blueGreyDark}
-              />
-            </Column>
+              <CaretIcon />
+            </Row>
           </Row>
         </ButtonPressAnimation>
-      </View>
+      </Column>
     );
   });
 };
