@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
 import { useOpenSavings } from '../../hooks';
@@ -6,7 +5,7 @@ import { OpacityToggler } from '../animations';
 import SavingsListHeader from './SavingsListHeader';
 import SavingsListRow from './SavingsListRow';
 
-const SavingsListWrapper = ({ assets, totalValue }) => {
+export default function SavingsListWrapper({ assets, totalValue = '0' }) {
   const { isSavingsOpen, toggleOpenSavings } = useOpenSavings();
 
   return (
@@ -34,15 +33,4 @@ const SavingsListWrapper = ({ assets, totalValue }) => {
       </View>
     </React.Fragment>
   );
-};
-
-SavingsListWrapper.propTypes = {
-  assets: PropTypes.array,
-  totalValue: PropTypes.string,
-};
-
-SavingsListWrapper.defaultProps = {
-  totalValue: '0',
-};
-
-export default SavingsListWrapper;
+}

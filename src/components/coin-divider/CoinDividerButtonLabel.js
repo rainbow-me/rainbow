@@ -1,16 +1,20 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
+import { magicMemo } from '../../utils';
 import { OpacityToggler } from '../animations';
 import { Text } from '../text';
 
-const sx = StyleSheet.create({
-  text: {
-    position: 'absolute',
-    top: -10.25,
-  },
-});
+const LabelText = styled(Text).attrs({
+  color: colors.alpha(colors.blueGreyDark, 0.6),
+  letterSpacing: 'roundedTight',
+  size: 'lmedium',
+  weight: 'semibold',
+})`
+  position: absolute;
+  top: -10.25;
+`;
 
 const CoinDividerButtonLabel = ({ isVisible, label, node, steps }) => (
   <OpacityToggler
@@ -19,15 +23,7 @@ const CoinDividerButtonLabel = ({ isVisible, label, node, steps }) => (
     isVisible={isVisible}
     startingOpacity={steps[0]}
   >
-    <Text
-      color={colors.alpha(colors.blueGreyDark, 0.6)}
-      letterSpacing="roundedTight"
-      size="lmedium"
-      style={sx.text}
-      weight="semibold"
-    >
-      {label}
-    </Text>
+    <LabelText>{label}</LabelText>
   </OpacityToggler>
 );
 
@@ -38,5 +34,4 @@ CoinDividerButtonLabel.propTypes = {
   steps: PropTypes.arrayOf(PropTypes.number),
 };
 
-const arePropsEqual = (prev, next) => prev.isVisible === next.isVisible;
-export default React.memo(CoinDividerButtonLabel, arePropsEqual);
+export default magicMemo(CoinDividerButtonLabel, 'isVisible');

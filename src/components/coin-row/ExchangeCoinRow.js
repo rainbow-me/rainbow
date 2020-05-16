@@ -1,8 +1,10 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { InteractionManager, StyleSheet } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { InteractionManager } from 'react-native';
+import styled, { css } from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
+import { padding } from '../../styles';
 import { haptics } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
@@ -17,36 +19,42 @@ import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 const CoinRowPaddingTop = 11;
 const CoinRowPaddingBottom = 11;
 
-const sx = StyleSheet.create({
-  container: {
-    paddingBottom: CoinRowPaddingBottom,
-    paddingLeft: 15,
-    paddingRight: 0,
-    paddingTop: CoinRowPaddingTop,
-  },
-  containerWithFavorite: {
-    paddingRight: 38,
-  },
-});
+const BalanceColumn = styled(ColumnWithMargins).attrs({
+  align: 'end',
+  margin: 4,
+})`
+  padding-right: 19;
+`;
+
+const FloatingFavoriteEmojis = styled(FloatingEmojis).attrs({
+  centerVertically: true,
+  disableHorizontalMovement: true,
+  disableVerticalMovement: true,
+  distance: 70,
+  duration: 400,
+  emojis: ['star2'],
+  fadeOut: false,
+  marginTop: 11,
+  range: [0, 0],
+  scaleTo: 0,
+  size: 32,
+  wiggleFactor: 0,
+})`
+  left: ${({ deviceWidth }) => deviceWidth - 46};
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 100;
+`;
 
 const BottomRow = ({ showBalance, symbol }) =>
   showBalance ? null : <BottomRowText>{symbol}</BottomRowText>;
-
-BottomRow.propTypes = {
-  showBalance: PropTypes.bool,
-  symbol: PropTypes.string,
-};
 
 const TopRow = ({ name, showBalance }) => (
   <Centered height={showBalance ? CoinIconSize : null}>
     <CoinName>{name}</CoinName>
   </Centered>
 );
-
-TopRow.propTypes = {
-  name: PropTypes.string,
-  showBalance: PropTypes.bool,
-};
 
 const ExchangeCoinRow = ({
   item,
@@ -56,54 +64,42 @@ const ExchangeCoinRow = ({
   showFavoriteButton,
   ...props
 }) => {
-  const { width } = useDimensions();
+  const { width: deviceWidth } = useDimensions();
   const [localFavorite, setLocalFavorite] = useState(!!item.favorite);
+
+  const handlePress = useCallback(() => onPress(item), [item, onPress]);
 
   return (
     <ButtonPressAnimation
       {...props}
       height={CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom}
-      onPress={() => onPress(item)}
+      onPress={handlePress}
       scaleTo={0.96}
     >
       <CoinRow
         {...item}
         bottomRowRender={BottomRow}
-        containerStyles={[
-          sx.container,
-          showFavoriteButton ? sx.containerWithFavorite : null,
-        ]}
+        containerStyles={css(
+          padding(
+            CoinRowPaddingTop,
+            showFavoriteButton ? 38 : 0,
+            CoinRowPaddingBottom,
+            15
+          )
+        )}
         showBalance={showBalance}
         topRowRender={TopRow}
       >
         {showBalance && (
-          <ColumnWithMargins align="end" margin={4} paddingRight={19}>
+          <BalanceColumn>
             <BalanceText>
               {get(item, 'native.balance.display', '–')}
             </BalanceText>
             <BottomRowText>{get(item, 'balance.display', '')}</BottomRowText>
-          </ColumnWithMargins>
+          </BalanceColumn>
         )}
         {showFavoriteButton && (
-          <FloatingEmojis
-            centerVertically
-            disableHorizontalMovement
-            disableVerticalMovement
-            distance={70}
-            duration={400}
-            emojis={['star2']}
-            fadeOut={false}
-            left={width - 46}
-            marginTop={11}
-            position="absolute"
-            range={[0, 0]}
-            right={0}
-            scaleTo={0}
-            size={32}
-            top={0}
-            wiggleFactor={0}
-            zIndex={100}
-          >
+          <FloatingFavoriteEmojis deviceWidth={deviceWidth}>
             {({ onNewEmoji }) => (
               <CoinRowFavoriteButton
                 isFavorited={localFavorite}
@@ -120,7 +116,7 @@ const ExchangeCoinRow = ({
                 }}
               />
             )}
-          </FloatingEmojis>
+          </FloatingFavoriteEmojis>
         )}
       </CoinRow>
     </ButtonPressAnimation>

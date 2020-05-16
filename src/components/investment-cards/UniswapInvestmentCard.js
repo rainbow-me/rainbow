@@ -2,7 +2,7 @@ import { floor } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
 import { useNavigation, useNavigationState } from 'react-navigation-hooks';
-import { withProps } from 'recompact';
+import styled from 'styled-components/primitives';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { useAccountSettings, useOpenInvestmentCards } from '../../hooks';
 import { colors, padding } from '../../styles';
@@ -20,11 +20,11 @@ const gradientColors = [
   colors.uniswapInvestmentCards.endGradient,
 ];
 
-const AssetLabel = withProps({
+const AssetLabel = styled(Text).attrs({
   color: colors.alpha(colors.blueGreyDark, 0.6),
   lineHeight: 'tight',
   size: 'smedium',
-})(Text);
+})``;
 
 const UniswapInvestmentCard = ({
   assetType,

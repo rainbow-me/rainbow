@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import styled from 'styled-components/primitives';
 import { useOpenInvestmentCards } from '../../hooks';
-import { colors, position, shadow } from '../../styles';
+import { colors, padding, position, shadow } from '../../styles';
 import { ButtonPressAnimation, SizeToggler } from '../animations';
 import { Column, InnerBorder } from '../layout';
 import InvestmentCardHeader from './InvestmentCardHeader';
@@ -20,12 +20,28 @@ const gradientStops = {
   start: { x: 0, y: 0.5 },
 };
 
-const sx = StyleSheet.create({
-  container: {
-    ...shadow.buildAsObject(0, 2, 3, colors.dark, 0.08),
-    flex: 0,
-  },
-});
+const Container = styled.View`
+  ${({ isExpandedState }) => {
+    return padding(
+      InvestmentCardMargin.vertical,
+      isExpandedState ? 0 : InvestmentCardMargin.horizontal
+    );
+  }};
+  ${shadow.build(0, 2, 3, colors.dark, 0.08)};
+  flex: 0;
+  height: ${({ height }) => height + 2 * InvestmentCardMargin.vertical + 20};
+`;
+
+const Content = styled(Column).attrs({ justify: 'start' })`
+  ${position.size('100%')};
+  background-color: ${({ color }) => color};
+  border-radius: ${InvestmentCardBorderRadius};
+`;
+
+const Mask = styled.View`
+  border-radius: ${InvestmentCardBorderRadius};
+  overflow: hidden;
+`;
 
 // eslint-disable-next-line react/display-name
 const InvestmentCard = React.forwardRef(
@@ -57,28 +73,18 @@ const InvestmentCard = React.forwardRef(
     );
 
     return (
-      <View
-        height={containerHeight + 2 * InvestmentCardMargin.vertical + 20}
-        paddingHorizontal={
-          isExpandedState ? 0 : InvestmentCardMargin.horizontal
-        }
-        paddingVertical={InvestmentCardMargin.vertical}
+      <Container
+        height={containerHeight}
+        isExpandedState={isExpandedState}
         ref={ref}
-        style={sx.container}
       >
         <SizeToggler
           endingWidth={InvestmentCardHeader.height}
           startingWidth={containerHeight}
           toggle={openInvestmentCards[uniqueId]}
         >
-          <View borderRadius={InvestmentCardBorderRadius} overflow="hidden">
-            <Column
-              {...position.sizeAsObject('100%')}
-              backgroundColor={gradientColors[0]}
-              borderRadius={InvestmentCardBorderRadius}
-              justify="start"
-              onLayout={onLayout}
-            >
+          <Mask>
+            <Content color={gradientColors[0]} onLayout={onLayout}>
               <LinearGradient
                 {...gradientStops}
                 colors={gradientColors}
@@ -98,10 +104,10 @@ const InvestmentCard = React.forwardRef(
                 radius={InvestmentCardBorderRadius}
                 width={0.5}
               />
-            </Column>
-          </View>
+            </Content>
+          </Mask>
         </SizeToggler>
-      </View>
+      </Container>
     );
   }
 );

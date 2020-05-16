@@ -1,53 +1,41 @@
-import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { StyleSheet } from 'react-native';
 import { CircularProgress } from 'react-native-circular-progress';
+import styled from 'styled-components/primitives';
 import RequestVendorLogoIcon from './RequestVendorLogoIcon';
 
 const RequestCoinIconSize = 48;
 
-const sx = StyleSheet.create({
-  childrenContainer: {
+const ProgressBorder = styled(CircularProgress).attrs({
+  childrenContainerStyle: {
     overflow: 'visible',
   },
-});
+  lineCap: 'round',
+  rotation: 0,
+  width: 2,
+})``;
 
 const RequestCoinIcon = ({
   dappName,
   expirationColor,
   percentElapsed,
-  size,
+  size = RequestCoinIconSize,
 }) => {
   const renderIcon = useCallback(
+    // react-native-circular-progress expects a single function child.
     () => <RequestVendorLogoIcon borderRadius={size} dappName={dappName} />,
     [dappName, size]
   );
 
   return (
-    <CircularProgress
-      childrenContainerStyle={sx.childrenContainer}
+    <ProgressBorder
       fill={percentElapsed}
-      lineCap="round"
       prefill={percentElapsed}
-      rotation={0}
       size={size}
       tintColor={expirationColor}
-      width={2}
     >
       {renderIcon}
-    </CircularProgress>
+    </ProgressBorder>
   );
-};
-
-RequestCoinIcon.propTypes = {
-  dappName: PropTypes.string,
-  expirationColor: PropTypes.string,
-  percentElapsed: PropTypes.number,
-  size: PropTypes.number,
-};
-
-RequestCoinIcon.defaultProps = {
-  size: RequestCoinIconSize,
 };
 
 export default React.memo(RequestCoinIcon);

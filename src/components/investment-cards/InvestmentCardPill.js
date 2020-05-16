@@ -1,21 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { colors } from '../../styles';
+import styled from 'styled-components/primitives';
+import { colors, margin, padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
 
-const sx = StyleSheet.create({
-  pill: {
-    backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
-    borderRadius: 20,
-    marginHorizontal: 5,
-    paddingBottom: 2.5,
-    paddingHorizontal: 6,
-    paddingTop: 1.8,
-  },
-});
+const Pill = styled(Centered)`
+  ${margin(0, 5)};
+  ${padding(1.8, 6, 2.5)};
+  background-color: ${colors.alpha(colors.blueGreyDark, 0.06)};
+  border-radius: 20;
+`;
 
 const InvestmentCardPill = ({ hideIcon, reverse, symbol, value }) => {
   const icon = hideIcon ? null : (
@@ -28,11 +24,11 @@ const InvestmentCardPill = ({ hideIcon, reverse, symbol, value }) => {
   );
 
   const label = (
-    <Centered key={`Pill-${symbol}`} style={sx.pill}>
+    <Pill key={`Pill-${symbol}`}>
       <Text letterSpacing="roundedTight" size="small" weight="semibold">
         {`${value} ${symbol}`}
       </Text>
-    </Centered>
+    </Pill>
   );
 
   const children = [icon, label];

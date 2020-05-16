@@ -1,72 +1,70 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
-import { StyleSheet, View } from 'react-primitives';
-import Caret from '../../assets/family-dropdown-arrow.png';
-import { colors } from '../../styles';
+import styled from 'styled-components/primitives';
+import CaretAsset from '../../assets/family-dropdown-arrow.png';
+import { colors, padding } from '../../styles';
 import { RotationArrow } from '../animations';
 import { Column, Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 
 const InvestmentCardHeaderHeight = 49;
 
-const sx = StyleSheet.create({
-  caret: {
-    height: 17,
-    width: 9,
-  },
-  emoji: {
-    paddingBottom: 1.5,
-  },
-});
+const Caret = styled(FastImage).attrs({ source: CaretAsset })`
+  height: 17;
+  width: 9;
+`;
 
-// eslint-disable-next-line react/display-name
+const CaretContainer = styled.View`
+  padding-left: 12;
+  padding-right: 4;
+`;
+
+const Container = styled(Row).attrs({
+  align: 'center',
+  justify: 'space-between',
+})`
+  ${padding(0, 15)};
+  height: ${InvestmentCardHeaderHeight};
+`;
+
+const InvestmentCardEmoji = styled(Emoji).attrs({
+  lineHeight: 'none',
+  size: 'medium',
+})`
+  padding-bottom: 1.5;
+`;
+
+const Label = styled(Text).attrs({
+  letterSpacing: 'roundedTight',
+  size: 'lmedium',
+  weight: 'semibold',
+})``;
+
 const InvestmentCardHeader = React.memo(
   ({ collapsed, color, emoji, isCollapsible, title, titleColor, value }) => (
-    <Row
-      align="center"
-      height={InvestmentCardHeaderHeight}
-      justify="space-between"
-      paddingHorizontal={15}
-    >
+    <Container>
       <RowWithMargins align="center" margin={3} paddingBottom={3}>
         <Column align="start" justify="center" width={24}>
-          <Emoji
-            lineHeight="none"
-            name={emoji}
-            size="medium"
-            style={sx.emoji}
-          />
+          <InvestmentCardEmoji name={emoji} />
         </Column>
-        <Text
-          color={titleColor || color}
-          letterSpacing="roundedTight"
-          size="lmedium"
-          weight="semibold"
-        >
-          {title}
-        </Text>
+        <Label color={titleColor || color}>{title}</Label>
       </RowWithMargins>
       <Row align="center" paddingBottom={3}>
-        <Text
-          color={color}
-          letterSpacing="roundedTight"
-          size="lmedium"
-          weight="semibold"
-        >
-          {value}
-        </Text>
+        <Label color={color}>{value}</Label>
         {isCollapsible && (
-          <View paddingLeft={12} paddingRight={4}>
+          <CaretContainer>
             <RotationArrow endingPosition={90} isOpen={!collapsed}>
-              <FastImage source={Caret} style={sx.caret} />
+              <Caret />
             </RotationArrow>
-          </View>
+          </CaretContainer>
         )}
       </Row>
-    </Row>
+    </Container>
   )
 );
+
+InvestmentCardHeader.displayName = 'InvestmentCardHeader';
 
 InvestmentCardHeader.propTypes = {
   collapsed: PropTypes.bool,

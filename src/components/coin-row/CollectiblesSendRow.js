@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
-import { StyleSheet } from 'react-native';
 import { compose, onlyUpdateForKeys, shouldUpdate, withProps } from 'recompact';
+import { css } from 'styled-components/primitives';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
-import { colors } from '../../styles';
+import { colors, padding } from '../../styles';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RequestVendorLogoIcon } from '../coin-icon';
@@ -15,25 +15,16 @@ import CoinRow from './CoinRow';
 const dividerHeight = 22;
 const selectedHeight = 78;
 
-const sx = StyleSheet.create({
-  selected: {
-    height: selectedHeight,
-    paddingBottom: 19,
-    paddingLeft: 13,
-    paddingRight: 14,
-    paddingTop: 17,
-  },
-});
+const selectedStyles = css`
+  ${padding(17, 14, 19, 13)};
+  height: ${selectedHeight};
+`;
 
 const BottomRow = ({ subtitle }) => (
   <TruncatedText color={colors.alpha(colors.blueGreyDark, 0.5)} size="smedium">
     {subtitle}
   </TruncatedText>
 );
-
-BottomRow.propTypes = {
-  subtitle: PropTypes.string,
-};
 
 const TopRow = ({ id, name, selected }) => (
   <CoinName
@@ -43,12 +34,6 @@ const TopRow = ({ id, name, selected }) => (
     {name || `#${id}`}
   </CoinName>
 );
-
-TopRow.propTypes = {
-  id: PropTypes.any,
-  name: PropTypes.string,
-  selected: PropTypes.bool,
-};
 
 const enhanceUniqueTokenCoinIcon = onlyUpdateForKeys([
   'background',
@@ -114,7 +99,7 @@ const CollectiblesSendRow = enhance(
           {...item}
           bottomRowRender={BottomRow}
           coinIconRender={UniqueTokenCoinIcon}
-          containerStyles={selected ? sx.selected : null}
+          containerStyles={selected ? selectedStyles : null}
           selected={selected}
           subtitle={subtitle}
           topRowRender={TopRow}

@@ -1,7 +1,8 @@
-import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
+import { useNavigation } from 'react-navigation-hooks';
+import styled from 'styled-components/primitives';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import {
   useAccountSettings,
@@ -18,30 +19,37 @@ import { Centered, InnerBorder } from '../layout';
 import { Text } from '../text';
 import HeaderButton from './HeaderButton';
 
-const sx = StyleSheet.create({
-  avatar: {
-    ...borders.buildCircleAsObject(34),
-    zIndex: 10,
-  },
-  firstLetter: {
-    width: '100%',
-  },
-});
-
 const shadows = [
   [0, 2, 2.5, colors.dark, 0.08],
   [0, 6, 5, colors.dark, 0.12],
 ];
 
-const ProfileHeaderButton = ({ navigation }) => {
+const FirstLetter = styled(Text).attrs({
+  align: 'center',
+  color: colors.white,
+  letterSpacing: -0.6,
+  lineHeight: 34,
+  size: 'big',
+  weight: 'regular',
+})`
+  width: 100%;
+`;
+
+const FirstLetterCircleBackground = styled.View`
+  ${borders.buildCircle(34)};
+  background-color: ${({ color }) => color};
+  z-index: 10;
+`;
+
+export default function ProfileHeaderButton() {
+  const { navigate } = useNavigation();
   const { pendingRequestCount } = useRequests();
   const { isCoinListEdited } = useCoinListEdited();
   const { accountColor, accountName } = useAccountSettings();
 
-  const onPress = useCallback(
-    () => navigation.navigate(Routes.PROFILE_SCREEN),
-    [navigation]
-  );
+  const onPress = useCallback(() => navigate(Routes.PROFILE_SCREEN), [
+    navigate,
+  ]);
 
   return (
     <OpacityToggler
@@ -51,8 +59,8 @@ const ProfileHeaderButton = ({ navigation }) => {
     >
       <View pointerEvents={isCoinListEdited ? 'none' : 'auto'}>
         <HeaderButton
-          testID="goToProfile"
           onPress={onPress}
+          testID="goToProfile"
           transformOrigin="left"
         >
           <Centered>
@@ -64,23 +72,12 @@ const ProfileHeaderButton = ({ navigation }) => {
                 shadows={shadows}
                 width={34}
               >
-                <View
-                  backgroundColor={colors.avatarColor[accountColor]}
-                  style={sx.avatar}
+                <FirstLetterCircleBackground
+                  color={colors.avatarColor[accountColor]}
                 >
-                  <Text
-                    align="center"
-                    color={colors.white}
-                    letterSpacing={-0.6}
-                    lineHeight={34}
-                    size="big"
-                    style={sx.firstLetter}
-                    weight="regular"
-                  >
-                    {getFirstGrapheme(accountName)}
-                  </Text>
+                  <FirstLetter>{getFirstGrapheme(accountName)}</FirstLetter>
                   <InnerBorder opacity={0.04} radius={34} />
-                </View>
+                </FirstLetterCircleBackground>
               </ShadowStack>
             ) : (
               <Avatar size={34} />
@@ -93,10 +90,4 @@ const ProfileHeaderButton = ({ navigation }) => {
       </View>
     </OpacityToggler>
   );
-};
-
-ProfileHeaderButton.propTypes = {
-  navigation: PropTypes.object,
-};
-
-export default ProfileHeaderButton;
+}

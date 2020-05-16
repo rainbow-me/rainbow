@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useRef } from 'react';
-import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native';
+import styled from 'styled-components/primitives';
 import { colors, fonts } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { TokenSelectionButton } from '../buttons';
@@ -14,14 +15,36 @@ const BottomRowHeight = 32;
 const padding = 15;
 const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
-const sx = StyleSheet.create({
-  maxEmoji: {
-    marginTop: 0.5,
-  },
-  maxLabel: {
-    marginTop: 1,
-  },
-});
+const MaxButtonEmoji = styled(Emoji).attrs({
+  lineHeight: 'none',
+  name: 'moneybag',
+  size: 'lmedium',
+})`
+  margin-top: 0.5;
+`;
+
+const MaxButtonLabel = styled(Text).attrs({
+  align: 'center',
+  color: 'appleBlue',
+  size: 'lmedium',
+  weight: 'semibold',
+})`
+  margin-top: 1;
+`;
+
+const MaxButton = ({ disabled, onPress }) => (
+  <ButtonPressAnimation disabled={disabled} marginRight={4} onPress={onPress}>
+    <RowWithMargins
+      align="center"
+      height={BottomRowHeight}
+      margin={0}
+      paddingHorizontal={padding}
+    >
+      <MaxButtonEmoji />
+      <MaxButtonLabel>Max</MaxButtonLabel>
+    </RowWithMargins>
+  </ButtonPressAnimation>
+);
 
 const ExchangeInputField = ({
   assignInputFieldRef,
@@ -120,34 +143,10 @@ const ExchangeInputField = ({
           onFocus={onFocus}
           setNativeAmount={setNativeAmount}
         />
-        <ButtonPressAnimation
+        <MaxButton
           disabled={!inputCurrencySymbol}
-          marginRight={4}
           onPress={onPressMaxBalance}
-        >
-          <RowWithMargins
-            align="center"
-            height={BottomRowHeight}
-            margin={0}
-            paddingHorizontal={padding}
-          >
-            <Emoji
-              lineHeight="none"
-              name="moneybag"
-              size="lmedium"
-              style={sx.maxEmoji}
-            />
-            <Text
-              align="center"
-              color="appleBlue"
-              size="lmedium"
-              style={sx.maxLabel}
-              weight="semibold"
-            >
-              Max
-            </Text>
-          </RowWithMargins>
-        </ButtonPressAnimation>
+        />
       </Row>
     </ColumnWithMargins>
   );

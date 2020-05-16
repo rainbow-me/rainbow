@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useRef } from 'react';
-import { StyleSheet } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
-import { withNeverRerender } from '../../hoc';
-import { colors, fonts } from '../../styles';
+import styled from 'styled-components/primitives';
+import { borders, colors, fonts } from '../../styles';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
@@ -11,27 +10,7 @@ import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 
 const paddingValue = 15;
-
-const sx = StyleSheet.create({
-  container: {
-    backgroundColor: colors.white,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    overflow: 'hidden',
-    paddingBottom: 26,
-    paddingTop: 24 + paddingValue,
-    width: '100%',
-  },
-  fakeNotch: {
-    height: paddingValue,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    width: '100%',
-    zIndex: 0,
-  },
-});
+const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
 const FakeNotchShadow = [
   [0, 0, 1, colors.dark, 0.01],
@@ -39,11 +18,29 @@ const FakeNotchShadow = [
   [0, 8, 23, colors.dark, 0.05],
 ];
 
-const FakeNotchThing = withNeverRerender(() => (
-  <ShadowStack shadows={FakeNotchShadow} style={sx.fakeNotch} />
-));
+const Container = styled(Row).attrs({
+  align: 'center',
+})`
+  ${borders.buildRadius('bottom', 30)};
+  background-color: ${colors.white};
+  flex: 0;
+  overflow: hidden;
+  padding-bottom: 26;
+  padding-top: ${24 + paddingValue};
+  width: 100%;
+`;
 
-const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
+const FakeNotchThing = styled(ShadowStack).attrs({
+  shadows: FakeNotchShadow,
+})`
+  height: ${paddingValue};
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+  z-index: 0;
+`;
 
 const ExchangeOutputField = ({
   assignOutputFieldRef,
@@ -69,7 +66,7 @@ const ExchangeOutputField = ({
   };
 
   return (
-    <Row align="center" flex={0} style={sx.container}>
+    <Container>
       <FakeNotchThing />
       <RowWithMargins
         align="center"
@@ -105,7 +102,7 @@ const ExchangeOutputField = ({
         onPress={onPressSelectOutputCurrency}
         symbol={outputCurrencySymbol}
       />
-    </Row>
+    </Container>
   );
 };
 

@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import ShadowStack from 'react-native-shadow-stack';
+import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
 import { initials } from '../../utils';
 import { Centered } from '../layout';
@@ -20,17 +20,28 @@ const RVLIShadows = {
   ],
 };
 
-const RequestVendorLogoIcon = ({
-  backgroundColor,
-  borderRadius,
+const Content = styled(Centered)`
+  ${({ size }) => position.size(size)};
+  background-color: ${({ color }) => color};
+`;
+
+export default function RequestVendorLogoIcon({
+  backgroundColor = colors.dark,
+  borderRadius = RVLIBorderRadius,
   dappName,
   imageUrl,
   shouldPrioritizeImageLoading,
   showLargeShadow,
-  size,
+  size = CoinIconSize,
   ...props
-}) => {
+}) {
   const [error, setError] = useState(null);
+
+  // When dapps have no icon the bgColor provided to us is transparent.
+  // Having a transparent background breaks our UI, so we instead show a background
+  // color of white.
+  const bgColor =
+    backgroundColor === 'transparent' ? colors.white : backgroundColor;
 
   const imageSource = useMemo(
     () => ({
@@ -41,18 +52,15 @@ const RequestVendorLogoIcon = ({
     [imageUrl, shouldPrioritizeImageLoading]
   );
 
-  // When dapps have no icon the bg is transparent
-  const bg = backgroundColor === 'transparent' ? colors.white : backgroundColor;
-
   return (
     <ShadowStack
       {...props}
       {...position.sizeAsObject(size)}
-      backgroundColor={bg}
+      backgroundColor={bgColor}
       borderRadius={borderRadius}
       shadows={RVLIShadows[showLargeShadow ? 'large' : 'default']}
     >
-      <Centered {...position.sizeAsObject(size)} backgroundColor={bg}>
+      <Content color={bgColor} size={size}>
         {imageUrl && !error ? (
           <FastImage
             onError={err => setError(err)}
@@ -62,32 +70,14 @@ const RequestVendorLogoIcon = ({
         ) : (
           <Text
             align="center"
-            color={colors.getFallbackTextColor(bg)}
+            color={colors.getFallbackTextColor(bgColor)}
             size="smedium"
             weight="semibold"
           >
             {initials(dappName)}
           </Text>
         )}
-      </Centered>
+      </Content>
     </ShadowStack>
   );
-};
-
-RequestVendorLogoIcon.propTypes = {
-  backgroundColor: PropTypes.string,
-  borderRadius: PropTypes.number,
-  dappName: PropTypes.string.isRequired,
-  imageUrl: PropTypes.string,
-  shouldPrioritizeImageLoading: PropTypes.bool,
-  showLargeShadow: PropTypes.bool,
-  size: PropTypes.number.isRequired,
-};
-
-RequestVendorLogoIcon.defaultProps = {
-  backgroundColor: colors.dark,
-  borderRadius: RVLIBorderRadius,
-  size: CoinIconSize,
-};
-
-export default RequestVendorLogoIcon;
+}

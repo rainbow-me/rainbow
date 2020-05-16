@@ -2,10 +2,11 @@ import analytics from '@segment/analytics-react-native';
 import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { InteractionManager, StyleSheet } from 'react-native';
+import { InteractionManager } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ShadowStack from 'react-native-shadow-stack';
 import { useNavigation } from 'react-navigation-hooks';
+import styled from 'styled-components/primitives';
 import {
   calculateAPY,
   calculateCompoundInterestInDays,
@@ -29,12 +30,6 @@ const SavingsListRowShadows = [
   [0, 5, 15, colors.dark, 0.04],
 ];
 
-const sx = StyleSheet.create({
-  shadow: {
-    elevation: 15,
-  },
-});
-
 const neverRerender = () => true;
 // eslint-disable-next-line react/display-name
 const SavingsListRowGradient = React.memo(
@@ -51,6 +46,17 @@ const SavingsListRowGradient = React.memo(
   ),
   neverRerender
 );
+
+const SavingsListRowShadowStack = styled(ShadowStack).attrs(
+  ({ deviceWidth }) => ({
+    borderRadius: 49,
+    height: 49,
+    shadows: SavingsListRowShadows,
+    width: deviceWidth - 38,
+  })
+)`
+  elevation: 15;
+`;
 
 const SavingsListRow = ({
   cTokenBalance,
@@ -141,13 +147,7 @@ const SavingsListRow = ({
   return !underlying || !underlying.address ? null : (
     <ButtonPressAnimation onPress={onButtonPress} scaleTo={0.96}>
       <Centered direction="column" marginBottom={15}>
-        <ShadowStack
-          borderRadius={49}
-          height={49}
-          shadows={SavingsListRowShadows}
-          style={sx.shadow}
-          width={deviceWidth - 38}
-        >
+        <SavingsListRowShadowStack deviceWidth={deviceWidth}>
           <SavingsListRowGradient />
           <Row
             align="center"
@@ -174,7 +174,7 @@ const SavingsListRow = ({
             </Row>
             <APYPill value={apyTruncated} />
           </Row>
-        </ShadowStack>
+        </SavingsListRowShadowStack>
       </Centered>
     </ButtonPressAnimation>
   );

@@ -1,17 +1,20 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useRef, useState } from 'react';
-import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native';
+import styled from 'styled-components/primitives';
 import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { colors, fonts } from '../../styles';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
 
-const sx = StyleSheet.create({
-  text: {
-    marginBottom: 0.5,
-  },
-});
+const CurrencySymbol = styled(Text).attrs({
+  size: 'large',
+  weight: 'regular',
+})`
+  flex: 0;
+  margin-bottom: 0.5;
+`;
 
 const ExchangeNativeField = ({
   assignNativeFieldRef,
@@ -39,10 +42,7 @@ const ExchangeNativeField = ({
   const handleBlur = useCallback(
     event => {
       setIsFocused(false);
-
-      if (onBlur) {
-        onBlur(event);
-      }
+      if (onBlur) onBlur(event);
     },
     [onBlur]
   );
@@ -50,10 +50,7 @@ const ExchangeNativeField = ({
   const handleFocus = useCallback(
     event => {
       setIsFocused(true);
-
-      if (onFocus) {
-        onFocus(event);
-      }
+      if (onFocus) onFocus(event);
     },
     [onFocus]
   );
@@ -82,15 +79,7 @@ const ExchangeNativeField = ({
   return (
     <TouchableWithoutFeedback flex={0} onPress={focusNativeField}>
       <Row align="center" flex={1} height={height}>
-        <Text
-          color={color}
-          flex={0}
-          size="large"
-          style={sx.text}
-          weight="regular"
-        >
-          {symbol}
-        </Text>
+        <CurrencySymbol color={color}>{symbol}</CurrencySymbol>
         <ExchangeInput
           color={color}
           disableTabularNums

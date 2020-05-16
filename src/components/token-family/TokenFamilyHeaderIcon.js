@@ -1,26 +1,28 @@
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import { FallbackIcon } from 'react-coin-icon';
-import { StyleSheet } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
 import stylePropType from 'react-style-proptype';
+import styled from 'styled-components/primitives';
 import { borders, colors } from '../../styles';
 import { initials } from '../../utils';
 import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
 import { Emoji } from '../text';
 
-const sx = StyleSheet.create({
-  trophy: {
-    height: 30,
-    marginRight: 4.5,
-    textAlignVertical: 'center',
-  },
-});
-
 const shadows = [
   [0, 4, 6, colors.dark, 0.04],
   [0, 1, 3, colors.dark, 0.08],
 ];
+
+const TrophyEmoji = styled(Emoji).attrs({
+  align: 'center',
+  name: 'trophy',
+  size: 'medium',
+})`
+  height: 30;
+  margin-right: 4.5;
+  text-align-vertical: center;
+`;
 
 const TokenFamilyHeaderIcon = ({
   familyImage,
@@ -30,8 +32,9 @@ const TokenFamilyHeaderIcon = ({
 }) => {
   const imageSource = useMemo(() => ({ uri: familyImage }), [familyImage]);
   const size = borders.buildCircleAsObject(isCoinRow ? 40 : 32);
+
   return familyName === 'Showcase' ? (
-    <Emoji align="center" name="trophy" size="medium" style={sx.trophy} />
+    <TrophyEmoji />
   ) : (
     <ShadowStack
       {...size}

@@ -36,18 +36,18 @@ const enhance = compose(
 
 const CoinRow = enhance(
   ({
+    address,
     bottomRowRender,
     children,
     coinIconRender,
     containerStyles,
     contentStyles,
     highlight,
-    symbol,
-    address,
-    topRowRender,
     isCoinListEdited,
     isHidden,
     isPinned,
+    symbol,
+    topRowRender,
     ...props
   }) => (
     <Container style={containerStyles}>

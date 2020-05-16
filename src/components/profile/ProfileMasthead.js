@@ -1,8 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import GraphemeSplitter from 'grapheme-splitter';
-import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { Platform, StyleSheet, Text } from 'react-native';
+import { Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
@@ -23,13 +22,6 @@ import AddCashButton from './AddCashButton';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
 
-const sx = StyleSheet.create({
-  bottomDivider: {
-    bottom: 0,
-    position: 'absolute',
-  },
-});
-
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
   firstSectionLength: abbreviations.defaultNumCharsPerSection,
@@ -42,6 +34,17 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
   margin-top: ${isAvatarPickerAvailable ? 0 : -6};
   padding-left: 24;
   padding-right: 24;
+`;
+
+const AvatarImage = styled(FastImage).attrs({ source: AvatarImageSource })`
+  ${borders.buildCircle(85)};
+`;
+
+const ProfileMastheadDivider = styled(Divider).attrs({
+  color: colors.rowDividerLight,
+})`
+  bottom: 0;
+  position: absolute;
 `;
 
 const FirstLetter = styled(Text)`
@@ -59,7 +62,7 @@ const ProfileMasthead = ({
   accountColor,
   accountName,
   addCashAvailable,
-  showBottomDivider,
+  showBottomDivider = true,
   onPressAvatar,
 }) => {
   const name = accountName || DEFAULT_WALLET_NAME;
@@ -91,10 +94,7 @@ const ProfileMasthead = ({
           </FirstLetter>
         </AvatarCircle>
       ) : (
-        <FastImage
-          source={AvatarImageSource}
-          style={borders.buildCircleAsObject(85)}
-        />
+        <AvatarImage />
       )}
       <CopyTooltip
         textToCopy={accountENS || accountAddress}
@@ -134,23 +134,9 @@ const ProfileMasthead = ({
         />
       </RowWithMargins>
       {addCashAvailable && <AddCashButton onPress={onAddCash} />}
-      {showBottomDivider && (
-        <Divider color={colors.rowDividerLight} style={sx.bottomDivider} />
-      )}
+      {showBottomDivider && <ProfileMastheadDivider />}
     </Column>
   );
-};
-
-ProfileMasthead.propTypes = {
-  accountAddress: PropTypes.string,
-  accountColor: PropTypes.number,
-  accountName: PropTypes.string,
-  addCashAvailable: PropTypes.bool,
-  showBottomDivider: PropTypes.bool,
-};
-
-ProfileMasthead.defaultProps = {
-  showBottomDivider: true,
 };
 
 export default compose(

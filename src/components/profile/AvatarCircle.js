@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
-import { compose } from 'recompact';
+import styled from 'styled-components/primitives';
 import { withAccountInfo } from '../../hoc';
 import { colors, position } from '../../styles';
 import { getFirstGrapheme } from '../../utils';
@@ -10,15 +9,24 @@ import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
 import { Text } from '../text';
 
-const sx = StyleSheet.create({
-  avatar: {
-    ...position.sizeAsObject(65),
-    marginBottom: 16,
-  },
-  firstLetter: {
-    width: '100%',
-  },
-});
+const ProfileActionSize = 65;
+
+const FirstLetter = styled(Text).attrs({
+  align: 'center',
+  color: colors.white,
+  letterSpacing: 2,
+  lineHeight: 66,
+  size: 38,
+  weight: 'semibold',
+})`
+  width: 100%;
+`;
+
+const FirstLetterCircleBackground = styled.View`
+  ${position.size(ProfileActionSize)};
+  background-color: ${({ color }) => color};
+  margin-bottom: 16;
+`;
 
 const ProfileAction = ({
   accountColor,
@@ -49,31 +57,18 @@ const ProfileAction = ({
       scaleTo={0.9}
     >
       <ShadowStack
-        {...position.sizeAsObject(65)}
+        {...position.sizeAsObject(ProfileActionSize)}
         backgroundColor={overlayStyles ? 'rgb(51, 54, 59)' : colors.white}
-        borderRadius={65}
-        height={65}
+        borderRadius={ProfileActionSize}
         marginBottom={12}
         shadows={shadows[overlayStyles ? 'overlay' : 'default']}
-        width={65}
       >
-        <View
-          backgroundColor={colors.avatarColor[accountColor]}
-          style={sx.avatar}
-        >
-          <Text
-            align="center"
-            color={colors.white}
-            letterSpacing={2}
-            lineHeight={66}
-            size={38}
-            style={sx.firstLetter}
-            weight="semibold"
-          >
-            {getFirstGrapheme(accountName)}
-          </Text>
-          {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
-        </View>
+        <FirstLetterCircleBackground color={colors.avatarColor[accountColor]}>
+          <FirstLetter>{getFirstGrapheme(accountName)}</FirstLetter>
+          {!overlayStyles && (
+            <InnerBorder opacity={0.02} radius={ProfileActionSize} />
+          )}
+        </FirstLetterCircleBackground>
       </ShadowStack>
     </ButtonPressAnimation>
   );
@@ -91,4 +86,4 @@ ProfileAction.defaultProps = {
   accountName: '🤔',
 };
 
-export default compose(withAccountInfo)(ProfileAction);
+export default withAccountInfo(ProfileAction);

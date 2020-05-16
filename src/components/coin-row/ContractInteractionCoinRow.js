@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Linking } from 'react-native';
 import {
@@ -6,9 +5,8 @@ import {
   mapProps,
   onlyUpdateForKeys,
   withHandlers,
-  withProps,
 } from 'recompact';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import styled from 'styled-components/primitives';
 import { withAccountSettings } from '../../hoc';
 import { ethereumUtils } from '../../utils/';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
@@ -18,24 +16,12 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 
-const rowRenderPropTypes = {
-  // eslint-disable-next-line react/no-unused-prop-types
-  dappName: PropTypes.string,
-  // eslint-disable-next-line react/no-unused-prop-types
-  status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
-};
-
 const BottomRow = ({ dappName }) => <CoinName>{dappName}</CoinName>;
-
-BottomRow.propTypes = rowRenderPropTypes;
-
 const TopRow = ({ status }) => <TransactionStatusBadge status={status} />;
 
-TopRow.propTypes = rowRenderPropTypes;
-
-const ContractInteractionVenderLogoIcon = withProps({
+const ContractInteractionVenderLogoIcon = styled(RequestVendorLogoIcon).attrs({
   borderRadius: CoinIconSize,
-})(RequestVendorLogoIcon);
+})``;
 
 const ContractInteractionCoinRow = ({ item, onPressTransaction, ...props }) => (
   <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.98}>
@@ -49,8 +35,6 @@ const ContractInteractionCoinRow = ({ item, onPressTransaction, ...props }) => (
     />
   </ButtonPressAnimation>
 );
-
-ContractInteractionCoinRow.propTypes = rowRenderPropTypes;
 
 export default compose(
   mapProps(({ item: { hash, pending, ...item }, ...props }) => ({

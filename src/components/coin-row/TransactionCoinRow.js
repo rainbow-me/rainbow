@@ -1,9 +1,10 @@
 import { compact, get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Linking, StyleSheet } from 'react-native';
+import { Linking } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { compose, mapProps, onlyUpdateForKeys, withHandlers } from 'recompact';
+import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import { withAccountSettings } from '../../hoc';
@@ -19,11 +20,9 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 
-const sx = StyleSheet.create({
-  container: {
-    paddingLeft: 19,
-  },
-});
+const containerStyles = css`
+  padding-left: 19;
+`;
 
 const rowRenderPropTypes = {
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
@@ -109,8 +108,7 @@ const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
       {...item}
       {...props}
       bottomRowRender={BottomRow}
-      containerStyles={sx.container}
-      shouldRasterizeIOS
+      containerStyles={containerStyles}
       topRowRender={TopRow}
     />
   </ButtonPressAnimation>
