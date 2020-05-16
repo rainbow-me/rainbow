@@ -1,7 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { TextInput } from 'react-native';
+import { TextInput as TextInputPrimitive } from 'react-native';
+import styled from 'styled-components/primitives';
 import { buildTextStyles, colors } from '../../styles';
+
+const TextInput = styled(TextInputPrimitive)(buildTextStyles);
 
 export default class Input extends PureComponent {
   static propTypes = {
@@ -50,7 +53,6 @@ export default class Input extends PureComponent {
         placeholderTextColor={placeholderTextColor}
         ref={this.ref}
         spellCheck={spellCheck}
-        style={buildTextStyles(props)}
       />
     );
   };

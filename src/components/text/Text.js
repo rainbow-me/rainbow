@@ -1,49 +1,8 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import { Text as TextPrimitive } from 'react-primitives';
-import { useTextStyles } from '../../styles';
+import styled from 'styled-components/primitives';
+import { buildTextStyles } from '../../styles';
 
-const Text = (
-  {
-    align,
-    color,
-    isEmoji,
-    family,
-    letterSpacing,
-    lineHeight,
-    mono,
-    opacity,
-    size,
-    style,
-    uppercase,
-    weight,
-    ...props
-  },
-  ref
-) => {
-  const textStyles = useTextStyles({
-    align,
-    color,
-    family,
-    isEmoji,
-    letterSpacing,
-    lineHeight,
-    mono,
-    opacity,
-    size,
-    uppercase,
-    weight,
-  });
-
-  return (
-    <TextPrimitive
-      {...props}
-      allowFontScaling={false}
-      ref={ref}
-      style={[textStyles, style]}
-    />
-  );
-};
+const Text = styled.Text.attrs({ allowFontScaling: false })(buildTextStyles);
 
 Text.propTypes = {
   align: PropTypes.oneOf(['auto', 'center', 'left', 'justify', 'right']),
@@ -60,4 +19,4 @@ Text.propTypes = {
   weight: PropTypes.string,
 };
 
-export default React.forwardRef(Text);
+export default Text;

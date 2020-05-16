@@ -5,7 +5,7 @@ import { fonts } from '../../styles';
 import Text from './Text';
 
 const Emoji = ({ name, ...props }) => (
-  <Text {...props} emoji>
+  <Text {...props} isEmoji>
     {nodeEmoji.get(name)}
   </Text>
 );
