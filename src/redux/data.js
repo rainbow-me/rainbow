@@ -198,7 +198,7 @@ export const transactionsRemoved = message => (dispatch, getState) => {
   logger.log('[data] - remove txn hashes', removeHashes);
   const updatedTransactions = filter(
     transactions,
-    txn => !includes(removeHashes, txn.hash.split('-').shift())
+    txn => !includes(removeHashes, ethereumUtils.getHash(txn))
   );
 
   dispatch({
@@ -452,7 +452,7 @@ export const dataWatchPendingTransactions = () => async (
   const updatedPendingTransactions = await Promise.all(
     pending.map(async tx => {
       const updatedPending = { ...tx };
-      const txHash = tx.hash.split('-').shift();
+      const txHash = ethereumUtils.getHash(tx);
       try {
         const txObj = await getTransactionReceipt(txHash);
         if (txObj && txObj.blockNumber) {

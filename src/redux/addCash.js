@@ -41,7 +41,8 @@ export const addCashUpdatePurchases = purchases => (dispatch, getState) => {
     if (txn.status === TransactionStatusTypes.purchasing) {
       const updatedPurchase = find(
         purchases,
-        purchase => purchase.hash === txn.hash
+        purchase =>
+          ethereumUtils.getHash(purchase) === ethereumUtils.getHash(txn)
       );
       if (updatedPurchase) {
         return {
