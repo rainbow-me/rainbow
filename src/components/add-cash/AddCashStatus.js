@@ -10,8 +10,8 @@ import jumpingDaiAnimation from '../../assets/lottie/jumping-dai.json';
 import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import {
+  ADD_CASH_STATUS_TYPES,
   WYRE_ORDER_STATUS_TYPES,
-  WYRE_TRANSFER_STATUS_TYPES,
 } from '../../helpers/wyreStatusTypes';
 import { useDimensions, usePrevious, useTimeout } from '../../hooks';
 import Routes from '../../screens/Routes/routesNames';
@@ -96,6 +96,15 @@ const AddCashFailed = () => (
   </Content>
 );
 
+const AddCashChecking = () => (
+  <Content>
+    <Centered height={85}>
+      <Emoji name="bank" size={50} />
+    </Centered>
+    <StatusMessageText>Running checks...</StatusMessageText>
+  </Content>
+);
+
 const AddCashPending = ({ currency }) => (
   <Fragment>
     <Content>
@@ -144,17 +153,21 @@ const AddCashStatus = ({ orderCurrency, orderStatus, transferStatus }) => {
       orderStatus === WYRE_ORDER_STATUS_TYPES.success ||
       transferStatus === TransactionStatusTypes.purchased
     ) {
-      return WYRE_TRANSFER_STATUS_TYPES.success;
+      return ADD_CASH_STATUS_TYPES.success;
     }
 
     if (
       orderStatus === WYRE_ORDER_STATUS_TYPES.failed ||
       transferStatus === TransactionStatusTypes.failed
     ) {
-      return WYRE_TRANSFER_STATUS_TYPES.failed;
+      return ADD_CASH_STATUS_TYPES.failed;
     }
 
-    return WYRE_TRANSFER_STATUS_TYPES.pending;
+    if (orderStatus === WYRE_ORDER_STATUS_TYPES.checking) {
+      return ADD_CASH_STATUS_TYPES.checking;
+    }
+
+    return ADD_CASH_STATUS_TYPES.pending;
   }, [orderStatus, transferStatus]);
 
   const previousStatus = usePrevious(status);
@@ -169,7 +182,7 @@ const AddCashStatus = ({ orderCurrency, orderStatus, transferStatus }) => {
 
   return (
     <Transitioning.View ref={ref} style={sx.container} transition={transition}>
-      {status === WYRE_TRANSFER_STATUS_TYPES.failed ? (
+      {status === ADD_CASH_STATUS_TYPES.failed ? (
         <AddCashFailed />
       ) : (
         <FloatingEmojisTapper
@@ -177,8 +190,10 @@ const AddCashStatus = ({ orderCurrency, orderStatus, transferStatus }) => {
           emojis={['money_with_wings']}
           flex={1}
         >
-          {status === WYRE_TRANSFER_STATUS_TYPES.success ? (
+          {status === ADD_CASH_STATUS_TYPES.success ? (
             <AddCashSuccess currency={currency} />
+          ) : status === ADD_CASH_STATUS_TYPES.checking ? (
+            <AddCashChecking />
           ) : (
             <AddCashPending currency={currency} />
           )}

@@ -5,9 +5,9 @@ export const WYRE_ORDER_STATUS_TYPES = {
   success: 'COMPLETE',
 };
 
-export const WYRE_TRANSFER_STATUS_TYPES = {
+export const ADD_CASH_STATUS_TYPES = {
+  checking: 'RUNNING_CHECKS',
   failed: 'FAILED',
-  initiated: 'INITIATED',
   pending: 'PENDING',
   success: 'COMPLETED',
 };
