@@ -6,8 +6,8 @@ import { withNeverRerender } from '../../hoc';
 import { colors, fonts } from '../../styles';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
-import { EnDash } from '../html-entities';
 import { Row, RowWithMargins } from '../layout';
+import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 
 const paddingValue = 15;

@@ -5,9 +5,8 @@ import { colors, fonts } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
-import { EnDash } from '../html-entities';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
-import { Emoji, Text } from '../text';
+import { Emoji, EnDash, Text } from '../text';
 import ExchangeInput from './ExchangeInput';
 import ExchangeNativeField from './ExchangeNativeField';
 

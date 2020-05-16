@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { usePrevious } from '../../hooks';
 import { colors, padding, position } from '../../styles';
@@ -11,9 +10,18 @@ import { Centered, Column } from '../layout';
 import { SheetHandle } from '../sheet';
 import { Text } from '../text';
 
-const InfoButtonPaddingHorizontal = 19;
-const InfoIconSize = 18;
 const SheetHandleMargin = 6;
+
+const transition = (
+  <Transition.Sequence>
+    <Transition.Out durationMs={200} interpolation="easeOut" type="fade" />
+    <Transition.Change durationMs={200} interpolation="easeInOut" />
+    <Transition.Together>
+      <Transition.In durationMs={75} interpolation="easeOut" type="fade" />
+      <Transition.In durationMs={100} interpolation="easeOut" type="scale" />
+    </Transition.Together>
+  </Transition.Sequence>
+);
 
 const InfoButtonPosition = `
   bottom: 0;
@@ -32,40 +40,21 @@ const InfoButton = styled(Centered).attrs({
   useNativeDriver: true,
 })`
   ${InfoButtonPosition};
+  ${padding(0, 19)};
   margin-top: ${SheetHandleMargin + 4};
-  padding-left: ${InfoButtonPaddingHorizontal};
-  padding-right: ${InfoButtonPaddingHorizontal};
 `;
 
 const InfoButtonIcon = styled(Icon).attrs({
   color: colors.alpha(colors.blueGreyDark, 0.3),
   name: 'info',
 })`
-  ${position.size(InfoIconSize)};
+  ${position.size(18)};
 `;
 
 const InfoButtonTransition = styled(Transitioning.View)`
   ${position.centered};
   ${InfoButtonPosition};
 `;
-
-const Title = withProps({
-  align: 'center',
-  lineHeight: 'loose',
-  size: 'large',
-  weight: 'bold',
-})(Text);
-
-const transition = (
-  <Transition.Sequence>
-    <Transition.Out durationMs={200} interpolation="easeOut" type="fade" />
-    <Transition.Change durationMs={200} interpolation="easeInOut" />
-    <Transition.Together>
-      <Transition.In durationMs={75} interpolation="easeOut" type="fade" />
-      <Transition.In durationMs={100} interpolation="easeOut" type="scale" />
-    </Transition.Together>
-  </Transition.Sequence>
-);
 
 const ExchangeModalHeader = ({ onPressDetails, showDetailsButton, title }) => {
   const ref = useRef();
@@ -78,7 +67,9 @@ const ExchangeModalHeader = ({ onPressDetails, showDetailsButton, title }) => {
   return (
     <Column align="center" css={padding(8, 0)}>
       <SheetHandle marginBottom={SheetHandleMargin} />
-      <Title>{title}</Title>
+      <Text align="center" lineHeight="loose" size="large" weight="bold">
+        {title}
+      </Text>
       <InfoButtonTransition ref={ref} transition={transition}>
         {showDetailsButton && (
           <InfoButton as={TouchableScale} onPress={onPressDetails}>
