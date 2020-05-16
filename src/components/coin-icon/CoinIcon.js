@@ -1,22 +1,14 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
-import ReactCoinIcon, { FallbackIcon } from 'react-coin-icon';
-import FastImage from 'react-native-fast-image';
+import React, { Fragment } from 'react';
+import ReactCoinIcon from 'react-coin-icon';
 import ShadowStack from 'react-native-shadow-stack';
 import { onlyUpdateForKeys } from 'recompact';
-import styled, { css } from 'styled-components/primitives';
-import { toChecksumAddress } from '../../handlers/web3';
-import { borders, colors, fonts } from '../../styles';
+import styled from 'styled-components/primitives';
+import { borders, colors } from '../../styles';
 import { Icon } from '../icons';
+import CoinIconFallback from './CoinIconFallback';
 
 const CoinIconSize = 40;
-
-const fallbackTextStyles = css`
-  font-family: ${fonts.family.SFProRounded};
-  letter-spacing: ${fonts.letterSpacing.roundedTight};
-  margin-bottom: 1;
-  text-align: center;
-`;
 
 const IndicatorIcon = styled.View`
   align-items: center;
@@ -34,48 +26,6 @@ const IndicatorIcon = styled.View`
   width: 20;
   z-index: 10;
 `;
-
-const CoinIconFallback = fallbackProps => {
-  const { height, width, address, symbol } = fallbackProps;
-  const [remoteIconUrl, setRemoteIconUrl] = useState(null);
-  const [iconNotAvailable, setIconNotAvailable] = useState(false);
-  const loadRemoteIcon = useCallback(async () => {
-    if (address) {
-      const checksummedAddress = toChecksumAddress(address);
-      const potentialIconUrl = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${checksummedAddress}/logo.png`;
-      if (potentialIconUrl !== remoteIconUrl) {
-        setRemoteIconUrl(potentialIconUrl);
-      }
-    }
-  }, [address, remoteIconUrl]);
-
-  if (!iconNotAvailable) {
-    loadRemoteIcon();
-  }
-
-  if (iconNotAvailable) {
-    return (
-      <FallbackIcon
-        {...fallbackProps}
-        bgColor={colors.blueGreyDark}
-        symbol={symbol || ''}
-        textStyles={fallbackTextStyles}
-      />
-    );
-  } else if (remoteIconUrl) {
-    return (
-      <FastImage
-        {...fallbackProps}
-        onError={() => {
-          setIconNotAvailable(true);
-        }}
-        source={{ uri: remoteIconUrl }}
-        style={{ height, width }}
-      />
-    );
-  }
-  return null;
-};
 
 const enhance = onlyUpdateForKeys([
   'bgColor',
@@ -98,7 +48,7 @@ const CoinIcon = enhance(
     ...props
   }) =>
     showShadow ? (
-      <>
+      <Fragment>
         {(isPinned || isHidden) && isCoinListEdited ? (
           <IndicatorIcon>
             <Icon
@@ -129,7 +79,7 @@ const CoinIcon = enhance(
             symbol={symbol || ''}
           />
         </ShadowStack>
-      </>
+      </Fragment>
     ) : (
       <ReactCoinIcon
         {...props}
