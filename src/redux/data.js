@@ -195,15 +195,17 @@ export const transactionsRemoved = message => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { transactions } = getState().data;
   const removeHashes = map(transactionData, txn => txn.hash);
-  remove(transactions, txn =>
-    includes(removeHashes, txn.hash.split('-').shift())
+  logger.log('[data] - remove txn hashes', removeHashes);
+  const updatedTransactions = filter(
+    transactions,
+    txn => !includes(removeHashes, ethereumUtils.getHash(txn))
   );
 
   dispatch({
-    payload: transactions,
+    payload: updatedTransactions,
     type: DATA_UPDATE_TRANSACTIONS,
   });
-  saveLocalTransactions(transactions, accountAddress, network);
+  saveLocalTransactions(updatedTransactions, accountAddress, network);
 };
 
 export const addressAssetsReceived = (
@@ -450,7 +452,7 @@ export const dataWatchPendingTransactions = () => async (
   const updatedPendingTransactions = await Promise.all(
     pending.map(async tx => {
       const updatedPending = { ...tx };
-      const txHash = tx.hash.split('-').shift();
+      const txHash = ethereumUtils.getHash(tx);
       try {
         const txObj = await getTransactionReceipt(txHash);
         if (txObj && txObj.blockNumber) {

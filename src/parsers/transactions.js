@@ -27,7 +27,7 @@ import {
   convertRawAmountToNativeDisplay,
 } from '../helpers/utilities';
 import { savingsAssetsList } from '../references';
-import { isLowerCaseMatch } from '../utils';
+import { ethereumUtils, isLowerCaseMatch } from '../utils';
 
 const DIRECTION_OUT = 'out';
 const LAST_TXN_HASH_BUFFER = 20;
@@ -56,7 +56,9 @@ export const parseTransactions = (
   network,
   appended = false
 ) => {
-  const purchaseTransactionHashes = map(purchaseTransactions, 'hash');
+  const purchaseTransactionHashes = map(purchaseTransactions, txn =>
+    ethereumUtils.getHash(txn)
+  );
   const data = appended
     ? transactionData
     : dataFromLastTxHash(transactionData, existingTransactions);
