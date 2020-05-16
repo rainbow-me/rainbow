@@ -79,14 +79,10 @@ export default function useWyreApplePay() {
               error_category: get(data, 'errorCategory', 'unknown'),
               error_code: get(data, 'errorCode', 'unknown'),
             });
-            paymentResponse.complete(PaymentRequestStatusTypes.FAIL);
-            handlePaymentCallback();
           } else if (isPending || isSuccess) {
             analytics.track('Purchase completed', {
               category: 'add cash',
             });
-            paymentResponse.complete(PaymentRequestStatusTypes.SUCCESS);
-            handlePaymentCallback();
           } else if (!isChecking) {
             logger.sentry('Wyre order data', data);
             captureMessage(
@@ -109,13 +105,7 @@ export default function useWyreApplePay() {
         retryOrderStatusTimeout(retry, 1000);
       }
     },
-    [
-      dispatch,
-      isPaymentComplete,
-      handlePaymentCallback,
-      network,
-      retryOrderStatusTimeout,
-    ]
+    [dispatch, isPaymentComplete, network, retryOrderStatusTimeout]
   );
 
   const onPurchase = useCallback(
@@ -136,6 +126,7 @@ export default function useWyreApplePay() {
 
       if (applePayResponse) {
         const { paymentResponse, totalAmount } = applePayResponse;
+        logger.log('[add cash] - get order id');
         const { orderId, errorCode, type } = await getOrderId(
           referenceInfo,
           paymentResponse,
@@ -145,7 +136,9 @@ export default function useWyreApplePay() {
           network
         );
         if (orderId) {
-          logger.log('Wyre order ID', orderId);
+          paymentResponse.complete(PaymentRequestStatusTypes.SUCCESS);
+          handlePaymentCallback();
+          logger.log('[add cash] - watch for order status', orderId);
           referenceInfo.orderId = orderId;
           getOrderStatus(
             referenceInfo,

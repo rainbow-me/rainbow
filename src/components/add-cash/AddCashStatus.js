@@ -163,11 +163,11 @@ const AddCashStatus = ({ orderCurrency, orderStatus, transferStatus }) => {
       return ADD_CASH_STATUS_TYPES.failed;
     }
 
-    if (orderStatus === WYRE_ORDER_STATUS_TYPES.checking) {
-      return ADD_CASH_STATUS_TYPES.checking;
+    if (orderStatus === WYRE_ORDER_STATUS_TYPES.pending) {
+      return ADD_CASH_STATUS_TYPES.pending;
     }
 
-    return ADD_CASH_STATUS_TYPES.pending;
+    return ADD_CASH_STATUS_TYPES.checking;
   }, [orderStatus, transferStatus]);
 
   const previousStatus = usePrevious(status);
@@ -192,10 +192,10 @@ const AddCashStatus = ({ orderCurrency, orderStatus, transferStatus }) => {
         >
           {status === ADD_CASH_STATUS_TYPES.success ? (
             <AddCashSuccess currency={currency} />
-          ) : status === ADD_CASH_STATUS_TYPES.checking ? (
-            <AddCashChecking />
-          ) : (
+          ) : status === ADD_CASH_STATUS_TYPES.pending ? (
             <AddCashPending currency={currency} />
+          ) : (
+            <AddCashChecking />
           )}
         </FloatingEmojisTapper>
       )}

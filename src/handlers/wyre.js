@@ -196,14 +196,12 @@ export const getOrderId = async (
         message
       )
     );
-    paymentResponse.complete(PaymentRequestStatusTypes.FAIL);
     return { errorCode, type };
   } catch (error) {
     logger.sentry(
       `WYRE - getOrderId response catch - ${referenceInfo.referenceId}`
     );
     captureException(error);
-    paymentResponse.complete(PaymentRequestStatusTypes.FAIL);
     return {};
   }
 };
