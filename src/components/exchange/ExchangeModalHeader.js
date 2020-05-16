@@ -24,17 +24,24 @@ const InfoButtonPosition = `
 
 const InfoButton = styled(Centered).attrs({
   activeScale: 0.8,
-  component: TouchableScale,
   hapticType: 'impactLight',
   pressInFriction: 50,
   pressInTension: 400,
   pressOutFriction: 30,
   pressOutTension: 300,
+  useNativeDriver: true,
 })`
   ${InfoButtonPosition};
   margin-top: ${SheetHandleMargin + 4};
   padding-left: ${InfoButtonPaddingHorizontal};
   padding-right: ${InfoButtonPaddingHorizontal};
+`;
+
+const InfoButtonIcon = styled(Icon).attrs({
+  color: colors.alpha(colors.blueGreyDark, 0.3),
+  name: 'info',
+})`
+  ${position.size(InfoIconSize)};
 `;
 
 const InfoButtonTransition = styled(Transitioning.View)`
@@ -74,12 +81,8 @@ const ExchangeModalHeader = ({ onPressDetails, showDetailsButton, title }) => {
       <Title>{title}</Title>
       <InfoButtonTransition ref={ref} transition={transition}>
         {showDetailsButton && (
-          <InfoButton onPress={onPressDetails} useNativeDriver>
-            <Icon
-              {...position.sizeAsObject(InfoIconSize)}
-              color={colors.alpha(colors.blueGreyDark, 0.3)}
-              name="info"
-            />
+          <InfoButton as={TouchableScale} onPress={onPressDetails}>
+            <InfoButtonIcon />
           </InfoButton>
         )}
       </InfoButtonTransition>

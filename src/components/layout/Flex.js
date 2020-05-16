@@ -1,46 +1,25 @@
 import PropTypes from 'prop-types';
-import { createElement, forwardRef } from 'react';
-import { View } from 'react-primitives';
+import styled from 'styled-components/primitives';
 
-export const getFlexStyleKeysFromShorthand = style =>
+export const getFlexStylesFromShorthand = style =>
   style === 'end' || style === 'start' ? `flex-${style}` : style;
 
-const Flex = forwardRef(
-  (
-    {
-      align,
-      component,
-      direction,
-      flex,
-      grow,
-      justify,
-      self,
-      shrink,
-      wrap,
-      ...props
-    },
-    ref
-  ) => {
-    return createElement(component, {
-      alignItems: getFlexStyleKeysFromShorthand(align),
-      alignSelf: getFlexStyleKeysFromShorthand(self),
-      flex,
-      flexDirection: direction,
-      flexGrow: grow,
-      flexShrink: shrink,
-      flexWrap: wrap ? 'wrap' : 'nowrap',
-      justifyContent: getFlexStyleKeysFromShorthand(justify),
-      ...props,
-      ref,
-    });
-  }
-);
+const Flex = styled.View`
+  ${({ flex }) => (flex !== undefined ? `flex: ${flex};` : '')}
+  ${({ grow }) => (grow !== undefined ? `flex-grow: ${grow};` : '')}
+  ${({ self }) =>
+    self ? `align-self: ${getFlexStylesFromShorthand(self)};` : ''}
+  ${({ shrink }) => (shrink !== undefined ? `flex-shrink: ${shrink};` : '')}
+  align-items: ${({ align }) => getFlexStylesFromShorthand(align)};
+  flex-direction: ${({ direction }) => direction};
+  flex-wrap: ${({ wrap }) => (wrap ? 'wrap' : 'nowrap')};
+  justify-content: ${({ justify }) => getFlexStylesFromShorthand(justify)};
+`;
 
 Flex.displayName = 'Flex';
 
 Flex.propTypes = {
   align: PropTypes.oneOf(['baseline', 'center', 'end', 'start', 'stretch']),
-  component: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
   direction: PropTypes.oneOf([
     'column',
     'column-reverse',
@@ -63,7 +42,6 @@ Flex.propTypes = {
 
 Flex.defaultProps = {
   align: 'stretch',
-  component: View,
   direction: 'row',
   justify: 'start',
 };

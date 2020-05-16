@@ -1,13 +1,9 @@
-import React from 'react';
+import styled from 'styled-components/primitives';
 import LayoutWithDividers from './LayoutWithDividers';
 
-const ColumnWithDividers = (props, ref) => (
-  <LayoutWithDividers
-    direction="column"
-    dividerHorizontal
-    ref={ref}
-    {...props}
-  />
-);
+const ColumnWithDividers = styled(LayoutWithDividers).attrs({
+  direction: 'column',
+  dividerHorizontal: true,
+})``;
 
-export default React.forwardRef(ColumnWithDividers);
+export default ColumnWithDividers;

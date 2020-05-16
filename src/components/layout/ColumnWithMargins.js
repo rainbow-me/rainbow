@@ -1,14 +1,12 @@
-import React from 'react';
+import styled from 'styled-components/primitives';
 import LayoutWithMargins from './LayoutWithMargins';
 
-const ColumnWithMargins = ({ margin = 20, ...props }, ref) => (
-  <LayoutWithMargins
-    direction="column"
-    margin={margin}
-    marginKey="marginBottom"
-    ref={ref}
-    {...props}
-  />
-);
+const ColumnWithMargins = styled(LayoutWithMargins).attrs(
+  ({ margin = 20 }) => ({
+    direction: 'column',
+    margin,
+    marginKey: 'marginBottom',
+  })
+)``;
 
-export default React.forwardRef(ColumnWithMargins);
+export default ColumnWithMargins;

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { useIsFocused } from 'react-navigation-hooks';
+import styled from 'styled-components/primitives';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
 import { ActivityList } from '../components/activity-list';
 import {
@@ -30,6 +31,15 @@ import { colors, position } from '../styles';
 import Routes from './Routes/routesNames';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
+
+const ProfileScreenPage = styled(Page)`
+  ${position.size('100%')};
+  flex: 1;
+`;
+
+const NativeTransactionList = styled(TransactionList)`
+  flex: 1;
+`;
 
 const ProfileScreen = ({ navigation }) => {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
@@ -75,7 +85,7 @@ const ProfileScreen = ({ navigation }) => {
   const addCashAvailable = Platform.OS === 'ios' && addCashSupportedNetworks;
 
   return (
-    <Page flex={1} style={position.sizeAsObject('100%')}>
+    <ProfileScreenPage>
       <Header justify="space-between">
         <HeaderButton onPress={onPressSettings}>
           <Icon color={colors.black} name="gear" />
@@ -94,7 +104,7 @@ const ProfileScreen = ({ navigation }) => {
         />
       </Header>
       {network === NetworkTypes.mainnet && nativeTransactionListAvailable ? (
-        <TransactionList
+        <NativeTransactionList
           accountAddress={accountAddress}
           accountColor={accountColor}
           accountENS={accountENS}
@@ -150,7 +160,7 @@ const ProfileScreen = ({ navigation }) => {
       {isEmpty && !isLoading && network === NetworkTypes.mainnet && (
         <AddFundsInterstitial network={network} />
       )}
-    </Page>
+    </ProfileScreenPage>
   );
 };
 

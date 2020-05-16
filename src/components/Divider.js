@@ -1,7 +1,7 @@
 import { constant, isNil, isNumber, times } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useMemo } from 'react';
-import { View } from 'react-primitives';
+import React from 'react';
+import styled from 'styled-components/primitives';
 import { borders, colors, position } from '../styles';
 import { magicMemo } from '../utils';
 
@@ -21,47 +21,56 @@ const buildInsetFromProps = inset => {
   ];
 };
 
-const horizontalBorderLineStyles = inset => ({
-  ...(inset[3] ? borders.buildRadiusAsObject('left', 2) : {}),
-  ...(inset[1] ? borders.buildRadiusAsObject('right', 2) : {}),
-  left: inset[3],
-  right: inset[1],
-});
+const horizontalBorderLineStyles = inset => `
+  ${inset[3] ? borders.buildRadius('left', 2) : null}
+  ${inset[1] ? borders.buildRadius('right', 2) : null}
+  left: ${inset[3]};
+  right: ${inset[1]};
+`;
 
-const verticalBorderLineStyles = inset => ({
-  ...(inset[2] ? borders.buildRadiusAsObject('bottom', 2) : {}),
-  ...(inset[0] ? borders.buildRadiusAsObject('top', 2) : {}),
-  bottom: inset[2],
-  top: inset[0],
-});
+const verticalBorderLineStyles = inset => `
+  ${inset[2] ? borders.buildRadius('bottom', 2) : null}
+  ${inset[0] ? borders.buildRadius('top', 2) : null}
+  bottom: ${inset[2]};
+  top: ${inset[0]};
+`;
+
+const BorderLine = styled.View`
+  ${position.cover};
+  ${({ horizontal, inset }) => {
+    const insetFromProps = buildInsetFromProps(inset);
+    return horizontal
+      ? horizontalBorderLineStyles(insetFromProps)
+      : verticalBorderLineStyles(insetFromProps);
+  }};
+  background-color: ${({ color }) => color};
+  bottom: 0;
+  top: 0;
+`;
+
+const Container = styled.View`
+  background-color: ${({ backgroundColor }) => backgroundColor || colors.white};
+  flex-shrink: 0;
+  height: ${({ horizontal, size }) => (horizontal ? size : '100%')};
+  width: ${({ horizontal, size }) => (horizontal ? '100%' : size)};
+`;
 
 const Divider = magicMemo(
-  ({ backgroundColor, color, horizontal, inset, size, ...props }) => {
-    const borderLineStyles = useMemo(() => {
-      const insetFromProps = buildInsetFromProps(inset);
-      return horizontal
-        ? horizontalBorderLineStyles(insetFromProps)
-        : verticalBorderLineStyles(insetFromProps);
-    }, [horizontal, inset]);
-
-    return (
-      <View
-        backgroundColor={backgroundColor || colors.white}
-        flexShrink={0}
-        height={horizontal ? size : '100%'}
-        width={horizontal ? '100%' : size}
+  ({ backgroundColor, color, horizontal, inset, size, ...props }) => (
+    <Container
+      {...props}
+      backgroundColor={backgroundColor}
+      horizontal={horizontal}
+      size={size}
+    >
+      <BorderLine
         {...props}
-      >
-        <View
-          {...position.coverAsObject}
-          backgroundColor={color}
-          horizontal={horizontal}
-          style={borderLineStyles}
-          {...props}
-        />
-      </View>
-    );
-  },
+        color={color}
+        horizontal={horizontal}
+        inset={inset}
+      />
+    </Container>
+  ),
   ['color', 'inset']
 );
 

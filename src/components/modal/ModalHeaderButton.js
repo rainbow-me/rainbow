@@ -31,7 +31,7 @@ const Text = styled(UnstyledText).attrs({
 
 const ModalHeaderButton = ({ label, showBackArrow, side, ...props }) => (
   <Container
-    component={Platform.OS === 'ios' ? BorderlessButton : Button}
+    as={Platform.OS === 'ios' ? BorderlessButton : Button}
     justify={side === 'left' ? 'start' : 'end'}
     side={side}
     {...props}

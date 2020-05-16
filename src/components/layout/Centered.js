@@ -1,8 +1,9 @@
-import React from 'react';
+import styled from 'styled-components/primitives';
 import Flex from './Flex';
 
-const Centered = (props, ref) => (
-  <Flex align="center" justify="center" ref={ref} {...props} />
-);
+const Centered = styled(Flex).attrs({
+  align: 'center',
+  justify: 'center',
+})``;
 
-export default React.forwardRef(Centered);
+export default Centered;

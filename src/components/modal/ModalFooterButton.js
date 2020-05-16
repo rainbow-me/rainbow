@@ -24,7 +24,7 @@ const IconContainer = styled(Centered)`
 `;
 
 const ModalFooterButton = ({ icon, label, onPress }) => (
-  <Container component={BorderlessButton} onPress={onPress} paddingBottom={7}>
+  <Container as={BorderlessButton} onPress={onPress} paddingBottom={7}>
     <IconContainer>
       <ButtonIcon color={colors.appleBlue} name={icon} />
     </IconContainer>

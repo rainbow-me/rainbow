@@ -1,13 +1,9 @@
-import React from 'react';
+import styled from 'styled-components/primitives';
 import LayoutWithDividers from './LayoutWithDividers';
 
-const RowWithDividers = (props, ref) => (
-  <LayoutWithDividers
-    direction="row"
-    dividerHorizontal={false}
-    ref={ref}
-    {...props}
-  />
-);
+const RowWithDividers = styled(LayoutWithDividers).attrs({
+  direction: 'row',
+  dividerHorizontal: false,
+})``;
 
-export default React.forwardRef(RowWithDividers);
+export default RowWithDividers;

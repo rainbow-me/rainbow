@@ -1,24 +1,11 @@
 import { isUndefined } from 'lodash';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { View } from 'react-primitives';
+import styled from 'styled-components/primitives';
 
-const FlexItem = ({ flex, grow, shrink, ...props }, ref) => (
-  <View
-    {...props}
-    flex={
-      isUndefined(flex) && isUndefined(grow) && isUndefined(shrink) ? 1 : flex
-    }
-    flexGrow={grow}
-    flexShrink={shrink}
-    ref={ref}
-  />
-);
+const FlexItem = styled.View`
+  flex: ${({ flex, grow, shrink }) =>
+    isUndefined(flex) && isUndefined(grow) && isUndefined(shrink) ? 1 : flex};
+  ${({ grow }) => (grow !== undefined ? `flex-grow: ${grow};` : '')}
+  ${({ shrink }) => (shrink !== undefined ? `flex-shrink: ${shrink};` : '')}
+`;
 
-FlexItem.propTypes = {
-  flex: PropTypes.number,
-  grow: PropTypes.number,
-  shrink: PropTypes.number,
-};
-
-export default React.forwardRef(FlexItem);
+export default FlexItem;

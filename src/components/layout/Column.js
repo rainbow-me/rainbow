@@ -1,6 +1,5 @@
-import React from 'react';
+import styled from 'styled-components/primitives';
 import Flex from './Flex';
 
-const Column = (props, ref) => <Flex direction="column" ref={ref} {...props} />;
-
-export default React.forwardRef(Column);
+const Column = styled(Flex).attrs({ direction: 'column' })``;
+export default Column;

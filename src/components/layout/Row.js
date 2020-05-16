@@ -1,6 +1,5 @@
-import React from 'react';
+import styled from 'styled-components/primitives';
 import Flex from './Flex';
 
-const Row = (props, ref) => <Flex direction="row" ref={ref} {...props} />;
-
-export default React.forwardRef(Row);
+const Row = styled(Flex).attrs({ direction: 'row' })``;
+export default Row;
