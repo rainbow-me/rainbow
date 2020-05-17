@@ -1,11 +1,14 @@
-import { find, map, toLower } from 'lodash';
+import analytics from '@segment/analytics-react-native';
+import { captureException, captureMessage } from '@sentry/react-native';
+import { find, get, map, toLower } from 'lodash';
 import {
   getPurchaseTransactions,
   savePurchaseTransactions,
 } from '../handlers/localstorage/accountLocal';
-import { trackWyreTransfer } from '../handlers/wyre';
+import { trackWyreOrder, trackWyreTransfer } from '../handlers/wyre';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
+import { WYRE_ORDER_STATUS_TYPES } from '../helpers/wyreStatusTypes';
 import { AddCashCurrencies, AddCashCurrencyInfo } from '../references';
 import { ethereumUtils, logger } from '../utils';
 /* eslint-disable-next-line import/no-cycle */
@@ -14,6 +17,15 @@ import { dataAddNewTransaction } from './data';
 // -- Constants --------------------------------------- //
 const ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS =
   'addCash/ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS';
+
+const ADD_CASH_ADD_NEW_PURCHASE_TRANSACTION =
+  'addCash/ADD_CASH_ADD_NEW_PURCHASE_TRANSACTION';
+
+const ADD_CASH_UPDATE_CURRENT_ORDER_STATUS =
+  'addCash/ADD_CASH_UPDATE_CURRENT_ORDER_STATUS';
+
+const ADD_CASH_UPDATE_CURRENT_TRANSFER_ID =
+  'addCash/ADD_CASH_UPDATE_CURRENT_TRANSFER_ID';
 
 const ADD_CASH_CLEAR_STATE = 'addCash/ADD_CASH_CLEAR_STATE';
 
@@ -71,9 +83,101 @@ export const addCashNewPurchaseTransaction = txDetails => (
   const updatedPurchases = [txDetails, ...purchaseTransactions];
   dispatch({
     payload: updatedPurchases,
-    type: ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS,
+    type: ADD_CASH_ADD_NEW_PURCHASE_TRANSACTION,
   });
   savePurchaseTransactions(updatedPurchases, accountAddress, network);
+};
+
+export const addCashGetOrderStatus = (
+  referenceInfo,
+  destCurrency,
+  orderId,
+  paymentResponse,
+  sourceAmount
+) => async (dispatch, getState) => {
+  logger.log('[add cash] - watch for order status', orderId);
+  const { network } = getState().settings;
+  const getOrderStatus = async (
+    referenceInfo,
+    destCurrency,
+    orderId,
+    paymentResponse,
+    sourceAmount
+  ) => {
+    try {
+      const { data, orderStatus, transferId } = await trackWyreOrder(
+        referenceInfo,
+        orderId,
+        network
+      );
+
+      dispatch({
+        payload: orderStatus,
+        type: ADD_CASH_UPDATE_CURRENT_ORDER_STATUS,
+      });
+
+      const isFailed = orderStatus === WYRE_ORDER_STATUS_TYPES.failed;
+
+      if (isFailed) {
+        logger.sentry('Wyre order data failed', data);
+        captureMessage(
+          `Wyre final check - order status failed - ${referenceInfo.referenceId}`
+        );
+        analytics.track('Purchase failed', {
+          category: 'add cash',
+          error_category: get(data, 'errorCategory', 'unknown'),
+          error_code: get(data, 'errorCode', 'unknown'),
+        });
+      }
+
+      if (transferId) {
+        dispatch({
+          payload: transferId,
+          type: ADD_CASH_UPDATE_CURRENT_TRANSFER_ID,
+        });
+        referenceInfo.transferId = transferId;
+        dispatch(
+          addCashGetTransferHash(referenceInfo, transferId, sourceAmount)
+        );
+        analytics.track('Purchase completed', {
+          category: 'add cash',
+        });
+      } else if (!isFailed) {
+        setTimeout(
+          () =>
+            getOrderStatus(
+              referenceInfo,
+              destCurrency,
+              orderId,
+              paymentResponse,
+              sourceAmount
+            ),
+          1000
+        );
+      }
+    } catch (error) {
+      captureException(error);
+      setTimeout(
+        () =>
+          getOrderStatus(
+            referenceInfo,
+            destCurrency,
+            orderId,
+            paymentResponse,
+            sourceAmount
+          ),
+        1000
+      );
+    }
+  };
+
+  await getOrderStatus(
+    referenceInfo,
+    destCurrency,
+    orderId,
+    paymentResponse,
+    sourceAmount
+  );
 };
 
 export const addCashGetTransferHash = (
@@ -139,15 +243,34 @@ export const addCashGetTransferHash = (
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
+  currentOrderStatus: null,
+  currentTransferId: null,
   purchaseTransactions: [],
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case ADD_CASH_ADD_NEW_PURCHASE_TRANSACTION:
+      return {
+        ...state,
+        currentOrderStatus: null,
+        currentTransferId: null,
+        purchaseTransactions: action.payload,
+      };
     case ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS:
       return {
         ...state,
         purchaseTransactions: action.payload,
+      };
+    case ADD_CASH_UPDATE_CURRENT_ORDER_STATUS:
+      return {
+        ...state,
+        currentOrderStatus: action.payload,
+      };
+    case ADD_CASH_UPDATE_CURRENT_TRANSFER_ID:
+      return {
+        ...state,
+        currentTransferId: action.payload,
       };
     case ADD_CASH_CLEAR_STATE:
       return {
