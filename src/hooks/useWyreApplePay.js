@@ -1,5 +1,5 @@
 import analytics from '@segment/analytics-react-native';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   getOrderId,
@@ -7,21 +7,29 @@ import {
   PaymentRequestStatusTypes,
   showApplePayRequest,
 } from '../handlers/wyre';
-import { addCashGetOrderStatus } from '../redux/addCash';
+import {
+  addCashGetOrderStatus,
+  addCashOrderCreationFailure,
+  addCashResetCurrentOrder,
+} from '../redux/addCash';
 import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
 import usePurchaseTransactionStatus from './usePurchaseTransactionStatus';
 import useTimeout from './useTimeout';
 
 export default function useWyreApplePay() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(addCashResetCurrentOrder());
+  }, [dispatch]);
+
   const { accountAddress, network } = useAccountSettings();
 
   const [isPaymentComplete, setPaymentComplete] = useState(false);
   const [orderCurrency, setOrderCurrency] = useState(null);
 
   const { orderStatus, transferStatus } = usePurchaseTransactionStatus();
-
-  const dispatch = useDispatch();
 
   const [startPaymentCompleteTimeout] = useTimeout();
 
@@ -72,6 +80,7 @@ export default function useWyreApplePay() {
             )
           );
         } else {
+          dispatch(addCashOrderCreationFailure());
           paymentResponse.complete(PaymentRequestStatusTypes.FAIL);
           handlePaymentCallback();
           analytics.track('Purchase failed', {

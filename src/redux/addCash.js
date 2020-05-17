@@ -18,14 +18,16 @@ import { dataAddNewTransaction } from './data';
 const ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS =
   'addCash/ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS';
 
-const ADD_CASH_ADD_NEW_PURCHASE_TRANSACTION =
-  'addCash/ADD_CASH_ADD_NEW_PURCHASE_TRANSACTION';
-
 const ADD_CASH_UPDATE_CURRENT_ORDER_STATUS =
   'addCash/ADD_CASH_UPDATE_CURRENT_ORDER_STATUS';
 
 const ADD_CASH_UPDATE_CURRENT_TRANSFER_ID =
   'addCash/ADD_CASH_UPDATE_CURRENT_TRANSFER_ID';
+
+const ADD_CASH_RESET_CURRENT_ORDER = 'addCash/ADD_CASH_RESET_CURRENT_ORDER';
+
+const ADD_CASH_ORDER_CREATION_FAILURE =
+  'addCash/ADD_CASH_ORDER_CREATION_FAILURE';
 
 const ADD_CASH_CLEAR_STATE = 'addCash/ADD_CASH_CLEAR_STATE';
 
@@ -83,7 +85,7 @@ export const addCashNewPurchaseTransaction = txDetails => (
   const updatedPurchases = [txDetails, ...purchaseTransactions];
   dispatch({
     payload: updatedPurchases,
-    type: ADD_CASH_ADD_NEW_PURCHASE_TRANSACTION,
+    type: ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS,
   });
   savePurchaseTransactions(updatedPurchases, accountAddress, network);
 };
@@ -180,7 +182,7 @@ export const addCashGetOrderStatus = (
   );
 };
 
-export const addCashGetTransferHash = (
+const addCashGetTransferHash = (
   referenceInfo,
   transferId,
   sourceAmount
@@ -241,6 +243,16 @@ export const addCashGetTransferHash = (
   await getTransferHash(referenceInfo, transferId, sourceAmount);
 };
 
+export const addCashResetCurrentOrder = () => dispatch =>
+  dispatch({
+    type: ADD_CASH_RESET_CURRENT_ORDER,
+  });
+
+export const addCashOrderCreationFailure = () => dispatch =>
+  dispatch({
+    type: ADD_CASH_ORDER_CREATION_FAILURE,
+  });
+
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   currentOrderStatus: null,
@@ -250,12 +262,16 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case ADD_CASH_ADD_NEW_PURCHASE_TRANSACTION:
+    case ADD_CASH_RESET_CURRENT_ORDER:
       return {
         ...state,
         currentOrderStatus: null,
         currentTransferId: null,
-        purchaseTransactions: action.payload,
+      };
+    case ADD_CASH_ORDER_CREATION_FAILURE:
+      return {
+        ...state,
+        currentOrderStatus: WYRE_ORDER_STATUS_TYPES.failed,
       };
     case ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS:
       return {
