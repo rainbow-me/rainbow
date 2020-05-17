@@ -7,6 +7,7 @@ import { compose, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
+import { useNavigation } from '../navigation/Navigation';
 import Routes from '../screens/Routes/routesNames';
 import { colors, margin, padding } from '../styles';
 import Divider from './Divider';
@@ -126,7 +127,8 @@ export default compose(
   pure,
   withNavigation,
   withHandlers({
-    onPressAddFunds: ({ navigation }) => () => {
+    onPressAddFunds: () => () => {
+      const navigation = useNavigation();
       navigation.navigate(Routes.RECEIVE_MODAL);
     },
     onPressImportWallet: ({ navigation }) => () =>

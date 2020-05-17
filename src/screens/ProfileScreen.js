@@ -2,7 +2,7 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { useIsFocused, useNavigation } from 'react-navigation-hooks';
+import { useIsFocused } from 'react-navigation-hooks';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
 import { ActivityList } from '../components/activity-list';
 import {
@@ -25,6 +25,7 @@ import {
   useRequests,
   useWallets,
 } from '../hooks';
+import { useNavigation } from '../navigation/Navigation';
 import { colors, position } from '../styles';
 import Routes from './Routes/routesNames';
 
