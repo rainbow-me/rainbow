@@ -9,7 +9,6 @@ import {
   saveAllWallets,
   setSelectedWallet,
 } from '../model/wallet';
-import { colors } from '../styles';
 
 // -- Constants --------------------------------------- //
 const WALLETS_UPDATE = 'wallets/ALL_WALLETS_UPDATE';
@@ -70,7 +69,10 @@ export const addressSetSelected = address => () => {
   saveAddress(address);
 };
 
-export const createAccountForWallet = id => async (dispatch, getState) => {
+export const createAccountForWallet = (id, color, name) => async (
+  dispatch,
+  getState
+) => {
   const { wallets } = getState().wallets;
   const newWallets = { ...wallets };
   let index = 0;
@@ -82,9 +84,9 @@ export const createAccountForWallet = id => async (dispatch, getState) => {
   newWallets[id].addresses.push({
     address: account.address,
     avatar: null,
-    color: colors.getRandomColor(),
+    color,
     index: newIndex,
-    label: '',
+    label: name,
     visible: true,
   });
 

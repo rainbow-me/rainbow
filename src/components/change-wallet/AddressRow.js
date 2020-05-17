@@ -1,7 +1,7 @@
 /* eslint-disable sort-keys */
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 import { colors, fonts } from '../../styles';
@@ -157,50 +157,52 @@ export default function AddressRow({
 
   return (
     <View style={[sx.accountRow, borderBottom ? sx.borderBottom : null]}>
-      <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
-        <Row>
-          <Column style={sx.leftContent}>
-            <ContactAvatar
-              color={accountColor}
-              marginRight={10}
-              size="medium"
-              value={label || ens || `${index + 1}`}
-            />
-            <View>
+      <TouchableWithoutFeedback onLongPress={onOptionsPress}>
+        <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+          <Row>
+            <Column style={sx.leftContent}>
+              <ContactAvatar
+                color={accountColor}
+                marginRight={10}
+                size="medium"
+                value={label || ens || `${index + 1}`}
+              />
               <View>
-                {cleanedUpLabel || ens ? (
-                  <Text style={sx.accountLabel}>{cleanedUpLabel || ens}</Text>
-                ) : (
-                  <TruncatedAddress
-                    address={address}
-                    firstSectionLength={6}
-                    size="smaller"
-                    style={sx.accountLabel}
-                    truncationLength={4}
-                    weight="medium"
-                  />
+                <View>
+                  {cleanedUpLabel || ens ? (
+                    <Text style={sx.accountLabel}>{cleanedUpLabel || ens}</Text>
+                  ) : (
+                    <TruncatedAddress
+                      address={address}
+                      firstSectionLength={6}
+                      size="smaller"
+                      style={sx.accountLabel}
+                      truncationLength={4}
+                      weight="medium"
+                    />
+                  )}
+                </View>
+                <BottomRowText style={sx.bottomRowText}>
+                  {cleanedUpBalance} ETH
+                </BottomRowText>
+              </View>
+            </Column>
+            <Column style={sx.rightContent}>
+              <View style={sx.coinCheck}>
+                {!editMode && isSelected && (
+                  <CoinCheckButton toggle={isSelected} isAbsolute />
                 )}
               </View>
-              <BottomRowText style={sx.bottomRowText}>
-                {cleanedUpBalance} ETH
-              </BottomRowText>
-            </View>
-          </Column>
-          <Column style={sx.rightContent}>
-            <View style={sx.coinCheck}>
-              {!editMode && isSelected && (
-                <CoinCheckButton toggle={isSelected} isAbsolute />
+              {editMode && <OptionsIcon onPress={onOptionsPress} />}
+              {!editMode && !isSelected && isReadOnly && (
+                <LinearGradient {...linearGradientProps} radius={77}>
+                  <Text style={sx.readOnlyText}>Read only</Text>
+                </LinearGradient>
               )}
-            </View>
-            {editMode && <OptionsIcon onPress={onOptionsPress} />}
-            {!editMode && !isSelected && isReadOnly && (
-              <LinearGradient {...linearGradientProps} radius={77}>
-                <Text style={sx.readOnlyText}>Read only</Text>
-              </LinearGradient>
-            )}
-          </Column>
-        </Row>
-      </ButtonPressAnimation>
+            </Column>
+          </Row>
+        </ButtonPressAnimation>
+      </TouchableWithoutFeedback>
     </View>
   );
 }
