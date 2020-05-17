@@ -12,7 +12,7 @@ import {
 } from 'react-native-dotenv';
 import NetworkTypes from '../helpers/networkTypes';
 import { add, feeCalculation } from '../helpers/utilities';
-import { WYRE_SUPPORTED_COUNTRIES_ISO } from '../references';
+import { WYRE_SUPPORTED_COUNTRIES_ISO } from '../references/wyre';
 import { logger } from '../utils';
 
 const WYRE_PERCENT_FEE = 4;
@@ -196,7 +196,11 @@ export const getOrderId = async (
         message
       )
     );
-    return { errorCode, type };
+    return {
+      errorCategory: type,
+      errorCode,
+      errorMessage: message,
+    };
   } catch (error) {
     logger.sentry(
       `WYRE - getOrderId response catch - ${referenceInfo.referenceId}`

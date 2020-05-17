@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException, captureMessage } from '@sentry/react-native';
-import { find, get, map, toLower } from 'lodash';
+import { find, map, toLower } from 'lodash';
 import {
   getPurchaseTransactions,
   savePurchaseTransactions,
@@ -28,6 +28,8 @@ const ADD_CASH_RESET_CURRENT_ORDER = 'addCash/ADD_CASH_RESET_CURRENT_ORDER';
 
 const ADD_CASH_ORDER_CREATION_FAILURE =
   'addCash/ADD_CASH_ORDER_CREATION_FAILURE';
+
+const ADD_CASH_ORDER_FAILURE = 'addCash/ADD_CASH_ORDER_FAILURE';
 
 const ADD_CASH_CLEAR_STATE = 'addCash/ADD_CASH_CLEAR_STATE';
 
@@ -121,14 +123,24 @@ export const addCashGetOrderStatus = (
       const isFailed = orderStatus === WYRE_ORDER_STATUS_TYPES.failed;
 
       if (isFailed) {
+        const { errorCategory, errorCode, errorMessage } = data;
+        dispatch({
+          payload: {
+            errorCategory,
+            errorCode,
+            errorMessage,
+          },
+          type: ADD_CASH_ORDER_FAILURE,
+        });
         logger.sentry('Wyre order data failed', data);
         captureMessage(
           `Wyre final check - order status failed - ${referenceInfo.referenceId}`
         );
         analytics.track('Purchase failed', {
           category: 'add cash',
-          error_category: get(data, 'errorCategory', 'unknown'),
-          error_code: get(data, 'errorCode', 'unknown'),
+          error_category: errorCategory,
+          error_code: errorCode,
+          error_message: errorMessage,
         });
       }
 
@@ -248,8 +260,9 @@ export const addCashResetCurrentOrder = () => dispatch =>
     type: ADD_CASH_RESET_CURRENT_ORDER,
   });
 
-export const addCashOrderCreationFailure = () => dispatch =>
+export const addCashOrderCreationFailure = error => dispatch =>
   dispatch({
+    payload: error,
     type: ADD_CASH_ORDER_CREATION_FAILURE,
   });
 
@@ -257,6 +270,7 @@ export const addCashOrderCreationFailure = () => dispatch =>
 const INITIAL_STATE = {
   currentOrderStatus: null,
   currentTransferId: null,
+  error: {},
   purchaseTransactions: [],
 };
 
@@ -267,11 +281,18 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         currentOrderStatus: null,
         currentTransferId: null,
+        error: {},
       };
     case ADD_CASH_ORDER_CREATION_FAILURE:
       return {
         ...state,
         currentOrderStatus: WYRE_ORDER_STATUS_TYPES.failed,
+        error: action.payload,
+      };
+    case ADD_CASH_ORDER_FAILURE:
+      return {
+        ...state,
+        error: action.payload,
       };
     case ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS:
       return {
