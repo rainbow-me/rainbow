@@ -211,14 +211,7 @@ const parseTransaction = (
     };
     internalTransactions = [approveInternalTransaction];
   }
-  // logic below: prevent sending yourself money to be seen as a trade
-  if (
-    changes.length === 2 &&
-    get(changes, '[0].asset.asset_code') ===
-      get(changes, '[1].asset.asset_code')
-  ) {
-    internalTransactions = [changes[0]];
-  }
+
   // logic below: prevent sending a WalletConnect 0 amount to be seen as a Cancel
   if (isEmpty(internalTransactions) && transaction.type === 'cancel') {
     const ethInternalTransaction = {
@@ -249,7 +242,8 @@ const parseTransaction = (
       symbol: toUpper(get(internalTxn, 'asset.symbol') || ''),
       ...tokenOverrides[address],
     };
-    const priceUnit = internalTxn.price || 0;
+    const priceUnit =
+      internalTxn.price || get(internalTxn, 'asset.price.value') || 0;
     const valueUnit = internalTxn.value || 0;
     const nativeDisplay = convertRawAmountToNativeDisplay(
       valueUnit,

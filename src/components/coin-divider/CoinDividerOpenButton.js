@@ -83,7 +83,7 @@ const CoinDividerOpenButton = ({
 CoinDividerOpenButton.propTypes = {
   assetsAmount: PropTypes.number,
   coinDividerHeight: PropTypes.number,
-  initialState: PropTypes.object,
+  initialState: PropTypes.bool,
   isCoinListEdited: PropTypes.bool,
   node: PropTypes.object,
   openSmallBalances: PropTypes.bool,

@@ -194,15 +194,17 @@ export const transactionsRemoved = message => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { transactions } = getState().data;
   const removeHashes = map(transactionData, txn => txn.hash);
-  remove(transactions, txn =>
-    includes(removeHashes, txn.hash.split('-').shift())
+  logger.log('[data] - remove txn hashes', removeHashes);
+  const updatedTransactions = filter(
+    transactions,
+    txn => !includes(removeHashes, txn.hash.split('-').shift())
   );
 
   dispatch({
-    payload: transactions,
+    payload: updatedTransactions,
     type: DATA_UPDATE_TRANSACTIONS,
   });
-  saveLocalTransactions(transactions, accountAddress, network);
+  saveLocalTransactions(updatedTransactions, accountAddress, network);
 };
 
 export const addressAssetsReceived = (
@@ -463,10 +465,10 @@ export const dataWatchPendingTransactions = () => async (
           updatedPending.pending = false;
           updatedPending.minedAt = minedAt;
         }
-        return updatedPending;
       } catch (error) {
         logger.log('Error watching pending txn', error);
       }
+      return updatedPending;
     })
   );
   const updatedTransactions = concat(
