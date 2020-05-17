@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import { isValidAddress } from 'ethereumjs-util';
 import PropTypes from 'prop-types';
 import React, {
   useCallback,
@@ -82,40 +83,20 @@ const StyledInput = styled(Input)`
   min-height: 50;
 `;
 
-const ConfirmImportAlert = (onSuccess, navigate) =>
-  Alert({
-    buttons: [
-      {
-        onPress: () =>
-          navigate(Routes.OVERLAY_EXPANDED_ASSET_SCREEN, {
-            actionType: 'Import',
-            address: undefined,
-            asset: [],
-            isCurrentProfile: false,
-            isNewProfile: true,
-            onCloseModal: args => {
-              if (args) {
-                onSuccess(args);
-              } else {
-                onSuccess({
-                  color: colors.getRandomColor(),
-                  name: '',
-                });
-              }
-            },
-            profile: {},
-            type: 'wallet_profile_creator',
-          }),
-        text: 'Import Wallet',
-      },
-      {
-        style: 'cancel',
-        text: 'Cancel',
-      },
-    ],
-    message:
-      'You can switch between your existing wallets in the top navbar of the profile screen.',
-    title: 'Import new wallet',
+const ConfirmImportAlert = (name, onSuccess, navigate) =>
+  navigate(Routes.OVERLAY_EXPANDED_ASSET_SCREEN, {
+    actionType: 'Import',
+    asset: [],
+    isNewProfile: true,
+    onCloseModal: args => {
+      if (args) {
+        onSuccess(args);
+      }
+    },
+    profile: {
+      name,
+    },
+    type: 'wallet_profile_creator',
   });
 
 const ImportButton = ({ disabled, onPress, seedPhrase }) => (
@@ -140,6 +121,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   const [seedPhrase, setSeedPhrase] = useState('');
   const [color, setColor] = useState(null);
   const [name, setName] = useState(null);
+  const [resolvedAddress, setResolvedAddress] = useState(null);
   const [startFocusTimeout] = useTimeout();
   const [startAnalyticsTimeout] = useTimeout();
   const wasImporting = usePrevious(isImporting);
@@ -186,13 +168,42 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     [setParams]
   );
 
-  const onPressImportButton = useCallback(() => {
+  const onPressImportButton = useCallback(async () => {
     if (isSecretValid && seedPhrase) {
-      return ConfirmImportAlert(({ color, name }) => {
-        if (color !== null) setColor(color);
-        if (name) setName(name);
-        toggleImporting(true);
-      }, navigate);
+      const input = seedPhrase.trim();
+      let name = null;
+      // Validate ENS
+      if (isENSAddressFormat(input)) {
+        try {
+          const address = await web3Provider.resolveName(input);
+
+          if (!address) {
+            Alert.alert('This is not a valid ENS name');
+            return;
+          }
+          setResolvedAddress(address);
+          name = input;
+        } catch (e) {
+          Alert.alert('This is not a valid ENS name');
+          return;
+        }
+        // Look up ENS for 0x address
+      } else if (isValidAddress(input)) {
+        const ens = await web3Provider.lookupAddress(input);
+        if (ens && ens !== input) {
+          name = ens;
+        }
+      }
+
+      return ConfirmImportAlert(
+        name,
+        ({ color, name }) => {
+          if (color !== null) setColor(color);
+          if (name) setName(name);
+          toggleImporting(true);
+        },
+        navigate
+      );
     }
 
     if (isClipboardValidSecret && clipboard) {
@@ -211,19 +222,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   useEffect(() => {
     if (!wasImporting && isImporting) {
       startAnalyticsTimeout(async () => {
-        let input = seedPhrase.trim();
-        if (isENSAddressFormat(input)) {
-          try {
-            input = await web3Provider.resolveName(input);
-            if (!input) {
-              Alert.alert('This is not a valid ENS name');
-              return;
-            }
-          } catch (e) {
-            Alert.alert('This is not a valid ENS name');
-            return;
-          }
-        }
+        const input = resolvedAddress ? resolvedAddress : seedPhrase.trim();
         initializeWallet(input, color, name || '')
           .then(success => {
             if (success) {
@@ -249,6 +248,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     isImporting,
     name,
     navigate,
+    resolvedAddress,
     seedPhrase,
     startAnalyticsTimeout,
     toggleImporting,

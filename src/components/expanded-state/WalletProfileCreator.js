@@ -37,11 +37,7 @@ export default function WalletProfileCreator({
 }) {
   const { goBack } = useNavigation();
   const [color, setColor] = useState(
-    isNewProfile
-      ? colors.getRandomColor()
-      : profile.color
-      ? profile.color
-      : colors.getRandomColor()
+    (profile.color !== null && profile.color) || colors.getRandomColor()
   );
   const [value, setValue] = useState(get(profile, 'name', ''));
   const inputRef = useRef(null);
@@ -49,7 +45,7 @@ export default function WalletProfileCreator({
 
   useEffect(() => {
     if (!value || value.length === 0) {
-      text.current.updateValue('Name');
+      text.current.updateValue('Name your wallet');
     }
   }, [value]);
 
@@ -79,7 +75,7 @@ export default function WalletProfileCreator({
     if (value.length > 0) {
       text.current.updateValue(' ');
     } else {
-      text.current.updateValue('Name');
+      text.current.updateValue('Name your wallet');
     }
     setValue(value);
   }, []);
@@ -150,8 +146,7 @@ export default function WalletProfileCreator({
               <Divider inset={false} />
             </Centered>
             <Button
-              backgroundColor={value.length > 0 ? colors.appleBlue : undefined}
-              disabled={!value.length > 0}
+              backgroundColor={colors.appleBlue}
               height={43}
               onPress={acceptAction}
               showShadow
@@ -164,7 +159,11 @@ export default function WalletProfileCreator({
                 style={{ marginBottom: 1.5 }}
                 weight="semibold"
               >
-                {isNewProfile ? `${actionType} Wallet` : 'Done'}
+                {isNewProfile
+                  ? value && value.length > 0
+                    ? `${actionType} Wallet`
+                    : 'Skip'
+                  : 'Done'}
               </Text>
             </Button>
             <ButtonPressAnimation marginTop={11} onPress={cancel}>

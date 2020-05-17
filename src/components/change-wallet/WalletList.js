@@ -72,6 +72,7 @@ export function WalletList({
   useEffect(() => {
     let newRows = [];
     if (!allWallets) return;
+
     Object.keys(allWallets).forEach(key => {
       const wallet = allWallets[key];
       const filteredAccounts = wallet.addresses.filter(
@@ -94,6 +95,7 @@ export function WalletList({
         });
       });
       // You can't add accounts for read only or private key wallets
+
       if (
         [WalletTypes.mnemonic, WalletTypes.seed].indexOf(wallet.type) !== -1 &&
         filteredAccounts.length > 0
@@ -108,6 +110,23 @@ export function WalletList({
         });
       }
     });
+
+    // You should always be able to create a new account
+    // for ex. if you only import pkey or read only wallet
+    const canCreateAccount = newRows.find(
+      r => r.rowType === RowTypes.ADDRESS_OPTION
+    );
+    if (!canCreateAccount) {
+      newRows.push({
+        editMode,
+        height: optionRowHeight,
+        id: 'add_account',
+        label: '􀁍 Create a new wallet',
+        onPress: () => onPressAddAccount(),
+        rowType: RowTypes.ADDRESS_OPTION,
+      });
+    }
+
     setRows(newRows);
 
     setLayoutProvider(
@@ -142,6 +161,11 @@ export function WalletList({
     onPressAddAccount,
     onPressImportSeedPhrase,
   ]);
+
+  const getStableId = useCallback(
+    index => (rows[index] && rows[index].id) || new Date().getTime(),
+    [rows]
+  );
 
   // Update the data provider when rows change
   useEffect(() => {
@@ -194,7 +218,7 @@ export function WalletList({
           scrollView.current.scrollToOffset(0, distanceToScroll, true);
       }, 300);
     }
-  }, [doneScrolling, height, ready, rows]);
+  }, [doneScrolling, getStableId, height, ready, rows]);
 
   useEffect(() => {
     if (layoutProvider && dataProvider && !ready) {
