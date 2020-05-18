@@ -30,6 +30,8 @@ const getBalanceAmount = async (selectedGasPrice, selected) => {
   return amount;
 };
 
+const getHash = txn => txn.hash.split('-').shift();
+
 const getAsset = (assets, address = 'eth') =>
   find(assets, asset => asset.address === address);
 
@@ -167,6 +169,7 @@ export default {
   getDataString,
   getEtherscanHostFromNetwork,
   getEthPriceUnit,
+  getHash,
   getNetworkFromChainId,
   hasPreviousTransactions,
   isEthAddress,

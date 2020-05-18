@@ -11,7 +11,11 @@ const findRemainingAmount = (limit, purchaseTransactions, index) => {
   const transactionsInTimeline =
     index >= 0 ? take(purchaseTransactions, index) : purchaseTransactions;
   const purchasedAmount = sumBy(transactionsInTimeline, txn =>
-    txn.status === TransactionStatusTypes.failed ? 0 : Number(txn.sourceAmount)
+    txn.status === TransactionStatusTypes.failed
+      ? 0
+      : txn.sourceAmount
+      ? Number(txn.sourceAmount)
+      : 0
   );
   return limit - purchasedAmount;
 };

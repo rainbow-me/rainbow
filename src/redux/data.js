@@ -41,6 +41,7 @@ import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
 import { tokenOverrides } from '../references';
 import { ethereumUtils, isLowerCaseMatch, logger } from '../utils';
+/* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
 /* eslint-disable-next-line import/no-cycle */
 import { uniqueTokensRefreshState } from './uniqueTokens';
@@ -181,7 +182,7 @@ export const transactionsReceived = (message, appended = false) => async (
     payload: parsedTransactions,
     type: DATA_UPDATE_TRANSACTIONS,
   });
-  updatePurchases(parsedTransactions);
+  dispatch(updatePurchases(parsedTransactions));
   saveLocalTransactions(parsedTransactions, accountAddress, network);
 };
 
@@ -197,7 +198,7 @@ export const transactionsRemoved = message => (dispatch, getState) => {
   logger.log('[data] - remove txn hashes', removeHashes);
   const updatedTransactions = filter(
     transactions,
-    txn => !includes(removeHashes, txn.hash.split('-').shift())
+    txn => !includes(removeHashes, ethereumUtils.getHash(txn))
   );
 
   dispatch({
@@ -411,6 +412,7 @@ export const dataAddNewTransaction = (
     if (!disableTxnWatcher) {
       dispatch(watchPendingTransactions());
     }
+    return parsedTransaction;
     // eslint-disable-next-line no-empty
   } catch (error) {}
 };
@@ -450,7 +452,7 @@ export const dataWatchPendingTransactions = () => async (
   const updatedPendingTransactions = await Promise.all(
     pending.map(async tx => {
       const updatedPending = { ...tx };
-      const txHash = tx.hash.split('-').shift();
+      const txHash = ethereumUtils.getHash(tx);
       try {
         const txObj = await getTransactionReceipt(txHash);
         if (txObj && txObj.blockNumber) {
@@ -477,7 +479,7 @@ export const dataWatchPendingTransactions = () => async (
   );
 
   if (txStatusesDidChange) {
-    updatePurchases(updatedTransactions);
+    dispatch(updatePurchases(updatedTransactions));
     const { accountAddress, network } = getState().settings;
     dispatch({
       payload: updatedTransactions,
