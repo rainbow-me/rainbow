@@ -9,7 +9,9 @@ import React, {
   useState,
 } from 'react';
 import Animated from 'react-native-reanimated';
+import { useNavigationParam } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
+import HorizontalGestureBlocker from '../components/HorizontalGestureBlocker';
 import { interpolate } from '../components/animations';
 import {
   ConfirmExchangeButton,
@@ -23,7 +25,6 @@ import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
-import { withBlockedHorizontalSwipe } from '../hoc';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -64,7 +65,7 @@ const ExchangeModal = ({
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
 
-  const tabPosition = get(navigation, 'state.params.position');
+  const tabPosition = useNavigationParam('position');
 
   const defaultGasLimit = isDeposit
     ? ethUnits.basic_deposit
@@ -74,19 +75,19 @@ const ExchangeModal = ({
 
   const dispatch = useDispatch();
   const {
-    gasPricesStartPolling,
-    gasPricesStopPolling,
-    gasUpdateDefaultGasLimit,
-    gasUpdateTxFee,
     isSufficientGas,
     selectedGasPrice,
+    startPollingGasPrices,
+    stopPollingGasPrices,
+    updateDefaultGasLimit,
+    updateTxFee,
   } = useGas();
   const {
+    clearUniswapCurrenciesAndReserves,
     inputReserve,
     outputReserve,
-    uniswapClearCurrenciesAndReserves,
   } = useUniswapCurrencyReserves();
-  const { web3ListenerInit, web3ListenerStop } = useBlockPolling();
+  const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { nativeCurrency } = useAccountSettings();
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
   const { getMarketDetails } = useUniswapMarketDetails();
@@ -119,9 +120,6 @@ const ExchangeModal = ({
   });
 
   const {
-    assignInputFieldRef,
-    assignNativeFieldRef,
-    assignOutputFieldRef,
     handleFocus,
     inputFieldRef,
     nativeFieldRef,
@@ -163,21 +161,20 @@ const ExchangeModal = ({
         outputCurrency,
         outputReserve,
       });
-      dispatch(gasUpdateTxFee(gasLimit));
+      updateTxFee(gasLimit);
     } catch (error) {
-      dispatch(gasUpdateTxFee(defaultGasLimit));
+      updateTxFee(defaultGasLimit);
     }
   }, [
     defaultGasLimit,
-    dispatch,
     estimateRap,
-    gasUpdateTxFee,
     inputAmount,
     inputCurrency,
     inputReserve,
     outputAmount,
     outputCurrency,
     outputReserve,
+    updateTxFee,
   ]);
 
   // Update gas limit
@@ -187,11 +184,9 @@ const ExchangeModal = ({
 
   const clearForm = useCallback(() => {
     logger.log('[exchange] - clear form');
-    if (inputFieldRef && inputFieldRef.current) inputFieldRef.current.clear();
-    if (nativeFieldRef && nativeFieldRef.current)
-      nativeFieldRef.current.clear();
-    if (outputFieldRef && outputFieldRef.current)
-      outputFieldRef.current.clear();
+    inputFieldRef?.current?.clear();
+    nativeFieldRef?.current?.clear();
+    outputFieldRef?.current?.clear();
     updateInputAmount();
   }, [inputFieldRef, nativeFieldRef, outputFieldRef, updateInputAmount]);
 
@@ -221,24 +216,30 @@ const ExchangeModal = ({
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
-    dispatch(
-      gasUpdateDefaultGasLimit(
-        isDeposit
-          ? ethUnits.basic_deposit
-          : isWithdrawal
-          ? ethUnits.basic_withdrawal
-          : ethUnits.basic_swap
-      )
+    updateDefaultGasLimit(
+      isDeposit
+        ? ethUnits.basic_deposit
+        : isWithdrawal
+        ? ethUnits.basic_withdrawal
+        : ethUnits.basic_swap
     );
-    dispatch(gasPricesStartPolling());
-    dispatch(web3ListenerInit());
+    startPollingGasPrices();
+    initWeb3Listener();
     return () => {
-      dispatch(uniswapClearCurrenciesAndReserves());
-      dispatch(gasPricesStopPolling());
-      dispatch(web3ListenerStop());
+      clearUniswapCurrenciesAndReserves();
+      stopPollingGasPrices();
+      stopWeb3Listener();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [
+    clearUniswapCurrenciesAndReserves,
+    initWeb3Listener,
+    isDeposit,
+    isWithdrawal,
+    startPollingGasPrices,
+    stopPollingGasPrices,
+    stopWeb3Listener,
+    updateDefaultGasLimit,
+  ]);
 
   // Update input amount when max is set and the max input balance changed
   useEffect(() => {
@@ -389,9 +390,9 @@ const ExchangeModal = ({
   ]);
 
   const navigateToSwapDetailsModal = useCallback(() => {
-    inputFieldRef.current.blur();
-    outputFieldRef.current.blur();
-    nativeFieldRef.current.blur();
+    inputFieldRef?.current?.blur();
+    outputFieldRef?.current?.blur();
+    nativeFieldRef?.current?.blur();
     navigation.setParams({ focused: false });
     navigation.navigate(Routes.SWAP_DETAILS_SCREEN, {
       ...extraTradeDetails,
@@ -436,91 +437,95 @@ const ExchangeModal = ({
       : !!inputCurrency && !!outputCurrency;
 
   return (
-    <KeyboardFixedOpenLayout>
-      <Centered
-        {...position.sizeAsObject('100%')}
-        backgroundColor={colors.transparent}
-        direction="column"
-      >
-        <AnimatedFloatingPanels
-          margin={0}
-          style={{
-            opacity: interpolate(tabPosition, {
-              extrapolate: Animated.Extrapolate.CLAMP,
-              inputRange: [0, 1],
-              outputRange: [1, 0],
-            }),
-          }}
+    <HorizontalGestureBlocker>
+      <KeyboardFixedOpenLayout>
+        <Centered
+          {...position.sizeAsObject('100%')}
+          backgroundColor={colors.transparent}
+          direction="column"
         >
-          <FloatingPanel
-            overflow="visible"
-            paddingBottom={showOutputField ? 0 : 26}
-            radius={exchangeModalBorderRadius}
+          <AnimatedFloatingPanels
+            margin={0}
+            style={{
+              opacity: interpolate(tabPosition, {
+                extrapolate: Animated.Extrapolate.CLAMP,
+                inputRange: [0, 1],
+                outputRange: [1, 0],
+              }),
+            }}
           >
-            <ExchangeModalHeader
-              onPressDetails={navigateToSwapDetailsModal}
-              showDetailsButton={showDetailsButton}
-              title={inputHeaderTitle}
-            />
-            <ExchangeInputField
-              assignInputFieldRef={assignInputFieldRef}
-              assignNativeFieldRef={assignNativeFieldRef}
-              disableInputCurrencySelection={isWithdrawal}
-              inputAmount={inputAmountDisplay}
-              inputCurrencyAddress={get(inputCurrency, 'address', null)}
-              inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
-              nativeAmount={nativeAmount}
-              nativeCurrency={nativeCurrency}
-              onFocus={handleFocus}
-              onPressMaxBalance={handlePressMaxBalance}
-              onPressSelectInputCurrency={navigateToSelectInputCurrency}
-              setInputAmount={updateInputAmount}
-              setNativeAmount={updateNativeAmount}
-            />
-            {showOutputField && (
-              <ExchangeOutputField
-                assignOutputFieldRef={assignOutputFieldRef}
+            <FloatingPanel
+              overflow="visible"
+              paddingBottom={showOutputField ? 0 : 26}
+              radius={exchangeModalBorderRadius}
+            >
+              <ExchangeModalHeader
+                onPressDetails={navigateToSwapDetailsModal}
+                showDetailsButton={showDetailsButton}
+                title={inputHeaderTitle}
+              />
+              <ExchangeInputField
+                disableInputCurrencySelection={isWithdrawal}
+                inputAmount={inputAmountDisplay}
+                inputCurrencyAddress={get(inputCurrency, 'address', null)}
+                inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
+                inputFieldRef={inputFieldRef}
+                nativeAmount={nativeAmount}
+                nativeCurrency={nativeCurrency}
+                nativeFieldRef={nativeFieldRef}
                 onFocus={handleFocus}
-                onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
-                outputAmount={outputAmountDisplay}
-                outputCurrencyAddress={get(outputCurrency, 'address', null)}
-                outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
-                setOutputAmount={updateOutputAmount}
+                onPressMaxBalance={handlePressMaxBalance}
+                onPressSelectInputCurrency={navigateToSelectInputCurrency}
+                setInputAmount={updateInputAmount}
+                setNativeAmount={updateNativeAmount}
+              />
+              {showOutputField && (
+                <ExchangeOutputField
+                  onFocus={handleFocus}
+                  onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
+                  outputAmount={outputAmountDisplay}
+                  outputCurrencyAddress={get(outputCurrency, 'address', null)}
+                  outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
+                  outputFieldRef={outputFieldRef}
+                  setOutputAmount={updateOutputAmount}
+                />
+              )}
+            </FloatingPanel>
+            {isDeposit && (
+              <SwapInfo
+                amount={(inputAmount > 0 && outputAmountDisplay) || null}
+                asset={outputCurrency}
               />
             )}
-          </FloatingPanel>
-          {isDeposit && (
-            <SwapInfo
-              amount={(inputAmount > 0 && outputAmountDisplay) || null}
-              asset={outputCurrency}
-            />
-          )}
-          {isSlippageWarningVisible && <SlippageWarning slippage={slippage} />}
-          {showConfirmButton && (
-            <Fragment>
-              <Centered
-                flexShrink={0}
-                paddingHorizontal={15}
-                paddingTop={24}
-                width="100%"
-              >
-                <ConfirmExchangeButton
-                  disabled={!Number(inputAmountDisplay)}
-                  isAuthorizing={isAuthorizing}
-                  isDeposit={isDeposit}
-                  isSufficientBalance={isSufficientBalance}
-                  isSufficientGas={isSufficientGas}
-                  onSubmit={handleSubmit}
-                  slippage={slippage}
-                  type={type}
-                />
-              </Centered>
-              <GasSpeedButton type={type} />
-            </Fragment>
-          )}
-        </AnimatedFloatingPanels>
-      </Centered>
-    </KeyboardFixedOpenLayout>
+            {isSlippageWarningVisible && (
+              <SlippageWarning slippage={slippage} />
+            )}
+            {showConfirmButton && (
+              <Fragment>
+                <Centered
+                  flexShrink={0}
+                  paddingHorizontal={15}
+                  paddingTop={24}
+                  width="100%"
+                >
+                  <ConfirmExchangeButton
+                    disabled={!Number(inputAmountDisplay)}
+                    isAuthorizing={isAuthorizing}
+                    isDeposit={isDeposit}
+                    isSufficientBalance={isSufficientBalance}
+                    isSufficientGas={isSufficientGas}
+                    onSubmit={handleSubmit}
+                    slippage={slippage}
+                    type={type}
+                  />
+                </Centered>
+                <GasSpeedButton type={type} />
+              </Fragment>
+            )}
+          </AnimatedFloatingPanels>
+        </Centered>
+      </KeyboardFixedOpenLayout>
+    </HorizontalGestureBlocker>
   );
 };
 
@@ -537,4 +542,4 @@ ExchangeModal.propTypes = {
   underlyingPrice: PropTypes.string,
 };
 
-export default withBlockedHorizontalSwipe(ExchangeModal);
+export default ExchangeModal;

@@ -1,4 +1,5 @@
-import { useSelector } from 'react-redux';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   uniswapClearCurrenciesAndReserves,
   uniswapUpdateInputCurrency,
@@ -6,16 +7,34 @@ import {
 } from '../redux/uniswap';
 
 export default function useUniswapCurrencyReserves() {
+  const dispatch = useDispatch();
+
   const uniswapAllowances = useSelector(
     ({ uniswap: { inputReserve, outputReserve } }) => ({
       inputReserve,
       outputReserve,
     })
   );
+
+  const clearUniswapCurrenciesAndReserves = useCallback(
+    () => dispatch(uniswapClearCurrenciesAndReserves()),
+    [dispatch]
+  );
+
+  const updateUniswapInputCurrency = useCallback(
+    data => dispatch(uniswapUpdateInputCurrency(data)),
+    [dispatch]
+  );
+
+  const updateUniswapOutputCurrency = useCallback(
+    data => dispatch(uniswapUpdateOutputCurrency(data)),
+    [dispatch]
+  );
+
   return {
-    uniswapClearCurrenciesAndReserves,
-    uniswapUpdateInputCurrency,
-    uniswapUpdateOutputCurrency,
+    clearUniswapCurrenciesAndReserves,
+    updateUniswapInputCurrency,
+    updateUniswapOutputCurrency,
     ...uniswapAllowances,
   };
 }

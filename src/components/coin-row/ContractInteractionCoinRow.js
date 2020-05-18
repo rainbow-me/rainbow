@@ -1,11 +1,6 @@
 import React from 'react';
 import { Linking } from 'react-native';
-import {
-  compose,
-  mapProps,
-  onlyUpdateForKeys,
-  withHandlers,
-} from 'recompact';
+import { compose, mapProps, onlyUpdateForKeys, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withAccountSettings } from '../../hoc';
 import { ethereumUtils } from '../../utils/';

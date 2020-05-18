@@ -1,16 +1,13 @@
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import { colors, margin, padding } from '../../styles';
 import { Icon } from '../icons';
 import { ClearInputDecorator, Input } from '../inputs';
-import { InnerBorder, RowWithMargins } from '../layout';
+import { InnerBorder, Row } from '../layout';
 
-const ExchangeSearchHeight = 40;
+export const ExchangeSearchHeight = 40;
 
-const Container = styled(RowWithMargins).attrs({
-  margin: 0,
-})`
+const Container = styled(Row)`
   ${margin(0, 15, 8)};
   ${padding(0, 37, 0, 13)};
   background-color: ${colors.skeleton};
@@ -18,66 +15,56 @@ const Container = styled(RowWithMargins).attrs({
   height: ${ExchangeSearchHeight};
 `;
 
-export default class ExchangeSearch extends PureComponent {
-  static propTypes = {
-    autoFocus: PropTypes.bool,
-    onChangeText: PropTypes.func,
-    searchQuery: PropTypes.string,
-  };
+const SearchIcon = styled(Icon).attrs({
+  color: colors.alpha(colors.blueGreyDark, 0.4),
+  name: 'search',
+})`
+  flex-shrink: 0;
+  margin-top: 10.5;
+`;
 
-  static height = ExchangeSearchHeight;
+const SearchInput = styled(Input).attrs({
+  allowFontScaling: false,
+  autoCapitalize: 'words',
+  blurOnSubmit: false,
+  clearTextOnFocus: true,
+  enablesReturnKeyAutomatically: true,
+  keyboardAppearance: 'dark',
+  keyboardType: 'ascii-capable',
+  lineHeight: 'loose',
+  placeholderTextColor: colors.grey,
+  returnKeyType: 'search',
+  selectionColor: colors.appleBlue,
+  size: 'large',
+  spellCheck: false,
+})`
+  flex: 1;
+  margin-left: 7;
+`;
 
-  clearInput = () => {
-    if (this.inputRef && this.inputRef.current) {
-      this.inputRef.current.clear();
-    }
-    this.props.onChangeText('');
-  };
+const ExchangeSearch = ({ autoFocus, onChangeText, searchQuery }, ref) => {
+  const handleClearInput = useCallback(() => {
+    ref?.current.clear();
+    if (onChangeText) onChangeText('');
+  }, [ref, onChangeText]);
 
-  focus = event => {
-    if (this.inputRef && this.inputRef.current) {
-      this.inputRef.current.focus(event);
-    }
-  };
+  const handleFocus = useCallback(event => ref?.current.focus(event), [ref]);
 
-  inputRef = React.createRef();
-
-  render = () => (
+  return (
     <Container>
-      <Icon
-        color={colors.alpha(colors.blueGreyDark, 0.4)}
-        flex={0}
-        marginTop={10.5}
-        name="search"
-      />
-      <Input
-        allowFontScaling={false}
-        autoCapitalize="words"
-        autoFocus={this.props.autoFocus}
-        blurOnSubmit={false}
-        clearTextOnFocus
-        color={colors.dark}
-        enablesReturnKeyAutomatically
-        flex={1}
-        keyboardAppearance="dark"
-        keyboardType="ascii-capable"
-        lineHeight="loose"
-        marginLeft={7}
-        onChangeText={this.props.onChangeText}
-        onFocus={this.props.onFocus}
+      <SearchIcon />
+      <SearchInput
+        autoFocus={autoFocus}
+        onChangeText={onChangeText}
+        onFocus={handleFocus}
         placeholder="Search"
-        placeholderTextColor={colors.grey}
-        ref={this.inputRef}
-        returnKeyType="search"
-        selectionColor={colors.appleBlue}
-        size="large"
-        spellCheck={false}
-        value={this.props.searchQuery}
+        ref={ref}
+        value={searchQuery}
       />
       <ClearInputDecorator
         inputHeight={ExchangeSearchHeight}
-        isVisible={this.props.searchQuery !== ''}
-        onPress={this.clearInput}
+        isVisible={searchQuery !== ''}
+        onPress={handleClearInput}
       />
       <InnerBorder
         color={colors.dark}
@@ -86,4 +73,6 @@ export default class ExchangeSearch extends PureComponent {
       />
     </Container>
   );
-}
+};
+
+export default React.forwardRef(ExchangeSearch);

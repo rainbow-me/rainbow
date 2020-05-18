@@ -1,172 +1,70 @@
-import PropTypes from 'prop-types';
-import React, { useCallback, useRef } from 'react';
-import { TouchableWithoutFeedback } from 'react-native';
+import React from 'react';
 import styled from 'styled-components/primitives';
-import { colors, fonts } from '../../styles';
-import { ButtonPressAnimation } from '../animations';
-import { TokenSelectionButton } from '../buttons';
-import { CoinIcon } from '../coin-icon';
-import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
-import { Emoji, EnDash, Text } from '../text';
-import ExchangeInput from './ExchangeInput';
+import { colors } from '../../styles';
+import { ColumnWithMargins, Row } from '../layout';
+import ExchangeField from './ExchangeField';
+import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
 
 const BottomRowHeight = 32;
-const padding = 15;
-const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
-const MaxButtonEmoji = styled(Emoji).attrs({
-  lineHeight: 'none',
-  name: 'moneybag',
-  size: 'lmedium',
-})`
-  margin-top: 0.5;
+const Container = styled(ColumnWithMargins).attrs({ margin: 12 })`
+  background-color: ${colors.white};
+  padding-top: 6;
+  width: 100%;
+  z-index: 1;
 `;
 
-const MaxButtonLabel = styled(Text).attrs({
+const NativeFieldRow = styled(Row).attrs({
   align: 'center',
-  color: 'appleBlue',
-  size: 'lmedium',
-  weight: 'semibold',
+  justify: 'space-between',
 })`
-  margin-top: 1;
+  height: ${BottomRowHeight};
+  padding-left: 15;
 `;
 
-const MaxButton = ({ disabled, onPress }) => (
-  <ButtonPressAnimation disabled={disabled} marginRight={4} onPress={onPress}>
-    <RowWithMargins
-      align="center"
-      height={BottomRowHeight}
-      margin={0}
-      paddingHorizontal={padding}
-    >
-      <MaxButtonEmoji />
-      <MaxButtonLabel>Max</MaxButtonLabel>
-    </RowWithMargins>
-  </ButtonPressAnimation>
-);
-
-const ExchangeInputField = ({
-  assignInputFieldRef,
-  assignNativeFieldRef,
+export default function ExchangeInputField({
   disableInputCurrencySelection,
   inputAmount,
   inputCurrencyAddress,
   inputCurrencySymbol,
+  inputFieldRef,
   nativeAmount,
   nativeCurrency,
-  onBlur,
+  nativeFieldRef,
   onFocus,
   onPressMaxBalance,
   onPressSelectInputCurrency,
   setInputAmount,
   setNativeAmount,
-}) => {
-  const inputFieldRef = useRef();
-
-  const handleFocusInputField = useCallback(() => {
-    if (inputFieldRef && inputFieldRef.current) {
-      inputFieldRef.current.focus();
-    }
-  }, []);
-
-  const handleInputFieldRef = useCallback(
-    ref => {
-      inputFieldRef.current = ref;
-      assignInputFieldRef(ref);
-    },
-    [assignInputFieldRef]
-  );
-
+}) {
   return (
-    <ColumnWithMargins
-      backgroundColor={colors.white}
-      flex={0}
-      margin={12}
-      paddingTop={16}
-      width="100%"
-      zIndex={1}
-    >
-      <Row align="center">
-        <TouchableWithoutFeedback onPress={handleFocusInputField}>
-          <RowWithMargins
-            align="center"
-            flex={1}
-            margin={10}
-            paddingLeft={padding}
-            paddingRight={disableInputCurrencySelection ? padding : null}
-          >
-            <CoinIcon
-              address={inputCurrencyAddress}
-              bgColor={inputCurrencySymbol ? undefined : skeletonColor}
-              flex={0}
-              size={40}
-              symbol={inputCurrencySymbol}
-            />
-            <ExchangeInput
-              disableTabularNums
-              editable={!!inputCurrencySymbol}
-              height={40}
-              letterSpacing={fonts.letterSpacing.roundedTightest}
-              onBlur={onBlur}
-              onChangeText={setInputAmount}
-              onFocus={onFocus}
-              placeholder={inputCurrencySymbol ? '0' : EnDash.unicode}
-              placeholderTextColor={
-                inputCurrencySymbol ? undefined : skeletonColor
-              }
-              refInput={handleInputFieldRef}
-              value={inputAmount}
-            />
-          </RowWithMargins>
-        </TouchableWithoutFeedback>
-        {!disableInputCurrencySelection && (
-          <TokenSelectionButton
-            onPress={onPressSelectInputCurrency}
-            symbol={inputCurrencySymbol}
-          />
-        )}
-      </Row>
-      <Row
-        align="center"
-        height={BottomRowHeight}
-        justify="space-between"
-        paddingLeft={padding}
-      >
+    <Container>
+      <ExchangeField
+        address={inputCurrencyAddress}
+        amount={inputAmount}
+        disableCurrencySelection={disableInputCurrencySelection}
+        onFocus={onFocus}
+        onPressSelectCurrency={onPressSelectInputCurrency}
+        ref={inputFieldRef}
+        setAmount={setInputAmount}
+        symbol={inputCurrencySymbol}
+      />
+      <NativeFieldRow>
         <ExchangeNativeField
-          assignNativeFieldRef={assignNativeFieldRef}
           editable={!!inputCurrencySymbol}
           height={BottomRowHeight}
           nativeAmount={nativeAmount}
           nativeCurrency={nativeCurrency}
-          onBlur={onBlur}
           onFocus={onFocus}
+          ref={nativeFieldRef}
           setNativeAmount={setNativeAmount}
         />
-        <MaxButton
+        <ExchangeMaxButton
           disabled={!inputCurrencySymbol}
           onPress={onPressMaxBalance}
         />
-      </Row>
-    </ColumnWithMargins>
+      </NativeFieldRow>
+    </Container>
   );
-};
-
-ExchangeInputField.propTypes = {
-  assignInputFieldRef: PropTypes.func,
-  assignNativeFieldRef: PropTypes.func,
-  disableInputCurrencySelection: PropTypes.bool,
-  inputAmount: PropTypes.string,
-  inputCurrencyAddress: PropTypes.string,
-  inputCurrencySymbol: PropTypes.string,
-  nativeAmount: PropTypes.string,
-  nativeCurrency: PropTypes.string,
-  onBlur: PropTypes.func,
-  onFocus: PropTypes.func,
-  onPressMaxBalance: PropTypes.func,
-  onPressSelectInputCurrency: PropTypes.func,
-  setInputAmount: PropTypes.func,
-  setNativeAmount: PropTypes.func,
-};
-
-export default ExchangeInputField;
+}

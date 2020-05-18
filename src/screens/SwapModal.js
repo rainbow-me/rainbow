@@ -5,15 +5,15 @@ import createUnlockAndSwapRap, {
 } from '../raps/unlockAndSwap';
 import ExchangeModal from './ExchangeModal';
 
-const SwapModal = ({ ...props }) => (
+const SwapModal = (props, ref) => (
   <ExchangeModal
     createRap={createUnlockAndSwapRap}
     estimateRap={estimateUnlockAndSwap}
     inputHeaderTitle="Swap"
     showOutputField
+    ref={ref}
     type={ExchangeModalTypes.swap}
     {...props}
   />
 );
-
-export default SwapModal;
+export default React.forwardRef(SwapModal);

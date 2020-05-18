@@ -3,7 +3,6 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { LayoutAnimation } from 'react-native';
-import { useDispatch } from 'react-redux';
 import { withProps } from 'recompact';
 import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
 import { useAccountSettings, useGas } from '../../hooks';
@@ -47,10 +46,9 @@ const getActionLabel = type => {
 };
 
 const GasSpeedButton = ({ type }) => {
-  const dispatch = useDispatch();
   const { nativeCurrencySymbol } = useAccountSettings();
   const {
-    gasUpdateGasPriceOption,
+    updateGasPriceOption,
     selectedGasPrice,
     selectedGasPriceOption,
   } = useGas();
@@ -77,8 +75,8 @@ const GasSpeedButton = ({ type }) => {
 
     const nextSpeed = gasUtils.GasSpeedOrder[nextSpeedIndex];
 
-    dispatch(gasUpdateGasPriceOption(nextSpeed));
-  }, [dispatch, gasUpdateGasPriceOption, selectedGasPriceOption]);
+    updateGasPriceOption(nextSpeed);
+  }, [selectedGasPriceOption, updateGasPriceOption]);
 
   const formatAnimatedGasPrice = useCallback(
     animatedPrice => {

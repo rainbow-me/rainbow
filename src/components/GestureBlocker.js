@@ -1,36 +1,29 @@
 import PropTypes from 'prop-types';
-import React, { useMemo, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet } from 'react-native';
 import {
   PanGestureHandler,
   State,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
+import styled from 'styled-components/primitives';
 import { useDimensions } from '../hooks';
 
 const { call, cond, event, eq } = Animated;
 
-const sx = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    width: '100%',
-    zIndex: 10,
-  },
-});
+const Container = styled.View`
+  ${({ height, type }) => `${type}: ${-height};`};
+  height: ${({ height }) => height};
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+`;
 
 const GestureBlocker = ({ type, onTouchEnd }) => {
   const { height: screenHeight } = useDimensions();
   const tab = useRef(null);
   const pan = useRef(null);
-
-  const containerStyles = useMemo(
-    () => ({
-      height: screenHeight,
-      [type]: -screenHeight,
-    }),
-    [screenHeight, type]
-  );
 
   const onHandlerStateChange = event([
     {
@@ -41,7 +34,7 @@ const GestureBlocker = ({ type, onTouchEnd }) => {
   ]);
 
   return (
-    <View style={[containerStyles, sx.container]}>
+    <Container height={screenHeight} type={type}>
       <PanGestureHandler
         minDeltaX={1}
         minDeltaY={1}
@@ -58,7 +51,7 @@ const GestureBlocker = ({ type, onTouchEnd }) => {
           </TapGestureHandler>
         </Animated.View>
       </PanGestureHandler>
-    </View>
+    </Container>
   );
 };
 
