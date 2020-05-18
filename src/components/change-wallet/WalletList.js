@@ -74,16 +74,19 @@ export function WalletList({
 
   // Update the rows when allWallets changes
   useEffect(() => {
-    let newRows = [];
-    if (!allWallets) return;
+    const seedRows = [];
+    const privateKeyRows = [];
+    const readOnlyRows = [];
 
-    Object.keys(allWallets).forEach(key => {
+    if (!allWallets) return;
+    const sortedKeys = Object.keys(allWallets).sort();
+    sortedKeys.forEach(key => {
       const wallet = allWallets[key];
       const filteredAccounts = wallet.addresses.filter(
         account => account.visible
       );
       filteredAccounts.forEach(account => {
-        newRows.push({
+        const row = {
           ...account,
           editMode,
           height: rowHeight,
@@ -96,7 +99,21 @@ export function WalletList({
           onPress: () => onChangeAccount(wallet.id, account.address),
           rowType: RowTypes.ADDRESS,
           wallet_id: wallet.id,
-        });
+        };
+        switch (wallet.type) {
+          case WalletTypes.mnemonic:
+          case WalletTypes.seed:
+            seedRows.push(row);
+            break;
+          case WalletTypes.privateKey:
+            privateKeyRows.push(row);
+            break;
+          case WalletTypes.readOnly:
+            readOnlyRows.push(row);
+            break;
+          default:
+            break;
+        }
       });
       // You can't add accounts for read only or private key wallets
 
@@ -104,7 +121,7 @@ export function WalletList({
         [WalletTypes.mnemonic, WalletTypes.seed].indexOf(wallet.type) !== -1 &&
         filteredAccounts.length > 0
       ) {
-        newRows.push({
+        seedRows.push({
           editMode,
           height: optionRowHeight,
           id: 'add_account',
@@ -114,6 +131,8 @@ export function WalletList({
         });
       }
     });
+
+    const newRows = [...seedRows, ...privateKeyRows, ...readOnlyRows];
 
     // You should always be able to create a new account
     // for ex. if you only import pkey or read only wallet
