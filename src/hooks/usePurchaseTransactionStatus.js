@@ -2,21 +2,32 @@ import { find } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-export default function usePurchaseTransactionStatus(transferId) {
-  const { purchaseTransactions } = useSelector(
-    ({ addCash: { purchaseTransactions } }) => ({
+export default function usePurchaseTransactionStatus() {
+  const {
+    currentOrderStatus,
+    currentTransferId,
+    purchaseTransactions,
+  } = useSelector(
+    ({
+      addCash: { currentOrderStatus, currentTransferId, purchaseTransactions },
+    }) => ({
+      currentOrderStatus,
+      currentTransferId,
       purchaseTransactions,
     })
   );
 
   const transferStatus = useMemo(() => {
-    if (!transferId) return null;
+    if (!currentTransferId) return null;
     const purchase = find(
       purchaseTransactions,
-      txn => txn.transferId === transferId
+      txn => txn.transferId === currentTransferId
     );
     return purchase ? purchase.status : null;
-  }, [purchaseTransactions, transferId]);
+  }, [purchaseTransactions, currentTransferId]);
 
-  return transferStatus;
+  return {
+    orderStatus: currentOrderStatus,
+    transferStatus,
+  };
 }
