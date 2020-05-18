@@ -2,7 +2,7 @@ import React from 'react';
 import { StatusBar } from 'react-native';
 import styled from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
-import { colors, position } from '../../styles';
+import { colors, padding, position } from '../../styles';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 
@@ -10,8 +10,8 @@ const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   direction: 'column',
   justify: fixedToTop ? 'start' : 'center',
 }))`
+  ${({ containerPadding }) => padding(containerPadding)};
   ${position.size('100%')};
-  padding: ${({ padding }) => padding};
 `;
 
 const Content = styled(Column).attrs({ shrink: 0 })`
@@ -34,7 +34,7 @@ export default function Modal({
   const { height: deviceHeight } = useDimensions();
 
   return (
-    <Container fixedToTop={fixedToTop} padding={containerPadding}>
+    <Container containerPadding={containerPadding} fixedToTop={fixedToTop}>
       <StatusBar barStyle={statusBarStyle} />
       <TouchableBackdrop onPress={onCloseModal} />
       <Content

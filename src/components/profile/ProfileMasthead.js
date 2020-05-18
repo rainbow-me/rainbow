@@ -3,7 +3,6 @@ import GraphemeSplitter from 'grapheme-splitter';
 import React, { useCallback } from 'react';
 import { Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
 import { isAvatarPickerAvailable } from '../../config/experimental';
@@ -17,7 +16,7 @@ import Divider from '../Divider';
 import CopyTooltip from '../copy-tooltip';
 import { FloatingEmojis } from '../floating-emojis';
 import { Column, RowWithMargins } from '../layout';
-import { TruncatedAddress } from '../text';
+import { Text, TruncatedAddress } from '../text';
 import AddCashButton from './AddCashButton';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
@@ -57,26 +56,36 @@ const FirstLetter = styled(Text)`
   padding-left: 0.5px;
 `;
 
-const ProfileMasthead = ({
+export default function ProfileMasthead({
   accountAddress,
   accountColor,
   accountName,
   addCashAvailable,
+  recyclerListRef,
   showBottomDivider = true,
-  onPressAvatar,
-}) => {
+}) {
   const name = accountName || DEFAULT_WALLET_NAME;
   const color = accountColor || 0;
   const { accountENS } = useAccountSettings();
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
 
-  const onAddCash = useCallback(() => {
+  const handlePressAddCash = useCallback(() => {
     navigate(Routes.ADD_CASH_SHEET);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
   }, [navigate]);
+
+  const handlePressAvatar = useCallback(() => {
+    if (recyclerListRef) {
+      recyclerListRef.scrollToTop(true);
+      setTimeout(
+        () => navigate(Routes.AVATAR_BUILDER, { accountColor, accountName }),
+        recyclerListRef.getCurrentScrollOffset() > 0 ? 200 : 1
+      );
+    }
+  }, [accountColor, accountName, navigate, recyclerListRef]);
 
   return (
     <Column
@@ -86,7 +95,7 @@ const ProfileMasthead = ({
     >
       {isAvatarPickerAvailable ? (
         <AvatarCircle
-          onPress={onPressAvatar}
+          onPress={handlePressAvatar}
           style={{ backgroundColor: colors.avatarColor[color] }}
         >
           <FirstLetter>
@@ -124,7 +133,6 @@ const ProfileMasthead = ({
             />
           )}
         </FloatingEmojis>
-
         <ProfileAction
           icon="qrCode"
           onPress={() => navigate(Routes.RECEIVE_MODAL)}
@@ -133,30 +141,8 @@ const ProfileMasthead = ({
           width={81}
         />
       </RowWithMargins>
-      {addCashAvailable && <AddCashButton onPress={onAddCash} />}
+      {addCashAvailable && <AddCashButton onPress={handlePressAddCash} />}
       {showBottomDivider && <ProfileMastheadDivider />}
     </Column>
   );
-};
-
-export default compose(
-  withHandlers({
-    onPressAvatar: ({
-      navigation,
-      accountColor,
-      accountName,
-      recyclerListRef,
-    }) => () => {
-      recyclerListRef.scrollToTop(true);
-      setTimeout(
-        () => {
-          navigation.navigate(Routes.AVATAR_BUILDER, {
-            accountColor: accountColor,
-            accountName: accountName,
-          });
-        },
-        recyclerListRef.getCurrentScrollOffset() > 0 ? 200 : 1
-      );
-    },
-  })
-)(ProfileMasthead);
+}

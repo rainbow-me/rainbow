@@ -1,59 +1,47 @@
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { useImperativeHandle, useRef } from 'react';
 import { TextInput as TextInputPrimitive } from 'react-native';
 import styled from 'styled-components/primitives';
 import { buildTextStyles, colors } from '../../styles';
 
-const TextInput = styled(TextInputPrimitive)(buildTextStyles);
+const TextInput = styled(TextInputPrimitive)`
+  ${buildTextStyles};
+`;
 
-export default class Input extends PureComponent {
-  static propTypes = {
-    allowFontScaling: PropTypes.bool,
-    autoCapitalize: PropTypes.string,
-    autoCorrect: PropTypes.bool,
-    keyboardType: PropTypes.string,
-    placeholderTextColor: PropTypes.string,
-    spellCheck: PropTypes.bool,
-  };
+const Input = (
+  {
+    allowFontScaling = false,
+    autoCapitalize = 'none',
+    autoCorrect = false,
+    keyboardType,
+    placeholderTextColor = colors.placeholder,
+    spellCheck = true,
+    ...props
+  },
+  ref
+) => {
+  const inputRef = useRef();
 
-  static defaultProps = {
-    allowFontScaling: false,
-    autoCapitalize: 'none',
-    autoCorrect: false,
-    placeholderTextColor: colors.placeholder,
-    spellCheck: true,
-  };
+  useImperativeHandle(ref, () => ({
+    blur: event => inputRef?.current?.blur(event),
+    clear: () => inputRef?.current?.clear(),
+    focus: event => inputRef?.current?.focus(event),
+    isFocused: () => inputRef?.current?.isFocused(),
+    setNativeProps: nativeProps =>
+      inputRef?.current?.setNativeProps(nativeProps),
+  }));
 
-  clear = () => this.ref.current.clear();
+  return (
+    <TextInput
+      {...props}
+      allowFontScaling={allowFontScaling}
+      autoCapitalize={autoCapitalize}
+      autoCorrect={autoCorrect}
+      keyboardType={keyboardType}
+      placeholderTextColor={placeholderTextColor}
+      ref={inputRef}
+      spellCheck={spellCheck}
+    />
+  );
+};
 
-  focus = event => this.ref.current.focus(event);
-
-  isFocused = () => this.ref.current.isFocused();
-
-  ref = React.createRef();
-
-  render = () => {
-    const {
-      allowFontScaling,
-      autoCapitalize,
-      autoCorrect,
-      keyboardType,
-      placeholderTextColor,
-      spellCheck,
-      ...props
-    } = this.props;
-
-    return (
-      <TextInput
-        {...props}
-        allowFontScaling={allowFontScaling}
-        autoCapitalize={autoCapitalize}
-        autoCorrect={autoCorrect}
-        keyboardType={keyboardType}
-        placeholderTextColor={placeholderTextColor}
-        ref={this.ref}
-        spellCheck={spellCheck}
-      />
-    );
-  };
-}
+export default React.forwardRef(Input);

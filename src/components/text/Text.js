@@ -2,7 +2,9 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components/primitives';
 import { buildTextStyles } from '../../styles';
 
-const Text = styled.Text.attrs({ allowFontScaling: false })(buildTextStyles);
+const Text = styled.Text.attrs({ allowFontScaling: false })`
+  ${buildTextStyles};
+`;
 
 Text.propTypes = {
   align: PropTypes.oneOf(['auto', 'center', 'left', 'justify', 'right']),

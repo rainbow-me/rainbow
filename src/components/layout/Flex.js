@@ -1,24 +1,11 @@
+import { pickBy } from 'lodash';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { View } from 'react-primitives';
 import styled from 'styled-components/primitives';
+import { buildFlexStyles } from '../../styles';
 
-export const getFlexStylesFromShorthand = style =>
-  style === 'end' || style === 'start' ? `flex-${style}` : style;
-
-const Flex = styled.View`
-  ${({ flex }) => (flex !== undefined ? `flex: ${flex};` : '')}
-  ${({ grow }) => (grow !== undefined ? `flex-grow: ${grow};` : '')}
-  ${({ self }) =>
-    self ? `align-self: ${getFlexStylesFromShorthand(self)};` : ''}
-  ${({ shrink }) => (shrink !== undefined ? `flex-shrink: ${shrink};` : '')}
-  align-items: ${({ align }) => getFlexStylesFromShorthand(align)};
-  flex-direction: ${({ direction }) => direction};
-  flex-wrap: ${({ wrap }) => (wrap ? 'wrap' : 'nowrap')};
-  justify-content: ${({ justify }) => getFlexStylesFromShorthand(justify)};
-`;
-
-Flex.displayName = 'Flex';
-
-Flex.propTypes = {
+const flexPropTypes = {
   align: PropTypes.oneOf(['baseline', 'center', 'end', 'start', 'stretch']),
   direction: PropTypes.oneOf([
     'column',
@@ -39,6 +26,21 @@ Flex.propTypes = {
   shrink: PropTypes.number,
   wrap: PropTypes.bool,
 };
+
+const blacklist = Object.keys(flexPropTypes);
+const filterProps = (_, prop) => !blacklist.includes(prop);
+const FlexPrimitive = React.forwardRef((props, ref) => (
+  <View {...pickBy(props, filterProps)} ref={ref} />
+));
+FlexPrimitive.displayName = 'FlexPrimitive';
+
+const Flex = styled(FlexPrimitive)`
+  ${buildFlexStyles};
+`;
+
+Flex.displayName = 'Flex';
+
+Flex.propTypes = flexPropTypes;
 
 Flex.defaultProps = {
   align: 'stretch',

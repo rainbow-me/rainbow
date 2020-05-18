@@ -10,7 +10,6 @@ import React, {
 } from 'react';
 import Animated from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
-import { compose, toClass } from 'recompact';
 import { interpolate } from '../components/animations';
 import {
   ConfirmExchangeButton,
@@ -48,9 +47,7 @@ import Routes from './Routes/routesNames';
 
 export const exchangeModalBorderRadius = 30;
 
-const AnimatedFloatingPanels = Animated.createAnimatedComponent(
-  toClass(FloatingPanels)
-);
+const AnimatedFloatingPanels = Animated.createAnimatedComponent(FloatingPanels);
 
 const ExchangeModal = ({
   createRap,
@@ -540,4 +537,4 @@ ExchangeModal.propTypes = {
   underlyingPrice: PropTypes.string,
 };
 
-export default compose(withBlockedHorizontalSwipe)(ExchangeModal);
+export default withBlockedHorizontalSwipe(ExchangeModal);

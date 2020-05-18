@@ -8,6 +8,7 @@ import { position } from '../../styles';
 import Centered from './Centered';
 
 const Container = styled(Transitioning.View)`
+  height: ${({ height }) => height};
   left: 0;
   position: absolute;
   right: 0;

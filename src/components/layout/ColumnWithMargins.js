@@ -2,8 +2,8 @@ import styled from 'styled-components/primitives';
 import LayoutWithMargins from './LayoutWithMargins';
 
 const ColumnWithMargins = styled(LayoutWithMargins).attrs(
-  ({ margin = 20 }) => ({
-    direction: 'column',
+  ({ direction = 'column', margin = 20 }) => ({
+    direction,
     margin,
     marginKey: 'marginBottom',
   })

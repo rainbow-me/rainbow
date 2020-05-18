@@ -22,30 +22,28 @@ const buildInsetFromProps = inset => {
 };
 
 const horizontalBorderLineStyles = inset => `
-  ${inset[3] ? borders.buildRadius('left', 2) : null}
-  ${inset[1] ? borders.buildRadius('right', 2) : null}
+  ${inset[3] ? borders.buildRadius('left', 2) : ''}
+  ${inset[1] ? borders.buildRadius('right', 2) : ''}
   left: ${inset[3]};
   right: ${inset[1]};
 `;
 
 const verticalBorderLineStyles = inset => `
-  ${inset[2] ? borders.buildRadius('bottom', 2) : null}
-  ${inset[0] ? borders.buildRadius('top', 2) : null}
+  ${inset[2] ? borders.buildRadius('bottom', 2) : ''}
+  ${inset[0] ? borders.buildRadius('top', 2) : ''}
   bottom: ${inset[2]};
   top: ${inset[0]};
 `;
 
 const BorderLine = styled.View`
   ${position.cover};
+  background-color: ${({ color }) => color};
   ${({ horizontal, inset }) => {
     const insetFromProps = buildInsetFromProps(inset);
     return horizontal
       ? horizontalBorderLineStyles(insetFromProps)
       : verticalBorderLineStyles(insetFromProps);
-  }};
-  background-color: ${({ color }) => color};
-  bottom: 0;
-  top: 0;
+  }}
 `;
 
 const Container = styled.View`

@@ -8,7 +8,6 @@ import store from '../../redux/store';
 import { colors, fonts, position } from '../../styles';
 import { Button } from '../buttons';
 import { ExchangeInput } from '../exchange';
-import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 
 const Underline = styled(View)`
@@ -35,7 +34,7 @@ export default class UnderlineField extends PureComponent {
     autoFocus: PropTypes.bool,
     buttonText: PropTypes.string,
     format: PropTypes.func,
-    keyboardType: Input.propTypes.keyboardType,
+    keyboardType: PropTypes.string,
     mask: PropTypes.string,
     maxLength: PropTypes.number,
     onBlur: PropTypes.func,

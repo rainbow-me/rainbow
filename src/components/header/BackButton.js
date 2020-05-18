@@ -1,43 +1,35 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { NavigationActions, withNavigation } from 'react-navigation';
-import { compose, omitProps, withHandlers } from 'recompact';
+import React, { useCallback } from 'react';
+import { NavigationActions } from 'react-navigation';
+import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
-import { colors } from '../../styles';
-import { directionPropType } from '../../utils';
 import Icon from '../icons/Icon';
-import { Flex } from '../layout';
+import { Row } from '../layout';
 import HeaderButton from './HeaderButton';
 
-const ContainerElement = omitProps('direction')(Flex);
-const Container = styled(ContainerElement).attrs({ align: 'end' })`
+const Container = styled(Row).attrs({ align: 'end' })`
   height: 100%;
   padding-bottom: 2;
 `;
 
-const BackButton = ({ color, direction, onPress, ...props }) => (
-  <HeaderButton onPress={onPress} transformOrigin={direction}>
-    <Container direction={direction} {...props}>
-      <Icon color={color} direction={direction} name="caret" {...props} />
-    </Container>
-  </HeaderButton>
-);
+export default function BackButton({ color, direction, onPress, ...props }) {
+  const navigation = useNavigation();
 
-BackButton.propTypes = {
-  color: colors.propType,
-  direction: directionPropType,
-  onPress: PropTypes.func,
-};
-
-export default compose(
-  withNavigation,
-  withHandlers({
-    onPress: ({ navigation, onPress }) => event => {
+  const handlePress = useCallback(
+    event => {
       if (onPress) {
         return onPress(event);
       }
 
       return navigation.dispatch(NavigationActions.back());
     },
-  })
-)(BackButton);
+    [navigation, onPress]
+  );
+
+  return (
+    <HeaderButton onPress={handlePress} transformOrigin={direction}>
+      <Container {...props}>
+        <Icon color={color} direction={direction} name="caret" {...props} />
+      </Container>
+    </HeaderButton>
+  );
+}

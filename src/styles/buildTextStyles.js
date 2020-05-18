@@ -33,8 +33,8 @@ const buildTextStyles = css`
         )};`}
 
   /* Line Height */
-  ${({ emoji, lineHeight }) =>
-    isNil(lineHeight) || (emoji && Platform.OS === 'android')
+  ${({ isEmoji, lineHeight }) =>
+    isNil(lineHeight) || (isEmoji && Platform.OS === 'android')
       ? ''
       : `line-height: ${get(fonts, `lineHeight[${lineHeight}]`, lineHeight)};`}
 

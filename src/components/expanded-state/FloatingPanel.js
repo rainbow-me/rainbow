@@ -11,13 +11,15 @@ export const FloatingPanelPadding = {
   y: 0,
 };
 
+const FloatingPanelShadow = shadow.build(0, 10, 50, colors.dark, 0.6);
+
 const Container = styled(Column)`
-  ${({ hideShadow }) =>
-    hideShadow ? '' : shadow.build(0, 10, 50, colors.dark, 0.6)};
+  ${({ hideShadow }) => (hideShadow ? '' : FloatingPanelShadow)};
   background-color: ${({ color }) => color};
   border-radius: ${({ radius }) => radius};
-  min-height: ${({ minHeight }) => minHeight};
+  min-height: ${({ minHeight }) => minHeight || 0};
   opacity: 1;
+  overflow: ${({ overflow }) => overflow};
   padding-bottom: 0;
   z-index: 1;
 `;
@@ -31,12 +33,12 @@ const FloatingPanel = ({
   ...props
 }) => (
   <Container
+    {...props}
     color={color}
     hideShadow={hideShadow}
     minHeight={height}
     overflow={overflow}
     radius={radius}
-    {...props}
   />
 );
 
