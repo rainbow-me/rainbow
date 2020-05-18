@@ -41,7 +41,10 @@ class LayoutItemAnimator extends BaseItemAnimator {
   }
 
   animateDidMount = NOOP;
-  animateShift = () => {
+  animateShift = NOOP;
+  animateWillMount = NOOP;
+  animateWillUnmount = NOOP;
+  animateWillUpdate = () => {
     if (
       this.rlv.getContentDimension().height <
         this.rlv.getCurrentScrollOffset() + globalDeviceDimensions + 46 &&
@@ -64,13 +67,6 @@ class LayoutItemAnimator extends BaseItemAnimator {
         },
       });
     }
-  };
-  animateWillMount = NOOP;
-  animateWillUnmount = NOOP;
-  animateWillUpdate = () => {
-    // if (this.rlv._refreshViewability) {
-    //   console.log(this.rlv._refreshViewability());
-    // }
   };
 }
 
@@ -529,6 +525,7 @@ class RecyclerAssetList extends Component {
                 Number(focusedFamilyItem.childrenAmount) / 2
               ),
               isFirst: false,
+              isHeader: true,
               isOpen: true,
             }
           );
@@ -810,6 +807,7 @@ class RecyclerAssetList extends Component {
           >
             <RecyclerListView
               dataProvider={dataProvider}
+              disableRecycling
               extendedState={{ headersIndices }}
               externalScrollView={externalScrollView}
               itemAnimator={new LayoutItemAnimator(this.rlv)}
