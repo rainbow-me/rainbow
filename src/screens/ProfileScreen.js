@@ -92,8 +92,8 @@ const ProfileScreen = ({ navigation }) => {
             <ProfileMasthead
               addCashAvailable={addCashAvailable}
               navigation={navigation}
-              showBottomDivider={!isEmpty || isLoading}
               onChangeWallet={onChangeWallet}
+              showBottomDivider={!isEmpty || isLoading}
             />
           }
           initialized={activityListInitialized}
@@ -101,7 +101,6 @@ const ProfileScreen = ({ navigation }) => {
           navigation={navigation}
           network={network}
           requests={requests}
-          style={{ flex: 1 }}
           transactions={transactions}
         />
       ) : (
@@ -114,8 +113,8 @@ const ProfileScreen = ({ navigation }) => {
             <ProfileMasthead
               addCashAvailable={addCashAvailable}
               navigation={navigation}
-              showBottomDivider={!isEmpty || isLoading}
               onChangeWallet={onChangeWallet}
+              showBottomDivider={!isEmpty || isLoading}
             />
           }
           isEmpty={isEmpty}

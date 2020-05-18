@@ -1,26 +1,15 @@
 import { get } from 'lodash';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
-import { withProps } from 'recompact';
+import styled from 'styled-components';
 import { ButtonPressAnimation } from '../components/animations';
 import WalletList from '../components/change-wallet/WalletList';
 import { Sheet } from '../components/sheet';
 import { Text } from '../components/text';
 import WalletTypes from '../helpers/walletTypes';
-import {
-  useAccountSettings,
-  useInitializeWallet,
-  usePrevious,
-  useWallets,
-} from '../hooks';
+import { useAccountSettings, useInitializeWallet, useWallets } from '../hooks';
 import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
 import { createWallet } from '../model/wallet';
 import {
@@ -40,30 +29,13 @@ const walletRowHeight = 60;
 const titleHeight = 70;
 const footerHeight = 65;
 const maxListHeight = deviceHeight - 220;
-const Title = withProps({
-  align: 'center',
-  letterSpacing: 'roundedMedium',
-  size: 'large',
-  weight: 'bold',
-})(Text);
 
-const EditText = withProps({
-  align: 'right',
-  color: colors.appleBlue,
-  letterSpacing: 'roundedMedium',
-  size: 'large',
-  weight: 'medium',
-})(Text);
-
-const EditButton = withProps({
-  scaleTo: 0.96,
-  style: {
-    padding: 10,
-    position: 'absolute',
-    right: 9,
-    top: 8,
-  },
-})(ButtonPressAnimation);
+const EditButton = styled(ButtonPressAnimation).attrs({ scaleTo: 0.96 })`
+  position: absolute;
+  right: 9px;
+  top: 8px;
+  padding: 10px;
+`;
 
 const ChangeWalletSheet = () => {
   const { wallets, selected: selectedWallet } = useWallets();
@@ -75,9 +47,6 @@ const ChangeWalletSheet = () => {
   const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames(wallets);
   const creatingWallet = useRef();
-  const prevWalletsWithBalancesAndNames = usePrevious(
-    walletsWithBalancesAndNames
-  );
 
   const listHeight = useRef(0);
 
@@ -312,35 +281,42 @@ const ChangeWalletSheet = () => {
     navigate(Routes.IMPORT_SEED_PHRASE_SHEET);
   }, [goBack, navigate]);
 
-  const skeletonTransitionRef = useRef();
-
   const toggleEditMode = useCallback(() => {
     setEditMode(!editMode);
   }, [editMode]);
 
-  useEffect(() => {
-    skeletonTransitionRef &&
-      skeletonTransitionRef.current &&
-      skeletonTransitionRef.current.animateNextTransition();
-  }, [prevWalletsWithBalancesAndNames]);
-
   return (
     <Sheet borderRadius={30}>
-      <Title>Wallets</Title>
+      <Text
+        align="center"
+        letterSpacing="roundedMedium"
+        size="large"
+        weight="bold"
+      >
+        Wallets
+      </Text>
       <EditButton onPress={toggleEditMode}>
-        <EditText>{editMode ? 'Done' : 'Edit'}</EditText>
+        <Text
+          align="right"
+          color={colors.appleBlue}
+          letterSpacing="roundedMedium"
+          size="large"
+          weight="medium"
+        >
+          {editMode ? 'Done' : 'Edit'}
+        </Text>
       </EditButton>
 
       <WalletList
-        editMode={editMode}
-        currentWallet={selectedWallet}
         accountAddress={accountAddress}
         allWallets={walletsWithBalancesAndNames}
+        currentWallet={selectedWallet}
+        editMode={editMode}
         height={listHeight.current}
         onChangeAccount={onChangeAccount}
         onEditWallet={onEditWallet}
-        onPressImportSeedPhrase={onPressImportSeedPhrase}
         onPressAddAccount={onPressAddAccount}
+        onPressImportSeedPhrase={onPressImportSeedPhrase}
       />
     </Sheet>
   );
