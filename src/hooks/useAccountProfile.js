@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { removeFirstEmojiFromString } from '../helpers/emojiHandler';
 import { address } from '../utils/abbreviations';
 
-export default function useWallets() {
+export default function useAccountProfile() {
   const selectedWallet = useSelector(({ wallets: { selected } }) => selected);
   const accountData = useSelector(
     ({ settings: { accountAddress, accountENS } }) => ({
