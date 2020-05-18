@@ -4,8 +4,8 @@ import {
   estimateSwapGasLimit,
   executeSwap,
 } from '../../handlers/uniswap';
-import transactionStatusTypes from '../../helpers/transactionStatusTypes';
-import transactionTypes from '../../helpers/transactionTypes';
+import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import TransactionTypes from '../../helpers/transactionTypes';
 import {
   convertHexToString,
   convertRawAmountToDecimalFormat,
@@ -33,8 +33,8 @@ export const isValidSwapInput = ({
   const isMissingAmounts = !inputAmount || !outputAmount;
   const isMissingCurrency = !inputCurrency || !outputCurrency;
   const isMissingReserves =
-    (inputCurrency && inputCurrency.address !== 'eth' && !inputReserve) ||
-    (outputCurrency && outputCurrency.address !== 'eth' && !outputReserve);
+    (get(inputCurrency, 'address') !== 'eth' && !inputReserve) ||
+    (get(outputCurrency, 'address') !== 'eth' && !outputReserve);
 
   return !(isMissingAmounts || isMissingCurrency || isMissingReserves);
 };
@@ -121,12 +121,12 @@ const swap = async (wallet, currentRap, index, parameters) => {
     from: accountAddress,
     hash: swap.hash,
     nonce: get(swap, 'nonce'),
-    status: transactionStatusTypes.swapping,
+    status: TransactionStatusTypes.swapping,
     to: get(swap, 'to'),
-    type: transactionTypes.swap,
+    type: TransactionTypes.trade,
   };
   logger.log('[swap] adding new txn', newTransaction);
-  dispatch(dataAddNewTransaction(newTransaction, true));
+  await dispatch(dataAddNewTransaction(newTransaction, true));
   logger.log('[swap] calling the callback');
   currentRap.callback();
   currentRap.callback = NOOP;
@@ -142,7 +142,8 @@ const swap = async (wallet, currentRap, index, parameters) => {
       logger.log('[swap] raw received amount', rawReceivedAmount);
       logger.log('[swap] updated raps');
       const convertedOutput = convertRawAmountToDecimalFormat(
-        rawReceivedAmount
+        rawReceivedAmount,
+        outputCurrency.decimals
       );
       logger.log('[swap] updated raps', convertedOutput);
       return convertedOutput;

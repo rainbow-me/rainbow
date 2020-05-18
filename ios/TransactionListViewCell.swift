@@ -75,6 +75,11 @@ class TransactionListViewCell: TransactionListBaseCell {
        transactionIcon.image!.accessibilityIdentifier = "static";
      }
 
+    // Purchase Overrides
+    if transaction.type?.lowercased() == "purchase" && transaction.status?.lowercased() == "purchased" {
+      transactionIcon.image = UIImage.init(named: "received")
+    }
+
     // Authorize Overrides
     if transaction.type?.lowercased() == "authorize" && transaction.status?.lowercased() == "approved" {
       transactionIcon.image = UIImage.init(named: "self")

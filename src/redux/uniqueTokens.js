@@ -10,7 +10,7 @@ import {
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '../handlers/opensea-api';
-import networkTypes from '../helpers/networkTypes';
+import NetworkTypes from '../helpers/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '../parsers/uniqueTokens';
 /* eslint-disable-next-line import/no-cycle */
 import { dataUpdateAssets } from './data';
@@ -61,7 +61,7 @@ export const uniqueTokensRefreshState = () => async (dispatch, getState) => {
   const { network } = getState().settings;
 
   // Currently not supported in testnets
-  if (network !== networkTypes.mainnet) {
+  if (network !== NetworkTypes.mainnet && network !== NetworkTypes.rinkeby) {
     return;
   }
 
@@ -82,6 +82,7 @@ const fetchUniqueTokens = () => async (dispatch, getState) => {
   try {
     while (!shouldStopFetching) {
       const newPageResults = await apiGetAccountUniqueTokens(
+        network,
         accountAddress,
         page
       );

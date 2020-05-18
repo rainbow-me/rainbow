@@ -1,131 +1,119 @@
-import { pick } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
-import { withProps } from 'recompact';
 import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { colors, fonts } from '../../styles';
-import { isNewValueForPath } from '../../utils';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
 
-class ExchangeNativeField extends Component {
-  static propTypes = {
-    height: PropTypes.number,
-    mask: PropTypes.string,
-    nativeAmount: PropTypes.string,
-    nativeFieldRef: PropTypes.func,
-    onBlur: PropTypes.func,
-    onFocus: PropTypes.func,
-    placeholder: PropTypes.string,
-    setNativeAmount: PropTypes.func,
-    symbol: PropTypes.string,
-  };
+const ExchangeNativeField = ({
+  assignNativeFieldRef,
+  editable,
+  height,
+  nativeAmount,
+  nativeCurrency,
+  onBlur,
+  onFocus,
+  setNativeAmount,
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const { mask, placeholder, symbol } = supportedNativeCurrencies[
+    nativeCurrency
+  ];
 
-  state = { isFocused: false };
+  const nativeFieldRef = useRef();
 
-  shouldComponentUpdate = (nextProps, nextState) => {
-    const isNewAmount = isNewValueForPath(
-      this.props,
-      nextProps,
-      'nativeAmount'
-    );
-    const isNewFocus = isNewValueForPath(this.state, nextState, 'isFocused');
-    const isNewSymbol = isNewValueForPath(this.props, nextProps, 'symbol');
-
-    return isNewAmount || isNewFocus || isNewSymbol;
-  };
-
-  nativeFieldRef = undefined;
-
-  focusNativeField = () => {
-    if (this.nativeFieldRef) {
-      this.nativeFieldRef.focus();
+  const focusNativeField = useCallback(() => {
+    if (nativeFieldRef && nativeFieldRef.current) {
+      nativeFieldRef.current.focus();
     }
-  };
+  }, []);
 
-  handleBlur = event => {
-    this.setState({ isFocused: false });
+  const handleBlur = useCallback(
+    event => {
+      setIsFocused(false);
 
-    if (this.props.onBlur) {
-      this.props.onBlur(event);
-    }
-  };
+      if (onBlur) {
+        onBlur(event);
+      }
+    },
+    [onBlur]
+  );
 
-  handleFocus = event => {
-    this.setState({ isFocused: true });
+  const handleFocus = useCallback(
+    event => {
+      setIsFocused(true);
 
-    if (this.props.onFocus) {
-      this.props.onFocus(event);
-    }
-  };
+      if (onFocus) {
+        onFocus(event);
+      }
+    },
+    [onFocus]
+  );
 
-  handleNativeFieldRef = ref => {
-    this.nativeFieldRef = ref;
-    this.props.nativeFieldRef(ref);
-  };
+  const handleNativeFieldRef = useCallback(
+    ref => {
+      nativeFieldRef.current = ref;
+      assignNativeFieldRef(ref);
+    },
+    [assignNativeFieldRef]
+  );
 
-  render = () => {
-    const {
-      height,
-      mask,
-      nativeAmount,
-      placeholder,
-      setNativeAmount,
-      symbol,
-    } = this.props;
+  const nativeAmountExists =
+    typeof nativeAmount === 'string' && nativeAmount.length > 0;
 
-    const { isFocused } = this.state;
+  let opacity = nativeAmountExists ? 0.5 : 0.3;
 
-    const nativeAmountExists =
-      typeof nativeAmount === 'string' && nativeAmount.length > 0;
+  if (isFocused) {
+    opacity = 1;
+  }
 
-    let opacity = nativeAmountExists ? 0.5 : 0.3;
-    if (isFocused) {
-      opacity = 1;
-    }
+  const color = colors.alpha(
+    isFocused ? colors.dark : colors.blueGreyDark,
+    opacity
+  );
 
-    const color = colors.alpha(
-      isFocused ? colors.dark : colors.blueGreyDark,
-      opacity
-    );
+  return (
+    <TouchableWithoutFeedback flex={0} onPress={focusNativeField}>
+      <Row align="center" flex={1} height={height}>
+        <Text
+          flex={0}
+          size="large"
+          style={{ color, marginBottom: 0.5 }}
+          weight="regular"
+        >
+          {symbol}
+        </Text>
+        <ExchangeInput
+          color={color}
+          disableTabularNums
+          editable={editable}
+          fontSize={fonts.size.large}
+          fontWeight={fonts.weight.regular}
+          letterSpacing={fonts.letterSpacing.roundedTight}
+          mask={mask}
+          onBlur={handleBlur}
+          onChangeText={setNativeAmount}
+          onFocus={handleFocus}
+          placeholder={placeholder}
+          refInput={handleNativeFieldRef}
+          value={nativeAmount}
+        />
+      </Row>
+    </TouchableWithoutFeedback>
+  );
+};
 
-    return (
-      <TouchableWithoutFeedback flex={0} onPress={this.focusNativeField}>
-        <Row align="center" flex={1} height={height}>
-          <Text
-            flex={0}
-            size="large"
-            style={{ color, marginBottom: 0.5 }}
-            weight="regular"
-          >
-            {symbol}
-          </Text>
-          <ExchangeInput
-            color={color}
-            disableTabularNums
-            fontSize={fonts.size.large}
-            fontWeight={fonts.weight.regular}
-            letterSpacing={fonts.letterSpacing.roundedTight}
-            mask={mask}
-            onBlur={this.handleBlur}
-            onChangeText={setNativeAmount}
-            onFocus={this.handleFocus}
-            placeholder={placeholder}
-            refInput={this.handleNativeFieldRef}
-            value={nativeAmount}
-          />
-        </Row>
-      </TouchableWithoutFeedback>
-    );
-  };
-}
+ExchangeNativeField.propTypes = {
+  assignNativeFieldRef: PropTypes.func,
+  editable: PropTypes.bool,
+  height: PropTypes.number,
+  nativeAmount: PropTypes.string,
+  nativeCurrency: PropTypes.string,
+  onBlur: PropTypes.func,
+  onFocus: PropTypes.func,
+  setNativeAmount: PropTypes.func,
+};
 
-export default withProps(({ nativeCurrency }) =>
-  pick(supportedNativeCurrencies[nativeCurrency], [
-    'mask',
-    'placeholder',
-    'symbol',
-  ])
-)(ExchangeNativeField);
+export default ExchangeNativeField;

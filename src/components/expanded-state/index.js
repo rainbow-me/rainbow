@@ -7,3 +7,4 @@ export { default as SupportedCountriesExpandedState } from './SupportedCountries
 export { default as SwapDetailsState } from './SwapDetailsState';
 export { default as TokenExpandedState } from './TokenExpandedState';
 export { default as UniqueTokenExpandedState } from './UniqueTokenExpandedState';
+export { default as WalletProfileCreator } from './WalletProfileCreator';

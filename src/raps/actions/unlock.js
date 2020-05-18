@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
-import { get } from 'lodash';
-import transactionStatusTypes from '../../helpers/transactionStatusTypes';
-import transactionTypes from '../../helpers/transactionTypes';
+import { get, toLower } from 'lodash';
+import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import TransactionTypes from '../../helpers/transactionTypes';
 import {
   convertAmountToRawAmount,
   greaterThan,
@@ -43,10 +43,13 @@ const unlock = async (wallet, currentRap, index, parameters) => {
     get(fastGasPrice, 'value.amount'),
     wallet
   );
+
+  const cacheKey = toLower(
+    `${wallet.address}|${assetAddress}|${contractAddress}`
+  );
+
   // Cache the approved value
-  AllowancesCache.cache[
-    `${wallet.address}|${assetToUnlock}|${contractAddress}`
-  ] = ethers.constants.MaxUint256;
+  AllowancesCache.cache[cacheKey] = ethers.constants.MaxUint256;
 
   // update rap for hash
   currentRap.actions[index].transaction.hash = approval.hash;
@@ -54,16 +57,16 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
 
   logger.log('[unlock] add a new txn');
-  dispatch(
+  await dispatch(
     dataAddNewTransaction({
       amount: 0,
       asset: assetToUnlock,
       from: wallet.address,
       hash: approval.hash,
       nonce: get(approval, 'nonce'),
-      status: transactionStatusTypes.approving,
+      status: TransactionStatusTypes.approving,
       to: get(approval, 'to'),
-      type: transactionTypes.authorize,
+      type: TransactionTypes.authorize,
     })
   );
   logger.log('[unlock] calling callback');
@@ -106,31 +109,26 @@ export const assetNeedsUnlocking = async (
     return false;
   }
 
+  const cacheKey = toLower(`${accountAddress}|${address}|${contractAddress}`);
+
   let allowance;
   // Check on cache first
-  if (
-    AllowancesCache.cache[
-      `${accountAddress}|${assetToUnlock}|${contractAddress}`
-    ]
-  ) {
-    allowance =
-      AllowancesCache.cache[
-        `${accountAddress}|${assetToUnlock}|${contractAddress}`
-      ];
+  if (AllowancesCache.cache[cacheKey]) {
+    allowance = AllowancesCache.cache[cacheKey];
   } else {
-    allowance = await contractUtils.getAllowance(
+    allowance = await contractUtils.getRawAllowance(
       accountAddress,
       assetToUnlock,
       contractAddress
     );
     // Cache that value
-    AllowancesCache.cache[
-      `${accountAddress}|${assetToUnlock}|${contractAddress}`
-    ] = allowance;
+    AllowancesCache.cache[cacheKey] = allowance;
   }
 
   const rawAmount = convertAmountToRawAmount(amount, assetToUnlock.decimals);
-  return !greaterThan(allowance, rawAmount);
+  const assetNeedsUnlocking = !greaterThan(allowance, rawAmount);
+  logger.log('asset needs unlocking?', assetNeedsUnlocking);
+  return assetNeedsUnlocking;
 };
 
 export default unlock;

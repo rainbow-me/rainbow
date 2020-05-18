@@ -32,13 +32,13 @@ export async function loadString(key, authenticationPrompt) {
   return null;
 }
 
-export async function saveObject(key, value) {
+export async function saveObject(key, value, accessControlOptions) {
   const jsonValue = JSON.stringify(value);
-  await saveString(key, jsonValue);
+  await saveString(key, jsonValue, accessControlOptions);
 }
 
-export async function loadObject(key) {
-  const jsonValue = await loadString(key);
+export async function loadObject(key, authenticationPrompt) {
+  const jsonValue = await loadString(key, authenticationPrompt);
   try {
     const objectValue = JSON.parse(jsonValue);
     logger.log(`Keychain: parsed object for key: ${key}`);

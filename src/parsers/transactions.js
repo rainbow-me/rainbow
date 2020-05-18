@@ -9,6 +9,7 @@ import {
   includes,
   isEmpty,
   map,
+  orderBy,
   partition,
   pick,
   reverse,
@@ -26,9 +27,10 @@ import {
   convertRawAmountToNativeDisplay,
 } from '../helpers/utilities';
 import { savingsAssetsList } from '../references';
-import { isLowerCaseMatch } from '../utils';
+import { ethereumUtils, isLowerCaseMatch } from '../utils';
 
 const DIRECTION_OUT = 'out';
+const LAST_TXN_HASH_BUFFER = 20;
 
 const dataFromLastTxHash = (transactionData, transactions) => {
   const lastSuccessfulTxn = find(transactions, txn => txn.hash && !txn.pending);
@@ -38,7 +40,7 @@ const dataFromLastTxHash = (transactionData, transactions) => {
       lastTxHash.startsWith(txn.hash)
     );
     if (lastTxnHashIndex > -1) {
-      return slice(transactionData, 0, lastTxnHashIndex);
+      return slice(transactionData, 0, lastTxnHashIndex + LAST_TXN_HASH_BUFFER);
     }
   }
   return transactionData;
@@ -54,10 +56,13 @@ export const parseTransactions = (
   network,
   appended = false
 ) => {
-  const purchaseTransactionHashes = map(purchaseTransactions, 'hash');
+  const purchaseTransactionHashes = map(purchaseTransactions, txn =>
+    ethereumUtils.getHash(txn)
+  );
   const data = appended
-    ? dataFromLastTxHash(transactionData, existingTransactions)
-    : transactionData;
+    ? transactionData
+    : dataFromLastTxHash(transactionData, existingTransactions);
+
   const parsedNewTransactions = flatten(
     data.map(txn =>
       parseTransaction(
@@ -70,22 +75,23 @@ export const parseTransactions = (
       )
     )
   );
+
   const [pendingTransactions, remainingTransactions] = partition(
     existingTransactions,
     txn => txn.pending
   );
+
   const updatedPendingTransactions = dedupePendingTransactions(
     accountAddress,
     pendingTransactions,
     parsedNewTransactions
   );
-  const updatedResults = appended
-    ? concat(
-        updatedPendingTransactions,
-        parsedNewTransactions,
-        remainingTransactions
-      )
-    : concat(updatedPendingTransactions, parsedNewTransactions);
+
+  const updatedResults = concat(
+    updatedPendingTransactions,
+    parsedNewTransactions,
+    remainingTransactions
+  );
 
   const potentialNftTransaction = appended
     ? find(parsedNewTransactions, txn => {
@@ -97,8 +103,16 @@ export const parseTransactions = (
       })
     : null;
 
+  const dedupedResults = uniqBy(updatedResults, txn => txn.hash);
+
+  const orderedDedupedResults = orderBy(
+    dedupedResults,
+    ['minedAt', 'nonce'],
+    ['desc', 'desc']
+  );
+
   return {
-    dedupedResults: uniqBy(updatedResults, txn => txn.hash),
+    parsedTransactions: orderedDedupedResults,
     potentialNftTransaction,
   };
 };
@@ -199,14 +213,7 @@ const parseTransaction = (
     };
     internalTransactions = [approveInternalTransaction];
   }
-  // logic below: prevent sending yourself money to be seen as a trade
-  if (
-    changes.length === 2 &&
-    get(changes, '[0].asset.asset_code') ===
-      get(changes, '[1].asset.asset_code')
-  ) {
-    internalTransactions = [changes[0]];
-  }
+
   // logic below: prevent sending a WalletConnect 0 amount to be seen as a Cancel
   if (isEmpty(internalTransactions) && transaction.type === 'cancel') {
     const ethInternalTransaction = {
@@ -237,7 +244,8 @@ const parseTransaction = (
       symbol: toUpper(get(internalTxn, 'asset.symbol') || ''),
       ...tokenOverrides[address],
     };
-    const priceUnit = internalTxn.price || 0;
+    const priceUnit =
+      internalTxn.price || get(internalTxn, 'asset.price.value') || 0;
     const valueUnit = internalTxn.value || 0;
     const nativeDisplay = convertRawAmountToNativeDisplay(
       valueUnit,

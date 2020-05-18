@@ -1,5 +1,6 @@
 import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
 import { find, get, isEmpty, replace, toLower } from 'lodash';
+import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import networkTypes from '../helpers/networkTypes';
 import {
   add,
@@ -18,7 +19,7 @@ const getEthPriceUnit = assets => {
 
 const getBalanceAmount = async (selectedGasPrice, selected) => {
   let amount = get(selected, 'balance.amount', 0);
-  if (selected && selected.address === 'eth') {
+  if (get(selected, 'address') === 'eth') {
     if (!isEmpty(selectedGasPrice)) {
       const txFeeRaw = get(selectedGasPrice, 'txFee.value.amount');
       const txFeeAmount = fromWei(txFeeRaw);
@@ -28,6 +29,8 @@ const getBalanceAmount = async (selectedGasPrice, selected) => {
   }
   return amount;
 };
+
+const getHash = txn => txn.hash.split('-').shift();
 
 const getAsset = (assets, address = 'eth') =>
   find(assets, asset => asset.address === address);
@@ -135,6 +138,30 @@ const isEthAddress = str => {
   return isValidAddress(withHexPrefix);
 };
 
+/**
+ * @desc Checks if a an address has previous transactions
+ * @param  {String} address
+ * @return {Promise<Boolean>}
+ */
+const hasPreviousTransactions = address => {
+  return new Promise(async resolve => {
+    try {
+      const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&tag=latest&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
+      const response = await fetch(url);
+      const parsedResponse = await response.json();
+      // Timeout needed to avoid the 5 requests / second rate limit of etherscan API
+      setTimeout(() => {
+        if (parsedResponse.status !== '0' && parsedResponse.result.length > 0) {
+          resolve(true);
+        }
+        resolve(false);
+      }, 260);
+    } catch (e) {
+      resolve(false);
+    }
+  });
+};
+
 export default {
   getAsset,
   getBalanceAmount,
@@ -142,7 +169,9 @@ export default {
   getDataString,
   getEtherscanHostFromNetwork,
   getEthPriceUnit,
+  getHash,
   getNetworkFromChainId,
+  hasPreviousTransactions,
   isEthAddress,
   padLeft,
   removeHexPrefix,

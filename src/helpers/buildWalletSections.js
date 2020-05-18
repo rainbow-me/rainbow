@@ -129,7 +129,7 @@ const withEthPrice = allAssets => {
 
 const withBalanceSavingsSection = (savings, priceOfEther) => {
   let savingsAssets = savings;
-  let totalUnderlyingNativeValue = 0;
+  let totalUnderlyingNativeValue = '0';
   if (priceOfEther) {
     savingsAssets = map(savings, asset => {
       const {

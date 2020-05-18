@@ -4,11 +4,13 @@ import {
   filter,
   get,
   includes,
+  isEmpty,
   isNil,
   keyBy,
   map,
   mapKeys,
   mapValues,
+  partition,
   property,
   remove,
   uniqBy,
@@ -34,11 +36,12 @@ import { getTransactionReceipt } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
 import { divide, isZero } from '../helpers/utilities';
-import { parseAccountAssets } from '../parsers/accounts';
+import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
-import { shitcoinBlacklist, tokenOverrides } from '../references';
-import { ethereumUtils, isLowerCaseMatch } from '../utils';
+import { tokenOverrides } from '../references';
+import { ethereumUtils, isLowerCaseMatch, logger } from '../utils';
+/* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
 /* eslint-disable-next-line import/no-cycle */
 import { uniqueTokensRefreshState } from './uniqueTokens';
@@ -51,6 +54,7 @@ let pendingTransactionsHandle = null;
 const DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP =
   'data/DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP';
 const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
+const DATA_UPDATE_GENERIC_ASSETS = 'data/DATA_UPDATE_GENERIC_ASSETS';
 const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
 const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
   'data/DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION';
@@ -159,7 +163,7 @@ export const transactionsReceived = (message, appended = false) => async (
   const { accountAddress, nativeCurrency, network } = getState().settings;
   const { purchaseTransactions } = getState().addCash;
   const { transactions, tokenOverrides } = getState().data;
-  const { dedupedResults, potentialNftTransaction } = parseTransactions(
+  const { parsedTransactions, potentialNftTransaction } = parseTransactions(
     transactionData,
     accountAddress,
     nativeCurrency,
@@ -175,11 +179,11 @@ export const transactionsReceived = (message, appended = false) => async (
     }, 60000);
   }
   dispatch({
-    payload: dedupedResults,
+    payload: parsedTransactions,
     type: DATA_UPDATE_TRANSACTIONS,
   });
-  updatePurchases(dedupedResults);
-  saveLocalTransactions(dedupedResults, accountAddress, network);
+  dispatch(updatePurchases(parsedTransactions));
+  saveLocalTransactions(parsedTransactions, accountAddress, network);
 };
 
 export const transactionsRemoved = message => (dispatch, getState) => {
@@ -191,13 +195,17 @@ export const transactionsRemoved = message => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { transactions } = getState().data;
   const removeHashes = map(transactionData, txn => txn.hash);
-  remove(transactions, txn => includes(removeHashes, txn.hash));
+  logger.log('[data] - remove txn hashes', removeHashes);
+  const updatedTransactions = filter(
+    transactions,
+    txn => !includes(removeHashes, ethereumUtils.getHash(txn))
+  );
 
   dispatch({
-    payload: transactions,
+    payload: updatedTransactions,
     type: DATA_UPDATE_TRANSACTIONS,
   });
-  saveLocalTransactions(transactions, accountAddress, network);
+  saveLocalTransactions(updatedTransactions, accountAddress, network);
 };
 
 export const addressAssetsReceived = (
@@ -213,7 +221,10 @@ export const addressAssetsReceived = (
   const { accountAddress, network } = getState().settings;
   const { uniqueTokens } = getState().uniqueTokens;
   const payload = values(get(message, 'payload.assets', {}));
-  let assets = filter(payload, asset => asset.asset.type !== 'compound');
+  let assets = filter(
+    payload,
+    asset => asset.asset.type !== 'compound' && asset.asset.type !== 'trash'
+  );
 
   if (removed) {
     assets = map(payload, asset => {
@@ -241,10 +252,7 @@ export const addressAssetsReceived = (
   }
 
   parsedAssets = parsedAssets.filter(
-    asset =>
-      // Shitcoin filtering
-      shitcoinBlacklist[network].indexOf(get(asset, 'address')) === -1 &&
-      !!Number(get(asset, 'balance.amount'))
+    asset => !!Number(get(asset, 'balance.amount'))
   );
 
   saveAssets(parsedAssets, accountAddress, network);
@@ -352,30 +360,62 @@ const get24HourPrice = async (exchangeAddress, yesterday) => {
   return get(result, 'data.exchangeHistoricalDatas[0]');
 };
 
-export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
-  dispatch,
-  getState
-) =>
-  new Promise((resolve, reject) => {
-    const { transactions } = getState().data;
-    const { accountAddress, nativeCurrency, network } = getState().settings;
-    parseNewTransaction(txDetails, nativeCurrency)
-      .then(parsedTransaction => {
-        const _transactions = [parsedTransaction, ...transactions];
-        dispatch({
-          payload: _transactions,
-          type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
-        });
-        saveLocalTransactions(_transactions, accountAddress, network);
-        if (!disableTxnWatcher) {
-          dispatch(watchPendingTransactions());
-        }
-        resolve(true);
-      })
-      .catch(error => {
-        reject(error);
-      });
+export const assetPricesReceived = message => (dispatch, getState) => {
+  const { tokenOverrides } = getState().data;
+  const assets = get(message, 'payload.prices', {});
+  if (isEmpty(assets)) return;
+  const parsedAssets = mapValues(assets, asset =>
+    parseAsset(asset, tokenOverrides)
+  );
+  dispatch({
+    payload: parsedAssets,
+    type: DATA_UPDATE_GENERIC_ASSETS,
   });
+};
+
+export const assetPricesChanged = message => (dispatch, getState) => {
+  const price = get(message, 'payload.prices[0]');
+  const assetAddress = get(message, 'meta.asset_code');
+  if (isNil(price) || isNil(assetAddress)) return;
+  const { genericAssets } = getState().data;
+  const genericAsset = {
+    ...get(genericAssets, assetAddress),
+    price,
+  };
+  const updatedAssets = {
+    ...genericAssets,
+    [assetAddress]: genericAsset,
+  };
+  dispatch({
+    payload: updatedAssets,
+    type: DATA_UPDATE_GENERIC_ASSETS,
+  });
+};
+
+export const dataAddNewTransaction = (
+  txDetails,
+  disableTxnWatcher = false
+) => async (dispatch, getState) => {
+  const { transactions } = getState().data;
+  const { accountAddress, nativeCurrency, network } = getState().settings;
+  try {
+    const parsedTransaction = await parseNewTransaction(
+      txDetails,
+      nativeCurrency
+    );
+    const _transactions = [parsedTransaction, ...transactions];
+    dispatch({
+      payload: _transactions,
+      type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
+    });
+    saveLocalTransactions(_transactions, accountAddress, network);
+    if (!disableTxnWatcher) {
+      dispatch(watchPendingTransactions());
+    }
+    return parsedTransaction;
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
+};
 
 const getConfirmedState = type => {
   switch (type) {
@@ -399,36 +439,47 @@ export const dataWatchPendingTransactions = () => async (
   getState
 ) => {
   const { transactions } = getState().data;
-  if (!transactions.length) return false;
-  const updatedTransactions = [...transactions];
+  if (!transactions.length) return true;
   let txStatusesDidChange = false;
 
-  const pending = filter(transactions, ['pending', true]);
-  await Promise.all(
-    pending.map(async (tx, index) => {
-      const txHash = tx.hash.split('-').shift();
+  const [pending, remainingTransactions] = partition(
+    transactions,
+    txn => txn.pending
+  );
+
+  if (isEmpty(pending)) return true;
+
+  const updatedPendingTransactions = await Promise.all(
+    pending.map(async tx => {
+      const updatedPending = { ...tx };
+      const txHash = ethereumUtils.getHash(tx);
       try {
         const txObj = await getTransactionReceipt(txHash);
         if (txObj && txObj.blockNumber) {
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
           if (!isZero(txObj.status)) {
-            updatedTransactions[index].status = getConfirmedState(
-              updatedTransactions[index].type
-            );
+            const newStatus = getConfirmedState(tx.type);
+            updatedPending.status = newStatus;
           } else {
-            updatedTransactions[index].status = TransactionStatusTypes.failed;
+            updatedPending.status = TransactionStatusTypes.failed;
           }
-          updatedTransactions[index].pending = false;
-          updatedTransactions[index].minedAt = minedAt;
+          updatedPending.pending = false;
+          updatedPending.minedAt = minedAt;
         }
-        // eslint-disable-next-line no-empty
-      } catch (error) {}
+      } catch (error) {
+        logger.log('Error watching pending txn', error);
+      }
+      return updatedPending;
     })
+  );
+  const updatedTransactions = concat(
+    updatedPendingTransactions,
+    remainingTransactions
   );
 
   if (txStatusesDidChange) {
-    updatePurchases(updatedTransactions);
+    dispatch(updatePurchases(updatedTransactions));
     const { accountAddress, network } = getState().settings;
     dispatch({
       payload: updatedTransactions,
@@ -470,7 +521,8 @@ const watchPendingTransactions = () => async dispatch => {
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   assetPricesFromUniswap: {},
-  assets: [],
+  assets: [], // for account-specific assets
+  genericAssets: {},
   isLoadingAssets: true,
   isLoadingTransactions: true,
   tokenOverrides: tokenOverrides,
@@ -489,6 +541,8 @@ export default (state = INITIAL_STATE, action) => {
       };
     case DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP:
       return { ...state, assetPricesFromUniswap: action.payload };
+    case DATA_UPDATE_GENERIC_ASSETS:
+      return { ...state, genericAssets: action.payload };
     case DATA_UPDATE_ASSETS:
       return { ...state, assets: action.payload, isLoadingAssets: false };
     case DATA_UPDATE_TRANSACTIONS:

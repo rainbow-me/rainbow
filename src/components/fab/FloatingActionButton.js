@@ -40,6 +40,7 @@ export default class FloatingActionButton extends Component {
       'disabled',
       'isFabSelectionValid',
       'scaleTo',
+      'onPress',
     ]);
 
   static size = FabSize;

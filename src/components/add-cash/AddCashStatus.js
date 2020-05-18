@@ -1,17 +1,19 @@
+import { toLower } from 'lodash';
 import LottieView from 'lottie-react-native';
 import PropTypes from 'prop-types';
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { useNavigation } from 'react-navigation-hooks';
 import { withProps } from 'recompact';
 import jumpingDaiAnimation from '../../assets/lottie/jumping-dai.json';
 import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';
+import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import {
+  ADD_CASH_STATUS_TYPES,
   WYRE_ORDER_STATUS_TYPES,
-  WYRE_TRANSFER_STATUS_TYPES,
 } from '../../helpers/wyreStatusTypes';
-import { useDimensions, useTimeout } from '../../hooks';
+import { useDimensions, usePrevious, useTimeout } from '../../hooks';
 import Routes from '../../screens/Routes/routesNames';
 import { position } from '../../styles';
 import { CoinIcon } from '../coin-icon';
@@ -94,6 +96,15 @@ const AddCashFailed = () => (
   </Content>
 );
 
+const AddCashChecking = () => (
+  <Content>
+    <Centered height={85}>
+      <Emoji name="bank" size={50} />
+    </Centered>
+    <StatusMessageText>Running checks...</StatusMessageText>
+  </Content>
+);
+
 const AddCashPending = ({ currency }) => (
   <Fragment>
     <Content>
@@ -136,31 +147,42 @@ const AddCashSuccess = ({ currency }) => {
 
 const AddCashStatus = ({ orderCurrency, orderStatus, transferStatus }) => {
   const ref = useRef();
-  const [status, setStatus] = useState(null);
 
-  useEffect(() => {
+  const status = useMemo(() => {
     if (
       orderStatus === WYRE_ORDER_STATUS_TYPES.success ||
-      transferStatus === WYRE_TRANSFER_STATUS_TYPES.success
+      transferStatus === TransactionStatusTypes.purchased
     ) {
-      setStatus(WYRE_TRANSFER_STATUS_TYPES.success);
-      if (ref.current) ref.current.animateNextTransition();
+      return ADD_CASH_STATUS_TYPES.success;
     }
 
     if (
       orderStatus === WYRE_ORDER_STATUS_TYPES.failed ||
-      transferStatus === WYRE_TRANSFER_STATUS_TYPES.failed
+      transferStatus === TransactionStatusTypes.failed
     ) {
-      setStatus(WYRE_TRANSFER_STATUS_TYPES.failed);
-      if (ref.current) ref.current.animateNextTransition();
+      return ADD_CASH_STATUS_TYPES.failed;
     }
+
+    if (orderStatus === WYRE_ORDER_STATUS_TYPES.pending) {
+      return ADD_CASH_STATUS_TYPES.pending;
+    }
+
+    return ADD_CASH_STATUS_TYPES.checking;
   }, [orderStatus, transferStatus]);
 
-  const currency = (orderCurrency || 'ETH').toLowerCase();
+  const previousStatus = usePrevious(status);
+
+  useEffect(() => {
+    if (status !== previousStatus) {
+      if (ref.current) ref.current.animateNextTransition();
+    }
+  }, [previousStatus, status]);
+
+  const currency = toLower(orderCurrency || 'ETH');
 
   return (
     <Transitioning.View ref={ref} style={sx.container} transition={transition}>
-      {status === WYRE_TRANSFER_STATUS_TYPES.failed ? (
+      {status === ADD_CASH_STATUS_TYPES.failed ? (
         <AddCashFailed />
       ) : (
         <FloatingEmojisTapper
@@ -168,10 +190,12 @@ const AddCashStatus = ({ orderCurrency, orderStatus, transferStatus }) => {
           emojis={['money_with_wings']}
           flex={1}
         >
-          {status === WYRE_TRANSFER_STATUS_TYPES.success ? (
+          {status === ADD_CASH_STATUS_TYPES.success ? (
             <AddCashSuccess currency={currency} />
-          ) : (
+          ) : status === ADD_CASH_STATUS_TYPES.pending ? (
             <AddCashPending currency={currency} />
+          ) : (
+            <AddCashChecking />
           )}
         </FloatingEmojisTapper>
       )}

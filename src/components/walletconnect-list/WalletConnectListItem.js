@@ -48,7 +48,7 @@ const WalletConnectListItem = enhance(
           imageUrl={dappIcon}
           size={VendorLogoIconSize}
         />
-        <ColumnWithMargins css={padding(0, 18, 1.5, 12)} flex={1} margin={2}>
+        <ColumnWithMargins css={padding(0, 19, 1.5, 12)} flex={1} margin={2}>
           <TruncatedText
             letterSpacing="roundedTight"
             size="lmedium"
@@ -67,7 +67,7 @@ const WalletConnectListItem = enhance(
       </Row>
       <Centered>
         <ContextMenu
-          css={padding(0, 24, 3, 48)}
+          css={padding(16, 19)}
           destructiveButtonIndex={0}
           onPressActionSheet={onPressActionSheet}
           options={['Disconnect', lang.t('wallet.action.cancel')]}

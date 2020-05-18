@@ -3,10 +3,10 @@ import ExchangeModalTypes from '../helpers/exchangeModalTypes';
 import createUnlockAndSwapRap, {
   estimateUnlockAndSwap,
 } from '../raps/unlockAndSwap';
-import ExchangeModalWithData from './ExchangeModalWithData';
+import ExchangeModal from './ExchangeModal';
 
 const SwapModal = ({ ...props }) => (
-  <ExchangeModalWithData
+  <ExchangeModal
     createRap={createUnlockAndSwapRap}
     estimateRap={estimateUnlockAndSwap}
     inputHeaderTitle="Swap"

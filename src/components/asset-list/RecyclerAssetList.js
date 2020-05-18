@@ -94,6 +94,11 @@ const hasRowChanged = (r1, r2) => {
   );
   const isNewUniswapToken = isNewValueForPath(r1, r2, 'item.tokenSymbol');
   const isPinned = isNewValueForPath(r1, r2, 'item.isPinned');
+  const isNewSmallBalancesRow = isNewValueForPath(
+    r1,
+    r2,
+    'item.smallBalancesContainer'
+  );
 
   const isCollectiblesRow = has(r1, 'item.tokens') && has(r2, 'item.tokens');
   let isNewAssetBalance = false;
@@ -151,6 +156,7 @@ const hasRowChanged = (r1, r2) => {
   return (
     isNewAsset ||
     isNewAssetBalance ||
+    isNewSmallBalancesRow ||
     isNewTitle ||
     isNewTokenFamilyId ||
     isNewTokenFamilyName ||

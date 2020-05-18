@@ -56,16 +56,22 @@ const TokenFamilyHeader = ({
               isCoinRow={isCoinRow}
             />
           )}
-          <TruncatedText
-            letterSpacing="roundedMedium"
-            lineHeight="normal"
-            size="large"
-            style={{ marginBottom: 1 }}
-            weight="semibold"
-          >
-            {title}
-          </TruncatedText>
         </RowWithMargins>
+        <TruncatedText
+          letterSpacing="roundedMedium"
+          lineHeight="normal"
+          size="large"
+          style={{
+            flex: 1,
+            marginBottom: 1,
+            paddingLeft: title !== 'Showcase' ? 9 : 0,
+            paddingRight: 9,
+            textAlign: 'left',
+          }}
+          weight="semibold"
+        >
+          {title}
+        </TruncatedText>
         <RowWithMargins align="center" margin={13}>
           <Animated.View
             style={{

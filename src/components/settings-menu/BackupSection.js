@@ -4,7 +4,8 @@ import React, { useCallback, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import SeedPhraseImageSource from '../../assets/seed-phrase-icon.png';
-import { loadSeedPhrase as loadSeedPhraseFromKeychain } from '../../model/wallet';
+import { useWallets } from '../../hooks';
+import { loadSeedPhraseAndMigrateIfNeeded } from '../../model/wallet';
 import { colors, padding, position, shadow } from '../../styles';
 import { Button } from '../buttons';
 import CopyTooltip from '../copy-tooltip';
@@ -26,12 +27,13 @@ const ToggleSeedPhraseButton = styled(Button)`
 
 const BackupSection = ({ navigation }) => {
   const [seedPhrase, setSeedPhrase] = useState(null);
+  const { selected: selectedWallet = {} } = useWallets();
 
   const hideSeedPhrase = () => setSeedPhrase(null);
 
   const handlePressToggleSeedPhrase = useCallback(() => {
     if (!seedPhrase) {
-      loadSeedPhraseFromKeychain()
+      loadSeedPhraseAndMigrateIfNeeded(selectedWallet.id)
         .then(keychainValue => {
           setSeedPhrase(keychainValue);
           analytics.track('Viewed backup seed phrase text');
@@ -40,7 +42,7 @@ const BackupSection = ({ navigation }) => {
     } else {
       hideSeedPhrase();
     }
-  }, [seedPhrase]);
+  }, [seedPhrase, selectedWallet.id]);
 
   return (
     <Column align="center" css={padding(80, 40, 0)} flex={1}>

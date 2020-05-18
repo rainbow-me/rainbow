@@ -60,15 +60,14 @@ class ContextMenu extends PureComponent {
       : false;
 
     return (
-      <Row width={30} height={30}>
+      <Row>
         {this.props.onPressActionSheet && (
           <ButtonPressAnimation
             activeOpacity={0.2}
             onPress={this.showActionSheet}
           >
             <Centered
-              css={padding(0, 10)}
-              height="100%"
+              css={padding(12, 8)}
               {...omit(this.props, ActionSheetProps)}
             >
               <Icon name="threeDots" />

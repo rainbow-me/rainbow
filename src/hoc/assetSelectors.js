@@ -73,7 +73,7 @@ const sortAssetsByNativeAmount = (
   const allAssets = sortedAssets.concat(sortedShitcoins);
   const allAssetsWithoutHidden = filter(
     allAssets,
-    asset => !hiddenCoins.includes(asset.uniqueId)
+    asset => hiddenCoins && !hiddenCoins.includes(asset.uniqueId)
   );
 
   return {

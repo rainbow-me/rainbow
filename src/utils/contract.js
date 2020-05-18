@@ -1,6 +1,5 @@
 import { ethers } from 'ethers';
 import { toHex, web3Provider } from '../handlers/web3';
-import { convertRawAmountToDecimalFormat } from '../helpers/utilities';
 import { loadWallet } from '../model/wallet';
 import { ethUnits } from '../references';
 import erc20ABI from '../references/erc20-abi.json';
@@ -48,19 +47,19 @@ const approve = async (
   };
 };
 
-const getAllowance = async (owner, token, spender) => {
-  const { address: tokenAddress, decimals } = token;
+const getRawAllowance = async (owner, token, spender) => {
+  const { address: tokenAddress } = token;
   const tokenContract = new ethers.Contract(
     tokenAddress,
     erc20ABI,
     web3Provider
   );
   const allowance = await tokenContract.allowance(owner, spender);
-  return convertRawAmountToDecimalFormat(allowance.toString(), decimals);
+  return allowance.toString();
 };
 
 export default {
   approve,
   estimateApprove,
-  getAllowance,
+  getRawAllowance,
 };

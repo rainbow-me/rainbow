@@ -8,8 +8,8 @@ import {
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import transactionStatusTypes from '../../helpers/transactionStatusTypes';
-import transactionTypes from '../../helpers/transactionTypes';
+import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import TransactionTypes from '../../helpers/transactionTypes';
 import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
 import {
   deviceUtils,
@@ -133,8 +133,8 @@ export default class RecyclerActivityList extends PureComponent {
       (ctx, section) => {
         section.data.forEach(asset => {
           if (
-            asset.type === transactionTypes.trade &&
-            asset.status === transactionStatusTypes.sent
+            asset.type === TransactionTypes.trade &&
+            asset.status === TransactionStatusTypes.sent
           ) {
             swappedIndices.push(index);
           }

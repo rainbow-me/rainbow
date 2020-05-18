@@ -20,7 +20,7 @@ class TransactionViewModelTransactionItem : TransactionViewModelProtocol {
     for transaction in transactions {
       var date = groupByDate(transaction.minedAt)
       
-      if (transaction.status?.lowercased() == "pending" || transaction.status?.lowercased() == "swapping") {
+      if (transaction.pending) {
         pending.append(transaction)
         continue
       }

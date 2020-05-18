@@ -14,6 +14,7 @@ import {
 import { deviceUtils } from '../../utils';
 import AddCashSheet from '../AddCashSheet';
 import AvatarBuilder from '../AvatarBuilder';
+import ChangeWalletModal from '../ChangeWalletModal';
 import ExampleScreen from '../ExampleScreen';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
@@ -29,6 +30,7 @@ import {
   createStackNavigator,
   exchangePresetWithTransitions,
   expandedPresetWithTransitions,
+  expandedReversePresetWithTransitions,
   onTransitionStart,
   sheetPresetWithTransitions,
 } from './helpers';
@@ -55,6 +57,10 @@ const routesForMainNavigator = {
     navigationOptions: emojiPreset,
     screen: AvatarBuilder,
     transparentCard: true,
+  },
+  [Routes.CHANGE_WALLET_MODAL]: {
+    navigationOptions: expandedReversePresetWithTransitions,
+    screen: ChangeWalletModal,
   },
   [Routes.CONFIRM_REQUEST]: {
     navigationOptions: sheetPresetWithTransitions,

@@ -17,9 +17,9 @@ import { explorerClearState, explorerInit } from './explorer';
 
 const SETTINGS_UPDATE_SETTINGS_ADDRESS =
   'settings/SETTINGS_UPDATE_SETTINGS_ADDRESS';
-const SETTINGS_UPDATE_SETTINGS_ENS = 'settings/SETTINGS_UPDATE_SETTINGS_ENS';
 const SETTINGS_UPDATE_SETTINGS_COLOR =
   'settings/SETTINGS_UPDATE_SETTINGS_COLOR';
+const SETTINGS_UPDATE_SETTINGS_ENS = 'settings/SETTINGS_UPDATE_SETTINGS_ENS';
 const SETTINGS_UPDATE_SETTINGS_NAME = 'settings/SETTINGS_UPDATE_SETTINGS_NAME';
 const SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS =
   'settings/SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS';
@@ -146,7 +146,7 @@ export const INITIAL_STATE = {
   accountAddress: '',
   accountColor: 6,
   accountENS: null,
-  accountName: '🤑',
+  accountName: '',
   chainId: 1,
   language: 'en',
   nativeCurrency: 'USD',
