@@ -160,7 +160,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
       }
     }
     let tokens = compact(tokensRow);
-    tokens = chunk(tokens, tokens.length > 16 ? 4 : 16);
+    tokens = chunk(tokens, tokens.length > 25 ? 4 : 25);
     // eslint-disable-next-line no-loop-func
     tokens.forEach((tokenChunk, index) => {
       const id = tokensRow[0]

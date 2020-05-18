@@ -807,7 +807,6 @@ class RecyclerAssetList extends Component {
           >
             <RecyclerListView
               dataProvider={dataProvider}
-              disableRecycling
               extendedState={{ headersIndices }}
               externalScrollView={externalScrollView}
               itemAnimator={new LayoutItemAnimator(this.rlv)}
