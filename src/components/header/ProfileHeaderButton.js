@@ -40,8 +40,8 @@ const ProfileHeaderButton = ({ navigation }) => {
         >
           <Centered>
             <ContactAvatar
-              size="small"
               color={accountColor}
+              size="small"
               value={accountEmoji}
             />
 

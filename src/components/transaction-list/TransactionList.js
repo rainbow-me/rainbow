@@ -2,7 +2,7 @@ import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Linking, requireNativeComponent, View } from 'react-native';
+import { Linking, requireNativeComponent, StyleSheet } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import { isAvatarPickerAvailable } from '../../config/experimental';
@@ -15,8 +15,14 @@ import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import LoadingState from '../activity-list/LoadingState';
 import { FloatingEmojis } from '../floating-emojis';
+import { Row } from '../layout';
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
+const sx = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
+}); 
 const formatAddress = address => {
   if (address) {
     return abbreviations.address(
@@ -191,24 +197,24 @@ const TransactionList = ({
   }
 
   return (
-    <View style={style}>
+    <Row flex={1}>
       <NativeTransactionListView
-        emoji={accountEmoji}
         accountAddress={accountName}
         accountColor={colors.avatarColor[accountColor]}
         accountName={accountEmoji}
         addCashAvailable={addCashAvailable}
         data={data}
+        emoji={accountEmoji}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
+        onAccountNamePress={onAccountNamePress}
         onAddCashPress={onAddCashPress}
         onAvatarPress={onAvatarPress}
         onCopyAddressPress={onCopyAddressPress}
-        onAccountNamePress={onAccountNamePress}
         onReceivePress={onReceivePress}
         onRequestExpire={onRequestExpire}
         onRequestPress={onRequestPress}
         onTransactionPress={onTransactionPress}
-        style={style}
+        style={[sx.flex, style]}
       />
       <FloatingEmojis
         distance={250}
@@ -226,7 +232,7 @@ const TransactionList = ({
         setOnNewEmoji={setOnNewEmoji}
         wiggleFactor={0}
       />
-    </View>
+    </Row>
   );
 };
 

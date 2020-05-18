@@ -19,8 +19,8 @@ const HeaderButton = ({
     pressInTension={400}
     pressOutFriction={30}
     pressOutTension={300}
-    onPress={onPress}
     onLongPress={onLongPress}
+    onPress={onPress}
     transformOrigin={transformOrigin}
     useNativeDriver
   >
