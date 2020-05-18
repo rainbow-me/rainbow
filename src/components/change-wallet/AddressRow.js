@@ -10,7 +10,7 @@ import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import CoinCheckButton from '../coin-row/CoinCheckButton';
 import { ContactAvatar } from '../contacts';
-import { Column, Row } from '../layout';
+import { Centered, Column, Row } from '../layout';
 import { TruncatedAddress } from '../text';
 
 const sx = StyleSheet.create({
@@ -32,9 +32,18 @@ const sx = StyleSheet.create({
     fontWeight: fonts.weight.medium,
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
-  leftContent: {
-    flexDirection: 'row',
-    flex: 1,
+  editButton: {
+    width: 22,
+    height: 22,
+    alignSelf: 'flex-end',
+    justifyContent: 'center',
+  },
+  editIcon: {
+    color: colors.appleBlue,
+    fontFamily: fonts.family.SFProRounded,
+    fontSize: getFontSize(fonts.size.large),
+    fontWeight: fonts.weight.medium,
+    textAlign: 'right',
   },
   rightContent: {
     flex: 0,
@@ -87,38 +96,10 @@ const linearGradientProps = {
 };
 
 const OptionsIcon = ({ onPress }) => (
-  <ButtonPressAnimation
-    onPress={onPress}
-    scaleTo={0.9}
-    style={{
-      width: 22,
-      height: 22,
-      alignSelf: 'flex-end',
-      justifyContent: 'center',
-    }}
-  >
-    <View
-      style={{
-        borderRadius: 22,
-        width: 22,
-        height: 22,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 45,
-      }}
-    >
-      <Text
-        style={{
-          color: colors.appleBlue,
-          fontFamily: fonts.family.SFProRounded,
-          fontSize: getFontSize(fonts.size.large),
-          fontWeight: fonts.weight.medium,
-          textAlign: 'right',
-        }}
-      >
-        􀍡
-      </Text>
-    </View>
+  <ButtonPressAnimation onPress={onPress} scaleTo={0.9} style={sx.editButton}>
+    <Centered width={22} height={22} marginTop={45} borderRadius={22}>
+      <Text style={sx.editIcon}>􀍡</Text>
+    </Centered>
   </ButtonPressAnimation>
 );
 
@@ -160,7 +141,7 @@ export default function AddressRow({
       <TouchableWithoutFeedback onLongPress={onOptionsPress}>
         <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
           <Row>
-            <Column style={sx.leftContent}>
+            <Row flex={1}>
               <ContactAvatar
                 color={accountColor}
                 marginRight={10}
@@ -186,7 +167,7 @@ export default function AddressRow({
                   {cleanedUpBalance} ETH
                 </BottomRowText>
               </View>
-            </Column>
+            </Row>
             <Column style={sx.rightContent}>
               <View style={sx.coinCheck}>
                 {!editMode && isSelected && (

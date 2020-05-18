@@ -39,6 +39,10 @@ const sx = StyleSheet.create({
   container: {
     paddingTop: 14.5,
   },
+  rlv: {
+    flex: 1,
+    minHeight: 1,
+  },
 });
 
 const skeletonTransition = (
@@ -236,9 +240,9 @@ export function WalletList({
           return (
             <Column>
               <AddressOption
+                editMode={editMode}
                 label={data.label}
                 onPress={data.onPress}
-                editMode={editMode}
               />
               {!isLastRow && <WalletDivider />}
             </Column>
@@ -247,9 +251,9 @@ export function WalletList({
           return (
             <AddressRow
               data={data}
-              onPress={data.onPress}
-              onEditWallet={onEditWallet}
               editMode={editMode}
+              onEditWallet={onEditWallet}
+              onPress={data.onPress}
             />
           );
         default:
@@ -269,18 +273,18 @@ export function WalletList({
           {ready ? (
             <Fragment>
               <RecyclerListView
-                style={{ flex: 1 }}
-                rowRenderer={renderRow}
+                style={sx.rlv}
                 dataProvider={dataProvider}
                 layoutProvider={layoutProvider}
-                optimizeForInsertDeleteAnimations
                 ref={scrollView}
+                rowRenderer={renderRow}
+                optimizeForInsertDeleteAnimations
               />
               <WalletOption
+                editMode={editMode}
                 icon="arrowBack"
                 label="􀂍 Add an existing wallet"
                 onPress={onPressImportSeedPhrase}
-                editMode={editMode}
               />
             </Fragment>
           ) : (

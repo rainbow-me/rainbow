@@ -1,10 +1,10 @@
 import { toUpper } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { View } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { borders, colors } from '../../styles';
 import { getFirstGrapheme } from '../../utils';
+import { Row } from '../layout';
 import { Text } from '../text';
 
 const ContactAvatar = ({ color, size, value, ...props }) => {
@@ -23,16 +23,11 @@ const ContactAvatar = ({ color, size, value, ...props }) => {
       ]}
       shouldRasterizeIOS
     >
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-        }}
-      >
+      <Row flex={1} justify="center" align="center">
         <Text align="center" color="white" size={textSize} weight="semibold">
           {value && getFirstGrapheme(toUpper(value))}
         </Text>
-      </View>
+      </Row>
     </ShadowStack>
   );
 };
