@@ -1,4 +1,12 @@
-import { chunk, compact, forEach, get, groupBy, includes, sortBy } from 'lodash';
+import {
+  chunk,
+  compact,
+  forEach,
+  get,
+  groupBy,
+  includes,
+  sortBy,
+} from 'lodash';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 import { add } from './utilities';
 
@@ -152,16 +160,20 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
       }
     }
     let tokens = compact(tokensRow);
-    tokens = chunk(tokens, 4);
+    tokens = chunk(tokens, tokens.length > 16 ? 4 : 16);
+    // eslint-disable-next-line no-loop-func
     tokens.forEach((tokenChunk, index) => {
+      const id = tokensRow[0]
+        .map(({ uniqueId }) => uniqueId)
+        .join(`__${index}`);
       rows.push({
-        isHeader: index === 0,
         childrenAmount: grouped[families[i]].length,
         familyImage: get(tokensRow, '[0][0].familyImage', null),
         familyName: families[i],
-        stableId: tokensRow[0].map(({ uniqueId }) => uniqueId).join(`__${index}`),
+        isHeader: index === 0,
+        stableId: id,
         tokens: tokenChunk,
-        uniqueId: tokensRow[0].map(({ uniqueId }) => uniqueId).join(`__${index}`),
+        uniqueId: id,
       });
     });
   }

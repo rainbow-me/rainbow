@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { createElement, Fragment } from 'react';
+import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { pure } from 'recompact';
 import { colors, padding, position } from '../../styles';
+import { deviceUtils } from '../../utils';
 import ContextMenu from '../ContextMenu';
 import Divider from '../Divider';
 import { Row } from '../layout';
@@ -14,6 +16,7 @@ const ListHeader = pure(
   ({
     children,
     contextMenuOptions,
+    isCoinListEdited,
     isSticky,
     showDivider,
     title,
@@ -46,6 +49,16 @@ const ListHeader = pure(
         {children}
       </Row>
       {showDivider && <Divider />}
+      {!isSticky && title !== 'Balances' && (
+        <View
+          style={{
+            backgroundColor: colors.white,
+            height,
+            top: isCoinListEdited ? -40 : 0,
+            width: deviceUtils.dimensions.width,
+          }}
+        />
+      )}
     </Fragment>
   )
 );
