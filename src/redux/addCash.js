@@ -81,6 +81,7 @@ export const addCashGetTransferHash = (
   transferId,
   sourceAmount
 ) => async (dispatch, getState) => {
+  logger.log('[add cash] - watch for transfer hash');
   const { accountAddress, network } = getState().settings;
   const { assets } = getState().data;
   const getTransferHash = async (referenceInfo, transferId, sourceAmount) => {
@@ -96,7 +97,7 @@ export const addCashGetTransferHash = (
       );
 
       if (transferHash) {
-        logger.log('Wyre transfer hash', transferHash);
+        logger.log('[add cash] - Wyre transfer hash', transferHash);
         let asset = ethereumUtils.getAsset(assets, destAssetAddress);
         if (!asset) {
           asset = AddCashCurrencyInfo[network][destAssetAddress];
@@ -114,6 +115,7 @@ export const addCashGetTransferHash = (
           transferId,
           type: TransactionTypes.purchase,
         };
+        logger.log('[add cash] - add new pending txn');
         const newTxDetails = await dispatch(
           dataAddNewTransaction(txDetails),
           false
