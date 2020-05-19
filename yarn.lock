@@ -9139,10 +9139,10 @@ react-native-dotenv@^0.2.0:
   dependencies:
     babel-plugin-dotenv "0.1.1"
 
-react-native-emoji@1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/react-native-emoji/-/react-native-emoji-1.5.0.tgz#d5d4e421d20e39d48465d7fb525926d99eb3c7fc"
-  integrity sha512-Lg42ICDunUXim/sY7Xhdhxn6lpQbJVmzI1bw91LwMIB+O5IHo2nYjzkxbE6wz0grzgLMx2QmpIfu+cNIqbtlHg==
+react-native-emoji@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/react-native-emoji/-/react-native-emoji-1.8.0.tgz#9fe5d97dbb84b102c9b1a68eb3f8e1bf4c1f6173"
+  integrity sha512-VunKOtYes6eymyWwE7QS3mhmNXksTt2AN92PcGRtmDKLDPjuKrwd5tcJckFUekAK3H+6AMpwYy30CsiCJrDdFQ==
   dependencies:
     node-emoji "1.10.0"
 
