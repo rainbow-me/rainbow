@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { useDimensions } from '../../hooks';
-import { supportedCountries } from '../../references/wyre/supportedCountries';
+import { supportedCountries } from '../../references/wyre';
 import { colors, fonts, padding } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';

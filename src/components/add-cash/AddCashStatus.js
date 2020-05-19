@@ -1,4 +1,4 @@
-import { toLower } from 'lodash';
+import { isEmpty, toLower } from 'lodash';
 import LottieView from 'lottie-react-native';
 import PropTypes from 'prop-types';
 import React, { Fragment, useEffect, useMemo, useRef } from 'react';
@@ -14,6 +14,7 @@ import {
   WYRE_ORDER_STATUS_TYPES,
 } from '../../helpers/wyreStatusTypes';
 import { useDimensions, usePrevious, useTimeout } from '../../hooks';
+import { getErrorOverride } from '../../references/wyre';
 import Routes from '../../screens/Routes/routesNames';
 import { position } from '../../styles';
 import { CoinIcon } from '../coin-icon';
@@ -21,6 +22,7 @@ import { FloatingEmojisTapper } from '../floating-emojis';
 import { Centered } from '../layout';
 import { Br, Emoji, Text } from '../text';
 import NeedHelpButton from './NeedHelpButton';
+import SupportButton from './SupportButton';
 
 const StatusMessageText = withProps({
   align: 'center',
@@ -36,7 +38,7 @@ const sx = StyleSheet.create({
     flexDirection: 'column',
   },
   content: {
-    paddingHorizontal: 19,
+    paddingHorizontal: 42,
     transform: [{ translateY: -42.5 }],
   },
 });
@@ -83,18 +85,33 @@ const Content = props => {
   );
 };
 
-const AddCashFailed = () => (
-  <Content>
-    <Centered height={85}>
-      <Emoji name="cry" size={50} />
-    </Centered>
-    <StatusMessageText>
-      Sorry, your purchase failed. <Br />
-      You were not charged.
-    </StatusMessageText>
-    <NeedHelpButton marginTop={24} subject="Purchase Failed" />
-  </Content>
-);
+const AddCashFailed = ({ error, resetAddCashForm }) => {
+  const { errorMessage, tryAgain } = error;
+  return (
+    <Content>
+      <Centered height={85}>
+        <Emoji name="cry" size={50} />
+      </Centered>
+      {!isEmpty(errorMessage) ? (
+        <StatusMessageText>{errorMessage}</StatusMessageText>
+      ) : (
+        <StatusMessageText>
+          Sorry, your purchase failed. <Br />
+          You were not charged.
+        </StatusMessageText>
+      )}
+      {tryAgain ? (
+        <SupportButton
+          label="Try again"
+          marginTop={24}
+          onPress={resetAddCashForm}
+        />
+      ) : (
+        <NeedHelpButton marginTop={24} subject="Purchase Failed" />
+      )}
+    </Content>
+  );
+};
 
 const AddCashChecking = () => (
   <Content>
@@ -145,7 +162,13 @@ const AddCashSuccess = ({ currency }) => {
   );
 };
 
-const AddCashStatus = ({ orderCurrency, orderStatus, transferStatus }) => {
+const AddCashStatus = ({
+  error,
+  orderCurrency,
+  orderStatus,
+  resetAddCashForm,
+  transferStatus,
+}) => {
   const ref = useRef();
 
   const status = useMemo(() => {
@@ -180,10 +203,17 @@ const AddCashStatus = ({ orderCurrency, orderStatus, transferStatus }) => {
 
   const currency = toLower(orderCurrency || 'ETH');
 
+  const updatedError = useMemo(() => {
+    return getErrorOverride(error);
+  }, [error]);
+
   return (
     <Transitioning.View ref={ref} style={sx.container} transition={transition}>
       {status === ADD_CASH_STATUS_TYPES.failed ? (
-        <AddCashFailed />
+        <AddCashFailed
+          error={updatedError}
+          resetAddCashForm={resetAddCashForm}
+        />
       ) : (
         <FloatingEmojisTapper
           {...position.centeredAsObject}
@@ -204,8 +234,10 @@ const AddCashStatus = ({ orderCurrency, orderStatus, transferStatus }) => {
 };
 
 AddCashStatus.propTypes = {
+  error: PropTypes.object,
   orderCurrency: PropTypes.string.isRequired,
   orderStatus: PropTypes.string,
+  resetAddCashForm: PropTypes.func,
   transferStatus: PropTypes.string,
 };
 

@@ -59,10 +59,12 @@ const AddCashSheet = () => {
   );
 
   const {
+    error,
     isPaymentComplete,
     onPurchase,
     orderCurrency,
     orderStatus,
+    resetAddCashForm,
     transferStatus,
   } = useWyreApplePay();
 
@@ -105,8 +107,10 @@ const AddCashSheet = () => {
         <FlexItem width="100%">
           {isPaymentComplete ? (
             <AddCashStatus
+              error={error}
               orderCurrency={orderCurrency}
               orderStatus={orderStatus}
+              resetAddCashForm={resetAddCashForm}
               transferStatus={transferStatus}
             />
           ) : (

@@ -6,13 +6,20 @@ export default function usePurchaseTransactionStatus() {
   const {
     currentOrderStatus,
     currentTransferId,
+    error,
     purchaseTransactions,
   } = useSelector(
     ({
-      addCash: { currentOrderStatus, currentTransferId, purchaseTransactions },
+      addCash: {
+        currentOrderStatus,
+        currentTransferId,
+        error,
+        purchaseTransactions,
+      },
     }) => ({
       currentOrderStatus,
       currentTransferId,
+      error,
       purchaseTransactions,
     })
   );
@@ -27,6 +34,7 @@ export default function usePurchaseTransactionStatus() {
   }, [purchaseTransactions, currentTransferId]);
 
   return {
+    error,
     orderStatus: currentOrderStatus,
     transferStatus,
   };
