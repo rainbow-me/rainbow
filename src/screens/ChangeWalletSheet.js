@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
@@ -37,6 +37,25 @@ const EditButton = styled(ButtonPressAnimation).attrs({ scaleTo: 0.96 })`
   padding: 10px;
 `;
 
+const getRowCount = wallets => {
+  let count = 0;
+  if (wallets) {
+    Object.keys(wallets).forEach(key => {
+      // Addresses
+      count += wallets[key].addresses.filter(account => account.visible).length;
+
+      // Add account
+      if (
+        [WalletTypes.mnemonic, WalletTypes.seed].indexOf(wallets[key].type) !==
+        -1
+      ) {
+        count += 1;
+      }
+    });
+  }
+  return count;
+};
+
 const ChangeWalletSheet = () => {
   const { wallets, selected: selectedWallet } = useWallets();
   const [editMode, setEditMode] = useState(false);
@@ -48,36 +67,11 @@ const ChangeWalletSheet = () => {
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames(wallets);
   const creatingWallet = useRef();
 
-  const listHeight = useRef(0);
+  const rowsCount = getRowCount(wallets);
 
-  const rowsCount = useMemo(() => {
-    let count = 0;
-    if (wallets) {
-      Object.keys(wallets).forEach(key => {
-        // Addresses
-        count += wallets[key].addresses.filter(account => account.visible)
-          .length;
-
-        // Add account
-        if (
-          [WalletTypes.mnemonic, WalletTypes.seed].indexOf(
-            wallets[key].type
-          ) !== -1
-        ) {
-          count += 1;
-        }
-      });
-    }
-    return count;
-  }, [wallets]);
-
-  let newListHeight = walletRowHeight * rowsCount + titleHeight + footerHeight;
-  if (newListHeight > maxListHeight) {
-    newListHeight = maxListHeight;
-  }
-
-  if (newListHeight >= listHeight.current) {
-    listHeight.current = newListHeight;
+  let listHeight = walletRowHeight * rowsCount + titleHeight + footerHeight;
+  if (listHeight > maxListHeight) {
+    listHeight = maxListHeight;
   }
 
   const onChangeAccount = useCallback(
@@ -312,7 +306,7 @@ const ChangeWalletSheet = () => {
         allWallets={walletsWithBalancesAndNames}
         currentWallet={selectedWallet}
         editMode={editMode}
-        height={listHeight.current}
+        height={listHeight}
         onChangeAccount={onChangeAccount}
         onEditWallet={onEditWallet}
         onPressAddAccount={onPressAddAccount}
