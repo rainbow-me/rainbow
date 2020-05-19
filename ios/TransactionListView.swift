@@ -41,9 +41,13 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       header.accountAddress.text = accountAddress
       header.accountAddress.addCharacterSpacing(kernValue: 0.5)
       header.accountAddress.sizeToFit()
-      let dropdownMarginLeft:CGFloat = 8.0;
-      let padding:CGFloat = 15.0;
-      header.accountNameViewWidthConstraint.constant = header.accountAddress.frame.size.width + header.accountDropdown.frame.size.width + dropdownMarginLeft + padding;
+      let dropdownMarginLeft: CGFloat = 6.7
+      let padding: CGFloat = 30.0
+      var accountAddressWidth = header.accountAddress.frame.size.width + header.accountDropdown.frame.size.width + dropdownMarginLeft + padding * 2
+      if accountAddressWidth > UIScreen.main.bounds.width {
+        accountAddressWidth = UIScreen.main.bounds.width
+      }
+      header.accountNameViewWidthConstraint.constant = accountAddressWidth
     }
   }
   
@@ -217,8 +221,8 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     
     let dropdownImage = UIImage(named: "caret-down")
     header.accountDropdown.contentMode = UIView.ContentMode.scaleAspectFit
-    header.accountDropdown.frame.size.width = 20
-    header.accountDropdown.frame.size.height = 20
+    header.accountDropdown.frame.size.width = 21
+    header.accountDropdown.frame.size.height = 9
     header.accountDropdown.image = dropdownImage
     
     header.copyAddress.titleLabel?.addCharacterSpacing(kernValue: 0.5)
