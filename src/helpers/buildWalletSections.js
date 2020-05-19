@@ -252,8 +252,12 @@ const withBalanceSection = (
   );
   let balanceSectionData = [...assets];
 
-  const totalValue = convertAmountToNativeDisplay(
+  const totalBalanceWithSavingsValue = add(
     totalBalancesValue,
+    get(savingsSection, 'totalValue', 0)
+  );
+  const totalValue = convertAmountToNativeDisplay(
+    totalBalanceWithSavingsValue,
     nativeCurrency
   );
 
