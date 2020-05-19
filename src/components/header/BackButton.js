@@ -10,9 +10,9 @@ import { Flex } from '../layout';
 import HeaderButton from './HeaderButton';
 
 const ContainerElement = omitProps('direction')(Flex);
-const Container = styled(ContainerElement).attrs({ align: 'end' })`
-  height: 100%;
-  padding-bottom: 2;
+const Container = styled(ContainerElement).attrs({ align: 'center' })`
+  height: 24;
+  padding-bottom: 0;
 `;
 
 const BackButton = ({ color, direction, onPress, ...props }) => (
