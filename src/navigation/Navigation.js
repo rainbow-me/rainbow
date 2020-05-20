@@ -1,9 +1,46 @@
 import { get } from 'lodash';
 import { Value } from 'react-native-reanimated';
 import { StackActions } from 'react-navigation';
+import { useNavigation as oldUseNavigation } from 'react-navigation-hooks';
 
 let TopLevelNavigationRef = null;
 const transitionPosition = new Value(0);
+
+const poppingCounter = { isClosing: false, pendingAction: null };
+
+export function onWillPop() {
+  poppingCounter.isClosing = true;
+}
+
+export function onDidPop() {
+  poppingCounter.isClosing = false;
+  if (poppingCounter.pendingAction) {
+    setImmediate(() => {
+      poppingCounter.pendingAction();
+      poppingCounter.pendingAction = null;
+    });
+  }
+}
+
+export function useNavigation() {
+  const { navigate: oldNavigate, ...rest } = oldUseNavigation();
+  return {
+    navigate: (...args) => navigate(oldNavigate, ...args),
+    ...rest,
+  };
+}
+
+/**
+ * With this wrapper we allow to delay pushing of native
+ * screen with delay when there's a closing transaction in progress
+ */
+export function navigate(oldNavigate, ...args) {
+  if (typeof args[0] === 'string' && poppingCounter.isClosing) {
+    poppingCounter.pendingAction = () => oldNavigate(...args);
+  } else {
+    oldNavigate(...args);
+  }
+}
 
 function getActiveRoute(navigationState) {
   navigationState = navigationState || get(TopLevelNavigationRef, 'state.nav');

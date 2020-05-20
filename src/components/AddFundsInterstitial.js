@@ -1,14 +1,13 @@
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment, useCallback } from 'react';
 import { Linking } from 'react-native';
-import { withNavigation } from 'react-navigation';
-import { compose, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
+import { useNavigation } from '../navigation/Navigation';
 import Routes from '../screens/Routes/routesNames';
 import { colors, margin, padding } from '../styles';
+import { magicMemo } from '../utils';
 import Divider from './Divider';
 import { Button } from './buttons';
 import { Centered } from './layout';
@@ -63,73 +62,61 @@ const onAddFromFaucet = network => {
   Linking.openURL(faucetUrl);
 };
 
-const AddFundsInterstitial = ({
-  network,
-  offsetY,
-  onPressAddFunds,
-  onPressImportWallet,
-}) => (
-  <Container style={buildInterstitialTransform(offsetY)}>
-    <ButtonContainer>
-      <InterstitialButton
-        backgroundColor={colors.appleBlue}
-        onPress={onPressAddFunds}
-      >
-        Add Funds
-      </InterstitialButton>
-      <DividerContainer>
-        <Divider inset={false} />
-      </DividerContainer>
-      {network === networkTypes.mainnet ? (
-        <React.Fragment>
-          <InterstitialButton
-            backgroundColor={colors.paleBlue}
-            onPress={onPressImportWallet}
-          >
-            Import My Wallet
-          </InterstitialButton>
-          <Paragraph>
-            If you already have an Ethereum wallet, you can securely import it
-            with a seed phrase or private key.
-          </Paragraph>
-        </React.Fragment>
-      ) : (
-        <React.Fragment>
-          <InterstitialButton
-            backgroundColor={colors.paleBlue}
-            onPress={() => onAddFromFaucet(network)}
-          >
-            Add from Faucet
-          </InterstitialButton>
-          <Paragraph>
-            You can request test ETH through the{' '}
-            {get(networkInfo[network], 'name')} faucet.
-          </Paragraph>
-        </React.Fragment>
-      )}
-    </ButtonContainer>
-  </Container>
-);
+const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
+  const { navigate } = useNavigation();
 
-AddFundsInterstitial.propTypes = {
-  network: PropTypes.string,
-  offsetY: PropTypes.number,
-  onPressAddFunds: PropTypes.func.isRequired,
-  onPressImportWallet: PropTypes.func.isRequired,
+  const handlePressAddFunds = useCallback(
+    () => navigate(Routes.RECEIVE_MODAL),
+    [navigate]
+  );
+
+  const handlePressImportWallet = useCallback(
+    () => navigate(Routes.IMPORT_SEED_PHRASE_SHEET),
+    [navigate]
+  );
+
+  return (
+    <Container style={buildInterstitialTransform(offsetY)}>
+      <ButtonContainer>
+        <InterstitialButton
+          backgroundColor={colors.appleBlue}
+          onPress={handlePressAddFunds}
+        >
+          Add Funds
+        </InterstitialButton>
+        <DividerContainer>
+          <Divider inset={false} />
+        </DividerContainer>
+        {network === networkTypes.mainnet ? (
+          <Fragment>
+            <InterstitialButton
+              backgroundColor={colors.paleBlue}
+              onPress={handlePressImportWallet}
+            >
+              Import My Wallet
+            </InterstitialButton>
+            <Paragraph>
+              If you already have an Ethereum wallet, you can securely import it
+              with a seed phrase or private key.
+            </Paragraph>
+          </Fragment>
+        ) : (
+          <Fragment>
+            <InterstitialButton
+              backgroundColor={colors.paleBlue}
+              onPress={() => onAddFromFaucet(network)}
+            >
+              Add from Faucet
+            </InterstitialButton>
+            <Paragraph>
+              You can request test ETH through the{' '}
+              {get(networkInfo[network], 'name')} faucet.
+            </Paragraph>
+          </Fragment>
+        )}
+      </ButtonContainer>
+    </Container>
+  );
 };
 
-AddFundsInterstitial.defaultProps = {
-  offsetY: 0,
-};
-
-export default compose(
-  pure,
-  withNavigation,
-  withHandlers({
-    onPressAddFunds: ({ navigation }) => () => {
-      navigation.navigate(Routes.RECEIVE_MODAL);
-    },
-    onPressImportWallet: ({ navigation }) => () =>
-      navigation.navigate(Routes.IMPORT_SEED_PHRASE_SHEET),
-  })
-)(AddFundsInterstitial);
+export default magicMemo(AddFundsInterstitial, ['network', 'offsetY']);
