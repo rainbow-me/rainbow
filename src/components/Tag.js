@@ -1,9 +1,9 @@
 import { upperCase, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { compose, onlyUpdateForKeys, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../styles';
-import { magicMemo } from '../utils';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';
 
@@ -46,18 +46,26 @@ const Title = styled(TextElement).attrs({
   opacity: 0.7;
 `;
 
-const Tag = ({ text, title, ...props }) => (
+const enhance = compose(
+  withProps(({ text, title }) => ({
+    text: upperFirst(text),
+    title: upperCase(title),
+  })),
+  onlyUpdateForKeys(['text', 'title'])
+);
+
+const Tag = enhance(({ text, title, ...props }) => (
   <OuterBorder {...props}>
     <Container>
-      <Title>{upperCase(title)}</Title>
-      <Text>{upperFirst(text)}</Text>
+      <Title>{title}</Title>
+      <Text>{text}</Text>
     </Container>
   </OuterBorder>
-);
+));
 
 Tag.propTypes = {
   text: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
 };
 
-export default magicMemo(Tag, ['text', 'title']);
+export default Tag;

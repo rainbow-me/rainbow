@@ -14,7 +14,7 @@ const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
   const { isTallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
   const onSupportedGeoPress = useCallback(() => {
-    navigate(Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN, {
+    navigate(Routes.OVERLAY_EXPANDED_SUPPORTED_COUNTRIES, {
       type: 'supported_countries',
     });
   }, [navigate]);

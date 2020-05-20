@@ -109,7 +109,7 @@ class SendContactList extends Component {
     const refocusCallback =
       this.props.selectedInputId && this.props.selectedInputId.focus;
 
-    navigation.navigate(Routes.MODAL_SCREEN, {
+    navigation.navigate(Routes.OVERLAY_EXPANDED_ASSET_SCREEN, {
       address,
       asset: {},
       color,

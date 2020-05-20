@@ -1,4 +1,3 @@
-import { isEmpty } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
@@ -19,7 +18,7 @@ import Routes from './Routes/routesNames';
 const walletRowHeight = 54;
 
 const ChangeWalletModal = () => {
-  const { selectedWallet, wallets } = useWallets();
+  const { wallets, selected: selectedWallet } = useWallets();
 
   const { goBack, navigate } = useNavigation();
   const dispatch = useDispatch();
@@ -76,13 +75,13 @@ const ChangeWalletModal = () => {
   const onEditWallet = useCallback(
     id => {
       const wallet = wallets[id];
-      if (isEmpty(selectedWallet)) return;
+      if (!selectedWallet) return;
 
       let isDeletable = false;
       if (Object.keys(wallet).length > 1 && selectedWallet.id !== id) {
         isDeletable = true;
       }
-      navigate(Routes.MODAL_SCREEN, {
+      navigate(Routes.EXPANDED_ASSET_SCREEN, {
         address: undefined,
         asset: [],
         isDeletable,
@@ -118,7 +117,7 @@ const ChangeWalletModal = () => {
       if (accountAddress !== address) {
         isDeletable = true;
       }
-      navigate(Routes.MODAL_SCREEN, {
+      navigate(Routes.EXPANDED_ASSET_SCREEN, {
         address,
         asset: [],
         isDeletable,

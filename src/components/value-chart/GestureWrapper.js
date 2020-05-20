@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import {
   PanGestureHandler,
@@ -5,28 +6,33 @@ import {
 } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 
-export default function GestureWrapper({
+const TimestampText = ({
   children,
   enabled,
-  onHandlerStateChange,
-  onPanGestureEvent,
   onTapGestureEvent,
-}) {
-  return enabled ? (
-    <TapGestureHandler maxDeltaY={30} onHandlerStateChange={onTapGestureEvent}>
-      <Animated.View accessible justifyContent="flex-start">
+  onPanGestureEvent,
+  onHandlerStateChange,
+}) =>
+  enabled ? (
+    <TapGestureHandler onHandlerStateChange={onTapGestureEvent} maxDeltaY={30}>
+      <Animated.View>
         <PanGestureHandler
-          failOffsetY={2}
           minDist={1}
+          shouldActivateOnStart
           onGestureEvent={onPanGestureEvent}
           onHandlerStateChange={onHandlerStateChange}
-          shouldActivateOnStart
+          failOffsetY={2}
         >
-          <Animated.View>{children}</Animated.View>
+          {children}
         </PanGestureHandler>
       </Animated.View>
     </TapGestureHandler>
   ) : (
     children
   );
-}
+
+TimestampText.propTypes = {
+  children: PropTypes.string,
+};
+
+export default TimestampText;

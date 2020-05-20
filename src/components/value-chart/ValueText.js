@@ -1,97 +1,93 @@
 import PropTypes from 'prop-types';
-import React, { Fragment, useMemo, useRef } from 'react';
+import React from 'react';
+import { View } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import { colors } from '../../styles';
-import { Icon } from '../icons';
-import { RowWithMargins } from '../layout';
-import { Text, TruncatedText } from '../text';
+import styled from 'styled-components/primitives';
+import { colors, fonts } from '../../styles';
+import { deviceUtils } from '../../utils';
+import { TruncatedText } from '../text';
+import TrendIndicatorText from './TrendIndicatorText';
 
-const Subtitle = props => (
-  <TruncatedText
-    {...props}
-    color={colors.blueGreyDark50}
-    letterSpacing="uppercase"
-    size="smedium"
-    weight="semibold"
-  />
-);
+const HeadingTextStyles = {
+  color: colors.dark,
+  weight: 'bold',
+};
 
-const Title = props => <TruncatedText {...props} size="h2" weight="bold" />;
+const Title = styled(TruncatedText).attrs(HeadingTextStyles)`
+  font-size: 30px;
+  margin-bottom: 6.5px;
+`;
+
+const Header = styled(TruncatedText)`
+  font-size: ${fonts.size.smedium};
+  color: ${colors.alpha(colors.blueGreyDark, 0.5)};
+  font-weight: ${fonts.weight.semibold};
+`;
 
 const transition = (
   <Transition.Together>
     <Transition.Out
       durationMs={220}
-      interpolation="easeInOut"
-      propagation="right"
       type="slide-top"
+      propagation="right"
+      interpolation="easeInOut"
     />
     <Transition.In
-      delayMs={120}
       durationMs={200}
-      propagation="left"
+      delayMs={120}
       type="fade"
+      propagation="left"
     />
   </Transition.Together>
 );
 
-const ValueText = ({ change, direction, headerText, value }) => {
-  const transitionRef = useRef();
+class ValueText extends React.Component {
+  static propTypes = {
+    change: PropTypes.string,
+    direction: PropTypes.bool,
+    headerText: PropTypes.string,
+  };
 
-  if (transitionRef.current) {
-    transitionRef.current.animateNextTransition();
+  state = {
+    text: undefined,
+  };
+
+  updateValue = text => {
+    this.ref.animateNextTransition();
+    this.setState({ text });
+  };
+
+  render() {
+    return (
+      <View
+        style={{
+          height: 85,
+          paddingLeft: 15,
+          width: deviceUtils.dimensions.width,
+        }}
+      >
+        <Transitioning.View
+          ref={ref => (this.ref = ref)}
+          transition={transition}
+        >
+          {this.state.text ? (
+            <View>
+              <Header>{this.props.headerText}</Header>
+              <Title>${Number(this.state.text).toFixed(2)}</Title>
+              <TrendIndicatorText direction={this.props.direction}>
+                {Math.abs(Number(this.props.change))}%
+              </TrendIndicatorText>
+            </View>
+          ) : (
+            <>
+              <Header>Downloading data...</Header>
+              <Title>Loading...</Title>
+            </>
+          )}
+        </Transitioning.View>
+      </View>
+    );
   }
+}
 
-  const formattedChange = useMemo(() => `${Math.abs(Number(change))}%`, [
-    change,
-  ]);
-
-  return (
-    <Transitioning.View
-      height={85}
-      paddingLeft={15}
-      ref={transitionRef}
-      transition={transition}
-      width="100%"
-    >
-      {value ? (
-        <Fragment>
-          <Subtitle>{headerText}</Subtitle>
-          <Title>${value}</Title>
-          <RowWithMargins align="center" margin={2} marginTop={2}>
-            <Icon
-              color={direction ? colors.chartGreen : colors.red}
-              direction={direction ? 'right' : 'left'}
-              height={15}
-              name="fatArrow"
-              width={13}
-            />
-            <Text
-              color={direction ? colors.chartGreen : colors.red}
-              letterSpacing="roundedTight"
-              lineHeight="loose"
-              size="large"
-              weight="bold"
-            >
-              {formattedChange}
-            </Text>
-          </RowWithMargins>
-        </Fragment>
-      ) : (
-        <Fragment>
-          <Subtitle>Downloading data...</Subtitle>
-          <Title>Loading...</Title>
-        </Fragment>
-      )}
-    </Transitioning.View>
-  );
-};
-
-ValueText.propTypes = {
-  change: PropTypes.string,
-  direction: PropTypes.bool,
-  headerText: PropTypes.string,
-  value: PropTypes.number,
-};
-
-export default React.memo(ValueText);
+export default ValueText;

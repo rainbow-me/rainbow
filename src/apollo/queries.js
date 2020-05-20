@@ -28,6 +28,17 @@ export const COMPOUND_ACCOUNT_AND_MARKET_QUERY = gql`
   }
 `;
 
+export const UNISWAP_PRICES_QUERY = gql`
+  query exchanges($addresses: [String]!) {
+    exchanges(where: { tokenAddress_in: $addresses, price_gt: 0 }) {
+      id
+      tokenAddress
+      tokenSymbol
+      price
+    }
+  }
+`;
+
 export const UNISWAP_24HOUR_PRICE_QUERY = gql`
   query exchangeHistoricalDatas($timestamp: Int!, $exchangeAddress: String!) {
     exchangeHistoricalDatas(
@@ -36,10 +47,10 @@ export const UNISWAP_24HOUR_PRICE_QUERY = gql`
       orderBy: tradeVolumeEth
       orderDirection: desc
     ) {
-      exchangeAddress
       id
-      price
       timestamp
+      exchangeAddress
+      price
     }
   }
 `;
@@ -53,41 +64,12 @@ export const UNISWAP_ALL_EXCHANGES_QUERY = gql`
       orderDirection: desc
       where: { tokenAddress_not_in: $excluded }
     ) {
-      ethBalance
       id
-      tokenAddress
-      tokenDecimals
+      tokenSymbol
       tokenName
-      tokenSymbol
-    }
-  }
-`;
-
-export const UNISWAP_PRICES_QUERY = gql`
-  query exchanges($addresses: [String]!) {
-    exchanges(where: { tokenAddress_in: $addresses, price_gt: 0 }) {
-      id
-      price
+      tokenDecimals
       tokenAddress
-      tokenSymbol
-    }
-  }
-`;
-
-export const UNISWAP_CHART_QUERY = gql`
-  query exchangeDayDatas($date: Int!, $exchangeAddress: String!) {
-    exchangeDayDatas(
-      where: { exchangeAddress: $exchangeAddress, date_gt: $date }
-      orderBy: date
-      orderDirection: asc
-    ) {
-      date
       ethBalance
-      tokenBalance
-      marginalEthRate
-      ethVolume
-      tokenPriceUSD
-      totalEvents
     }
   }
 `;

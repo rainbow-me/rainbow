@@ -45,7 +45,7 @@ const ProfileScreen = ({ navigation }) => {
   const { contacts } = useContacts();
   const { pendingRequestCount, requests } = useRequests();
   const { accountAddress, accountENS, network } = useAccountSettings();
-  const { selectedWallet } = useWallets();
+  const { selected: selectedWallet } = useWallets();
 
   const isEmpty = !transactionsCount && !pendingRequestCount;
 

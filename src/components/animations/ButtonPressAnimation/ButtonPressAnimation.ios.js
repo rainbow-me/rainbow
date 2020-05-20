@@ -205,7 +205,6 @@ function ButtonPressAnimationJS({
   hapticType,
   isInteraction,
   minLongPressDuration,
-  onLayout,
   onLongPress,
   onPress,
   onPressStart,
@@ -214,10 +213,7 @@ function ButtonPressAnimationJS({
   transformOrigin,
 }) {
   const [createHandle, removeHandle, interactionHandle] = useInteraction();
-  const {
-    onLayout: measureInnerElement,
-    withTransformOrigin,
-  } = useTransformOrigin(transformOrigin);
+  const { onLayout, withTransformOrigin } = useTransformOrigin(transformOrigin);
 
   const optionallyTriggerHaptic = useCallback(() => {
     if (enableHapticFeedback) {
@@ -356,11 +352,10 @@ function ButtonPressAnimationJS({
     <AnimatedRawButton
       enabled={!disabled}
       onHandlerStateChange={onGestureEvent}
-      onLayout={onLayout}
     >
       <Animated.View
         accessible
-        onLayout={measureInnerElement}
+        onLayout={onLayout}
         style={[
           style,
           {
@@ -394,7 +389,6 @@ ButtonPressAnimation.propTypes = {
   hapticType: PropTypes.string,
   isInteraction: PropTypes.bool,
   minLongPressDuration: PropTypes.number,
-  onLayout: PropTypes.func,
   onLongPress: PropTypes.func,
   onPress: PropTypes.func,
   onPressStart: PropTypes.func,

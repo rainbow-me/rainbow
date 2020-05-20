@@ -1,4 +1,5 @@
-import { isEmpty } from 'lodash';
+/* eslint-disable sort-keys */
+import GraphemeSplitter from 'grapheme-splitter';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -6,65 +7,64 @@ import FastImage from 'react-native-fast-image';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { useAccountSettings, useWallets } from '../../hooks';
 import { colors, fonts } from '../../styles';
-import { getFirstGrapheme } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 
 const sx = StyleSheet.create({
-  arrowWrapper: {
-    alignItems: 'center',
-    height: 16,
-    justifyContent: 'center',
-    paddingLeft: 10,
-    paddingRight: 20,
-    paddingTop: 2,
-    width: 12,
-  },
-  avatarCircle: {
-    borderRadius: 20,
-    height: 32,
-    marginLeft: 8,
-    marginRight: 9,
-    width: 32,
-  },
   container: {
-    alignItems: 'center',
-    backgroundColor: colors.skeleton,
-    borderRadius: 23,
-    flexDirection: 'row',
     height: 46,
+    backgroundColor: colors.skeleton,
     marginLeft: 6,
-  },
-  firstLetter: {
-    color: colors.white,
-    fontSize: 18,
-    fontWeight: '600',
-    lineHeight: 31,
-    paddingLeft: 0.5,
-    textAlign: 'center',
-    width: '100%',
-  },
-  nickname: {
-    color: colors.dark,
-    fontFamily: fonts.family.SFProText,
-    fontSize: Number(fonts.size.smedium.replace('px', '')),
-    fontWeight: fonts.weight.medium,
-    maxWidth: 120,
-  },
-  settingsIcon: {
-    height: 12,
-    transform: [{ rotate: '90deg' }],
-    width: 6,
+    borderRadius: 23,
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   topRow: {
     flexDirection: 'row',
   },
+  arrowWrapper: {
+    height: 16,
+    width: 12,
+    paddingLeft: 10,
+    paddingRight: 20,
+    paddingTop: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  nickname: {
+    fontFamily: fonts.family.SFProText,
+    fontWeight: fonts.weight.medium,
+    fontSize: Number(fonts.size.smedium.replace('px', '')),
+    color: colors.dark,
+    maxWidth: 120,
+  },
+  settingsIcon: {
+    height: 12,
+    width: 6,
+    transform: [{ rotate: '90deg' }],
+  },
+  avatarCircle: {
+    borderRadius: 20,
+    marginLeft: 8,
+    marginRight: 9,
+    height: 32,
+    width: 32,
+  },
+  firstLetter: {
+    width: '100%',
+    textAlign: 'center',
+    color: colors.white,
+    fontWeight: '600',
+    fontSize: 18,
+    lineHeight: 31,
+    paddingLeft: 0.5,
+  },
 });
 
 const HeaderWalletInfo = ({ onPress }) => {
-  const { selectedWallet } = useWallets();
+  const { selected: selectedWallet } = useWallets();
   const { accountAddress } = useAccountSettings();
 
-  if (isEmpty(selectedWallet) || !selectedWallet.addresses.length) return null;
+  if (!selectedWallet || !selectedWallet.addresses.length) return null;
 
   const selectedAccount = selectedWallet.addresses.find(
     account => account.address === accountAddress
@@ -86,7 +86,9 @@ const HeaderWalletInfo = ({ onPress }) => {
             { backgroundColor: colors.avatarColor[accountColor] },
           ]}
         >
-          <Text style={sx.firstLetter}>{getFirstGrapheme(accountName)}</Text>
+          <Text style={sx.firstLetter}>
+            {new GraphemeSplitter().splitGraphemes(accountName)[0]}
+          </Text>
         </View>
         <View>
           <View style={sx.topRow}>

@@ -87,7 +87,7 @@ const ConfirmImportAlert = (onSuccess, navigate) =>
     buttons: [
       {
         onPress: () =>
-          navigate(Routes.MODAL_SCREEN, {
+          navigate(Routes.OVERLAY_EXPANDED_ASSET_SCREEN, {
             actionType: 'Import',
             address: undefined,
             asset: [],
