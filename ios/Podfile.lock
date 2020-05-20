@@ -1,9 +1,13 @@
 PODS:
 <<<<<<< HEAD
+<<<<<<< HEAD
   - Analytics (3.8.1)
 =======
   - Analytics (3.8.0)
 >>>>>>> 9a79675c... fix eslint errors + eslint config
+=======
+  - Analytics (3.8.1)
+>>>>>>> 7e808762... fix emoji effect on SupportedCountriesExpandedState
   - Base64 (1.1.2)
   - boost-for-react-native (1.63.0)
   - BVLinearGradient (2.5.6):
@@ -135,6 +139,7 @@ PODS:
     - nanopb (= 0.3.9011)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   - GoogleDataTransport (6.1.1)
   - GoogleDataTransportCCTSupport (3.0.0):
     - GoogleDataTransport (~> 6.0)
@@ -150,6 +155,9 @@ PODS:
 >>>>>>> 51ed9411... Apply new layout patterns across components
 =======
   - GoogleDataTransport (6.0.0)
+=======
+  - GoogleDataTransport (6.1.1)
+>>>>>>> 7e808762... fix emoji effect on SupportedCountriesExpandedState
   - GoogleDataTransportCCTSupport (3.0.0):
     - GoogleDataTransport (~> 6.0)
 >>>>>>> 9a79675c... fix eslint errors + eslint config
@@ -185,7 +193,7 @@ PODS:
     - libwebp/demux
   - libwebp/webp (1.1.0)
   - lottie-ios (3.1.3)
-  - lottie-react-native (3.3.2):
+  - lottie-react-native (3.4.0):
     - lottie-ios (~> 3.1.3)
     - React
   - nanopb (0.3.9011):
@@ -197,6 +205,7 @@ PODS:
     - OpenSSL-Universal/Static (= 1.0.2.19)
   - OpenSSL-Universal/Static (1.0.2.19)
   - PanModal (1.2.7)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   - Permission-Camera (2.1.3):
@@ -211,9 +220,14 @@ PODS:
     - RNPermissions
   - Permission-FaceID (2.1.2):
 >>>>>>> 51ed9411... Apply new layout patterns across components
+=======
+  - Permission-Camera (2.1.4):
     - RNPermissions
-<<<<<<< HEAD
+  - Permission-FaceID (2.1.4):
+>>>>>>> 7e808762... fix emoji effect on SupportedCountriesExpandedState
+    - RNPermissions
   - pop (1.0.12)
+<<<<<<< HEAD
 <<<<<<< HEAD
   - PromisesObjC (1.2.8)
   - Protobuf (3.12.0)
@@ -223,6 +237,10 @@ PODS:
 >>>>>>> 0424c902... fix eslint errors + eslint config
   - Protobuf (3.11.4)
 >>>>>>> 9a79675c... fix eslint errors + eslint config
+=======
+  - PromisesObjC (1.2.8)
+  - Protobuf (3.12.0)
+>>>>>>> 7e808762... fix emoji effect on SupportedCountriesExpandedState
   - RCTRequired (0.62.2)
   - RCTTypeSafety (0.62.2):
     - FBLazyVector (= 0.62.2)
@@ -390,17 +408,17 @@ PODS:
     - React
   - react-native-blur (0.8.0):
     - React
-  - react-native-camera (3.23.1):
+  - react-native-camera (3.26.0):
     - React
-    - react-native-camera/RCT (= 3.23.1)
-    - react-native-camera/RN (= 3.23.1)
-  - react-native-camera/RCT (3.23.1):
+    - react-native-camera/RCT (= 3.26.0)
+    - react-native-camera/RN (= 3.26.0)
+  - react-native-camera/RCT (3.26.0):
     - React
-  - react-native-camera/RN (3.23.1):
+  - react-native-camera/RN (3.26.0):
     - React
   - react-native-mail (4.1.0):
     - React
-  - react-native-netinfo (5.8.0):
+  - react-native-netinfo (5.9.0):
     - React
   - react-native-randombytes (3.5.3):
     - React
@@ -482,7 +500,7 @@ PODS:
   - RNAnalytics (1.1.0):
     - Analytics
     - React
-  - RNCAsyncStorage (1.9.0):
+  - RNCAsyncStorage (1.10.3):
     - React
   - RNCClipboard (1.2.2):
     - React
@@ -491,7 +509,7 @@ PODS:
   - RNCoolModals (0.0.7):
     - PanModal
     - React
-  - RNCPushNotificationIOS (1.1.1):
+  - RNCPushNotificationIOS (1.2.0):
     - React
   - RNDeviceInfo (5.3.1):
     - React
@@ -527,29 +545,33 @@ PODS:
   - RNOS (1.2.8):
     - React
 <<<<<<< HEAD
+<<<<<<< HEAD
   - RNPermissions (2.1.3):
 =======
   - RNPermissions (2.1.2):
 >>>>>>> 51ed9411... Apply new layout patterns across components
+=======
+  - RNPermissions (2.1.4):
+>>>>>>> 7e808762... fix emoji effect on SupportedCountriesExpandedState
     - React
-  - RNReactNativeHapticFeedback (1.9.0):
+  - RNReactNativeHapticFeedback (1.10.0):
     - React
   - RNReanimated (1.7.0):
     - React
   - RNScreens (2.2.0):
     - React
-  - RNSentry (1.3.7):
+  - RNSentry (1.3.9):
     - React
     - Sentry (~> 4.4.0)
   - RNStoreReview (0.1.5):
     - React
   - RNSVG (12.1.0):
     - React
-<<<<<<< HEAD
   - RNTooltips (1.0.2):
     - pop (~> 1.0)
     - React
     - SexyTooltip
+<<<<<<< HEAD
 <<<<<<< HEAD
   - SDWebImage (5.8.0):
     - SDWebImage/Core (= 5.8.0)
@@ -564,6 +586,11 @@ PODS:
     - SDWebImage/Core (= 5.7.3)
   - SDWebImage/Core (5.7.3)
 >>>>>>> 0424c902... fix eslint errors + eslint config
+=======
+  - SDWebImage (5.8.0):
+    - SDWebImage/Core (= 5.8.0)
+  - SDWebImage/Core (5.8.0)
+>>>>>>> 7e808762... fix emoji effect on SupportedCountriesExpandedState
   - SDWebImageWebPCoder (0.2.5):
 >>>>>>> 9a79675c... fix eslint errors + eslint config
     - libwebp (~> 1.0)
@@ -716,8 +743,8 @@ SPEC REPOS:
     - libwebp
     - nanopb
     - OpenSSL-Universal
-<<<<<<< HEAD
     - pop
+<<<<<<< HEAD
 <<<<<<< HEAD
     - PromisesObjC
 =======
@@ -725,6 +752,9 @@ SPEC REPOS:
     - PromisesObjC
 >>>>>>> 0424c902... fix eslint errors + eslint config
 >>>>>>> 9a79675c... fix eslint errors + eslint config
+=======
+    - PromisesObjC
+>>>>>>> 7e808762... fix emoji effect on SupportedCountriesExpandedState
     - Protobuf
     - SDWebImage
     - SDWebImageWebPCoder
@@ -887,10 +917,14 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
 <<<<<<< HEAD
+<<<<<<< HEAD
   Analytics: 45b1faec509367a99c7b788cc5389180c43fe3fc
 =======
   Analytics: fcf79ebc393a7d77befb8d43ce296353ba9ede3d
 >>>>>>> 9a79675c... fix eslint errors + eslint config
+=======
+  Analytics: 45b1faec509367a99c7b788cc5389180c43fe3fc
+>>>>>>> 7e808762... fix emoji effect on SupportedCountriesExpandedState
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
@@ -923,6 +957,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: dfe55efa543e899d906309eaaac6ca26d249862f
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   GoogleDataTransport: ad884314b81cdb808fb1d23787b367ff8da4e28a
   GoogleDataTransportCCTSupport: 0f39025e8cf51f168711bd3fb773938d7e62ddb5
   GoogleUtilities: 39530bc0ad980530298e9c4af8549e991fd033b1
@@ -938,16 +973,20 @@ SPEC CHECKSUMS:
 >>>>>>> 51ed9411... Apply new layout patterns across components
 =======
   GoogleDataTransport: 061fe7d9b476710e3cd8ea51e8e07d8b67c2b420
+=======
+  GoogleDataTransport: ad884314b81cdb808fb1d23787b367ff8da4e28a
+>>>>>>> 7e808762... fix emoji effect on SupportedCountriesExpandedState
   GoogleDataTransportCCTSupport: 0f39025e8cf51f168711bd3fb773938d7e62ddb5
   GoogleUtilities: 39530bc0ad980530298e9c4af8549e991fd033b1
 >>>>>>> 9a79675c... fix eslint errors + eslint config
   JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   lottie-ios: 496ac5cea1bbf1a7bd1f1f472f3232eb1b8d744b
-  lottie-react-native: 2a1a82bb326ae51331a5520de0cf706733c6db69
+  lottie-react-native: a664f59f1f298c2696dd0ae07b15cbdfc433cb02
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   Permission-Camera: cbbed5d193641837e9a32592dd71292eabd11827
@@ -961,20 +1000,19 @@ SPEC CHECKSUMS:
   Permission-Camera: 01583e5864cb99d89cbfb3ec62cb83c78d8d227a
   Permission-FaceID: fafd8c4809ad5be3547e1b66c2ce444c5abd92a6
 <<<<<<< HEAD
+=======
+  Permission-Camera: 402f1ac15b962448d75e8cf2039d235e7bc09a85
+  Permission-FaceID: 08f06f502c95dbd7d35033e65c7ebe23d4189f67
+>>>>>>> 7e808762... fix emoji effect on SupportedCountriesExpandedState
   pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
-=======
-=======
-  Permission-Camera: ebdba00e6926aface672cc547b19fa317c3d956e
-  Permission-FaceID: 47e37e5acf891b4b7a8fd6736b422045d74db17c
->>>>>>> 380e84cb... Apply new layout patterns across components
->>>>>>> 5919024d... Apply new layout patterns across components
-=======
-  Permission-Camera: ebdba00e6926aface672cc547b19fa317c3d956e
-  Permission-FaceID: 47e37e5acf891b4b7a8fd6736b422045d74db17c
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
+<<<<<<< HEAD
 >>>>>>> 0424c902... fix eslint errors + eslint config
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
 >>>>>>> 51ed9411... Apply new layout patterns across components
+=======
+  Protobuf: 2793fcd0622a00b546c60e7cbbcc493e043e9bb9
+>>>>>>> 7e808762... fix emoji effect on SupportedCountriesExpandedState
   RCTRequired: cec6a34b3ac8a9915c37e7e4ad3aa74726ce4035
   RCTTypeSafety: 93006131180074cffa227a1075802c89a49dd4ce
   React: 29a8b1a02bd764fb7644ef04019270849b9a7ac3
@@ -986,9 +1024,9 @@ SPEC CHECKSUMS:
   React-jsinspector: 512e560d0e985d0e8c479a54a4e5c147a9c83493
   react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: 1b52abea404d04e040edb3e74b7c5523c01a3089
+  react-native-camera: 2b74be8edc1103c4c46d1f4e5f41723d9ff052cc
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
-  react-native-netinfo: b9650ab1b8b4362b3c455b1274e4bc48223cc957
+  react-native-netinfo: 7b3c53674ea611b26a7788821f137c6d9d3a038b
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
@@ -1008,11 +1046,11 @@ SPEC CHECKSUMS:
   ReactCommon: ed4e11d27609d571e7eee8b65548efc191116eb3
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
-  RNCAsyncStorage: 453cd7c335ec9ba3b877e27d02238956b76f3268
+  RNCAsyncStorage: cd7234ff15c010723ed7c499ae4eedc605eac1fd
   RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNCoolModals: 101e6048991c708be5f6486186ddbb8f23b20d78
-  RNCPushNotificationIOS: a0b6894f4ad9b93d9dac467fdf4d055660ac8a0d
+  RNCPushNotificationIOS: 4d9ffd08f00ef6c1029ebbf4d72fc711eca3ff01
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
 <<<<<<< HEAD
   RNFastImage: 35ae972d6727c84ee3f5c6897e07f84d0a3445e9
@@ -1028,18 +1066,23 @@ SPEC CHECKSUMS:
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
 <<<<<<< HEAD
+<<<<<<< HEAD
   RNPermissions: 6772df08e03565f718f7e140d9fccae441b8ca8b
 =======
   RNPermissions: a96580116f7894146552e92b000ac30bf1661947
 >>>>>>> 51ed9411... Apply new layout patterns across components
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
+=======
+  RNPermissions: 3635b407c15f2fe591bd2101c8f20aa0912caba8
+  RNReactNativeHapticFeedback: 22c5ecf474428766c6b148f96f2ff6155cd7225e
+>>>>>>> 7e808762... fix emoji effect on SupportedCountriesExpandedState
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
-  RNSentry: 370623102247ebea20191b5fb549ecc7a275b324
+  RNSentry: 9c9783b13fb5cba387fff55f085cc1da3854ce71
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
-<<<<<<< HEAD
   RNTooltips: e13180e4339e2a85daabd09507f62a5a32d3dc8a
+<<<<<<< HEAD
 <<<<<<< HEAD
   SDWebImage: 84000f962cbfa70c07f19d2234cbfcf5d779b5dc
   SDWebImageWebPCoder: 36f8f47bd9879a8aea6044765c1351120fd8e3a8
@@ -1048,6 +1091,9 @@ SPEC CHECKSUMS:
 =======
   SDWebImage: 97351f6582ceca541ea294ba66a1fcb342a331c2
 >>>>>>> 0424c902... fix eslint errors + eslint config
+=======
+  SDWebImage: 84000f962cbfa70c07f19d2234cbfcf5d779b5dc
+>>>>>>> 7e808762... fix emoji effect on SupportedCountriesExpandedState
   SDWebImageWebPCoder: 947093edd1349d820c40afbd9f42acb6cdecd987
 >>>>>>> 9a79675c... fix eslint errors + eslint config
   Sentry: 14bdd673870e8cf64932b149fad5bbbf39a9b390
