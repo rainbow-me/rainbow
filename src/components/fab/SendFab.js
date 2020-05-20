@@ -21,7 +21,7 @@ const SendFab = ({ disabled, isReadOnlyWallet, scaleTo, tapRef }) => {
   const { navigate } = useNavigation();
   const onPressHandler = useCallback(() => {
     if (!isReadOnlyWallet) {
-      navigate(Routes.SEND_SHEET);
+      navigate('BottomSheetSample');
     } else {
       Alert.alert(`You need to import the wallet in order to do this`);
     }

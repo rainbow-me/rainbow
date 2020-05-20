@@ -48,6 +48,8 @@ import {
 } from './nativeStackWrappers';
 import { onNavigationStateChange } from './onNavigationStateChange.ios';
 import Routes from './routesNames';
+import { SlackBottomSheetContent } from '../../components/discover-sheet/DiscoverSheet';
+import createBottomSheetNavigator from '../../navigation/createBottomSheetNavigator';
 
 const routesForSwipeStack = {
   [Routes.PROFILE_SCREEN]: ProfileScreen,
@@ -296,7 +298,17 @@ const MainNativeBottomSheetNavigation = createNativeStackNavigator(
   }
 );
 
-const AppContainer = createAppContainer(MainNativeBottomSheetNavigation);
+const BottomSheetNavigator = createBottomSheetNavigator(
+  {
+    BottomSheetSample: SlackBottomSheetContent,
+    Stack,
+  },
+  {
+    initialRouteName: 'Stack',
+  }
+);
+
+const AppContainer = createAppContainer(BottomSheetNavigator);
 
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
   <AppContainer ref={ref} onNavigationStateChange={onNavigationStateChange} />

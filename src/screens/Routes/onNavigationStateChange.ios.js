@@ -5,6 +5,8 @@ import { NavigationActions } from 'react-navigation';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { Navigation } from '../../navigation';
 import { expandedPreset } from '../../navigation/transitions/effects';
+import { setModalVisible } from '../../redux/modal';
+import store from '../../redux/store';
 import { sentryUtils } from '../../utils';
 import Routes from './routesNames';
 
@@ -111,6 +113,14 @@ export function onNavigationStateChange(prevState, currentState) {
 
   if (routeName !== prevRouteName) {
     let paramsToTrack = null;
+
+    store.dispatch(
+      setModalVisible(
+        routeName === 'WalletScreen' ||
+          routeName === 'QRScannerScreen' ||
+          routeName === 'ProfileScreen'
+      )
+    );
 
     if (routeName === Routes.EXPANDED_ASSET_SHEET) {
       const { asset, type } = params;
