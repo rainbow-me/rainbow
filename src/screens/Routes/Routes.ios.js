@@ -147,17 +147,6 @@ const routesForMainNavigator = {
     navigationOptions: expandedPresetWithTransitions,
     screen: WalletConnectConfirmationModal,
   },
-  ...(isNativeStackAvailable && {
-    [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: {
-      navigationOptions: overlayExpandedPreset,
-      screen: ExpandedAssetScreenWithData,
-    },
-  }),
-};
-
-const MainNavigator = createStackNavigator(routesForMainNavigator);
-
-const routesForSavingsModals = {
   [Routes.SAVINGS_DEPOSIT_MODAL]: {
     navigationOptions: exchangePresetWithTransitions,
     params: {
@@ -172,7 +161,15 @@ const routesForSavingsModals = {
     },
     screen: WithdrawModal,
   },
+  ...(isNativeStackAvailable && {
+    [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: {
+      navigationOptions: overlayExpandedPreset,
+      screen: ExpandedAssetScreenWithData,
+    },
+  }),
 };
+
+const MainNavigator = createStackNavigator(routesForMainNavigator);
 
 const AddCashFlowNavigator = createStackNavigator(routesForAddCash, {
   initialRouteName: Routes.ADD_CASH_SHEET,
@@ -183,18 +180,6 @@ const routesForNativeStack = {
   [Routes.SEND_SHEET_NAVIGATOR]: SendFlowNavigator,
   [Routes.ADD_CASH_SCREEN_NAVIGATOR]: AddCashFlowNavigator,
 };
-
-const routesForMainNavigatorWrapper = {
-  [Routes.MAIN_NAVIGATOR]: MainNavigator,
-  ...routesForSavingsModals,
-};
-
-const MainNavigationWrapper = createStackNavigator(
-  routesForMainNavigatorWrapper,
-  {
-    initialRouteName: Routes.MAIN_NAVIGATOR,
-  }
-);
 
 const routesForNativeStackFallback = {
   [Routes.ADD_CASH_SHEET]: {
@@ -229,7 +214,6 @@ const routesForNativeStackFallback = {
     },
     screen: SendSheet,
   },
-  ...routesForSavingsModals,
 };
 
 const NativeStackFallback = createStackNavigator(routesForNativeStackFallback, {
@@ -242,9 +226,7 @@ const NativeStackFallback = createStackNavigator(routesForNativeStackFallback, {
   mode: 'modal',
 });
 
-const Stack = isNativeStackAvailable
-  ? MainNavigationWrapper
-  : NativeStackFallback;
+const Stack = isNativeStackAvailable ? MainNavigator : NativeStackFallback;
 
 const withCustomStack = screen => ({
   navigationOptions: { customStack: true, onAppear: null },
