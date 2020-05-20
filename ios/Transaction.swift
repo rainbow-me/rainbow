@@ -31,6 +31,8 @@
 import Foundation
 
 @objcMembers class Transaction: NSObject {
+  var transactionDescription: String!
+  var title: String!
   var type: String!
   var minedAt: Date!
   var pending: Bool = false
@@ -45,6 +47,6 @@ import Foundation
   var to: String!
   
   func isSwapped() -> Bool {
-    return type == "trade" && status.lowercased() == "sent"
+    return status == "swapped"
   }
 }
