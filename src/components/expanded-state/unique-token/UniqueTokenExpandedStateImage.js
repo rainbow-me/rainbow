@@ -12,7 +12,7 @@ const paddingHorizontal = 19;
 const UniqueTokenExpandedStateImage = ({ asset }) => {
   const { width } = useDimensions();
 
-  const imageUrl = asset.image_preview_url; //.replace('s250', `s${width * scale}`);
+  const imageUrl = asset.image_preview_url;
   const imageDimensions = useSelector(
     ({ imageDimensionsCache }) => imageDimensionsCache[imageUrl]
   );
@@ -51,4 +51,4 @@ UniqueTokenExpandedStateImage.propTypes = {
   asset: PropTypes.object,
 };
 
-export default UniqueTokenExpandedStateImage;//magicMemo(, 'asset');
+export default magicMemo(UniqueTokenExpandedStateImage, 'asset');

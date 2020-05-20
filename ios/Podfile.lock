@@ -1,5 +1,5 @@
 PODS:
-  - Analytics (3.8.0)
+  - Analytics (3.8.1)
   - Base64 (1.1.2)
   - boost-for-react-native (1.63.0)
   - BVLinearGradient (2.5.6):
@@ -129,7 +129,7 @@ PODS:
     - GoogleUtilities/Network (~> 6.0)
     - "GoogleUtilities/NSData+zlib (~> 6.0)"
     - nanopb (= 0.3.9011)
-  - GoogleDataTransport (6.0.0)
+  - GoogleDataTransport (6.1.1)
   - GoogleDataTransportCCTSupport (3.0.0):
     - GoogleDataTransport (~> 6.0)
     - nanopb (~> 0.3.901)
@@ -180,12 +180,9 @@ PODS:
     - RNPermissions
   - Permission-FaceID (2.1.3):
     - RNPermissions
-<<<<<<< HEAD
   - pop (1.0.12)
-=======
   - PromisesObjC (1.2.8)
->>>>>>> 5b0cb3e8... ✨️ New Asset and NFT expanded states (using cool-modals)
-  - Protobuf (3.11.4)
+  - Protobuf (3.12.0)
   - RCTRequired (0.62.2)
   - RCTTypeSafety (0.62.2):
     - FBLazyVector (= 0.62.2)
@@ -500,21 +497,14 @@ PODS:
     - React
   - RNSVG (12.1.0):
     - React
-<<<<<<< HEAD
   - RNTooltips (1.0.2):
     - pop (~> 1.0)
     - React
     - SexyTooltip
-  - SDWebImage (5.7.0):
-    - SDWebImage/Core (= 5.7.0)
-  - SDWebImage/Core (5.7.0)
-  - SDWebImageWebPCoder (0.2.5):
-=======
-  - SDWebImage (5.7.3):
-    - SDWebImage/Core (= 5.7.3)
-  - SDWebImage/Core (5.7.3)
+  - SDWebImage (5.8.0):
+    - SDWebImage/Core (= 5.8.0)
+  - SDWebImage/Core (5.8.0)
   - SDWebImageWebPCoder (0.4.1):
->>>>>>> 5b0cb3e8... ✨️ New Asset and NFT expanded states (using cool-modals)
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.5)
   - Sentry (4.4.3):
@@ -524,7 +514,7 @@ PODS:
     - pop (~> 1.0)
   - SRSRadialGradient (1.0.6):
     - React
-  - SSZipArchive (2.2.2)
+  - SSZipArchive (2.2.3)
   - TcpSockets (3.3.2):
     - CocoaAsyncSocket
     - React
@@ -665,11 +655,8 @@ SPEC REPOS:
     - libwebp
     - nanopb
     - OpenSSL-Universal
-<<<<<<< HEAD
     - pop
-=======
     - PromisesObjC
->>>>>>> 5b0cb3e8... ✨️ New Asset and NFT expanded states (using cool-modals)
     - Protobuf
     - SDWebImage
     - SDWebImageWebPCoder
@@ -831,7 +818,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/osdnk/PanModal
 
 SPEC CHECKSUMS:
-  Analytics: fcf79ebc393a7d77befb8d43ce296353ba9ede3d
+  Analytics: 45b1faec509367a99c7b788cc5389180c43fe3fc
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
@@ -862,7 +849,7 @@ SPEC CHECKSUMS:
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   GoogleAppMeasurement: dfe55efa543e899d906309eaaac6ca26d249862f
-  GoogleDataTransport: 061fe7d9b476710e3cd8ea51e8e07d8b67c2b420
+  GoogleDataTransport: ad884314b81cdb808fb1d23787b367ff8da4e28a
   GoogleDataTransportCCTSupport: 0f39025e8cf51f168711bd3fb773938d7e62ddb5
   GoogleUtilities: 39530bc0ad980530298e9c4af8549e991fd033b1
   JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
@@ -872,16 +859,11 @@ SPEC CHECKSUMS:
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
-<<<<<<< HEAD
-  Permission-Camera: 01583e5864cb99d89cbfb3ec62cb83c78d8d227a
-  Permission-FaceID: fafd8c4809ad5be3547e1b66c2ce444c5abd92a6
-  pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
-=======
   Permission-Camera: cbbed5d193641837e9a32592dd71292eabd11827
   Permission-FaceID: bb11b645251e0986cbbcfdd7e258720e463ff692
+  pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
->>>>>>> 5b0cb3e8... ✨️ New Asset and NFT expanded states (using cool-modals)
-  Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
+  Protobuf: 2793fcd0622a00b546c60e7cbbcc493e043e9bb9
   RCTRequired: cec6a34b3ac8a9915c37e7e4ad3aa74726ce4035
   RCTTypeSafety: 93006131180074cffa227a1075802c89a49dd4ce
   React: 29a8b1a02bd764fb7644ef04019270849b9a7ac3
@@ -937,18 +919,13 @@ SPEC CHECKSUMS:
   RNSentry: 370623102247ebea20191b5fb549ecc7a275b324
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
-<<<<<<< HEAD
   RNTooltips: e13180e4339e2a85daabd09507f62a5a32d3dc8a
-  SDWebImage: a99471f452bdfa0ca52ddf5b1adf2b61cab1d1eb
-  SDWebImageWebPCoder: 947093edd1349d820c40afbd9f42acb6cdecd987
-=======
-  SDWebImage: 97351f6582ceca541ea294ba66a1fcb342a331c2
+  SDWebImage: 84000f962cbfa70c07f19d2234cbfcf5d779b5dc
   SDWebImageWebPCoder: 36f8f47bd9879a8aea6044765c1351120fd8e3a8
->>>>>>> 5b0cb3e8... ✨️ New Asset and NFT expanded states (using cool-modals)
   Sentry: 14bdd673870e8cf64932b149fad5bbbf39a9b390
   SexyTooltip: e243da5a858c7160141cf35786a4033669d1efca
   SRSRadialGradient: 77bcb1ae812d0c77560e54ed9e52166df032db1d
-  SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
+  SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: 3ebccbdd559724312790e7742142d062476b698e

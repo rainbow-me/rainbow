@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Animated, View } from 'react-native';
 import { useTimeout } from '../../hooks';
 import { position } from '../../styles';

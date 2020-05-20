@@ -1,7 +1,6 @@
 import { upperCase, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, onlyUpdateForKeys, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../styles';
 import { magicMemo } from '../utils';

@@ -18,7 +18,7 @@ const springConfig = {
   stiffness: 121.6,
 };
 
-const Toast = styled(RowWithMargins).attrs({
+const Container = styled(RowWithMargins).attrs({
   component: Centered,
   margin: 5,
   self: 'center',
@@ -32,7 +32,7 @@ const Toast = styled(RowWithMargins).attrs({
   z-index: 100;
 `;
 
-export default function({
+export default function Toast({
   children,
   color = colors.dark,
   distance = 60,
@@ -57,7 +57,7 @@ export default function({
 
   return (
     <Animated.View style={{ opacity, transform: [{ translateY }] }}>
-      <Toast color={color} insets={insets}>
+      <Container color={color} insets={insets}>
         {children || (
           <Fragment>
             {icon && <Icon color={textColor} marginTop={3} name={icon} />}
@@ -66,7 +66,7 @@ export default function({
             </Text>
           </Fragment>
         )}
-      </Toast>
+      </Container>
     </Animated.View>
   );
 }

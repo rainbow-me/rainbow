@@ -141,7 +141,7 @@ const { BEGAN, ACTIVE, CANCELLED, END, FAILED, UNDETERMINED } = State;
 const width = deviceUtils.dimensions.width;
 const height = 170;
 const chartPadding = 16;
-
+const viewBox = `2 ${height + chartPadding - width} ${width} ${width}`;
 const flipY = { transform: [{ scaleX: 1 }, { scaleY: -1 }] };
 
 const pickImportantPoints = (array, indexInterval) => {
@@ -719,7 +719,7 @@ export default class Chart extends PureComponent {
                 height={height}
                 preserveAspectRatio="none"
                 style={flipY}
-                viewBox={`2 ${height + chartPadding - width} ${width} ${width}`}
+                viewBox={viewBox}
                 width={width + 2}
               >
                 {this.state.animatedPath}

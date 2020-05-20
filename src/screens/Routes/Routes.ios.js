@@ -68,7 +68,7 @@ const importSeedPhraseFlowRoutes = {
     navigationOptions: sheetPresetWithTransitions,
     screen: ImportSeedPhraseSheetWrapper,
   },
-  [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: {
+  [Routes.MODAL_SCREEN]: {
     navigationOptions: overlayExpandedPreset,
     screen: ModalScreen,
   },

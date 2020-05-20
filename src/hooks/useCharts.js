@@ -1,5 +1,3 @@
-// import { get, reverse } from 'lodash';
-// import { useCallback, useEffect, useMemo } from 'react';
 import { get } from 'lodash';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,11 +25,6 @@ export default function useCharts(asset) {
       !isNewValueForObjectPaths(...props, ['chartType', 'fetchingCharts'])
   );
   const chart = charts?.[exchangeAddress]?.[chartType];
-
-  // const chart = useMemo(() => reverse(get(charts, `${asset.address}`, [])), [
-  //   asset.address,
-  //   charts,
-  // ]);
 
   const fetchFallbackCharts = useCallback(
     async () =>

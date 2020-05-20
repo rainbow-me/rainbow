@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Fragment, useRef } from 'react';
+import React, { Fragment, useMemo, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { colors } from '../../styles';
 import { Icon } from '../icons';
@@ -42,6 +42,10 @@ const ValueText = ({ change, direction, headerText, value }) => {
     transitionRef.current.animateNextTransition();
   }
 
+  const formattedChange = useMemo(() => `${Math.abs(Number(change))}%`, [
+    change,
+  ]);
+
   return (
     <Transitioning.View
       height={85}
@@ -69,7 +73,7 @@ const ValueText = ({ change, direction, headerText, value }) => {
               size="large"
               weight="bold"
             >
-              {Math.abs(Number(change))}%
+              {formattedChange}
             </Text>
           </RowWithMargins>
         </Fragment>

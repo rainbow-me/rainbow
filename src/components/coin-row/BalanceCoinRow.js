@@ -97,7 +97,6 @@ TopRow.propTypes = {
 
 const BalanceCoinRow = ({
   containerStyles,
-  // firstCoinRowMarginTop,
   isCoinListEdited,
   isExpandedState,
   isFirstCoinRow,
