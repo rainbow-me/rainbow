@@ -2,7 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import GraphemeSplitter from 'grapheme-splitter';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { Text } from 'react-native';
+import { Platform, Text } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useNavigation } from 'react-navigation-hooks';
 import { compose, withHandlers } from 'recompact';
@@ -89,7 +89,10 @@ const ProfileMasthead = ({
           style={{ ...borders.buildCircleAsObject(85) }}
         />
       )}
-      <CopyTooltip textToCopy={accountENS || accountAddress} tooltipText="Copy">
+      <CopyTooltip
+        textToCopy={accountENS || accountAddress}
+        tooltipText={Platform.OS === 'android' ? 'Address Copied' : 'Copy'}
+      >
         <AddressAbbreviation address={accountENS || accountAddress} />
       </CopyTooltip>
       <RowWithMargins align="center" margin={19}>

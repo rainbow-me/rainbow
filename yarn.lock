@@ -9364,6 +9364,11 @@ react-native-tooltip@marcosrdz/react-native-tooltip#e0e88d212b5b7f350e5eabba87f5
   version "5.2.1"
   resolved "https://codeload.github.com/marcosrdz/react-native-tooltip/tar.gz/e0e88d212b5b7f350e5eabba87f588a32e0f2590"
 
+react-native-tooltips@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-tooltips/-/react-native-tooltips-1.0.2.tgz#51f8f0e5e49f1a1999a37f257d7d04c0c5d69593"
+  integrity sha512-4JDI9fjWmCeiGzSGp5FFEPRYCX/kfawd+IU9LEIN8oICV5AWowF6xmCt0Qtxiqh8Ek4y0nF1JLSO3HeVXGXPAQ==
+
 react-native-udp@^2.6.1:
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/react-native-udp/-/react-native-udp-2.7.0.tgz#d04c5100fcbff343f8a2bf35a3025743d8960f93"

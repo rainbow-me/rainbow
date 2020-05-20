@@ -149,6 +149,7 @@
     "react-native-tcp": "^3.3.2",
     "react-native-text-input-mask": "^2.0.0",
     "react-native-tooltip": "marcosrdz/react-native-tooltip#e0e88d212b5b7f350e5eabba87f588a32e0f2590",
+    "react-native-tooltips": "^1.0.2",
     "react-native-udp": "^2.6.1",
     "react-native-version-number": "^0.3.6",
     "react-navigation": "^4.3.5",
