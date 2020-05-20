@@ -40,6 +40,33 @@ const EditButton = styled(ButtonPressAnimation).attrs({ scaleTo: 0.96 })`
   top: 6px;
 `;
 
+const getWalletRowCount = wallets => {
+  let count = 0;
+  if (wallets) {
+    Object.keys(wallets).forEach(key => {
+      // Addresses
+      count += wallets[key].addresses.filter(account => account.visible).length;
+    });
+  }
+  return count;
+};
+
+const getAddAccountRowCount = wallets => {
+  let count = 0;
+  if (wallets) {
+    Object.keys(wallets).forEach(key => {
+      count +=
+        wallets[key].type === WalletTypes.mnemonic ||
+        wallets[key].type === WalletTypes.seed;
+    });
+  }
+  // Always add space for create wallet row
+  if (count === 0) {
+    count = 1;
+  }
+  return count;
+};
+
 const ChangeWalletSheet = () => {
   const { wallets, selected: selectedWallet } = useWallets();
   const [editMode, setEditMode] = useState(false);
@@ -50,34 +77,6 @@ const ChangeWalletSheet = () => {
   const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames(wallets);
   const creatingWallet = useRef();
-
-  const getWalletRowCount = wallets => {
-    let count = 0;
-    if (wallets) {
-      Object.keys(wallets).forEach(key => {
-        // Addresses
-        count += wallets[key].addresses.filter(account => account.visible)
-          .length;
-      });
-    }
-    return count;
-  };
-
-  const getAddAccountRowCount = wallets => {
-    let count = 0;
-    if (wallets) {
-      Object.keys(wallets).forEach(key => {
-        count +=
-          wallets[key].type === WalletTypes.mnemonic ||
-          wallets[key].type === WalletTypes.seed;
-      });
-    }
-    // Always add space for create wallet row
-    if (count === 0) {
-      count = 1;
-    }
-    return count;
-  };
 
   const walletRowCount = getWalletRowCount(wallets);
   const addAccountRowCount = getAddAccountRowCount(wallets);
