@@ -10,7 +10,7 @@ import {
 } from 'recompact';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { withImageDimensionsCache } from '../../hoc';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { colors } from '../../styles';
 import {
   deviceUtils,

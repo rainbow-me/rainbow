@@ -3,29 +3,28 @@ import React from 'react';
 import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
-import { ExchangeModalNavigator } from '../../navigation';
+import AddCashSheet from '../screens/AddCashSheet';
+import AvatarBuilder from '../screens/AvatarBuilder';
+import ChangeWalletModal from '../screens/ChangeWalletModal';
+import ExampleScreen from '../screens/ExampleScreen';
+import ExpandedAssetScreenWithData from '../screens/ExpandedAssetScreenWithData';
+import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
+import ProfileScreen from '../screens/ProfileScreen';
+import QRScannerScreenWithData from '../screens/QRScannerScreenWithData';
+import ReceiveModal from '../screens/ReceiveModal';
+import SendSheet from '../screens/SendSheet';
+import SettingsModal from '../screens/SettingsModal';
+import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
+import WalletConnectConfirmationModal from '../screens/WalletConnectConfirmationModal';
+import WalletScreen from '../screens/WalletScreen';
+import { deviceUtils } from '../utils';
 import {
   backgroundPreset,
   emojiPreset,
   expandedPreset,
   overlayExpandedPreset,
   sheetPreset,
-} from '../../navigation/transitions/effects';
-import { deviceUtils } from '../../utils';
-import AddCashSheet from '../AddCashSheet';
-import AvatarBuilder from '../AvatarBuilder';
-import ChangeWalletModal from '../ChangeWalletModal';
-import ExampleScreen from '../ExampleScreen';
-import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
-import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
-import ProfileScreen from '../ProfileScreen';
-import QRScannerScreenWithData from '../QRScannerScreenWithData';
-import ReceiveModal from '../ReceiveModal';
-import SendSheet from '../SendSheet';
-import SettingsModal from '../SettingsModal';
-import TransactionConfirmationScreen from '../TransactionConfirmationScreen';
-import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
-import WalletScreen from '../WalletScreen';
+} from './effects';
 import {
   createStackNavigator,
   exchangePresetWithTransitions,
@@ -36,6 +35,7 @@ import {
 } from './helpers';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
+import { ExchangeModalNavigator } from './index';
 
 const routesForSwipeStack = {
   [Routes.PROFILE_SCREEN]: ProfileScreen,

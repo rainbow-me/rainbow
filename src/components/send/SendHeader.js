@@ -7,7 +7,7 @@ import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withNeverRerender, withSelectedInput } from '../../hoc';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { colors, padding } from '../../styles';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import Divider from '../Divider';

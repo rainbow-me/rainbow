@@ -23,10 +23,10 @@ import {
   useUniswapAssets,
   useUniswapAssetsInWallet,
 } from '../hooks';
+import Routes from '../navigation/routesNames';
 import { position } from '../styles';
 import { filterList, filterScams } from '../utils/search';
 import { exchangeModalBorderRadius } from './ExchangeModal';
-import Routes from './Routes/routesNames';
 
 const headerlessSection = data => [{ data, title: '' }];
 

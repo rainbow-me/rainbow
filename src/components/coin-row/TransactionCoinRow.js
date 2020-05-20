@@ -8,7 +8,7 @@ import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import { withAccountSettings } from '../../hoc';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';

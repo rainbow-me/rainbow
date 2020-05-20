@@ -29,10 +29,10 @@ import {
   usePrevious,
   useTimeout,
 } from '../hooks';
-import { sheetVerticalOffset } from '../navigation/transitions/effects';
+import { sheetVerticalOffset } from '../navigation/effects';
+import Routes from '../navigation/routesNames';
 import { borders, colors, padding, shadow } from '../styles';
 import { logger } from '../utils';
-import Routes from './Routes/routesNames';
 
 const keyboardVerticalOffset =
   Platform.OS === 'android'

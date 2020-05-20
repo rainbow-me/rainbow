@@ -10,7 +10,7 @@ import {
   useCoinListEdited,
   useRequests,
 } from '../../hooks';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { colors } from '../../styles';
 import Avatar from '../Avatar';
 import { OpacityToggler } from '../animations';

@@ -44,10 +44,10 @@ import {
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { Navigation } from './navigation';
+import RoutesComponent from './navigation/Routes';
+import Routes from './navigation/routesNames';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
-import RoutesComponent from './screens/Routes';
-import Routes from './screens/Routes/routesNames';
 import { parseQueryParams } from './utils';
 
 const WALLETCONNECT_SYNC_DELAY = 500;

@@ -3,7 +3,7 @@ import React, { useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import { calculateAPY } from '../../helpers/savings';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { colors, fonts, padding } from '../../styles';
 import Divider from '../Divider';
 import { CoinIcon } from '../coin-icon';

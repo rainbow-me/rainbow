@@ -12,7 +12,7 @@ import {
   formatSavingsAmount,
 } from '../../helpers/savings';
 import { useDimensions } from '../../hooks';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { colors, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';

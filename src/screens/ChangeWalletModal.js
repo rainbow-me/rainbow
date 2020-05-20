@@ -6,6 +6,7 @@ import WalletList from '../components/change-wallet/WalletList';
 import { Modal } from '../components/modal';
 import WalletTypes from '../helpers/walletTypes';
 import { useAccountSettings, useInitializeWallet, useWallets } from '../hooks';
+import Routes from '../navigation/routesNames';
 import {
   addressSetSelected,
   createAccountForWallet,
@@ -13,7 +14,6 @@ import {
   walletsUpdate,
 } from '../redux/wallets';
 import { logger } from '../utils';
-import Routes from './Routes/routesNames';
 
 const walletRowHeight = 54;
 

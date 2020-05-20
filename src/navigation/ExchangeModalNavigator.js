@@ -4,11 +4,11 @@ import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { withBlockedHorizontalSwipe } from '../hoc';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ExpandedAssetScreenWithData from '../screens/ExpandedAssetScreenWithData';
-import { createStackNavigator } from '../screens/Routes/helpers';
-import Routes from '../screens/Routes/routesNames';
 import SwapModal from '../screens/SwapModal';
 import { deviceUtils } from '../utils';
-import { swapDetailsPreset } from './transitions/effects';
+import { swapDetailsPreset } from './effects';
+import { createStackNavigator } from './helpers';
+import Routes from './routesNames';
 
 const ExchangeModalTabPosition = new Value(0);
 

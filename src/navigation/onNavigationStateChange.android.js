@@ -2,9 +2,9 @@ import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 import { StatusBar } from 'react-native';
 import { NavigationActions } from 'react-navigation';
-import { Navigation } from '../../navigation';
-import { sentryUtils } from '../../utils';
+import { sentryUtils } from '../utils';
 import Routes from './routesNames';
+import { Navigation } from './index';
 
 export function onNavigationStateChange(prevState, currentState) {
   const { params, routeName } = Navigation.getActiveRoute(currentState);

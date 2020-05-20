@@ -1,13 +1,13 @@
 import { Platform } from 'react-native';
 import { createStackNavigator as oldCreateStackNavigator } from 'react-navigation-stack';
+import { updateTransitionProps } from '../redux/navigation';
+import store from '../redux/store';
 import {
   exchangePreset,
   expandedPreset,
   expandedPresetReverse,
   sheetPreset,
-} from '../../navigation/transitions/effects';
-import { updateTransitionProps } from '../../redux/navigation';
-import store from '../../redux/store';
+} from './effects';
 import Routes from './routesNames';
 
 export const onTransitionEnd = () =>

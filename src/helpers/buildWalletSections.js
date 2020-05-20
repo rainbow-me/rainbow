@@ -17,6 +17,7 @@ import {
   convertAmountToNativeDisplay,
   multiply,
 } from '../helpers/utilities';
+import Routes from '../navigation/routesNames';
 import {
   setHiddenCoins,
   setIsCoinListEdited,
@@ -24,7 +25,6 @@ import {
 } from '../redux/editOptions';
 import { setOpenSmallBalances } from '../redux/openStateSettings';
 import store from '../redux/store';
-import Routes from '../screens/Routes/routesNames';
 import { ethereumUtils } from '../utils';
 import {
   amountOfShowedCoins,

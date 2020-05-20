@@ -9,8 +9,8 @@ import {
   isMultiwalletAvailable,
 } from '../../config/experimental';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import Routes from '../../navigation/routesNames';
 import { removeRequest } from '../../redux/requests';
-import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';

@@ -1,7 +1,7 @@
 import React from 'react';
-import AddCashSheet from '../AddCashSheet';
-import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
-import SendSheet from '../SendSheet';
+import AddCashSheet from '../screens/AddCashSheet';
+import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
+import SendSheet from '../screens/SendSheet';
 
 export const appearListener = { current: null };
 export const setListener = listener => (appearListener.current = listener);

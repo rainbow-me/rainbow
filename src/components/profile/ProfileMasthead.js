@@ -11,7 +11,7 @@ import AvatarImageSource from '../../assets/avatar.png';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import { useAccountSettings, useClipboard } from '../../hooks';
 import { DEFAULT_WALLET_NAME } from '../../model/wallet';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { borders, colors } from '../../styles';
 import { abbreviations } from '../../utils';
 import Divider from '../Divider';

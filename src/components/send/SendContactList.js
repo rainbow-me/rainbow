@@ -9,8 +9,8 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import { withSelectedInput } from '../../hoc';
-import { sheetVerticalOffset } from '../../navigation/transitions/effects';
-import Routes from '../../screens/Routes/routesNames';
+import { sheetVerticalOffset } from '../../navigation/effects';
+import Routes from '../../navigation/routesNames';
 import { deviceUtils } from '../../utils';
 import { filterList } from '../../utils/search';
 import { FlyInAnimation } from '../animations';

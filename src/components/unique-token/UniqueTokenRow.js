@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import WalletTypes from '../../helpers/walletTypes';
 import { useWallets } from '../../hooks';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { position } from '../../styles';
 import { deviceUtils, isNewValueForPath } from '../../utils';
 import { Row } from '../layout';

@@ -5,7 +5,7 @@ import { Alert } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import WalletTypes from '../../helpers/walletTypes';
 import { useAccountAssets, useWallets } from '../../hooks';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { ethereumUtils } from '../../utils';
 import FloatingPanels from './FloatingPanels';
 import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';

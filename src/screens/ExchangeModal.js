@@ -39,12 +39,12 @@ import {
   useUniswapMarketDetails,
 } from '../hooks';
 import { loadWallet } from '../model/wallet';
+import Routes from '../navigation/routesNames';
 import { executeRap } from '../raps/common';
 import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import { backgroundTask, isNewValueForPath, logger } from '../utils';
-import Routes from './Routes/routesNames';
 
 export const exchangeModalBorderRadius = 30;
 

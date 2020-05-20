@@ -5,7 +5,7 @@ import { useNavigation } from 'react-navigation-hooks';
 import { compose } from 'recompact';
 import { onlyUpdateForKeys } from 'recompose';
 import { withFabSelection, withTransitionProps } from '../../hoc';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { colors } from '../../styles';
 import { Icon } from '../icons';
 import { Centered } from '../layout';

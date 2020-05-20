@@ -4,8 +4,8 @@ import { Value } from 'react-native-reanimated';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
 import DepositModal from '../screens/DepositModal';
-import Routes from '../screens/Routes/routesNames';
 import { deviceUtils } from '../utils';
+import Routes from './routesNames';
 
 const ExchangeModalTabPosition = new Value(0);
 

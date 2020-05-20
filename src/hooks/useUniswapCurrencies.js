@@ -6,7 +6,7 @@ import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import { multiply } from '../helpers/utilities';
-import Routes from '../screens/Routes/routesNames';
+import Routes from '../navigation/routesNames';
 import { ethereumUtils, isNewValueForPath, logger } from '../utils';
 import useAccountAssets from './useAccountAssets';
 import usePrevious from './usePrevious';

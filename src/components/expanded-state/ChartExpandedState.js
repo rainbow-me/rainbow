@@ -5,7 +5,7 @@ import { InteractionManager } from 'react-native';
 import styled from 'styled-components/primitives';
 import { chartExpandedAvailable } from '../../config/experimental';
 import { useCharts } from '../../hooks';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import Divider from '../Divider';

@@ -14,9 +14,9 @@ import {
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
 } from '../hoc';
+import Routes from '../navigation/routesNames';
 import { addressUtils } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
-import Routes from './Routes/routesNames';
 
 class QRScannerScreenWithData extends Component {
   static propTypes = {

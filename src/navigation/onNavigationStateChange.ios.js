@@ -2,11 +2,11 @@ import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 import { StatusBar } from 'react-native';
 import { NavigationActions } from 'react-navigation';
-import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import { Navigation } from '../../navigation';
-import { expandedPreset } from '../../navigation/transitions/effects';
-import { sentryUtils } from '../../utils';
+import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { sentryUtils } from '../utils';
+import { expandedPreset } from './effects';
 import Routes from './routesNames';
+import { Navigation } from './index';
 
 const routesForNativeStackFallback = {
   [Routes.ADD_CASH_SHEET]: true,

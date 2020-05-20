@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
-import { swapDetailsTransitionPosition } from '../../navigation/transitions/effects';
+import { swapDetailsTransitionPosition } from '../../navigation/effects';
 import { colors, padding, position } from '../../styles';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { TouchableScale } from '../animations';

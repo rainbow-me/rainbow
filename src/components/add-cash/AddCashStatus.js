@@ -14,8 +14,8 @@ import {
   WYRE_ORDER_STATUS_TYPES,
 } from '../../helpers/wyreStatusTypes';
 import { useDimensions, usePrevious, useTimeout } from '../../hooks';
+import Routes from '../../navigation/routesNames';
 import { getErrorOverride } from '../../references/wyre';
-import Routes from '../../screens/Routes/routesNames';
 import { position } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { FloatingEmojisTapper } from '../floating-emojis';

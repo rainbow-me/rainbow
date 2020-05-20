@@ -25,8 +25,8 @@ import {
   useRequests,
   useWallets,
 } from '../hooks';
+import Routes from '../navigation/routesNames';
 import { colors, position } from '../styles';
-import Routes from './Routes/routesNames';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 

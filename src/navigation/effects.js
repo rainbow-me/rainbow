@@ -1,11 +1,11 @@
 import React from 'react';
 import { Animated, StatusBar, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import Header from '../../components/header/Header';
-import AvatarCircle from '../../components/profile/AvatarCircle';
-import { colors } from '../../styles';
-import { deviceUtils } from '../../utils';
-import { transformOrigin } from './transformOriginAnimated';
+import Header from '../components/header/Header';
+import AvatarCircle from '../components/profile/AvatarCircle';
+import { transformOrigin } from '../helpers/transformOriginAnimated';
+import { colors } from '../styles';
+import { deviceUtils } from '../utils';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;

@@ -9,7 +9,7 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import { sheetVerticalOffset } from '../../navigation/transitions/effects';
+import { sheetVerticalOffset } from '../../navigation/effects';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';

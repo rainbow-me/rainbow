@@ -43,9 +43,9 @@ import {
   useTransactionConfirmation,
 } from '../hooks';
 import { sendTransaction } from '../model/wallet';
+import Routes from '../navigation/routesNames';
 import { borders, colors } from '../styles';
 import { deviceUtils, gasUtils } from '../utils';
-import Routes from './Routes/routesNames';
 
 const sheetHeight = deviceUtils.dimensions.height - 10;
 

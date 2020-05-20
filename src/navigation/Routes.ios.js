@@ -4,8 +4,24 @@ import { StatusBar } from 'react-native';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
-import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import { ExchangeModalNavigator, SavingModalNavigator } from '../../navigation';
+import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import AddCashSheet from '../screens/AddCashSheet';
+import AvatarBuilder from '../screens/AvatarBuilder';
+import ChangeWalletModal from '../screens/ChangeWalletModal';
+import ExampleScreen from '../screens/ExampleScreen';
+import ExpandedAssetScreenWithData from '../screens/ExpandedAssetScreenWithData';
+import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
+import ProfileScreen from '../screens/ProfileScreen';
+import QRScannerScreenWithData from '../screens/QRScannerScreenWithData';
+import ReceiveModal from '../screens/ReceiveModal';
+import SavingsSheet from '../screens/SavingsSheet';
+import SendSheet from '../screens/SendSheet';
+import SettingsModal from '../screens/SettingsModal';
+import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
+import WalletConnectConfirmationModal from '../screens/WalletConnectConfirmationModal';
+import WalletScreen from '../screens/WalletScreen';
+import WithdrawModal from '../screens/WithdrawModal';
+import { deviceUtils } from '../utils';
 import {
   backgroundPreset,
   emojiPreset,
@@ -13,24 +29,7 @@ import {
   overlayExpandedPreset,
   savingsPreset,
   sheetPreset,
-} from '../../navigation/transitions/effects';
-import { deviceUtils } from '../../utils';
-import AddCashSheet from '../AddCashSheet';
-import AvatarBuilder from '../AvatarBuilder';
-import ChangeWalletModal from '../ChangeWalletModal';
-import ExampleScreen from '../ExampleScreen';
-import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
-import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
-import ProfileScreen from '../ProfileScreen';
-import QRScannerScreenWithData from '../QRScannerScreenWithData';
-import ReceiveModal from '../ReceiveModal';
-import SavingsSheet from '../SavingsSheet';
-import SendSheet from '../SendSheet';
-import SettingsModal from '../SettingsModal';
-import TransactionConfirmationScreen from '../TransactionConfirmationScreen';
-import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
-import WalletScreen from '../WalletScreen';
-import WithdrawModal from '../WithdrawModal';
+} from './effects';
 import {
   createStackNavigator,
   exchangePresetWithTransitions,
@@ -45,9 +44,10 @@ import {
   appearListener,
   ImportSeedPhraseSheetWrapper,
   SendSheetWrapper,
-} from './nativeStackWrappers';
-import { onNavigationStateChange } from './onNavigationStateChange.ios';
+} from './nativeStackHelpers';
+import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
+import { ExchangeModalNavigator, SavingModalNavigator } from './index';
 
 const routesForSwipeStack = {
   [Routes.PROFILE_SCREEN]: ProfileScreen,
