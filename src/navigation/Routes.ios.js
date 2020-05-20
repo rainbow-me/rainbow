@@ -2,8 +2,9 @@ import { omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
+// import { ScrollPager } from 'react-native-tab-view';
 import { createAppContainer } from 'react-navigation';
-import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
@@ -60,6 +61,7 @@ const SwipeStack = createMaterialTopTabNavigator(routesForSwipeStack, {
   headerMode: 'none',
   initialLayout: deviceUtils.dimensions,
   initialRouteName: Routes.WALLET_SCREEN,
+  // TODO renderPager: props => <ScrollPager {...props} />,
   tabBarComponent: null,
 });
 
