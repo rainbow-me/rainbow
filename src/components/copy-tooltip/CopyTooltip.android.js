@@ -1,6 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import PropTypes from 'prop-types';
-import React, { useRef, useState } from 'react';
+import React, { Fragment, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import Tooltips from 'react-native-tooltips';
 import { colors } from '../../styles';
@@ -11,7 +11,7 @@ const CopyTooltip = ({ children, textToCopy, tooltipText }) => {
   const target = useRef();
 
   return (
-    <>
+    <Fragment>
       <View ref={parent}>
         <TouchableOpacity
           ref={target}
@@ -39,7 +39,7 @@ const CopyTooltip = ({ children, textToCopy, tooltipText }) => {
         corner={100}
         position={3}
       />
-    </>
+    </Fragment>
   );
 };
 
