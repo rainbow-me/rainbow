@@ -8,12 +8,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
-import { Alert } from '../components/alerts';
 import { Button } from '../components/buttons';
 import { Icon } from '../components/icons';
 import { Input } from '../components/inputs';

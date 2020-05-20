@@ -25,7 +25,7 @@ const FirstLetter = styled(Text)`
 
 const ProfileAction = ({
   accountColor,
-  accountEmoji,
+  accountSymbol,
   onPress,
   overlayStyles,
 }) => {
@@ -57,7 +57,7 @@ const ProfileAction = ({
         shouldRasterizeIOS
       >
         <AvatarCircle backgroundColor={colors.avatarColor[accountColor]}>
-          <FirstLetter>{accountEmoji}</FirstLetter>
+          <FirstLetter>{accountSymbol}</FirstLetter>
           {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
         </AvatarCircle>
       </ShadowStack>
@@ -67,14 +67,14 @@ const ProfileAction = ({
 
 ProfileAction.propTypes = {
   accountColor: PropTypes.number,
-  accountEmoji: PropTypes.string,
+  accountSymbol: PropTypes.string,
   onPress: PropTypes.func,
   overlayStyles: PropTypes.bool,
 };
 
 ProfileAction.defaultProps = {
   accountColor: 0,
-  accountEmoji: '🤔',
+  accountSymbol: '🤔',
 };
 
 export default ProfileAction;

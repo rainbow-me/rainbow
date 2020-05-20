@@ -34,7 +34,7 @@ export default function useAccountProfile() {
 
   const labelOrAccountName =
     accountName === label ? toUpper(accountName) : label;
-  const accountEmoji = new GraphemeSplitter().splitGraphemes(
+  const accountSymbol = new GraphemeSplitter().splitGraphemes(
     labelOrAccountName || toUpper(accountENS) || `${index + 1}`
   )[0];
   const accountColor = color;
@@ -42,8 +42,8 @@ export default function useAccountProfile() {
   return {
     accountAddress,
     accountColor,
-    accountEmoji,
     accountENS,
     accountName,
+    accountSymbol,
   };
 }

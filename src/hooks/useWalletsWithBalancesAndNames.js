@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { get } from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { web3Provider } from '../handlers/web3';
 import networkInfo from '../helpers/networkInfo';
 import {
@@ -29,8 +29,8 @@ export const useWalletsWithBalancesAndNames = wallets => {
     };
   }, []);
 
-  useEffect(() => {
-    const fetchBalancesAndNames = async updatedWallets => {
+  const fetchBalancesAndNames = useCallback(
+    async updatedWallets => {
       const newWallets = {};
       const addressesThatNeedBalance = [];
       // Fetch ENS names and get list of addresses to get
@@ -87,8 +87,11 @@ export const useWalletsWithBalancesAndNames = wallets => {
         });
       });
       isMountedRef && setData(newWallets);
-    };
+    },
+    [accountAddress, network, wallets]
+  );
 
+  useEffect(() => {
     if (!wallets) return {};
 
     // We already have the data for the selected account
@@ -108,7 +111,14 @@ export const useWalletsWithBalancesAndNames = wallets => {
       );
     });
     isMountedRef && fetchBalancesAndNames(updatedWallets);
-  }, [accountAddress, accountENS, network, selectedAccountBalance, wallets]);
+  }, [
+    accountAddress,
+    accountENS,
+    fetchBalancesAndNames,
+    network,
+    selectedAccountBalance,
+    wallets,
+  ]);
 
   return data;
 };

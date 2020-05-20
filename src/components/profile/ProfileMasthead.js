@@ -52,7 +52,7 @@ const ProfileMasthead = ({
 }) => {
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
-  const { accountEmoji, accountColor, accountName } = useAccountProfile();
+  const { accountColor, accountSymbol, accountName } = useAccountProfile();
   const onPressAvatar = useCallback(() => {
     if (!isAvatarPickerAvailable) return;
     recyclerListRef.scrollToTop(true);
@@ -87,8 +87,8 @@ const ProfileMasthead = ({
     >
       <AvatarCircle
         onPress={onPressAvatar}
-        accountEmoji={accountEmoji}
         accountColor={accountColor}
+        accountSymbol={accountSymbol}
       />
       <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.9}>
         <Row>

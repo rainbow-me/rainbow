@@ -23,16 +23,6 @@ const sx = StyleSheet.create({
     flex: 1,
   },
 });
-const formatAddress = address => {
-  if (address) {
-    return abbreviations.address(
-      address,
-      4,
-      abbreviations.defaultNumCharsPerSection
-    );
-  }
-  return '';
-};
 
 const TransactionList = ({
   addCashAvailable,
@@ -56,8 +46,8 @@ const TransactionList = ({
   const { navigate } = useNavigation();
   const {
     accountAddress,
-    accountEmoji,
     accountColor,
+    accountSymbol,
     accountName,
   } = useAccountProfile();
 
@@ -201,10 +191,9 @@ const TransactionList = ({
       <NativeTransactionListView
         accountAddress={accountName}
         accountColor={colors.avatarColor[accountColor]}
-        accountName={accountEmoji}
+        accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         data={data}
-        emoji={accountEmoji}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
         onAccountNamePress={onAccountNamePress}
         onAddCashPress={onAddCashPress}
