@@ -153,7 +153,7 @@ export default class UnderlineField extends PureComponent {
             onFocus={this.onFocus}
             paddingRight={8}
             placeholder={placeholder}
-            refInput={this.handleRef}
+            ref={this.handleRef}
             size={fonts.size.h3}
             value={this.format(String(this.state.value || ''))}
             weight={fonts.weight.medium}
@@ -161,7 +161,6 @@ export default class UnderlineField extends PureComponent {
           {showFieldButton && (
             <Button
               backgroundColor={colors.sendScreen.brightBlue}
-              flex={0}
               onPress={this.handleButtonPress}
               size="small"
               type="pill"

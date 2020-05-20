@@ -84,7 +84,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
     updateGasPriceOption,
     updateTxFee,
   } = useGas();
-  const { contacts, removeContact, sortedContacts } = useContacts();
+  const { contacts, onRemoveContact, sortedContacts } = useContacts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     accountAddress,
@@ -397,21 +397,21 @@ const SendSheet = ({ setAppearListener, ...props }) => {
       <KeyboardAvoidingView behavior="padding">
         <Container align="center">
           <SendHeader
-            showAssetList={showAssetList}
-            setAppearListener={setAppearListener}
             contacts={contacts}
             isValidAddress={isValidAddress}
             onChangeAddressInput={onChangeInput}
             onPressPaste={sendUpdateRecipient}
             recipient={recipient}
-            removeContact={contact => dispatch(removeContact(contact))}
+            removeContact={onRemoveContact}
+            setAppearListener={setAppearListener}
+            showAssetList={showAssetList}
           />
           {showEmptyState && (
             <SendContactList
               allAssets={sortedContacts}
               currentInput={currentInput}
               onPressContact={sendUpdateRecipient}
-              removeContact={contact => dispatch(removeContact(contact))}
+              removeContact={onRemoveContact}
             />
           )}
           {showAssetList && (

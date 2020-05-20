@@ -1,9 +1,10 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { css } from 'styled-components/primitives';
+import styled, { css } from 'styled-components/primitives';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
-import { colors, padding } from '../../styles';
+import { colors, padding, position } from '../../styles';
+import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import Text from '../text/Text';
 import CoinName from './CoinName';
@@ -21,6 +22,14 @@ const containerSelectedStyles = css`
   height: ${selectedHeight};
 `;
 
+const TouchableContainer = styled(ButtonPressAnimation).attrs({
+  scaleTo: 0.96,
+})`
+  ${position.centered};
+  flex: 1;
+  padding-bottom: 4;
+`;
+
 const BottomRow = ({ balance, native, nativeCurrencySymbol }) => {
   const fiatValue =
     get(native, 'balance.display') || `${nativeCurrencySymbol}0.00`;
@@ -36,16 +45,9 @@ const TopRow = ({ name, selected }) => (
   <CoinName weight={selected ? 'semibold' : 'regular'}>{name}</CoinName>
 );
 
-const arePropsEqual = (prev, next) => {
-  const identifier = buildAssetUniqueIdentifier(prev.item);
-  const nextIdentifier = buildAssetUniqueIdentifier(next.item);
-
-  return identifier === nextIdentifier;
-};
-
-const SendCoinRow = React.memo(
+const SendCoinRow = magicMemo(
   ({ item, onPress, selected, ...props }) => (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+    <TouchableContainer onPress={onPress}>
       <CoinRow
         {...item}
         {...props}
@@ -54,9 +56,10 @@ const SendCoinRow = React.memo(
         selected={selected}
         topRowRender={TopRow}
       />
-    </ButtonPressAnimation>
+    </TouchableContainer>
   ),
-  arePropsEqual
+  'item',
+  buildAssetUniqueIdentifier
 );
 
 SendCoinRow.displayName = 'SendCoinRow';

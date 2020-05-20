@@ -1,7 +1,7 @@
 import React, { useImperativeHandle, useState } from 'react';
 import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
-import { Text } from '.';
+import Text from './Text';
 
 const Placeholder = styled(Text).attrs({
   color: colors.alpha(colors.blueGreyDark, 0.3),
@@ -12,13 +12,9 @@ const Placeholder = styled(Text).attrs({
 `;
 
 const PlaceholderText = (props, ref) => {
-  const [text, setText] = useState(' ');
-
-  useImperativeHandle(ref, () => ({
-    updateValue: newText => setText(newText),
-  }));
-
-  return <Placeholder ref={ref}>{text}</Placeholder>;
+  const [value, updateValue] = useState(' ');
+  useImperativeHandle(ref, () => ({ updateValue }));
+  return <Placeholder ref={ref}>{value}</Placeholder>;
 };
 
 export default React.forwardRef(PlaceholderText);

@@ -1,75 +1,54 @@
 import analytics from '@segment/analytics-react-native';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { compose, pure, withHandlers } from 'recompact';
+import React, { useCallback } from 'react';
 import { UnderlineField } from '../fields';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 
-const SendAssetFormField = ({
+export default function SendAssetFormField({
   autoFocus,
   format,
   label,
-  labelMaxLength,
+  labelMaxLength = 6,
   mask,
   onChange,
   onPressButton,
   placeholder,
   value,
   ...props
-}) => (
-  <RowWithMargins
-    align="start"
-    flex={0}
-    justify="space-between"
-    margin={23}
-    {...props}
-  >
-    <UnderlineField
-      autoFocus={autoFocus}
-      buttonText="Max"
-      format={format}
-      keyboardType="decimal-pad"
-      mask={mask}
-      onChange={onChange}
-      onPressButton={onPressButton}
-      placeholder={placeholder}
-      value={value}
-    />
-    <Text align="right" color="dark" size="h3">
-      {label.length > labelMaxLength
-        ? label.substring(0, labelMaxLength)
-        : label}
-    </Text>
-  </RowWithMargins>
-);
-
-SendAssetFormField.propTypes = {
-  assetAmount: PropTypes.number,
-  autoFocus: PropTypes.bool,
-  format: PropTypes.func,
-  label: PropTypes.string,
-  labelMaxLength: PropTypes.number,
-  mask: PropTypes.string,
-  onChange: PropTypes.func,
-  onPressButton: PropTypes.func,
-  placeholder: PropTypes.string,
-  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-};
-
-SendAssetFormField.defaultProps = {
-  labelMaxLength: 6,
-};
-
-export default compose(
-  withHandlers({
-    onPressButton: ({ onPressButton }) => event => {
+}) {
+  const handlePressButton = useCallback(
+    event => {
       analytics.track('Clicked "Max" in Send flow input');
-
       if (onPressButton) {
         onPressButton(event);
       }
     },
-  }),
-  pure
-)(SendAssetFormField);
+    [onPressButton]
+  );
+
+  return (
+    <RowWithMargins
+      align="start"
+      justify="space-between"
+      margin={23}
+      {...props}
+    >
+      <UnderlineField
+        autoFocus={autoFocus}
+        buttonText="Max"
+        format={format}
+        keyboardType="decimal-pad"
+        mask={mask}
+        onChange={onChange}
+        onPressButton={handlePressButton}
+        placeholder={placeholder}
+        value={value}
+      />
+      <Text align="right" color="dark" size="h3">
+        {label.length > labelMaxLength
+          ? label.substring(0, labelMaxLength)
+          : label}
+      </Text>
+    </RowWithMargins>
+  );
+}
