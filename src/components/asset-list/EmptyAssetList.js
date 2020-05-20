@@ -13,6 +13,7 @@ import AssetListItemSkeleton from './AssetListItemSkeleton';
 const InterstitialOffset = AssetListHeader.height + FabWrapper.bottomPosition;
 
 const EmptyAssetList = ({
+  descendingOpacity,
   hideHeader,
   isWalletEthZero,
   network,
@@ -27,7 +28,7 @@ const EmptyAssetList = ({
         {times(skeletonCount, index => (
           <AssetListItemSkeleton
             animated={!isWalletEthZero}
-            descendingOpacity={isWalletEthZero}
+            descendingOpacity={descendingOpacity || isWalletEthZero}
             index={index}
             key={`skeleton${index}`}
           />
@@ -44,6 +45,7 @@ const EmptyAssetList = ({
 );
 
 EmptyAssetList.propTypes = {
+  descendingOpacity: PropTypes.bool,
   hideHeader: PropTypes.bool,
   isWalletEthZero: PropTypes.bool,
   skeletonCount: PropTypes.number,

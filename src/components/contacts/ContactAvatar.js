@@ -10,7 +10,7 @@ import { Text } from '../text';
 const ContactAvatar = ({ color, size, value, ...props }) => {
   const dimensions = size === 'large' ? 60 : size === 'medium' ? 40 : 34;
   const textSize =
-    size === 'large' ? 'biggest' : size === 'medium' ? 'big' : 'large';
+    size === 'large' ? 'bigger' : size === 'medium' ? 'larger' : 'large';
   return (
     <ShadowStack
       {...props}
@@ -24,7 +24,7 @@ const ContactAvatar = ({ color, size, value, ...props }) => {
       shouldRasterizeIOS
     >
       <Row flex={1} justify="center" align="center">
-        <Text align="center" color="white" size={textSize} weight="semibold">
+        <Text align="center" color="white" size={textSize} weight="bold">
           {value && getFirstGrapheme(toUpper(value))}
         </Text>
       </Row>

@@ -19,6 +19,7 @@ import { Icon } from '../components/icons';
 import { Input } from '../components/inputs';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
+import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
 import { web3Provider } from '../handlers/web3';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
@@ -60,14 +61,6 @@ const Container = isNativeStackAvailable
       top: ${statusBarHeight};
     `;
 
-const HandleIcon = styled(Icon).attrs({
-  color: '#C4C6CB',
-  name: 'handle',
-})`
-  margin-top: 16px;
-  margin-bottom: 2;
-`;
-
 const StyledImportButton = styled(
   Platform.OS === 'ios' ? BorderlessButton : Button
 )`
@@ -82,22 +75,6 @@ const StyledImportButton = styled(
 const StyledInput = styled(Input)`
   min-height: 50;
 `;
-
-const ConfirmImportAlert = (name, onSuccess, navigate) =>
-  navigate(Routes.OVERLAY_EXPANDED_ASSET_SCREEN, {
-    actionType: 'Import',
-    asset: [],
-    isNewProfile: true,
-    onCloseModal: args => {
-      if (args) {
-        onSuccess(args);
-      }
-    },
-    profile: {
-      name,
-    },
-    type: 'wallet_profile_creator',
-  });
 
 const ImportButton = ({ disabled, onPress, seedPhrase }) => (
   <StyledImportButton disabled={disabled} onPress={onPress} overflow="visible">
@@ -195,6 +172,24 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
         }
       }
 
+      const ConfirmImportAlert = (name, onSuccess, navigate) =>
+        navigate(Routes.OVERLAY_EXPANDED_ASSET_SCREEN, {
+          actionType: 'Import',
+          asset: [],
+          isNewProfile: true,
+          onCloseModal: args => {
+            if (args) {
+              onSuccess(args);
+            }
+          },
+          onRefocusInput: setAppearListener(focusListener),
+          profile: {
+            name,
+          },
+          type: 'wallet_profile_creator',
+          withoutStatusBar: true,
+        });
+
       return ConfirmImportAlert(
         name,
         ({ color, name }) => {
@@ -211,11 +206,13 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     }
   }, [
     clipboard,
+    focusListener,
     handleSetSeedPhrase,
     isClipboardValidSecret,
     isSecretValid,
     navigate,
     seedPhrase,
+    setAppearListener,
     toggleImporting,
   ]);
 
@@ -226,7 +223,6 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
         initializeWallet(input, color, name || '')
           .then(success => {
             if (success) {
-              toggleImporting(false);
               analytics.track('Imported seed phrase', {
                 hadPreviousAddressWithValue: isEmpty,
               });
@@ -258,33 +254,35 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   return (
     <Container>
       <StatusBar barStyle="light-content" />
-      <HandleIcon />
+      <SheetHandle marginBottom={7} marginTop={6} />
       <Text size="large" weight="bold">
-        Import
+        Add Wallet
       </Text>
       <KeyboardAvoidingView
         behavior="padding"
         keyboardVerticalOffset={keyboardVerticalOffset}
       >
-        <Centered css={padding(0, 50)} flex={1}>
+        <Centered css={padding(0, 42)} flex={1}>
           <StyledInput
             align="center"
             autoCapitalize="none"
             autoCorrect={false}
             autoFocus
+            color={isSecretValid ? 'appleBlue' : 'dark'}
             enablesReturnKeyAutomatically
             keyboardType={
               Platform.OS === 'android' ? 'visible-password' : 'default'
             }
             lineHeight="looser"
             multiline
-            numberOfLines={7}
+            numberOfLines={3}
             onChangeText={handleSetSeedPhrase}
             onSubmitEditing={onPressImportButton}
-            placeholder="Seed phrase, private key, Ethereum account or ENS name"
+            placeholder="Seed phrase, private key, Ethereum address or ENS name"
             ref={isNativeStackAvailable ? inputRef : inputRefListener}
             returnKeyType="done"
             size="large"
+            spellCheck={false}
             value={seedPhrase}
             weight="semibold"
             width="100%"

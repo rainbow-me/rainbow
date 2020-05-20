@@ -6,15 +6,9 @@ import { getFontSize } from '../../styles/fonts';
 import { ButtonPressAnimation } from '../animations';
 
 const sx = StyleSheet.create({
-  borderBottom: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.lightestGrey,
-  },
   optionContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    paddingBottom: 19,
-    paddingTop: 12,
   },
   optionText: {
     color: colors.appleBlue,
@@ -22,37 +16,24 @@ const sx = StyleSheet.create({
     fontSize: getFontSize(fonts.size.lmedium),
     fontWeight: fonts.weight.semibold,
     letterSpacing: fonts.letterSpacing.roundedMedium,
+    marginBottom: 9.5,
+    paddingHorizontal: 19,
+    paddingVertical: 9.5,
   },
   optionTextDisabled: {
-    color: colors.lightGrey,
-  },
-  wrapper: {
-    marginLeft: 20,
+    color: colors.alpha(colors.blueGreyDark, 0.2),
   },
 });
 
-export default function AddressOption({
-  borderBottom,
-  editMode,
-  label,
-  onPress,
-}) {
+export default function AddressOption({ editMode, label, onPress }) {
   return (
-    <View style={sx.wrapper}>
-      <View style={[sx.subItem, borderBottom ? sx.borderBottom : null]}>
-        <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
-          <View style={sx.optionContainer}>
-            <View>
-              <Text
-                style={[sx.optionText, editMode ? sx.optionTextDisabled : null]}
-              >
-                {label}
-              </Text>
-            </View>
-          </View>
-        </ButtonPressAnimation>
+    <ButtonPressAnimation disabled={editMode} onPress={onPress} scaleTo={0.98}>
+      <View style={sx.optionContainer}>
+        <Text style={[sx.optionText, editMode ? sx.optionTextDisabled : null]}>
+          {label}
+        </Text>
       </View>
-    </View>
+    </ButtonPressAnimation>
   );
 }
 

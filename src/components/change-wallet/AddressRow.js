@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys */
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -6,12 +5,15 @@ import LinearGradient from 'react-native-linear-gradient';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 import { colors, fonts } from '../../styles';
 import { getFontSize } from '../../styles/fonts';
+import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import CoinCheckButton from '../coin-row/CoinCheckButton';
 import { ContactAvatar } from '../contacts';
 import { Centered, Column, Row } from '../layout';
-import { TruncatedAddress } from '../text';
+import { TruncatedAddress, TruncatedText } from '../text';
+
+const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 
 const sx = StyleSheet.create({
   accountLabel: {
@@ -21,6 +23,7 @@ const sx = StyleSheet.create({
     fontWeight: fonts.weight.medium,
     letterSpacing: fonts.letterSpacing.roundedMedium,
     marginBottom: 3,
+    maxWidth: maxAccountLabelWidth,
   },
   accountRow: {
     flex: 1,
@@ -32,35 +35,19 @@ const sx = StyleSheet.create({
     fontWeight: fonts.weight.medium,
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
-  editButton: {
-    width: 22,
-    height: 22,
-    alignSelf: 'flex-end',
-    justifyContent: 'center',
-  },
   editIcon: {
     color: colors.appleBlue,
     fontFamily: fonts.family.SFProRounded,
     fontSize: getFontSize(fonts.size.large),
     fontWeight: fonts.weight.medium,
-    textAlign: 'right',
+    textAlign: 'center',
   },
-  rightContent: {
-    flex: 0,
-    marginRight: 19,
-  },
-  coinCheck: {
-    alignSelf: 'flex-end',
-    backgroundColor: 'red',
-    marginRight: 19,
-    marginTop: -9,
-    width: 22,
-  },
-  borderBottom: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.lightestGrey,
+  gradient: {
+    alignSelf: 'center',
+    borderRadius: 24,
+    height: 24,
     marginLeft: 19,
-    paddingVertical: 10,
+    textAlign: 'center',
   },
   readOnlyText: {
     color: colors.alpha(colors.blueGreyDark, 0.5),
@@ -71,11 +58,10 @@ const sx = StyleSheet.create({
     paddingVertical: 3,
     textAlign: 'center',
   },
-  gradient: {
-    borderRadius: 24,
-    height: 24,
-    marginTop: 19,
-    textAlign: 'center',
+  rightContent: {
+    flex: 0,
+    flexDirection: 'row',
+    marginLeft: 48,
   },
 });
 
@@ -96,20 +82,14 @@ const linearGradientProps = {
 };
 
 const OptionsIcon = ({ onPress }) => (
-  <ButtonPressAnimation onPress={onPress} scaleTo={0.9} style={sx.editButton}>
-    <Centered width={22} height={22} marginTop={45} borderRadius={22}>
+  <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
+    <Centered height={40} width={60}>
       <Text style={sx.editIcon}>􀍡</Text>
     </Centered>
   </ButtonPressAnimation>
 );
 
-export default function AddressRow({
-  borderBottom,
-  data,
-  editMode,
-  onPress,
-  onEditWallet,
-}) {
+export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
   const {
     address,
     balance,
@@ -137,11 +117,12 @@ export default function AddressRow({
   }, [address, cleanedUpLabel, onEditWallet, wallet_id]);
 
   return (
-    <View style={[sx.accountRow, borderBottom ? sx.borderBottom : null]}>
+    <View style={sx.accountRow}>
       <ButtonPressAnimation
+        enableHapticFeedback={!editMode}
         onLongPress={onOptionsPress}
         onPress={onPress}
-        scaleTo={0.98}
+        scaleTo={editMode ? 1 : 0.98}
       >
         <Row>
           <Row flex={1}>
@@ -154,7 +135,9 @@ export default function AddressRow({
             <View>
               <View>
                 {cleanedUpLabel || ens ? (
-                  <Text style={sx.accountLabel}>{cleanedUpLabel || ens}</Text>
+                  <TruncatedText style={sx.accountLabel}>
+                    {cleanedUpLabel || ens}
+                  </TruncatedText>
                 ) : (
                   <TruncatedAddress
                     address={address}
@@ -172,17 +155,17 @@ export default function AddressRow({
             </View>
           </Row>
           <Column style={sx.rightContent}>
-            <View style={sx.coinCheck}>
-              {!editMode && isSelected && (
-                <CoinCheckButton toggle={isSelected} isAbsolute />
-              )}
-            </View>
-            {editMode && <OptionsIcon onPress={onOptionsPress} />}
-            {!editMode && !isSelected && isReadOnly && (
-              <LinearGradient {...linearGradientProps} radius={77}>
-                <Text style={sx.readOnlyText}>Read only</Text>
+            {isReadOnly && (
+              <LinearGradient
+                {...linearGradientProps}
+                marginRight={editMode || isSelected ? -9 : 19}
+                radius={77}
+              >
+                <Text style={sx.readOnlyText}>Watching</Text>
               </LinearGradient>
             )}
+            {!editMode && isSelected && <CoinCheckButton toggle={isSelected} />}
+            {editMode && <OptionsIcon onPress={onOptionsPress} />}
           </Column>
         </Row>
       </ButtonPressAnimation>
