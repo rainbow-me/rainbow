@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Animated, View } from 'react-native';
+import { useTimeout } from '../../hooks';
 import { position } from '../../styles';
 import FloatingEmoji from './FloatingEmoji';
 
@@ -29,10 +30,7 @@ const FloatingEmojis = ({
   ...props
 }) => {
   const [floatingEmojis, setEmojis] = useState(EMPTY_ARRAY);
-
-  const timeout = useRef(undefined);
-  useEffect(() => () => timeout.current && clearTimeout(timeout.current), []);
-
+  const [startTimeout, stopTimeout] = useTimeout();
   const clearEmojis = useCallback(() => setEmojis(EMPTY_ARRAY), []);
 
   // 🚧️ TODO: 🚧️
@@ -42,8 +40,8 @@ const FloatingEmojis = ({
   const onNewEmoji = useCallback(
     (x, y) => {
       // Set timeout to automatically clearEmojis after the latest one has finished animating
-      if (timeout.current) clearTimeout(timeout.current);
-      timeout.current = setTimeout(clearEmojis, duration * 1.1);
+      stopTimeout();
+      startTimeout(clearEmojis, duration * 1.1);
 
       setEmojis(existingEmojis => {
         const newEmoji = {
@@ -60,7 +58,15 @@ const FloatingEmojis = ({
         return [...existingEmojis, newEmoji];
       });
     },
-    [clearEmojis, disableRainbow, duration, emojis, range]
+    [
+      clearEmojis,
+      disableRainbow,
+      duration,
+      emojis,
+      range,
+      startTimeout,
+      stopTimeout,
+    ]
   );
 
   useEffect(() => {

@@ -30,4 +30,4 @@ FloatingEmojisTapHandler.propTypes = {
   onNewEmoji: PropTypes.func.isRequired,
 };
 
-export default React.memo(FloatingEmojisTapHandler);
+export default FloatingEmojisTapHandler;

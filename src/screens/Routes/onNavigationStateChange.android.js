@@ -71,7 +71,7 @@ export function onNavigationStateChange(prevState, currentState) {
   if (routeName !== prevRouteName) {
     let paramsToTrack = {};
 
-    if (routeName === Routes.EXPANDED_ASSET_SCREEN) {
+    if (routeName === Routes.EXPANDED_ASSET_SHEET) {
       const { asset, type } = params;
       paramsToTrack = {
         assetContractAddress:

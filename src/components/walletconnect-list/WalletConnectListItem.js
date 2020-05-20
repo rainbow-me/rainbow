@@ -5,8 +5,8 @@ import React from 'react';
 import { compose, withHandlers } from 'recompact';
 import { withWalletConnectConnections } from '../../hoc';
 import { colors, padding } from '../../styles';
-import ContextMenu from '../ContextMenu';
 import { RequestVendorLogoIcon } from '../coin-icon';
+import { ContextMenu } from '../context-menu';
 import { Centered, ColumnWithMargins, FlexItem, Row } from '../layout';
 import { TruncatedText } from '../text';
 

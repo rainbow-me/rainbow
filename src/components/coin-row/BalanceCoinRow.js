@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { compose } from 'recompact';
+import styled from 'styled-components/primitives';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import {
   withCoinListEdited,
@@ -10,21 +11,55 @@ import {
   withEditOptions,
   withOpenBalances,
 } from '../../hoc';
-import { deviceUtils, isNewValueForPath } from '../../utils';
+import { useDimensions } from '../../hooks';
+import { colors } from '../../styles';
+import { isNewValueForObjectPaths, isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { FlexItem, Row } from '../layout';
+import { Column, FlexItem, Row } from '../layout';
+import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinCheckButton from './CoinCheckButton';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import CoinRowInfo from './CoinRowInfo';
 
 const editTranslateOffset = 32;
 
-const BottomRow = ({ balance }) => {
+const BalanceCoinRowExpandedStyles = `
+  padding-bottom: 0;
+  padding-top: 0;
+`;
+
+const PercentageText = styled(BottomRowText).attrs({
+  align: 'right',
+})`
+  ${({ isPositive }) => (isPositive ? `color: ${colors.green};` : null)};
+  margin-bottom: 0.5;
+`;
+
+const formatPercentageString = percentString =>
+  percentString ? percentString.split('-').join('- ') : '-';
+
+const BottomRow = ({ balance, isExpandedState, native }) => {
+  const percentChange = get(native, 'change');
+  const percentageChangeDisplay = formatPercentageString(percentChange);
+
+  const isPositive =
+    !isExpandedState &&
+    percentChange &&
+    percentageChangeDisplay.charAt(0) !== '-';
+
   return (
     <Fragment>
-      <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
+      <FlexItem flex={1}>
+        <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
+      </FlexItem>
+      {!isExpandedState && (
+        <FlexItem flex={0}>
+          <PercentageText isPositive={isPositive}>
+            {percentageChangeDisplay}
+          </PercentageText>
+        </FlexItem>
+      )}
     </Fragment>
   );
 };
@@ -33,11 +68,24 @@ BottomRow.propTypes = {
   balance: PropTypes.shape({ display: PropTypes.string }),
 };
 
-const TopRow = ({ name }) => {
+const TopRow = ({ isExpandedState, name, native, nativeCurrencySymbol }) => {
+  const nativeDisplay = get(native, 'balance.display');
+
   return (
     <Row align="center" justify="space-between">
       <FlexItem flex={1}>
-        <CoinName>{name}</CoinName>
+        <CoinName weight={isExpandedState ? 'semibold' : 'regular'}>
+          {name}
+        </CoinName>
+      </FlexItem>
+      <FlexItem flex={0}>
+        <BalanceText
+          color={nativeDisplay ? null : colors.blueGreyLight}
+          numberOfLines={1}
+          weight={isExpandedState ? 'medium' : 'regular'}
+        >
+          {nativeDisplay || `${nativeCurrencySymbol}0.00`}
+        </BalanceText>
       </FlexItem>
     </Row>
   );
@@ -48,17 +96,19 @@ TopRow.propTypes = {
 };
 
 const BalanceCoinRow = ({
+  containerStyles,
+  isCoinListEdited,
+  isExpandedState,
   isFirstCoinRow,
-  firstCoinRowMarginTop,
   item,
   onPress,
   onPressSend,
-  isCoinListEdited,
   pushSelectedCoin,
-  removeSelectedCoin,
   recentlyPinnedCount,
+  removeSelectedCoin,
   ...props
 }) => {
+  const { width: deviceWidth } = useDimensions();
   const [toggle, setToggle] = useState(false);
   const [previousPinned, setPreviousPinned] = useState(0);
 
@@ -70,68 +120,58 @@ const BalanceCoinRow = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCoinListEdited, recentlyPinnedCount]);
 
-  const handlePress = () => {
+  const handleEditModePress = useCallback(() => {
     if (toggle) {
       removeSelectedCoin(item.uniqueId);
     } else {
       pushSelectedCoin(item.uniqueId);
     }
     setToggle(!toggle);
-  };
+  }, [item.uniqueId, pushSelectedCoin, removeSelectedCoin, setToggle, toggle]);
 
-  const onPressHandler = useCallback(() => {
+  const handlePress = useCallback(() => {
     onPress && onPress(item);
   }, [onPress, item]);
 
-  const onPressSendHandler = useCallback(() => {
+  const handlePressSend = useCallback(() => {
     onPressSend && onPressSend(item);
   }, [onPressSend, item]);
 
   return (
-    <View
-      width={deviceUtils.dimensions.width}
-      paddingTop={isFirstCoinRow ? firstCoinRowMarginTop : 0}
-    >
+    <Column flex={1} justify={isFirstCoinRow ? 'end' : 'start'}>
       <ButtonPressAnimation
-        onPress={isCoinListEdited ? handlePress : onPressHandler}
+        disabled={isExpandedState}
+        onPress={isCoinListEdited ? handleEditModePress : handlePress}
         scaleTo={0.96}
       >
-        <Row>
-          <View
-            left={isCoinListEdited ? editTranslateOffset : 0}
-            width={
-              deviceUtils.dimensions.width -
-              80 -
-              (isCoinListEdited ? editTranslateOffset : 0)
+        <View
+          left={isCoinListEdited ? editTranslateOffset : 0}
+          width={deviceWidth - (isCoinListEdited ? editTranslateOffset : 0)}
+        >
+          <CoinRow
+            containerStyles={
+              isExpandedState ? BalanceCoinRowExpandedStyles : containerStyles
             }
-          >
-            <CoinRow
-              onPress={onPressHandler}
-              onPressSend={onPressSendHandler}
-              {...item}
-              {...props}
-              bottomRowRender={BottomRow}
-              topRowRender={TopRow}
-            />
-          </View>
-          <View position="absolute" right={3}>
-            <CoinRowInfo isHidden={item.isHidden} native={item.native} />
-          </View>
-        </Row>
+            isExpandedState={isExpandedState}
+            onPress={handlePress}
+            onPressSend={handlePressSend}
+            bottomRowRender={BottomRow}
+            topRowRender={TopRow}
+            {...item}
+            {...props}
+          />
+        </View>
       </ButtonPressAnimation>
       {isCoinListEdited ? (
-        <CoinCheckButton
-          isAbsolute
-          toggle={toggle}
-          onPress={handlePress}
-          style={{ top: isFirstCoinRow ? firstCoinRowMarginTop : 0 }}
-        />
+        <CoinCheckButton toggle={toggle} onPress={handleEditModePress} />
       ) : null}
-    </View>
+    </Column>
   );
 };
 
 BalanceCoinRow.propTypes = {
+  containerStyles: PropTypes.string,
+  isExpandedState: PropTypes.bool,
   isFirstCoinRow: PropTypes.bool,
   item: PropTypes.object,
   onPress: PropTypes.func,
@@ -139,29 +179,26 @@ BalanceCoinRow.propTypes = {
   openSmallBalances: PropTypes.bool,
 };
 
-const arePropsEqual = (props, nextProps) => {
-  const isChangeInOpenAssets =
-    props.openSmallBalances !== nextProps.openSmallBalances;
-  const itemIdentifier = buildAssetUniqueIdentifier(props.item);
-  const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.item);
+const arePropsEqual = (prev, next) => {
+  const itemIdentifier = buildAssetUniqueIdentifier(prev.item);
+  const nextItemIdentifier = buildAssetUniqueIdentifier(next.item);
 
-  const isNewItem = itemIdentifier !== nextItemIdentifier;
-  const isEdited = isNewValueForPath(props, nextProps, 'isCoinListEdited');
-  const isPinned = isNewValueForPath(props, nextProps, 'item.isPinned');
-  const isHidden = isNewValueForPath(props, nextProps, 'item.isHidden');
-  const isFirst = isNewValueForPath(props, nextProps, 'isFirstCoinRow');
+  const isNewItem = itemIdentifier === nextItemIdentifier;
+
   const recentlyPinnedCount =
-    isNewValueForPath(props, nextProps, 'recentlyPinnedCount') &&
-    (get(props, 'item.isPinned', false) || get(props, 'item.isHidden', false));
+    !isNewValueForPath(prev, next, 'recentlyPinnedCount') &&
+    (get(prev, 'item.isPinned', false) || get(prev, 'item.isHidden', false));
 
-  return !(
+  return (
     isNewItem ||
-    isChangeInOpenAssets ||
-    isEdited ||
-    isPinned ||
-    isHidden ||
-    isFirst ||
-    recentlyPinnedCount
+    recentlyPinnedCount ||
+    !isNewValueForObjectPaths(prev, next, [
+      'isCoinListEdited',
+      'isFirstCoinRow',
+      'item.isHidden',
+      'item.isPinned',
+      'openSmallBalances',
+    ])
   );
 };
 
