@@ -104,10 +104,14 @@ class SendContactList extends Component {
     return false;
   };
 
+  handleRefocus = () => {
+    if (this.props.selectedInputId) {
+      this.props.selectedInputId.focus();
+    }
+  };
+
   onSelectEdit = accountInfo => {
     const { address, color, navigation, nickname, onChange } = accountInfo;
-    const refocusCallback =
-      this.props.selectedInputId && this.props.selectedInputId.focus;
 
     navigation.navigate(Routes.MODAL_SCREEN, {
       address,
@@ -115,16 +119,15 @@ class SendContactList extends Component {
       color,
       contact: { address, color, nickname },
       onCloseModal: onChange,
-      onRefocusInput: refocusCallback,
+      onRefocusInput: this.handleRefocus,
       type: 'contact',
     });
   };
 
   renderItem = (type, item) => {
-    const { inputRef, navigation, onPressContact, removeContact } = this.props;
+    const { navigation, onPressContact, removeContact } = this.props;
     return (
       <SwipeableContactRow
-        inputRef={inputRef}
         navigation={navigation}
         onPress={onPressContact}
         onSelectEdit={this.onSelectEdit}

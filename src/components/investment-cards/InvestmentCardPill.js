@@ -7,10 +7,10 @@ import { Centered, Row } from '../layout';
 import { Text } from '../text';
 
 const Pill = styled(Centered)`
-  ${padding(1.8, 6, 2.5, 6)};
+  ${margin(0, 5)};
+  ${padding(1.8, 6, 2.5)};
   background-color: ${colors.alpha(colors.blueGreyDark, 0.06)};
   border-radius: 20;
-  ${margin(0, 5, 0, 5)};
 `;
 
 const InvestmentCardPill = ({ hideIcon, reverse, symbol, value }) => {

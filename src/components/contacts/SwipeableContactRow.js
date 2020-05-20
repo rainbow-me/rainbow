@@ -3,7 +3,6 @@ import React, { PureComponent } from 'react';
 import { Animated } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { toClass } from 'recompact';
 import DeleteIcon from '../../assets/swipeToDelete.png';
 import EditIcon from '../../assets/swipeToEdit.png';
 import { colors, margin, position } from '../../styles';
@@ -13,7 +12,7 @@ import { Text } from '../text';
 import ContactRow from './ContactRow';
 import showDeleteContactActionSheet from './showDeleteContactActionSheet';
 
-const AnimatedCentered = Animated.createAnimatedComponent(toClass(Centered));
+const AnimatedCentered = Animated.createAnimatedComponent(Centered);
 
 const RightAction = ({ onPress, progress, text, x }) => {
   const isEdit = text === 'Edit';

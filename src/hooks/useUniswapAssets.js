@@ -8,7 +8,8 @@ import {
   toLower,
   values,
 } from 'lodash';
-import { useSelector } from 'react-redux';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import {
   uniswapGetAllExchanges,
@@ -111,10 +112,17 @@ const withUniswapAssetsSelector = createSelector(
 );
 
 export default function useUniswapAssets() {
+  const dispatch = useDispatch();
   const uniswapAssets = useSelector(withUniswapAssetsSelector);
+
+  const updateFavorites = useCallback(
+    (...data) => dispatch(uniswapUpdateFavorites(...data)),
+    [dispatch]
+  );
+
   return {
     uniswapGetAllExchanges,
-    uniswapUpdateFavorites,
+    updateFavorites,
     ...uniswapAssets,
   };
 }

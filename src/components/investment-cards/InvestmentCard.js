@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import { View } from 'react-native';
+import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { compose, withHandlers } from 'recompact';
-import { withOpenInvestmentCards } from '../../hoc';
-import { colors, position } from '../../styles';
+import styled from 'styled-components/primitives';
+import { useOpenInvestmentCards } from '../../hooks';
+import { colors, padding, position, shadow } from '../../styles';
 import { ButtonPressAnimation, SizeToggler } from '../animations';
 import { Column, InnerBorder } from '../layout';
 import InvestmentCardHeader from './InvestmentCardHeader';
@@ -16,77 +15,85 @@ const InvestmentCardMargin = {
   vertical: 15,
 };
 
-const enhance = compose(
-  withOpenInvestmentCards,
-  withHandlers({
-    onPress: ({
+const gradientStops = {
+  end: { x: 1, y: 0.5 },
+  start: { x: 0, y: 0.5 },
+};
+
+const Container = styled.View`
+  ${({ isExpandedState }) => {
+    return padding(
+      InvestmentCardMargin.vertical,
+      isExpandedState ? 0 : InvestmentCardMargin.horizontal
+    );
+  }};
+  ${shadow.build(0, 2, 3, colors.dark, 0.08)};
+  flex: 0;
+  height: ${({ height }) => height + 2 * InvestmentCardMargin.vertical + 20};
+`;
+
+const Content = styled(Column).attrs({ justify: 'start' })`
+  ${position.size('100%')};
+  background-color: ${({ color }) => color};
+  border-radius: ${InvestmentCardBorderRadius};
+`;
+
+const Mask = styled.View`
+  border-radius: ${InvestmentCardBorderRadius};
+  overflow: hidden;
+`;
+
+// eslint-disable-next-line react/display-name
+const InvestmentCard = React.forwardRef(
+  (
+    {
+      children,
+      collapsed,
+      containerHeight,
+      gradientColors,
+      headerProps,
+      isExpandedState,
+      onLayout,
+      uniqueId,
+    },
+    ref
+  ) => {
+    const {
       openInvestmentCards,
       setOpenInvestmentCards,
-      uniqueId,
-    }) => () => {
-      setOpenInvestmentCards({
-        index: uniqueId,
-        state: !openInvestmentCards[uniqueId],
-      });
-    },
-  })
-);
+    } = useOpenInvestmentCards();
 
-const InvestmentCard = enhance(
-  ({
-    children,
-    collapsed,
-    containerHeight,
-    gradientColors,
-    headerProps,
-    isExpandedState,
-    onLayout,
-    onPress,
-    openInvestmentCards,
-    uniqueId,
-  }) => (
-    <View
-      style={
-        headerProps.isCollapsible && {
-          height: containerHeight + 2 * InvestmentCardMargin.vertical + 20,
-        }
-      }
-    >
-      <View
-        paddingHorizontal={
-          isExpandedState ? 0 : InvestmentCardMargin.horizontal
-        }
-        paddingVertical={InvestmentCardMargin.vertical}
-        style={{
-          shadowColor: colors.dark,
-          shadowOffset: { height: 2, width: 0 },
-          shadowOpacity: 0.08,
-          shadowRadius: 3,
-        }}
+    const handlePress = useCallback(
+      () =>
+        setOpenInvestmentCards({
+          index: uniqueId,
+          state: !openInvestmentCards[uniqueId],
+        }),
+      [openInvestmentCards, setOpenInvestmentCards, uniqueId]
+    );
+
+    return (
+      <Container
+        height={containerHeight}
+        isExpandedState={isExpandedState}
+        ref={ref}
       >
         <SizeToggler
           endingWidth={InvestmentCardHeader.height}
           startingWidth={containerHeight}
           toggle={openInvestmentCards[uniqueId]}
         >
-          <View borderRadius={InvestmentCardBorderRadius} overflow="hidden">
-            <Column
-              {...position.sizeAsObject('100%')}
-              backgroundColor={gradientColors[0]}
-              borderRadius={InvestmentCardBorderRadius}
-              justify="start"
-              onLayout={onLayout}
-            >
+          <Mask>
+            <Content color={gradientColors[0]} onLayout={onLayout}>
               <LinearGradient
+                {...gradientStops}
                 colors={gradientColors}
-                end={{ x: 1, y: 0.5 }}
                 pointerEvents="none"
-                start={{ x: 0, y: 0.5 }}
                 style={position.coverAsObject}
               />
               <ButtonPressAnimation
                 disabled={!headerProps.isCollapsible}
-                onPress={onPress}
+                onPress={handlePress}
                 scaleTo={1.03}
               >
                 <InvestmentCardHeader {...headerProps} collapsed={collapsed} />
@@ -97,12 +104,12 @@ const InvestmentCard = enhance(
                 radius={InvestmentCardBorderRadius}
                 width={0.5}
               />
-            </Column>
-          </View>
+            </Content>
+          </Mask>
         </SizeToggler>
-      </View>
-    </View>
-  )
+      </Container>
+    );
+  }
 );
 
 InvestmentCard.propTypes = {

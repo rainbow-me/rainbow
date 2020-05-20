@@ -4,7 +4,7 @@ import styled from 'styled-components/primitives';
 import { borders, colors, padding, position, shadow } from '../../styles';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
-import { CoinIcon } from '../coin-icon';
+import { CoinIconSize } from '../coin-icon';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 
@@ -12,7 +12,7 @@ const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;
 
 const Container = styled.View`
-  ${position.size(CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom)};
+  ${position.size(CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom)};
   position: absolute;
 `;
 

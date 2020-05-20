@@ -164,7 +164,7 @@ PODS:
     - libwebp/demux
   - libwebp/webp (1.1.0)
   - lottie-ios (3.1.3)
-  - lottie-react-native (3.3.2):
+  - lottie-react-native (3.4.0):
     - lottie-ios (~> 3.1.3)
     - React
   - nanopb (0.3.9011):
@@ -176,9 +176,9 @@ PODS:
     - OpenSSL-Universal/Static (= 1.0.2.19)
   - OpenSSL-Universal/Static (1.0.2.19)
   - PanModal (1.2.7)
-  - Permission-Camera (2.1.3):
+  - Permission-Camera (2.1.4):
     - RNPermissions
-  - Permission-FaceID (2.1.3):
+  - Permission-FaceID (2.1.4):
     - RNPermissions
   - pop (1.0.12)
   - PromisesObjC (1.2.8)
@@ -350,17 +350,17 @@ PODS:
     - React
   - react-native-blur (0.8.0):
     - React
-  - react-native-camera (3.23.1):
+  - react-native-camera (3.26.0):
     - React
-    - react-native-camera/RCT (= 3.23.1)
-    - react-native-camera/RN (= 3.23.1)
-  - react-native-camera/RCT (3.23.1):
+    - react-native-camera/RCT (= 3.26.0)
+    - react-native-camera/RN (= 3.26.0)
+  - react-native-camera/RCT (3.26.0):
     - React
-  - react-native-camera/RN (3.23.1):
+  - react-native-camera/RN (3.26.0):
     - React
   - react-native-mail (4.1.0):
     - React
-  - react-native-netinfo (5.8.0):
+  - react-native-netinfo (5.9.0):
     - React
   - react-native-randombytes (3.5.3):
     - React
@@ -442,7 +442,7 @@ PODS:
   - RNAnalytics (1.1.0):
     - Analytics
     - React
-  - RNCAsyncStorage (1.9.0):
+  - RNCAsyncStorage (1.10.3):
     - React
   - RNCClipboard (1.2.2):
     - React
@@ -451,7 +451,7 @@ PODS:
   - RNCoolModals (0.0.7):
     - PanModal
     - React
-  - RNCPushNotificationIOS (1.1.1):
+  - RNCPushNotificationIOS (1.2.0):
     - React
   - RNDeviceInfo (5.3.1):
     - React
@@ -482,15 +482,15 @@ PODS:
     - React
   - RNOS (1.2.8):
     - React
-  - RNPermissions (2.1.3):
+  - RNPermissions (2.1.4):
     - React
-  - RNReactNativeHapticFeedback (1.9.0):
+  - RNReactNativeHapticFeedback (1.10.0):
     - React
   - RNReanimated (1.7.0):
     - React
   - RNScreens (2.2.0):
     - React
-  - RNSentry (1.3.7):
+  - RNSentry (1.3.9):
     - React
     - Sentry (~> 4.4.0)
   - RNStoreReview (0.1.5):
@@ -855,12 +855,12 @@ SPEC CHECKSUMS:
   JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   lottie-ios: 496ac5cea1bbf1a7bd1f1f472f3232eb1b8d744b
-  lottie-react-native: 2a1a82bb326ae51331a5520de0cf706733c6db69
+  lottie-react-native: a664f59f1f298c2696dd0ae07b15cbdfc433cb02
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
-  Permission-Camera: cbbed5d193641837e9a32592dd71292eabd11827
-  Permission-FaceID: bb11b645251e0986cbbcfdd7e258720e463ff692
+  Permission-Camera: 402f1ac15b962448d75e8cf2039d235e7bc09a85
+  Permission-FaceID: 08f06f502c95dbd7d35033e65c7ebe23d4189f67
   pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
   Protobuf: 2793fcd0622a00b546c60e7cbbcc493e043e9bb9
@@ -875,9 +875,9 @@ SPEC CHECKSUMS:
   React-jsinspector: 512e560d0e985d0e8c479a54a4e5c147a9c83493
   react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: 1b52abea404d04e040edb3e74b7c5523c01a3089
+  react-native-camera: 2b74be8edc1103c4c46d1f4e5f41723d9ff052cc
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
-  react-native-netinfo: b9650ab1b8b4362b3c455b1274e4bc48223cc957
+  react-native-netinfo: 7b3c53674ea611b26a7788821f137c6d9d3a038b
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
@@ -897,11 +897,11 @@ SPEC CHECKSUMS:
   ReactCommon: ed4e11d27609d571e7eee8b65548efc191116eb3
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
-  RNCAsyncStorage: 453cd7c335ec9ba3b877e27d02238956b76f3268
+  RNCAsyncStorage: cd7234ff15c010723ed7c499ae4eedc605eac1fd
   RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNCoolModals: 101e6048991c708be5f6486186ddbb8f23b20d78
-  RNCPushNotificationIOS: a0b6894f4ad9b93d9dac467fdf4d055660ac8a0d
+  RNCPushNotificationIOS: 4d9ffd08f00ef6c1029ebbf4d72fc711eca3ff01
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNFastImage: 35ae972d6727c84ee3f5c6897e07f84d0a3445e9
   RNFBApp: 7b539bb25520fa73d6a240f5c6ea569e27683645
@@ -912,11 +912,11 @@ SPEC CHECKSUMS:
   RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
-  RNPermissions: 6772df08e03565f718f7e140d9fccae441b8ca8b
-  RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
+  RNPermissions: 3635b407c15f2fe591bd2101c8f20aa0912caba8
+  RNReactNativeHapticFeedback: 22c5ecf474428766c6b148f96f2ff6155cd7225e
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
-  RNSentry: 370623102247ebea20191b5fb549ecc7a275b324
+  RNSentry: 9c9783b13fb5cba387fff55f085cc1da3854ce71
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNTooltips: e13180e4339e2a85daabd09507f62a5a32d3dc8a

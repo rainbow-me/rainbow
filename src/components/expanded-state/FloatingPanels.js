@@ -1,18 +1,23 @@
-import { compose, setDisplayName, withProps } from 'recompact';
+import React from 'react';
 import { position } from '../../styles';
 import { ColumnWithMargins } from '../layout';
 
 const FloatingPanelsMargin = 20;
 
-const FloatingPanels = compose(
-  setDisplayName('FloatingPanels'),
-  withProps(({ margin = FloatingPanelsMargin, style }) => ({
-    justify: 'center',
-    margin,
-    pointerEvents: 'box-none',
-    style: [position.sizeAsObject('100%'), style],
-  }))
-)(ColumnWithMargins);
+const FloatingPanels = React.forwardRef(
+  ({ margin = FloatingPanelsMargin, ...props }, ref) => (
+    <ColumnWithMargins
+      {...props}
+      css={position.size('100%')}
+      justify="center"
+      margin={margin}
+      pointerEvents="box-none"
+      ref={ref}
+    />
+  )
+);
+
+FloatingPanels.displayName = 'FloatingPanels';
 
 FloatingPanels.margin = FloatingPanelsMargin;
 

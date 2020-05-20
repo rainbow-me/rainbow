@@ -1,28 +1,20 @@
-import React from 'react';
+import React, { useImperativeHandle, useState } from 'react';
+import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
-import { Text } from '.';
+import Text from './Text';
 
-class PlaceholderText extends React.Component {
-  state = {
-    text: ' ',
-  };
+const Placeholder = styled(Text).attrs({
+  color: colors.alpha(colors.blueGreyDark, 0.3),
+  size: 'big',
+  weight: 'semibold',
+})`
+  margin-bottom: -27;
+`;
 
-  updateValue = text => {
-    this.setState({ text });
-  };
+const PlaceholderText = (props, ref) => {
+  const [value, updateValue] = useState(' ');
+  useImperativeHandle(ref, () => ({ updateValue }));
+  return <Placeholder ref={ref}>{value}</Placeholder>;
+};
 
-  render() {
-    return (
-      <Text
-        color={colors.alpha(colors.blueGreyDark, 0.3)}
-        size="big"
-        style={{ marginBottom: -27 }}
-        weight="semibold"
-      >
-        {this.state.text}
-      </Text>
-    );
-  }
-}
-
-export default PlaceholderText;
+export default React.forwardRef(PlaceholderText);

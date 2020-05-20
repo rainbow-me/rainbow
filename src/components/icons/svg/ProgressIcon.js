@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import { G, Path } from 'svgs';
+import { G, Path } from 'react-native-svg';
 import { colors, position } from '../../../styles';
 import { Centered } from '../../layout';
-import { AnimatedSvg } from '../Svg';
+import Svg from '../Svg';
+
+const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 
 const {
   add,

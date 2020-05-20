@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Svg, { Defs, Path, RadialGradient, Stop } from 'svgs';
+import Svg, { Defs, Path, RadialGradient, Stop } from 'react-native-svg';
 
 const EmojiFoodIcon = ({ color, ...props }) => (
   <Svg height="30" width="30" viewBox="0 0 30 30" {...props}>

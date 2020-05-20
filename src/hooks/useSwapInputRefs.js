@@ -20,18 +20,6 @@ export default function useSwapInputRefs({ inputCurrency, outputCurrency }) {
 
   const [createRefocusInteraction] = useInteraction();
 
-  const assignInputFieldRef = useCallback(ref => {
-    inputFieldRef.current = ref;
-  }, []);
-
-  const assignNativeFieldRef = useCallback(ref => {
-    nativeFieldRef.current = ref;
-  }, []);
-
-  const assignOutputFieldRef = useCallback(ref => {
-    outputFieldRef.current = ref;
-  }, []);
-
   const findNextFocused = useCallback(
     ({ inputCurrency, outputCurrency }) => {
       const inputRefTag = getNativeTag(inputFieldRef.current);
@@ -86,9 +74,6 @@ export default function useSwapInputRefs({ inputCurrency, outputCurrency }) {
   }, [handleRefocusLastInput, isScreenFocused, wasScreenFocused]);
 
   return {
-    assignInputFieldRef,
-    assignNativeFieldRef,
-    assignOutputFieldRef,
     handleFocus,
     inputFieldRef,
     nativeFieldRef,

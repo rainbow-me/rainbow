@@ -1,165 +1,70 @@
-import PropTypes from 'prop-types';
-import React, { useCallback, useRef } from 'react';
-import { TouchableWithoutFeedback } from 'react-native';
-import { colors, fonts } from '../../styles';
-import { ButtonPressAnimation } from '../animations';
-import { TokenSelectionButton } from '../buttons';
-import { CoinIcon } from '../coin-icon';
-import { EnDash } from '../html-entities';
-import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
-import { Emoji, Text } from '../text';
-import ExchangeInput from './ExchangeInput';
+import React from 'react';
+import styled from 'styled-components/primitives';
+import { colors } from '../../styles';
+import { ColumnWithMargins, Row } from '../layout';
+import ExchangeField from './ExchangeField';
+import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
 
 const BottomRowHeight = 32;
-const padding = 15;
-const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
-const ExchangeInputField = ({
-  assignInputFieldRef,
-  assignNativeFieldRef,
+const Container = styled(ColumnWithMargins).attrs({ margin: 12 })`
+  background-color: ${colors.white};
+  padding-top: 6;
+  width: 100%;
+  z-index: 1;
+`;
+
+const NativeFieldRow = styled(Row).attrs({
+  align: 'center',
+  justify: 'space-between',
+})`
+  height: ${BottomRowHeight};
+  padding-left: 15;
+`;
+
+export default function ExchangeInputField({
   disableInputCurrencySelection,
   inputAmount,
   inputCurrencyAddress,
   inputCurrencySymbol,
+  inputFieldRef,
   nativeAmount,
   nativeCurrency,
-  onBlur,
+  nativeFieldRef,
   onFocus,
   onPressMaxBalance,
   onPressSelectInputCurrency,
   setInputAmount,
   setNativeAmount,
-}) => {
-  const inputFieldRef = useRef();
-
-  const handleFocusInputField = useCallback(() => {
-    if (inputFieldRef && inputFieldRef.current) {
-      inputFieldRef.current.focus();
-    }
-  }, []);
-
-  const handleInputFieldRef = useCallback(
-    ref => {
-      inputFieldRef.current = ref;
-      assignInputFieldRef(ref);
-    },
-    [assignInputFieldRef]
-  );
-
+}) {
   return (
-    <ColumnWithMargins
-      backgroundColor={colors.white}
-      flex={0}
-      margin={12}
-      paddingTop={16}
-      width="100%"
-      zIndex={1}
-    >
-      <Row align="center">
-        <TouchableWithoutFeedback onPress={handleFocusInputField}>
-          <RowWithMargins
-            align="center"
-            flex={1}
-            margin={10}
-            paddingLeft={padding}
-            paddingRight={disableInputCurrencySelection ? padding : null}
-          >
-            <CoinIcon
-              bgColor={inputCurrencySymbol ? undefined : skeletonColor}
-              flex={0}
-              size={40}
-              symbol={inputCurrencySymbol}
-              address={inputCurrencyAddress}
-            />
-            <ExchangeInput
-              disableTabularNums
-              editable={!!inputCurrencySymbol}
-              height={40}
-              letterSpacing={fonts.letterSpacing.roundedTightest}
-              onChangeText={setInputAmount}
-              onBlur={onBlur}
-              onFocus={onFocus}
-              placeholder={inputCurrencySymbol ? '0' : EnDash.unicode}
-              placeholderTextColor={
-                inputCurrencySymbol ? undefined : skeletonColor
-              }
-              refInput={handleInputFieldRef}
-              value={inputAmount}
-            />
-          </RowWithMargins>
-        </TouchableWithoutFeedback>
-        {!disableInputCurrencySelection && (
-          <TokenSelectionButton
-            onPress={onPressSelectInputCurrency}
-            symbol={inputCurrencySymbol}
-          />
-        )}
-      </Row>
-      <Row
-        align="center"
-        height={BottomRowHeight}
-        justify="space-between"
-        paddingLeft={padding}
-      >
+    <Container>
+      <ExchangeField
+        address={inputCurrencyAddress}
+        amount={inputAmount}
+        disableCurrencySelection={disableInputCurrencySelection}
+        onFocus={onFocus}
+        onPressSelectCurrency={onPressSelectInputCurrency}
+        ref={inputFieldRef}
+        setAmount={setInputAmount}
+        symbol={inputCurrencySymbol}
+      />
+      <NativeFieldRow>
         <ExchangeNativeField
-          assignNativeFieldRef={assignNativeFieldRef}
           editable={!!inputCurrencySymbol}
           height={BottomRowHeight}
           nativeAmount={nativeAmount}
           nativeCurrency={nativeCurrency}
-          onBlur={onBlur}
           onFocus={onFocus}
+          ref={nativeFieldRef}
           setNativeAmount={setNativeAmount}
         />
-        <ButtonPressAnimation
+        <ExchangeMaxButton
           disabled={!inputCurrencySymbol}
-          marginRight={4}
           onPress={onPressMaxBalance}
-        >
-          <RowWithMargins
-            align="center"
-            height={BottomRowHeight}
-            margin={0}
-            paddingHorizontal={padding}
-          >
-            <Emoji
-              lineHeight="none"
-              name="moneybag"
-              style={{ marginTop: 0.5 }}
-              size="lmedium"
-            />
-            <Text
-              align="center"
-              color="appleBlue"
-              size="lmedium"
-              style={{ marginTop: 1 }}
-              weight="semibold"
-            >
-              Max
-            </Text>
-          </RowWithMargins>
-        </ButtonPressAnimation>
-      </Row>
-    </ColumnWithMargins>
+        />
+      </NativeFieldRow>
+    </Container>
   );
-};
-
-ExchangeInputField.propTypes = {
-  assignInputFieldRef: PropTypes.func,
-  assignNativeFieldRef: PropTypes.func,
-  disableInputCurrencySelection: PropTypes.bool,
-  inputAmount: PropTypes.string,
-  inputCurrencyAddress: PropTypes.string,
-  inputCurrencySymbol: PropTypes.string,
-  nativeAmount: PropTypes.string,
-  nativeCurrency: PropTypes.string,
-  onBlur: PropTypes.func,
-  onFocus: PropTypes.func,
-  onPressMaxBalance: PropTypes.func,
-  onPressSelectInputCurrency: PropTypes.func,
-  setInputAmount: PropTypes.func,
-  setNativeAmount: PropTypes.func,
-};
-
-export default ExchangeInputField;
+}

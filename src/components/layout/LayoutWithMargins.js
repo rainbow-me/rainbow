@@ -4,8 +4,8 @@ import React, { Children, cloneElement } from 'react';
 import flattenChildren from 'react-flatten-children';
 import Flex from './Flex';
 
-const LayoutWithMargins = ({ children, margin, marginKey, ...props }) => (
-  <Flex {...props}>
+const LayoutWithMargins = ({ children, margin, marginKey, ...props }, ref) => (
+  <Flex {...props} ref={ref}>
     {Children.toArray(flattenChildren(children)).map((child, index, array) =>
       cloneElement(child, {
         style: {
@@ -23,4 +23,4 @@ LayoutWithMargins.propTypes = {
   marginKey: PropTypes.string.isRequired,
 };
 
-export default LayoutWithMargins;
+export default React.forwardRef(LayoutWithMargins);

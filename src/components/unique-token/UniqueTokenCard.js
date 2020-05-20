@@ -1,16 +1,27 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { View } from 'react-native';
 import stylePropType from 'react-style-proptype';
 import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
+import styled from 'styled-components/primitives';
 import { withFabSendAction } from '../../hoc';
-import { colors } from '../../styles';
+import { colors, shadow } from '../../styles';
 import Highlight from '../Highlight';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
 import UniqueTokenImage from './UniqueTokenImage';
 
 const UniqueTokenCardBorderRadius = 18;
+
+const Container = styled(ButtonPressAnimation)`
+  ${shadow.build(0, 2, 3, colors.dark, 0.08)};
+`;
+
+const Content = styled.View`
+  border-radius: ${UniqueTokenCardBorderRadius};
+  height: ${({ height }) => height};
+  overflow: hidden;
+  width: ${({ width }) => width};
+`;
 
 const UniqueTokenCard = ({
   borderEnabled,
@@ -28,27 +39,14 @@ const UniqueTokenCard = ({
   ...props
 }) => {
   return (
-    <ButtonPressAnimation
+    <Container
       disabled={disabled}
       enableHapticFeedback={enableHapticFeedback}
       onPress={onPress}
       scaleTo={scaleTo}
-      style={{
-        shadowColor: colors.dark,
-        shadowOffset: { height: 2, width: 0 },
-        shadowOpacity: 0.08,
-        shadowRadius: 3,
-        ...shadowStyle,
-      }}
+      style={shadowStyle}
     >
-      <View
-        {...props}
-        borderRadius={UniqueTokenCardBorderRadius}
-        height={height}
-        overflow="hidden"
-        style={style}
-        width={width}
-      >
+      <Content {...props} height={height} style={style} width={width}>
         <UniqueTokenImage
           backgroundColor={background || colors.lightestGrey}
           imageUrl={image_preview_url}
@@ -66,8 +64,8 @@ const UniqueTokenCard = ({
           backgroundColor={colors.alpha(colors.white, 0.33)}
           visible={highlight}
         />
-      </View>
-    </ButtonPressAnimation>
+      </Content>
+    </Container>
   );
 };
 

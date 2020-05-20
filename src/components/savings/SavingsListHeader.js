@@ -3,6 +3,7 @@ import React from 'react';
 import FastImage from 'react-native-fast-image';
 import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
+import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { useAccountSettings } from '../../hooks';
@@ -15,6 +16,17 @@ const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
 
 const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 44;
+
+const SumValueText = styled(Text).attrs({
+  align: 'right',
+  size: 'large',
+})`
+  margin-bottom: 1;
+`;
+
+const ListHeaderEmoji = styled(Emoji).attrs({ size: 'medium' })`
+  margin-bottom: 3.5;
+`;
 
 const SavingsListHeader = ({
   emoji,
@@ -46,7 +58,7 @@ const SavingsListHeader = ({
       >
         <Highlight visible={highlight} />
         <RowWithMargins align="center" margin={emoji ? 3.5 : 9}>
-          <Emoji name={emoji} size="medium" style={{ marginBottom: 3.5 }} />
+          <ListHeaderEmoji name={emoji} />
           <TruncatedText
             letterSpacing="roundedMedium"
             lineHeight="normal"
@@ -66,14 +78,9 @@ const SavingsListHeader = ({
                 }),
               }}
             >
-              <Text
-                align="right"
-                color="dark"
-                size="large"
-                style={{ marginBottom: 1 }}
-              >
+              <SumValueText>
                 {convertAmountToNativeDisplay(savingsSumValue, nativeCurrency)}
-              </Text>
+              </SumValueText>
             </Animated.View>
           )}
           <AnimatedFastImage

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { onlyUpdateForKeys } from 'recompact';
+import styled from 'styled-components/primitives';
 import { safeAreaInsetValues } from '../../utils';
 import { FlexItem, RowWithMargins } from '../layout';
 import ExchangeFab from './ExchangeFab';
@@ -8,47 +8,37 @@ import SendFab from './SendFab';
 
 const bottomPosition = 21 + safeAreaInsetValues.bottom;
 
-const enhance = onlyUpdateForKeys([
-  'children',
-  'disabled',
-  'isCoinListEdited',
-  'isReadOnlyWallet',
-]);
-const FabWrapper = enhance(
-  ({
-    children,
-    disabled,
-    fabs,
-    isCoinListEdited,
-    isReadOnlyWallet,
-    ...props
-  }) => {
-    return (
-      <FlexItem>
-        {children}
-        {!disabled && (
-          <RowWithMargins
-            bottom={isCoinListEdited ? -60 : bottomPosition}
-            css={`
-              position: absolute;
-              right: 15;
-              z-index: 2;
-            `}
-            direction="row-reverse"
-            margin={12}
-          >
-            {fabs.map((fab, id) =>
-              createElement(fab, {
-                isReadOnlyWallet,
-                key: `fab-${id}`,
-                ...props,
-              })
-            )}
-          </RowWithMargins>
+const FabWrapperRow = styled(RowWithMargins).attrs({
+  margin: 12,
+})`
+  bottom: ${({ isEditMode }) => (isEditMode ? -60 : bottomPosition)};
+  position: absolute;
+  right: 15;
+  z-index: 2;
+`;
+
+const FabWrapper = ({
+  children,
+  disabled,
+  fabs,
+  isCoinListEdited,
+  isReadOnlyWallet,
+  ...props
+}) => (
+  <FlexItem>
+    {children}
+    {!disabled && (
+      <FabWrapperRow isEditMode={isCoinListEdited}>
+        {fabs.map((fab, id) =>
+          createElement(fab, {
+            isReadOnlyWallet,
+            key: `fab-${id}`,
+            ...props,
+          })
         )}
-      </FlexItem>
-    );
-  }
+      </FabWrapperRow>
+    )}
+  </FlexItem>
 );
 
 FabWrapper.propTypes = {

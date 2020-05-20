@@ -3,7 +3,6 @@ import analytics from '@segment/analytics-react-native';
 import { find, get } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import { useDispatch } from 'react-redux';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import { multiply } from '../helpers/utilities';
 import Routes from '../screens/Routes/routesNames';
@@ -85,22 +84,19 @@ export default function useUniswapCurrencies({
 
   useEffect(() => {
     if (defaultOutputItem) {
-      dispatch(uniswapUpdateInputCurrency(defaultInputItemInWallet));
-      dispatch(uniswapUpdateOutputCurrency(defaultOutputItem));
+      updateUniswapInputCurrency(defaultInputItemInWallet);
+      updateUniswapOutputCurrency(defaultOutputItem);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [updateUniswapInputCurrency, updateUniswapOutputCurrency]);
 
   const previousInputCurrency = usePrevious(inputCurrency);
   const previousOutputCurrency = usePrevious(outputCurrency);
 
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const {
-    uniswapUpdateInputCurrency,
-    uniswapUpdateOutputCurrency,
+    updateUniswapInputCurrency,
+    updateUniswapOutputCurrency,
   } = useUniswapCurrencyReserves();
-
-  const dispatch = useDispatch();
 
   const updateInputCurrency = useCallback(
     async (newInputCurrency, userSelected = true) => {
@@ -114,7 +110,7 @@ export default function useUniswapCurrencies({
 
       setInputCurrency(newInputCurrency);
 
-      dispatch(uniswapUpdateInputCurrency(newInputCurrency));
+      updateUniswapInputCurrency(newInputCurrency);
 
       if (userSelected && isSameAsset(newInputCurrency, outputCurrency)) {
         logger.log(
@@ -150,14 +146,13 @@ export default function useUniswapCurrencies({
       defaultChosenInputItem,
       defaultInputAddress,
       defaultInputAsset,
-      dispatch,
       isDeposit,
       isWithdrawal,
       outputCurrency,
       previousInputCurrency,
       type,
-      uniswapUpdateInputCurrency,
       updateOutputCurrency,
+      updateUniswapInputCurrency,
     ]
   );
 
@@ -172,7 +167,7 @@ export default function useUniswapCurrencies({
         '[update output curr] input currency at the moment',
         inputCurrency
       );
-      dispatch(uniswapUpdateOutputCurrency(newOutputCurrency));
+      updateUniswapOutputCurrency(newOutputCurrency);
 
       setOutputCurrency(newOutputCurrency);
 
@@ -207,15 +202,14 @@ export default function useUniswapCurrencies({
     },
     [
       defaultInputAsset,
-      dispatch,
       inputCurrency,
       isDeposit,
       isWithdrawal,
       previousOutputCurrency,
       type,
       uniswapAssetsInWallet,
-      uniswapUpdateOutputCurrency,
       updateInputCurrency,
+      updateUniswapOutputCurrency,
     ]
   );
 

@@ -109,7 +109,6 @@ const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
       {...props}
       bottomRowRender={BottomRow}
       containerStyles={containerStyles}
-      shouldRasterizeIOS
       topRowRender={TopRow}
     />
   </ButtonPressAnimation>

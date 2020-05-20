@@ -1,103 +1,72 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
+import styled from 'styled-components/primitives';
 import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { colors, fonts } from '../../styles';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
 
-const ExchangeNativeField = ({
-  assignNativeFieldRef,
-  editable,
-  height,
-  nativeAmount,
-  nativeCurrency,
-  onBlur,
-  onFocus,
-  setNativeAmount,
-}) => {
+const CurrencySymbol = styled(Text).attrs({
+  size: 'large',
+  weight: 'regular',
+})`
+  margin-bottom: 0.5;
+`;
+
+const NativeInput = styled(ExchangeInput).attrs({
+  letterSpacing: fonts.letterSpacing.roundedTight,
+  size: fonts.size.large,
+  weight: fonts.weight.regular,
+})`
+  height: ${({ height }) => height};
+`;
+
+const ExchangeNativeField = (
+  { editable, height, nativeAmount, nativeCurrency, onFocus, setNativeAmount },
+  ref
+) => {
   const [isFocused, setIsFocused] = useState(false);
   const { mask, placeholder, symbol } = supportedNativeCurrencies[
     nativeCurrency
   ];
 
-  const nativeFieldRef = useRef();
+  const handleFocusNativeField = useCallback(() => ref?.current?.focus(), [
+    ref,
+  ]);
 
-  const focusNativeField = useCallback(() => {
-    if (nativeFieldRef && nativeFieldRef.current) {
-      nativeFieldRef.current.focus();
-    }
-  }, []);
-
-  const handleBlur = useCallback(
-    event => {
-      setIsFocused(false);
-
-      if (onBlur) {
-        onBlur(event);
-      }
-    },
-    [onBlur]
-  );
-
+  const handleBlur = useCallback(() => setIsFocused(false), []);
   const handleFocus = useCallback(
     event => {
       setIsFocused(true);
-
-      if (onFocus) {
-        onFocus(event);
-      }
+      if (onFocus) onFocus(event);
     },
     [onFocus]
-  );
-
-  const handleNativeFieldRef = useCallback(
-    ref => {
-      nativeFieldRef.current = ref;
-      assignNativeFieldRef(ref);
-    },
-    [assignNativeFieldRef]
   );
 
   const nativeAmountExists =
     typeof nativeAmount === 'string' && nativeAmount.length > 0;
 
-  let opacity = nativeAmountExists ? 0.5 : 0.3;
-
-  if (isFocused) {
-    opacity = 1;
-  }
-
-  const color = colors.alpha(
+  const nativeAmountColor = colors.alpha(
     isFocused ? colors.dark : colors.blueGreyDark,
-    opacity
+    isFocused ? 1 : nativeAmountExists ? 0.5 : 0.3
   );
 
   return (
-    <TouchableWithoutFeedback flex={0} onPress={focusNativeField}>
+    <TouchableWithoutFeedback onPress={handleFocusNativeField}>
       <Row align="center" flex={1} height={height}>
-        <Text
-          flex={0}
-          size="large"
-          style={{ color, marginBottom: 0.5 }}
-          weight="regular"
-        >
-          {symbol}
-        </Text>
-        <ExchangeInput
-          color={color}
-          disableTabularNums
+        <CurrencySymbol color={nativeAmountColor}>{symbol}</CurrencySymbol>
+        <NativeInput
+          color={nativeAmountColor}
           editable={editable}
-          fontSize={fonts.size.large}
-          fontWeight={fonts.weight.regular}
-          letterSpacing={fonts.letterSpacing.roundedTight}
+          height={height}
           mask={mask}
           onBlur={handleBlur}
           onChangeText={setNativeAmount}
           onFocus={handleFocus}
           placeholder={placeholder}
-          refInput={handleNativeFieldRef}
+          ref={ref}
           value={nativeAmount}
         />
       </Row>
@@ -106,14 +75,12 @@ const ExchangeNativeField = ({
 };
 
 ExchangeNativeField.propTypes = {
-  assignNativeFieldRef: PropTypes.func,
   editable: PropTypes.bool,
   height: PropTypes.number,
   nativeAmount: PropTypes.string,
   nativeCurrency: PropTypes.string,
-  onBlur: PropTypes.func,
   onFocus: PropTypes.func,
   setNativeAmount: PropTypes.func,
 };
 
-export default ExchangeNativeField;
+export default React.forwardRef(ExchangeNativeField);

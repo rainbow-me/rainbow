@@ -1,71 +1,84 @@
 import PropTypes from 'prop-types';
 import React, { createElement, Fragment } from 'react';
-import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { pure } from 'recompact';
+import styled from 'styled-components/primitives';
+import { useDimensions } from '../../hooks';
 import { colors, padding, position } from '../../styles';
-import { deviceUtils } from '../../utils';
 import Divider from '../Divider';
 import { ContextMenu } from '../context-menu';
 import { Row } from '../layout';
 import { H1 } from '../text';
 
-const height = 44;
+const ListHeaderHeight = 44;
 
-const ListHeader = pure(
-  ({
-    children,
-    contextMenuOptions,
-    isCoinListEdited,
-    isSticky,
-    showDivider,
-    title,
-    titleRenderer,
-  }) => (
+const BackgroundGradient = styled(LinearGradient).attrs({
+  colors: [
+    colors.listHeaders.firstGradient,
+    colors.listHeaders.secondGradient,
+    colors.listHeaders.thirdGradient,
+  ],
+  end: { x: 0, y: 0 },
+  pointerEvents: 'none',
+  start: { x: 0, y: 0.5 },
+})`
+  ${position.cover};
+`;
+
+const Content = styled(Row).attrs({
+  align: 'center',
+  justify: 'space-between',
+})`
+  ${padding(0, 19, 2)};
+  background-color: ${({ isSticky }) =>
+    isSticky ? colors.white : colors.transparent};
+  height: ${ListHeaderHeight};
+  width: 100%;
+`;
+
+const StickyBackgroundBlocker = styled.View`
+  background-color: ${colors.white};
+  height: ${({ isEditMode }) => (isEditMode ? ListHeaderHeight : 0)};
+  top: ${({ isEditMode }) => (isEditMode ? -40 : 0)};
+  width: ${({ deviceDimensions }) => deviceDimensions.width};
+`;
+
+const ListHeader = ({
+  children,
+  contextMenuOptions,
+  isCoinListEdited,
+  isSticky,
+  showDivider,
+  title,
+  titleRenderer,
+}) => {
+  const deviceDimensions = useDimensions();
+
+  return (
     <Fragment>
-      <LinearGradient
-        colors={[
-          colors.listHeaders.firstGradient,
-          colors.listHeaders.secondGradient,
-          colors.listHeaders.thirdGradient,
-        ]}
-        end={{ x: 0, y: 0 }}
-        pointerEvents="none"
-        start={{ x: 0, y: 0.5 }}
-        style={[position.coverAsObject]}
-      />
-      <Row
-        align="center"
-        backgroundColor={isSticky ? colors.white : colors.transparent}
-        css={padding(0, 19, 2, 19)}
-        height={height}
-        justify="space-between"
-        width="100%"
-      >
+      <BackgroundGradient />
+      <Content isSticky={isSticky}>
         <Row align="center">
           {createElement(titleRenderer, { children: title })}
           <ContextMenu marginTop={3} {...contextMenuOptions} />
         </Row>
         {children}
-      </Row>
+      </Content>
       {showDivider && <Divider />}
       {!isSticky && title !== 'Balances' && (
-        <View
-          style={{
-            backgroundColor: colors.white,
-            height: isCoinListEdited ? height : 0,
-            top: isCoinListEdited ? -40 : 0,
-            width: deviceUtils.dimensions.width,
-          }}
+        <StickyBackgroundBlocker
+          deviceDimensions={deviceDimensions}
+          isEditMode={isCoinListEdited}
         />
       )}
     </Fragment>
-  )
-);
+  );
+};
 
 ListHeader.propTypes = {
   children: PropTypes.node,
   contextMenuOptions: PropTypes.object,
+  isCoinListEdited: PropTypes.bool,
+  isSticky: PropTypes.bool,
   showDivider: PropTypes.bool,
   title: PropTypes.string,
   titleRenderer: PropTypes.func,
@@ -76,6 +89,6 @@ ListHeader.defaultProps = {
   titleRenderer: H1,
 };
 
-ListHeader.height = height;
+ListHeader.height = ListHeaderHeight;
 
 export default ListHeader;

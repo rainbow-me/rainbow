@@ -3,13 +3,12 @@ import React, { useCallback } from 'react';
 import Animated, { Easing } from 'react-native-reanimated';
 import { bInterpolateColor, useTimingTransition } from 'react-native-redash';
 import ShadowStack from 'react-native-shadow-stack';
-import { toClass } from 'recompact';
 import { colors, position } from '../../styles';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Icon } from '../icons';
 import { Centered, InnerBorder } from '../layout';
 
-const AnimatedCenter = Animated.createAnimatedComponent(toClass(Centered));
+const AnimatedCenter = Animated.createAnimatedComponent(Centered);
 const AnimatedShadowStack = Animated.createAnimatedComponent(ShadowStack);
 
 const ApplePayButtonBorderRadius = 28;

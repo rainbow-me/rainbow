@@ -1,21 +1,19 @@
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withProps } from 'recompact';
-import styled from 'styled-components';
+import styled from 'styled-components/primitives';
 import { colors, fonts, padding } from '../../../styles';
 import { CoinIcon } from '../../coin-icon';
-import { Nbsp } from '../../html-entities';
 import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
-import { Text, TruncatedAddress, TruncatedText } from '../../text';
+import { Nbsp, Text, TruncatedAddress, TruncatedText } from '../../text';
 import TransactionRow from '../TransactionRow';
 import TransactionSheet from '../TransactionSheet';
 
-const Amount = withProps({
+const Amount = styled(TruncatedText).attrs({
   color: colors.alpha(colors.blueGreyDark, 0.6),
   size: 'lmedium',
   uppercase: true,
-})(Text);
+})``;
 
 const AmountRow = styled(Row).attrs({
   align: 'center',
@@ -33,7 +31,7 @@ const NativeAmount = styled(Text).attrs({
   flex-shrink: 0;
 `;
 
-const TokenAmount = styled(TruncatedText).attrs({ component: Amount })`
+const TokenAmount = styled(Amount)`
   flex-grow: 0;
   flex-shrink: 1;
 `;

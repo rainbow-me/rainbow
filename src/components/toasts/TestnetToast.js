@@ -3,9 +3,8 @@ import networkInfo from '../../helpers/networkInfo';
 import networkTypes from '../../helpers/networkTypes';
 import { useAccountSettings } from '../../hooks';
 import { colors } from '../../styles';
-import { Nbsp } from '../html-entities';
 import { Icon } from '../icons';
-import { Text } from '../text';
+import { Nbsp, Text } from '../text';
 import Toast from './Toast';
 
 const TestnetToast = () => {
