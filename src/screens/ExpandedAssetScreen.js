@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import {
@@ -43,7 +42,6 @@ const ExpandedAssetScreen = ({
       css={padding(top, containerPadding, bottom || top)}
       direction="column"
     >
-      <StatusBar barStyle="light-content" />
       <TouchableBackdrop onPress={onPressBackground} />
       {createElement(ScreenTypes[type], props)}
     </Centered>

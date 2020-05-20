@@ -7,9 +7,6 @@ import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Icon } from '../icons';
 
-const CoinRowPaddingTop = 9;
-const CoinRowPaddingBottom = 10;
-
 const Centered = styled.View`
   align-items: center;
   height: 100%;
@@ -45,7 +42,7 @@ const CoinCheckButton = ({ isAbsolute, onPress, toggle, style }) => (
   <View
     style={[
       {
-        height: CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom,
+        height: CoinIcon.size,
         position: isAbsolute ? 'absolute' : 'relative',
         width: 60,
       },
