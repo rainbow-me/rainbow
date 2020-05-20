@@ -19,6 +19,7 @@ import {
   toUpper,
   uniqBy,
 } from 'lodash';
+import { parseAllTxnsOnReceive } from '../config/debug';
 import { toChecksumAddress } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
@@ -33,6 +34,7 @@ const DIRECTION_OUT = 'out';
 const LAST_TXN_HASH_BUFFER = 20;
 
 const dataFromLastTxHash = (transactionData, transactions) => {
+  if (__DEV__ && parseAllTxnsOnReceive) return transactionData;
   const lastSuccessfulTxn = find(transactions, txn => txn.hash && !txn.pending);
   const lastTxHash = lastSuccessfulTxn ? lastSuccessfulTxn.hash : '';
   if (lastTxHash) {
