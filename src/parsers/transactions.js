@@ -23,6 +23,7 @@ import {
 import { parseAllTxnsOnReceive } from '../config/debug';
 import { toChecksumAddress } from '../handlers/web3';
 import ProtocolTypes from '../helpers/protocolTypes';
+import DirectionTypes from '../helpers/transactionDirectionTypes';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
 import {
@@ -30,9 +31,8 @@ import {
   convertRawAmountToNativeDisplay,
 } from '../helpers/utilities';
 import { savingsAssetsList } from '../references';
-import { ethereumUtils, isLowerCaseMatch } from '../utils';
+import { ethereumUtils } from '../utils';
 
-const DIRECTION_OUT = 'out';
 const LAST_TXN_HASH_BUFFER = 20;
 
 const dataFromLastTxHash = (transactionData, transactions) => {
@@ -124,7 +124,7 @@ export const parseTransactions = (
 const transformUniswapRefund = internalTransactions => {
   const [txnsOut, txnsIn] = partition(
     internalTransactions,
-    txn => txn.direction === DIRECTION_OUT
+    txn => txn.direction === DirectionTypes.out
   );
   const isSuccessfulSwap =
     txnsOut.length === 1 && (txnsIn.length === 1 || txnsIn.length === 2);
@@ -172,8 +172,11 @@ const parseTransaction = (
   const changes = get(txn, 'changes', []);
   let internalTransactions = changes;
 
+  // Compound shows success status even when there are internal failures
+  // We are overriding to show the user a failure state if the action actually failed
   if (
     isEmpty(changes) &&
+    txn.protocol === ProtocolTypes.compound.name &&
     (txn.type === TransactionTypes.deposit ||
       txn.type === TransactionTypes.withdraw)
   ) {
@@ -268,12 +271,10 @@ const parseTransaction = (
     }
 
     const status = getTransactionLabel({
-      accountAddress,
-      from: internalTxn.address_from,
+      direction: internalTxn.direction || txn.direction,
       pending: transaction.pending,
       protocol: transaction.protocol,
       status: transaction.status,
-      to: internalTxn.address_to,
       type: transaction.type,
     });
 
@@ -370,19 +371,18 @@ const getDescription = ({ name, status, type }) => {
 };
 
 const getTransactionLabel = ({
-  accountAddress,
-  from,
+  direction,
   pending,
   protocol,
   status,
-  to,
   type,
 }) => {
   if (pending && type === TransactionTypes.purchase)
     return TransactionStatusTypes.purchasing;
 
-  const isFromAccount = isLowerCaseMatch(from, accountAddress);
-  const isToAccount = isLowerCaseMatch(to, accountAddress);
+  const isFromAccount = direction === DirectionTypes.out;
+  const isToAccount = direction === DirectionTypes.in;
+  const isSelf = direction === DirectionTypes.self;
 
   if (pending && type === TransactionTypes.authorize)
     return TransactionStatusTypes.approving;
@@ -409,8 +409,9 @@ const getTransactionLabel = ({
   if (status === TransactionStatusTypes.failed)
     return TransactionStatusTypes.failed;
 
-  if (type === TransactionTypes.trade && status === TransactionStatusTypes.sent)
+  if (type === TransactionTypes.trade && isFromAccount)
     return TransactionStatusTypes.swapped;
+
   if (type === TransactionTypes.authorize)
     return TransactionStatusTypes.approved;
   if (type === TransactionTypes.purchase)
@@ -432,7 +433,7 @@ const getTransactionLabel = ({
     }
   }
 
-  if (isFromAccount && isToAccount) return TransactionStatusTypes.self;
+  if (isSelf) return TransactionStatusTypes.self;
 
   if (isFromAccount) return TransactionStatusTypes.sent;
   if (isToAccount) return TransactionStatusTypes.received;
