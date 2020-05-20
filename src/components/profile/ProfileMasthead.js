@@ -1,13 +1,11 @@
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { Platform, Text } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
 import Caret from '../../assets/caret-down.png';
 import { isAvatarPickerAvailable } from '../../config/experimental';
-import { useAccountSettings, useClipboard } from '../../hooks';
-import { DEFAULT_WALLET_NAME } from '../../model/wallet';
+import { useAccountProfile, useClipboard } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
@@ -55,7 +53,7 @@ const ProfileMasthead = ({
 }) => {
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
-  const { accountEmoji, accountColor, accountName } = useAccountProfile();
+  const { accountSymbol, accountColor, accountName } = useAccountProfile();
   const onPressAvatar = useCallback(() => {
     if (!isAvatarPickerAvailable) return;
     recyclerListRef.scrollToTop(true);
@@ -90,7 +88,7 @@ const ProfileMasthead = ({
     >
       <AvatarCircle
         onPress={onPressAvatar}
-        accountEmoji={accountEmoji}
+        accountSymbol={accountSymbol}
         accountColor={accountColor}
       />
       <Row>

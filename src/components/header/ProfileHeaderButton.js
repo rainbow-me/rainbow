@@ -12,7 +12,7 @@ import HeaderButton from './HeaderButton';
 const ProfileHeaderButton = ({ navigation }) => {
   const { pendingRequestCount } = useRequests();
   const { isCoinListEdited } = useCoinListEdited();
-  const { accountEmoji, accountColor } = useAccountProfile();
+  const { accountSymbol, accountColor } = useAccountProfile();
 
   const onPress = useCallback(
     () => navigation.navigate(Routes.PROFILE_SCREEN),
@@ -42,7 +42,7 @@ const ProfileHeaderButton = ({ navigation }) => {
             <ContactAvatar
               color={accountColor}
               size="small"
-              value={accountEmoji}
+              value={accountSymbol}
             />
 
             {pendingRequestCount > 0 && (
