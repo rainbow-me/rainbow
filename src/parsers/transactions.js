@@ -18,9 +18,11 @@ import {
   toLower,
   toUpper,
   uniqBy,
+  upperFirst,
 } from 'lodash';
 import { parseAllTxnsOnReceive } from '../config/debug';
 import { toChecksumAddress } from '../handlers/web3';
+import ProtocolTypes from '../helpers/protocolTypes';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
 import {
@@ -260,26 +262,40 @@ const parseTransaction = (
       transaction.type = TransactionTypes.purchase;
     }
 
-    const status = getTransactionLabel(
+    const status = getTransactionLabel({
       accountAddress,
-      internalTxn.address_from,
-      transaction.pending,
-      transaction.status,
-      internalTxn.address_to,
-      transaction.hash,
-      transaction.type
-    );
+      from: internalTxn.address_from,
+      pending: transaction.pending,
+      protocol: transaction.protocol,
+      status: transaction.status,
+      to: internalTxn.address_to,
+      type: transaction.type,
+    });
+
+    const title = getTitle({
+      protocol: transaction.protocol,
+      status,
+      type: transaction.type,
+    });
+
+    const description = getDescription({
+      name: updatedAsset.name,
+      status,
+      type: transaction.type,
+    });
 
     return {
       ...transaction,
       address: toChecksumAddress(updatedAsset.address),
       balance: convertRawAmountToBalance(valueUnit, updatedAsset),
+      description,
       from: internalTxn.address_from,
       hash: `${transaction.hash}-${index}`,
       name: updatedAsset.name,
       native: nativeDisplay,
       status,
       symbol: updatedAsset.symbol,
+      title,
       to: internalTxn.address_to,
     };
   });
@@ -313,15 +329,50 @@ export const dedupePendingTransactions = (
   return updatedPendingTransactions;
 };
 
-const getTransactionLabel = (
+const getTitle = ({ protocol, status, type }) => {
+  if (type === TransactionTypes.deposit || type === TransactionTypes.withdraw) {
+    if (
+      status === TransactionStatusTypes.deposited ||
+      status === TransactionStatusTypes.withdrew ||
+      status === TransactionStatusTypes.sent ||
+      status === TransactionStatusTypes.received
+    ) {
+      if (protocol === ProtocolTypes.compound.name) {
+        return 'Savings';
+      } else {
+        return get(ProtocolTypes, `${protocol}.displayName`);
+      }
+    }
+  }
+  return upperFirst(status);
+};
+
+const getDescription = ({ name, status, type }) => {
+  switch (type) {
+    case TransactionTypes.deposit:
+      return status === TransactionStatusTypes.depositing ||
+        status === TransactionStatusTypes.sending
+        ? name
+        : `Deposited ${name}`;
+    case TransactionTypes.withdraw:
+      return status === TransactionStatusTypes.withdrawing ||
+        status === TransactionStatusTypes.receiving
+        ? name
+        : `Withdrew ${name}`;
+    default:
+      return name;
+  }
+};
+
+const getTransactionLabel = ({
   accountAddress,
   from,
   pending,
+  protocol,
   status,
   to,
-  hash,
-  type
-) => {
+  type,
+}) => {
   if (pending && type === TransactionTypes.purchase)
     return TransactionStatusTypes.purchasing;
 
@@ -330,10 +381,22 @@ const getTransactionLabel = (
 
   if (pending && type === TransactionTypes.authorize)
     return TransactionStatusTypes.approving;
-  if (pending && type === TransactionTypes.deposit)
-    return TransactionStatusTypes.depositing;
-  if (pending && type === TransactionTypes.withdraw)
-    return TransactionStatusTypes.withdrawing;
+
+  if (pending && type === TransactionTypes.deposit) {
+    if (protocol === ProtocolTypes.compound.name) {
+      return TransactionStatusTypes.depositing;
+    } else {
+      return TransactionStatusTypes.sending;
+    }
+  }
+
+  if (pending && type === TransactionTypes.withdraw) {
+    if (protocol === ProtocolTypes.compound.name) {
+      return TransactionStatusTypes.withdrawing;
+    } else {
+      return TransactionStatusTypes.receiving;
+    }
+  }
 
   if (pending && isFromAccount) return TransactionStatusTypes.sending;
   if (pending && isToAccount) return TransactionStatusTypes.receiving;
@@ -341,14 +404,28 @@ const getTransactionLabel = (
   if (status === TransactionStatusTypes.failed)
     return TransactionStatusTypes.failed;
 
-  if (type === TransactionTypes.purchase)
-    return TransactionStatusTypes.purchased;
-  if (type === TransactionTypes.deposit)
-    return TransactionStatusTypes.deposited;
-  if (type === TransactionTypes.withdraw)
-    return TransactionStatusTypes.withdrew;
+  if (type === TransactionTypes.trade && status === TransactionStatusTypes.sent)
+    return TransactionStatusTypes.swapped;
   if (type === TransactionTypes.authorize)
     return TransactionStatusTypes.approved;
+  if (type === TransactionTypes.purchase)
+    return TransactionStatusTypes.purchased;
+
+  if (type === TransactionTypes.deposit) {
+    if (protocol === ProtocolTypes.compound.name) {
+      return TransactionStatusTypes.deposited;
+    } else {
+      return TransactionStatusTypes.sent;
+    }
+  }
+
+  if (type === TransactionTypes.withdraw) {
+    if (protocol === ProtocolTypes.compound.name) {
+      return TransactionStatusTypes.withdrew;
+    } else {
+      return TransactionStatusTypes.received;
+    }
+  }
 
   if (isFromAccount && isToAccount) return TransactionStatusTypes.self;
 
