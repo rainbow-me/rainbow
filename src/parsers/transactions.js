@@ -235,7 +235,7 @@ const parseTransaction = (
   }
   if (
     transaction.type === TransactionTypes.trade &&
-    transaction.protocol === 'uniswap'
+    transaction.protocol === ProtocolTypes.uniswap
   ) {
     internalTransactions = transformUniswapRefund(internalTransactions);
   }
