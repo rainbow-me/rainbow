@@ -1,4 +1,5 @@
 import { get, isNil } from 'lodash';
+import { Platform } from 'react-native';
 import { css } from 'styled-components';
 import colors from './colors';
 import fonts from './fonts';
@@ -22,8 +23,8 @@ const buildLetterSpacing = ({ letterSpacing = 'rounded' }) => {
   )};`;
 };
 
-const buildLineHeight = ({ lineHeight }) => {
-  if (isNil(lineHeight)) return '';
+const buildLineHeight = ({ emoji, lineHeight }) => {
+  if (isNil(lineHeight) || (emoji && Platform.OS === 'android')) return '';
   return `line-height: ${get(fonts, `lineHeight[${lineHeight}]`, lineHeight)};`;
 };
 
