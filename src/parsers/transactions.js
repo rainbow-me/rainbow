@@ -218,8 +218,12 @@ const parseTransaction = (
     internalTransactions = [approveInternalTransaction];
   }
 
-  // logic below: prevent sending a WalletConnect 0 amount to be seen as a Cancel
-  if (isEmpty(internalTransactions) && transaction.type === 'cancel') {
+  // logic below: prevent sending a WalletConnect 0 amount to be ignored
+  if (
+    isEmpty(internalTransactions) &&
+    transaction.type === TransactionTypes.execution &&
+    txn.direction === 'self'
+  ) {
     const ethInternalTransaction = {
       address_from: transaction.from,
       address_to: transaction.to,
@@ -233,6 +237,7 @@ const parseTransaction = (
     };
     internalTransactions = [ethInternalTransaction];
   }
+
   if (
     transaction.type === TransactionTypes.trade &&
     transaction.protocol === ProtocolTypes.uniswap
