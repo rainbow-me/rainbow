@@ -33,8 +33,8 @@ const ProfileHeaderButton = ({ navigation }) => {
       <View pointerEvents={isCoinListEdited ? 'none' : 'auto'}>
         <HeaderButton
           testID="goToProfile"
-          onPress={onPress}
           onLongPress={onLongPress}
+          onPress={onPress}
           shouldRasterizeIOS
           transformOrigin="left"
         >

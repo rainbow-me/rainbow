@@ -4,9 +4,11 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import Divider from '../components/Divider';
 import { ButtonPressAnimation } from '../components/animations';
 import WalletList from '../components/change-wallet/WalletList';
-import { Sheet } from '../components/sheet';
+import { Column } from '../components/layout';
+import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
 import WalletTypes from '../helpers/walletTypes';
 import { useAccountSettings, useInitializeWallet, useWallets } from '../hooks';
@@ -19,42 +21,24 @@ import {
   walletsUpdate,
 } from '../redux/wallets';
 
-import { colors } from '../styles';
+import { colors, fonts } from '../styles';
 import { abbreviations, deviceUtils, logger } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 import Routes from './Routes/routesNames';
 
 const deviceHeight = deviceUtils.dimensions.height;
-const walletRowHeight = 60;
-const titleHeight = 70;
-const footerHeight = 65;
+const addAccountRowHeight = 55;
+const footerHeight = 61;
+const listPaddingBottom = 17;
+const walletRowHeight = 59;
 const maxListHeight = deviceHeight - 220;
 
 const EditButton = styled(ButtonPressAnimation).attrs({ scaleTo: 0.96 })`
-  position: absolute;
-  right: 9px;
-  top: 8px;
   padding: 10px;
+  position: absolute;
+  right: 7px;
+  top: 6px;
 `;
-
-const getRowCount = wallets => {
-  let count = 0;
-  if (wallets) {
-    Object.keys(wallets).forEach(key => {
-      // Addresses
-      count += wallets[key].addresses.filter(account => account.visible).length;
-
-      // Add account
-      if (
-        [WalletTypes.mnemonic, WalletTypes.seed].indexOf(wallets[key].type) !==
-        -1
-      ) {
-        count += 1;
-      }
-    });
-  }
-  return count;
-};
 
 const ChangeWalletSheet = () => {
   const { wallets, selected: selectedWallet } = useWallets();
@@ -67,11 +51,46 @@ const ChangeWalletSheet = () => {
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames(wallets);
   const creatingWallet = useRef();
 
-  const rowsCount = getRowCount(wallets);
+  const getWalletRowCount = wallets => {
+    let count = 0;
+    if (wallets) {
+      Object.keys(wallets).forEach(key => {
+        // Addresses
+        count += wallets[key].addresses.filter(account => account.visible)
+          .length;
+      });
+    }
+    return count;
+  };
 
-  let listHeight = walletRowHeight * rowsCount + titleHeight + footerHeight;
+  const getAddAccountRowCount = wallets => {
+    let count = 0;
+    if (wallets) {
+      Object.keys(wallets).forEach(key => {
+        count +=
+          wallets[key].type === WalletTypes.mnemonic ||
+          wallets[key].type === WalletTypes.seed;
+      });
+    }
+    // Always add space for create wallet row
+    if (count === 0) {
+      count = 1;
+    }
+    return count;
+  };
+
+  const walletRowCount = getWalletRowCount(wallets);
+  const addAccountRowCount = getAddAccountRowCount(wallets);
+
+  let listHeight =
+    walletRowHeight * walletRowCount +
+    addAccountRowHeight * addAccountRowCount +
+    footerHeight +
+    listPaddingBottom;
+  let scrollEnabled = false;
   if (listHeight > maxListHeight) {
     listHeight = maxListHeight;
+    scrollEnabled = true;
   }
 
   const onChangeAccount = useCallback(
@@ -94,7 +113,7 @@ const ChangeWalletSheet = () => {
   const deleteWallet = useCallback(
     async (wallet_id, address) => {
       const newWallets = { ...wallets };
-      // mark it as hidden
+      // Mark it as hidden
       newWallets[wallet_id].addresses.some((account, index) => {
         if (account.address === address) {
           newWallets[wallet_id].addresses[index].visible = false;
@@ -102,7 +121,8 @@ const ChangeWalletSheet = () => {
         }
         return false;
       });
-      // if there are no visible wallets, then delete the wallet
+      // If there are no visible wallets
+      // then delete the wallet
       const visibleAddresses = newWallets[wallet_id].addresses.filter(
         account => account.visible
       );
@@ -121,7 +141,7 @@ const ChangeWalletSheet = () => {
         account => account.address === address
       );
 
-      navigate(Routes.EXPANDED_ASSET_SCREEN, {
+      navigate(Routes.EDIT_WALLET_MODAL, {
         address,
         asset: [],
         onCloseModal: async args => {
@@ -155,9 +175,8 @@ const ChangeWalletSheet = () => {
 
   const onEditWallet = useCallback(
     (wallet_id, address, label) => {
-      const wallet = wallets[wallet_id];
       // If there's more than 1 account
-      // It's deletable
+      // it's deletable
       let isDeletable = false;
       for (let i = 0; i < Object.keys(wallets).length; i++) {
         const key = Object.keys(wallets)[i];
@@ -171,12 +190,7 @@ const ChangeWalletSheet = () => {
         }
       }
 
-      const accountInUse = wallet.addresses.find(
-        account => account.address === address
-      );
-      const buttons = [
-        accountInUse.label ? 'Rename Wallet' : 'Name your wallet',
-      ];
+      const buttons = ['Edit Wallet'];
       if (isDeletable) {
         buttons.push('Delete Wallet');
       }
@@ -199,7 +213,7 @@ const ChangeWalletSheet = () => {
               {
                 cancelButtonIndex: 1,
                 destructiveButtonIndex: 0,
-                message: `Are you sure that you want to delete this wallet?`,
+                message: `Are you sure you want to delete this wallet?`,
                 options: ['Delete Wallet', 'Cancel'],
               },
               async buttonIndex => {
@@ -239,7 +253,7 @@ const ChangeWalletSheet = () => {
         if (creatingWallet.current) return;
         creatingWallet.current = true;
         // Show naming modal
-        navigate(Routes.EXPANDED_ASSET_SCREEN, {
+        navigate(Routes.EDIT_WALLET_MODAL, {
           actionType: 'Create',
           asset: [],
           isNewProfile: true,
@@ -271,9 +285,8 @@ const ChangeWalletSheet = () => {
   );
 
   const onPressImportSeedPhrase = useCallback(() => {
-    goBack();
     navigate(Routes.IMPORT_SEED_PHRASE_SHEET);
-  }, [goBack, navigate]);
+  }, [navigate]);
 
   const toggleEditMode = useCallback(() => {
     setEditMode(!editMode);
@@ -281,21 +294,17 @@ const ChangeWalletSheet = () => {
 
   return (
     <Sheet borderRadius={30}>
-      <Text
-        align="center"
-        letterSpacing="roundedMedium"
-        size="large"
-        weight="bold"
-      >
-        Wallets
-      </Text>
+      <Column height={41} justify="space-between">
+        <SheetTitle>Wallets</SheetTitle>
+        <Divider color={colors.rowDividerExtraLight} />
+      </Column>
       <EditButton onPress={toggleEditMode}>
         <Text
           align="right"
           color={colors.appleBlue}
           letterSpacing="roundedMedium"
           size="large"
-          weight="medium"
+          weight={editMode ? fonts.weight.semibold : fonts.weight.medium}
         >
           {editMode ? 'Done' : 'Edit'}
         </Text>
@@ -311,6 +320,7 @@ const ChangeWalletSheet = () => {
         onEditWallet={onEditWallet}
         onPressAddAccount={onPressAddAccount}
         onPressImportSeedPhrase={onPressImportSeedPhrase}
+        scrollEnabled={scrollEnabled}
       />
     </Sheet>
   );

@@ -111,13 +111,15 @@ const routesForMainNavigator = {
     screen: AvatarBuilder,
     transparentCard: true,
   },
-  [Routes.CHANGE_WALLET_SHEET]: {
-    navigationOptions: bottomSheetPreset,
-    screen: ChangeWalletSheet,
-  },
   [Routes.CONFIRM_REQUEST]: {
     navigationOptions: sheetPresetWithTransitions,
     screen: TransactionConfirmationScreen,
+  },
+  [Routes.EDIT_WALLET_MODAL]: {
+    navigationOptions: {
+      ...omit(expandedPreset, 'onTransitionStart'),
+    },
+    screen: ExpandedAssetScreenWithData,
   },
   [Routes.EXAMPLE_SCREEN]: {
     navigationOptions: expandedPresetWithTransitions,
@@ -252,6 +254,16 @@ const withCustomStack = screen => ({
 
 const routesForBottomSheetStack = {
   [Routes.STACK]: Stack,
+  [Routes.CHANGE_WALLET_SHEET]: {
+    navigationOptions: {
+      allowsDragToDismiss: true,
+      backgroundOpacity: 0.6,
+      customStack: true,
+      springDamping: 1,
+      transitionDuration: 0.25,
+    },
+    screen: ChangeWalletSheet,
+  },
   [Routes.RECEIVE_MODAL]: withCustomStack(ReceiveModal),
   [Routes.SETTINGS_MODAL]: withCustomStack(SettingsModal),
   ...(isNativeStackAvailable && routesForNativeStack),

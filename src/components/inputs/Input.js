@@ -50,6 +50,7 @@ export default class Input extends PureComponent {
         keyboardType={keyboardType}
         placeholderTextColor={placeholderTextColor}
         ref={this.ref}
+        selectionColor={colors.appleBlue}
         spellCheck={spellCheck}
       />
     );

@@ -5,6 +5,7 @@ const Routes = {
   CHANGE_WALLET_SHEET: 'ChangeWalletSheet',
   CONFIRM_REQUEST: 'ConfirmRequest',
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',
+  EDIT_WALLET_MODAL: 'EditWalletModal',
   EXAMPLE_SCREEN: 'ExampleScreen',
   EXCHANGE_MODAL: 'ExchangeModal',
   EXPANDED_ASSET_SCREEN: 'ExpandedAssetScreen',
