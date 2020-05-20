@@ -15,8 +15,10 @@ export function onWillPop() {
 export function onDidPop() {
   poppingCounter.isClosing = false;
   if (poppingCounter.pendingAction) {
-    poppingCounter.pendingAction();
-    poppingCounter.pendingAction = null;
+    setTimeout(() => {
+      poppingCounter.pendingAction();
+      poppingCounter.pendingAction = null;
+    }, 0);
   }
 }
 
