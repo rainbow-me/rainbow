@@ -2,7 +2,7 @@ import { omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
-// import { ScrollPager } from 'react-native-tab-view';
+import { ScrollPager } from 'react-native-tab-view';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
@@ -57,11 +57,15 @@ const routesForSwipeStack = {
   [Routes.QR_SCANNER_SCREEN]: QRScannerScreenWithData,
 };
 
+function ScrollPagerWrapper(props) {
+  return <ScrollPager {...props} overscroll={false} />;
+}
+
 const SwipeStack = createMaterialTopTabNavigator(routesForSwipeStack, {
   headerMode: 'none',
   initialLayout: deviceUtils.dimensions,
   initialRouteName: Routes.WALLET_SCREEN,
-  // TODO renderPager: props => <ScrollPager {...props} />,
+  renderPager: ScrollPagerWrapper,
   tabBarComponent: null,
 });
 
