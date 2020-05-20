@@ -21,6 +21,7 @@ const TokenFamilyWrap = ({
   childrenAmount,
   highlight,
   isFirst,
+  isHeader,
   isOpen,
   item,
   onToggle,
@@ -65,14 +66,16 @@ const TokenFamilyWrap = ({
       overflow="hidden"
       paddingTop={isFirst ? TokenFamilyWrapPaddingTop : 0}
     >
-      <TokenFamilyHeader
-        {...props}
-        childrenAmount={childrenAmount}
-        highlight={highlight}
-        isOpen={isOpen}
-        onPress={onToggle}
-        title={title}
-      />
+      {isHeader ? (
+        <TokenFamilyHeader
+          {...props}
+          childrenAmount={childrenAmount}
+          highlight={highlight}
+          isOpen={isOpen}
+          onPress={onToggle}
+          title={title}
+        />
+      ) : null}
       {/*
           XXX 👇️👇️👇️👇️ not sure if this Transitioning.View should have a `key` defined for performance or not
       */}

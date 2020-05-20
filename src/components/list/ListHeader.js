@@ -53,7 +53,7 @@ const ListHeader = pure(
         <View
           style={{
             backgroundColor: colors.white,
-            height: deviceUtils.dimensions.height + 100,
+            height: isCoinListEdited ? height : 0,
             top: isCoinListEdited ? -40 : 0,
             width: deviceUtils.dimensions.width,
           }}
