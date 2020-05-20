@@ -1,17 +1,18 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { pure } from 'recompact';
-import { margin } from '../../styles';
+import { margin, position } from '../../styles';
 import { UniswapInvestmentCard } from '../investment-cards';
 import { Centered } from '../layout';
 import FloatingPanels from './FloatingPanels';
 
 const InvestmentExpandedState = ({ asset }) => (
-  <Centered paddingHorizontal={19}>
-    <FloatingPanels>
+  <Centered {...position.coverAsObject} flex={1} height="100%">
+    <FloatingPanels flex={1}>
       <UniswapInvestmentCard
         css={margin(0)}
         isCollapsible={false}
+        isExpandedState
         item={asset}
         width="100%"
       />

@@ -54,18 +54,12 @@ const BottomRow = ({ balance, isExpandedState, native }) => {
         <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
       </FlexItem>
       {!isExpandedState && (
-        <FlexItem flex={0}>
-          <PercentageText isPositive={isPositive}>
-            {percentageChangeDisplay}
-          </PercentageText>
-        </FlexItem>
+        <PercentageText isPositive={isPositive}>
+          {percentageChangeDisplay}
+        </PercentageText>
       )}
     </Fragment>
   );
-};
-
-BottomRow.propTypes = {
-  balance: PropTypes.shape({ display: PropTypes.string }),
 };
 
 const TopRow = ({ isExpandedState, name, native, nativeCurrencySymbol }) => {
@@ -78,21 +72,15 @@ const TopRow = ({ isExpandedState, name, native, nativeCurrencySymbol }) => {
           {name}
         </CoinName>
       </FlexItem>
-      <FlexItem flex={0}>
-        <BalanceText
-          color={nativeDisplay ? null : colors.blueGreyLight}
-          numberOfLines={1}
-          weight={isExpandedState ? 'medium' : 'regular'}
-        >
-          {nativeDisplay || `${nativeCurrencySymbol}0.00`}
-        </BalanceText>
-      </FlexItem>
+      <BalanceText
+        color={nativeDisplay ? null : colors.blueGreyLight}
+        numberOfLines={1}
+        weight={isExpandedState ? 'medium' : 'regular'}
+      >
+        {nativeDisplay || `${nativeCurrencySymbol}0.00`}
+      </BalanceText>
     </Row>
   );
-};
-
-TopRow.propTypes = {
-  name: PropTypes.string,
 };
 
 const BalanceCoinRow = ({
