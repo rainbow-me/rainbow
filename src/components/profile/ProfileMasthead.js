@@ -1,26 +1,28 @@
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import FastImage from 'react-native-fast-image';
+import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
-import Caret from '../../assets/caret-down.png';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import { useAccountProfile, useClipboard } from '../../hooks';
-import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
-import { abbreviations } from '../../utils';
+import { abbreviations, deviceUtils } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { FloatingEmojis } from '../floating-emojis';
-import { Column, Row, RowWithMargins } from '../layout';
-import { Text } from '../text';
+import Icon from '../icons/Icon';
+import { Centered, Column, Row, RowWithMargins } from '../layout';
+import { TruncatedText } from '../text';
 import AddCashButton from './AddCashButton';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
 
-const AccountName = styled(Text).attrs({
-  align: 'center',
+const dropdownArrowWidth = 21;
+const maxAddressWidth = deviceUtils.dimensions.width - dropdownArrowWidth - 60;
+
+const AccountName = styled(TruncatedText).attrs({
+  align: 'left',
   firstSectionLength: abbreviations.defaultNumCharsPerSection,
   letterSpacing: 'roundedMedium',
   size: 'bigger',
@@ -30,30 +32,27 @@ const AccountName = styled(Text).attrs({
   height: 33;
   margin-top: -3;
   margin-bottom: 3;
-  padding-left: 15;
-  padding-right: 8;
+  max-width: ${maxAddressWidth};
+  padding-right: 6;
 `;
 
-const DropdownSelector = styled(FastImage).attrs({
-  source: Caret,
-})`
-  height: 20;
-  width: 20;
-  justify-content: center;
+const DropdownArrow = styled(Centered)`
   align-items: center;
-  margin-right: 15;
-  margin-top: 3;
+  height: 9;
+  justify-content: center;
+  margin-top: 9;
+  width: 21;
 `;
 
 const ProfileMasthead = ({
   accountAddress,
   addCashAvailable,
-  showBottomDivider,
   recyclerListRef,
+  showBottomDivider,
 }) => {
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
-  const { accountSymbol, accountColor, accountName } = useAccountProfile();
+  const { accountColor, accountSymbol, accountName } = useAccountProfile();
   const onPressAvatar = useCallback(() => {
     if (!isAvatarPickerAvailable) return;
     recyclerListRef.scrollToTop(true);
@@ -88,15 +87,17 @@ const ProfileMasthead = ({
     >
       <AvatarCircle
         onPress={onPressAvatar}
-        accountSymbol={accountSymbol}
         accountColor={accountColor}
+        accountSymbol={accountSymbol}
       />
-      <Row>
-        <AccountName>{accountName}</AccountName>
-        <ButtonPressAnimation onPress={onChangeWallet}>
-          <DropdownSelector />
-        </ButtonPressAnimation>
-      </Row>
+      <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.9}>
+        <Row>
+          <AccountName>{accountName}</AccountName>
+          <DropdownArrow>
+            <Icon color={colors.dark} direction="down" name="caret" />
+          </DropdownArrow>
+        </Row>
+      </ButtonPressAnimation>
       <RowWithMargins align="center" margin={19}>
         <FloatingEmojis
           distance={250}
