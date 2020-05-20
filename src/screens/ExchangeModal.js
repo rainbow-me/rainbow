@@ -450,8 +450,8 @@ const ExchangeModal = ({
           style={{
             opacity: interpolate(tabPosition, {
               extrapolate: Animated.Extrapolate.CLAMP,
-              inputRange: [0, 1],
-              outputRange: [1, 0],
+              inputRange: [0, 0.2, 1],
+              outputRange: [1, 1, 0],
             }),
           }}
         >

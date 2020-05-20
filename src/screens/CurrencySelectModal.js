@@ -231,8 +231,8 @@ const CurrencySelectModal = ({
           ...position.sizeAsObject('100%'),
           opacity: interpolate(transitionPosition, {
             extrapolate: Animated.Extrapolate.CLAMP,
-            inputRange: [0, 1],
-            outputRange: [0, 1],
+            inputRange: [0, 0.8, 1],
+            outputRange: [0, 1, 1],
           }),
         }}
       >

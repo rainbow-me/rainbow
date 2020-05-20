@@ -1,5 +1,4 @@
 import { get } from 'lodash';
-import React from 'react';
 import { Value } from 'react-native-reanimated';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { withBlockedHorizontalSwipe } from '../hoc';
@@ -65,17 +64,8 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator(
   }
 );
 
-// I need it for changing navigationOptions dynamically
-// for preventing swipe down to close on CurrencySelectScreen
-// TODO
-// eslint-disable-next-line react/display-name
-const EnhancedExchangeModalNavigator = React.memo(props => (
-  <ExchangeModalNavigator {...props} />
-));
-EnhancedExchangeModalNavigator.router = ExchangeModalNavigator.router;
-EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => ({
-  ...navigation.state.params,
+ExchangeModalNavigator.navigationOptions = ({ navigation }) => ({
   gestureEnabled: !get(navigation, 'state.params.isGestureBlocked'),
 });
 
-export default EnhancedExchangeModalNavigator;
+export default ExchangeModalNavigator;
