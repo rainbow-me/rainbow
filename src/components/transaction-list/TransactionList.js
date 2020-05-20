@@ -1,7 +1,7 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Linking, requireNativeComponent, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import {
@@ -9,7 +9,6 @@ import {
   isMultiwalletAvailable,
 } from '../../config/experimental';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
 import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
@@ -19,6 +18,17 @@ import LoadingState from '../activity-list/LoadingState';
 import { FloatingEmojis } from '../floating-emojis';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
+
+const formatAddress = address => {
+  if (address) {
+    return abbreviations.address(
+      address,
+      4,
+      abbreviations.defaultNumCharsPerSection
+    );
+  }
+  return '';
+};
 
 const TransactionList = ({
   accountAddress,
@@ -30,137 +40,150 @@ const TransactionList = ({
   header,
   initialized,
   isLoading,
+  navigation,
   network,
   requests,
   style,
   transactions,
 }) => {
-  const navigation = useNavigation();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
+  const setOnNewEmoji = useCallback(
+    newOnNewEmoji => (onNewEmoji.current = newOnNewEmoji),
+    []
+  );
   const dispatch = useDispatch();
 
-  const onAddCashPress = () => {
+  const onAddCashPress = useCallback(() => {
     navigation.navigate(Routes.ADD_CASH_SHEET);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-  };
+  }, [navigation]);
 
-  const onAvatarPress = () => {
+  const onAvatarPress = useCallback(() => {
     navigation.navigate(Routes.AVATAR_BUILDER, {
       accountColor,
       accountName,
     });
-  };
+  }, [accountColor, accountName, navigation]);
 
-  const onReceivePress = () => {
+  const onReceivePress = useCallback(() => {
     navigation.navigate(Routes.RECEIVE_MODAL);
-  };
+  }, [navigation]);
 
-  const onRequestExpire = e => {
-    const { index } = e.nativeEvent;
-    const item = requests[index];
-    dispatch(removeRequest(item.requestId));
-  };
+  const onRequestExpire = useCallback(
+    e => {
+      const { index } = e.nativeEvent;
+      const item = requests[index];
+      dispatch(removeRequest(item.requestId));
+    },
+    [dispatch, requests]
+  );
 
-  const onRequestPress = e => {
-    const { index } = e.nativeEvent;
-    const item = requests[index];
-    navigation.navigate({
-      params: { transactionDetails: item },
-      routeName: Routes.CONFIRM_REQUEST,
-    });
-    return;
-  };
+  const onRequestPress = useCallback(
+    e => {
+      const { index } = e.nativeEvent;
+      const item = requests[index];
+      navigation.navigate({
+        params: { transactionDetails: item },
+        routeName: Routes.CONFIRM_REQUEST,
+      });
+      return;
+    },
+    [navigation, requests]
+  );
 
-  const onTransactionPress = e => {
-    const { index } = e.nativeEvent;
-    const item = transactions[index];
-    const { hash, from, to, status } = item;
+  const onTransactionPress = useCallback(
+    e => {
+      const { index } = e.nativeEvent;
+      const item = transactions[index];
+      const { hash, from, to, status } = item;
 
-    const isPurchasing = status === TransactionStatusTypes.purchasing;
-    const isSent = status === TransactionStatusTypes.sent;
+      const isPurchasing = status === TransactionStatusTypes.purchasing;
+      const isSent = status === TransactionStatusTypes.sent;
 
-    const headerInfo = {
-      address: '',
-      divider: isSent ? 'to' : 'from',
-      type: status.charAt(0).toUpperCase() + status.slice(1),
-    };
+      const headerInfo = {
+        address: '',
+        divider: isSent ? 'to' : 'from',
+        type: status.charAt(0).toUpperCase() + status.slice(1),
+      };
 
-    const contactAddress = isSent ? to : from;
-    const contact = contacts[contactAddress];
-    let contactColor = 0;
+      const contactAddress = isSent ? to : from;
+      const contact = contacts[contactAddress];
+      let contactColor = 0;
 
-    if (contact) {
-      headerInfo.address = contact.nickname;
-      contactColor = contact.color;
-    } else {
-      headerInfo.address = abbreviations.address(contactAddress, 4, 10);
-      contactColor = Math.floor(Math.random() * colors.avatarColor.length);
-    }
-
-    if (hash) {
-      let buttons = ['View on Etherscan', 'Cancel'];
-      if (!isPurchasing) {
-        buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
+      if (contact) {
+        headerInfo.address = contact.nickname;
+        contactColor = contact.color;
+      } else {
+        headerInfo.address = abbreviations.address(contactAddress, 4, 10);
+        contactColor = Math.floor(Math.random() * colors.avatarColor.length);
       }
 
-      showActionSheetWithOptions(
-        {
-          cancelButtonIndex: isPurchasing ? 1 : 2,
-          options: buttons,
-          title: isPurchasing
-            ? headerInfo.type
-            : `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
-        },
-        buttonIndex => {
-          if (!isPurchasing && buttonIndex === 0) {
-            navigation.navigate(Routes.EXPANDED_ASSET_SCREEN, {
-              address: contactAddress,
-              asset: item,
-              color: contactColor,
-              contact,
-              type: 'contact',
-            });
-          } else if (
-            (isPurchasing && buttonIndex === 0) ||
-            (!isPurchasing && buttonIndex === 1)
-          ) {
-            const normalizedHash = hash.replace(/-.*/g, '');
-            const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
-              network
-            );
-            Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
-          }
+      if (hash) {
+        let buttons = ['View on Etherscan', 'Cancel'];
+        if (!isPurchasing) {
+          buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
         }
-      );
-    }
-  };
 
-  const onCopyAddressPress = e => {
-    const { x, y, width, height } = e.nativeEvent;
-    setTapTarget([x, y, width, height]);
-    if (onNewEmoji && onNewEmoji.current) {
-      onNewEmoji.current();
-    }
-    Clipboard.setString(accountAddress);
-  };
+        showActionSheetWithOptions(
+          {
+            cancelButtonIndex: isPurchasing ? 1 : 2,
+            options: buttons,
+            title: isPurchasing
+              ? headerInfo.type
+              : `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
+          },
+          buttonIndex => {
+            if (!isPurchasing && buttonIndex === 0) {
+              navigation.navigate(Routes.EXPANDED_ASSET_SCREEN, {
+                address: contactAddress,
+                asset: item,
+                color: contactColor,
+                contact,
+                type: 'contact',
+              });
+            } else if (
+              (isPurchasing && buttonIndex === 0) ||
+              (!isPurchasing && buttonIndex === 1)
+            ) {
+              const normalizedHash = hash.replace(/-.*/g, '');
+              const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
+                network
+              );
+              Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
+            }
+          }
+        );
+      }
+    },
+    [contacts, navigation, network, transactions]
+  );
 
-  const onCopyTooltipPress = () => {
+  const onCopyAddressPress = useCallback(
+    e => {
+      const { x, y, width, height } = e.nativeEvent;
+      setTapTarget([x, y, width, height]);
+      if (onNewEmoji && onNewEmoji.current) {
+        onNewEmoji.current();
+      }
+      Clipboard.setString(accountAddress);
+    },
+    [accountAddress]
+  );
+
+  const onCopyTooltipPress = useCallback(() => {
     Clipboard.setString(accountENS || accountAddress);
-  };
+  }, [accountAddress, accountENS]);
 
-  const formatAddress = address => {
-    if (address) {
-      return abbreviations.address(
-        address,
-        4,
-        abbreviations.defaultNumCharsPerSection
-      );
-    }
-    return '';
-  };
+  const data = useMemo(
+    () => ({
+      requests,
+      transactions,
+    }),
+    [requests, transactions]
+  );
 
   if ((!initialized && !navigation.isFocused()) || isLoading) {
     return (
@@ -171,11 +194,6 @@ const TransactionList = ({
   }
 
   const addressOrEns = accountENS || formatAddress(accountAddress);
-
-  const data = {
-    requests,
-    transactions,
-  };
 
   return (
     <View style={style}>
@@ -209,15 +227,9 @@ const TransactionList = ({
           top: tapTarget[1] - tapTarget[3],
           width: tapTarget[2],
         }}
+        setOnNewEmoji={setOnNewEmoji}
         wiggleFactor={0}
-      >
-        {({ onNewEmoji: newOnNewEmoji }) => {
-          if (!onNewEmoji.current) {
-            onNewEmoji.current = newOnNewEmoji;
-          }
-          return null;
-        }}
-      </FloatingEmojis>
+      />
     </View>
   );
 };
@@ -232,6 +244,7 @@ TransactionList.propTypes = {
   header: PropTypes.node,
   initialized: PropTypes.bool,
   isLoading: PropTypes.bool,
+  navigation: PropTypes.object,
   network: PropTypes.string,
   requests: PropTypes.array,
   style: PropTypes.object,
