@@ -20,7 +20,6 @@ const Container = styled(Column)`
   min-height: ${({ minHeight }) => minHeight || 0};
   opacity: 1;
   overflow: ${({ overflow }) => overflow};
-  padding-bottom: 0;
   z-index: 1;
 `;
 

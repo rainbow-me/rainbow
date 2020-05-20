@@ -5,6 +5,7 @@ import { useNavigation, useNavigationState } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { useAccountSettings, useOpenInvestmentCards } from '../../hooks';
+import Routes from '../../screens/Routes/routesNames';
 import { colors, padding } from '../../styles';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -39,7 +40,7 @@ const UniswapInvestmentCard = ({
   const { routeName } = useNavigationState();
 
   const handleOpenExpandedState = useCallback(() => {
-    navigate('ExpandedAssetScreen', {
+    navigate(Routes.EXPANDED_ASSET_SCREEN, {
       asset: item,
       type: assetType,
     });
