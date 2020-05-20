@@ -111,7 +111,14 @@ export const useWalletsWithBalancesAndNames = wallets => {
       );
     });
     isMountedRef && fetchBalancesAndNames(updatedWallets);
-  }, [accountAddress, accountENS, network, selectedAccountBalance, wallets]);
+  }, [
+    accountAddress,
+    accountENS,
+    fetchBalancesAndNames,
+    network,
+    selectedAccountBalance,
+    wallets,
+  ]);
 
   return data;
 };
