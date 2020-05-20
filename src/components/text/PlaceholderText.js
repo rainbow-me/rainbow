@@ -14,9 +14,10 @@ class PlaceholderText extends React.Component {
   render() {
     return (
       <Text
+        align="center"
         color={colors.alpha(colors.blueGreyDark, 0.3)}
         size="big"
-        style={{ marginBottom: -27 }}
+        style={{ marginBottom: -27, width: '100%' }}
         weight="semibold"
       >
         {this.state.text}

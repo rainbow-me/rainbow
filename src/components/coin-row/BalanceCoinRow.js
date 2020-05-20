@@ -61,6 +61,7 @@ const BalanceCoinRow = ({
 }) => {
   const [toggle, setToggle] = useState(false);
   const [previousPinned, setPreviousPinned] = useState(0);
+  const firstCoinRowCoinCheckMarginTop = firstCoinRowMarginTop + 9;
 
   useEffect(() => {
     if (toggle && (recentlyPinnedCount > previousPinned || !isCoinListEdited)) {
@@ -124,7 +125,7 @@ const BalanceCoinRow = ({
           isAbsolute
           toggle={toggle}
           onPress={handlePress}
-          style={{ top: isFirstCoinRow ? firstCoinRowMarginTop : 0 }}
+          style={{ top: isFirstCoinRow ? firstCoinRowCoinCheckMarginTop : 9 }}
         />
       ) : null}
     </View>

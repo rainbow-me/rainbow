@@ -46,8 +46,8 @@ const TransactionList = ({
   const { navigate } = useNavigation();
   const {
     accountAddress,
-    accountSymbol,
     accountColor,
+    accountSymbol,
     accountName,
   } = useAccountProfile();
 

@@ -17,31 +17,34 @@ import {
 import WalletTypes from '../../helpers/walletTypes';
 import { colors, position } from '../../styles';
 import { deviceUtils } from '../../utils';
+import Divider from '../Divider';
 import { EmptyAssetList } from '../asset-list';
 import { Column } from '../layout';
 import AddressOption from './AddressOption';
 import AddressRow from './AddressRow';
-import WalletDivider from './WalletDivider';
 import WalletOption from './WalletOption';
 
+const listTopPadding = 7.5;
+const optionRowHeight = 55;
 const rowHeight = 59;
-const optionRowHeight = 59;
-const lastRowPadding = 10;
 
 const RowTypes = {
   ADDRESS: 1,
   ADDRESS_OPTION: 2,
   EMPTY: 3,
-  LAST_ROW: 4,
 };
 
 const sx = StyleSheet.create({
   container: {
-    paddingTop: 14.5,
+    marginTop: -2,
   },
   rlv: {
     flex: 1,
     minHeight: 1,
+    paddingTop: listTopPadding,
+  },
+  skeleton: {
+    paddingTop: listTopPadding,
   },
 });
 
@@ -63,6 +66,7 @@ export function WalletList({
   onPressAddAccount,
   onPressImportSeedPhrase,
   onChangeAccount,
+  scrollEnabled,
 }) {
   const [rows, setRows] = useState([]);
   const [ready, setReady] = useState(false);
@@ -115,8 +119,8 @@ export function WalletList({
             break;
         }
       });
-      // You can't add accounts for read only or private key wallets
 
+      // You can't add accounts for read only or private key wallets
       if (
         [WalletTypes.mnemonic, WalletTypes.seed].indexOf(wallet.type) !== -1 &&
         filteredAccounts.length > 0
@@ -165,9 +169,6 @@ export function WalletList({
           } else if (type === RowTypes.ADDRESS_OPTION) {
             dim.width = deviceUtils.dimensions.width;
             dim.height = optionRowHeight;
-          } else if (type === RowTypes.LAST_ROW) {
-            dim.width = deviceUtils.dimensions.width;
-            dim.height = rowHeight + lastRowPadding;
           } else {
             dim.width = 0;
             dim.height = 0;
@@ -263,7 +264,12 @@ export function WalletList({
                 label={data.label}
                 onPress={data.onPress}
               />
-              {!isLastRow && <WalletDivider />}
+              {!isLastRow && (
+                <Divider
+                  color={colors.rowDividerExtraLight}
+                  inset={[0, 19, 0, 19]}
+                />
+              )}
             </Column>
           );
         case RowTypes.ADDRESS:
@@ -292,12 +298,13 @@ export function WalletList({
           {ready ? (
             <Fragment>
               <RecyclerListView
-                style={sx.rlv}
                 dataProvider={dataProvider}
                 layoutProvider={layoutProvider}
+                optimizeForInsertDeleteAnimations
                 ref={scrollView}
                 rowRenderer={renderRow}
-                optimizeForInsertDeleteAnimations
+                scrollEnabled={scrollEnabled}
+                style={sx.rlv}
               />
               <WalletOption
                 editMode={editMode}
@@ -310,7 +317,9 @@ export function WalletList({
             <EmptyAssetList
               {...position.coverAsObject}
               backgroundColor={colors.white}
+              descendingOpacity
               pointerEvents="none"
+              style={sx.skeleton}
             />
           )}
         </Transitioning.View>
@@ -330,4 +339,5 @@ WalletList.propTypes = {
   onEditWallet: PropTypes.func,
   onPressAddAccount: PropTypes.func,
   onPressImportSeedPhrase: PropTypes.func,
+  scrollEnabled: PropTypes.bool,
 };
