@@ -28,7 +28,6 @@ const Container = styled.View`
     );
   }};
   ${shadow.build(0, 2, 3, colors.dark, 0.08)};
-  flex: 0;
   height: ${({ height }) => height + 2 * InvestmentCardMargin.vertical + 20};
 `;
 

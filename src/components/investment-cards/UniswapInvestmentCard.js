@@ -40,7 +40,7 @@ const UniswapInvestmentCard = ({
   const { routeName } = useNavigationState();
 
   const handleOpenExpandedState = useCallback(() => {
-    navigate(Routes.EXPANDED_ASSET_SCREEN, {
+    navigate(Routes.EXPANDED_ASSET_SHEET, {
       asset: item,
       type: assetType,
     });
