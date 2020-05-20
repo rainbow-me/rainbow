@@ -179,6 +179,7 @@ PODS:
     - RNPermissions
   - Permission-FaceID (2.1.1):
     - RNPermissions
+  - pop (1.0.12)
   - Protobuf (3.11.4)
   - RCTRequired (0.62.2)
   - RCTTypeSafety (0.62.2):
@@ -494,6 +495,10 @@ PODS:
     - React
   - RNSVG (12.1.0):
     - React
+  - RNTooltips (1.0.2):
+    - pop (~> 1.0)
+    - React
+    - SexyTooltip
   - SDWebImage (5.7.0):
     - SDWebImage/Core (= 5.7.0)
   - SDWebImage/Core (5.7.0)
@@ -503,6 +508,8 @@ PODS:
   - Sentry (4.4.3):
     - Sentry/Core (= 4.4.3)
   - Sentry/Core (4.4.3)
+  - SexyTooltip (1.2.7):
+    - pop (~> 1.0)
   - SRSRadialGradient (1.0.6):
     - React
   - SSZipArchive (2.2.2)
@@ -607,6 +614,7 @@ DEPENDENCIES:
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNStoreReview (from `../node_modules/react-native-store-review/ios`)
   - RNSVG (from `../node_modules/react-native-svg`)
+  - RNTooltips (from `../node_modules/react-native-tooltips/ios`)
   - SRSRadialGradient (from `../node_modules/react-native-radial-gradient/ios`)
   - TcpSockets (from `../node_modules/react-native-tcp`)
   - ToolTipMenu (from `../node_modules/react-native-tooltip`)
@@ -645,10 +653,12 @@ SPEC REPOS:
     - libwebp
     - nanopb
     - OpenSSL-Universal
+    - pop
     - Protobuf
     - SDWebImage
     - SDWebImageWebPCoder
     - Sentry
+    - SexyTooltip
     - SSZipArchive
     - YogaKit
 
@@ -788,6 +798,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-store-review/ios"
   RNSVG:
     :path: "../node_modules/react-native-svg"
+  RNTooltips:
+    :path: "../node_modules/react-native-tooltips/ios"
   SRSRadialGradient:
     :path: "../node_modules/react-native-radial-gradient/ios"
   TcpSockets:
@@ -846,6 +858,7 @@ SPEC CHECKSUMS:
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
   Permission-Camera: 01583e5864cb99d89cbfb3ec62cb83c78d8d227a
   Permission-FaceID: fafd8c4809ad5be3547e1b66c2ce444c5abd92a6
+  pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
   RCTRequired: cec6a34b3ac8a9915c37e7e4ad3aa74726ce4035
   RCTTypeSafety: 93006131180074cffa227a1075802c89a49dd4ce
@@ -902,9 +915,11 @@ SPEC CHECKSUMS:
   RNSentry: 370623102247ebea20191b5fb549ecc7a275b324
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
+  RNTooltips: e13180e4339e2a85daabd09507f62a5a32d3dc8a
   SDWebImage: a99471f452bdfa0ca52ddf5b1adf2b61cab1d1eb
   SDWebImageWebPCoder: 947093edd1349d820c40afbd9f42acb6cdecd987
   Sentry: 14bdd673870e8cf64932b149fad5bbbf39a9b390
+  SexyTooltip: e243da5a858c7160141cf35786a4033669d1efca
   SRSRadialGradient: 77bcb1ae812d0c77560e54ed9e52166df032db1d
   SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0

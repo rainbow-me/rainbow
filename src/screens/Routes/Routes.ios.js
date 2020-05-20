@@ -6,6 +6,7 @@ import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { ExchangeModalNavigator, SavingModalNavigator } from '../../navigation';
+import { onDidPop, onWillPop } from '../../navigation/Navigation';
 import {
   backgroundPreset,
   emojiPreset,
@@ -263,7 +264,9 @@ const MainNativeBottomSheetNavigation = createNativeStackNavigator(
   {
     defaultNavigationOptions: {
       onAppear: () => appearListener.current && appearListener.current(),
+      onDismissed: onDidPop,
       onWillDismiss: () => {
+        onWillPop();
         sheetPreset.onTransitionStart({ closing: true });
       },
       showDragIndicator: false,

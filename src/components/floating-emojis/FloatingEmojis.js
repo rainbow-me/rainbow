@@ -23,6 +23,7 @@ const FloatingEmojis = ({
   opacityThreshold,
   range,
   scaleTo,
+  setOnNewEmoji,
   size,
   wiggleFactor,
   ...props
@@ -61,6 +62,11 @@ const FloatingEmojis = ({
     },
     [clearEmojis, disableRainbow, duration, emojis, range]
   );
+
+  useEffect(() => {
+    setOnNewEmoji?.(onNewEmoji);
+    return () => setOnNewEmoji?.(undefined);
+  }, [setOnNewEmoji, onNewEmoji]);
 
   return (
     <View zIndex={1} {...props}>
@@ -112,6 +118,7 @@ FloatingEmojis.propTypes = {
   opacityThreshold: PropTypes.number,
   range: PropTypes.arrayOf(PropTypes.number),
   scaleTo: PropTypes.number,
+  setOnNewEmoji: PropTypes.func,
   size: PropTypes.string.isRequired,
   wiggleFactor: PropTypes.number,
 };
