@@ -47,7 +47,6 @@ const UniqueTokenRow = magicMemo(({ item }) => {
           index={index}
           item={uniqueToken}
           key={uniqueToken.uniqueId}
-          marginLeft={itemIndex >= 1 ? CardMargin : 0}
           onPress={handleItemPress}
         />
       ))}

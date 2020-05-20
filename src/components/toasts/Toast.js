@@ -3,7 +3,7 @@ import Animated from 'react-native-reanimated';
 import { bin, useSpringTransition } from 'react-native-redash';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
-import { colors, padding, shadow } from '../../styles';
+import { colors, padding, position, shadow } from '../../styles';
 import { interpolate } from '../animations';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
@@ -19,11 +19,11 @@ const springConfig = {
 };
 
 const Container = styled(RowWithMargins).attrs({
-  component: Centered,
   margin: 5,
   self: 'center',
 })`
   ${padding(9, 10, 11, 10)};
+  ${position.centered};
   ${shadow.build(0, 6, 10, colors.dark, 0.14)};
   background-color: ${({ color }) => color};
   border-radius: 20;
