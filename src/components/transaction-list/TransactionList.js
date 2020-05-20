@@ -90,7 +90,7 @@ const TransactionList = ({
     e => {
       const { index } = e.nativeEvent;
       const item = requests[index];
-      dispatch(removeRequest(item.requestId));
+      item && item.requestId && dispatch(removeRequest(item.requestId));
     },
     [dispatch, requests]
   );

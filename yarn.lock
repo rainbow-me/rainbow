@@ -1721,7 +1721,7 @@
     "@walletconnect/types" "^1.0.0-beta.47"
     "@walletconnect/utils" "^1.0.0-beta.47"
 
-"@walletconnect/react-native@^1.0.0-beta.29":
+"@walletconnect/react-native@^1.0.0-beta.47":
   version "1.0.0-beta.47"
   resolved "https://registry.yarnpkg.com/@walletconnect/react-native/-/react-native-1.0.0-beta.47.tgz#34d5d834db4e7b857fde33cca4959cc1693dee1a"
   integrity sha512-kvz4gO1N6PfIlXr0xVfT/me7yiqADj3xbghYxntdyOcDWDJxUBkNwnorieyh8ZZV2AMRdvgVed/TUzr+bpjl0w==
@@ -1735,7 +1735,7 @@
   resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.0.0-beta.47.tgz#d790b33902629e05d7e18f6cbb6774c4a2f0619f"
   integrity sha512-lxjBiNLLDOsyEaoB1nlBDrgznV0477udMfN4zvEuv+bNL+dxH27yQI1mM1VqIKIhrEaibjswLJGaweEMzgynoQ==
 
-"@walletconnect/utils@^1.0.0-beta.36", "@walletconnect/utils@^1.0.0-beta.47":
+"@walletconnect/utils@^1.0.0-beta.47":
   version "1.0.0-beta.47"
   resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.0.0-beta.47.tgz#b1ffa5e0d05d5f13aa76c72d9b9eca98085a4420"
   integrity sha512-il8QKvf8AaYpW8xC9mjXBiOH8CkCeV5W7CZAIfVxuJ46WV4XyIAxhEKvF8zGWGKRjz4LjFj3r3l1nyrxeIkrMA==

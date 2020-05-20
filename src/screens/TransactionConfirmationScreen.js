@@ -228,7 +228,6 @@ const TransactionConfirmationScreen = ({ navigation }) => {
     } else if (isSignSecondParamType(method)) {
       message = get(params, '[1]');
     }
-
     switch (method) {
       case SIGN:
         flatFormatSignature = await signMessage(message);
