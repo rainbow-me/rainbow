@@ -9,6 +9,7 @@ import {
   isMultiwalletAvailable,
 } from '../../config/experimental';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../navigation/routesNames';
 import { removeRequest } from '../../redux/requests';
 import { colors } from '../../styles';
@@ -29,12 +30,12 @@ const TransactionList = ({
   header,
   initialized,
   isLoading,
-  navigation,
   network,
   requests,
   style,
   transactions,
 }) => {
+  const navigation = useNavigation();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
   const dispatch = useDispatch();
@@ -231,7 +232,6 @@ TransactionList.propTypes = {
   header: PropTypes.node,
   initialized: PropTypes.bool,
   isLoading: PropTypes.bool,
-  navigation: PropTypes.object,
   network: PropTypes.string,
   requests: PropTypes.array,
   style: PropTypes.object,

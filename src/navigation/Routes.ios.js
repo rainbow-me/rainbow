@@ -22,6 +22,7 @@ import WalletConnectConfirmationModal from '../screens/WalletConnectConfirmation
 import WalletScreen from '../screens/WalletScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import { deviceUtils } from '../utils';
+import { onDidPop, onWillPop } from './Navigation';
 import {
   backgroundPreset,
   emojiPreset,
@@ -245,7 +246,9 @@ const MainNativeBottomSheetNavigation = createNativeStackNavigator(
   {
     defaultNavigationOptions: {
       onAppear: () => appearListener.current && appearListener.current(),
+      onDismissed: onDidPop,
       onWillDismiss: () => {
+        onWillPop();
         sheetPreset.onTransitionStart({ closing: true });
       },
       showDragIndicator: false,
