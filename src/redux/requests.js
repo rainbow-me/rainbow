@@ -37,7 +37,7 @@ export const addRequestToApprove = (
     assets,
     nativeCurrency
   );
-  const dappName = peerMeta.name;
+  const dappName = peerMeta.name || 'Unknown Dapp';
   const imageUrl = get(peerMeta, 'icons[0]');
   const request = {
     clientId,
