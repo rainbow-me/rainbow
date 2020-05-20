@@ -104,7 +104,7 @@
     "punycode": "^1.4.1",
     "querystring-es3": "^0.2.1",
     "react": "16.11.0",
-    "react-coin-icon": "^0.1.18",
+    "react-coin-icon": "^0.1.19",
     "react-fast-compare": "^2.0.4",
     "react-native": "0.62.2",
     "react-native-actionsheet": "^2.4.2",
