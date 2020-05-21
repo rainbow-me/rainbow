@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { TouchableWithoutFeedback } from 'react-native';
+import { Platform, TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
 import { TokenSelectionButton } from '../buttons';
@@ -9,6 +9,7 @@ import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 
 const ExchangeFieldHeight = 40;
+const ExchangeFieldHeightAndroid = 64;
 const ExchangeFieldPadding = 15;
 const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
@@ -28,7 +29,9 @@ const FieldRow = styled(RowWithMargins).attrs({
 `;
 
 const Input = styled(ExchangeInput).attrs({ letterSpacing: 'roundedTightest' })`
-  height: ${ExchangeFieldHeight};
+  height: ${Platform.OS === 'android'
+    ? ExchangeFieldHeightAndroid
+    : ExchangeFieldHeight};
 `;
 
 const ExchangeField = (

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { KeyboardAvoidingView } from 'react-native';
+import { KeyboardAvoidingView, Platform } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
@@ -10,7 +10,7 @@ import Centered from './Centered';
 const Container = styled(Transitioning.View)`
   height: ${({ height }) => height};
   left: 0;
-  position: absolute;
+  position: ${Platform.OS === 'android' ? 'relative' : 'absolute'};
   right: 0;
   top: 0;
 `;

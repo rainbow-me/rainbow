@@ -1,11 +1,14 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { borders, colors } from '../../styles';
 import { Row } from '../layout';
 import ExchangeField from './ExchangeField';
 
-const paddingValue = 15;
+const notchPaddingValue = 15;
+const paddingValue = 39;
+const paddingValueAndroid = 15;
 
 const FakeNotchShadow = [
   [0, 0, 1, colors.dark, 0.01],
@@ -18,14 +21,16 @@ const Container = styled(Row).attrs({ align: 'center' })`
   background-color: ${colors.white};
   overflow: hidden;
   padding-bottom: 26;
-  padding-top: ${24 + paddingValue};
+  padding-top: ${Platform.OS === 'android'
+    ? paddingValueAndroid
+    : paddingValue};
   width: 100%;
 `;
 
 const FakeNotchThing = styled(ShadowStack).attrs({
   shadows: FakeNotchShadow,
 })`
-  height: ${paddingValue};
+  height: ${notchPaddingValue};
   left: 0;
   position: absolute;
   right: 0;
