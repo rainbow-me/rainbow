@@ -19,9 +19,8 @@ const TrophyEmoji = styled(Emoji).attrs({
   name: 'trophy',
   size: 'medium',
 })`
-  height: 30;
+  height: 22;
   margin-right: 4.5;
-  text-align-vertical: center;
 `;
 
 const TokenFamilyHeaderIcon = ({

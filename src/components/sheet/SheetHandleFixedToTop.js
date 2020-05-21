@@ -20,7 +20,7 @@ const Container = styled(Centered)`
 `;
 
 const SheetHandleFixedToTop = ({ showBlur }) => (
-  <Container>
+  <Container pointerEvents="none">
     <SheetHandle showBlur={showBlur} />
   </Container>
 );

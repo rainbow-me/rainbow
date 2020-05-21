@@ -9262,9 +9262,9 @@ react-native-qrcode-svg@mikedemarais/react-native-qrcode-svg#c0302a698ea4fa0bb9b
     prop-types "^15.5.10"
     qrcode "^1.2.0"
 
-react-native-radial-gradient@rainbow-me/react-native-radial-gradient#c7c62f1bba91818c29f4a7ce874f723eb34b80ee:
+react-native-radial-gradient@rainbow-me/react-native-radial-gradient#de98a182a4e5fb8db850cd94960d23c68035f9c6:
   version "1.0.6"
-  resolved "https://codeload.github.com/rainbow-me/react-native-radial-gradient/tar.gz/c7c62f1bba91818c29f4a7ce874f723eb34b80ee"
+  resolved "https://codeload.github.com/rainbow-me/react-native-radial-gradient/tar.gz/de98a182a4e5fb8db850cd94960d23c68035f9c6"
 
 react-native-randombytes@^3.5.3:
   version "3.5.3"

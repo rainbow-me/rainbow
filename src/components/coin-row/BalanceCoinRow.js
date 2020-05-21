@@ -24,16 +24,15 @@ import CoinRow from './CoinRow';
 
 const editTranslateOffset = 32;
 
-const BalanceCoinRowExpandedStyles = `
-  padding-bottom: 0;
-  padding-top: 0;
-`;
+const BalanceCoinRowExpandedStyles = {
+  paddingBottom: 0,
+  paddingTop: 0,
+};
 
 const PercentageText = styled(BottomRowText).attrs({
   align: 'right',
 })`
   ${({ isPositive }) => (isPositive ? `color: ${colors.green};` : null)};
-  margin-bottom: 0.5;
 `;
 
 const formatPercentageString = percentString =>
@@ -51,7 +50,9 @@ const BottomRow = ({ balance, isExpandedState, native }) => {
   return (
     <Fragment>
       <FlexItem flex={1}>
-        <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
+        <BottomRowText weight={isExpandedState ? 'medium' : 'regular'}>
+          {get(balance, 'display', '')}
+        </BottomRowText>
       </FlexItem>
       {!isExpandedState && (
         <PercentageText isPositive={isPositive}>

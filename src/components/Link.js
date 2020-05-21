@@ -20,14 +20,9 @@ const Link = ({ url }) => {
 
   return (
     <ButtonPressAnimation onPress={handlePress} scaleTo={1.1}>
-      <RowWithMargins align="center" margin={5} paddingVertical={11}>
-        <Icon color={colors.appleBlue} name="compass" size={16} />
-        <Text
-          color={colors.appleBlue}
-          lineHeight={17}
-          size="lmedium"
-          weight="medium"
-        >
+      <RowWithMargins align="center" margin={5} paddingVertical={15}>
+        <Icon color={colors.appleBlue} name="compass" />
+        <Text color={colors.appleBlue} size="lmedium" weight="semibold">
           {formatURLForDisplay(url)}
         </Text>
       </RowWithMargins>

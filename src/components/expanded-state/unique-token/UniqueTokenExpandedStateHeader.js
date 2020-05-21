@@ -48,11 +48,11 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
         margin={paddingVertical}
         paddingRight={paddingHorizontal}
       >
-        <RowWithMargins align="center" margin={paddingVertical} marginLeft={1}>
+        <RowWithMargins align="center" margin={paddingVertical}>
           <Text
             color={colors.blueGreyDark50}
-            letterSpacing="roundedTight"
-            size="small"
+            letterSpacing="uppercase"
+            size="smedium"
             uppercase
             weight="semibold"
           >
@@ -61,7 +61,7 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
           <Pill maxWidth={150}>#{asset.id}</Pill>
         </RowWithMargins>
         <FlexItem flex={1}>
-          <Text letterSpacing="roundedTight" size="blarge" weight="bold">
+          <Text letterSpacing="roundedMedium" size="big" weight="bold">
             {buildUniqueTokenName(asset)}
           </Text>
         </FlexItem>
