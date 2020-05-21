@@ -12,19 +12,20 @@ const ButtonIcon = styled(Icon)`
   margin-right: 9;
 `;
 
-const Container = styled(Centered)`
+const Container = styled(BorderlessButton)`
+  ${position.centered};
+  flex-direction: row;
   flex: 1;
   height: 56;
+  padding-bottom: 7;
 `;
 
-const IconContainer = styled(Centered)`
-  ${position.size(18)}
-  flex-grow: 0;
-  flex-shrink: 0;
+const IconContainer = styled(Centered).attrs({ grow: 0, shrink: 0 })`
+  ${position.size(18)};
 `;
 
 const ModalFooterButton = ({ icon, label, onPress }) => (
-  <Container component={BorderlessButton} onPress={onPress} paddingBottom={7}>
+  <Container onPress={onPress}>
     <IconContainer>
       <ButtonIcon color={colors.appleBlue} name={icon} />
     </IconContainer>

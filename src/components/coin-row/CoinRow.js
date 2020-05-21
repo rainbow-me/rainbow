@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { compose, withProps } from 'recompact';
+import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
 import {
   withAccountSettings,
@@ -10,34 +10,22 @@ import {
 } from '../../hoc';
 import { padding } from '../../styles';
 import Highlight from '../Highlight';
-import { CoinIcon } from '../coin-icon';
+import { CoinIcon, CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;
 
-const Container = styled(Row)`
-  ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom, 19)}
+const Container = styled(Row).attrs({ align: 'center' })`
+  ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom)};
   width: 100%;
 `;
 
-const OpacityWrapper = styled(Row)`
+const Content = styled(Column).attrs({ justify: 'space-between' })`
   flex: 1;
-`;
-
-const Content = styled(Column).attrs({
-  flex: 1,
-  justify: 'space-between',
-})`
-  height: ${CoinIcon.size};
+  height: ${CoinIconSize};
   margin-left: 10;
 `;
-
-const CoinRowHighlight = withProps({
-  borderRadius: 18,
-  margin: 2,
-  marginHorizontal: 8,
-})(Highlight);
 
 const enhance = compose(
   withAccountSettings,
@@ -48,22 +36,27 @@ const enhance = compose(
 
 const CoinRow = enhance(
   ({
+    address,
     bottomRowRender,
     children,
     coinIconRender,
     containerStyles,
     contentStyles,
     highlight,
-    symbol,
-    address,
-    topRowRender,
     isCoinListEdited,
     isHidden,
     isPinned,
+    symbol,
+    topRowRender,
     ...props
   }) => (
-    <Container align="center" css={containerStyles}>
-      <CoinRowHighlight visible={highlight} />
+    <Container style={containerStyles}>
+      <Highlight
+        borderRadius={18}
+        margin={2}
+        marginHorizontal={8}
+        visible={highlight}
+      />
       {createElement(coinIconRender, {
         address,
         isCoinListEdited,
@@ -72,8 +65,8 @@ const CoinRow = enhance(
         symbol,
         ...props,
       })}
-      <OpacityWrapper style={{ opacity: isHidden ? 0.4 : 1 }}>
-        <Content css={contentStyles}>
+      <Row flex={1} opacity={isHidden ? 0.4 : 1}>
+        <Content style={contentStyles}>
           <Row align="center" justify="space-between">
             {topRowRender({ symbol, ...props })}
           </Row>
@@ -81,7 +74,7 @@ const CoinRow = enhance(
             {bottomRowRender({ symbol, ...props })}
           </Row>
         </Content>
-      </OpacityWrapper>
+      </Row>
       {typeof children === 'function'
         ? children({ symbol, ...props })
         : children}
@@ -107,6 +100,6 @@ CoinRow.defaultProps = {
   coinIconRender: CoinIcon,
 };
 
-CoinRow.height = CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom;
+CoinRow.height = CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom;
 
 export default CoinRow;

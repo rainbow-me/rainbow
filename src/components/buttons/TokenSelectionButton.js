@@ -2,51 +2,48 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 import ShadowStack from 'react-native-shadow-stack';
+import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { colors, margin, padding, position } from '../../styles';
-import { isNewValueForObjectPaths } from '../../utils';
+import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { InnerBorder, Row } from '../layout';
+import { InnerBorder, Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 
-const TokenSelectionButton = ({ borderRadius, onPress, shadows, symbol }) => {
-  return (
-    <ButtonPressAnimation onPress={onPress}>
-      <Row accessible flex={0} css={margin(0, 15)}>
-        <ShadowStack
-          {...position.coverAsObject}
-          backgroundColor={symbol ? colors.dark : colors.appleBlue}
-          borderRadius={borderRadius}
-          shadows={shadows}
-        />
-        <Row align="center" css={padding(9.5, 14, 11, 15)} zIndex={1}>
-          <Text
-            color={colors.white}
-            size="lmedium"
-            style={{
-              marginLeft: 0,
-              marginRight: 7,
-            }}
-            weight="semibold"
-          >
-            {symbol || 'Choose a Coin'}
-          </Text>
-          <FastImage
-            resizeMode={FastImage.resizeMode.contain}
-            source={CaretImageSource}
-            style={{
-              height: 17,
-              right: -0.5,
-              width: 9,
-            }}
-            tintColor={colors.white}
-          />
-        </Row>
-        <InnerBorder radius={borderRadius} />
-      </Row>
-    </ButtonPressAnimation>
-  );
-};
+const Content = styled(RowWithMargins).attrs({ align: 'center', margin: 7 })`
+  ${padding(9.5, 14, 11, 15)};
+  z-index: 1;
+`;
+
+const CaretIcon = styled(FastImage).attrs({
+  resizeMode: FastImage.resizeMode.contain,
+  source: CaretImageSource,
+  tintColor: colors.white,
+})`
+  height: 17;
+  right: -0.5;
+  width: 9;
+`;
+
+const TokenSelectionButton = ({ borderRadius, onPress, shadows, symbol }) => (
+  <ButtonPressAnimation onPress={onPress}>
+    <Row accessible css={margin(0, 15)}>
+      <ShadowStack
+        {...position.coverAsObject}
+        backgroundColor={symbol ? colors.dark : colors.appleBlue}
+        borderRadius={borderRadius}
+        shadows={shadows}
+      />
+      <Content>
+        <Text color={colors.white} size="lmedium" weight="semibold">
+          {symbol || 'Choose a Coin'}
+        </Text>
+        <CaretIcon />
+      </Content>
+      <InnerBorder radius={borderRadius} />
+    </Row>
+  </ButtonPressAnimation>
+);
 
 TokenSelectionButton.propTypes = {
   borderRadius: PropTypes.number,
@@ -65,7 +62,8 @@ TokenSelectionButton.defaultProps = {
   ],
 };
 
-const arePropsEqual = (...props) =>
-  !isNewValueForObjectPaths(...props, ['onPress', 'showLockIcon', 'symbol']);
-
-export default React.memo(TokenSelectionButton, arePropsEqual);
+export default magicMemo(TokenSelectionButton, [
+  'onPress',
+  'showLockIcon',
+  'symbol',
+]);

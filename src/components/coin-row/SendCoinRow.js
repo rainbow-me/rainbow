@@ -1,25 +1,33 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { shouldUpdate } from 'recompact';
-import { css } from 'styled-components/primitives';
+import styled, { css } from 'styled-components/primitives';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
-import { colors, padding } from '../../styles';
+import { colors, padding, position } from '../../styles';
+import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import Text from '../text/Text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+
+const selectedHeight = 78;
 
 const containerStyles = css`
   padding-left: 15;
   padding-top: 17;
 `;
 
-const selectedHeight = 78;
-
-const selectedStyles = css`
-  ${padding(15, 15, 19, 15)};
+const containerSelectedStyles = css`
+  ${padding(15, 15, 19)};
   height: ${selectedHeight};
+`;
+
+const TouchableContainer = styled(ButtonPressAnimation).attrs({
+  scaleTo: 0.96,
+})`
+  ${position.centered};
+  flex: 1;
+  padding-bottom: 4;
 `;
 
 const BottomRow = ({ balance, native, nativeCurrencySymbol }) => {
@@ -33,40 +41,28 @@ const BottomRow = ({ balance, native, nativeCurrencySymbol }) => {
   );
 };
 
-BottomRow.propTypes = {
-  balance: PropTypes.shape({ display: PropTypes.string }),
-  native: PropTypes.object,
-  nativeCurrencySymbol: PropTypes.string,
-};
-
 const TopRow = ({ name, selected }) => (
   <CoinName weight={selected ? 'semibold' : 'regular'}>{name}</CoinName>
 );
 
-TopRow.propTypes = {
-  name: PropTypes.string,
-  selected: PropTypes.bool,
-};
+const SendCoinRow = magicMemo(
+  ({ item, onPress, selected, ...props }) => (
+    <TouchableContainer onPress={onPress}>
+      <CoinRow
+        {...item}
+        {...props}
+        bottomRowRender={BottomRow}
+        containerStyles={selected ? containerSelectedStyles : containerStyles}
+        selected={selected}
+        topRowRender={TopRow}
+      />
+    </TouchableContainer>
+  ),
+  'item',
+  buildAssetUniqueIdentifier
+);
 
-const enhance = shouldUpdate((props, nextProps) => {
-  const itemIdentifier = buildAssetUniqueIdentifier(props.item);
-  const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.item);
-
-  return itemIdentifier !== nextItemIdentifier;
-});
-
-const SendCoinRow = enhance(({ item, onPress, selected, ...props }) => (
-  <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
-    <CoinRow
-      {...item}
-      bottomRowRender={BottomRow}
-      containerStyles={selected ? selectedStyles : containerStyles}
-      selected={selected}
-      topRowRender={TopRow}
-      {...props}
-    />
-  </ButtonPressAnimation>
-));
+SendCoinRow.displayName = 'SendCoinRow';
 
 SendCoinRow.propTypes = {
   item: PropTypes.object,

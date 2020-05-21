@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Circle } from 'svgs';
+import { Circle } from 'react-native-svg';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 

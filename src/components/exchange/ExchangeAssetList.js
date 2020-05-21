@@ -1,41 +1,43 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { SectionList } from 'react-native-gesture-handler';
+import styled from 'styled-components/primitives';
 import { usePrevious } from '../../hooks';
 import { exchangeModalBorderRadius } from '../../screens/ExchangeModal';
-import { colors, fonts } from '../../styles';
-import { isNewValueForObjectPaths } from '../../utils';
+import { colors, padding } from '../../styles';
+import { magicMemo } from '../../utils';
 import { CoinRow, ExchangeCoinRow } from '../coin-row';
 import { Text } from '../text';
 
-const styles = StyleSheet.create({
-  headerStyle: {
-    backgroundColor: colors.white,
-    flex: 1,
-    paddingBottom: 6,
-    paddingHorizontal: 19,
-    paddingTop: 12,
-  },
-  headerStyleText: {
-    color: colors.blueGreyDark,
-    fontSize: 12,
-    fontWeight: fonts.weight.semibold,
-    opacity: 0.4,
-  },
-});
+const Header = styled.View`
+  ${padding(12, 19, 6)};
+  background-color: ${colors.white};
+  flex: 1;
+`;
 
-const contentContainerStyle = {
-  paddingBottom: exchangeModalBorderRadius,
-};
+const HeaderTitle = styled(Text).attrs({
+  color: colors.blueGreyDark,
+  opacity: 0.4,
+  size: 'smaller',
+  weight: 'semibold',
+})`
+  ${padding(12, 19, 6)};
+  background-color: ${colors.white};
+  flex: 1;
+`;
 
-const scrollIndicatorInsets = {
-  bottom: exchangeModalBorderRadius,
-};
+const ExchangeAssetSectionListHeader = ({ section }) =>
+  section?.title ? (
+    <Header>
+      <HeaderTitle>{section.title}</HeaderTitle>
+    </Header>
+  ) : null;
 
+const contentContainerStyle = { paddingBottom: exchangeModalBorderRadius };
+const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;
+const scrollIndicatorInsets = { bottom: exchangeModalBorderRadius };
 const getItemLayout = ({ showBalance }, index) => {
   const height = showBalance ? CoinRow.height + 1 : CoinRow.height;
-
   return {
     index,
     length: height,
@@ -43,7 +45,21 @@ const getItemLayout = ({ showBalance }, index) => {
   };
 };
 
-const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;
+const ExchangeAssetSectionList = styled(SectionList).attrs({
+  alwaysBounceVertical: true,
+  contentContainerStyle,
+  directionalLockEnabled: true,
+  getItemLayout,
+  initialNumToRender: 8,
+  keyboardDismissMode: 'none',
+  keyboardShouldPersistTaps: 'always',
+  keyExtractor,
+  scrollEventThrottle: 32,
+  scrollIndicatorInsets,
+  windowSize: 11,
+})`
+  height: 100%;
+`;
 
 const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
   const sectionListRef = useRef();
@@ -70,35 +86,13 @@ const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
     []
   );
 
-  const renderSectionHeaderCallback = useCallback(
-    ({ section }) =>
-      section.title ? (
-        <View style={styles.headerStyle}>
-          <Text style={styles.headerStyleText}>{section.title}</Text>
-        </View>
-      ) : null,
-    []
-  );
-
   return (
-    <SectionList
-      alwaysBounceVertical
-      contentContainerStyle={contentContainerStyle}
-      directionalLockEnabled
-      getItemLayout={getItemLayout}
-      height="100%"
-      initialNumToRender={8}
-      keyboardDismissMode="none"
-      keyboardShouldPersistTaps="always"
-      keyExtractor={keyExtractor}
+    <ExchangeAssetSectionList
       onLayout={onLayout}
       ref={sectionListRef}
       renderItem={renderItemCallback}
-      renderSectionHeader={renderSectionHeaderCallback}
-      scrollEventThrottle={32}
-      scrollIndicatorInsets={scrollIndicatorInsets}
+      renderSectionHeader={ExchangeAssetSectionListHeader}
       sections={items.map(createItem)}
-      windowSize={11}
     />
   );
 };
@@ -110,7 +104,4 @@ ExchangeAssetList.propTypes = {
   query: PropTypes.string,
 };
 
-const propsAreEqual = (...props) =>
-  !isNewValueForObjectPaths(...props, ['items', 'query']);
-
-export default React.memo(ExchangeAssetList, propsAreEqual);
+export default magicMemo(ExchangeAssetList, ['items', 'query']);

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { createElement } from 'react';
-import Emoji from 'react-native-emoji';
 import Flex from '../layout/Flex';
+import { Emoji } from '../text';
 
 import ApplePayIcon from './svg/ApplePayIcon';
 import ArrowBackIcon from './svg/ArrowBack';
@@ -33,6 +33,7 @@ import EmojiSmileysIcon from './svg/EmojiSmileysIcon';
 import EmojiSymbolsIcon from './svg/EmojiSymbolsIcon';
 import EmojiTravelIcon from './svg/EmojiTravelIcon';
 import FaceIdIcon from './svg/FaceIdIcon';
+import FatArrowIcon from './svg/FatArrowIcon';
 import GearIcon from './svg/GearIcon';
 import HandleIcon from './svg/HandleIcon';
 import HiddenIcon from './svg/HiddenIcon';
@@ -94,6 +95,7 @@ Icon.IconTypes = {
   emojiSymbols: EmojiSymbolsIcon,
   emojiTravel: EmojiTravelIcon,
   faceid: FaceIdIcon,
+  fatArrow: FatArrowIcon,
   gear: GearIcon,
   handle: HandleIcon,
   hidden: HiddenIcon,

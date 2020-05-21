@@ -1,25 +1,15 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Text } from 'react-primitives';
+import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
+import { Text } from '../text';
 
-const TimestampText = ({ children, style }) => (
-  <Text
-    style={{
-      color: colors.blueGreyDark,
-      lineHeight: 17,
-      marginLeft: -15,
-      opacity: 0.5,
-      textAlign: 'center',
-      ...style,
-    }}
-  >
-    {children}
-  </Text>
-);
-
-TimestampText.propTypes = {
-  children: PropTypes.string,
-};
+const TimestampText = styled(Text).attrs({
+  align: 'center',
+  color: colors.blueGreyDark50,
+  letterSpacing: 'roundedTight',
+  size: 'smedium',
+  weight: 'semibold',
+})`
+  margin-left: -15;
+`;
 
 export default TimestampText;

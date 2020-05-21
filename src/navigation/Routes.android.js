@@ -7,8 +7,9 @@ import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletModal from '../screens/ChangeWalletModal';
 import ExampleScreen from '../screens/ExampleScreen';
-import ExpandedAssetScreenWithData from '../screens/ExpandedAssetScreenWithData';
+import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
+import ModalScreen from '../screens/ModalScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import QRScannerScreenWithData from '../screens/QRScannerScreenWithData';
 import ReceiveModal from '../screens/ReceiveModal';
@@ -74,13 +75,13 @@ const routesForMainNavigator = {
     },
     screen: ExchangeModalNavigator,
   },
-  [Routes.EXPANDED_ASSET_SCREEN]: {
+  [Routes.EXPANDED_ASSET_SHEET]: {
     navigationOptions: expandedPreset,
-    screen: ExpandedAssetScreenWithData,
+    screen: ExpandedAssetSheet,
   },
-  [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: {
+  [Routes.MODAL_SCREEN]: {
     navigationOptions: overlayExpandedPreset,
-    screen: ExpandedAssetScreenWithData,
+    screen: ModalScreen,
   },
   [Routes.RECEIVE_MODAL]: {
     navigationOptions: expandedPresetWithTransitions,

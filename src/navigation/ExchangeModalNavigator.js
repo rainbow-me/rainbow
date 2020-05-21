@@ -3,7 +3,7 @@ import { Value } from 'react-native-reanimated';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { withBlockedHorizontalSwipe } from '../hoc';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
-import ExpandedAssetScreenWithData from '../screens/ExpandedAssetScreenWithData';
+import ModalScreen from '../screens/ModalScreen';
 import SwapModal from '../screens/SwapModal';
 import { deviceUtils } from '../utils';
 import { swapDetailsPreset } from './effects';
@@ -27,7 +27,7 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator(
             navigationOptions: {
               ...swapDetailsPreset,
             },
-            screen: withBlockedHorizontalSwipe(ExpandedAssetScreenWithData),
+            screen: withBlockedHorizontalSwipe(ModalScreen),
           },
         },
         {

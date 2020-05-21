@@ -8,7 +8,7 @@ import styled from 'styled-components/primitives';
 import { useShowcaseTokens } from '../../../hooks';
 import { setOpenFamilyTabs } from '../../../redux/openStateSettings';
 import { colors, padding } from '../../../styles';
-import ContextMenu from '../../ContextMenu';
+import { ContextMenu } from '../../context-menu';
 import { Column, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import FloatingPanel from '../FloatingPanel';

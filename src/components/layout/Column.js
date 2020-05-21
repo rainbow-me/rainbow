@@ -1,7 +1,5 @@
-import { compose, setDisplayName, withProps } from 'recompact';
+import styled from 'styled-components/primitives';
 import Flex from './Flex';
 
-export default compose(
-  setDisplayName('Column'),
-  withProps({ direction: 'column' })
-)(Flex);
+const Column = styled(Flex).attrs({ direction: 'column' })``;
+export default Column;

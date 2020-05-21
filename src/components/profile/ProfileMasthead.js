@@ -1,10 +1,8 @@
 import analytics from '@segment/analytics-react-native';
 import GraphemeSplitter from 'grapheme-splitter';
-import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { Text } from 'react-native';
+import { Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
 import { isAvatarPickerAvailable } from '../../config/experimental';
@@ -18,7 +16,7 @@ import Divider from '../Divider';
 import CopyTooltip from '../copy-tooltip';
 import { FloatingEmojis } from '../floating-emojis';
 import { Column, RowWithMargins } from '../layout';
-import { TruncatedAddress } from '../text';
+import { Text, TruncatedAddress } from '../text';
 import AddCashButton from './AddCashButton';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
@@ -37,6 +35,17 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
   padding-right: 24;
 `;
 
+const AvatarImage = styled(FastImage).attrs({ source: AvatarImageSource })`
+  ${borders.buildCircle(85)};
+`;
+
+const ProfileMastheadDivider = styled(Divider).attrs({
+  color: colors.rowDividerLight,
+})`
+  bottom: 0;
+  position: absolute;
+`;
+
 const FirstLetter = styled(Text)`
   width: 100%;
   text-align: center;
@@ -47,26 +56,36 @@ const FirstLetter = styled(Text)`
   padding-left: 0.5px;
 `;
 
-const ProfileMasthead = ({
+export default function ProfileMasthead({
   accountAddress,
   accountColor,
   accountName,
   addCashAvailable,
-  showBottomDivider,
-  onPressAvatar,
-}) => {
+  recyclerListRef,
+  showBottomDivider = true,
+}) {
   const name = accountName || DEFAULT_WALLET_NAME;
   const color = accountColor || 0;
   const { accountENS } = useAccountSettings();
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
 
-  const onAddCash = useCallback(() => {
+  const handlePressAddCash = useCallback(() => {
     navigate(Routes.ADD_CASH_SHEET);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
   }, [navigate]);
+
+  const handlePressAvatar = useCallback(() => {
+    if (recyclerListRef) {
+      recyclerListRef.scrollToTop(true);
+      setTimeout(
+        () => navigate(Routes.AVATAR_BUILDER, { accountColor, accountName }),
+        recyclerListRef.getCurrentScrollOffset() > 0 ? 200 : 1
+      );
+    }
+  }, [accountColor, accountName, navigate, recyclerListRef]);
 
   return (
     <Column
@@ -76,7 +95,7 @@ const ProfileMasthead = ({
     >
       {isAvatarPickerAvailable ? (
         <AvatarCircle
-          onPress={onPressAvatar}
+          onPress={handlePressAvatar}
           style={{ backgroundColor: colors.avatarColor[color] }}
         >
           <FirstLetter>
@@ -84,12 +103,12 @@ const ProfileMasthead = ({
           </FirstLetter>
         </AvatarCircle>
       ) : (
-        <FastImage
-          source={AvatarImageSource}
-          style={{ ...borders.buildCircleAsObject(85) }}
-        />
+        <AvatarImage />
       )}
-      <CopyTooltip textToCopy={accountENS || accountAddress} tooltipText="Copy">
+      <CopyTooltip
+        textToCopy={accountENS || accountAddress}
+        tooltipText={Platform.OS === 'android' ? 'Address Copied' : 'Copy'}
+      >
         <AddressAbbreviation address={accountENS || accountAddress} />
       </CopyTooltip>
       <RowWithMargins align="center" margin={19}>
@@ -114,7 +133,6 @@ const ProfileMasthead = ({
             />
           )}
         </FloatingEmojis>
-
         <ProfileAction
           icon="qrCode"
           onPress={() => navigate(Routes.RECEIVE_MODAL)}
@@ -123,47 +141,8 @@ const ProfileMasthead = ({
           width={81}
         />
       </RowWithMargins>
-      {addCashAvailable && <AddCashButton onPress={onAddCash} />}
-      {showBottomDivider && (
-        <Divider
-          color={colors.rowDividerLight}
-          style={{ bottom: 0, position: 'absolute' }}
-        />
-      )}
+      {addCashAvailable && <AddCashButton onPress={handlePressAddCash} />}
+      {showBottomDivider && <ProfileMastheadDivider />}
     </Column>
   );
-};
-
-ProfileMasthead.propTypes = {
-  accountAddress: PropTypes.string,
-  accountColor: PropTypes.number,
-  accountName: PropTypes.string,
-  addCashAvailable: PropTypes.bool,
-  showBottomDivider: PropTypes.bool,
-};
-
-ProfileMasthead.defaultProps = {
-  showBottomDivider: true,
-};
-
-export default compose(
-  withHandlers({
-    onPressAvatar: ({
-      navigation,
-      accountColor,
-      accountName,
-      recyclerListRef,
-    }) => () => {
-      recyclerListRef.scrollToTop(true);
-      setTimeout(
-        () => {
-          navigation.navigate(Routes.AVATAR_BUILDER, {
-            accountColor: accountColor,
-            accountName: accountName,
-          });
-        },
-        recyclerListRef.getCurrentScrollOffset() > 0 ? 200 : 1
-      );
-    },
-  })
-)(ProfileMasthead);
+}

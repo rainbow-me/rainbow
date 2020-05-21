@@ -27,7 +27,7 @@ const ToggleSeedPhraseButton = styled(Button)`
 
 const BackupSection = ({ navigation }) => {
   const [seedPhrase, setSeedPhrase] = useState(null);
-  const { selected: selectedWallet = {} } = useWallets();
+  const { selectedWallet } = useWallets();
 
   const hideSeedPhrase = () => setSeedPhrase(null);
 
@@ -53,7 +53,7 @@ const BackupSection = ({ navigation }) => {
       <Text lineHeight="loosest" size="larger" weight="semibold">
         Your Private Key
       </Text>
-      <Content flex={0} seedPhrase={seedPhrase}>
+      <Content seedPhrase={seedPhrase}>
         {seedPhrase ? (
           <CopyTooltip
             navigation={navigation}

@@ -1,9 +1,8 @@
-import { includes, upperFirst } from 'lodash';
+import { includes } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForPropTypes } from 'recompact';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import TransactionTypes from '../../helpers/transactionTypes';
 import { colors, position } from '../../styles';
 import Spinner from '../Spinner';
 import Icon from '../icons/Icon';
@@ -73,19 +72,8 @@ const StatusProps = {
   },
 };
 
-const getCustomDisplayStatus = status => {
-  switch (status) {
-    case TransactionStatusTypes.deposited:
-    case TransactionStatusTypes.withdrew:
-      return 'Savings';
-    default:
-      return upperFirst(status);
-  }
-};
-
-const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
+const TransactionStatusBadge = ({ pending, status, title, ...props }) => {
   const isSwapping = status === TransactionStatusTypes.swapping;
-  const isTrade = type === TransactionTypes.trade;
 
   let statusColor = colors.alpha(colors.blueGreyDark, 0.7);
   if (pending) {
@@ -94,14 +82,9 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
     } else {
       statusColor = colors.appleBlue;
     }
-  } else if (isTrade && status === TransactionStatusTypes.sent) {
+  } else if (status === TransactionStatusTypes.swapped) {
     statusColor = colors.swapPurple;
   }
-
-  const displayStatus =
-    isTrade && status === TransactionStatusTypes.sent
-      ? TransactionStatusTypes.swapped
-      : status;
 
   return (
     <Row align="center" {...props}>
@@ -111,15 +94,15 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
           size={12}
         />
       )}
-      {displayStatus && includes(Object.keys(StatusProps), displayStatus) && (
+      {status && includes(Object.keys(StatusProps), status) && (
         <Icon
           color={statusColor}
           style={position.maxSizeAsObject(10)}
-          {...StatusProps[displayStatus]}
+          {...StatusProps[status]}
         />
       )}
       <Text color={statusColor} size="smedium" weight="semibold">
-        {getCustomDisplayStatus(displayStatus)}
+        {title}
       </Text>
     </Row>
   );
@@ -128,7 +111,7 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
 TransactionStatusBadge.propTypes = {
   pending: PropTypes.bool,
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
-  type: PropTypes.oneOf(Object.values(TransactionTypes)),
+  title: PropTypes.string,
 };
 
 TransactionStatusBadge.defaultProps = {

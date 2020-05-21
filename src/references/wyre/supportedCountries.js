@@ -1,35 +1,35 @@
 /* eslint-disable sort-keys */
 export const supportedCountries = {
   AU: {
-    emojiName: 'flag-au',
+    emojiName: 'australia',
     name: 'Australia',
   },
   AT: {
-    emojiName: 'flag-at',
+    emojiName: 'austria',
     name: 'Austria',
   },
   BE: {
-    emojiName: 'flag-be',
+    emojiName: 'belgium',
     name: 'Belgium',
   },
   CA: {
-    emojiName: 'flag-ca',
+    emojiName: 'canada',
     name: 'Canada',
   },
   CZ: {
-    emojiName: 'flag-cz',
+    emojiName: 'czech_republic',
     name: 'Czech Republic',
   },
   DK: {
-    emojiName: 'flag-dk',
+    emojiName: 'denmark',
     name: 'Denmark',
   },
   EE: {
-    emojiName: 'flag-ee',
+    emojiName: 'estonia',
     name: 'Estonia',
   },
   FI: {
-    emojiName: 'flag-fi',
+    emojiName: 'finland',
     name: 'Finland',
   },
   FR: {
@@ -41,15 +41,15 @@ export const supportedCountries = {
     name: 'Germany',
   },
   GR: {
-    emojiName: 'flag-gr',
+    emojiName: 'greece',
     name: 'Greece',
   },
   HK: {
-    emojiName: 'flag-hk',
+    emojiName: 'hong_kong',
     name: 'Hong Kong',
   },
   IE: {
-    emojiName: 'flag-ie',
+    emojiName: 'ireland',
     name: 'Ireland',
   },
   IT: {
@@ -57,47 +57,47 @@ export const supportedCountries = {
     name: 'Italy',
   },
   LV: {
-    emojiName: 'flag-lv',
+    emojiName: 'latvia',
     name: 'Latvia',
   },
   LT: {
-    emojiName: 'flag-lt',
+    emojiName: 'lithuania',
     name: 'Lithuania',
   },
   LU: {
-    emojiName: 'flag-lu',
+    emojiName: 'luxembourg',
     name: 'Luxembourg',
   },
   MX: {
-    emojiName: 'flag-mx',
+    emojiName: 'mexico',
     name: 'Mexico',
   },
   NL: {
-    emojiName: 'flag-nl',
+    emojiName: 'netherlands',
     name: 'The Netherlands',
   },
   NZ: {
-    emojiName: 'flag-nz',
+    emojiName: 'new_zealand',
     name: 'New Zealand',
   },
   NO: {
-    emojiName: 'flag-no',
+    emojiName: 'norway',
     name: 'Norway',
   },
   PL: {
-    emojiName: 'flag-pl',
+    emojiName: 'poland',
     name: 'Poland',
   },
   PT: {
-    emojiName: 'flag-pt',
+    emojiName: 'portugal',
     name: 'Portugal',
   },
   SK: {
-    emojiName: 'flag-sk',
+    emojiName: 'slovakia',
     name: 'Slovakia',
   },
   SI: {
-    emojiName: 'flag-si',
+    emojiName: 'slovenia',
     name: 'Slovenia',
   },
   ES: {
@@ -105,11 +105,11 @@ export const supportedCountries = {
     name: 'Spain',
   },
   SE: {
-    emojiName: 'flag-se',
+    emojiName: 'sweden',
     name: 'Sweden',
   },
   CH: {
-    emojiName: 'flag-ch',
+    emojiName: 'switzerland',
     name: 'Switzerland',
   },
   US: {

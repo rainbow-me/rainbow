@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { View } from 'react-primitives';
+import { useTimeout } from '../../hooks';
 import { colors } from '../../styles';
 import TokenFamilyHeader from './TokenFamilyHeader';
 
@@ -21,6 +22,7 @@ const TokenFamilyWrap = ({
   childrenAmount,
   highlight,
   isFirst,
+  isHeader,
   isOpen,
   item,
   onToggle,
@@ -28,14 +30,9 @@ const TokenFamilyWrap = ({
   title,
   ...props
 }) => {
+  const [areChildrenVisible, setAreChildrenVisible] = useState(false);
+  const [startTimeout, stopTimeout] = useTimeout();
   const transitionRef = useRef();
-  const [areChildrenVisible, setAreChildrenVisible] = useState(isOpen);
-
-  const timeoutHandle = useRef();
-  const clearHandle = useCallback(
-    () => timeoutHandle.current && clearTimeout(timeoutHandle.current),
-    []
-  );
 
   const showChildren = useCallback(() => {
     if (!areChildrenVisible) {
@@ -47,17 +44,13 @@ const TokenFamilyWrap = ({
   }, [areChildrenVisible]);
 
   useEffect(() => {
-    clearHandle();
+    stopTimeout();
     if (areChildrenVisible && !isOpen) {
       setAreChildrenVisible(false);
     } else if (!areChildrenVisible && isOpen) {
-      timeoutHandle.current = setTimeout(
-        showChildren,
-        TokenFamilyHeader.animationDuration
-      );
+      startTimeout(showChildren, TokenFamilyHeader.animationDuration);
     }
-    return () => clearHandle();
-  }, [areChildrenVisible, clearHandle, isOpen, showChildren]);
+  }, [areChildrenVisible, isOpen, showChildren, startTimeout, stopTimeout]);
 
   return (
     <View
@@ -65,14 +58,16 @@ const TokenFamilyWrap = ({
       overflow="hidden"
       paddingTop={isFirst ? TokenFamilyWrapPaddingTop : 0}
     >
-      <TokenFamilyHeader
-        {...props}
-        childrenAmount={childrenAmount}
-        highlight={highlight}
-        isOpen={isOpen}
-        onPress={onToggle}
-        title={title}
-      />
+      {isHeader ? (
+        <TokenFamilyHeader
+          {...props}
+          childrenAmount={childrenAmount}
+          highlight={highlight}
+          isOpen={isOpen}
+          onPress={onToggle}
+          title={title}
+        />
+      ) : null}
       {/*
           XXX 👇️👇️👇️👇️ not sure if this Transitioning.View should have a `key` defined for performance or not
       */}

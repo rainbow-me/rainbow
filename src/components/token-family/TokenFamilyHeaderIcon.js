@@ -1,20 +1,27 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FallbackIcon } from 'react-coin-icon';
 import ShadowStack from 'react-native-shadow-stack';
 import stylePropType from 'react-style-proptype';
 import styled from 'styled-components/primitives';
-import { borders, colors, fonts } from '../../styles';
+import { borders, colors } from '../../styles';
 import { initials } from '../../utils';
 import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
-import { Text } from '../text';
+import { Emoji } from '../text';
 
-const Container = styled(Text)`
-  font-size: ${fonts.size.medium};
+const shadows = [
+  [0, 4, 6, colors.dark, 0.04],
+  [0, 1, 3, colors.dark, 0.08],
+];
+
+const TrophyEmoji = styled(Emoji).attrs({
+  align: 'center',
+  name: 'trophy',
+  size: 'medium',
+})`
   height: 30;
   margin-right: 4.5;
   text-align-vertical: center;
-  text-align: center;
 `;
 
 const TokenFamilyHeaderIcon = ({
@@ -23,23 +30,22 @@ const TokenFamilyHeaderIcon = ({
   isCoinRow,
   style,
 }) => {
+  const imageSource = useMemo(() => ({ uri: familyImage }), [familyImage]);
   const size = borders.buildCircleAsObject(isCoinRow ? 40 : 32);
+
   return familyName === 'Showcase' ? (
-    <Container>🏆</Container>
+    <TrophyEmoji />
   ) : (
     <ShadowStack
       {...size}
       backgroundColor={familyImage ? colors.white : colors.purpleLight}
-      shadows={[
-        [0, 4, 6, colors.dark, 0.04],
-        [0, 1, 3, colors.dark, 0.08],
-      ]}
+      shadows={shadows}
       style={style}
     >
       {familyImage ? (
         <ImageWithCachedDimensions
           id={familyImage}
-          source={{ uri: familyImage }}
+          source={imageSource}
           style={size}
         />
       ) : (
