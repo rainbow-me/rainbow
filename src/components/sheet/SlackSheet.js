@@ -24,7 +24,7 @@ const Content = styled(ScrollView)`
 `;
 
 export default function SlackSheet({
-  borderRadius = 39,
+  borderRadius = 30,
   children,
   scrollEnabled = true,
   ...props
