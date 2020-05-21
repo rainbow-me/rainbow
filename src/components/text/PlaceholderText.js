@@ -4,6 +4,7 @@ import { colors } from '../../styles';
 import Text from './Text';
 
 const Placeholder = styled(Text).attrs({
+  align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.3),
   size: 'big',
   weight: 'semibold',

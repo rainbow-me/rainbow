@@ -10,7 +10,7 @@ import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import CoinCheckButton from '../coin-row/CoinCheckButton';
 import { ContactAvatar } from '../contacts';
-import { Row } from '../layout';
+import { Centered, Column, Row } from '../layout';
 import { TruncatedAddress, TruncatedText } from '../text';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
@@ -28,7 +28,7 @@ const sx = StyleSheet.create({
   accountRow: {
     flex: 1,
     justifyContent: 'center',
-    marginHorizontal: 19,
+    marginLeft: 19,
   },
   bottomRowText: {
     color: colors.alpha(colors.blueGreyDark, 0.5),
@@ -36,7 +36,7 @@ const sx = StyleSheet.create({
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
   coinCheckIcon: {
-    right: -9,
+    width: 60,
   },
   editIcon: {
     color: colors.appleBlue,
@@ -49,6 +49,7 @@ const sx = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 24,
     height: 24,
+    marginLeft: 19,
     textAlign: 'center',
   },
   readOnlyText: {
@@ -59,6 +60,11 @@ const sx = StyleSheet.create({
     paddingHorizontal: 6.5,
     paddingVertical: 3,
     textAlign: 'center',
+  },
+  rightContent: {
+    flex: 0,
+    flexDirection: 'row',
+    marginLeft: 48,
   },
 });
 
@@ -80,9 +86,9 @@ const linearGradientProps = {
 
 const OptionsIcon = ({ onPress }) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
-    <Row paddingTop={8} justify="flex-end" height={40} width={60}>
+    <Centered height={40} width={60}>
       <Text style={sx.editIcon}>􀍡</Text>
-    </Row>
+    </Centered>
   </ButtonPressAnimation>
 );
 
@@ -90,12 +96,12 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
   const {
     address,
     balance,
+    color: accountColor,
     ens,
     index,
     isSelected,
     isReadOnly,
     label,
-    color: accountColor,
     wallet_id,
   } = data;
 
@@ -151,21 +157,20 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
               </BottomRowText>
             </View>
           </Row>
-          <Row>
+          <Column style={sx.rightContent}>
             {isReadOnly && (
               <LinearGradient
                 {...linearGradientProps}
-                radius={77}
-                marginRight={editMode ? -29 : isSelected ? -9 : 0}
+                marginRight={editMode || isSelected ? -9 : 19}
               >
                 <Text style={sx.readOnlyText}>Watching</Text>
               </LinearGradient>
             )}
             {!editMode && isSelected && (
-              <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
+              <CoinCheckButton toggle={isSelected} style={sx.coinCheckIcon} />
             )}
             {editMode && <OptionsIcon onPress={onOptionsPress} />}
-          </Row>
+          </Column>
         </Row>
       </ButtonPressAnimation>
     </View>

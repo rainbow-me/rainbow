@@ -34,7 +34,7 @@ const walletRowHeight = 59;
 const maxListHeight = deviceHeight - 220;
 
 const EditButton = styled(ButtonPressAnimation).attrs({ scaleTo: 0.96 })`
-  padding: 10px;
+  padding: 12px;
   position: absolute;
   right: 7px;
   top: 6px;
@@ -293,7 +293,7 @@ const ChangeWalletSheet = () => {
 
   return (
     <Sheet borderRadius={30}>
-      <Column height={41} justify="space-between">
+      <Column height={42} justify="space-between">
         <SheetTitle>Wallets</SheetTitle>
         <Divider color={colors.rowDividerExtraLight} />
       </Column>
