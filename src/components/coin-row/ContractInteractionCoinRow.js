@@ -12,7 +12,9 @@ import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 
 const BottomRow = ({ dappName }) => <CoinName>{dappName}</CoinName>;
-const TopRow = ({ status }) => <TransactionStatusBadge status={status} />;
+const TopRow = ({ status, title }) => (
+  <TransactionStatusBadge status={status} title={title} />
+);
 
 const ContractInteractionVenderLogoIcon = styled(RequestVendorLogoIcon).attrs({
   borderRadius: CoinIconSize,

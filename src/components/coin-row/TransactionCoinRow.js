@@ -34,8 +34,7 @@ const BottomRow = ({ description, native, status, type }) => {
     status === TransactionStatusTypes.purchased;
   const isSent = status === TransactionStatusTypes.sent;
 
-  const isOutgoingSwap =
-    status === TransactionStatusTypes.sent && type === TransactionTypes.trade;
+  const isOutgoingSwap = status === TransactionStatusTypes.swapped;
   const isIncomingSwap =
     status === TransactionStatusTypes.received &&
     type === TransactionTypes.trade;
@@ -73,14 +72,9 @@ const BottomRow = ({ description, native, status, type }) => {
 
 BottomRow.propTypes = rowRenderPropTypes;
 
-const TopRow = ({ balance, pending, status, title, type }) => (
+const TopRow = ({ balance, pending, status, title }) => (
   <RowWithMargins align="center" justify="space-between" margin={19}>
-    <TransactionStatusBadge
-      pending={pending}
-      status={status}
-      title={title}
-      type={type}
-    />
+    <TransactionStatusBadge pending={pending} status={status} title={title} />
     <Row align="center" flex={1} justify="end">
       <BottomRowText align="right">{get(balance, 'display', '')}</BottomRowText>
     </Row>
