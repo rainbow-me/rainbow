@@ -29,6 +29,7 @@ import ChartTypes from '../helpers/chartTypes';
 import {
   convertAmountToRawAmount,
   convertRawAmountToDecimalFormat,
+  convertStringToNumber,
   divide,
   fromWei,
   greaterThan,
@@ -43,6 +44,9 @@ import {
 } from '../references';
 import { logger } from '../utils';
 import { toHex, web3Provider } from './web3';
+
+const DefaultMaxSlippageInBips = 200;
+const SlippageBufferInBips = 100;
 
 export const getTestnetUniswapPairs = network => {
   const pairs = get(uniswapTestnetAssets, network, {});
@@ -132,8 +136,15 @@ export const estimateSwapGasLimit = async (accountAddress, tradeDetails) => {
   }
 };
 
-export const getContractExecutionDetails = (tradeDetails, providerOrSigner) => {
-  const executionDetails = getExecutionDetails(tradeDetails);
+const getContractExecutionDetails = (tradeDetails, providerOrSigner) => {
+  const slippage = convertStringToNumber(
+    get(tradeDetails, 'executionRateSlippage', 0)
+  );
+  const maxSlippage = Math.max(
+    slippage + SlippageBufferInBips,
+    DefaultMaxSlippageInBips
+  );
+  const executionDetails = getExecutionDetails(tradeDetails, maxSlippage);
   const {
     exchangeAddress,
     methodArguments,
