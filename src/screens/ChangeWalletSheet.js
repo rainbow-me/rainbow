@@ -74,7 +74,7 @@ const ChangeWalletSheet = () => {
 
   const { goBack, navigate } = useNavigation();
   const dispatch = useDispatch();
-  const { accountAddress, network } = useAccountSettings();
+  const { accountAddress } = useAccountSettings();
   const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames(wallets);
   const creatingWallet = useRef();
@@ -130,9 +130,9 @@ const ChangeWalletSheet = () => {
         delete newWallets[walletId];
       }
       await dispatch(walletsUpdate(newWallets));
-      removeWalletData(address, network);
+      removeWalletData(address);
     },
-    [dispatch, network, wallets]
+    [dispatch, wallets]
   );
 
   const renameWallet = useCallback(

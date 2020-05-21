@@ -1,22 +1,25 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { concat, map } from 'lodash';
+import { concat, flatten, keys, map } from 'lodash';
+import NetworkTypes from '../../helpers/networkTypes';
 import { logger } from '../../utils';
 import { accountLocalKeys } from './accountLocal';
 import { getKey } from './common';
 import { uniswapAccountLocalKeys } from './uniswap';
 import { walletConnectAccountLocalKeys } from './walletconnect';
 
-export const removeWalletData = async (accountAddress, network) => {
-  logger.log('[remove wallet]', accountAddress, network);
+export const removeWalletData = async accountAddress => {
+  logger.log('[remove wallet]', accountAddress);
   const allPrefixes = concat(
     accountLocalKeys,
     uniswapAccountLocalKeys,
     walletConnectAccountLocalKeys
   );
   logger.log('[remove wallet] - all prefixes', allPrefixes);
-  const allKeys = map(allPrefixes, prefix =>
-    getKey(prefix, accountAddress, network)
+  const networks = keys(NetworkTypes);
+  const allKeysWithNetworks = map(allPrefixes, prefix =>
+    map(networks, network => getKey(prefix, accountAddress, network))
   );
+  const allKeys = flatten(allKeysWithNetworks);
   try {
     await AsyncStorage.multiRemove(allKeys);
   } catch (error) {
