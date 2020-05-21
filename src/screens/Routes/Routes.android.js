@@ -99,11 +99,11 @@ const routesForMainNavigator = {
     screen: SettingsModal,
     transparentCard: true,
   },
-  SwipeLayout: {
+  [Routes.SWIPE_LAYOUT]: {
     navigationOptions: backgroundPreset,
     screen: SwipeStack,
   },
-  WalletConnectConfirmationModal: {
+  [Routes.WALLET_CONNECT_CONFIRMATION_MODAL]: {
     navigationOptions: expandedPresetWithTransitions,
     screen: WalletConnectConfirmationModal,
   },
@@ -112,7 +112,7 @@ const routesForMainNavigator = {
 const MainNavigator = createStackNavigator(routesForMainNavigator);
 
 const routesForStack = {
-  AddCashSheet: {
+  [Routes.ADD_CASH_SHEET]: {
     navigationOptions: {
       ...sheetPreset,
       onTransitionStart: props => {
@@ -122,7 +122,7 @@ const routesForStack = {
     },
     screen: AddCashSheet,
   },
-  ImportSeedPhraseSheet: {
+  [Routes.IMPORT_SEED_PHRASE_SHEET]: {
     navigationOptions: {
       ...sheetPreset,
       onTransitionStart: props => {
@@ -133,21 +133,21 @@ const routesForStack = {
     screen: ImportSeedPhraseSheetWithData,
   },
   MainNavigator,
-  SavingsDepositModal: {
+  [Routes.SAVINGS_DEPOSIT_MODAL]: {
     navigationOptions: exchangePresetWithTransitions,
     params: {
       isGestureBlocked: false,
     },
     screen: SavingModalNavigator,
   },
-  SavingsWithdrawModal: {
+  [Routes.SAVINGS_WITHDRAW_MODAL]: {
     navigationOptions: exchangePresetWithTransitions,
     params: {
       isGestureBlocked: false,
     },
     screen: WithdrawModal,
   },
-  SendSheet: {
+  [Routes.SEND_SHEET]: {
     navigationOptions: {
       ...omit(sheetPreset, 'gestureResponseDistance'),
       onTransitionStart: props => {
