@@ -25,9 +25,6 @@ import {
   getAssetPricesFromUniswap,
   getAssets,
   getLocalTransactions,
-  removeAssetPricesFromUniswap,
-  removeAssets,
-  removeLocalTransactions,
   saveAssetPricesFromUniswap,
   saveAssets,
   saveLocalTransactions,
@@ -74,7 +71,6 @@ const DATA_ADD_NEW_TRANSACTION_SUCCESS =
   'data/DATA_ADD_NEW_TRANSACTION_SUCCESS';
 
 const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
-const DATA_RESET_STATE = 'data/DATA_RESET_STATE';
 
 // -- Actions ---------------------------------------- //
 export const dataLoadState = () => async (dispatch, getState) => {
@@ -112,24 +108,12 @@ export const dataLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const dataClearState = () => (dispatch, getState) => {
-  const { uniswapPricesSubscription } = getState().data;
-  const { accountAddress, network } = getState().settings;
-  uniswapPricesSubscription &&
-    uniswapPricesSubscription.unsubscribe &&
-    uniswapPricesSubscription.unsubscribe();
-  removeAssets(accountAddress, network);
-  removeAssetPricesFromUniswap(accountAddress, network);
-  removeLocalTransactions(accountAddress, network);
-  dispatch({ type: DATA_CLEAR_STATE });
-};
-
 export const dataResetState = () => (dispatch, getState) => {
   const { uniswapPricesSubscription } = getState().data;
   uniswapPricesSubscription &&
     uniswapPricesSubscription.unsubscribe &&
     uniswapPricesSubscription.unsubscribe();
-  dispatch({ type: DATA_RESET_STATE });
+  dispatch({ type: DATA_CLEAR_STATE });
 };
 
 export const dataUpdateAssets = assets => (dispatch, getState) => {
@@ -597,12 +581,6 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         ...INITIAL_STATE,
-      };
-    case DATA_RESET_STATE:
-      return {
-        ...state,
-        ...INITIAL_STATE,
-        isLoadingTransactions: true,
       };
     default:
       return state;
