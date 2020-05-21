@@ -78,7 +78,9 @@ export function onNavigationStateChange(prevState, currentState) {
 
   if (
     prevRouteName === Routes.IMPORT_SEED_PHRASE_SHEET &&
-    (routeName === Routes.PROFILE_SCREEN || routeName === Routes.WALLET_SCREEN)
+    (routeName === Routes.CHANGE_WALLET_SHEET ||
+      routeName === Routes.PROFILE_SCREEN ||
+      routeName === Routes.WALLET_SCREEN)
   ) {
     StatusBar.setBarStyle('dark-content', true);
   }

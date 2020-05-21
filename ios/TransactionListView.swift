@@ -19,7 +19,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var onRequestExpire: RCTBubblingEventBlock = { _ in }
   @objc var onReceivePress: RCTBubblingEventBlock = { _ in }
   @objc var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
-  @objc var onCopyTooltipPress: RCTBubblingEventBlock = { _ in }
+  @objc var onAccountNamePress: RCTBubblingEventBlock = { _ in }
   @objc var onAvatarPress: RCTBubblingEventBlock = { _ in }
   @objc var onAddCashPress: RCTBubblingEventBlock = { _ in }
   @objc var addCashAvailable: Bool = true {
@@ -30,12 +30,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       headerSeparator.frame.origin.y = header.frame.size.height - 2
     }
   }
-  @objc var isAvatarPickerAvailable: Bool = true {
-    didSet {
-      header.avatarView.isHidden = isAvatarPickerAvailable
-      header.accountView.isHidden = !isAvatarPickerAvailable
-    }
-  }
+  @objc var isAvatarPickerAvailable: Bool = false
   @objc var scaleTo: CGFloat = 0.97
   @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5)
   @objc var enableHapticFeedback: Bool = true
@@ -45,8 +40,17 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     didSet {
       header.accountAddress.text = accountAddress
       header.accountAddress.addCharacterSpacing(kernValue: 0.5)
+      header.accountAddress.sizeToFit()
+      let dropdownMarginLeft: CGFloat = 6.7
+      let padding: CGFloat = 30.0
+      var accountAddressWidth = header.accountAddress.frame.size.width + header.accountDropdown.frame.size.width + dropdownMarginLeft + padding * 2
+      if accountAddressWidth > UIScreen.main.bounds.width {
+        accountAddressWidth = UIScreen.main.bounds.width
+      }
+      header.accountNameViewWidthConstraint.constant = accountAddressWidth
     }
   }
+  
   @objc var accountColor: UIColor? = nil {
     didSet {
       header.accountBackground.backgroundColor = accountColor
@@ -88,6 +92,16 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       }
     }
   }
+  
+  
+  @objc func onPressInAccountAddress(_ sender: UIButton) {
+    header.accountNameView.animateTapStart(scale: 0.9)
+  }
+  @objc func onPressOutAccountAddress(_ sender: UIButton) {
+    header.accountNameView.animateTapEnd(useHaptic: "selection")
+  }
+  
+  
   @objc func onPressInAvatar(_ sender: UIButton) {
     header.accountView.animateTapStart(scale: 0.9)
   }
@@ -95,21 +109,8 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.accountView.animateTapEnd(useHaptic: "selection")
   }
   
-  @objc func onAccountAddressPressed(_ sender: UITapGestureRecognizer) {
-    
-    if let senderView = sender.view {
-      senderView.becomeFirstResponder()
-      
-      let copyMenuItem = UIMenuItem(title: "Copy", action: #selector(onCopyTooltipPressed))
-      UIMenuController.shared.menuItems = [copyMenuItem]
-      UIMenuController.shared.setTargetRect(senderView.frame, in: header)
-      UIMenuController.shared.setMenuVisible(true, animated: true)
-    }
-  }
-  
-  @objc func onCopyTooltipPressed() {
-    header.accountAddress.resignFirstResponder()
-    self.onCopyTooltipPress(nil);
+  @objc func onAccountAddressPressed(_ sender: UIButton) {
+      self.onAccountNamePress([:]);
   }
   
   @objc func onCopyAddressPressed(_ sender: UIButton) {
@@ -169,20 +170,29 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     tableView.canCancelContentTouches = true
     tableView.scrollIndicatorInsets.bottom = 0.0000000001
     
+    // Enable avatars
+    header.avatarView.isHidden = true
+    header.accountView.isHidden = false
+    
     header.addSubview(headerSeparator)
-    
-    header.accountView.addTarget(self, action: #selector(onAvatarPressed(_:)), for: .touchUpInside)
-    header.accountView.addTarget(self, action: #selector(onPressInAvatar(_:)), for: .touchDown)
-    header.accountView.addTarget(self, action: #selector(onPressInAvatar(_:)), for: .touchDragInside)
-    header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchUpInside)
-    header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchDragOutside)
-    header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchCancel)
-    header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchUpOutside)
-    
-    header.accountAddress.becomeFirstResponder();
-    let pressGR = UITapGestureRecognizer(target: self, action: #selector(onAccountAddressPressed))
-    header.accountAddress.isUserInteractionEnabled = true
-    header.accountAddress.addGestureRecognizer(pressGR)
+    if(isAvatarPickerAvailable){
+      header.accountView.addTarget(self, action: #selector(onAvatarPressed(_:)), for: .touchUpInside)
+      header.accountView.addTarget(self, action: #selector(onPressInAvatar(_:)), for: .touchDown)
+      header.accountView.addTarget(self, action: #selector(onPressInAvatar(_:)), for: .touchDragInside)
+      header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchUpInside)
+      header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchDragOutside)
+      header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchCancel)
+      header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchUpOutside)
+    } else {
+      header.accountView.isEnabled = false;
+    }
+    header.accountButton.addTarget(self, action: #selector(onAccountAddressPressed(_:)), for: .touchUpInside)
+    header.accountButton.addTarget(self, action: #selector(onPressInAccountAddress(_:)), for: .touchDown)
+    header.accountButton.addTarget(self, action: #selector(onPressInAccountAddress(_:)), for: .touchDragInside)
+    header.accountButton.addTarget(self, action: #selector(onPressOutAccountAddress(_:)), for: .touchUpInside)
+    header.accountButton.addTarget(self, action: #selector(onPressOutAccountAddress(_:)), for: .touchDragOutside)
+    header.accountButton.addTarget(self, action: #selector(onPressOutAccountAddress(_:)), for: .touchCancel)
+    header.accountButton.addTarget(self, action: #selector(onPressOutAccountAddress(_:)), for: .touchUpOutside)
     
     header.copyAddress.addTarget(self, action: #selector(onCopyAddressPressed(_:)), for: .touchUpInside)
     header.copyAddress.addTarget(self, action: #selector(onPressInCopyAddress(_:)), for: .touchDown)
@@ -207,6 +217,13 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchDragOutside)
     header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchCancel)
     header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchUpOutside)
+    
+    
+    let dropdownImage = UIImage(named: "caret-down")
+    header.accountDropdown.contentMode = UIView.ContentMode.scaleAspectFit
+    header.accountDropdown.frame.size.width = 21
+    header.accountDropdown.frame.size.height = 9
+    header.accountDropdown.image = dropdownImage
     
     header.copyAddress.titleLabel?.addCharacterSpacing(kernValue: 0.5)
     header.receive.titleLabel?.addCharacterSpacing(kernValue: 0.5)

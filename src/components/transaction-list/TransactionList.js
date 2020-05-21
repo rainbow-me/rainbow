@@ -2,14 +2,13 @@ import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Linking, requireNativeComponent, View } from 'react-native';
+import { Linking, requireNativeComponent } from 'react-native';
+import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
-import {
-  isAvatarPickerAvailable,
-  isMultiwalletAvailable,
-} from '../../config/experimental';
+import { isAvatarPickerAvailable } from '../../config/experimental';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import { useAccountProfile } from '../../hooks';
 import { removeRequest } from '../../redux/requests';
 import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
@@ -17,17 +16,11 @@ import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import LoadingState from '../activity-list/LoadingState';
 import { FloatingEmojis } from '../floating-emojis';
-
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
-
-const formatAddress = address =>
-  address
-    ? abbreviations.address(address, 4, abbreviations.defaultNumCharsPerSection)
-    : '';
 
 const Container = styled.View`
   flex: 1;
-  margin-top: ${isMultiwalletAvailable ? 10 : 0};
+  margin-top: 0;
 `;
 
 const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
@@ -46,10 +39,6 @@ const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
 `;
 
 const TransactionList = ({
-  accountAddress,
-  accountColor,
-  accountENS,
-  accountName,
   addCashAvailable,
   contacts,
   header,
@@ -67,6 +56,13 @@ const TransactionList = ({
     []
   );
   const dispatch = useDispatch();
+  const { navigate } = useNavigation();
+  const {
+    accountAddress,
+    accountColor,
+    accountSymbol,
+    accountName,
+  } = useAccountProfile();
 
   const onAddCashPress = useCallback(() => {
     navigation.navigate(Routes.ADD_CASH_SHEET);
@@ -187,9 +183,9 @@ const TransactionList = ({
     [accountAddress]
   );
 
-  const onCopyTooltipPress = useCallback(() => {
-    Clipboard.setString(accountENS || accountAddress);
-  }, [accountAddress, accountENS]);
+  const onAccountNamePress = useCallback(() => {
+    navigate(Routes.CHANGE_WALLET_SHEET);
+  }, [navigate]);
 
   const data = useMemo(
     () => ({
@@ -200,29 +196,23 @@ const TransactionList = ({
   );
 
   if ((!initialized && !navigation.isFocused()) || isLoading) {
-    return (
-      <View style={isMultiwalletAvailable ? { marginTop: 20 } : null}>
-        <LoadingState>{header}</LoadingState>
-      </View>
-    );
+    return <LoadingState>{header}</LoadingState>;
   }
-
-  const addressOrEns = accountENS || formatAddress(accountAddress);
 
   return (
     <Container>
       <Container
-        accountAddress={addressOrEns}
+        accountAddress={accountName}
         accountColor={colors.avatarColor[accountColor]}
-        accountName={accountName}
+        accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}
         data={data}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
+        onAccountNamePress={onAccountNamePress}
         onAddCashPress={onAddCashPress}
         onAvatarPress={onAvatarPress}
         onCopyAddressPress={onCopyAddressPress}
-        onCopyTooltipPress={onCopyTooltipPress}
         onReceivePress={onReceivePress}
         onRequestExpire={onRequestExpire}
         onRequestPress={onRequestPress}
@@ -237,10 +227,6 @@ const TransactionList = ({
 };
 
 TransactionList.propTypes = {
-  accountAddress: PropTypes.string,
-  accountColor: PropTypes.number,
-  accountENS: PropTypes.string,
-  accountName: PropTypes.string,
   addCashAvailable: PropTypes.bool,
   contacts: PropTypes.array,
   header: PropTypes.node,

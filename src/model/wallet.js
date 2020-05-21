@@ -278,7 +278,7 @@ export const identifyWalletType = walletSeed => {
   return type;
 };
 
-export const createWallet = async (seed, color, name) => {
+export const createWallet = async (seed = null, color = null, name = null) => {
   const isImported = !!seed;
   const walletSeed = seed || generateSeedPhrase();
   let wallet = null;
@@ -349,9 +349,9 @@ export const createWallet = async (seed, color, name) => {
     addresses.push({
       address: wallet.address,
       avatar: null,
-      color: colors.getRandomColor(),
+      color: color !== null ? color : colors.getRandomColor(),
       index: 0,
-      label: '',
+      label: name || '',
       visible: true,
     });
 
@@ -385,14 +385,11 @@ export const createWallet = async (seed, color, name) => {
       }
     }
 
-    // if imported and we have only one account, we name it.
-    // If we have more than one account, we name the wallet
+    // if imported and we have only one account, we name the wallet too.
     let walletName = DEFAULT_WALLET_NAME;
     if (isImported && name) {
       if (addresses.length > 1) {
         walletName = name;
-      } else {
-        addresses[0].label = name;
       }
     }
 

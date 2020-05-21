@@ -38,10 +38,8 @@ font.size = {
   bmedium: '17px',
   large: '18px',
   larger: '20px',
-  blarge: '21px',
   big: '23px',
   bigger: '26px',
-  biggest: '27px',
   h1: '41px',
   h2: '32px',
   h3: '30px',
@@ -64,3 +62,5 @@ font.weight = {
 };
 
 export default font;
+
+export const getFontSize = key => Number(key.replace('px', ''));

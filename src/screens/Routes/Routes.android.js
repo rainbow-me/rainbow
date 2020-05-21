@@ -6,16 +6,16 @@ import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { ExchangeModalNavigator, SavingModalNavigator } from '../../navigation';
 import {
   backgroundPreset,
+  bottomSheetPreset,
   emojiPreset,
   expandedPreset,
   overlayExpandedPreset,
-  savingsPreset,
   sheetPreset,
 } from '../../navigation/transitions/effects';
 import { deviceUtils } from '../../utils';
 import AddCashSheet from '../AddCashSheet';
 import AvatarBuilder from '../AvatarBuilder';
-import ChangeWalletModal from '../ChangeWalletModal';
+import ChangeWalletSheet from '../ChangeWalletSheet';
 import ExampleScreen from '../ExampleScreen';
 import ExpandedAssetSheet from '../ExpandedAssetSheet';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
@@ -34,7 +34,6 @@ import {
   createStackNavigator,
   exchangePresetWithTransitions,
   expandedPresetWithTransitions,
-  expandedReversePresetWithTransitions,
   onTransitionStart,
   sheetPresetWithTransitions,
 } from './helpers';
@@ -62,9 +61,9 @@ const routesForMainNavigator = {
     screen: AvatarBuilder,
     transparentCard: true,
   },
-  [Routes.CHANGE_WALLET_MODAL]: {
-    navigationOptions: expandedReversePresetWithTransitions,
-    screen: ChangeWalletModal,
+  [Routes.CHANGE_WALLET_SHEET]: {
+    navigationOptions: bottomSheetPreset,
+    screen: ChangeWalletSheet,
   },
   [Routes.CONFIRM_REQUEST]: {
     navigationOptions: sheetPresetWithTransitions,
@@ -91,7 +90,7 @@ const routesForMainNavigator = {
     screen: ReceiveModal,
   },
   [Routes.SAVINGS_SHEET]: {
-    navigationOptions: savingsPreset,
+    navigationOptions: bottomSheetPreset,
     screen: SavingsSheet,
   },
   [Routes.SETTINGS_MODAL]: {

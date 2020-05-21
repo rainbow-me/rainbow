@@ -5,17 +5,11 @@ import { useIsFocused } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
 import { ActivityList } from '../components/activity-list';
-import {
-  BackButton,
-  Header,
-  HeaderButton,
-  HeaderWalletInfo,
-} from '../components/header';
+import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
-import { isMultiwalletAvailable } from '../config/experimental';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
 import {
@@ -71,8 +65,8 @@ export default function ProfileScreen({ navigation }) {
   let accountName = get(selectedWallet, 'name');
   let accountColor = get(selectedWallet, 'color');
 
-  const onPressProfileHeader = useCallback(() => {
-    navigate(Routes.CHANGE_WALLET_MODAL);
+  const onChangeWallet = useCallback(() => {
+    navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
   const addCashSupportedNetworks =
@@ -85,13 +79,6 @@ export default function ProfileScreen({ navigation }) {
         <HeaderButton onPress={onPressSettings}>
           <Icon color={colors.black} name="gear" />
         </HeaderButton>
-        {isMultiwalletAvailable && (
-          <HeaderWalletInfo
-            accountColor={accountColor}
-            accountName={accountName}
-            onPress={onPressProfileHeader}
-          />
-        )}
         <BackButton
           color={colors.black}
           direction="right"
@@ -108,13 +95,10 @@ export default function ProfileScreen({ navigation }) {
           contacts={contacts}
           header={
             <ProfileMasthead
-              accountAddress={accountAddress}
-              accountColor={accountColor}
-              accountName={accountName}
-              accountENS={accountENS}
               addCashAvailable={addCashAvailable}
               navigation={navigation}
               showBottomDivider={!isEmpty || isLoading}
+              onChangeWallet={onChangeWallet}
             />
           }
           initialized={activityListInitialized}
@@ -132,12 +116,10 @@ export default function ProfileScreen({ navigation }) {
           addCashAvailable={addCashAvailable}
           header={
             <ProfileMasthead
-              accountAddress={accountAddress}
-              accountColor={accountColor}
-              accountName={accountName}
               addCashAvailable={addCashAvailable}
               navigation={navigation}
               showBottomDivider={!isEmpty || isLoading}
+              onChangeWallet={onChangeWallet}
             />
           }
           isEmpty={isEmpty}

@@ -56,7 +56,6 @@ const SettingsSection = ({
   onPressBackup,
   onPressCurrency,
   onPressHiddenFeature,
-  onPressImportSeedPhrase,
   onPressLanguage,
   onPressNetwork,
   onPressReview,
@@ -143,11 +142,6 @@ const SettingsSection = ({
       <ListFooter />
       <ColumnWithDividers dividerRenderer={ListItemDivider}>
         <ListItem
-          icon={<Emoji name="seedling" />}
-          label="Replace Wallet"
-          onPress={onPressImportSeedPhrase}
-        />
-        <ListItem
           icon={<Emoji name="rainbow" />}
           label="Follow Us on Twitter"
           onPress={onPressTwitter}
@@ -180,7 +174,6 @@ SettingsSection.propTypes = {
   onPressBackup: PropTypes.func.isRequired,
   onPressCurrency: PropTypes.func.isRequired,
   onPressHiddenFeature: PropTypes.func.isRequired,
-  onPressImportSeedPhrase: PropTypes.func.isRequired,
   onPressLanguage: PropTypes.func.isRequired,
   onPressNetwork: PropTypes.func,
   onPressReview: PropTypes.func,

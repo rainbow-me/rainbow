@@ -175,8 +175,8 @@ const AddContactState = ({
             <ButtonPressAnimation onPress={handleChangeColor} scaleTo={0.96}>
               <ContactAvatar
                 color={color}
-                large
                 marginBottom={19}
+                size="large"
                 value={value}
               />
             </ButtonPressAnimation>

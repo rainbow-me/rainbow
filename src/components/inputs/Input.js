@@ -39,6 +39,7 @@ const Input = (
       keyboardType={keyboardType}
       placeholderTextColor={placeholderTextColor}
       ref={inputRef}
+      selectionColor={colors.appleBlue}
       spellCheck={spellCheck}
     />
   );

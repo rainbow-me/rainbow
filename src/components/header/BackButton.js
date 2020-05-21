@@ -6,9 +6,9 @@ import Icon from '../icons/Icon';
 import { Row } from '../layout';
 import HeaderButton from './HeaderButton';
 
-const Container = styled(Row).attrs({ align: 'end' })`
-  height: 100%;
-  padding-bottom: 2;
+const Container = styled(Row).attrs({ align: 'center' })`
+  height: 24;
+  padding-bottom: 0;
 `;
 
 export default function BackButton({ color, direction, onPress, ...props }) {
