@@ -8,8 +8,7 @@ import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 
-const ExchangeFieldHeight = 40;
-const ExchangeFieldHeightAndroid = 64;
+const ExchangeFieldHeight = Platform.OS === 'android' ? 64 : 40;
 const ExchangeFieldPadding = 15;
 const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
@@ -29,9 +28,7 @@ const FieldRow = styled(RowWithMargins).attrs({
 `;
 
 const Input = styled(ExchangeInput).attrs({ letterSpacing: 'roundedTightest' })`
-  height: ${Platform.OS === 'android'
-    ? ExchangeFieldHeightAndroid
-    : ExchangeFieldHeight};
+  height: ${ExchangeFieldHeight};
 `;
 
 const ExchangeField = (

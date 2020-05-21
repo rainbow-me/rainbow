@@ -7,8 +7,7 @@ import { Row } from '../layout';
 import ExchangeField from './ExchangeField';
 
 const notchPaddingValue = 15;
-const paddingValue = 39;
-const paddingValueAndroid = 15;
+const paddingValue = Platform.OS === 'android' ? 15 : 39;
 
 const FakeNotchShadow = [
   [0, 0, 1, colors.dark, 0.01],
@@ -21,9 +20,7 @@ const Container = styled(Row).attrs({ align: 'center' })`
   background-color: ${colors.white};
   overflow: hidden;
   padding-bottom: 26;
-  padding-top: ${Platform.OS === 'android'
-    ? paddingValueAndroid
-    : paddingValue};
+  padding-top: ${paddingValue};
   width: 100%;
 `;
 
