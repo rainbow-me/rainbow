@@ -4,7 +4,7 @@ import Toast from './Toast';
 
 const OfflineToast = () => {
   const isConnected = useInternetStatus();
-  return <Toast icon="offline" isVisible={isConnected} text="Offline" />;
+  return <Toast icon="offline" isVisible={!isConnected} text="Offline" />;
 };
 
 const neverRerender = () => true;

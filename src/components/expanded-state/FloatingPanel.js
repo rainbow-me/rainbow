@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import stylePropType from 'react-style-proptype';
-import { pure } from 'recompact';
+import styled from 'styled-components/primitives';
 import { colors, shadow } from '../../styles';
 import { Column } from '../layout';
 
@@ -12,23 +11,34 @@ export const FloatingPanelPadding = {
   y: 0,
 };
 
-const FloatingPanel = pure(
-  ({ color, height, hideShadow, style, radius, overflow, ...props }) => (
-    <Column
-      css={`
-      ${shadow.build(0, 10, 50, colors.dark, hideShadow ? 0 : 0.6)}
-      background-color: ${color};
-      border-radius: ${radius || FloatingPanelBorderRadius};
-      min-height: ${height || 'auto'};
-      opacity: 1;
-      overflow: ${overflow || 'hidden'};
-      padding-bottom: 0px;
-      z-index: 1;
-    `}
-      style={style}
-      {...props}
-    />
-  )
+const FloatingPanelShadow = shadow.build(0, 10, 50, colors.dark, 0.6);
+
+const Container = styled(Column)`
+  ${({ hideShadow }) => (hideShadow ? '' : FloatingPanelShadow)};
+  background-color: ${({ color }) => color};
+  border-radius: ${({ radius }) => radius};
+  min-height: ${({ minHeight }) => minHeight || 0};
+  opacity: 1;
+  overflow: ${({ overflow }) => overflow};
+  z-index: 1;
+`;
+
+const FloatingPanel = ({
+  color = colors.white,
+  height = 'auto',
+  hideShadow = true,
+  overflow = 'hidden',
+  radius = FloatingPanelBorderRadius,
+  ...props
+}) => (
+  <Container
+    {...props}
+    color={color}
+    hideShadow={hideShadow}
+    minHeight={height}
+    overflow={overflow}
+    radius={radius}
+  />
 );
 
 FloatingPanel.propTypes = {
@@ -37,13 +47,7 @@ FloatingPanel.propTypes = {
   hideShadow: PropTypes.bool,
   overflow: PropTypes.string,
   radius: PropTypes.number,
-  style: stylePropType,
   width: PropTypes.number,
-};
-
-FloatingPanel.defaultProps = {
-  color: colors.white,
-  hideShadow: true,
 };
 
 FloatingPanel.padding = FloatingPanelPadding;

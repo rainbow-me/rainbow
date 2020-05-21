@@ -1,4 +1,5 @@
-import { withProps } from 'recompact';
+import styled from 'styled-components/primitives';
 import Text from './Text';
 
-export default withProps({ family: 'SFMono' })(Text);
+const Monospace = styled(Text).attrs({ family: 'SFMono' })``;
+export default Monospace;

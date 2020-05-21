@@ -1,13 +1,9 @@
-import { compose, setDisplayName, withProps } from 'recompact';
+import styled from 'styled-components/primitives';
 import LayoutWithDividers from './LayoutWithDividers';
 
-export default compose(
-  setDisplayName('ColumnWithDividers'),
-  withProps(({ dividerProps }) => ({
-    direction: 'column',
-    dividerProps: {
-      horizontal: true,
-      ...dividerProps,
-    },
-  }))
-)(LayoutWithDividers);
+const ColumnWithDividers = styled(LayoutWithDividers).attrs({
+  direction: 'column',
+  dividerHorizontal: true,
+})``;
+
+export default ColumnWithDividers;

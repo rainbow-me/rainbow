@@ -2,9 +2,10 @@ import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Linking, requireNativeComponent, StyleSheet } from 'react-native';
+import { Linking, requireNativeComponent } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
+import styled from 'styled-components/primitives';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { useAccountProfile } from '../../hooks';
@@ -15,14 +16,27 @@ import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import LoadingState from '../activity-list/LoadingState';
 import { FloatingEmojis } from '../floating-emojis';
-import { Row } from '../layout';
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
-const sx = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
-});
+const Container = styled.View`
+  flex: 1;
+  margin-top: 0;
+`;
+
+const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
+  distance: 250,
+  duration: 500,
+  fadeOut: false,
+  scaleTo: 0,
+  size: 50,
+  wiggleFactor: 0,
+})`
+  height: 0;
+  left: ${({ tapTarget }) => tapTarget[0] - 24};
+  position: absolute;
+  top: ${({ tapTarget }) => tapTarget[1] - tapTarget[3]};
+  width: ${({ tapTarget }) => tapTarget[2]};
+`;
 
 const TransactionList = ({
   addCashAvailable,
@@ -33,7 +47,6 @@ const TransactionList = ({
   navigation,
   network,
   requests,
-  style,
   transactions,
 }) => {
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
@@ -73,7 +86,7 @@ const TransactionList = ({
     e => {
       const { index } = e.nativeEvent;
       const item = requests[index];
-      dispatch(removeRequest(item.requestId));
+      item && item.requestId && dispatch(removeRequest(item.requestId));
     },
     [dispatch, requests]
   );
@@ -134,7 +147,7 @@ const TransactionList = ({
           },
           buttonIndex => {
             if (!isPurchasing && buttonIndex === 0) {
-              navigation.navigate(Routes.EXPANDED_ASSET_SCREEN, {
+              navigation.navigate(Routes.MODAL_SCREEN, {
                 address: contactAddress,
                 asset: item,
                 color: contactColor,
@@ -187,12 +200,13 @@ const TransactionList = ({
   }
 
   return (
-    <Row flex={1}>
-      <NativeTransactionListView
+    <Container>
+      <Container
         accountAddress={accountName}
         accountColor={colors.avatarColor[accountColor]}
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
+        as={NativeTransactionListView}
         data={data}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
         onAccountNamePress={onAccountNamePress}
@@ -203,25 +217,12 @@ const TransactionList = ({
         onRequestExpire={onRequestExpire}
         onRequestPress={onRequestPress}
         onTransactionPress={onTransactionPress}
-        style={[sx.flex, style]}
       />
-      <FloatingEmojis
-        distance={250}
-        duration={500}
-        fadeOut={false}
-        scaleTo={0}
-        size={50}
-        style={{
-          height: 0,
-          left: tapTarget[0] - 24,
-          position: 'absolute',
-          top: tapTarget[1] - tapTarget[3],
-          width: tapTarget[2],
-        }}
+      <FloatingEmojisRegion
         setOnNewEmoji={setOnNewEmoji}
-        wiggleFactor={0}
+        tapTarget={tapTarget}
       />
-    </Row>
+    </Container>
   );
 };
 
@@ -234,12 +235,7 @@ TransactionList.propTypes = {
   navigation: PropTypes.object,
   network: PropTypes.string,
   requests: PropTypes.array,
-  style: PropTypes.object,
   transactions: PropTypes.array,
-};
-
-TransactionList.defaultProps = {
-  style: {},
 };
 
 export default TransactionList;

@@ -1,14 +1,21 @@
-import { useSelector } from 'react-redux';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { setOpenSavings } from '../redux/openStateSettings';
 
 export default function useOpenSavings() {
-  const openSavingsData = useSelector(
-    ({ openStateSettings: { openSavings } }) => ({
-      openSavings,
-    })
+  const dispatch = useDispatch();
+
+  const isSavingsOpen = useSelector(
+    ({ openStateSettings: { openSavings } }) => openSavings
   );
+
+  const toggleOpenSavings = useCallback(
+    () => dispatch(setOpenSavings(!isSavingsOpen)),
+    [dispatch, isSavingsOpen]
+  );
+
   return {
-    setOpenSavings,
-    ...openSavingsData,
+    isSavingsOpen,
+    toggleOpenSavings,
   };
 }

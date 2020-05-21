@@ -1,13 +1,13 @@
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { useIsFocused } from 'react-navigation-hooks';
+import styled from 'styled-components/primitives';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
 import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
-import { FlexItem, Page } from '../components/layout';
+import { Page } from '../components/layout';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
@@ -25,7 +25,12 @@ import Routes from './Routes/routesNames';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 
-const ProfileScreen = ({ navigation }) => {
+const ProfileScreenPage = styled(Page)`
+  ${position.size('100%')};
+  flex: 1;
+`;
+
+export default function ProfileScreen({ navigation }) {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
@@ -39,7 +44,7 @@ const ProfileScreen = ({ navigation }) => {
   const { contacts } = useContacts();
   const { pendingRequestCount, requests } = useRequests();
   const { accountAddress, accountENS, network } = useAccountSettings();
-  const { selected: selectedWallet } = useWallets();
+  const { selectedWallet } = useWallets();
 
   const isEmpty = !transactionsCount && !pendingRequestCount;
 
@@ -69,7 +74,7 @@ const ProfileScreen = ({ navigation }) => {
   const addCashAvailable = Platform.OS === 'ios' && addCashSupportedNetworks;
 
   return (
-    <Page component={FlexItem} style={position.sizeAsObject('100%')}>
+    <ProfileScreenPage>
       <Header justify="space-between">
         <HeaderButton onPress={onPressSettings}>
           <Icon color={colors.black} name="gear" />
@@ -92,8 +97,8 @@ const ProfileScreen = ({ navigation }) => {
             <ProfileMasthead
               addCashAvailable={addCashAvailable}
               navigation={navigation}
-              onChangeWallet={onChangeWallet}
               showBottomDivider={!isEmpty || isLoading}
+              onChangeWallet={onChangeWallet}
             />
           }
           initialized={activityListInitialized}
@@ -113,8 +118,8 @@ const ProfileScreen = ({ navigation }) => {
             <ProfileMasthead
               addCashAvailable={addCashAvailable}
               navigation={navigation}
-              onChangeWallet={onChangeWallet}
               showBottomDivider={!isEmpty || isLoading}
+              onChangeWallet={onChangeWallet}
             />
           }
           isEmpty={isEmpty}
@@ -128,12 +133,6 @@ const ProfileScreen = ({ navigation }) => {
       {isEmpty && !isLoading && network === NetworkTypes.mainnet && (
         <AddFundsInterstitial network={network} />
       )}
-    </Page>
+    </ProfileScreenPage>
   );
-};
-
-ProfileScreen.propTypes = {
-  navigation: PropTypes.object,
-};
-
-export default ProfileScreen;
+}

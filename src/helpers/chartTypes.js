@@ -1,7 +1,10 @@
+/* eslint-disable sort-keys */
 export default {
-  day: 'd',
   hour: 'h',
-  month: 'm',
+  day: 'd',
   week: 'w',
+  month: 'm',
   year: 'y',
+  max: 'a',
 };
+/* eslint-enable sort-keys */

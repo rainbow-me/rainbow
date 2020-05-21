@@ -17,24 +17,13 @@ import {
 import { Sheet, SheetActionButton } from '../components/sheet';
 import { isSymbolStablecoin } from '../helpers/savings';
 import { convertAmountToNativeDisplay } from '../helpers/utilities';
-import WalletTypes from '../helpers/walletTypes';
 import { useAccountSettings, useWallets } from '../hooks';
 import { colors, padding } from '../styles';
 import Routes from './Routes/routesNames';
 
-const DepositButtonShadows = [
-  [0, 7, 21, colors.dark, 0.25],
-  [0, 3.5, 10.5, colors.swapPurple, 0.35],
-];
-
-const WithdrawButtonShadows = [
-  [0, 7, 21, colors.dark, 0.25],
-  [0, 3.5, 10.5, colors.dark, 0.35],
-];
-
 const SavingsSheet = () => {
   const { getParam, navigate, goBack } = useNavigation();
-  const { selected: selectedWallet = {} } = useWallets();
+  const { isReadOnlyWallet } = useWallets();
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
   const cTokenBalance = getParam('cTokenBalance');
   const isEmpty = getParam('isEmpty');
@@ -85,7 +74,7 @@ const SavingsSheet = () => {
   }, []);
 
   const onWithdraw = useCallback(() => {
-    if (selectedWallet.type !== WalletTypes.readOnly) {
+    if (!isReadOnlyWallet) {
       navigate(Routes.SAVINGS_WITHDRAW_MODAL, {
         cTokenBalance,
         defaultInputAsset: underlying,
@@ -104,15 +93,15 @@ const SavingsSheet = () => {
   }, [
     cTokenBalance,
     goBack,
+    isReadOnlyWallet,
     navigate,
-    selectedWallet.type,
     supplyBalanceUnderlying,
     underlying,
     underlyingPrice,
   ]);
 
   const onDeposit = useCallback(() => {
-    if (selectedWallet.type !== WalletTypes.readOnly) {
+    if (!isReadOnlyWallet) {
       navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
         defaultInputAsset: underlying,
         underlyingPrice,
@@ -130,8 +119,8 @@ const SavingsSheet = () => {
   }, [
     goBack,
     isEmpty,
+    isReadOnlyWallet,
     navigate,
-    selectedWallet.type,
     underlying,
     underlyingPrice,
   ]);
@@ -140,9 +129,9 @@ const SavingsSheet = () => {
     <Sheet>
       {isEmpty ? (
         <SavingsSheetEmptyState
+          isReadOnlyWallet={isReadOnlyWallet}
           supplyRate={supplyRate}
           underlying={underlying}
-          isReadOnlyWallet={selectedWallet.type === WalletTypes.readOnly}
         />
       ) : (
         <Fragment>
@@ -155,13 +144,11 @@ const SavingsSheet = () => {
               color={colors.dark}
               label="􀁏 Withdraw"
               onPress={onWithdraw}
-              shadows={WithdrawButtonShadows}
             />
             <SheetActionButton
               color={colors.swapPurple}
               label="􀁍 Deposit"
               onPress={onDeposit}
-              shadows={DepositButtonShadows}
             />
           </RowWithMargins>
           <Divider zIndex={0} />

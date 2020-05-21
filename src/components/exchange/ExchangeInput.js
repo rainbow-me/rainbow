@@ -1,155 +1,118 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import TextInputMask from 'react-native-text-input-mask';
-import stylePropType from 'react-style-proptype';
-import { colors, fonts } from '../../styles';
-import { isNewValueForObjectPaths } from '../../utils';
+import styled from 'styled-components/primitives';
+import { buildTextStyles, colors } from '../../styles';
+import { magicMemo } from '../../utils';
 
-export default class ExchangeInput extends Component {
-  static propTypes = {
-    color: PropTypes.string,
-    disableTabularNums: PropTypes.bool,
-    fontSize: PropTypes.string,
-    fontWeight: PropTypes.string,
-    keyboardAppearance: PropTypes.string,
-    mask: PropTypes.string,
-    onBlur: PropTypes.func,
-    onChange: PropTypes.func,
-    onChangeText: PropTypes.func,
-    onFocus: PropTypes.func,
-    placeholder: PropTypes.string,
-    placeholderTextColor: PropTypes.string,
-    refInput: PropTypes.func,
-    style: stylePropType,
-    value: PropTypes.string,
-  };
+const Input = styled(TextInputMask).attrs({
+  allowFontScaling: false,
+  keyboardType: 'decimal-pad',
+  selectionColor: colors.appleBlue,
+})`
+  ${buildTextStyles};
+  flex: 1;
+`;
 
-  static defaultProps = {
-    color: colors.dark,
-    fontSize: fonts.size.h2,
-    fontWeight: fonts.weight.medium,
-    keyboardAppearance: 'dark',
-    mask: '[099999999999999999].[999999999999999999]',
-    placeholder: '0',
-    placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.3),
-    value: '',
-  };
+const ExchangeInput = (
+  {
+    color = colors.dark,
+    editable,
+    keyboardAppearance = 'dark',
+    mask = '[099999999999999999].[999999999999999999]',
+    onBlur,
+    onChange,
+    onChangeText,
+    onFocus,
+    placeholder = '0',
+    placeholderTextColor = colors.alpha(colors.blueGreyDark, 0.3),
+    size = 'h2',
+    value = '',
+    weight = 'medium',
+    ...props
+  },
+  ref
+) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const [isTouched, setIsTouched] = useState(false);
 
-  state = {
-    isFocused: false,
-    isTouched: false,
-  };
-
-  shouldComponentUpdate = (nextProps, nextState) =>
-    nextState.isTouched !== this.state.isTouched ||
-    isNewValueForObjectPaths(this.props, nextProps, [
-      'color',
-      'editable',
-      'placeholder',
-      'placeholderTextColor',
-      'value',
-    ]);
-
-  handleBlur = event => {
-    const { onBlur, onChangeText, value } = this.props;
-
-    if (typeof value === 'string') {
-      const parts = value.split('.');
-      if (parts[0].length > 1 && !Number(parts[0])) {
-        onChangeText(`0.${parts[1]}`);
+  const handleBlur = useCallback(
+    event => {
+      if (typeof value === 'string') {
+        const parts = value.split('.');
+        if (parts[0].length > 1 && !Number(parts[0])) {
+          onChangeText(`0.${parts[1]}`);
+        }
       }
-    }
+      setIsFocused(false);
+      setIsTouched(false);
+      if (onBlur) {
+        onBlur(event);
+      }
+    },
+    [onBlur, onChangeText, value]
+  );
 
-    this.setState({
-      isFocused: false,
-      isTouched: false,
-    });
+  const handleChange = useCallback(
+    event => {
+      if (isFocused && !isTouched) {
+        InteractionManager.runAfterInteractions(() => setIsTouched(true));
+      }
+      if (onChange) {
+        onChange(event);
+      }
+    },
+    [isFocused, isTouched, onChange]
+  );
 
-    if (onBlur) {
-      onBlur(event);
-    }
-  };
+  const handleChangeText = useCallback(
+    formatted => {
+      let text = formatted;
+      if (isTouched && !text.length && !value) {
+        text = '0.';
+      }
+      if (onChangeText) {
+        onChangeText(text);
+      }
+    },
+    [isTouched, onChangeText, value]
+  );
 
-  handleFocus = event => {
-    this.setState({ isFocused: true });
-    if (this.props.onFocus) {
-      this.props.onFocus(event);
-    }
-  };
+  const handleFocus = useCallback(
+    event => {
+      setIsFocused(true);
+      if (onFocus) {
+        onFocus(event);
+      }
+    },
+    [onFocus]
+  );
 
-  handleChangeText = formatted => {
-    const { onChangeText, value } = this.props;
-    let text = formatted;
+  return (
+    <Input
+      {...props}
+      color={color}
+      editable={editable}
+      keyboardAppearance={keyboardAppearance}
+      mask={mask}
+      onBlur={handleBlur}
+      onChange={handleChange}
+      onChangeText={handleChangeText}
+      onFocus={handleFocus}
+      placeholder={placeholder}
+      placeholderTextColor={placeholderTextColor}
+      ref={ref}
+      size={size}
+      value={value}
+      weight={weight}
+    />
+  );
+};
 
-    if (this.state.isTouched && !text.length && !value) {
-      text = '0.';
-    }
-
-    if (onChangeText) {
-      onChangeText(text);
-    }
-  };
-
-  handleChange = event => {
-    const { isFocused, isTouched } = this.state;
-
-    if (isFocused && !isTouched) {
-      InteractionManager.runAfterInteractions(() => {
-        this.setState({ isTouched: true });
-      });
-    }
-
-    if (this.props.onChange) {
-      this.props.onChange(event);
-    }
-  };
-
-  render = () => {
-    const {
-      color,
-      disableTabularNums,
-      editable,
-      fontSize,
-      fontWeight,
-      keyboardAppearance,
-      mask,
-      placeholder,
-      placeholderTextColor,
-      refInput,
-      style,
-      value,
-    } = this.props;
-
-    return (
-      <TextInputMask
-        {...this.props}
-        allowFontScaling={false}
-        editable={editable}
-        flex={1}
-        keyboardAppearance={keyboardAppearance}
-        keyboardType="decimal-pad"
-        mask={mask}
-        onBlur={this.handleBlur}
-        onChange={this.handleChange}
-        onChangeText={this.handleChangeText}
-        onFocus={this.handleFocus}
-        placeholder={placeholder}
-        placeholderTextColor={placeholderTextColor}
-        refInput={refInput}
-        selectionColor={colors.appleBlue}
-        style={[
-          {
-            color,
-            fontFamily: fonts.family.SFProRounded,
-            fontSize: parseFloat(fontSize),
-            fontVariant: disableTabularNums ? undefined : ['tabular-nums'],
-            fontWeight,
-          },
-          style,
-        ]}
-        value={value}
-      />
-    );
-  };
-}
+export default magicMemo(React.forwardRef(ExchangeInput), [
+  'color',
+  'editable',
+  'placeholder',
+  'placeholderTextColor',
+  'value',
+]);

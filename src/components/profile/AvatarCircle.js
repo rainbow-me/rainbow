@@ -1,25 +1,28 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import { View } from 'react-native';
+import React, { useMemo } from 'react';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
-import { colors } from '../../styles';
+import { colors, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
-import { InnerBorder } from '../layout';
+import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
 
-const AvatarCircle = styled(View)`
+const ProfileActionSize = 65;
+
+const AvatarCircleView = styled(Flex)`
   height: 65px;
   margin-bottom: 16px;
   width: 65px;
 `;
 
-const FirstLetter = styled(Text)`
-  color: #fff;
-  font-size: 38;
-  font-weight: 600;
-  line-height: 64.5;
-  text-align: center;
+const FirstLetter = styled(Text).attrs({
+  align: 'center',
+  color: colors.white,
+  letterSpacing: 2,
+  lineHeight: 64.5,
+  size: 38,
+  weight: 'semibold',
+})`
   width: 65.5;
 `;
 
@@ -29,37 +32,39 @@ const ProfileAction = ({
   onPress,
   overlayStyles,
 }) => {
-  const AvatarCircleShadows = {
-    default: [
-      [0, 2, 5, colors.dark, 0.2],
-      [0, 6, 10, colors.alpha(colors.avatarColor[accountColor], 0.6)],
-    ],
-    overlay: [
-      [0, 6, 10, colors.black, 0.08],
-      [0, 2, 5, colors.black, 0.12],
-    ],
-  };
+  const shadows = useMemo(
+    () => ({
+      default: [
+        [0, 2, 5, colors.dark, 0.2],
+        [0, 6, 10, colors.alpha(colors.avatarColor[accountColor], 0.6)],
+      ],
+      overlay: [
+        [0, 6, 10, colors.black, 0.08],
+        [0, 2, 5, colors.black, 0.12],
+      ],
+    }),
+    [accountColor]
+  );
+
   return (
     <ButtonPressAnimation
       hapticType="impactMedium"
+      marginTop={2}
       onPress={onPress}
       pressOutDuration={200}
       scaleTo={0.9}
-      marginTop={2}
     >
       <ShadowStack
+        {...position.sizeAsObject(ProfileActionSize)}
         backgroundColor={overlayStyles ? 'rgb(51, 54, 59)' : colors.white}
-        borderRadius={65}
-        height={65}
-        width={65}
+        borderRadius={ProfileActionSize}
         marginBottom={12}
-        shadows={AvatarCircleShadows[overlayStyles ? 'overlay' : 'default']}
-        shouldRasterizeIOS
+        shadows={shadows[overlayStyles ? 'overlay' : 'default']}
       >
-        <AvatarCircle backgroundColor={colors.avatarColor[accountColor]}>
+        <AvatarCircleView backgroundColor={colors.avatarColor[accountColor]}>
           <FirstLetter>{accountSymbol}</FirstLetter>
           {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
-        </AvatarCircle>
+        </AvatarCircleView>
       </ShadowStack>
     </ButtonPressAnimation>
   );

@@ -172,7 +172,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
       }
 
       const ConfirmImportAlert = (name, onSuccess, navigate) =>
-        navigate(Routes.OVERLAY_EXPANDED_ASSET_SCREEN, {
+        navigate(Routes.MODAL_SCREEN, {
           actionType: 'Import',
           asset: [],
           isNewProfile: true,

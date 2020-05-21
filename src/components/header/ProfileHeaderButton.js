@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
+import { useNavigation } from 'react-navigation-hooks';
 import { useAccountProfile, useCoinListEdited, useRequests } from '../../hooks';
 import Routes from '../../screens/Routes/routesNames';
 import { OpacityToggler } from '../animations';
@@ -9,20 +9,19 @@ import { ContactAvatar } from '../contacts';
 import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
 
-const ProfileHeaderButton = ({ navigation }) => {
+export default function ProfileHeaderButton() {
+  const { navigate } = useNavigation();
   const { pendingRequestCount } = useRequests();
   const { isCoinListEdited } = useCoinListEdited();
   const { accountSymbol, accountColor } = useAccountProfile();
 
-  const onPress = useCallback(
-    () => navigation.navigate(Routes.PROFILE_SCREEN),
-    [navigation]
-  );
+  const onPress = useCallback(() => navigate(Routes.PROFILE_SCREEN), [
+    navigate,
+  ]);
 
-  const onLongPress = useCallback(
-    () => navigation.navigate(Routes.CHANGE_WALLET_SHEET),
-    [navigation]
-  );
+  const onLongPress = useCallback(() => navigate(Routes.CHANGE_WALLET_SHEET), [
+    navigate,
+  ]);
 
   return (
     <OpacityToggler
@@ -32,10 +31,9 @@ const ProfileHeaderButton = ({ navigation }) => {
     >
       <View pointerEvents={isCoinListEdited ? 'none' : 'auto'}>
         <HeaderButton
-          testID="goToProfile"
           onLongPress={onLongPress}
           onPress={onPress}
-          shouldRasterizeIOS
+          testID="goToProfile"
           transformOrigin="left"
         >
           <Centered>
@@ -44,7 +42,6 @@ const ProfileHeaderButton = ({ navigation }) => {
               size="small"
               value={accountSymbol}
             />
-
             {pendingRequestCount > 0 && (
               <Badge delay={1500} value={pendingRequestCount} zIndex={1} />
             )}
@@ -53,10 +50,4 @@ const ProfileHeaderButton = ({ navigation }) => {
       </View>
     </OpacityToggler>
   );
-};
-
-ProfileHeaderButton.propTypes = {
-  navigation: PropTypes.object,
-};
-
-export default ProfileHeaderButton;
+}

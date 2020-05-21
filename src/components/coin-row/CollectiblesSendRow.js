@@ -26,10 +26,6 @@ const BottomRow = ({ subtitle }) => (
   </TruncatedText>
 );
 
-BottomRow.propTypes = {
-  subtitle: PropTypes.string,
-};
-
 const TopRow = ({ id, name, selected }) => (
   <CoinName
     paddingRight={selected ? undefined : 0}
@@ -38,12 +34,6 @@ const TopRow = ({ id, name, selected }) => (
     {name || `#${id}`}
   </CoinName>
 );
-
-TopRow.propTypes = {
-  id: PropTypes.any,
-  name: PropTypes.string,
-  selected: PropTypes.bool,
-};
 
 const enhanceUniqueTokenCoinIcon = onlyUpdateForKeys([
   'background',
@@ -67,7 +57,7 @@ const UniqueTokenCoinIcon = enhanceUniqueTokenCoinIcon(
         shouldPrioritizeImageLoading={shouldPrioritizeImageLoading}
         {...props}
       />
-      <InnerBorder opacity={0.04} radius={8} style={{ zIndex: 2 }} />
+      <InnerBorder opacity={0.04} radius={8} zIndex={2} />
     </Centered>
   )
 );
@@ -99,7 +89,7 @@ const CollectiblesSendRow = enhance(
   ({ item, isFirstRow, onPress, selected, subtitle, ...props }) => (
     <Fragment>
       {isFirstRow && (
-        <Centered style={{ height: dividerHeight }}>
+        <Centered height={dividerHeight}>
           <Divider color={colors.rowDividerLight} />
         </Centered>
       )}

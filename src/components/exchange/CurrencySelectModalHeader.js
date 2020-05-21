@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { hoistStatics, onlyUpdateForKeys, withProps } from 'recompact';
+import React, { useCallback } from 'react';
+import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
+import Routes from '../../screens/Routes/routesNames';
 import { borders, colors, padding } from '../../styles';
 import { BackButton } from '../header';
 import { Centered } from '../layout';
@@ -14,42 +14,43 @@ const BackButtonWrapper = styled(Centered)`
   top: 3;
 `;
 
-const HeaderHeight = 59;
-const HeaderContainer = styled(Centered).attrs({ flex: 0 })`
+export const CurrencySelectModalHeaderHeight = 59;
+const HeaderContainer = styled(Centered)`
   ${borders.buildRadius('top', 12)};
   background-color: ${colors.white};
-  height: ${HeaderHeight};
+  height: ${CurrencySelectModalHeaderHeight};
   width: 100%;
 `;
 
-const HeaderTitle = withProps({
+const Title = styled(TruncatedText).attrs({
   align: 'center',
-  height: 21,
   lineHeight: 'loose',
   size: 'large',
   weight: 'bold',
-})(TruncatedText);
+})`
+  ${padding(1, 0, 0)};
+  height: 21;
+`;
 
-const CurrencySelectModalHeader = ({ onPressBack, title }) => (
-  <HeaderContainer>
-    <BackButtonWrapper>
-      <BackButton
-        direction="left"
-        height={HeaderHeight}
-        onPress={onPressBack}
-      />
-    </BackButtonWrapper>
-    <HeaderTitle css={padding(1, 0, 0)}>{title}</HeaderTitle>
-  </HeaderContainer>
-);
+export default function CurrencySelectModalHeader() {
+  const { navigate } = useNavigation();
+  const title = useNavigationParam('headerTitle');
 
-CurrencySelectModalHeader.propTypes = {
-  onPressBack: PropTypes.func,
-  title: PropTypes.string,
-};
+  const handlePressBack = useCallback(
+    () => navigate(Routes.MAIN_EXCHANGE_SCREEN),
+    [navigate]
+  );
 
-CurrencySelectModalHeader.height = HeaderHeight;
-
-export default hoistStatics(onlyUpdateForKeys(['title']))(
-  CurrencySelectModalHeader
-);
+  return (
+    <HeaderContainer>
+      <BackButtonWrapper>
+        <BackButton
+          direction="left"
+          height={CurrencySelectModalHeaderHeight}
+          onPress={handlePressBack}
+        />
+      </BackButtonWrapper>
+      <Title>{title}</Title>
+    </HeaderContainer>
+  );
+}

@@ -68,7 +68,7 @@ const getAddAccountRowCount = wallets => {
 };
 
 const ChangeWalletSheet = () => {
-  const { wallets, selected: selectedWallet } = useWallets();
+  const { wallets, selectedWallet } = useWallets();
   const [editMode, setEditMode] = useState(false);
 
   const { goBack, navigate } = useNavigation();
@@ -140,7 +140,7 @@ const ChangeWalletSheet = () => {
         account => account.address === address
       );
 
-      navigate(Routes.EDIT_WALLET_MODAL, {
+      navigate(Routes.MODAL_SCREEN, {
         address,
         asset: [],
         onCloseModal: async args => {
@@ -252,7 +252,7 @@ const ChangeWalletSheet = () => {
         if (creatingWallet.current) return;
         creatingWallet.current = true;
         // Show naming modal
-        navigate(Routes.EDIT_WALLET_MODAL, {
+        navigate(Routes.MODAL_SCREEN, {
           actionType: 'Create',
           asset: [],
           isNewProfile: true,

@@ -11,7 +11,7 @@ import { abbreviations, deviceUtils } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { FloatingEmojis } from '../floating-emojis';
-import Icon from '../icons/Icon';
+import { Icon } from '../icons';
 import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import AddCashButton from './AddCashButton';
@@ -44,16 +44,24 @@ const DropdownArrow = styled(Centered)`
   width: 21;
 `;
 
-const ProfileMasthead = ({
+const ProfileMastheadDivider = styled(Divider).attrs({
+  color: colors.rowDividerLight,
+})`
+  bottom: 0;
+  position: absolute;
+`;
+
+export default function ProfileMasthead({
   accountAddress,
   addCashAvailable,
   recyclerListRef,
   showBottomDivider,
-}) => {
+}) {
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
   const { accountColor, accountSymbol, accountName } = useAccountProfile();
-  const onPressAvatar = useCallback(() => {
+
+  const handlePressAvatar = useCallback(() => {
     if (!isAvatarPickerAvailable) return;
     recyclerListRef.scrollToTop(true);
     setTimeout(
@@ -67,14 +75,14 @@ const ProfileMasthead = ({
     );
   }, [accountColor, accountName, navigate, recyclerListRef]);
 
-  const onAddCash = useCallback(() => {
+  const handlePressAddCash = useCallback(() => {
     navigate(Routes.ADD_CASH_SHEET);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
   }, [navigate]);
 
-  const onChangeWallet = useCallback(() => {
+  const handlePressChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
@@ -86,11 +94,11 @@ const ProfileMasthead = ({
       marginTop={0}
     >
       <AvatarCircle
-        onPress={onPressAvatar}
+        onPress={handlePressAvatar}
         accountColor={accountColor}
         accountSymbol={accountSymbol}
       />
-      <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.9}>
+      <ButtonPressAnimation onPress={handlePressChangeWallet} scaleTo={0.9}>
         <Row>
           <AccountName>{accountName}</AccountName>
           <DropdownArrow>
@@ -120,7 +128,6 @@ const ProfileMasthead = ({
             />
           )}
         </FloatingEmojis>
-
         <ProfileAction
           icon="qrCode"
           onPress={() => navigate(Routes.RECEIVE_MODAL)}
@@ -129,16 +136,11 @@ const ProfileMasthead = ({
           width={81}
         />
       </RowWithMargins>
-      {addCashAvailable && <AddCashButton onPress={onAddCash} />}
-      {showBottomDivider && (
-        <Divider
-          color={colors.rowDividerLight}
-          style={{ bottom: 0, position: 'absolute' }}
-        />
-      )}
+      {addCashAvailable && <AddCashButton onPress={handlePressAddCash} />}
+      {showBottomDivider && <ProfileMastheadDivider />}
     </Column>
   );
-};
+}
 
 ProfileMasthead.propTypes = {
   accountAddress: PropTypes.string,
@@ -149,5 +151,3 @@ ProfileMasthead.propTypes = {
 ProfileMasthead.defaultProps = {
   showBottomDivider: true,
 };
-
-export default ProfileMasthead;

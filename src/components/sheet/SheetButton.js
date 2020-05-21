@@ -44,10 +44,8 @@ const SheetButton = ({
         <Text
           align="center"
           color={textColor}
+          lineHeight={24}
           size="larger"
-          style={{
-            lineHeight: 24,
-          }}
           weight="semibold"
         >
           {label}

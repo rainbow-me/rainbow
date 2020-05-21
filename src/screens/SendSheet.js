@@ -75,16 +75,16 @@ const SendSheet = ({ setAppearListener, ...props }) => {
   const {
     gasLimit,
     gasPrices,
-    gasPricesStartPolling,
-    gasPricesStopPolling,
-    gasUpdateDefaultGasLimit,
-    gasUpdateGasPriceOption,
-    gasUpdateTxFee,
     isSufficientGas,
     selectedGasPrice,
+    startPollingGasPrices,
+    stopPollingGasPrices,
     txFees,
+    updateDefaultGasLimit,
+    updateGasPriceOption,
+    updateTxFee,
   } = useGas();
-  const { contacts, removeContact, sortedContacts } = useContacts();
+  const { contacts, onRemoveContact, sortedContacts } = useContacts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     accountAddress,
@@ -114,16 +114,11 @@ const SendSheet = ({ setAppearListener, ...props }) => {
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
 
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      dispatch(gasPricesStartPolling());
-    });
+    InteractionManager.runAfterInteractions(() => startPollingGasPrices());
     return () => {
-      InteractionManager.runAfterInteractions(() => {
-        dispatch(gasPricesStopPolling());
-      });
+      InteractionManager.runAfterInteractions(() => stopPollingGasPrices());
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [startPollingGasPrices, stopPollingGasPrices]);
 
   // Recalculate balance when gas price changes
   useEffect(() => {
@@ -311,11 +306,11 @@ const SendSheet = ({ setAppearListener, ...props }) => {
       gasUtils.showTransactionSpeedOptions(
         gasPrices,
         txFees,
-        gasPriceOption => dispatch(gasUpdateGasPriceOption(gasPriceOption)),
+        gasPriceOption => updateGasPriceOption(gasPriceOption),
         onSuccess
       );
     },
-    [dispatch, gasPrices, gasUpdateGasPriceOption, txFees]
+    [gasPrices, txFees, updateGasPriceOption]
   );
 
   const onLongPressSend = useCallback(() => {
@@ -338,9 +333,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
     setRecipient(event);
   }, []);
 
-  useEffect(() => {
-    dispatch(gasUpdateDefaultGasLimit());
-  }, [dispatch, gasUpdateDefaultGasLimit]);
+  useEffect(() => updateDefaultGasLimit(), [updateDefaultGasLimit]);
 
   useEffect(() => {
     if (
@@ -385,21 +378,17 @@ const SendSheet = ({ setAppearListener, ...props }) => {
         asset: selected,
         recipient,
       })
-        .then(gasLimit => {
-          dispatch(gasUpdateTxFee(gasLimit));
-        })
-        .catch(() => {
-          dispatch(gasUpdateTxFee(null));
-        });
+        .then(gasLimit => updateTxFee(gasLimit))
+        .catch(() => updateTxFee(null));
     }
   }, [
     accountAddress,
     amountDetails.assetAmount,
     dispatch,
-    gasUpdateTxFee,
     isValidAddress,
     recipient,
     selected,
+    updateTxFee,
   ]);
 
   return (
@@ -408,21 +397,21 @@ const SendSheet = ({ setAppearListener, ...props }) => {
       <KeyboardAvoidingView behavior="padding">
         <Container align="center">
           <SendHeader
-            showAssetList={showAssetList}
-            setAppearListener={setAppearListener}
             contacts={contacts}
             isValidAddress={isValidAddress}
             onChangeAddressInput={onChangeInput}
             onPressPaste={sendUpdateRecipient}
             recipient={recipient}
-            removeContact={contact => dispatch(removeContact(contact))}
+            removeContact={onRemoveContact}
+            setAppearListener={setAppearListener}
+            showAssetList={showAssetList}
           />
           {showEmptyState && (
             <SendContactList
               allAssets={sortedContacts}
               currentInput={currentInput}
               onPressContact={sendUpdateRecipient}
-              removeContact={contact => dispatch(removeContact(contact))}
+              removeContact={onRemoveContact}
             />
           )}
           {showAssetList && (
