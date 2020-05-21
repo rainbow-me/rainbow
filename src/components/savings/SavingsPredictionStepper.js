@@ -29,10 +29,10 @@ const sx = StyleSheet.create({
 
 /* eslint-disable sort-keys */
 const steps = {
-  Monthly: {
+  'Monthly': {
     days: 30,
   },
-  Yearly: {
+  'Yearly': {
     days: 365,
   },
   '5-Year': {
