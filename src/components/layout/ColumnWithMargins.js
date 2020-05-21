@@ -1,11 +1,12 @@
-import { compose, defaultProps, setDisplayName, withProps } from 'recompact';
+import styled from 'styled-components/primitives';
 import LayoutWithMargins from './LayoutWithMargins';
 
-export default compose(
-  setDisplayName('ColumnWithMargins'),
-  defaultProps({ margin: 20 }),
-  withProps({
-    direction: 'column',
+const ColumnWithMargins = styled(LayoutWithMargins).attrs(
+  ({ direction = 'column', margin = 20 }) => ({
+    direction,
+    margin,
     marginKey: 'marginBottom',
   })
-)(LayoutWithMargins);
+)``;
+
+export default ColumnWithMargins;

@@ -3,8 +3,9 @@
  * could be useful during development.
  */
 
+export const darkMode = false;
+export const parseAllTxnsOnReceive = false;
 export const reactNativeDisableYellowBox = true;
 export const reactNativeEnableLogbox = false;
 export const showNetworkRequests = false;
 export const showNetworkResponses = false;
-export const darkMode = false;

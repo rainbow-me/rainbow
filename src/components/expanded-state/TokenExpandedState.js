@@ -14,7 +14,7 @@ const TokenExpandedState = ({ asset }) => {
   const { navigate, goBack } = useNavigation();
   const { address, name, symbol } = asset;
   const { assets } = useAccountAssets();
-  const { selected: selectedWallet = {} } = useWallets();
+  const { selectedWallet } = useWallets();
   const selectedAsset = ethereumUtils.getAsset(assets, address);
   const price = get(selectedAsset, 'native.price.display', null);
   const subtitle = get(selectedAsset, 'balance.display', symbol);

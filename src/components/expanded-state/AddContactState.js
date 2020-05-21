@@ -1,13 +1,17 @@
-import { get } from 'lodash';
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import { compose, onlyUpdateForKeys } from 'recompact';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import { withContacts } from '../../hoc';
+import { useContacts, useDimensions } from '../../hooks';
 import Routes from '../../screens/Routes/routesNames';
 import { colors, margin, padding } from '../../styles';
-import { abbreviations, deviceUtils } from '../../utils';
+import { abbreviations, magicMemo } from '../../utils';
 import Divider from '../Divider';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { ButtonPressAnimation } from '../animations';
@@ -16,8 +20,7 @@ import { ContactAvatar, showDeleteContactActionSheet } from '../contacts';
 import CopyTooltip from '../copy-tooltip';
 import { Input } from '../inputs';
 import { Centered, KeyboardFixedOpenLayout } from '../layout';
-import { Text, TruncatedAddress } from '../text';
-import PlaceholderText from '../text/PlaceholderText';
+import { PlaceholderText, Text, TruncatedAddress } from '../text';
 import FloatingPanels from './FloatingPanels';
 import { AssetPanel } from './asset-panel';
 
@@ -36,201 +39,188 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
   width: 100%;
 `;
 
-class AddContactState extends PureComponent {
-  static propTypes = {
-    address: PropTypes.string,
-    color: PropTypes.number,
-    contact: PropTypes.object,
-    contactsAddOrUpdate: PropTypes.func,
-    navigation: PropTypes.object,
-    onCloseModal: PropTypes.func,
-    onRefocusInput: PropTypes.func,
-    removeContact: PropTypes.func,
-  };
+const NameInput = styled(Input).attrs({
+  align: 'center',
+  autoCapitalize: 'words',
+  autoFocus: true,
+  letterSpacing: 'roundedTight',
+  returnKeyType: 'done',
+  size: 'big',
+  spellCheck: false,
+  weight: 'bold',
+})`
+  width: 100%;
+`;
 
-  state = {
-    color: this.props.color || 0,
-    value: get(this.props, 'contact.nickname', ''),
-  };
+const SubmitButton = styled(Button).attrs(({ value }) => ({
+  backgroundColor: value.length > 0 ? colors.appleBlue : undefined,
+  disabled: !value.length > 0,
+  showShadow: true,
+  size: 'small',
+}))`
+  height: 43;
+  width: 215;
+`;
 
-  componentDidMount = () => {
-    if (this.state.value.length === 0) {
-      this._text.updateValue('Name');
-    }
-  };
+const SubmitButtonLabel = styled(Text).attrs({
+  color: 'white',
+  size: 'lmedium',
+  weight: 'semibold',
+})`
+  margin-bottom: 1.5;
+`;
 
-  componentWillUnmount = () => {
-    if (this.props.onRefocusInput) {
-      this.props.onRefocusInput();
-    }
-  };
+const AddContactState = ({
+  address,
+  color: colorProp,
+  contact,
+  onCloseModal,
+  onRefocusInput,
+}) => {
+  const { width: deviceWidth } = useDimensions();
+  const { dangerouslyGetParent, goBack } = useNavigation();
+  const { onAddOrUpdateContacts, onRemoveContact } = useContacts();
 
-  inputRef = undefined;
+  const [color, setColor] = useState(colorProp || 0);
+  const [value, setValue] = useState(contact?.nickname || '');
 
-  handleAddContact = async () => {
-    const {
-      address,
-      contactsAddOrUpdate,
-      navigation,
-      onCloseModal,
-    } = this.props;
-    const { color, value } = this.state;
+  const nameInputRef = useRef();
+  const placeHolderText = useRef();
 
+  const additionalContainerPadding = useMemo(
+    () =>
+      dangerouslyGetParent().state.routeName === Routes.SEND_SHEET_NAVIGATOR &&
+      isNativeStackAvailable
+        ? nativeStackAdditionalPadding
+        : 0,
+    [dangerouslyGetParent]
+  );
+
+  const handleAddContact = useCallback(async () => {
     if (value.length > 0) {
-      contactsAddOrUpdate(address, value, color);
+      onAddOrUpdateContacts(address, value, color);
       if (onCloseModal) {
         onCloseModal();
       }
-      navigation.goBack();
+      goBack();
     }
-  };
+  }, [address, color, goBack, onAddOrUpdateContacts, onCloseModal, value]);
 
-  handleCancel = () => {
-    if (this.props.onCloseModal) {
-      this.props.onCloseModal();
+  const handleCancel = useCallback(() => {
+    if (onCloseModal) {
+      onCloseModal();
     }
-    this.props.navigation.goBack();
-  };
+    goBack();
+  }, [goBack, onCloseModal]);
 
-  handleChange = ({ nativeEvent: { text } }) => {
-    const value = text.charCodeAt(0) === 32 ? text.substring(1) : text;
-    if (value.length > 0) {
-      this._text.updateValue(' ');
-    } else {
-      this._text.updateValue('Name');
+  const handleChange = useCallback(
+    ({ nativeEvent: { text } }) => {
+      const newValue = text.charCodeAt(0) === 32 ? text.substring(1) : text;
+
+      if (newValue.length > 0) {
+        placeHolderText.current.updateValue(' ');
+      } else {
+        placeHolderText.current.updateValue('Name');
+      }
+
+      setValue(newValue);
+    },
+    [placeHolderText]
+  );
+
+  const handleChangeColor = useCallback(
+    () =>
+      setColor(prevColor => {
+        let newColor = prevColor + 1;
+        if (newColor > colors.avatarColor.length - 1) {
+          newColor = 0;
+        }
+        return newColor;
+      }),
+    []
+  );
+
+  const handleDeleteContact = useCallback(
+    () =>
+      showDeleteContactActionSheet({
+        address,
+        nickname: value,
+        onDelete: handleCancel,
+        removeContact: onRemoveContact,
+      }),
+    [address, handleCancel, onRemoveContact, value]
+  );
+
+  const handleFocusInput = useCallback(() => nameInputRef?.current?.focus(), [
+    nameInputRef,
+  ]);
+
+  useEffect(() => {
+    if (value.length === 0) {
+      placeHolderText.current.updateValue('Name');
     }
-    this.setState({ value });
-  };
+    return () => {
+      if (onRefocusInput) {
+        onRefocusInput();
+      }
+    };
+  }, [onRefocusInput, placeHolderText, value]);
 
-  handleChangeColor = async () => {
-    const { color } = this.state;
-
-    let newColor = color + 1;
-    if (newColor > colors.avatarColor.length - 1) {
-      newColor = 0;
-    }
-
-    this.setState({ color: newColor });
-  };
-
-  handleDeleteContact = () =>
-    showDeleteContactActionSheet({
-      address: this.props.address,
-      nickname: this.state.value,
-      onDelete: this.handleCancel,
-      removeContact: this.props.removeContact,
-    });
-
-  handleFocusInput = () => {
-    if (this.inputRef) {
-      this.inputRef.focus();
-    }
-  };
-
-  handleInputRef = ref => {
-    this.inputRef = ref;
-  };
-
-  render() {
-    const { address, contact, navigation } = this.props;
-    const { color, value } = this.state;
-
-    const additionalPadding =
-      navigation.dangerouslyGetParent().state.routeName ===
-        Routes.SEND_SHEET_NAVIGATOR && isNativeStackAvailable
-        ? nativeStackAdditionalPadding
-        : 0;
-
-    return (
-      <KeyboardFixedOpenLayout additionalPadding={additionalPadding}>
-        <TouchableBackdrop onPress={this.handleAddContact} />
-        <FloatingPanels maxWidth={deviceUtils.dimensions.width - 110}>
-          <AssetPanel>
-            <Centered css={padding(24, 25)} direction="column">
-              <ButtonPressAnimation
-                onPress={this.handleChangeColor}
-                scaleTo={0.96}
-              >
-                <ContactAvatar
-                  color={color}
-                  large
-                  marginBottom={19}
-                  value={value}
-                />
-              </ButtonPressAnimation>
-              <PlaceholderText
-                ref={component => {
-                  this._text = component;
-                }}
-              />
-              <Input
-                autoCapitalize="words"
-                autoFocus
-                letterSpacing="roundedTight"
-                onChange={this.handleChange}
-                onSubmitEditing={this.handleAddContact}
-                returnKeyType="done"
-                size="big"
-                spellCheck={false}
-                ref={this.handleInputRef}
-                style={{ width: '100%' }}
-                textAlign="center"
+  return (
+    <KeyboardFixedOpenLayout additionalPadding={additionalContainerPadding}>
+      <TouchableBackdrop onPress={handleAddContact} />
+      <FloatingPanels maxWidth={deviceWidth - 110}>
+        <AssetPanel>
+          <Centered css={padding(24, 25)} direction="column">
+            <ButtonPressAnimation onPress={handleChangeColor} scaleTo={0.96}>
+              <ContactAvatar
+                color={color}
+                large
+                marginBottom={19}
                 value={value}
-                weight="bold"
               />
-              <CopyTooltip
-                onHide={this.handleFocusInput}
-                textToCopy={address}
-                tooltipText="Copy Address"
-              >
-                <AddressAbbreviation address={address} />
-              </CopyTooltip>
-              <Centered paddingVertical={19} width={93}>
-                <Divider inset={false} />
-              </Centered>
-              <Button
-                backgroundColor={
-                  value.length > 0 ? colors.appleBlue : undefined
-                }
-                disabled={!value.length > 0}
-                height={43}
-                onPress={this.handleAddContact}
-                showShadow
-                size="small"
-                width={215}
-              >
-                <Text
-                  color="white"
-                  size="lmedium"
-                  style={{ marginBottom: 1.5 }}
-                  weight="semibold"
-                >
-                  {contact ? 'Done' : 'Add Contact'}
-                </Text>
-              </Button>
-              <ButtonPressAnimation
-                marginTop={11}
-                onPress={contact ? this.handleDeleteContact : this.handleCancel}
-              >
-                <Centered backgroundColor={colors.white} css={padding(8, 9)}>
-                  <Text
-                    color={colors.alpha(colors.blueGreyDark, 0.4)}
-                    size="lmedium"
-                    weight="regular"
-                  >
-                    {contact ? 'Delete Contact' : 'Cancel'}
-                  </Text>
-                </Centered>
-              </ButtonPressAnimation>
+            </ButtonPressAnimation>
+            <PlaceholderText ref={placeHolderText} />
+            <NameInput
+              onChange={handleChange}
+              onSubmitEditing={handleAddContact}
+              ref={nameInputRef}
+              value={value}
+            />
+            <CopyTooltip
+              onHide={handleFocusInput}
+              textToCopy={address}
+              tooltipText="Copy Address"
+            >
+              <AddressAbbreviation address={address} />
+            </CopyTooltip>
+            <Centered paddingVertical={19} width={93}>
+              <Divider inset={false} />
             </Centered>
-          </AssetPanel>
-        </FloatingPanels>
-      </KeyboardFixedOpenLayout>
-    );
-  }
-}
+            <SubmitButton onPress={handleAddContact} value={value}>
+              <SubmitButtonLabel>
+                {contact ? 'Done' : 'Add Contact'}
+              </SubmitButtonLabel>
+            </SubmitButton>
+            <ButtonPressAnimation
+              marginTop={11}
+              onPress={contact ? handleDeleteContact : handleCancel}
+            >
+              <Centered backgroundColor={colors.white} css={padding(8, 9)}>
+                <Text
+                  color={colors.alpha(colors.blueGreyDark, 0.4)}
+                  size="lmedium"
+                  weight="regular"
+                >
+                  {contact ? 'Delete Contact' : 'Cancel'}
+                </Text>
+              </Centered>
+            </ButtonPressAnimation>
+          </Centered>
+        </AssetPanel>
+      </FloatingPanels>
+    </KeyboardFixedOpenLayout>
+  );
+};
 
-export default compose(
-  withContacts,
-  onlyUpdateForKeys(['price', 'subtitle'])
-)(AddContactState);
+export default magicMemo(AddContactState, ['address', 'color', 'contact']);

@@ -12,7 +12,8 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
   @IBOutlet weak var transactionType: UILabel!
   @IBOutlet weak var walletName: UILabel!
   @IBOutlet weak var walletImage: CoinIconWithProgressBar!
-  
+  @IBOutlet weak var walletInternalImage: UIImageView!
+
   @IBAction func onOpenButtonPress(_ sender: Any) {
     onItemPress(["index": row!])
   }
@@ -55,13 +56,18 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
     walletName.text = request.dappName
     walletName.addCharacterSpacing(kernValue: 0.5)
     walletName.setLineSpacing(lineHeightMultiple: 1.1)
-    walletImage.image = generateTextImage(String(request.dappName.prefix(2).uppercased()))
-    walletImage.layer.cornerRadius = 12
+    walletInternalImage.image = generateTextImage(String(request.dappName.prefix(2).uppercased()))
+    walletInternalImage.layer.cornerRadius = 12
+    walletInternalImage.layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner]
+    
+
+    
     
     if request.imageUrl != nil {
       let url = URL(string: request.imageUrl!)
-      self.walletImage.sd_setImage(with: url)
+      self.walletInternalImage.sd_setImage(with: url)
     }
+    
   }
   
   deinit {

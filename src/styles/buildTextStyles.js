@@ -1,42 +1,54 @@
 import { get, isNil } from 'lodash';
 import { Platform } from 'react-native';
-import { css } from 'styled-components';
+import { css } from 'styled-components/primitives';
 import colors from './colors';
 import fonts from './fonts';
 
-const buildFontFamily = ({ emoji, family = 'SFProRounded', mono }) => {
-  if (emoji) return '';
-  return `font-family: ${fonts.family[mono ? 'SFMono' : family]}`;
-};
+const buildTextStyles = css`
+  /* Color */
+  color: ${({ color }) => colors.get(color) || colors.dark};
 
-const buildFontWeight = ({ emoji, weight = 'regular' }) => {
-  if (emoji || isNil(weight)) return '';
-  return `font-weight: ${get(fonts, `weight[${weight}]`, weight)};`;
-};
+  /* Font Family */
+  ${({ isEmoji, family = 'SFProRounded', mono }) =>
+    isEmoji ? '' : `font-family: ${fonts.family[mono ? 'SFMono' : family]};`}
 
-const buildLetterSpacing = ({ letterSpacing = 'rounded' }) => {
-  if (isNil(letterSpacing)) return '';
-  return `letter-spacing: ${get(
-    fonts,
-    `letterSpacing[${letterSpacing}]`,
-    letterSpacing
-  )};`;
-};
+  /* Font Size */
+  font-size: ${({ size = 'medium' }) =>
+    typeof size === 'number' ? size : get(fonts, `size[${size}]`, size)};
 
-const buildLineHeight = ({ emoji, lineHeight }) => {
-  if (isNil(lineHeight) || (emoji && Platform.OS === 'android')) return '';
-  return `line-height: ${get(fonts, `lineHeight[${lineHeight}]`, lineHeight)};`;
-};
+  /* Font Weight */
+  ${({ isEmoji, weight = 'regular' }) =>
+    isEmoji || isNil(weight)
+      ? ''
+      : `font-weight: ${get(fonts, `weight[${weight}]`, weight)};`}
 
-export default css`
-  ${buildFontFamily}
-  ${buildFontWeight}
-  ${buildLetterSpacing}
-  ${buildLineHeight}
-  ${({ align }) => (align ? `text-align: ${align};` : '')}
+  /* Letter Spacing */
+  ${({ letterSpacing = 'rounded' }) =>
+    isNil(letterSpacing)
+      ? ''
+      : `letter-spacing: ${get(
+          fonts,
+          `letterSpacing[${letterSpacing}]`,
+          letterSpacing
+        )};`}
+
+  /* Line Height */
+  ${({ isEmoji, lineHeight }) =>
+    isNil(lineHeight) || (isEmoji && Platform.OS === 'android')
+      ? ''
+      : `line-height: ${get(fonts, `lineHeight[${lineHeight}]`, lineHeight)};`}
+
+  /* Opacity */
   ${({ opacity }) => (isNil(opacity) ? '' : `opacity: ${opacity};`)}
+
+  /* Tabular Numbers */
+  ${({ tabularNums }) => (tabularNums ? 'font-variant: tabular-nums;' : '')}
+
+  /* Text Align */
+  ${({ align }) => (isNil(align) ? '' : `text-align: ${align};`)}
+
+  /* Uppercase */
   ${({ uppercase }) => (uppercase ? 'text-transform: uppercase;' : '')}
-  color: ${({ color }) => colors.get(color) || colors.dark}
-  font-size: ${({ size }) =>
-    typeof size === 'number' ? size : fonts.size[size || 'medium']};
 `;
+
+export default buildTextStyles;

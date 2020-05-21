@@ -1,32 +1,41 @@
+import React, { useCallback } from 'react';
 import FastImage from 'react-native-fast-image';
-import { compose, withHandlers } from 'recompact';
-import { withImageDimensionsCache } from '../hoc';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateImageDimensionsCache } from '../redux/imageDimensionsCache';
 
-const ImageWithCachedDimensions = compose(
-  withImageDimensionsCache,
-  withHandlers({
-    onLoad: ({ id, imageDimensionsCache, onLoad, updateCache }) => event => {
-      event.persist();
+export default function ImageWithCachedDimensions({ id, onLoad, ...props }) {
+  const dispatch = useDispatch();
+  const imageDimensions = useSelector(
+    ({ imageDimensionsCache }) => imageDimensionsCache
+  );
+
+  const isCached = imageDimensions[id];
+
+  const handleLoad = useCallback(
+    event => {
       const {
         nativeEvent: { height, width },
       } = event;
 
-      if (!imageDimensionsCache[id]) {
-        updateCache({
-          dimensions: {
-            height,
-            isSquare: height === width,
-            width,
-          },
-          id,
-        });
+      if (!isCached) {
+        dispatch(
+          updateImageDimensionsCache({
+            dimensions: {
+              height,
+              isSquare: height === width,
+              width,
+            },
+            id,
+          })
+        );
       }
 
       if (onLoad) {
         onLoad(event);
       }
     },
-  })
-)(FastImage);
+    [dispatch, id, isCached, onLoad]
+  );
 
-export default ImageWithCachedDimensions;
+  return <FastImage {...props} onLoad={handleLoad} />;
+}

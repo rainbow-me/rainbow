@@ -52,7 +52,6 @@ const getContactForRecipient = ({ contacts, recipient }) => {
   if (recipient && !isEmpty(contacts)) {
     contact = get(contacts, `${[toLower(recipient)]}`, DefaultContactItem);
   }
-
   return { contact };
 };
 
@@ -149,7 +148,7 @@ class SendHeader extends PureComponent {
     }
 
     Keyboard.dismiss();
-    navigation.navigate(Routes.OVERLAY_EXPANDED_ASSET_SCREEN, {
+    navigation.navigate(Routes.MODAL_SCREEN, {
       address: recipient,
       asset: {},
       color,
@@ -180,7 +179,7 @@ class SendHeader extends PureComponent {
       showAssetList,
     } = this.props;
 
-    const isPreExistingContact = contact.nickname.length > 0;
+    const isPreExistingContact = (contact?.nickname.length || 0) > 0;
 
     return (
       <Fragment>

@@ -6,17 +6,21 @@ import styled from 'styled-components';
 import { colors } from '../../styles';
 import { Button } from '../buttons';
 import { Icon } from '../icons';
-import { Row } from '../layout';
 import { Text as UnstyledText } from '../text';
 
-const Container = styled(Row).attrs({ align: 'center' })`
+const ContainerElement = Platform.OS === 'ios' ? BorderlessButton : Button;
+const Container = styled(ContainerElement)`
+  align-items: center;
   bottom: 0;
   flex: 1;
-  padding-left: ${({ side }) => (side === 'left' ? 16 : 48)}
-  padding-right: ${({ side }) => (side === 'left' ? 48 : 16)}
+  flex-direction: row;
+  justify-content: ${({ side }) =>
+    side === 'left' ? 'flex-start' : 'flex-end'};
+  padding-left: ${({ side }) => (side === 'left' ? 16 : 48)};
+  padding-right: ${({ side }) => (side === 'left' ? 48 : 16)};
   position: absolute;
   top: 0;
-  zIndex: 2;
+  z-index: 2;
   ${({ side }) => (side === 'left' ? 'left: 0;' : 'right: 0')}
 `;
 
@@ -30,12 +34,7 @@ const Text = styled(UnstyledText).attrs({
 `;
 
 const ModalHeaderButton = ({ label, showBackArrow, side, ...props }) => (
-  <Container
-    component={Platform.OS === 'ios' ? BorderlessButton : Button}
-    justify={side === 'left' ? 'start' : 'end'}
-    side={side}
-    {...props}
-  >
+  <Container side={side} {...props}>
     {showBackArrow && (
       <Icon
         color={colors.appleBlue}

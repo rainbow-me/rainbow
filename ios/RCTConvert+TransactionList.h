@@ -35,7 +35,13 @@
     NSDictionary *data = [self NSDictionary:t];
     Transaction *transaction = [[Transaction alloc] init];
     if (data[@"status"] != [NSNull null]) {
-       transaction.status = [data[@"status"] capitalizedString];
+       transaction.status = data[@"status"];
+    }
+    if (data[@"title"] != [NSNull null]) {
+       transaction.title = data[@"title"];
+    }
+    if (data[@"description"] != [NSNull null]) {
+       transaction.transactionDescription = data[@"description"];
     }
     if (data[@"symbol"] != [NSNull null]) {
        transaction.symbol = data[@"symbol"];

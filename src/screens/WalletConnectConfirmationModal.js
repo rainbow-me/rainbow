@@ -5,10 +5,9 @@ import { compose, withHandlers, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import Divider from '../components/Divider';
 import { Button } from '../components/buttons';
-import { Nbsp } from '../components/html-entities';
 import { Column } from '../components/layout';
 import { Modal } from '../components/modal';
-import { Bold, Text } from '../components/text';
+import { Bold, Nbsp, Text } from '../components/text';
 import { withWalletConnectConfirmationModal } from '../hoc';
 import { padding } from '../styles';
 

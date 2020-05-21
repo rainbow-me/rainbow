@@ -1,12 +1,12 @@
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { useMemo, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import ShadowStack from 'react-native-shadow-stack';
+import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
 import { initials } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import CoinIcon from './CoinIcon';
+import { CoinIconSize } from './CoinIcon';
 
 const RVLIBorderRadius = 16.25;
 const RVLIShadows = {
@@ -20,85 +20,64 @@ const RVLIShadows = {
   ],
 };
 
-export default class RequestVendorLogoIcon extends PureComponent {
-  static propTypes = {
-    backgroundColor: PropTypes.string,
-    borderRadius: PropTypes.number,
-    dappName: PropTypes.string.isRequired,
-    imageUrl: PropTypes.string,
-    shouldPrioritizeImageLoading: PropTypes.bool,
-    showLargeShadow: PropTypes.bool,
-    size: PropTypes.number.isRequired,
-  };
+const Content = styled(Centered)`
+  ${({ size }) => position.size(size)};
+  background-color: ${({ color }) => color};
+`;
 
-  static defaultProps = {
-    backgroundColor: colors.dark,
-    borderRadius: RVLIBorderRadius,
-    size: CoinIcon.size,
-  };
+export default function RequestVendorLogoIcon({
+  backgroundColor = colors.dark,
+  borderRadius = RVLIBorderRadius,
+  dappName,
+  imageUrl,
+  shouldPrioritizeImageLoading,
+  showLargeShadow,
+  size = CoinIconSize,
+  ...props
+}) {
+  const [error, setError] = useState(null);
 
-  state = {
-    error: null,
-  };
+  // When dapps have no icon the bgColor provided to us is transparent.
+  // Having a transparent background breaks our UI, so we instead show a background
+  // color of white.
+  const bgColor =
+    backgroundColor === 'transparent' ? colors.white : backgroundColor;
 
-  static size = CoinIcon.size;
+  const imageSource = useMemo(
+    () => ({
+      priority:
+        FastImage.priority[shouldPrioritizeImageLoading ? 'high' : 'low'],
+      uri: imageUrl,
+    }),
+    [imageUrl, shouldPrioritizeImageLoading]
+  );
 
-  handleError = error => this.setState({ error });
-
-  renderFallbackText = bg => (
-    <Text
-      align="center"
-      color={colors.getFallbackTextColor(bg)}
-      size="smedium"
-      weight="semibold"
+  return (
+    <ShadowStack
+      {...props}
+      {...position.sizeAsObject(size)}
+      backgroundColor={bgColor}
+      borderRadius={borderRadius}
+      shadows={RVLIShadows[showLargeShadow ? 'large' : 'default']}
     >
-      {initials(this.props.dappName)}
-    </Text>
+      <Content color={bgColor} size={size}>
+        {imageUrl && !error ? (
+          <FastImage
+            onError={err => setError(err)}
+            source={imageSource}
+            style={position.sizeAsObject('100%')}
+          />
+        ) : (
+          <Text
+            align="center"
+            color={colors.getFallbackTextColor(bgColor)}
+            size="smedium"
+            weight="semibold"
+          >
+            {initials(dappName)}
+          </Text>
+        )}
+      </Content>
+    </ShadowStack>
   );
-
-  renderImage = () => (
-    <FastImage
-      onError={this.handleError}
-      source={{
-        priority:
-          FastImage.priority[
-            this.props.shouldPrioritizeImageLoading ? 'high' : 'low'
-          ],
-        uri: this.props.imageUrl,
-      }}
-      style={position.sizeAsObject('100%')}
-    />
-  );
-
-  render = () => {
-    const {
-      backgroundColor,
-      borderRadius,
-      imageUrl,
-      showLargeShadow,
-      size,
-      ...props
-    } = this.props;
-
-    // When dapps have no icon the bg is transparent
-    const bg =
-      backgroundColor === 'transparent' ? colors.white : backgroundColor;
-
-    return (
-      <ShadowStack
-        {...props}
-        {...position.sizeAsObject(size)}
-        backgroundColor={bg}
-        borderRadius={borderRadius}
-        shadows={RVLIShadows[showLargeShadow ? 'large' : 'default']}
-        shouldRasterizeIOS
-      >
-        <Centered style={{ ...position.sizeAsObject(size), bg }}>
-          {imageUrl && !this.state.error
-            ? this.renderImage()
-            : this.renderFallbackText(bg)}
-        </Centered>
-      </ShadowStack>
-    );
-  };
 }

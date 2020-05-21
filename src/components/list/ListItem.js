@@ -5,7 +5,7 @@ import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { fonts, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
-import { Centered, FlexItem, Row, RowWithMargins } from '../layout';
+import { Centered, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 
 const ListItemHeight = 54;
@@ -62,11 +62,7 @@ const ListItem = enhance(
             {label}
           </TruncatedText>
         </RowWithMargins>
-        {children && (
-          <Centered component={FlexItem} shrink={0}>
-            {children}
-          </Centered>
-        )}
+        {children && <Centered flexShrink={0}>{children}</Centered>}
       </Row>
     </ButtonPressAnimation>
   )

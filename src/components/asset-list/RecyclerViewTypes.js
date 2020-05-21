@@ -128,8 +128,8 @@ export const ViewTypes = {
   },
 
   UNIQUE_TOKEN_ROW: {
-    calculateHeight: ({ amountOfRows, isFirst, isOpen }) => {
-      const TokenFamilyHeaderHeight = TokenFamilyHeader.height;
+    calculateHeight: ({ amountOfRows, isFirst, isHeader, isOpen }) => {
+      const TokenFamilyHeaderHeight = isHeader ? TokenFamilyHeader.height : 0;
       const firstRowExtraTopPadding = isFirst ? 4 : 0;
       const heightOfRows = amountOfRows * UniqueTokenRow.cardSize;
       const heightOfRowMargins = UniqueTokenRow.cardMargin * (amountOfRows - 1);
@@ -152,6 +152,7 @@ export const ViewTypes = {
         familyImage: item.familyImage,
         familyName: item.familyName,
         isFirst: type.isFirst,
+        isHeader: type.isHeader,
         item: item.tokens,
         shouldPrioritizeImageLoading:
           index < get(sections, '[0].data.length', 0) + 9,

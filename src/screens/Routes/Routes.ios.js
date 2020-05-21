@@ -6,10 +6,10 @@ import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { ExchangeModalNavigator, SavingModalNavigator } from '../../navigation';
+import { onDidPop, onWillPop } from '../../navigation/Navigation';
 import {
   backgroundPreset,
   emojiPreset,
-  expandedPreset,
   overlayExpandedPreset,
   savingsPreset,
   sheetPreset,
@@ -19,8 +19,8 @@ import AddCashSheet from '../AddCashSheet';
 import AvatarBuilder from '../AvatarBuilder';
 import ChangeWalletModal from '../ChangeWalletModal';
 import ExampleScreen from '../ExampleScreen';
-import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
+import ModalScreen from '../ModalScreen';
 import ProfileScreen from '../ProfileScreen';
 import QRScannerScreenWithData from '../QRScannerScreenWithData';
 import ReceiveModal from '../ReceiveModal';
@@ -43,6 +43,7 @@ import {
 import {
   AddCashSheetWrapper,
   appearListener,
+  ExpandedAssetSheetWrapper,
   ImportSeedPhraseSheetWrapper,
   SendSheetWrapper,
 } from './nativeStackWrappers';
@@ -67,16 +68,16 @@ const importSeedPhraseFlowRoutes = {
     navigationOptions: sheetPresetWithTransitions,
     screen: ImportSeedPhraseSheetWrapper,
   },
-  [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: {
+  [Routes.MODAL_SCREEN]: {
     navigationOptions: overlayExpandedPreset,
-    screen: ExpandedAssetScreenWithData,
+    screen: ModalScreen,
   },
 };
 
 const sendFlowRoutes = {
-  [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: {
+  [Routes.MODAL_SCREEN]: {
     navigationOptions: overlayExpandedPreset,
-    screen: ExpandedAssetScreenWithData,
+    screen: ModalScreen,
   },
   [Routes.SEND_SHEET]: {
     navigationOptions: sheetPresetWithTransitions,
@@ -100,9 +101,9 @@ const routesForAddCash = {
     navigationOptions: sheetPresetWithTransitions,
     screen: AddCashSheetWrapper,
   },
-  [Routes.OVERLAY_EXPANDED_SUPPORTED_COUNTRIES]: {
+  [Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN]: {
     navigationOptions: overlayExpandedPreset,
-    screen: ExpandedAssetScreenWithData,
+    screen: ModalScreen,
   },
 };
 
@@ -131,10 +132,6 @@ const routesForMainNavigator = {
     },
     screen: ExchangeModalNavigator,
   },
-  [Routes.EXPANDED_ASSET_SCREEN]: {
-    navigationOptions: expandedPreset,
-    screen: ExpandedAssetScreenWithData,
-  },
   [Routes.SAVINGS_SHEET]: {
     navigationOptions: savingsPreset,
     screen: SavingsSheet,
@@ -148,9 +145,9 @@ const routesForMainNavigator = {
     screen: WalletConnectConfirmationModal,
   },
   ...(isNativeStackAvailable && {
-    [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: {
+    [Routes.MODAL_SCREEN]: {
       navigationOptions: overlayExpandedPreset,
-      screen: ExpandedAssetScreenWithData,
+      screen: ModalScreen,
     },
   }),
 };
@@ -211,13 +208,9 @@ const routesForNativeStackFallback = {
     screen: ImportSeedPhraseSheetWithData,
   },
   [Routes.MAIN_NAVIGATOR]: MainNavigator,
-  [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: {
+  [Routes.MODAL_SCREEN]: {
     navigationOptions: overlayExpandedPreset,
-    screen: ExpandedAssetScreenWithData,
-  },
-  [Routes.OVERLAY_EXPANDED_SUPPORTED_COUNTRIES]: {
-    navigationOptions: overlayExpandedPreset,
-    screen: ExpandedAssetScreenWithData,
+    screen: ModalScreen,
   },
   [Routes.SEND_SHEET]: {
     navigationOptions: {
@@ -228,6 +221,10 @@ const routesForNativeStackFallback = {
       },
     },
     screen: SendSheet,
+  },
+  [Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN]: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ModalScreen,
   },
   ...routesForSavingsModals,
 };
@@ -255,6 +252,24 @@ const routesForBottomSheetStack = {
   [Routes.STACK]: Stack,
   [Routes.RECEIVE_MODAL]: withCustomStack(ReceiveModal),
   [Routes.SETTINGS_MODAL]: withCustomStack(SettingsModal),
+  [Routes.EXPANDED_ASSET_SHEET]: {
+    navigationOptions: {
+      allowsDragToDismiss: true,
+      allowsTapToDismiss: true,
+      backgroundOpacity: 0.7,
+      blocksBackgroundTouches: true,
+      cornerRadius: 24,
+      customStack: true,
+      gestureEnabled: true,
+      headerHeight: 50,
+      onAppear: null,
+      scrollEnabled: true,
+      springDamping: 0.8755,
+      topOffset: 0,
+      transitionDuration: 0.42,
+    },
+    screen: ExpandedAssetSheetWrapper,
+  },
   ...(isNativeStackAvailable && routesForNativeStack),
 };
 
@@ -263,7 +278,9 @@ const MainNativeBottomSheetNavigation = createNativeStackNavigator(
   {
     defaultNavigationOptions: {
       onAppear: () => appearListener.current && appearListener.current(),
+      onDismissed: onDidPop,
       onWillDismiss: () => {
+        onWillPop();
         sheetPreset.onTransitionStart({ closing: true });
       },
       showDragIndicator: false,

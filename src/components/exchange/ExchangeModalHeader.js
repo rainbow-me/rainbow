@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { usePrevious } from '../../hooks';
 import { colors, padding, position } from '../../styles';
@@ -11,43 +10,7 @@ import { Centered, Column } from '../layout';
 import { SheetHandle } from '../sheet';
 import { Text } from '../text';
 
-const InfoButtonPaddingHorizontal = 19;
-const InfoIconSize = 18;
 const SheetHandleMargin = 6;
-
-const InfoButtonPosition = `
-  bottom: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-`;
-
-const InfoButton = styled(Centered).attrs({
-  activeScale: 0.8,
-  component: TouchableScale,
-  hapticType: 'impactLight',
-  pressInFriction: 50,
-  pressInTension: 400,
-  pressOutFriction: 30,
-  pressOutTension: 300,
-})`
-  ${InfoButtonPosition};
-  margin-top: ${SheetHandleMargin + 4};
-  padding-left: ${InfoButtonPaddingHorizontal};
-  padding-right: ${InfoButtonPaddingHorizontal};
-`;
-
-const InfoButtonTransition = styled(Transitioning.View)`
-  ${position.centered};
-  ${InfoButtonPosition};
-`;
-
-const Title = withProps({
-  align: 'center',
-  lineHeight: 'loose',
-  size: 'large',
-  weight: 'bold',
-})(Text);
 
 const transition = (
   <Transition.Sequence>
@@ -60,6 +23,39 @@ const transition = (
   </Transition.Sequence>
 );
 
+const InfoButtonPosition = `
+  bottom: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+`;
+
+const InfoButton = styled(Centered).attrs({
+  activeScale: 0.8,
+  hapticType: 'impactLight',
+  pressInFriction: 50,
+  pressInTension: 400,
+  pressOutFriction: 30,
+  pressOutTension: 300,
+  useNativeDriver: true,
+})`
+  ${InfoButtonPosition};
+  ${padding(0, 19)};
+  margin-top: ${SheetHandleMargin + 4};
+`;
+
+const InfoButtonIcon = styled(Icon).attrs({
+  color: colors.alpha(colors.blueGreyDark, 0.3),
+  name: 'info',
+})`
+  ${position.size(18)};
+`;
+
+const InfoButtonTransition = styled(Transitioning.View)`
+  ${position.centered};
+  ${InfoButtonPosition};
+`;
+
 const ExchangeModalHeader = ({ onPressDetails, showDetailsButton, title }) => {
   const ref = useRef();
   const prevShowDetailsButton = usePrevious(showDetailsButton);
@@ -71,15 +67,13 @@ const ExchangeModalHeader = ({ onPressDetails, showDetailsButton, title }) => {
   return (
     <Column align="center" css={padding(8, 0)}>
       <SheetHandle marginBottom={SheetHandleMargin} />
-      <Title>{title}</Title>
+      <Text align="center" lineHeight="loose" size="large" weight="bold">
+        {title}
+      </Text>
       <InfoButtonTransition ref={ref} transition={transition}>
         {showDetailsButton && (
-          <InfoButton onPress={onPressDetails} useNativeDriver>
-            <Icon
-              {...position.sizeAsObject(InfoIconSize)}
-              color={colors.alpha(colors.blueGreyDark, 0.3)}
-              name="info"
-            />
+          <InfoButton as={TouchableScale} onPress={onPressDetails}>
+            <InfoButtonIcon />
           </InfoButton>
         )}
       </InfoButtonTransition>

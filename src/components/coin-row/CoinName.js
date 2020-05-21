@@ -1,23 +1,10 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import styled from 'styled-components/primitives';
 import { TruncatedText } from '../text';
 
-const CoinName = ({ paddingRight, ...props }) => (
-  <TruncatedText
-    color="dark"
-    letterSpacing="roundedMedium"
-    size="lmedium"
-    style={{ paddingRight }}
-    {...props}
-  />
-);
-
-CoinName.propTypes = {
-  paddingRight: PropTypes.number,
-};
-
-CoinName.defaultProps = {
-  paddingRight: 19,
-};
-
-export default React.memo(CoinName);
+export default styled(TruncatedText).attrs({
+  color: 'dark',
+  letterSpacing: 'roundedMedium',
+  size: 'lmedium',
+})`
+  padding-right: ${({ paddingRight }) => paddingRight || 19};
+`;

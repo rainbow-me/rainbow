@@ -7,8 +7,7 @@ export default function useInternetStatus() {
   const [isInternetReachable, setIsInternetReachable] = useState(true);
 
   const onChange = useCallback(
-    newState => {
-      const { isInternetReachable: newIsInternetReachable } = newState;
+    ({ isInternetReachable: newIsInternetReachable }) => {
       if (!isNil(newIsInternetReachable)) {
         setIsInternetReachable(newIsInternetReachable);
         if (!isInternetReachable && newIsInternetReachable) {

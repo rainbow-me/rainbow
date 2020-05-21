@@ -1,8 +1,7 @@
-import GraphemeSplitter from 'grapheme-splitter';
-import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
+import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import {
@@ -11,39 +10,46 @@ import {
   useRequests,
 } from '../../hooks';
 import Routes from '../../screens/Routes/routesNames';
-import { colors } from '../../styles';
+import { borders, colors } from '../../styles';
+import { getFirstGrapheme } from '../../utils';
 import Avatar from '../Avatar';
 import { OpacityToggler } from '../animations';
 import { Badge } from '../badge';
 import { Centered, InnerBorder } from '../layout';
+import { Text } from '../text';
 import HeaderButton from './HeaderButton';
 
-const AvatarCircle = styled(View)`
-  border-radius: 17px;
-  height: 34px;
-  width: 34px;
-  z-index: 10;
-`;
+const shadows = [
+  [0, 2, 2.5, colors.dark, 0.08],
+  [0, 6, 5, colors.dark, 0.12],
+];
 
-const FirstLetter = styled(Text)`
-  color: #fff;
-  font-size: 23;
-  font-weight: 400;
-  letter-spacing: -0.6;
-  line-height: 34;
-  text-align: center;
+const FirstLetter = styled(Text).attrs({
+  align: 'center',
+  color: colors.white,
+  letterSpacing: -0.6,
+  lineHeight: 34,
+  size: 'big',
+  weight: 'regular',
+})`
   width: 100%;
 `;
 
-const ProfileHeaderButton = ({ navigation }) => {
+const FirstLetterCircleBackground = styled.View`
+  ${borders.buildCircle(34)};
+  background-color: ${({ color }) => color};
+  z-index: 10;
+`;
+
+export default function ProfileHeaderButton() {
+  const { navigate } = useNavigation();
   const { pendingRequestCount } = useRequests();
   const { isCoinListEdited } = useCoinListEdited();
   const { accountColor, accountName } = useAccountSettings();
 
-  const onPress = useCallback(
-    () => navigation.navigate(Routes.PROFILE_SCREEN),
-    [navigation]
-  );
+  const onPress = useCallback(() => navigate(Routes.PROFILE_SCREEN), [
+    navigate,
+  ]);
 
   return (
     <OpacityToggler
@@ -53,9 +59,8 @@ const ProfileHeaderButton = ({ navigation }) => {
     >
       <View pointerEvents={isCoinListEdited ? 'none' : 'auto'}>
         <HeaderButton
-          testID="goToProfile"
           onPress={onPress}
-          shouldRasterizeIOS
+          testID="goToProfile"
           transformOrigin="left"
         >
           <Centered>
@@ -64,21 +69,15 @@ const ProfileHeaderButton = ({ navigation }) => {
                 backgroundColor={colors.avatarColor[accountColor]}
                 borderRadius={65}
                 height={34}
+                shadows={shadows}
                 width={34}
-                shadows={[
-                  [0, 2, 2.5, colors.dark, 0.08],
-                  [0, 6, 5, colors.dark, 0.12],
-                ]}
-                shouldRasterizeIOS
               >
-                <AvatarCircle
-                  style={{ backgroundColor: colors.avatarColor[accountColor] }}
+                <FirstLetterCircleBackground
+                  color={colors.avatarColor[accountColor]}
                 >
-                  <FirstLetter>
-                    {new GraphemeSplitter().splitGraphemes(accountName)[0]}
-                  </FirstLetter>
+                  <FirstLetter>{getFirstGrapheme(accountName)}</FirstLetter>
                   <InnerBorder opacity={0.04} radius={34} />
-                </AvatarCircle>
+                </FirstLetterCircleBackground>
               </ShadowStack>
             ) : (
               <Avatar size={34} />
@@ -91,10 +90,4 @@ const ProfileHeaderButton = ({ navigation }) => {
       </View>
     </OpacityToggler>
   );
-};
-
-ProfileHeaderButton.propTypes = {
-  navigation: PropTypes.object,
-};
-
-export default ProfileHeaderButton;
+}

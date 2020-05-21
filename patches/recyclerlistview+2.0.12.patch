@@ -71,15 +71,16 @@ index 8da004f..8ec46b0 100644
          this._offsetY = offsetY;
          this.boundaryProcessing(offsetY, this.props.getDistanceFromWindow(), this._windowBound);
 diff --git a/node_modules/recyclerlistview/dist/reactnative/core/viewrenderer/BaseViewRenderer.js b/node_modules/recyclerlistview/dist/reactnative/core/viewrenderer/BaseViewRenderer.js
-index f584ea7..77e1275 100644
+index f584ea7..328ebdf 100644
 --- a/node_modules/recyclerlistview/dist/reactnative/core/viewrenderer/BaseViewRenderer.js
 +++ b/node_modules/recyclerlistview/dist/reactnative/core/viewrenderer/BaseViewRenderer.js
-@@ -28,7 +28,7 @@ var BaseViewRenderer = /** @class */ (function (_super) {
+@@ -28,7 +28,8 @@ var BaseViewRenderer = /** @class */ (function (_super) {
          var hasInternalSnapshotChanged = this.props.internalSnapshot !== newProps.internalSnapshot;
          var hasDataChanged = (this.props.dataHasChanged && this.props.dataHasChanged(this.props.data, newProps.data));
          var shouldUpdate = hasSizeChanged || hasDataChanged || hasExtendedStateChanged || hasInternalSnapshotChanged;
 -        if (shouldUpdate) {
-+        if (hasSizeChanged) {
++        var isTooBigFamilyToAnimate = this.props.data.item?.childrenAmount > 50;
++        if (hasSizeChanged && !hasMoved && !isTooBigFamilyToAnimate) {
              newProps.itemAnimator.animateWillUpdate(this.props.x, this.props.y, newProps.x, newProps.y, this.getRef(), newProps.index);
          }
          else if (hasMoved) {
