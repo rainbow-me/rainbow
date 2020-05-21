@@ -1,28 +1,28 @@
 import analytics from '@segment/analytics-react-native';
-import GraphemeSplitter from 'grapheme-splitter';
+import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { Platform } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
-import AvatarImageSource from '../../assets/avatar.png';
 import { isAvatarPickerAvailable } from '../../config/experimental';
-import { useAccountSettings, useClipboard } from '../../hooks';
-import { DEFAULT_WALLET_NAME } from '../../model/wallet';
-import { useNavigation } from '../../navigation/Navigation';
+import { useAccountProfile, useClipboard } from '../../hooks';
 import Routes from '../../screens/Routes/routesNames';
-import { borders, colors } from '../../styles';
-import { abbreviations } from '../../utils';
+import { colors } from '../../styles';
+import { abbreviations, deviceUtils } from '../../utils';
 import Divider from '../Divider';
-import CopyTooltip from '../copy-tooltip';
+import { ButtonPressAnimation } from '../animations';
 import { FloatingEmojis } from '../floating-emojis';
-import { Column, RowWithMargins } from '../layout';
-import { Text, TruncatedAddress } from '../text';
+import { Icon } from '../icons';
+import { Centered, Column, Row, RowWithMargins } from '../layout';
+import { TruncatedText } from '../text';
 import AddCashButton from './AddCashButton';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
 
-const AddressAbbreviation = styled(TruncatedAddress).attrs({
-  align: 'center',
+const dropdownArrowWidth = 21;
+const maxAddressWidth = deviceUtils.dimensions.width - dropdownArrowWidth - 60;
+
+const AccountName = styled(TruncatedText).attrs({
+  align: 'left',
   firstSectionLength: abbreviations.defaultNumCharsPerSection,
   letterSpacing: 'roundedMedium',
   size: 'bigger',
@@ -30,13 +30,18 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
   weight: 'bold',
 })`
   height: 33;
-  margin-top: ${isAvatarPickerAvailable ? 0 : -6};
-  padding-left: 24;
-  padding-right: 24;
+  margin-top: -3;
+  margin-bottom: 3;
+  max-width: ${maxAddressWidth};
+  padding-right: 6;
 `;
 
-const AvatarImage = styled(FastImage).attrs({ source: AvatarImageSource })`
-  ${borders.buildCircle(85)};
+const DropdownArrow = styled(Centered)`
+  align-items: center;
+  height: 9;
+  justify-content: center;
+  margin-top: 9;
+  width: 21;
 `;
 
 const ProfileMastheadDivider = styled(Divider).attrs({
@@ -46,29 +51,29 @@ const ProfileMastheadDivider = styled(Divider).attrs({
   position: absolute;
 `;
 
-const FirstLetter = styled(Text)`
-  width: 100%;
-  text-align: center;
-  color: #fff;
-  font-weight: 600;
-  font-size: 32.5;
-  line-height: 64;
-  padding-left: 0.5px;
-`;
-
 export default function ProfileMasthead({
   accountAddress,
-  accountColor,
-  accountName,
   addCashAvailable,
   recyclerListRef,
-  showBottomDivider = true,
+  showBottomDivider,
 }) {
-  const name = accountName || DEFAULT_WALLET_NAME;
-  const color = accountColor || 0;
-  const { accountENS } = useAccountSettings();
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
+  const { accountColor, accountSymbol, accountName } = useAccountProfile();
+
+  const handlePressAvatar = useCallback(() => {
+    if (!isAvatarPickerAvailable) return;
+    recyclerListRef.scrollToTop(true);
+    setTimeout(
+      () => {
+        navigate(Routes.AVATAR_BUILDER, {
+          accountColor: accountColor,
+          accountName: accountName,
+        });
+      },
+      recyclerListRef.getCurrentScrollOffset() > 0 ? 200 : 1
+    );
+  }, [accountColor, accountName, navigate, recyclerListRef]);
 
   const handlePressAddCash = useCallback(() => {
     navigate(Routes.ADD_CASH_SHEET);
@@ -77,40 +82,30 @@ export default function ProfileMasthead({
     });
   }, [navigate]);
 
-  const handlePressAvatar = useCallback(() => {
-    if (recyclerListRef) {
-      recyclerListRef.scrollToTop(true);
-      setTimeout(
-        () => navigate(Routes.AVATAR_BUILDER, { accountColor, accountName }),
-        recyclerListRef.getCurrentScrollOffset() > 0 ? 200 : 1
-      );
-    }
-  }, [accountColor, accountName, navigate, recyclerListRef]);
+  const handlePressChangeWallet = useCallback(() => {
+    navigate(Routes.CHANGE_WALLET_SHEET);
+  }, [navigate]);
 
   return (
     <Column
       align="center"
       height={addCashAvailable ? 260 : 185}
       marginBottom={24}
+      marginTop={0}
     >
-      {isAvatarPickerAvailable ? (
-        <AvatarCircle
-          onPress={handlePressAvatar}
-          style={{ backgroundColor: colors.avatarColor[color] }}
-        >
-          <FirstLetter>
-            {new GraphemeSplitter().splitGraphemes(name)[0]}
-          </FirstLetter>
-        </AvatarCircle>
-      ) : (
-        <AvatarImage />
-      )}
-      <CopyTooltip
-        textToCopy={accountENS || accountAddress}
-        tooltipText={Platform.OS === 'android' ? 'Address Copied' : 'Copy'}
-      >
-        <AddressAbbreviation address={accountENS || accountAddress} />
-      </CopyTooltip>
+      <AvatarCircle
+        onPress={handlePressAvatar}
+        accountColor={accountColor}
+        accountSymbol={accountSymbol}
+      />
+      <ButtonPressAnimation onPress={handlePressChangeWallet} scaleTo={0.9}>
+        <Row>
+          <AccountName>{accountName}</AccountName>
+          <DropdownArrow>
+            <Icon color={colors.dark} direction="down" name="caret" />
+          </DropdownArrow>
+        </Row>
+      </ButtonPressAnimation>
       <RowWithMargins align="center" margin={19}>
         <FloatingEmojis
           distance={250}
@@ -146,3 +141,13 @@ export default function ProfileMasthead({
     </Column>
   );
 }
+
+ProfileMasthead.propTypes = {
+  accountAddress: PropTypes.string,
+  addCashAvailable: PropTypes.bool,
+  showBottomDivider: PropTypes.bool,
+};
+
+ProfileMasthead.defaultProps = {
+  showBottomDivider: true,
+};

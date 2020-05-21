@@ -30,6 +30,7 @@ let base = {
   purpleLight: '#FFD9FE', // '255, 217, 254'
   red: '#FF494A', // '255, 73, 74'
   rowDivider: 'rgba(60, 66, 82, 0.03)', // '60, 66, 82, 0.03'
+  rowDividerExtraLight: 'rgba(60, 66, 82, 0.015)', // '60, 66, 82, 0.015'
   rowDividerLight: 'rgba(60, 66, 82, 0.02)', // '60, 66, 82, 0.02'
   shadowGrey: '#6F6F6F', // '111, 111, 111'
   shimmer: '#EDEEF1', // '237, 238, 241'

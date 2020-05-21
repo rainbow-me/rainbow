@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import { isValidAddress } from 'ethereumjs-util';
 import PropTypes from 'prop-types';
 import React, {
   useCallback,
@@ -7,17 +8,17 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
-import { Alert } from '../components/alerts';
 import { Button } from '../components/buttons';
 import { Icon } from '../components/icons';
 import { Input } from '../components/inputs';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
+import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
 import { web3Provider } from '../handlers/web3';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
@@ -59,14 +60,6 @@ const Container = isNativeStackAvailable
       top: ${statusBarHeight};
     `;
 
-const HandleIcon = styled(Icon).attrs({
-  color: '#C4C6CB',
-  name: 'handle',
-})`
-  margin-top: 16px;
-  margin-bottom: 2;
-`;
-
 const StyledImportButton = styled(
   Platform.OS === 'ios' ? BorderlessButton : Button
 )`
@@ -81,42 +74,6 @@ const StyledImportButton = styled(
 const StyledInput = styled(Input)`
   min-height: 50;
 `;
-
-const ConfirmImportAlert = (onSuccess, navigate) =>
-  Alert({
-    buttons: [
-      {
-        onPress: () =>
-          navigate(Routes.MODAL_SCREEN, {
-            actionType: 'Import',
-            address: undefined,
-            asset: [],
-            isCurrentProfile: false,
-            isNewProfile: true,
-            onCloseModal: args => {
-              if (args) {
-                onSuccess(args);
-              } else {
-                onSuccess({
-                  color: colors.getRandomColor(),
-                  name: 'Imported Wallet',
-                });
-              }
-            },
-            profile: {},
-            type: 'wallet_profile_creator',
-          }),
-        text: 'Import Wallet',
-      },
-      {
-        style: 'cancel',
-        text: 'Cancel',
-      },
-    ],
-    message:
-      'You can switch between your existing wallets in the top navbar of the profile screen.',
-    title: 'Import new wallet',
-  });
 
 const ImportButton = ({ disabled, onPress, seedPhrase }) => (
   <StyledImportButton disabled={disabled} onPress={onPress} overflow="visible">
@@ -140,6 +97,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   const [seedPhrase, setSeedPhrase] = useState('');
   const [color, setColor] = useState(null);
   const [name, setName] = useState(null);
+  const [resolvedAddress, setResolvedAddress] = useState(null);
   const [startFocusTimeout] = useTimeout();
   const [startAnalyticsTimeout] = useTimeout();
   const wasImporting = usePrevious(isImporting);
@@ -186,13 +144,60 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     [setParams]
   );
 
-  const onPressImportButton = useCallback(() => {
+  const onPressImportButton = useCallback(async () => {
     if (isSecretValid && seedPhrase) {
-      return ConfirmImportAlert(({ color, name }) => {
-        if (color) setColor(color);
-        if (name) setName(name);
-        toggleImporting(true);
-      }, navigate);
+      const input = seedPhrase.trim();
+      let name = null;
+      // Validate ENS
+      if (isENSAddressFormat(input)) {
+        try {
+          const address = await web3Provider.resolveName(input);
+
+          if (!address) {
+            Alert.alert('This is not a valid ENS name');
+            return;
+          }
+          setResolvedAddress(address);
+          name = input;
+        } catch (e) {
+          Alert.alert('This is not a valid ENS name');
+          return;
+        }
+        // Look up ENS for 0x address
+      } else if (isValidAddress(input)) {
+        const ens = await web3Provider.lookupAddress(input);
+        if (ens && ens !== input) {
+          name = ens;
+        }
+      }
+
+      const ConfirmImportAlert = (name, onSuccess, navigate) =>
+        navigate(Routes.MODAL_SCREEN, {
+          actionType: 'Import',
+          asset: [],
+          isNewProfile: true,
+          onCloseModal: args => {
+            if (args) {
+              onSuccess(args);
+            }
+          },
+          onRefocusInput: setAppearListener(focusListener),
+          profile: {
+            name,
+          },
+          type: 'wallet_profile_creator',
+          withoutStatusBar: true,
+        });
+
+      return ConfirmImportAlert(
+        name,
+        ({ color, name }) => {
+          if (color !== null) setColor(color);
+          if (name) setName(name);
+          toggleImporting(true);
+        },
+        navigate
+      );
     }
 
     if (isClipboardValidSecret && clipboard) {
@@ -200,35 +205,23 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     }
   }, [
     clipboard,
+    focusListener,
     handleSetSeedPhrase,
     isClipboardValidSecret,
     isSecretValid,
     navigate,
     seedPhrase,
+    setAppearListener,
     toggleImporting,
   ]);
 
   useEffect(() => {
     if (!wasImporting && isImporting) {
       startAnalyticsTimeout(async () => {
-        let input = seedPhrase.trim();
-        if (isENSAddressFormat(input)) {
-          try {
-            input = await web3Provider.resolveName(input);
-            if (!input) {
-              Alert.alert('This is not a valid ENS name');
-              return;
-            }
-          } catch (e) {
-            Alert.alert('This is not a valid ENS name');
-            return;
-          }
-        }
-
-        initializeWallet(input, color, name || 'Imported Wallet')
+        const input = resolvedAddress ? resolvedAddress : seedPhrase.trim();
+        initializeWallet(input, color, name || '')
           .then(success => {
             if (success) {
-              toggleImporting(false);
               analytics.track('Imported seed phrase', {
                 hadPreviousAddressWithValue: isEmpty,
               });
@@ -250,6 +243,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     isImporting,
     name,
     navigate,
+    resolvedAddress,
     seedPhrase,
     startAnalyticsTimeout,
     toggleImporting,
@@ -259,33 +253,35 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   return (
     <Container>
       <StatusBar barStyle="light-content" />
-      <HandleIcon />
+      <SheetHandle marginBottom={7} marginTop={6} />
       <Text size="large" weight="bold">
-        Import
+        Add Wallet
       </Text>
       <KeyboardAvoidingView
         behavior="padding"
         keyboardVerticalOffset={keyboardVerticalOffset}
       >
-        <Centered css={padding(0, 50)} flex={1}>
+        <Centered css={padding(0, 42)} flex={1}>
           <StyledInput
             align="center"
             autoCapitalize="none"
             autoCorrect={false}
             autoFocus
+            color={isSecretValid ? 'appleBlue' : 'dark'}
             enablesReturnKeyAutomatically
             keyboardType={
               Platform.OS === 'android' ? 'visible-password' : 'default'
             }
             lineHeight="looser"
             multiline
-            numberOfLines={7}
+            numberOfLines={3}
             onChangeText={handleSetSeedPhrase}
             onSubmitEditing={onPressImportButton}
-            placeholder="Seed phrase, private key, Ethereum account or ENS name"
+            placeholder="Seed phrase, private key, Ethereum address or ENS name"
             ref={isNativeStackAvailable ? inputRef : inputRefListener}
             returnKeyType="done"
             size="large"
+            spellCheck={false}
             value={seedPhrase}
             weight="semibold"
             width="100%"

@@ -1,4 +1,5 @@
 export { default as useAccountAssets } from './useAccountAssets';
+export { default as useAccountProfile } from './useAccountProfile';
 export { default as useAccountSettings } from './useAccountSettings';
 export { default as useAccountTransactions } from './useAccountTransactions';
 export { default as useAddCashLimits } from './useAddCashLimits';
@@ -53,5 +54,6 @@ export { default as useUniswapCurrencyReserves } from './useUniswapCurrencyReser
 export { default as useUniswapMarketDetails } from './useUniswapMarketDetails';
 export { default as useUniswapMarketPrice } from './useUniswapMarketPrice';
 export { default as useWallets } from './useWallets';
+export { default as useWalletsWithBalancesAndNames } from './useWalletsWithBalancesAndNames';
 export { default as useWalletSectionsData } from './useWalletSectionsData';
 export { default as useWyreApplePay } from './useWyreApplePay';

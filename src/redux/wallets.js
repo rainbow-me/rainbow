@@ -1,13 +1,14 @@
+import { toChecksumAddress } from 'ethereumjs-util';
 import { get } from 'lodash';
 import {
   generateAccount,
   getAllWallets,
   getSelectedWallet,
+  loadAddress,
   saveAddress,
   saveAllWallets,
   setSelectedWallet,
 } from '../model/wallet';
-import { colors } from '../styles';
 
 // -- Constants --------------------------------------- //
 const WALLETS_UPDATE = 'wallets/ALL_WALLETS_UPDATE';
@@ -20,10 +21,27 @@ export const walletsLoadState = () => async dispatch => {
   try {
     const { wallets } = await getAllWallets();
     const selected = await getSelectedWallet();
+    // Prevent irrecoverable state (no selected wallet)
+    let selectedWallet = get(selected, 'wallet', undefined);
+    if (!selectedWallet) {
+      const address = await loadAddress();
+      Object.keys(wallets).some(key => {
+        const someWallet = wallets[key];
+        const found = someWallet.addresses.some(account => {
+          return (
+            toChecksumAddress(account.address) === toChecksumAddress(address)
+          );
+        });
+        if (found) {
+          selectedWallet = someWallet;
+        }
+        return found;
+      });
+    }
 
     dispatch({
       payload: {
-        selected: get(selected, 'wallet', undefined),
+        selected: selectedWallet,
         wallets,
       },
       type: WALLETS_LOAD,
@@ -51,7 +69,10 @@ export const addressSetSelected = address => () => {
   saveAddress(address);
 };
 
-export const createAccountForWallet = id => async (dispatch, getState) => {
+export const createAccountForWallet = (id, color, name) => async (
+  dispatch,
+  getState
+) => {
   const { wallets } = getState().wallets;
   const newWallets = { ...wallets };
   let index = 0;
@@ -63,9 +84,9 @@ export const createAccountForWallet = id => async (dispatch, getState) => {
   newWallets[id].addresses.push({
     address: account.address,
     avatar: null,
-    color: colors.getRandomColor(),
+    color,
     index: newIndex,
-    label: '',
+    label: name,
     visible: true,
   });
 

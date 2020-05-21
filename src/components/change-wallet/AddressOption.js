@@ -2,58 +2,42 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../styles';
+import { getFontSize } from '../../styles/fonts';
 import { ButtonPressAnimation } from '../animations';
-import { Icon } from '../icons';
 
 const sx = StyleSheet.create({
   optionContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    paddingHorizontal: 7.5,
-    paddingVertical: 0,
-  },
-  optionIconWrapper: {
-    alignItems: 'center',
-    backgroundColor: colors.skeleton,
-    borderRadius: 14,
-    height: 22,
-    justifyContent: 'center',
-    marginLeft: 11,
-    marginRight: 17,
-    width: 22,
   },
   optionText: {
-    color: colors.darkGrey,
-    fontFamily: fonts.family.SFProText,
-    fontSize: Number(fonts.size.small.replace('px', '')),
-    fontWeight: fonts.weight.smedium,
+    color: colors.appleBlue,
+    fontFamily: fonts.family.SFProRounded,
+    fontSize: getFontSize(fonts.size.lmedium),
+    fontWeight: fonts.weight.semibold,
+    letterSpacing: fonts.letterSpacing.roundedMedium,
+    marginBottom: 9.5,
+    paddingHorizontal: 19,
+    paddingVertical: 9.5,
+  },
+  optionTextDisabled: {
+    color: colors.alpha(colors.blueGreyDark, 0.2),
   },
 });
 
-export default function AddressOption({ icon, label, onPress }) {
+export default function AddressOption({ editMode, label, onPress }) {
   return (
-    <View style={sx.subItem}>
-      <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
-        <View style={sx.optionContainer}>
-          <View style={sx.optionIconWrapper}>
-            <Icon
-              color={colors.blueGreyDark50}
-              height={15}
-              width={15}
-              name={icon}
-            />
-          </View>
-          <View>
-            <Text style={sx.optionText}>{label}</Text>
-          </View>
-        </View>
-      </ButtonPressAnimation>
-    </View>
+    <ButtonPressAnimation disabled={editMode} onPress={onPress} scaleTo={0.98}>
+      <View style={sx.optionContainer}>
+        <Text style={[sx.optionText, editMode ? sx.optionTextDisabled : null]}>
+          {label}
+        </Text>
+      </View>
+    </ButtonPressAnimation>
   );
 }
 
 AddressOption.propTypes = {
-  icon: PropTypes.string,
   label: PropTypes.string,
   onPress: PropTypes.func,
 };

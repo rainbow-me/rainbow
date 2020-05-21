@@ -2,54 +2,40 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../styles';
+import { getFontSize } from '../../styles/fonts';
+import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
-import { Icon } from '../icons';
 
 const sx = StyleSheet.create({
   container: {
     alignItems: 'center',
     flexDirection: 'row',
-    paddingHorizontal: 7.5,
-    paddingVertical: 10,
   },
-  iconWrapper: {
-    alignItems: 'center',
-    backgroundColor: colors.skeleton,
-    borderRadius: 14,
-    height: 30,
-    justifyContent: 'center',
-    marginLeft: 8,
-    marginRight: 9,
-    width: 30,
+  text: {
+    color: colors.appleBlue,
+    fontFamily: fonts.family.SFProRounded,
+    fontSize: getFontSize(fonts.size.lmedium),
+    fontWeight: fonts.weight.semibold,
+    height: 57,
+    letterSpacing: fonts.letterSpacing.roundedMedium,
+    marginBottom: 2,
+    padding: 19,
   },
-  nickname: {
-    color: colors.dark,
-    fontFamily: fonts.family.SFProText,
-    fontSize: Number(fonts.size.smedium.replace('px', '')),
-    fontWeight: fonts.weight.medium,
+  textDisabled: {
+    color: colors.alpha(colors.blueGreyDark, 0.2),
   },
 });
 
-const WalletOption = ({ icon, label, onPress }) => (
-  <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
+const WalletOption = ({ editMode, label, onPress }) => (
+  <ButtonPressAnimation disabled={editMode} scaleTo={0.98} onPress={onPress}>
+    <Divider color={colors.rowDividerExtraLight} />
     <View style={sx.container}>
-      <View style={sx.iconWrapper}>
-        <Icon
-          color={colors.blueGreyDark50}
-          height={15}
-          width={15}
-          name={icon}
-        />
-      </View>
-      <View>
-        <Text style={sx.nickname}>{label}</Text>
-      </View>
+      <Text style={[sx.text, editMode ? sx.textDisabled : null]}>{label}</Text>
     </View>
   </ButtonPressAnimation>
 );
 
 WalletOption.propTypes = {
-  icon: PropTypes.string,
   label: PropTypes.string.isRequired,
   onPress: PropTypes.func,
 };

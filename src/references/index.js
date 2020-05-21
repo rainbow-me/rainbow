@@ -38,7 +38,7 @@ export const AddCashCurrencyInfo = {
       name: 'Dai',
       symbol: 'DAI',
     },
-    eth: {
+    'eth': {
       decimals: 18,
       name: 'Ethereum',
       symbol: 'ETH',
@@ -50,7 +50,7 @@ export const AddCashCurrencyInfo = {
       name: 'Dai',
       symbol: 'DAI',
     },
-    eth: {
+    'eth': {
       decimals: 18,
       name: 'Ethereum',
       symbol: 'ETH',

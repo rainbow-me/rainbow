@@ -5,7 +5,13 @@ import { padding } from '../../styles';
 import { TouchableScale } from '../animations';
 import { Flex } from '../layout';
 
-const HeaderButton = ({ children, onPress, transformOrigin, ...props }) => (
+const HeaderButton = ({
+  children,
+  onLongPress,
+  onPress,
+  transformOrigin,
+  ...props
+}) => (
   <TouchableScale
     activeScale={0.8}
     hapticType="impactLight"
@@ -13,6 +19,7 @@ const HeaderButton = ({ children, onPress, transformOrigin, ...props }) => (
     pressInTension={400}
     pressOutFriction={30}
     pressOutTension={300}
+    onLongPress={onLongPress}
     onPress={onPress}
     transformOrigin={transformOrigin}
     useNativeDriver

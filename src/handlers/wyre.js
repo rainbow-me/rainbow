@@ -30,7 +30,7 @@ const getBaseUrl = network =>
 
 const wyreApi = axios.create({
   headers: {
-    Accept: 'application/json',
+    'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
   timeout: 30000, // 30 secs

@@ -85,6 +85,7 @@ const TopRow = ({ isExpandedState, name, native, nativeCurrencySymbol }) => {
 
 const BalanceCoinRow = ({
   containerStyles,
+  firstCoinRowMarginTop,
   isCoinListEdited,
   isExpandedState,
   isFirstCoinRow,
@@ -99,6 +100,7 @@ const BalanceCoinRow = ({
   const { width: deviceWidth } = useDimensions();
   const [toggle, setToggle] = useState(false);
   const [previousPinned, setPreviousPinned] = useState(0);
+  const firstCoinRowCoinCheckMarginTop = firstCoinRowMarginTop + 9;
 
   useEffect(() => {
     if (toggle && (recentlyPinnedCount > previousPinned || !isCoinListEdited)) {
@@ -151,7 +153,12 @@ const BalanceCoinRow = ({
         </View>
       </ButtonPressAnimation>
       {isCoinListEdited ? (
-        <CoinCheckButton toggle={toggle} onPress={handleEditModePress} />
+        <CoinCheckButton
+          isAbsolute
+          toggle={toggle}
+          onPress={handleEditModePress}
+          style={{ top: isFirstCoinRow ? firstCoinRowCoinCheckMarginTop : 9 }}
+        />
       ) : null}
     </Column>
   );

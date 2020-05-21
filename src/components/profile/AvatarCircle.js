@@ -2,35 +2,33 @@ import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
-import { withAccountInfo } from '../../hoc';
 import { colors, position } from '../../styles';
-import { getFirstGrapheme } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { InnerBorder } from '../layout';
+import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
 
 const ProfileActionSize = 65;
+
+const AvatarCircleView = styled(Flex)`
+  height: 65px;
+  margin-bottom: 16px;
+  width: 65px;
+`;
 
 const FirstLetter = styled(Text).attrs({
   align: 'center',
   color: colors.white,
   letterSpacing: 2,
-  lineHeight: 66,
+  lineHeight: 64.5,
   size: 38,
   weight: 'semibold',
 })`
-  width: 100%;
-`;
-
-const FirstLetterCircleBackground = styled.View`
-  ${position.size(ProfileActionSize)};
-  background-color: ${({ color }) => color};
-  margin-bottom: 16;
+  width: 65.5;
 `;
 
 const ProfileAction = ({
   accountColor,
-  accountName,
+  accountSymbol,
   onPress,
   overlayStyles,
 }) => {
@@ -63,12 +61,10 @@ const ProfileAction = ({
         marginBottom={12}
         shadows={shadows[overlayStyles ? 'overlay' : 'default']}
       >
-        <FirstLetterCircleBackground color={colors.avatarColor[accountColor]}>
-          <FirstLetter>{getFirstGrapheme(accountName)}</FirstLetter>
-          {!overlayStyles && (
-            <InnerBorder opacity={0.02} radius={ProfileActionSize} />
-          )}
-        </FirstLetterCircleBackground>
+        <AvatarCircleView backgroundColor={colors.avatarColor[accountColor]}>
+          <FirstLetter>{accountSymbol}</FirstLetter>
+          {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
+        </AvatarCircleView>
       </ShadowStack>
     </ButtonPressAnimation>
   );
@@ -76,14 +72,14 @@ const ProfileAction = ({
 
 ProfileAction.propTypes = {
   accountColor: PropTypes.number,
-  accountName: PropTypes.string,
+  accountSymbol: PropTypes.string,
   onPress: PropTypes.func,
   overlayStyles: PropTypes.bool,
 };
 
 ProfileAction.defaultProps = {
   accountColor: 0,
-  accountName: '🤔',
+  accountSymbol: '🤔',
 };
 
-export default withAccountInfo(ProfileAction);
+export default ProfileAction;

@@ -4,11 +4,13 @@ import { colors } from '../../styles';
 import Text from './Text';
 
 const Placeholder = styled(Text).attrs({
+  align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.3),
   size: 'big',
   weight: 'semibold',
 })`
   margin-bottom: -27;
+  width: 100%;
 `;
 
 const PlaceholderText = (props, ref) => {

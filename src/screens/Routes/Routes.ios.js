@@ -9,15 +9,15 @@ import { ExchangeModalNavigator, SavingModalNavigator } from '../../navigation';
 import { onDidPop, onWillPop } from '../../navigation/Navigation';
 import {
   backgroundPreset,
+  bottomSheetPreset,
   emojiPreset,
   overlayExpandedPreset,
-  savingsPreset,
   sheetPreset,
 } from '../../navigation/transitions/effects';
 import { deviceUtils } from '../../utils';
 import AddCashSheet from '../AddCashSheet';
 import AvatarBuilder from '../AvatarBuilder';
-import ChangeWalletModal from '../ChangeWalletModal';
+import ChangeWalletSheet from '../ChangeWalletSheet';
 import ExampleScreen from '../ExampleScreen';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
 import ModalScreen from '../ModalScreen';
@@ -35,7 +35,6 @@ import {
   createStackNavigator,
   exchangePresetWithTransitions,
   expandedPresetWithTransitions,
-  expandedReversePresetWithTransitions,
   onTransitionEnd,
   onTransitionStart,
   sheetPresetWithTransitions,
@@ -113,10 +112,6 @@ const routesForMainNavigator = {
     screen: AvatarBuilder,
     transparentCard: true,
   },
-  [Routes.CHANGE_WALLET_MODAL]: {
-    navigationOptions: expandedReversePresetWithTransitions,
-    screen: ChangeWalletModal,
-  },
   [Routes.CONFIRM_REQUEST]: {
     navigationOptions: sheetPresetWithTransitions,
     screen: TransactionConfirmationScreen,
@@ -133,7 +128,7 @@ const routesForMainNavigator = {
     screen: ExchangeModalNavigator,
   },
   [Routes.SAVINGS_SHEET]: {
-    navigationOptions: savingsPreset,
+    navigationOptions: bottomSheetPreset,
     screen: SavingsSheet,
   },
   [Routes.SWIPE_LAYOUT]: {
@@ -250,6 +245,16 @@ const withCustomStack = screen => ({
 
 const routesForBottomSheetStack = {
   [Routes.STACK]: Stack,
+  [Routes.CHANGE_WALLET_SHEET]: {
+    navigationOptions: {
+      allowsDragToDismiss: true,
+      backgroundOpacity: 0.6,
+      customStack: true,
+      springDamping: 1,
+      transitionDuration: 0.25,
+    },
+    screen: ChangeWalletSheet,
+  },
   [Routes.RECEIVE_MODAL]: withCustomStack(ReceiveModal),
   [Routes.SETTINGS_MODAL]: withCustomStack(SettingsModal),
   [Routes.EXPANDED_ASSET_SHEET]: {

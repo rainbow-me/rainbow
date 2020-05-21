@@ -39,7 +39,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
       {...props}
     >
       <RowWithMargins css={margin(17, 15, 5)} height={40} margin={10}>
-        <ContactAvatar color={color} value={nickname} />
+        <ContactAvatar color={color} size="medium" value={nickname} />
         <Column justify="space-between">
           <ContactName deviceWidth={deviceWidth}>
             {removeFirstEmojiFromString(nickname)}
