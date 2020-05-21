@@ -3,12 +3,13 @@ import React from 'react';
 import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
-import { ExchangeModalNavigator } from '../../navigation';
+import { ExchangeModalNavigator, SavingModalNavigator } from '../../navigation';
 import {
   backgroundPreset,
   emojiPreset,
   expandedPreset,
   overlayExpandedPreset,
+  savingsPreset,
   sheetPreset,
 } from '../../navigation/transitions/effects';
 import { deviceUtils } from '../../utils';
@@ -22,11 +23,13 @@ import ModalScreen from '../ModalScreen';
 import ProfileScreen from '../ProfileScreen';
 import QRScannerScreenWithData from '../QRScannerScreenWithData';
 import ReceiveModal from '../ReceiveModal';
+import SavingsSheet from '../SavingsSheet';
 import SendSheet from '../SendSheet';
 import SettingsModal from '../SettingsModal';
 import TransactionConfirmationScreen from '../TransactionConfirmationScreen';
 import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
 import WalletScreen from '../WalletScreen';
+import WithdrawModal from '../WithdrawModal';
 import {
   createStackNavigator,
   exchangePresetWithTransitions,
@@ -87,6 +90,10 @@ const routesForMainNavigator = {
     navigationOptions: expandedPresetWithTransitions,
     screen: ReceiveModal,
   },
+  [Routes.SAVINGS_SHEET]: {
+    navigationOptions: savingsPreset,
+    screen: SavingsSheet,
+  },
   [Routes.SETTINGS_MODAL]: {
     navigationOptions: expandedPresetWithTransitions,
     screen: SettingsModal,
@@ -126,6 +133,20 @@ const routesForStack = {
     screen: ImportSeedPhraseSheetWithData,
   },
   MainNavigator,
+  SavingsDepositModal: {
+    navigationOptions: exchangePresetWithTransitions,
+    params: {
+      isGestureBlocked: false,
+    },
+    screen: SavingModalNavigator,
+  },
+  SavingsWithdrawModal: {
+    navigationOptions: exchangePresetWithTransitions,
+    params: {
+      isGestureBlocked: false,
+    },
+    screen: WithdrawModal,
+  },
   SendSheet: {
     navigationOptions: {
       ...omit(sheetPreset, 'gestureResponseDistance'),
