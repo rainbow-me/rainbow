@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForPropTypes } from 'recompact';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import TransactionTypes from '../../helpers/transactionTypes';
 import { colors, position } from '../../styles';
 import Spinner from '../Spinner';
 import Icon from '../icons/Icon';
@@ -73,9 +72,8 @@ const StatusProps = {
   },
 };
 
-const TransactionStatusBadge = ({ pending, status, title, type, ...props }) => {
+const TransactionStatusBadge = ({ pending, status, title, ...props }) => {
   const isSwapping = status === TransactionStatusTypes.swapping;
-  const isTrade = type === TransactionTypes.trade;
 
   let statusColor = colors.alpha(colors.blueGreyDark, 0.7);
   if (pending) {
@@ -84,7 +82,7 @@ const TransactionStatusBadge = ({ pending, status, title, type, ...props }) => {
     } else {
       statusColor = colors.appleBlue;
     }
-  } else if (isTrade && status === TransactionStatusTypes.sent) {
+  } else if (status === TransactionStatusTypes.swapped) {
     statusColor = colors.swapPurple;
   }
 
@@ -113,7 +111,7 @@ const TransactionStatusBadge = ({ pending, status, title, type, ...props }) => {
 TransactionStatusBadge.propTypes = {
   pending: PropTypes.bool,
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
-  type: PropTypes.oneOf(Object.values(TransactionTypes)),
+  title: PropTypes.string,
 };
 
 TransactionStatusBadge.defaultProps = {

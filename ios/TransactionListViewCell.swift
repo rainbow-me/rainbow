@@ -156,7 +156,7 @@ class TransactionListViewCell: TransactionListBaseCell {
       nativeDisplayColor = transactionColors.green
       nativeDisplayFont = UIFont(name: "SFRounded-Medium", size: 16)
     }
-    if transaction.type == "trade" && transaction.status == "sent" {
+    if transaction.status == "swapped" {
       coinNameColor = transactionColors.blueGreyDark50
       nativeDisplayColor = transactionColors.dark
       nativeDisplay.text = "- " + transaction.nativeDisplay
