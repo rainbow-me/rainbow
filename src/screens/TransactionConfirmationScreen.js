@@ -66,7 +66,7 @@ const TransactionType = styled(Text).attrs({ size: 'h5' })`
 const TransactionConfirmationScreen = ({ navigation }) => {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
-  const { gasPrices, gasPricesStartPolling, gasPricesStopPolling } = useGas();
+  const { gasPrices, startPollingGasPrices, stopPollingGasPrices } = useGas();
   const dispatch = useDispatch();
 
   const {
@@ -98,14 +98,14 @@ const TransactionConfirmationScreen = ({ navigation }) => {
     }
 
     InteractionManager.runAfterInteractions(() => {
-      dispatch(gasPricesStartPolling());
+      startPollingGasPrices();
     });
-  }, [dispatch, gasPricesStartPolling, navigation]);
+  }, [startPollingGasPrices, navigation]);
 
   const closeScreen = useCallback(() => {
     navigation.popToTop();
-    dispatch(gasPricesStopPolling());
-  }, [dispatch, gasPricesStopPolling, navigation]);
+    stopPollingGasPrices();
+  }, [stopPollingGasPrices, navigation]);
 
   const onCancel = useCallback(async () => {
     try {
