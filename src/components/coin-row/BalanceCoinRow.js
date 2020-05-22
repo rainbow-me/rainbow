@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { compose } from 'recompact';
-import styled from 'styled-components/primitives';
+import styled, { css } from 'styled-components/primitives';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import {
   withCoinListEdited,
@@ -24,10 +24,10 @@ import CoinRow from './CoinRow';
 
 const editTranslateOffset = 32;
 
-const BalanceCoinRowExpandedStyles = {
-  paddingBottom: 0,
-  paddingTop: 0,
-};
+const BalanceCoinRowExpandedStyles = css`
+  padding-bottom: 0;
+  padding-top: 0;
+`;
 
 const PercentageText = styled(BottomRowText).attrs({
   align: 'right',

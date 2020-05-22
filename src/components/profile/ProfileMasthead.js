@@ -37,9 +37,7 @@ const AccountName = styled(TruncatedText).attrs({
 `;
 
 const DropdownArrow = styled(Centered)`
-  align-items: center;
   height: 9;
-  justify-content: center;
   margin-top: 9;
   width: 21;
 `;
