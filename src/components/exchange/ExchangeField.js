@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { TouchableWithoutFeedback } from 'react-native';
+import { Platform, TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
 import { TokenSelectionButton } from '../buttons';
@@ -8,7 +8,7 @@ import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 
-const ExchangeFieldHeight = 40;
+const ExchangeFieldHeight = Platform.OS === 'android' ? 64 : 40;
 const ExchangeFieldPadding = 15;
 const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 

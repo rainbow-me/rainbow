@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
 import { ColumnWithMargins, Row } from '../layout';
@@ -6,7 +7,7 @@ import ExchangeField from './ExchangeField';
 import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
 
-const BottomRowHeight = 32;
+const BottomRowHeight = Platform.OS === 'android' ? 52 : 32;
 
 const Container = styled(ColumnWithMargins).attrs({ margin: 12 })`
   background-color: ${colors.white};
