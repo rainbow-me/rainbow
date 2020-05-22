@@ -6,6 +6,7 @@ import {
   InteractionManager,
   Keyboard,
   KeyboardAvoidingView,
+  Platform,
   StatusBar,
 } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
@@ -394,7 +395,10 @@ const SendSheet = ({ setAppearListener, ...props }) => {
   return (
     <SheetContainer>
       <StatusBar barStyle="light-content" />
-      <KeyboardAvoidingView behavior="padding">
+      <KeyboardAvoidingView
+        enabled={Platform.OS !== 'android'}
+        behavior="padding"
+      >
         <Container align="center">
           <SendHeader
             contacts={contacts}

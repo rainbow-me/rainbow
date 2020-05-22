@@ -109,6 +109,7 @@
     "react-fast-compare": "^2.0.4",
     "react-flatten-children": "^1.1.2",
     "react-native": "0.62.2",
+    "react-native-action-sheet": "^2.2.0",
     "react-native-actionsheet": "^2.4.2",
     "react-native-background-timer": "^2.2.0",
     "react-native-camera": "^3.9.0",
