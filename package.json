@@ -35,6 +35,9 @@
     ]
   },
   "dependencies": {
+    "@react-navigation/native": "^5.4.2",
+    "@react-navigation/stack": "^5.3.9",
+    "@react-navigation/material-top-tabs": "^5.2.7",
     "@apollo/client": "^3.0.0-beta.34",
     "@bankify/react-native-animate-number": "^0.2.1",
     "@hocs/omit-props": "^0.4.0",

@@ -71,7 +71,7 @@ export default function ProfileMasthead({
   const { navigate } = useNavigation();
 
   const handlePressAddCash = useCallback(() => {
-    navigate(Routes.ADD_CASH_SHEET);
+    navigate(Routes.ADD_CASH_SCREEN_NAVIGATOR);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });

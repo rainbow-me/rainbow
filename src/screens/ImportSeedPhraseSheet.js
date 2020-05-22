@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, {
@@ -10,7 +11,6 @@ import React, {
 import { KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { Alert } from '../components/alerts';
 import { Button } from '../components/buttons';
@@ -154,6 +154,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
 
   const inputRef = useRef(null);
   const focusListener = useCallback(() => {
+    console.log("XXXX")
     inputRef.current && inputRef.current.focus();
   }, []);
 
@@ -166,9 +167,13 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   );
 
   useEffect(() => {
+    console.log("setting", setAppearListener)
     setAppearListener && setAppearListener(focusListener);
-    return () => setAppearListener && setAppearListener(null);
-  });
+    return () => {
+      setAppearListener && setAppearListener(null);
+      console.log('dropping')
+    };
+  }, []);
 
   const handleSetSeedPhrase = useCallback(
     text => {
@@ -314,5 +319,4 @@ ImportSeedPhraseSheet.propTypes = {
   setAppearListener: PropTypes.func,
 };
 
-const neverRerender = () => true;
-export default React.memo(ImportSeedPhraseSheet, neverRerender);
+export default ImportSeedPhraseSheet;

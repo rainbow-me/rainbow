@@ -7,7 +7,6 @@ import React, { Component } from 'react';
 import { Platform, Vibration } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import { PERMISSIONS, request } from 'react-native-permissions';
-import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
 import { Alert, Prompt } from '../components/alerts';
 import {
@@ -20,7 +19,6 @@ import QRScannerScreen from './QRScannerScreen';
 
 class QRScannerScreenWithData extends Component {
   static propTypes = {
-    isFocused: PropTypes.bool,
     navigation: PropTypes.object,
     setSafeTimeout: PropTypes.func,
     walletConnectOnSessionRequest: PropTypes.func,
@@ -130,7 +128,7 @@ class QRScannerScreenWithData extends Component {
 }
 
 export default compose(
-  withNavigationFocus,
+  // TODO withNavigationFocus,
   withWalletConnectOnSessionRequest,
   withSafeTimeout,
   withWalletConnectConnections

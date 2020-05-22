@@ -1,7 +1,7 @@
+import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
-import { useNavigation } from 'react-navigation-hooks';
 import { compose } from 'recompact';
 import { onlyUpdateForKeys } from 'recompose';
 import { withFabSelection, withTransitionProps } from '../../hoc';
@@ -21,7 +21,7 @@ const SendFab = ({ disabled, isReadOnlyWallet, scaleTo, tapRef }) => {
   const { navigate } = useNavigation();
   const onPressHandler = useCallback(() => {
     if (!isReadOnlyWallet) {
-      navigate(Routes.SEND_SHEET);
+      navigate(Routes.SEND_SHEET_NAVIGATOR);
     } else {
       Alert.alert(`You need to import the wallet in order to do this`);
     }

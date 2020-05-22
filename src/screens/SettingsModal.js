@@ -72,7 +72,7 @@ const SettingsModal = ({ navigation }) => {
 
   const onPressImportSeedPhrase = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
-      navigation.navigate(Routes.IMPORT_SEED_PHRASE_SHEET);
+      navigation.navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
       StatusBar.setBarStyle('light-content');
     });
   }, [navigation]);

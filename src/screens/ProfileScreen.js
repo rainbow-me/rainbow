@@ -1,7 +1,7 @@
+import { useIsFocused } from '@react-navigation/native';
 import { get } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { useIsFocused } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
 import { ActivityList } from '../components/activity-list';
@@ -47,6 +47,7 @@ export default function ProfileScreen({ navigation }) {
     transactions,
     transactionsCount,
   } = useAccountTransactions(activityListInitialized, isFocused);
+
   const { contacts } = useContacts();
   const { pendingRequestCount, requests } = useRequests();
   const { accountAddress, accountENS, network } = useAccountSettings();

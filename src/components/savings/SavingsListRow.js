@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
@@ -5,7 +6,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ShadowStack from 'react-native-shadow-stack';
-import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import {
   calculateAPY,

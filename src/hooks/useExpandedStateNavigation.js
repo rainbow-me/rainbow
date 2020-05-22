@@ -1,12 +1,12 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { Alert, InteractionManager } from 'react-native';
-import { useNavigation, useNavigationState } from 'react-navigation-hooks';
 import useAsset from './useAsset';
 import useWallets from './useWallets';
 
 export default function useExpandedStateNavigation() {
   const { goBack, navigate } = useNavigation();
-  const { params } = useNavigationState();
+  const { params } = useRoute();
   const { isReadOnlyWallet } = useWallets();
 
   const asset = useAsset(params.asset);

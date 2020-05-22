@@ -70,7 +70,7 @@ const TransactionList = ({
   const dispatch = useDispatch();
 
   const onAddCashPress = useCallback(() => {
-    navigation.navigate(Routes.ADD_CASH_SHEET);
+    navigation.navigate(Routes.ADD_CASH_SCREEN_NAVIGATOR);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });

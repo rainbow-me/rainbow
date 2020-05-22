@@ -2,7 +2,7 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
-import { useNavigation } from 'react-navigation-hooks';
+import { useNavigation } from '@react-navigation/native';
 import WalletTypes from '../../helpers/walletTypes';
 import { useAccountAssets, useWallets } from '../../hooks';
 import Routes from '../../navigation/routesNames';

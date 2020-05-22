@@ -10,6 +10,7 @@ const Routes = {
   EXPANDED_ASSET_SHEET: 'ExpandedAssetSheet',
   IMPORT_SEED_PHRASE_SHEET: 'ImportSeedPhraseSheet',
   IMPORT_SEED_PHRASE_SHEET_NAVIGATOR: 'ImportSeedPhraseSheetNavigator',
+  MAIN_EXCHANGE_NAVIGATOR: 'MainExchangeNavigator',
   MAIN_EXCHANGE_SCREEN: 'MainExchangeScreen',
   MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR: 'MainNativeBottomSheetNavigation',
   MAIN_NAVIGATOR: 'MainNavigator',

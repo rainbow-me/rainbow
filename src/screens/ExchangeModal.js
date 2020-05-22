@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
@@ -9,7 +10,6 @@ import React, {
   useState,
 } from 'react';
 import Animated from 'react-native-reanimated';
-import { useNavigationParam } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import HorizontalGestureBlocker from '../components/HorizontalGestureBlocker';
 import { interpolate } from '../components/animations';
@@ -65,7 +65,8 @@ const ExchangeModal = ({
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
 
-  const tabPosition = useNavigationParam('position');
+  const { params } = useRoute();
+  const tabPosition = params?.position;
 
   const defaultGasLimit = isDeposit
     ? ethUnits.basic_deposit
@@ -118,6 +119,7 @@ const ExchangeModal = ({
     type,
     underlyingPrice,
   });
+
 
   const {
     handleFocus,
@@ -322,6 +324,7 @@ const ExchangeModal = ({
     type,
     updateInputAmount,
   ]);
+
 
   const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {

@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import { useCallback, useEffect, useRef } from 'react';
 import { TextInput } from 'react-native';
-import { useIsFocused } from 'react-navigation-hooks';
+import { useIsFocused } from '@react-navigation/native';
 import useInteraction from './useInteraction';
 import useMagicFocus from './useMagicFocus';
 import usePrevious from './usePrevious';
@@ -16,7 +16,8 @@ export default function useSwapInputRefs({ inputCurrency, outputCurrency }) {
   const nativeFieldRef = useRef();
   const outputFieldRef = useRef();
 
-  const [lastFocusedInput, handleFocus] = useMagicFocus(inputFieldRef.current);
+  // TODO nav mike
+  // const [lastFocusedInput, handleFocus] = useMagicFocus(inputFieldRef.current);
 
   const [createRefocusInteraction] = useInteraction();
 

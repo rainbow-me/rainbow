@@ -1,7 +1,7 @@
+import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { floor } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
-import { useNavigation, useNavigationState } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { useAccountSettings, useOpenInvestmentCards } from '../../hooks';
@@ -37,7 +37,6 @@ const UniswapInvestmentCard = ({
   const { openInvestmentCards } = useOpenInvestmentCards();
 
   const { navigate } = useNavigation();
-  const { routeName } = useNavigationState();
 
   const handleOpenExpandedState = useCallback(() => {
     navigate(Routes.EXPANDED_ASSET_SHEET, {
@@ -76,7 +75,7 @@ const UniswapInvestmentCard = ({
     ]
   );
 
-  const isExpandedState = routeName === 'ExpandedAssetScreen';
+  const isExpandedState = false; //TODO nav
 
   return (
     <InvestmentCard

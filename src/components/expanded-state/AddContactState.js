@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React, {
   useCallback,
   useEffect,
@@ -5,7 +6,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { useContacts, useDimensions } from '../../hooks';
@@ -78,7 +78,7 @@ const AddContactState = ({
   onRefocusInput,
 }) => {
   const { width: deviceWidth } = useDimensions();
-  const { dangerouslyGetParent, goBack } = useNavigation();
+  const { goBack, useRoute } = useNavigation();
   const { onAddOrUpdateContacts, onRemoveContact } = useContacts();
 
   const [color, setColor] = useState(colorProp || 0);
@@ -87,14 +87,10 @@ const AddContactState = ({
   const nameInputRef = useRef();
   const placeHolderText = useRef();
 
-  const additionalContainerPadding = useMemo(
-    () =>
-      dangerouslyGetParent().state.routeName === Routes.SEND_SHEET_NAVIGATOR &&
-      isNativeStackAvailable
-        ? nativeStackAdditionalPadding
-        : 0,
-    [dangerouslyGetParent]
-  );
+  const { params } = useRoute();
+  const additionalContainerPadding = params?.additionalPadding
+    ? nativeStackAdditionalPadding
+    : 0;
 
   const handleAddContact = useCallback(async () => {
     if (value.length > 0) {

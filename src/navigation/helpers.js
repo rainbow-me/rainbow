@@ -1,55 +1,8 @@
+import React from 'react';
 import { Platform } from 'react-native';
+import { ScrollPager } from 'react-native-tab-view';
 import { createStackNavigator as oldCreateStackNavigator } from 'react-navigation-stack';
-import { updateTransitionProps } from '../redux/navigation';
-import store from '../redux/store';
-import {
-  exchangePreset,
-  expandedPreset,
-  expandedPresetReverse,
-  sheetPreset,
-} from './effects';
 import Routes from './routesNames';
-
-export const onTransitionEnd = () =>
-  store.dispatch(
-    updateTransitionProps({ date: Date.now(), isTransitioning: false })
-  );
-export const onTransitionStart = () =>
-  store.dispatch(
-    updateTransitionProps({ date: Date.now(), isTransitioning: true })
-  );
-
-function presetWithTransition(preset) {
-  return {
-    ...preset,
-    onTransitionEnd: props => {
-      if (preset.onTransitionEnd) {
-        preset.onTransitionEnd(props);
-      }
-      onTransitionEnd();
-    },
-    onTransitionStart: props => {
-      if (preset.onTransitionStart) {
-        preset.onTransitionStart(props);
-      }
-      onTransitionStart();
-    },
-  };
-}
-
-export const sheetPresetWithTransitions = presetWithTransition(sheetPreset);
-
-export const expandedPresetWithTransitions = presetWithTransition(
-  expandedPreset
-);
-
-export const expandedReversePresetWithTransitions = presetWithTransition(
-  expandedPresetReverse
-);
-
-export const exchangePresetWithTransitions = presetWithTransition(
-  exchangePreset
-);
 
 export function createStackNavigator(routes, config = {}) {
   return oldCreateStackNavigator(routes, {
@@ -61,9 +14,11 @@ export function createStackNavigator(routes, config = {}) {
     // eslint-disable-next-line sort-keys
     defaultNavigationOptions: {
       gestureEnabled: true,
-      onTransitionEnd,
-      onTransitionStart,
       ...config.defaultNavigationOptions,
     },
   });
+}
+
+export function ScrollPagerWrapper(props) {
+  return <ScrollPager {...props} overscroll={false} />;
 }

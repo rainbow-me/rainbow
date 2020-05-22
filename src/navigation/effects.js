@@ -11,14 +11,25 @@ const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
 export let swapDetailsTransitionPosition = new Animated.Value(0);
 
-const backgroundInterpolator = ({ current: { progress: current } }) => {
+const backgroundInterpolator = ({
+  current: { progress: current },
+  layouts: { screen },
+}) => {
   const cardOpacity = current.interpolate({
     inputRange: [0, 1],
     outputRange: [0, 1],
   });
 
+  const translateY = current.interpolate({
+    inputRange: [0, 1, 2],
+    outputRange: [screen.height, 0, 0],
+  });
+
   return {
     cardStyle: {
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
       opacity: cardOpacity,
     },
   };
@@ -291,6 +302,7 @@ export const onTransitionStart = props => {
 export const backgroundPreset = {
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: backgroundInterpolator,
+  gestureResponseDistance,
 };
 
 export const emojiPreset = {
@@ -402,6 +414,16 @@ export const sheetPreset = {
   gestureResponseDistance,
   onTransitionStart,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+};
+
+export const exchangeModalPreset = {
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: () => ({
+    overlayStyle: {
+      backgroundColor: 'transparent',
+    },
+  }),
+  gestureResponseDistance,
 };
 
 export const swapDetailsPreset = {

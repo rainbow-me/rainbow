@@ -1,7 +1,6 @@
 import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { withNavigation } from 'react-navigation';
 import { compose } from 'recompose';
 import {
   DataProvider,
@@ -9,6 +8,7 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import { withSelectedInput } from '../../hoc';
+import { withNavigation } from '../../navigation/Navigation';
 import { sheetVerticalOffset } from '../../navigation/effects';
 import Routes from '../../navigation/routesNames';
 import { deviceUtils } from '../../utils';
@@ -114,6 +114,7 @@ class SendContactList extends Component {
     const { address, color, navigation, nickname, onChange } = accountInfo;
 
     navigation.navigate(Routes.MODAL_SCREEN, {
+      additionalPadding: true,
       address,
       asset: {},
       color,

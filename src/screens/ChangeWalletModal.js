@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
-import { useNavigation } from 'react-navigation-hooks';
+import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import WalletList from '../components/change-wallet/WalletList';
 import { Modal } from '../components/modal';
@@ -176,7 +176,7 @@ const ChangeWalletModal = () => {
 
   const onPressImportSeedPhrase = useCallback(() => {
     goBack();
-    navigate(Routes.IMPORT_SEED_PHRASE_SHEET);
+    navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
   }, [goBack, navigate]);
 
   return (

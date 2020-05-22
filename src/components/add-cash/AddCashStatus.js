@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import { useNavigation } from 'react-navigation-hooks';
+import { useNavigation } from '@react-navigation/native';
 import { withProps } from 'recompact';
 import jumpingDaiAnimation from '../../assets/lottie/jumping-dai.json';
 import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';

@@ -1,7 +1,7 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
-import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import {

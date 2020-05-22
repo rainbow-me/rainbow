@@ -11,5 +11,6 @@ export default function useNavigationWillFocusEffect(effect) {
     [effect]
   );
 
-  useNavigationEvents(handleWillFocus);
+  // TODO nav
+  //useNavigationEvents(handleWillFocus);
 }

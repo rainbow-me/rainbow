@@ -20,36 +20,43 @@ const routesForNativeStackFallback = {
   [Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN]: true,
 };
 
+let memRouteName;
+
 export function onNavigationStateChange(prevState, currentState) {
-  const { params, routeName } = Navigation.getActiveRoute(currentState);
-  const prevRouteName = Navigation.getActiveRouteName(prevState);
+  console.log(prevState, currentState);
+  const { name: routeName } = Navigation.getActiveRoute();
+  //const options = Navigation.getActiveOptions();
+  // console.log(options)
+  const prevRouteName = memRouteName;
+  memRouteName = routeName;
   // native stack rn does not support onTransitionEnd and onTransitionStart
   // Set focus manually on route changes
 
-  if (
-    prevRouteName !== routeName &&
-    isNativeStackAvailable &&
-    (routesForNativeStackFallback[prevRouteName] ||
-      routesForNativeStackFallback[routeName])
-  ) {
-    Navigation.handleAction(
-      NavigationActions.setParams({
-        key: routeName,
-        params: { focused: true },
-      })
-    );
+  // TODO nav
+  // if (
+  //   prevRouteName !== routeName &&
+  //   isNativeStackAvailable &&
+  //   (routesForNativeStackFallback[prevRouteName] ||
+  //     routesForNativeStackFallback[routeName])
+  // ) {
+  //   Navigation.handleAction(
+  //     NavigationActions.setParams({
+  //       key: routeName,
+  //       params: { focused: true },
+  //     })
+  //   );
+  //
+  //   Navigation.handleAction(
+  //     NavigationActions.setParams({
+  //       key: prevRouteName,
+  //       params: { focused: false },
+  //     })
+  //   );
+  // }
 
-    Navigation.handleAction(
-      NavigationActions.setParams({
-        key: prevRouteName,
-        params: { focused: false },
-      })
-    );
-  }
-
-  const oldBottomSheetStackRoute = prevState.routes[prevState.index].routeName;
+  const oldBottomSheetStackRoute = prevState?.routes[prevState.index].routeName;
   const newBottomSheetStackRoute =
-    currentState.routes[currentState.index].routeName;
+    currentState?.routes[currentState.index].routeName;
 
   const wasCustomSlackOpen =
     oldBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
@@ -101,26 +108,28 @@ export function onNavigationStateChange(prevState, currentState) {
     StatusBar.setBarStyle('dark-content', true);
   }
 
-  if (routeName === 'SettingsModal') {
-    let subRoute = get(params, 'section.title');
-    if (subRoute === 'Settings') subRoute = null;
-    return analytics.screen(`${routeName}${subRoute ? `>${subRoute}` : ''}`);
-  }
+  // TODO nav
+  // if (routeName === 'SettingsModal') {
+  //   let subRoute = get(params, 'section.title');
+  //   if (subRoute === 'Settings') subRoute = null;
+  //   return analytics.screen(`${routeName}${subRoute ? `>${subRoute}` : ''}`);
+  // }
 
-  if (routeName !== prevRouteName) {
-    let paramsToTrack = null;
-
-    if (routeName === Routes.EXPANDED_ASSET_SHEET) {
-      const { asset, type } = params;
-      paramsToTrack = {
-        assetContractAddress:
-          asset.address || get(asset, 'asset_contract.address'),
-        assetName: asset.name,
-        assetSymbol: asset.symbol || get(asset, 'asset_contract.symbol'),
-        assetType: type,
-      };
-    }
-    sentryUtils.addNavBreadcrumb(prevRouteName, routeName, paramsToTrack);
-    return analytics.screen(routeName, paramsToTrack);
-  }
+  // TODO nav
+  // if (routeName !== prevRouteName) {
+  //   let paramsToTrack = null;
+  //
+  //   if (routeName === Routes.EXPANDED_ASSET_SHEET) {
+  //     const { asset, type } = params;
+  //     paramsToTrack = {
+  //       assetContractAddress:
+  //         asset.address || get(asset, 'asset_contract.address'),
+  //       assetName: asset.name,
+  //       assetSymbol: asset.symbol || get(asset, 'asset_contract.symbol'),
+  //       assetType: type,
+  //     };
+  //   }
+  //   sentryUtils.addNavBreadcrumb(prevRouteName, routeName, paramsToTrack);
+  //   return analytics.screen(routeName, paramsToTrack);
+  // }
 }

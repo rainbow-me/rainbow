@@ -1,7 +1,7 @@
+import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
-import { useNavigation } from 'react-navigation-hooks';
 import { compose } from 'recompact';
 import { onlyUpdateForKeys } from 'recompose';
 import { withFabSelection } from '../../hoc';

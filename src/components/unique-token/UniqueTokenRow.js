@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { useNavigation } from 'react-navigation-hooks';
+import { useNavigation } from '@react-navigation/native';
 import styled from 'styled-components/primitives';
 import { useWallets } from '../../hooks';
 import Routes from '../../navigation/routesNames';

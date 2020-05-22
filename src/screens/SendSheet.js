@@ -9,7 +9,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
-import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
@@ -344,7 +344,8 @@ const SendSheet = ({ setAppearListener, ...props }) => {
     }
   }, [isValidAddress, selected.type, showAssetForm, showAssetList]);
 
-  const assetOverride = useNavigationParam('asset');
+  const { params } = useRoute()
+  const assetOverride = params?.asset;
   const prevAssetOverride = usePrevious(assetOverride);
 
   useEffect(() => {
@@ -353,7 +354,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
     }
   }, [assetOverride, prevAssetOverride, sendUpdateSelected]);
 
-  const recipientOverride = useNavigationParam('address');
+  const recipientOverride = params?.address;
 
   useEffect(() => {
     if (recipientOverride && !recipient) {

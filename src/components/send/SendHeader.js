@@ -3,7 +3,6 @@ import { get, isEmpty, isNumber, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { Keyboard } from 'react-native';
-import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withNeverRerender, withSelectedInput } from '../../hoc';
@@ -16,6 +15,7 @@ import { AddressField } from '../fields';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Label } from '../text';
+import { withNavigation } from '../../navigation/Navigation';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   ${padding(19, 15)}
@@ -149,6 +149,7 @@ class SendHeader extends PureComponent {
 
     Keyboard.dismiss();
     navigation.navigate(Routes.MODAL_SCREEN, {
+      additionalPadding: true,
       address: recipient,
       asset: {},
       color,

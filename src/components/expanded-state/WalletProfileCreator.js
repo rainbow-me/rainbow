@@ -2,7 +2,7 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { useNavigation } from 'react-navigation-hooks';
+import { useNavigation } from '@react-navigation/native';
 import { colors, padding } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';

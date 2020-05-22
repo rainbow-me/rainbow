@@ -2,9 +2,9 @@ import Clipboard from '@react-native-community/clipboard';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import ToolTip from 'react-native-tooltip';
-import { withNavigation } from 'react-navigation';
 import { compose, onlyUpdateForKeys } from 'recompact';
 import { colors } from '../../styles';
+import { withNavigation } from '../../navigation/Navigation';
 
 class CopyTooltip extends PureComponent {
   static propTypes = {
@@ -18,12 +18,6 @@ class CopyTooltip extends PureComponent {
   static defaultProps = {
     activeOpacity: 0.666,
     tooltipText: 'Copy',
-  };
-
-  componentDidUpdate = () => {
-    if (this.props.navigation.state.isTransitioning) {
-      this.handleHideTooltip();
-    }
   };
 
   componentWillUnmount = () => this.handleHideTooltip();

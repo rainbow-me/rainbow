@@ -1,15 +1,13 @@
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
-import { ScrollPager } from 'react-native-tab-view';
-import { createAppContainer } from 'react-navigation';
-import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
+import { createNativeStackNavigator } from 'react-native-cool-modals/native-stack';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletModal from '../screens/ChangeWalletModal';
-import ExampleScreen from '../screens/ExampleScreen';
 import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
 import ModalScreen from '../screens/ModalScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -23,270 +21,268 @@ import WalletConnectConfirmationModal from '../screens/WalletConnectConfirmation
 import WalletScreen from '../screens/WalletScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import { deviceUtils } from '../utils';
-import { onDidPop, onWillPop } from './Navigation';
+import {
+  defaultScreenStackOptions,
+  expandedAssetSheetConfig,
+  nativeStackConfig,
+  sharedCoolModalConfig,
+  stackNavigationConfig,
+} from './config';
 import {
   backgroundPreset,
   emojiPreset,
   overlayExpandedPreset,
-  savingsPreset,
   sheetPreset,
 } from './effects';
 import {
-  createStackNavigator,
   exchangePresetWithTransitions,
   expandedPresetWithTransitions,
   expandedReversePresetWithTransitions,
-  onTransitionEnd,
   onTransitionStart,
+  ScrollPagerWrapper,
   sheetPresetWithTransitions,
 } from './helpers';
 import {
   AddCashSheetWrapper,
-  appearListener,
   ExpandedAssetSheetWrapper,
   ImportSeedPhraseSheetWrapper,
   SendSheetWrapper,
 } from './nativeStackHelpers';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
-import { ExchangeModalNavigator, SavingModalNavigator } from './index';
+import { ExchangeModalNavigator } from './index';
 
-const routesForSwipeStack = {
-  [Routes.PROFILE_SCREEN]: ProfileScreen,
-  [Routes.WALLET_SCREEN]: WalletScreen,
-  [Routes.QR_SCANNER_SCREEN]: QRScannerScreenWithData,
-};
+const Swipe = createMaterialTopTabNavigator();
+const Stack = createStackNavigator();
+const NativeStack = createNativeStackNavigator();
 
-function ScrollPagerWrapper(props) {
-  return <ScrollPager {...props} overscroll={false} />;
+const renderTabBar = () => null;
+
+function NewSwipe() {
+  return (
+    <Swipe.Navigator
+      initialRouteName={Routes.WALLET_SCREEN}
+      tabBar={renderTabBar}
+      initialLayout={deviceUtils.dimensions}
+      pager={ScrollPagerWrapper}
+    >
+      <Swipe.Screen name={Routes.PROFILE_SCREEN} component={ProfileScreen} />
+      <Swipe.Screen name={Routes.WALLET_SCREEN} component={WalletScreen} />
+      <Swipe.Screen
+        name={Routes.QR_SCANNER_SCREEN}
+        component={QRScannerScreenWithData}
+      />
+    </Swipe.Navigator>
+  );
 }
 
-const SwipeStack = createMaterialTopTabNavigator(routesForSwipeStack, {
-  headerMode: 'none',
-  initialLayout: deviceUtils.dimensions,
-  initialRouteName: Routes.WALLET_SCREEN,
-  renderPager: ScrollPagerWrapper,
-  tabBarComponent: null,
-});
+function SendFlowNavigator() {
+  return (
+    <Stack.Navigator
+      {...stackNavigationConfig}
+      initialRouteName={Routes.SEND_SHEET}
+    >
+      <Stack.Screen
+        name={Routes.MODAL_SCREEN}
+        component={ModalScreen}
+        options={overlayExpandedPreset}
+      />
+      <Stack.Screen
+        name={Routes.SEND_SHEET}
+        component={SendSheetWrapper}
+        options={sheetPresetWithTransitions}
+      />
+    </Stack.Navigator>
+  );
+}
 
-const importSeedPhraseFlowRoutes = {
-  [Routes.IMPORT_SEED_PHRASE_SHEET]: {
-    navigationOptions: sheetPresetWithTransitions,
-    screen: ImportSeedPhraseSheetWrapper,
-  },
-  [Routes.MODAL_SCREEN]: {
-    navigationOptions: overlayExpandedPreset,
-    screen: ModalScreen,
-  },
-};
+function ImportSeedPhraseFlowNavigator() {
+  return (
+    <Stack.Navigator
+      {...stackNavigationConfig}
+      initialRouteName={Routes.IMPORT_SEED_PHRASE_SHEET}
+    >
+      <Stack.Screen
+        name={Routes.MODAL_SCREEN}
+        component={ModalScreen}
+        options={overlayExpandedPreset}
+      />
+      <Stack.Screen
+        name={Routes.IMPORT_SEED_PHRASE_SHEET}
+        component={ImportSeedPhraseSheetWrapper}
+      />
+    </Stack.Navigator>
+  );
+}
 
-const sendFlowRoutes = {
-  [Routes.MODAL_SCREEN]: {
-    navigationOptions: overlayExpandedPreset,
-    screen: ModalScreen,
-  },
-  [Routes.SEND_SHEET]: {
-    navigationOptions: sheetPresetWithTransitions,
-    screen: SendSheetWrapper,
-  },
-};
+function NewAddCashFlowNavigator() {
+  return (
+    <Stack.Navigator
+      {...stackNavigationConfig}
+      initialRouteName={Routes.ADD_CASH_SCREEN_NAVIGATOR}
+    >
+      <Stack.Screen
+        name={Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN}
+        component={ModalScreen}
+        options={overlayExpandedPreset}
+      />
+      <Stack.Screen
+        name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
+        component={AddCashSheetWrapper}
+      />
+    </Stack.Navigator>
+  );
+}
 
-const SendFlowNavigator = createStackNavigator(sendFlowRoutes, {
-  initialRouteName: Routes.SEND_SHEET,
-});
+function MainNavigator() {
+  return (
+    <Stack.Navigator
+      initialRouteName={Routes.SWIPE_LAYOUT}
+      {...stackNavigationConfig}
+      screenOptions={defaultScreenStackOptions}
+    >
+      <Stack.Screen name={Routes.SWIPE_LAYOUT} component={NewSwipe} />
+      <Stack.Screen
+        name={Routes.SAVINGS_SHEET}
+        component={SavingsSheet}
+        options={backgroundPreset}
+      />
+      <Stack.Screen
+        name={Routes.AVATAR_BUILDER}
+        component={AvatarBuilder}
+        options={emojiPreset}
+      />
+      <Stack.Screen
+        name={Routes.SAVINGS_WITHDRAW_MODAL}
+        component={WithdrawModal}
+        options={exchangePresetWithTransitions}
+      />
+      <Stack.Screen
+        name={Routes.SAVINGS_DEPOSIT_MODAL}
+        component={() => null}
+        options={exchangePresetWithTransitions}
+      />
+      <Stack.Screen
+        name={Routes.WALLET_CONNECT_CONFIRMATION_MODAL}
+        component={WalletConnectConfirmationModal}
+        options={expandedPresetWithTransitions}
+      />
+      <Stack.Screen
+        name={Routes.CONFIRM_REQUEST}
+        component={TransactionConfirmationScreen}
+        options={sheetPresetWithTransitions}
+      />
+      <Stack.Screen
+        name={Routes.CHANGE_WALLET_MODAL}
+        component={ChangeWalletModal}
+        options={expandedReversePresetWithTransitions}
+      />
+      <Stack.Screen
+        name={Routes.EXCHANGE_MODAL}
+        component={ExchangeModalNavigator}
+        options={{ ...exchangePresetWithTransitions, gestureEnabled: true }}
+      />
+      {isNativeStackAvailable && (
+        <Stack.Screen
+          name={Routes.MODAL_SCREEN}
+          component={ModalScreen}
+          options={overlayExpandedPreset}
+        />
+      )}
+    </Stack.Navigator>
+  );
+}
 
-const ImportSeedPhraseFlowNavigator = createStackNavigator(
-  importSeedPhraseFlowRoutes,
-  {
-    initialRouteName: Routes.IMPORT_SEED_PHRASE_SHEET,
-  }
-);
+function MainNavigatorFallback() {
+  return (
+    <Stack.Navigator
+      initialRouteName={Routes.MAIN_NAVIGATOR}
+      {...stackNavigationConfig}
+      screenOptions={defaultScreenStackOptions}
+    >
+      <Stack.Screen name={Routes.MAIN_NAVIGATOR} component={MainNavigator} />
+      <Stack.Screen
+        name={Routes.IMPORT_SEED_PHRASE_SHEET}
+        component={ImportSeedPhraseSheetWithData}
+        options={{
+          ...sheetPreset,
+          onTransitionStart: () => {
+            StatusBar.setBarStyle('light-content');
+          },
+        }}
+      />
+      <Stack.Screen
+        name={Routes.MODAL_SCREEN}
+        component={ModalScreen}
+        options={overlayExpandedPreset}
+      />
+      <Stack.Screen
+        name={Routes.SEND_SHEET}
+        component={SendSheet}
+        options={{
+          ...omit(sheetPreset, 'gestureResponseDistance'),
+          onTransitionStart: () => {
+            StatusBar.setBarStyle('light-content');
+            onTransitionStart();
+          },
+        }}
+      />
+      <Stack.Screen
+        name={Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN}
+        component={ModalScreen}
+        options={overlayExpandedPreset}
+      />
+    </Stack.Navigator>
+  );
+}
 
-const routesForAddCash = {
-  [Routes.ADD_CASH_SHEET]: {
-    navigationOptions: sheetPresetWithTransitions,
-    screen: AddCashSheetWrapper,
-  },
-  [Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN]: {
-    navigationOptions: overlayExpandedPreset,
-    screen: ModalScreen,
-  },
-};
+const MainStack = isNativeStackAvailable
+  ? MainNavigator
+  : MainNavigatorFallback;
 
-const routesForSavingsModals = {
-  [Routes.SAVINGS_DEPOSIT_MODAL]: {
-    navigationOptions: exchangePresetWithTransitions,
-    params: {
-      isGestureBlocked: false,
-    },
-    screen: SavingModalNavigator,
-  },
-  [Routes.SAVINGS_WITHDRAW_MODAL]: {
-    navigationOptions: exchangePresetWithTransitions,
-    params: {
-      isGestureBlocked: false,
-    },
-    screen: WithdrawModal,
-  },
-};
-
-const routesForMainNavigator = {
-  [Routes.AVATAR_BUILDER]: {
-    navigationOptions: emojiPreset,
-    screen: AvatarBuilder,
-    transparentCard: true,
-  },
-  [Routes.CHANGE_WALLET_MODAL]: {
-    navigationOptions: expandedReversePresetWithTransitions,
-    screen: ChangeWalletModal,
-  },
-  [Routes.CONFIRM_REQUEST]: {
-    navigationOptions: sheetPresetWithTransitions,
-    screen: TransactionConfirmationScreen,
-  },
-  [Routes.EXAMPLE_SCREEN]: {
-    navigationOptions: expandedPresetWithTransitions,
-    screen: ExampleScreen,
-  },
-  [Routes.EXCHANGE_MODAL]: {
-    navigationOptions: exchangePresetWithTransitions,
-    params: {
-      isGestureBlocked: false,
-    },
-    screen: ExchangeModalNavigator,
-  },
-  [Routes.SAVINGS_SHEET]: {
-    navigationOptions: savingsPreset,
-    screen: SavingsSheet,
-  },
-  [Routes.SWIPE_LAYOUT]: {
-    navigationOptions: backgroundPreset,
-    screen: SwipeStack,
-  },
-  [Routes.WALLET_CONNECT_CONFIRMATION_MODAL]: {
-    navigationOptions: expandedPresetWithTransitions,
-    screen: WalletConnectConfirmationModal,
-  },
-  ...routesForSavingsModals,
-  ...(isNativeStackAvailable && {
-    [Routes.MODAL_SCREEN]: {
-      navigationOptions: overlayExpandedPreset,
-      screen: ModalScreen,
-    },
-  }),
-};
-
-const MainNavigator = createStackNavigator(routesForMainNavigator);
-
-const AddCashFlowNavigator = createStackNavigator(routesForAddCash, {
-  initialRouteName: Routes.ADD_CASH_SHEET,
-});
-
-const routesForNativeStack = {
-  [Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR]: ImportSeedPhraseFlowNavigator,
-  [Routes.SEND_SHEET_NAVIGATOR]: SendFlowNavigator,
-  [Routes.ADD_CASH_SCREEN_NAVIGATOR]: AddCashFlowNavigator,
-};
-
-const routesForNativeStackFallback = {
-  [Routes.ADD_CASH_SHEET]: {
-    navigationOptions: sheetPresetWithTransitions,
-    screen: AddCashSheet,
-  },
-  [Routes.IMPORT_SEED_PHRASE_SHEET]: {
-    navigationOptions: {
-      ...sheetPreset,
-      onTransitionStart: () => {
-        StatusBar.setBarStyle('light-content');
-      },
-    },
-    screen: ImportSeedPhraseSheetWithData,
-  },
-  [Routes.MAIN_NAVIGATOR]: MainNavigator,
-  [Routes.MODAL_SCREEN]: {
-    navigationOptions: overlayExpandedPreset,
-    screen: ModalScreen,
-  },
-  [Routes.SEND_SHEET]: {
-    navigationOptions: {
-      ...omit(sheetPreset, 'gestureResponseDistance'),
-      onTransitionStart: () => {
-        StatusBar.setBarStyle('light-content');
-        onTransitionStart();
-      },
-    },
-    screen: SendSheet,
-  },
-  [Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN]: {
-    navigationOptions: overlayExpandedPreset,
-    screen: ModalScreen,
-  },
-};
-
-const NativeStackFallback = createStackNavigator(routesForNativeStackFallback, {
-  defaultNavigationOptions: {
-    onTransitionEnd,
-    onTransitionStart,
-  },
-  headerMode: 'none',
-  initialRouteName: Routes.MAIN_NAVIGATOR,
-  mode: 'modal',
-});
-
-const Stack = isNativeStackAvailable ? MainNavigator : NativeStackFallback;
-
-const withCustomStack = screen => ({
-  navigationOptions: { customStack: true, onAppear: null },
-  screen,
-});
-
-const routesForBottomSheetStack = {
-  [Routes.STACK]: Stack,
-  [Routes.RECEIVE_MODAL]: withCustomStack(ReceiveModal),
-  [Routes.SETTINGS_MODAL]: withCustomStack(SettingsModal),
-  [Routes.EXPANDED_ASSET_SHEET]: {
-    navigationOptions: {
-      allowsDragToDismiss: true,
-      allowsTapToDismiss: true,
-      backgroundOpacity: 0.7,
-      blocksBackgroundTouches: true,
-      cornerRadius: 24,
-      customStack: true,
-      gestureEnabled: true,
-      headerHeight: 50,
-      onAppear: null,
-      scrollEnabled: true,
-      springDamping: 0.8755,
-      topOffset: 0,
-      transitionDuration: 0.42,
-    },
-    screen: ExpandedAssetSheetWrapper,
-  },
-  ...(isNativeStackAvailable && routesForNativeStack),
-};
-
-const MainNativeBottomSheetNavigation = createNativeStackNavigator(
-  routesForBottomSheetStack,
-  {
-    defaultNavigationOptions: {
-      onAppear: () => appearListener.current && appearListener.current(),
-      onDismissed: onDidPop,
-      onWillDismiss: () => {
-        onWillPop();
-        sheetPreset.onTransitionStart({ closing: true });
-      },
-      showDragIndicator: false,
-      springDamping: 0.8,
-      transitionDuration: 0.35,
-    },
-    mode: 'modal',
-  }
-);
-
-const AppContainer = createAppContainer(MainNativeBottomSheetNavigation);
+function NativeStackNavigator() {
+  return (
+    <NativeStack.Navigator {...nativeStackConfig}>
+      <NativeStack.Screen name={Routes.STACK} component={MainStack} />
+      <NativeStack.Screen
+        name={Routes.RECEIVE_MODAL}
+        component={ReceiveModal}
+        {...sharedCoolModalConfig}
+      />
+      <NativeStack.Screen
+        name={Routes.SETTINGS_MODAL}
+        component={SettingsModal}
+        {...sharedCoolModalConfig}
+      />
+      <NativeStack.Screen
+        name={Routes.EXPANDED_ASSET_SHEET}
+        component={ExpandedAssetSheetWrapper}
+        {...expandedAssetSheetConfig}
+      />
+      {isNativeStackAvailable && (
+        <>
+          <NativeStack.Screen
+            name={Routes.SEND_SHEET_NAVIGATOR}
+            component={SendFlowNavigator}
+          />
+          <NativeStack.Screen
+            name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
+            component={ImportSeedPhraseFlowNavigator}
+          />
+          <NativeStack.Screen
+            name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
+            component={NewAddCashFlowNavigator}
+          />
+        </>
+      )}
+    </NativeStack.Navigator>
+  );
+}
 
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
-  <AppContainer ref={ref} onNavigationStateChange={onNavigationStateChange} />
+  <NavigationContainer ref={ref} onStateChange={onNavigationStateChange}>
+    <NativeStackNavigator />
+  </NavigationContainer>
 ));
 
 AppContainerWithAnalytics.displayName = 'AppContainerWithAnalytics';

@@ -71,7 +71,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
   );
 
   const handlePressImportWallet = useCallback(
-    () => navigate(Routes.IMPORT_SEED_PHRASE_SHEET),
+    () => navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR),
     [navigate]
   );
 

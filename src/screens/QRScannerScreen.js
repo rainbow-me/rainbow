@@ -1,3 +1,4 @@
+import { useIsFocused } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useIsEmulator } from 'react-native-device-info';
@@ -19,7 +20,6 @@ import { isNewValueForObjectPaths } from '../utils';
 const QRScannerScreen = ({
   enableScanning,
   isCameraAuthorized,
-  isFocused,
   onPressBackButton,
   onPressPasteSessionUri,
   onScanSuccess,
@@ -31,6 +31,7 @@ const QRScannerScreen = ({
 }) => {
   const { result: isEmulator } = useIsEmulator();
   const insets = useSafeArea();
+  const isFocused = useIsFocused();
 
   return (
     <Centered
@@ -101,7 +102,6 @@ const arePropsEqual = (prev, next) =>
   !isNewValueForObjectPaths(prev, next, [
     'enableScanning',
     'isCameraAuthorized',
-    'isFocused',
     'sheetHeight',
     'walletConnectorsCount',
   ]);

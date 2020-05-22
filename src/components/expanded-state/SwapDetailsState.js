@@ -1,6 +1,6 @@
+import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
-import { useNavigation } from 'react-navigation-hooks';
 import { swapDetailsTransitionPosition } from '../../navigation/effects';
 import { colors } from '../../styles';
 import TouchableBackdrop from '../TouchableBackdrop';

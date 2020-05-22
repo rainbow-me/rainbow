@@ -1,6 +1,6 @@
+import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { useNavigation } from 'react-navigation-hooks';
 import { useDimensions } from '../../hooks';
 import Routes from '../../navigation/routesNames';
 import { colors, position } from '../../styles';

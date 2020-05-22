@@ -1,6 +1,6 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import { NavigationActions } from 'react-navigation';
-import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import Icon from '../icons/Icon';
 import { Row } from '../layout';

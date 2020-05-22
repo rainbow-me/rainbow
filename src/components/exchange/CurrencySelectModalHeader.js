@@ -1,5 +1,5 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import Routes from '../../navigation/routesNames';
 import { borders, colors, padding } from '../../styles';
@@ -34,7 +34,8 @@ const Title = styled(TruncatedText).attrs({
 
 export default function CurrencySelectModalHeader() {
   const { navigate } = useNavigation();
-  const title = useNavigationParam('headerTitle');
+  const { params } = useRoute();
+  const title = params?.headerTitle;
 
   const handlePressBack = useCallback(
     () => navigate(Routes.MAIN_EXCHANGE_SCREEN),
