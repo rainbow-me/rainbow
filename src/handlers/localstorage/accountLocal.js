@@ -1,8 +1,4 @@
-import {
-  getAccountLocal,
-  removeAccountLocal,
-  saveAccountLocal,
-} from './common';
+import { getAccountLocal, saveAccountLocal } from './common';
 
 const assetPricesFromUniswapVersion = '0.1.0';
 const assetsVersion = '0.2.0';
@@ -26,6 +22,24 @@ const TRANSACTIONS = 'transactions';
 const UNIQUE_TOKENS = 'uniquetokens';
 const PINNED_COINS = 'pinnedCoins';
 const HIDDEN_COINS = 'hiddenCoins';
+
+export const accountLocalKeys = [
+  ACCOUNT_INFO,
+  ASSET_PRICES_FROM_UNISWAP,
+  ASSETS,
+  CHARTS,
+  OPEN_FAMILIES,
+  OPEN_INVESTMENT_CARDS,
+  PURCHASE_TRANSACTIONS,
+  SMALL_BALANCE_TOGGLE,
+  SAVINGS,
+  SAVINGS_TOGGLE,
+  SHOWCASE_TOKENS,
+  TRANSACTIONS,
+  UNIQUE_TOKENS,
+  PINNED_COINS,
+  HIDDEN_COINS,
+];
 
 /**
  * @desc get savings
@@ -64,15 +78,6 @@ export const saveAssets = (assets, accountAddress, network) =>
   saveAccountLocal(ASSETS, assets, accountAddress, network, assetsVersion);
 
 /**
- * @desc remove assets
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const removeAssets = (accountAddress, network) =>
-  removeAccountLocal(ASSETS, accountAddress, network);
-
-/**
  * @desc get asset prices from Uniswap
  * @param  {String}   [address]
  * @param  {String}   [network]
@@ -105,15 +110,6 @@ export const saveAssetPricesFromUniswap = (
     network,
     assetPricesFromUniswapVersion
   );
-
-/**
- * @desc remove asset from Uniswap
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const removeAssetPricesFromUniswap = (accountAddress, network) =>
-  removeAccountLocal(ASSET_PRICES_FROM_UNISWAP, accountAddress, network);
 
 /**
  * @desc get purchase transactions
@@ -168,14 +164,6 @@ export const saveCharts = (charts, accountAddress, network) =>
   saveAccountLocal(CHARTS, charts, accountAddress, network);
 
 /**
- * @desc remove charts data
- * @param  {String}   [address]
- * @param  {String}   [network]
- */
-export const removeCharts = (accountAddress, network) =>
-  removeAccountLocal(CHARTS, accountAddress, network);
-
-/**
  * @desc get transactions
  * @param  {String}   [address]
  * @param  {String}   [network]
@@ -204,15 +192,6 @@ export const saveLocalTransactions = (transactions, accountAddress, network) =>
     network,
     transactionsVersion
   );
-
-/**
- * @desc remove transactions
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const removeLocalTransactions = (accountAddress, network) =>
-  removeAccountLocal(TRANSACTIONS, accountAddress, network);
 
 /**
  * @desc get unique tokens
@@ -245,15 +224,6 @@ export const saveUniqueTokens = (uniqueTokens, accountAddress, network) =>
   );
 
 /**
- * @desc remove unique tokens
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const removeUniqueTokens = (accountAddress, network) =>
-  removeAccountLocal(UNIQUE_TOKENS, accountAddress, network);
-
-/**
  * @desc get open small balances
  * @param  {String}   [address]
  * @param  {String}   [network]
@@ -281,15 +251,6 @@ export const saveSmallBalanceToggle = (
   );
 
 /**
- * @desc remove small balance toggle
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const removeSmallBalanceToggle = (accountAddress, network) =>
-  removeAccountLocal(SMALL_BALANCE_TOGGLE, accountAddress, network);
-
-/**
  * @desc get open savings
  * @param  {String}   [address]
  * @param  {String}   [network]
@@ -306,15 +267,6 @@ export const getSavingsToggle = (accountAddress, network) =>
  */
 export const saveSavingsToggle = (isOpen, accountAddress, network) =>
   saveAccountLocal(SAVINGS_TOGGLE, isOpen, accountAddress, network);
-
-/**
- * @desc remove small balance toggle
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const removeSavingsToggle = (accountAddress, network) =>
-  removeAccountLocal(SAVINGS_TOGGLE, accountAddress, network);
 
 /**
  * @desc get open investment cards
@@ -344,15 +296,6 @@ export const saveOpenInvestmentCards = (
   );
 
 /**
- * @desc remove open investment cards
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const removeOpenInvestmentCards = (accountAddress, network) =>
-  removeAccountLocal(OPEN_INVESTMENT_CARDS, accountAddress, network);
-
-/**
  * @desc get open families
  * @param  {String}   [address]
  * @param  {String}   [network]
@@ -371,15 +314,6 @@ export const saveOpenFamilies = (openFamilies, accountAddress, network) =>
   saveAccountLocal(OPEN_FAMILIES, openFamilies, accountAddress, network);
 
 /**
- * @desc remove open families
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const removeOpenFamilies = (accountAddress, network) =>
-  removeAccountLocal(OPEN_FAMILIES, accountAddress, network);
-
-/**
  * @desc get profile info
  * @param  {String}   [address]
  * @param  {String}   [network]
@@ -396,14 +330,6 @@ export const getAccountInfo = (accountAddress, network) =>
  */
 export const saveAccountInfo = (profileInfo, accountAddress, network) =>
   saveAccountLocal(ACCOUNT_INFO, profileInfo, accountAddress, network);
-
-/**
- * @desc remove profile info
- * @param  {String}   [address]
- * @param  {String}   [network]
- */
-export const removeAccountInfo = (accountAddress, network) =>
-  removeAccountLocal(ACCOUNT_INFO, accountAddress, network);
 
 /**
  * @desc get pinned coins
@@ -458,11 +384,3 @@ export const getShowcaseTokens = (accountAddress, network) =>
  */
 export const saveShowcaseTokens = (showcaseTokens, accountAddress, network) =>
   saveAccountLocal(SHOWCASE_TOKENS, showcaseTokens, accountAddress, network);
-
-/**
- * @desc remove showcase tokens
- * @param  {String}   [address]
- * @param  {String}   [network]
- */
-export const removeShowcaseTokens = (accountAddress, network) =>
-  removeAccountLocal(SHOWCASE_TOKENS, accountAddress, network);

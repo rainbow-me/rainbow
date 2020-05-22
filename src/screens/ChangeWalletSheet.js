@@ -10,6 +10,7 @@ import WalletList from '../components/change-wallet/WalletList';
 import { Column } from '../components/layout';
 import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
+import { removeWalletData } from '../handlers/localstorage/removeWallet';
 import WalletTypes from '../helpers/walletTypes';
 import { useAccountSettings, useInitializeWallet, useWallets } from '../hooks';
 import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
@@ -93,11 +94,11 @@ const ChangeWalletSheet = () => {
   }
 
   const onChangeAccount = useCallback(
-    async (wallet_id, address, fromDeletion = false) => {
+    async (walletId, address, fromDeletion = false) => {
       if (editMode && !fromDeletion) return;
       if (address === accountAddress) return;
       try {
-        const wallet = wallets[wallet_id];
+        const wallet = wallets[walletId];
         dispatch(walletsSetSelected(wallet));
         dispatch(addressSetSelected(address));
         await initializeWallet();
@@ -110,32 +111,33 @@ const ChangeWalletSheet = () => {
   );
 
   const deleteWallet = useCallback(
-    async (wallet_id, address) => {
+    async (walletId, address) => {
       const newWallets = { ...wallets };
       // Mark it as hidden
-      newWallets[wallet_id].addresses.some((account, index) => {
+      newWallets[walletId].addresses.some((account, index) => {
         if (account.address === address) {
-          newWallets[wallet_id].addresses[index].visible = false;
+          newWallets[walletId].addresses[index].visible = false;
           return true;
         }
         return false;
       });
       // If there are no visible wallets
       // then delete the wallet
-      const visibleAddresses = newWallets[wallet_id].addresses.filter(
+      const visibleAddresses = newWallets[walletId].addresses.filter(
         account => account.visible
       );
       if (visibleAddresses.length === 0) {
-        delete newWallets[wallet_id];
+        delete newWallets[walletId];
       }
       await dispatch(walletsUpdate(newWallets));
+      removeWalletData(address);
     },
     [dispatch, wallets]
   );
 
   const renameWallet = useCallback(
-    (wallet_id, address) => {
-      const wallet = wallets[wallet_id];
+    (walletId, address) => {
+      const wallet = wallets[walletId];
       const account = wallet.addresses.find(
         account => account.address === address
       );
@@ -147,12 +149,12 @@ const ChangeWalletSheet = () => {
           if (args) {
             const newWallets = { ...wallets };
             if (args.name) {
-              newWallets[wallet_id].addresses.some((account, index) => {
+              newWallets[walletId].addresses.some((account, index) => {
                 if (account.address === address) {
-                  newWallets[wallet_id].addresses[index].label = args.name;
-                  newWallets[wallet_id].addresses[index].color = args.color;
-                  if (selectedWallet.id === wallet_id) {
-                    dispatch(walletsSetSelected(newWallets[wallet_id]));
+                  newWallets[walletId].addresses[index].label = args.name;
+                  newWallets[walletId].addresses[index].color = args.color;
+                  if (selectedWallet.id === walletId) {
+                    dispatch(walletsSetSelected(newWallets[walletId]));
                   }
                   return true;
                 }
@@ -173,7 +175,7 @@ const ChangeWalletSheet = () => {
   );
 
   const onEditWallet = useCallback(
-    (wallet_id, address, label) => {
+    (walletId, address, label) => {
       // If there's more than 1 account
       // it's deletable
       let isDeletable = false;
@@ -205,7 +207,7 @@ const ChangeWalletSheet = () => {
         buttonIndex => {
           if (buttonIndex === 0) {
             // Edit wallet
-            renameWallet(wallet_id, address);
+            renameWallet(walletId, address);
           } else if (isDeletable && buttonIndex === 1) {
             // Delete wallet with confirmation
             showActionSheetWithOptions(
@@ -217,7 +219,7 @@ const ChangeWalletSheet = () => {
               },
               async buttonIndex => {
                 if (buttonIndex === 0) {
-                  await deleteWallet(wallet_id, address);
+                  await deleteWallet(walletId, address);
                   ReactNativeHapticFeedback.trigger('notificationSuccess');
                   // If we're deleting the selected wallet
                   // we need to switch to another one
@@ -247,7 +249,7 @@ const ChangeWalletSheet = () => {
   );
 
   const onPressAddAccount = useCallback(
-    async wallet_id => {
+    async walletId => {
       try {
         if (creatingWallet.current) return;
         creatingWallet.current = true;
@@ -260,8 +262,8 @@ const ChangeWalletSheet = () => {
             if (args) {
               const name = get(args, 'name', '');
               const color = get(args, 'color', colors.getRandomColor());
-              if (wallet_id) {
-                await dispatch(createAccountForWallet(wallet_id, color, name));
+              if (walletId) {
+                await dispatch(createAccountForWallet(walletId, color, name));
                 await initializeWallet();
               } else {
                 await createWallet(null, color, name);

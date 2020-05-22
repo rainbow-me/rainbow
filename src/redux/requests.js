@@ -2,7 +2,6 @@ import { filter, get, omit, values } from 'lodash';
 import {
   getLocalRequests,
   removeLocalRequest,
-  removeLocalRequests,
   saveLocalRequests,
 } from '../handlers/localstorage/walletconnect';
 import { getRequestDisplayDetails } from '../parsers/requests';
@@ -60,12 +59,6 @@ export const addRequestToApprove = (
 export const requestsForTopic = topic => (dispatch, getState) => {
   const { requests } = getState().requests;
   return filter(values(requests), { clientId: topic });
-};
-
-export const requestsClearState = () => (dispatch, getState) => {
-  const { accountAddress, network } = getState().settings;
-  removeLocalRequests(accountAddress, network);
-  dispatch({ type: REQUESTS_CLEAR_STATE });
 };
 
 export const requestsResetState = () => dispatch =>

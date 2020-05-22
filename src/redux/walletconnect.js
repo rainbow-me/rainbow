@@ -5,7 +5,6 @@ import { forEach, mapValues, omitBy, pickBy, values } from 'lodash';
 import { Alert } from 'react-native';
 import {
   getAllValidWalletConnectSessions,
-  removeWalletConnect,
   removeWalletConnectSessions,
   saveWalletConnectSession,
 } from '../handlers/localstorage/walletconnect';
@@ -120,12 +119,6 @@ const listenOnNewMessages = walletConnector => dispatch => {
     );
   });
   return walletConnector;
-};
-
-export const walletConnectClearState = () => (dispatch, getState) => {
-  const { accountAddress, network } = getState().settings;
-  removeWalletConnect(accountAddress, network);
-  dispatch({ type: WALLETCONNECT_CLEAR_STATE });
 };
 
 export const walletConnectResetState = () => dispatch => {

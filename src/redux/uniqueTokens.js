@@ -2,7 +2,6 @@ import { captureException } from '@sentry/react-native';
 import { concat, isEmpty, without } from 'lodash';
 import {
   getUniqueTokens,
-  removeUniqueTokens,
   saveUniqueTokens,
 } from '../handlers/localstorage/accountLocal';
 import {
@@ -45,12 +44,6 @@ export const uniqueTokensLoadState = () => async (dispatch, getState) => {
   } catch (error) {
     dispatch({ type: UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE });
   }
-};
-
-export const uniqueTokensClearState = () => (dispatch, getState) => {
-  const { accountAddress, network } = getState().settings;
-  removeUniqueTokens(accountAddress, network);
-  dispatch({ type: UNIQUE_TOKENS_CLEAR_STATE });
 };
 
 export const uniqueTokensResetState = () => dispatch => {

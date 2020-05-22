@@ -8,7 +8,6 @@ export { default as useAsset } from './useAsset';
 export { default as useBiometryType, BiometryTypes } from './useBiometryType';
 export { default as useBlockPolling } from './useBlockPolling';
 export { default as useCharts } from './useCharts';
-export { default as useClearAccountData } from './useClearAccountData';
 export { default as useClipboard } from './useClipboard';
 export { default as useCoinListEdited } from './useCoinListEdited';
 export { default as useCoinListEditOptions } from './useCoinListEditOptions';

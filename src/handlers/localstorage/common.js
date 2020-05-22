@@ -1,5 +1,5 @@
 /*global storage*/
-import { map, toLower } from 'lodash';
+import { toLower } from 'lodash';
 import { logger } from '../../utils';
 
 const defaultVersion = '0.1.0';
@@ -69,14 +69,6 @@ export const removeLocal = (key = '') => {
   }
 };
 
-export const removeMultiLocal = async keys => {
-  try {
-    await storage.multiRemove(keys);
-  } catch (error) {
-    logger.log('Storage: error removing multiple keys', keys);
-  }
-};
-
 export const getGlobal = async (
   key,
   emptyState = [],
@@ -112,12 +104,4 @@ export const saveAccountLocal = (
 export const removeAccountLocal = (prefix, accountAddress, network) => {
   const key = getKey(prefix, accountAddress, network);
   removeLocal(key);
-};
-
-export const getAccountLocalKeys = (prefixes, accountAddress, network) =>
-  map(prefixes, prefix => getKey(prefix, accountAddress, network));
-
-export const removeAccountLocalMulti = (prefixes, accountAddress, network) => {
-  const keys = getAccountLocalKeys(prefixes, accountAddress, network);
-  removeMultiLocal(keys);
 };

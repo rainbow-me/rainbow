@@ -15,15 +15,15 @@ import {
 import { walletsLoadState } from '../redux/wallets';
 import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
-import useClearAccountData from './useClearAccountData';
 import useHideSplashScreen from './useHideSplashScreen';
 import useInitializeAccountData from './useInitializeAccountData';
 import useLoadAccountData from './useLoadAccountData';
+import useResetAccountState from './useResetAccountState';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
   const onHideSplashScreen = useHideSplashScreen();
-  const clearAccountData = useClearAccountData();
+  const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
 
@@ -61,7 +61,7 @@ export default function useInitializeWallet() {
           return null;
         }
         if (isImported) {
-          await clearAccountData();
+          await resetAccountState();
         }
         dispatch(settingsUpdateAccountAddress(walletAddress));
         if (!(isNew || isImported)) {
@@ -81,7 +81,7 @@ export default function useInitializeWallet() {
       }
     },
     [
-      clearAccountData,
+      resetAccountState,
       dispatch,
       initializeAccountData,
       loadAccountData,

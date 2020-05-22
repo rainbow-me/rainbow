@@ -15,7 +15,6 @@ import {
   getLiquidity,
   getUniswapFavorites,
   getUniswapLiquidityInfo,
-  removeUniswapStorage,
   saveLiquidity,
   saveLiquidityInfo,
   saveUniswapFavorites,
@@ -160,12 +159,6 @@ export const uniswapUpdateOutputCurrency = outputCurrency => async dispatch => {
 
 export const uniswapClearCurrenciesAndReserves = () => dispatch =>
   dispatch({ type: UNISWAP_RESET_CURRENCIES_AND_RESERVES });
-
-export const uniswapClearState = () => (dispatch, getState) => {
-  const { accountAddress, network } = getState().settings;
-  removeUniswapStorage(accountAddress, network);
-  dispatch({ type: UNISWAP_CLEAR_STATE });
-};
 
 export const uniswapResetState = () => dispatch =>
   dispatch({ type: UNISWAP_CLEAR_STATE });
