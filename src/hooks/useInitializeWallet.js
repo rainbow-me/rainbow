@@ -3,14 +3,11 @@ import { isNil } from 'lodash';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { getAccountInfo } from '../handlers/localstorage/accountLocal';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
 import {
   settingsLoadNetwork,
   settingsUpdateAccountAddress,
-  settingsUpdateAccountColor,
-  settingsUpdateAccountName,
 } from '../redux/settings';
 import { walletsLoadState } from '../redux/wallets';
 import { logger } from '../utils';
@@ -35,14 +32,18 @@ export default function useInitializeWallet() {
     async (seedPhrase, color = null, name = null) => {
       try {
         logger.sentry('Start wallet setup');
+
+        const isImported = !!seedPhrase;
+
         if (!seedPhrase) {
           await dispatch(walletsLoadState());
           await runMigrations();
         }
+
         // Load the network first
         await dispatch(settingsLoadNetwork());
 
-        const { isImported, isNew, walletAddress } = await walletInit(
+        const { isNew, walletAddress } = await walletInit(
           seedPhrase,
           color,
           name
@@ -51,11 +52,7 @@ export default function useInitializeWallet() {
         if (seedPhrase || isNew) {
           await dispatch(walletsLoadState());
         }
-        const info = await getAccountInfo(walletAddress, network);
-        if (info.name && info.color) {
-          dispatch(settingsUpdateAccountName(info.name));
-          dispatch(settingsUpdateAccountColor(info.color));
-        }
+
         if (isNil(walletAddress)) {
           Alert.alert(
             'Import failed due to an invalid private key. Please try again.'
