@@ -1,6 +1,11 @@
 import { ethers } from 'ethers';
-import { get } from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { get, isEmpty } from 'lodash';
+import { useCallback, useMemo } from 'react';
+import { queryCache, useQuery } from 'react-query';
+import {
+  saveWalletBalanceNames,
+  WALLET_BALANCE_NAMES_FROM_STORAGE,
+} from '../handlers/localstorage/walletBalanceNames';
 import { web3Provider } from '../handlers/web3';
 import networkInfo from '../helpers/networkInfo';
 import {
@@ -11,26 +16,17 @@ import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
 import { ethereumUtils, logger } from '../utils';
 import useAccountAssets from './useAccountAssets';
 import useAccountSettings from './useAccountSettings';
+
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 export const useWalletsWithBalancesAndNames = wallets => {
-  const [data, setData] = useState(null);
   const { assets } = useAccountAssets();
   const { accountAddress, accountENS, network } = useAccountSettings();
   const selectedAsset = ethereumUtils.getAsset(assets);
   const selectedAccountBalance = get(selectedAsset, 'balance.amount', '0.00');
-  const isMountedRef = useRef(false);
-
-  useEffect(() => {
-    isMountedRef.current = true;
-
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
 
   const fetchBalancesAndNames = useCallback(
-    async updatedWallets => {
+    async (_, updatedWallets) => {
       const newWallets = {};
       const addressesThatNeedBalance = [];
       // Fetch ENS names and get list of addresses to get
@@ -86,39 +82,49 @@ export const useWalletsWithBalancesAndNames = wallets => {
           }
         });
       });
-      isMountedRef && setData(newWallets);
+      return newWallets;
     },
     [accountAddress, network, wallets]
   );
 
-  useEffect(() => {
-    if (!wallets) return {};
+  const updatedWallets = useMemo(() => {
+    const updated = { ...wallets };
 
     // We already have the data for the selected account
-    const updatedWallets = { ...wallets };
-    Object.keys(updatedWallets).forEach(key => {
-      updatedWallets[key].addresses = updatedWallets[key].addresses.map(
-        account => {
-          if (account.address === accountAddress) {
-            account.ens = accountENS;
-            account.balance = handleSignificantDecimals(
-              selectedAccountBalance,
-              4
-            );
-          }
-          return account;
+    Object.keys(updated).forEach(key => {
+      updated[key].addresses = updated[key].addresses.map(account => {
+        if (account.address === accountAddress) {
+          account.ens = accountENS;
+          account.balance = handleSignificantDecimals(
+            selectedAccountBalance,
+            4
+          );
         }
-      );
+        return account;
+      });
     });
-    isMountedRef && fetchBalancesAndNames(updatedWallets);
-  }, [
-    accountAddress,
-    accountENS,
-    fetchBalancesAndNames,
-    network,
-    selectedAccountBalance,
-    wallets,
-  ]);
+
+    saveWalletBalanceNames(updated);
+    return updated;
+  }, [accountAddress, accountENS, selectedAccountBalance, wallets]);
+
+  const { data } = useQuery(
+    !isEmpty(updatedWallets) && ['walletBalanceNames'],
+    [updatedWallets],
+    fetchBalancesAndNames
+  );
+
+  const resultFromStorage = queryCache.getQueryData(
+    WALLET_BALANCE_NAMES_FROM_STORAGE
+  );
+
+  if (!data && !isEmpty(resultFromStorage)) {
+    return resultFromStorage;
+  }
+
+  if (!data) {
+    return {};
+  }
 
   return data;
 };

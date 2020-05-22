@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, {
   Fragment,
@@ -82,7 +82,7 @@ export function WalletList({
     const privateKeyRows = [];
     const readOnlyRows = [];
 
-    if (!allWallets) return;
+    if (isEmpty(allWallets)) return;
     const sortedKeys = Object.keys(allWallets).sort();
     sortedKeys.forEach(key => {
       const wallet = allWallets[key];
@@ -138,7 +138,7 @@ export function WalletList({
 
     const newRows = [...seedRows, ...privateKeyRows, ...readOnlyRows];
 
-    // You should always be able to create a new account
+    // You should always be able to create a new wallet
     // for ex. if you only import pkey or read only wallet
     const canCreateAccount = newRows.find(
       r => r.rowType === RowTypes.ADDRESS_OPTION
@@ -183,7 +183,6 @@ export function WalletList({
     editMode,
     onChangeAccount,
     onPressAddAccount,
-    onPressImportSeedPhrase,
   ]);
 
   const getStableId = useCallback(

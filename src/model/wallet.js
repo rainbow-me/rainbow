@@ -3,7 +3,7 @@ import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { isValidAddress, toBuffer } from 'ethereumjs-util';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { get, isEmpty, isNil } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {
@@ -54,14 +54,12 @@ export const walletInit = async (
   name = null
 ) => {
   let walletAddress = null;
-  let isImported = false;
   let isNew = false;
   // Importing a seedphrase
   if (!isEmpty(seedPhrase)) {
     const wallet = await createWallet(seedPhrase, color, name);
     walletAddress = wallet.address;
-    isImported = !isNil(walletAddress);
-    return { isImported, isNew, walletAddress };
+    return { isNew, walletAddress };
   }
   walletAddress = await loadAddress();
   // First launch (no seed phrase)
@@ -70,7 +68,7 @@ export const walletInit = async (
     walletAddress = wallet.address;
     isNew = true;
   }
-  return { isImported, isNew, walletAddress };
+  return { isNew, walletAddress };
 };
 
 export const loadWallet = async () => {
