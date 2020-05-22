@@ -1,5 +1,4 @@
 import { compact, get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
@@ -22,10 +21,6 @@ import TransactionStatusBadge from './TransactionStatusBadge';
 const containerStyles = css`
   padding-left: 19;
 `;
-
-const rowRenderPropTypes = {
-  status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
-};
 
 const BottomRow = ({ description, native, status, type }) => {
   const isFailed = status === TransactionStatusTypes.failed;
@@ -58,19 +53,15 @@ const BottomRow = ({ description, native, status, type }) => {
       <FlexItem flex={1}>
         <CoinName color={coinNameColor}>{description}</CoinName>
       </FlexItem>
-      <FlexItem flex={0}>
-        <BalanceText
-          color={balanceTextColor}
-          weight={isReceived ? 'medium' : null}
-        >
-          {balanceText}
-        </BalanceText>
-      </FlexItem>
+      <BalanceText
+        color={balanceTextColor}
+        weight={isReceived ? 'medium' : null}
+      >
+        {balanceText}
+      </BalanceText>
     </Row>
   );
 };
-
-BottomRow.propTypes = rowRenderPropTypes;
 
 const TopRow = ({ balance, pending, status, title }) => (
   <RowWithMargins align="center" justify="space-between" margin={19}>
@@ -81,9 +72,7 @@ const TopRow = ({ balance, pending, status, title }) => (
   </RowWithMargins>
 );
 
-TopRow.propTypes = rowRenderPropTypes;
-
-const TransactionCoinRow = ({ item, ...props }) => {
+export default function TransactionCoinRow({ item, ...props }) {
   const { contact, hash } = item;
   const { network } = useAccountSettings();
   const { navigate } = useNavigation();
@@ -159,8 +148,4 @@ const TransactionCoinRow = ({ item, ...props }) => {
       />
     </ButtonPressAnimation>
   );
-};
-
-TransactionCoinRow.propTypes = rowRenderPropTypes;
-
-export default TransactionCoinRow;
+}

@@ -19,13 +19,6 @@ import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 const CoinRowPaddingTop = 11;
 const CoinRowPaddingBottom = 11;
 
-const BalanceColumn = styled(ColumnWithMargins).attrs({
-  align: 'end',
-  margin: 4,
-})`
-  padding-right: 19;
-`;
-
 const FloatingFavoriteEmojis = styled(FloatingEmojis).attrs({
   centerVertically: true,
   disableHorizontalMovement: true,
@@ -91,12 +84,12 @@ const ExchangeCoinRow = ({
         topRowRender={TopRow}
       >
         {showBalance && (
-          <BalanceColumn>
+          <ColumnWithMargins align="end" margin={4}>
             <BalanceText>
               {get(item, 'native.balance.display', '–')}
             </BalanceText>
             <BottomRowText>{get(item, 'balance.display', '')}</BottomRowText>
-          </BalanceColumn>
+          </ColumnWithMargins>
         )}
         {showFavoriteButton && (
           <FloatingFavoriteEmojis deviceWidth={deviceWidth}>
