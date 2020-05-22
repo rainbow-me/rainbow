@@ -12,7 +12,7 @@ import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { ButtonPressAnimation } from '../animations';
-import { FlexItem, Row, RowWithMargins } from '../layout';
+import { Row, RowWithMargins } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
@@ -54,19 +54,17 @@ const BottomRow = ({ description, native, status, type }) => {
     : '';
 
   return (
-    <Row align="center" justify="space-between">
-      <FlexItem flex={1}>
-        <CoinName color={coinNameColor}>{description}</CoinName>
-      </FlexItem>
-      <FlexItem flex={0}>
+    <RowWithMargins align="center" justify="space-between" margin={19}>
+      <CoinName color={coinNameColor}>{description}</CoinName>
+      <Row align="center" flex={1} justify="end">
         <BalanceText
           color={balanceTextColor}
           weight={isReceived ? 'medium' : null}
         >
           {balanceText}
         </BalanceText>
-      </FlexItem>
-    </Row>
+      </Row>
+    </RowWithMargins>
   );
 };
 
