@@ -18,6 +18,7 @@ import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
 import useInitializeAccountData from './useInitializeAccountData';
 import useLoadAccountData from './useLoadAccountData';
+import useLoadGlobalData from './useLoadGlobalData';
 import useResetAccountState from './useResetAccountState';
 
 export default function useInitializeWallet() {
@@ -25,6 +26,7 @@ export default function useInitializeWallet() {
   const onHideSplashScreen = useHideSplashScreen();
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
+  const loadGlobalData = useLoadGlobalData();
   const initializeAccountData = useInitializeAccountData();
 
   const { network } = useAccountSettings();
@@ -65,6 +67,7 @@ export default function useInitializeWallet() {
         }
         dispatch(settingsUpdateAccountAddress(walletAddress));
         if (!(isNew || isImported)) {
+          await loadGlobalData();
           await loadAccountData(network);
         }
         onHideSplashScreen();
@@ -85,6 +88,7 @@ export default function useInitializeWallet() {
       dispatch,
       initializeAccountData,
       loadAccountData,
+      loadGlobalData,
       network,
       onHideSplashScreen,
     ]

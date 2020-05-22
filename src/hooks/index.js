@@ -25,6 +25,7 @@ export { default as useInterval } from './useInterval';
 export { default as useIsWalletEthZero } from './useIsWalletEthZero';
 export { default as useKeyboardHeight } from './useKeyboardHeight';
 export { default as useLoadAccountData } from './useLoadAccountData';
+export { default as useLoadGlobalData } from './useLoadGlobalData';
 export { default as useMagicFocus } from './useMagicFocus';
 export { default as useMaxInputBalance } from './useMaxInputBalance';
 export { default as useOpenInvestmentCards } from './useOpenInvestmentCards';

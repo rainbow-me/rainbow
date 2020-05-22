@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, {
   Fragment,
@@ -82,7 +82,7 @@ export function WalletList({
     const privateKeyRows = [];
     const readOnlyRows = [];
 
-    if (!allWallets) return;
+    if (isEmpty(allWallets)) return;
     const sortedKeys = Object.keys(allWallets).sort();
     sortedKeys.forEach(key => {
       const wallet = allWallets[key];
