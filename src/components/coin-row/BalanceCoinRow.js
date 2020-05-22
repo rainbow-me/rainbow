@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { compose } from 'recompact';
-import styled from 'styled-components/primitives';
+import styled, { css } from 'styled-components/primitives';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import {
   withCoinListEdited,
@@ -24,7 +24,7 @@ import CoinRow from './CoinRow';
 
 const editTranslateOffset = 32;
 
-const BalanceCoinRowExpandedStyles = `
+const BalanceCoinRowExpandedStyles = css`
   padding-bottom: 0;
   padding-top: 0;
 `;
@@ -33,7 +33,6 @@ const PercentageText = styled(BottomRowText).attrs({
   align: 'right',
 })`
   ${({ isPositive }) => (isPositive ? `color: ${colors.green};` : null)};
-  margin-bottom: 0.5;
 `;
 
 const formatPercentageString = percentString =>
@@ -51,7 +50,9 @@ const BottomRow = ({ balance, isExpandedState, native }) => {
   return (
     <Fragment>
       <FlexItem flex={1}>
-        <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
+        <BottomRowText weight={isExpandedState ? 'medium' : 'regular'}>
+          {get(balance, 'display', '')}
+        </BottomRowText>
       </FlexItem>
       {!isExpandedState && (
         <PercentageText isPositive={isPositive}>

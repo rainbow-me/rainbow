@@ -1,21 +1,33 @@
 import React from 'react';
+import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
-import { borders, colors } from '../../styles';
+import { borders, colors, position } from '../../styles';
 import { Icon } from '../icons';
-import { Centered } from '../layout';
 import ContextMenu from './ContextMenu';
 
-const Button = styled(Centered)`
-  ${borders.buildCircle(42)};
-  background-color: ${colors.alpha(colors.blueGreyDark, 0.06)};
+const CircleButton = styled(RadialGradient).attrs({
+  center: [0, 20],
+  colors: [colors.alpha('#ECF1F5', 0.4), colors.alpha('#DFE4EB', 0.5)],
+})`
+  ${borders.buildCircle(40)};
+  ${position.centered};
+  overflow: hidden;
+`;
+
+const ContextIcon = styled(Icon).attrs({
+  color: colors.alpha(colors.blueGreyDark, 0.4),
+  name: 'threeDots',
+  tightDots: true,
+})`
+  height: 5;
 `;
 
 export default function ContextCircleButton(props) {
   return (
     <ContextMenu {...props} activeOpacity={1}>
-      <Button>
-        <Icon color={colors.alpha(colors.blueGreyDark, 0.4)} name="threeDots" />
-      </Button>
+      <CircleButton {...props}>
+        <ContextIcon />
+      </CircleButton>
     </ContextMenu>
   );
 }

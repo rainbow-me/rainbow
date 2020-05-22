@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
-import { colors } from '../styles';
+import styled from 'styled-components/primitives';
+import { colors, padding } from '../styles';
 import { magicMemo } from '../utils';
 import { ButtonPressAnimation } from './animations';
 import { Icon } from './icons';
@@ -15,22 +16,24 @@ const formatURLForDisplay = url => {
     : pretty;
 };
 
+const Container = styled(RowWithMargins).attrs({
+  align: 'center',
+  margin: 5,
+})`
+  ${padding(0, 15)};
+`;
+
 const Link = ({ url }) => {
   const handlePress = useCallback(() => Linking.openURL(url), [url]);
 
   return (
     <ButtonPressAnimation onPress={handlePress} scaleTo={1.1}>
-      <RowWithMargins align="center" margin={5} paddingVertical={11}>
-        <Icon color={colors.appleBlue} name="compass" size={16} />
-        <Text
-          color={colors.appleBlue}
-          lineHeight={17}
-          size="lmedium"
-          weight="medium"
-        >
+      <Container>
+        <Icon color={colors.appleBlue} name="compass" />
+        <Text color={colors.appleBlue} size="lmedium" weight="semibold">
           {formatURLForDisplay(url)}
         </Text>
-      </RowWithMargins>
+      </Container>
     </ButtonPressAnimation>
   );
 };

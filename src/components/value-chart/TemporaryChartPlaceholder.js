@@ -42,12 +42,12 @@ export default function TemporaryChartPlaceholder({ asset }) {
       <ColumnWithMargins align="end" margin={4}>
         <RowWithMargins align="center" margin={4}>
           <Icon
-            color={isPositiveChange ? colors.chartGreen : colors.red}
+            color={isPositiveChange ? colors.green : colors.red}
             direction={isPositiveChange ? 'left' : 'right'}
             name="fatArrow"
           />
           <Title
-            color={isPositiveChange ? colors.chartGreen : colors.red}
+            color={isPositiveChange ? colors.green : colors.red}
             weight="semibold"
           >
             {Math.abs(Number(toFixedDecimals(change, 2)))}%

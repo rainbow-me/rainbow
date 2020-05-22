@@ -1,5 +1,5 @@
 PODS:
-  - Analytics (3.8.1)
+  - Analytics (3.8.2)
   - Base64 (1.1.2)
   - boost-for-react-native (1.63.0)
   - BVLinearGradient (2.5.6):
@@ -176,9 +176,9 @@ PODS:
     - OpenSSL-Universal/Static (= 1.0.2.19)
   - OpenSSL-Universal/Static (1.0.2.19)
   - PanModal (1.2.7)
-  - Permission-Camera (2.1.4):
+  - Permission-Camera (2.1.5):
     - RNPermissions
-  - Permission-FaceID (2.1.4):
+  - Permission-FaceID (2.1.5):
     - RNPermissions
   - pop (1.0.12)
   - PromisesObjC (1.2.8)
@@ -482,7 +482,7 @@ PODS:
     - React
   - RNOS (1.2.8):
     - React
-  - RNPermissions (2.1.4):
+  - RNPermissions (2.1.5):
     - React
   - RNReactNativeHapticFeedback (1.10.0):
     - React
@@ -821,7 +821,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/osdnk/PanModal
 
 SPEC CHECKSUMS:
-  Analytics: 45b1faec509367a99c7b788cc5389180c43fe3fc
+  Analytics: 4c482aea5efcecaeb03adfc7fc22e350f5ca575c
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
@@ -862,8 +862,8 @@ SPEC CHECKSUMS:
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
-  Permission-Camera: 402f1ac15b962448d75e8cf2039d235e7bc09a85
-  Permission-FaceID: 08f06f502c95dbd7d35033e65c7ebe23d4189f67
+  Permission-Camera: afad27bf90337684d4a86f3825112d648c8c4d3b
+  Permission-FaceID: fbdeb41087f35887f0cade55396007fadee3a234
   pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
   Protobuf: 2793fcd0622a00b546c60e7cbbcc493e043e9bb9
@@ -915,7 +915,7 @@ SPEC CHECKSUMS:
   RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
-  RNPermissions: 3635b407c15f2fe591bd2101c8f20aa0912caba8
+  RNPermissions: ad71dd4f767ec254f2cd57592fbee02afee75467
   RNReactNativeHapticFeedback: 22c5ecf474428766c6b148f96f2ff6155cd7225e
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
