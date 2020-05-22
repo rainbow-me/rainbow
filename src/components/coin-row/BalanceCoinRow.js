@@ -24,9 +24,18 @@ import CoinRow from './CoinRow';
 
 const editTranslateOffset = 32;
 
+const formatPercentageString = percentString =>
+  percentString ? percentString.split('-').join('- ') : '-';
+
 const BalanceCoinRowExpandedStyles = css`
   padding-bottom: 0;
   padding-top: 0;
+`;
+
+const BalanceCoinRowCoinCheckButton = styled(CoinCheckButton).attrs({
+  isAbsolute: true,
+})`
+  top: ${({ top }) => top};
 `;
 
 const PercentageText = styled(BottomRowText).attrs({
@@ -34,9 +43,6 @@ const PercentageText = styled(BottomRowText).attrs({
 })`
   ${({ isPositive }) => (isPositive ? `color: ${colors.green};` : null)};
 `;
-
-const formatPercentageString = percentString =>
-  percentString ? percentString.split('-').join('- ') : '-';
 
 const BottomRow = ({ balance, isExpandedState, native }) => {
   const percentChange = get(native, 'change');
@@ -154,11 +160,10 @@ const BalanceCoinRow = ({
         </View>
       </ButtonPressAnimation>
       {isCoinListEdited ? (
-        <CoinCheckButton
-          isAbsolute
-          toggle={toggle}
+        <BalanceCoinRowCoinCheckButton
           onPress={handleEditModePress}
-          style={{ top: isFirstCoinRow ? firstCoinRowCoinCheckMarginTop : 9 }}
+          toggle={toggle}
+          top={isFirstCoinRow ? firstCoinRowCoinCheckMarginTop : 9}
         />
       ) : null}
     </Column>
@@ -181,13 +186,13 @@ const arePropsEqual = (prev, next) => {
 
   const isNewItem = itemIdentifier === nextItemIdentifier;
 
-  const recentlyPinnedCount =
+  const isNewRecentlyPinnedCount =
     !isNewValueForPath(prev, next, 'recentlyPinnedCount') &&
-    (get(prev, 'item.isPinned', false) || get(prev, 'item.isHidden', false));
+    (get(next, 'item.isPinned', true) || get(next, 'item.isHidden', true));
 
   return (
-    isNewItem ||
-    recentlyPinnedCount ||
+    isNewItem &&
+    isNewRecentlyPinnedCount &&
     !isNewValueForObjectPaths(prev, next, [
       'isCoinListEdited',
       'isFirstCoinRow',
@@ -198,12 +203,11 @@ const arePropsEqual = (prev, next) => {
   );
 };
 
-export default React.memo(
-  compose(
-    withOpenBalances,
-    withEditOptions,
-    withCoinListEdited,
-    withCoinRecentlyPinned
-  )(BalanceCoinRow),
-  arePropsEqual
-);
+const MemoizedBalanceCoinRow = React.memo(BalanceCoinRow, arePropsEqual);
+
+export default compose(
+  withOpenBalances,
+  withEditOptions,
+  withCoinListEdited,
+  withCoinRecentlyPinned
+)(MemoizedBalanceCoinRow);
