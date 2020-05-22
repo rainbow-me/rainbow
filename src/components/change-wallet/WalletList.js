@@ -185,11 +185,6 @@ export function WalletList({
     onPressAddAccount,
   ]);
 
-  const getStableId = useCallback(
-    index => (rows[index] && rows[index].id) || new Date().getTime(),
-    [rows]
-  );
-
   // Update the data provider when rows change
   useEffect(() => {
     const dataProvider = new DataProvider((r1, r2) => {
@@ -223,7 +218,16 @@ export function WalletList({
       return false;
     }).cloneWithRows(rows);
     setDataProvider(dataProvider);
+  }, [doneScrolling, height, ready, rows]);
 
+  useEffect(() => {
+    if (layoutProvider && dataProvider && !ready) {
+      skeletonTransitionRef.current.animateNextTransition();
+      setReady(true);
+    }
+  }, [dataProvider, layoutProvider, ready]);
+
+  useEffect(() => {
     // Detect if we need to autoscroll to the selected account
     let distanceToScroll = 0;
     rows.some(item => {
@@ -234,21 +238,15 @@ export function WalletList({
       return false;
     });
     if (distanceToScroll > height - rowHeight && !doneScrolling) {
-      setDoneScrolling(true);
       setTimeout(() => {
         scrollView &&
           scrollView.current &&
           scrollView.current.scrollToOffset(0, distanceToScroll, true);
+        setDoneScrolling(true);
       }, 300);
     }
-  }, [doneScrolling, getStableId, height, ready, rows]);
-
-  useEffect(() => {
-    if (layoutProvider && dataProvider && !ready) {
-      skeletonTransitionRef.current.animateNextTransition();
-      setReady(true);
-    }
-  }, [dataProvider, layoutProvider, ready]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
 
   const renderRow = useCallback(
     (_, data, index) => {
