@@ -10,6 +10,7 @@ import {
   WALLET_BALANCE_NAMES_FROM_STORAGE,
 } from '../handlers/localstorage/walletBalanceNames';
 import { contactsLoadState } from '../redux/contacts';
+import { settingsLoadState } from '../redux/settings';
 import { logger, promiseUtils } from '../utils';
 
 const loadTopMoversToCache = () =>
@@ -27,10 +28,11 @@ export default function useLoadGlobalData() {
   const loadGlobalData = useCallback(async () => {
     logger.sentry('Load wallet global data');
     const promises = [];
-    const p1 = dispatch(contactsLoadState());
-    const p2 = loadTopMoversToCache();
-    const p3 = loadWalletBalanceNamesToCache();
-    promises.push(p1, p2, p3);
+    const p1 = dispatch(settingsLoadState());
+    const p2 = dispatch(contactsLoadState());
+    const p3 = loadTopMoversToCache();
+    const p4 = loadWalletBalanceNamesToCache();
+    promises.push(p1, p2, p3, p4);
 
     return promiseUtils.PromiseAllWithFails(promises);
   }, [dispatch]);

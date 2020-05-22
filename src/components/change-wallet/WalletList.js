@@ -138,7 +138,7 @@ export function WalletList({
 
     const newRows = [...seedRows, ...privateKeyRows, ...readOnlyRows];
 
-    // You should always be able to create a new account
+    // You should always be able to create a new wallet
     // for ex. if you only import pkey or read only wallet
     const canCreateAccount = newRows.find(
       r => r.rowType === RowTypes.ADDRESS_OPTION
@@ -183,7 +183,6 @@ export function WalletList({
     editMode,
     onChangeAccount,
     onPressAddAccount,
-    onPressImportSeedPhrase,
   ]);
 
   const getStableId = useCallback(

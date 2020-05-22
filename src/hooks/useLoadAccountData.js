@@ -7,7 +7,6 @@ import { coinListLoadState } from '../redux/editOptions';
 import { openStateSettingsLoadState } from '../redux/openStateSettings';
 import { requestsLoadState } from '../redux/requests';
 import { savingsLoadState } from '../redux/savings';
-import { settingsLoadState } from '../redux/settings';
 import { showcaseTokensLoadState } from '../redux/showcaseTokens';
 import { uniqueTokensLoadState } from '../redux/uniqueTokens';
 import { uniswapLoadState } from '../redux/uniswap';
@@ -24,15 +23,13 @@ export default function useLoadAccountData() {
       await dispatch(coinListLoadState());
       await dispatch(showcaseTokensLoadState());
       const promises = [];
-      const p1 = dispatch(settingsLoadState());
-      promises.push(p1);
       if (network === networkTypes.mainnet) {
-        const p2 = dispatch(dataLoadState());
-        const p3 = dispatch(savingsLoadState());
-        const p4 = dispatch(uniqueTokensLoadState());
-        const p5 = dispatch(walletConnectLoadState());
-        const p6 = dispatch(requestsLoadState());
-        promises.push(p2, p3, p4, p5, p6);
+        const p1 = dispatch(dataLoadState());
+        const p2 = dispatch(savingsLoadState());
+        const p3 = dispatch(uniqueTokensLoadState());
+        const p4 = dispatch(walletConnectLoadState());
+        const p5 = dispatch(requestsLoadState());
+        promises.push(p1, p2, p3, p4, p5);
       }
 
       const p6 = dispatch(uniswapLoadState());
