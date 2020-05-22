@@ -9408,10 +9408,15 @@ react-native-tab-view-viewpager-adapter@^1.0.7:
   resolved "https://registry.yarnpkg.com/react-native-tab-view-viewpager-adapter/-/react-native-tab-view-viewpager-adapter-1.0.7.tgz#673cacc8e1ce98bcfd9d44dda8f094126c7432be"
   integrity sha512-EmH/ETtC5o7VjTWvuZvf3pUdkuR7TaUgWgbroS60FMmrLeO/5bzUpEJS637FkNMy5dXMPAdGzml3/ebjtIsgvg==
 
-react-native-tab-view@^2.11.0, react-native-tab-view@^2.14.1:
+react-native-tab-view@^2.11.0:
   version "2.14.1"
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-2.14.1.tgz#efa9c2e96f70d43ef6539d65a2e6e685d50fe31b"
   integrity sha512-2gk6XlcD9HExZ4Y4gZIJI2Pwm80abYfV0JHRIrNbc0SfitGfr/GvvPcbekWWsl1syTiseZrwrLnr3oidLon2tQ==
+
+react-native-tab-view@^2.14.2:
+  version "2.14.2"
+  resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-2.14.2.tgz#5f1e2063f632ec7f8ab27374ecaf72677788b445"
+  integrity sha512-BkQ9htmUM3iroMTgIdCSP+1On8bRHkgFHiOCAnk9OhoFlQOvwZebSU6k705QBDeuuwEVIIT4+C+nT2MvXI/FEQ==
 
 react-native-tcp@^3.3.2:
   version "3.3.2"
