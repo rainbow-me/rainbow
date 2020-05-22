@@ -9,7 +9,7 @@ import Svg from '../Svg';
 const CaretIcon = ({ color, size, ...props }) => (
   <Svg
     {...props}
-    height={size ? (size * 20) / 9 : '21'}
+    height={size ? (size * 21) / 9 : '21'}
     width={size || '9'}
     viewBox="0 0 9 21"
   >

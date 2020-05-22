@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
+import { BiometryTypes, useBiometryType } from '../../hooks';
 import Routes from '../../screens/Routes/routesNames';
 import { colors, padding } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
@@ -12,8 +13,9 @@ import TouchableBackdrop from '../TouchableBackdrop';
 import { ButtonPressAnimation } from '../animations';
 import { ContactAvatar } from '../contacts';
 import CopyTooltip from '../copy-tooltip';
+import { Icon } from '../icons';
 import { Input } from '../inputs';
-import { Centered, KeyboardFixedOpenLayout } from '../layout';
+import { Centered, KeyboardFixedOpenLayout, RowWithMargins } from '../layout';
 import { Text, TruncatedAddress } from '../text';
 import PlaceholderText from '../text/PlaceholderText';
 import FloatingPanels from './FloatingPanels';
@@ -38,6 +40,7 @@ export default function WalletProfileCreator({
   onRefocusInput,
   profile,
 }) {
+  const biometryType = useBiometryType();
   const { dangerouslyGetParent, goBack, navigate } = useNavigation();
   const [color, setColor] = useState(
     (profile.color !== null && profile.color) || colors.getRandomColor()
@@ -112,6 +115,14 @@ export default function WalletProfileCreator({
   const acceptAction = isNewProfile ? addProfileInfo : editProfile;
   const cancelAction = actionType === 'Import' ? cancelImport : cancelEdit;
 
+  const biometryIcon = biometryType ? biometryType.toLowerCase() : null;
+  const showBiometryIcon =
+    actionType === 'Create' &&
+    (biometryType === BiometryTypes.passcode ||
+      biometryType === BiometryTypes.TouchID);
+  const showFaceIDCharacter =
+    actionType === 'Create' && biometryType === BiometryTypes.FaceID;
+
   return (
     <KeyboardFixedOpenLayout additionalPadding={additionalPadding}>
       <TouchableBackdrop />
@@ -173,19 +184,25 @@ export default function WalletProfileCreator({
               paddingTop={15}
               width="100%"
             >
-              <Text
-                align="center"
-                color="appleBlue"
-                letterSpacing="rounded"
-                size="larger"
-                weight="semibold"
-              >
-                {isNewProfile
-                  ? value && value.length > 0
-                    ? `${actionType} Wallet`
-                    : 'Skip'
-                  : 'Done'}
-              </Text>
+              <RowWithMargins align="center" justify="center" margin={7}>
+                {showBiometryIcon && (
+                  <Icon
+                    color={colors.appleBlue}
+                    name={biometryIcon}
+                    size={biometryIcon === 'passcode' ? 19 : 20}
+                  />
+                )}
+                <Text
+                  align="center"
+                  color="appleBlue"
+                  letterSpacing="rounded"
+                  size="larger"
+                  weight="semibold"
+                >
+                  {showFaceIDCharacter && '􀎽 '}
+                  {isNewProfile ? `${actionType} Wallet` : 'Done'}
+                </Text>
+              </RowWithMargins>
             </ButtonPressAnimation>
             <Centered>
               <Divider
