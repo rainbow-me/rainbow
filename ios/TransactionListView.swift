@@ -31,6 +31,13 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
   }
   @objc var isAvatarPickerAvailable: Bool = false
+  @objc var isLoading: Bool = false {
+    didSet {
+      if(isLoading != oldValue){
+       tableView.reloadData()
+      }
+    }
+  }
   @objc var scaleTo: CGFloat = 0.97
   @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5)
   @objc var enableHapticFeedback: Bool = true
@@ -167,6 +174,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     tableView.separatorStyle = .none
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
     tableView.register(UINib(nibName: "TransactionListRequestViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListRequestViewCell")
+    tableView.register(UINib(nibName: "TransactionListLoadingViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListLoadingViewCell")
     tableView.canCancelContentTouches = true
     tableView.scrollIndicatorInsets.bottom = 0.0000000001
     
@@ -268,6 +276,9 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   }
   
   func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    if(isLoading){
+      return 0;
+    }
     return 57
   }
   
@@ -292,6 +303,10 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   }
   
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    
+    if(isLoading){
+      return UIScreen.main.bounds.height - header.frame.size.height;
+    }
     let item = sections[indexPath.section]
     
     if item.type == .transactions {
@@ -309,10 +324,18 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   }
   
   func numberOfSections(in tableView: UITableView) -> Int {
+    if(isLoading){
+      return 1
+    }
     return sections.count
   }
   
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    
+    if(isLoading){
+      return 1
+    }
+    
     if sections.count == 0 {
       return 0
     }
@@ -320,6 +343,11 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   }
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    if(isLoading){
+      let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionListLoadingViewCell", for: indexPath) as! TransactionListLoadingViewCell
+      return cell;
+
+    }
     let item = sections[indexPath.section]
     
     if item.type == .transactions {

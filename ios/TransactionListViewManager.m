@@ -25,6 +25,7 @@ RCT_EXPORT_VIEW_PROPERTY(onCopyAddressPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onReceivePress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(addCashAvailable, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(isAvatarPickerAvailable, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(isLoading, BOOL)
 
 @end
 

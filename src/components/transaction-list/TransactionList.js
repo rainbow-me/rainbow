@@ -14,7 +14,6 @@ import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
-import LoadingState from '../activity-list/LoadingState';
 import { FloatingEmojis } from '../floating-emojis';
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
@@ -41,10 +40,8 @@ const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
 const TransactionList = ({
   addCashAvailable,
   contacts,
-  header,
   initialized,
   isLoading,
-  navigation,
   network,
   requests,
   transactions,
@@ -56,7 +53,7 @@ const TransactionList = ({
     []
   );
   const dispatch = useDispatch();
-  const { navigate } = useNavigation();
+  const { navigate, isFocused } = useNavigation();
   const {
     accountAddress,
     accountColor,
@@ -65,22 +62,22 @@ const TransactionList = ({
   } = useAccountProfile();
 
   const onAddCashPress = useCallback(() => {
-    navigation.navigate(Routes.ADD_CASH_SHEET);
+    navigate(Routes.ADD_CASH_SHEET);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-  }, [navigation]);
+  }, [navigate]);
 
   const onAvatarPress = useCallback(() => {
-    navigation.navigate(Routes.AVATAR_BUILDER, {
+    navigate(Routes.AVATAR_BUILDER, {
       accountColor,
       accountName,
     });
-  }, [accountColor, accountName, navigation]);
+  }, [accountColor, accountName, navigate]);
 
   const onReceivePress = useCallback(() => {
-    navigation.navigate(Routes.RECEIVE_MODAL);
-  }, [navigation]);
+    navigate(Routes.RECEIVE_MODAL);
+  }, [navigate]);
 
   const onRequestExpire = useCallback(
     e => {
@@ -95,13 +92,13 @@ const TransactionList = ({
     e => {
       const { index } = e.nativeEvent;
       const item = requests[index];
-      navigation.navigate({
+      navigate({
         params: { transactionDetails: item },
         routeName: Routes.CONFIRM_REQUEST,
       });
       return;
     },
-    [navigation, requests]
+    [navigate, requests]
   );
 
   const onTransactionPress = useCallback(
@@ -147,7 +144,7 @@ const TransactionList = ({
           },
           buttonIndex => {
             if (!isPurchasing && buttonIndex === 0) {
-              navigation.navigate(Routes.MODAL_SCREEN, {
+              navigate(Routes.MODAL_SCREEN, {
                 address: contactAddress,
                 asset: item,
                 color: contactColor,
@@ -168,7 +165,7 @@ const TransactionList = ({
         );
       }
     },
-    [contacts, navigation, network, transactions]
+    [contacts, navigate, network, transactions]
   );
 
   const onCopyAddressPress = useCallback(
@@ -195,9 +192,11 @@ const TransactionList = ({
     [requests, transactions]
   );
 
-  if ((!initialized && !navigation.isFocused()) || isLoading) {
-    return <LoadingState>{header}</LoadingState>;
-  }
+  const loading = useMemo(() => (!initialized && !isFocused()) || isLoading, [
+    initialized,
+    isLoading,
+    isFocused,
+  ]);
 
   return (
     <Container>
@@ -217,6 +216,7 @@ const TransactionList = ({
         onRequestExpire={onRequestExpire}
         onRequestPress={onRequestPress}
         onTransactionPress={onTransactionPress}
+        isLoading={loading}
       />
       <FloatingEmojisRegion
         setOnNewEmoji={setOnNewEmoji}
@@ -229,10 +229,8 @@ const TransactionList = ({
 TransactionList.propTypes = {
   addCashAvailable: PropTypes.bool,
   contacts: PropTypes.array,
-  header: PropTypes.node,
   initialized: PropTypes.bool,
   isLoading: PropTypes.bool,
-  navigation: PropTypes.object,
   network: PropTypes.string,
   requests: PropTypes.array,
   transactions: PropTypes.array,
