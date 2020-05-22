@@ -148,7 +148,7 @@ const ChangeWalletSheet = () => {
         onCloseModal: async args => {
           if (args) {
             const newWallets = { ...wallets };
-            if (args.name) {
+            if ('name' in args) {
               newWallets[walletId].addresses.some((account, index) => {
                 if (account.address === address) {
                   newWallets[walletId].addresses[index].label = args.name;
