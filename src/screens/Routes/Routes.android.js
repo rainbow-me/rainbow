@@ -3,7 +3,7 @@ import React from 'react';
 import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
-import { ExchangeModalNavigator } from '../../navigation';
+import { ExchangeModalNavigator, SavingModalNavigator } from '../../navigation';
 import {
   backgroundPreset,
   bottomSheetPreset,
@@ -29,6 +29,7 @@ import SettingsModal from '../SettingsModal';
 import TransactionConfirmationScreen from '../TransactionConfirmationScreen';
 import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
 import WalletScreen from '../WalletScreen';
+import WithdrawModal from '../WithdrawModal';
 import {
   createStackNavigator,
   exchangePresetWithTransitions,
@@ -97,11 +98,11 @@ const routesForMainNavigator = {
     screen: SettingsModal,
     transparentCard: true,
   },
-  SwipeLayout: {
+  [Routes.SWIPE_LAYOUT]: {
     navigationOptions: backgroundPreset,
     screen: SwipeStack,
   },
-  WalletConnectConfirmationModal: {
+  [Routes.WALLET_CONNECT_CONFIRMATION_MODAL]: {
     navigationOptions: expandedPresetWithTransitions,
     screen: WalletConnectConfirmationModal,
   },
@@ -110,7 +111,7 @@ const routesForMainNavigator = {
 const MainNavigator = createStackNavigator(routesForMainNavigator);
 
 const routesForStack = {
-  AddCashSheet: {
+  [Routes.ADD_CASH_SHEET]: {
     navigationOptions: {
       ...sheetPreset,
       onTransitionStart: props => {
@@ -120,7 +121,7 @@ const routesForStack = {
     },
     screen: AddCashSheet,
   },
-  ImportSeedPhraseSheet: {
+  [Routes.IMPORT_SEED_PHRASE_SHEET]: {
     navigationOptions: {
       ...sheetPreset,
       onTransitionStart: props => {
@@ -131,7 +132,21 @@ const routesForStack = {
     screen: ImportSeedPhraseSheetWithData,
   },
   MainNavigator,
-  SendSheet: {
+  [Routes.SAVINGS_DEPOSIT_MODAL]: {
+    navigationOptions: exchangePresetWithTransitions,
+    params: {
+      isGestureBlocked: false,
+    },
+    screen: SavingModalNavigator,
+  },
+  [Routes.SAVINGS_WITHDRAW_MODAL]: {
+    navigationOptions: exchangePresetWithTransitions,
+    params: {
+      isGestureBlocked: false,
+    },
+    screen: WithdrawModal,
+  },
+  [Routes.SEND_SHEET]: {
     navigationOptions: {
       ...omit(sheetPreset, 'gestureResponseDistance'),
       onTransitionStart: props => {
