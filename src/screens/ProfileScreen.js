@@ -93,17 +93,8 @@ export default function ProfileScreen({ navigation }) {
           accountName={accountName}
           addCashAvailable={addCashAvailable}
           contacts={contacts}
-          header={
-            <ProfileMasthead
-              addCashAvailable={addCashAvailable}
-              navigation={navigation}
-              showBottomDivider={!isEmpty || isLoading}
-              onChangeWallet={onChangeWallet}
-            />
-          }
           initialized={activityListInitialized}
           isLoading={isLoading}
-          navigation={navigation}
           network={network}
           requests={requests}
           transactions={transactions}

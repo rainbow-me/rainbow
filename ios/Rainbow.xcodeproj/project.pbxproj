@@ -11,6 +11,8 @@
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		153D1AAC24777130007E4723 /* TransactionListLoadingViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153D1AAB24777130007E4723 /* TransactionListLoadingViewCell.swift */; };
+		153D1AAE24777214007E4723 /* TransactionListLoadingViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 153D1AAD24777214007E4723 /* TransactionListLoadingViewCell.xib */; };
 		15E531D5242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D4242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift */; };
 		15E531DA242DAB7100797B89 /* NotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D9242DAB7100797B89 /* NotificationManager.m */; };
 		24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 24979E7720F84004007EB0DA /* GoogleService-Info.plist */; };
@@ -64,6 +66,8 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Rainbow/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Rainbow/main.m; sourceTree = "<group>"; };
 		13E5CE549E13349A65C71B53 /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		153D1AAB24777130007E4723 /* TransactionListLoadingViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListLoadingViewCell.swift; sourceTree = "<group>"; };
+		153D1AAD24777214007E4723 /* TransactionListLoadingViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionListLoadingViewCell.xib; sourceTree = "<group>"; };
 		157155032418733F009B698B /* RainbowRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowRelease.entitlements; path = Rainbow/RainbowRelease.entitlements; sourceTree = "<group>"; };
 		157155042418734C009B698B /* RainbowDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowDebug.entitlements; path = Rainbow/RainbowDebug.entitlements; sourceTree = "<group>"; };
 		15E531D4242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageViewWithPersistentAnimations.swift; sourceTree = "<group>"; };
@@ -284,6 +288,8 @@
 				A485E61223C8EC4400E5C3D4 /* TransactionListViewHeader.xib */,
 				A4704B4123C546D900E50E4B /* TransactionListView.swift */,
 				A4F8DACA23DF85DF00560E47 /* TransactionListBaseCell.swift */,
+				153D1AAB24777130007E4723 /* TransactionListLoadingViewCell.swift */,
+				153D1AAD24777214007E4723 /* TransactionListLoadingViewCell.xib */,
 			);
 			name = Transactions;
 			sourceTree = "<group>";
@@ -425,6 +431,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				153D1AAE24777214007E4723 /* TransactionListLoadingViewCell.xib in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */,
@@ -525,6 +532,7 @@
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				3CBE29CD2381E43900BE05AC /* Dummy.swift in Sources */,
+				153D1AAC24777130007E4723 /* TransactionListLoadingViewCell.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				A49B52B623DB5D5600A00918 /* TransactionViewModelProtocol.swift in Sources */,
 				15E531DA242DAB7100797B89 /* NotificationManager.m in Sources */,

@@ -7,3 +7,7 @@
 #import "React/RCTView.h"
 
 #import <SDWebImage/SDWebImage.h>
+
+#import "FBShimmering.h"
+#import "FBShimmeringLayer.h"
+#import "FBShimmeringView.h"

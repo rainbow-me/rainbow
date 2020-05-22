@@ -104,6 +104,8 @@ target 'Rainbow' do
 
   pod "PanModal", :git => 'https://github.com/osdnk/PanModal', :commit => '25be2df9ccf997b62c39e1edb42857bab2d0cdab'
 
+  pod 'Shimmer'
+
   use_native_modules!
 
   # Enables Flipper.
