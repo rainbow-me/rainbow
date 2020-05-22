@@ -120,7 +120,6 @@ const ExchangeModal = ({
     underlyingPrice,
   });
 
-
   const {
     handleFocus,
     inputFieldRef,
@@ -324,7 +323,6 @@ const ExchangeModal = ({
     type,
     updateInputAmount,
   ]);
-
 
   const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {

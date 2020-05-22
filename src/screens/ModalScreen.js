@@ -1,7 +1,7 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { createElement } from 'react';
 import { StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import styled from 'styled-components/primitives';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import {

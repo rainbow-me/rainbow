@@ -2,68 +2,65 @@ import { createMaterialTopTabNavigator as newCreateMaterialTopTabNavigator } fro
 import { createStackNavigator as newCreateStackNavigator } from '@react-navigation/stack';
 
 import React from 'react';
-import { useCallback } from 'use-memo-one';
+import { useCallback, useMemo } from 'use-memo-one';
 import { withBlockedHorizontalSwipe } from '../hoc';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ModalScreen from '../screens/ModalScreen';
 import SwapModal from '../screens/SwapModal';
 import { useNavigation } from './Navigation';
-import {
-  ExchangeModalTabPosition,
-  exchangeTabNavigatorConfig,
-  stackNavigationConfig,
-} from './config';
+import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
 import { exchangeModalPreset } from './effects';
+import { useReanimatedValue } from './helpers';
 import Routes from './routesNames';
 
 const Tabs = newCreateMaterialTopTabNavigator();
+const Stack = newCreateStackNavigator();
 
 function SwapDetailsScreen(props) {
   const Component = withBlockedHorizontalSwipe(ModalScreen);
   return <Component {...props} />;
 }
 
-const NewStack = newCreateStackNavigator();
-
 function MainExchangeNavigator() {
   return (
-    <NewStack.Navigator
+    <Stack.Navigator
       {...stackNavigationConfig}
       screenOptions={exchangeModalPreset}
       initialRouteName={Routes.MAIN_EXCHANGE_SCREEN}
     >
-      <NewStack.Screen
-        name={Routes.MAIN_EXCHANGE_SCREEN}
-        component={SwapModal}
-      />
-      <NewStack.Screen
+      <Stack.Screen name={Routes.MAIN_EXCHANGE_SCREEN} component={SwapModal} />
+      <Stack.Screen
         name={Routes.SWAP_DETAILS_SCREEN}
         component={SwapDetailsScreen}
       />
-    </NewStack.Navigator>
+    </Stack.Navigator>
   );
 }
 
 function NewExchangeModalNavigator() {
   const { setOptions } = useNavigation();
+  const position = useReanimatedValue(0);
+  const config = useMemo(() => exchangeTabNavigatorConfig(position), [
+    position,
+  ]);
   const toggleGestureEnabled = useCallback(
     gestureEnabled => setOptions({ gestureEnabled }),
     [setOptions]
   );
   return (
-    <Tabs.Navigator {...exchangeTabNavigatorConfig}>
+    <Tabs.Navigator {...config}>
       <Tabs.Screen
         name={Routes.MAIN_EXCHANGE_NAVIGATOR}
         component={MainExchangeNavigator}
         initialParams={{
-          position: ExchangeModalTabPosition,
+          position,
         }}
       />
       <Tabs.Screen
         name={Routes.CURRENCY_SELECT_SCREEN}
         component={CurrencySelectModal}
         initialParams={{
-          position: ExchangeModalTabPosition,
+          position,
           toggleGestureEnabled,
         }}
       />

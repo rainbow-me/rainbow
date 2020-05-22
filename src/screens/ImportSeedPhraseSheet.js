@@ -154,7 +154,6 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
 
   const inputRef = useRef(null);
   const focusListener = useCallback(() => {
-    console.log("XXXX")
     inputRef.current && inputRef.current.focus();
   }, []);
 
@@ -167,13 +166,11 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   );
 
   useEffect(() => {
-    console.log("setting", setAppearListener)
     setAppearListener && setAppearListener(focusListener);
     return () => {
       setAppearListener && setAppearListener(null);
-      console.log('dropping')
     };
-  }, []);
+  }, [focusListener, setAppearListener]);
 
   const handleSetSeedPhrase = useCallback(
     text => {

@@ -1,8 +1,8 @@
+import { useNavigation } from '@react-navigation/native';
 import { compact, get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';

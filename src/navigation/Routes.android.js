@@ -1,8 +1,6 @@
+import { NavigationContainer } from '@react-navigation/native';
 import { omit } from 'lodash';
 import React from 'react';
-import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
-import { createAppContainer } from 'react-navigation';
-import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletModal from '../screens/ChangeWalletModal';
@@ -10,66 +8,44 @@ import ExampleScreen from '../screens/ExampleScreen';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
 import ModalScreen from '../screens/ModalScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import QRScannerScreenWithData from '../screens/QRScannerScreenWithData';
 import ReceiveModal from '../screens/ReceiveModal';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectConfirmationModal from '../screens/WalletConnectConfirmationModal';
-import WalletScreen from '../screens/WalletScreen';
-import { deviceUtils } from '../utils';
+import { SwipeNavigator } from './SwipeNavigator';
+import { defaultScreenStackOptions, stackNavigationConfig } from './config';
 import {
   backgroundPreset,
   emojiPreset,
+  exchangePreset,
   expandedPreset,
+  expandedPresetReverse,
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
-import {
-  createStackNavigator,
-  exchangePresetWithTransitions,
-  expandedPresetWithTransitions,
-  expandedReversePresetWithTransitions,
-  onTransitionStart,
-  sheetPresetWithTransitions,
-} from './helpers';
+import { createStackNavigator } from './helpers';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 
-const routesForSwipeStack = {
-  [Routes.PROFILE_SCREEN]: ProfileScreen,
-  [Routes.WALLET_SCREEN]: WalletScreen,
-  [Routes.QR_SCANNER_SCREEN]: QRScannerScreenWithData,
-};
-
-const SwipeStack = createMaterialTopTabNavigator(routesForSwipeStack, {
-  headerMode: 'none',
-  initialLayout: deviceUtils.dimensions,
-  initialRouteName: Routes.WALLET_SCREEN,
-  pagerComponent: ViewPagerAdapter,
-  swipeEnabled: true,
-  tabBarComponent: null,
-});
-
-const routesForMainNavigator = {
+const routesForStack = {
   [Routes.AVATAR_BUILDER]: {
     navigationOptions: emojiPreset,
     screen: AvatarBuilder,
     transparentCard: true,
   },
   [Routes.CHANGE_WALLET_MODAL]: {
-    navigationOptions: expandedReversePresetWithTransitions,
+    navigationOptions: expandedPresetReverse,
     screen: ChangeWalletModal,
   },
   [Routes.CONFIRM_REQUEST]: {
-    navigationOptions: sheetPresetWithTransitions,
+    navigationOptions: sheetPreset,
     screen: TransactionConfirmationScreen,
   },
   [Routes.EXAMPLE_SCREEN]: ExampleScreen,
   [Routes.EXCHANGE_MODAL]: {
-    navigationOptions: exchangePresetWithTransitions,
+    navigationOptions: exchangePreset,
     params: {
       isGestureBlocked: false,
     },
@@ -84,55 +60,33 @@ const routesForMainNavigator = {
     screen: ModalScreen,
   },
   [Routes.RECEIVE_MODAL]: {
-    navigationOptions: expandedPresetWithTransitions,
+    navigationOptions: expandedPreset,
     screen: ReceiveModal,
   },
   [Routes.SETTINGS_MODAL]: {
-    navigationOptions: expandedPresetWithTransitions,
+    navigationOptions: expandedPreset,
     screen: SettingsModal,
     transparentCard: true,
   },
-  SwipeLayout: {
+  [Routes.SWIPE_LAYOUT]: {
     navigationOptions: backgroundPreset,
-    screen: SwipeStack,
+    screen: SwipeNavigator,
   },
-  WalletConnectConfirmationModal: {
-    navigationOptions: expandedPresetWithTransitions,
+  [Routes.WALLET_CONNECT_CONFIRMATION_MODAL]: {
+    navigationOptions: expandedPreset,
     screen: WalletConnectConfirmationModal,
   },
-};
-
-const MainNavigator = createStackNavigator(routesForMainNavigator);
-
-const routesForStack = {
-  AddCashSheet: {
-    navigationOptions: {
-      ...sheetPreset,
-      onTransitionStart: props => {
-        onTransitionStart(props);
-        sheetPreset.onTransitionStart(props);
-      },
-    },
+  [Routes.ADD_CASH_SHEET]: {
+    navigationOptions: sheetPreset,
     screen: AddCashSheet,
   },
-  ImportSeedPhraseSheet: {
-    navigationOptions: {
-      ...sheetPreset,
-      onTransitionStart: props => {
-        sheetPreset.onTransitionStart(props);
-        onTransitionStart();
-      },
-    },
+  [Routes.IMPORT_SEED_PHRASE_SHEET]: {
+    navigationOptions: sheetPreset,
     screen: ImportSeedPhraseSheetWithData,
   },
-  MainNavigator,
-  SendSheet: {
+  [Routes.SEND_SHEET]: {
     navigationOptions: {
       ...omit(sheetPreset, 'gestureResponseDistance'),
-      onTransitionStart: props => {
-        onTransitionStart(props);
-        sheetPreset.onTransitionStart(props);
-      },
     },
     screen: SendSheet,
   },
@@ -141,11 +95,86 @@ const Stack = createStackNavigator(routesForStack, {
   initialRouteName: 'MainNavigator',
 });
 
-const AppContainer = createAppContainer(Stack);
+function MainNavigator() {
+  return (
+    <Stack.Navigator
+      initialRouteName={Routes.SWIPE_LAYOUT}
+      {...stackNavigationConfig}
+      screenOptions={defaultScreenStackOptions}
+    >
+      <Stack.Screen name={Routes.SWIPE_LAYOUT} component={SwipeNavigator} />
+      <Stack.Screen
+        name={Routes.AVATAR_BUILDER}
+        component={AvatarBuilder}
+        options={emojiPreset}
+      />
+      <Stack.Screen
+        name={Routes.CHANGE_WALLET_MODAL}
+        component={ChangeWalletModal}
+        options={expandedPresetReverse}
+      />
+      <Stack.Screen
+        name={Routes.CONFIRM_REQUEST}
+        component={TransactionConfirmationScreen}
+        options={sheetPreset}
+      />
+      <Stack.Screen
+        name={Routes.EXCHANGE_MODAL}
+        component={ExchangeModalNavigator}
+        options={exchangePreset}
+      />
+      <Stack.Screen
+        name={Routes.EXPANDED_ASSET_SHEET}
+        component={ExpandedAssetSheet}
+        options={expandedPreset}
+      />
+      <Stack.Screen
+        name={Routes.MODAL_SCREEN}
+        component={ModalScreen}
+        options={overlayExpandedPreset}
+      />
+      <Stack.Screen
+        name={Routes.RECEIVE_MODAL}
+        component={ReceiveModal}
+        options={expandedPreset}
+      />
+      <Stack.Screen
+        name={Routes.SETTINGS_MODAL}
+        component={SettingsModal}
+        options={expandedPreset}
+      />
+      <Stack.Screen
+        name={Routes.WALLET_CONNECT_CONFIRMATION_MODAL}
+        component={WalletConnectConfirmationModal}
+        options={expandedPreset}
+      />
+      <Stack.Screen
+        name={Routes.ADD_CASH_SHEET}
+        component={AddCashSheet}
+        options={sheetPreset}
+      />
+      <Stack.Screen
+        name={Routes.IMPORT_SEED_PHRASE_SHEET}
+        component={ImportSeedPhraseSheetWithData}
+        options={sheetPreset}
+      />
+      <Stack.Screen
+        name={Routes.SEND_SHEET}
+        component={SendSheet}
+        options={{
+          ...omit(sheetPreset, 'gestureResponseDistance'),
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
 
-// eslint-disable-next-line react/display-name
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
-  <AppContainer onNavigationStateChange={onNavigationStateChange} ref={ref} />
+  <NavigationContainer ref={ref} onStateChange={onNavigationStateChange}>
+    <MainNavigator />
+  </NavigationContainer>
 ));
+
+AppContainerWithAnalytics.displayName = 'AppContainerWithAnalytics';
 
 export default React.memo(AppContainerWithAnalytics);

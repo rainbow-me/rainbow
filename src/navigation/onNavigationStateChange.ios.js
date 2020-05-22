@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 import { StatusBar } from 'react-native';
@@ -21,42 +22,18 @@ const routesForNativeStackFallback = {
 };
 
 let memRouteName;
+let memState;
 
-export function onNavigationStateChange(prevState, currentState) {
-  console.log(prevState, currentState);
+export function onNavigationStateChange(currentState) {
+  const prevState = memState;
+  memState = currentState;
   const { name: routeName } = Navigation.getActiveRoute();
-  //const options = Navigation.getActiveOptions();
-  // console.log(options)
   const prevRouteName = memRouteName;
   memRouteName = routeName;
-  // native stack rn does not support onTransitionEnd and onTransitionStart
-  // Set focus manually on route changes
 
-  // TODO nav
-  // if (
-  //   prevRouteName !== routeName &&
-  //   isNativeStackAvailable &&
-  //   (routesForNativeStackFallback[prevRouteName] ||
-  //     routesForNativeStackFallback[routeName])
-  // ) {
-  //   Navigation.handleAction(
-  //     NavigationActions.setParams({
-  //       key: routeName,
-  //       params: { focused: true },
-  //     })
-  //   );
-  //
-  //   Navigation.handleAction(
-  //     NavigationActions.setParams({
-  //       key: prevRouteName,
-  //       params: { focused: false },
-  //     })
-  //   );
-  // }
-
-  const oldBottomSheetStackRoute = prevState?.routes[prevState.index].routeName;
+  const oldBottomSheetStackRoute = prevState?.routes[prevState.index].name;
   const newBottomSheetStackRoute =
-    currentState?.routes[currentState.index].routeName;
+    currentState?.routes[currentState.index].name;
 
   const wasCustomSlackOpen =
     oldBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
@@ -66,7 +43,9 @@ export function onNavigationStateChange(prevState, currentState) {
     newBottomSheetStackRoute === Routes.SETTINGS_MODAL;
 
   if (wasCustomSlackOpen !== isCustomSlackOpen) {
-    expandedPreset.onTransitionStart({ closing: wasCustomSlackOpen });
+    StatusBar.setBarStyle(
+      wasCustomSlackOpen ? 'dark-content' : 'light-content'
+    );
   }
 
   if (

@@ -1,15 +1,8 @@
-import { useNavigation } from '@react-navigation/native';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/primitives';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { useContacts, useDimensions } from '../../hooks';
-import Routes from '../../navigation/routesNames';
 import { colors, margin, padding } from '../../styles';
 import { abbreviations, magicMemo } from '../../utils';
 import Divider from '../Divider';
@@ -78,7 +71,7 @@ const AddContactState = ({
   onRefocusInput,
 }) => {
   const { width: deviceWidth } = useDimensions();
-  const { goBack, useRoute } = useNavigation();
+  const { goBack } = useNavigation();
   const { onAddOrUpdateContacts, onRemoveContact } = useContacts();
 
   const [color, setColor] = useState(colorProp || 0);
@@ -88,9 +81,10 @@ const AddContactState = ({
   const placeHolderText = useRef();
 
   const { params } = useRoute();
-  const additionalContainerPadding = params?.additionalPadding
-    ? nativeStackAdditionalPadding
-    : 0;
+  const additionalContainerPadding =
+    params?.additionalPadding && isNativeStackAvailable
+      ? nativeStackAdditionalPadding
+      : 0;
 
   const handleAddContact = useCallback(async () => {
     if (value.length > 0) {

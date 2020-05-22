@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import ToolTip from 'react-native-tooltip';
 import { compose, onlyUpdateForKeys } from 'recompact';
-import { colors } from '../../styles';
 import { withNavigation } from '../../navigation/Navigation';
+import { colors } from '../../styles';
 
 class CopyTooltip extends PureComponent {
   static propTypes = {

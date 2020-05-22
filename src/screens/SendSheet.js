@@ -1,3 +1,4 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { get, isEmpty, isString, toLower } from 'lodash';
 import PropTypes from 'prop-types';
@@ -9,7 +10,6 @@ import {
   StatusBar,
 } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
@@ -344,7 +344,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
     }
   }, [isValidAddress, selected.type, showAssetForm, showAssetList]);
 
-  const { params } = useRoute()
+  const { params } = useRoute();
   const assetOverride = params?.asset;
   const prevAssetOverride = usePrevious(assetOverride);
 

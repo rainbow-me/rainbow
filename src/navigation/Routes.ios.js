@@ -1,4 +1,3 @@
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
@@ -8,19 +7,17 @@ import { createNativeStackNavigator } from 'react-native-cool-modals/native-stac
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletModal from '../screens/ChangeWalletModal';
+import DepositModal from '../screens/DepositModal';
 import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
 import ModalScreen from '../screens/ModalScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import QRScannerScreenWithData from '../screens/QRScannerScreenWithData';
 import ReceiveModal from '../screens/ReceiveModal';
 import SavingsSheet from '../screens/SavingsSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectConfirmationModal from '../screens/WalletConnectConfirmationModal';
-import WalletScreen from '../screens/WalletScreen';
 import WithdrawModal from '../screens/WithdrawModal';
-import { deviceUtils } from '../utils';
+import { SwipeNavigator } from './SwipeNavigator';
 import {
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
@@ -29,19 +26,15 @@ import {
   stackNavigationConfig,
 } from './config';
 import {
-  backgroundPreset,
   emojiPreset,
+  exchangePreset,
+  expandedPreset,
+  expandedPresetReverse,
   overlayExpandedPreset,
+  savingsPreset,
   sheetPreset,
 } from './effects';
-import {
-  exchangePresetWithTransitions,
-  expandedPresetWithTransitions,
-  expandedReversePresetWithTransitions,
-  onTransitionStart,
-  ScrollPagerWrapper,
-  sheetPresetWithTransitions,
-} from './helpers';
+import { onTransitionStart } from './helpers';
 import {
   AddCashSheetWrapper,
   ExpandedAssetSheetWrapper,
@@ -52,29 +45,8 @@ import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 
-const Swipe = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
-
-const renderTabBar = () => null;
-
-function NewSwipe() {
-  return (
-    <Swipe.Navigator
-      initialRouteName={Routes.WALLET_SCREEN}
-      tabBar={renderTabBar}
-      initialLayout={deviceUtils.dimensions}
-      pager={ScrollPagerWrapper}
-    >
-      <Swipe.Screen name={Routes.PROFILE_SCREEN} component={ProfileScreen} />
-      <Swipe.Screen name={Routes.WALLET_SCREEN} component={WalletScreen} />
-      <Swipe.Screen
-        name={Routes.QR_SCANNER_SCREEN}
-        component={QRScannerScreenWithData}
-      />
-    </Swipe.Navigator>
-  );
-}
 
 function SendFlowNavigator() {
   return (
@@ -90,7 +62,7 @@ function SendFlowNavigator() {
       <Stack.Screen
         name={Routes.SEND_SHEET}
         component={SendSheetWrapper}
-        options={sheetPresetWithTransitions}
+        options={sheetPreset}
       />
     </Stack.Navigator>
   );
@@ -141,11 +113,11 @@ function MainNavigator() {
       {...stackNavigationConfig}
       screenOptions={defaultScreenStackOptions}
     >
-      <Stack.Screen name={Routes.SWIPE_LAYOUT} component={NewSwipe} />
+      <Stack.Screen name={Routes.SWIPE_LAYOUT} component={SwipeNavigator} />
       <Stack.Screen
         name={Routes.SAVINGS_SHEET}
         component={SavingsSheet}
-        options={backgroundPreset}
+        options={savingsPreset}
       />
       <Stack.Screen
         name={Routes.AVATAR_BUILDER}
@@ -153,34 +125,24 @@ function MainNavigator() {
         options={emojiPreset}
       />
       <Stack.Screen
-        name={Routes.SAVINGS_WITHDRAW_MODAL}
-        component={WithdrawModal}
-        options={exchangePresetWithTransitions}
-      />
-      <Stack.Screen
-        name={Routes.SAVINGS_DEPOSIT_MODAL}
-        component={() => null}
-        options={exchangePresetWithTransitions}
-      />
-      <Stack.Screen
         name={Routes.WALLET_CONNECT_CONFIRMATION_MODAL}
         component={WalletConnectConfirmationModal}
-        options={expandedPresetWithTransitions}
+        options={expandedPreset}
       />
       <Stack.Screen
         name={Routes.CONFIRM_REQUEST}
         component={TransactionConfirmationScreen}
-        options={sheetPresetWithTransitions}
+        options={sheetPreset}
       />
       <Stack.Screen
         name={Routes.CHANGE_WALLET_MODAL}
         component={ChangeWalletModal}
-        options={expandedReversePresetWithTransitions}
+        options={expandedPresetReverse}
       />
       <Stack.Screen
         name={Routes.EXCHANGE_MODAL}
         component={ExchangeModalNavigator}
-        options={{ ...exchangePresetWithTransitions, gestureEnabled: true }}
+        options={exchangePreset}
       />
       {isNativeStackAvailable && (
         <Stack.Screen
@@ -193,7 +155,32 @@ function MainNavigator() {
   );
 }
 
-function MainNavigatorFallback() {
+function MainNavigatorWrapper() {
+  return (
+    <Stack.Navigator
+      initialRouteName={Routes.MAIN_NAVIGATOR_WRAPPER}
+      {...stackNavigationConfig}
+      screenOptions={defaultScreenStackOptions}
+    >
+      <Stack.Screen
+        name={Routes.MAIN_NAVIGATOR_WRAPPER}
+        component={MainNavigator}
+      />
+      <Stack.Screen
+        name={Routes.SAVINGS_WITHDRAW_MODAL}
+        component={WithdrawModal}
+        options={exchangePreset}
+      />
+      <Stack.Screen
+        name={Routes.SAVINGS_DEPOSIT_MODAL}
+        component={DepositModal}
+        options={exchangePreset}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function NativeStackFallbackNavigator() {
   return (
     <Stack.Navigator
       initialRouteName={Routes.MAIN_NAVIGATOR}
@@ -237,8 +224,8 @@ function MainNavigatorFallback() {
 }
 
 const MainStack = isNativeStackAvailable
-  ? MainNavigator
-  : MainNavigatorFallback;
+  ? MainNavigatorWrapper
+  : NativeStackFallbackNavigator;
 
 function NativeStackNavigator() {
   return (

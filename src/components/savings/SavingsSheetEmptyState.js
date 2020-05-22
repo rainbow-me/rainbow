@@ -1,7 +1,7 @@
+import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { calculateAPY } from '../../helpers/savings';
 import Routes from '../../navigation/routesNames';
 import { colors, fonts, padding } from '../../styles';

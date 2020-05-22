@@ -1,10 +1,9 @@
-import { useNavigation } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { compact, flattenDeep, get, groupBy, map, property } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { compose, withHandlers, withProps } from 'recompact';
+import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
 import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
@@ -16,6 +15,7 @@ import {
   convertAmountToNativeDisplay,
   multiply,
 } from '../helpers/utilities';
+import { withNavigation } from '../navigation/Navigation';
 import Routes from '../navigation/routesNames';
 import {
   setHiddenCoins,
@@ -51,9 +51,7 @@ const uniswapSelector = state => state.uniswap;
 const uniswapTotalSelector = state => state.uniswapTotal;
 
 const enhanceRenderItem = compose(
-  withProps({
-    navigation: useNavigation(), //TODO
-  }),
+  withNavigation,
   withHandlers({
     onPress: ({ assetType, navigation }) => item => {
       navigation.navigate(Routes.EXPANDED_ASSET_SHEET, {

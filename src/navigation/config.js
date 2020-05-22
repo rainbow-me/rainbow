@@ -1,8 +1,6 @@
-import { Platform } from 'react-native';
-import { Value } from 'react-native-reanimated';
+import { Platform, StatusBar } from 'react-native';
 import { deviceUtils } from '../utils';
 import { onDidPop, onWillPop } from './Navigation';
-import { sheetPreset } from './effects';
 import { appearListener } from './nativeStackHelpers';
 
 export const expandedAssetSheetConfig = {
@@ -35,7 +33,7 @@ export const nativeStackConfig = {
     onDismissed: onDidPop,
     onWillDismiss: () => {
       onWillPop();
-      sheetPreset.onTransitionStart({ closing: true });
+      StatusBar.setBarStyle('dark-content');
     },
     showDragIndicator: false,
     springDamping: 0.8,
@@ -61,11 +59,9 @@ export const defaultScreenStackOptions = {
   gestureEnabled: true,
 };
 
-export const ExchangeModalTabPosition = new Value(0);
-
-export const exchangeTabNavigatorConfig = {
+export const exchangeTabNavigatorConfig = position => ({
   initialLayout: deviceUtils.dimensions,
-  position: ExchangeModalTabPosition,
+  position,
   sceneContainerStyle: {
     backgroundColor: 'transparent',
   },
@@ -82,4 +78,4 @@ export const exchangeTabNavigatorConfig = {
   swipeVelocityScale: 1,
   tabBar: () => null,
   transparentCard: true,
-};
+});

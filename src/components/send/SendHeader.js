@@ -6,6 +6,7 @@ import { Keyboard } from 'react-native';
 import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withNeverRerender, withSelectedInput } from '../../hoc';
+import { withNavigation } from '../../navigation/Navigation';
 import Routes from '../../navigation/routesNames';
 import { colors, padding } from '../../styles';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
@@ -15,7 +16,6 @@ import { AddressField } from '../fields';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Label } from '../text';
-import { withNavigation } from '../../navigation/Navigation';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   ${padding(19, 15)}

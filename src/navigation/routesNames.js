@@ -14,6 +14,7 @@ const Routes = {
   MAIN_EXCHANGE_SCREEN: 'MainExchangeScreen',
   MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR: 'MainNativeBottomSheetNavigation',
   MAIN_NAVIGATOR: 'MainNavigator',
+  MAIN_NAVIGATOR_WRAPPER: 'MainNavigatorWrapper',
   MODAL_SCREEN: 'ModalScreen',
   NATIVE_STACK: 'NativeStack',
   PROFILE_SCREEN: 'ProfileScreen',

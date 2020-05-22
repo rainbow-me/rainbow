@@ -1,7 +1,7 @@
+import { useNavigation } from '@react-navigation/native';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import WalletList from '../components/change-wallet/WalletList';
 import { Modal } from '../components/modal';

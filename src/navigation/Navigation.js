@@ -51,11 +51,11 @@ export function navigate(oldNavigate, ...args) {
 }
 
 function getActiveRoute() {
-  return TopLevelNavigationRef?.getCurrentRoute()
+  return TopLevelNavigationRef?.getCurrentRoute();
 }
 
 function getActiveOptions() {
-  return TopLevelNavigationRef?.getCurrentOptions()
+  return TopLevelNavigationRef?.getCurrentOptions();
 }
 
 /**

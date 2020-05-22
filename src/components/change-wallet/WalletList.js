@@ -1,8 +1,8 @@
+import { useNavigation } from '@react-navigation/native';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import {
   DataProvider,
   LayoutProvider,

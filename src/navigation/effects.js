@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, StatusBar, View } from 'react-native';
+import { Animated, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import Header from '../components/header/Header';
 import AvatarCircle from '../components/profile/AvatarCircle';
@@ -291,14 +291,6 @@ const gestureResponseDistance = {
   vertical: deviceUtils.dimensions.height,
 };
 
-export const onTransitionStart = props => {
-  if (props.closing) {
-    StatusBar.setBarStyle('dark-content');
-  } else {
-    StatusBar.setBarStyle('light-content');
-  }
-};
-
 export const backgroundPreset = {
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: backgroundInterpolator,
@@ -342,7 +334,6 @@ export const emojiPreset = {
   gestureDirection: 'vertical-inverted',
   gestureEnabled: false,
   gestureResponseDistance,
-  onTransitionStart,
   transitionSpec: { close: closeSpec, open: emojiOpenSpec },
 };
 
@@ -354,7 +345,6 @@ export const exchangePreset = {
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
-  onTransitionStart,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
@@ -366,7 +356,6 @@ export const expandedPreset = {
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
-  onTransitionStart,
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 
@@ -400,7 +389,6 @@ export const expandedPresetReverse = {
   cardTransparent: true,
   gestureDirection: 'vertical-inverted',
   gestureResponseDistance,
-  onTransitionStart,
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 
@@ -412,7 +400,6 @@ export const sheetPreset = {
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
-  onTransitionStart,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 

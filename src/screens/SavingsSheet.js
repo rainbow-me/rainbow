@@ -1,7 +1,7 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { Alert, View } from 'react-native';
+import { Alert } from 'react-native';
 import Divider from '../components/Divider';
 import { SavingsCoinRow } from '../components/coin-row';
 import {
