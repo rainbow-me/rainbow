@@ -19,13 +19,13 @@ class TransactionListLoadingViewCell: UITableViewCell {
     override func awakeFromNib() {
       super.awakeFromNib()
       shimmeringView.contentView = skeletonView
-      shimmeringView.isShimmering = true;
+      shimmeringView.isShimmering = true
       // settings
-      shimmeringView.shimmeringPauseDuration = 0.1
+      shimmeringView.shimmeringPauseDuration = 0
       shimmeringView.shimmeringAnimationOpacity = 1
-      shimmeringView.shimmeringOpacity = 0.5;
-      shimmeringView.shimmeringSpeed = 150;
-      shimmeringView.shimmeringHighlightLength = 0.25
+      shimmeringView.shimmeringOpacity = 0.5
+      shimmeringView.shimmeringSpeed = 250
+      shimmeringView.shimmeringHighlightLength = 0.4
       shimmeringView.shimmeringDirection = .right
      }
     
