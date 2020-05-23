@@ -20,7 +20,6 @@ const CameraHeaderButton = ({ onPress, isCoinListEdited }) => (
     <View pointerEvents={isCoinListEdited ? 'none' : 'auto'}>
       <HeaderButton
         onPress={onPress}
-        shouldRasterizeIOS
         transformOrigin="right"
         testID="goToCamera"
       >
