@@ -103,7 +103,7 @@ const TransactionConfirmationScreen = ({ navigation }) => {
   }, [startPollingGasPrices, navigation]);
 
   const closeScreen = useCallback(() => {
-    navigation.popToTop();
+    navigation.goBack();
     stopPollingGasPrices();
   }, [stopPollingGasPrices, navigation]);
 
