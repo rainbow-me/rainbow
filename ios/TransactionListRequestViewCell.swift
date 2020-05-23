@@ -57,11 +57,8 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
     walletName.addCharacterSpacing(kernValue: 0.5)
     walletName.setLineSpacing(lineHeightMultiple: 1.1)
     walletInternalImage.image = generateTextImage(String(request.dappName.prefix(2).uppercased()))
+    walletInternalImage.layer.backgroundColor = UIColor.white.cgColor
     walletInternalImage.layer.cornerRadius = 12
-    walletInternalImage.layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner]
-    
-
-    
     
     if request.imageUrl != nil {
       let url = URL(string: request.imageUrl!)

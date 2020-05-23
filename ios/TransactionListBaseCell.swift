@@ -44,11 +44,10 @@ class TransactionListBaseCell : UITableViewCell {
     let rect = CGRect(x: view.frame.minX, y: view.frame.minY, width: 40, height: 40)
     let roundedRect = UIBezierPath(roundedRect: rect, cornerRadius: 12)
     
-    shadowLayer.fillColor = UIColor.white.cgColor
-    shadowLayer.path = roundedRect.cgPath
     shadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
     shadowLayer.shadowOffset = CGSize(width: 0, height: 4)
     shadowLayer.shadowOpacity = 0.04
+    shadowLayer.shadowPath = roundedRect.cgPath
     shadowLayer.shadowRadius = 3
     shadowLayer.zPosition = -1
     
