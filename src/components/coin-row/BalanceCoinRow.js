@@ -27,7 +27,7 @@ const editTranslateOffset = 32;
 const formatPercentageString = percentString =>
   percentString ? percentString.split('-').join('- ') : '-';
 
-const BalanceCoinRowExpandedStyles = css`
+const containerExpandedStyles = css`
   padding-bottom: 0;
   padding-top: 0;
 `;
@@ -147,7 +147,7 @@ const BalanceCoinRow = ({
         >
           <CoinRow
             containerStyles={
-              isExpandedState ? BalanceCoinRowExpandedStyles : containerStyles
+              isExpandedState ? containerExpandedStyles : containerStyles
             }
             isExpandedState={isExpandedState}
             onPress={handlePress}

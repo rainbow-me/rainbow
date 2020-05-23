@@ -108,19 +108,18 @@ const SendAssetFormCollectible = enhance(
         )}
       </Column>
       <View
-        width="100%"
-        marginBottom={0}
         height={210}
         justifyContent="flex-end"
+        marginBottom={0}
+        width="100%"
       >
         <ColumnWithMargins
-          flex={0}
           margin={deviceUtils.dimensions.height < 812 ? 15.5 : 25}
+          marginBottom={29}
+          paddingBottom={15}
+          paddingHorizontal={15}
           style={{ zIndex: 3 }}
           width="100%"
-          marginBottom={29}
-          paddingHorizontal={15}
-          paddingBottom={15}
         >
           {buttonRenderer}
           {txSpeedRenderer}
@@ -132,9 +131,9 @@ const SendAssetFormCollectible = enhance(
         >
           <LinearGradient
             borderRadius={19}
-            overflow="hidden"
             colors={['#FAFAFA00', '#FAFAFAFF']}
             end={{ x: 0.5, y: deviceUtils.dimensions.height < 812 ? 0.4 : 0.2 }}
+            overflow="hidden"
             pointerEvents="none"
             start={{ x: 0.5, y: 0 }}
             style={position.coverAsObject}

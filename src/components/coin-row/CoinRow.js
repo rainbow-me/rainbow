@@ -51,7 +51,7 @@ const CoinRow = enhance(
     topRowRender,
     ...props
   }) => (
-    <Container style={containerStyles}>
+    <Container css={containerStyles}>
       <Highlight
         borderRadius={18}
         margin={2}
