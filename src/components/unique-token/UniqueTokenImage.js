@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { useCallback, useMemo, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import { buildUniqueTokenName } from '../../helpers/assets';
@@ -16,7 +15,12 @@ const FallbackTextColorVariants = {
 const getFallbackTextColor = bg =>
   colors.getTextColorForBackground(bg, FallbackTextColorVariants);
 
-const UniqueTokenImage = ({ backgroundColor, imageUrl, item, resizeMode }) => {
+const UniqueTokenImage = ({
+  backgroundColor,
+  imageUrl,
+  item,
+  resizeMode = 'cover',
+}) => {
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const source = useMemo(() => ({ uri: imageUrl }), [imageUrl]);
@@ -43,18 +47,6 @@ const UniqueTokenImage = ({ backgroundColor, imageUrl, item, resizeMode }) => {
       )}
     </Centered>
   );
-};
-
-UniqueTokenImage.propTypes = {
-  backgroundColor: PropTypes.string,
-  imageUrl: PropTypes.string,
-  item: PropTypes.object,
-  resizeMode: PropTypes.oneOf(Object.values(FastImage.resizeMode)),
-};
-
-UniqueTokenImage.defaultProps = {
-  borderRadius: 0,
-  resizeMode: 'cover',
 };
 
 export default magicMemo(UniqueTokenImage, 'imageUrl');
