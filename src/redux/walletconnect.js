@@ -227,12 +227,32 @@ export const removeWalletConnector = peerId => (dispatch, getState) => {
   });
 };
 
+export const walletConnectUpdateSessions = () => (dispatch, getState) => {
+  const { accountAddress, chainId, network } = getState().settings;
+  const { walletConnectors } = getState().walletconnect;
+
+  Object.keys(walletConnectors).forEach(key => {
+    const connector = walletConnectors[key];
+    const newSessionData = {
+      accounts: [accountAddress],
+      chainId,
+    };
+    connector.updateSession(newSessionData);
+
+    saveWalletConnectSession(
+      connector.peerId,
+      connector.session,
+      accountAddress,
+      network
+    );
+  });
+};
+
 export const walletConnectApproveSession = (peerId, callback) => (
   dispatch,
   getState
 ) => {
   const { accountAddress, chainId, network } = getState().settings;
-  console.log(accountAddress, chainId, network);
   const walletConnector = dispatch(getPendingRequest(peerId));
   walletConnector.approveSession({
     accounts: [accountAddress],

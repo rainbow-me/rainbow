@@ -98,7 +98,6 @@ class QRScannerScreenWithData extends Component {
     const address = await addressUtils.getEthereumAddressFromQRCodeData(data);
 
     if (address) {
-      console.log('address', address, isReadOnlyWallet);
       if (isReadOnlyWallet) {
         NativeAlert.alert(`You need to import the wallet in order to do this`);
         return null;

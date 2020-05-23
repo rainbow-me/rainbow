@@ -14,6 +14,8 @@ import { updateLanguage } from '../languages';
 import { ethereumUtils, logger } from '../utils';
 import { dataResetState } from './data';
 import { explorerClearState, explorerInit } from './explorer';
+import { walletConnectUpdateSessions } from './walletconnect';
+
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -85,6 +87,7 @@ export const settingsUpdateAccountAddress = accountAddress => async dispatch => 
     type: SETTINGS_UPDATE_SETTINGS_ADDRESS,
   });
   dispatch(settingsResolveAccountENS(accountAddress));
+  dispatch(walletConnectUpdateSessions());
 };
 
 const settingsResolveAccountENS = accountAddress => async (
@@ -115,6 +118,7 @@ export const settingsUpdateNetwork = network => async dispatch => {
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
     });
     saveNetwork(network);
+	dispatch(walletConnectUpdateSessions());
   } catch (error) {
     logger.log('Error updating network settings', error);
   }
