@@ -140,18 +140,23 @@ class App extends Component {
     const requests = requestsForTopic(topic);
 
     if (openAutomatically && requests) {
-      return Navigation.handleAction({
-        params: { openAutomatically, transactionDetails: last(requests) },
-        routeName: Routes.CONFIRM_REQUEST,
-      });
+      const lastRequest = last(requests);
+      if (lastRequest) {
+        return Navigation.handleAction({
+          params: { openAutomatically, transactionDetails: lastRequest },
+          routeName: Routes.CONFIRM_REQUEST,
+        });
+      }
     }
 
     if (requests && requests.length === 1) {
       const request = requests[0];
-      return Navigation.handleAction({
-        params: { openAutomatically, transactionDetails: request },
-        routeName: Routes.CONFIRM_REQUEST,
-      });
+      if (request) {
+        return Navigation.handleAction({
+          params: { openAutomatically, transactionDetails: request },
+          routeName: Routes.CONFIRM_REQUEST,
+        });
+      }
     }
 
     return Navigation.handleAction({ routeName: Routes.PROFILE_SCREEN });

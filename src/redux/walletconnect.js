@@ -9,6 +9,7 @@ import {
   saveWalletConnectSession,
 } from '../handlers/localstorage/walletconnect';
 import { sendRpcCall } from '../handlers/web3';
+import WalletTypes from '../helpers/walletTypes';
 import {
   checkPushNotificationPermissions,
   getFCMToken,
@@ -87,7 +88,7 @@ export const walletConnectOnSessionRequest = (
   }
 };
 
-const listenOnNewMessages = walletConnector => dispatch => {
+const listenOnNewMessages = walletConnector => (dispatch, getState) => {
   walletConnector.on('call_request', (error, payload) => {
     if (error) throw error;
     const { clientId, peerId, peerMeta } = walletConnector;
@@ -107,7 +108,20 @@ const listenOnNewMessages = walletConnector => dispatch => {
           });
         });
       return;
+    } else {
+      const { selected } = getState().wallets;
+      const selectedWallet = selected || {};
+      const isReadOnlyWallet = selectedWallet.type === WalletTypes.readOnly;
+      if (isReadOnlyWallet) {
+        Alert.alert(`You need to import the wallet in order to do this`);
+        walletConnector.rejectRequest({
+          error: { message: 'JSON RPC method not supported' },
+          id: payload.id,
+        });
+        return;
+      }
     }
+
     dispatch(
       addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)
     );
@@ -218,7 +232,7 @@ export const walletConnectApproveSession = (peerId, callback) => (
   getState
 ) => {
   const { accountAddress, chainId, network } = getState().settings;
-
+  console.log(accountAddress, chainId, network);
   const walletConnector = dispatch(getPendingRequest(peerId));
   walletConnector.approveSession({
     accounts: [accountAddress],
