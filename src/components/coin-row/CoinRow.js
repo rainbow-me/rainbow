@@ -50,7 +50,7 @@ const CoinRow = enhance(
     topRowRender,
     ...props
   }) => (
-    <Container style={containerStyles}>
+    <Container css={containerStyles}>
       <Highlight
         borderRadius={18}
         margin={2}
@@ -66,7 +66,7 @@ const CoinRow = enhance(
         ...props,
       })}
       <Row flex={1} opacity={isHidden ? 0.4 : 1}>
-        <Content style={contentStyles}>
+        <Content css={contentStyles}>
           <Row align="center" justify="space-between">
             {topRowRender({ symbol, ...props })}
           </Row>

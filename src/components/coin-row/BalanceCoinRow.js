@@ -24,7 +24,10 @@ import CoinRow from './CoinRow';
 
 const editTranslateOffset = 32;
 
-const BalanceCoinRowExpandedStyles = css`
+const formatPercentageString = percentString =>
+  percentString ? percentString.split('-').join('- ') : '-';
+
+const containerExpandedStyles = css`
   padding-bottom: 0;
   padding-top: 0;
 `;
@@ -34,9 +37,6 @@ const PercentageText = styled(BottomRowText).attrs({
 })`
   ${({ isPositive }) => (isPositive ? `color: ${colors.green};` : null)};
 `;
-
-const formatPercentageString = percentString =>
-  percentString ? percentString.split('-').join('- ') : '-';
 
 const BottomRow = ({ balance, isExpandedState, native }) => {
   const percentChange = get(native, 'change');
@@ -141,7 +141,7 @@ const BalanceCoinRow = ({
         >
           <CoinRow
             containerStyles={
-              isExpandedState ? BalanceCoinRowExpandedStyles : containerStyles
+              isExpandedState ? containerExpandedStyles : containerStyles
             }
             isExpandedState={isExpandedState}
             onPress={handlePress}
