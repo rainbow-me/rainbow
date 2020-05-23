@@ -112,10 +112,6 @@ const routesForMainNavigator = {
     screen: AvatarBuilder,
     transparentCard: true,
   },
-  [Routes.CONFIRM_REQUEST]: {
-    navigationOptions: sheetPresetWithTransitions,
-    screen: TransactionConfirmationScreen,
-  },
   [Routes.EXAMPLE_SCREEN]: {
     navigationOptions: expandedPresetWithTransitions,
     screen: ExampleScreen,
@@ -247,7 +243,6 @@ const routesForBottomSheetStack = {
   [Routes.STACK]: Stack,
   [Routes.CHANGE_WALLET_SHEET]: {
     navigationOptions: {
-      allowsDragToDismiss: true,
       backgroundOpacity: 0.6,
       customStack: true,
       springDamping: 1,
@@ -255,17 +250,20 @@ const routesForBottomSheetStack = {
     },
     screen: ChangeWalletSheet,
   },
-  [Routes.RECEIVE_MODAL]: withCustomStack(ReceiveModal),
-  [Routes.SETTINGS_MODAL]: withCustomStack(SettingsModal),
+  [Routes.CONFIRM_REQUEST]: {
+    navigationOptions: {
+      backgroundOpacity: 1,
+      customStack: true,
+      springDamping: 1,
+      transitionDuration: 0.25,
+    },
+    screen: TransactionConfirmationScreen,
+  },
   [Routes.EXPANDED_ASSET_SHEET]: {
     navigationOptions: {
-      allowsDragToDismiss: true,
-      allowsTapToDismiss: true,
       backgroundOpacity: 0.7,
-      blocksBackgroundTouches: true,
       cornerRadius: 24,
       customStack: true,
-      gestureEnabled: true,
       headerHeight: 50,
       onAppear: null,
       scrollEnabled: true,
@@ -275,6 +273,8 @@ const routesForBottomSheetStack = {
     },
     screen: ExpandedAssetSheetWrapper,
   },
+  [Routes.RECEIVE_MODAL]: withCustomStack(ReceiveModal),
+  [Routes.SETTINGS_MODAL]: withCustomStack(SettingsModal),
   ...(isNativeStackAvailable && routesForNativeStack),
 };
 
