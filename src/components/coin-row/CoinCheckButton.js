@@ -10,11 +10,7 @@ import { Centered } from '../layout';
 
 const Container = styled.View`
   ${position.size(CoinIconSize)};
-  position: relative;
-`;
-const ContainerAbsolute = styled.View`
-  ${position.size(CoinIconSize)};
-  position: absolute;
+  position: ${({ isAbsolute }) => (isAbsolute ? 'absolute' : 'relative')};
 `;
 
 const CircleOutline = styled.View`
@@ -31,23 +27,20 @@ const CheckmarkBackground = styled.View`
   background-color: ${colors.appleBlue};
 `;
 
-const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => {
-  const Wrapper = isAbsolute ? ContainerAbsolute : Container;
-  return (
-    <Wrapper {...props}>
-      <ButtonPressAnimation onPress={onPress}>
-        <Centered {...position.sizeAsObject('100%')}>
-          <CircleOutline />
-          <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
-            <CheckmarkBackground>
-              <Icon name="checkmark" color="white" />
-            </CheckmarkBackground>
-          </OpacityToggler>
-        </Centered>
-      </ButtonPressAnimation>
-    </Wrapper>
-  );
-};
+const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => (
+  <Container {...props} isAbsolute={isAbsolute}>
+    <ButtonPressAnimation onPress={onPress}>
+      <Centered {...position.sizeAsObject('100%')}>
+        <CircleOutline />
+        <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
+          <CheckmarkBackground>
+            <Icon name="checkmark" color="white" />
+          </CheckmarkBackground>
+        </OpacityToggler>
+      </Centered>
+    </ButtonPressAnimation>
+  </Container>
+);
 
 CoinCheckButton.propTypes = {
   onPress: PropTypes.func,
