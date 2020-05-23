@@ -25,6 +25,7 @@ const Content = styled(Column).attrs({ justify: 'space-between' })`
   flex: 1;
   height: ${CoinIconSize};
   margin-left: 10;
+  opacity: ${({ isHidden }) => (isHidden ? 0.4 : 1)};
 `;
 
 const enhance = compose(
@@ -65,16 +66,14 @@ const CoinRow = enhance(
         symbol,
         ...props,
       })}
-      <Row flex={1} opacity={isHidden ? 0.4 : 1}>
-        <Content style={contentStyles}>
-          <Row align="center" justify="space-between">
-            {topRowRender({ symbol, ...props })}
-          </Row>
-          <Row align="center" justify="space-between" marginBottom={0.5}>
-            {bottomRowRender({ symbol, ...props })}
-          </Row>
-        </Content>
-      </Row>
+      <Content isHidden={isHidden} style={contentStyles}>
+        <Row align="center" justify="space-between">
+          {topRowRender({ symbol, ...props })}
+        </Row>
+        <Row align="center" justify="space-between" marginBottom={0.5}>
+          {bottomRowRender({ symbol, ...props })}
+        </Row>
+      </Content>
       {typeof children === 'function'
         ? children({ symbol, ...props })
         : children}
