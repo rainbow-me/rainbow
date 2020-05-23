@@ -1,9 +1,23 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { LayoutAnimation, View } from 'react-native';
-import { colors } from '../../styles';
+import React, { useCallback } from 'react';
+import { LayoutAnimation } from 'react-native';
+import styled from 'styled-components/primitives';
+import { colors, padding, shadow } from '../../styles';
+import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
+import { Row } from '../layout';
 import { Text } from '../text';
+
+const ButtonContent = styled(Row).attrs({
+  justify: 'center',
+})`
+  ${padding(5, 10, 6)};
+  ${({ isActive }) =>
+    isActive ? shadow.build(0, 4, 6, colors.appleBlue, 0.6) : ''};
+  background-color: ${({ isActive }) =>
+    isActive ? colors.appleBlue : colors.alpha(colors.blueGreyDark, 0.06)};
+  border-radius: 15;
+  height: 30;
+`;
 
 const CoinDividerEditButton = ({
   isActive,
@@ -13,64 +27,41 @@ const CoinDividerEditButton = ({
   style,
   text,
   textOpacityAlwaysOn,
-}) => (
-  <OpacityToggler endingOpacity={1} startingOpacity={0} isVisible={isVisible}>
-    <ButtonPressAnimation
-      onPress={async () => {
-        await onPress();
-        if (shouldReloadList) {
-          LayoutAnimation.configureNext(
-            LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-          );
-        }
-      }}
-      scaleTo={textOpacityAlwaysOn || isActive ? 0.9 : 1}
-    >
-      <View
-        style={[
-          {
-            backgroundColor: isActive
-              ? colors.appleBlue
-              : colors.alpha(colors.blueGreyDark, 0.06),
-            borderRadius: 15,
-            height: 30,
-            justifyContent: 'center',
-            paddingBottom: 6,
-            paddingHorizontal: 10,
-            paddingTop: 5,
-            shadowColor: colors.appleBlue,
-            shadowOffset: { height: 4, width: 0 },
-            shadowOpacity: isActive ? 0.4 : 0,
-            shadowRadius: 6,
-          },
-          style,
-        ]}
-      >
-        <Text
-          align="center"
-          color={isActive ? 'white' : colors.alpha(colors.blueGreyDark, 0.6)}
-          style={{
-            opacity: textOpacityAlwaysOn || isActive ? 1 : 0.3333333333,
-          }}
-          letterSpacing="roundedTight"
-          size="lmedium"
-          weight="semibold"
-        >
-          {text}
-        </Text>
-      </View>
-    </ButtonPressAnimation>
-  </OpacityToggler>
-);
+}) => {
+  const handlePress = useCallback(async () => {
+    await onPress();
+    if (shouldReloadList) {
+      LayoutAnimation.configureNext(
+        LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+      );
+    }
+  }, [onPress, shouldReloadList]);
 
-CoinDividerEditButton.propTypes = {
-  isActive: PropTypes.bool,
-  isVisible: PropTypes.bool,
-  onPress: PropTypes.func,
-  shouldReloadList: PropTypes.bool,
-  style: PropTypes.object,
-  text: PropTypes.string,
-  textOpacityAlwaysOn: PropTypes.bool,
+  return (
+    <OpacityToggler endingOpacity={1} isVisible={isVisible} startingOpacity={0}>
+      <ButtonPressAnimation
+        onPress={handlePress}
+        scaleTo={textOpacityAlwaysOn || isActive ? 0.9 : 1}
+      >
+        <ButtonContent isActive={isActive} style={style}>
+          <Text
+            align="center"
+            color={isActive ? 'white' : colors.alpha(colors.blueGreyDark, 0.6)}
+            letterSpacing="roundedTight"
+            opacity={textOpacityAlwaysOn || isActive ? 1 : 0.3333333333}
+            size="lmedium"
+            weight="semibold"
+          >
+            {text}
+          </Text>
+        </ButtonContent>
+      </ButtonPressAnimation>
+    </OpacityToggler>
+  );
 };
 
-export default CoinDividerEditButton;
+export default magicMemo(CoinDividerEditButton, [
+  'isActive',
+  'isVisible',
+  'text',
+]);

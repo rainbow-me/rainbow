@@ -10,7 +10,7 @@ import {
   withOpenInvestmentCards,
 } from '../../hoc';
 import { deviceUtils } from '../../utils';
-import { CoinDivider } from '../coin-divider';
+import { CoinDividerHeight } from '../coin-divider';
 import { CoinRowHeight } from '../coin-row';
 import {
   InvestmentCard,
@@ -380,13 +380,13 @@ const traverseSectionsToDimensions = ({
         height += CoinRowHeight;
       }
       areas.push({
-        bottom: height + CoinDivider.height,
+        bottom: height + CoinDividerHeight,
         id: 'smallBalancesHeader',
         left: 0,
         right: deviceUtils.dimensions.width,
         top: height,
       });
-      height += CoinDivider.height;
+      height += CoinDividerHeight;
       if (openSmallBalances) {
         const smallBalances = balances.data[balances.data.length - 1].assets;
         for (let i = 0; i < smallBalances.length; i++) {

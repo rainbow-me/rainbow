@@ -2,7 +2,11 @@
 /* eslint-disable sort-keys */
 import { get } from 'lodash';
 import React from 'react';
-import { CoinDivider, SmallBalancesWrapper } from '../coin-divider';
+import {
+  CoinDivider,
+  CoinDividerHeight,
+  SmallBalancesWrapper,
+} from '../coin-divider';
 import { CoinRowHeight } from '../coin-row';
 import { FloatingActionButton } from '../fab';
 import {
@@ -48,7 +52,7 @@ export const ViewTypes = {
   },
 
   COIN_DIVIDER: {
-    calculateHeight: () => CoinDivider.height,
+    calculateHeight: () => CoinDividerHeight,
     index: 2,
     renderComponent: ({ data, isCoinListEdited, nativeCurrency }) => {
       const { item = {} } = data;
