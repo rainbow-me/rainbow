@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import { BiometryTypes, useBiometryType } from '../../hooks';
+import { BiometryTypes, useBiometryType, useMagicAutofocus } from '../../hooks';
 import Routes from '../../screens/Routes/routesNames';
 import { colors, padding } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
@@ -26,6 +26,9 @@ const sx = StyleSheet.create({
     marginBottom: 5,
     marginHorizontal: 0,
     marginTop: 9,
+    width: '100%',
+  },
+  walletNameInput: {
     width: '100%',
   },
 });
@@ -106,11 +109,11 @@ export default function WalletProfileCreator({
     setColor(newColor);
   }, [color]);
 
-  const handleFocusInput = useCallback(async () => {
-    if (inputRef) {
-      inputRef.current.focus();
-    }
-  }, []);
+  const [handleDidFocus] = useMagicAutofocus(inputRef.current);
+  const handleTriggerFocusInput = useCallback(
+    () => inputRef?.current?.focus(),
+    [inputRef]
+  );
 
   const acceptAction = isNewProfile ? addProfileInfo : editProfile;
   const cancelAction = actionType === 'Import' ? cancelImport : cancelEdit;
@@ -140,22 +143,22 @@ export default function WalletProfileCreator({
             <PlaceholderText ref={text} />
             <Input
               autoCapitalize="words"
-              autoFocus
               letterSpacing="roundedTight"
               onChange={handleChange}
+              onFocus={handleDidFocus}
               onSubmitEditing={acceptAction}
               ref={inputRef}
               returnKeyType="done"
               size="big"
               spellCheck={false}
-              style={{ width: '100%' }}
+              style={sx.walletNameInput}
               textAlign="center"
               value={value}
               weight="bold"
             />
             {address && (
               <CopyTooltip
-                onHide={handleFocusInput}
+                onHide={handleTriggerFocusInput}
                 textToCopy={address}
                 tooltipText="Copy Address"
               >
