@@ -11,7 +11,7 @@ import {
 } from '../../hoc';
 import { deviceUtils } from '../../utils';
 import { CoinDivider } from '../coin-divider';
-import { CoinRow } from '../coin-row';
+import { CoinRowHeight } from '../coin-row';
 import {
   InvestmentCard,
   InvestmentCardHeader,
@@ -371,13 +371,13 @@ const traverseSectionsToDimensions = ({
     if (balances) {
       for (let i = 0; i < balances.data.length - 1; i++) {
         areas.push({
-          bottom: height + CoinRow.height,
+          bottom: height + CoinRowHeight,
           id: balances.data[i].uniqueId,
           left: 0,
           right: deviceUtils.dimensions.width,
           top: height,
         });
-        height += CoinRow.height;
+        height += CoinRowHeight;
       }
       areas.push({
         bottom: height + CoinDivider.height,
@@ -391,13 +391,13 @@ const traverseSectionsToDimensions = ({
         const smallBalances = balances.data[balances.data.length - 1].assets;
         for (let i = 0; i < smallBalances.length; i++) {
           areas.push({
-            bottom: height + CoinRow.height,
+            bottom: height + CoinRowHeight,
             id: smallBalances[i].uniqueId,
             left: 0,
             right: deviceUtils.dimensions.width,
             top: height,
           });
-          height += CoinRow.height;
+          height += CoinRowHeight;
         }
       }
       height += ListFooter.height + headerHeight;

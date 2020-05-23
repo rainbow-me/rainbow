@@ -1,13 +1,6 @@
-import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
-import {
-  withAccountSettings,
-  withCoinListEdited,
-  withEditOptions,
-  withFabSendAction,
-} from '../../hoc';
+import { useAccountSettings, useCoinListEdited } from '../../hooks';
 import { padding } from '../../styles';
 import Highlight from '../Highlight';
 import { CoinIcon, CoinIconSize } from '../coin-icon';
@@ -15,8 +8,14 @@ import { Column, Row } from '../layout';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;
+export const CoinRowHeight =
+  CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom;
 
-const Container = styled(Row).attrs({ align: 'center' })`
+const Container = styled(Row).attrs({
+  align: 'center',
+  grow: 0,
+  shrink: 1,
+})`
   ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom)};
   width: 100%;
 `;
@@ -28,29 +27,24 @@ const Content = styled(Column).attrs({ justify: 'space-between' })`
   opacity: ${({ isHidden }) => (isHidden ? 0.4 : 1)};
 `;
 
-const enhance = compose(
-  withAccountSettings,
-  withFabSendAction,
-  withEditOptions,
-  withCoinListEdited
-);
+export default function CoinRow({
+  address,
+  bottomRowRender,
+  children,
+  coinIconRender = CoinIcon,
+  containerStyles,
+  contentStyles,
+  highlight,
+  isHidden,
+  isPinned,
+  symbol,
+  topRowRender,
+  ...props
+}) {
+  const accountSettings = useAccountSettings();
+  const { isCoinListEdited } = useCoinListEdited();
 
-const CoinRow = enhance(
-  ({
-    address,
-    bottomRowRender,
-    children,
-    coinIconRender,
-    containerStyles,
-    contentStyles,
-    highlight,
-    isCoinListEdited,
-    isHidden,
-    isPinned,
-    symbol,
-    topRowRender,
-    ...props
-  }) => (
+  return (
     <Container css={containerStyles}>
       <Highlight
         borderRadius={18}
@@ -64,41 +58,20 @@ const CoinRow = enhance(
         isHidden,
         isPinned,
         symbol,
+        ...accountSettings,
         ...props,
       })}
       <Content isHidden={isHidden} style={contentStyles}>
         <Row align="center" justify="space-between">
-          {topRowRender({ symbol, ...props })}
+          {topRowRender({ symbol, ...accountSettings, ...props })}
         </Row>
         <Row align="center" justify="space-between" marginBottom={0.5}>
-          {bottomRowRender({ symbol, ...props })}
+          {bottomRowRender({ symbol, ...accountSettings, ...props })}
         </Row>
       </Content>
       {typeof children === 'function'
         ? children({ symbol, ...props })
         : children}
     </Container>
-  )
-);
-
-CoinRow.propTypes = {
-  address: PropTypes.string,
-  bottomRowRender: PropTypes.func,
-  children: PropTypes.node,
-  coinIconRender: PropTypes.func,
-  containerStyles: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
-  contentStyles: PropTypes.string,
-  highlight: PropTypes.bool,
-  isCoinListEdited: PropTypes.bool,
-  onPress: PropTypes.func,
-  symbol: PropTypes.string,
-  topRowRender: PropTypes.func,
-};
-
-CoinRow.defaultProps = {
-  coinIconRender: CoinIcon,
-};
-
-CoinRow.height = CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom;
-
-export default CoinRow;
+  );
+}

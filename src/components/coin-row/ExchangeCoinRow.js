@@ -1,11 +1,10 @@
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import styled, { css } from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
 import { padding } from '../../styles';
-import { haptics } from '../../utils';
+import { haptics, neverRerender } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FloatingEmojis } from '../floating-emojis';
@@ -116,17 +115,4 @@ const ExchangeCoinRow = ({
   );
 };
 
-ExchangeCoinRow.propTypes = {
-  item: PropTypes.shape({
-    address: PropTypes.string,
-    favorite: PropTypes.bool,
-    symbol: PropTypes.string,
-  }),
-  onFavoriteAsset: PropTypes.func,
-  onPress: PropTypes.func,
-  showBalance: PropTypes.bool,
-  showFavoriteButton: PropTypes.bool,
-};
-
-const neverRerender = () => true;
-export default React.memo(ExchangeCoinRow, neverRerender);
+export default neverRerender(ExchangeCoinRow);

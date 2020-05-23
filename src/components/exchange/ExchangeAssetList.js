@@ -6,7 +6,7 @@ import { usePrevious } from '../../hooks';
 import { exchangeModalBorderRadius } from '../../screens/ExchangeModal';
 import { colors, padding } from '../../styles';
 import { magicMemo } from '../../utils';
-import { CoinRow, ExchangeCoinRow } from '../coin-row';
+import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
 import { Text } from '../text';
 
 const Header = styled.View`
@@ -37,7 +37,7 @@ const contentContainerStyle = { paddingBottom: exchangeModalBorderRadius };
 const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;
 const scrollIndicatorInsets = { bottom: exchangeModalBorderRadius };
 const getItemLayout = ({ showBalance }, index) => {
-  const height = showBalance ? CoinRow.height + 1 : CoinRow.height;
+  const height = showBalance ? CoinRowHeight + 1 : CoinRowHeight;
   return {
     index,
     length: height,

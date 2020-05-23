@@ -3,7 +3,7 @@
 import { get } from 'lodash';
 import React from 'react';
 import { CoinDivider, SmallBalancesWrapper } from '../coin-divider';
-import { CoinRow } from '../coin-row';
+import { CoinRowHeight } from '../coin-row';
 import { FloatingActionButton } from '../fab';
 import {
   InvestmentCard,
@@ -32,7 +32,7 @@ export const ViewTypes = {
 
   COIN_ROW: {
     calculateHeight: ({ isFirst, isLast, areSmallCollectibles }) =>
-      CoinRow.height +
+      CoinRowHeight +
       (isFirst ? firstCoinRowMarginTop : 0) +
       (isLast && !areSmallCollectibles ? ListFooter.height + 1 : 0),
     index: 1,
@@ -66,7 +66,7 @@ export const ViewTypes = {
   COIN_SMALL_BALANCES: {
     calculateHeight: ({ isOpen, smallBalancesLength, isCoinListEdited }) =>
       isOpen
-        ? smallBalancesLength * CoinRow.height +
+        ? smallBalancesLength * CoinRowHeight +
           15 +
           (isCoinListEdited ? 100 : 0)
         : 13,

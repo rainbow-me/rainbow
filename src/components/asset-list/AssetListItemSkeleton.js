@@ -14,7 +14,7 @@ import styled from 'styled-components/primitives';
 import { colors, padding, position } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { interpolate } from '../animations';
-import { CoinRow } from '../coin-row';
+import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
 
 const { block, cond, set, startClock, stopClock } = Animated;
@@ -22,7 +22,7 @@ const { block, cond, set, startClock, stopClock } = Animated;
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 const Container = styled.View`
-  height: ${CoinRow.height};
+  height: ${CoinRowHeight};
   opacity: ${({ descendingOpacity, index }) =>
     1 - 0.2 * (descendingOpacity ? index : 0)};
   width: 100%;

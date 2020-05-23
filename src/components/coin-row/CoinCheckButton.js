@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { borders, colors, padding, position, shadow } from '../../styles';
@@ -6,11 +5,17 @@ import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { Icon } from '../icons';
-import { Centered } from '../layout';
 
 const Container = styled.View`
   ${position.size(CoinIconSize)};
   position: ${({ isAbsolute }) => (isAbsolute ? 'absolute' : 'relative')};
+  top: 0;
+`;
+
+const Content = styled(ButtonPressAnimation)`
+  ${position.size('100%')};
+  align-items: ${({ isAbsolute }) => (isAbsolute ? 'flex-end' : 'flex-start')};
+  justify-content: center;
 `;
 
 const CircleOutline = styled.View`
@@ -28,27 +33,16 @@ const CheckmarkBackground = styled.View`
 `;
 
 const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => (
-  <Container {...props} isAbsolute={isAbsolute}>
-    <ButtonPressAnimation onPress={onPress}>
-      <Centered {...position.sizeAsObject('100%')}>
-        <CircleOutline />
-        <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
-          <CheckmarkBackground>
-            <Icon name="checkmark" color="white" />
-          </CheckmarkBackground>
-        </OpacityToggler>
-      </Centered>
-    </ButtonPressAnimation>
+  <Container isAbsolute={isAbsolute}>
+    <Content {...props} isAbsolute={isAbsolute} onPress={onPress}>
+      <CircleOutline />
+      <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
+        <CheckmarkBackground>
+          <Icon name="checkmark" color="white" />
+        </CheckmarkBackground>
+      </OpacityToggler>
+    </Content>
   </Container>
 );
-
-CoinCheckButton.propTypes = {
-  onPress: PropTypes.func,
-  toggle: PropTypes.bool,
-};
-
-CoinCheckButton.defaultProps = {
-  toggle: false,
-};
 
 export default magicMemo(CoinCheckButton, 'toggle');

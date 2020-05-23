@@ -27,7 +27,7 @@ import {
   safeAreaInsetValues,
 } from '../../utils';
 import { CoinDivider } from '../coin-divider';
-import { CoinRow } from '../coin-row';
+import { CoinRowHeight } from '../coin-row';
 import AssetListHeader from './AssetListHeader';
 import { ViewTypes } from './RecyclerViewTypes';
 
@@ -608,7 +608,7 @@ class RecyclerAssetList extends Component {
   savingsSumValue = 0;
 
   checkEditStickyHeader = offsetY => {
-    const offsetHeight = CoinRow.height * (this.coinDividerIndex - 1) + 5;
+    const offsetHeight = CoinRowHeight * (this.coinDividerIndex - 1) + 5;
     if (this.props.isCoinListEdited && offsetY > offsetHeight) {
       this.setState({ showCoinListEditor: true });
     } else if (
