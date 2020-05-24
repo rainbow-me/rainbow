@@ -33,6 +33,8 @@ export default function useInitializeWallet() {
       try {
         logger.sentry('Start wallet setup');
 
+        await resetAccountState();
+
         const isImported = !!seedPhrase;
 
         if (!seedPhrase) {
@@ -58,9 +60,6 @@ export default function useInitializeWallet() {
             'Import failed due to an invalid private key. Please try again.'
           );
           return null;
-        }
-        if (isImported) {
-          await resetAccountState();
         }
 
         if (!(isNew || isImported)) {
