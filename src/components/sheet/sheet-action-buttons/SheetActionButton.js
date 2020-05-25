@@ -18,7 +18,7 @@ const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 4,
 })`
-  ${padding(9.5, 14, 11, 15)}
+  ${padding(10, 14, 14, 15)}
   height: 46;
   z-index: 1;
 `;
@@ -48,9 +48,9 @@ const SheetActionButton = ({
         shadows={shadowsForButtonColor}
       />
       <Content>
-        {emoji && <Emoji name={emoji} size="bmedium" />}
+        {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
         {icon && <Icon color="white" name={icon} size={18} height={18} />}
-        <Text color="white" size="large" weight="semibold">
+        <Text align="center" color="white" size="large" weight="semibold">
           {label}
         </Text>
       </Content>

@@ -27,7 +27,6 @@ const ContractInteractionCoinRow = ({ item, onPressTransaction, ...props }) => (
       {...props}
       bottomRowRender={BottomRow}
       coinIconRender={ContractInteractionVenderLogoIcon}
-      shouldRasterizeIOS
       topRowRender={TopRow}
     />
   </ButtonPressAnimation>

@@ -1,14 +1,12 @@
-import React from 'react';
 import SvgPrimitive from 'react-native-svg';
+import styled from 'styled-components/primitives';
 import { reduceArrayToObject } from '../../utils';
+import { PrimitiveWithoutOmittedProps } from '../layout';
 
-// eslint-disable-next-line no-unused-vars
-const Svg = React.forwardRef(({ direction, style, ...props }, ref) => (
-  // 👆️👨‍🏫️ we purposefully want to prevent the `direction` prop from being passed
-  // to the underlying native SvgPrimitive view, so we are going to deconstruct
-  // it here and then do nothing with it lol!
-  <SvgPrimitive {...props} ref={ref} style={reduceArrayToObject(style)} />
-));
+const Svg = styled(PrimitiveWithoutOmittedProps).attrs(({ style }) => ({
+  as: SvgPrimitive,
+  blacklist: 'direction',
+  style: reduceArrayToObject(style),
+}))``;
 
-Svg.displayName = 'Svg';
 export default Svg;

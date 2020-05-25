@@ -48,7 +48,7 @@ const UniqueTokenCoinIcon = enhanceUniqueTokenCoinIcon(
     shouldPrioritizeImageLoading,
     ...props
   }) => (
-    <Centered shouldRasterizeIOS>
+    <Centered>
       <RequestVendorLogoIcon
         backgroundColor={background || colors.lightestGrey}
         borderRadius={8}

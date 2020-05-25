@@ -1,7 +1,9 @@
 import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
+import PrimitiveWithoutOmittedProps from './PrimitiveWithoutOmittedProps';
 
-const InnerBorder = styled.View.attrs({
+const InnerBorder = styled(PrimitiveWithoutOmittedProps).attrs({
+  blacklist: 'width',
   pointerEvents: 'none',
 })`
   ${position.cover};

@@ -7,10 +7,10 @@ import { magicMemo } from '../utils';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';
 
-const TagBorderRadius = 7;
+const TagBorderRadius = 12;
 
 const Container = styled(Column)`
-  ${padding(7, 10)};
+  ${padding(8, 10)};
   background-color: ${colors.white};
   border-radius: ${TagBorderRadius};
   text-align: left;
@@ -18,7 +18,7 @@ const Container = styled(Column)`
 `;
 
 const OuterBorder = styled(Centered)`
-  border-color: ${colors.alpha(colors.black, 0.06)};
+  border-color: ${colors.alpha(colors.blueGreyDark, 0.06)};
   border-radius: ${TagBorderRadius};
   border-width: 1;
   flex: none;
@@ -28,7 +28,7 @@ const OuterBorder = styled(Centered)`
 
 const Text = styled(TextElement).attrs({
   color: colors.alpha(colors.blueGreyDark, 0.5),
-  letterSpacing: 'roundedTight',
+  letterSpacing: 'roundedMedium',
   size: 'lmedium',
   weight: 'medium',
 })`
@@ -37,13 +37,12 @@ const Text = styled(TextElement).attrs({
 
 const Title = styled(TextElement).attrs({
   color: colors.alpha(colors.blueGreyDark, 0.4),
+  letterSpacing: 'roundedMedium',
   size: 'tiny',
-  weight: 'medium',
+  weight: 'semibold',
 })`
-  letter-spacing: 0.3px;
   line-height: 13;
   margin-bottom: 1;
-  opacity: 0.7;
 `;
 
 const Tag = ({ text, title, ...props }) => (

@@ -27,7 +27,6 @@ const TouchableContainer = styled(ButtonPressAnimation).attrs({
 })`
   ${position.centered};
   flex: 1;
-  padding-bottom: 4;
 `;
 
 const BottomRow = ({ balance, native, nativeCurrencySymbol }) => {

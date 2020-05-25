@@ -1,9 +1,7 @@
-import { pickBy } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { View } from 'react-primitives';
 import styled from 'styled-components/primitives';
 import { buildFlexStyles } from '../../styles';
+import PrimitiveWithoutOmittedProps from './PrimitiveWithoutOmittedProps';
 
 const flexPropTypes = {
   align: PropTypes.oneOf(['baseline', 'center', 'end', 'start', 'stretch']),
@@ -27,14 +25,9 @@ const flexPropTypes = {
   wrap: PropTypes.bool,
 };
 
-const blacklist = Object.keys(flexPropTypes);
-const filterProps = (_, prop) => !blacklist.includes(prop);
-const FlexPrimitive = React.forwardRef((props, ref) => (
-  <View {...pickBy(props, filterProps)} ref={ref} />
-));
-FlexPrimitive.displayName = 'FlexPrimitive';
-
-const Flex = styled(FlexPrimitive)`
+const Flex = styled(PrimitiveWithoutOmittedProps).attrs({
+  blacklist: Object.keys(flexPropTypes),
+})`
   ${buildFlexStyles};
 `;
 

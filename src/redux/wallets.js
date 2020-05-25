@@ -9,6 +9,7 @@ import {
   saveAllWallets,
   setSelectedWallet,
 } from '../model/wallet';
+import { settingsUpdateAccountAddress } from '../redux/settings';
 
 // -- Constants --------------------------------------- //
 const WALLETS_UPDATE = 'wallets/ALL_WALLETS_UPDATE';
@@ -17,8 +18,10 @@ const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
 
 // -- Actions ---------------------------------------- //
-export const walletsLoadState = () => async dispatch => {
+export const walletsLoadState = () => async (dispatch, getState) => {
   try {
+    const { accountAddress } = getState().settings;
+    let addressFromKeychain = accountAddress;
     const { wallets } = await getAllWallets();
     const selected = await getSelectedWallet();
     // Prevent irrecoverable state (no selected wallet)
@@ -37,6 +40,21 @@ export const walletsLoadState = () => async dispatch => {
         }
         return found;
       });
+    }
+
+    // Recover from broken state (account address not in selected wallet)
+    if (!addressFromKeychain) {
+      addressFromKeychain = await loadAddress();
+    }
+
+    const selectedAddress = selectedWallet.addresses.find(a => {
+      return a.visible && a.address === addressFromKeychain;
+    });
+
+    if (!selectedAddress) {
+      const account = selectedWallet.addresses.find(a => a.visible);
+      await dispatch(settingsUpdateAccountAddress(account.address));
+      await saveAddress(account.address);
     }
 
     dispatch({
@@ -65,9 +83,8 @@ export const walletsSetSelected = wallet => dispatch => {
     type: WALLETS_SET_SELECTED,
   });
 };
-export const addressSetSelected = address => () => {
-  saveAddress(address);
-};
+
+export const addressSetSelected = address => () => saveAddress(address);
 
 export const createAccountForWallet = (id, color, name) => async (
   dispatch,

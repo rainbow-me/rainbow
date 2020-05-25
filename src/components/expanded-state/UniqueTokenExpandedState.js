@@ -81,7 +81,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
               <Column align="start">
                 <Text
                   color={colors.alpha(colors.blueGreyDark, 0.5)}
-                  lineHeight={25}
+                  lineHeight="paragraphSmall"
                   size="lmedium"
                 >
                   {asset.asset_contract.description}

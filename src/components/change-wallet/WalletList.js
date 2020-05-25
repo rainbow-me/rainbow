@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, {
   Fragment,
@@ -82,7 +82,7 @@ export function WalletList({
     const privateKeyRows = [];
     const readOnlyRows = [];
 
-    if (!allWallets) return;
+    if (isEmpty(allWallets)) return;
     const sortedKeys = Object.keys(allWallets).sort();
     sortedKeys.forEach(key => {
       const wallet = allWallets[key];
@@ -138,7 +138,7 @@ export function WalletList({
 
     const newRows = [...seedRows, ...privateKeyRows, ...readOnlyRows];
 
-    // You should always be able to create a new account
+    // You should always be able to create a new wallet
     // for ex. if you only import pkey or read only wallet
     const canCreateAccount = newRows.find(
       r => r.rowType === RowTypes.ADDRESS_OPTION
@@ -183,13 +183,7 @@ export function WalletList({
     editMode,
     onChangeAccount,
     onPressAddAccount,
-    onPressImportSeedPhrase,
   ]);
-
-  const getStableId = useCallback(
-    index => (rows[index] && rows[index].id) || new Date().getTime(),
-    [rows]
-  );
 
   // Update the data provider when rows change
   useEffect(() => {
@@ -224,7 +218,16 @@ export function WalletList({
       return false;
     }).cloneWithRows(rows);
     setDataProvider(dataProvider);
+  }, [doneScrolling, height, ready, rows]);
 
+  useEffect(() => {
+    if (layoutProvider && dataProvider && !ready) {
+      skeletonTransitionRef.current.animateNextTransition();
+      setReady(true);
+    }
+  }, [dataProvider, layoutProvider, ready]);
+
+  useEffect(() => {
     // Detect if we need to autoscroll to the selected account
     let distanceToScroll = 0;
     rows.some(item => {
@@ -235,21 +238,15 @@ export function WalletList({
       return false;
     });
     if (distanceToScroll > height - rowHeight && !doneScrolling) {
-      setDoneScrolling(true);
       setTimeout(() => {
         scrollView &&
           scrollView.current &&
           scrollView.current.scrollToOffset(0, distanceToScroll, true);
+        setDoneScrolling(true);
       }, 300);
     }
-  }, [doneScrolling, getStableId, height, ready, rows]);
-
-  useEffect(() => {
-    if (layoutProvider && dataProvider && !ready) {
-      skeletonTransitionRef.current.animateNextTransition();
-      setReady(true);
-    }
-  }, [dataProvider, layoutProvider, ready]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
 
   const renderRow = useCallback(
     (_, data, index) => {

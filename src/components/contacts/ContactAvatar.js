@@ -21,7 +21,6 @@ const ContactAvatar = ({ color, size, value, ...props }) => {
         [0, 4, 6, colors.dark, 0.04],
         [0, 1, 3, colors.dark, 0.08],
       ]}
-      shouldRasterizeIOS
     >
       <Row flex={1} justify="center" align="center">
         <Text align="center" color="white" size={textSize} weight="bold">
