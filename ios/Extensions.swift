@@ -200,6 +200,32 @@ extension CALayer {
     }
 }
 
+extension UITableView {
+    func showEmptyState(_ message: String) {
+        let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: self.bounds.size.width, height: self.bounds.size.height))
+        let emoji = "🏝️"
+        let paragraphStyle = NSMutableParagraphStyle()
+        messageLabel.text = "\n\n\n\n\n\n\n" + emoji + "\n" + message
+        messageLabel.numberOfLines = 0
+        messageLabel.textAlignment = .center
+        messageLabel.textColor = UIColor.RainbowTheme.Transactions.blueGreyDark35
+        messageLabel.sizeToFit()
+        paragraphStyle.alignment = .center
+        paragraphStyle.lineHeightMultiple = 1.25
+        
+        let emojiRange = (messageLabel.text! as NSString).range(of: emoji)
+        let attributedString = NSMutableAttributedString(string: messageLabel.text!, attributes: [NSAttributedString.Key.font : UIFont(name: "SFRounded-Semibold", size: 16)!, NSAttributedString.Key.kern : 0.5, NSAttributedString.Key.paragraphStyle : paragraphStyle])
+        attributedString.setAttributes([NSAttributedString.Key.font : UIFont(name: "SFRounded-Medium", size: 32) as Any], range: emojiRange)
+        messageLabel.attributedText = attributedString
+        
+        self.backgroundView = messageLabel
+    }
+
+    func restore() {
+        self.backgroundView = nil
+    }
+}
+
 @IBDesignable class AddCashButton: UIView {
     @IBInspectable var innerColor: UIColor = UIColor.red
     @IBInspectable var middleColor: UIColor = UIColor.green
