@@ -255,3 +255,80 @@ index eb127c3..be5701c 100644
    }
  
    override func viewDidLayoutSubviews() {
+diff --git a/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx b/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
+index ddcbfd0..15cfe4a 100644
+--- a/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
++++ b/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
+@@ -4,7 +4,7 @@ import {
+   ScreenStack,
+   Screen as ScreenComponent,
+   ScreenProps,
+-} from 'react-native-screens';
++} from 'react-native-cool-modals';
+ import {
+   StackNavigationState,
+   StackActions,
+@@ -42,20 +42,55 @@ export default function NativeStackView({
+           contentStyle,
+         } = options;
+ 
++        const {
++          customStack,
++          topOffset,
++          showDragIndicator,
++          allowsDragToDismiss,
++          allowsTapToDismiss,
++          anchorModaltoLongForm,
++          onWillDismiss,
++          backgroundOpacity,
++          cornerRadius,
++          headerHeight,
++          isShortFormEnabled,
++          shortFormHeight,
++          springDamping,
++          startFromShortForm,
++          transitionDuration,
++        } = options;
++
+         return (
+           <Screen
++            customStack={customStack}
++            topOffset={topOffset}
++            showDragIndicator={showDragIndicator}
++            allowsDragToDismiss={allowsDragToDismiss}
++            allowsTapToDismiss={allowsTapToDismiss}
++            anchorModaltoLongForm={anchorModaltoLongForm}
++            onWillDismiss={onWillDismiss}
++            backgroundOpacity={backgroundOpacity}
++            cornerRadius={cornerRadius}
++            headerHeight={headerHeight}
++            isShortFormEnabled={isShortFormEnabled}
++            shortFormHeight={shortFormHeight}
++            springDamping={springDamping}
++            startFromShortForm={startFromShortForm}
++            transitionDuration={transitionDuration}
+             key={route.key}
+             style={StyleSheet.absoluteFill}
+             gestureEnabled={gestureEnabled}
+             stackPresentation={stackPresentation}
+             stackAnimation={stackAnimation}
+             onAppear={() => {
++              options?.onAppear?.()
+               navigation.emit({
+                 type: 'appear',
+                 target: route.key,
+               });
+             }}
+             onDismissed={() => {
++              options?.onDismissed?.()
+               navigation.emit({
+                 type: 'dismiss',
+                 target: route.key,
+@@ -73,7 +108,6 @@ export default function NativeStackView({
+                 target: route.key,
+               });
+             }}>
+-            <HeaderConfig {...options} route={route} />
+             <View
+               style={[
+                 styles.container,
