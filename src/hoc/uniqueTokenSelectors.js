@@ -1,7 +1,7 @@
 import { filter, groupBy } from 'lodash';
 import { createSelector } from 'reselect';
 
-const uniqueTokensSelector = state => state.uniqueTokens.uniqueTokens;
+export const uniqueTokensSelector = state => state.uniqueTokens.uniqueTokens;
 
 const sendableUniqueTokens = uniqueTokens => {
   const sendableUniqueTokens = filter(uniqueTokens, ['isSendable', true]);

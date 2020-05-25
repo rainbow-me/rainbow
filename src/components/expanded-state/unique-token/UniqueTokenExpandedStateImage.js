@@ -1,23 +1,32 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { useDimensions } from '../../../hooks';
-import { position } from '../../../styles';
+import styled from 'styled-components/primitives';
+import { useDimensions, useImageDimensionsCache } from '../../../hooks';
+import { margin, padding, position } from '../../../styles';
 import { magicMemo } from '../../../utils';
 import { Centered } from '../../layout';
 import { UniqueTokenImage } from '../../unique-token';
 
 const paddingHorizontal = 19;
 
+const Container = styled(Centered)`
+  ${padding(0, paddingHorizontal)};
+  height: ${({ height }) => height};
+`;
+
+const ImageWrapper = styled(Centered)`
+  ${({ isImageHuge }) => margin(isImageHuge ? paddingHorizontal : 0, 0)};
+  ${position.size('100%')};
+  border-radius: 10;
+  overflow: hidden;
+`;
+
 const UniqueTokenExpandedStateImage = ({ asset }) => {
-  const { width } = useDimensions();
+  const { width: deviceWidth } = useDimensions();
 
   const imageUrl = asset.image_preview_url;
-  const imageDimensions = useSelector(
-    ({ imageDimensionsCache }) => imageDimensionsCache[imageUrl]
-  );
+  const { imageDimensions } = useImageDimensionsCache(imageUrl);
 
-  const maxImageWidth = width - paddingHorizontal * 2;
+  const maxImageWidth = deviceWidth - paddingHorizontal * 2;
   const maxImageHeight = maxImageWidth * 1.5;
 
   const heightForDeviceSize =
@@ -27,28 +36,17 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
     heightForDeviceSize > maxImageHeight ? maxImageWidth : heightForDeviceSize;
 
   return (
-    <Centered height={containerHeight} paddingHorizontal={paddingHorizontal}>
-      <Centered
-        {...position.sizeAsObject('100%')}
-        borderRadius={10}
-        marginVertical={
-          heightForDeviceSize > maxImageHeight ? paddingHorizontal : 0 // 👈️ make this work
-        }
-        overflow="hidden"
-      >
+    <Container height={containerHeight}>
+      <ImageWrapper isImageHuge={heightForDeviceSize > maxImageHeight}>
         <UniqueTokenImage
           backgroundColor={asset.background}
           imageUrl={imageUrl}
           item={asset}
           resizeMode="contain"
         />
-      </Centered>
-    </Centered>
+      </ImageWrapper>
+    </Container>
   );
 };
 
-UniqueTokenExpandedStateImage.propTypes = {
-  asset: PropTypes.object,
-};
-
-export default magicMemo(UniqueTokenExpandedStateImage, 'asset');
+export default magicMemo(UniqueTokenExpandedStateImage, 'asset.uniqueId');
