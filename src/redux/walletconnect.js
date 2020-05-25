@@ -1,7 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import WalletConnect from '@walletconnect/react-native';
 import lang from 'i18n-js';
-import { forEach, mapValues, omitBy, pickBy, values } from 'lodash';
+import { forEach, isEmpty, mapValues, omitBy, pickBy, values } from 'lodash';
 import { Alert } from 'react-native';
 import {
   getAllValidWalletConnectSessions,
@@ -9,6 +9,7 @@ import {
   saveWalletConnectSession,
 } from '../handlers/localstorage/walletconnect';
 import { sendRpcCall } from '../handlers/web3';
+import WalletTypes from '../helpers/walletTypes';
 import {
   checkPushNotificationPermissions,
   getFCMToken,
@@ -87,7 +88,7 @@ export const walletConnectOnSessionRequest = (
   }
 };
 
-const listenOnNewMessages = walletConnector => dispatch => {
+const listenOnNewMessages = walletConnector => (dispatch, getState) => {
   walletConnector.on('call_request', (error, payload) => {
     if (error) throw error;
     const { clientId, peerId, peerMeta } = walletConnector;
@@ -107,7 +108,20 @@ const listenOnNewMessages = walletConnector => dispatch => {
           });
         });
       return;
+    } else {
+      const { selected } = getState().wallets;
+      const selectedWallet = selected || {};
+      const isReadOnlyWallet = selectedWallet.type === WalletTypes.readOnly;
+      if (isReadOnlyWallet) {
+        Alert.alert(`You need to import the wallet in order to do this`);
+        walletConnector.rejectRequest({
+          error: { message: 'JSON RPC method not supported' },
+          id: payload.id,
+        });
+        return;
+      }
     }
+
     dispatch(
       addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)
     );
@@ -121,13 +135,13 @@ const listenOnNewMessages = walletConnector => dispatch => {
   return walletConnector;
 };
 
-export const walletConnectResetState = () => dispatch => {
-  dispatch({ type: WALLETCONNECT_CLEAR_STATE });
-};
-
 export const walletConnectLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  let walletConnectors = {};
+  const { walletConnectors } = getState().walletconnect;
+  if (!isEmpty(walletConnectors)) {
+    return;
+  }
+  let newWalletConnectors = {};
   try {
     const allSessions = await getAllValidWalletConnectSessions(
       accountAddress,
@@ -136,16 +150,16 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
 
     const nativeOptions = await getNativeOptions();
 
-    walletConnectors = mapValues(allSessions, session => {
+    newWalletConnectors = mapValues(allSessions, session => {
       const walletConnector = new WalletConnect({ session }, nativeOptions);
       return dispatch(listenOnNewMessages(walletConnector));
     });
   } catch (error) {
-    walletConnectors = {};
+    newWalletConnectors = {};
   }
-  if (walletConnectors) {
+  if (!isEmpty(newWalletConnectors)) {
     dispatch({
-      payload: walletConnectors,
+      payload: newWalletConnectors,
       type: WALLETCONNECT_INIT_SESSIONS,
     });
   }
@@ -213,12 +227,32 @@ export const removeWalletConnector = peerId => (dispatch, getState) => {
   });
 };
 
+export const walletConnectUpdateSessions = () => (dispatch, getState) => {
+  const { accountAddress, chainId, network } = getState().settings;
+  const { walletConnectors } = getState().walletconnect;
+
+  Object.keys(walletConnectors).forEach(key => {
+    const connector = walletConnectors[key];
+    const newSessionData = {
+      accounts: [accountAddress],
+      chainId,
+    };
+    connector.updateSession(newSessionData);
+
+    saveWalletConnectSession(
+      connector.peerId,
+      connector.session,
+      accountAddress,
+      network
+    );
+  });
+};
+
 export const walletConnectApproveSession = (peerId, callback) => (
   dispatch,
   getState
 ) => {
   const { accountAddress, chainId, network } = getState().settings;
-
   const walletConnector = dispatch(getPendingRequest(peerId));
   walletConnector.approveSession({
     accounts: [accountAddress],

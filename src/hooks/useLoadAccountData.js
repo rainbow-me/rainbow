@@ -27,14 +27,13 @@ export default function useLoadAccountData() {
         const p1 = dispatch(dataLoadState());
         const p2 = dispatch(savingsLoadState());
         const p3 = dispatch(uniqueTokensLoadState());
-        const p4 = dispatch(walletConnectLoadState());
-        const p5 = dispatch(requestsLoadState());
-        promises.push(p1, p2, p3, p4, p5);
+        promises.push(p1, p2, p3);
       }
-
+      const p4 = dispatch(requestsLoadState());
+      const p5 = dispatch(walletConnectLoadState());
       const p6 = dispatch(uniswapLoadState());
       const p7 = dispatch(addCashLoadState());
-      promises.push(p6, p7);
+      promises.push(p4, p5, p6, p7);
 
       return promiseUtils.PromiseAllWithFails(promises);
     },
