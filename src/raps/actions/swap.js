@@ -4,6 +4,7 @@ import {
   estimateSwapGasLimit,
   executeSwap,
 } from '../../handlers/uniswap';
+import ProtocolTypes from '../../helpers/protocolTypes';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import {
@@ -121,6 +122,7 @@ const swap = async (wallet, currentRap, index, parameters) => {
     from: accountAddress,
     hash: swap.hash,
     nonce: get(swap, 'nonce'),
+    protocol: ProtocolTypes.uniswap.name,
     status: TransactionStatusTypes.swapping,
     to: get(swap, 'to'),
     type: TransactionTypes.trade,

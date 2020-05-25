@@ -335,7 +335,7 @@ export const dedupePendingTransactions = (
   return updatedPendingTransactions;
 };
 
-const getTitle = ({ protocol, status, type }) => {
+export const getTitle = ({ protocol, status, type }) => {
   if (type === TransactionTypes.deposit || type === TransactionTypes.withdraw) {
     if (
       status === TransactionStatusTypes.deposited ||
@@ -353,7 +353,7 @@ const getTitle = ({ protocol, status, type }) => {
   return upperFirst(status);
 };
 
-const getDescription = ({ name, status, type }) => {
+export const getDescription = ({ name, status, type }) => {
   switch (type) {
     case TransactionTypes.deposit:
       return status === TransactionStatusTypes.depositing ||
