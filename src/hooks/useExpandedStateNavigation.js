@@ -28,15 +28,14 @@ export default function useExpandedStateNavigation(inputType) {
 
   return useCallback(
     routeName => {
-      InteractionManager.runAfterInteractions(() => {
-        goBack();
-      });
+      if (isReadOnlyWallet) {
+        return Alert.alert(`You need to import the wallet in order to do this`);
+      }
 
-      return isReadOnlyWallet
-        ? Alert.alert(`You need to import the wallet in order to do this`)
-        : InteractionManager.runAfterInteractions(() =>
-            setTimeout(() => navigate(routeName, navigationPayload), 50)
-          );
+      InteractionManager.runAfterInteractions(() => goBack());
+      InteractionManager.runAfterInteractions(() =>
+        setTimeout(() => navigate(routeName, navigationPayload), 50)
+      );
     },
     [goBack, isReadOnlyWallet, navigate, navigationPayload]
   );
