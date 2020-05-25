@@ -49,7 +49,7 @@ const ProfileAction = ({
 
   return (
     <ButtonPressAnimation
-      enableHapticFeedback={isAvatarPickerAvailable ? true : false}
+      enableHapticFeedback={isAvatarPickerAvailable}
       marginTop={2}
       onPress={onPress}
       pressOutDuration={200}
