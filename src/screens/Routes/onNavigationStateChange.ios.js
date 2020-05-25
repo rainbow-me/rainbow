@@ -4,6 +4,7 @@ import { StatusBar } from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { Navigation } from '../../navigation';
+import { notifyMountBottomSheet } from '../../navigation/Navigation';
 import { expandedPreset } from '../../navigation/transitions/effects';
 import { setModalVisible } from '../../redux/modal';
 import store from '../../redux/store';
@@ -80,9 +81,7 @@ export function onNavigationStateChange(prevState, currentState) {
 
   if (
     prevRouteName === Routes.IMPORT_SEED_PHRASE_SHEET &&
-    (routeName === Routes.CHANGE_WALLET_SHEET ||
-      routeName === Routes.PROFILE_SCREEN ||
-      routeName === Routes.WALLET_SCREEN)
+    (routeName === Routes.PROFILE_SCREEN || routeName === Routes.WALLET_SCREEN)
   ) {
     StatusBar.setBarStyle('dark-content', true);
   }
@@ -114,13 +113,19 @@ export function onNavigationStateChange(prevState, currentState) {
   if (routeName !== prevRouteName) {
     let paramsToTrack = null;
 
-    store.dispatch(
-      setModalVisible(
-        routeName === 'WalletScreen' ||
-          routeName === 'QRScannerScreen' ||
-          routeName === 'ProfileScreen'
-      )
-    );
+    if (
+      routeName === Routes.WALLET_SCREEN ||
+      routeName === Routes.QR_SCANNER_SCREEN ||
+      routeName === Routes.PROFILE_SCREEN
+    ) {
+      console.log(prevRouteName);
+      console.log('setting visible to true');
+      const delay = prevRouteName === Routes.SEND_SHEET ? 100 : 400;
+      setTimeout(() => {
+        store.dispatch(setModalVisible(true));
+        notifyMountBottomSheet();
+      }, delay);
+    }
 
     if (routeName === Routes.EXPANDED_ASSET_SHEET) {
       const { asset, type } = params;

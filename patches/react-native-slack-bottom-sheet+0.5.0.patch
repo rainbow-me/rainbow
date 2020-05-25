@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-slack-bottom-sheet/ios/SlackBottomSheet.m b/node_modules/react-native-slack-bottom-sheet/ios/SlackBottomSheet.m
+index 637f112..d822ad8 100644
+--- a/node_modules/react-native-slack-bottom-sheet/ios/SlackBottomSheet.m
++++ b/node_modules/react-native-slack-bottom-sheet/ios/SlackBottomSheet.m
+@@ -196,6 +196,8 @@ - (void)setVisible:(BOOL)visible {
+       [[rootViewController presentedViewController] dismissViewControllerAnimated:!self->_isHiding completion:^{
+         self.transitionDuration = oldTransitionDuration;
+       }];
++      //self->_contoller.view = nil;
++      self->_contoller = nil;
+       self->_isHiding = false;
+       self->_modalPresented = NO;
+     });
