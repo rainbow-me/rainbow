@@ -244,8 +244,11 @@ const routesForBottomSheetStack = {
   [Routes.CHANGE_WALLET_SHEET]: {
     navigationOptions: {
       backgroundOpacity: 0.6,
+      cornerRadius: 0,
       customStack: true,
+      headerHeight: 46,
       springDamping: 1,
+      topOffset: 128,
       transitionDuration: 0.25,
     },
     screen: ChangeWalletSheet,
