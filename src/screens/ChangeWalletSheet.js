@@ -102,7 +102,7 @@ const ChangeWalletSheet = () => {
         const wallet = wallets[walletId];
         dispatch(walletsSetSelected(wallet));
         dispatch(addressSetSelected(address));
-        await initializeWallet();
+        initializeWallet();
         !fromDeletion && goBack();
       } catch (e) {
         logger.log('error while switching account', e);
