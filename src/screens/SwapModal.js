@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigationParam } from 'react-navigation-hooks';
+import React, { useMemo } from 'react';
+import { useNavigation } from 'react-navigation-hooks';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
 import createUnlockAndSwapRap, {
   estimateUnlockAndSwap,
@@ -7,14 +7,18 @@ import createUnlockAndSwapRap, {
 import ExchangeModal from './ExchangeModal';
 
 const SwapModal = (props, ref) => {
-  const defaultInputAsset = useNavigationParam('inputAsset');
-  const defaultOutputAsset = useNavigationParam('outputAsset');
+  const { dangerouslyGetParent } = useNavigation();
+
+  const { inputAsset, outputAsset } = useMemo(
+    () => dangerouslyGetParent()?.state?.params || {},
+    [dangerouslyGetParent]
+  );
 
   return (
     <ExchangeModal
       createRap={createUnlockAndSwapRap}
-      defaultInputAsset={defaultInputAsset}
-      defaultOutputAsset={defaultOutputAsset}
+      defaultInputAsset={inputAsset}
+      defaultOutputAsset={outputAsset}
       estimateRap={estimateUnlockAndSwap}
       inputHeaderTitle="Swap"
       ref={ref}
