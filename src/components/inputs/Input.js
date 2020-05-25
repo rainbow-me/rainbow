@@ -1,9 +1,12 @@
-import React, { useImperativeHandle, useRef } from 'react';
+import React from 'react';
 import { TextInput as TextInputPrimitive } from 'react-native';
 import styled from 'styled-components/primitives';
 import { buildTextStyles, colors } from '../../styles';
 
-const TextInput = styled(TextInputPrimitive)`
+const TextInput = styled(TextInputPrimitive).attrs({
+  selectionColor: colors.appleBlue,
+})`
+  /* our Input uses same styling system as our <Text /> component */
   ${buildTextStyles};
 `;
 
@@ -19,17 +22,6 @@ const Input = (
   },
   ref
 ) => {
-  const inputRef = useRef();
-
-  useImperativeHandle(ref, () => ({
-    blur: event => inputRef?.current?.blur(event),
-    clear: () => inputRef?.current?.clear(),
-    focus: event => inputRef?.current?.focus(event),
-    isFocused: () => inputRef?.current?.isFocused(),
-    setNativeProps: nativeProps =>
-      inputRef?.current?.setNativeProps(nativeProps),
-  }));
-
   return (
     <TextInput
       {...props}
@@ -38,8 +30,7 @@ const Input = (
       autoCorrect={autoCorrect}
       keyboardType={keyboardType}
       placeholderTextColor={placeholderTextColor}
-      ref={inputRef}
-      selectionColor={colors.appleBlue}
+      ref={ref}
       spellCheck={spellCheck}
     />
   );

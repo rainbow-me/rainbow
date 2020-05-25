@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import React, { useCallback, useRef, useState } from 'react';
+import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import Divider from '../components/Divider';
@@ -15,6 +15,7 @@ import WalletTypes from '../helpers/walletTypes';
 import { useAccountSettings, useInitializeWallet, useWallets } from '../hooks';
 import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
 import { createWallet } from '../model/wallet';
+import { useNavigation } from '../navigation/Navigation';
 import {
   addressSetSelected,
   createAccountForWallet,
@@ -142,36 +143,44 @@ const ChangeWalletSheet = () => {
         account => account.address === address
       );
 
-      navigate(Routes.MODAL_SCREEN, {
-        address,
-        asset: [],
-        onCloseModal: async args => {
-          if (args) {
-            const newWallets = { ...wallets };
-            if ('name' in args) {
-              newWallets[walletId].addresses.some((account, index) => {
-                if (account.address === address) {
-                  newWallets[walletId].addresses[index].label = args.name;
-                  newWallets[walletId].addresses[index].color = args.color;
-                  if (selectedWallet.id === walletId) {
-                    dispatch(walletsSetSelected(newWallets[walletId]));
-                  }
-                  return true;
+      InteractionManager.runAfterInteractions(() => {
+        goBack();
+      });
+
+      InteractionManager.runAfterInteractions(() => {
+        setTimeout(() => {
+          navigate(Routes.MODAL_SCREEN, {
+            address,
+            asset: [],
+            onCloseModal: async args => {
+              if (args) {
+                const newWallets = { ...wallets };
+                if ('name' in args) {
+                  newWallets[walletId].addresses.some((account, index) => {
+                    if (account.address === address) {
+                      newWallets[walletId].addresses[index].label = args.name;
+                      newWallets[walletId].addresses[index].color = args.color;
+                      if (selectedWallet.id === walletId) {
+                        dispatch(walletsSetSelected(newWallets[walletId]));
+                      }
+                      return true;
+                    }
+                    return false;
+                  });
+                  await dispatch(walletsUpdate(newWallets));
                 }
-                return false;
-              });
-              await dispatch(walletsUpdate(newWallets));
-            }
-          }
-        },
-        profile: {
-          color: account.color,
-          name: account.label || ``,
-        },
-        type: 'wallet_profile_creator',
+              }
+            },
+            profile: {
+              color: account.color,
+              name: account.label || ``,
+            },
+            type: 'wallet_profile_creator',
+          });
+        }, 50);
       });
     },
-    [dispatch, navigate, selectedWallet.id, wallets]
+    [dispatch, goBack, navigate, selectedWallet.id, wallets]
   );
 
   const onEditWallet = useCallback(
@@ -253,36 +262,46 @@ const ChangeWalletSheet = () => {
       try {
         if (creatingWallet.current) return;
         creatingWallet.current = true;
+
         // Show naming modal
-        navigate(Routes.MODAL_SCREEN, {
-          actionType: 'Create',
-          asset: [],
-          isNewProfile: true,
-          onCloseModal: async args => {
-            if (args) {
-              const name = get(args, 'name', '');
-              const color = get(args, 'color', colors.getRandomColor());
-              if (walletId) {
-                await dispatch(createAccountForWallet(walletId, color, name));
-                await initializeWallet();
-              } else {
-                await createWallet(null, color, name);
-                await initializeWallet();
-              }
-            }
-            creatingWallet.current = false;
-          },
-          profile: {
-            color: null,
-            name: ``,
-          },
-          type: 'wallet_profile_creator',
+        InteractionManager.runAfterInteractions(() => {
+          goBack();
+        });
+        InteractionManager.runAfterInteractions(() => {
+          setTimeout(() => {
+            navigate(Routes.MODAL_SCREEN, {
+              actionType: 'Create',
+              asset: [],
+              isNewProfile: true,
+              onCloseModal: async args => {
+                if (args) {
+                  const name = get(args, 'name', '');
+                  const color = get(args, 'color', colors.getRandomColor());
+                  if (walletId) {
+                    await dispatch(
+                      createAccountForWallet(walletId, color, name)
+                    );
+                    await initializeWallet();
+                  } else {
+                    await createWallet(null, color, name);
+                    await initializeWallet();
+                  }
+                }
+                creatingWallet.current = false;
+              },
+              profile: {
+                color: null,
+                name: ``,
+              },
+              type: 'wallet_profile_creator',
+            });
+          }, 50);
         });
       } catch (e) {
         logger.log('Error while trying to add account', e);
       }
     },
-    [dispatch, initializeWallet, navigate]
+    [dispatch, goBack, initializeWallet, navigate]
   );
 
   const onPressImportSeedPhrase = useCallback(() => {
