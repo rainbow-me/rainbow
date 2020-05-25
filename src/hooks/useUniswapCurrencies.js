@@ -87,7 +87,12 @@ export default function useUniswapCurrencies({
       updateUniswapInputCurrency(defaultInputItemInWallet);
       updateUniswapOutputCurrency(defaultOutputItem);
     }
-  }, [updateUniswapInputCurrency, updateUniswapOutputCurrency]);
+  }, [
+    defaultInputItemInWallet,
+    defaultOutputItem,
+    updateUniswapInputCurrency,
+    updateUniswapOutputCurrency,
+  ]);
 
   const previousInputCurrency = usePrevious(inputCurrency);
   const previousOutputCurrency = usePrevious(outputCurrency);
