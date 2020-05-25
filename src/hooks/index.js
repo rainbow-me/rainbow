@@ -17,6 +17,7 @@ export { default as useEmailRainbow } from './useEmailRainbow';
 export { default as useExpandedStateNavigation } from './useExpandedStateNavigation';
 export { default as useGas } from './useGas';
 export { default as useHideSplashScreen } from './useHideSplashScreen';
+export { default as useImageDimensionsCache } from './useImageDimensionsCache';
 export { default as useInitializeAccountData } from './useInitializeAccountData';
 export { default as useInitializeWallet } from './useInitializeWallet';
 export { default as useInteraction } from './useInteraction';

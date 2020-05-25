@@ -1,10 +1,11 @@
 import React, { createElement, Fragment } from 'react';
+import { useSafeArea } from 'react-native-safe-area-context';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import AssetTypes from '../../helpers/assetTypes';
+import { useAsset, useDimensions } from '../../hooks';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import { colors, padding, position } from '../../styles';
-import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../../utils';
 import { SendCoinRow } from '../coin-row';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
 import SendSavingsCoinRow from '../coin-row/SendSavingsCoinRow';
@@ -13,7 +14,6 @@ import { Column } from '../layout';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
 
-const nftPaddingBottom = safeAreaInsetValues.bottom;
 const tokenPaddingBottom = sheetVerticalOffset + 19;
 
 const AssetRowShadow = [
@@ -29,19 +29,18 @@ const Container = styled(Column)`
   overflow: hidden;
 `;
 
-const TransactionContainer = styled(Column).attrs({
+const FormContainer = styled(Column).attrs({
   align: 'end',
   justify: 'space-between',
 })`
-  ${({ isNft }) =>
-    padding(22, isNft ? 0 : 15, isNft ? nftPaddingBottom : tokenPaddingBottom)};
+  ${({ insets, isNft }) =>
+    padding(22, isNft ? 0 : 15, isNft ? insets.bottom : tokenPaddingBottom)};
   background-color: ${colors.lighterGrey};
   flex: 1;
   width: 100%;
 `;
 
 export default function SendAssetForm({
-  allAssets,
   assetAmount,
   buttonRenderer,
   nativeAmount,
@@ -54,10 +53,13 @@ export default function SendAssetForm({
   txSpeedRenderer,
   ...props
 }) {
-  const selectedAsset = ethereumUtils.getAsset(allAssets, selected.address);
+  const insets = useSafeArea();
+  const { width: deviceWidth } = useDimensions();
 
-  const isNft = selected.type === AssetTypes.nft;
-  const isSavings = selected.type === AssetTypes.cToken;
+  const selectedAsset = useAsset(selected);
+
+  const isNft = selectedAsset.type === AssetTypes.nft;
+  const isSavings = selectedAsset.type === AssetTypes.cToken;
 
   return (
     <Container>
@@ -65,7 +67,7 @@ export default function SendAssetForm({
         borderRadius={0}
         height={SendCoinRow.selectedHeight}
         shadows={AssetRowShadow}
-        width={deviceUtils.dimensions.width}
+        width={deviceWidth}
       >
         {createElement(
           isNft
@@ -75,16 +77,16 @@ export default function SendAssetForm({
             : SendCoinRow,
           {
             children: <Icon name="doubleCaret" />,
-            item: isNft || isSavings ? selected : selectedAsset,
+            item: selectedAsset,
             onPress: onResetAssetSelection,
             selected: true,
           }
         )}
       </ShadowStack>
-      <TransactionContainer isNft={isNft}>
+      <FormContainer insets={insets} isNft={isNft}>
         {isNft ? (
           <SendAssetFormCollectible
-            {...selected}
+            asset={selectedAsset}
             buttonRenderer={buttonRenderer}
             txSpeedRenderer={txSpeedRenderer}
           />
@@ -98,13 +100,13 @@ export default function SendAssetForm({
               nativeCurrency={nativeCurrency}
               onChangeAssetAmount={onChangeAssetAmount}
               onChangeNativeAmount={onChangeNativeAmount}
-              selected={selected}
+              selected={selectedAsset}
               sendMaxBalance={sendMaxBalance}
               txSpeedRenderer={txSpeedRenderer}
             />
           </Fragment>
         )}
-      </TransactionContainer>
+      </FormContainer>
     </Container>
   );
 }

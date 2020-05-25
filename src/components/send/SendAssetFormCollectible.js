@@ -1,155 +1,133 @@
-import withViewLayoutProps from '@hocs/with-view-layout-props';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { View } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { compose, onlyUpdateForKeys, withProps, withState } from 'recompact';
-import { withImageDimensionsCache } from '../../hoc';
-import { colors, position } from '../../styles';
-import { deviceUtils } from '../../utils';
+import styled from 'styled-components/primitives';
+import { useDimensions, useImageDimensionsCache } from '../../hooks';
+import { colors, padding, position } from '../../styles';
 import { OpacityToggler } from '../animations';
 import { Column, ColumnWithMargins } from '../layout';
 import { UniqueTokenCard } from '../unique-token';
 
-const enhance = compose(
-  withImageDimensionsCache,
-  withState('previousContainerHeight', 'setPreviousContainerHeight', 0),
-  withState('isGradientVisible', 'setIsGradientVisible', false),
-  withViewLayoutProps(
-    ({ width: containerWidth, height: containerHeight, y }) => ({
-      containerHeight: containerHeight - y * 2,
-      containerWidth,
-    })
-  ),
-  withProps(({ image_preview_url, imageDimensionsCache }) => ({
-    imageDimensions: imageDimensionsCache[image_preview_url],
-  })),
-  withProps(
-    ({
-      containerHeight,
-      imageDimensions,
-      previousContainerHeight,
-      setIsGradientVisible,
-      setPreviousContainerHeight,
-    }) => {
-      if (!imageDimensions) {
-        imageDimensions = { height: 512, width: 512 };
+const defaultImageDimensions = { height: 512, width: 512 };
+
+const ButtonWrapper = styled(ColumnWithMargins).attrs(({ isTallPhone }) => ({
+  margin: isTallPhone ? 25 : 15.5,
+}))`
+  ${padding(0, 15, 15)};
+  margin-bottom: 29;
+  width: 100%;
+  z-index: 3;
+`;
+
+const Footer = styled(Column).attrs({ justify: 'end' })`
+  height: 210;
+  width: 100%;
+`;
+
+const Gradient = styled(LinearGradient).attrs(({ isTallPhone }) => ({
+  colors: ['#FAFAFA00', '#FAFAFAFF'],
+  end: { x: 0.5, y: isTallPhone ? 0.2 : 0.4 },
+  pointerEvents: 'none',
+  start: { x: 0.5, y: 0 },
+}))`
+  ${position.cover};
+  border-radius: 19;
+  overflow: hidden;
+`;
+
+const GradientToggler = styled(OpacityToggler).attrs({
+  endingOpacity: 1,
+  startingOpacity: 0,
+  tension: 500,
+})`
+  ${position.cover};
+`;
+
+const SendFormUniqueTokenCard = styled(UniqueTokenCard).attrs({
+  borderEnabled: false,
+  enableHapticFeedback: false,
+  resizeMode: 'contain',
+  scaleTo: 1,
+  shadow: [0, 10, 25, colors.dark, 0.4],
+})`
+  opacity: 1;
+`;
+
+export default function SendAssetFormCollectible({
+  asset,
+  buttonRenderer,
+  txSpeedRenderer,
+  ...props
+}) {
+  const {
+    height: deviceHeight,
+    isTallPhone,
+    width: deviceWidth,
+  } = useDimensions();
+
+  const [containerHeight, setContainerHeight] = useState();
+  const [containerWidth, setContainerWidth] = useState();
+  const [isGradientVisible, setIsGradientVisible] = useState(false);
+
+  const { imageDimensions: cachedImageDimensions } = useImageDimensionsCache(
+    asset.image_preview_url
+  );
+
+  const { height: imageHeight, width: imageWidth } = useMemo(() => {
+    const imgDims = cachedImageDimensions || defaultImageDimensions;
+
+    const defaultWidth = deviceWidth - 30;
+    const defaultHeight = (defaultWidth * imgDims.height) / imgDims.width;
+    let width = defaultWidth;
+    let height = defaultHeight;
+
+    const calculatedHeight = deviceHeight - (isTallPhone ? 440 : 330);
+
+    if (height > calculatedHeight) {
+      height = calculatedHeight;
+      width = (height * imgDims.width) / imgDims.height;
+      if (width > defaultWidth) {
+        width = defaultWidth;
+        height = defaultHeight;
       }
-      let width = deviceUtils.dimensions.width - 30;
-      let height = !imageDimensions
-        ? width
-        : (width * imageDimensions.height) / imageDimensions.width;
-
-      const calculatedHeight =
-        deviceUtils.dimensions.height -
-        (deviceUtils.dimensions.height < 812 ? 330 : 440);
-
-      if (containerHeight < previousContainerHeight) {
-        setPreviousContainerHeight(containerHeight);
-        setIsGradientVisible(true);
-      } else if (containerHeight > previousContainerHeight) {
-        setPreviousContainerHeight(containerHeight);
-        setIsGradientVisible(false);
-      }
-
-      if (height > calculatedHeight) {
-        height = calculatedHeight;
-        width = (height * imageDimensions.width) / imageDimensions.height;
-
-        if (width > deviceUtils.dimensions.width - 30) {
-          width = deviceUtils.dimensions.width - 30;
-          height = !imageDimensions
-            ? width
-            : (width * imageDimensions.height) / imageDimensions.width;
-        }
-      }
-
-      return {
-        height,
-        width,
-      };
     }
-  ),
-  onlyUpdateForKeys(['containerHeight', 'containerWidth', 'height', 'width'])
-);
 
-const SendAssetFormCollectible = enhance(
-  ({
-    buttonRenderer,
-    containerHeight,
-    containerWidth,
-    height,
-    isGradientVisible,
-    onLayout,
-    width,
-    txSpeedRenderer,
-    ...props
-  }) => (
-    <>
-      <Column align="center" flex={1} onLayout={onLayout} width="100%">
-        {!!containerHeight && !!containerWidth && (
-          <UniqueTokenCard
-            {...props}
-            borderEnabled={false}
-            enableHapticFeedback={false}
-            height={height}
-            item={props}
-            opacity={1}
-            scaleTo={1}
-            resizeMode="contain"
-            shadowStyle={{
-              shadowColor: colors.dark,
-              shadowOffset: { height: 10, width: 0 },
-              shadowOpacity: 0.4,
-              shadowRadius: 25,
-            }}
-            width={width}
-          />
-        )}
+    return { height, width };
+  }, [cachedImageDimensions, deviceHeight, deviceWidth, isTallPhone]);
+
+  const handleLayout = useCallback(
+    ({ nativeEvent: { layout } }) => {
+      const newContainerHeight = layout.height - layout.y * 2;
+      setIsGradientVisible(newContainerHeight < containerHeight);
+      setContainerHeight(newContainerHeight);
+      setContainerWidth(layout.width);
+    },
+    [containerHeight]
+  );
+
+  return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <Column align="end" flex={1} width="100%">
+        <Column align="center" flex={1} onLayout={handleLayout} width="100%">
+          {!!containerHeight && !!containerWidth && (
+            <SendFormUniqueTokenCard
+              {...props}
+              height={imageHeight}
+              item={asset}
+              width={imageWidth}
+            />
+          )}
+        </Column>
+        <Footer>
+          <ButtonWrapper isTallPhone={isTallPhone}>
+            {buttonRenderer}
+            {txSpeedRenderer}
+          </ButtonWrapper>
+          <GradientToggler isVisible={isGradientVisible}>
+            <Gradient isTallPhone={isTallPhone} />
+          </GradientToggler>
+        </Footer>
       </Column>
-      <View
-        height={210}
-        justifyContent="flex-end"
-        marginBottom={0}
-        width="100%"
-      >
-        <ColumnWithMargins
-          margin={deviceUtils.dimensions.height < 812 ? 15.5 : 25}
-          marginBottom={29}
-          paddingBottom={15}
-          paddingHorizontal={15}
-          style={{ zIndex: 3 }}
-          width="100%"
-        >
-          {buttonRenderer}
-          {txSpeedRenderer}
-        </ColumnWithMargins>
-        <OpacityToggler
-          isVisible={isGradientVisible}
-          style={position.coverAsObject}
-          tension={500}
-        >
-          <LinearGradient
-            borderRadius={19}
-            colors={['#FAFAFA00', '#FAFAFAFF']}
-            end={{ x: 0.5, y: deviceUtils.dimensions.height < 812 ? 0.4 : 0.2 }}
-            overflow="hidden"
-            pointerEvents="none"
-            start={{ x: 0.5, y: 0 }}
-            style={position.coverAsObject}
-          />
-        </OpacityToggler>
-      </View>
-    </>
-  )
-);
-
-SendAssetFormCollectible.propTypes = {
-  containerHeight: PropTypes.number,
-  containerWidth: PropTypes.number,
-  height: PropTypes.number,
-  onLayout: PropTypes.func,
-  width: PropTypes.number,
-};
-
-export default SendAssetFormCollectible;
+    </TouchableWithoutFeedback>
+  );
+}
