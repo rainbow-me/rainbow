@@ -14,7 +14,7 @@ const Container = styled.View`
 
 const Content = styled(ButtonPressAnimation)`
   ${position.size('100%')};
-  align-items: ${({ isAbsolute }) => (isAbsolute ? 'flex-end' : 'flex-start')};
+  align-items: ${({ isAbsolute }) => (isAbsolute ? 'flex-end' : 'center')};
   justify-content: center;
 `;
 
@@ -33,8 +33,8 @@ const CheckmarkBackground = styled.View`
 `;
 
 const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => (
-  <Container isAbsolute={isAbsolute}>
-    <Content {...props} isAbsolute={isAbsolute} onPress={onPress}>
+  <Container {...props} isAbsolute={isAbsolute}>
+    <Content isAbsolute={isAbsolute} onPress={onPress}>
       <CircleOutline />
       <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
         <CheckmarkBackground>

@@ -12,7 +12,7 @@ const ButtonContent = styled(Row).attrs({
 })`
   ${padding(5, 10, 6)};
   ${({ isActive }) =>
-    isActive ? shadow.build(0, 4, 6, colors.appleBlue, 0.6) : ''};
+    isActive ? shadow.build(0, 4, 6, colors.appleBlue, 0.4) : ''};
   background-color: ${({ isActive }) =>
     isActive ? colors.appleBlue : colors.alpha(colors.blueGreyDark, 0.06)};
   border-radius: 15;
