@@ -80,7 +80,7 @@ const GasSpeedButton = ({ type }) => {
 
   const formatAnimatedGasPrice = useCallback(
     animatedPrice => {
-      const formattedPrice = parseFloat(animatedPrice).toFixed(3);
+      const formattedPrice = parseFloat(Number(animatedPrice).toFixed(3));
       return `${nativeCurrencySymbol}${formattedPrice}`;
     },
     [nativeCurrencySymbol]
