@@ -852,14 +852,6 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@hocs/omit-props@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@hocs/omit-props/-/omit-props-0.4.0.tgz#6fb182a8c793e018b3706bb11ba24dd1664d99eb"
-  integrity sha512-vR0CzO2HdUszPRVOF2vxlVsXNeLvG9N5KIVEDIZtGBXWxdv6FAjxCSHQBjj2O0FqeW0G61N5XMuKWr8xjYiRpQ==
-  dependencies:
-    just-omit "^1.0.1"
-    react-display-name "^0.2.4"
-
 "@hocs/safe-timers@^0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@hocs/safe-timers/-/safe-timers-0.4.0.tgz#e3e7ff8988f8b044b56d18647f71a508d62805f4"
@@ -6707,11 +6699,6 @@ jsx-ast-utils@^2.2.3:
   dependencies:
     array-includes "^3.1.1"
     object.assign "^4.1.0"
-
-just-omit@^1.0.1:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/just-omit/-/just-omit-1.1.0.tgz#ea507d3a251a36383d09e47324181d7f4acb2ea6"
-  integrity sha512-MBDr0a1Yyzht8KK3RS2oUKtJSKRrm+6txDuEFJOXoALnX4h+FcQyWSKVNDlZiClOSIRf1PkzJ+QkKm0pjLS7Mw==
 
 keccak@^1.0.2:
   version "1.4.0"
