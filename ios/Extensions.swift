@@ -214,8 +214,8 @@ extension UITableView {
         paragraphStyle.lineHeightMultiple = 1.25
         
         let emojiRange = (messageLabel.text! as NSString).range(of: emoji)
-        let attributedString = NSMutableAttributedString(string: messageLabel.text!, attributes: [NSAttributedString.Key.font : UIFont(name: "SFRounded-Semibold", size: 16)!, NSAttributedString.Key.kern : 0.5, NSAttributedString.Key.paragraphStyle : paragraphStyle])
-        attributedString.setAttributes([NSAttributedString.Key.font : UIFont(name: "SFRounded-Medium", size: 32) as Any], range: emojiRange)
+        let attributedString = NSMutableAttributedString(string: messageLabel.text!, attributes: [NSAttributedString.Key.font : UIFont(name: "SFRounded-Semibold", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .semibold), NSAttributedString.Key.kern : 0.5, NSAttributedString.Key.paragraphStyle : paragraphStyle])
+        attributedString.setAttributes([NSAttributedString.Key.font : UIFont.systemFont(ofSize: 32)], range: emojiRange)
         messageLabel.attributedText = attributedString
         
         self.backgroundView = messageLabel
