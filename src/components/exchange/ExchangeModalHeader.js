@@ -39,7 +39,6 @@ const InfoButton = styled(Centered).attrs({
   pressOutTension: 300,
   useNativeDriver: true,
 })`
-  ${InfoButtonPosition};
   ${padding(0, 19)};
   margin-top: ${SheetHandleMargin + 4};
 `;
