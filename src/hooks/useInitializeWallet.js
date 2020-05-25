@@ -62,11 +62,17 @@ export default function useInitializeWallet() {
         if (isImported) {
           await resetAccountState();
         }
-        dispatch(settingsUpdateAccountAddress(walletAddress));
+
         if (!(isNew || isImported)) {
           await loadGlobalData();
+        }
+
+        await dispatch(settingsUpdateAccountAddress(walletAddress));
+
+        if (!(isNew || isImported)) {
           await loadAccountData(network);
         }
+
         onHideSplashScreen();
         logger.sentry('Hide splash screen');
         initializeAccountData();

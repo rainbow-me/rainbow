@@ -1,22 +1,17 @@
 import GraphemeSplitter from 'grapheme-splitter';
 import { toUpper } from 'lodash';
-import { useSelector } from 'react-redux';
 import { removeFirstEmojiFromString } from '../helpers/emojiHandler';
 import { address } from '../utils/abbreviations';
+import useAccountSettings from './useAccountSettings';
+import useWallets from './useWallets';
 
 export default function useAccountProfile() {
-  const selectedWallet = useSelector(({ wallets: { selected } }) => selected);
-  const accountData = useSelector(
-    ({ settings: { accountAddress, accountENS } }) => ({
-      accountAddress,
-      accountENS,
-    })
-  );
+  const { selectedWallet } = useWallets();
+
+  const { accountAddress, accountENS } = useAccountSettings();
 
   if (!selectedWallet) return {};
-  if (!accountData) return {};
-
-  const { accountENS, accountAddress } = accountData;
+  if (!accountAddress) return {};
 
   if (!selectedWallet || !selectedWallet.addresses.length) return {};
 
