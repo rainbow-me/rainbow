@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import ReactCoinIcon from 'react-coin-icon';
 import ShadowStack from 'react-native-shadow-stack';
@@ -20,8 +19,8 @@ const CoinIcon = ({
   isCoinListEdited,
   isHidden,
   isPinned,
-  showShadow,
-  size,
+  showShadow = true,
+  size = CoinIconSize,
   symbol,
   ...props
 }) =>
@@ -56,22 +55,6 @@ const CoinIcon = ({
       symbol={symbol}
     />
   );
-
-CoinIcon.propTypes = {
-  address: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.string]),
-  bgColor: PropTypes.string,
-  isCoinListEdited: PropTypes.bool,
-  isHidden: PropTypes.bool,
-  isPinned: PropTypes.bool,
-  showShadow: PropTypes.bool,
-  size: PropTypes.number,
-  symbol: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.string]),
-};
-
-CoinIcon.defaultProps = {
-  showShadow: true,
-  size: CoinIconSize,
-};
 
 export default magicMemo(CoinIcon, [
   'address',

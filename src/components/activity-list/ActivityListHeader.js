@@ -11,7 +11,6 @@ export default compose(
   pickProps(Object.keys(ListHeader.propTypes)),
   withProps({
     isSticky: true,
-    shouldRasterizeIOS: true,
     showDivider: false,
     titleRenderer,
   }),

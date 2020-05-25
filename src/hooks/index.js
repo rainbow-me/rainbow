@@ -30,6 +30,7 @@ export { default as useMagicFocus } from './useMagicFocus';
 export { default as useMaxInputBalance } from './useMaxInputBalance';
 export { default as useOpenInvestmentCards } from './useOpenInvestmentCards';
 export { default as useOpenSavings } from './useOpenSavings';
+export { default as useOpenSmallBalances } from './useOpenSmallBalances';
 export { default as usePrevious } from './usePrevious';
 export { default as usePurchaseTransactionStatus } from './usePurchaseTransactionStatus';
 export { default as useRefreshAccountData } from './useRefreshAccountData';
@@ -54,6 +55,6 @@ export { default as useUniswapCurrencyReserves } from './useUniswapCurrencyReser
 export { default as useUniswapMarketDetails } from './useUniswapMarketDetails';
 export { default as useUniswapMarketPrice } from './useUniswapMarketPrice';
 export { default as useWallets } from './useWallets';
-export { default as useWalletsWithBalancesAndNames } from './useWalletsWithBalancesAndNames';
 export { default as useWalletSectionsData } from './useWalletSectionsData';
+export { default as useWalletsWithBalancesAndNames } from './useWalletsWithBalancesAndNames';
 export { default as useWyreApplePay } from './useWyreApplePay';

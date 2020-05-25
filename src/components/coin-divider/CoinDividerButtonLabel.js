@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
@@ -26,12 +25,5 @@ const CoinDividerButtonLabel = ({ isVisible, label, node, steps }) => (
     <LabelText>{label}</LabelText>
   </OpacityToggler>
 );
-
-CoinDividerButtonLabel.propTypes = {
-  isVisible: PropTypes.bool,
-  label: PropTypes.string,
-  node: PropTypes.any,
-  steps: PropTypes.arrayOf(PropTypes.number),
-};
 
 export default magicMemo(CoinDividerButtonLabel, 'isVisible');
