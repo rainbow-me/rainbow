@@ -1,13 +1,11 @@
 import {
-  getAccountENS,
   getNativeCurrency,
   getNetwork,
-  saveAccountENS,
   saveLanguage,
   saveNativeCurrency,
   saveNetwork,
 } from '../handlers/localstorage/globalSettings';
-import { web3Provider, web3SetHttpProvider } from '../handlers/web3';
+import { web3SetHttpProvider } from '../handlers/web3';
 import networkTypes from '../helpers/networkTypes';
 import { updateLanguage } from '../languages';
 
@@ -22,7 +20,6 @@ const SETTINGS_UPDATE_SETTINGS_ADDRESS =
   'settings/SETTINGS_UPDATE_SETTINGS_ADDRESS';
 const SETTINGS_UPDATE_SETTINGS_COLOR =
   'settings/SETTINGS_UPDATE_SETTINGS_COLOR';
-const SETTINGS_UPDATE_SETTINGS_ENS = 'settings/SETTINGS_UPDATE_SETTINGS_ENS';
 const SETTINGS_UPDATE_SETTINGS_NAME = 'settings/SETTINGS_UPDATE_SETTINGS_NAME';
 const SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS =
   'settings/SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS';
@@ -41,16 +38,6 @@ export const settingsLoadState = () => async dispatch => {
     });
   } catch (error) {
     logger.log('Error loading native currency', error);
-  }
-
-  try {
-    const accountENS = await getAccountENS();
-    dispatch({
-      payload: accountENS,
-      type: SETTINGS_UPDATE_SETTINGS_ENS,
-    });
-  } catch (error) {
-    logger.log('Error loading account ENS', error);
   }
 };
 
@@ -85,27 +72,7 @@ export const settingsUpdateAccountAddress = accountAddress => async dispatch => 
     payload: accountAddress,
     type: SETTINGS_UPDATE_SETTINGS_ADDRESS,
   });
-  dispatch(settingsResolveAccountENS(accountAddress));
   dispatch(walletConnectUpdateSessions());
-};
-
-const settingsResolveAccountENS = accountAddress => async (
-  dispatch,
-  getState
-) => {
-  const { accountENS: existingAccountENS } = getState().settings;
-  try {
-    const accountENS = await web3Provider.lookupAddress(accountAddress);
-    dispatch({
-      payload: accountENS,
-      type: SETTINGS_UPDATE_SETTINGS_ENS,
-    });
-    if (accountENS !== existingAccountENS) {
-      saveAccountENS(accountENS);
-    }
-  } catch (error) {
-    logger.log('Error finding ens', error);
-  }
 };
 
 export const settingsUpdateNetwork = network => async dispatch => {
@@ -155,7 +122,6 @@ export const settingsChangeNativeCurrency = nativeCurrency => async dispatch => 
 export const INITIAL_STATE = {
   accountAddress: '',
   accountColor: 6,
-  accountENS: null,
   accountName: '',
   chainId: 1,
   language: 'en',
@@ -169,11 +135,6 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         accountAddress: action.payload,
-      };
-    case SETTINGS_UPDATE_SETTINGS_ENS:
-      return {
-        ...state,
-        accountENS: action.payload,
       };
     case SETTINGS_UPDATE_SETTINGS_NAME:
       return {

@@ -13,7 +13,7 @@ import { Text } from '../components/text';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
 import WalletTypes from '../helpers/walletTypes';
 import { useAccountSettings, useInitializeWallet, useWallets } from '../hooks';
-import { useWalletBalances } from '../hooks/useWalletBalances';
+import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
 import { createWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import {
@@ -77,7 +77,7 @@ const ChangeWalletSheet = () => {
   const dispatch = useDispatch();
   const { accountAddress } = useAccountSettings();
   const initializeWallet = useInitializeWallet();
-  const walletsWithBalances = useWalletBalances(wallets);
+  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const creatingWallet = useRef();
 
   const [currentAddress, setCurrentAddress] = useState(accountAddress);
@@ -342,7 +342,7 @@ const ChangeWalletSheet = () => {
 
       <WalletList
         accountAddress={currentAddress}
-        allWallets={walletsWithBalances}
+        allWallets={walletsWithBalancesAndNames}
         currentWallet={currentSelectedWallet}
         editMode={editMode}
         height={listHeight}
