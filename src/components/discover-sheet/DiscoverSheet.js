@@ -1,7 +1,9 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { BaseButton } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import { useSafeArea } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
 import { useIsFocused } from 'react-navigation-hooks';
@@ -10,10 +12,12 @@ import {
   notifyUnmountBottomSheet,
   useNavigation,
 } from '../../navigation/Navigation';
+import { SlackSheet } from '../sheet';
+import { Text } from '../text';
 
 // eslint-disable-next-line import/no-named-as-default-member
 const { SpringUtils } = Animated;
-
+const statusBarHeight = getStatusBarHeight(true);
 const discoverSheetSpring = SpringUtils.makeConfigFromBouncinessAndSpeed({
   ...SpringUtils.makeDefaultConfig(),
   bounciness: 0,
@@ -35,9 +39,6 @@ const Lorem = () => {
         paddingRight: 19,
       }}
     >
-      <BaseButton onPress={() => navigate('ImportSeedPhraseSheet')}>
-        <Text style={styles.panelTitle}>Discover</Text>
-      </BaseButton>
       <Text>
         At vero eos et accusamus et iusto odio dignissimos ducimus qui
         blanditiis praesentium voluptatum deleniti atque corrupti quos dolores
@@ -375,13 +376,13 @@ const Lorem = () => {
         rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
         molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
         delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat.
-      </Text>
+        perferendis doloribus asperiores repellat.</Text>
     </View>
   );
 };
 
 function renderInner() {
+  console.log('happenign')
   return (
     <View
       style={{
@@ -394,7 +395,6 @@ function renderInner() {
           <View style={styles.panelHandle} />
         </View>
       </View>
-      <Lorem />
     </View>
   );
 }
@@ -418,6 +418,7 @@ export function SlackBottomSheetContent() {
 }
 
 function DiscoverSheet({ modalVisible }) {
+  const insets = useSafeArea();
   const [initialPosition, setInitialPosition] = useState('long');
   const position = useRef({ x: 0, y: 0 });
   const setPosition = useCallback(
@@ -428,38 +429,31 @@ function DiscoverSheet({ modalVisible }) {
   // noinspection JSConstructorReturnsPrimitive
   return Platform.OS === 'ios' ? (
     <SlackBottomSheet
-      onDidDismiss={notifyUnmountBottomSheet}
-      visible={modalVisible}
-      topOffset={100}
-      unmountAnimation={false}
-      initialAnimation={false}
-      presentGlobally={false}
-      backgroundOpacity={0}
       allowsDragToDismiss={false}
       allowsTapToDismiss={false}
-      isHapticFeedbackEnabled={false}
-      onWillTransition={({ type }) => setInitialPosition(type)}
+      backgroundOpacity={0}
       blocksBackgroundTouches={false}
-      startFromShortForm={initialPosition === 'short'}
+      cornerRadius={24}
+      initialAnimation={false}
       interactsWithOuterScrollView
+      isHapticFeedbackEnabled={false}
+      onDidDismiss={notifyUnmountBottomSheet}
+      onWillTransition={({ type }) => setInitialPosition(type)}
+      presentGlobally={false}
       scrollsToTopOnTapStatusBar={isFocused}
+      showDragIndicator={false}
+      startFromShortForm={initialPosition === 'short'}
+      topOffset={insets.top}
+      unmountAnimation={false}
+      visible={modalVisible}
     >
-      <View style={StyleSheet.absoluteFillObject}>
-        <ScrollView
-          style={{
-            backgroundColor: 'white',
-            marginBottom: -20,
-            opacity: 1,
-            paddingTop: 12,
-          }}
-          contentOffset={position.current}
-          onScrollEndDrag={setPosition}
-          onMomentumScrollEnd={setPosition}
-          contentContainerStyle={{ marginBottom: 20 }}
-        >
-          <Lorem />
-        </ScrollView>
-      </View>
+      <SlackSheet
+        contentOffset={position.current}
+        onMomentumScrollEnd={setPosition}
+        onScrollEndDrag={setPosition}
+      >
+        <Lorem />
+      </SlackSheet>
     </SlackBottomSheet>
   ) : (
     <BottomSheet
@@ -486,10 +480,21 @@ const styles = StyleSheet.create({
   panelHeader: {
     alignItems: 'center',
   },
-  panelTitle: {
-    fontSize: 27,
-    fontWeight: '700',
-    letterSpacing: -0.4,
-    marginBottom: 10,
-  },
 });
+
+
+
+
+      // <View style={StyleSheet.absoluteFillObject}>
+      //   <ScrollView
+      //     style={{
+      //       backgroundColor: 'white',
+      //       marginBottom: -20,
+      //       opacity: 1,
+      //       paddingTop: 12,
+      //     }}
+      //     contentContainerStyle={{ marginBottom: 20 }}
+      //   >
+      //     <Lorem />
+      //   </ScrollView>
+      // </View>

@@ -6,5 +6,5 @@ export default styled(TruncatedText).attrs({
   letterSpacing: 'roundedMedium',
   size: 'lmedium',
 })`
-  padding-right: ${({ paddingRight }) => paddingRight || 19};
+  padding-right: ${({ paddingRight = 19 }) => paddingRight};
 `;
