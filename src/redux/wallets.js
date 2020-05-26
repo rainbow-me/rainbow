@@ -138,7 +138,7 @@ export const createAccountForWallet = (id, color, name) => async (
   });
 };
 
-const fetchWalletNames = () => async (dispatch, getState) => {
+export const fetchWalletNames = () => async (dispatch, getState) => {
   const { wallets } = getState().wallets;
   const updatedWalletNames = {};
 
