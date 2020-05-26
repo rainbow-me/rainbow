@@ -7,7 +7,7 @@ import Animated, {
   Transitioning,
 } from 'react-native-reanimated';
 import { useTimingTransition } from 'react-native-redash';
-import { withProps } from 'recompact';
+import styled from 'styled-components/primitives';
 import { gasUtils } from '../../utils';
 import { interpolate } from '../animations';
 import { Row } from '../layout';
@@ -16,20 +16,31 @@ import GasSpeedEmoji from './GasSpeedEmoji';
 
 const { cond } = Animated;
 
-const containerStyle = {
-  bottom: 0,
-  position: 'absolute',
-  right: 0,
-  top: 0,
-};
+const AnimatedRow = Animated.createAnimatedComponent(Row);
 
 export const GasSpeedLabelPagerItemHeight = 26;
 
-const GasSpeedLabel = withProps({
+const GasSpeedRow = styled(AnimatedRow).attrs({
+  align: 'end',
+  justify: 'end',
+})`
+  height: ${GasSpeedLabelPagerItemHeight};
+`;
+
+const TransitionContainer = styled(Transitioning.View)`
+  bottom: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+`;
+
+const GasSpeedLabel = styled(Text).attrs({
   color: 'white',
   size: 'lmedium',
   weight: 'semibold',
-})(Text);
+})`
+  margin-bottom: 3;
+`;
 
 const distance = 20;
 const duration = 150;
@@ -38,13 +49,12 @@ const transition = (
 );
 
 const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
-  const ref = useRef();
+  const transitionRef = useRef();
 
-  useEffect(() => {
-    if (shouldAnimate && ref.current) {
-      ref.current.animateNextTransition();
-    }
-  }, [shouldAnimate]);
+  useEffect(
+    () => shouldAnimate && transitionRef.current?.animateNextTransition(),
+    [shouldAnimate]
+  );
 
   const index = gasUtils.GasSpeedOrder.indexOf(label);
   const isFirst = index === 0;
@@ -95,23 +105,15 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
   );
 
   return (
-    <Transitioning.View
-      ref={ref}
-      style={containerStyle}
-      transition={transition}
-    >
-      <Animated.View style={{ opacity, transform: [{ translateX }] }}>
-        <Row align="end" height={GasSpeedLabelPagerItemHeight} justify="end">
-          <GasSpeedEmoji
-            containerHeight={GasSpeedLabelPagerItemHeight}
-            label={label}
-          />
-          <GasSpeedLabel style={{ marginBottom: 3 }}>
-            {upperFirst(label)}
-          </GasSpeedLabel>
-        </Row>
-      </Animated.View>
-    </Transitioning.View>
+    <TransitionContainer ref={transitionRef} transition={transition}>
+      <GasSpeedRow style={{ opacity, transform: [{ translateX }] }}>
+        <GasSpeedEmoji
+          containerHeight={GasSpeedLabelPagerItemHeight}
+          label={label}
+        />
+        <GasSpeedLabel>{upperFirst(label)}</GasSpeedLabel>
+      </GasSpeedRow>
+    </TransitionContainer>
   );
 };
 

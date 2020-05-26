@@ -1,9 +1,7 @@
 import { has } from 'lodash';
-import PropTypes from 'prop-types';
 import React from 'react';
-import { View } from 'react-primitives';
-import { onlyUpdateForKeys } from 'recompact';
-import { gasUtils } from '../../utils';
+import styled from 'styled-components/primitives';
+import { gasUtils, magicMemo } from '../../utils';
 import { Emoji } from '../text';
 
 const EmojiForGasSpeedType = {
@@ -21,29 +19,34 @@ const EmojiForGasSpeedType = {
   },
 };
 
+const Container = styled.View`
+  height: ${({ height }) => height};
+  width: 25;
+`;
+
+const GasEmoji = styled(Emoji).attrs({
+  lineHeight: 'looser',
+  size: 'lmedium',
+})`
+  left: ${({ left }) => left};
+  position: absolute;
+  top: ${({ top }) => top};
+`;
+
 const GasSpeedEmoji = ({ containerHeight, label }) => {
   const gasSpeed = has(EmojiForGasSpeedType, label)
     ? EmojiForGasSpeedType[label]
     : EmojiForGasSpeedType[gasUtils.NORMAL];
 
   return (
-    <View height={containerHeight} width={25}>
-      <Emoji
-        lineHeight="looser"
+    <Container height={containerHeight}>
+      <GasEmoji
+        left={gasSpeed.position[0]}
         name={gasSpeed.emoji}
-        size="lmedium"
-        style={{
-          left: gasSpeed.position[0],
-          position: 'absolute',
-          top: gasSpeed.position[1],
-        }}
+        top={gasSpeed.position[1]}
       />
-    </View>
+    </Container>
   );
 };
 
-GasSpeedEmoji.propTypes = {
-  label: PropTypes.oneOf(gasUtils.GasSpeedOrder),
-};
-
-export default onlyUpdateForKeys(['label'])(GasSpeedEmoji);
+export default magicMemo(GasSpeedEmoji, 'label');

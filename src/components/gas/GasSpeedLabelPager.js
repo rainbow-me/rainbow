@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-import { gasUtils } from '../../utils';
+import { gasUtils, magicMemo } from '../../utils';
 import { Row } from '../layout';
 import GasSpeedLabelPagerItem, {
   GasSpeedLabelPagerItemHeight,
@@ -24,8 +23,4 @@ const GasSpeedLabelPager = ({ label }) => {
   );
 };
 
-GasSpeedLabelPager.propTypes = {
-  label: PropTypes.oneOf(gasUtils.GasSpeedOrder),
-};
-
-export default React.memo(GasSpeedLabelPager);
+export default magicMemo(GasSpeedLabelPager, 'label');
