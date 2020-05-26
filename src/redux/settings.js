@@ -16,7 +16,6 @@ import { dataResetState } from './data';
 import { explorerClearState, explorerInit } from './explorer';
 import { walletConnectUpdateSessions } from './walletconnect';
 
-
 // -- Constants ------------------------------------------------------------- //
 
 const SETTINGS_UPDATE_SETTINGS_ADDRESS =
@@ -118,7 +117,7 @@ export const settingsUpdateNetwork = network => async dispatch => {
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
     });
     saveNetwork(network);
-	dispatch(walletConnectUpdateSessions());
+    dispatch(walletConnectUpdateSessions());
   } catch (error) {
     logger.log('Error updating network settings', error);
   }
