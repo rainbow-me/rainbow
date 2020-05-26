@@ -1,6 +1,6 @@
 import { VibrancyView } from '@react-native-community/blur';
 import React, { createElement } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { colors } from '../../styles';
 
 export const HandleHeight = 5;
@@ -16,7 +16,7 @@ const sx = StyleSheet.create({
 });
 
 const SheetHandle = ({ showBlur, ...props }) =>
-  createElement(showBlur ? VibrancyView : View, {
+  createElement(showBlur && Platform.OS === 'ios' ? VibrancyView : View, {
     blurAmount: 20,
     blurType: 'light',
     style: sx.handle,

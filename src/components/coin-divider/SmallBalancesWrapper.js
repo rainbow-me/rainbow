@@ -2,14 +2,15 @@ import React from 'react';
 import styled from 'styled-components/primitives';
 import { useOpenSmallBalances } from '../../hooks';
 import { OpacityToggler } from '../animations';
+import { CoinRowHeight } from '../coin-row';
 
-const Content = styled.View.attrs(({ isSmallBalancesOpen }) => ({
+const Content = styled.View.attrs(({ isSmallBalancesOpen, size }) => ({
+  height: size * CoinRowHeight,
   pointerEvents: isSmallBalancesOpen ? 'auto' : 'none',
 }))`
   left: 0;
   margin-top: 13;
   opacity: ${({ isSmallBalancesOpen }) => (isSmallBalancesOpen ? 1 : 0)};
-  position: absolute;
   right: 0;
 `;
 
@@ -22,7 +23,9 @@ export default function SmallBalancesWrapper({ assets }) {
       isVisible={isSmallBalancesOpen}
       startingOpacity={0}
     >
-      <Content isSmallBalancesOpen={isSmallBalancesOpen}>{assets}</Content>
+      <Content isSmallBalancesOpen={isSmallBalancesOpen} size={assets.length}>
+        {assets}
+      </Content>
     </OpacityToggler>
   );
 }
