@@ -51,11 +51,10 @@ const transition = (
 const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
   const transitionRef = useRef();
 
-  useEffect(() => {
-    if (shouldAnimate && transitionRef.current) {
-      transitionRef.current.animateNextTransition();
-    }
-  }, [shouldAnimate]);
+  useEffect(
+    () => shouldAnimate && transitionRef.current?.animateNextTransition(),
+    [shouldAnimate]
+  );
 
   const index = gasUtils.GasSpeedOrder.indexOf(label);
   const isFirst = index === 0;

@@ -28,6 +28,23 @@ const Label = styled(Text).attrs({
   weight: 'medium',
 })``;
 
+const formatGasPrice = gasPrice => {
+  const fixedGasPrice = Number(gasPrice).toFixed(3);
+  const gasPriceWithTrailingZerosStripped = parseFloat(fixedGasPrice);
+  return gasPriceWithTrailingZerosStripped;
+};
+
+const getActionLabel = type => {
+  switch (type) {
+    case ExchangeModalTypes.deposit:
+      return 'Deposits in';
+    case ExchangeModalTypes.withdrawal:
+      return 'Withdraws in';
+    default:
+      return 'Swaps in';
+  }
+};
+
 const renderEstimatedTimeText = animatedNumber => (
   <Label>{animatedNumber}</Label>
 );
@@ -42,17 +59,6 @@ const renderGasPriceText = animatedNumber => (
     {animatedNumber}
   </Text>
 );
-
-const getActionLabel = type => {
-  switch (type) {
-    case ExchangeModalTypes.deposit:
-      return 'Deposits in';
-    case ExchangeModalTypes.withdrawal:
-      return 'Withdraws in';
-    default:
-      return 'Swaps in';
-  }
-};
 
 const GasSpeedButton = ({ type }) => {
   const { nativeCurrencySymbol } = useAccountSettings();
@@ -88,10 +94,7 @@ const GasSpeedButton = ({ type }) => {
   }, [selectedGasPriceOption, updateGasPriceOption]);
 
   const formatAnimatedGasPrice = useCallback(
-    animatedPrice => {
-      const formattedPrice = parseFloat(Number(animatedPrice).toFixed(3));
-      return `${nativeCurrencySymbol}${formattedPrice}`;
-    },
+    animatedPrice => `${nativeCurrencySymbol}${formatGasPrice(animatedPrice)}`,
     [nativeCurrencySymbol]
   );
 
