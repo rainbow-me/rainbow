@@ -506,6 +506,8 @@ PODS:
     - React
   - RNSVG (12.1.0):
     - React
+  - RNTextSize (4.0.0-rc.1):
+    - React
   - RNTooltips (1.0.2):
     - pop (~> 1.0)
     - React
@@ -628,6 +630,7 @@ DEPENDENCIES:
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNStoreReview (from `../node_modules/react-native-store-review/ios`)
   - RNSVG (from `../node_modules/react-native-svg`)
+  - RNTextSize (from `../node_modules/react-native-text-size`)
   - RNTooltips (from `../node_modules/react-native-tooltips/ios`)
   - Shimmer
   - SRSRadialGradient (from `../node_modules/react-native-radial-gradient/ios`)
@@ -820,6 +823,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-store-review/ios"
   RNSVG:
     :path: "../node_modules/react-native-svg"
+  RNTextSize:
+    :path: "../node_modules/react-native-text-size"
   RNTooltips:
     :path: "../node_modules/react-native-tooltips/ios"
   SRSRadialGradient:
@@ -941,6 +946,7 @@ SPEC CHECKSUMS:
   RNSentry: 0a70359ddacbfb9b1cbbb0971e54065b9f70ac57
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
+  RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
   RNTooltips: e13180e4339e2a85daabd09507f62a5a32d3dc8a
   SDWebImage: 84000f962cbfa70c07f19d2234cbfcf5d779b5dc
   SDWebImageWebPCoder: 36f8f47bd9879a8aea6044765c1351120fd8e3a8

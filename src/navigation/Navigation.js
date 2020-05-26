@@ -1,7 +1,8 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Value } from 'react-native-reanimated';
 import { StackActions } from 'react-navigation';
 import { useNavigation as oldUseNavigation } from 'react-navigation-hooks';
+import { useCallbackOne } from 'use-memo-one';
 
 let TopLevelNavigationRef = null;
 const transitionPosition = new Value(0);
@@ -44,12 +45,14 @@ export function onDidPop() {
 
 export function useNavigation() {
   const { navigate: oldNavigate, ...rest } = oldUseNavigation();
-  const enhancedNavigate = useCallback(
+
+  const handleNavigate = useCallbackOne(
     (...args) => navigate(oldNavigate, ...args),
     [oldNavigate]
   );
+
   return {
-    navigate: enhancedNavigate,
+    navigate: handleNavigate,
     ...rest,
   };
 }
