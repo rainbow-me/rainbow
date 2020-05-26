@@ -5,12 +5,15 @@ import LinearGradient from 'react-native-linear-gradient';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 import { colors, fonts } from '../../styles';
 import { getFontSize } from '../../styles/fonts';
+import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import CoinCheckButton from '../coin-row/CoinCheckButton';
 import { ContactAvatar } from '../contacts';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { TruncatedAddress, TruncatedText } from '../text';
+
+const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 
 const sx = StyleSheet.create({
   accountLabel: {
@@ -19,9 +22,10 @@ const sx = StyleSheet.create({
     fontSize: getFontSize(fonts.size.lmedium),
     fontWeight: fonts.weight.medium,
     letterSpacing: fonts.letterSpacing.roundedMedium,
-    paddingRight: 24,
+    maxWidth: maxAccountLabelWidth,
   },
   accountRow: {
+    flex: 1,
     justifyContent: 'center',
     marginLeft: 19,
   },
