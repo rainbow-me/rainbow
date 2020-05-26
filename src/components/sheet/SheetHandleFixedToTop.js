@@ -1,10 +1,11 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
+import { padding } from '../../styles';
 import { neverRerender } from '../../utils';
 import { Centered } from '../layout';
 import SheetHandle, { HandleHeight } from './SheetHandle';
 
-const paddingBottom = 19;
+const paddingBottom = 8;
 const paddingTop = 6;
 
 export const SheetHandleFixedToTopHeight =
@@ -13,9 +14,8 @@ export const SheetHandleFixedToTopHeight =
 const Container = styled(Centered).attrs({
   pointerEvents: 'none',
 })`
+  ${padding(paddingTop, 0, paddingBottom)};
   left: 0;
-  padding-bottom: ${paddingBottom};
-  padding-top: ${paddingTop};
   position: absolute;
   right: 0;
   top: 0;
