@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { useIsFocused } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
-import AddFundsInterstitial from '../components/AddFundsInterstitial';
 import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
@@ -109,7 +108,6 @@ export default function ProfileScreen({ navigation }) {
             <ProfileMasthead
               addCashAvailable={addCashAvailable}
               navigation={navigation}
-              showBottomDivider={!isEmpty || isLoading}
               onChangeWallet={onChangeWallet}
             />
           }
@@ -119,10 +117,6 @@ export default function ProfileScreen({ navigation }) {
           network={network}
           sections={sections}
         />
-      )}
-      {/* Show the interstitial only for mainnet */}
-      {isEmpty && !isLoading && network === NetworkTypes.mainnet && (
-        <AddFundsInterstitial network={network} />
       )}
     </ProfileScreenPage>
   );

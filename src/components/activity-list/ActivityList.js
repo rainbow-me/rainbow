@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import networkTypes from '../../helpers/networkTypes';
+import ActivityListEmptyState from './ActivityListEmptyState';
 import RecyclerActivityList from './RecyclerActivityList';
-import TestnetEmptyState from './TestnetEmptyState';
 
 const ActivityList = ({
   accountAddress,
@@ -29,7 +29,12 @@ const ActivityList = ({
       sections={sections}
     />
   ) : (
-    <TestnetEmptyState>{header}</TestnetEmptyState>
+    <ActivityListEmptyState
+      emoji="👻"
+      label="Your testnet transaction history starts now!"
+    >
+      {header}
+    </ActivityListEmptyState>
   );
 
 ActivityList.propTypes = {

@@ -29,6 +29,7 @@ const FirstLetter = styled(Text).attrs({
 const ProfileAction = ({
   accountColor,
   accountSymbol,
+  isAvatarPickerAvailable,
   onPress,
   overlayStyles,
 }) => {
@@ -48,11 +49,11 @@ const ProfileAction = ({
 
   return (
     <ButtonPressAnimation
-      hapticType="impactMedium"
+      enableHapticFeedback={isAvatarPickerAvailable}
       marginTop={2}
       onPress={onPress}
       pressOutDuration={200}
-      scaleTo={0.9}
+      scaleTo={isAvatarPickerAvailable ? 0.9 : 1}
     >
       <ShadowStack
         {...position.sizeAsObject(ProfileActionSize)}
@@ -73,6 +74,7 @@ const ProfileAction = ({
 ProfileAction.propTypes = {
   accountColor: PropTypes.number,
   accountSymbol: PropTypes.string,
+  isAvatarPickerAvailable: PropTypes.bool,
   onPress: PropTypes.func,
   overlayStyles: PropTypes.bool,
 };

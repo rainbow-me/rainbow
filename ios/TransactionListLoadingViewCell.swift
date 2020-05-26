@@ -22,8 +22,8 @@ class TransactionListLoadingViewCell: UITableViewCell {
       shimmeringView.isShimmering = true
       // settings
       shimmeringView.shimmeringPauseDuration = 0
-      shimmeringView.shimmeringAnimationOpacity = 1
-      shimmeringView.shimmeringOpacity = 0.5
+      shimmeringView.shimmeringAnimationOpacity = 0.08
+      shimmeringView.shimmeringOpacity = 0.04
       shimmeringView.shimmeringSpeed = 250
       shimmeringView.shimmeringHighlightLength = 0.4
       shimmeringView.shimmeringDirection = .right

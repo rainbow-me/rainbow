@@ -22,6 +22,7 @@ import {
 } from '../coin-row';
 import ListFooter from '../list/ListFooter';
 import { ProfileMasthead } from '../profile';
+import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import LoadingState from './LoadingState';
 
@@ -178,12 +179,15 @@ export default class RecyclerActivityList extends PureComponent {
           accountName={this.props.accountName}
           addCashAvailable={this.props.addCashAvailable}
           navigation={this.props.navigation}
-          showBottomDivider={!this.props.isEmpty || this.props.isLoading}
           recyclerListRef={this.rlv}
         />
       );
       return this.props.isLoading ? (
         <LoadingState>{header}</LoadingState>
+      ) : this.props.isEmpty ? (
+        <ActivityListEmptyState label="No transactions yet">
+          {header}
+        </ActivityListEmptyState>
       ) : (
         header
       );
@@ -207,7 +211,7 @@ export default class RecyclerActivityList extends PureComponent {
           ref={this.handleListRef}
           renderAheadOffset={deviceUtils.dimensions.height}
           rowRenderer={this.rowRenderer}
-          scrollEnabled={!this.props.isLoading}
+          scrollEnabled={!(this.props.isEmpty || this.props.isLoading)}
           scrollIndicatorInsets={{
             bottom: safeAreaInsetValues.bottom,
           }}
