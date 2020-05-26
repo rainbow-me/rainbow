@@ -80,6 +80,11 @@ const ChangeWalletSheet = () => {
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames(wallets);
   const creatingWallet = useRef();
 
+  const [currentAddress, setCurrentAddress] = useState(accountAddress);
+  const [currentSelectedWallet, setCurrentSelectedWallet] = useState(
+    selectedWallet
+  );
+
   const walletRowCount = getWalletRowCount(wallets);
   const addAccountRowCount = getAddAccountRowCount(wallets);
 
@@ -97,9 +102,11 @@ const ChangeWalletSheet = () => {
   const onChangeAccount = useCallback(
     async (walletId, address, fromDeletion = false) => {
       if (editMode && !fromDeletion) return;
-      if (address === accountAddress) return;
+      if (address === currentAddress) return;
       try {
         const wallet = wallets[walletId];
+        setCurrentAddress(address);
+        setCurrentSelectedWallet(wallet);
         const p1 = dispatch(walletsSetSelected(wallet));
         const p2 = dispatch(addressSetSelected(address));
         await Promise.all([p1, p2]);
@@ -110,7 +117,7 @@ const ChangeWalletSheet = () => {
         logger.log('error while switching account', e);
       }
     },
-    [accountAddress, dispatch, editMode, goBack, initializeWallet, wallets]
+    [currentAddress, dispatch, editMode, goBack, initializeWallet, wallets]
   );
 
   const deleteWallet = useCallback(
@@ -162,7 +169,8 @@ const ChangeWalletSheet = () => {
                     if (account.address === address) {
                       newWallets[walletId].addresses[index].label = args.name;
                       newWallets[walletId].addresses[index].color = args.color;
-                      if (selectedWallet.id === walletId) {
+                      if (currentSelectedWallet.id === walletId) {
+                        setCurrentSelectedWallet(wallet);
                         dispatch(walletsSetSelected(newWallets[walletId]));
                       }
                       return true;
@@ -182,7 +190,7 @@ const ChangeWalletSheet = () => {
         }, 50);
       });
     },
-    [dispatch, goBack, navigate, selectedWallet.id, wallets]
+    [dispatch, goBack, navigate, currentSelectedWallet.id, wallets]
   );
 
   const onEditWallet = useCallback(
@@ -234,7 +242,7 @@ const ChangeWalletSheet = () => {
                   ReactNativeHapticFeedback.trigger('notificationSuccess');
                   // If we're deleting the selected wallet
                   // we need to switch to another one
-                  if (address === accountAddress) {
+                  if (address === currentAddress) {
                     for (let i = 0; i < Object.keys(wallets).length; i++) {
                       const key = Object.keys(wallets)[i];
                       const someWallet = wallets[key];
@@ -256,7 +264,7 @@ const ChangeWalletSheet = () => {
         }
       );
     },
-    [accountAddress, deleteWallet, onChangeAccount, renameWallet, wallets]
+    [currentAddress, deleteWallet, onChangeAccount, renameWallet, wallets]
   );
 
   const onPressAddAccount = useCallback(
@@ -333,9 +341,9 @@ const ChangeWalletSheet = () => {
       </EditButton>
 
       <WalletList
-        accountAddress={accountAddress}
+        accountAddress={currentAddress}
         allWallets={walletsWithBalancesAndNames}
-        currentWallet={selectedWallet}
+        currentWallet={currentSelectedWallet}
         editMode={editMode}
         height={listHeight}
         onChangeAccount={onChangeAccount}
