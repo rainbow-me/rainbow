@@ -128,7 +128,7 @@ export function WalletList({
         seedRows.push({
           editMode,
           height: optionRowHeight,
-          id: 'add_account',
+          id: `add_account_${wallet.id}`,
           label: '􀁍 Create a new wallet',
           onPress: () => onPressAddAccount(wallet.id),
           rowType: RowTypes.ADDRESS_OPTION,
@@ -211,14 +211,20 @@ export function WalletList({
       if (r1.isSelected !== r2.isSelected) {
         return true;
       }
+      if (r1.isReadOnly !== r2.isReadOnly) {
+        return true;
+      }
       if (r1.editMode !== r2.editMode) {
         return true;
       }
 
       return false;
-    }).cloneWithRows(rows);
+    }).cloneWithRows(rows, index => {
+      const row = get(dataProvider, `dataProvider._data[${index}]`);
+      return row.id;
+    });
     setDataProvider(dataProvider);
-  }, [doneScrolling, height, ready, rows]);
+  }, [height, ready, rows]);
 
   useEffect(() => {
     if (layoutProvider && dataProvider && !ready) {
@@ -243,7 +249,7 @@ export function WalletList({
           scrollView.current &&
           scrollView.current.scrollToOffset(0, distanceToScroll, true);
         setDoneScrolling(true);
-      }, 300);
+      }, 350);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready]);
@@ -299,6 +305,7 @@ export function WalletList({
                 layoutProvider={layoutProvider}
                 optimizeForInsertDeleteAnimations
                 ref={scrollView}
+                renderAheadOffset={height}
                 rowRenderer={renderRow}
                 scrollEnabled={scrollEnabled}
                 style={sx.rlv}
