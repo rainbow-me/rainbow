@@ -160,8 +160,10 @@ export default function WalletList({
   // Update the data provider when rows change
   useEffect(() => {
     if (rows && rows.length && !ready) {
-      skeletonTransitionRef.current.animateNextTransition();
-      setReady(true);
+      setTimeout(() => {
+        skeletonTransitionRef.current.animateNextTransition();
+        setReady(true);
+      }, 50);
     }
   }, [rows, ready]);
 
