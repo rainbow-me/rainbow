@@ -100,8 +100,10 @@ const ChangeWalletSheet = () => {
       if (address === accountAddress) return;
       try {
         const wallet = wallets[walletId];
-        dispatch(walletsSetSelected(wallet));
-        dispatch(addressSetSelected(address));
+        const p1 = dispatch(walletsSetSelected(wallet));
+        const p2 = dispatch(addressSetSelected(address));
+        await Promise.all([p1, p2]);
+
         initializeWallet();
         !fromDeletion && goBack();
       } catch (e) {
