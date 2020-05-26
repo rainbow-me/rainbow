@@ -8,6 +8,7 @@ import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 
+const CoinSize = 40;
 const ExchangeFieldHeight = Platform.OS === 'android' ? 64 : 40;
 const ExchangeFieldPadding = 15;
 const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
@@ -57,7 +58,7 @@ const ExchangeField = (
             address={address}
             bgColor={placeholderColor}
             flex={0}
-            size={ExchangeFieldHeight}
+            size={CoinSize}
             symbol={symbol}
           />
           <Input

@@ -4,7 +4,7 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../../../styles';
-import { Centered, InnerBorder } from '../../layout';
+import { Centered } from '../../layout';
 import { Text } from '../../text';
 
 const ButtonSizeTypes = {
@@ -43,13 +43,9 @@ const shouldRenderChildrenAsText = children =>
 
 const Button = ({
   backgroundColor,
-  borderColor,
-  borderOpacity,
-  borderWidth,
   children,
   color,
   containerStyles,
-  disabled,
   onPress,
   showShadow,
   size,
@@ -79,14 +75,6 @@ const Button = ({
         >
           {children}
         </Text>
-      )}
-      {(!onPress || !disabled) && (
-        <InnerBorder
-          color={borderColor}
-          opacity={borderOpacity}
-          radius={type === 'rounded' ? 14 : 50}
-          width={borderWidth}
-        />
       )}
     </TouchableOpacity>
   </Container>

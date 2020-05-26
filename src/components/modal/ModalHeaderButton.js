@@ -6,11 +6,15 @@ import styled from 'styled-components';
 import { colors } from '../../styles';
 import { Button } from '../buttons';
 import { Icon } from '../icons';
+import { Row } from '../layout';
 import { Text as UnstyledText } from '../text';
+
+const IconMarginTop = Platform.OS === 'android' ? 2 : 0;
 
 const ContainerElement = Platform.OS === 'ios' ? BorderlessButton : Button;
 const Container = styled(ContainerElement)`
   align-items: center;
+  background-color: transparent;
   bottom: 0;
   flex: 1;
   flex-direction: row;
@@ -35,15 +39,18 @@ const Text = styled(UnstyledText).attrs({
 
 const ModalHeaderButton = ({ label, showBackArrow, side, ...props }) => (
   <Container side={side} {...props}>
-    {showBackArrow && (
-      <Icon
-        color={colors.appleBlue}
-        direction="left"
-        height={16}
-        name="caret"
-      />
-    )}
-    <Text showBackArrow={showBackArrow}>{label}</Text>
+    <Row>
+      {showBackArrow && (
+        <Icon
+          color={colors.appleBlue}
+          direction="left"
+          height={16}
+          marginTop={IconMarginTop}
+          name="caret"
+        />
+      )}
+      <Text showBackArrow={showBackArrow}>{label}</Text>
+    </Row>
   </Container>
 );
 
