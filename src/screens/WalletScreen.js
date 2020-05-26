@@ -39,7 +39,8 @@ export default function WalletScreen() {
 
   useEffect(() => {
     if (!initialized) {
-      initializeWallet();
+      // We run the migrations only once on app launch
+      initializeWallet(null, null, null, true);
       setInitialized(true);
     }
   }, [initializeWallet, initialized]);
