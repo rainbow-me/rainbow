@@ -4,6 +4,7 @@ import FastImage from 'react-native-fast-image';
 import styled, { css } from 'styled-components/primitives';
 import { toChecksumAddress } from '../../handlers/web3';
 import { colors, fonts, position } from '../../styles';
+import { pseudoRandomArrayItemFromString } from '../../utils';
 import { Centered } from '../layout';
 
 const fallbackTextStyles = css`
@@ -26,9 +27,16 @@ const getFallbackIconUrl = address => {
 
 const CoinIconFallback = fallbackProps => {
   const { bgColor, height, width, address, symbol } = fallbackProps;
+
   const [showFallbackImage, setShowFallbackImage] = useState(false);
   const handleError = useCallback(() => setShowFallbackImage(false), []);
   const handleLoad = useCallback(() => setShowFallbackImage(true), []);
+
+  const fallbackIconColor = useMemo(
+    () =>
+      bgColor || pseudoRandomArrayItemFromString(symbol, colors.avatarColor),
+    [bgColor, symbol]
+  );
 
   const fallbackImageSource = useMemo(
     () => ({
@@ -42,7 +50,7 @@ const CoinIconFallback = fallbackProps => {
     <Centered height={height} width={width}>
       <FallbackIcon
         {...fallbackProps}
-        bgColor={bgColor || colors.blueGreyDark}
+        bgColor={fallbackIconColor}
         opacity={showFallbackImage ? 0 : 1}
         symbol={symbol || ''}
         textStyles={fallbackTextStyles}
