@@ -108,7 +108,6 @@ export default function ProfileScreen({ navigation }) {
             <ProfileMasthead
               addCashAvailable={addCashAvailable}
               navigation={navigation}
-              showBottomDivider={!isEmpty || isLoading}
               onChangeWallet={onChangeWallet}
             />
           }

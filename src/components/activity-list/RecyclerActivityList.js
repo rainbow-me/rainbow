@@ -179,7 +179,6 @@ export default class RecyclerActivityList extends PureComponent {
           accountName={this.props.accountName}
           addCashAvailable={this.props.addCashAvailable}
           navigation={this.props.navigation}
-          showBottomDivider={this.props.isEmpty || this.props.isLoading}
           recyclerListRef={this.rlv}
         />
       );
