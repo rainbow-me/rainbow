@@ -42,10 +42,10 @@ const ModalHeaderButton = ({ label, showBackArrow, side, ...props }) => (
     <Row>
       {showBackArrow && (
         <Icon
-          marginTop={IconMarginTop}
           color={colors.appleBlue}
           direction="left"
           height={16}
+          marginTop={IconMarginTop}
           name="caret"
         />
       )}
