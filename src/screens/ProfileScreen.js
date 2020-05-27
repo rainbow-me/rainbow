@@ -1,4 +1,3 @@
-import { get } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { useIsFocused } from 'react-navigation-hooks';
@@ -16,7 +15,6 @@ import {
   useAccountTransactions,
   useContacts,
   useRequests,
-  useWallets,
 } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { colors, position } from '../styles';
@@ -42,8 +40,7 @@ export default function ProfileScreen({ navigation }) {
   } = useAccountTransactions(activityListInitialized, isFocused);
   const { contacts } = useContacts();
   const { pendingRequestCount, requests } = useRequests();
-  const { accountAddress, accountENS, network } = useAccountSettings();
-  const { selectedWallet } = useWallets();
+  const { network } = useAccountSettings();
 
   const isEmpty = !transactionsCount && !pendingRequestCount;
 
@@ -60,9 +57,6 @@ export default function ProfileScreen({ navigation }) {
   const onPressSettings = useCallback(() => navigate(Routes.SETTINGS_MODAL), [
     navigate,
   ]);
-
-  let accountName = get(selectedWallet, 'name');
-  let accountColor = get(selectedWallet, 'color');
 
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
@@ -86,10 +80,6 @@ export default function ProfileScreen({ navigation }) {
       </Header>
       {network === NetworkTypes.mainnet && nativeTransactionListAvailable ? (
         <TransactionList
-          accountAddress={accountAddress}
-          accountColor={accountColor}
-          accountENS={accountENS}
-          accountName={accountName}
           addCashAvailable={addCashAvailable}
           contacts={contacts}
           initialized={activityListInitialized}
@@ -100,9 +90,6 @@ export default function ProfileScreen({ navigation }) {
         />
       ) : (
         <ActivityList
-          accountAddress={accountAddress}
-          accountColor={accountColor}
-          accountName={accountName}
           addCashAvailable={addCashAvailable}
           header={
             <ProfileMasthead

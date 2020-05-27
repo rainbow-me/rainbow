@@ -1,19 +1,21 @@
 import GraphemeSplitter from 'grapheme-splitter';
-import { toUpper } from 'lodash';
+import { get, toUpper } from 'lodash';
 import { removeFirstEmojiFromString } from '../helpers/emojiHandler';
 import { address } from '../utils/abbreviations';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
 
 export default function useAccountProfile() {
-  const { selectedWallet } = useWallets();
+  const { selectedWallet, walletNames } = useWallets();
 
-  const { accountAddress, accountENS } = useAccountSettings();
+  const { accountAddress } = useAccountSettings();
 
   if (!selectedWallet) return {};
   if (!accountAddress) return {};
 
   if (!selectedWallet || !selectedWallet.addresses.length) return {};
+
+  const accountENS = get(walletNames, `${accountAddress}`);
 
   const selectedAccount = selectedWallet.addresses.find(
     account => account.address === accountAddress

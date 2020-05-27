@@ -16,7 +16,6 @@ export default function useAccountSettings() {
       settings: {
         accountAddress,
         accountColor,
-        accountENS,
         accountName,
         chainId,
         nativeCurrency,
@@ -25,7 +24,6 @@ export default function useAccountSettings() {
     }) => ({
       accountAddress,
       accountColor,
-      accountENS,
       accountName,
       chainId,
       language,

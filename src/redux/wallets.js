@@ -1,5 +1,10 @@
 import { toChecksumAddress } from 'ethereumjs-util';
-import { get } from 'lodash';
+import { get, keys, map } from 'lodash';
+import {
+  getWalletNames,
+  saveWalletNames,
+} from '../handlers/localstorage/walletNames';
+import { web3Provider } from '../handlers/web3';
 import {
   generateAccount,
   getAllWallets,
@@ -16,6 +21,7 @@ const WALLETS_UPDATE = 'wallets/ALL_WALLETS_UPDATE';
 const WALLETS_LOAD = 'wallets/ALL_WALLETS_LOAD';
 const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
+const WALLETS_UPDATE_NAMES = 'wallets/WALLETS_UPDATE_NAMES';
 
 // -- Actions ---------------------------------------- //
 export const walletsLoadState = () => async (dispatch, getState) => {
@@ -57,13 +63,19 @@ export const walletsLoadState = () => async (dispatch, getState) => {
       await saveAddress(account.address);
     }
 
+    const walletNames = await getWalletNames();
+
     dispatch({
       payload: {
         selected: selectedWallet,
+        walletNames,
         wallets,
       },
       type: WALLETS_LOAD,
     });
+
+    dispatch(fetchWalletNames());
+
     // eslint-disable-next-line no-empty
   } catch (error) {}
 };
@@ -120,9 +132,37 @@ export const createAccountForWallet = (id, color, name) => async (
   });
 };
 
+export const fetchWalletNames = () => async (dispatch, getState) => {
+  const { wallets } = getState().wallets;
+  const updatedWalletNames = {};
+
+  // Fetch ENS names
+  await Promise.all(
+    map(keys(wallets), async key => {
+      map(wallets[key].addresses, async account => {
+        try {
+          const ens = await web3Provider.lookupAddress(account.address);
+          if (ens && ens !== account.address) {
+            updatedWalletNames[account.address] = ens;
+          }
+          // eslint-disable-next-line no-empty
+        } catch (error) {}
+        return account;
+      });
+    })
+  );
+
+  dispatch({
+    payload: updatedWalletNames,
+    type: WALLETS_UPDATE_NAMES,
+  });
+  saveWalletNames(updatedWalletNames);
+};
+
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   selected: undefined,
+  walletNames: {},
   wallets: null,
 };
 
@@ -132,10 +172,13 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, selected: action.payload };
     case WALLETS_UPDATE:
       return { ...state, wallets: action.payload };
+    case WALLETS_UPDATE_NAMES:
+      return { ...state, walletNames: action.payload };
     case WALLETS_LOAD:
       return {
         ...state,
         selected: action.payload.selected,
+        walletNames: action.payload.walletNames,
         wallets: action.payload.wallets,
       };
     case WALLETS_ADDED_ACCOUNT:

@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import NetworkTypes from '../helpers/networkTypes';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { uniswapUpdateState } from '../redux/uniswap';
+import { fetchWalletNames } from '../redux/wallets';
 import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
 
@@ -25,11 +26,13 @@ export default function useRefreshAccountData() {
     }
 
     try {
+      const getWalletNames = dispatch(fetchWalletNames());
       const getUniswap = dispatch(uniswapUpdateState());
       const getUniqueTokens = dispatch(uniqueTokensRefreshState());
 
       return Promise.all([
         delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
+        getWalletNames,
         getUniswap,
         getUniqueTokens,
       ]);
