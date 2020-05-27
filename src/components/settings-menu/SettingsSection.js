@@ -1,12 +1,10 @@
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { InteractionManager, Linking, ScrollView } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import * as StoreReview from 'react-native-store-review';
-import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import BackupIcon from '../../assets/backup-icon.png';
 import CurrencyIcon from '../../assets/currency-icon.png';
@@ -18,8 +16,7 @@ import {
   saveAppStoreReviewCount,
 } from '../../handlers/localstorage/globalSettings';
 import networkInfo from '../../helpers/networkInfo';
-import { withAccountSettings, withSendFeedback } from '../../hoc';
-import { useWallets } from '../../hooks';
+import { useAccountSettings, useSendFeedback, useWallets } from '../../hooks';
 import { supportedLanguages } from '../../languages';
 import { position } from '../../styles';
 import AppVersionStamp from '../AppVersionStamp';
@@ -51,21 +48,19 @@ let versionPressHandle = null;
 let versionNumberOfTaps = 0;
 
 const SettingsSection = ({
-  language,
-  nativeCurrency,
-  network,
+  onCloseModal,
   onPressBackup,
   onPressCurrency,
   onPressHiddenFeature,
   onPressLanguage,
   onPressNetwork,
-  onPressReview,
-  onPressTwitter,
-  onSendFeedback,
 }) => {
   const { isReadOnlyWallet } = useWallets();
+  const { language, nativeCurrency, network } = useAccountSettings();
 
-  const handleVersionPress = () => {
+  const onSendFeedback = useSendFeedback();
+
+  const handleVersionPress = useCallback(() => {
     versionPressHandle && clearTimeout(versionPressHandle);
     versionNumberOfTaps++;
 
@@ -76,7 +71,31 @@ const SettingsSection = ({
     versionPressHandle = setTimeout(() => {
       versionNumberOfTaps = 0;
     }, 3000);
-  };
+  }, [onPressHiddenFeature]);
+
+  const onPressReview = useCallback(async () => {
+    const maxRequestCount = 2;
+    const count = await getAppStoreReviewCount();
+    const shouldDeeplinkToAppStore =
+      count >= maxRequestCount || !StoreReview.isAvailable;
+
+    if (shouldDeeplinkToAppStore && !isEmulatorSync()) {
+      Linking.openURL(SettingsExternalURLs.review);
+    } else {
+      onCloseModal();
+      InteractionManager.runAfterInteractions(StoreReview.requestReview);
+    }
+
+    return saveAppStoreReviewCount(count + 1);
+  }, [onCloseModal]);
+
+  const onPressTwitter = useCallback(async () => {
+    Linking.canOpenURL(SettingsExternalURLs.twitterDeepLink).then(supported =>
+      supported
+        ? Linking.openURL(SettingsExternalURLs.twitterDeepLink)
+        : Linking.openURL(SettingsExternalURLs.twitterWebUrl)
+    );
+  }, []);
 
   return (
     <ScrollView
@@ -172,47 +191,4 @@ const SettingsSection = ({
   );
 };
 
-SettingsSection.propTypes = {
-  language: PropTypes.string.isRequired,
-  nativeCurrency: PropTypes.string.isRequired,
-  network: PropTypes.string.isRequired,
-  onPressBackup: PropTypes.func.isRequired,
-  onPressCurrency: PropTypes.func.isRequired,
-  onPressHiddenFeature: PropTypes.func.isRequired,
-  onPressLanguage: PropTypes.func.isRequired,
-  onPressNetwork: PropTypes.func,
-  onPressReview: PropTypes.func,
-  // onPressSecurity: PropTypes.func.isRequired,
-  onPressTwitter: PropTypes.func,
-  onSendFeedback: PropTypes.func.isRequired,
-};
-
-export default compose(
-  withAccountSettings,
-  withSendFeedback,
-  withHandlers({
-    onPressReview: ({ onCloseModal }) => async () => {
-      const maxRequestCount = 2;
-      const count = await getAppStoreReviewCount();
-      const shouldDeeplinkToAppStore =
-        count >= maxRequestCount || !StoreReview.isAvailable;
-
-      if (shouldDeeplinkToAppStore && !isEmulatorSync()) {
-        Linking.openURL(SettingsExternalURLs.review);
-      } else {
-        onCloseModal();
-        InteractionManager.runAfterInteractions(StoreReview.requestReview);
-      }
-
-      return saveAppStoreReviewCount(count + 1);
-    },
-    onPressTwitter: () => async () => {
-      Linking.canOpenURL(SettingsExternalURLs.twitterDeepLink).then(supported =>
-        supported
-          ? Linking.openURL(SettingsExternalURLs.twitterDeepLink)
-          : Linking.openURL(SettingsExternalURLs.twitterWebUrl)
-      );
-    },
-  }),
-  onlyUpdateForKeys(['language', 'nativeCurrency', 'network'])
-)(SettingsSection);
+export default SettingsSection;

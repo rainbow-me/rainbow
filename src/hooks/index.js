@@ -39,6 +39,7 @@ export { default as useRequests } from './useRequests';
 export { default as useResetAccountState } from './useResetAccountState';
 export { default as useSavingsAccount } from './useSavingsAccount';
 export { default as useSendableUniqueTokens } from './useSendableUniqueTokens';
+export { default as useSendFeedback } from './useSendFeedback';
 export { default as useSendSavingsAccount } from './useSendSavingsAccount';
 export { default as useShakeAnimation } from './useShakeAnimation';
 export { default as useShowcaseTokens } from './useShowcaseTokens';
