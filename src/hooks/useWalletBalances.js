@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { forEach, get, isEmpty, keys, map, values } from 'lodash';
+import { forEach, get, isEmpty, keys, values } from 'lodash';
 import { useCallback } from 'react';
 import { queryCache, useQuery } from 'react-query';
 import {
@@ -8,29 +8,23 @@ import {
 } from '../handlers/localstorage/walletBalances';
 import { web3Provider } from '../handlers/web3';
 import networkInfo from '../helpers/networkInfo';
-import { handleSignificantDecimals } from '../helpers/utilities';
+import { fromWei, handleSignificantDecimals } from '../helpers/utilities';
 import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
-import { ethereumUtils, logger } from '../utils';
-import useAccountAssets from './useAccountAssets';
+import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 const useWalletBalances = wallets => {
-  const { accountAddress, network } = useAccountSettings();
-  const { assets } = useAccountAssets();
-  const selectedAsset = ethereumUtils.getAsset(assets);
-  const selectedAccountBalance = get(selectedAsset, 'balance.amount', '0.00');
+  const { network } = useAccountSettings();
 
   const fetchBalances = useCallback(async () => {
     const walletBalances = {};
 
     // Get list of addresses to get balances for
-    map(values(wallets), wallet => {
-      map(wallet.addresses, account => {
-        if (account.address !== accountAddress) {
-          walletBalances[account.address] = '0.00';
-        }
+    forEach(values(wallets), wallet => {
+      forEach(wallet.addresses, account => {
+        walletBalances[account.address] = '0.00';
       });
     });
 
@@ -48,21 +42,17 @@ const useWalletBalances = wallets => {
       );
 
       forEach(keys(walletBalances), (address, index) => {
-        walletBalances[address] = balances[index];
+        const amountInETH = fromWei(balances[index]);
+        const formattedBalance = handleSignificantDecimals(amountInETH, 4);
+        walletBalances[address] = formattedBalance;
       });
     } catch (e) {
       logger.log('Error fetching ETH balances in batch', e);
     }
 
-    // We already have the balance data for the selected account
-    walletBalances[accountAddress] = handleSignificantDecimals(
-      selectedAccountBalance,
-      4
-    );
-
     saveWalletBalances(walletBalances);
     return walletBalances;
-  }, [accountAddress, network, selectedAccountBalance, wallets]);
+  }, [network, wallets]);
 
   const { data } = useQuery(
     !isEmpty(wallets) && ['walletBalances'],
