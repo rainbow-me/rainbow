@@ -1,5 +1,6 @@
 import { get } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import { View } from 'react-primitives';
 import { compose } from 'recompact';
 import styled, { css } from 'styled-components/primitives';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
@@ -39,11 +40,6 @@ const Content = styled(ButtonPressAnimation)`
   padding-left: ${({ isEditMode }) => (isEditMode ? editTranslateOffset : 0)};
 `;
 
-const FixedToRight = styled.View`
-  position: absolute;
-  right: 0;
-`;
-
 const PercentageText = styled(BottomRowText).attrs({
   align: 'right',
 })`
@@ -67,11 +63,11 @@ const BottomRow = ({ balance, isExpandedState, native }) => {
         </BottomRowText>
       </FlexItem>
       {!isExpandedState && (
-        <FixedToRight>
+        <View>
           <PercentageText isPositive={isPositive}>
             {percentageChangeDisplay}
           </PercentageText>
-        </FixedToRight>
+        </View>
       )}
     </Fragment>
   );
@@ -87,7 +83,7 @@ const TopRow = ({ isExpandedState, name, native, nativeCurrencySymbol }) => {
           {name}
         </CoinName>
       </FlexItem>
-      <FixedToRight>
+      <View>
         <BalanceText
           color={nativeDisplay ? null : colors.blueGreyLight}
           numberOfLines={1}
@@ -95,7 +91,7 @@ const TopRow = ({ isExpandedState, name, native, nativeCurrencySymbol }) => {
         >
           {nativeDisplay || `${nativeCurrencySymbol}0.00`}
         </BalanceText>
-      </FixedToRight>
+      </View>
     </Fragment>
   );
 };
