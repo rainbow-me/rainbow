@@ -1,7 +1,7 @@
 import Clipboard from '@react-native-community/clipboard';
 import { debounce } from 'lodash';
+import { useCallback } from 'react';
 import Mailer from 'react-native-mail';
-import { withHandlers } from 'recompact';
 import { Alert } from '../components/alerts';
 
 const FeedbackEmailAddress = 'support@rainbow.me';
@@ -36,10 +36,10 @@ const feedbackEmailOptions = {
   subject: '🌈️ Rainbow Feedback',
 };
 
-const withSendFeedback = ComponentToWrap =>
-  withHandlers({
-    onSendFeedback: () => () =>
-      Mailer.mail(feedbackEmailOptions, handleMailError),
-  })(ComponentToWrap);
-
-export default withSendFeedback;
+export default function useSendFeedback() {
+  const onSendFeedback = useCallback(
+    () => Mailer.mail(feedbackEmailOptions, handleMailError),
+    []
+  );
+  return onSendFeedback;
+}
