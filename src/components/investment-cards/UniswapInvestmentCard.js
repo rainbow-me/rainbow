@@ -1,10 +1,11 @@
 import { floor } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
-import { useNavigation, useNavigationState } from 'react-navigation-hooks';
+import { useNavigationState } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { useAccountSettings, useOpenInvestmentCards } from '../../hooks';
+import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
 import { colors, padding } from '../../styles';
 import Divider from '../Divider';

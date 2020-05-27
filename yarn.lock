@@ -1047,9 +1047,9 @@
     validator "^7.0.0"
 
 "@react-native-community/async-storage@^1.6.1", "@react-native-community/async-storage@^1.9.0":
-  version "1.10.3"
-  resolved "https://registry.yarnpkg.com/@react-native-community/async-storage/-/async-storage-1.10.3.tgz#6974404a903a317f462bd0ac3fafa7c0291679df"
-  integrity sha512-f3G3dX5aoFZZC1G7alnaFmlTpXn8HPfpR8H3Hf7wbbQrQvZmW7mW2fXHv/oj99FNPd228bneL3GOnjGe2Epkww==
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/async-storage/-/async-storage-1.11.0.tgz#bf81b8813080846f150c67f531987c429b442166"
+  integrity sha512-Pq9LlmvtCEKAGdkyrgTcRxNh2fnHFykEj2qnRYijOl1pDIl2MkD5IxaXu5eOL0wgOtAl4U//ff4z40Td6XR5rw==
   dependencies:
     deep-assign "^3.0.0"
 
@@ -9121,10 +9121,9 @@ react-native-code-push@^6.2.0:
     semver "^7.1.1"
     xcode "1.0.0"
 
-react-native-cool-modals@^0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/react-native-cool-modals/-/react-native-cool-modals-0.0.7.tgz#bf023c35f848ad6723e6aa8e4afc3579932c5738"
-  integrity sha512-MvkppPxJlK8RIOr4zaKJ7rSmFwaZfiLS0krRPMbN02nVZ1YCbYC3N+Sn+FrPaEyjn62uT3m0ikkTmRtpGcLT7g==
+react-native-cool-modals@osdnk/react-native-cool-modals:
+  version "0.0.9"
+  resolved "https://codeload.github.com/osdnk/react-native-cool-modals/tar.gz/8fb5db6ab669ecf6cf4f28c728a1b364eef24511"
   dependencies:
     debounce "^1.2.0"
 
@@ -9311,6 +9310,10 @@ react-native-shadow-stack@^0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/react-native-shadow-stack/-/react-native-shadow-stack-0.0.5.tgz#ae4df0bf5d7dd80b46d27d2e3f64da59b7046014"
   integrity sha512-5gsqkoAY1IiMLbcvRb/v6F/ALmasgF84ATYXJXNkTG7oWFx9Q0u+ddiBNid+xdWx+CLk+HvyjUk1qHIfU/S0/Q==
+
+react-native-slack-bottom-sheet@osdnk/react-native-slack-bottom-sheet#hack:
+  version "0.5.0"
+  resolved "https://codeload.github.com/osdnk/react-native-slack-bottom-sheet/tar.gz/121f7d150785d8cd69256264745cd2887cb79747"
 
 react-native-splash-screen@^3.2.0:
   version "3.2.0"

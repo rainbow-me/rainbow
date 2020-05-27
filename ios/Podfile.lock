@@ -360,7 +360,7 @@ PODS:
     - React
   - react-native-mail (4.1.0):
     - React
-  - react-native-netinfo (5.9.0):
+  - react-native-netinfo (5.9.1):
     - React
   - react-native-randombytes (3.5.3):
     - React
@@ -439,10 +439,13 @@ PODS:
     - ReactCommon/callinvoker (= 0.62.2)
   - ReactNativePayments (1.1.5):
     - React
+  - reactnativeslackbottomsheet (0.5.0):
+    - PanModal
+    - React
   - RNAnalytics (1.1.0):
     - Analytics
     - React
-  - RNCAsyncStorage (1.10.3):
+  - RNCAsyncStorage (1.11.0):
     - React
   - RNCClipboard (1.2.2):
     - React
@@ -594,6 +597,7 @@ DEPENDENCIES:
   - ReactCommon/callinvoker (from `../node_modules/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "ReactNativePayments (from `../node_modules/@rainbow-me/react-native-payments/lib/ios`)"
+  - reactnativeslackbottomsheet (from `../node_modules/react-native-slack-bottom-sheet`)
   - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
@@ -758,6 +762,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativePayments:
     :path: "../node_modules/@rainbow-me/react-native-payments/lib/ios"
+  reactnativeslackbottomsheet:
+    :path: "../node_modules/react-native-slack-bottom-sheet"
   RNAnalytics:
     :path: "../node_modules/@segment/analytics-react-native"
   RNCAsyncStorage:
@@ -880,7 +886,7 @@ SPEC CHECKSUMS:
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: 2b74be8edc1103c4c46d1f4e5f41723d9ff052cc
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
-  react-native-netinfo: 7b3c53674ea611b26a7788821f137c6d9d3a038b
+  react-native-netinfo: 4284e9f4ade9fc498f313b2e9e3f7fd4fa6e3082
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
@@ -899,8 +905,9 @@ SPEC CHECKSUMS:
   React-RCTVibration: 4356114dbcba4ce66991096e51a66e61eda51256
   ReactCommon: ed4e11d27609d571e7eee8b65548efc191116eb3
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
+  reactnativeslackbottomsheet: d44b4c59c1e69c045983044d2f361d256d3ddb98
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
-  RNCAsyncStorage: cd7234ff15c010723ed7c499ae4eedc605eac1fd
+  RNCAsyncStorage: d059c3ee71738c39834a627476322a5a8cd5bf36
   RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNCoolModals: 101e6048991c708be5f6486186ddbb8f23b20d78
