@@ -53,10 +53,12 @@ const uniswapTotalSelector = state => state.uniswapTotal;
 const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
-    onPress: ({ assetType, navigation }) => item => {
+    onPress: ({ assetType, navigation }) => (item, params) => {
+      console.log(params);
       navigation.navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: item,
         type: assetType,
+        ...params,
       });
     },
     onPressSend: ({ navigation }) => asset => {

@@ -260,17 +260,22 @@ const routesForBottomSheetStack = {
     screen: TransactionConfirmationScreen,
   },
   [Routes.EXPANDED_ASSET_SHEET]: {
-    navigationOptions: {
+    navigationOptions: ({
+      navigation: {
+        state: { params },
+      },
+    }) => ({
       backgroundOpacity: 0.7,
       cornerRadius: 24,
       customStack: true,
       headerHeight: 50,
+      longFormHeight: params?.longFormHeight,
       onAppear: null,
       scrollEnabled: true,
       springDamping: 0.8755,
       topOffset: 0,
       transitionDuration: 0.42,
-    },
+    }),
     screen: ExpandedAssetSheetWrapper,
   },
   [Routes.RECEIVE_MODAL]: withCustomStack(ReceiveModal),

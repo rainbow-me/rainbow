@@ -1,19 +1,28 @@
 diff --git a/node_modules/react-native-cool-modals/createNativeStackNavigator.js b/node_modules/react-native-cool-modals/createNativeStackNavigator.js
-index 334ef99..e3695c7 100644
+index 334ef99..ebbe488 100644
 --- a/node_modules/react-native-cool-modals/createNativeStackNavigator.js
 +++ b/node_modules/react-native-cool-modals/createNativeStackNavigator.js
 @@ -61,6 +61,7 @@ class StackView extends React.Component {
-
+ 
      let stackPresentation = 'push';
      const {
 +      dismissable,
        customStack,
        topOffset,
        showDragIndicator,
-@@ -98,6 +99,7 @@ class StackView extends React.Component {
+@@ -78,6 +79,7 @@ class StackView extends React.Component {
+       springDamping,
+       startFromShortForm,
+       transitionDuration,
++      longFormHeight,
+     } = options;
+ 
+     if (mode === 'modal' || mode === 'containedModal') {
+@@ -98,6 +100,8 @@ class StackView extends React.Component {
      const { screenProps } = this.props;
      return (
        <Screen
++        longFormHeight={longFormHeight}
 +        dismissable={dismissable}
          onWillDismiss={onWillDismiss}
          allowsDragToDismiss={allowsDragToDismiss}
@@ -31,9 +40,23 @@ index 8648e95..fe585da 100644
  @property (nonatomic) NSNumber* topOffset;
  @property (nonatomic) NSNumber* cornerRadius;
 diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreen.m b/node_modules/react-native-cool-modals/ios/RNCMScreen.m
-index 7c27c15..afdf6e5 100644
+index 7c27c15..21c7079 100644
 --- a/node_modules/react-native-cool-modals/ios/RNCMScreen.m
 +++ b/node_modules/react-native-cool-modals/ios/RNCMScreen.m
+@@ -31,11 +31,11 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
+     _startFromShortForm = false;
+     _topOffset = [[NSNumber alloc] initWithInt: 42];
+     _isShortFormEnabled = false;
+-    _longFormHeight = nil;
++    _longFormHeight = [[NSNumber alloc] initWithDouble:UIScreen.mainScreen.bounds.size.height];
+     _cornerRadius = [[NSNumber alloc] initWithInt: 8.0];
+     _springDamping = [[NSNumber alloc] initWithDouble: 0.8];
+     _transitionDuration = [[NSNumber alloc] initWithDouble: 0.5];
+-    _anchorModalToLongForm = true;
++    _anchorModalToLongForm = false;
+     _allowsDragToDismiss = true;
+     _allowsTapToDismiss = true;
+     _showDragIndicator = true;
 @@ -45,7 +45,7 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
      _startFromShortForm = false;
      _modalBackgroundColor = [[UIColor alloc] initWithRed:0.0f green:0.0f blue:0.0f alpha:1];
@@ -41,7 +64,7 @@ index 7c27c15..afdf6e5 100644
 -
 +    _dismissable = YES;
    }
-
+ 
    return self;
 @@ -375,6 +375,7 @@ @implementation RNCMScreenManager
  RCT_EXPORT_VIEW_PROPERTY(gestureEnabled, BOOL)
@@ -51,6 +74,14 @@ index 7c27c15..afdf6e5 100644
  RCT_EXPORT_VIEW_PROPERTY(topOffset, NSNumber)
  RCT_EXPORT_VIEW_PROPERTY(cornerRadius, NSNumber)
  RCT_EXPORT_VIEW_PROPERTY(stackPresentation, RNSScreenStackPresentation)
+@@ -392,6 +393,7 @@ @implementation RNCMScreenManager
+ RCT_EXPORT_VIEW_PROPERTY(isShortFormEnabled, BOOL)
+ RCT_EXPORT_VIEW_PROPERTY(blocksBackgroundTouches, BOOL)
+ RCT_EXPORT_VIEW_PROPERTY(anchorModalToLongForm, BOOL)
++RCT_EXPORT_VIEW_PROPERTY(longFormHeight, NSNumber)
+ RCT_EXPORT_VIEW_PROPERTY(allowsTapToDismiss, BOOL)
+ RCT_EXPORT_VIEW_PROPERTY(allowsDragToDismiss, BOOL)
+ RCT_EXPORT_VIEW_PROPERTY(startFromShortForm, BOOL)
 diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m b/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m
 index b397efb..b9194e9 100644
 --- a/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m
@@ -71,12 +102,12 @@ index b397efb..b9194e9 100644
      finish();
    }
 diff --git a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-index b21a043..b455899 100644
+index b21a043..e8d6f19 100644
 --- a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 +++ b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 @@ -125,7 +125,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
    }
-
+ 
    func shouldRespond(to panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
 -    return !hiding
 +    if (hiding) {
@@ -84,24 +115,39 @@ index b21a043..b455899 100644
 +    }
 +    return self.config?.value(forKey: "dismissable") as! Bool
    }
-
+ 
    var allowsDragToDismiss: Bool {
+@@ -187,7 +190,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+   }
+ 
+   var longFormHeight: PanModalHeight {
+-    return .contentHeight(UIScreen.main.bounds.height)
++    return .contentHeight(CGFloat(truncating: self.config?.value(forKey: "longFormHeight") as! NSNumber));
+   }
+ 
+   override func viewDidAppear(_ animated: Bool) {
 diff --git a/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx b/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
-index c2f2e2b..7f6f332 100644
+index c2f2e2b..491bd3b 100644
 --- a/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
 +++ b/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
 @@ -43,6 +43,7 @@ export default function NativeStackView({
            } = options;
-
+ 
            const {
 +            dismissable,
              customStack,
              topOffset,
              showDragIndicator,
-@@ -62,6 +63,7 @@ export default function NativeStackView({
-
+@@ -58,10 +59,13 @@ export default function NativeStackView({
+             springDamping,
+             startFromShortForm,
+             transitionDuration,
++            longFormHeight,
+           } = options;
+ 
            return (
                <Screen
++                  longFormHeight={longFormHeight}
 +                  dismissable={dismissable}
                    customStack={customStack}
                    topOffset={topOffset}

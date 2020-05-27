@@ -132,7 +132,7 @@ const BalanceCoinRow = ({
   }, [item.uniqueId, pushSelectedCoin, removeSelectedCoin, setToggle, toggle]);
 
   const handlePress = useCallback(() => {
-    onPress && onPress(item);
+    onPress && onPress(item, { longFormHeight: 400 });
   }, [onPress, item]);
 
   const handlePressSend = useCallback(() => {
