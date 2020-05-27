@@ -12,9 +12,9 @@ const ButtonIcon = styled(Icon)`
   margin-right: 9;
 `;
 
-const Container = styled(BorderlessButton)`
-  ${position.centered};
-  flex-direction: row;
+const Container = styled(Centered).attrs({
+  as: BorderlessButton,
+})`
   flex: 1;
   height: 56;
   padding-bottom: 7;

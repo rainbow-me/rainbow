@@ -5,6 +5,7 @@ import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { Icon } from '../icons';
+import { Row } from '../layout';
 
 const Container = styled.View`
   ${position.size(CoinIconSize)};
@@ -12,10 +13,12 @@ const Container = styled.View`
   top: 0;
 `;
 
-const Content = styled(ButtonPressAnimation)`
+const Content = styled(Row).attrs(({ isAbsolute }) => ({
+  align: isAbsolute ? 'end' : 'center',
+  as: ButtonPressAnimation,
+  justify: 'center',
+}))`
   ${position.size('100%')};
-  align-items: ${({ isAbsolute }) => (isAbsolute ? 'flex-end' : 'center')};
-  justify-content: center;
 `;
 
 const CircleOutline = styled.View`

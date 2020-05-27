@@ -10,8 +10,7 @@ import { CoinRowHeight } from './CoinRow';
 const FavoriteButtonPadding = 19;
 const FavoriteButtonWidth = FavoriteButtonPadding * 3;
 
-const Button = styled(BaseButton)`
-  ${position.centered};
+const Button = styled(Centered).attrs({ as: BaseButton })`
   ${padding(0, FavoriteButtonPadding)}
   bottom: 0;
   flex: 0;

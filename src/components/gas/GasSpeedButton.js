@@ -8,16 +8,16 @@ import { useAccountSettings, useGas } from '../../hooks';
 import { colors, padding } from '../../styles';
 import { gasUtils, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { Row } from '../layout';
+import { Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
 
-const Container = styled(ButtonPressAnimation).attrs({
+const Container = styled(Column).attrs({
+  as: ButtonPressAnimation,
   hapticType: 'impactHeavy',
   scaleTo: 0.99,
 })`
   ${padding(15, 19, 0)};
-  flex-direction: column;
   width: 100%;
 `;
 

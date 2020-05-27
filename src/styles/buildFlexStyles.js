@@ -5,7 +5,7 @@ export const getFlexStylesFromShorthand = style =>
 
 const buildFlexStyles = css`
   /* Align Items */
-  align-items: ${({ align }) => getFlexStylesFromShorthand(align)};
+  align-items: ${({ align = 'stretch' }) => getFlexStylesFromShorthand(align)};
 
   /* Align Self */
   ${({ self }) =>
@@ -15,7 +15,7 @@ const buildFlexStyles = css`
   ${({ flex }) => (flex !== undefined ? `flex: ${flex};` : '')}
 
   /* Flex Direction */
-  flex-direction: ${({ direction }) => direction};
+  flex-direction: ${({ direction = 'row' }) => direction};
 
   /* Flex Grow */
   ${({ grow }) => (grow !== undefined ? `flex-grow: ${grow};` : '')}
@@ -27,7 +27,8 @@ const buildFlexStyles = css`
   flex-wrap: ${({ wrap }) => (wrap ? 'wrap' : 'nowrap')};
 
   /* Justify Content */
-  justify-content: ${({ justify }) => getFlexStylesFromShorthand(justify)};
+  justify-content: ${({ justify = 'start' }) =>
+    getFlexStylesFromShorthand(justify)};
 `;
 
 export default buildFlexStyles;
