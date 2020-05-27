@@ -63,22 +63,16 @@ export const walletsLoadState = () => async (dispatch, getState) => {
       await saveAddress(account.address);
     }
 
+    const walletNames = await getWalletNames();
+
     dispatch({
       payload: {
         selected: selectedWallet,
+        walletNames,
         wallets,
       },
       type: WALLETS_LOAD,
     });
-
-    try {
-      const walletNames = await getWalletNames();
-      dispatch({
-        payload: walletNames,
-        type: WALLETS_UPDATE_NAMES,
-      });
-      // eslint-disable-next-line no-empty
-    } catch (loadNamesError) {}
 
     dispatch(fetchWalletNames());
 
@@ -184,6 +178,7 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         selected: action.payload.selected,
+        walletNames: action.payload.walletNames,
         wallets: action.payload.wallets,
       };
     case WALLETS_ADDED_ACCOUNT:
