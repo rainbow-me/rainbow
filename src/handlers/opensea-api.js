@@ -4,7 +4,7 @@ import { parseAccountUniqueTokens } from '../parsers/uniqueTokens';
 import { logger } from '../utils';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
-export const UNIQUE_TOKENS_LIMIT_TOTAL = 350;
+export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
 
 const api = axios.create({
   headers: {
