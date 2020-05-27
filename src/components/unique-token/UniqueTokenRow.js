@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { useWallets } from '../../hooks';
+import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
 import { padding, position } from '../../styles';
 import { deviceUtils, magicMemo } from '../../utils';

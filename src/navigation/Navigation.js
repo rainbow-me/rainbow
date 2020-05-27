@@ -4,6 +4,7 @@ import { Value } from 'react-native-reanimated';
 import { StackActions } from 'react-navigation';
 import { useNavigation as oldUseNavigation } from 'react-navigation-hooks';
 import { useCallback } from 'use-memo-one';
+import { discoverSheetAvailable } from '../config/experimental';
 import { setModalVisible } from '../redux/modal';
 import store from '../redux/store';
 import Routes from '../screens/Routes/routesNames';
@@ -16,14 +17,22 @@ export function notifyUnmountBottomSheet() {
   bottomSheetState.mounted = false;
   const action = bottomSheetState.pendingAction;
   bottomSheetState.pendingAction = null;
-  action();
+  action && action();
 }
 
 export function notifyMountBottomSheet() {
   bottomSheetState.mounted = true;
 }
 
-const poppingCounter = { isClosing: false, pendingAction: null };
+const poppingCounter = { isClosing: false, pendingActions: [] };
+
+export function addActionAfterClosingSheet(action) {
+  if (poppingCounter.isClosing) {
+    poppingCounter.pendingActions.push(action);
+  } else {
+    action();
+  }
+}
 
 export function onWillPop() {
   poppingCounter.isClosing = true;
@@ -31,10 +40,10 @@ export function onWillPop() {
 
 export function onDidPop() {
   poppingCounter.isClosing = false;
-  if (poppingCounter.pendingAction) {
+  if (poppingCounter.pendingActions.length !== 0) {
     setImmediate(() => {
-      poppingCounter.pendingAction();
-      poppingCounter.pendingAction = null;
+      poppingCounter.pendingActions.forEach(action => action());
+      poppingCounter.pendingActions = [];
     });
   }
 }
@@ -65,6 +74,7 @@ export function withNavigation(Component) {
  */
 export function navigate(oldNavigate, ...args) {
   if (
+    discoverSheetAvailable &&
     typeof args[0] === 'string' &&
     (args[0] === Routes.SETTINGS_MODAL ||
       args[0] === Routes.RECEIVE_MODAL ||
@@ -78,8 +88,8 @@ export function navigate(oldNavigate, ...args) {
       return;
     }
   }
-  if (typeof args[0] === 'string' && poppingCounter.isClosing) {
-    poppingCounter.pendingAction = () => oldNavigate(...args);
+  if (typeof args[0] === 'string') {
+    addActionAfterClosingSheet(() => oldNavigate(...args));
   } else {
     oldNavigate(...args);
   }

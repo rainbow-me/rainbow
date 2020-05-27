@@ -4,7 +4,10 @@ import { StatusBar } from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { Navigation } from '../../navigation';
-import { notifyMountBottomSheet } from '../../navigation/Navigation';
+import {
+  addActionAfterClosingSheet,
+  notifyMountBottomSheet,
+} from '../../navigation/Navigation';
 import { expandedPreset } from '../../navigation/transitions/effects';
 import { setModalVisible } from '../../redux/modal';
 import store from '../../redux/store';
@@ -118,13 +121,12 @@ export function onNavigationStateChange(prevState, currentState) {
       routeName === Routes.QR_SCANNER_SCREEN ||
       routeName === Routes.PROFILE_SCREEN
     ) {
-      console.log(prevRouteName);
-      console.log('setting visible to true');
-      const delay = prevRouteName === Routes.SEND_SHEET ? 100 : 400;
-      setTimeout(() => {
-        store.dispatch(setModalVisible(true));
-        notifyMountBottomSheet();
-      }, delay);
+      addActionAfterClosingSheet(() => {
+        setTimeout(() => {
+          store.dispatch(setModalVisible(true));
+          notifyMountBottomSheet();
+        }, 100);
+      });
     }
 
     if (routeName === Routes.EXPANDED_ASSET_SHEET) {
