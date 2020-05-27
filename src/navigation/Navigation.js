@@ -1,9 +1,7 @@
-import { get } from 'lodash';
-import React, { useCallback }  from 'react';
+import React, { useCallback } from 'react';
 import { Value } from 'react-native-reanimated';
 import { StackActions } from 'react-navigation';
 import { useNavigation as oldUseNavigation } from 'react-navigation-hooks';
-import { useCallback } from 'use-memo-one';
 import { discoverSheetAvailable } from '../config/experimental';
 import { setModalVisible } from '../redux/modal';
 import store from '../redux/store';
