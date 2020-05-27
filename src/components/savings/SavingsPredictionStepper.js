@@ -1,31 +1,32 @@
-import AnimatedNumber from '@rainbow-me/react-native-animated-number';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import styled from 'styled-components/primitives';
 import {
   calculateEarningsInDays,
   isSymbolStablecoin,
 } from '../../helpers/savings';
 import { handleSignificantDecimals } from '../../helpers/utilities';
-import { colors, fonts, padding } from '../../styles';
+import { colors, padding } from '../../styles';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
-import { Emoji, Text } from '../text';
+import { AnimatedNumber, Emoji, Text } from '../text';
 
-const sx = StyleSheet.create({
-  animatedNumber: {
-    color: colors.swapPurple,
-    flexGrow: 1,
-    fontFamily: fonts.family.SFProRounded,
-    fontSize: parseFloat(fonts.size.lmedium),
-    fontWeight: fonts.weight.semibold,
-    letterSpacing: fonts.letterSpacing.roundedTight,
-  },
-  emoji: {
-    marginBottom: 0.5,
-  },
-});
+const CrystalBallEmoji = styled(Emoji).attrs({
+  name: 'crystal_ball',
+  size: 'medium',
+})`
+  margin-bottom: 0.5;
+`;
+
+const PredictionNumber = styled(AnimatedNumber).attrs({
+  color: colors.swapPurple,
+  letterSpacing: 'roundedTight',
+  size: 'lmedium',
+  weight: 'semibold',
+})`
+  flex-grow: 1;
+`;
 
 /* eslint-disable sort-keys */
 const steps = {
@@ -89,17 +90,16 @@ const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
     >
       <Row align="center" css={padding(15, 19, 19)}>
         <RowWithMargins align="center" margin={5}>
-          <Emoji name="crystal_ball" size="medium" style={sx.emoji} />
+          <CrystalBallEmoji />
           <Text size="lmedium">
             {`Est. ${Object.keys(steps)[step]} Earnings`}
           </Text>
         </RowWithMargins>
         <Row flex={1} justify="end">
-          <AnimatedNumber
+          <PredictionNumber
             disableTabularNums
             formatter={formatter}
             steps={9}
-            style={sx.animatedNumber}
             time={8}
             value={estimatedEarnings}
           />

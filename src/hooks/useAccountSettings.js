@@ -4,7 +4,6 @@ import {
   createNativeCurrencySelector,
 } from '../hoc/accountSettingsSelectors';
 import {
-  settingsUpdateAccountAddress,
   settingsUpdateAccountColor,
   settingsUpdateAccountName,
 } from '../redux/settings';
@@ -36,7 +35,6 @@ export default function useAccountSettings() {
     })
   );
   return {
-    settingsUpdateAccountAddress,
     settingsUpdateAccountColor,
     settingsUpdateAccountName,
     ...settingsData,

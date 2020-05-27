@@ -1,6 +1,8 @@
 import {
+  getAccountENS,
   getNativeCurrency,
   getNetwork,
+  saveAccountENS,
   saveLanguage,
   saveNativeCurrency,
   saveNetwork,
@@ -9,9 +11,10 @@ import { web3Provider, web3SetHttpProvider } from '../handlers/web3';
 import networkTypes from '../helpers/networkTypes';
 import { updateLanguage } from '../languages';
 
-import { ethereumUtils } from '../utils';
+import { ethereumUtils, logger } from '../utils';
 import { dataResetState } from './data';
 import { explorerClearState, explorerInit } from './explorer';
+import { walletConnectUpdateSessions } from './walletconnect';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -23,18 +26,10 @@ const SETTINGS_UPDATE_SETTINGS_ENS = 'settings/SETTINGS_UPDATE_SETTINGS_ENS';
 const SETTINGS_UPDATE_SETTINGS_NAME = 'settings/SETTINGS_UPDATE_SETTINGS_NAME';
 const SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS =
   'settings/SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS';
-const SETTINGS_UPDATE_NATIVE_CURRENCY_FAILURE =
-  'settings/SETTINGS_UPDATE_NATIVE_CURRENCY_FAILURE';
-
 const SETTINGS_UPDATE_LANGUAGE_SUCCESS =
   'settings/SETTINGS_UPDATE_LANGUAGE_SUCCESS';
-const SETTINGS_UPDATE_LANGUAGE_FAILURE =
-  'settings/SETTINGS_UPDATE_LANGUAGE_FAILURE';
-
 const SETTINGS_UPDATE_NETWORK_SUCCESS =
   'settings/SETTINGS_UPDATE_NETWORK_SUCCESS';
-const SETTINGS_UPDATE_NETWORK_FAILURE =
-  'settings/SETTINGS_UPDATE_NETWORK_FAILURE';
 
 // -- Actions --------------------------------------------------------------- //
 export const settingsLoadState = () => async dispatch => {
@@ -45,7 +40,17 @@ export const settingsLoadState = () => async dispatch => {
       type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
     });
   } catch (error) {
-    dispatch({ type: SETTINGS_UPDATE_NATIVE_CURRENCY_FAILURE });
+    logger.log('Error loading native currency', error);
+  }
+
+  try {
+    const accountENS = await getAccountENS();
+    dispatch({
+      payload: accountENS,
+      type: SETTINGS_UPDATE_SETTINGS_ENS,
+    });
+  } catch (error) {
+    logger.log('Error loading account ENS', error);
   }
 };
 
@@ -59,36 +64,48 @@ export const settingsLoadNetwork = () => async dispatch => {
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
     });
   } catch (error) {
-    dispatch({ type: SETTINGS_UPDATE_NETWORK_FAILURE });
+    logger.log('Error loading network settings', error);
   }
 };
 
-export const settingsUpdateAccountName = accountName => dispatch => {
+export const settingsUpdateAccountName = accountName => dispatch =>
   dispatch({
     payload: { accountName },
     type: SETTINGS_UPDATE_SETTINGS_NAME,
   });
-};
 
-export const settingsUpdateAccountColor = accountColor => dispatch => {
+export const settingsUpdateAccountColor = accountColor => dispatch =>
   dispatch({
     payload: { accountColor },
     type: SETTINGS_UPDATE_SETTINGS_COLOR,
   });
-};
 
 export const settingsUpdateAccountAddress = accountAddress => async dispatch => {
   dispatch({
     payload: accountAddress,
     type: SETTINGS_UPDATE_SETTINGS_ADDRESS,
   });
+  dispatch(settingsResolveAccountENS(accountAddress));
+  dispatch(walletConnectUpdateSessions());
+};
 
-  await web3Provider.lookupAddress(accountAddress).then(accountENS =>
+const settingsResolveAccountENS = accountAddress => async (
+  dispatch,
+  getState
+) => {
+  const { accountENS: existingAccountENS } = getState().settings;
+  try {
+    const accountENS = await web3Provider.lookupAddress(accountAddress);
     dispatch({
       payload: accountENS,
       type: SETTINGS_UPDATE_SETTINGS_ENS,
-    })
-  );
+    });
+    if (accountENS !== existingAccountENS) {
+      saveAccountENS(accountENS);
+    }
+  } catch (error) {
+    logger.log('Error finding ens', error);
+  }
 };
 
 export const settingsUpdateNetwork = network => async dispatch => {
@@ -100,45 +117,38 @@ export const settingsUpdateNetwork = network => async dispatch => {
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
     });
     saveNetwork(network);
+    dispatch(walletConnectUpdateSessions());
   } catch (error) {
-    dispatch({
-      type: SETTINGS_UPDATE_NETWORK_FAILURE,
-    });
+    logger.log('Error updating network settings', error);
   }
 };
 
-export const settingsChangeLanguage = language => dispatch => {
+export const settingsChangeLanguage = language => async dispatch => {
   updateLanguage(language);
-  saveLanguage(language)
-    .then(() =>
-      dispatch({
-        payload: language,
-        type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
-      })
-    )
-    .catch(() =>
-      dispatch({
-        type: SETTINGS_UPDATE_LANGUAGE_FAILURE,
-      })
-    );
+  try {
+    dispatch({
+      payload: language,
+      type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
+    });
+    saveLanguage(language);
+  } catch (error) {
+    logger.log('Error changing language', error);
+  }
 };
 
-export const settingsChangeNativeCurrency = nativeCurrency => dispatch => {
+export const settingsChangeNativeCurrency = nativeCurrency => async dispatch => {
   dispatch(dataResetState());
   dispatch(explorerClearState());
-  saveNativeCurrency(nativeCurrency)
-    .then(() => {
-      dispatch({
-        payload: nativeCurrency,
-        type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
-      });
-      dispatch(explorerInit());
-    })
-    .catch(() => {
-      dispatch({
-        type: SETTINGS_UPDATE_NATIVE_CURRENCY_FAILURE,
-      });
+  try {
+    dispatch({
+      payload: nativeCurrency,
+      type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
     });
+    dispatch(explorerInit());
+    saveNativeCurrency(nativeCurrency);
+  } catch (error) {
+    logger.log('Error changing native currency', error);
+  }
 };
 
 // -- Reducer --------------------------------------------------------------- //
@@ -180,10 +190,6 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         nativeCurrency: action.payload,
       };
-    case SETTINGS_UPDATE_NATIVE_CURRENCY_FAILURE:
-      return {
-        ...state,
-      };
     case SETTINGS_UPDATE_NETWORK_SUCCESS:
       return {
         ...state,
@@ -194,10 +200,6 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         language: action.payload,
-      };
-    case SETTINGS_UPDATE_LANGUAGE_FAILURE:
-      return {
-        ...state,
       };
     default:
       return state;

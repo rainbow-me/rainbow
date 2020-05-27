@@ -1,20 +1,28 @@
+import MaskedView from '@react-native-community/masked-view';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import RadialGradient from 'react-native-radial-gradient';
 import { withProps } from 'recompact';
-import AddCashButtonBackgroundSource from '../../assets/addCashButtonBackground.png';
 import AddCashIconSource from '../../assets/addCashIcon.png';
-import { margin, position } from '../../styles';
+import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
-import { Centered, Row, RowWithMargins } from '../layout';
+import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 
-const BorderRadius = 28;
-const BorderWidth = 2;
+const BorderWidth = 1;
+const ButtonHeight = 56;
+const ButtonWidth = 155;
+const InnerButtonHeight = ButtonHeight - BorderWidth * 2;
+const InnerButtonWidth = ButtonWidth - BorderWidth * 2;
+const BorderRadius = ButtonHeight / 2;
 
 const sx = StyleSheet.create({
+  buttonContainer: {
+    height: ButtonHeight,
+    width: ButtonWidth,
+  },
   content: {
     alignSelf: 'center',
     height: '100%',
@@ -27,36 +35,63 @@ const sx = StyleSheet.create({
     marginTop: 7,
     width: 45,
   },
-  innerGradient: {
-    ...position.sizeAsObject('100%'),
+  innerButton: {
+    backgroundColor: colors.dark,
     borderRadius: BorderRadius - BorderWidth,
+    height: InnerButtonHeight,
+    margin: BorderWidth,
+    width: InnerButtonWidth,
+  },
+  innerGradient: {
+    height: ButtonWidth - BorderWidth * 2,
     overflow: 'hidden',
+    position: 'absolute',
+    top: -(InnerButtonWidth / 2 - InnerButtonHeight / 2),
+    transform: [{ scaleY: 0.7884615385 }],
+    width: InnerButtonWidth,
+  },
+  outerButton: {
+    backgroundColor: colors.dark,
+    borderRadius: BorderRadius,
+    height: ButtonHeight,
+    shadowColor: colors.dark,
+    shadowOffset: { height: 5, width: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 7.5,
+    width: ButtonWidth,
   },
   outerGradient: {
-    borderRadius: BorderRadius,
-    height: 56,
-    minWidth: 155,
-    overflow: 'hidden',
-    padding: BorderWidth,
+    height: ButtonWidth * 2,
+    left: -ButtonWidth / 2,
+    position: 'absolute',
+    top: -(ButtonWidth - ButtonHeight / 2),
+    transform: [{ scaleY: 0.7884615385 }],
+    width: ButtonWidth * 2,
   },
   shadow: {
-    height: 154,
-    opacity: 0.8,
+    backgroundColor: colors.white,
+    borderRadius: ButtonHeight,
+    height: ButtonHeight,
+    opacity: 0.2,
     position: 'absolute',
-    top: -40,
-    width: 255,
+    shadowColor: colors.dark,
+    shadowOffset: { height: 10, width: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 15,
+    width: ButtonWidth,
   },
 });
 
-const GradientRadius = 155;
-const GradientStops = [0, 0.635483871, 1];
+const innerButton = <View style={sx.innerButton} />;
+const outerButton = <View style={sx.outerButton} />;
 
+const GradientStops = [0, 0.544872, 1];
 const AddCashRadialGradient = withProps({
-  radius: GradientRadius,
+  radius: ButtonWidth,
   stops: GradientStops,
 })(RadialGradient);
 
-const InnerGradientCenter = [GradientRadius, BorderRadius - BorderWidth];
+const InnerGradientCenter = [InnerButtonWidth, InnerButtonWidth / 2];
 const InnerGradientColors = ['#FFB114', '#FF54BB', '#00F0FF'];
 const InnerGradient = withProps({
   center: InnerGradientCenter,
@@ -64,8 +99,8 @@ const InnerGradient = withProps({
   style: sx.innerGradient,
 })(AddCashRadialGradient);
 
-const OuterGradientCenter = [GradientRadius, BorderRadius];
-const OuterGradientColors = ['#FF6B14', '#FFAC54', '#38BBFF'];
+const OuterGradientCenter = [ButtonWidth * 1.5, ButtonWidth];
+const OuterGradientColors = ['#F7AC13', '#F751B5', '#00E9F7'];
 const OuterGradient = withProps({
   center: OuterGradientCenter,
   colors: OuterGradientColors,
@@ -73,35 +108,31 @@ const OuterGradient = withProps({
 })(AddCashRadialGradient);
 
 const AddCashButton = ({ onPress }) => (
-  <ButtonPressAnimation onPress={onPress} scaleTo={0.9} zIndex={-1}>
-    <Row css={margin(16, 15, 30)} flex={0}>
-      <Centered {...position.coverAsObject}>
-        <FastImage
-          resizeMode={FastImage.resizeMode.contain}
-          source={AddCashButtonBackgroundSource}
-          style={sx.shadow}
-        />
-      </Centered>
-      <OuterGradient>
-        <InnerGradient>
-          <RowWithMargins align="center" margin={-2.5} style={sx.content}>
-            <FastImage
-              resizeMode={FastImage.resizeMode.contain}
-              source={AddCashIconSource}
-              style={sx.icon}
-            />
-            <Text
-              color="white"
-              letterSpacing="roundedTight"
-              size="larger"
-              weight="bold"
-            >
-              Add Cash
-            </Text>
-          </RowWithMargins>
-        </InnerGradient>
-      </OuterGradient>
-    </Row>
+  <ButtonPressAnimation marginTop={16} onPress={onPress} scaleTo={0.9}>
+    <View style={sx.shadow} />
+    <MaskedView maskElement={outerButton} pointerEvents="none">
+      <View style={sx.buttonContainer}>
+        <OuterGradient />
+        <MaskedView maskElement={innerButton}>
+          <InnerGradient />
+        </MaskedView>
+        <RowWithMargins align="center" margin={-2.5} style={sx.content}>
+          <FastImage
+            resizeMode={FastImage.resizeMode.contain}
+            source={AddCashIconSource}
+            style={sx.icon}
+          />
+          <Text
+            color="white"
+            letterSpacing="roundedTight"
+            size="larger"
+            weight="bold"
+          >
+            Add Cash
+          </Text>
+        </RowWithMargins>
+      </View>
+    </MaskedView>
   </ButtonPressAnimation>
 );
 

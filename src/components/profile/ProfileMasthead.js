@@ -92,9 +92,10 @@ export default function ProfileMasthead({
       marginTop={0}
     >
       <AvatarCircle
-        onPress={handlePressAvatar}
         accountColor={accountColor}
         accountSymbol={accountSymbol}
+        isAvatarPickerAvailable={isAvatarPickerAvailable}
+        onPress={handlePressAvatar}
       />
       <ButtonPressAnimation onPress={handlePressChangeWallet} scaleTo={0.9}>
         <Row>

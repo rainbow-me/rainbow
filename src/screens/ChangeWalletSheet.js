@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import React, { useCallback, useRef, useState } from 'react';
+import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import Divider from '../components/Divider';
@@ -15,6 +15,7 @@ import WalletTypes from '../helpers/walletTypes';
 import { useAccountSettings, useInitializeWallet, useWallets } from '../hooks';
 import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
 import { createWallet } from '../model/wallet';
+import { useNavigation } from '../navigation/Navigation';
 import {
   addressSetSelected,
   createAccountForWallet,
@@ -79,6 +80,11 @@ const ChangeWalletSheet = () => {
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames(wallets);
   const creatingWallet = useRef();
 
+  const [currentAddress, setCurrentAddress] = useState(accountAddress);
+  const [currentSelectedWallet, setCurrentSelectedWallet] = useState(
+    selectedWallet
+  );
+
   const walletRowCount = getWalletRowCount(wallets);
   const addAccountRowCount = getAddAccountRowCount(wallets);
 
@@ -96,18 +102,22 @@ const ChangeWalletSheet = () => {
   const onChangeAccount = useCallback(
     async (walletId, address, fromDeletion = false) => {
       if (editMode && !fromDeletion) return;
-      if (address === accountAddress) return;
+      if (address === currentAddress) return;
       try {
         const wallet = wallets[walletId];
-        dispatch(walletsSetSelected(wallet));
-        dispatch(addressSetSelected(address));
-        await initializeWallet();
+        setCurrentAddress(address);
+        setCurrentSelectedWallet(wallet);
+        const p1 = dispatch(walletsSetSelected(wallet));
+        const p2 = dispatch(addressSetSelected(address));
+        await Promise.all([p1, p2]);
+
+        initializeWallet();
         !fromDeletion && goBack();
       } catch (e) {
         logger.log('error while switching account', e);
       }
     },
-    [accountAddress, dispatch, editMode, goBack, initializeWallet, wallets]
+    [currentAddress, dispatch, editMode, goBack, initializeWallet, wallets]
   );
 
   const deleteWallet = useCallback(
@@ -142,36 +152,45 @@ const ChangeWalletSheet = () => {
         account => account.address === address
       );
 
-      navigate(Routes.MODAL_SCREEN, {
-        address,
-        asset: [],
-        onCloseModal: async args => {
-          if (args) {
-            const newWallets = { ...wallets };
-            if ('name' in args) {
-              newWallets[walletId].addresses.some((account, index) => {
-                if (account.address === address) {
-                  newWallets[walletId].addresses[index].label = args.name;
-                  newWallets[walletId].addresses[index].color = args.color;
-                  if (selectedWallet.id === walletId) {
-                    dispatch(walletsSetSelected(newWallets[walletId]));
-                  }
-                  return true;
+      InteractionManager.runAfterInteractions(() => {
+        goBack();
+      });
+
+      InteractionManager.runAfterInteractions(() => {
+        setTimeout(() => {
+          navigate(Routes.MODAL_SCREEN, {
+            address,
+            asset: [],
+            onCloseModal: async args => {
+              if (args) {
+                const newWallets = { ...wallets };
+                if ('name' in args) {
+                  newWallets[walletId].addresses.some((account, index) => {
+                    if (account.address === address) {
+                      newWallets[walletId].addresses[index].label = args.name;
+                      newWallets[walletId].addresses[index].color = args.color;
+                      if (currentSelectedWallet.id === walletId) {
+                        setCurrentSelectedWallet(wallet);
+                        dispatch(walletsSetSelected(newWallets[walletId]));
+                      }
+                      return true;
+                    }
+                    return false;
+                  });
+                  await dispatch(walletsUpdate(newWallets));
                 }
-                return false;
-              });
-              await dispatch(walletsUpdate(newWallets));
-            }
-          }
-        },
-        profile: {
-          color: account.color,
-          name: account.label || ``,
-        },
-        type: 'wallet_profile_creator',
+              }
+            },
+            profile: {
+              color: account.color,
+              name: account.label || ``,
+            },
+            type: 'wallet_profile_creator',
+          });
+        }, 50);
       });
     },
-    [dispatch, navigate, selectedWallet.id, wallets]
+    [dispatch, goBack, navigate, currentSelectedWallet.id, wallets]
   );
 
   const onEditWallet = useCallback(
@@ -223,7 +242,7 @@ const ChangeWalletSheet = () => {
                   ReactNativeHapticFeedback.trigger('notificationSuccess');
                   // If we're deleting the selected wallet
                   // we need to switch to another one
-                  if (address === accountAddress) {
+                  if (address === currentAddress) {
                     for (let i = 0; i < Object.keys(wallets).length; i++) {
                       const key = Object.keys(wallets)[i];
                       const someWallet = wallets[key];
@@ -245,7 +264,7 @@ const ChangeWalletSheet = () => {
         }
       );
     },
-    [accountAddress, deleteWallet, onChangeAccount, renameWallet, wallets]
+    [currentAddress, deleteWallet, onChangeAccount, renameWallet, wallets]
   );
 
   const onPressAddAccount = useCallback(
@@ -253,36 +272,46 @@ const ChangeWalletSheet = () => {
       try {
         if (creatingWallet.current) return;
         creatingWallet.current = true;
+
         // Show naming modal
-        navigate(Routes.MODAL_SCREEN, {
-          actionType: 'Create',
-          asset: [],
-          isNewProfile: true,
-          onCloseModal: async args => {
-            if (args) {
-              const name = get(args, 'name', '');
-              const color = get(args, 'color', colors.getRandomColor());
-              if (walletId) {
-                await dispatch(createAccountForWallet(walletId, color, name));
-                await initializeWallet();
-              } else {
-                await createWallet(null, color, name);
-                await initializeWallet();
-              }
-            }
-            creatingWallet.current = false;
-          },
-          profile: {
-            color: null,
-            name: ``,
-          },
-          type: 'wallet_profile_creator',
+        InteractionManager.runAfterInteractions(() => {
+          goBack();
+        });
+        InteractionManager.runAfterInteractions(() => {
+          setTimeout(() => {
+            navigate(Routes.MODAL_SCREEN, {
+              actionType: 'Create',
+              asset: [],
+              isNewProfile: true,
+              onCloseModal: async args => {
+                if (args) {
+                  const name = get(args, 'name', '');
+                  const color = get(args, 'color', colors.getRandomColor());
+                  if (walletId) {
+                    await dispatch(
+                      createAccountForWallet(walletId, color, name)
+                    );
+                    await initializeWallet();
+                  } else {
+                    await createWallet(null, color, name);
+                    await initializeWallet();
+                  }
+                }
+                creatingWallet.current = false;
+              },
+              profile: {
+                color: null,
+                name: ``,
+              },
+              type: 'wallet_profile_creator',
+            });
+          }, 50);
         });
       } catch (e) {
         logger.log('Error while trying to add account', e);
       }
     },
-    [dispatch, initializeWallet, navigate]
+    [dispatch, goBack, initializeWallet, navigate]
   );
 
   const onPressImportSeedPhrase = useCallback(() => {
@@ -312,9 +341,9 @@ const ChangeWalletSheet = () => {
       </EditButton>
 
       <WalletList
-        accountAddress={accountAddress}
+        accountAddress={currentAddress}
         allWallets={walletsWithBalancesAndNames}
-        currentWallet={selectedWallet}
+        currentWallet={currentSelectedWallet}
         editMode={editMode}
         height={listHeight}
         onChangeAccount={onChangeAccount}

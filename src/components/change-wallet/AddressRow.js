@@ -10,7 +10,7 @@ import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import CoinCheckButton from '../coin-row/CoinCheckButton';
 import { ContactAvatar } from '../contacts';
-import { Centered, Column, Row } from '../layout';
+import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { TruncatedAddress, TruncatedText } from '../text';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
@@ -22,7 +22,6 @@ const sx = StyleSheet.create({
     fontSize: getFontSize(fonts.size.lmedium),
     fontWeight: fonts.weight.medium,
     letterSpacing: fonts.letterSpacing.roundedMedium,
-    marginBottom: 3,
     maxWidth: maxAccountLabelWidth,
   },
   accountRow: {
@@ -127,35 +126,33 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
         onPress={onPress}
         scaleTo={editMode ? 1 : 0.98}
       >
-        <Row>
-          <Row flex={1}>
+        <Row align="center">
+          <Row align="center" flex={1}>
             <ContactAvatar
               color={accountColor}
               marginRight={10}
               size="medium"
               value={label || ens || `${index + 1}`}
             />
-            <View>
-              <View>
-                {cleanedUpLabel || ens ? (
-                  <TruncatedText style={sx.accountLabel}>
-                    {cleanedUpLabel || ens}
-                  </TruncatedText>
-                ) : (
-                  <TruncatedAddress
-                    address={address}
-                    firstSectionLength={6}
-                    size="smaller"
-                    style={sx.accountLabel}
-                    truncationLength={4}
-                    weight="medium"
-                  />
-                )}
-              </View>
+            <ColumnWithMargins margin={3}>
+              {cleanedUpLabel || ens ? (
+                <TruncatedText style={sx.accountLabel}>
+                  {cleanedUpLabel || ens}
+                </TruncatedText>
+              ) : (
+                <TruncatedAddress
+                  address={address}
+                  firstSectionLength={6}
+                  size="smaller"
+                  style={sx.accountLabel}
+                  truncationLength={4}
+                  weight="medium"
+                />
+              )}
               <BottomRowText style={sx.bottomRowText}>
                 {cleanedUpBalance} ETH
               </BottomRowText>
-            </View>
+            </ColumnWithMargins>
           </Row>
           <Column style={sx.rightContent}>
             {isReadOnly && (

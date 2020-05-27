@@ -1,5 +1,5 @@
 import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
-import { find, get, isEmpty, replace, toLower } from 'lodash';
+import { find, get, isEmpty, matchesProperty, replace, toLower } from 'lodash';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import networkTypes from '../helpers/networkTypes';
 import {
@@ -33,7 +33,7 @@ const getBalanceAmount = async (selectedGasPrice, selected) => {
 const getHash = txn => txn.hash.split('-').shift();
 
 const getAsset = (assets, address = 'eth') =>
-  find(assets, asset => asset.address === address);
+  find(assets, matchesProperty('address', address));
 
 export const checkWalletEthZero = assets => {
   const ethAsset = find(assets, asset => asset.address === 'eth');

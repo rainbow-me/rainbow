@@ -29,13 +29,20 @@ export default function useInitializeWallet() {
   const { network } = useAccountSettings();
 
   const initializeWallet = useCallback(
-    async (seedPhrase, color = null, name = null) => {
+    async (
+      seedPhrase,
+      color = null,
+      name = null,
+      shouldRunMigrations = false
+    ) => {
       try {
         logger.sentry('Start wallet setup');
 
+        await resetAccountState();
+
         const isImported = !!seedPhrase;
 
-        if (!seedPhrase) {
+        if (shouldRunMigrations && !seedPhrase) {
           await dispatch(walletsLoadState());
           await runMigrations();
         }
@@ -59,14 +66,17 @@ export default function useInitializeWallet() {
           );
           return null;
         }
-        if (isImported) {
-          await resetAccountState();
-        }
-        dispatch(settingsUpdateAccountAddress(walletAddress));
+
         if (!(isNew || isImported)) {
           await loadGlobalData();
+        }
+
+        await dispatch(settingsUpdateAccountAddress(walletAddress));
+
+        if (!(isNew || isImported)) {
           await loadAccountData(network);
         }
+
         onHideSplashScreen();
         logger.sentry('Hide splash screen');
         initializeAccountData();

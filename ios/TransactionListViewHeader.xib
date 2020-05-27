@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment version="4352" identifier="iOS"/>
@@ -25,48 +25,25 @@
                     <rect key="frame" x="110" y="162" width="155" height="56"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
                     <subviews>
-                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.80000000000000004" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="addCashButtonBackground" id="y3G-dd-G0Z" userLabel="Shadow">
-                            <rect key="frame" x="-50" y="-40" width="255" height="154"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                        </imageView>
-                        <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hy9-ml-9zf" userLabel="Outer Gradient" customClass="AddCashGradient" customModule="Rainbow" customModuleProvider="target">
+                        <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hy9-ml-9zf" userLabel="Outer Gradient" customClass="AddCashButton" customModule="Rainbow" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="155" height="56"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <userDefinedRuntimeAttributes>
                                 <userDefinedRuntimeAttribute type="color" keyPath="outerColor">
-                                    <color key="value" red="0.2196078431372549" green="0.73333333333333328" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="value" red="0.0" green="0.90196078431372551" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="color" keyPath="middleColor">
-                                    <color key="value" red="1" green="0.67450980392156867" blue="0.32941176470588235" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="value" red="0.96078431372549022" green="0.31764705882352939" blue="0.70588235294117641" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="color" keyPath="innerColor">
-                                    <color key="value" red="1" green="0.41960784313725491" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="value" red="0.96862745098039216" green="0.67450980392156867" blue="0.074509803921568626" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                    <real key="value" value="56"/>
-                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="enableShadows" value="YES"/>
                             </userDefinedRuntimeAttributes>
                         </view>
-                        <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9zi-tb-NQp" userLabel="Inner Gradient" customClass="AddCashGradient" customModule="Rainbow" customModuleProvider="target">
-                            <rect key="frame" x="2" y="2" width="151" height="52"/>
+                        <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9zi-tb-NQp" userLabel="Inner Gradient" customClass="AddCashButton" customModule="Rainbow" customModuleProvider="target">
+                            <rect key="frame" x="1" y="1" width="153" height="54"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            <subviews>
-                                <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="Nlo-pe-gcO" userLabel="Label">
-                                    <rect key="frame" x="0.0" y="0.0" width="151" height="52"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                    <accessibility key="accessibilityConfiguration">
-                                        <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
-                                    </accessibility>
-                                    <fontDescription key="fontDescription" name="SFRounded-Bold" family="SF Pro Rounded" pointSize="20"/>
-                                    <color key="tintColor" red="0.054901960780000002" green="0.46274509800000002" blue="0.99215686270000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <inset key="contentEdgeInsets" minX="0.0" minY="4" maxX="13" maxY="0.0"/>
-                                    <inset key="titleEdgeInsets" minX="0.5" minY="0.0" maxX="0.0" maxY="8"/>
-                                    <inset key="imageEdgeInsets" minX="4" minY="0.0" maxX="0.0" maxY="1"/>
-                                    <state key="normal" title="Add Cash" image="addCashIcon">
-                                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </state>
-                                </button>
-                            </subviews>
                             <userDefinedRuntimeAttributes>
                                 <userDefinedRuntimeAttribute type="color" keyPath="innerColor">
                                     <color key="value" red="1" green="0.69411764710000001" blue="0.078431372550000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -77,11 +54,24 @@
                                 <userDefinedRuntimeAttribute type="color" keyPath="outerColor">
                                     <color key="value" red="0.0" green="0.94117647059999998" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                    <real key="value" value="52"/>
-                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="enableShadows" value="NO"/>
                             </userDefinedRuntimeAttributes>
                         </view>
+                        <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="Nlo-pe-gcO" userLabel="Label">
+                            <rect key="frame" x="2" y="2" width="151" height="52"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration">
+                                <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
+                            </accessibility>
+                            <fontDescription key="fontDescription" name="SFRounded-Bold" family="SF Pro Rounded" pointSize="20"/>
+                            <color key="tintColor" red="0.054901960780000002" green="0.46274509800000002" blue="0.99215686270000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <inset key="contentEdgeInsets" minX="0.0" minY="4" maxX="13" maxY="0.0"/>
+                            <inset key="titleEdgeInsets" minX="0.5" minY="0.0" maxX="0.0" maxY="8"/>
+                            <inset key="imageEdgeInsets" minX="4" minY="0.0" maxX="0.0" maxY="1"/>
+                            <state key="normal" title="Add Cash" image="addCashIcon">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                        </button>
                     </subviews>
                     <accessibility key="accessibilityConfiguration">
                         <accessibilityTraits key="traits" button="YES"/>
@@ -217,7 +207,6 @@
         </view>
     </objects>
     <resources>
-        <image name="addCashButtonBackground" width="765" height="462"/>
         <image name="addCashIcon" width="45" height="45"/>
         <image name="avatar" width="255" height="255"/>
         <image name="caret-down" width="21" height="9"/>

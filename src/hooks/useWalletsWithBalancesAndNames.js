@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { get, isEmpty } from 'lodash';
+import { forEach, get, isEmpty, keys, map } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { queryCache, useQuery } from 'react-query';
 import {
@@ -28,21 +28,25 @@ export const useWalletsWithBalancesAndNames = wallets => {
   const fetchBalancesAndNames = useCallback(
     async (_, updatedWallets) => {
       const newWallets = {};
-      const addressesThatNeedBalance = [];
+      const addressesThatNeedBalance = {};
+
       // Fetch ENS names and get list of addresses to get
       await Promise.all(
-        Object.keys(wallets).map(async key => {
+        map(keys(wallets), async key => {
           newWallets[key] = { ...updatedWallets[key] };
           newWallets[key].addresses = await Promise.all(
-            wallets[key].addresses.map(async account => {
+            map(wallets[key].addresses, async account => {
               if (account.address === accountAddress) {
                 return account;
               }
               addressesThatNeedBalance[account.address] = '0.00';
-              const ens = await web3Provider.lookupAddress(account.address);
-              if (ens && ens !== account.address) {
-                account.ens = ens;
-              }
+              try {
+                const ens = await web3Provider.lookupAddress(account.address);
+                if (ens && ens !== account.address) {
+                  account.ens = ens;
+                }
+                // eslint-disable-next-line no-empty
+              } catch (error) {}
               return account;
             })
           );
@@ -58,11 +62,11 @@ export const useWalletsWithBalancesAndNames = wallets => {
         );
 
         const values = await balanceCheckerContract.balances(
-          Object.keys(addressesThatNeedBalance),
+          keys(addressesThatNeedBalance),
           [ETH_ADDRESS]
         );
 
-        Object.keys(addressesThatNeedBalance).forEach((address, index) => {
+        forEach(keys(addressesThatNeedBalance), (address, index) => {
           addressesThatNeedBalance[address] = values[index];
         });
       } catch (e) {
@@ -70,8 +74,8 @@ export const useWalletsWithBalancesAndNames = wallets => {
       }
 
       // Update the balance for each wallet
-      Object.keys(wallets).map(async key => {
-        newWallets[key].addresses.forEach(account => {
+      map(keys(wallets), async key => {
+        forEach(newWallets[key].addresses, account => {
           if (account.address !== accountAddress) {
             const balance = addressesThatNeedBalance[account.address];
             const decimalFormatAmount = convertRawAmountToDecimalFormat(
@@ -82,6 +86,8 @@ export const useWalletsWithBalancesAndNames = wallets => {
           }
         });
       });
+
+      saveWalletBalanceNames(newWallets);
       return newWallets;
     },
     [accountAddress, network, wallets]
@@ -104,7 +110,6 @@ export const useWalletsWithBalancesAndNames = wallets => {
       });
     });
 
-    saveWalletBalanceNames(updated);
     return updated;
   }, [accountAddress, accountENS, selectedAccountBalance, wallets]);
 

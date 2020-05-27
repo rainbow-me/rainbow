@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
-import { colors, shadow } from '../../styles';
+import { colors, shadow as shadowUtil } from '../../styles';
 import { magicMemo } from '../../utils';
 import Highlight from '../Highlight';
 import { ButtonPressAnimation } from '../animations';
@@ -8,9 +8,10 @@ import { InnerBorder } from '../layout';
 import UniqueTokenImage from './UniqueTokenImage';
 
 const UniqueTokenCardBorderRadius = 18;
+const UniqueTokenCardShadow = [0, 2, 3, colors.dark, 0.08];
 
 const Container = styled(ButtonPressAnimation)`
-  ${shadow.build(0, 2, 3, colors.dark, 0.08)};
+  ${({ shadow }) => shadowUtil.build(...shadow)};
 `;
 
 const Content = styled.View`
@@ -30,7 +31,7 @@ const UniqueTokenCard = ({
   onPress,
   resizeMode,
   scaleTo = 0.96,
-  shadowStyle,
+  shadow = UniqueTokenCardShadow,
   style,
   width,
   ...props
@@ -47,7 +48,7 @@ const UniqueTokenCard = ({
       enableHapticFeedback={enableHapticFeedback}
       onPress={handlePress}
       scaleTo={scaleTo}
-      style={shadowStyle}
+      shadow={shadow}
     >
       <Content {...props} height={height} style={style} width={width}>
         <UniqueTokenImage

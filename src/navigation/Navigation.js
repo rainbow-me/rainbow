@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import React from 'react';
+import React, { useCallback }  from 'react';
 import { Value } from 'react-native-reanimated';
 import { StackActions } from 'react-navigation';
 import { useNavigation as oldUseNavigation } from 'react-navigation-hooks';
@@ -96,7 +96,7 @@ export function navigate(oldNavigate, ...args) {
 }
 
 function getActiveRoute(navigationState) {
-  navigationState = navigationState || get(TopLevelNavigationRef, 'state.nav');
+  navigationState = navigationState || TopLevelNavigationRef?.state?.nav;
   if (!navigationState) return null;
 
   const route = navigationState.routes[navigationState.index];
@@ -112,7 +112,7 @@ function getActiveRoute(navigationState) {
  */
 function getActiveRouteName(navigationState) {
   const route = getActiveRoute(navigationState);
-  return get(route, 'routeName');
+  return route?.routeName;
 }
 
 /**

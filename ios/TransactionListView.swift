@@ -78,11 +78,20 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       if !requests.isEmpty {
         let item = TransactionViewModelTransactionRequestItem(requests: requests)
         items.append(item)
+        self.tableView.isScrollEnabled = true
+        self.tableView.restore()
       }
       
       if !transactions.isEmpty {
         let item = TransactionViewModelTransactionItem(transactions: transactions)
         items.append(item)
+        self.tableView.isScrollEnabled = true
+        self.tableView.restore()
+      }
+      
+      else {
+        self.tableView.isScrollEnabled = false
+        self.tableView.showEmptyState("No transactions yet")
       }
       
       sections = items.flatMap { $0.sections }

@@ -1,23 +1,49 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { LayoutAnimation } from 'react-native';
-import { withProps } from 'recompact';
+import styled from 'styled-components/primitives';
 import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
 import { useAccountSettings, useGas } from '../../hooks';
 import { colors, padding } from '../../styles';
-import { gasUtils } from '../../utils';
+import { gasUtils, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { Column, Row } from '../layout';
+import { Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
 
-const Label = withProps({
-  color: colors.alpha(colors.white, 0.5),
+const Container = styled(ButtonPressAnimation).attrs({
+  hapticType: 'impactHeavy',
+  scaleTo: 0.99,
+})`
+  ${padding(15, 19, 0)};
+  flex-direction: column;
+  width: 100%;
+`;
+
+const Label = styled(Text).attrs({
+  color: colors.white,
+  opacity: 0.5,
   size: 'smedium',
   weight: 'medium',
-})(Text);
+})``;
+
+const formatGasPrice = gasPrice => {
+  const fixedGasPrice = Number(gasPrice).toFixed(3);
+  const gasPriceWithTrailingZerosStripped = parseFloat(fixedGasPrice);
+  return gasPriceWithTrailingZerosStripped;
+};
+
+const getActionLabel = type => {
+  switch (type) {
+    case ExchangeModalTypes.deposit:
+      return 'Deposits in';
+    case ExchangeModalTypes.withdrawal:
+      return 'Withdraws in';
+    default:
+      return 'Swaps in';
+  }
+};
 
 const renderEstimatedTimeText = animatedNumber => (
   <Label>{animatedNumber}</Label>
@@ -33,17 +59,6 @@ const renderGasPriceText = animatedNumber => (
     {animatedNumber}
   </Text>
 );
-
-const getActionLabel = type => {
-  switch (type) {
-    case ExchangeModalTypes.deposit:
-      return 'Deposits in';
-    case ExchangeModalTypes.withdrawal:
-      return 'Withdraws in';
-    default:
-      return 'Swaps in';
-  }
-};
 
 const GasSpeedButton = ({ type }) => {
   const { nativeCurrencySymbol } = useAccountSettings();
@@ -79,10 +94,7 @@ const GasSpeedButton = ({ type }) => {
   }, [selectedGasPriceOption, updateGasPriceOption]);
 
   const formatAnimatedGasPrice = useCallback(
-    animatedPrice => {
-      const formattedPrice = parseFloat(animatedPrice).toFixed(3);
-      return `${nativeCurrencySymbol}${formattedPrice}`;
-    },
+    animatedPrice => `${nativeCurrencySymbol}${formatGasPrice(animatedPrice)}`,
     [nativeCurrencySymbol]
   );
 
@@ -96,42 +108,31 @@ const GasSpeedButton = ({ type }) => {
   );
 
   return (
-    <ButtonPressAnimation
-      hapticType="impactHeavy"
-      onPress={handlePress}
-      scaleTo={0.99}
-      width="100%"
-    >
-      <Column css={padding(15, 19, 0)} width="100%">
-        <Row align="center" justify="space-between">
-          <AnimateNumber
-            formatter={formatAnimatedGasPrice}
-            interval={6}
-            renderContent={renderGasPriceText}
-            steps={6}
-            timing="linear"
-            value={price}
-          />
-          <GasSpeedLabelPager label={selectedGasPriceOption} />
-        </Row>
-        <Row align="center" justify="space-between">
-          <Label>Fee</Label>
-          <AnimateNumber
-            formatter={formatAnimatedEstimatedTime}
-            interval={1}
-            renderContent={renderEstimatedTimeText}
-            steps={6}
-            timing="linear"
-            value={estimatedTimeValue}
-          />
-        </Row>
-      </Column>
-    </ButtonPressAnimation>
+    <Container onPress={handlePress}>
+      <Row align="center" justify="space-between">
+        <AnimateNumber
+          formatter={formatAnimatedGasPrice}
+          interval={6}
+          renderContent={renderGasPriceText}
+          steps={6}
+          timing="linear"
+          value={price}
+        />
+        <GasSpeedLabelPager label={selectedGasPriceOption} />
+      </Row>
+      <Row align="center" justify="space-between">
+        <Label>Fee</Label>
+        <AnimateNumber
+          formatter={formatAnimatedEstimatedTime}
+          interval={1}
+          renderContent={renderEstimatedTimeText}
+          steps={6}
+          timing="linear"
+          value={estimatedTimeValue}
+        />
+      </Row>
+    </Container>
   );
 };
 
-GasSpeedButton.propTypes = {
-  type: PropTypes.oneOf(Object.values(ExchangeModalTypes)),
-};
-
-export default GasSpeedButton;
+export default magicMemo(GasSpeedButton, 'type');

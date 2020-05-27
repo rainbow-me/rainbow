@@ -1,7 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import { Alert, InteractionManager } from 'react-native';
-import { useNavigation, useNavigationState } from 'react-navigation-hooks';
+import { useNavigationState } from 'react-navigation-hooks';
 import AssetInputTypes from '../helpers/assetInputTypes';
+import { useNavigation } from '../navigation/Navigation';
 import useAsset from './useAsset';
 import useWallets from './useWallets';
 
@@ -26,14 +27,15 @@ export default function useExpandedStateNavigation(inputType) {
   }, [asset, inputType]);
 
   return useCallback(
-    route => {
-      goBack();
+    routeName => {
+      if (isReadOnlyWallet) {
+        return Alert.alert(`You need to import the wallet in order to do this`);
+      }
 
-      return isReadOnlyWallet
-        ? Alert.alert(`You need to import the wallet in order to do this`)
-        : InteractionManager.runAfterInteractions(() =>
-            navigate(route, navigationPayload)
-          );
+      InteractionManager.runAfterInteractions(() => goBack());
+      InteractionManager.runAfterInteractions(() =>
+        setTimeout(() => navigate(routeName, navigationPayload), 50)
+      );
     },
     [goBack, isReadOnlyWallet, navigate, navigationPayload]
   );
