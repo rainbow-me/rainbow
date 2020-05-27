@@ -19,6 +19,7 @@ import {
 } from '../../handlers/localstorage/globalSettings';
 import networkInfo from '../../helpers/networkInfo';
 import { withAccountSettings, withSendFeedback } from '../../hoc';
+import { useWallets } from '../../hooks';
 import { supportedLanguages } from '../../languages';
 import { position } from '../../styles';
 import AppVersionStamp from '../AppVersionStamp';
@@ -62,6 +63,8 @@ const SettingsSection = ({
   onPressTwitter,
   onSendFeedback,
 }) => {
+  const { isReadOnlyWallet } = useWallets();
+
   const handleVersionPress = () => {
     versionPressHandle && clearTimeout(versionPressHandle);
     versionNumberOfTaps++;
@@ -82,13 +85,14 @@ const SettingsSection = ({
       style={position.coverAsObject}
     >
       <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={8}>
-        <ListItem
-          icon={<SettingIcon source={BackupIcon} />}
-          onPress={onPressBackup}
-          label="Backup"
-        >
-          <ListItemArrowGroup>
-            {/*
+        {!isReadOnlyWallet && (
+          <ListItem
+            icon={<SettingIcon source={BackupIcon} />}
+            onPress={onPressBackup}
+            label="Backup"
+          >
+            <ListItemArrowGroup>
+              {/*
 
 
               XXX TODO: show this icon after a user has completed the "backup" user flow
@@ -101,8 +105,9 @@ const SettingsSection = ({
                 />
               </Centered>
             */}
-          </ListItemArrowGroup>
-        </ListItem>
+            </ListItemArrowGroup>
+          </ListItem>
+        )}
         <ListItem
           icon={<SettingIcon source={NetworkIcon} />}
           onPress={onPressNetwork}
