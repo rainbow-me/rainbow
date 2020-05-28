@@ -1,26 +1,21 @@
 import React from 'react';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { padding } from '../../styles';
+import styled from 'styled-components/primitives';
+import { useDimensions } from '../../hooks';
 import { Row } from '../layout';
 
 const StatusBarHeight = getStatusBarHeight(true);
-const HeaderHeight = 44;
-const HeaderHeightWithStatusBar = HeaderHeight + StatusBarHeight;
+export const HeaderHeight = 44;
+export const HeaderHeightWithStatusBar = HeaderHeight + StatusBarHeight;
 
-// eslint-disable-next-line react/display-name
-const Header = React.memo(props => (
-  <Row
-    {...props}
-    align="end"
-    css={padding(StatusBarHeight, 0, 0)}
-    flexShrink={0}
-    height={HeaderHeightWithStatusBar}
-    width="100%"
-    zIndex={1}
-  />
-));
+const Container = styled(Row).attrs({ align: 'end' })`
+  height: ${HeaderHeightWithStatusBar};
+  padding-top: ${StatusBarHeight};
+  width: ${({ width }) => width};
+  z-index: 1;
+`;
 
-Header.height = HeaderHeight;
-Header.heightWithStatusBar = HeaderHeightWithStatusBar;
-
-export default Header;
+export default function Header(props) {
+  const { width: deviceWidth } = useDimensions();
+  return <Container {...props} width={deviceWidth} />;
+}
