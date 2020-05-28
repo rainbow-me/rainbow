@@ -71,7 +71,7 @@ index b397efb..b9194e9 100644
      finish();
    }
 diff --git a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-index b21a043..a54b893 100644
+index b21a043..132924f 100644
 --- a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 +++ b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 @@ -125,7 +125,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
@@ -86,7 +86,7 @@ index b21a043..a54b893 100644
    }
  
    var allowsDragToDismiss: Bool {
-@@ -147,8 +150,23 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -147,8 +150,21 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
  
    func shouldPrioritize(panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
      let headerHeight: CGFloat = CGFloat(truncating: self.config?.value(forKey: "headerHeight") as! NSNumber)
@@ -106,8 +106,6 @@ index b21a043..a54b893 100644
 +    
 +    // END HACK
 +    
-+    
-+    print("XXXX", locationY, headerHeight)
 +    return locationY < headerHeight
    }
  
