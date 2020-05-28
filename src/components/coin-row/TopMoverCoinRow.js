@@ -1,42 +1,60 @@
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
-import styled, { css } from 'styled-components/primitives';
-import { calculateAPY } from '../../helpers/savings';
-import { convertAmountToBalanceDisplay } from '../../helpers/utilities';
+import React, { useMemo } from 'react';
+import styled from 'styled-components/primitives';
+import { handleSignificantDecimals } from '../../helpers/utilities';
+import { useAccountSettings } from '../../hooks';
+import { uniswapPairs } from '../../references';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
-import { Centered, ColumnWithMargins, FlexItem, Row, RowWithMargins } from '../layout';
-import { APYPill } from '../savings';
-import { Text } from '../text';
-import BalanceText from './BalanceText';
+import { Centered, ColumnWithMargins, RowWithMargins } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
-import CoinRow from './CoinRow';
 
 const TopMoverTitle = styled(CoinName).attrs({
   paddingRight: 0,
   weight: 'semibold',
 })``;
 
-const TopMoverCoinRow = ({ asset, onPress, ...props }) => {
+const TopMoverCoinRow = ({
+  address,
+  name,
+  percent_change_24h,
+  price,
+  symbol,
+  onPress,
+  ...props
+}) => {
+  const { nativeCurrencySymbol } = useAccountSettings();
+
+  console.log('props', props);
+
+  const formattedPrice = useMemo(() => {
+    const value = handleSignificantDecimals(price, 2);
+    return `${nativeCurrencySymbol}${value}`;
+  }, [nativeCurrencySymbol, price]);
 
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={1.02}>
       <RowWithMargins margin={8}>
         <Centered>
-          <CoinIcon address={asset?.address} size={36} symbol={asset?.symbol} />
+          <CoinIcon address={address} size={36} symbol={symbol} />
         </Centered>
-        <RowWithMargins margin={12}>
-          <ColumnWithMargins margin={2}>
-            <TopMoverTitle>{asset?.name}</TopMoverTitle>
-            <BottomRowText>{asset?.native?.change}</BottomRowText>
-          </ColumnWithMargins>
-          <ColumnWithMargins align="end" justify="end" margin={2}>
-            <TopMoverTitle align="right">{asset?.native?.change}</TopMoverTitle>
-            <BottomRowText align="right">{asset?.symbol}</BottomRowText>
-          </ColumnWithMargins>
-        </RowWithMargins>
+        <ColumnWithMargins margin={2}>
+          <TopMoverTitle color={colors.alpha(colors.blueGreyDark, 0.8)}>
+            {uniswapPairs[address]?.name || name}
+          </TopMoverTitle>
+          <BottomRowText>{formattedPrice}</BottomRowText>
+        </ColumnWithMargins>
+        <ColumnWithMargins align="end" justify="end" margin={2}>
+          <TopMoverTitle
+            align="right"
+            color={percent_change_24h > 0 ? colors.green : colors.red}
+          >
+            {`${parseFloat((percent_change_24h || 0).toFixed(2))}%`}
+          </TopMoverTitle>
+          <BottomRowText align="right">{symbol}</BottomRowText>
+        </ColumnWithMargins>
       </RowWithMargins>
     </ButtonPressAnimation>
   );
