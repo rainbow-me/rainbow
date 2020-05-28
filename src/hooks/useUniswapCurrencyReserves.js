@@ -9,7 +9,7 @@ import {
 export default function useUniswapCurrencyReserves() {
   const dispatch = useDispatch();
 
-  const uniswapAllowances = useSelector(
+  const uniswapReserves = useSelector(
     ({ uniswap: { inputReserve, outputReserve } }) => ({
       inputReserve,
       outputReserve,
@@ -35,6 +35,6 @@ export default function useUniswapCurrencyReserves() {
     clearUniswapCurrenciesAndReserves,
     updateUniswapInputCurrency,
     updateUniswapOutputCurrency,
-    ...uniswapAllowances,
+    ...uniswapReserves,
   };
 }
