@@ -2,13 +2,12 @@ import { get } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
-
 import { AssetList } from '../components/asset-list';
 import { FabWrapper } from '../components/fab';
 import ExchangeFab from '../components/fab/ExchangeFab';
 import SendFab from '../components/fab/SendFab';
 import {
-  CameraHeaderButton,
+  DiscoverHeaderButton,
   Header,
   HeaderGestureBlocker,
   ProfileHeaderButton,
@@ -31,7 +30,6 @@ import { position } from '../styles';
 export default function WalletScreen() {
   const [initialized, setInitialized] = useState(false);
   const initializeWallet = useInitializeWallet();
-  const navigation = useNavigation();
   const refreshAccountData = useRefreshAccountData();
   const { isCoinListEdited } = useCoinListEdited();
   const { updateKeyboardHeight } = useKeyboardHeight();
@@ -81,9 +79,9 @@ export default function WalletScreen() {
         sections={sections}
       >
         <HeaderGestureBlocker enabled={isCoinListEdited}>
-          <Header marginTop={5} justify="space-between">
+          <Header justify="space-between" marginTop={5}>
             <ProfileHeaderButton />
-            <CameraHeaderButton navigation={navigation} />
+            <DiscoverHeaderButton />
           </Header>
         </HeaderGestureBlocker>
         <AssetList

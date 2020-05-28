@@ -4,9 +4,9 @@ import React from 'react';
 import { fonts } from '../../styles';
 import Text from './Text';
 
-const Emoji = ({ name, ...props }) => (
+const Emoji = ({ children, name, ...props }) => (
   <Text {...props} isEmoji>
-    {nodeEmoji.get(name)}
+    {children || nodeEmoji.get(name)}
   </Text>
 );
 
