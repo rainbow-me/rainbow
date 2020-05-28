@@ -19,13 +19,14 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
 
 const Content = styled(ScrollView)`
   background-color: ${colors.white};
-  padding-top: ${SheetHandleFixedToTopHeight};
+  padding-top: ${({ headerHeight }) => headerHeight};
   width: 100%;
 `;
 
 export default function SlackSheet({
   borderRadius = 30,
   children,
+  headerHeight = SheetHandleFixedToTopHeight,
   scrollEnabled = true,
   ...props
 }) {
@@ -53,6 +54,7 @@ export default function SlackSheet({
       <Content
         contentContainerStyle={contentContainerStyle}
         directionalLockEnabled
+        headerHeight={headerHeight}
         scrollEnabled={scrollEnabled}
         scrollIndicatorInsets={scrollIndicatorInsets}
       >
