@@ -8,7 +8,7 @@ import {
 } from '../handlers/localstorage/topMovers';
 import { apiGetTopMovers } from '../handlers/topMovers';
 
-const TOP_MOVERS_PER_ROW_MAX = 5;
+const TOP_MOVERS_PER_ROW_MAX = 12;
 const TOP_MOVERS_PER_ROW_MIN = 3;
 const TOP_MOVERS_INTERVAL_IN_MS = 12 * 60 * 1000; // 12 mins
 
