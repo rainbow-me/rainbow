@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { View } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import { useAccountProfile, useCoinListEdited, useRequests } from '../../hooks';
 import Routes from '../../screens/Routes/routesNames';
@@ -27,27 +26,26 @@ export default function ProfileHeaderButton() {
     <OpacityToggler
       endingOpacity={0.4}
       isVisible={isCoinListEdited}
+      pointerEvents={isCoinListEdited ? 'none' : 'auto'}
       startingOpacity={1}
     >
-      <View pointerEvents={isCoinListEdited ? 'none' : 'auto'}>
-        <HeaderButton
-          onLongPress={onLongPress}
-          onPress={onPress}
-          testID="goToProfile"
-          transformOrigin="left"
-        >
-          <Centered>
-            <ContactAvatar
-              color={accountColor}
-              size="small"
-              value={accountSymbol}
-            />
-            {pendingRequestCount > 0 && (
-              <Badge delay={1500} value={pendingRequestCount} zIndex={1} />
-            )}
-          </Centered>
-        </HeaderButton>
-      </View>
+      <HeaderButton
+        onLongPress={onLongPress}
+        onPress={onPress}
+        testID="goToProfile"
+        transformOrigin="left"
+      >
+        <Centered>
+          <ContactAvatar
+            color={accountColor}
+            size="small"
+            value={accountSymbol}
+          />
+          {pendingRequestCount > 0 && (
+            <Badge delay={1500} value={pendingRequestCount} zIndex={1} />
+          )}
+        </Centered>
+      </HeaderButton>
     </OpacityToggler>
   );
 }
