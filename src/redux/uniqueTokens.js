@@ -32,6 +32,8 @@ const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE =
 const UNIQUE_TOKENS_CLEAR_STATE = 'uniqueTokens/UNIQUE_TOKENS_CLEAR_STATE';
 
 // -- Actions --------------------------------------------------------------- //
+let uniqueTokensHandle = null;
+
 export const uniqueTokensLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   dispatch({ type: UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST });
@@ -47,6 +49,7 @@ export const uniqueTokensLoadState = () => async (dispatch, getState) => {
 };
 
 export const uniqueTokensResetState = () => dispatch => {
+  uniqueTokensHandle && clearTimeout(uniqueTokensHandle);
   dispatch({ type: UNIQUE_TOKENS_CLEAR_STATE });
 };
 
@@ -72,45 +75,59 @@ const fetchUniqueTokens = () => async (dispatch, getState) => {
   let page = 0;
   let uniqueTokens = [];
 
-  try {
-    while (!shouldStopFetching) {
+  const fetchPage = async () => {
+    try {
       const newPageResults = await apiGetAccountUniqueTokens(
         network,
         accountAddress,
         page
       );
+
+      // check that the account address to fetch for has not changed
+      const { accountAddress: currentAccountAddress } = getState().settings;
+      if (currentAccountAddress !== accountAddress) return;
+
       uniqueTokens = concat(uniqueTokens, newPageResults);
       shouldStopFetching =
         newPageResults.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
         uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL;
       page += 1;
+
       if (shouldUpdateInBatches) {
         dispatch({
           payload: uniqueTokens,
           type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
         });
       }
-    }
 
-    if (!shouldUpdateInBatches) {
-      dispatch({
-        payload: uniqueTokens,
-        type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
-      });
+      if (shouldStopFetching) {
+        if (!shouldUpdateInBatches) {
+          dispatch({
+            payload: uniqueTokens,
+            type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
+          });
+        }
+        const existingFamilies = getFamilies(existingUniqueTokens);
+        const newFamilies = getFamilies(uniqueTokens);
+        const incomingFamilies = without(newFamilies, ...existingFamilies);
+        if (incomingFamilies.length) {
+          const dedupedAssets = dedupeAssetsWithFamilies(
+            assets,
+            incomingFamilies
+          );
+          dispatch(dataUpdateAssets(dedupedAssets));
+        }
+        saveUniqueTokens(uniqueTokens, accountAddress, network);
+      } else {
+        uniqueTokensHandle = setTimeout(fetchPage, 200);
+      }
+    } catch (error) {
+      dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE });
+      captureException(error);
     }
-    const existingFamilies = getFamilies(existingUniqueTokens);
-    const newFamilies = getFamilies(uniqueTokens);
-    const incomingFamilies = without(newFamilies, ...existingFamilies);
-    if (incomingFamilies.length) {
-      const dedupedAssets = dedupeAssetsWithFamilies(assets, incomingFamilies);
-      dispatch(dataUpdateAssets(dedupedAssets));
-    }
+  };
 
-    saveUniqueTokens(uniqueTokens, accountAddress, network);
-  } catch (error) {
-    dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE });
-    captureException(error);
-  }
+  fetchPage();
 };
 
 // -- Reducer --------------------------------------------------------------- //
