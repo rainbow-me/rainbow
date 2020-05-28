@@ -4,26 +4,21 @@ import { useOpenSmallBalances } from '../../hooks';
 import { OpacityToggler } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 
-const Content = styled.View.attrs(({ isOpen }) => ({
-  pointerEvents: isOpen ? 'auto' : 'none',
+const Container = styled(OpacityToggler).attrs(({ isVisible }) => ({
+  endingOpacity: 1,
+  pointerEvents: isVisible ? 'auto' : 'none',
+  startingOpacity: 0,
 }))`
   height: ${({ numberOfRows }) => numberOfRows * CoinRowHeight};
   margin-top: 13;
-  opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
 `;
 
 export default function SmallBalancesWrapper({ assets = [] }) {
   const { isSmallBalancesOpen } = useOpenSmallBalances();
 
   return (
-    <OpacityToggler
-      endingOpacity={1}
-      isVisible={isSmallBalancesOpen}
-      startingOpacity={0}
-    >
-      <Content isOpen={isSmallBalancesOpen} numberOfRows={assets.length}>
-        {assets}
-      </Content>
-    </OpacityToggler>
+    <Container isVisible={isSmallBalancesOpen} numberOfRows={assets.length}>
+      {assets}
+    </Container>
   );
 }
