@@ -24,17 +24,11 @@ const NetworkSection = () => {
 
   const onNetworkChange = useCallback(
     async network => {
-      InteractionManager.runAfterInteractions(async () => {
-        await resetAccountState();
-      });
-      InteractionManager.runAfterInteractions(async () => {
-        await dispatch(settingsUpdateNetwork(network));
-      });
+      await resetAccountState();
+      await dispatch(settingsUpdateNetwork(network));
       InteractionManager.runAfterInteractions(async () => {
         await loadAccountData(network);
-      });
-      InteractionManager.runAfterInteractions(() => {
-        initializeAccountData();
+        await initializeAccountData();
         analytics.track('Changed network', { network });
       });
     },
