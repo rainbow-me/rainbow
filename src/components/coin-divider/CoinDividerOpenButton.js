@@ -79,16 +79,18 @@ const CoinDividerOpenButton = ({
           />
           <View>
             <CoinDividerButtonLabel
+              endingOpacity={0}
               isVisible={isSmallBalancesOpen}
               label="All"
               node={node}
-              steps={[1, 0]}
+              startingOpacity={1}
             />
             <CoinDividerButtonLabel
+              endingOpacity={1}
               isVisible={isSmallBalancesOpen}
               label="Less"
               node={node}
-              steps={[0, 1]}
+              startingOpacity={0}
             />
           </View>
           <CaretContainer>

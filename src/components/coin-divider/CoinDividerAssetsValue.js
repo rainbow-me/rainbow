@@ -1,12 +1,12 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
-import { colors } from '../../styles';
+import { colors, position } from '../../styles';
 import { OpacityToggler } from '../animations';
-import { Centered } from '../layout';
 import { Text } from '../text';
 
-const Container = styled(Centered)`
+const Container = styled(OpacityToggler)`
+  ${position.centered};
   height: 30;
 `;
 
@@ -28,7 +28,6 @@ export default function CoinDividerAssetsValue({
   return (
     <Container
       animationNode={node}
-      as={OpacityToggler}
       isVisible={openSmallBalances || assetsAmount === 0}
     >
       <ValueText>
