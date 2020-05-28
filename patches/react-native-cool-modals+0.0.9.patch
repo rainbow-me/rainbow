@@ -3,7 +3,7 @@ index 334ef99..e3695c7 100644
 --- a/node_modules/react-native-cool-modals/createNativeStackNavigator.js
 +++ b/node_modules/react-native-cool-modals/createNativeStackNavigator.js
 @@ -61,6 +61,7 @@ class StackView extends React.Component {
-
+ 
      let stackPresentation = 'push';
      const {
 +      dismissable,
@@ -41,7 +41,7 @@ index 7c27c15..afdf6e5 100644
 -
 +    _dismissable = YES;
    }
-
+ 
    return self;
 @@ -375,6 +375,7 @@ @implementation RNCMScreenManager
  RCT_EXPORT_VIEW_PROPERTY(gestureEnabled, BOOL)
@@ -71,12 +71,12 @@ index b397efb..b9194e9 100644
      finish();
    }
 diff --git a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-index b21a043..b455899 100644
+index b21a043..132924f 100644
 --- a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 +++ b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 @@ -125,7 +125,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
    }
-
+ 
    func shouldRespond(to panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
 -    return !hiding
 +    if (hiding) {
@@ -84,22 +84,46 @@ index b21a043..b455899 100644
 +    }
 +    return self.config?.value(forKey: "dismissable") as! Bool
    }
-
+ 
    var allowsDragToDismiss: Bool {
+@@ -147,8 +150,21 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+ 
+   func shouldPrioritize(panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
+     let headerHeight: CGFloat = CGFloat(truncating: self.config?.value(forKey: "headerHeight") as! NSNumber)
+-    let location = panModalGestureRecognizer.location(in: view)
+-    return location.y < headerHeight
++    
++    var locationY = panModalGestureRecognizer.location(in: view).y
++    
++    /// HACK
++    
++    let initialLocationAbsY = (panModalGestureRecognizer as! UIPanGestureRecognizerWithInitialPosition).initialTouchLocation.y;
++    let currLocationAbsY = panModalGestureRecognizer.location(in: view.superview!.superview).y
++    
++    let displacementY = currLocationAbsY - initialLocationAbsY
++    
++    locationY -= displacementY
++    
++    // END HACK
++    
++    return locationY < headerHeight
+   }
+ 
+   var isShortFormEnabledInternal = 2
 diff --git a/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx b/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
 index c2f2e2b..7f6f332 100644
 --- a/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
 +++ b/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
 @@ -43,6 +43,7 @@ export default function NativeStackView({
            } = options;
-
+ 
            const {
 +            dismissable,
              customStack,
              topOffset,
              showDragIndicator,
 @@ -62,6 +63,7 @@ export default function NativeStackView({
-
+ 
            return (
                <Screen
 +                  dismissable={dismissable}
