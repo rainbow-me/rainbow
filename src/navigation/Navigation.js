@@ -81,6 +81,7 @@ export function navigate(oldNavigate, ...args) {
       args[0] === Routes.RECEIVE_MODAL ||
       args[0] === Routes.EXPANDED_ASSET_SHEET ||
       args[0] === Routes.ADD_CASH_SHEET ||
+      args[0] === Routes.CHANGE_WALLET_SHEET ||
       args[0] === Routes.SEND_SHEET)
   ) {
     store.dispatch(setModalVisible(false));
