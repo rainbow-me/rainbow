@@ -160,7 +160,9 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
           setResolvedAddress(address);
           name = input;
         } catch (e) {
-          Alert.alert('This is not a valid ENS name');
+          Alert.alert(
+            'Sorry, we cannot add this ENS name at this time. Please try again later!'
+          );
           return;
         }
         // Look up ENS for 0x address
