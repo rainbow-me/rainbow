@@ -34,6 +34,9 @@ const ADD_CASH_ORDER_FAILURE = 'addCash/ADD_CASH_ORDER_FAILURE';
 const ADD_CASH_CLEAR_STATE = 'addCash/ADD_CASH_CLEAR_STATE';
 
 // -- Actions ---------------------------------------- //
+let orderStatusHandle = null;
+let transferHashHandle = null;
+
 export const addCashLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   try {
@@ -46,8 +49,11 @@ export const addCashLoadState = () => async (dispatch, getState) => {
   } catch (error) {}
 };
 
-export const addCashClearState = () => dispatch =>
+export const addCashClearState = () => dispatch => {
+  orderStatusHandle && clearTimeout(orderStatusHandle);
+  transferHashHandle && clearTimeout(transferHashHandle);
   dispatch({ type: ADD_CASH_CLEAR_STATE });
+};
 
 export const addCashUpdatePurchases = purchases => (dispatch, getState) => {
   const { purchaseTransactions } = getState().addCash;
@@ -100,7 +106,7 @@ export const addCashGetOrderStatus = (
   sourceAmount
 ) => async (dispatch, getState) => {
   logger.log('[add cash] - watch for order status', orderId);
-  const { network } = getState().settings;
+  const { accountAddress, network } = getState().settings;
   const getOrderStatus = async (
     referenceInfo,
     destCurrency,
@@ -114,6 +120,9 @@ export const addCashGetOrderStatus = (
         orderId,
         network
       );
+
+      const { accountAddress: currentAccountAddress } = getState().settings;
+      if (currentAccountAddress !== accountAddress) return;
 
       dispatch({
         payload: orderStatus,
@@ -157,7 +166,7 @@ export const addCashGetOrderStatus = (
           category: 'add cash',
         });
       } else if (!isFailed) {
-        setTimeout(
+        orderStatusHandle = setTimeout(
           () =>
             getOrderStatus(
               referenceInfo,
@@ -171,7 +180,7 @@ export const addCashGetOrderStatus = (
       }
     } catch (error) {
       captureException(error);
-      setTimeout(
+      orderStatusHandle = setTimeout(
         () =>
           getOrderStatus(
             referenceInfo,
@@ -210,6 +219,9 @@ const addCashGetTransferHash = (
         transferHash,
       } = await trackWyreTransfer(referenceInfo, transferId, network);
 
+      const { accountAddress: currentAccountAddress } = getState().settings;
+      if (currentAccountAddress !== accountAddress) return;
+
       const destAssetAddress = toLower(
         AddCashCurrencies[network][destCurrency]
       );
@@ -240,13 +252,13 @@ const addCashGetTransferHash = (
         );
         dispatch(addCashNewPurchaseTransaction(newTxDetails));
       } else {
-        setTimeout(
+        transferHashHandle = setTimeout(
           () => getTransferHash(referenceInfo, transferId, sourceAmount),
           1000
         );
       }
     } catch (error) {
-      setTimeout(
+      transferHashHandle = setTimeout(
         () => getTransferHash(referenceInfo, transferId, sourceAmount),
         1000
       );
