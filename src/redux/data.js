@@ -13,6 +13,7 @@ import {
   partition,
   property,
   remove,
+  toLower,
   uniqBy,
   values,
 } from 'lodash';
@@ -379,10 +380,17 @@ export const assetPricesChanged = message => (dispatch, getState) => {
 
 export const dataAddNewTransaction = (
   txDetails,
+  accountAddressToUpdate = null,
   disableTxnWatcher = false
 ) => async (dispatch, getState) => {
   const { transactions } = getState().data;
   const { accountAddress, nativeCurrency, network } = getState().settings;
+  if (
+    accountAddressToUpdate &&
+    toLower(accountAddressToUpdate) !== toLower(accountAddress)
+  )
+    return;
+
   try {
     const parsedTransaction = await parseNewTransaction(
       txDetails,
