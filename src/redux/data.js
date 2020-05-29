@@ -46,6 +46,7 @@ import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswap';
 
 let pendingTransactionsHandle = null;
+const TXN_WATCHER_MAX_TRIES = 5 * 60;
 
 // -- Constants --------------------------------------- //
 
@@ -499,11 +500,12 @@ const updatePurchases = updatedTransactions => dispatch => {
   dispatch(addCashUpdatePurchases(confirmedPurchases));
 };
 
-const watchPendingTransactions = accountAddressToWatch => async (
-  dispatch,
-  getState
-) => {
+const watchPendingTransactions = (
+  accountAddressToWatch,
+  remainingTries = TXN_WATCHER_MAX_TRIES
+) => async (dispatch, getState) => {
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
+  if (remainingTries === 0) return;
 
   const { accountAddress: currentAccountAddress } = getState().settings;
   if (currentAccountAddress !== accountAddressToWatch) return;
@@ -512,7 +514,9 @@ const watchPendingTransactions = accountAddressToWatch => async (
 
   if (!done) {
     pendingTransactionsHandle = setTimeout(() => {
-      dispatch(watchPendingTransactions(accountAddressToWatch));
+      dispatch(
+        watchPendingTransactions(accountAddressToWatch, remainingTries - 1)
+      );
     }, 1000);
   }
 };
