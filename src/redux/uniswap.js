@@ -107,19 +107,16 @@ export const uniswapGetAllExchanges = () => async (dispatch, getState) => {
   }
 };
 
-export const uniswapPairsInit = () => async (dispatch, getState) => {
-  try {
-    const { network } = getState().settings;
-    const pairs =
-      network === networkTypes.mainnet
-        ? uniswapPairs
-        : getTestnetUniswapPairs(network);
-    dispatch({
-      payload: pairs,
-      type: UNISWAP_UPDATE_PAIRS,
-    });
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
+export const uniswapPairsInit = () => (dispatch, getState) => {
+  const { network } = getState().settings;
+  const pairs =
+    network === networkTypes.mainnet
+      ? uniswapPairs
+      : getTestnetUniswapPairs(network);
+  dispatch({
+    payload: pairs,
+    type: UNISWAP_UPDATE_PAIRS,
+  });
 };
 
 export const uniswapUpdateTokenReserves = (

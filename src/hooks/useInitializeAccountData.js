@@ -19,7 +19,7 @@ export default function useInitializeAccountData() {
       });
 
       InteractionManager.runAfterInteractions(async () => {
-        await dispatch(uniswapPairsInit());
+        dispatch(uniswapPairsInit());
         await dispatch(uniswapGetAllExchanges());
       });
 
