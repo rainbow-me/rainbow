@@ -113,6 +113,7 @@ export const dataResetState = () => (dispatch, getState) => {
   uniswapPricesSubscription &&
     uniswapPricesSubscription.unsubscribe &&
     uniswapPricesSubscription.unsubscribe();
+  pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
@@ -394,7 +395,7 @@ export const dataAddNewTransaction = (
     });
     saveLocalTransactions(_transactions, accountAddress, network);
     if (!disableTxnWatcher) {
-      dispatch(watchPendingTransactions());
+      dispatch(watchPendingTransactions(accountAddress));
     }
     return parsedTransaction;
     // eslint-disable-next-line no-empty
@@ -490,14 +491,20 @@ const updatePurchases = updatedTransactions => dispatch => {
   dispatch(addCashUpdatePurchases(confirmedPurchases));
 };
 
-const watchPendingTransactions = () => async dispatch => {
+const watchPendingTransactions = accountAddressToWatch => async (
+  dispatch,
+  getState
+) => {
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
+
+  const { accountAddress: currentAccountAddress } = getState().settings;
+  if (currentAccountAddress !== accountAddressToWatch) return;
 
   const done = await dispatch(dataWatchPendingTransactions());
 
   if (!done) {
     pendingTransactionsHandle = setTimeout(() => {
-      dispatch(watchPendingTransactions());
+      dispatch(watchPendingTransactions(accountAddressToWatch));
     }, 1000);
   }
 };
