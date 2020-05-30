@@ -88,6 +88,7 @@ const Shadow = styled(View)`
 `;
 
 const RainbowButton = ({
+  disabled,
   height,
   label,
   onPress,
@@ -97,6 +98,7 @@ const RainbowButton = ({
   ...props
 }) => {
   height = type === 'small' ? 46 : height;
+  strokeWidth = disabled ? 0.5 : strokeWidth;
   width = type === 'addCash' ? 155 : width;
 
   const gradientStops =
@@ -109,20 +111,27 @@ const RainbowButton = ({
     width - strokeWidth * 2,
     (width - strokeWidth * 2) / 2,
   ];
-  const innerGradientColors =
-    type === 'addCash'
-      ? ['#FFB114', '#FF54BB', '#00F0FF']
-      : ['#FFB114', '#FF54BB', '#7EA4DE'];
+  const innerGradientColors = disabled
+    ? ['#B0B3B9', '#B0B3B9', '#B0B3B9']
+    : type === 'addCash'
+    ? ['#FFB114', '#FF54BB', '#00F0FF']
+    : ['#FFB114', '#FF54BB', '#7EA4DE'];
 
   const outerButtonMask = <OuterButton height={height} width={width} />;
   const outerGradientCenter = [width * 1.5, width];
-  const outerGradientColors =
-    type === 'addCash'
-      ? ['#F5AA13', '#F551B4', '#00E6F5']
-      : ['#F5AA13', '#F551B4', '#799DD5'];
+  const outerGradientColors = disabled
+    ? ['#A5A8AE', '#A5A8AE', '#A5A8AE']
+    : type === 'addCash'
+    ? ['#F5AA13', '#F551B4', '#00E6F5']
+    : ['#F5AA13', '#F551B4', '#799DD5'];
 
   return (
-    <ButtonPressAnimation {...props} onPress={onPress} scaleTo={0.9}>
+    <ButtonPressAnimation
+      {...props}
+      disabled={disabled}
+      onPress={onPress}
+      scaleTo={0.9}
+    >
       <Shadow height={height} width={width} />
       <MaskedView maskElement={outerButtonMask} pointerEvents="none">
         <ButtonContainer height={height} width={width}>
@@ -164,6 +173,7 @@ const RainbowButton = ({
 };
 
 RainbowButton.propTypes = {
+  disabled: PropTypes.bool,
   height: PropTypes.number,
   label: PropTypes.string,
   onPress: PropTypes.func,
