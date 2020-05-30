@@ -10,11 +10,11 @@ import { colors } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
+import { RainbowButton } from '../buttons';
 import { FloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
-import AddCashButton from './AddCashButton';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
 
@@ -34,6 +34,12 @@ const AccountName = styled(TruncatedText).attrs({
   margin-bottom: 3;
   max-width: ${maxAddressWidth};
   padding-right: 6;
+`;
+
+const AddCashButton = styled(RainbowButton).attrs({
+  type: 'addCash',
+})`
+  margin-top: 16;
 `;
 
 const DropdownArrow = styled(Centered)`
