@@ -55,10 +55,11 @@ const OuterButton = styled.View`
 `;
 
 const Shadow = styled.View`
-  ${shadow.build(0, 10, 30, colors.dark, 0.2)};
+  ${shadow.build(0, 10, 30, colors.dark, 1)};
   background-color: ${colors.white};
   border-radius: ${({ height }) => height / 2};
   height: ${({ height }) => height};
+  opacity: 0.2;
   position: absolute;
   width: ${({ width }) => width};
 `;
