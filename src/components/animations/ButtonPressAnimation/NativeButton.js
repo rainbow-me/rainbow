@@ -23,9 +23,18 @@ const normalizeTransformOrigin = transformOrigin => {
 
 const NativeButton = ({ transformOrigin, ...props }, ref) => (
   <View>
+    {/*
+      👆️ This wrapper view is necessary for NativeButton's flexbox functionality to work as
+      flexbox everywhere else
+    */}
     <Button
       {...props}
-      css={transformOrigin ? `${transformOrigin}: -50%` : ''}
+      css={
+        transformOrigin ? `${transformOrigin}: -50%` : ''
+        // 👆️ Here we want to translate the button -50% (relative to the parent wrapper view)
+        // so that we can use the `transformOrigin` prop with NativeButton without effecting
+        // layout.
+      }
       ref={ref}
       transformOrigin={normalizeTransformOrigin(transformOrigin)}
     />
