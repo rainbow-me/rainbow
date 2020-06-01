@@ -64,6 +64,7 @@ const ExchangeModal = ({
 }) => {
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
+  console.log('rerender');
 
   const tabPosition = useNavigationParam('position');
 
@@ -214,7 +215,7 @@ const ExchangeModal = ({
     updateMaxInputBalance,
   ]);
 
-  // Liten to gas prices, Uniswap reserves updates
+  // Listen to gas prices, Uniswap reserves updates
   useEffect(() => {
     updateDefaultGasLimit(
       isDeposit

@@ -9,7 +9,10 @@ const web3UpdateReserves = () => async (dispatch, getState) => {
   const { inputCurrency, outputCurrency } = getState().uniswap;
 
   if (!(inputCurrency || outputCurrency)) return;
-  const [inputReserve, outputReserve] = await promiseUtils.PromiseAllWithFails([
+  const [
+    [inputReserve],
+    [outputReserve],
+  ] = await promiseUtils.PromiseAllWithFails([
     getReserve(get(inputCurrency, 'address')),
     getReserve(get(outputCurrency, 'address')),
   ]);

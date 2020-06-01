@@ -20,7 +20,13 @@ export default function useUniswapMarketDetails() {
   const { chainId } = useAccountSettings();
   const { getMarketPrice } = useUniswapMarketPrice();
 
-  const { inputReserve, outputReserve } = useUniswapCurrencyReserves();
+  const {
+    inputReserve,
+    outputReserve,
+    inputTokenV2,
+    outputTokenV2,
+    inputOutputPairV2,
+  } = useUniswapCurrencyReserves();
 
   const updateTradeDetails = useCallback(
     ({
@@ -52,10 +58,13 @@ export default function useUniswapMarketDetails() {
         outputAmount,
         outputCurrency,
         outputReserve,
-        updatedInputAsExactAmount
+        updatedInputAsExactAmount,
+        inputTokenV2,
+        outputTokenV2,
+        inputOutputPairV2
       );
     },
-    [chainId, getMarketPrice, inputReserve, outputReserve]
+    [chainId, getMarketPrice, inputOutputPairV2, inputReserve, inputTokenV2, outputReserve, outputTokenV2]
   );
 
   const calculateInputGivenOutputChange = useCallback(
@@ -183,6 +192,7 @@ export default function useUniswapMarketDetails() {
           outputAmount,
           outputCurrency,
         });
+
         updateExtraTradeDetails({
           inputCurrency,
           nativeCurrency,

@@ -14,6 +14,8 @@ const SwapModal = (props, ref) => {
     [dangerouslyGetParent]
   );
 
+  console.log('rerendero');
+
   return (
     <ExchangeModal
       createRap={createUnlockAndSwapRap}

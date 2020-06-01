@@ -8,6 +8,15 @@ import {
   tradeTokensForExactEthWithData,
   tradeTokensForExactTokensWithData,
 } from '@uniswap/sdk';
+import {
+  ChainId,
+  Pair,
+  Route,
+  Token,
+  TokenAmount,
+  TradeType,
+} from '@uniswap/sdk2';
+
 import { getUnixTime, sub } from 'date-fns';
 import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
@@ -66,10 +75,19 @@ const convertValueForEthers = value => {
   return ethers.utils.hexlify(valueBigNumber);
 };
 
-export const getReserve = async tokenAddress =>
-  !tokenAddress || tokenAddress === 'eth'
+export const getReserve = async tokenAddress => {
+  return !tokenAddress || tokenAddress === 'eth'
     ? Promise.resolve(null)
-    : getTokenReserves(toLower(tokenAddress), web3Provider);
+    : Promise.all([
+        getTokenReserves(toLower(tokenAddress), web3Provider),
+        Token.fetchData(ChainId.MAINNET, tokenAddress), // V2
+      ]);
+};
+
+export const getPair = async (tokenA: Token, tokenB: Token) => {
+  console.log('fetching', tokenA.address, tokenB.address);
+  return await Pair.fetchData(tokenA, tokenB);
+};
 
 const getGasLimit = async (
   accountAddress,
@@ -415,6 +433,7 @@ export const getAllExchanges = async (tokenOverrides, excluded = []) => {
         dataEnd = true;
       }
     }
+    console.log(data);
   } catch (err) {
     logger.log('error: ', err);
   }
@@ -444,10 +463,22 @@ export const calculateTradeDetails = (
   outputAmount,
   outputCurrency,
   outputReserve,
-  inputAsExactAmount
+  inputAsExactAmount,
+  inputTokenV2: Token,
+  outputTokenV2: Token,
+  inputOutputPairV2: Pair | null
 ) => {
   const { address: inputAddress, decimals: inputDecimals } = inputCurrency;
   const { address: outputAddress, decimals: outputDecimals } = outputCurrency;
+
+  console.log(
+    'fffffff',
+    inputAddress,
+    inputTokenV2,
+    outputAddress,
+    outputTokenV2,
+    inputOutputPairV2
+  );
 
   const isInputEth = inputAddress === 'eth';
   const isOutputEth = outputAddress === 'eth';
