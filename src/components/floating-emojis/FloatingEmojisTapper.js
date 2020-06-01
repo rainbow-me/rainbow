@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableScale } from '../animations';
+import { ButtonPressAnimation } from '../animations';
 import FloatingEmojis from './FloatingEmojis';
 import FloatingEmojisTapHandler from './FloatingEmojisTapHandler';
 
@@ -18,7 +18,9 @@ export default function FloatingEmojisTapper({
     >
       {({ onNewEmoji }) => (
         <FloatingEmojisTapHandler onNewEmoji={onNewEmoji}>
-          <TouchableScale activeScale={activeScale}>{children}</TouchableScale>
+          <ButtonPressAnimation scaleTo={activeScale}>
+            {children}
+          </ButtonPressAnimation>
         </FloatingEmojisTapHandler>
       )}
     </FloatingEmojis>
