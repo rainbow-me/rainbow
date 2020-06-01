@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-slack-bottom-sheet/ios/SlackBottomSheet.m b/node_modules/react-native-slack-bottom-sheet/ios/SlackBottomSheet.m
-index 637f112..da0492a 100644
+index 637f112..e8ca8a1 100644
 --- a/node_modules/react-native-slack-bottom-sheet/ios/SlackBottomSheet.m
 +++ b/node_modules/react-native-slack-bottom-sheet/ios/SlackBottomSheet.m
 @@ -182,7 +182,7 @@ - (void)setVisible:(BOOL)visible {
@@ -7,7 +7,7 @@ index 637f112..da0492a 100644
      });
    } else {
 -    RCTExecuteOnMainQueue(^{
-+    //RCTExecuteOnMainQueue(^{
++    // RCTExecuteOnMainQueue(^{
        if (!self->_modalPresented) {
          return;
        }
@@ -22,12 +22,12 @@ index 637f112..da0492a 100644
 +        }
          self.transitionDuration = oldTransitionDuration;
        }];
-+      //self->_contoller.view = nil;
++      // self->_contoller.view = nil;
 +      self->_contoller = nil;
        self->_isHiding = false;
        self->_modalPresented = NO;
 -    });
-+    //});
++    // });
    }
  }
  
