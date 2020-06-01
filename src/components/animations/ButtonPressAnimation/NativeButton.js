@@ -21,14 +21,15 @@ const normalizeTransformOrigin = transformOrigin => {
   }
 };
 
-export default function NativeButton({ transformOrigin, ...props }) {
-  return (
-    <View>
-      <Button
-        {...props}
-        css={transformOrigin ? `${transformOrigin}: -50%` : ''}
-        transformOrigin={normalizeTransformOrigin(transformOrigin)}
-      />
-    </View>
-  );
-}
+const NativeButton = ({ transformOrigin, ...props }, ref) => (
+  <View>
+    <Button
+      {...props}
+      css={transformOrigin ? `${transformOrigin}: -50%` : ''}
+      ref={ref}
+      transformOrigin={normalizeTransformOrigin(transformOrigin)}
+    />
+  </View>
+);
+
+export default React.forwardRef(NativeButton);
