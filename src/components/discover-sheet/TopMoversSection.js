@@ -7,7 +7,7 @@ import { Text } from '../text';
 const TopMoversSection = () => {
   const { gainers, losers } = useTopMovers();
   return (
-    <ColumnWithMargins margin={15} backgroundColor="purple">
+    <ColumnWithMargins margin={15}>
       <Text size="larger" weight="bold">
         Top Movers
       </Text>

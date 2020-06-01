@@ -40,7 +40,7 @@ export default function useTopMovers() {
 
   const fetchTopMovers = useCallback(async () => {
     const topMovers = await apiGetTopMovers();
-    console.log('topMovers', topMovers);
+    // console.log('topMovers', topMovers);
     const { gainers: gainersData, losers: losersData } = topMovers;
 
     const gainers = updatePriceAndExchangeAddress(

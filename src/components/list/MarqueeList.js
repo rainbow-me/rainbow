@@ -4,43 +4,30 @@ import styled from 'styled-components/primitives';
 import { exchangeModalBorderRadius } from '../../screens/ExchangeModal';
 import { CoinRowHeight, TopMoverCoinRow } from '../coin-row';
 
+const contentContainerStyle = { paddingVertical: 8 };
+const keyExtractor = ({ address }) => `MarqueeList-${address}`;
+
 const MarqueeFlatList = styled(FlatList).attrs({
-  decelerationRate: 'fast',
+  // decelerationRate: 'fast',
+  contentContainerStyle,
   directionalLockEnabled: true,
   horizontal: true,
   initialNumToRender: 8,
+  keyExtractor,
   removeClippedSubviews: true,
   scrollEventThrottle: 32,
   showsHorizontalScrollIndicator: false,
   windowSize: 11,
 })`
-  height: 70;
-  background-color: purple;
   width: 100%;
 `;
 
-const contentContainerStyle = {
-  paddingBottom: exchangeModalBorderRadius,
-};
+// height: 70;
+  // background-color: purple;
 
-const scrollIndicatorInsets = {
-  bottom: exchangeModalBorderRadius,
-};
-
-const getItemLayout = ({ showBalance }, index) => {
-  const height = showBalance ? CoinRowHeight + 1 : CoinRowHeight;
-
-  return {
-    index,
-    length: height,
-    offset: height * index,
-  };
-};
-
-const keyExtractor = ({ uniqueId }) => `MarqueeList-${uniqueId}`;
 
 const MarqueeList = ({ items, onLayout }) => {
-  const sectionListRef = useRef();
+  const listRef = useRef();
 
   const renderItemCallback = useCallback(
     ({ item: { address, price, ...asset } }) => (
@@ -53,17 +40,14 @@ const MarqueeList = ({ items, onLayout }) => {
     ),
     []
   );
+      // initialScrollIndex={items.length}
 
   return (
     <MarqueeFlatList
-      contentContainerStyle={contentContainerStyle}
       data={items}
-      getItemLayout={getItemLayout}
-      keyExtractor={keyExtractor}
       onLayout={onLayout}
-      ref={sectionListRef}
+      ref={listRef}
       renderItem={renderItemCallback}
-      scrollIndicatorInsets={scrollIndicatorInsets}
     />
   );
 };

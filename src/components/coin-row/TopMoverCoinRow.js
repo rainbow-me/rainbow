@@ -27,8 +27,6 @@ const TopMoverCoinRow = ({
 }) => {
   const { nativeCurrencySymbol } = useAccountSettings();
 
-  console.log('props', props);
-
   const formattedPrice = useMemo(() => {
     const value = handleSignificantDecimals(price, 2);
     return `${nativeCurrencySymbol}${value}`;
