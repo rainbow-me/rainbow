@@ -40,8 +40,7 @@ const InnerButton = styled(View)`
 `;
 
 const InnerGradient = styled(RainbowButtonGradient).attrs(
-  ({ disabled, strokeWidth, type, width }) => ({
-    center: [width - strokeWidth * 2, (width - strokeWidth * 2) / 2],
+  ({ disabled, type }) => ({
     colors: disabled
       ? RainbowGradientColors.inner.disabled
       : type === RainbowButtonTypes.addCash
@@ -55,8 +54,7 @@ const InnerGradient = styled(RainbowButtonGradient).attrs(
 `;
 
 const OuterGradient = styled(RainbowButtonGradient).attrs(
-  ({ disabled, type, width }) => ({
-    center: [width * 1.5, width],
+  ({ disabled, type }) => ({
     colors: disabled
       ? RainbowGradientColors.outer.disabled
       : type === RainbowButtonTypes.addCash
@@ -70,16 +68,39 @@ const OuterGradient = styled(RainbowButtonGradient).attrs(
   width: ${({ width }) => width * 2};
 `;
 
-const RainbowButtonBackground = ({ height, strokeWidth, width }) => {
+const RainbowButtonBackground = ({
+  disabled,
+  height,
+  strokeWidth,
+  type,
+  width,
+}) => {
   const maskElement = (
     <InnerButton strokeWidth={strokeWidth} height={height} width={width} />
   );
+  const innerGradientCenter = [
+    width - strokeWidth * 2,
+    (width - strokeWidth * 2) / 2,
+  ];
+  const outerGradientCenter = [width * 1.5, width];
 
   return (
     <Fragment>
-      <OuterGradient height={height} width={width} />
+      <OuterGradient
+        center={outerGradientCenter}
+        disabled={disabled}
+        height={height}
+        type={type}
+        width={width}
+      />
       <MaskedView maskElement={maskElement}>
-        <InnerGradient height={height} width={width} />
+        <InnerGradient
+          center={innerGradientCenter}
+          disabled={disabled}
+          height={height}
+          type={type}
+          width={width}
+        />
       </MaskedView>
     </Fragment>
   );

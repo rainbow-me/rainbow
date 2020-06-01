@@ -38,6 +38,7 @@ const ButtonContent = styled(RowWithMargins).attrs({
 `;
 
 const ButtonLabel = styled(Text).attrs(({ type }) => ({
+  align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
   color: colors.white,
   letterSpacing:
     type === RainbowButtonTypes.addCash ? 'roundedTight' : 'roundedMedium',
@@ -46,7 +47,7 @@ const ButtonLabel = styled(Text).attrs(({ type }) => ({
 }))``;
 
 const OuterButton = styled.View`
-  ${shadow.build(0, 5, 7.5, colors.dark, 0.4)};
+  ${shadow.build(0, 5, 15, colors.dark, 0.4)};
   background-color: ${colors.dark};
   border-radius: ${({ height }) => height / 2};
   height: ${({ height }) => height};
@@ -54,11 +55,10 @@ const OuterButton = styled.View`
 `;
 
 const Shadow = styled.View`
-  ${shadow.build(0, 10, 15, colors.dark, 1)};
+  ${shadow.build(0, 10, 30, colors.dark, 0.2)};
   background-color: ${colors.white};
   border-radius: ${({ height }) => height / 2};
   height: ${({ height }) => height};
-  opacity: 0.2;
   position: absolute;
   width: ${({ width }) => width};
 `;
@@ -96,13 +96,15 @@ const RainbowButton = ({
         width={width}
       >
         <RainbowButtonBackground
+          disabled={disabled}
           height={height}
           strokeWidth={strokeWidth}
+          type={type}
           width={width}
         />
         <ButtonContent type={type}>
           {type === RainbowButtonTypes.addCash && <AddCashIcon />}
-          <ButtonLabel>
+          <ButtonLabel type={type}>
             {type === RainbowButtonTypes.addCash ? 'Add Cash' : label}
           </ButtonLabel>
         </ButtonContent>
