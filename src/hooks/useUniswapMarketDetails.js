@@ -58,13 +58,10 @@ export default function useUniswapMarketDetails() {
         outputAmount,
         outputCurrency,
         outputReserve,
-        updatedInputAsExactAmount,
-        inputTokenV2,
-        outputTokenV2,
-        inputOutputPairV2
+        updatedInputAsExactAmount
       );
     },
-    [chainId, getMarketPrice, inputOutputPairV2, inputReserve, inputTokenV2, outputReserve, outputTokenV2]
+    [chainId, getMarketPrice, inputOutputPairV2, inputReserve]
   );
 
   const calculateInputGivenOutputChange = useCallback(

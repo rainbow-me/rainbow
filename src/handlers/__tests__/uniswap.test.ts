@@ -35,19 +35,22 @@ it('fetches pair', async () => {
     await uniswap2Client.query({
       query: UNISWAP2_ALL_TOKENS,
     })
-  )?.data.tokens.map(
-    ({ id, name, symbol, decimals }) =>
-      new Token(ChainId.MAINNET, id, decimals, symbol, name)
+  )?.data.tokens.reduce(
+    (acc, { id, name, symbol, decimals }) => ({
+      ...acc,
+      [id]: new Token(ChainId.MAINNET, id, decimals, symbol, name),
+    }),
+    {}
   );
+  console.log(`fetched ${Object.keys(tokens).length} tokens`);
 
   const result = await uniswap2Client.query({
     query: UNISWAP2_ALL_PAIRS,
   });
-  const { pairs } = result.data.pairs.reduce((acc, pair) => {
+  const pairs = result.data.pairs.reduce((acc, pair) => {
     const token0 = tokens[pair.token0.id];
     const token1 = tokens[pair.token1.id];
 
-    // TODO
     const res0 = JSBI.BigInt(Math.round(10 ** token0.decimals * pair.reserve0));
     const res1 = JSBI.BigInt(Math.round(10 ** token1.decimals * pair.reserve1));
 
@@ -60,22 +63,24 @@ it('fetches pair', async () => {
     };
   }, {});
 
-  const addrs0 = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'; // DAI
-  const addrs1 = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'; // DGX
+  console.log(`fetched ${Object.keys(pairs).length} pairs`);
+
+  const addrs0 = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
+  const addrs1 = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+  const addrs2 = '0x6b175474e89094c44da98b954eedeac495271d0f';
+  const addrs3 = '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2';
 
   const WBTC = tokens[addrs0];
   const USDC = tokens[addrs1];
+  const DAI = tokens[addrs2];
+  const MKR = tokens[addrs3];
 
-  console.log(WBTC);
-  console.log(USDC);
+  const FROM = MKR;
+  const TO = DAI;
 
-  const amountIn = new TokenAmount(WBTC, JSBI.BigInt(100000));
+  const amountIn = new TokenAmount(FROM, JSBI.BigInt(100000));
 
-  const p = Pair.getAddress(WBTC, USDC);
-  console.log(p, pairs[p]);
-  const trade = Trade.bestTradeExactIn(Object.values(pairs), amountIn, USDC, {
-    maxHops: 1000,
-  });
+  const trade = Trade.bestTradeExactIn(Object.values(pairs), amountIn, TO);
   console.log(
     amountIn.toExact(),
     amountIn.token.symbol,

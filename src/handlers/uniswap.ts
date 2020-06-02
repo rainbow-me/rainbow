@@ -415,7 +415,6 @@ export const getChart = async (exchangeAddress, timeframe) => {
 };
 
 export const getAllPairsAndTokensV2 = async () => {
-  console.log('FFF, starting tokens');
   const tokens = (
     await uniswap2Client.query({
       query: UNISWAP2_ALL_TOKENS,
@@ -428,47 +427,30 @@ export const getAllPairsAndTokensV2 = async () => {
     {}
   );
 
-  console.log('FFF, neding tokens', tokens, Object.keys(tokens).length);
-
   if (!tokens) {
     return null;
   }
-
-  console.log('FFF, staring pairs', tokens);
-
-  const paiasdrs = await uniswap2Client.query({
-    query: UNISWAP2_ALL_PAIRS,
-  });
-
-  console.log('FFFF', paiasdrs);
 
   const pairs = (
     await uniswap2Client.query({
       query: UNISWAP2_ALL_PAIRS,
     })
-  )?.data.pairs.reduce((acc, pair, all) => {
+  )?.data.pairs.reduce((acc, pair) => {
     const token0 = tokens[pair.token0.id];
     const token1 = tokens[pair.token1.id];
-    console.log(token0, token1);
 
-    // // TODO
-    // const res0 = JSBI.BigInt(Math.round(10 ** token0.decimals * pair.reserve0));
-    // const res1 = JSBI.BigInt(Math.round(10 ** token1.decimals * pair.reserve1));
-    //
-    const amount0 = new TokenAmount(token0, JSBI.BigInt(1));
-    const amount1 = new TokenAmount(token1, JSBI.BigInt(1));
-    console.log(amount0, amount1);
+    const res0 = convertAmountToRawAmount(pair.reserve0, token0.decimals);
+    const res1 = convertAmountToRawAmount(pair.reserve1, token1.decimals);
+
+    const amount0 = new TokenAmount(token0, res0);
+    const amount1 = new TokenAmount(token1, res1);
 
     const newPair = new Pair(amount0, amount1);
-    console.log(pair, all.length);
     return {
-      // [pair.id]: newPair,
-      [pair.id]: 'x',
+      [pair.id]: newPair,
       ...acc,
     };
   }, {});
-
-  console.log('FFF, endgin pairs', pairs);
 
   if (!pairs) {
     return null;
@@ -531,27 +513,10 @@ export const calculateTradeDetails = (
   outputAmount,
   outputCurrency,
   outputReserve,
-  inputAsExactAmount,
-  inputTokenV2: Token,
-  outputTokenV2: Token,
-  inputOutputPairV2: Pair | null
+  inputAsExactAmount
 ) => {
   const { address: inputAddress, decimals: inputDecimals } = inputCurrency;
   const { address: outputAddress, decimals: outputDecimals } = outputCurrency;
-
-  console.log('start fetching');
-  Pair.fetchData(inputTokenV2, outputTokenV2, web3Provider)
-    .then(x => console.log(x.reserve0))
-    .catch(e => console.log('error', e));
-
-  console.log(
-    'fffffff',
-    inputAddress,
-    inputTokenV2,
-    outputAddress,
-    outputTokenV2,
-    inputOutputPairV2
-  );
 
   const isInputEth = inputAddress === 'eth';
   const isOutputEth = outputAddress === 'eth';

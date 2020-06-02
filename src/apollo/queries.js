@@ -94,13 +94,15 @@ export const UNISWAP_CHART_QUERY = gql`
 
 export const UNISWAP2_ALL_PAIRS = gql`
   {
-    pairs {
+    pairs(where: { reserve0_gt: 0 }, first: 1000) {
       id
       token0 {
         id
+        symbol
       }
       token1 {
         id
+        symbol
       }
       reserve0
       reserve1
