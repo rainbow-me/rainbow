@@ -1,10 +1,11 @@
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { useNavigation } from 'react-navigation-hooks';
+
 import styled from 'styled-components/primitives';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import { useAccountProfile, useClipboard } from '../../hooks';
+import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';

@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
-import { useNavigation } from 'react-navigation-hooks';
+
 import styled from 'styled-components/primitives';
 import { calculateAPY } from '../../helpers/savings';
+import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
 import { colors, padding } from '../../styles';
 import { magicMemo } from '../../utils';

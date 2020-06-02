@@ -4,9 +4,12 @@ import { BaseButton } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
-import { useIsFocused, useNavigation } from 'react-navigation-hooks';
+import { useIsFocused } from 'react-navigation-hooks';
 import BottomSheet from 'reanimated-bottom-sheet';
-import { notifyUnmountBottomSheet } from '../../navigation/Navigation';
+import {
+  notifyUnmountBottomSheet,
+  useNavigation,
+} from '../../navigation/Navigation';
 
 // eslint-disable-next-line import/no-named-as-default-member
 const { SpringUtils } = Animated;

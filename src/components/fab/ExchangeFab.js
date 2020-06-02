@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
-import { useNavigation } from 'react-navigation-hooks';
 import { compose } from 'recompact';
 import { onlyUpdateForKeys } from 'recompose';
 import { withFabSelection } from '../../hoc';
+import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { Icon } from '../icons';
