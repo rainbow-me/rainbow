@@ -9,12 +9,7 @@ import useUniswapCurrencyReserves from './useUniswapCurrencyReserves';
 export default function useUniswapMarketDetails() {
   const { allAssets } = useAccountAssets();
 
-  const {
-    inputReserve,
-    outputReserve,
-    inputTokenV2,
-    outputTokenV2,
-  } = useUniswapCurrencyReserves();
+  const { inputReserve, outputReserve } = useUniswapCurrencyReserves();
 
   const getMarketPrice = useCallback(
     (inputCurrency, outputCurrency, useInputReserve = true) => {

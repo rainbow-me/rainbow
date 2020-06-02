@@ -152,17 +152,17 @@ export const uniswapUpdateInputCurrency = (
     type: UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE,
   });
 
-  if (inputTokenV2 !== null && outputTokenV2 !== null) {
-    console.log('starting pair', inputTokenV2, outputTokenV2);
-    const pair = await getPair(inputTokenV2, outputTokenV2);
-    console.log('pair', pair);
-    dispatch({
-      payload: {
-        inputOutputPairV2: pair,
-      },
-      type: UNISWAP_UPDATE_INPUT_OUTPUT_PAIR,
-    });
-  }
+  // if (inputTokenV2 !== null && outputTokenV2 !== null) {
+  //   console.log('starting pair', inputTokenV2, outputTokenV2);
+  //   const pair = await getPair(inputTokenV2, outputTokenV2);
+  //   console.log('pair', pair);
+  //   dispatch({
+  //     payload: {
+  //       inputOutputPairV2: pair,
+  //     },
+  //     type: UNISWAP_UPDATE_INPUT_OUTPUT_PAIR,
+  //   });
+  // }
 };
 
 export const uniswapUpdateOutputCurrency = (
@@ -181,17 +181,17 @@ export const uniswapUpdateOutputCurrency = (
     },
     type: UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE,
   });
-  if (inputTokenV2 !== null && outputTokenV2 !== null) {
-    console.log('starting pair');
-    const pair = await getPair(inputTokenV2, outputTokenV2);
-    console.log('pair');
-    dispatch({
-      payload: {
-        inputOutputPairV2: pair,
-      },
-      type: UNISWAP_UPDATE_INPUT_OUTPUT_PAIR,
-    });
-  }
+  // if (inputTokenV2 !== null && outputTokenV2 !== null) {
+  //   console.log('starting pair');
+  //   const pair = await getPair(inputTokenV2, outputTokenV2);
+  //   console.log('pair');
+  //   dispatch({
+  //     payload: {
+  //       inputOutputPairV2: pair,
+  //     },
+  //     type: UNISWAP_UPDATE_INPUT_OUTPUT_PAIR,
+  //   });
+  // }
 };
 
 export const uniswapClearCurrenciesAndReserves = () => dispatch =>

@@ -10,6 +10,7 @@ import {
 } from '@uniswap/sdk';
 import {
   ChainId,
+  JSBI,
   Pair,
   Route,
   Token,
@@ -29,8 +30,10 @@ import {
   toLower,
   zipObject,
 } from 'lodash';
-import { uniswapClient } from '../apollo/client';
+import { uniswap2Client, uniswapClient } from '../apollo/client';
 import {
+  UNISWAP2_ALL_PAIRS,
+  UNISWAP2_ALL_TOKENS,
   UNISWAP_ALL_EXCHANGES_QUERY,
   UNISWAP_CHART_QUERY,
 } from '../apollo/queries';
@@ -86,7 +89,7 @@ export const getReserve = async tokenAddress => {
 
 export const getPair = async (tokenA: Token, tokenB: Token) => {
   console.log('fetching', tokenA.address, tokenB.address);
-  return await Pair.fetchData(tokenA, tokenB);
+  return await Pair.fetchData(tokenA, tokenB, web3Provider);
 };
 
 const getGasLimit = async (
@@ -411,6 +414,71 @@ export const getChart = async (exchangeAddress, timeframe) => {
   return data;
 };
 
+export const getAllPairsAndTokensV2 = async () => {
+  console.log('FFF, starting tokens');
+  const tokens = (
+    await uniswap2Client.query({
+      query: UNISWAP2_ALL_TOKENS,
+    })
+  )?.data.tokens.reduce(
+    (acc, { id, name, symbol, decimals }) => ({
+      ...acc,
+      [id]: new Token(ChainId.MAINNET, id, decimals, symbol, name),
+    }),
+    {}
+  );
+
+  console.log('FFF, neding tokens', tokens, Object.keys(tokens).length);
+
+  if (!tokens) {
+    return null;
+  }
+
+  console.log('FFF, staring pairs', tokens);
+
+  const paiasdrs = await uniswap2Client.query({
+    query: UNISWAP2_ALL_PAIRS,
+  });
+
+  console.log('FFFF', paiasdrs);
+
+  const pairs = (
+    await uniswap2Client.query({
+      query: UNISWAP2_ALL_PAIRS,
+    })
+  )?.data.pairs.reduce((acc, pair, all) => {
+    const token0 = tokens[pair.token0.id];
+    const token1 = tokens[pair.token1.id];
+    console.log(token0, token1);
+
+    // // TODO
+    // const res0 = JSBI.BigInt(Math.round(10 ** token0.decimals * pair.reserve0));
+    // const res1 = JSBI.BigInt(Math.round(10 ** token1.decimals * pair.reserve1));
+    //
+    const amount0 = new TokenAmount(token0, JSBI.BigInt(1));
+    const amount1 = new TokenAmount(token1, JSBI.BigInt(1));
+    console.log(amount0, amount1);
+
+    const newPair = new Pair(amount0, amount1);
+    console.log(pair, all.length);
+    return {
+      // [pair.id]: newPair,
+      [pair.id]: 'x',
+      ...acc,
+    };
+  }, {});
+
+  console.log('FFF, endgin pairs', pairs);
+
+  if (!pairs) {
+    return null;
+  }
+  return {
+    pairs,
+    tokens,
+  };
+};
+
 export const getAllExchanges = async (tokenOverrides, excluded = []) => {
   const pageSize = 600;
   let allTokens = {};
@@ -470,6 +538,11 @@ export const calculateTradeDetails = (
 ) => {
   const { address: inputAddress, decimals: inputDecimals } = inputCurrency;
   const { address: outputAddress, decimals: outputDecimals } = outputCurrency;
+
+  console.log('start fetching');
+  Pair.fetchData(inputTokenV2, outputTokenV2, web3Provider)
+    .then(x => console.log(x.reserve0))
+    .catch(e => console.log('error', e));
 
   console.log(
     'fffffff',

@@ -13,3 +13,10 @@ export const uniswapClient = new ApolloClient({
     uri: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswapbackup',
   }),
 });
+
+export const uniswap2Client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: new HttpLink({
+    uri: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v2-local',
+  }),
+});

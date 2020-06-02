@@ -91,3 +91,34 @@ export const UNISWAP_CHART_QUERY = gql`
     }
   }
 `;
+
+export const UNISWAP2_ALL_PAIRS = gql`
+  {
+    pairs {
+      id
+      token0 {
+        id
+      }
+      token1 {
+        id
+      }
+      reserve0
+      reserve1
+      token0Price
+      token1Price
+      reserveUSD
+      totalSupply
+    }
+  }
+`;
+
+export const UNISWAP2_ALL_TOKENS = gql`
+  {
+    tokens(first: 1000) {
+      id
+      name
+      symbol
+      decimals
+    }
+  }
+`;

@@ -209,6 +209,7 @@
     "babel-plugin-rewire": "^1.2.0",
     "babel-plugin-styled-components": "^1.10.7",
     "babel-plugin-transform-remove-console": "^6.9.4",
+    "cross-fetch": "^3.0.4",
     "detox": "^16.5.0",
     "eslint": "^6.8.0",
     "eslint-config-satya164": "^3.1.6",
