@@ -35,12 +35,6 @@ export const web3SetHttpProvider = async network => {
 export const sendRpcCall = async payload =>
   web3Provider.send(payload.method, payload.params);
 
-export const getTransactionByHash = txHash =>
-  sendRpcCall({
-    method: 'eth_getTransactionByHash',
-    params: [txHash],
-  });
-
 export const getTransactionReceipt = txHash =>
   sendRpcCall({
     method: 'eth_getTransactionReceipt',
@@ -96,16 +90,6 @@ export const toHex = value =>
   ethers.utils.hexlify(ethers.utils.bigNumberify(value));
 
 /**
- * @desc has ETH balance
- * @param  {String} address
- * @return {Boolean}
- */
-export const hasEthBalance = async address => {
-  const weiBalance = await web3Provider.getBalance(address, 'pending');
-  return weiBalance > 0;
-};
-
-/**
  * @desc estimate gas limit
  * @param  {String} address
  * @return {Number} gas limit
@@ -117,15 +101,6 @@ export const estimateGas = async estimateGasData => {
   } catch (error) {
     return null;
   }
-};
-
-/**
- * @desc get gas price
- * @return {String} gas price
- */
-export const getGasPrice = async () => {
-  const gasPrice = await web3Provider.getGasPrice();
-  return gasPrice.toString();
 };
 
 /**
@@ -173,7 +148,7 @@ export const getTxDetails = async transaction => {
   return tx;
 };
 
-export const resolveNameOrAddress = async nameOrAddress => {
+const resolveNameOrAddress = async nameOrAddress => {
   if (!isHexString(nameOrAddress)) {
     return web3Provider.resolveName(nameOrAddress);
   }
