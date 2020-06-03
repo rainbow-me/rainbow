@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { get, replace, startsWith } from 'lodash';
-import { REACT_APP_INFURA_PROJECT_ID } from 'react-native-dotenv';
+import { INFURA_PROJECT_ID, INFURA_PROJECT_ID_DEV } from 'react-native-dotenv';
 import AssetTypes from '../helpers/assetTypes';
 import NetworkTypes from '../helpers/networkTypes';
 import {
@@ -12,7 +12,8 @@ import {
 import smartContractMethods from '../references/smartcontract-methods.json';
 import { ethereumUtils } from '../utils';
 
-const infuraUrl = `https://network.infura.io/v3/${REACT_APP_INFURA_PROJECT_ID}`;
+const infuraProjectId = __DEV__ ? INFURA_PROJECT_ID_DEV : INFURA_PROJECT_ID;
+const infuraUrl = `https://network.infura.io/v3/${infuraProjectId}`;
 /**
  * @desc web3 http instance
  */
