@@ -1,3 +1,78 @@
+diff --git a/node_modules/react-native-reanimated/package.json b/node_modules/react-native-reanimated/package.json
+index 38fa133..a84de83 100644
+--- a/node_modules/react-native-reanimated/package.json
++++ b/node_modules/react-native-reanimated/package.json
+@@ -10,9 +10,35 @@
+     "lint": "eslint './src/**/*.js'",
+     "release": "npm login && release-it"
+   },
+-  "main": "lib/commonjs/Animated",
++  "main": "src/Animated",
+   "module": "lib/module/Animated",
+-  "react-native": "src/Animated",
++  "react-native": {
++    "lib/commonjs/Animated": "src/Animated",
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "crypto": "react-native-crypto",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
++  },
+   "source": "src/Animated",
+   "types": "react-native-reanimated.d.ts",
+   "files": [
+@@ -104,5 +130,32 @@
+       "commonjs",
+       "module"
+     ]
++  },
++  "browser": {
++    "lib/commonjs/Animated": "src/Animated",
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "crypto": "react-native-crypto",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
+   }
+ }
 diff --git a/node_modules/react-native-reanimated/src/createAnimatedComponent.js b/node_modules/react-native-reanimated/src/createAnimatedComponent.js
 index c62260e..ffd62cf 100644
 --- a/node_modules/react-native-reanimated/src/createAnimatedComponent.js
@@ -11,3 +86,17 @@ index c62260e..ffd62cf 100644
                // this is how we recognize styles returned by useAnimatedStyle
                return style.initial;
              } else {
+diff --git a/node_modules/react-native-reanimated/src/reanimated2/interpolation.js b/node_modules/react-native-reanimated/src/reanimated2/interpolation.js
+index b2c1fa0..a7a88fd 100644
+--- a/node_modules/react-native-reanimated/src/reanimated2/interpolation.js
++++ b/node_modules/react-native-reanimated/src/reanimated2/interpolation.js
+@@ -30,6 +30,9 @@ function internalInterpolate(x, l, r, ll, rr, type) {
+ 
+ export function interpolate(x, input, output, type) {
+   'worklet';
++  if (x && x.__nodeID) {
++    throw new Error('Reanimated: interpolate from V1 has been renamed to interpolateNode.')
++  }
+   const length = input.length;
+   let narrowedInput = [];
+   if (x < input[0]) {
