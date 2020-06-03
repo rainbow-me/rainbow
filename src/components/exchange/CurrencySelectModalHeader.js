@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
-import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
+import { useNavigationParam } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
+import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
 import { borders, colors, padding } from '../../styles';
 import { BackButton } from '../header';

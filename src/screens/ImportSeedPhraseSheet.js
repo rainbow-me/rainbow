@@ -11,8 +11,8 @@ import React, {
 import { Alert, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
+
 import { Button } from '../components/buttons';
 import { Icon } from '../components/icons';
 import { Input } from '../components/inputs';
@@ -30,6 +30,7 @@ import {
   usePrevious,
   useTimeout,
 } from '../hooks';
+import { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { borders, colors, padding, shadow } from '../styles';
 import { logger } from '../utils';

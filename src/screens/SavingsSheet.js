@@ -1,7 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
-import { useNavigation } from 'react-navigation-hooks';
+
 import Divider from '../components/Divider';
 import { SavingsCoinRow } from '../components/coin-row';
 import {
@@ -18,6 +18,7 @@ import { Sheet, SheetActionButton } from '../components/sheet';
 import { isSymbolStablecoin } from '../helpers/savings';
 import { convertAmountToNativeDisplay } from '../helpers/utilities';
 import { useAccountSettings, useWallets } from '../hooks';
+import { useNavigation } from '../navigation/Navigation';
 import { colors, padding } from '../styles';
 import Routes from './Routes/routesNames';
 
