@@ -9260,10 +9260,12 @@ react-native-randombytes@^3.5.3:
     buffer "^4.9.1"
     sjcl "^1.0.3"
 
-react-native-reanimated@1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.7.0.tgz#896db2576552ac59d288a1f6c7f00afc171f240c"
-  integrity sha512-FQWSqP605eQVJumuK2HpR+7heF0ZI+qfy4jNguv3Xv8nPFHeIgZaRTXHCEQL2AcuSIj50zy8jGJf5l134QMQWQ==
+react-native-reanimated@2.0.0-alpha.1:
+  version "2.0.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.0.0-alpha.1.tgz#d8d451aeb8e31b59e36664749a2c00c736c981e9"
+  integrity sha512-nNYO+lX0xKfeXKLoGQZtJIAcEt3JV4OD94/oQJZlqBhVUgfCkLFXB9yiPgcVHNp9BHefmdI2lBbJfWmmWVNZQg==
+  dependencies:
+    fbjs "^1.0.0"
 
 react-native-redash@9.6.0:
   version "9.6.0"

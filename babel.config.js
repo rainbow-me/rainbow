@@ -6,6 +6,7 @@ module.exports = function(api) {
     'date-fns',
     'graphql-tag',
     ['lodash', { id: ['lodash', 'recompact', 'recompose'] }],
+    'react-native-reanimated/plugin',
   ];
 
   const presets = [

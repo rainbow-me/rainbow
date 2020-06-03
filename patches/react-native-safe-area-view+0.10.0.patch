@@ -1,0 +1,16 @@
+diff --git a/node_modules/react-native-safe-area-view/index.js b/node_modules/react-native-safe-area-view/index.js
+index 613c5ec..c3fa169 100644
+--- a/node_modules/react-native-safe-area-view/index.js
++++ b/node_modules/react-native-safe-area-view/index.js
+@@ -21,9 +21,10 @@ const PAD_HEIGHT = 1024;
+ 
+ const { height: D_HEIGHT, width: D_WIDTH } = Dimensions.get('window');
+ 
+-const { PlatformConstants = {} } = NativeModules;
++const PlatformConstants = Platform.constants || {};
+ const { minor = 0 } = PlatformConstants.reactNativeVersion || {};
+ 
++
+ const isIPhoneX = (() => {
+   if (Platform.OS === 'web') return false;
+ 

@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-reanimated/src/createAnimatedComponent.js b/node_modules/react-native-reanimated/src/createAnimatedComponent.js
+index c62260e..ffd62cf 100644
+--- a/node_modules/react-native-reanimated/src/createAnimatedComponent.js
++++ b/node_modules/react-native-reanimated/src/createAnimatedComponent.js
+@@ -247,7 +247,7 @@ export default function createAnimatedComponent(Component) {
+         if (key === 'style') {
+           const styles = Array.isArray(value) ? value : [value];
+           const processedStyle = styles.map(style => {
+-            if (style.viewTag) {
++            if (style && style.viewTag) {
+               // this is how we recognize styles returned by useAnimatedStyle
+               return style.initial;
+             } else {
