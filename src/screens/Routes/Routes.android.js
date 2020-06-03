@@ -8,7 +8,9 @@ import {
   backgroundPreset,
   bottomSheetPreset,
   emojiPreset,
+  exchangePreset,
   expandedPreset,
+  onTransitionStart,
   overlayExpandedPreset,
   sheetPreset,
 } from '../../navigation/transitions/effects';
@@ -30,13 +32,7 @@ import TransactionConfirmationScreen from '../TransactionConfirmationScreen';
 import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
 import WalletScreen from '../WalletScreen';
 import WithdrawModal from '../WithdrawModal';
-import {
-  createStackNavigator,
-  exchangePresetWithTransitions,
-  expandedPresetWithTransitions,
-  onTransitionStart,
-  sheetPresetWithTransitions,
-} from './helpers';
+import { createStackNavigator } from './helpers';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 
@@ -66,12 +62,12 @@ const routesForMainNavigator = {
     screen: ChangeWalletSheet,
   },
   [Routes.CONFIRM_REQUEST]: {
-    navigationOptions: sheetPresetWithTransitions,
+    navigationOptions: sheetPreset,
     screen: TransactionConfirmationScreen,
   },
   [Routes.EXAMPLE_SCREEN]: ExampleScreen,
   [Routes.EXCHANGE_MODAL]: {
-    navigationOptions: exchangePresetWithTransitions,
+    navigationOptions: exchangePreset,
     params: {
       isGestureBlocked: false,
     },
@@ -86,7 +82,7 @@ const routesForMainNavigator = {
     screen: ModalScreen,
   },
   [Routes.RECEIVE_MODAL]: {
-    navigationOptions: expandedPresetWithTransitions,
+    navigationOptions: expandedPreset,
     screen: ReceiveModal,
   },
   [Routes.SAVINGS_SHEET]: {
@@ -94,7 +90,7 @@ const routesForMainNavigator = {
     screen: SavingsSheet,
   },
   [Routes.SETTINGS_MODAL]: {
-    navigationOptions: expandedPresetWithTransitions,
+    navigationOptions: expandedPreset,
     screen: SettingsModal,
     transparentCard: true,
   },
@@ -103,7 +99,7 @@ const routesForMainNavigator = {
     screen: SwipeStack,
   },
   [Routes.WALLET_CONNECT_CONFIRMATION_MODAL]: {
-    navigationOptions: expandedPresetWithTransitions,
+    navigationOptions: expandedPreset,
     screen: WalletConnectConfirmationModal,
   },
 };
@@ -133,14 +129,14 @@ const routesForStack = {
   },
   MainNavigator,
   [Routes.SAVINGS_DEPOSIT_MODAL]: {
-    navigationOptions: exchangePresetWithTransitions,
+    navigationOptions: exchangePreset,
     params: {
       isGestureBlocked: false,
     },
     screen: SavingModalNavigator,
   },
   [Routes.SAVINGS_WITHDRAW_MODAL]: {
-    navigationOptions: exchangePresetWithTransitions,
+    navigationOptions: exchangePreset,
     params: {
       isGestureBlocked: false,
     },
