@@ -8,15 +8,7 @@ import {
   tradeTokensForExactEthWithData,
   tradeTokensForExactTokensWithData,
 } from '@uniswap/sdk';
-import {
-  ChainId,
-  JSBI,
-  Pair,
-  Route,
-  Token,
-  TokenAmount,
-  TradeType,
-} from '@uniswap/sdk2';
+import { ChainId, Pair, Token, TokenAmount, Trade, WETH } from '@uniswap/sdk2';
 
 import { getUnixTime, sub } from 'date-fns';
 import contractMap from 'eth-contract-metadata';
@@ -30,6 +22,7 @@ import {
   toLower,
   zipObject,
 } from 'lodash';
+import { useSelector } from 'react-redux';
 import { uniswap2Client, uniswapClient } from '../apollo/client';
 import {
   UNISWAP2_ALL_PAIRS,
@@ -40,6 +33,7 @@ import {
 import ChartTypes from '../helpers/chartTypes';
 import {
   convertAmountToRawAmount,
+  convertNumberToString,
   convertRawAmountToDecimalFormat,
   convertStringToNumber,
   divide,
@@ -419,13 +413,10 @@ export const getAllPairsAndTokensV2 = async () => {
     await uniswap2Client.query({
       query: UNISWAP2_ALL_TOKENS,
     })
-  )?.data.tokens.reduce(
-    (acc, { id, name, symbol, decimals }) => ({
-      ...acc,
-      [id]: new Token(ChainId.MAINNET, id, decimals, symbol, name),
-    }),
-    {}
-  );
+  )?.data.tokens.reduce((acc, { id, name, symbol, decimals }) => {
+    acc[id] = new Token(ChainId.MAINNET, id, decimals, symbol, name);
+    return acc;
+  }, {});
 
   if (!tokens) {
     return null;
@@ -445,11 +436,8 @@ export const getAllPairsAndTokensV2 = async () => {
     const amount0 = new TokenAmount(token0, res0);
     const amount1 = new TokenAmount(token1, res1);
 
-    const newPair = new Pair(amount0, amount1);
-    return {
-      [pair.id]: newPair,
-      ...acc,
-    };
+    acc[pair.id] = new Pair(amount0, amount1);
+    return acc;
   }, {});
 
   if (!pairs) {
@@ -557,4 +545,80 @@ export const calculateTradeDetails = (
         );
   }
   return tradeDetails;
+};
+
+export const calculateTradeDetailsV2 = (
+  inputAmount: number,
+  outputAmount: number,
+  inputToken: Token,
+  outputToken: Token,
+  pairs: Record<string, Pair>,
+  exactInput: boolean
+): Trade | null => {
+  if (!inputToken || !outputToken) {
+    return null;
+  }
+  if (exactInput) {
+    const inputRawAmount = convertAmountToRawAmount(
+      convertNumberToString(inputAmount || 0),
+      inputToken.decimals
+    );
+
+    const amountIn = new TokenAmount(inputToken, inputRawAmount);
+    return Trade.bestTradeExactIn(Object.values(pairs), amountIn, outputToken, {
+      maxNumResults: 1,
+    })[0];
+  } else {
+    const outputRawAmount = convertAmountToRawAmount(
+      convertNumberToString(outputAmount || 0),
+      outputToken.decimals
+    );
+    const amountOut = new TokenAmount(outputToken, outputRawAmount);
+    return Trade.bestTradeExactOut(
+      Object.values(pairs),
+      inputToken,
+      amountOut,
+      {
+        maxNumResults: 1,
+      }
+    )[0];
+  }
+};
+
+export const useTradeInputsAndPairs = () => {
+  const {
+    inputCurrency,
+    outputCurrency,
+    pairs,
+    tokens,
+  }: {
+    inputCurrency?: { address: string };
+    outputCurrency?: { address: string };
+    pairs: Record<string, Pair>;
+    tokens: Record<string, Token>;
+  } = useSelector(
+    ({
+      uniswap2: { pairs, tokens },
+      uniswap: { inputCurrency, outputCurrency },
+    }) => ({
+      inputCurrency,
+      outputCurrency,
+      pairs,
+      tokens,
+    })
+  );
+
+  // translating v1 tokens into v2. Probably need to fix later
+  const inputToken: Token = inputCurrency
+    ? tokens[inputCurrency.address]
+    : WETH[ChainId.MAINNET];
+  const outputToken: Token | null = outputCurrency
+    ? tokens[outputCurrency.address]
+    : null;
+
+  return {
+    inputToken,
+    outputToken,
+    pairs,
+  };
 };

@@ -261,6 +261,7 @@ const ExchangeModal = ({
 
   // Calculate market details
   useEffect(() => {
+    console.log('EM', inputAmount);
     if (
       (isDeposit || isWithdrawal) &&
       get(inputCurrency, 'address') === defaultInputAddress
@@ -284,17 +285,6 @@ const ExchangeModal = ({
     });
   }, [
     defaultInputAddress,
-    getMarketDetails,
-    inputAmount,
-    inputAsExactAmount,
-    inputCurrency,
-    inputFieldRef,
-    isDeposit,
-    isWithdrawal,
-    maxInputBalance,
-    nativeCurrency,
-    outputAmount,
-    outputCurrency,
     outputFieldRef,
     setIsSufficientBalance,
     updateExtraTradeDetails,

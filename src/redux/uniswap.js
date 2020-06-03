@@ -135,63 +135,29 @@ export const uniswapUpdateTokenReserves = (
   });
 };
 
-export const uniswapUpdateInputCurrency = (
-  inputCurrency,
-  outputTokenV2
-) => async dispatch => {
+export const uniswapUpdateInputCurrency = inputCurrency => async dispatch => {
   console.log(inputCurrency);
-  const [inputReserve, inputTokenV2] = await getReserve(
-    get(inputCurrency, 'address', null)
-  );
+  const [inputReserve] = await getReserve(get(inputCurrency, 'address', null));
   dispatch({
     payload: {
       inputCurrency,
       inputReserve,
-      inputTokenV2,
     },
     type: UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE,
   });
-
-  // if (inputTokenV2 !== null && outputTokenV2 !== null) {
-  //   console.log('starting pair', inputTokenV2, outputTokenV2);
-  //   const pair = await getPair(inputTokenV2, outputTokenV2);
-  //   console.log('pair', pair);
-  //   dispatch({
-  //     payload: {
-  //       inputOutputPairV2: pair,
-  //     },
-  //     type: UNISWAP_UPDATE_INPUT_OUTPUT_PAIR,
-  //   });
-  // }
 };
 
-export const uniswapUpdateOutputCurrency = (
-  outputCurrency,
-  inputTokenV2
-) => async dispatch => {
-  const [outputReserve, outputTokenV2] = await getReserve(
+export const uniswapUpdateOutputCurrency = outputCurrency => async dispatch => {
+  const [outputReserve] = await getReserve(
     get(outputCurrency, 'address', null)
   );
-  console.log('ue2', inputTokenV2 !== null);
   dispatch({
     payload: {
       outputCurrency,
       outputReserve,
-      outputTokenV2,
     },
     type: UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE,
   });
-  // if (inputTokenV2 !== null && outputTokenV2 !== null) {
-  //   console.log('starting pair');
-  //   const pair = await getPair(inputTokenV2, outputTokenV2);
-  //   console.log('pair');
-  //   dispatch({
-  //     payload: {
-  //       inputOutputPairV2: pair,
-  //     },
-  //     type: UNISWAP_UPDATE_INPUT_OUTPUT_PAIR,
-  //   });
-  // }
 };
 
 export const uniswapClearCurrenciesAndReserves = () => dispatch =>
@@ -273,15 +239,12 @@ export const INITIAL_UNISWAP_STATE = {
   favorites: DefaultUniswapFavorites,
   fetchingUniswap: false,
   inputCurrency: null,
-  inputOutputPairV2: null,
   inputReserve: null,
-  inputTokenV2: null,
   isInitialized: false,
   liquidityTokens: [],
   loadingUniswap: false,
   outputCurrency: null,
   outputReserve: null,
-  outputTokenV2: null,
   pairs: uniswapPairs,
   uniswapLiquidityTokenInfo: {},
 };
@@ -317,15 +280,10 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
       case UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE:
         draft.inputCurrency = action.payload.inputCurrency;
         draft.inputReserve = action.payload.inputReserve;
-        draft.inputTokenV2 = action.payload.inputTokenV2;
         break;
       case UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE:
         draft.outputCurrency = action.payload.outputCurrency;
         draft.outputReserve = action.payload.outputReserve;
-        draft.outputTokenV2 = action.payload.outputTokenV2;
-        break;
-      case UNISWAP_UPDATE_INPUT_OUTPUT_PAIR:
-        draft.inputOutputPairV2 = action.payload.inputOutputPairV2;
         break;
       case UNISWAP_LOAD_FAILURE:
         draft.loadingUniswap = false;

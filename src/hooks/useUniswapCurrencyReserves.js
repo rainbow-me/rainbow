@@ -10,20 +10,9 @@ export default function useUniswapCurrencyReserves() {
   const dispatch = useDispatch();
 
   const uniswapReserves = useSelector(
-    ({
-      uniswap: {
-        inputReserve,
-        outputReserve,
-        inputTokenV2,
-        outputTokenV2,
-        inputOutputPairV2,
-      },
-    }) => ({
-      inputOutputPairV2,
+    ({ uniswap: { inputReserve, outputReserve } }) => ({
       inputReserve,
-      inputTokenV2,
       outputReserve,
-      outputTokenV2,
     })
   );
 
@@ -33,15 +22,13 @@ export default function useUniswapCurrencyReserves() {
   );
 
   const updateUniswapInputCurrency = useCallback(
-    data =>
-      dispatch(uniswapUpdateInputCurrency(data, uniswapReserves.outputTokenV2)),
-    [dispatch, uniswapReserves.outputTokenV2]
+    data => dispatch(uniswapUpdateInputCurrency(data)),
+    [dispatch]
   );
 
   const updateUniswapOutputCurrency = useCallback(
-    data =>
-      dispatch(uniswapUpdateOutputCurrency(data, uniswapReserves.inputTokenV2)),
-    [dispatch, uniswapReserves.inputTokenV2]
+    data => dispatch(uniswapUpdateOutputCurrency(data)),
+    [dispatch]
   );
 
   return {
