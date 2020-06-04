@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import { Platform, TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
@@ -72,15 +71,6 @@ const ExchangeNativeField = (
       </Row>
     </TouchableWithoutFeedback>
   );
-};
-
-ExchangeNativeField.propTypes = {
-  editable: PropTypes.bool,
-  height: PropTypes.number,
-  nativeAmount: PropTypes.string,
-  nativeCurrency: PropTypes.string,
-  onFocus: PropTypes.func,
-  setNativeAmount: PropTypes.func,
 };
 
 export default React.forwardRef(ExchangeNativeField);

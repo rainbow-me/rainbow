@@ -1,6 +1,6 @@
 import React, { createElement } from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { useNavigation, useNavigationState } from 'react-navigation-hooks';
+import { useNavigationState } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import {
@@ -10,6 +10,7 @@ import {
   WalletProfileCreator,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
+import { useNavigation } from '../navigation/Navigation';
 import { padding, position } from '../styles';
 
 const ModalTypes = {

@@ -51,7 +51,7 @@ export const UNISWAP_ALL_EXCHANGES_QUERY = gql`
       skip: $skip
       orderBy: combinedBalanceInUSD
       orderDirection: desc
-      where: { tokenAddress_not_in: $excluded }
+      where: { tokenAddress_not_in: $excluded, ethBalance_gt: 0 }
     ) {
       ethBalance
       id

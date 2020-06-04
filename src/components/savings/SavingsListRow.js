@@ -5,7 +5,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ShadowStack from 'react-native-shadow-stack';
-import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import {
   calculateAPY,
@@ -13,6 +12,7 @@ import {
   formatSavingsAmount,
 } from '../../helpers/savings';
 import { useDimensions } from '../../hooks';
+import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
 import { colors, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';

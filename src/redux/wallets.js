@@ -1,5 +1,5 @@
 import { toChecksumAddress } from 'ethereumjs-util';
-import { get, keys, map } from 'lodash';
+import { filter, flatMap, get, map, values } from 'lodash';
 import {
   getWalletNames,
   saveWalletNames,
@@ -138,8 +138,9 @@ export const fetchWalletNames = () => async (dispatch, getState) => {
 
   // Fetch ENS names
   await Promise.all(
-    map(keys(wallets), async key => {
-      map(wallets[key].addresses, async account => {
+    flatMap(values(wallets), wallet => {
+      const visibleAccounts = filter(wallet.addresses, 'visible');
+      return map(visibleAccounts, async account => {
         try {
           const ens = await web3Provider.lookupAddress(account.address);
           if (ens && ens !== account.address) {

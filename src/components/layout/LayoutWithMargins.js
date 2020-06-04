@@ -1,5 +1,4 @@
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { Children, cloneElement } from 'react';
 import flattenChildren from 'react-flatten-children';
 import Flex from './Flex';
@@ -16,11 +15,5 @@ const LayoutWithMargins = ({ children, margin, marginKey, ...props }, ref) => (
     )}
   </Flex>
 );
-
-LayoutWithMargins.propTypes = {
-  children: PropTypes.node,
-  margin: PropTypes.number.isRequired,
-  marginKey: PropTypes.string.isRequired,
-};
 
 export default React.forwardRef(LayoutWithMargins);

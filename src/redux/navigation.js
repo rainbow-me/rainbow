@@ -11,7 +11,6 @@ const INITIAL_STATE = {
     blurColor: null,
     date: Date.now(),
     effect: '',
-    isTransitioning: false,
   },
 };
 
