@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
-import WalletConnect from '@walletconnect/react-native';
+import { captureException } from '@sentry/react-native';
+import WalletConnect from '@walletconnect/client';
 import lang from 'i18n-js';
 import {
   forEach,
@@ -90,9 +91,9 @@ export const walletConnectOnSessionRequest = (
 ) => async dispatch => {
   let walletConnector = null;
   try {
-    const nativeOptions = await getNativeOptions();
+    const { clientMeta, push } = await getNativeOptions();
     try {
-      walletConnector = new WalletConnect({ uri }, nativeOptions);
+      walletConnector = new WalletConnect({ clientMeta, uri }, push);
       walletConnector.on('session_request', (error, payload) => {
         if (error) {
           logger.log('Error on session request', error);
@@ -122,6 +123,7 @@ export const walletConnectOnSessionRequest = (
         });
       });
     } catch (error) {
+      captureException(error);
       Alert.alert(lang.t('wallet.wallet_connect.error'));
     }
   } catch (error) {
