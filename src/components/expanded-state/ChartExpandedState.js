@@ -11,11 +11,12 @@ import {
   SlackSheet,
   SwapActionButton,
 } from '../sheet';
-// import Chart from '../value-chart/Chart';
+import Chart from '../value-chart/Chart';
 import TemporaryChartPlaceholder from '../value-chart/TemporaryChartPlaceholder';
 
 const ChartExpandedState = ({ asset }) => (
   <SlackSheet scrollEnabled={false}>
+    <Chart />
     <BalanceCoinRow isExpandedState item={asset} />
     <ColumnWithDividers dividerRenderer={SheetDivider}>
       <SheetActionButtonRow>

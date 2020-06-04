@@ -11,32 +11,55 @@ import { greaterThan, toFixedDecimals } from '../../helpers/utilities';
 import { useCharts } from '../../hooks';
 import { colors } from '../../styles';
 import { Column } from '../layout';
+import AnimatedChart from './AnimatedChart';
 import TimespanSelector from './TimespanSelector';
 import ValueChart from './ValueChart';
 import ValueText from './ValueText';
+import { data1, data2, data3, data4 } from './data';
+
+const dataSwitching2 = [[data1], [data2], [data4], [data3]];
 
 const chartStroke = { detailed: 1.5, simplified: 3 };
 
 const Chart = ({ asset, ...props }) => {
-  const { chart, chartType, updateChartType } = useCharts(asset);
+  // const { chart, chartType, updateChartType } = useCharts(asset);
+  const [currentChartIndex, setCurrentChartIndex] = useState('h');
 
-  const hasChart = !isEmpty(chart);
+  // const hasChart = !isEmpty(chart);
   const change = get(asset, 'price.relative_change_24h', 0);
 
-  const chartData = useMemo(() => {
-    if (!chart || !hasChart) return [];
-    return [[chart, chart]].map((sectionsData, index) => {
+  const data = useMemo(() => {
+    return dataSwitching2.map((sectionsData, index) => {
       return {
         name: index,
-        segments: sectionsData.map((data, i) => ({
-          color: colors.green,
-          line: i * 5,
-          points: data.map(([x, y]) => ({ x, y })),
-          renderStartSeparator: undefined,
-        })),
+        segments: sectionsData.map((data, i) => {
+          return {
+            color: colors.green,
+            line: i * 5,
+            points: data.map(values => {
+              return { x: values[0], y: values[1] };
+            }),
+            renderStartSeparator: undefined,
+          };
+        }),
       };
     });
-  }, [chart, hasChart]);
+  }, []);
+
+  // const chartData = useMemo(() => {
+  //   if (!chart || !hasChart) return [];
+  //   return [[chart, chart]].map((sectionsData, index) => {
+  //     return {
+  //       name: index,
+  //       segments: sectionsData.map((data, i) => ({
+  //         color: colors.green,
+  //         line: i * 5,
+  //         points: data.map(([x, y]) => ({ x, y })),
+  //         renderStartSeparator: undefined,
+  //       })),
+  //     };
+  //   });
+  // }, [chart, hasChart]);
 
   const [currentPrice, setCurrentPrice] = useState(0);
   const positiveChange = greaterThan(change, 0);
@@ -55,7 +78,7 @@ const Chart = ({ asset, ...props }) => {
     colors.chartGreen
   );
 
-  const currentChartIndex = Object.values(ChartTypes).indexOf(chartType);
+  // const currentChartIndex = Object.values(ChartTypes).indexOf(chartType);
   const amountOfPathPoints = 30; // 👈️ TODO make this dynamic
 
   return (
@@ -73,10 +96,10 @@ const Chart = ({ asset, ...props }) => {
         value={currentPrice}
       />
       <ValueChart
-        amountOfPathPoints={amountOfPathPoints}
+        amountOfPathPoints={120}
         barColor={positiveChange ? colors.chartGreen : colors.red}
-        currentDataSource={0}
-        data={chartData}
+        currentDataSource={currentChartIndex}
+        data={data}
         enableSelect
         importantPointsIndexInterval={amountOfPathPoints}
         mode="gesture-managed"
@@ -85,9 +108,11 @@ const Chart = ({ asset, ...props }) => {
       />
       <TimespanSelector
         color={timespanIndicatorColor}
-        defaultIndex={currentChartIndex}
+        defaultIndex={0}
         isLoading={false}
-        reloadChart={updateChartType}
+        reloadChart={selected => {
+          setCurrentChartIndex(selected);
+        }}
       />
     </Column>
   );
