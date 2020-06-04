@@ -20,12 +20,6 @@ class CopyTooltip extends PureComponent {
     tooltipText: 'Copy',
   };
 
-  componentDidUpdate = () => {
-    if (this.props.navigation.state.isTransitioning) {
-      this.handleHideTooltip();
-    }
-  };
-
   componentWillUnmount = () => this.handleHideTooltip();
 
   tooltip = null;
