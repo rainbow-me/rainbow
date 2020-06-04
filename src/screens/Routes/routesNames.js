@@ -9,7 +9,6 @@ const Routes = {
   EXAMPLE_SCREEN: 'ExampleScreen',
   EXCHANGE_MODAL: 'ExchangeModal',
   EXPANDED_ASSET_SHEET: 'ExpandedAssetSheet',
-  IMPORT_SCREEN: 'ImportScreen',
   IMPORT_SEED_PHRASE_SHEET: 'ImportSeedPhraseSheet',
   IMPORT_SEED_PHRASE_SHEET_NAVIGATOR: 'ImportSeedPhraseSheetNavigator',
   MAIN_EXCHANGE_SCREEN: 'MainExchangeScreen',

@@ -21,7 +21,6 @@ import AddCashSheet from '../AddCashSheet';
 import AvatarBuilder from '../AvatarBuilder';
 import ChangeWalletSheet from '../ChangeWalletSheet';
 import ExampleScreen from '../ExampleScreen';
-import ImportScreen from '../ImportScreen';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
 import ModalScreen from '../ModalScreen';
 import ProfileScreen from '../ProfileScreen';
@@ -127,10 +126,6 @@ const routesForMainNavigator = {
     navigationOptions: backgroundPreset,
     screen: SwipeStack,
   },
-  [Routes.IMPORT_SCREEN]: {
-    navigationOptions: backgroundPreset,
-    screen: ImportScreen,
-  },
   [Routes.WALLET_CONNECT_CONFIRMATION_MODAL]: {
     navigationOptions: expandedPreset,
     screen: WalletConnectConfirmationModal,
@@ -143,9 +138,7 @@ const routesForMainNavigator = {
   }),
 };
 
-const MainNavigator = createStackNavigator(routesForMainNavigator, {
-  initialRouteName: Routes.IMPORT_SCREEN,
-});
+const MainNavigator = createStackNavigator(routesForMainNavigator);
 
 const routesForSavingsModals = {
   [Routes.SAVINGS_DEPOSIT_MODAL]: {
