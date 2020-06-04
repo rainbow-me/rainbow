@@ -2,6 +2,9 @@ PODS:
   - Analytics (3.8.2)
   - Base64 (1.1.2)
   - boost-for-react-native (1.63.0)
+  - Branch (0.32.0):
+    - Branch/Core (= 0.32.0)
+  - Branch/Core (0.32.0)
   - BVLinearGradient (2.5.6):
     - React
   - CocoaAsyncSocket (7.6.4)
@@ -350,6 +353,9 @@ PODS:
     - React
   - react-native-blur (0.8.0):
     - React
+  - react-native-branch (5.0.0-beta.1):
+    - Branch (= 0.32.0)
+    - React
   - react-native-camera (3.26.0):
     - React
     - react-native-camera/RCT (= 3.26.0)
@@ -575,6 +581,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-background-timer (from `../node_modules/react-native-background-timer`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
+  - react-native-branch (from `../node_modules/react-native-branch`)
   - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
@@ -633,6 +640,7 @@ SPEC REPOS:
     - Analytics
     - Base64
     - boost-for-react-native
+    - Branch
     - CocoaAsyncSocket
     - CocoaLibEvent
     - Crashlytics
@@ -720,6 +728,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-background-timer"
   react-native-blur:
     :path: "../node_modules/@react-native-community/blur"
+  react-native-branch:
+    :path: "../node_modules/react-native-branch"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
   react-native-mail:
@@ -830,6 +840,7 @@ SPEC CHECKSUMS:
   Analytics: 4c482aea5efcecaeb03adfc7fc22e350f5ca575c
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
+  Branch: 770a23c04d3f5410cf9231db099a444dd3060784
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
@@ -884,6 +895,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 512e560d0e985d0e8c479a54a4e5c147a9c83493
   react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
+  react-native-branch: ed90b087f2ff6a2f81643ead0b321531877f2e69
   react-native-camera: 2b74be8edc1103c4c46d1f4e5f41723d9ff052cc
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-netinfo: 4284e9f4ade9fc498f313b2e9e3f7fd4fa6e3082
