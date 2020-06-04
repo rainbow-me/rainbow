@@ -1,4 +1,6 @@
+import { Group, Shape, Surface } from '@react-native-community/art';
 import Spline from 'cubic-spline';
+import * as shape from 'd3-shape';
 import deepEqual from 'fbjs/lib/areEqual';
 import { maxBy, minBy } from 'lodash';
 import PropTypes from 'prop-types';
@@ -11,6 +13,7 @@ import Svg, { Circle, Path } from 'react-native-svg';
 import { deviceUtils } from '../../utils';
 import ActivityIndicator from '../ActivityIndicator';
 import { Centered, Row } from '../layout';
+import AnimatedChart from './AnimatedChart';
 import GestureWrapper from './GestureWrapper';
 import TimestampText from './TimestampText';
 
@@ -69,7 +72,7 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
     const xMul = Math.floor(
       (allSegmentsPoints[allSegmentsPoints.length - 1].x -
         allSegmentsPoints[0].x) /
-        allSegmentsPoints.length
+      allSegmentsPoints.length
     );
     let newData = [];
     newData.push({
@@ -129,10 +132,10 @@ const hexToRgb = hex => {
   let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? [
-        parseInt(result[1], 16),
-        parseInt(result[2], 16),
-        parseInt(result[3], 16),
-      ]
+      parseInt(result[1], 16),
+      parseInt(result[2], 16),
+      parseInt(result[3], 16),
+    ]
     : null;
 };
 
@@ -249,7 +252,7 @@ export default class Chart extends PureComponent {
       animatedDividers: undefined,
       animatedPath: undefined,
       chartData: this.data,
-      currentData: this.data[0],
+      currentData: this.data[3],
       hideLoadingBar: false,
       isLoading: true,
       shouldRenderChart: true,
@@ -283,16 +286,7 @@ export default class Chart extends PureComponent {
     /* value that point currently selected chart */
     this.currentChart = new Value(0);
 
-    /* table of animation values that are used to animate between different charts on the run. */
-    /* only one can be set to 1 at the time because all charts are multiplied by this table and summed */
-    this.chartAnimationValues = [
-      new Value(1),
-      new Value(0),
-      new Value(0),
-      new Value(0),
-    ];
-
-    this.currentInterval = 0;
+    this.currentInterval = 'h';
 
     this._configUp = {
       duration: 500,
@@ -359,9 +353,10 @@ export default class Chart extends PureComponent {
       this.reloadChart(this.currentInterval, true);
     }
     if (this.currentInterval !== this.props.currentDataSource) {
+      this.currentInterval = this.props.currentDataSource;
       this.currentChart.setValue(this.props.currentDataSource);
       this.touchX.setValue(deviceUtils.dimensions.width - 1);
-      this.reloadChart(this.props.currentDataSource);
+      this.reloadChart(this.props.currentDataSource, true);
     }
   }
 
@@ -398,8 +393,26 @@ export default class Chart extends PureComponent {
       const data = this.props.data.map(data =>
         simplifyChartData(data, this.props.amountOfPathPoints)
       );
+      let index = 0;
+      switch (currentInterval) {
+        case 'h':
+          index = 0;
+          break;
+        case 'd':
+          index = 1;
+          break;
+        case 'w':
+          index = 2;
+          break;
+        case 'm':
+          index = 3;
+          break;
+        default:
+          break;
+      }
       await this.setState({
         chartData: data,
+        currentData: data[index],
         isLoading: true,
       });
       this.timeoutHandle = setTimeout(async () => {
@@ -411,262 +424,13 @@ export default class Chart extends PureComponent {
         });
       });
     }
-    if (currentInterval !== this.currentInterval) {
-      this.timeoutHandle = setTimeout(async () => {
-        // eslint-disable-next-line import/no-named-as-default-member
-        Animated.timing(
-          this.chartAnimationValues[this.currentInterval],
-          this._configDown
-        ).start();
-        // eslint-disable-next-line import/no-named-as-default-member
-        Animated.timing(
-          this.chartAnimationValues[currentInterval],
-          this._configUp
-        ).start();
-        this.currentInterval = currentInterval;
-
-        await this.setState(prevState => ({
-          currentData: prevState.chartData[currentInterval],
-          isLoading: false,
-        }));
-        this.props.onValueUpdate(
-          this.state.chartData[currentInterval].points[
-            this.state.chartData[currentInterval].points.length - 1
-          ].y
-        );
-      });
-    }
   };
 
-  createSegmentColorsArray = (segments, data) => {
-    let segmentColors = [];
-    let segmentSwitch = [];
-    for (let i = 0; i < segments.length + 1; i++) {
-      segmentColors.push([]);
-      segmentSwitch.push([]);
+  setTouchFlag = flag => {
+    if (flag !== this.state.touchFlag) {
+      this.setState({ touchFlag: flag });
     }
-    for (let i = 0; i < data.length; i++) {
-      let dataIndex = 0;
-      for (let j = 0; j < segments.length + 1; j++) {
-        segmentColors[j].push(dataIndex);
-        if (segments[j] === data[i].lastPoints[dataIndex]) {
-          segmentSwitch[j].push(i);
-          dataIndex++;
-        }
-      }
-    }
-    segmentSwitch.pop();
-    return { colors: segmentColors, dividers: segmentSwitch };
-  };
-
-  createAnimatedPath = () => {
-    let sectionEndPoints = [];
-    const { chartData } = this.state;
-    allSegmentDividers.sort(function(a, b) {
-      return a - b;
-    });
-    let segmentsWithDeletedDuplicates = [];
-
-    allSegmentDividers.forEach(function(x) {
-      if (
-        segmentsWithDeletedDuplicates.length === 0 ||
-        segmentsWithDeletedDuplicates.slice(-1)[0] !== x
-      )
-        segmentsWithDeletedDuplicates.push(x);
-    });
-    allSegmentDividers = segmentsWithDeletedDuplicates;
-
-    const segments = this.createSegmentColorsArray(
-      allSegmentDividers,
-      chartData
-    );
-    let splinePoints = [];
-    for (let i = 0; i < chartData.length; i++) {
-      if (chartData[i].points.length > 0) {
-        const maxValue = maxBy(chartData[i].points, 'y');
-        const minValue = minBy(chartData[i].points, 'y');
-
-        const timestampLength =
-          chartData[i].points[chartData[i].points.length - 1].x -
-          chartData[i].points[0].x;
-
-        const xMultiply = width / timestampLength;
-
-        const yMultiply = height / (maxValue.y - minValue.y);
-        const points = chartData[i].points.map(({ x, y, isImportant }) => ({
-          isImportant,
-          x: (x - chartData[i].points[0].x) * xMultiply,
-          y: (y - minValue.y) * yMultiply,
-        }));
-
-        const importantPoints = pickImportantPoints(
-          points,
-          this.props.importantPointsIndexInterval
-        );
-        const spline = new Spline(importantPoints.xs, importantPoints.ys);
-        splinePoints.push(
-          points
-            .map(({ x, y }) => {
-              return { x, y1: y, y2: spline.at(x) };
-            })
-            .filter(Boolean)
-        );
-      } else {
-        let emptyArray = new Array(this.props.amountOfPathPoints);
-        for (let j = 0; j < emptyArray.length; j++) {
-          emptyArray[j] = { x: 0, y1: 0, y2: 0 };
-        }
-        splinePoints.push(emptyArray);
-      }
-    }
-
-    let chartNode = (multiplyNode, index, chartIndex) =>
-      multiply(
-        multiplyNode,
-        add(
-          splinePoints[chartIndex][index].y1,
-          multiply(
-            this.value,
-            sub(
-              splinePoints[chartIndex][index].y2,
-              splinePoints[chartIndex][index].y1
-            )
-          )
-        )
-      );
-
-    const allNodes = index => {
-      return chartData.map((_, i) => {
-        return chartNode(this.chartAnimationValues[i], index, i);
-      });
-    };
-
-    let returnPaths = [];
-    let returnPoints = [];
-    const localSegmentDividers = allSegmentDividers;
-
-    for (let i = 0; i <= localSegmentDividers.length; i++) {
-      const animatedPath = concat(
-        'M 0 0',
-        ...splinePoints[0].flatMap(({ x }, index) => {
-          if (i === 0) {
-            if (index <= localSegmentDividers[i]) {
-              return ['L', x, ' ', add(...allNodes(index))];
-            }
-          } else {
-            if (index === localSegmentDividers[i - 1]) {
-              sectionEndPoints.push({
-                index: segments.dividers[i - 1],
-                opacity: this.chartAnimationValues[segments.dividers[i - 1]],
-                x,
-                y: add(...allNodes(index)),
-              });
-              return ['M', x, ' ', add(...allNodes(index))];
-            }
-            if (i === localSegmentDividers.length) {
-              if (index >= localSegmentDividers[i - 1]) {
-                return ['L', x, ' ', add(...allNodes(index))];
-              }
-            } else {
-              if (
-                index >= localSegmentDividers[i - 1] &&
-                index <= localSegmentDividers[i]
-              ) {
-                return ['L', x, ' ', add(...allNodes(index))];
-              }
-            }
-          }
-        })
-      );
-
-      const colorMatrix = index => {
-        return index < chartData.length - 1
-          ? cond(
-              eq(this.currentChart, index),
-              Animated.color(
-                ...hexToRgb(chartData[index].colors[segments.colors[i][index]])
-              ),
-              colorMatrix(index + 1)
-            )
-          : cond(
-              eq(this.currentChart, index),
-              Animated.color(
-                ...hexToRgb(chartData[index].colors[segments.colors[i][index]])
-              )
-            );
-      };
-
-      const lineMatrix = index => {
-        return index < chartData.length - 1
-          ? cond(
-              eq(this.currentChart, index),
-              chartData[index].lines[segments.colors[i][index]],
-              lineMatrix(index + 1)
-            )
-          : cond(
-              eq(this.currentChart, index),
-              chartData[index].lines[segments.colors[i][index]]
-            );
-      };
-
-      returnPaths.push(
-        <AnimatedPath
-          d={animatedPath}
-          fill="none"
-          id="main-path"
-          key={i}
-          stroke={colorMatrix(0)}
-          strokeDasharray={lineMatrix(0)}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={add(
-            this.props.stroke.detailed,
-            multiply(
-              this.value,
-              sub(this.props.stroke.simplified, this.props.stroke.detailed)
-            )
-          )}
-        />
-      );
-    }
-
-    let startingValues = [0, 0, 0, 0];
-    sectionEndPoints.forEach(element => {
-      if (
-        chartData[element.index].startSeparatator[startingValues[element.index]]
-      ) {
-        returnPoints.push(
-          <AnimatedCircle
-            cx={element.x}
-            cy={element.y}
-            fill={
-              chartData[element.index].startSeparatator[
-                startingValues[element.index]++
-              ].fill
-            }
-            opacity={element.opacity}
-            r={
-              chartData[element.index].startSeparatator[
-                startingValues[element.index]
-              ].r
-            }
-            stroke={
-              chartData[element.index].startSeparatator[
-                startingValues[element.index]
-              ].stroke
-            }
-            strokeWidth={
-              chartData[element.index].startSeparatator[
-                startingValues[element.index]
-              ].strokeWidth
-            }
-          />
-        );
-      }
-    });
-
-    return { paths: returnPaths, points: returnPoints };
-  };
+  }
 
   checkValueBoundaries = value => {
     if (Math.abs(value) > width / 2 - 45) {
@@ -674,6 +438,7 @@ export default class Chart extends PureComponent {
     }
     return value;
   };
+
   render() {
     const { amountOfPathPoints } = this.props;
     const { currentData } = this.state;
@@ -713,19 +478,8 @@ export default class Chart extends PureComponent {
               ${Number(maxValue.y).toFixed(2)}
             </TimestampText>
           </Animated.View>
-          <Row>
-            <View height={200} width={width}>
-              <Svg
-                height={height}
-                preserveAspectRatio="none"
-                style={flipY}
-                viewBox={viewBox}
-                width={width + 2}
-              >
-                {this.state.animatedPath}
-                {this.state.animatedDividers}
-              </Svg>
-            </View>
+          <AnimatedChart animatedValue={this.value} currentData={currentData} />
+          <Row height={180}>
             <Animated.View
               style={[
                 {
@@ -733,7 +487,6 @@ export default class Chart extends PureComponent {
                   borderRadius: 2,
                   height: 180,
                   position: 'absolute',
-                  top: 10,
                   width: 2,
                   zIndex: 10,
                 },
@@ -760,29 +513,24 @@ export default class Chart extends PureComponent {
             </TimestampText>
           </Animated.View>
         </GestureWrapper>
-        {this.state.isLoading && (
-          <Centered
-            style={{
-              backgroundColor: '#ffffffbb',
-              height: 235,
-              position: 'absolute',
-              top: 100,
-              width: width,
-            }}
-          >
-            <ActivityIndicator />
-          </Centered>
-        )}
         <Animated.Code
           exec={block([
             cond(
               or(eq(this.gestureState, ACTIVE), eq(this.gestureState, BEGAN)),
-              set(this.shouldSpring, 1)
+              block([
+                cond(
+                  eq(this.shouldSpring, 0),
+                  call([], () => {
+                    console.log('true');
+                    this.setTouchFlag(true);
+                  })
+                ),
+                set(this.shouldSpring, 1),
+              ])
             ),
             cond(
               contains([FAILED, CANCELLED, END], this.gestureState),
               block([
-                set(this.shouldSpring, 0),
                 call([], () => {
                   // When user stops interacting with charts, reset the
                   // "currently selected value" back to the newest possible price.
@@ -792,6 +540,7 @@ export default class Chart extends PureComponent {
                     this.props.onValueUpdate(points[points.length - 1].y);
                   }
                 }),
+                set(this.shouldSpring, 0),
               ]),
               onChange(
                 this.touchX,
@@ -815,8 +564,8 @@ export default class Chart extends PureComponent {
                     }
                     const calculatedIndex = Math.floor(
                       curX /
-                        ((width - (width / (amountOfPathPoints + 20)) * 10) /
-                          points.length)
+                      ((width - (width / (amountOfPathPoints + 20)) * 10) /
+                        points.length)
                     );
                     this.props.onValueUpdate(points[calculatedIndex].y);
                   }
