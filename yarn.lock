@@ -9356,10 +9356,10 @@ react-native-tab-view@^1.4.1:
   dependencies:
     prop-types "^15.6.1"
 
-react-native-tab-view@^2.11.0, react-native-tab-view@^2.12.0:
-  version "2.14.2"
-  resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-2.14.2.tgz#5f1e2063f632ec7f8ab27374ecaf72677788b445"
-  integrity sha512-BkQ9htmUM3iroMTgIdCSP+1On8bRHkgFHiOCAnk9OhoFlQOvwZebSU6k705QBDeuuwEVIIT4+C+nT2MvXI/FEQ==
+react-native-tab-view@^2.11.0, react-native-tab-view@^2.14.3:
+  version "2.14.3"
+  resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-2.14.3.tgz#cafc364cd6ebb98745e26514cb08390782bc7116"
+  integrity sha512-TALwHPmT8gCeeUTSdtXEkmaVIunVHmACV4CYivUHQ6m/fVWUCiQgz7Vp2qjOgBsiZEpSxfBfBr4DOgvtQ5A6sg==
 
 react-native-tcp@^3.3.2:
   version "3.3.2"
