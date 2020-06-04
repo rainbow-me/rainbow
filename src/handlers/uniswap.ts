@@ -72,14 +72,10 @@ const convertValueForEthers = value => {
   return ethers.utils.hexlify(valueBigNumber);
 };
 
-export const getReserve = async tokenAddress => {
-  return !tokenAddress || tokenAddress === 'eth'
+export const getReserve = async tokenAddress =>
+  !tokenAddress || tokenAddress === 'eth'
     ? Promise.resolve(null)
-    : Promise.all([
-        getTokenReserves(toLower(tokenAddress), web3Provider),
-        Token.fetchData(ChainId.MAINNET, tokenAddress), // V2
-      ]);
-};
+    : getTokenReserves(toLower(tokenAddress), web3Provider);
 
 export const getPair = async (tokenA: Token, tokenB: Token) => {
   console.log('fetching', tokenA.address, tokenB.address);
@@ -555,6 +551,7 @@ export const calculateTradeDetailsV2 = (
   pairs: Record<string, Pair>,
   exactInput: boolean
 ): Trade | null => {
+  console.log('calculateTradeDetailsV2', inputToken, outputToken);
   if (!inputToken || !outputToken) {
     return null;
   }
