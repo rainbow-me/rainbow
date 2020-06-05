@@ -57,14 +57,15 @@ export default class animations extends Component {
 
       const pathInterpolate = interpolatePath(a, b);
 
-      const listenerId = this.state.animation.addListener(({ value }) => {
-        const path = pathInterpolate(value);
-        this._path.setNativeProps({
-          d: path,
+      if (!this.listenerId) {
+        const listenerId = this.state.animation.addListener(({ value }) => {
+          const path = pathInterpolate(value);
+          this._path.setNativeProps({
+            d: path,
+          });
         });
-      });
-
-      this.listenerId = listenerId;
+        this.listenerId = listenerId;
+      }
       setTimeout(() => {
         this.handlePress();
       }, 500);
