@@ -485,7 +485,11 @@ export default class Chart extends PureComponent {
                         ((width - (width / (amountOfPathPoints + 20)) * 10) /
                           points.length)
                     );
-                    this.props.onValueUpdate(points[calculatedIndex].y);
+                    const calculatedValue = points[calculatedIndex].y;
+                    if (this.currentSelectedPoint !== calculatedValue) {
+                      this.currentSelectedPoint = calculatedValue;
+                      this.props.onValueUpdate(calculatedValue);
+                    }
                   }
                 })
               )
