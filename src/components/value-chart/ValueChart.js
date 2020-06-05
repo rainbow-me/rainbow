@@ -1,40 +1,27 @@
-import { Group, Shape, Surface } from '@react-native-community/art';
-import Spline from 'cubic-spline';
-import * as shape from 'd3-shape';
 import deepEqual from 'fbjs/lib/areEqual';
 import { maxBy, minBy } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
-import { View } from 'react-native';
 import { State } from 'react-native-gesture-handler';
 import Animated, { Clock, Easing, Value } from 'react-native-reanimated';
 import { contains, delay, timing } from 'react-native-redash';
-import Svg, { Circle, Path } from 'react-native-svg';
 import { deviceUtils } from '../../utils';
-import ActivityIndicator from '../ActivityIndicator';
-import { Centered, Row } from '../layout';
+import { Row } from '../layout';
 import AnimatedChart from './AnimatedChart';
 import GestureWrapper from './GestureWrapper';
 import TimestampText from './TimestampText';
-
-const AnimatedPath = Animated.createAnimatedComponent(Path);
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const {
   and,
   or,
   eq,
-  add,
-  sub,
   onChange,
   block,
   event,
-  concat,
   cond,
   call,
   set,
   neq,
-  multiply,
   greaterOrEq,
   lessThan,
   greaterThan,
@@ -72,7 +59,7 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
     const xMul = Math.floor(
       (allSegmentsPoints[allSegmentsPoints.length - 1].x -
         allSegmentsPoints[0].x) /
-      allSegmentsPoints.length
+        allSegmentsPoints.length
     );
     let newData = [];
     newData.push({
@@ -127,62 +114,9 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
   }
 };
 
-const hexToRgb = hex => {
-  // result contain table of [r, g, b] from given hex string
-  let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? [
-      parseInt(result[1], 16),
-      parseInt(result[2], 16),
-      parseInt(result[3], 16),
-    ]
-    : null;
-};
-
 const { BEGAN, ACTIVE, CANCELLED, END, FAILED, UNDETERMINED } = State;
 
 const width = deviceUtils.dimensions.width;
-const height = 170;
-const chartPadding = 16;
-const viewBox = `2 ${height + chartPadding - width} ${width} ${width}`;
-const flipY = { transform: [{ scaleX: 1 }, { scaleY: -1 }] };
-
-const pickImportantPoints = (array, indexInterval) => {
-  const result = [];
-  let xs = [];
-  let ys = [];
-  array.forEach(point => {
-    if (point.isImportant) {
-      xs.push(point.x);
-      ys.push(point.y);
-    }
-  });
-
-  if (xs.length <= 2) {
-    result.push(array[0]);
-    let thresholdIndex = indexInterval;
-    for (let i = 1; i < array.length; i++) {
-      if (i === array.length - 1) {
-        result.push(array[i]);
-      } else if (array[i].y === 0 || array[i].y === 200) {
-        result.push(array[i]);
-        thresholdIndex = i + indexInterval;
-      } else if (i === thresholdIndex) {
-        result.push(array[i]);
-        thresholdIndex += indexInterval;
-      }
-    }
-
-    xs = [];
-    ys = [];
-    result.forEach(point => {
-      xs.push(point.x);
-      ys.push(point.y);
-    });
-  }
-
-  return { xs, ys };
-};
 
 export default class Chart extends PureComponent {
   static propTypes = {
@@ -219,18 +153,11 @@ export default class Chart extends PureComponent {
     /* flag  that specify if gestures are active on chart */
     enableSelect: PropTypes.bool,
 
-    /* if important points are generated automaticaly in component */
-    /* you can specify the graduality from important points */
-    importantPointsIndexInterval: PropTypes.number,
-
     /* specify what kind of chart will be displayed */
     mode: PropTypes.oneOf(['gesture-managed', 'detailed', 'simplified']),
 
     /* callback that returns value of original data x for touched y */
     onValueUpdate: PropTypes.func,
-
-    /* specify stroke width */
-    stroke: PropTypes.object,
   };
 
   static defaultProps = {
@@ -426,12 +353,6 @@ export default class Chart extends PureComponent {
     }
   };
 
-  setTouchFlag = flag => {
-    if (flag !== this.state.touchFlag) {
-      this.setState({ touchFlag: flag });
-    }
-  }
-
   checkValueBoundaries = value => {
     if (Math.abs(value) > width / 2 - 45) {
       return value > 0 ? value - 45 : value + 45;
@@ -478,7 +399,13 @@ export default class Chart extends PureComponent {
               ${Number(maxValue.y).toFixed(2)}
             </TimestampText>
           </Animated.View>
-          <AnimatedChart animatedValue={this.value} currentData={currentData} />
+          <AnimatedChart
+            currentData={currentData}
+            animatedValue={this.value}
+            ref={ref => {
+              this._chartRef = ref;
+            }}
+          />
           <Row height={180}>
             <Animated.View
               style={[
@@ -517,16 +444,7 @@ export default class Chart extends PureComponent {
           exec={block([
             cond(
               or(eq(this.gestureState, ACTIVE), eq(this.gestureState, BEGAN)),
-              block([
-                cond(
-                  eq(this.shouldSpring, 0),
-                  call([], () => {
-                    console.log('true');
-                    this.setTouchFlag(true);
-                  })
-                ),
-                set(this.shouldSpring, 1),
-              ])
+              set(this.shouldSpring, 1)
             ),
             cond(
               contains([FAILED, CANCELLED, END], this.gestureState),
@@ -564,48 +482,14 @@ export default class Chart extends PureComponent {
                     }
                     const calculatedIndex = Math.floor(
                       curX /
-                      ((width - (width / (amountOfPathPoints + 20)) * 10) /
-                        points.length)
+                        ((width - (width / (amountOfPathPoints + 20)) * 10) /
+                          points.length)
                     );
                     this.props.onValueUpdate(points[calculatedIndex].y);
                   }
                 })
               )
             ),
-            cond(this.shouldReactToGestures, [
-              cond(
-                and(greaterThan(this.value, 0), eq(this.shouldSpring, 1)),
-                block([
-                  stopClock(this.clockReversed),
-                  set(
-                    this.value,
-                    timing({
-                      clock: this.clock,
-                      duration: 350,
-                      easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
-                      from: this.value,
-                      to: 0,
-                    })
-                  ),
-                ])
-              ),
-              cond(
-                and(lessThan(this.value, 1), eq(this.shouldSpring, 0)),
-                block([
-                  stopClock(this.clock),
-                  set(
-                    this.value,
-                    timing({
-                      clock: this.clockReversed,
-                      duration: 350,
-                      easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
-                      from: this.value,
-                      to: 1,
-                    })
-                  ),
-                ])
-              ),
-            ]),
             cond(
               and(lessThan(this.opacity, 1), eq(this.shouldSpring, 1)),
               block([
