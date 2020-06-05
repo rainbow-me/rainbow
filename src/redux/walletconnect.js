@@ -201,10 +201,10 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
       network
     );
 
-    const nativeOptions = await getNativeOptions();
+    const { clientMeta, push } = await getNativeOptions();
 
     newWalletConnectors = mapValues(allSessions, session => {
-      const walletConnector = new WalletConnect({ session }, nativeOptions);
+      const walletConnector = new WalletConnect({ clientMeta, session }, push);
       return dispatch(listenOnNewMessages(walletConnector));
     });
   } catch (error) {
