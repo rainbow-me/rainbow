@@ -4,6 +4,8 @@ import styled from 'styled-components/primitives';
 import { exchangeModalBorderRadius } from '../../screens/ExchangeModal';
 import { CoinRowHeight, TopMoverCoinRow } from '../coin-row';
 
+import TextSize from 'react-native-text-size';
+
 const contentContainerStyle = { paddingVertical: 8 };
 const keyExtractor = ({ address }) => `MarqueeList-${address}`;
 
@@ -24,10 +26,17 @@ const MarqueeFlatList = styled(FlatList).attrs({
 
 // height: 70;
   // background-color: purple;
-
+async function lol() {
+  const thing = await TextSize.measure({ text: 'Synthetix' }).then(ha => console.log('ha', ha));
+  return thing;
+}
 
 const MarqueeList = ({ items, onLayout }) => {
   const listRef = useRef();
+
+  const haha = lol();
+  console.log('items', items);
+  console.log('TextSize', haha);
 
   const renderItemCallback = useCallback(
     ({ item: { address, price, ...asset } }) => (
