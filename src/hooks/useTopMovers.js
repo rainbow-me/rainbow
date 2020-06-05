@@ -16,11 +16,12 @@ const updatePriceAndExchangeAddress = (movers, genericAssets, uniswapPairs) => {
   if (movers.length < TOP_MOVERS_PER_ROW_MIN) return [];
   const topMovers = slice(movers, 0, TOP_MOVERS_PER_ROW_MAX);
   return map(topMovers, mover => {
-    const price = get(genericAssets, `${mover.address}.price`);
+    const price = get(genericAssets, `${mover.address}.price.value`);
     const exchangeAddress = get(
       uniswapPairs,
       `${mover.address}.exchangeAddress`
     );
+
     return {
       ...mover,
       exchangeAddress,
@@ -40,7 +41,6 @@ export default function useTopMovers() {
 
   const fetchTopMovers = useCallback(async () => {
     const topMovers = await apiGetTopMovers();
-    // console.log('topMovers', topMovers);
     const { gainers: gainersData, losers: losersData } = topMovers;
 
     const gainers = updatePriceAndExchangeAddress(
@@ -66,15 +66,5 @@ export default function useTopMovers() {
     }
   );
 
-  const resultFromStorage = queryCache.getQueryData(TOP_MOVERS_FROM_STORAGE);
-
-  if (!data && !isEmpty(resultFromStorage)) {
-    return resultFromStorage;
-  }
-
-  if (!data) {
-    return {};
-  }
-
-  return data;
+  return data || queryCache.getQueryData(TOP_MOVERS_FROM_STORAGE);
 }

@@ -1,10 +1,7 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import styled from 'styled-components/primitives';
-import { exchangeModalBorderRadius } from '../../screens/ExchangeModal';
-import { CoinRowHeight, TopMoverCoinRow } from '../coin-row';
-
-import TextSize from 'react-native-text-size';
+import { TopMoverCoinRow } from '../coin-row';
 
 const contentContainerStyle = { paddingVertical: 8 };
 const keyExtractor = ({ address }) => `MarqueeList-${address}`;
@@ -25,30 +22,26 @@ const MarqueeFlatList = styled(FlatList).attrs({
 `;
 
 // height: 70;
-  // background-color: purple;
-async function lol() {
-  const thing = await TextSize.measure({ text: 'Synthetix' }).then(ha => console.log('ha', ha));
-  return thing;
-}
 
-const MarqueeList = ({ items, onLayout }) => {
+const MarqueeList = ({ items = [], measureItem, onLayout }) => {
   const listRef = useRef();
+  const [itemWidths, setItemWidths] = useState([]);
 
-  const haha = lol();
-  console.log('items', items);
-  console.log('TextSize', haha);
+  const updateItemWidths = useCallback(async () => {
+    const widths = await Promise.all(items.map(measureItem));
+    setItemWidths(widths);
+  }, [items, measureItem]);
+
+  useEffect(() => {
+    console.log('happening');
+    updateItemWidths();
+  }, [updateItemWidths]);
 
   const renderItemCallback = useCallback(
-    ({ item: { address, price, ...asset } }) => (
-      <TopMoverCoinRow
-        {...asset}
-        address={address}
-        key={address}
-        price={price?.value}
-      />
-    ),
+    ({ item }) => <TopMoverCoinRow {...item} key={item?.address} />,
     []
   );
+
       // initialScrollIndex={items.length}
 
   return (

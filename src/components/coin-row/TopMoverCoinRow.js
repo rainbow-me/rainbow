@@ -1,66 +1,79 @@
-import PropTypes from 'prop-types';
-import React, { useMemo } from 'react';
+import React from 'react';
 import styled from 'styled-components/primitives';
-import { handleSignificantDecimals } from '../../helpers/utilities';
-import { useAccountSettings } from '../../hooks';
-import { uniswapPairs } from '../../references';
-import { colors } from '../../styles';
+import { colors, fonts } from '../../styles';
+import { magicMemo, measureText } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, ColumnWithMargins, RowWithMargins } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 
+const TopMoverCoinIconSize = 36;
+const TopMoverCoinRowMargin = 8;
+
 const TopMoverTitle = styled(CoinName).attrs({
   paddingRight: 0,
   weight: 'semibold',
 })``;
 
-const TopMoverCoinRow = ({
-  address,
+export const measureBottomRowText = text =>
+  measureText(text, {
+    fontSize: parseFloat(fonts.size.smedium),
+  });
+
+export const measureTopRowText = text =>
+  measureText(text, {
+    fontSize: parseFloat(fonts.size.lmedium),
+    fontWeight: fonts.weight.semibold,
+    letterSpacing: fonts.letterSpacing.roundedMedium,
+  });
+
+export const measureTopMoverCoinRow = async ({
+  change,
   name,
-  percent_change_24h,
   price,
   symbol,
-  onPress,
-  ...props
 }) => {
-  const { nativeCurrencySymbol } = useAccountSettings();
+  const { width: changeWidth } = await measureTopRowText(change);
+  const { width: nameWidth } = await measureTopRowText(name);
+  const { width: priceWidth } = await measureBottomRowText(price);
+  const { width: symbolWidth } = await measureBottomRowText(symbol);
 
-  const formattedPrice = useMemo(() => {
-    const value = handleSignificantDecimals(price, 2);
-    return `${nativeCurrencySymbol}${value}`;
-  }, [nativeCurrencySymbol, price]);
+  const leftWidth = Math.max(nameWidth, priceWidth);
+  const rightWidth = Math.max(changeWidth, symbolWidth);
 
-  return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={1.02}>
-      <RowWithMargins margin={8}>
-        <Centered>
-          <CoinIcon address={address} size={36} symbol={symbol} />
-        </Centered>
-        <ColumnWithMargins margin={2}>
-          <TopMoverTitle color={colors.alpha(colors.blueGreyDark, 0.8)}>
-            {uniswapPairs[address]?.name || name}
-          </TopMoverTitle>
-          <BottomRowText>{formattedPrice}</BottomRowText>
-        </ColumnWithMargins>
-        <ColumnWithMargins align="end" justify="end" margin={2}>
-          <TopMoverTitle
-            align="right"
-            color={percent_change_24h > 0 ? colors.green : colors.red}
-          >
-            {`${parseFloat((percent_change_24h || 0).toFixed(2))}%`}
-          </TopMoverTitle>
-          <BottomRowText align="right">{symbol}</BottomRowText>
-        </ColumnWithMargins>
-      </RowWithMargins>
-    </ButtonPressAnimation>
+  return [TopMoverCoinIconSize, leftWidth, rightWidth].reduce(
+    (acc, val) => acc + val + TopMoverCoinRowMargin
   );
 };
 
-TopMoverCoinRow.propTypes = {
-  item: PropTypes.object,
-  onPress: PropTypes.func,
-};
+const TopMoverCoinRow = ({ address, change, name, onPress, price, symbol }) => (
+  <ButtonPressAnimation onPress={onPress} scaleTo={1.02}>
+    <RowWithMargins margin={TopMoverCoinRowMargin}>
+      <Centered>
+        <CoinIcon
+          address={address}
+          size={TopMoverCoinIconSize}
+          symbol={symbol}
+        />
+      </Centered>
+      <ColumnWithMargins margin={2}>
+        <TopMoverTitle color={colors.alpha(colors.blueGreyDark, 0.8)}>
+          {name}
+        </TopMoverTitle>
+        <BottomRowText>{price}</BottomRowText>
+      </ColumnWithMargins>
+      <ColumnWithMargins align="end" justify="end" margin={2}>
+        <TopMoverTitle
+          align="right"
+          color={parseFloat(change) > 0 ? colors.green : colors.red}
+        >
+          {change}
+        </TopMoverTitle>
+        <BottomRowText align="right">{symbol}</BottomRowText>
+      </ColumnWithMargins>
+    </RowWithMargins>
+  </ButtonPressAnimation>
+);
 
-export default TopMoverCoinRow;
+export default magicMemo(TopMoverCoinRow, ['change', 'name', 'price']);
