@@ -13,7 +13,7 @@ export default function useAccountProfile() {
   if (!selectedWallet) return {};
   if (!accountAddress) return {};
 
-  if (!selectedWallet || !selectedWallet.addresses.length) return {};
+  if (!selectedWallet || !selectedWallet?.addresses?.length) return {};
 
   const accountENS = get(walletNames, `${accountAddress}`);
 
