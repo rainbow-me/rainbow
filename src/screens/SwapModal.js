@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
-import { useNavigation } from 'react-navigation-hooks';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
+import { useNavigation } from '../navigation/Navigation';
+
 import createUnlockAndSwapRap, {
   estimateUnlockAndSwap,
 } from '../raps/unlockAndSwap';

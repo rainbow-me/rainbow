@@ -1,0 +1,33 @@
+diff --git a/node_modules/react-native-slack-bottom-sheet/ios/SlackBottomSheet.m b/node_modules/react-native-slack-bottom-sheet/ios/SlackBottomSheet.m
+index 637f112..da0492a 100644
+--- a/node_modules/react-native-slack-bottom-sheet/ios/SlackBottomSheet.m
++++ b/node_modules/react-native-slack-bottom-sheet/ios/SlackBottomSheet.m
+@@ -182,7 +182,7 @@ - (void)setVisible:(BOOL)visible {
+       self->_modalPresented = YES;
+     });
+   } else {
+-    RCTExecuteOnMainQueue(^{
++    //RCTExecuteOnMainQueue(^{
+       if (!self->_modalPresented) {
+         return;
+       }
+@@ -193,12 +193,17 @@ - (void)setVisible:(BOOL)visible {
+       self.transitionDuration = [[NSNumber alloc] initWithDouble: 0];
+       UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
+ 
+-      [[rootViewController presentedViewController] dismissViewControllerAnimated:!self->_isHiding completion:^{
++      [[rootViewController presentedViewController] dismissViewControllerAnimated:NO completion:^{
++        if (self.onDidDismiss) {
++          self.onDidDismiss(nil);
++        }
+         self.transitionDuration = oldTransitionDuration;
+       }];
++      //self->_contoller.view = nil;
++      self->_contoller = nil;
+       self->_isHiding = false;
+       self->_modalPresented = NO;
+-    });
++    //});
+   }
+ }
+ 

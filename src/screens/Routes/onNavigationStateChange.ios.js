@@ -4,7 +4,13 @@ import { StatusBar } from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { Navigation } from '../../navigation';
+import {
+  addActionAfterClosingSheet,
+  notifyMountBottomSheet,
+} from '../../navigation/Navigation';
 import { expandedPreset } from '../../navigation/transitions/effects';
+import { setModalVisible } from '../../redux/modal';
+import store from '../../redux/store';
 import { sentryUtils } from '../../utils';
 import Routes from './routesNames';
 
@@ -78,9 +84,7 @@ export function onNavigationStateChange(prevState, currentState) {
 
   if (
     prevRouteName === Routes.IMPORT_SEED_PHRASE_SHEET &&
-    (routeName === Routes.CHANGE_WALLET_SHEET ||
-      routeName === Routes.PROFILE_SCREEN ||
-      routeName === Routes.WALLET_SCREEN)
+    (routeName === Routes.PROFILE_SCREEN || routeName === Routes.WALLET_SCREEN)
   ) {
     StatusBar.setBarStyle('dark-content', true);
   }
@@ -111,6 +115,19 @@ export function onNavigationStateChange(prevState, currentState) {
 
   if (routeName !== prevRouteName) {
     let paramsToTrack = null;
+
+    if (
+      routeName === Routes.WALLET_SCREEN ||
+      routeName === Routes.QR_SCANNER_SCREEN ||
+      routeName === Routes.PROFILE_SCREEN
+    ) {
+      addActionAfterClosingSheet(() => {
+        setTimeout(() => {
+          store.dispatch(setModalVisible(true));
+          notifyMountBottomSheet();
+        }, 100);
+      });
+    }
 
     if (routeName === Routes.EXPANDED_ASSET_SHEET) {
       const { asset, type } = params;

@@ -77,7 +77,7 @@ const ChangeWalletSheet = () => {
   const dispatch = useDispatch();
   const { accountAddress } = useAccountSettings();
   const initializeWallet = useInitializeWallet();
-  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames(wallets);
+  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const creatingWallet = useRef();
 
   const [currentAddress, setCurrentAddress] = useState(accountAddress);

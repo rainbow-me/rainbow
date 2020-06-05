@@ -5,10 +5,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useNavigation } from 'react-navigation-hooks';
+
 import styled from 'styled-components/primitives';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { useContacts, useDimensions } from '../../hooks';
+import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
 import { colors, margin, padding } from '../../styles';
 import { abbreviations, magicMemo } from '../../utils';

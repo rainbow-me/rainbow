@@ -2,7 +2,7 @@ import { get } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
-import { useNavigation } from 'react-navigation-hooks';
+
 import { AssetList } from '../components/asset-list';
 import { FabWrapper } from '../components/fab';
 import ExchangeFab from '../components/fab/ExchangeFab';
@@ -25,6 +25,7 @@ import {
   useWallets,
   useWalletSectionsData,
 } from '../hooks';
+import { useNavigation } from '../navigation/Navigation';
 import { position } from '../styles';
 
 export default function WalletScreen() {

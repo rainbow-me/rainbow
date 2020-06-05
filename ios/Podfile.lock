@@ -441,16 +441,19 @@ PODS:
     - React
   - ReactNativePayments (1.1.5):
     - React
+  - reactnativeslackbottomsheet (0.5.0):
+    - PanModal
+    - React
   - RNAnalytics (1.1.0):
     - Analytics
     - React
-  - RNCAsyncStorage (1.10.3):
+  - RNCAsyncStorage (1.11.0):
     - React
   - RNCClipboard (1.2.2):
     - React
   - RNCMaskedView (0.1.10):
     - React
-  - RNCoolModals (0.0.7):
+  - RNCoolModals (0.0.9):
     - PanModal
     - React
   - RNCPushNotificationIOS (1.2.0):
@@ -558,7 +561,7 @@ DEPENDENCIES:
   - libwebp
   - lottie-ios (from `../node_modules/lottie-ios`)
   - lottie-react-native (from `../node_modules/lottie-react-native`)
-  - PanModal (from `https://github.com/osdnk/PanModal`, commit `25be2df9ccf997b62c39e1edb42857bab2d0cdab`)
+  - PanModal (from `https://github.com/osdnk/PanModal`, commit `91fc4b76a31fedb18222b81e2aaa475a8466008d`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera.podspec`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -597,6 +600,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "ReactNativeART (from `../node_modules/@react-native-community/art`)"
   - "ReactNativePayments (from `../node_modules/@rainbow-me/react-native-payments/lib/ios`)"
+  - reactnativeslackbottomsheet (from `../node_modules/react-native-slack-bottom-sheet`)
   - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
@@ -691,7 +695,7 @@ EXTERNAL SOURCES:
   lottie-react-native:
     :path: "../node_modules/lottie-react-native"
   PanModal:
-    :commit: 25be2df9ccf997b62c39e1edb42857bab2d0cdab
+    :commit: 91fc4b76a31fedb18222b81e2aaa475a8466008d
     :git: https://github.com/osdnk/PanModal
   Permission-Camera:
     :path: "../node_modules/react-native-permissions/ios/Camera.podspec"
@@ -763,6 +767,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/art"
   ReactNativePayments:
     :path: "../node_modules/@rainbow-me/react-native-payments/lib/ios"
+  reactnativeslackbottomsheet:
+    :path: "../node_modules/react-native-slack-bottom-sheet"
   RNAnalytics:
     :path: "../node_modules/@segment/analytics-react-native"
   RNCAsyncStorage:
@@ -822,7 +828,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   PanModal:
-    :commit: 25be2df9ccf997b62c39e1edb42857bab2d0cdab
+    :commit: 91fc4b76a31fedb18222b81e2aaa475a8466008d
     :git: https://github.com/osdnk/PanModal
 
 SPEC CHECKSUMS:
@@ -905,11 +911,12 @@ SPEC CHECKSUMS:
   ReactCommon: ed4e11d27609d571e7eee8b65548efc191116eb3
   ReactNativeART: 78edc68dd4a1e675338cd0cd113319cf3a65f2ab
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
+  reactnativeslackbottomsheet: d44b4c59c1e69c045983044d2f361d256d3ddb98
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
-  RNCAsyncStorage: cd7234ff15c010723ed7c499ae4eedc605eac1fd
+  RNCAsyncStorage: d059c3ee71738c39834a627476322a5a8cd5bf36
   RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
-  RNCoolModals: 101e6048991c708be5f6486186ddbb8f23b20d78
+  RNCoolModals: 49df7bf454cb98802a208531a7fc4cec28cfc501
   RNCPushNotificationIOS: 4d9ffd08f00ef6c1029ebbf4d72fc711eca3ff01
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNFastImage: 35ae972d6727c84ee3f5c6897e07f84d0a3445e9
@@ -941,6 +948,6 @@ SPEC CHECKSUMS:
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: b10b7f240b529cf71805bbcd26adda9d4bc83e93
+PODFILE CHECKSUM: df70a4ab040822f997ed6531641648b9fd7a2fa3
 
 COCOAPODS: 1.9.1

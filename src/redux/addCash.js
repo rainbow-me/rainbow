@@ -34,6 +34,12 @@ const ADD_CASH_ORDER_FAILURE = 'addCash/ADD_CASH_ORDER_FAILURE';
 const ADD_CASH_CLEAR_STATE = 'addCash/ADD_CASH_CLEAR_STATE';
 
 // -- Actions ---------------------------------------- //
+let orderStatusHandle = null;
+let transferHashHandle = null;
+
+const MAX_TRIES = 10 * 60;
+const MAX_ERROR_TRIES = 3;
+
 export const addCashLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   try {
@@ -46,8 +52,11 @@ export const addCashLoadState = () => async (dispatch, getState) => {
   } catch (error) {}
 };
 
-export const addCashClearState = () => dispatch =>
+export const addCashClearState = () => dispatch => {
+  orderStatusHandle && clearTimeout(orderStatusHandle);
+  transferHashHandle && clearTimeout(transferHashHandle);
   dispatch({ type: ADD_CASH_CLEAR_STATE });
+};
 
 export const addCashUpdatePurchases = purchases => (dispatch, getState) => {
   const { purchaseTransactions } = getState().addCash;
@@ -100,20 +109,26 @@ export const addCashGetOrderStatus = (
   sourceAmount
 ) => async (dispatch, getState) => {
   logger.log('[add cash] - watch for order status', orderId);
-  const { network } = getState().settings;
+  const { accountAddress, network } = getState().settings;
   const getOrderStatus = async (
     referenceInfo,
     destCurrency,
     orderId,
     paymentResponse,
-    sourceAmount
+    sourceAmount,
+    remainingTries = MAX_TRIES,
+    remainingErrorTries = MAX_ERROR_TRIES
   ) => {
     try {
+      if (remainingTries === 0) return;
       const { data, orderStatus, transferId } = await trackWyreOrder(
         referenceInfo,
         orderId,
         network
       );
+
+      const { accountAddress: currentAccountAddress } = getState().settings;
+      if (currentAccountAddress !== accountAddress) return;
 
       dispatch({
         payload: orderStatus,
@@ -157,30 +172,35 @@ export const addCashGetOrderStatus = (
           category: 'add cash',
         });
       } else if (!isFailed) {
-        setTimeout(
+        orderStatusHandle = setTimeout(
           () =>
             getOrderStatus(
               referenceInfo,
               destCurrency,
               orderId,
               paymentResponse,
-              sourceAmount
+              sourceAmount,
+              remainingTries - 1,
+              remainingErrorTries
             ),
           1000
         );
       }
     } catch (error) {
       captureException(error);
-      setTimeout(
+      if (remainingErrorTries === 0) return;
+      orderStatusHandle = setTimeout(
         () =>
           getOrderStatus(
             referenceInfo,
             destCurrency,
             orderId,
             paymentResponse,
-            sourceAmount
+            sourceAmount,
+            remainingTries,
+            remainingErrorTries - 1
           ),
-        1000
+        5000
       );
     }
   };
@@ -202,13 +222,23 @@ const addCashGetTransferHash = (
   logger.log('[add cash] - watch for transfer hash');
   const { accountAddress, network } = getState().settings;
   const { assets } = getState().data;
-  const getTransferHash = async (referenceInfo, transferId, sourceAmount) => {
+  const getTransferHash = async (
+    referenceInfo,
+    transferId,
+    sourceAmount,
+    remainingTries = MAX_TRIES,
+    remainingErrorTries = MAX_ERROR_TRIES
+  ) => {
     try {
+      if (remainingTries === 0) return;
       const {
         destAmount,
         destCurrency,
         transferHash,
       } = await trackWyreTransfer(referenceInfo, transferId, network);
+
+      const { accountAddress: currentAccountAddress } = getState().settings;
+      if (currentAccountAddress !== accountAddress) return;
 
       const destAssetAddress = toLower(
         AddCashCurrencies[network][destCurrency]
@@ -240,15 +270,30 @@ const addCashGetTransferHash = (
         );
         dispatch(addCashNewPurchaseTransaction(newTxDetails));
       } else {
-        setTimeout(
-          () => getTransferHash(referenceInfo, transferId, sourceAmount),
+        transferHashHandle = setTimeout(
+          () =>
+            getTransferHash(
+              referenceInfo,
+              transferId,
+              sourceAmount,
+              remainingTries - 1,
+              remainingErrorTries
+            ),
           1000
         );
       }
     } catch (error) {
-      setTimeout(
-        () => getTransferHash(referenceInfo, transferId, sourceAmount),
-        1000
+      if (remainingErrorTries === 0) return;
+      transferHashHandle = setTimeout(
+        () =>
+          getTransferHash(
+            referenceInfo,
+            transferId,
+            sourceAmount,
+            remainingTries,
+            remainingErrorTries - 1
+          ),
+        5000
       );
     }
   };

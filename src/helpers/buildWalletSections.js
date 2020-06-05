@@ -3,7 +3,6 @@ import { compact, flattenDeep, get, groupBy, map, property } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
 import { AssetListItemSkeleton } from '../components/asset-list';
@@ -16,6 +15,7 @@ import {
   convertAmountToNativeDisplay,
   multiply,
 } from '../helpers/utilities';
+import { withNavigation } from '../navigation/Navigation';
 import {
   setHiddenCoins,
   setIsCoinListEdited,

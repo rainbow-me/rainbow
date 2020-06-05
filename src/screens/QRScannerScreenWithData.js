@@ -8,6 +8,7 @@ import { Alert as NativeAlert, Platform, Vibration } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { withNavigationFocus } from 'react-navigation';
+import { connect } from 'react-redux';
 import { compose } from 'recompact';
 import { Alert, Prompt } from '../components/alerts';
 import WalletTypes from '../helpers/walletTypes';
@@ -141,9 +142,14 @@ class QRScannerScreenWithData extends Component {
   }
 }
 
+const mapStateToProps = ({ modal: { visible: modalVisible } }) => ({
+  modalVisible,
+});
+
 export default compose(
   withNavigationFocus,
   withWalletConnectOnSessionRequest,
   withSafeTimeout,
+  connect(mapStateToProps),
   withWalletConnectConnections
 )(QRScannerScreenWithData);

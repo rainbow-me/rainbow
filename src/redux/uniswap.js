@@ -27,6 +27,7 @@ import {
 } from '../handlers/uniswap';
 import networkTypes from '../helpers/networkTypes';
 import { DefaultUniswapFavorites, uniswapPairs } from '../references';
+import { logger } from '../utils';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';
@@ -107,19 +108,16 @@ export const uniswapGetAllExchanges = () => async (dispatch, getState) => {
   }
 };
 
-export const uniswapPairsInit = () => async (dispatch, getState) => {
-  try {
-    const { network } = getState().settings;
-    const pairs =
-      network === networkTypes.mainnet
-        ? uniswapPairs
-        : getTestnetUniswapPairs(network);
-    dispatch({
-      payload: pairs,
-      type: UNISWAP_UPDATE_PAIRS,
-    });
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
+export const uniswapPairsInit = () => (dispatch, getState) => {
+  const { network } = getState().settings;
+  const pairs =
+    network === networkTypes.mainnet
+      ? uniswapPairs
+      : getTestnetUniswapPairs(network);
+  dispatch({
+    payload: pairs,
+    type: UNISWAP_UPDATE_PAIRS,
+  });
 };
 
 export const uniswapUpdateTokenReserves = (
@@ -136,25 +134,49 @@ export const uniswapUpdateTokenReserves = (
 };
 
 export const uniswapUpdateInputCurrency = inputCurrency => async dispatch => {
-  const inputReserve = await getReserve(get(inputCurrency, 'address', null));
-  dispatch({
-    payload: {
-      inputCurrency,
-      inputReserve,
-    },
-    type: UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE,
-  });
+  try {
+    const inputReserve = await getReserve(get(inputCurrency, 'address', null));
+    dispatch({
+      payload: {
+        inputCurrency,
+        inputReserve,
+      },
+      type: UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE,
+    });
+  } catch (error) {
+    dispatch({
+      payload: {
+        inputCurrency,
+        inputReserve: null,
+      },
+      type: UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE,
+    });
+    logger.log('Error updating input currency reserve', error);
+  }
 };
 
 export const uniswapUpdateOutputCurrency = outputCurrency => async dispatch => {
-  const outputReserve = await getReserve(get(outputCurrency, 'address', null));
-  dispatch({
-    payload: {
-      outputCurrency,
-      outputReserve,
-    },
-    type: UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE,
-  });
+  try {
+    const outputReserve = await getReserve(
+      get(outputCurrency, 'address', null)
+    );
+    dispatch({
+      payload: {
+        outputCurrency,
+        outputReserve,
+      },
+      type: UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE,
+    });
+  } catch (error) {
+    dispatch({
+      payload: {
+        outputCurrency,
+        outputReserve: null,
+      },
+      type: UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE,
+    });
+    logger.log('Error updating output currency reserve', error);
+  }
 };
 
 export const uniswapClearCurrenciesAndReserves = () => dispatch =>

@@ -11,10 +11,7 @@ import {
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import {
-  uniswapGetAllExchanges,
-  uniswapUpdateFavorites,
-} from '../redux/uniswap';
+import { uniswapUpdateFavorites } from '../redux/uniswap';
 
 const uniswapIsInitializedSelector = state => state.uniswap.isInitialized;
 const uniswapFavoritesSelector = state => state.uniswap.favorites;
@@ -121,7 +118,6 @@ export default function useUniswapAssets() {
   );
 
   return {
-    uniswapGetAllExchanges,
     updateFavorites,
     ...uniswapAssets,
   };
