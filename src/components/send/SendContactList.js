@@ -9,7 +9,6 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import { withSelectedInput } from '../../hoc';
-import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import Routes from '../../screens/Routes/routesNames';
 import { deviceUtils } from '../../utils';
 import { filterList } from '../../utils/search';
@@ -142,9 +141,7 @@ class SendContactList extends Component {
   };
 
   render = () => (
-    <FlyInAnimation
-      style={{ flex: 1, paddingBottom: sheetVerticalOffset, width: '100%' }}
-    >
+    <FlyInAnimation>
       {this.state.contacts.length === 0 ? (
         <SendEmptyState />
       ) : (

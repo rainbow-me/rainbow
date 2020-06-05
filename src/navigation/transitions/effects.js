@@ -2,7 +2,7 @@ import React from 'react';
 import { Animated, StatusBar, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { HeaderHeightWithStatusBar } from '../../components/header';
-import AvatarCircle from '../../components/profile/AvatarCircle';
+import { AvatarCircle } from '../../components/profile';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { transformOrigin } from './transformOriginAnimated';
