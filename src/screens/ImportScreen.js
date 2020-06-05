@@ -1,16 +1,11 @@
-import MaskedView from '@react-native-community/masked-view';
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Animated,
-  Image,
-  processColor,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
-
-import FastImage from 'react-native-fast-image';
-import Reanimated, { Easing } from 'react-native-reanimated';
+import { Animated, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import Reanimated, {
+  Clock,
+  Easing,
+  Value as RValue,
+  timing,
+} from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import { useMemoOne } from 'use-memo-one';
 
@@ -19,25 +14,19 @@ import LightRainbow from '../assets/rainbows/light.png';
 import LiquidRainbow from '../assets/rainbows/liquid.png';
 import NeonRainbow from '../assets/rainbows/neon.png';
 import PixelRainbow from '../assets/rainbows/pixel.png';
-
-import TouchableBackdrop from '../components/TouchableBackdrop';
 import { ButtonPressAnimation } from '../components/animations';
-import Button from '../components/buttons/Button';
-import { Icon } from '../components/icons';
-import { Input } from '../components/inputs';
-import { Centered, Page, RowWithMargins } from '../components/layout';
-import { useDimensions } from '../hooks';
-import { colors, padding, position, shadow } from '../styles';
+import { RowWithMargins } from '../components/layout';
+import { colors, shadow } from '../styles';
 
 const {
-  block,
-  not,
-  Clock,
-  clockRunning,
-  set,
-  and,
-  cond,
   add,
+  and,
+  block,
+  clockRunning,
+  color,
+  not,
+  set,
+  cond,
   multiply,
   lessThan,
   abs,
@@ -45,10 +34,7 @@ const {
   round,
   divide,
   sub,
-  color,
   startClock,
-  timing,
-  Value: RValue,
 } = Reanimated;
 
 const ButtonContainer = styled.View.attrs({
@@ -143,6 +129,7 @@ export const useReanimatedValue = initialValue => {
 
 const rainbows = [
   {
+    id: 'grey',
     rotate: '150deg',
     scale: 0.9,
     source: GreyNeonRainbow,
@@ -150,6 +137,7 @@ const rainbows = [
     y: -150,
   },
   {
+    id: 'neon',
     initialRotate: '-50deg',
     rotate: '0deg',
     scale: 0.8,
@@ -158,6 +146,7 @@ const rainbows = [
     y: 300,
   },
   {
+    id: 'pixel',
     rotate: '360deg',
     scale: 1.1,
     source: PixelRainbow,
@@ -165,6 +154,7 @@ const rainbows = [
     y: -200,
   },
   {
+    id: 'light',
     initialRotate: '300deg',
     rotate: '330deg',
     scale: 0.6,
@@ -172,7 +162,14 @@ const rainbows = [
     x: -160,
     y: 200,
   },
-  { rotate: '75deg', scale: 0.8, source: LiquidRainbow, x: 40, y: 200 },
+  {
+    id: 'liquid',
+    rotate: '75deg',
+    scale: 0.8,
+    source: LiquidRainbow,
+    x: 40,
+    y: 200,
+  },
 ];
 
 const traverseRainbows = animatedValue =>
@@ -315,21 +312,12 @@ export default function ImportScreen() {
     if (!visible) {
       return;
     }
-    // Animated.sequence([
-    //   Animated.spring(contentAnimattion.current, {
-    //     toValue: 1,
-    //     useNativeDriver: true,
-    //     damping: 5,
-    //     restDisplacementThreshold: 0.1,
-    //     restSpeedThreshold: 0.002,
-    //   }),
-    //   ,
-    // ]).start();
+
     Animated.sequence([
       Animated.spring(animatedValue.current, {
+        damping: 5,
         toValue: 1,
         useNativeDriver: true,
-        damping: 5,
       }),
       Animated.loop(
         Animated.sequence([
@@ -343,28 +331,11 @@ export default function ImportScreen() {
           }),
         ])
       ),
-      // Animated.loop(
-      //   Animated.sequence([
-      //     Animated.timing(animatedValue.current, {
-      //       toValue: 0.8,
-      //       duration: 800,
-      //       useNativeDriver: true,
-      //     }),
-      //     Animated.timing(animatedValue.current, {
-      //       toValue: 1,
-      //       duration: 800,
-      //       useNativeDriver: true,
-      //     }),
-      //   ])
-      // ),
-      // Animated.loop(
-      //   Animated.spring(animatedValue.current, {
-      //     toValue: 1,
-      //     useNativeDriver: true,
-      //     damping: 5,
-      //   })
-      // ),
     ]).start();
+    return () => {
+      contentAnimattion.current.setValue(1);
+      animatedValue.current.setValue(0);
+    };
   }, [animatedValue, visible]);
 
   const buttonStyle = useMemoOne(
@@ -399,28 +370,26 @@ export default function ImportScreen() {
     const color = colorHSV(runTiming(rValue.current), 1, 1, false);
     return {
       color,
+      fontSize: 20,
     };
   }, [rValue]);
 
   return (
     <Container>
       {visible &&
-        traversedRainbows.map(({ source, style }, index) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <RainbowImage source={source} style={style} key={`rainbow${index}`} />
+        traversedRainbows.map(({ source, style, id }) => (
+          <RainbowImage source={source} style={style} key={`rainbow${id}`} />
         ))}
 
-      <TouchableOpacity
-        onPress={() => setVisible(!visible)}
-        style={{ position: 'absolute', top: 100 }}
-      />
       <ContentWrapper style={contentStyle}>
-        <Reanimated.Text style={textStyle}>raibnow</Reanimated.Text>
+        <TouchableOpacity onPress={() => setVisible(!visible)}>
+          <Reanimated.Text style={textStyle}>rainbow</Reanimated.Text>
+        </TouchableOpacity>
         <ButtonWrapper style={buttonStyle}>
           <RainbowButton shadowStyle={shadowColor} />
         </ButtonWrapper>
         <ButtonWrapper>
-          <RainbowButton shadowStyle={shadowColor} />
+          <RainbowButton />
         </ButtonWrapper>
       </ContentWrapper>
     </Container>
