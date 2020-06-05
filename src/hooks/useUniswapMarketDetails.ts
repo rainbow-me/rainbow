@@ -4,7 +4,6 @@ import { useCallback } from 'react';
 import {
   calculateTradeDetails,
   calculateTradeDetailsV2,
-  useTradeInputsAndPairs,
 } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
@@ -18,6 +17,7 @@ import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
 import useUniswapCurrencyReserves from './useUniswapCurrencyReserves';
 import useUniswapMarketPrice from './useUniswapMarketPrice';
+import useUniswapPairs from './useUniswapPairs';
 
 const DEFAULT_NATIVE_INPUT_AMOUNT = 50;
 
@@ -100,7 +100,7 @@ function updateInputsUniswapV1({
 export default function useUniswapMarketDetails() {
   const { chainId } = useAccountSettings();
   const { getMarketPrice } = useUniswapMarketPrice();
-  const { inputToken, outputToken, pairs } = useTradeInputsAndPairs();
+  const { allPairs, inputToken, outputToken } = useUniswapPairs();
 
   const { inputReserve, outputReserve } = useUniswapCurrencyReserves();
 
@@ -131,7 +131,7 @@ export default function useUniswapMarketDetails() {
         outputAmount,
         inputToken,
         outputToken,
-        pairs,
+        allPairs,
         updatedInputAsExactAmount
       );
 
@@ -157,7 +157,7 @@ export default function useUniswapMarketDetails() {
       inputToken,
       outputReserve,
       outputToken,
-      pairs,
+      allPairs,
     ]
   );
 
@@ -289,14 +289,15 @@ export default function useUniswapMarketDetails() {
           outputAmount,
           outputCurrency,
         });
+
         const fallbackToV1 = false; // TODO
         if (!fallbackToV1) {
           // setSlippage(tradeDetailsV2.slippage.toFixed(2).toString());
 
           if (inputAsExactAmount) {
             updateOutputAmount(
-              tradeDetailsV2.outputAmount.toExact(),
-              tradeDetailsV2.outputAmount.toExact(), // todo
+              tradeDetailsV2?.outputAmount?.toExact(),
+              tradeDetailsV2?.outputAmount?.toExact(), // todo
               true
             );
           }

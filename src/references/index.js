@@ -1,3 +1,4 @@
+import { ChainId, Token, WETH } from '@uniswap/sdk2';
 import { mapKeys, mapValues, toLower } from 'lodash';
 import savingAssets from './compound/saving-assets.json';
 import tokenOverridesData from './token-overrides.json';
@@ -17,7 +18,20 @@ export const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
 export const USDC_ADDRESS = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
 const SOCKS_ADDRESS = '0x23B608675a2B2fB1890d3ABBd85c5775c51691d5';
 
+export const UNISWAP_V2_BASES = {
+  [ChainId.MAINNET]: [
+    WETH[ChainId.MAINNET],
+    new Token(ChainId.MAINNET, DAI_ADDRESS, 18, 'DAI', 'Dai Stablecoin'),
+    new Token(ChainId.MAINNET, USDC_ADDRESS, 6, 'USDC', 'USD//C'),
+  ],
+  [ChainId.ROPSTEN]: [WETH[ChainId.ROPSTEN]],
+  [ChainId.RINKEBY]: [WETH[ChainId.RINKEBY]],
+  [ChainId.GÖRLI]: [WETH[ChainId.GÖRLI]],
+  [ChainId.KOVAN]: [WETH[ChainId.KOVAN]],
+};
+
 export const TRANSFER_EVENT_TOPIC_LENGTH = 3;
+
 export const TRANSFER_EVENT_KECCAK =
   '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 

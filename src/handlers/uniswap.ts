@@ -8,8 +8,7 @@ import {
   tradeTokensForExactEthWithData,
   tradeTokensForExactTokensWithData,
 } from '@uniswap/sdk';
-import { ChainId, Pair, Token, TokenAmount, Trade, WETH } from '@uniswap/sdk2';
-
+import { ChainId, Pair, Token, TokenAmount, Trade } from '@uniswap/sdk2';
 import { getUnixTime, sub } from 'date-fns';
 import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
@@ -22,7 +21,6 @@ import {
   toLower,
   zipObject,
 } from 'lodash';
-import { useSelector } from 'react-redux';
 import { uniswap2Client, uniswapClient } from '../apollo/client';
 import {
   UNISWAP2_ALL_PAIRS,
@@ -410,7 +408,7 @@ export const getAllPairsAndTokensV2 = async () => {
       query: UNISWAP2_ALL_TOKENS,
     })
   )?.data.tokens.reduce((acc, { id, name, symbol, decimals }) => {
-    acc[id] = new Token(ChainId.MAINNET, id, decimals, symbol, name);
+    acc[id] = new Token(ChainId.MAINNET, id, Number(decimals), symbol, name);
     return acc;
   }, {});
 
@@ -580,42 +578,4 @@ export const calculateTradeDetailsV2 = (
       }
     )[0];
   }
-};
-
-export const useTradeInputsAndPairs = () => {
-  const {
-    inputCurrency,
-    outputCurrency,
-    pairs,
-    tokens,
-  }: {
-    inputCurrency?: { address: string };
-    outputCurrency?: { address: string };
-    pairs: Record<string, Pair>;
-    tokens: Record<string, Token>;
-  } = useSelector(
-    ({
-      uniswap2: { pairs, tokens },
-      uniswap: { inputCurrency, outputCurrency },
-    }) => ({
-      inputCurrency,
-      outputCurrency,
-      pairs,
-      tokens,
-    })
-  );
-
-  // translating v1 tokens into v2. Probably need to fix later
-  const inputToken: Token = inputCurrency
-    ? tokens[inputCurrency.address]
-    : WETH[ChainId.MAINNET];
-  const outputToken: Token | null = outputCurrency
-    ? tokens[outputCurrency.address]
-    : null;
-
-  return {
-    inputToken,
-    outputToken,
-    pairs,
-  };
 };
