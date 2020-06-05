@@ -3,7 +3,7 @@ import { useAccountProfile, useRequests } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
-import { Badge } from '../badge';
+import { NumberBadge } from '../badge';
 import { ContactAvatar } from '../contacts';
 import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
@@ -34,9 +34,10 @@ export default function ProfileHeaderButton() {
           size="small"
           value={accountSymbol}
         />
-        {pendingRequestCount > 0 && (
-          <Badge delay={1500} value={pendingRequestCount} zIndex={1} />
-        )}
+        <NumberBadge
+          isVisible={pendingRequestCount > 0}
+          value={pendingRequestCount}
+        />
       </Centered>
     </HeaderButton>
   );

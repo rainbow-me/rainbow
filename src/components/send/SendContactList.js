@@ -2,7 +2,7 @@ import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withNavigation } from 'react-navigation';
-import { compose } from 'recompose';
+import { compose } from 'recompact';
 import {
   DataProvider,
   LayoutProvider,

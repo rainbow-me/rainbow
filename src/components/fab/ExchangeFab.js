@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
-import { compose } from 'recompact';
-import { onlyUpdateForKeys } from 'recompose';
+import { compose, onlyUpdateForKeys } from 'recompact';
 import { withFabSelection } from '../../hoc';
 import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
