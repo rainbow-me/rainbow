@@ -391,12 +391,33 @@ export const createWallet = async (seed = null, color = null, name = null) => {
       }
     }
 
+    let primary = false;
+    // If it's not imported or it's the first one with a seed phrase
+    // it's the primary wallet
+    if (
+      !isImported ||
+      (Object.keys(allWallets) === 0 && type === WalletTypes.mnemonic)
+    ) {
+      primary = true;
+      // Or there's no other primary wallet and this one has a seed phrase
+    } else {
+      const primaryWallet = Object.keys(allWallets).find(key => {
+        const wallet = allWallets[key];
+        return wallet.primary;
+      });
+
+      if (!primaryWallet && type === WalletTypes.mnemonic) {
+        primary = true;
+      }
+    }
+
     allWallets[id] = {
       addresses,
       color: color || 0,
       id,
       imported: isImported,
       name: walletName,
+      primary,
       type,
     };
 
