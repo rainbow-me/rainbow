@@ -109,12 +109,12 @@ const TransactionConfirmationScreen = ({ navigation }) => {
   const closeScreen = useCallback(() => {
     navigation.goBack();
     stopPollingGasPrices();
-    if (pendingRedirect && isMessageDisplayType(method)) {
+    if (pendingRedirect) {
       InteractionManager.runAfterInteractions(() => {
         dispatch(walletConnectRemovePendingRedirect('sign'));
       });
     }
-  }, [navigation, stopPollingGasPrices, pendingRedirect, method, dispatch]);
+  }, [navigation, stopPollingGasPrices, pendingRedirect, dispatch]);
 
   const onCancel = useCallback(async () => {
     try {
