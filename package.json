@@ -22,7 +22,8 @@
     "ios": "react-native run-ios --simulator='iPhone 11'",
     "lint": "eslint --ext '.js,.jsx' .",
     "nodeify": "./node_modules/.bin/rn-nodeify --install \"crypto\" --hack",
-    "postinstall": "patch-package && rn-nodeify --install --hack"
+    "postinstall": "patch-package && rn-nodeify --install --hack",
+    "update-env": "curl -H 'Authorization: token '$GITHUB_TOKEN -H 'Accept: application/vnd.github.v3.raw' -O  -L https://api.github.com/repos/rainbow-me/rainbow-env/contents/dotenv && rm -f .env && mv dotenv .env"
   },
   "husky": {
     "hooks": {
