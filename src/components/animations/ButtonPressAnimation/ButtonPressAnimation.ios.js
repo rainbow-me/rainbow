@@ -19,7 +19,7 @@ import isNativeButtonAvailable from '../../../helpers/isNativeButtonAvailable';
 import { useInteraction, useTransformOrigin } from '../../../hooks';
 import { animations } from '../../../styles';
 import { directionPropType } from '../../../utils';
-import Button from '../../native-button';
+import NativeButton from './NativeButton';
 
 const {
   and,
@@ -380,7 +380,7 @@ function ButtonPressAnimationJS({
 }
 
 const ButtonPressAnimation = isNativeButtonAvailable
-  ? Button
+  ? NativeButton
   : ButtonPressAnimationJS;
 
 export default ButtonPressAnimation;
@@ -416,7 +416,7 @@ ButtonPressAnimation.defaultProps = {
   scaleTo: animations.keyframes.button.to.scale,
 };
 
-Button.defaultProps = {
+NativeButton.defaultProps = {
   activeOpacity: 1,
   duration: 160,
   enableHapticFeedback: true,
