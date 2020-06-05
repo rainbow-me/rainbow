@@ -3,7 +3,6 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../styles';
 import { getFontSize } from '../../styles/fonts';
-import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 
 const sx = StyleSheet.create({
@@ -18,8 +17,7 @@ const sx = StyleSheet.create({
     fontWeight: fonts.weight.semibold,
     height: 57,
     letterSpacing: fonts.letterSpacing.roundedMedium,
-    marginBottom: 2,
-    padding: 19,
+    padding: 15,
   },
   textDisabled: {
     color: colors.alpha(colors.blueGreyDark, 0.2),
@@ -28,7 +26,6 @@ const sx = StyleSheet.create({
 
 const WalletOption = ({ editMode, label, onPress }) => (
   <ButtonPressAnimation disabled={editMode} scaleTo={0.98} onPress={onPress}>
-    <Divider color={colors.rowDividerExtraLight} />
     <View style={sx.container}>
       <Text style={[sx.text, editMode ? sx.textDisabled : null]}>{label}</Text>
     </View>
