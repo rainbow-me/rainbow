@@ -215,7 +215,8 @@
   },
   "resolutions": {
     "**/eslint-plugin-import": "2.20.2",
-    "**/resolve": "1.8.1"
+    "**/resolve": "1.8.1",
+    "**/logkitty": "0.7.1"
   },
   "jest": {
     "preset": "react-native",
