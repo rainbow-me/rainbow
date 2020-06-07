@@ -16,7 +16,7 @@ import TemporaryChartPlaceholder from '../value-chart/TemporaryChartPlaceholder'
 
 const ChartExpandedState = ({ asset }) => (
   <SlackSheet scrollEnabled={false}>
-    <Chart />
+    <Chart asset={asset} />
     <BalanceCoinRow isExpandedState item={asset} />
     <ColumnWithDividers dividerRenderer={SheetDivider}>
       <SheetActionButtonRow>

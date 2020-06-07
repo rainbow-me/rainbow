@@ -15,23 +15,15 @@ export default class animations extends Component {
   };
 
   componentWillReceiveProps = nextProps => {
-    if (this.props.currentData !== nextProps.currentData) {
+    if (nextProps.currentData?.points) {
       let data = nextProps.currentData.points;
-      let prevData = this.props.currentData.points;
 
       const maxValue = maxBy(data, 'y');
       const minValue = minBy(data, 'y');
-      const oldMaxValue = maxBy(prevData, 'y');
-      const oldMinValue = minBy(prevData, 'y');
 
       const minX = nextProps.currentData.points[0].x;
       const maxX =
         nextProps.currentData.points[nextProps.currentData.points.length - 1].x;
-
-      const oldMinX = this.props.currentData.points[0].x;
-      const oldMaxX = this.props.currentData.points[
-        this.props.currentData.points.length - 1
-      ].x;
 
       const lineShape = shape
         .line()
@@ -39,25 +31,29 @@ export default class animations extends Component {
         .x(d => (d.x - minX) / ((maxX - minX) / width))
         .y(d => (d.y - minValue.y) / ((maxValue.y - minValue.y) / 170));
 
-      const oldLineShape = shape
-        .line()
-        .curve(shape.curveCatmullRom.alpha(0.5))
-        .x(d => (d.x - oldMinX) / ((oldMaxX - oldMinX) / width))
-        .y(
-          d => (d.y - oldMinValue.y) / ((oldMaxValue.y - oldMinValue.y) / 170)
-        );
+      if (this.oldLineShape !== lineShape(data)) {
+        let a, b;
+        if (this.oldLineShape) {
+          if (this.animatedIsDone) {
+            a = lineShape(data);
+            b = this.oldLineShape;
+          } else {
+            a = this.oldLineShape;
+            b = lineShape(data);
+          }
+        } else {
+          a = lineShape(data);
+          b = lineShape(data);
+        }
 
-      let a = oldLineShape(prevData);
-      let b = lineShape(data);
+        this.oldLineShape = lineShape(data);
 
-      if (this.animatedIsDone) {
-        a = lineShape(data);
-        b = oldLineShape(prevData);
-      }
+        const pathInterpolate = interpolatePath(a, b);
 
-      const pathInterpolate = interpolatePath(a, b);
+        if (this.listenerId) {
+          this.state.animation.removeListener(this.listenerId);
+        }
 
-      if (!this.listenerId) {
         const listenerId = this.state.animation.addListener(({ value }) => {
           const path = pathInterpolate(value);
           this._path.setNativeProps({
@@ -65,10 +61,11 @@ export default class animations extends Component {
           });
         });
         this.listenerId = listenerId;
+
+        setTimeout(() => {
+          this.handleAnimation();
+        }, 500);
       }
-      setTimeout(() => {
-        this.handlePress();
-      }, 500);
     }
   };
 
@@ -76,7 +73,7 @@ export default class animations extends Component {
     this.state.animation.removeListener(this.listenerId);
   };
 
-  handlePress = () => {
+  handleAnimation = () => {
     if (!this.animatedIsDone) {
       Animated.timing(this.state.animation, {
         duration: 200,
@@ -103,7 +100,7 @@ export default class animations extends Component {
         <Svg width={width} height={200} viewBox={`-25 -10 ${width + 25} 200`}>
           <Path
             d={this.state.currentChart}
-            stroke="red"
+            stroke={this.props.color}
             strokeWidth={1.5}
             ref={path => (this._path = path)}
           />

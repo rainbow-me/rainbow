@@ -61,7 +61,7 @@ const ValueText = ({ change, direction, headerText, value }) => {
           <RowWithMargins align="center" margin={2} marginTop={2}>
             <Icon
               color={direction ? colors.chartGreen : colors.red}
-              direction={direction ? 'right' : 'left'}
+              direction={direction ? 'left' : 'right'}
               height={15}
               name="fatArrow"
               width={13}
