@@ -39,7 +39,7 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
   let createdLastPoints = [];
 
   if (data.segments.length > 0) {
-    for (let i = 0; i < data.segments.length; i++) {
+    for (let i = 0; i < 1; i++) {
       allSegmentsPoints = allSegmentsPoints.concat(data.segments[i].points);
       allSegmentsPoints[allSegmentsPoints.length - 1] = {
         ...allSegmentsPoints[allSegmentsPoints.length - 1],
@@ -109,6 +109,15 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
       lastPoints: createdLastPoints,
       lines,
       points: newData,
+      startSeparatator: dividers,
+    };
+  } else if (allSegmentsPoints.length > 1) {
+    return {
+      allPointsForData: allSegmentsPoints,
+      colors,
+      lastPoints: createdLastPoints,
+      lines,
+      points: allSegmentsPoints,
       startSeparatator: dividers,
     };
   }
@@ -321,22 +330,6 @@ export default class Chart extends PureComponent {
         simplifyChartData(data, this.props.amountOfPathPoints)
       );
       let index = 0;
-      switch (currentInterval) {
-        case 'h':
-          index = 0;
-          break;
-        case 'd':
-          index = 1;
-          break;
-        case 'w':
-          index = 2;
-          break;
-        case 'm':
-          index = 3;
-          break;
-        default:
-          break;
-      }
       await this.setState({
         chartData: data,
         currentData: data[index],
@@ -402,9 +395,7 @@ export default class Chart extends PureComponent {
           <AnimatedChart
             currentData={currentData}
             animatedValue={this.value}
-            ref={ref => {
-              this._chartRef = ref;
-            }}
+            color={this.props.barColor}
           />
           <Row height={180}>
             <Animated.View
