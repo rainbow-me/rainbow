@@ -23,8 +23,44 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
+        <!-- Branch URI Scheme -->
+        <intent-filter android:autoVerify="true">
+          <action android:name="android.intent.action.VIEW" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+          <data android:scheme="https" android:host="rnbw.app" />
+          <data android:scheme="https" android:host="rainbowdotme.app.link" />
+          <data android:scheme="https" android:host="rainbowdotme-alternate.app.link" />
+        </intent-filter>
+        <intent-filter>
+          <data android:scheme="rainbow" />
+          <action android:name="android.intent.action.VIEW" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+        </intent-filter>
+        <intent-filter>
+          <data android:scheme="wc" />
+          <action android:name="android.intent.action.VIEW" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+        </intent-filter>
+        <!-- Branch App Links (optional) -->
+        <intent-filter android:autoVerify="true">
+          <action android:name="android.intent.action.VIEW" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+          <data android:scheme="https" android:host="rnbw.app" />
+        </intent-filter>
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+      <!-- Branch init -->
+      <meta-data android:name="io.branch.sdk.BranchKey" android:value="${BRANCH_KEY}" />
+      <meta-data android:name="io.branch.sdk.TestMode" android:value="false" />
+      <receiver android:name="io.branch.referral.InstallListener" android:exported="true">
+        <intent-filter>
+          <action android:name="com.android.vending.INSTALL_REFERRER" />
+        </intent-filter>
+      </receiver>
     </application>
 
 </manifest>

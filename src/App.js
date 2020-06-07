@@ -2,16 +2,12 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
 import { init as initSentry, setRelease } from '@sentry/react-native';
-import { get, last } from 'lodash';
+import { get } from 'lodash';
 import nanoid from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import {
-  AppRegistry,
-  AppState,
-  Linking,
-  unstable_enableLogBox,
-} from 'react-native';
+import { AppRegistry, AppState, unstable_enableLogBox } from 'react-native';
+import branch from 'react-native-branch';
 // eslint-disable-next-line import/default
 import CodePush from 'react-native-code-push';
 import {
@@ -36,19 +32,15 @@ import {
 } from './config/debug';
 
 import monitorNetwork from './debugging/network';
-import {
-  withAccountSettings,
-  withDeepLink,
-  withWalletConnectOnSessionRequest,
-} from './hoc';
+import handleDeeplink from './handlers/deeplinks';
+import { withAccountSettings } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { Navigation } from './navigation';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import RoutesComponent from './screens/Routes';
-import Routes from './screens/Routes/routesNames';
-import { parseQueryParams } from './utils';
+import { logger } from './utils';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
 
@@ -73,16 +65,13 @@ enableScreens();
 
 class App extends Component {
   static propTypes = {
-    addDeepLinkRequest: PropTypes.func,
     requestsForTopic: PropTypes.func,
-    walletConnectOnSessionRequest: PropTypes.func,
   };
 
   state = { appState: AppState.currentState };
 
   async componentDidMount() {
     AppState.addEventListener('change', this.handleAppStateChange);
-    Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.handleInitializeAnalytics();
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
@@ -95,71 +84,60 @@ class App extends Component {
       remoteMessage => {
         setTimeout(() => {
           const topic = get(remoteMessage, 'data.topic');
-          this.onPushNotificationOpened(topic, true);
+          this.onPushNotificationOpened(topic);
         }, WALLETCONNECT_SYNC_DELAY);
       }
     );
+
+    this.branchListener = branch.subscribe(({ error, params, uri }) => {
+      if (error) {
+        logger.error('Error from Branch: ' + error);
+        return;
+      }
+
+      if (params['+non_branch_link']) {
+        const nonBranchUrl = params['+non_branch_link'];
+        handleDeeplink(nonBranchUrl);
+        return;
+      } else if (!params['+clicked_branch_link']) {
+        // Indicates initialization success and some other conditions.
+        // No link was opened.
+        return;
+      } else if (uri) {
+        handleDeeplink(uri);
+      }
+    });
   }
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
-    Linking.removeEventListener('url', this.handleOpenLinkingURL);
     this.onTokenRefreshListener();
     this.foregroundNotificationListener();
     this.backgroundNotificationListener();
+    this.branchListener();
   }
 
   onRemoteNotification = notification => {
-    const { appState } = this.state;
     const topic = get(notification, 'data.topic');
     setTimeout(() => {
-      const shouldOpenAutomatically =
-        appState === 'active' || appState === 'inactive';
-      this.onPushNotificationOpened(topic, shouldOpenAutomatically);
+      this.onPushNotificationOpened(topic);
     }, WALLETCONNECT_SYNC_DELAY);
   };
 
-  handleOpenLinkingURL = ({ url }) => {
-    const { addDeepLinkRequest, walletConnectOnSessionRequest } = this.props;
-    Linking.canOpenURL(url).then(supported => {
-      if (supported) {
-        const { type, ...remainingParams } = parseQueryParams(url);
-        if (type && type === 'walletconnect') {
-          const { uri, redirectUrl } = remainingParams;
-          const redirect = () => Linking.openURL(redirectUrl);
-          walletConnectOnSessionRequest(uri, redirect);
-        } else {
-          addDeepLinkRequest(remainingParams);
-        }
-      }
-    });
+  handleOpenLinkingURL = url => {
+    handleDeeplink(url);
   };
 
-  onPushNotificationOpened = (topic, openAutomatically = false) => {
+  onPushNotificationOpened = topic => {
     const { requestsForTopic } = this.props;
     const requests = requestsForTopic(topic);
-
-    if (openAutomatically && requests) {
-      const lastRequest = last(requests);
-      if (lastRequest) {
-        return Navigation.handleAction({
-          params: { openAutomatically, transactionDetails: lastRequest },
-          routeName: Routes.CONFIRM_REQUEST,
-        });
-      }
+    if (requests) {
+      // WC requests will open automatically
+      return false;
     }
-
-    if (requests && requests.length === 1) {
-      const request = requests[0];
-      if (request) {
-        return Navigation.handleAction({
-          params: { openAutomatically, transactionDetails: request },
-          routeName: Routes.CONFIRM_REQUEST,
-        });
-      }
-    }
-
-    return Navigation.handleAction({ routeName: Routes.PROFILE_SCREEN });
+    // In the future, here  is where we should
+    // handle all other kinds of push notifications
+    // For ex. incoming txs, etc.
   };
 
   handleInitializeAnalytics = async () => {
@@ -217,9 +195,7 @@ class App extends Component {
 
 const AppWithRedux = compose(
   withProps({ store }),
-  withDeepLink,
   withAccountSettings,
-  withWalletConnectOnSessionRequest,
   connect(null, {
     requestsForTopic,
   })
