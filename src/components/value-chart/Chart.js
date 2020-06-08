@@ -22,7 +22,7 @@ const Chart = ({ asset, ...props }) => {
 
   useEffect(() => {
     return () => {
-      updateChartType('w');
+      updateChartType('y');
     };
   }, []);
 
@@ -90,7 +90,7 @@ const Chart = ({ asset, ...props }) => {
       />
       <TimespanSelector
         color={timespanIndicatorColor}
-        defaultIndex={0}
+        defaultIndex={4}
         isLoading={false}
         reloadChart={selected => {
           updateChartType(selected);
