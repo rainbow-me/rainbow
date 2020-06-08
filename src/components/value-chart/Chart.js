@@ -1,5 +1,5 @@
 import { get, isEmpty } from 'lodash';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Easing } from 'react-native-reanimated';
 import {
   bin,
@@ -19,6 +19,12 @@ const chartStroke = { detailed: 1.5, simplified: 3 };
 
 const Chart = ({ asset, ...props }) => {
   const { chart, chartType, updateChartType } = useCharts(asset);
+
+  useEffect(() => {
+    return () => {
+      updateChartType('w');
+    };
+  }, []);
 
   const hasChart = !isEmpty(chart);
   const change = get(asset, 'price.relative_change_24h', 0);
