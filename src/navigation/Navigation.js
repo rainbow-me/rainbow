@@ -119,7 +119,6 @@ function getActiveRouteName(navigationState) {
  */
 function handleAction(action) {
   if (!TopLevelNavigationRef) return;
-
   action = StackActions.push(action);
   TopLevelNavigationRef.dispatch(action);
 }

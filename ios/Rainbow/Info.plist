@@ -26,7 +26,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>rainbow</string>
+			<string>me.rainbow</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>rainbow</string>
@@ -116,5 +116,9 @@
 	<string>Light</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>branch_app_domain</key>
+	<string>${BRANCH_APP_DOMAIN)</string>
+	<key>branch_key</key>
+	<string>$(BRANCH_KEY)</string>
 </dict>
 </plist>
