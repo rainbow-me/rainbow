@@ -31,22 +31,23 @@ export default class animations extends Component {
         .x(d => (d.x - minX) / ((maxX - minX) / width))
         .y(d => (d.y - minValue.y) / ((maxValue.y - minValue.y) / 170));
 
-      if (this.oldLineShape !== lineShape(data)) {
+      const newLineShape = lineShape(data);
+      if (this.oldLineShape !== newLineShape) {
         let a, b;
         if (this.oldLineShape) {
           if (this.animatedIsDone) {
-            a = lineShape(data);
+            a = newLineShape;
             b = this.oldLineShape;
           } else {
             a = this.oldLineShape;
-            b = lineShape(data);
+            b = newLineShape;
           }
         } else {
-          a = lineShape(data);
-          b = lineShape(data);
+          a = newLineShape;
+          b = newLineShape;
         }
 
-        this.oldLineShape = lineShape(data);
+        this.oldLineShape = newLineShape;
 
         const pathInterpolate = interpolatePath(a, b);
 

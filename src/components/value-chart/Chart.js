@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import ChartTypes from '../../helpers/chartTypes';
 import { useCharts } from '../../hooks';
 import { Column } from '../layout';
@@ -11,6 +11,12 @@ const chartStroke = { detailed: 1.5, simplified: 3 };
 
 const Chart = ({ asset, color, latestPrice, setChartPrice, ...props }) => {
   const { chart, chartType, updateChartType } = useCharts(asset);
+
+  useEffect(() => {
+    return () => {
+      updateChartType('w');
+    };
+  }, []);
 
   const hasChart = !isEmpty(chart);
 
