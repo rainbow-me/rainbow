@@ -29,7 +29,8 @@ import SavingsSheet from '../SavingsSheet';
 import SendSheet from '../SendSheet';
 import SettingsModal from '../SettingsModal';
 import TransactionConfirmationScreen from '../TransactionConfirmationScreen';
-import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
+import WalletConnectApprovalSheet from '../WalletConnectApprovalSheet';
+import WalletConnectRedirectSheet from '../WalletConnectRedirectSheet';
 import WalletScreen from '../WalletScreen';
 import WithdrawModal from '../WithdrawModal';
 import { createStackNavigator } from './helpers';
@@ -98,9 +99,13 @@ const routesForMainNavigator = {
     navigationOptions: backgroundPreset,
     screen: SwipeStack,
   },
-  [Routes.WALLET_CONNECT_CONFIRMATION_MODAL]: {
+  [Routes.WALLET_CONNECT_APPROVAL_SHEET]: {
     navigationOptions: expandedPreset,
-    screen: WalletConnectConfirmationModal,
+    screen: WalletConnectApprovalSheet,
+  },
+  [Routes.WALLET_CONNECT_REDIRECT_SHEET]: {
+    navigationOptions: bottomSheetPreset,
+    screen: WalletConnectRedirectSheet,
   },
 };
 

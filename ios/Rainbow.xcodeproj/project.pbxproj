@@ -13,6 +13,9 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		153D1AAC24777130007E4723 /* TransactionListLoadingViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153D1AAB24777130007E4723 /* TransactionListLoadingViewCell.swift */; };
 		153D1AAE24777214007E4723 /* TransactionListLoadingViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 153D1AAD24777214007E4723 /* TransactionListLoadingViewCell.xib */; };
+		15DC38D9247E494400919009 /* RainbowDebug.entitlements in Sources */ = {isa = PBXBuildFile; fileRef = 157155042418734C009B698B /* RainbowDebug.entitlements */; };
+		15DC38DA247E494400919009 /* RainbowRelease.entitlements in Sources */ = {isa = PBXBuildFile; fileRef = 157155032418733F009B698B /* RainbowRelease.entitlements */; };
+		15DC38DB247E494400919009 /* Rainbow.entitlements in Sources */ = {isa = PBXBuildFile; fileRef = 3C379D5D20FD1F92009AF81F /* Rainbow.entitlements */; };
 		15E531D5242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D4242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift */; };
 		15E531DA242DAB7100797B89 /* NotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D9242DAB7100797B89 /* NotificationManager.m */; };
 		24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 24979E7720F84004007EB0DA /* GoogleService-Info.plist */; };
@@ -70,6 +73,10 @@
 		153D1AAD24777214007E4723 /* TransactionListLoadingViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionListLoadingViewCell.xib; sourceTree = "<group>"; };
 		157155032418733F009B698B /* RainbowRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowRelease.entitlements; path = Rainbow/RainbowRelease.entitlements; sourceTree = "<group>"; };
 		157155042418734C009B698B /* RainbowDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowDebug.entitlements; path = Rainbow/RainbowDebug.entitlements; sourceTree = "<group>"; };
+		15DC38CD247E0E0900919009 /* release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = release.xcconfig; sourceTree = SOURCE_ROOT; };
+		15DC38CE247E0E0900919009 /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = SOURCE_ROOT; };
+		15DC38CF247E0E0A00919009 /* localrelease.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = localrelease.xcconfig; sourceTree = SOURCE_ROOT; };
+		15DC38D0247E0E0A00919009 /* staging.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = staging.xcconfig; sourceTree = SOURCE_ROOT; };
 		15E531D4242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageViewWithPersistentAnimations.swift; sourceTree = "<group>"; };
 		15E531D8242DAB7100797B89 /* NotificationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationManager.h; sourceTree = "<group>"; };
 		15E531D9242DAB7100797B89 /* NotificationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationManager.m; sourceTree = "<group>"; };
@@ -188,6 +195,17 @@
 			name = Rainbow;
 			sourceTree = "<group>";
 		};
+		15DC38CC247E0DCC00919009 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				15DC38CE247E0E0900919009 /* debug.xcconfig */,
+				15DC38CF247E0E0A00919009 /* localrelease.xcconfig */,
+				15DC38CD247E0E0900919009 /* release.xcconfig */,
+				15DC38D0247E0E0A00919009 /* staging.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
 		15E531D6242B28F800797B89 /* Animations */ = {
 			isa = PBXGroup;
 			children = (
@@ -249,6 +267,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				15DC38CC247E0DCC00919009 /* Config */,
 				13B07FAE1A68108700A75B9A /* Rainbow */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* RainbowTests */,
@@ -530,6 +549,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				15DC38D9247E494400919009 /* RainbowDebug.entitlements in Sources */,
+				15DC38DA247E494400919009 /* RainbowRelease.entitlements in Sources */,
+				15DC38DB247E494400919009 /* Rainbow.entitlements in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				3CBE29CD2381E43900BE05AC /* Dummy.swift in Sources */,
 				153D1AAC24777130007E4723 /* TransactionListLoadingViewCell.swift in Sources */,
@@ -694,6 +716,7 @@
 		};
 		2C6A799721127ED9003AFB37 /* Staging */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 15DC38D0247E0E0A00919009 /* staging.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -788,6 +811,7 @@
 		};
 		2C87B7992197FA1900682EC4 /* LocalRelease */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 15DC38CF247E0E0A00919009 /* localrelease.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -883,6 +907,7 @@
 		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 15DC38CE247E0E0900919009 /* debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -925,6 +950,7 @@
 		};
 		83CBBA211A601CBA00E9B192 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 15DC38CD247E0E0900919009 /* release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";

@@ -29,6 +29,7 @@ const SheetActionButton = ({
   emoji,
   icon,
   label,
+  textColor,
   ...props
 }) => {
   const shadowsForButtonColor = useMemo(
@@ -50,7 +51,7 @@ const SheetActionButton = ({
       <Content>
         {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
         {icon && <Icon color="white" name={icon} size={18} height={18} />}
-        <Text align="center" color="white" size="large" weight="semibold">
+        <Text align="center" color={textColor} size="large" weight="semibold">
           {label}
         </Text>
       </Content>
@@ -63,11 +64,13 @@ SheetActionButton.propTypes = {
   borderRadius: PropTypes.number,
   color: PropTypes.string,
   emoji: PropTypes.string,
+  textColor: PropTypes.string,
 };
 
 SheetActionButton.defaultProps = {
   borderRadius: 50,
   color: 'appleBlue',
+  textColor: 'white',
 };
 
 export default SheetActionButton;

@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, InteractionManager, Vibration } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import { withNavigationFocus } from 'react-navigation';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { compose } from 'recompact';
 import styled from 'styled-components';
 import { Button, HoldToAuthorizeButton } from '../components/buttons';
@@ -28,6 +28,7 @@ import {
   signTransaction,
   signTypedDataMessage,
 } from '../model/wallet';
+import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
 import { colors, position } from '../styles';
 import { gasUtils, logger } from '../utils';
 import {
@@ -59,7 +60,7 @@ const Masthead = styled(Centered).attrs({ direction: 'column' })`
 `;
 
 const TransactionType = styled(Text).attrs({ size: 'h5' })`
-  color: ${colors.alpha(colors.white, 0.68)}
+  color: ${colors.alpha(colors.white, 0.68)};
   margin-top: 6;
 `;
 
@@ -68,6 +69,9 @@ const TransactionConfirmationScreen = ({ navigation }) => {
 
   const { gasPrices, startPollingGasPrices, stopPollingGasPrices } = useGas();
   const dispatch = useDispatch();
+  const pendingRedirect = useSelector(
+    ({ walletconnect }) => walletconnect.pendingRedirect
+  );
 
   const {
     dataAddNewTransaction,
@@ -105,7 +109,12 @@ const TransactionConfirmationScreen = ({ navigation }) => {
   const closeScreen = useCallback(() => {
     navigation.goBack();
     stopPollingGasPrices();
-  }, [stopPollingGasPrices, navigation]);
+    if (pendingRedirect) {
+      InteractionManager.runAfterInteractions(() => {
+        dispatch(walletConnectRemovePendingRedirect('sign'));
+      });
+    }
+  }, [navigation, stopPollingGasPrices, pendingRedirect, dispatch]);
 
   const onCancel = useCallback(async () => {
     try {
@@ -139,7 +148,7 @@ const TransactionConfirmationScreen = ({ navigation }) => {
   const handleConfirmTransaction = useCallback(async () => {
     const sendInsteadOfSign = method === SEND_TRANSACTION;
     const txPayload = get(params, '[0]');
-    let { gasLimit, gasPrice } = txPayload;
+    let { gas, gasLimit, gasPrice } = txPayload;
 
     if (isNil(gasPrice)) {
       const rawGasPrice = get(gasPrices, `${gasUtils.NORMAL}.value.amount`);
@@ -148,10 +157,10 @@ const TransactionConfirmationScreen = ({ navigation }) => {
       }
     }
 
-    if (isNil(gasLimit)) {
+    if (isNil(gas) && isNil(gasLimit)) {
       try {
         const rawGasLimit = await estimateGas(txPayload);
-        gasLimit = toHex(rawGasLimit);
+        gas = toHex(rawGasLimit);
       } catch (error) {
         logger.log('error estimating gas', error);
       }
@@ -160,8 +169,13 @@ const TransactionConfirmationScreen = ({ navigation }) => {
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(transactionCountNonce, web3TxnCount);
     const nonce = ethers.utils.hexlify(maxTxnCount);
-    let txPayloadLatestNonce = { ...txPayload, gasLimit, gasPrice, nonce };
-    txPayloadLatestNonce = omit(txPayloadLatestNonce, 'from');
+    let txPayloadLatestNonce = {
+      ...txPayload,
+      gasLimit: gas || gasLimit,
+      gasPrice,
+      nonce,
+    };
+    txPayloadLatestNonce = omit(txPayloadLatestNonce, ['from', 'gas']);
     let result = null;
     if (sendInsteadOfSign) {
       result = await sendTransaction({
