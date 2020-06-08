@@ -8,7 +8,6 @@ import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
 
 const Button = styled(Centered).attrs({
-  as: ButtonPressAnimation,
   scaleTo: 0.96,
 })`
   flex: 1;
@@ -42,7 +41,7 @@ const SheetActionButton = ({
   );
 
   return (
-    <Button {...props}>
+    <Button as={ButtonPressAnimation} {...props}>
       <ShadowStack
         {...position.coverAsObject}
         backgroundColor={color}

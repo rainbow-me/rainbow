@@ -13,7 +13,6 @@ import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
 
 const Container = styled(Column).attrs({
-  as: ButtonPressAnimation,
   hapticType: 'impactHeavy',
   scaleTo: 0.99,
 })`
@@ -108,7 +107,7 @@ const GasSpeedButton = ({ type }) => {
   );
 
   return (
-    <Container onPress={handlePress}>
+    <Container as={ButtonPressAnimation} onPress={handlePress}>
       <Row align="center" justify="space-between">
         <AnimateNumber
           formatter={formatAnimatedGasPrice}

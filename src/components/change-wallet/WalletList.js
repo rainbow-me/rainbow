@@ -124,7 +124,7 @@ export default function WalletList({
   useEffect(() => {
     if (rows && rows.length && !ready) {
       setTimeout(() => {
-        skeletonTransitionRef.current.animateNextTransition();
+        skeletonTransitionRef.current?.animateNextTransition();
         setReady(true);
       }, 50);
     }

@@ -15,7 +15,6 @@ const Container = styled.View`
 
 const Content = styled(Row).attrs(({ isAbsolute }) => ({
   align: isAbsolute ? 'end' : 'center',
-  as: ButtonPressAnimation,
   justify: 'center',
 }))`
   ${position.size('100%')};
@@ -37,7 +36,11 @@ const CheckmarkBackground = styled.View`
 
 const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => (
   <Container {...props} isAbsolute={isAbsolute}>
-    <Content isAbsolute={isAbsolute} onPress={onPress}>
+    <Content
+      as={ButtonPressAnimation}
+      isAbsolute={isAbsolute}
+      onPress={onPress}
+    >
       <CircleOutline />
       <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
         <CheckmarkBackground>

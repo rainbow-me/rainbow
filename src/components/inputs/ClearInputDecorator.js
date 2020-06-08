@@ -8,7 +8,6 @@ import { Icon } from '../icons';
 import { Centered } from '../layout';
 
 const Button = styled(Centered).attrs({
-  as: ButtonPressAnimation,
   scaleTo: 0.8,
 })`
   ${({ size }) => position.size(size)};
@@ -62,7 +61,11 @@ const ClearInputDecorator = ({ inputHeight, isVisible, onPress }) => {
     <Container>
       {isVisible && (
         <Transitioning.View ref={transitionRef} transition={transition}>
-          <Button onPress={onPress} size={inputHeight}>
+          <Button
+            as={ButtonPressAnimation}
+            onPress={onPress}
+            size={inputHeight}
+          >
             <Icon color={colors.blueGreyDark} name="clearInput" opacity={0.3} />
           </Button>
         </Transitioning.View>
