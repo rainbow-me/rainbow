@@ -4,7 +4,6 @@ import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import Divider from '../components/Divider';
 import { ButtonPressAnimation } from '../components/animations';
 import WalletList from '../components/change-wallet/WalletList';
 import { Column } from '../components/layout';
@@ -19,6 +18,7 @@ import { useNavigation } from '../navigation/Navigation';
 import {
   addressSetSelected,
   createAccountForWallet,
+  walletsLoadState,
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
@@ -29,8 +29,7 @@ import { showActionSheetWithOptions } from '../utils/actionsheet';
 import Routes from './Routes/routesNames';
 
 const deviceHeight = deviceUtils.dimensions.height;
-const addAccountRowHeight = 55;
-const footerHeight = 61;
+const footerHeight = 111;
 const listPaddingBottom = 17;
 const walletRowHeight = 59;
 const maxListHeight = deviceHeight - 220;
@@ -53,22 +52,6 @@ const getWalletRowCount = wallets => {
   return count;
 };
 
-const getAddAccountRowCount = wallets => {
-  let count = 0;
-  if (wallets) {
-    Object.keys(wallets).forEach(key => {
-      count +=
-        wallets[key].type === WalletTypes.mnemonic ||
-        wallets[key].type === WalletTypes.seed;
-    });
-  }
-  // Always add space for create wallet row
-  if (count === 0) {
-    count = 1;
-  }
-  return count;
-};
-
 const ChangeWalletSheet = () => {
   const { wallets, selectedWallet } = useWallets();
   const [editMode, setEditMode] = useState(false);
@@ -86,13 +69,9 @@ const ChangeWalletSheet = () => {
   );
 
   const walletRowCount = getWalletRowCount(wallets);
-  const addAccountRowCount = getAddAccountRowCount(wallets);
 
   let listHeight =
-    walletRowHeight * walletRowCount +
-    addAccountRowHeight * addAccountRowCount +
-    footerHeight +
-    listPaddingBottom;
+    walletRowHeight * walletRowCount + footerHeight + listPaddingBottom;
   let scrollEnabled = false;
   if (listHeight > maxListHeight) {
     listHeight = maxListHeight;
@@ -267,52 +246,94 @@ const ChangeWalletSheet = () => {
     [currentAddress, deleteWallet, onChangeAccount, renameWallet, wallets]
   );
 
-  const onPressAddAccount = useCallback(
-    async walletId => {
-      try {
-        if (creatingWallet.current) return;
-        creatingWallet.current = true;
+  const onPressAddAccount = useCallback(async () => {
+    try {
+      if (creatingWallet.current) return;
+      creatingWallet.current = true;
 
-        // Show naming modal
-        InteractionManager.runAfterInteractions(() => {
-          goBack();
-        });
-        InteractionManager.runAfterInteractions(() => {
-          setTimeout(() => {
-            navigate(Routes.MODAL_SCREEN, {
-              actionType: 'Create',
-              asset: [],
-              isNewProfile: true,
-              onCloseModal: async args => {
-                if (args) {
-                  const name = get(args, 'name', '');
-                  const color = get(args, 'color', colors.getRandomColor());
-                  if (walletId) {
-                    await dispatch(
-                      createAccountForWallet(walletId, color, name)
-                    );
-                    await initializeWallet();
-                  } else {
-                    await createWallet(null, color, name);
-                    await initializeWallet();
-                  }
+      // Show naming modal
+      InteractionManager.runAfterInteractions(() => {
+        goBack();
+      });
+      InteractionManager.runAfterInteractions(() => {
+        setTimeout(() => {
+          navigate(Routes.MODAL_SCREEN, {
+            actionType: 'Create',
+            asset: [],
+            isNewProfile: true,
+            onCloseModal: async args => {
+              if (args) {
+                const name = get(args, 'name', '');
+                const color = get(args, 'color', colors.getRandomColor());
+                // Check if the selected wallet is the primary
+                let primaryWalletKey = selectedWallet.primary
+                  ? selectedWallet.id
+                  : null;
+
+                // If it's not, then find it
+                !primaryWalletKey &&
+                  Object.keys(wallets).some(key => {
+                    const wallet = wallets[key];
+                    if (
+                      wallet.type === WalletTypes.mnemonic &&
+                      wallet.primary
+                    ) {
+                      primaryWalletKey = key;
+                      return true;
+                    }
+                    return false;
+                  });
+
+                // If there's no primary wallet at all,
+                // we fallback to an imported one with a seed phrase
+                !primaryWalletKey &&
+                  Object.keys(wallets).some(key => {
+                    const wallet = wallets[key];
+                    if (
+                      wallet.type === WalletTypes.mnemonic &&
+                      wallet.imported
+                    ) {
+                      primaryWalletKey = key;
+                      return true;
+                    }
+                    return false;
+                  });
+
+                // If we found it, use it to create the new account
+                if (primaryWalletKey) {
+                  await dispatch(
+                    createAccountForWallet(primaryWalletKey, color, name)
+                  );
+                  await initializeWallet();
+                  // If doesn't exist, we need to create a new wallet
+                } else {
+                  await createWallet(null, color, name);
+                  await dispatch(walletsLoadState());
+                  await initializeWallet();
                 }
-                creatingWallet.current = false;
-              },
-              profile: {
-                color: null,
-                name: ``,
-              },
-              type: 'wallet_profile_creator',
-            });
-          }, 50);
-        });
-      } catch (e) {
-        logger.log('Error while trying to add account', e);
-      }
-    },
-    [dispatch, goBack, initializeWallet, navigate]
-  );
+              }
+              creatingWallet.current = false;
+            },
+            profile: {
+              color: null,
+              name: ``,
+            },
+            type: 'wallet_profile_creator',
+          });
+        }, 50);
+      });
+    } catch (e) {
+      logger.log('Error while trying to add account', e);
+    }
+  }, [
+    dispatch,
+    goBack,
+    initializeWallet,
+    navigate,
+    selectedWallet.id,
+    selectedWallet.primary,
+    wallets,
+  ]);
 
   const onPressImportSeedPhrase = useCallback(() => {
     navigate(Routes.IMPORT_SEED_PHRASE_SHEET);
@@ -326,7 +347,6 @@ const ChangeWalletSheet = () => {
     <Sheet borderRadius={30}>
       <Column height={42} justify="space-between">
         <SheetTitle>Wallets</SheetTitle>
-        <Divider color={colors.rowDividerExtraLight} />
       </Column>
       <EditButton onPress={toggleEditMode}>
         <Text

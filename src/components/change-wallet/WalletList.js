@@ -9,24 +9,19 @@ import React, {
 import { StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Transition, Transitioning } from 'react-native-reanimated';
-
 import WalletTypes from '../../helpers/walletTypes';
 import { colors, position } from '../../styles';
-import Divider from '../Divider';
 import { EmptyAssetList } from '../asset-list';
 import { Column } from '../layout';
-import AddressOption from './AddressOption';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
 
 const listTopPadding = 7.5;
-const optionRowHeight = 55;
 const rowHeight = 59;
 
 const RowTypes = {
   ADDRESS: 1,
-  ADDRESS_OPTION: 2,
-  EMPTY: 3,
+  EMPTY: 2,
 };
 
 const sx = StyleSheet.create({
@@ -112,41 +107,9 @@ export default function WalletList({
             break;
         }
       });
-
-      // You can't add accounts for read only or private key wallets
-      if (
-        [WalletTypes.mnemonic, WalletTypes.seed].indexOf(wallet.type) !== -1 &&
-        filteredAccounts.length > 0
-      ) {
-        seedRows.push({
-          editMode,
-          height: optionRowHeight,
-          id: `add_account_${wallet.id}`,
-          label: '􀁍 Create a new wallet',
-          onPress: () => onPressAddAccount(wallet.id),
-          rowType: RowTypes.ADDRESS_OPTION,
-        });
-      }
     });
 
     const newRows = [...seedRows, ...privateKeyRows, ...readOnlyRows];
-
-    // You should always be able to create a new wallet
-    // for ex. if you only import pkey or read only wallet
-    const canCreateAccount = newRows.find(
-      r => r.rowType === RowTypes.ADDRESS_OPTION
-    );
-    if (!canCreateAccount) {
-      newRows.push({
-        editMode,
-        height: optionRowHeight,
-        id: 'add_account',
-        label: '􀁍 Create a new wallet',
-        onPress: () => onPressAddAccount(),
-        rowType: RowTypes.ADDRESS_OPTION,
-      });
-    }
-
     setRows(newRows);
   }, [
     accountAddress,
@@ -205,26 +168,8 @@ export default function WalletList({
   const keyExtractor = item => item.id;
 
   const renderItem = useCallback(
-    ({ item, index }) => {
-      const isLastRow = index === rows.length - 1;
-
+    ({ item }) => {
       switch (item.rowType) {
-        case RowTypes.ADDRESS_OPTION:
-          return (
-            <Column height={item.height}>
-              <AddressOption
-                editMode={editMode}
-                label={item.label}
-                onPress={item.onPress}
-              />
-              {!isLastRow && (
-                <Divider
-                  color={colors.rowDividerExtraLight}
-                  inset={[0, 19, 0, 19]}
-                />
-              )}
-            </Column>
-          );
         case RowTypes.ADDRESS:
           return (
             <Column height={item.height}>
@@ -240,7 +185,7 @@ export default function WalletList({
           return null;
       }
     },
-    [editMode, onEditWallet, rows.length]
+    [editMode, onEditWallet]
   );
 
   return (
@@ -263,6 +208,12 @@ export default function WalletList({
                 keyExtractor={keyExtractor}
                 removeClippedSubviews
                 initialNumToRender={rows.length}
+              />
+              <WalletOption
+                editMode={editMode}
+                icon="arrowBack"
+                label="􀁍 Create a new wallet"
+                onPress={onPressAddAccount}
               />
               <WalletOption
                 editMode={editMode}
