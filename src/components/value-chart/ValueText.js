@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Fragment, useMemo, useRef } from 'react';
-import { Transition, Transitioning } from 'react-native-reanimated';
 import { colors } from '../../styles';
 import { Icon } from '../icons';
-import { RowWithMargins } from '../layout';
+import { Column, RowWithMargins } from '../layout';
 import { Text, TruncatedText } from '../text';
 
 const Subtitle = props => (
@@ -18,23 +17,6 @@ const Subtitle = props => (
 
 const Title = props => <TruncatedText {...props} size="h2" weight="bold" />;
 
-const transition = (
-  <Transition.Together>
-    <Transition.Out
-      durationMs={220}
-      interpolation="easeInOut"
-      propagation="right"
-      type="slide-top"
-    />
-    <Transition.In
-      delayMs={120}
-      durationMs={200}
-      propagation="left"
-      type="fade"
-    />
-  </Transition.Together>
-);
-
 const ValueText = ({ change, direction, headerText, value }) => {
   const transitionRef = useRef();
 
@@ -47,13 +29,7 @@ const ValueText = ({ change, direction, headerText, value }) => {
   ]);
 
   return (
-    <Transitioning.View
-      height={85}
-      paddingLeft={15}
-      ref={transitionRef}
-      transition={transition}
-      width="100%"
-    >
+    <Column height={85} paddingLeft={15} width="100%">
       {value ? (
         <Fragment>
           <Subtitle>{headerText}</Subtitle>
@@ -83,7 +59,7 @@ const ValueText = ({ change, direction, headerText, value }) => {
           <Title>Loading...</Title>
         </Fragment>
       )}
-    </Transitioning.View>
+    </Column>
   );
 };
 
