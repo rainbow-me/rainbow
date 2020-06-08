@@ -18,6 +18,7 @@ import { useNavigation } from '../navigation/Navigation';
 import {
   addressSetSelected,
   createAccountForWallet,
+  walletsLoadState,
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
@@ -299,7 +300,6 @@ const ChangeWalletSheet = () => {
                   });
 
                 // If we found it, use it to create the new account
-
                 if (primaryWalletKey) {
                   await dispatch(
                     createAccountForWallet(primaryWalletKey, color, name)
@@ -308,6 +308,7 @@ const ChangeWalletSheet = () => {
                   // If doesn't exist, we need to create a new wallet
                 } else {
                   await createWallet(null, color, name);
+                  await dispatch(walletsLoadState());
                   await initializeWallet();
                 }
               }

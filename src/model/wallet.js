@@ -61,8 +61,9 @@ export const walletInit = async (
     walletAddress = wallet.address;
     return { isNew, walletAddress };
   }
+
   walletAddress = await loadAddress();
-  // First launch (no seed phrase)
+
   if (!walletAddress) {
     const wallet = await createWallet();
     walletAddress = wallet.address;
