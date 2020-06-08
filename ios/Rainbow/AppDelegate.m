@@ -156,9 +156,7 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
                                                          error:nil];
 
     SentryEvent *sentryEvent = [[SentryEvent alloc] initWithJSON:jsonData];
-    [SentryClient.sharedClient sendEvent:sentryEvent withCompletionHandler:^(NSError * _Nullable error) {
-      NSLog((@"ApplicationWillTerminate was called"));
-    }];
+    [SentrySDK captureEvent:sentryEvent];
   }
   
 }

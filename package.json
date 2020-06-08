@@ -55,7 +55,7 @@
     "@react-native-firebase/crashlytics": "^6.2.0",
     "@react-native-firebase/messaging": "^6.2.0",
     "@segment/analytics-react-native": "^1.1.0",
-    "@sentry/react-native": "^1.2.0",
+    "@sentry/react-native": "^1.4.5",
     "@tradle/react-native-http": "^2.0.1",
     "@uniswap/sdk": "^1.0.0-beta.4",
     "@walletconnect/client": "1.0.0-rc.0",
