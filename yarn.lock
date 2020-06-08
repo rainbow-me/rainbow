@@ -1284,10 +1284,10 @@
     "@sentry/types" "5.16.1"
     tslib "^1.9.3"
 
-"@sentry/react-native@^1.2.0":
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/@sentry/react-native/-/react-native-1.4.4.tgz#b5be33d3766a69bcc722b37ec6a1c9080ab0c64e"
-  integrity sha512-PIhq7RGuUTPwxf+33jNHpvv9YZYFih7AtMJeytErgUJghHc4hbI2FztA+mpsjAN0PDcHJPMaul8Ka8HZmA4Log==
+"@sentry/react-native@^1.4.5":
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/@sentry/react-native/-/react-native-1.4.5.tgz#bbbd431604e8436309c3b385904856708768cb52"
+  integrity sha512-Ruh3992WsaNSDwwV8b3KFyus6INK45ZwG1TvpvJLh/Dsq7YfWcSymdJXPqEI+xSgDSft1qlIbwptyVvLCHMWlA==
   dependencies:
     "@sentry/browser" "^5.16.1"
     "@sentry/core" "^5.16.1"
@@ -7020,7 +7020,7 @@ log-update@^4.0.0:
     slice-ansi "^4.0.0"
     wrap-ansi "^6.2.0"
 
-logkitty@0.7.1:
+logkitty@0.7.1, logkitty@^0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/logkitty/-/logkitty-0.7.1.tgz#8e8d62f4085a826e8d38987722570234e33c6aa7"
   integrity sha512-/3ER20CTTbahrCrpYfPn7Xavv9diBROZpoXGVZDWMw4b/X4uuUwAC0ki85tgsdMRONURyIJbcOvS94QsUBYPbQ==
