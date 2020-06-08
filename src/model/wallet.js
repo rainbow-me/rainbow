@@ -3,7 +3,7 @@ import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { isValidAddress, toBuffer } from 'ethereumjs-util';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { get, isEmpty } from 'lodash';
+import { findKey, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {
@@ -396,16 +396,13 @@ export const createWallet = async (seed = null, color = null, name = null) => {
     // it's the primary wallet
     if (
       !isImported ||
-      (Object.keys(allWallets) === 0 && type === WalletTypes.mnemonic)
+      (!findKey(allWallets, ['type', WalletTypes.mnemonic]) &&
+        type === WalletTypes.mnemonic)
     ) {
       primary = true;
       // Or there's no other primary wallet and this one has a seed phrase
     } else {
-      const primaryWallet = Object.keys(allWallets).find(key => {
-        const wallet = allWallets[key];
-        return wallet.primary;
-      });
-
+      const primaryWallet = findKey(allWallets, ['primary', true]);
       if (!primaryWallet && type === WalletTypes.mnemonic) {
         primary = true;
       }

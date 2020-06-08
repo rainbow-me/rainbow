@@ -1,3 +1,4 @@
+import { findKey } from 'lodash';
 import {
   getMigrationVersion,
   setMigrationVersion,
@@ -16,7 +17,7 @@ export default async function runMigrations() {
   const migrations = [];
 
   /*
-   *************** Migration v1 ******************
+   *************** Migration v0 ******************
    * This step rewrites public keys to the keychain
    * using the updated Keychain settings (THIS_DEVICE_ONLY)
    */
@@ -81,10 +82,7 @@ export default async function runMigrations() {
     const { wallets, selected } = store.getState().wallets;
 
     // Check if we have a primary wallet
-    const primaryWallet = Object.keys(wallets).find(key => {
-      const wallet = wallets[key];
-      return wallet.primary;
-    });
+    const primaryWallet = findKey(wallets, ['primary', true]);
 
     // If there's no primary wallet, we need to find
     // if there's a wallet with seed phrase that wasn't imported
@@ -115,7 +113,10 @@ export default async function runMigrations() {
 
       if (primaryWalletKey) {
         const updatedWallets = { ...wallets };
-        updatedWallets[primaryWalletKey].primary = true;
+        updatedWallets[primaryWalletKey] = {
+          ...updatedWallets[primaryWalletKey],
+          primary: true,
+        };
         await store.dispatch(walletsUpdate(updatedWallets));
         // Additionally, we need to check if it's the selected wallet
         // and if that's the case, update it too
