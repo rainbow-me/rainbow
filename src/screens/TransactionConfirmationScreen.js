@@ -60,7 +60,7 @@ const Masthead = styled(Centered).attrs({ direction: 'column' })`
 `;
 
 const TransactionType = styled(Text).attrs({ size: 'h5' })`
-  color: ${colors.alpha(colors.white, 0.68)}
+  color: ${colors.alpha(colors.white, 0.68)};
   margin-top: 6;
 `;
 

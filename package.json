@@ -20,7 +20,9 @@
     "install-pods-no-flipper": "cd ios && bundle exec env SKIP_FLIPPER=true pod install --repo-update && cd ..",
     "install-bundle": "cd ios && bundle install && cd ..",
     "ios": "react-native run-ios --simulator='iPhone 11'",
-    "lint": "eslint --ext '.js,.jsx' .",
+    "lint": "yarn lint:js && yarn lint:css",
+    "lint:css": "stylelint './src/**/*.js'",
+    "lint:js": "eslint --ext '.js,.jsx' .",
     "nodeify": "./node_modules/.bin/rn-nodeify --install \"crypto\" --hack",
     "postinstall": "./scripts/postinstall.sh",
     "update-env": "curl -H 'Authorization: token '$GITHUB_TOKEN -H 'Accept: application/vnd.github.v3.raw' -O  -L https://api.github.com/repos/rainbow-me/rainbow-env/contents/dotenv && rm -f .env && mv dotenv .env"
@@ -32,7 +34,8 @@
   },
   "lint-staged": {
     "*.{js,jsx}": [
-      "eslint --ext '.js,.jsx' -c .eslintrc.json"
+      "eslint --ext '.js,.jsx' -c .eslintrc.json",
+      "stylelint './src/**/*.js'"
     ]
   },
   "dependencies": {
@@ -214,7 +217,10 @@
     "react-native-bundle-visualizer": "^2.0.1",
     "react-native-clean-project": "^3.1.0",
     "react-test-renderer": "16.11.0",
-    "schedule": "0.5.0"
+    "schedule": "0.5.0",
+    "stylelint-config-react-native-styled-components": "^0.3.0",
+    "stylelint-processor-styled-components": "^1.10.0",
+    "stylelint-react-native": "^2.2.0"
   },
   "resolutions": {
     "**/eslint-plugin-import": "2.20.2",
