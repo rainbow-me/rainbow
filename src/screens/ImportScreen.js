@@ -1,5 +1,6 @@
+import MaskedView from '@react-native-community/masked-view';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import Reanimated, {
   Clock,
   Easing,
@@ -15,7 +16,9 @@ import LiquidRainbow from '../assets/rainbows/liquid.png';
 import NeonRainbow from '../assets/rainbows/neon.png';
 import PixelRainbow from '../assets/rainbows/pixel.png';
 import { ButtonPressAnimation } from '../components/animations';
+import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
+import { Text } from '../components/text';
 import { colors, shadow } from '../styles';
 
 const {
@@ -37,11 +40,12 @@ const {
   startClock,
 } = Reanimated;
 
-const ButtonContainer = styled.View.attrs({
+const ButtonContainer = styled(Reanimated.View).attrs({
   pointerEvents: 'none',
 })`
   height: ${({ height }) => height};
   width: ${({ width }) => width};
+  border-radius: ${({ height }) => height / 2};
 `;
 
 const ButtonContent = styled(RowWithMargins).attrs({
@@ -54,13 +58,15 @@ const ButtonContent = styled(RowWithMargins).attrs({
   padding-bottom: 4;
 `;
 
-const ButtonLabel = styled(Text).attrs({
-  align: 'center',
-  color: colors.black,
-  letterSpacing: 'roundedMedium',
-  size: 'larger',
-  weight: 'bold',
-})``;
+const ButtonLabel = styled(Text).attrs(
+  ({ textColor: color = colors.black }) => ({
+    align: 'center',
+    color,
+    letterSpacing: 'roundedMedium',
+    size: 'larger',
+    weight: 'bold',
+  })
+)``;
 
 const Shadow = styled(Reanimated.View)`
   ${shadow.build(0, 10, 30, colors.dark, 1)};
@@ -72,13 +78,20 @@ const Shadow = styled(Reanimated.View)`
   width: ${({ width }) => width};
 `;
 
-const RainbowButton = ({ height = 56, onPress, shadowStyle }) => {
+const RainbowButton = ({
+  height = 56,
+  onPress,
+  shadowStyle,
+  style,
+  textColor,
+  text,
+}) => {
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
       <Shadow height={height} width="100%" style={shadowStyle} />
-      <ButtonContainer height={height} width="100%">
+      <ButtonContainer height={height} width="100%" style={style}>
         <ButtonContent>
-          <ButtonLabel>Sample</ButtonLabel>
+          <ButtonLabel textColor={textColor}>{text}</ButtonLabel>
         </ButtonContent>
       </ButtonContainer>
     </ButtonPressAnimation>
@@ -220,6 +233,14 @@ const RainbowImage = styled(Animated.Image)`
   position: absolute
 `;
 
+const RAINBOW_TEXT_HEIGHT = 25;
+const RAINBOW_TEXT_WIDTH = 125;
+
+const RainbowTextMask = styled(Reanimated.View)`
+  height: ${RAINBOW_TEXT_HEIGHT}
+  width: ${RAINBOW_TEXT_WIDTH}
+`;
+
 function match(condsAndResPairs, offset = 0) {
   if (condsAndResPairs.length - offset === 1) {
     return condsAndResPairs[offset];
@@ -322,10 +343,12 @@ export default function ImportScreen() {
       Animated.loop(
         Animated.sequence([
           Animated.timing(contentAnimattion.current, {
-            toValue: 0.9,
+            duration: 1000,
+            toValue: 0.95,
             useNativeDriver: true,
           }),
           Animated.timing(contentAnimattion.current, {
+            duration: 1000,
             toValue: 1,
             useNativeDriver: true,
           }),
@@ -359,18 +382,43 @@ export default function ImportScreen() {
 
   const rValue = useReanimatedValue(0);
 
-  const shadowColor = useMemoOne(() => {
+  const backgroundColor = useMemoOne(
+    () => colorHSV(runTiming(rValue.current), 1, 1, false),
+    []
+  );
+
+  const importButtonProps = useMemoOne(() => {
     const color = colorHSV(runTiming(rValue.current), 1, 1, true);
     return {
-      shadowColor: color,
+      shadowStyle: {
+        shadowColor: color,
+      },
+      style: {
+        backgroundColor: colors.black,
+        borderColor: backgroundColor,
+        borderWidth: 3,
+      },
+      text: '💎 Get a New Wallet',
+      textColor: colors.white,
+    };
+  }, [rValue]);
+
+  const existingWallerButtonProps = useMemoOne(() => {
+    return {
+      shadowStyle: {
+        opacity: 0,
+      },
+      style: {
+        backgroundColor: colors.lighterGrey,
+      },
+      text: '🗝️ Import My Walllet',
+      textColor: colors.black,
     };
   }, [rValue]);
 
   const textStyle = useMemoOne(() => {
-    const color = colorHSV(runTiming(rValue.current), 1, 1, false);
     return {
-      color,
-      fontSize: 20,
+      backgroundColor,
     };
   }, [rValue]);
 
@@ -383,13 +431,16 @@ export default function ImportScreen() {
 
       <ContentWrapper style={contentStyle}>
         <TouchableOpacity onPress={() => setVisible(!visible)}>
-          <Reanimated.Text style={textStyle}>rainbow</Reanimated.Text>
+          <MaskedView maskElement={<RainbowText />}>
+            <RainbowTextMask style={textStyle} />
+          </MaskedView>
         </TouchableOpacity>
+
         <ButtonWrapper style={buttonStyle}>
-          <RainbowButton shadowStyle={shadowColor} />
+          <RainbowButton {...importButtonProps} />
         </ButtonWrapper>
         <ButtonWrapper>
-          <RainbowButton />
+          <RainbowButton {...existingWallerButtonProps} />
         </ButtonWrapper>
       </ContentWrapper>
     </Container>
