@@ -40,11 +40,9 @@ const {
   startClock,
 } = Reanimated;
 
-const ButtonContainer = styled(Reanimated.View).attrs({
-  pointerEvents: 'none',
-})`
+const ButtonContainer = styled(Reanimated.View)`
   height: ${({ height }) => height};
-  width: ${({ width }) => width};
+  width: 100%;
   border-radius: ${({ height }) => height / 2};
 `;
 
@@ -54,7 +52,6 @@ const ButtonContent = styled(RowWithMargins).attrs({
 })`
   align-self: center;
   height: 100%;
-  margin-right: ${({ type }) => (type === 'addCash' ? 9 : 0)};
   padding-bottom: 4;
 `;
 
@@ -75,7 +72,7 @@ const Shadow = styled(Reanimated.View)`
   height: ${({ height }) => height};
   opacity: 0.2;
   position: absolute;
-  width: ${({ width }) => width};
+  width: 100%;
 `;
 
 const RainbowButton = ({
@@ -88,8 +85,8 @@ const RainbowButton = ({
 }) => {
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
-      <Shadow height={height} width="100%" style={shadowStyle} />
-      <ButtonContainer height={height} width="100%" style={style}>
+      <Shadow height={height} style={shadowStyle} />
+      <ButtonContainer height={height} style={style}>
         <ButtonContent>
           <ButtonLabel textColor={textColor}>{text}</ButtonLabel>
         </ButtonContent>
