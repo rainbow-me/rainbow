@@ -64,7 +64,7 @@ export default class animations extends Component {
 
         setTimeout(() => {
           this.handleAnimation();
-        }, 500);
+        }, 200);
       }
     }
   };
@@ -94,6 +94,7 @@ export default class animations extends Component {
       <View
         style={{
           position: 'absolute',
+          top: -10,
           transform: [{ rotateX: '180deg' }],
         }}
       >
