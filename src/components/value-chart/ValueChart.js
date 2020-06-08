@@ -6,7 +6,8 @@ import { State } from 'react-native-gesture-handler';
 import Animated, { Clock, Easing, Value } from 'react-native-reanimated';
 import { contains, delay, timing } from 'react-native-redash';
 import { deviceUtils } from '../../utils';
-import { Row } from '../layout';
+import ActivityIndicator from '../ActivityIndicator';
+import { Centered, Column, Row } from '../layout';
 import AnimatedChart from './AnimatedChart';
 import GestureWrapper from './GestureWrapper';
 import TimestampText from './TimestampText';
@@ -385,18 +386,29 @@ export default class Chart extends PureComponent {
           onPanGestureEvent={this.onPanGestureEvent}
           onTapGestureEvent={this.onTapGestureEvent}
         >
-          <Animated.View style={{ opacity: this.loadingValue }}>
-            <TimestampText
-              style={{ transform: [{ translateX: maxValueDistance }] }}
-            >
-              ${Number(maxValue.y).toFixed(2)}
-            </TimestampText>
-          </Animated.View>
-          <AnimatedChart
-            currentData={currentData}
-            animatedValue={this.value}
-            color={this.props.barColor}
-          />
+          <TimestampText
+            style={{ transform: [{ translateX: maxValueDistance }] }}
+          >
+            ${Number(maxValue.y).toFixed(2)}
+          </TimestampText>
+          <Centered
+            style={{
+              backgroundColor: '#ffffffbb',
+              height: 200,
+              opacity: points ? 0 : 1,
+              position: 'absolute',
+              width: width,
+            }}
+          >
+            <ActivityIndicator />
+          </Centered>
+          <Column opacity={points ? 1 : 0.5}>
+            <AnimatedChart
+              currentData={currentData}
+              animatedValue={this.value}
+              color={this.props.barColor}
+            />
+          </Column>
           <Row height={180}>
             <Animated.View
               style={[
@@ -419,17 +431,11 @@ export default class Chart extends PureComponent {
               ]}
             />
           </Row>
-          <Animated.View
-            style={{
-              opacity: this.loadingValue,
-            }}
+          <TimestampText
+            style={{ transform: [{ translateX: minValueDistance }] }}
           >
-            <TimestampText
-              style={{ transform: [{ translateX: minValueDistance }] }}
-            >
-              ${Number(minValue.y).toFixed(2)}
-            </TimestampText>
-          </Animated.View>
+            ${Number(minValue.y).toFixed(2)}
+          </TimestampText>
         </GestureWrapper>
         <Animated.Code
           exec={block([
