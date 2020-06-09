@@ -35,7 +35,7 @@
   "lint-staged": {
     "*.{js,jsx}": [
       "eslint --ext '.js,.jsx' -c .eslintrc.json",
-      "stylelint './src/**/*.js'"
+      "stylelint"
     ]
   },
   "dependencies": {
