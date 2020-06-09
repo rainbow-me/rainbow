@@ -71,7 +71,7 @@ index b397efb..b9194e9 100644
      finish();
    }
 diff --git a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-index b21a043..132924f 100644
+index b21a043..7ee4df3 100644
 --- a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 +++ b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 @@ -125,7 +125,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
@@ -110,6 +110,25 @@ index b21a043..132924f 100644
    }
  
    var isShortFormEnabledInternal = 2
+@@ -200,12 +216,17 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+     super.viewWillDisappear(animated)
+   }
+ 
++  var prevHeight: CGFloat = 0;
+   override func viewDidLayoutSubviews() {
+     super.viewDidLayoutSubviews()
+     for i in 1...10 {
+       DispatchQueue.main.asyncAfter(deadline: .now() + 0.3 * Double(i)) {
+         if !self.disappared {
+-          self.panModalSetNeedsLayoutUpdate()
++          let newHeight: CGFloat = self.panScrollable?.layer.frame.height ?? 0
++          if newHeight.isEqual(to: self.prevHeight) {
++            self.prevHeight = newHeight
++            self.panModalSetNeedsLayoutUpdate()
++          }
+         }
+       }
+     }
 diff --git a/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx b/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
 index c2f2e2b..7f6f332 100644
 --- a/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
