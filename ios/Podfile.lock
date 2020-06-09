@@ -460,7 +460,7 @@ PODS:
   - RNCoolModals (0.0.9):
     - PanModal
     - React
-  - RNCPushNotificationIOS (1.2.0):
+  - RNCPushNotificationIOS (1.2.2):
     - React
   - RNDeviceInfo (5.3.1):
     - React
@@ -923,7 +923,7 @@ SPEC CHECKSUMS:
   RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNCoolModals: 49df7bf454cb98802a208531a7fc4cec28cfc501
-  RNCPushNotificationIOS: 4d9ffd08f00ef6c1029ebbf4d72fc711eca3ff01
+  RNCPushNotificationIOS: 4c97a36dbec42dba411cc35e6dac25e34a805fde
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNFastImage: 35ae972d6727c84ee3f5c6897e07f84d0a3445e9
   RNFBApp: 7b539bb25520fa73d6a240f5c6ea569e27683645

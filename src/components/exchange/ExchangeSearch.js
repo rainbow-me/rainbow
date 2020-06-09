@@ -44,11 +44,11 @@ const SearchInput = styled(Input).attrs({
 
 const ExchangeSearch = ({ autoFocus, onChangeText, searchQuery }, ref) => {
   const handleClearInput = useCallback(() => {
-    ref?.current.clear();
+    ref?.current?.clear();
     if (onChangeText) onChangeText('');
   }, [ref, onChangeText]);
 
-  const handleFocus = useCallback(event => ref?.current.focus(event), [ref]);
+  const handleFocus = useCallback(event => ref?.current?.focus(event), [ref]);
 
   return (
     <Container>

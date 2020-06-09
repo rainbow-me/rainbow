@@ -1,15 +1,15 @@
-import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { colors, padding, position } from '../../../styles';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
-import { InnerBorder, RowWithMargins } from '../../layout';
+import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
 
-const Button = styled(ButtonPressAnimation).attrs({ scaleTo: 0.96 })`
-  ${position.centered};
+const Button = styled(Centered).attrs({
+  scaleTo: 0.96,
+})`
   flex: 1;
   z-index: 1;
 `;
@@ -24,12 +24,12 @@ const Content = styled(RowWithMargins).attrs({
 `;
 
 const SheetActionButton = ({
-  borderRadius,
-  color,
+  borderRadius = 50,
+  color = colors.appleBlue,
   emoji,
   icon,
   label,
-  textColor,
+  textColor = colors.white,
   ...props
 }) => {
   const shadowsForButtonColor = useMemo(
@@ -41,7 +41,7 @@ const SheetActionButton = ({
   );
 
   return (
-    <Button {...props}>
+    <Button as={ButtonPressAnimation} {...props}>
       <ShadowStack
         {...position.coverAsObject}
         backgroundColor={color}
@@ -60,17 +60,4 @@ const SheetActionButton = ({
   );
 };
 
-SheetActionButton.propTypes = {
-  borderRadius: PropTypes.number,
-  color: PropTypes.string,
-  emoji: PropTypes.string,
-  textColor: PropTypes.string,
-};
-
-SheetActionButton.defaultProps = {
-  borderRadius: 50,
-  color: 'appleBlue',
-  textColor: 'white',
-};
-
-export default SheetActionButton;
+export default React.memo(SheetActionButton);

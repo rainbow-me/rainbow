@@ -2,15 +2,9 @@ import { isNil } from 'lodash';
 import { useEffect, useState } from 'react';
 import { isPinOrFingerprintSet } from 'react-native-device-info';
 import * as Keychain from 'react-native-keychain';
+import BiometryTypes from '../helpers/biometryTypes';
 import useAppState from './useAppState';
 import usePrevious from './usePrevious';
-
-export const BiometryTypes = {
-  FaceID: 'FaceID',
-  none: 'none',
-  passcode: 'passcode',
-  TouchID: 'TouchID',
-};
 
 export default function useBiometryType() {
   const { justBecameActive } = useAppState();

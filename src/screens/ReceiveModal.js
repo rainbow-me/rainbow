@@ -2,7 +2,6 @@ import { toLower } from 'lodash';
 import React from 'react';
 import { Platform, Share } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-
 import { useSelector } from 'react-redux';
 import styled from 'styled-components/primitives';
 import Divider from '../components/Divider';

@@ -1,10 +1,10 @@
-import React, { Children, cloneElement } from 'react';
+import React, { Children } from 'react';
 import { padding } from '../../../styles';
 import { FlexItem, Row } from '../../layout';
 
 function renderButton(child) {
   if (!child) return null;
-  return <FlexItem marginHorizontal={7.5}>{cloneElement(child)}</FlexItem>;
+  return <FlexItem marginHorizontal={7.5}>{child}</FlexItem>;
 }
 
 export default function SheetActionButtonRow({ children }) {

@@ -5,6 +5,7 @@ import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { Icon } from '../icons';
+import { Row } from '../layout';
 
 const Container = styled.View`
   ${position.size(CoinIconSize)};
@@ -12,10 +13,11 @@ const Container = styled.View`
   top: 0;
 `;
 
-const Content = styled(ButtonPressAnimation)`
+const Content = styled(Row).attrs(({ isAbsolute }) => ({
+  align: isAbsolute ? 'end' : 'center',
+  justify: 'center',
+}))`
   ${position.size('100%')};
-  align-items: ${({ isAbsolute }) => (isAbsolute ? 'flex-end' : 'center')};
-  justify-content: center;
 `;
 
 const CircleOutline = styled.View`
@@ -34,7 +36,11 @@ const CheckmarkBackground = styled.View`
 
 const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => (
   <Container {...props} isAbsolute={isAbsolute}>
-    <Content isAbsolute={isAbsolute} onPress={onPress}>
+    <Content
+      as={ButtonPressAnimation}
+      isAbsolute={isAbsolute}
+      onPress={onPress}
+    >
       <CircleOutline />
       <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
         <CheckmarkBackground>

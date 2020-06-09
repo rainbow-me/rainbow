@@ -9,7 +9,6 @@ export { default as KeyboardFixedOpenLayout } from './KeyboardFixedOpenLayout';
 export { default as LayoutWithDividers } from './LayoutWithDividers';
 export { default as LayoutWithMargins } from './LayoutWithMargins';
 export { default as Page } from './Page';
-export { default as PrimitiveWithoutOmittedProps } from './PrimitiveWithoutOmittedProps';
 export { default as Row } from './Row';
 export { default as RowWithDividers } from './RowWithDividers';
 export { default as RowWithMargins } from './RowWithMargins';

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Platform } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
@@ -9,54 +8,47 @@ import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text as UnstyledText } from '../text';
 
-const IconMarginTop = Platform.OS === 'android' ? 2 : 0;
+const BackArrow = styled(Icon).attrs({
+  color: colors.appleBlue,
+  direction: 'left',
+  name: 'caret',
+})`
+  height: 16;
+  margin-top: ${Platform.OS === 'android' ? 2 : 0};
+`;
 
-const ContainerElement = Platform.OS === 'ios' ? BorderlessButton : Button;
-const Container = styled(ContainerElement)`
-  align-items: center;
-  background-color: transparent;
+const Container = styled(Row).attrs(({ side }) => ({
+  align: 'center',
+  justify: side === 'left' ? 'start' : 'end',
+}))`
+  ${({ side }) => (side === 'left' ? 'left: 0;' : 'right: 0;')}
+  background-color: ${colors.transparent};
   bottom: 0;
-  flex: 1;
-  flex-direction: row;
-  justify-content: ${({ side }) =>
-    side === 'left' ? 'flex-start' : 'flex-end'};
   padding-left: ${({ side }) => (side === 'left' ? 16 : 48)};
   padding-right: ${({ side }) => (side === 'left' ? 48 : 16)};
   position: absolute;
   top: 0;
   z-index: 2;
-  ${({ side }) => (side === 'left' ? 'left: 0;' : 'right: 0')}
 `;
 
 const Text = styled(UnstyledText).attrs({
   align: 'center',
-  color: 'appleBlue',
+  color: colors.appleBlue,
   size: 'large',
   weight: 'medium',
 })`
-  margin-left: ${({ showBackArrow }) => (showBackArrow ? 4 : 0)};
+  margin-left: ${({ side }) => (side === 'left' ? 4 : 0)};
 `;
 
-const ModalHeaderButton = ({ label, showBackArrow, side, ...props }) => (
-  <Container side={side} {...props}>
-    <Row>
-      {showBackArrow && (
-        <Icon
-          color={colors.appleBlue}
-          direction="left"
-          height={16}
-          marginTop={IconMarginTop}
-          name="caret"
-        />
-      )}
-      <Text showBackArrow={showBackArrow}>{label}</Text>
-    </Row>
+const ModalHeaderButton = ({ label, onPress, side }) => (
+  <Container
+    as={Platform.OS === 'ios' ? BorderlessButton : Button}
+    onPress={onPress}
+    side={side}
+  >
+    {side === 'left' && <BackArrow />}
+    <Text side={side}>{label}</Text>
   </Container>
 );
 
-ModalHeaderButton.propTypes = {
-  label: PropTypes.string,
-  showBackArrow: PropTypes.bool,
-};
-
-export default ModalHeaderButton;
+export default React.memo(ModalHeaderButton);
