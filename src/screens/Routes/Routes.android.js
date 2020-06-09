@@ -78,10 +78,6 @@ const routesForMainNavigator = {
     navigationOptions: expandedPreset,
     screen: ExpandedAssetSheet,
   },
-  [Routes.MODAL_SCREEN]: {
-    navigationOptions: overlayExpandedPreset,
-    screen: ModalScreen,
-  },
   [Routes.RECEIVE_MODAL]: {
     navigationOptions: expandedPreset,
     screen: ReceiveModal,
@@ -133,6 +129,10 @@ const routesForStack = {
     screen: ImportSeedPhraseSheetWithData,
   },
   MainNavigator,
+  [Routes.MODAL_SCREEN]: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ModalScreen,
+  },
   [Routes.SAVINGS_DEPOSIT_MODAL]: {
     navigationOptions: exchangePreset,
     params: {
