@@ -74,6 +74,7 @@ const Chart = ({ asset, ...props }) => {
     >
       <ValueText
         change={toFixedDecimals(change, 2)}
+        currentValue={asset.native.price.display}
         direction={positiveChange}
         headerText="PRICE"
         value={currentPrice}
@@ -82,6 +83,7 @@ const Chart = ({ asset, ...props }) => {
         amountOfPathPoints={120}
         barColor={positiveChange ? colors.chartGreen : colors.red}
         currentDataSource={currentChartIndex}
+        currentValue={asset.native.price.amount}
         data={chartData}
         importantPointsIndexInterval={amountOfPathPoints}
         mode="gesture-managed"

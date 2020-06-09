@@ -355,7 +355,7 @@ export default class Chart extends PureComponent {
   };
 
   render() {
-    const { amountOfPathPoints } = this.props;
+    const { amountOfPathPoints, barColor, currentValue } = this.props;
     const { currentData } = this.state;
     let maxValue = 0,
       minValue = 0,
@@ -406,7 +406,8 @@ export default class Chart extends PureComponent {
             <AnimatedChart
               currentData={currentData}
               animatedValue={this.value}
-              color={this.props.barColor}
+              color={barColor}
+              currentValue={currentValue}
             />
           </Column>
           <Row height={180}>
