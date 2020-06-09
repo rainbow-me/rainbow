@@ -7,7 +7,9 @@ import { Animated, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { deviceUtils } from '../../utils';
 
-const width = deviceUtils.dimensions.width - 20;
+const padding = 20;
+const additionalChartPadding = 999999;
+const width = deviceUtils.dimensions.width;
 
 export default class animations extends Component {
   state = {
@@ -28,8 +30,22 @@ export default class animations extends Component {
       const lineShape = shape
         .line()
         .curve(shape.curveCatmullRom.alpha(0.5))
-        .x(d => (d.x - minX) / ((maxX - minX) / width))
-        .y(d => (d.y - minValue.y) / ((maxValue.y - minValue.y) / 170));
+        .x(
+          d => (d.x - minX) / ((maxX - minX) / (width - 2 * padding)) + padding
+        )
+        .y(d => (d.y - minValue.y) / ((maxValue.y - minValue.y) / 160));
+
+      data = [
+        {
+          x: data[0].x - additionalChartPadding,
+          y: data[0].y,
+        },
+        ...data,
+        {
+          x: data[data.length - 1].x + additionalChartPadding,
+          y: data[data.length - 1].y,
+        },
+      ];
 
       const newLineShape = lineShape(data);
       if (this.oldLineShape !== newLineShape) {
@@ -99,7 +115,7 @@ export default class animations extends Component {
           transform: [{ rotateX: '180deg' }],
         }}
       >
-        <Svg width={width} height={200} viewBox={`-25 -10 ${width + 25} 200`}>
+        <Svg width={width} height={200} viewBox={`0 -20 ${width} 200`}>
           <Path
             d={this.state.currentChart}
             stroke={this.props.color}
