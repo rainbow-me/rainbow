@@ -24,6 +24,25 @@ const RowTypes = {
   EMPTY: 2,
 };
 
+const getItemLayout = (data, index) => {
+  const { height } = data[index];
+  return {
+    index,
+    length: height,
+    offset: height * index,
+  };
+};
+
+const keyExtractor = item => item.id;
+
+const skeletonTransition = (
+  <Transition.Sequence>
+    <Transition.Out interpolation="easeOut" type="fade" />
+    <Transition.Change durationMs={0.001} interpolation="easeOut" />
+    <Transition.In durationMs={0.001} interpolation="easeOut" type="fade" />
+  </Transition.Sequence>
+);
+
 const Container = styled(Transitioning.View)`
   height: ${({ height }) => height};
   margin-top: -2;
@@ -38,7 +57,11 @@ const EmptyWalletList = styled(EmptyAssetList).attrs({
   padding-top: ${listTopPadding};
 `;
 
-const WalletFlatList = styled(FlatList)`
+const WalletFlatList = styled(FlatList).attrs({
+  getItemLayout,
+  keyExtractor,
+  removeClippedSubviews: true,
+})`
   flex: 1;
   min-height: 1;
   padding-top: ${listTopPadding};
@@ -47,14 +70,6 @@ const WalletFlatList = styled(FlatList)`
 const WalletListFooter = styled(Column)`
   padding-bottom: 6;
 `;
-
-const skeletonTransition = (
-  <Transition.Sequence>
-    <Transition.Out interpolation="easeOut" type="fade" />
-    <Transition.Change durationMs={0.001} interpolation="easeOut" />
-    <Transition.In durationMs={0.001} interpolation="easeOut" type="fade" />
-  </Transition.Sequence>
-);
 
 export default function WalletList({
   accountAddress,
@@ -166,17 +181,6 @@ export default function WalletList({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready]);
 
-  const getItemLayout = (data, index) => {
-    const { height } = data[index];
-    return {
-      index,
-      length: height,
-      offset: height * index,
-    };
-  };
-
-  const keyExtractor = item => item.id;
-
   const renderItem = useCallback(
     ({ item }) => {
       switch (item.rowType) {
@@ -208,11 +212,8 @@ export default function WalletList({
         <Fragment>
           <WalletFlatList
             data={rows}
-            getItemLayout={getItemLayout}
             initialNumToRender={rows.length}
-            keyExtractor={keyExtractor}
             ref={scrollView}
-            removeClippedSubviews
             renderItem={renderItem}
             scrollEnabled={scrollEnabled}
           />
