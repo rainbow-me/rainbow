@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-cool-modals/createNativeStackNavigator.js b/node_modules/react-native-cool-modals/createNativeStackNavigator.js
-index 334ef99..e3695c7 100644
+index 334ef99..f5d5e9f 100644
 --- a/node_modules/react-native-cool-modals/createNativeStackNavigator.js
 +++ b/node_modules/react-native-cool-modals/createNativeStackNavigator.js
 @@ -61,6 +61,7 @@ class StackView extends React.Component {
@@ -10,19 +10,35 @@ index 334ef99..e3695c7 100644
        customStack,
        topOffset,
        showDragIndicator,
-@@ -98,6 +99,7 @@ class StackView extends React.Component {
+@@ -68,6 +69,7 @@ class StackView extends React.Component {
+       allowsTapToDismiss,
+       anchorModaltoLongForm,
+       onWillDismiss,
++      onTouchTop,
+       backgroundColor,
+       backgroundOpacity,
+       blocksBackgroundTouches,
+@@ -98,6 +100,8 @@ class StackView extends React.Component {
      const { screenProps } = this.props;
      return (
        <Screen
++        onTouchTop={onTouchTop}
 +        dismissable={dismissable}
          onWillDismiss={onWillDismiss}
          allowsDragToDismiss={allowsDragToDismiss}
          allowsTapToDismiss={allowsTapToDismiss}
 diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreen.h b/node_modules/react-native-cool-modals/ios/RNCMScreen.h
-index 8648e95..fe585da 100644
+index 8648e95..4f77429 100644
 --- a/node_modules/react-native-cool-modals/ios/RNCMScreen.h
 +++ b/node_modules/react-native-cool-modals/ios/RNCMScreen.h
-@@ -50,6 +50,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
+@@ -44,12 +44,14 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
+ @property (nonatomic, copy) RCTDirectEventBlock onAppear;
+ @property (nonatomic, copy) RCTDirectEventBlock onDismissed;
+ @property (nonatomic, copy) RCTDirectEventBlock onWillDismiss;
++@property (nonatomic, copy) RCTDirectEventBlock onTouchTop;
+ @property (weak, nonatomic) UIView *reactSuperview;
+ @property (nonatomic, retain) UIViewController *controller;
+ @property (nonatomic, readonly) BOOL dismissed;
  @property (nonatomic) BOOL active;
  @property (nonatomic) BOOL customStack;
  @property (nonatomic) BOOL gestureEnabled;
@@ -31,7 +47,7 @@ index 8648e95..fe585da 100644
  @property (nonatomic) NSNumber* topOffset;
  @property (nonatomic) NSNumber* cornerRadius;
 diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreen.m b/node_modules/react-native-cool-modals/ios/RNCMScreen.m
-index 7c27c15..afdf6e5 100644
+index 7c27c15..909cf80 100644
 --- a/node_modules/react-native-cool-modals/ios/RNCMScreen.m
 +++ b/node_modules/react-native-cool-modals/ios/RNCMScreen.m
 @@ -45,7 +45,7 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -43,7 +59,21 @@ index 7c27c15..afdf6e5 100644
    }
  
    return self;
-@@ -375,6 +375,7 @@ @implementation RNCMScreenManager
+@@ -55,6 +55,13 @@ - (void)willDismiss {
+   _onWillDismiss(nil);
+ }
+ 
++- (void)onTouchTopWrapper:(NSNumber*)dismissing {
++  BOOL dismissingValue = [dismissing boolValue];
++  if (_onTouchTop) {
++    _onTouchTop(@{ @"dismissing": dismissing });
++  }
++}
++
+ - (void)reactSetFrame:(CGRect)frame
+ {
+   if (![self.reactViewController.parentViewController
+@@ -375,12 +382,14 @@ @implementation RNCMScreenManager
  RCT_EXPORT_VIEW_PROPERTY(gestureEnabled, BOOL)
  RCT_EXPORT_VIEW_PROPERTY(showDragIndicator, BOOL)
  RCT_EXPORT_VIEW_PROPERTY(customStack, BOOL)
@@ -51,6 +81,21 @@ index 7c27c15..afdf6e5 100644
  RCT_EXPORT_VIEW_PROPERTY(topOffset, NSNumber)
  RCT_EXPORT_VIEW_PROPERTY(cornerRadius, NSNumber)
  RCT_EXPORT_VIEW_PROPERTY(stackPresentation, RNSScreenStackPresentation)
+ RCT_EXPORT_VIEW_PROPERTY(stackAnimation, RNSScreenStackAnimation)
+ RCT_EXPORT_VIEW_PROPERTY(onAppear, RCTDirectEventBlock);
+ RCT_EXPORT_VIEW_PROPERTY(onDismissed, RCTDirectEventBlock);
++RCT_EXPORT_VIEW_PROPERTY(onTouchTop, RCTDirectEventBlock)
+ 
+ RCT_EXPORT_VIEW_PROPERTY(onWillDismiss, RCTDirectEventBlock);
+ RCT_EXPORT_VIEW_PROPERTY(springDamping, NSNumber)
+@@ -396,6 +405,7 @@ @implementation RNCMScreenManager
+ RCT_EXPORT_VIEW_PROPERTY(allowsDragToDismiss, BOOL)
+ RCT_EXPORT_VIEW_PROPERTY(startFromShortForm, BOOL)
+ 
++
+ - (UIView *)view
+ {
+   return [[RNCMScreenView alloc] initWithBridge:self.bridge];
 diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m b/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m
 index b397efb..b9194e9 100644
 --- a/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m
@@ -71,10 +116,22 @@ index b397efb..b9194e9 100644
      finish();
    }
 diff --git a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-index b21a043..7a14188 100644
+index b21a043..1cf695c 100644
 --- a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 +++ b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-@@ -125,7 +125,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -63,6 +63,11 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+     }
+   }
+   
++  func onTouchTop(_ dismissing: Bool) {
++    let selector = NSSelectorFromString("onTouchTopWrapper:")
++    config?.perform(selector, with: NSNumber.init(value: dismissing))
++  }
++
+   override var bottomLayoutGuide: UILayoutSupport {
+     get {
+       if self.isViewLoaded {
+@@ -125,7 +130,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
    }
  
    func shouldRespond(to panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
@@ -86,7 +143,7 @@ index b21a043..7a14188 100644
    }
  
    var allowsDragToDismiss: Bool {
-@@ -147,8 +150,21 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -147,8 +155,21 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
  
    func shouldPrioritize(panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
      let headerHeight: CGFloat = CGFloat(truncating: self.config?.value(forKey: "headerHeight") as! NSNumber)
@@ -110,7 +167,7 @@ index b21a043..7a14188 100644
    }
  
    var isShortFormEnabledInternal = 2
-@@ -200,12 +216,17 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -200,12 +221,17 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      super.viewWillDisappear(animated)
    }
  
@@ -130,7 +187,7 @@ index b21a043..7a14188 100644
        }
      }
 diff --git a/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx b/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
-index c2f2e2b..7f6f332 100644
+index c2f2e2b..3ba9622 100644
 --- a/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
 +++ b/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
 @@ -43,6 +43,7 @@ export default function NativeStackView({
@@ -141,10 +198,16 @@ index c2f2e2b..7f6f332 100644
              customStack,
              topOffset,
              showDragIndicator,
-@@ -62,6 +63,7 @@ export default function NativeStackView({
+@@ -58,10 +59,13 @@ export default function NativeStackView({
+             springDamping,
+             startFromShortForm,
+             transitionDuration,
++            onTouchTop
+           } = options;
  
            return (
                <Screen
++                  onTouchTop={onTouchTop}
 +                  dismissable={dismissable}
                    customStack={customStack}
                    topOffset={topOffset}

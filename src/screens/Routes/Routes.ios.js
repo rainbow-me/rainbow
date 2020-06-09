@@ -1,6 +1,6 @@
 import { omit } from 'lodash';
 import React from 'react';
-import { StatusBar } from 'react-native';
+import { Keyboard, StatusBar } from 'react-native';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
@@ -282,6 +282,13 @@ const MainNativeBottomSheetNavigation = createNativeStackNavigator(
     defaultNavigationOptions: {
       onAppear: () => appearListener.current && appearListener.current(),
       onDismissed: onDidPop,
+      onTouchTop: ({ nativeEvent: { dismissing } }) => {
+        if (dismissing) {
+          Keyboard.dismiss();
+        } else {
+          appearListener.current && appearListener.current();
+        }
+      },
       onWillDismiss: () => {
         onWillPop();
         sheetPreset.onTransitionStart({ closing: true });
