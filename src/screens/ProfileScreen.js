@@ -6,6 +6,7 @@ import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
+import { LoadingOverlay } from '../components/modal';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
@@ -15,8 +16,10 @@ import {
   useAccountTransactions,
   useContacts,
   useRequests,
+  useWallets,
 } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
+import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { colors, position } from '../styles';
 import Routes from './Routes/routesNames';
 
@@ -31,6 +34,7 @@ export default function ProfileScreen({ navigation }) {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
+  const { isCreatingAccount } = useWallets();
 
   const {
     isLoadingTransactions: isLoading,
@@ -103,6 +107,12 @@ export default function ProfileScreen({ navigation }) {
           navigation={navigation}
           network={network}
           sections={sections}
+        />
+      )}
+      {isCreatingAccount && (
+        <LoadingOverlay
+          paddingTop={sheetVerticalOffset}
+          title="Creating account..."
         />
       )}
     </ProfileScreenPage>

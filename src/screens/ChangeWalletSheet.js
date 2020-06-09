@@ -18,6 +18,7 @@ import { useNavigation } from '../navigation/Navigation';
 import {
   addressSetSelected,
   createAccountForWallet,
+  isCreatingAccount,
   walletsLoadState,
   walletsSetSelected,
   walletsUpdate,
@@ -263,6 +264,7 @@ const ChangeWalletSheet = () => {
             isNewProfile: true,
             onCloseModal: async args => {
               if (args) {
+                dispatch(isCreatingAccount(true));
                 const name = get(args, 'name', '');
                 const color = get(args, 'color', colors.getRandomColor());
                 // Check if the selected wallet is the primary
@@ -313,6 +315,7 @@ const ChangeWalletSheet = () => {
                 }
               }
               creatingWallet.current = false;
+              dispatch(isCreatingAccount(false));
             },
             profile: {
               color: null,
@@ -323,6 +326,7 @@ const ChangeWalletSheet = () => {
         }, 50);
       });
     } catch (e) {
+      dispatch(isCreatingAccount(false));
       logger.log('Error while trying to add account', e);
     }
   }, [
