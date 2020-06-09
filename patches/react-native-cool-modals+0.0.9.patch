@@ -71,7 +71,7 @@ index b397efb..b9194e9 100644
      finish();
    }
 diff --git a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-index b21a043..7ee4df3 100644
+index b21a043..7a14188 100644
 --- a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 +++ b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 @@ -125,7 +125,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
@@ -122,7 +122,7 @@ index b21a043..7ee4df3 100644
          if !self.disappared {
 -          self.panModalSetNeedsLayoutUpdate()
 +          let newHeight: CGFloat = self.panScrollable?.layer.frame.height ?? 0
-+          if newHeight.isEqual(to: self.prevHeight) {
++          if !newHeight.isEqual(to: self.prevHeight) {
 +            self.prevHeight = newHeight
 +            self.panModalSetNeedsLayoutUpdate()
 +          }
