@@ -9,8 +9,7 @@ const Container = styled(Row).attrs({
   align: 'center',
   scaleTo: 0.98,
 })`
-  ${padding(15)};
-  height: 57;
+  ${padding(15, 19)};
 `;
 
 const WalletOption = ({ editMode, label, onPress }) => (

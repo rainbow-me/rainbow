@@ -6,9 +6,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Transition, Transitioning } from 'react-native-reanimated';
+import styled from 'styled-components/primitives';
 import WalletTypes from '../../helpers/walletTypes';
 import { colors, position } from '../../styles';
 import { EmptyAssetList } from '../asset-list';
@@ -24,19 +24,29 @@ const RowTypes = {
   EMPTY: 2,
 };
 
-const sx = StyleSheet.create({
-  container: {
-    marginTop: -2,
-  },
-  flatList: {
-    flex: 1,
-    minHeight: 1,
-    paddingTop: listTopPadding,
-  },
-  skeleton: {
-    paddingTop: listTopPadding,
-  },
-});
+const Container = styled(Transitioning.View)`
+  height: ${({ height }) => height};
+  margin-top: -2;
+`;
+
+const EmptyWalletList = styled(EmptyAssetList).attrs({
+  descendingOpacity: true,
+  pointerEvents: 'none',
+})`
+  ${position.cover};
+  background-color: ${colors.white};
+  padding-top: ${listTopPadding};
+`;
+
+const WalletFlatList = styled(FlatList)`
+  flex: 1;
+  min-height: 1;
+  padding-top: ${listTopPadding};
+`;
+
+const WalletListFooter = styled(Column)`
+  padding-bottom: 6;
+`;
 
 const skeletonTransition = (
   <Transition.Sequence>
@@ -146,7 +156,7 @@ export default function WalletList({
 
     if (distanceToScroll > height - scrollThreshold && !doneScrolling) {
       setTimeout(() => {
-        scrollView?.current?.scrollToIndex({
+        scrollView.current?.scrollToIndex({
           animated: true,
           index: selectedItemIndex,
         });
@@ -189,50 +199,41 @@ export default function WalletList({
   );
 
   return (
-    <View style={sx.container}>
-      <View style={{ height }}>
-        <Transitioning.View
-          flex={1}
-          ref={skeletonTransitionRef}
-          transition={skeletonTransition}
-        >
-          {ready ? (
-            <Fragment>
-              <FlatList
-                data={rows}
-                style={sx.flatList}
-                ref={scrollView}
-                renderItem={renderItem}
-                scrollEnabled={scrollEnabled}
-                getItemLayout={getItemLayout}
-                keyExtractor={keyExtractor}
-                removeClippedSubviews
-                initialNumToRender={rows.length}
-              />
-              <WalletOption
-                editMode={editMode}
-                icon="arrowBack"
-                label="􀁍 Create a new wallet"
-                onPress={onPressAddAccount}
-              />
-              <WalletOption
-                editMode={editMode}
-                icon="arrowBack"
-                label="􀂍 Add an existing wallet"
-                onPress={onPressImportSeedPhrase}
-              />
-            </Fragment>
-          ) : (
-            <EmptyAssetList
-              {...position.coverAsObject}
-              backgroundColor={colors.white}
-              descendingOpacity
-              pointerEvents="none"
-              style={sx.skeleton}
+    <Container
+      height={height}
+      ref={skeletonTransitionRef}
+      transition={skeletonTransition}
+    >
+      {ready ? (
+        <Fragment>
+          <WalletFlatList
+            data={rows}
+            getItemLayout={getItemLayout}
+            initialNumToRender={rows.length}
+            keyExtractor={keyExtractor}
+            ref={scrollView}
+            removeClippedSubviews
+            renderItem={renderItem}
+            scrollEnabled={scrollEnabled}
+          />
+          <WalletListFooter>
+            <WalletOption
+              editMode={editMode}
+              icon="arrowBack"
+              label="􀁍 Create a new wallet"
+              onPress={onPressAddAccount}
             />
-          )}
-        </Transitioning.View>
-      </View>
-    </View>
+            <WalletOption
+              editMode={editMode}
+              icon="arrowBack"
+              label="􀂍 Add an existing wallet"
+              onPress={onPressImportSeedPhrase}
+            />
+          </WalletListFooter>
+        </Fragment>
+      ) : (
+        <EmptyWalletList />
+      )}
+    </Container>
   );
 }
