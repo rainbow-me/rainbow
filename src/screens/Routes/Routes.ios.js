@@ -242,6 +242,7 @@ const routesForBottomSheetStack = {
       cornerRadius: 0,
       customStack: true,
       headerHeight: 58,
+      ignoreBottomOffset: true,
       springDamping: 1,
       topOffset: 128,
       transitionDuration: 0.25,
