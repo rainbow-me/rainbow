@@ -24,6 +24,24 @@
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
+@interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
+@end
+
+@implementation RainbowSplashScreenManager
+
+- (dispatch_queue_t)methodQueue {
+  return dispatch_get_main_queue();
+}
+
+RCT_EXPORT_MODULE(RainbowSplashScreen);
+
+RCT_EXPORT_METHOD(hideAnimated) {
+  [((AppDelegate*) UIApplication.sharedApplication.delegate) hideSplashScreenAnimated];
+}
+
+@end
+
+
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
   SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
@@ -37,6 +55,18 @@ static void InitializeFlipper(UIApplication *application) {
 
 
 @implementation AppDelegate
+
+- (void)hideSplashScreenAnimated {
+  UIView* subview = self.window.rootViewController.view.subviews.lastObject;
+  UIView* rainbowIcon = subview.subviews.firstObject;
+  [UIView animateWithDuration:0.5
+  animations:^{
+      rainbowIcon.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.001, 0.001);
+  } completion:^(BOOL finished) {
+      rainbowIcon.hidden = YES;
+      [RNSplashScreen hide];
+  }];
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -77,7 +107,7 @@ static void InitializeFlipper(UIApplication *application) {
     object:nil];
   
   // Splashscreen - react-native-splash-screen
-  [RNSplashScreen show];
+  [RNSplashScreen showSplash:@"LaunchScreen" inRootView:rootView];
   return YES;
 }
 
