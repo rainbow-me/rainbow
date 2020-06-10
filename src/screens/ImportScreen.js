@@ -24,6 +24,7 @@ const {
   not,
   set,
   cond,
+  interpolate,
   multiply,
   lessThan,
   abs,
@@ -152,6 +153,7 @@ export const useReanimatedValue = initialValue => {
 
 const rainbows = [
   {
+    delay: 0,
     id: 'grey',
     rotate: '150deg',
     scale: 0.5066666667,
@@ -160,6 +162,7 @@ const rainbows = [
     y: -202,
   },
   {
+    delay: 20,
     id: 'neon',
     rotate: '394.75deg',
     scale: 0.3333333333,
@@ -168,6 +171,7 @@ const rainbows = [
     y: 380,
   },
   {
+    delay: 40,
     id: 'pixel',
     rotate: '360deg',
     scale: 0.6666666667,
@@ -176,6 +180,7 @@ const rainbows = [
     y: -263,
   },
   {
+    delay: 60,
     id: 'light',
     rotate: '-33deg',
     scale: 0.2826666667,
@@ -184,6 +189,7 @@ const rainbows = [
     y: 180,
   },
   {
+    delay: 80,
     id: 'liquid',
     rotate: '75deg',
     scale: 0.42248,
@@ -193,16 +199,19 @@ const rainbows = [
   },
 ];
 
-const traverseRainbows = animatedValue =>
-  rainbows.map(
-    ({
-      initialRotate = '0deg',
-      rotate = '0deg',
-      scale = 1,
-      source,
-      x = 0,
-      y = 0,
-    }) => ({
+const traversedRainbows = rainbows.map(
+  ({
+    delay,
+    initialRotate = '0deg',
+    rotate = '0deg',
+    scale = 1,
+    source,
+    x = 0,
+    y = 0,
+  }) => {
+    const animatedValue = new Animated.Value(0);
+    return {
+      delay,
       source,
       style: {
         opacity: animatedValue.interpolate({
@@ -236,8 +245,10 @@ const traverseRainbows = animatedValue =>
           },
         ],
       },
-    })
-  );
+      value: animatedValue,
+    };
+  }
+);
 
 const RainbowImage = styled(Animated.Image)`
   height: ${INITIAL_SIZE};
@@ -287,13 +298,21 @@ function runTiming(value) {
       set(state.time, 0),
       set(state.position, value),
       set(state.frameTime, 0),
-      set(config.toValue, 360),
+      set(config.toValue, 5),
       startClock(clock),
     ]),
     timing(clock, state, config),
     state.position,
   ]);
 }
+
+const colorsHSL = [
+  { h: 40, l: 0.5, s: 1 },
+  { h: 150, l: 0.44, s: 1 },
+  { h: 195, l: 0.43, s: 1 },
+  { h: 248, l: 0.68, s: 1 },
+  { h: 360, l: 0.64, s: 1 },
+];
 
 function colorHSV(h, s, v, fromShadow) {
   const c = multiply(v, s);
@@ -332,35 +351,64 @@ function colorHSV(h, s, v, fromShadow) {
   ]);
 }
 
+const springConfig = {
+  bounciness: 7.30332,
+  speed: 0.6021408,
+  toValue: 1,
+  useNativeDriver: true,
+};
+
+function colorAnimation(rValue, fromShadow) {
+  const animation = runTiming(rValue.current);
+  const h = interpolate(animation, {
+    inputRange: [0, 1, 2, 3, 4, 5],
+    outputRange: [
+      ...colorsHSL.map(({ h }) => h),
+      colorsHSL[colorsHSL.length - 1].h,
+    ],
+  });
+
+  const s = interpolate(animation, {
+    inputRange: [0, 1, 2, 3, 4, 5],
+    outputRange: [
+      ...colorsHSL.map(({ s }) => s),
+      colorsHSL[colorsHSL.length - 1].s,
+    ],
+  });
+
+  const l = interpolate(animation, {
+    inputRange: [0, 1, 2, 3, 4, 5],
+    outputRange: [
+      ...colorsHSL.map(({ l }) => l),
+      colorsHSL[colorsHSL.length - 1].l,
+    ],
+  });
+  return colorHSV(h, s, l, fromShadow);
+}
+
 export default function ImportScreen() {
   const [visible, setVisible] = useState(false);
-  const animatedValue = useAnimatedValue(0);
-  const contentAnimation = useAnimatedValue(1);
+  const contentAnimation = useAnimatedValue(0);
+  const importButtonAnimation = useAnimatedValue(1);
 
-  const traversedRainbows = useMemoOne(
-    () => traverseRainbows(animatedValue.current),
-    [animatedValue]
-  );
   useEffect(() => {
     if (!visible) {
       return;
     }
 
-    Animated.sequence([
-      Animated.spring(animatedValue.current, {
-        bounciness: 7.30332,
-        speed: 0.6021408,
-        toValue: 1,
-        useNativeDriver: true,
-      }),
+    Animated.parallel([
+      ...traversedRainbows.map(({ value, delay = 0 }) =>
+        Animated.spring(value, { ...springConfig, delay })
+      ),
+      Animated.spring(contentAnimation.current, springConfig),
       Animated.loop(
         Animated.sequence([
-          Animated.timing(contentAnimation.current, {
+          Animated.timing(importButtonAnimation.current, {
             duration: 1000,
             toValue: 1.02,
             useNativeDriver: true,
           }),
-          Animated.timing(contentAnimation.current, {
+          Animated.timing(importButtonAnimation.current, {
             duration: 1000,
             toValue: 0.98,
             useNativeDriver: true,
@@ -369,39 +417,39 @@ export default function ImportScreen() {
       ),
     ]).start();
     return () => {
-      contentAnimation.current.setValue(1);
-      animatedValue.current.setValue(0);
+      importButtonAnimation.current.setValue(1);
+      contentAnimation.current.setValue(0);
     };
-  }, [animatedValue, visible]);
+  }, [contentAnimation, importButtonAnimation, visible]);
 
   const buttonStyle = useMemoOne(
-    () => ({ transform: [{ scale: contentAnimation.current }], zIndex: 10 }),
-    [contentAnimation]
+    () => ({
+      transform: [{ scale: importButtonAnimation.current }],
+      zIndex: 10,
+    }),
+    [importButtonAnimation]
   );
 
   const contentStyle = useMemoOne(
     () => ({
       transform: [
         {
-          scale: animatedValue.current.interpolate({
+          scale: contentAnimation.current.interpolate({
             inputRange: [0, 1],
-            outputRange: [1, 1],
+            outputRange: [1, 1.2],
           }),
         },
       ],
     }),
-    [contentAnimation]
+    [importButtonAnimation]
   );
 
   const rValue = useReanimatedValue(0);
 
-  const backgroundColor = useMemoOne(
-    () => colorHSV(runTiming(rValue.current), 1, 1, false),
-    []
-  );
+  const backgroundColor = useMemoOne(() => colorAnimation(rValue, false), []);
 
   const importButtonProps = useMemoOne(() => {
-    const color = colorHSV(runTiming(rValue.current), 1, 1, true);
+    const color = colorAnimation(rValue, true);
     return {
       emoji: 'european_castle',
       height: 54,
