@@ -9,16 +9,10 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import { useMemoOne } from 'use-memo-one';
-
-import GreyNeonRainbow from '../assets/rainbows/greyneon.png';
-import LightRainbow from '../assets/rainbows/light.png';
-import LiquidRainbow from '../assets/rainbows/liquid.png';
-import NeonRainbow from '../assets/rainbows/neon.png';
-import PixelRainbow from '../assets/rainbows/pixel.png';
 import { ButtonPressAnimation } from '../components/animations';
 import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
-import { Text } from '../components/text';
+import { Emoji, Text } from '../components/text';
 import { colors, shadow } from '../styles';
 
 const {
@@ -41,14 +35,12 @@ const {
 } = Reanimated;
 
 const ButtonContainer = styled(Reanimated.View)`
-  height: ${({ height }) => height};
-  width: 100%;
   border-radius: ${({ height }) => height / 2};
 `;
 
 const ButtonContent = styled(RowWithMargins).attrs({
   align: 'center',
-  margin: -2.5,
+  margin: 4,
 })`
   align-self: center;
   height: 100%;
@@ -56,27 +48,47 @@ const ButtonContent = styled(RowWithMargins).attrs({
 `;
 
 const ButtonLabel = styled(Text).attrs(
-  ({ textColor: color = colors.black }) => ({
+  ({ textColor: color = colors.dark }) => ({
     align: 'center',
     color,
-    letterSpacing: 'roundedMedium',
     size: 'larger',
     weight: 'bold',
   })
 )``;
 
-const Shadow = styled(Reanimated.View)`
+const ButtonEmoji = styled(Emoji).attrs({
+  align: 'center',
+  size: 16.25,
+})`
+  padding-bottom: 1.5px;
+`;
+
+const DarkShadow = styled(Reanimated.View)`
   ${shadow.build(0, 10, 30, colors.dark, 1)};
   background-color: ${colors.white};
-  border-radius: ${({ height }) => height / 2};
-  height: ${({ height }) => height};
+  border-radius: 30;
+  height: 60;
+  left: -3;
   opacity: 0.2;
   position: absolute;
-  width: 100%;
+  top: -3;
+  width: 236;
+`;
+
+const Shadow = styled(Reanimated.View)`
+  ${shadow.build(0, 5, 15, colors.dark, 0.4)};
+  border-radius: 30;
+  height: 60;
+  left: -3;
+  position: absolute;
+  top: -3;
+  width: 236;
 `;
 
 const RainbowButton = ({
-  height = 56,
+  darkShadowStyle,
+  emoji,
+  height,
   onPress,
   shadowStyle,
   style,
@@ -85,9 +97,11 @@ const RainbowButton = ({
 }) => {
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
-      <Shadow height={height} style={shadowStyle} />
+      <DarkShadow style={darkShadowStyle} />
+      <Shadow style={shadowStyle} />
       <ButtonContainer height={height} style={style}>
         <ButtonContent>
+          <ButtonEmoji name={emoji} />
           <ButtonLabel textColor={textColor}>{text}</ButtonLabel>
         </ButtonContent>
       </ButtonContainer>
@@ -97,25 +111,24 @@ const RainbowButton = ({
 
 const Container = styled.View`
   ${StyleSheet.absoluteFillObject};
-  background-color: white;
-  justify-content: center
-  align-items: center
+  align-items: center;
+  background-color: ${colors.white};
+  justify-content: center;
 `;
 
 const ContentWrapper = styled(Animated.View)`
-  z-index: 10
-  width: 100%;
-  height: 180;
-  padding-horizontal: 40
-  align-items: center
+  align-items: center;
+  height: 192;
   justify-content: space-between;
+  margin-bottom: 20;
+  z-index: 10;
 `;
 
 const ButtonWrapper = styled(Animated.View)`
   width: 100%;
 `;
 
-const INITIAL_SIZE = 200;
+const INITIAL_SIZE = 375;
 
 export const useAnimatedValue = initialValue => {
   const value = useRef();
@@ -141,59 +154,61 @@ const rainbows = [
   {
     id: 'grey',
     rotate: '150deg',
-    scale: 0.9,
-    source: GreyNeonRainbow,
-    x: -100,
-    y: -150,
+    scale: 0.5066666667,
+    source: { uri: 'greyneon' },
+    x: -116,
+    y: -202,
   },
   {
     id: 'neon',
-    initialRotate: '-50deg',
-    rotate: '0deg',
-    scale: 0.8,
-    source: NeonRainbow,
-    x: 160,
-    y: 300,
+    rotate: '394.75deg',
+    scale: 0.3333333333,
+    source: { uri: 'neon' },
+    x: 149,
+    y: 380,
   },
   {
     id: 'pixel',
     rotate: '360deg',
-    scale: 1.1,
-    source: PixelRainbow,
-    x: 160,
-    y: -200,
+    scale: 0.6666666667,
+    source: { uri: 'pixel' },
+    x: 173,
+    y: -263,
   },
   {
     id: 'light',
-    initialRotate: '300deg',
-    rotate: '330deg',
-    scale: 0.6,
-    source: LightRainbow,
-    x: -160,
-    y: 200,
+    rotate: '-33deg',
+    scale: 0.2826666667,
+    source: { uri: 'light' },
+    x: -172,
+    y: 180,
   },
   {
     id: 'liquid',
     rotate: '75deg',
-    scale: 0.8,
-    source: LiquidRainbow,
+    scale: 0.42248,
+    source: { uri: 'liquid' },
     x: 40,
-    y: 200,
+    y: 215,
   },
 ];
 
 const traverseRainbows = animatedValue =>
   rainbows.map(
     ({
+      initialRotate = '0deg',
+      rotate = '0deg',
+      scale = 1,
       source,
       x = 0,
       y = 0,
-      rotate = '0deg',
-      initialRotate = '0deg',
-      scale = 1,
     }) => ({
       source,
       style: {
+        opacity: animatedValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, 1],
+        }),
         transform: [
           {
             translateX: animatedValue.interpolate({
@@ -225,17 +240,17 @@ const traverseRainbows = animatedValue =>
   );
 
 const RainbowImage = styled(Animated.Image)`
-  width: ${INITIAL_SIZE}
-  height: ${INITIAL_SIZE}
-  position: absolute
+  height: ${INITIAL_SIZE};
+  position: absolute;
+  width: ${INITIAL_SIZE};
 `;
 
-const RAINBOW_TEXT_HEIGHT = 25;
+const RAINBOW_TEXT_HEIGHT = 32;
 const RAINBOW_TEXT_WIDTH = 125;
 
 const RainbowTextMask = styled(Reanimated.View)`
-  height: ${RAINBOW_TEXT_HEIGHT}
-  width: ${RAINBOW_TEXT_WIDTH}
+  height: ${RAINBOW_TEXT_HEIGHT};
+  width: ${RAINBOW_TEXT_WIDTH};
 `;
 
 function match(condsAndResPairs, offset = 0) {
@@ -261,7 +276,7 @@ function runTiming(value) {
   };
 
   const config = {
-    duration: 5000,
+    duration: 2500,
     easing: Easing.linear,
     toValue: new RValue(1),
   };
@@ -320,7 +335,7 @@ function colorHSV(h, s, v, fromShadow) {
 export default function ImportScreen() {
   const [visible, setVisible] = useState(false);
   const animatedValue = useAnimatedValue(0);
-  const contentAnimattion = useAnimatedValue(1);
+  const contentAnimation = useAnimatedValue(1);
 
   const traversedRainbows = useMemoOne(
     () => traverseRainbows(animatedValue.current),
@@ -333,34 +348,35 @@ export default function ImportScreen() {
 
     Animated.sequence([
       Animated.spring(animatedValue.current, {
-        damping: 5,
+        bounciness: 7.30332,
+        speed: 0.6021408,
         toValue: 1,
         useNativeDriver: true,
       }),
       Animated.loop(
         Animated.sequence([
-          Animated.timing(contentAnimattion.current, {
+          Animated.timing(contentAnimation.current, {
             duration: 1000,
-            toValue: 0.95,
+            toValue: 1.02,
             useNativeDriver: true,
           }),
-          Animated.timing(contentAnimattion.current, {
+          Animated.timing(contentAnimation.current, {
             duration: 1000,
-            toValue: 1,
+            toValue: 0.98,
             useNativeDriver: true,
           }),
         ])
       ),
     ]).start();
     return () => {
-      contentAnimattion.current.setValue(1);
+      contentAnimation.current.setValue(1);
       animatedValue.current.setValue(0);
     };
   }, [animatedValue, visible]);
 
   const buttonStyle = useMemoOne(
-    () => ({ transform: [{ scale: contentAnimattion.current }] }),
-    [contentAnimattion]
+    () => ({ transform: [{ scale: contentAnimation.current }], zIndex: 10 }),
+    [contentAnimation]
   );
 
   const contentStyle = useMemoOne(
@@ -368,13 +384,13 @@ export default function ImportScreen() {
       transform: [
         {
           scale: animatedValue.current.interpolate({
-            inputRange: [0, 2],
-            outputRange: [0.8, 1.3],
+            inputRange: [0, 1],
+            outputRange: [1, 1],
           }),
         },
       ],
     }),
-    [contentAnimattion]
+    [contentAnimation]
   );
 
   const rValue = useReanimatedValue(0);
@@ -387,29 +403,38 @@ export default function ImportScreen() {
   const importButtonProps = useMemoOne(() => {
     const color = colorHSV(runTiming(rValue.current), 1, 1, true);
     return {
+      emoji: 'european_castle',
+      height: 54,
       shadowStyle: {
+        backgroundColor: backgroundColor,
         shadowColor: color,
       },
       style: {
-        backgroundColor: colors.black,
+        backgroundColor: colors.dark,
         borderColor: backgroundColor,
-        borderWidth: 3,
+        width: 230,
       },
-      text: '💎 Get a New Wallet',
+      text: 'Get a new wallet',
       textColor: colors.white,
     };
   }, [rValue]);
 
-  const existingWallerButtonProps = useMemoOne(() => {
+  const existingWalletButtonProps = useMemoOne(() => {
     return {
+      darkShadowStyle: {
+        opacity: 0,
+      },
+      emoji: 'old_key',
+      height: 56,
       shadowStyle: {
         opacity: 0,
       },
       style: {
-        backgroundColor: colors.lighterGrey,
+        backgroundColor: colors.blueGreyDarkLight,
+        width: 248,
       },
-      text: '🗝️ Import My Walllet',
-      textColor: colors.black,
+      text: 'I already have one',
+      textColor: colors.alpha(colors.blueGreyDark, 0.8),
     };
   }, [rValue]);
 
@@ -437,7 +462,7 @@ export default function ImportScreen() {
           <RainbowButton {...importButtonProps} />
         </ButtonWrapper>
         <ButtonWrapper>
-          <RainbowButton {...existingWallerButtonProps} />
+          <RainbowButton {...existingWalletButtonProps} />
         </ButtonWrapper>
       </ContentWrapper>
     </Container>
