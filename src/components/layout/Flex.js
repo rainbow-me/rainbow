@@ -1,44 +1,9 @@
 import PropTypes from 'prop-types';
-import { createElement, useMemo } from 'react';
-import { View } from 'react-primitives';
+import styled from 'styled-components/primitives';
+import { buildFlexStyles } from '../../styles';
 
-export const getFlexStyleKeysFromShorthand = style =>
-  style === 'end' || style === 'start' ? `flex-${style}` : style;
-
-const Flex = ({
-  align,
-  component,
-  direction,
-  flex: flexProp,
-  justify,
-  self,
-  style,
-  wrap,
-  ...props
-}) => {
-  const flexStyles = useMemo(
-    () => ({
-      ...(self ? { alignSelf: getFlexStyleKeysFromShorthand(self) } : {}),
-      ...(flexProp ? { flex: flexProp } : {}),
-      alignItems: getFlexStyleKeysFromShorthand(align),
-      flexDirection: direction,
-      flexWrap: wrap ? 'wrap' : 'nowrap',
-      justifyContent: getFlexStyleKeysFromShorthand(justify),
-    }),
-    [align, direction, flexProp, justify, self, wrap]
-  );
-
-  return createElement(component, {
-    ...props,
-    style: [flexStyles, style],
-  });
-};
-
-Flex.displayName = 'Flex';
-
-Flex.propTypes = {
+const flexPropTypes = {
   align: PropTypes.oneOf(['baseline', 'center', 'end', 'start', 'stretch']),
-  component: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
   direction: PropTypes.oneOf([
     'column',
     'column-reverse',
@@ -46,6 +11,7 @@ Flex.propTypes = {
     'row-reverse',
   ]),
   flex: PropTypes.number,
+  grow: PropTypes.number,
   justify: PropTypes.oneOf([
     'center',
     'end',
@@ -54,14 +20,21 @@ Flex.propTypes = {
     'start',
   ]),
   self: PropTypes.oneOf(['center', 'end', 'start', 'stretch']),
+  shrink: PropTypes.number,
   wrap: PropTypes.bool,
 };
 
-Flex.defaultProps = {
-  align: 'stretch',
-  component: View,
-  direction: 'row',
-  justify: 'start',
-};
+const Flex = styled.View.withConfig({
+  // We need to prevent the buildFlexStyles-related props from being
+  // passed to the root element because our namespace collides with some native props
+  shouldForwardProp: (prop, defaultValidatorFn) =>
+    !Object.keys(flexPropTypes).includes(prop) && defaultValidatorFn(prop),
+})`
+  ${buildFlexStyles};
+`;
+
+Flex.displayName = 'Flex';
+
+Flex.propTypes = flexPropTypes;
 
 export default Flex;

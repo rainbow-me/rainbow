@@ -8,7 +8,7 @@
 
 import Foundation
 
-class CoinIconWithProgressBar : UIImageView {
+class CoinIconWithProgressBar : UIView {
   private let shape = CAShapeLayer()
 
   override init(frame: CGRect) {

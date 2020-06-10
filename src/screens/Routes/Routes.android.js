@@ -3,12 +3,14 @@ import React from 'react';
 import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
-import { ExchangeModalNavigator } from '../../navigation';
+import { ExchangeModalNavigator, SavingModalNavigator } from '../../navigation';
 import {
   backgroundPreset,
   bottomSheetPreset,
   emojiPreset,
+  exchangePreset,
   expandedPreset,
+  onTransitionStart,
   overlayExpandedPreset,
   sheetPreset,
 } from '../../navigation/transitions/effects';
@@ -18,8 +20,9 @@ import AvatarBuilder from '../AvatarBuilder';
 import BackupSheet from '../BackupSheet';
 import ChangeWalletSheet from '../ChangeWalletSheet';
 import ExampleScreen from '../ExampleScreen';
-import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
+import ExpandedAssetSheet from '../ExpandedAssetSheet';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
+import ModalScreen from '../ModalScreen';
 import ProfileScreen from '../ProfileScreen';
 import QRScannerScreenWithData from '../QRScannerScreenWithData';
 import ReceiveModal from '../ReceiveModal';
@@ -27,15 +30,11 @@ import SavingsSheet from '../SavingsSheet';
 import SendSheet from '../SendSheet';
 import SettingsModal from '../SettingsModal';
 import TransactionConfirmationScreen from '../TransactionConfirmationScreen';
-import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
+import WalletConnectApprovalSheet from '../WalletConnectApprovalSheet';
+import WalletConnectRedirectSheet from '../WalletConnectRedirectSheet';
 import WalletScreen from '../WalletScreen';
-import {
-  createStackNavigator,
-  exchangePresetWithTransitions,
-  expandedPresetWithTransitions,
-  onTransitionStart,
-  sheetPresetWithTransitions,
-} from './helpers';
+import WithdrawModal from '../WithdrawModal';
+import { createStackNavigator } from './helpers';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 
@@ -69,27 +68,23 @@ const routesForMainNavigator = {
     screen: ChangeWalletSheet,
   },
   [Routes.CONFIRM_REQUEST]: {
-    navigationOptions: sheetPresetWithTransitions,
+    navigationOptions: sheetPreset,
     screen: TransactionConfirmationScreen,
   },
   [Routes.EXAMPLE_SCREEN]: ExampleScreen,
   [Routes.EXCHANGE_MODAL]: {
-    navigationOptions: exchangePresetWithTransitions,
+    navigationOptions: exchangePreset,
     params: {
       isGestureBlocked: false,
     },
     screen: ExchangeModalNavigator,
   },
-  [Routes.EXPANDED_ASSET_SCREEN]: {
+  [Routes.EXPANDED_ASSET_SHEET]: {
     navigationOptions: expandedPreset,
-    screen: ExpandedAssetScreenWithData,
-  },
-  [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: {
-    navigationOptions: overlayExpandedPreset,
-    screen: ExpandedAssetScreenWithData,
+    screen: ExpandedAssetSheet,
   },
   [Routes.RECEIVE_MODAL]: {
-    navigationOptions: expandedPresetWithTransitions,
+    navigationOptions: expandedPreset,
     screen: ReceiveModal,
   },
   [Routes.SAVINGS_SHEET]: {
@@ -97,24 +92,28 @@ const routesForMainNavigator = {
     screen: SavingsSheet,
   },
   [Routes.SETTINGS_MODAL]: {
-    navigationOptions: expandedPresetWithTransitions,
+    navigationOptions: expandedPreset,
     screen: SettingsModal,
     transparentCard: true,
   },
-  SwipeLayout: {
+  [Routes.SWIPE_LAYOUT]: {
     navigationOptions: backgroundPreset,
     screen: SwipeStack,
   },
-  WalletConnectConfirmationModal: {
-    navigationOptions: expandedPresetWithTransitions,
-    screen: WalletConnectConfirmationModal,
+  [Routes.WALLET_CONNECT_APPROVAL_SHEET]: {
+    navigationOptions: expandedPreset,
+    screen: WalletConnectApprovalSheet,
+  },
+  [Routes.WALLET_CONNECT_REDIRECT_SHEET]: {
+    navigationOptions: bottomSheetPreset,
+    screen: WalletConnectRedirectSheet,
   },
 };
 
 const MainNavigator = createStackNavigator(routesForMainNavigator);
 
 const routesForStack = {
-  AddCashSheet: {
+  [Routes.ADD_CASH_SHEET]: {
     navigationOptions: {
       ...sheetPreset,
       onTransitionStart: props => {
@@ -124,7 +123,7 @@ const routesForStack = {
     },
     screen: AddCashSheet,
   },
-  ImportSeedPhraseSheet: {
+  [Routes.IMPORT_SEED_PHRASE_SHEET]: {
     navigationOptions: {
       ...sheetPreset,
       onTransitionStart: props => {
@@ -135,7 +134,25 @@ const routesForStack = {
     screen: ImportSeedPhraseSheetWithData,
   },
   MainNavigator,
-  SendSheet: {
+  [Routes.MODAL_SCREEN]: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ModalScreen,
+  },
+  [Routes.SAVINGS_DEPOSIT_MODAL]: {
+    navigationOptions: exchangePreset,
+    params: {
+      isGestureBlocked: false,
+    },
+    screen: SavingModalNavigator,
+  },
+  [Routes.SAVINGS_WITHDRAW_MODAL]: {
+    navigationOptions: exchangePreset,
+    params: {
+      isGestureBlocked: false,
+    },
+    screen: WithdrawModal,
+  },
+  [Routes.SEND_SHEET]: {
     navigationOptions: {
       ...omit(sheetPreset, 'gestureResponseDistance'),
       onTransitionStart: props => {

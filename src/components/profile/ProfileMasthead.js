@@ -1,26 +1,29 @@
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import FastImage from 'react-native-fast-image';
-import { useNavigation } from 'react-navigation-hooks';
+
 import styled from 'styled-components/primitives';
-import Caret from '../../assets/caret-down.png';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import { useAccountProfile, useClipboard } from '../../hooks';
+import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
-import { abbreviations } from '../../utils';
+import { abbreviations, deviceUtils } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
+import { RainbowButton } from '../buttons';
 import { FloatingEmojis } from '../floating-emojis';
-import { Column, Row, RowWithMargins } from '../layout';
-import { Text } from '../text';
-import AddCashButton from './AddCashButton';
+import { Icon } from '../icons';
+import { Centered, Column, Row, RowWithMargins } from '../layout';
+import { TruncatedText } from '../text';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
 
-const AccountName = styled(Text).attrs({
-  align: 'center',
+const dropdownArrowWidth = 21;
+const maxAddressWidth = deviceUtils.dimensions.width - dropdownArrowWidth - 60;
+
+const AccountName = styled(TruncatedText).attrs({
+  align: 'left',
   firstSectionLength: abbreviations.defaultNumCharsPerSection,
   letterSpacing: 'roundedMedium',
   size: 'bigger',
@@ -30,31 +33,40 @@ const AccountName = styled(Text).attrs({
   height: 33;
   margin-top: -3;
   margin-bottom: 3;
-  padding-left: 15;
-  padding-right: 8;
+  max-width: ${maxAddressWidth};
+  padding-right: 6;
 `;
 
-const DropdownSelector = styled(FastImage).attrs({
-  source: Caret,
+const AddCashButton = styled(RainbowButton).attrs({
+  type: 'addCash',
 })`
-  height: 20;
-  width: 20;
-  justify-content: center;
-  align-items: center;
-  margin-right: 15;
-  margin-top: 3;
+  margin-top: 16;
 `;
 
-const ProfileMasthead = ({
+const DropdownArrow = styled(Centered)`
+  height: 9;
+  margin-top: 9;
+  width: 21;
+`;
+
+const ProfileMastheadDivider = styled(Divider).attrs({
+  color: colors.rowDividerLight,
+})`
+  bottom: 0;
+  position: absolute;
+`;
+
+export default function ProfileMasthead({
   accountAddress,
   addCashAvailable,
-  showBottomDivider,
   recyclerListRef,
-}) => {
+  showBottomDivider,
+}) {
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
-  const { accountEmoji, accountColor, accountName } = useAccountProfile();
-  const onPressAvatar = useCallback(() => {
+  const { accountColor, accountSymbol, accountName } = useAccountProfile();
+
+  const handlePressAvatar = useCallback(() => {
     if (!isAvatarPickerAvailable) return;
     recyclerListRef.scrollToTop(true);
     setTimeout(
@@ -68,14 +80,14 @@ const ProfileMasthead = ({
     );
   }, [accountColor, accountName, navigate, recyclerListRef]);
 
-  const onAddCash = useCallback(() => {
+  const handlePressAddCash = useCallback(() => {
     navigate(Routes.ADD_CASH_SHEET);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
   }, [navigate]);
 
-  const onChangeWallet = useCallback(() => {
+  const handlePressChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
@@ -87,16 +99,19 @@ const ProfileMasthead = ({
       marginTop={0}
     >
       <AvatarCircle
-        onPress={onPressAvatar}
-        accountEmoji={accountEmoji}
         accountColor={accountColor}
+        accountSymbol={accountSymbol}
+        isAvatarPickerAvailable={isAvatarPickerAvailable}
+        onPress={handlePressAvatar}
       />
-      <Row>
-        <AccountName>{accountName}</AccountName>
-        <ButtonPressAnimation onPress={onChangeWallet}>
-          <DropdownSelector />
-        </ButtonPressAnimation>
-      </Row>
+      <ButtonPressAnimation onPress={handlePressChangeWallet} scaleTo={0.9}>
+        <Row>
+          <AccountName>{accountName}</AccountName>
+          <DropdownArrow>
+            <Icon color={colors.dark} direction="down" name="caret" />
+          </DropdownArrow>
+        </Row>
+      </ButtonPressAnimation>
       <RowWithMargins align="center" margin={19}>
         <FloatingEmojis
           distance={250}
@@ -119,7 +134,6 @@ const ProfileMasthead = ({
             />
           )}
         </FloatingEmojis>
-
         <ProfileAction
           icon="qrCode"
           onPress={() => navigate(Routes.RECEIVE_MODAL)}
@@ -128,16 +142,11 @@ const ProfileMasthead = ({
           width={81}
         />
       </RowWithMargins>
-      {addCashAvailable && <AddCashButton onPress={onAddCash} />}
-      {showBottomDivider && (
-        <Divider
-          color={colors.rowDividerLight}
-          style={{ bottom: 0, position: 'absolute' }}
-        />
-      )}
+      {addCashAvailable && <AddCashButton onPress={handlePressAddCash} />}
+      {showBottomDivider && <ProfileMastheadDivider />}
     </Column>
   );
-};
+}
 
 ProfileMasthead.propTypes = {
   accountAddress: PropTypes.string,
@@ -148,5 +157,3 @@ ProfileMasthead.propTypes = {
 ProfileMasthead.defaultProps = {
   showBottomDivider: true,
 };
-
-export default ProfileMasthead;

@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
 import { bInterpolateColor, useTimingTransition } from 'react-native-redash';
-import { toClass } from 'recompact';
 import { useInterval, useTimeout, useTransformOrigin } from '../../hooks';
 import { colors, position } from '../../styles';
 import { magicMemo } from '../../utils';
@@ -12,7 +11,7 @@ import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 
-const AnimatedText = Animated.createAnimatedComponent(toClass(Text));
+const AnimatedText = Animated.createAnimatedComponent(Text);
 
 const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
   const ease = Easing[error ? 'out' : 'in'](Easing.ease);

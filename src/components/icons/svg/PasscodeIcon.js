@@ -1,11 +1,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Defs, G, LinearGradient, Path, Stop } from 'svgs';
+import { Defs, G, LinearGradient, Path, Stop } from 'react-native-svg';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
-const PasscodeIcon = ({ color, ...props }) => (
-  <Svg viewBox="0 0 18 24" {...props}>
+const PasscodeIcon = ({ color, size, ...props }) => (
+  <Svg
+    height={size || 24}
+    viewBox="0 0 18 24"
+    width={size ? (size * 18) / 24 : '18'}
+    {...props}
+  >
     <Defs>
       <LinearGradient id="gradient" x1="50%" x2="50%" y1="0%" y2="100%">
         <Stop offset="0%" stopColor={color} />
@@ -29,6 +34,7 @@ const PasscodeIcon = ({ color, ...props }) => (
 
 PasscodeIcon.propTypes = {
   color: PropTypes.string,
+  size: PropTypes.number,
 };
 
 PasscodeIcon.defaultProps = {

@@ -16,7 +16,7 @@
     "assetLimit": 1,
     "currency": "EUR",
     "decimals": 2,
-    "emojiName": "flag-eu",
+    "emojiName": "eu",
     "label": "Euro",
     "mask": "[099999999999]{.}[00]",
     "placeholder": "0.00",

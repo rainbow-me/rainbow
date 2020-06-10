@@ -27,7 +27,7 @@ import {
   safeAreaInsetValues,
 } from '../../utils';
 import { CoinDivider } from '../coin-divider';
-import { CoinRow } from '../coin-row';
+import { CoinRowHeight } from '../coin-row';
 import AssetListHeader from './AssetListHeader';
 import { ViewTypes } from './RecyclerViewTypes';
 
@@ -46,6 +46,7 @@ class LayoutItemAnimator extends BaseItemAnimator {
   animateWillUnmount = NOOP;
   animateWillUpdate = () => {
     if (
+      this.rlv &&
       this.rlv.getContentDimension().height <
         this.rlv.getCurrentScrollOffset() + globalDeviceDimensions + 46 &&
       this.rlv.getCurrentScrollOffset() > 0
@@ -208,6 +209,7 @@ class RecyclerAssetList extends Component {
       dataProvider: new DataProvider(hasRowChanged, this.getStableId),
       headersIndices: [],
       isRefreshing: false,
+      items: [],
       itemsCount: 0,
       showCoinListEditor: false,
       stickyComponentsIndices: [],
@@ -277,7 +279,8 @@ class RecyclerAssetList extends Component {
             if (this.coinDividerIndex !== index) {
               this.coinDividerIndex = index;
               if (this.props.isCoinListEdited) {
-                this.checkEditStickyHeader(this.rlv.getCurrentScrollOffset());
+                this.rlv &&
+                  this.checkEditStickyHeader(this.rlv.getCurrentScrollOffset());
               }
             }
             if (
@@ -378,7 +381,10 @@ class RecyclerAssetList extends Component {
 
         if (collectiblesIndex > -1) {
           if (index > headersIndices[collectiblesIndex]) {
-            const familyIndex = index - headersIndices[collectiblesIndex] - 1;
+            const familyIndex = this.state.items[index].familySectionIndex;
+            const isFirst = index === headersIndices[collectiblesIndex] + 1;
+            const isHeader =
+              sections[collectiblesIndex].data[familyIndex].isHeader;
             return {
               height: ViewTypes.UNIQUE_TOKEN_ROW.calculateHeight({
                 amountOfRows: get(
@@ -386,14 +392,16 @@ class RecyclerAssetList extends Component {
                   `[${collectiblesIndex}].data[${familyIndex}].tokens`,
                   []
                 ).length,
-                isFirst: index === headersIndices[collectiblesIndex] + 1,
+                isFirst,
+                isHeader,
                 isOpen:
                   openFamilyTabs[
                     sections[collectiblesIndex].data[familyIndex].familyName
                   ],
               }),
               index: ViewTypes.UNIQUE_TOKEN_ROW.index,
-              isFirst: index === headersIndices[collectiblesIndex] + 1,
+              isFirst,
+              isHeader,
             };
           }
         }
@@ -415,25 +423,37 @@ class RecyclerAssetList extends Component {
     );
   }
 
-  static getDerivedStateFromProps({ sections }, state) {
+  static getDerivedStateFromProps({ sections, openFamilyTabs }, state) {
     const headersIndices = [];
     const stickyComponentsIndices = [];
     const items = sections.reduce((ctx, section) => {
       headersIndices.push(ctx.length);
       stickyComponentsIndices.push(ctx.length);
-      return ctx
-        .concat([
-          {
-            isHeader: true,
-            ...section.header,
-          },
-        ])
-        .concat(
+      ctx = ctx.concat([
+        {
+          isHeader: true,
+          ...section.header,
+        },
+      ]);
+      if (section.collectibles) {
+        section.data.forEach((item, index) => {
+          if (item.isHeader || openFamilyTabs[item.familyName]) {
+            ctx.push({
+              familySectionIndex: index,
+              item: { ...item, ...section.perData },
+              renderItem: section.renderItem,
+            });
+          }
+        });
+      } else {
+        ctx = ctx.concat(
           section.data.map(item => ({
             item: { ...item, ...section.perData },
             renderItem: section.renderItem,
           }))
         );
+      }
+      return ctx;
     }, []);
     items.push({ item: { isLastPlaceholder: true }, renderItem: () => null });
     const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(
@@ -443,6 +463,7 @@ class RecyclerAssetList extends Component {
       areSmallCollectibles,
       dataProvider: state.dataProvider.cloneWithRows(items),
       headersIndices,
+      items,
       itemsCount: items.length,
       stickyComponentsIndices,
     };
@@ -457,7 +478,7 @@ class RecyclerAssetList extends Component {
 
     if (nativeCurrency !== prevProps.nativeCurrency) {
       setTimeout(() => {
-        this.rlv.scrollToTop(false);
+        this.rlv && this.rlv.scrollToTop(false);
       }, 200);
     }
 
@@ -477,7 +498,8 @@ class RecyclerAssetList extends Component {
     });
 
     const bottomHorizonOfScreen =
-      this.rlv.getCurrentScrollOffset() + globalDeviceDimensions;
+      ((this.rlv && this.rlv.getCurrentScrollOffset()) || 0) +
+      globalDeviceDimensions;
 
     // Auto-scroll to opened family logic 👇
     if (openFamilyTabs !== prevProps.openFamilyTabs && collectibles.data) {
@@ -506,6 +528,7 @@ class RecyclerAssetList extends Component {
                 Number(focusedFamilyItem.childrenAmount) / 2
               ),
               isFirst: false,
+              isHeader: true,
               isOpen: true,
             }
           );
@@ -537,12 +560,13 @@ class RecyclerAssetList extends Component {
 
     // Auto-scroll to end of the list if something was closed/disappeared 👇
     if (
+      this.rlv &&
       this.rlv.getContentDimension().height < bottomHorizonOfScreen + 46 &&
       this.rlv.getCurrentScrollOffset() > 0 &&
       !this.props.isCoinListEdited
     ) {
       setTimeout(() => {
-        this.rlv.scrollToEnd({ animated: true });
+        this.rlv && this.rlv.scrollToEnd({ animated: true });
       }, 10);
     }
 
@@ -584,7 +608,7 @@ class RecyclerAssetList extends Component {
   savingsSumValue = 0;
 
   checkEditStickyHeader = offsetY => {
-    const offsetHeight = CoinRow.height * (this.coinDividerIndex - 1) + 5;
+    const offsetHeight = CoinRowHeight * (this.coinDividerIndex - 1) + 5;
     if (this.props.isCoinListEdited && offsetY > offsetHeight) {
       this.setState({ showCoinListEditor: true });
     } else if (
@@ -597,7 +621,7 @@ class RecyclerAssetList extends Component {
 
   scrollToOffset = (position, animated) => {
     setTimeout(() => {
-      this.rlv.scrollToOffset(0, position, animated);
+      this.rlv && this.rlv.scrollToOffset(0, position, animated);
     }, 5);
   };
 
@@ -605,7 +629,11 @@ class RecyclerAssetList extends Component {
     const { dataProvider } = this.state;
     const row = get(dataProvider, `_data[${index}]`);
 
-    if (row.isHeader) {
+    if (row.item && row.item.familyName) {
+      return `family_${row.item.familyName}_${row.item.familyId}`;
+    }
+
+    if (row.isHeader && (!row.item || !row.item.familyName)) {
       return `header_${row.title}`;
     }
 
@@ -615,10 +643,6 @@ class RecyclerAssetList extends Component {
 
     if (row.item && row.item.uniqueId) {
       return `investment_${row.item.uniqueId}`;
-    }
-
-    if (row.item && row.item.familyName) {
-      return `family_${row.item.familyName}`;
     }
 
     if (row.item && row.item.smallBalancesContainer) {
@@ -787,7 +811,6 @@ class RecyclerAssetList extends Component {
           >
             <RecyclerListView
               dataProvider={dataProvider}
-              disableRecycling
               extendedState={{ headersIndices }}
               externalScrollView={externalScrollView}
               itemAnimator={new LayoutItemAnimator(this.rlv)}

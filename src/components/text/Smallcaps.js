@@ -1,10 +1,12 @@
-import { withProps } from 'recompact';
+import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
 import Text from './Text';
 
-export default withProps(({ style }) => ({
+const Smallcaps = styled(Text).attrs({
   color: colors.alpha(colors.blueGreyDark, 0.8),
   size: 'small',
-  style: [{ textTransform: 'uppercase' }, style],
+  uppercase: true,
   weight: 'semibold',
-}))(Text);
+})``;
+
+export default Smallcaps;

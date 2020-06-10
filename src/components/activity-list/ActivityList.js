@@ -1,13 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import networkTypes from '../../helpers/networkTypes';
+import { useAccountProfile } from '../../hooks';
+import ActivityListEmptyState from './ActivityListEmptyState';
 import RecyclerActivityList from './RecyclerActivityList';
-import TestnetEmptyState from './TestnetEmptyState';
 
 const ActivityList = ({
-  accountAddress,
-  accountColor,
-  accountName,
   addCashAvailable,
   header,
   isEmpty,
@@ -15,8 +13,10 @@ const ActivityList = ({
   navigation,
   network,
   sections,
-}) =>
-  network === networkTypes.mainnet || sections.length ? (
+}) => {
+  const { accountAddress, accountColor, accountName } = useAccountProfile();
+
+  return network === networkTypes.mainnet || sections.length ? (
     <RecyclerActivityList
       accountAddress={accountAddress}
       accountColor={accountColor}
@@ -29,13 +29,16 @@ const ActivityList = ({
       sections={sections}
     />
   ) : (
-    <TestnetEmptyState>{header}</TestnetEmptyState>
+    <ActivityListEmptyState
+      emoji="👻"
+      label="Your testnet transaction history starts now!"
+    >
+      {header}
+    </ActivityListEmptyState>
   );
+};
 
 ActivityList.propTypes = {
-  accountAddress: PropTypes.string,
-  accountColor: PropTypes.number,
-  accountName: PropTypes.string,
   addCashAvailable: PropTypes.bool,
   header: PropTypes.node,
   isEmpty: PropTypes.bool,

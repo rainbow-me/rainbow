@@ -1,7 +1,9 @@
-import { compose, setDisplayName, withProps } from 'recompact';
+import styled from 'styled-components/primitives';
 import Flex from './Flex';
 
-export default compose(
-  setDisplayName('Centered'),
-  withProps({ align: 'center', justify: 'center' })
-)(Flex);
+const Centered = styled(Flex).attrs({
+  align: 'center',
+  justify: 'center',
+})``;
+
+export default Centered;

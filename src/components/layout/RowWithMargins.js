@@ -1,11 +1,12 @@
-import { compose, defaultProps, setDisplayName, withProps } from 'recompact';
+import styled from 'styled-components/primitives';
 import LayoutWithMargins from './LayoutWithMargins';
 
-export default compose(
-  setDisplayName('RowWithMargins'),
-  defaultProps({
-    margin: 19,
+const RowWithMargins = styled(LayoutWithMargins).attrs(
+  ({ direction = 'row', margin = 19 }) => ({
+    direction,
+    margin,
     marginKey: 'marginRight',
-  }),
-  withProps({ direction: 'row' })
-)(LayoutWithMargins);
+  })
+)``;
+
+export default RowWithMargins;

@@ -1,112 +1,77 @@
-import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import {
-  withAccountSettings,
-  withCoinListEdited,
-  withEditOptions,
-  withFabSendAction,
-} from '../../hoc';
+import { useAccountSettings, useCoinListEdited } from '../../hooks';
 import { padding } from '../../styles';
 import Highlight from '../Highlight';
-import { CoinIcon } from '../coin-icon';
+import { CoinIcon, CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;
+export const CoinRowHeight =
+  CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom;
 
-const Container = styled(Row)`
-  ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom, 19)}
+const Container = styled(Row).attrs({
+  align: 'center',
+  grow: 0,
+  shrink: 1,
+})`
+  ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom)};
   width: 100%;
 `;
 
-const OpacityWrapper = styled(Row)`
+const Content = styled(Column).attrs({ justify: 'space-between' })`
   flex: 1;
-`;
-
-const Content = styled(Column).attrs({
-  flex: 1,
-  justify: 'space-between',
-})`
-  height: ${CoinIcon.size};
+  height: ${CoinIconSize};
   margin-left: 10;
+  opacity: ${({ isHidden }) => (isHidden ? 0.4 : 1)};
 `;
 
-const CoinRowHighlight = withProps({
-  borderRadius: 18,
-  margin: 2,
-  marginHorizontal: 8,
-})(Highlight);
+export default function CoinRow({
+  address,
+  bottomRowRender,
+  children,
+  coinIconRender = CoinIcon,
+  containerStyles,
+  contentStyles,
+  highlight,
+  isHidden,
+  isPinned,
+  symbol,
+  topRowRender,
+  ...props
+}) {
+  const accountSettings = useAccountSettings();
+  const { isCoinListEdited } = useCoinListEdited();
 
-const enhance = compose(
-  withAccountSettings,
-  withFabSendAction,
-  withEditOptions,
-  withCoinListEdited
-);
-
-const CoinRow = enhance(
-  ({
-    bottomRowRender,
-    children,
-    coinIconRender,
-    containerStyles,
-    contentStyles,
-    highlight,
-    symbol,
-    address,
-    topRowRender,
-    isCoinListEdited,
-    isHidden,
-    isPinned,
-    ...props
-  }) => (
-    <Container align="center" css={containerStyles}>
-      <CoinRowHighlight visible={highlight} />
+  return (
+    <Container css={containerStyles}>
+      <Highlight
+        borderRadius={18}
+        margin={2}
+        marginHorizontal={8}
+        visible={highlight}
+      />
       {createElement(coinIconRender, {
         address,
         isCoinListEdited,
         isHidden,
         isPinned,
         symbol,
+        ...accountSettings,
         ...props,
       })}
-      <OpacityWrapper style={{ opacity: isHidden ? 0.4 : 1 }}>
-        <Content css={contentStyles}>
-          <Row align="center" justify="space-between">
-            {topRowRender({ symbol, ...props })}
-          </Row>
-          <Row align="center" justify="space-between" marginBottom={0.5}>
-            {bottomRowRender({ symbol, ...props })}
-          </Row>
-        </Content>
-      </OpacityWrapper>
+      <Content isHidden={isHidden} style={contentStyles}>
+        <Row align="center" justify="space-between">
+          {topRowRender({ symbol, ...accountSettings, ...props })}
+        </Row>
+        <Row align="center" justify="space-between" marginBottom={0.5}>
+          {bottomRowRender({ symbol, ...accountSettings, ...props })}
+        </Row>
+      </Content>
       {typeof children === 'function'
         ? children({ symbol, ...props })
         : children}
     </Container>
-  )
-);
-
-CoinRow.propTypes = {
-  address: PropTypes.string,
-  bottomRowRender: PropTypes.func,
-  children: PropTypes.node,
-  coinIconRender: PropTypes.func,
-  containerStyles: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
-  contentStyles: PropTypes.string,
-  highlight: PropTypes.bool,
-  isCoinListEdited: PropTypes.bool,
-  onPress: PropTypes.func,
-  symbol: PropTypes.string,
-  topRowRender: PropTypes.func,
-};
-
-CoinRow.defaultProps = {
-  coinIconRender: CoinIcon,
-};
-
-CoinRow.height = CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom;
-
-export default CoinRow;
+  );
+}

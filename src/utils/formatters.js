@@ -5,7 +5,10 @@ const grapheme = new GraphemeSplitter();
 
 const firstCharacterOfString = n => n.charAt(0);
 
-export const getFirstGrapheme = string => grapheme.splitGraphemes(string)[0];
+export const getFirstGrapheme = string => {
+  if (!string) return '';
+  return grapheme.splitGraphemes(string)[0];
+};
 
 export const initials = string =>
   !string || !isString(string)

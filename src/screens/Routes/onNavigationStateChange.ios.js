@@ -4,20 +4,26 @@ import { StatusBar } from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { Navigation } from '../../navigation';
+import {
+  addActionAfterClosingSheet,
+  notifyMountBottomSheet,
+} from '../../navigation/Navigation';
 import { expandedPreset } from '../../navigation/transitions/effects';
+import { setModalVisible } from '../../redux/modal';
+import store from '../../redux/store';
 import { sentryUtils } from '../../utils';
 import Routes from './routesNames';
 
 const routesForNativeStackFallback = {
   [Routes.ADD_CASH_SHEET]: true,
   [Routes.IMPORT_SEED_PHRASE_SHEET]: true,
-  [Routes.MAIN_NAVIGATOR]: true,
-  [Routes.OVERLAY_EXPANDED_ASSET_SCREEN]: true,
-  [Routes.OVERLAY_EXPANDED_SUPPORTED_COUNTRIES]: true,
-  [Routes.SEND_SHEET]: true,
   [Routes.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR]: true,
+  [Routes.MAIN_NAVIGATOR]: true,
+  [Routes.MODAL_SCREEN]: true,
   [Routes.SAVINGS_DEPOSIT_MODAL]: true,
   [Routes.SAVINGS_DEPOSIT_MODAL]: true,
+  [Routes.SEND_SHEET]: true,
+  [Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN]: true,
 };
 
 export function onNavigationStateChange(prevState, currentState) {
@@ -110,7 +116,20 @@ export function onNavigationStateChange(prevState, currentState) {
   if (routeName !== prevRouteName) {
     let paramsToTrack = null;
 
-    if (routeName === Routes.EXPANDED_ASSET_SCREEN) {
+    if (
+      routeName === Routes.WALLET_SCREEN ||
+      routeName === Routes.QR_SCANNER_SCREEN ||
+      routeName === Routes.PROFILE_SCREEN
+    ) {
+      addActionAfterClosingSheet(() => {
+        setTimeout(() => {
+          store.dispatch(setModalVisible(true));
+          notifyMountBottomSheet();
+        }, 100);
+      });
+    }
+
+    if (routeName === Routes.EXPANDED_ASSET_SHEET) {
       const { asset, type } = params;
       paramsToTrack = {
         assetContractAddress:

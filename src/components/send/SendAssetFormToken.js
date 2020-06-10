@@ -1,13 +1,21 @@
 import { pick } from 'lodash';
-import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
+import React, { Fragment, useMemo } from 'react';
+import styled from 'styled-components/primitives';
+import { useDimensions } from '../../hooks';
 import supportedNativeCurrencies from '../../references/native-currencies.json';
-import { deviceUtils } from '../../utils';
 import { removeLeadingZeros } from '../../utils/formatters';
 import { ColumnWithMargins } from '../layout';
 import SendAssetFormField from './SendAssetFormField';
 
-const SendAssetFormToken = ({
+const FooterContainer = styled(ColumnWithMargins)`
+  width: 100%;
+  z-index: 3;
+`;
+
+const getConfigForCurrency = nativeCurrency =>
+  pick(supportedNativeCurrencies[nativeCurrency], ['mask', 'placeholder']);
+
+export default function SendAssetFormToken({
   assetAmount,
   buttonRenderer,
   nativeAmount,
@@ -18,15 +26,17 @@ const SendAssetFormToken = ({
   sendMaxBalance,
   txSpeedRenderer,
   ...props
-}) => {
-  const {
-    mask: nativeMask,
-    placeholder: nativePlaceholder,
-  } = pick(supportedNativeCurrencies[nativeCurrency], ['mask', 'placeholder']);
+}) {
+  const { height: deviceHeight } = useDimensions();
+
+  const { mask: nativeMask, placeholder: nativePlaceholder } = useMemo(
+    () => getConfigForCurrency(nativeCurrency),
+    [nativeCurrency]
+  );
 
   return (
     <Fragment>
-      <ColumnWithMargins {...props} flex={0} margin={18} width="100%">
+      <ColumnWithMargins {...props} margin={18} width="100%">
         <SendAssetFormField
           format={removeLeadingZeros}
           label={selected.symbol}
@@ -45,29 +55,10 @@ const SendAssetFormToken = ({
           value={nativeAmount}
         />
       </ColumnWithMargins>
-      <ColumnWithMargins
-        flex={0}
-        margin={deviceUtils.dimensions.height < 812 ? 15.5 : 31}
-        style={{ zIndex: 3 }}
-        width="100%"
-      >
+      <FooterContainer margin={deviceHeight < 812 ? 15.5 : 31}>
         {buttonRenderer}
         {txSpeedRenderer}
-      </ColumnWithMargins>
+      </FooterContainer>
     </Fragment>
   );
-};
-
-SendAssetFormToken.propTypes = {
-  assetAmount: PropTypes.string,
-  buttonRenderer: PropTypes.object,
-  nativeAmount: PropTypes.string,
-  nativeCurrency: PropTypes.string,
-  onChangeAssetAmount: PropTypes.func,
-  onChangeNativeAmount: PropTypes.func,
-  selected: PropTypes.object,
-  sendMaxBalance: PropTypes.func,
-  txSpeedRenderer: PropTypes.object,
-};
-
-export default SendAssetFormToken;
+}

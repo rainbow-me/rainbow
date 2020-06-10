@@ -10,12 +10,11 @@ export const ModalHeaderHeight = 50;
 
 const Container = styled(Row).attrs({
   align: 'center',
-  flex: 0,
   justify: 'space-between',
+  shrink: 0,
 })`
   ${borders.buildRadius('top', 20)};
   background-color: ${colors.white};
-  flex-shrink: 0;
   height: ${ModalHeaderHeight};
   width: 100%;
 `;
@@ -35,12 +34,7 @@ const ModalHeader = ({
 }) => (
   <Container {...props}>
     {showBackButton && (
-      <ModalHeaderButton
-        label="Settings"
-        onPress={onPressBack}
-        showBackArrow
-        side="left"
-      />
+      <ModalHeaderButton label="Settings" onPress={onPressBack} side="left" />
     )}
     <TitleContainer>
       <TruncatedText

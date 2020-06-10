@@ -8,8 +8,7 @@ import {
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import transactionStatusTypes from '../../helpers/transactionStatusTypes';
-import transactionTypes from '../../helpers/transactionTypes';
+import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
 import {
   deviceUtils,
@@ -23,6 +22,7 @@ import {
 } from '../coin-row';
 import ListFooter from '../list/ListFooter';
 import { ProfileMasthead } from '../profile';
+import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import LoadingState from './LoadingState';
 
@@ -132,10 +132,7 @@ export default class RecyclerActivityList extends PureComponent {
     const items = props.sections.reduce(
       (ctx, section) => {
         section.data.forEach(asset => {
-          if (
-            asset.type === transactionTypes.trade &&
-            asset.status === transactionStatusTypes.sent
-          ) {
+          if (asset.status === TransactionStatusTypes.swapped) {
             swappedIndices.push(index);
           }
           index++;
@@ -182,12 +179,15 @@ export default class RecyclerActivityList extends PureComponent {
           accountName={this.props.accountName}
           addCashAvailable={this.props.addCashAvailable}
           navigation={this.props.navigation}
-          showBottomDivider={!this.props.isEmpty || this.props.isLoading}
           recyclerListRef={this.rlv}
         />
       );
       return this.props.isLoading ? (
         <LoadingState>{header}</LoadingState>
+      ) : this.props.isEmpty ? (
+        <ActivityListEmptyState label="No transactions yet">
+          {header}
+        </ActivityListEmptyState>
       ) : (
         header
       );
@@ -211,7 +211,7 @@ export default class RecyclerActivityList extends PureComponent {
           ref={this.handleListRef}
           renderAheadOffset={deviceUtils.dimensions.height}
           rowRenderer={this.rowRenderer}
-          scrollEnabled={!this.props.isLoading}
+          scrollEnabled={!(this.props.isEmpty || this.props.isLoading)}
           scrollIndicatorInsets={{
             bottom: safeAreaInsetValues.bottom,
           }}

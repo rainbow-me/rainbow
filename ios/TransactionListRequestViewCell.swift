@@ -12,7 +12,8 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
   @IBOutlet weak var transactionType: UILabel!
   @IBOutlet weak var walletName: UILabel!
   @IBOutlet weak var walletImage: CoinIconWithProgressBar!
-  
+  @IBOutlet weak var walletInternalImage: UIImageView!
+
   @IBAction func onOpenButtonPress(_ sender: Any) {
     onItemPress(["index": row!])
   }
@@ -22,13 +23,20 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
   var timer: Timer? = nil
   
   private let timeout = 3600.0 // 1h
-  private let interval = 5.0 // 5s
+  private let interval = 1.0 // 1s
   
   override func awakeFromNib() {
     super.awakeFromNib()
     addRequestShadowLayer(walletImage)
     requestIcon.frame = requestIcon.frame.offsetBy(dx: CGFloat(0), dy: CGFloat(-0.25))
   }
+  
+  
+  override func prepareForReuse() {
+    super.prepareForReuse()
+    walletInternalImage.image = nil;
+    timer?.invalidate()
+   }
   
   func set(request: TransactionRequest) {
     let expirationTime = request.requestedAt.addingTimeInterval(timeout)
@@ -55,13 +63,30 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
     walletName.text = request.dappName
     walletName.addCharacterSpacing(kernValue: 0.5)
     walletName.setLineSpacing(lineHeightMultiple: 1.1)
-    walletImage.image = generateTextImage(String(request.dappName.prefix(2).uppercased()))
-    walletImage.layer.cornerRadius = 12
+    walletInternalImage.layer.backgroundColor = UIColor.white.cgColor
+    walletInternalImage.layer.cornerRadius = 12
+    
+    let words = request.dappName.split(separator: " ");
+    let initials = words.map { $0.prefix(1).uppercased() }.joined(separator: "")
     
     if request.imageUrl != nil {
       let url = URL(string: request.imageUrl!)
-      self.walletImage.sd_setImage(with: url)
-    }
+      self.walletInternalImage.sd_setImage(with: url) { (image, error, cache, urls) in
+        if (error != nil) {
+          self.walletInternalImage.image = self.generateTextImage(String(initials), textColor: UIColor.white, backgroundColor: UIColor.RainbowTheme.Transactions.blueGreyDark)
+        } else {
+          self.walletInternalImage.image = image
+        }
+      }
+  } else {
+      self.walletInternalImage.image = self.generateTextImage(String(initials), textColor: UIColor.white, backgroundColor: UIColor.RainbowTheme.Transactions.blueGreyDark)
+  }
+    
+    
+    
+    
+    
+    
   }
   
   deinit {

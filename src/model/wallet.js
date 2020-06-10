@@ -3,7 +3,7 @@ import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { isValidAddress, toBuffer } from 'ethereumjs-util';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { get, isEmpty, isNil } from 'lodash';
+import { findKey, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {
@@ -54,23 +54,22 @@ export const walletInit = async (
   name = null
 ) => {
   let walletAddress = null;
-  let isImported = false;
   let isNew = false;
   // Importing a seedphrase
   if (!isEmpty(seedPhrase)) {
     const wallet = await createWallet(seedPhrase, color, name);
     walletAddress = wallet.address;
-    isImported = !isNil(walletAddress);
-    return { isImported, isNew, walletAddress };
+    return { isNew, walletAddress };
   }
+
   walletAddress = await loadAddress();
-  // First launch (no seed phrase)
+
   if (!walletAddress) {
     const wallet = await createWallet();
     walletAddress = wallet.address;
     isNew = true;
   }
-  return { isImported, isNew, walletAddress };
+  return { isNew, walletAddress };
 };
 
 export const loadWallet = async () => {
@@ -393,12 +392,30 @@ export const createWallet = async (seed = null, color = null, name = null) => {
       }
     }
 
+    let primary = false;
+    // If it's not imported or it's the first one with a seed phrase
+    // it's the primary wallet
+    if (
+      !isImported ||
+      (!findKey(allWallets, ['type', WalletTypes.mnemonic]) &&
+        type === WalletTypes.mnemonic)
+    ) {
+      primary = true;
+      // Or there's no other primary wallet and this one has a seed phrase
+    } else {
+      const primaryWallet = findKey(allWallets, ['primary', true]);
+      if (!primaryWallet && type === WalletTypes.mnemonic) {
+        primary = true;
+      }
+    }
+
     allWallets[id] = {
       addresses,
       color: color || 0,
       id,
       imported: isImported,
       name: walletName,
+      primary,
       type,
     };
 

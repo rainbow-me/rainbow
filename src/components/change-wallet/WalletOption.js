@@ -1,63 +1,30 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { colors, fonts } from '../../styles';
-import { getFontSize } from '../../styles/fonts';
+import styled from 'styled-components/primitives';
+import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
-import { Icon } from '../icons';
+import { Row } from '../layout';
+import { Text } from '../text';
 
-const sx = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    borderColor: colors.lightestGrey,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    flexDirection: 'row',
-    marginLeft: 20,
-    paddingVertical: 25,
-  },
-  iconWrapper: {
-    alignItems: 'center',
-    backgroundColor: colors.appleBlue,
-    borderRadius: 18,
-    height: 18,
-    justifyContent: 'center',
-    marginLeft: 2,
-    marginRight: 9,
-    width: 18,
-  },
-  iconWrapperDisabled: {
-    backgroundColor: colors.lightGrey,
-  },
-  text: {
-    color: colors.appleBlue,
-    fontFamily: fonts.family.SFProText,
-    fontSize: getFontSize(fonts.size.lmedium),
-    fontWeight: fonts.weight.semibold,
-  },
-  textDisabled: {
-    color: colors.lightGrey,
-  },
-});
+const Container = styled(Row).attrs({
+  align: 'center',
+  scaleTo: 0.98,
+})`
+  ${padding(15, 19)};
+`;
 
-const WalletOption = ({ editMode, icon, label, onPress }) => (
-  <ButtonPressAnimation disabled={editMode} scaleTo={0.96} onPress={onPress}>
-    <View style={sx.container}>
-      <View style={[sx.iconWrapper, editMode ? sx.iconWrapperDisabled : null]}>
-        <Icon color={colors.white} height={11} width={11} name={icon} />
-      </View>
-      <View>
-        <Text style={[sx.text, editMode ? sx.textDisabled : null]}>
-          {label}
-        </Text>
-      </View>
-    </View>
-  </ButtonPressAnimation>
+const WalletOption = ({ editMode, label, onPress }) => (
+  <Container as={ButtonPressAnimation} disabled={editMode} onPress={onPress}>
+    <Text
+      color={
+        editMode ? colors.alpha(colors.blueGreyDark, 0.2) : colors.appleBlue
+      }
+      letterSpacing="roundedMedium"
+      size="lmedium"
+      weight="semibold"
+    >
+      {label}
+    </Text>
+  </Container>
 );
 
-WalletOption.propTypes = {
-  icon: PropTypes.string,
-  label: PropTypes.string.isRequired,
-  onPress: PropTypes.func,
-};
-
-export default WalletOption;
+export default React.memo(WalletOption);

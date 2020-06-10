@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { get } from 'lodash';
 import { toHex } from '../../handlers/web3';
+import ProtocolTypes from '../../helpers/protocolTypes';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import { convertAmountToRawAmount, isZero } from '../../helpers/utilities';
@@ -74,6 +75,7 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     from: accountAddress,
     hash: withdraw.hash,
     nonce: get(withdraw, 'nonce'),
+    protocol: ProtocolTypes.compound.name,
     status: TransactionStatusTypes.withdrawing,
     to: get(withdraw, 'to'),
     type: TransactionTypes.withdraw,
@@ -81,7 +83,7 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
 
   logger.log('[withdraw] adding new txn', newTransaction);
   // Disable the txn watcher because Compound can silently fail
-  await dispatch(dataAddNewTransaction(newTransaction, true));
+  await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
 
   logger.log('[withdraw] calling the callback');
   currentRap.callback();

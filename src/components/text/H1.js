@@ -1,8 +1,12 @@
-import { withProps } from 'recompact';
+import styled from 'styled-components/primitives';
 import Text from './Text';
 
-export default withProps(({ letterSpacing, weight }) => ({
-  letterSpacing: letterSpacing || 'rounded',
-  size: 'big',
-  weight: weight || 'bold',
-}))(Text);
+const H1 = styled(Text).attrs(
+  ({ letterSpacing = 'rounded', weight = 'bold' }) => ({
+    letterSpacing,
+    size: 'big',
+    weight,
+  })
+)``;
+
+export default H1;

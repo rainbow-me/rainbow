@@ -30,7 +30,7 @@ const Shadow = styled(ShadowStack).attrs({
 `;
 
 const InputsWrapper = styled(View)`
-  align-items; center;
+  align-items: center;
   height: 150;
 `;
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment version="4352" identifier="iOS"/>
@@ -25,48 +25,25 @@
                     <rect key="frame" x="110" y="162" width="155" height="56"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
                     <subviews>
-                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.80000000000000004" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="addCashButtonBackground" id="y3G-dd-G0Z" userLabel="Shadow">
-                            <rect key="frame" x="-50" y="-40" width="255" height="154"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                        </imageView>
-                        <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hy9-ml-9zf" userLabel="Outer Gradient" customClass="AddCashGradient" customModule="Rainbow" customModuleProvider="target">
+                        <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hy9-ml-9zf" userLabel="Outer Gradient" customClass="AddCashButton" customModule="Rainbow" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="155" height="56"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <userDefinedRuntimeAttributes>
                                 <userDefinedRuntimeAttribute type="color" keyPath="outerColor">
-                                    <color key="value" red="0.2196078431372549" green="0.73333333333333328" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="value" red="0.0" green="0.90196078431372551" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="color" keyPath="middleColor">
-                                    <color key="value" red="1" green="0.67450980392156867" blue="0.32941176470588235" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="value" red="0.96078431372549022" green="0.31764705882352939" blue="0.70588235294117641" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="color" keyPath="innerColor">
-                                    <color key="value" red="1" green="0.41960784313725491" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="value" red="0.96862745098039216" green="0.67450980392156867" blue="0.074509803921568626" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                    <real key="value" value="56"/>
-                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="enableShadows" value="YES"/>
                             </userDefinedRuntimeAttributes>
                         </view>
-                        <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9zi-tb-NQp" userLabel="Inner Gradient" customClass="AddCashGradient" customModule="Rainbow" customModuleProvider="target">
-                            <rect key="frame" x="2" y="2" width="151" height="52"/>
+                        <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9zi-tb-NQp" userLabel="Inner Gradient" customClass="AddCashButton" customModule="Rainbow" customModuleProvider="target">
+                            <rect key="frame" x="1" y="1" width="153" height="54"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            <subviews>
-                                <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="Nlo-pe-gcO" userLabel="Label">
-                                    <rect key="frame" x="0.0" y="0.0" width="151" height="52"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                    <accessibility key="accessibilityConfiguration">
-                                        <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
-                                    </accessibility>
-                                    <fontDescription key="fontDescription" name="SFRounded-Bold" family="SF Pro Rounded" pointSize="20"/>
-                                    <color key="tintColor" red="0.054901960780000002" green="0.46274509800000002" blue="0.99215686270000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <inset key="contentEdgeInsets" minX="0.0" minY="4" maxX="13" maxY="0.0"/>
-                                    <inset key="titleEdgeInsets" minX="0.5" minY="0.0" maxX="0.0" maxY="8"/>
-                                    <inset key="imageEdgeInsets" minX="4" minY="0.0" maxX="0.0" maxY="1"/>
-                                    <state key="normal" title="Add Cash" image="addCashIcon">
-                                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </state>
-                                </button>
-                            </subviews>
                             <userDefinedRuntimeAttributes>
                                 <userDefinedRuntimeAttribute type="color" keyPath="innerColor">
                                     <color key="value" red="1" green="0.69411764710000001" blue="0.078431372550000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -77,11 +54,24 @@
                                 <userDefinedRuntimeAttribute type="color" keyPath="outerColor">
                                     <color key="value" red="0.0" green="0.94117647059999998" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                    <real key="value" value="52"/>
-                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="enableShadows" value="NO"/>
                             </userDefinedRuntimeAttributes>
                         </view>
+                        <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="Nlo-pe-gcO" userLabel="Label">
+                            <rect key="frame" x="2" y="2" width="151" height="52"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration">
+                                <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
+                            </accessibility>
+                            <fontDescription key="fontDescription" name="SFRounded-Bold" family="SF Pro Rounded" pointSize="20"/>
+                            <color key="tintColor" red="0.054901960780000002" green="0.46274509800000002" blue="0.99215686270000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <inset key="contentEdgeInsets" minX="0.0" minY="4" maxX="13" maxY="0.0"/>
+                            <inset key="titleEdgeInsets" minX="0.5" minY="0.0" maxX="0.0" maxY="8"/>
+                            <inset key="imageEdgeInsets" minX="4" minY="0.0" maxX="0.0" maxY="1"/>
+                            <state key="normal" title="Add Cash" image="addCashIcon">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                        </button>
                     </subviews>
                     <accessibility key="accessibilityConfiguration">
                         <accessibilityTraits key="traits" button="YES"/>
@@ -145,24 +135,25 @@
                         <accessibilityTraits key="traits" button="YES"/>
                     </accessibility>
                 </view>
-                <view contentMode="scaleToFill" misplaced="YES" placeholderIntrinsicWidth="275" placeholderIntrinsicHeight="51" translatesAutoresizingMaskIntoConstraints="NO" id="5Zx-ay-mQu" userLabel="Account Name View">
-                    <rect key="frame" x="50" y="66" width="0.0" height="51"/>
+                <view contentMode="scaleToFill" horizontalHuggingPriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="5Zx-ay-mQu" userLabel="Account Name View">
+                    <rect key="frame" x="0.0" y="76" width="375" height="31"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="0xDEADBEEF123Ab28Dfe3" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LxS-BQ-P6T">
-                            <rect key="frame" x="15" y="10" width="329" height="30"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="0xDEADBEEF123Ab28Dfe3" textAlignment="justified" lineBreakMode="tailTruncation" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LxS-BQ-P6T">
+                            <rect key="frame" x="29.666666666666657" y="0.3333333333333286" width="287.66666666666674" height="31"/>
                             <fontDescription key="fontDescription" name="SFRounded-Bold" family="SF Pro Rounded" pointSize="26"/>
                             <color key="textColor" red="0.14509803921568626" green="0.16078431372549018" blue="0.1803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
+                            <size key="shadowOffset" width="0.0" height="0.0"/>
                         </label>
-                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" image="caret-down" translatesAutoresizingMaskIntoConstraints="NO" id="L5x-F9-gnk">
-                            <rect key="frame" x="352" y="10" width="20" height="33"/>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="caret-down" translatesAutoresizingMaskIntoConstraints="NO" id="L5x-F9-gnk">
+                            <rect key="frame" x="324" y="12" width="21" height="9"/>
                             <constraints>
-                                <constraint firstAttribute="width" constant="20" id="3pf-vr-r8f"/>
-                                <constraint firstAttribute="height" constant="20" id="EXi-br-CLu"/>
+                                <constraint firstAttribute="width" constant="21" id="3pf-vr-r8f"/>
+                                <constraint firstAttribute="height" constant="9" id="EXi-br-CLu"/>
                             </constraints>
                         </imageView>
-                        <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0BU-ID-e0s">
-                            <rect key="frame" x="-138" y="2" width="275" height="46"/>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0BU-ID-e0s">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="31"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <fontDescription key="fontDescription" name="SFRounded-Semibold" family="SF Pro Rounded" pointSize="16"/>
                             <color key="tintColor" red="0.054901960780000002" green="0.46274509800000002" blue="0.99215686270000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -175,14 +166,15 @@
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="35" id="16R-Kt-6Ol"/>
+                        <constraint firstItem="LxS-BQ-P6T" firstAttribute="top" secondItem="5Zx-ay-mQu" secondAttribute="top" constant="0.29999999999999999" id="154-zS-mQ6"/>
+                        <constraint firstAttribute="height" constant="31" id="16R-Kt-6Ol"/>
                         <constraint firstItem="0BU-ID-e0s" firstAttribute="height" secondItem="5Zx-ay-mQu" secondAttribute="height" id="HjU-n2-PZj"/>
-                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="38" id="KC0-ty-5hl"/>
-                        <constraint firstAttribute="trailing" secondItem="L5x-F9-gnk" secondAttribute="trailing" constant="15" id="QuJ-Eb-yg9"/>
-                        <constraint firstItem="L5x-F9-gnk" firstAttribute="centerY" secondItem="LxS-BQ-P6T" secondAttribute="centerY" id="XgD-dl-OfK"/>
+                        <constraint firstAttribute="width" relation="lessThanOrEqual" constant="375" id="KC0-ty-5hl"/>
+                        <constraint firstAttribute="trailing" secondItem="L5x-F9-gnk" secondAttribute="trailing" constant="30" id="QuJ-Eb-yg9"/>
                         <constraint firstItem="0BU-ID-e0s" firstAttribute="top" secondItem="5Zx-ay-mQu" secondAttribute="top" id="dEH-Gv-Xax"/>
-                        <constraint firstItem="L5x-F9-gnk" firstAttribute="leading" secondItem="LxS-BQ-P6T" secondAttribute="trailing" constant="8" id="efh-nf-t5h"/>
-                        <constraint firstItem="LxS-BQ-P6T" firstAttribute="leading" secondItem="5Zx-ay-mQu" secondAttribute="leading" constant="15" id="itN-Yt-gXO"/>
+                        <constraint firstItem="L5x-F9-gnk" firstAttribute="leading" secondItem="LxS-BQ-P6T" secondAttribute="trailing" constant="6.7000000000000002" id="efh-nf-t5h"/>
+                        <constraint firstItem="LxS-BQ-P6T" firstAttribute="leading" secondItem="5Zx-ay-mQu" secondAttribute="leading" constant="29.699999999999999" id="itN-Yt-gXO"/>
+                        <constraint firstItem="L5x-F9-gnk" firstAttribute="top" secondItem="5Zx-ay-mQu" secondAttribute="top" constant="12" id="mzR-AD-71n"/>
                         <constraint firstItem="0BU-ID-e0s" firstAttribute="leading" secondItem="5Zx-ay-mQu" secondAttribute="leading" id="qmb-o5-581"/>
                         <constraint firstItem="0BU-ID-e0s" firstAttribute="width" secondItem="5Zx-ay-mQu" secondAttribute="width" id="sK0-G9-czR"/>
                     </constraints>
@@ -215,10 +207,9 @@
         </view>
     </objects>
     <resources>
-        <image name="addCashButtonBackground" width="765" height="462"/>
         <image name="addCashIcon" width="45" height="45"/>
         <image name="avatar" width="255" height="255"/>
-        <image name="caret-down" width="68.666664123535156" height="68.666664123535156"/>
+        <image name="caret-down" width="21" height="9"/>
         <image name="copy" width="16" height="16"/>
         <image name="receive" width="16" height="16"/>
     </resources>

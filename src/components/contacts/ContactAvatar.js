@@ -1,16 +1,16 @@
 import { toUpper } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { View } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { borders, colors } from '../../styles';
 import { getFirstGrapheme } from '../../utils';
+import { Row } from '../layout';
 import { Text } from '../text';
 
 const ContactAvatar = ({ color, size, value, ...props }) => {
   const dimensions = size === 'large' ? 60 : size === 'medium' ? 40 : 34;
   const textSize =
-    size === 'large' ? 'biggest' : size === 'medium' ? 'big' : 'large';
+    size === 'large' ? 'bigger' : size === 'medium' ? 'larger' : 'large';
   return (
     <ShadowStack
       {...props}
@@ -21,18 +21,12 @@ const ContactAvatar = ({ color, size, value, ...props }) => {
         [0, 4, 6, colors.dark, 0.04],
         [0, 1, 3, colors.dark, 0.08],
       ]}
-      shouldRasterizeIOS
     >
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-        }}
-      >
-        <Text align="center" color="white" size={textSize} weight="semibold">
+      <Row flex={1} justify="center" align="center">
+        <Text align="center" color="white" size={textSize} weight="bold">
           {value && getFirstGrapheme(toUpper(value))}
         </Text>
-      </View>
+      </Row>
     </ShadowStack>
   );
 };

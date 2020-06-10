@@ -1,4 +1,5 @@
-import { withProps } from 'recompact';
+import styled from 'styled-components/primitives';
 import Text from './Text';
 
-export default withProps({ weight: 'bold' })(Text);
+const Bold = styled(Text).attrs({ weight: 'bold' })``;
+export default Bold;

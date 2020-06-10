@@ -1,12 +1,11 @@
-import PropTypes from 'prop-types';
 import React, { createElement, Fragment } from 'react';
+import { useSafeArea } from 'react-native-safe-area-context';
 import ShadowStack from 'react-native-shadow-stack';
-import { pure } from 'recompose';
 import styled from 'styled-components/primitives';
 import AssetTypes from '../../helpers/assetTypes';
+import { useAsset, useDimensions } from '../../hooks';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import { colors, padding, position } from '../../styles';
-import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../../utils';
 import { SendCoinRow } from '../coin-row';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
 import SendSavingsCoinRow from '../coin-row/SendSavingsCoinRow';
@@ -15,6 +14,14 @@ import { Column } from '../layout';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
 
+const tokenPaddingBottom = sheetVerticalOffset + 19;
+
+const AssetRowShadow = [
+  [0, 1, 0, colors.dark, 0.01],
+  [0, 4, 12, colors.dark, 0.04],
+  [0, 8, 23, colors.dark, 0.05],
+];
+
 const Container = styled(Column)`
   ${position.size('100%')};
   background-color: ${colors.white};
@@ -22,22 +29,18 @@ const Container = styled(Column)`
   overflow: hidden;
 `;
 
-const nftPaddingBottom = safeAreaInsetValues.bottom;
-const tokenPaddingBottom = sheetVerticalOffset + 19;
-
-const TransactionContainer = styled(Column).attrs({
+const FormContainer = styled(Column).attrs({
   align: 'end',
   justify: 'space-between',
 })`
-  ${({ isNft }) =>
-    padding(22, isNft ? 0 : 15, isNft ? nftPaddingBottom : tokenPaddingBottom)};
+  ${({ insets, isNft }) =>
+    padding(22, isNft ? 0 : 15, isNft ? insets.bottom : tokenPaddingBottom)};
   background-color: ${colors.lighterGrey};
   flex: 1;
   width: 100%;
 `;
 
-const SendAssetForm = ({
-  allAssets,
+export default function SendAssetForm({
   assetAmount,
   buttonRenderer,
   nativeAmount,
@@ -49,25 +52,22 @@ const SendAssetForm = ({
   sendMaxBalance,
   txSpeedRenderer,
   ...props
-}) => {
-  const selectedAsset = ethereumUtils.getAsset(allAssets, selected.address);
+}) {
+  const insets = useSafeArea();
+  const { width: deviceWidth } = useDimensions();
 
-  const isNft = selected.type === AssetTypes.nft;
-  const isSavings = selected.type === AssetTypes.cToken;
+  const selectedAsset = useAsset(selected);
+
+  const isNft = selectedAsset.type === AssetTypes.nft;
+  const isSavings = selectedAsset.type === AssetTypes.cToken;
 
   return (
     <Container>
       <ShadowStack
         borderRadius={0}
-        flex={0}
         height={SendCoinRow.selectedHeight}
-        shadows={[
-          [0, 1, 0, colors.dark, 0.01],
-          [0, 4, 12, colors.dark, 0.04],
-          [0, 8, 23, colors.dark, 0.05],
-        ]}
-        shouldRasterizeIOS
-        width={deviceUtils.dimensions.width}
+        shadows={AssetRowShadow}
+        width={deviceWidth}
       >
         {createElement(
           isNft
@@ -77,16 +77,16 @@ const SendAssetForm = ({
             : SendCoinRow,
           {
             children: <Icon name="doubleCaret" />,
-            item: isNft || isSavings ? selected : selectedAsset,
+            item: selectedAsset,
             onPress: onResetAssetSelection,
             selected: true,
           }
         )}
       </ShadowStack>
-      <TransactionContainer isNft={isNft}>
+      <FormContainer insets={insets} isNft={isNft}>
         {isNft ? (
           <SendAssetFormCollectible
-            {...selected}
+            asset={selectedAsset}
             buttonRenderer={buttonRenderer}
             txSpeedRenderer={txSpeedRenderer}
           />
@@ -100,29 +100,13 @@ const SendAssetForm = ({
               nativeCurrency={nativeCurrency}
               onChangeAssetAmount={onChangeAssetAmount}
               onChangeNativeAmount={onChangeNativeAmount}
-              selected={selected}
+              selected={selectedAsset}
               sendMaxBalance={sendMaxBalance}
               txSpeedRenderer={txSpeedRenderer}
             />
           </Fragment>
         )}
-      </TransactionContainer>
+      </FormContainer>
     </Container>
   );
-};
-
-SendAssetForm.propTypes = {
-  allAssets: PropTypes.array,
-  assetAmount: PropTypes.string,
-  buttonRenderer: PropTypes.node,
-  nativeAmount: PropTypes.string,
-  nativeCurrency: PropTypes.string,
-  onChangeAssetAmount: PropTypes.func,
-  onChangeNativeAmount: PropTypes.func,
-  onResetAssetSelection: PropTypes.func,
-  selected: PropTypes.object,
-  sendMaxBalance: PropTypes.func,
-  txSpeedRenderer: PropTypes.node,
-};
-
-export default pure(SendAssetForm);
+}

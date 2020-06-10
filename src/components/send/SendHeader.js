@@ -52,7 +52,6 @@ const getContactForRecipient = ({ contacts, recipient }) => {
   if (recipient && !isEmpty(contacts)) {
     contact = get(contacts, `${[toLower(recipient)]}`, DefaultContactItem);
   }
-
   return { contact };
 };
 
@@ -137,11 +136,7 @@ class SendHeader extends PureComponent {
   };
 
   navigateToContact = (contact = {}) => {
-    const { navigation, recipient } = this.props;
-    const refocusCallback =
-      this.props.selectedInputId &&
-      this.props.selectedInputId.isFocused() &&
-      this.props.selectedInputId.focus;
+    const { navigation, recipient, selectedInputId } = this.props;
 
     let color = get(contact, 'color');
     if (!isNumber(color)) {
@@ -149,12 +144,12 @@ class SendHeader extends PureComponent {
     }
 
     Keyboard.dismiss();
-    navigation.navigate(Routes.OVERLAY_EXPANDED_ASSET_SCREEN, {
+    navigation.navigate(Routes.MODAL_SCREEN, {
       address: recipient,
       asset: {},
       color,
       contact: isEmpty(contact.address) ? false : contact,
-      onRefocusInput: refocusCallback,
+      onRefocusInput: () => selectedInputId?.focus(),
       type: 'contact',
     });
   };
@@ -180,7 +175,7 @@ class SendHeader extends PureComponent {
       showAssetList,
     } = this.props;
 
-    const isPreExistingContact = contact.nickname.length > 0;
+    const isPreExistingContact = (contact?.nickname.length || 0) > 0;
 
     return (
       <Fragment>

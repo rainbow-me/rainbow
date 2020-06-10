@@ -3,20 +3,19 @@ import { compact, flattenDeep, get, groupBy, map, property } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
 import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
-import { chartExpandedAvailable } from '../config/experimental';
 import EditOptions from '../helpers/editOptionTypes';
 import {
   add,
   convertAmountToNativeDisplay,
   multiply,
 } from '../helpers/utilities';
+import { withNavigation } from '../navigation/Navigation';
 import {
   setHiddenCoins,
   setIsCoinListEdited,
@@ -55,7 +54,7 @@ const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
     onPress: ({ assetType, navigation }) => item => {
-      navigation.navigate(Routes.EXPANDED_ASSET_SCREEN, {
+      navigation.navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: item,
         type: assetType,
       });
@@ -67,21 +66,18 @@ const enhanceRenderItem = compose(
 );
 
 const TokenItem = enhanceRenderItem(BalanceCoinRow);
-const UniswapCardItem = enhanceRenderItem(UniswapInvestmentCard);
 
 const balancesSkeletonRenderItem = item => (
   <AssetListItemSkeleton animated descendingOpacity={false} {...item} />
 );
 
-const balancesRenderItem = item => (
-  <TokenItem {...item} assetType={chartExpandedAvailable ? 'chart' : 'token'} />
-);
+const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
 
 const tokenFamilyItem = item => (
   <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
 );
 const uniswapRenderItem = item => (
-  <UniswapCardItem {...item} assetType="uniswap" isCollapsible />
+  <UniswapInvestmentCard {...item} assetType="uniswap" isCollapsible />
 );
 
 const filterWalletSections = sections =>
@@ -129,7 +125,7 @@ const withEthPrice = allAssets => {
 
 const withBalanceSavingsSection = (savings, priceOfEther) => {
   let savingsAssets = savings;
-  let totalUnderlyingNativeValue = 0;
+  let totalUnderlyingNativeValue = '0';
   if (priceOfEther) {
     savingsAssets = map(savings, asset => {
       const {
@@ -252,8 +248,12 @@ const withBalanceSection = (
   );
   let balanceSectionData = [...assets];
 
-  const totalValue = convertAmountToNativeDisplay(
+  const totalBalanceWithSavingsValue = add(
     totalBalancesValue,
+    get(savingsSection, 'totalValue', 0)
+  );
+  const totalValue = convertAmountToNativeDisplay(
+    totalBalanceWithSavingsValue,
     nativeCurrency
   );
 

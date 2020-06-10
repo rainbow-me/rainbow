@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { compose, withProps } from 'recompose';
 import { createSelector } from 'reselect';
 import {
-  settingsUpdateAccountAddress,
   settingsUpdateAccountColor,
   settingsUpdateAccountName,
 } from '../redux/settings';
@@ -22,7 +21,6 @@ const lowerAccountAddressSelector = createSelector(
 export default Component =>
   compose(
     connect(mapStateToProps, {
-      settingsUpdateAccountAddress,
       settingsUpdateAccountColor,
       settingsUpdateAccountName,
     }),

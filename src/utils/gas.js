@@ -23,26 +23,27 @@ const showTransactionSpeedOptions = (
   onSuccess
 ) => {
   const options = [
-    { label: 'Cancel' },
     ...formatGasSpeedItems(gasPrices, txFees),
+    { label: 'Cancel' },
   ];
+  const cancelButtonIndex = options.length - 1;
 
   showActionSheetWithOptions(
     {
-      cancelButtonIndex: 0,
+      cancelButtonIndex,
       options: options.map(property('label')),
     },
     buttonIndex => {
-      if (buttonIndex > 0) {
+      if (buttonIndex !== undefined && buttonIndex !== cancelButtonIndex) {
         const selectedGasPriceItem = options[buttonIndex];
         updateGasOption(selectedGasPriceItem.speed);
         analytics.track('Updated Gas Price', {
           gasPrice: selectedGasPriceItem.gweiValue,
         });
-      }
 
-      if (isFunction(onSuccess)) {
-        onSuccess();
+        if (isFunction(onSuccess)) {
+          onSuccess();
+        }
       }
     }
   );

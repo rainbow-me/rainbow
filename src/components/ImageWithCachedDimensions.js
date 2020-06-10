@@ -1,32 +1,16 @@
+import React, { useCallback } from 'react';
 import FastImage from 'react-native-fast-image';
-import { compose, withHandlers } from 'recompact';
-import { withImageDimensionsCache } from '../hoc';
+import { useImageDimensionsCache } from '../hooks';
 
-const ImageWithCachedDimensions = compose(
-  withImageDimensionsCache,
-  withHandlers({
-    onLoad: ({ id, imageDimensionsCache, onLoad, updateCache }) => event => {
-      event.persist();
-      const {
-        nativeEvent: { height, width },
-      } = event;
+export default function ImageWithCachedDimensions({ id, ...props }) {
+  const { onCacheImageDimensions } = useImageDimensionsCache(id);
 
-      if (!imageDimensionsCache[id]) {
-        updateCache({
-          dimensions: {
-            height,
-            isSquare: height === width,
-            width,
-          },
-          id,
-        });
-      }
-
-      if (onLoad) {
-        onLoad(event);
-      }
+  const handleLoad = useCallback(
+    ({ nativeEvent: { height, width } }) => {
+      onCacheImageDimensions({ height, width });
     },
-  })
-)(FastImage);
+    [onCacheImageDimensions]
+  );
 
-export default ImageWithCachedDimensions;
+  return <FastImage {...props} onLoad={handleLoad} />;
+}

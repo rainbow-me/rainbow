@@ -1,9 +1,9 @@
-import { keys, mapKeys, mapValues, toLower } from 'lodash';
+import { mapKeys, mapValues, toLower } from 'lodash';
 import savingAssets from './compound/saving-assets.json';
 import tokenOverridesData from './token-overrides.json';
 import uniswapPairsData from './uniswap/uniswap-pairs.json';
-import { supportedCountries } from './wyre/supportedCountries';
 
+export { default as chains } from './chains.json';
 export { default as compoundCERC20ABI } from './compound/compound-cerc20-abi.json';
 export { default as compoundCETHABI } from './compound/compound-ceth-abi.json';
 export { default as erc20ABI } from './erc20-abi.json';
@@ -20,8 +20,6 @@ const SOCKS_ADDRESS = '0x23B608675a2B2fB1890d3ABBd85c5775c51691d5';
 export const TRANSFER_EVENT_TOPIC_LENGTH = 3;
 export const TRANSFER_EVENT_KECCAK =
   '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
-
-export const WYRE_SUPPORTED_COUNTRIES_ISO = keys(supportedCountries);
 
 export const AddCashCurrencies = {
   kovan: {
@@ -41,7 +39,7 @@ export const AddCashCurrencyInfo = {
       name: 'Dai',
       symbol: 'DAI',
     },
-    eth: {
+    'eth': {
       decimals: 18,
       name: 'Ethereum',
       symbol: 'ETH',
@@ -53,7 +51,7 @@ export const AddCashCurrencyInfo = {
       name: 'Dai',
       symbol: 'DAI',
     },
-    eth: {
+    'eth': {
       decimals: 18,
       name: 'Ethereum',
       symbol: 'ETH',

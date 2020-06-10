@@ -44,7 +44,7 @@ def flipper_post_install(installer)
         config.build_settings['SWIFT_VERSION'] = '4.1'
     end
   end
-  file_name = Dir.glob('*.xcodeproj')[0]
+  file_name = Dir.glob("*.xcodeproj")[0]
   app_project = Xcodeproj::Project.open(file_name)
   app_project.native_targets.each do |target|
     target.build_configurations.each do |config|
@@ -63,10 +63,10 @@ end
 
 target 'Rainbow' do
   # Pods for Rainbow
-  pod 'FBLazyVector', :path => '../node_modules/react-native/Libraries/FBLazyVector'
-  pod 'FBReactNativeSpec', :path => '../node_modules/react-native/Libraries/FBReactNativeSpec'
-  pod 'RCTRequired', :path => '../node_modules/react-native/Libraries/RCTRequired'
-  pod 'RCTTypeSafety', :path => '../node_modules/react-native/Libraries/TypeSafety'
+  pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
+  pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
+  pod 'RCTRequired', :path => "../node_modules/react-native/Libraries/RCTRequired"
+  pod 'RCTTypeSafety', :path => "../node_modules/react-native/Libraries/TypeSafety"
   pod 'React', :path => '../node_modules/react-native/'
   pod 'React-Core', :path => '../node_modules/react-native/'
   pod 'React-CoreModules', :path => '../node_modules/react-native/React/CoreModules'
@@ -86,8 +86,8 @@ target 'Rainbow' do
   pod 'React-jsi', :path => '../node_modules/react-native/ReactCommon/jsi'
   pod 'React-jsiexecutor', :path => '../node_modules/react-native/ReactCommon/jsiexecutor'
   pod 'React-jsinspector', :path => '../node_modules/react-native/ReactCommon/jsinspector'
-  pod 'ReactCommon/callinvoker', :path => '../node_modules/react-native/ReactCommon'
-  pod 'ReactCommon/turbomodule/core', :path => '../node_modules/react-native/ReactCommon'
+  pod 'ReactCommon/callinvoker', :path => "../node_modules/react-native/ReactCommon"
+  pod 'ReactCommon/turbomodule/core', :path => "../node_modules/react-native/ReactCommon"
   pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga', :modular_headers => true
 
   pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
@@ -102,7 +102,10 @@ target 'Rainbow' do
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
   pod 'Permission-FaceID', :path => "#{permissions_path}/FaceID.podspec"
 
-  pod 'PanModal', :git => 'https://github.com/osdnk/PanModal', :commit => '25be2df9ccf997b62c39e1edb42857bab2d0cdab'
+  pod "PanModal", :git => 'https://github.com/osdnk/PanModal', :commit => '91fc4b76a31fedb18222b81e2aaa475a8466008d'
+
+  pod 'Shimmer'
+
   use_native_modules!
 
   # Enables Flipper.

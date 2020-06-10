@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { get, replace, startsWith } from 'lodash';
-import { REACT_APP_INFURA_PROJECT_ID } from 'react-native-dotenv';
+import { INFURA_PROJECT_ID, INFURA_PROJECT_ID_DEV } from 'react-native-dotenv';
 import AssetTypes from '../helpers/assetTypes';
 import NetworkTypes from '../helpers/networkTypes';
 import {
@@ -12,7 +12,8 @@ import {
 import smartContractMethods from '../references/smartcontract-methods.json';
 import { ethereumUtils } from '../utils';
 
-const infuraUrl = `https://network.infura.io/v3/${REACT_APP_INFURA_PROJECT_ID}`;
+const infuraProjectId = __DEV__ ? INFURA_PROJECT_ID_DEV : INFURA_PROJECT_ID;
+const infuraUrl = `https://network.infura.io/v3/${infuraProjectId}`;
 /**
  * @desc web3 http instance
  */
@@ -33,12 +34,6 @@ export const web3SetHttpProvider = async network => {
 
 export const sendRpcCall = async payload =>
   web3Provider.send(payload.method, payload.params);
-
-export const getTransactionByHash = txHash =>
-  sendRpcCall({
-    method: 'eth_getTransactionByHash',
-    params: [txHash],
-  });
 
 export const getTransactionReceipt = txHash =>
   sendRpcCall({
@@ -95,16 +90,6 @@ export const toHex = value =>
   ethers.utils.hexlify(ethers.utils.bigNumberify(value));
 
 /**
- * @desc has ETH balance
- * @param  {String} address
- * @return {Boolean}
- */
-export const hasEthBalance = async address => {
-  const weiBalance = await web3Provider.getBalance(address, 'pending');
-  return weiBalance > 0;
-};
-
-/**
  * @desc estimate gas limit
  * @param  {String} address
  * @return {Number} gas limit
@@ -116,15 +101,6 @@ export const estimateGas = async estimateGasData => {
   } catch (error) {
     return null;
   }
-};
-
-/**
- * @desc get gas price
- * @return {String} gas price
- */
-export const getGasPrice = async () => {
-  const gasPrice = await web3Provider.getGasPrice();
-  return gasPrice.toString();
 };
 
 /**
@@ -172,7 +148,7 @@ export const getTxDetails = async transaction => {
   return tx;
 };
 
-export const resolveNameOrAddress = async nameOrAddress => {
+const resolveNameOrAddress = async nameOrAddress => {
   if (!isHexString(nameOrAddress)) {
     return web3Provider.resolveName(nameOrAddress);
   }

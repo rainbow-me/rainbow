@@ -1,9 +1,5 @@
 import { concat, forEach, get } from 'lodash';
-import {
-  getCharts,
-  removeCharts,
-  saveCharts,
-} from '../handlers/localstorage/accountLocal';
+import { getCharts, saveCharts } from '../handlers/localstorage/accountLocal';
 import ChartTypes from '../helpers/chartTypes';
 
 // -- Constants --------------------------------------- //
@@ -14,7 +10,7 @@ const CHARTS_LOAD_FAILURE = 'charts/CHARTS_LOAD_FAILURE';
 const CHARTS_UPDATE = 'charts/CHARTS_UPDATE';
 const CHARTS_CLEAR_STATE = 'charts/CHARTS_CLEAR_STATE';
 
-const DEFAULT_CHART_TYPE = ChartTypes.week;
+const DEFAULT_CHART_TYPE = ChartTypes.year;
 
 // -- Actions ---------------------------------------- //
 export const chartsLoadState = () => async (dispatch, getState) => {
@@ -31,11 +27,8 @@ export const chartsLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const chartsClearState = () => (dispatch, getState) => {
-  const { accountAddress, network } = getState().settings;
-  removeCharts(accountAddress, network);
+export const chartsClearState = () => dispatch =>
   dispatch({ type: CHARTS_CLEAR_STATE });
-};
 
 export const chartsUpdateChartType = chartType => dispatch =>
   dispatch({

@@ -5,6 +5,7 @@ import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
 } from '../helpers/utilities';
+import { getDescription, getTitle } from './transactions';
 
 /**
  * @desc parse transactions from native prices
@@ -29,21 +30,44 @@ export const parseNewTransaction = async (
     get(txDetails, 'asset.price.value', 0),
     nativeCurrency
   );
-  let tx = pick(txDetails, ['dappName', 'from', 'nonce', 'to', 'type']);
+  let tx = pick(txDetails, [
+    'dappName',
+    'from',
+    'nonce',
+    'to',
+    'sourceAmount',
+    'transferId',
+    'type',
+  ]);
   const hash = txDetails.hash ? `${txDetails.hash}-0` : null;
   const nonce = tx.nonce || (tx.from ? await getTransactionCount(tx.from) : '');
   const status = txDetails.status || TransactionStatusTypes.sending;
+
+  const title = getTitle({
+    protocol: txDetails.protocol,
+    status,
+    type: txDetails.type,
+  });
+
+  const description = getDescription({
+    name: get(txDetails, 'asset.name'),
+    status,
+    type: txDetails.type,
+  });
+
   tx = {
     ...tx,
     balance,
+    description,
     hash,
     minedAt: null,
     name: get(txDetails, 'asset.name'),
     native,
     nonce,
-    pending: !!txDetails.hash,
+    pending: true,
     status,
     symbol: get(txDetails, 'asset.symbol'),
+    title,
     type: get(txDetails, 'type'),
   };
 

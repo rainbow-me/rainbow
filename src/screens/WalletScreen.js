@@ -2,7 +2,7 @@ import { get } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
-import { useNavigation } from 'react-navigation-hooks';
+
 import { AssetList } from '../components/asset-list';
 import { FabWrapper } from '../components/fab';
 import ExchangeFab from '../components/fab/ExchangeFab';
@@ -14,9 +14,9 @@ import {
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
+import { LoadingOverlay } from '../components/modal';
 import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import networkInfo from '../helpers/networkInfo';
-import WalletTypes from '../helpers/walletTypes';
 import {
   useAccountSettings,
   useCoinListEdited,
@@ -26,6 +26,8 @@ import {
   useWallets,
   useWalletSectionsData,
 } from '../hooks';
+import { useNavigation } from '../navigation/Navigation';
+import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { position } from '../styles';
 
 export default function WalletScreen() {
@@ -36,11 +38,12 @@ export default function WalletScreen() {
   const { isCoinListEdited } = useCoinListEdited();
   const { updateKeyboardHeight } = useKeyboardHeight();
   const [scrollViewTracker] = useValues([0], []);
-  const { selected: selectedWallet = {} } = useWallets();
+  const { isCreatingAccount, isReadOnlyWallet } = useWallets();
 
   useEffect(() => {
     if (!initialized) {
-      initializeWallet();
+      // We run the migrations only once on app launch
+      initializeWallet(null, null, null, true);
       setInitialized(true);
     }
   }, [initializeWallet, initialized]);
@@ -74,14 +77,14 @@ export default function WalletScreen() {
       <FabWrapper
         disabled={isWalletEthZero}
         fabs={fabs}
+        isCoinListEdited={isCoinListEdited}
+        isReadOnlyWallet={isReadOnlyWallet}
         scrollViewTracker={scrollViewTracker}
         sections={sections}
-        isCoinListEdited={isCoinListEdited}
-        isReadOnlyWallet={selectedWallet.type === WalletTypes.readOnly}
       >
         <HeaderGestureBlocker enabled={isCoinListEdited}>
           <Header marginTop={5} justify="space-between">
-            <ProfileHeaderButton navigation={navigation} />
+            <ProfileHeaderButton />
             <CameraHeaderButton navigation={navigation} />
           </Header>
         </HeaderGestureBlocker>
@@ -94,6 +97,12 @@ export default function WalletScreen() {
           sections={sections}
         />
       </FabWrapper>
+      {isCreatingAccount && (
+        <LoadingOverlay
+          paddingTop={sheetVerticalOffset}
+          title="Creating account..."
+        />
+      )}
     </Page>
   );
 }

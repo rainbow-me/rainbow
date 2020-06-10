@@ -31,6 +31,13 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
   }
   @objc var isAvatarPickerAvailable: Bool = false
+  @objc var isLoading: Bool = false {
+    didSet {
+      if(isLoading != oldValue){
+       tableView.reloadData()
+      }
+    }
+  }
   @objc var scaleTo: CGFloat = 0.97
   @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5)
   @objc var enableHapticFeedback: Bool = true
@@ -41,9 +48,13 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       header.accountAddress.text = accountAddress
       header.accountAddress.addCharacterSpacing(kernValue: 0.5)
       header.accountAddress.sizeToFit()
-      let dropdownMarginLeft:CGFloat = 8.0;
-      let padding:CGFloat = 15.0;
-      header.accountNameViewWidthConstraint.constant = header.accountAddress.frame.size.width + header.accountDropdown.frame.size.width + dropdownMarginLeft + padding;
+      let dropdownMarginLeft: CGFloat = 6.7
+      let padding: CGFloat = 30.0
+      var accountAddressWidth = header.accountAddress.frame.size.width + header.accountDropdown.frame.size.width + dropdownMarginLeft + padding * 2
+      if accountAddressWidth > UIScreen.main.bounds.width {
+        accountAddressWidth = UIScreen.main.bounds.width
+      }
+      header.accountNameViewWidthConstraint.constant = accountAddressWidth
     }
   }
   
@@ -67,11 +78,20 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       if !requests.isEmpty {
         let item = TransactionViewModelTransactionRequestItem(requests: requests)
         items.append(item)
+        self.tableView.isScrollEnabled = true
+        self.tableView.restore()
       }
       
       if !transactions.isEmpty {
         let item = TransactionViewModelTransactionItem(transactions: transactions)
         items.append(item)
+        self.tableView.isScrollEnabled = true
+        self.tableView.restore()
+      }
+      
+      else {
+        self.tableView.isScrollEnabled = false
+        self.tableView.showEmptyState("No transactions yet")
       }
       
       sections = items.flatMap { $0.sections }
@@ -163,6 +183,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     tableView.separatorStyle = .none
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
     tableView.register(UINib(nibName: "TransactionListRequestViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListRequestViewCell")
+    tableView.register(UINib(nibName: "TransactionListLoadingViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListLoadingViewCell")
     tableView.canCancelContentTouches = true
     tableView.scrollIndicatorInsets.bottom = 0.0000000001
     
@@ -217,8 +238,8 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     
     let dropdownImage = UIImage(named: "caret-down")
     header.accountDropdown.contentMode = UIView.ContentMode.scaleAspectFit
-    header.accountDropdown.frame.size.width = 20
-    header.accountDropdown.frame.size.height = 20
+    header.accountDropdown.frame.size.width = 21
+    header.accountDropdown.frame.size.height = 9
     header.accountDropdown.image = dropdownImage
     
     header.copyAddress.titleLabel?.addCharacterSpacing(kernValue: 0.5)
@@ -264,6 +285,9 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   }
   
   func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    if(isLoading){
+      return 0;
+    }
     return 57
   }
   
@@ -288,6 +312,10 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   }
   
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    
+    if(isLoading){
+      return UIScreen.main.bounds.height - header.frame.size.height;
+    }
     let item = sections[indexPath.section]
     
     if item.type == .transactions {
@@ -305,10 +333,18 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   }
   
   func numberOfSections(in tableView: UITableView) -> Int {
+    if(isLoading){
+      return 1
+    }
     return sections.count
   }
   
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    
+    if(isLoading){
+      return 1
+    }
+    
     if sections.count == 0 {
       return 0
     }
@@ -316,6 +352,11 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   }
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    if(isLoading){
+      let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionListLoadingViewCell", for: indexPath) as! TransactionListLoadingViewCell
+      return cell;
+
+    }
     let item = sections[indexPath.section]
     
     if item.type == .transactions {

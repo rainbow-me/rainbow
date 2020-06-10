@@ -1,4 +1,5 @@
-import { useSelector } from 'react-redux';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   gasPricesStartPolling,
   gasPricesStopPolling,
@@ -8,6 +9,8 @@ import {
 } from '../redux/gas';
 
 export default function useGas() {
+  const dispatch = useDispatch();
+
   const gasData = useSelector(
     ({
       gas: {
@@ -27,12 +30,36 @@ export default function useGas() {
       txFees,
     })
   );
+
+  const startPollingGasPrices = useCallback(
+    () => dispatch(gasPricesStartPolling()),
+    [dispatch]
+  );
+  const stopPollingGasPrices = useCallback(
+    () => dispatch(gasPricesStopPolling()),
+    [dispatch]
+  );
+
+  const updateDefaultGasLimit = useCallback(
+    data => dispatch(gasUpdateDefaultGasLimit(data)),
+    [dispatch]
+  );
+
+  const updateGasPriceOption = useCallback(
+    data => dispatch(gasUpdateGasPriceOption(data)),
+    [dispatch]
+  );
+
+  const updateTxFee = useCallback(data => dispatch(gasUpdateTxFee(data)), [
+    dispatch,
+  ]);
+
   return {
-    gasPricesStartPolling,
-    gasPricesStopPolling,
-    gasUpdateDefaultGasLimit,
-    gasUpdateGasPriceOption,
-    gasUpdateTxFee,
+    startPollingGasPrices,
+    stopPollingGasPrices,
+    updateDefaultGasLimit,
+    updateGasPriceOption,
+    updateTxFee,
     ...gasData,
   };
 }

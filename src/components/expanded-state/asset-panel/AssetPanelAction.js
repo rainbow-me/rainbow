@@ -1,52 +1,54 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
-import styled from 'styled-components/primitives';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { withNeverRerender } from '../../../hoc';
-import { colors, padding, position } from '../../../styles';
+import { colors, position } from '../../../styles';
 import { Icon } from '../../icons';
-import { Centered, FlexItem, Row } from '../../layout';
+import { Centered, FlexItem } from '../../layout';
 import { TruncatedText } from '../../text';
 import FloatingPanel from '../FloatingPanel';
 
-const Container = styled(Row).attrs({
-  align: 'center',
-  justify: 'space-between',
-})`
-  ${padding(0, FloatingPanel.padding.x)};
-  height: 60;
-  width: 100%;
-`;
-
-const AssetPanelIcon = styled(Icon)`
-  ${position.maxSize('100%')};
-  ${position.minSize(21)};
-`;
-
-const AssetPanelIconContainer = styled(Centered)`
-  flex-grow: 0;
-  flex-shrink: 0;
-  height: 100%;
-  padding-bottom: 4;
-  width: 24;
-`;
+const sx = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    height: 60,
+    justifyContent: 'space-between',
+    paddingHorizontal: FloatingPanel.padding.x,
+    width: '100%',
+  },
+  icon: {
+    ...position.maxSizeAsObject('100%'),
+    ...position.minSizeAsObject(21),
+  },
+  iconContainer: {
+    flexGrow: 0,
+    flexShrink: 0,
+    height: '100%',
+    paddingBottom: 4,
+    width: 24,
+  },
+  label: {
+    marginBottom: 4,
+  },
+});
 
 const AssetPanelAction = ({ color, icon, label, onPress }) => (
-  <Container activeOpacity={0.5} component={TouchableOpacity} onPress={onPress}>
-    <FlexItem>
+  <TouchableOpacity activeOpacity={0.5} onPress={onPress} style={sx.container}>
+    <FlexItem flex={1}>
       <TruncatedText
         color={color}
         size="large"
-        style={{ marginBottom: 4 }}
+        style={sx.label}
         weight="semibold"
       >
         {label}
       </TruncatedText>
     </FlexItem>
-    <AssetPanelIconContainer>
-      <AssetPanelIcon color={color} name={icon} />
-    </AssetPanelIconContainer>
-  </Container>
+    <Centered style={sx.iconContainer}>
+      <Icon color={color} name={icon} style={sx.icon} />
+    </Centered>
+  </TouchableOpacity>
 );
 
 AssetPanelAction.propTypes = {

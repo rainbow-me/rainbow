@@ -1,21 +1,34 @@
 import { sortBy, values } from 'lodash';
-import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { createSelector } from 'reselect';
 import { contactsAddOrUpdate, removeContact } from '../redux/contacts';
 
-export default function useContacts() {
-  const { contacts } = useSelector(({ contacts: { contacts } }) => ({
+const contactsSelector = createSelector(
+  ({ contacts: { contacts } }) => contacts,
+  contacts => ({
     contacts,
-  }));
+    sortedContacts: sortBy(values(contacts), 'nickname'),
+  })
+);
 
-  const sortedContacts = useMemo(() => {
-    return sortBy(values(contacts), 'nickname');
-  }, [contacts]);
+export default function useContacts() {
+  const dispatch = useDispatch();
+  const { contacts, sortedContacts } = useSelector(contactsSelector);
+
+  const onAddOrUpdateContacts = useCallback(
+    (...data) => dispatch(contactsAddOrUpdate(...data)),
+    [dispatch]
+  );
+
+  const onRemoveContact = useCallback(data => dispatch(removeContact(data)), [
+    dispatch,
+  ]);
 
   return {
     contacts,
-    contactsAddOrUpdate,
-    removeContact,
+    onAddOrUpdateContacts,
+    onRemoveContact,
     sortedContacts,
   };
 }

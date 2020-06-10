@@ -1,5 +1,4 @@
-import { get } from 'lodash';
-import PropTypes from 'prop-types';
+import { get, isEmpty } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -7,38 +6,34 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import {
-  DataProvider,
-  LayoutProvider,
-  RecyclerListView,
-} from 'recyclerlistview';
+import styled from 'styled-components/primitives';
 import WalletTypes from '../../helpers/walletTypes';
 import { colors, position } from '../../styles';
-import { deviceUtils } from '../../utils';
 import { EmptyAssetList } from '../asset-list';
-import AddressOption from './AddressOption';
+import { Column } from '../layout';
 import AddressRow from './AddressRow';
-import WalletDivider from './WalletDivider';
 import WalletOption from './WalletOption';
 
-const rowHeight = 70;
-const optionRowHeight = 50;
-const lastRowPadding = 10;
+const listTopPadding = 7.5;
+const rowHeight = 59;
 
 const RowTypes = {
   ADDRESS: 1,
-  ADDRESS_OPTION: 2,
-  EMPTY: 3,
-  LAST_ROW: 4,
+  EMPTY: 2,
 };
 
-const sx = StyleSheet.create({
-  container: {
-    paddingTop: 0,
-  },
-});
+const getItemLayout = (data, index) => {
+  const { height } = data[index];
+  return {
+    index,
+    length: height,
+    offset: height * index,
+  };
+};
+
+const keyExtractor = item => item.id;
 
 const skeletonTransition = (
   <Transition.Sequence>
@@ -48,7 +43,35 @@ const skeletonTransition = (
   </Transition.Sequence>
 );
 
-export function WalletList({
+const Container = styled(Transitioning.View)`
+  height: ${({ height }) => height};
+  margin-top: -2;
+`;
+
+const EmptyWalletList = styled(EmptyAssetList).attrs({
+  descendingOpacity: true,
+  pointerEvents: 'none',
+})`
+  ${position.cover};
+  background-color: ${colors.white};
+  padding-top: ${listTopPadding};
+`;
+
+const WalletFlatList = styled(FlatList).attrs({
+  getItemLayout,
+  keyExtractor,
+  removeClippedSubviews: true,
+})`
+  flex: 1;
+  min-height: 1;
+  padding-top: ${listTopPadding};
+`;
+
+const WalletListFooter = styled(Column)`
+  padding-bottom: 6;
+`;
+
+export default function WalletList({
   accountAddress,
   allWallets,
   currentWallet,
@@ -58,26 +81,29 @@ export function WalletList({
   onPressAddAccount,
   onPressImportSeedPhrase,
   onChangeAccount,
+  scrollEnabled,
 }) {
   const [rows, setRows] = useState([]);
   const [ready, setReady] = useState(false);
-  const [dataProvider, setDataProvider] = useState(null);
-  const [layoutProvider, setLayoutProvider] = useState(null);
   const [doneScrolling, setDoneScrolling] = useState(false);
   const scrollView = useRef(null);
   const skeletonTransitionRef = useRef();
 
   // Update the rows when allWallets changes
   useEffect(() => {
-    let newRows = [];
-    if (!allWallets) return;
-    Object.keys(allWallets).forEach(key => {
+    const seedRows = [];
+    const privateKeyRows = [];
+    const readOnlyRows = [];
+
+    if (isEmpty(allWallets)) return;
+    const sortedKeys = Object.keys(allWallets).sort();
+    sortedKeys.forEach(key => {
       const wallet = allWallets[key];
       const filteredAccounts = wallet.addresses.filter(
         account => account.visible
       );
       filteredAccounts.forEach(account => {
-        newRows.push({
+        const row = {
           ...account,
           editMode,
           height: rowHeight,
@@ -90,49 +116,26 @@ export function WalletList({
           onPress: () => onChangeAccount(wallet.id, account.address),
           rowType: RowTypes.ADDRESS,
           wallet_id: wallet.id,
-        });
-      });
-      // You can't add accounts for read only or private key wallets
-      if (
-        [WalletTypes.mnemonic, WalletTypes.seed].indexOf(wallet.type) !== -1 &&
-        filteredAccounts.length > 0
-      ) {
-        newRows.push({
-          editMode,
-          height: optionRowHeight,
-          icon: 'plus',
-          id: 'add_account',
-          label: 'Create a new wallet',
-          onPress: () => onPressAddAccount(wallet.id),
-          rowType: RowTypes.ADDRESS_OPTION,
-        });
-      }
-    });
-    setRows(newRows);
-
-    setLayoutProvider(
-      new LayoutProvider(
-        i => {
-          if (!newRows || !newRows.length) return RowTypes.EMPTY;
-          return (newRows[i] && newRows[i].rowType) || RowTypes.EMPTY;
-        },
-        (type, dim) => {
-          if (type === RowTypes.ADDRESS) {
-            dim.width = deviceUtils.dimensions.width;
-            dim.height = rowHeight;
-          } else if (type === RowTypes.ADDRESS_OPTION) {
-            dim.width = deviceUtils.dimensions.width;
-            dim.height = optionRowHeight;
-          } else if (type === RowTypes.LAST_ROW) {
-            dim.width = deviceUtils.dimensions.width;
-            dim.height = rowHeight + lastRowPadding;
-          } else {
-            dim.width = 0;
-            dim.height = 0;
-          }
+        };
+        switch (wallet.type) {
+          case WalletTypes.mnemonic:
+          case WalletTypes.seed:
+            seedRows.push(row);
+            break;
+          case WalletTypes.privateKey:
+            privateKeyRows.push(row);
+            break;
+          case WalletTypes.readOnly:
+            readOnlyRows.push(row);
+            break;
+          default:
+            break;
         }
-      )
-    );
+      });
+    });
+
+    const newRows = [...seedRows, ...privateKeyRows, ...readOnlyRows];
+    setRows(newRows);
   }, [
     accountAddress,
     allWallets,
@@ -140,148 +143,98 @@ export function WalletList({
     editMode,
     onChangeAccount,
     onPressAddAccount,
-    onPressImportSeedPhrase,
   ]);
 
   // Update the data provider when rows change
   useEffect(() => {
-    const dataProvider = new DataProvider((r1, r2) => {
-      if (r1.rowType !== r2.rowType) {
-        return true;
-      }
+    if (rows && rows.length && !ready) {
+      setTimeout(() => {
+        skeletonTransitionRef.current?.animateNextTransition();
+        setReady(true);
+      }, 50);
+    }
+  }, [rows, ready]);
 
-      if (r1.id !== r2.id) {
-        return true;
-      }
-
-      if (r1.name !== r2.name) {
-        return true;
-      }
-
-      if (r1.label !== r2.label) {
-        return true;
-      }
-
-      if (r1.color !== r2.color) {
-        return true;
-      }
-
-      if (r1.isSelected !== r2.isSelected) {
-        return true;
-      }
-      if (r1.editMode !== r2.editMode) {
-        return true;
-      }
-
-      return false;
-    }).cloneWithRows(rows);
-    setDataProvider(dataProvider);
-
+  useEffect(() => {
     // Detect if we need to autoscroll to the selected account
+    let selectedItemIndex = 0;
     let distanceToScroll = 0;
-    rows.some(item => {
+    const scrollThreshold = rowHeight * 2;
+    rows.some((item, index) => {
       if (item.isSelected) {
+        selectedItemIndex = index;
         return true;
       }
       distanceToScroll += item.height;
       return false;
     });
-    if (distanceToScroll > height - rowHeight && !doneScrolling) {
-      setDoneScrolling(true);
+
+    if (distanceToScroll > height - scrollThreshold && !doneScrolling) {
       setTimeout(() => {
-        scrollView &&
-          scrollView.current &&
-          scrollView.current.scrollToOffset(0, distanceToScroll, true);
-      }, 300);
+        scrollView.current?.scrollToIndex({
+          animated: true,
+          index: selectedItemIndex,
+        });
+        setDoneScrolling(true);
+      }, 50);
     }
-  }, [doneScrolling, height, ready, rows]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
 
-  useEffect(() => {
-    if (layoutProvider && dataProvider && !ready) {
-      skeletonTransitionRef.current.animateNextTransition();
-      setReady(true);
-    }
-  }, [dataProvider, layoutProvider, ready]);
-
-  const renderRow = useCallback(
-    (_, data, index) => {
-      const isLastRow = index === rows.length - 1;
-
-      switch (data.rowType) {
-        case RowTypes.ADDRESS_OPTION:
-          return (
-            <AddressOption
-              icon={data.icon}
-              label={data.label}
-              onPress={data.onPress}
-              borderBottom={!isLastRow}
-              editMode={editMode}
-            />
-          );
+  const renderItem = useCallback(
+    ({ item }) => {
+      switch (item.rowType) {
         case RowTypes.ADDRESS:
           return (
-            <AddressRow
-              data={data}
-              onPress={data.onPress}
-              onEditWallet={onEditWallet}
-              borderBottom={data.isOnlyAddress && data.isReadOnly && !isLastRow}
-              editMode={editMode}
-            />
+            <Column height={item.height}>
+              <AddressRow
+                data={item}
+                editMode={editMode}
+                onEditWallet={onEditWallet}
+                onPress={item.onPress}
+              />
+            </Column>
           );
         default:
           return null;
       }
     },
-    [editMode, onEditWallet, rows.length]
+    [editMode, onEditWallet]
   );
+
   return (
-    <View style={sx.container}>
-      <WalletDivider />
-      <View style={{ height }}>
-        <Transitioning.View
-          flex={1}
-          ref={skeletonTransitionRef}
-          transition={skeletonTransition}
-        >
-          {ready ? (
-            <Fragment>
-              <RecyclerListView
-                style={{ flex: 1 }}
-                rowRenderer={renderRow}
-                dataProvider={dataProvider}
-                layoutProvider={layoutProvider}
-                optimizeForInsertDeleteAnimations
-                ref={scrollView}
-              />
-              <WalletOption
-                icon="arrowBack"
-                label="Add an existing wallet"
-                onPress={onPressImportSeedPhrase}
-                editMode={editMode}
-              />
-            </Fragment>
-          ) : (
-            <EmptyAssetList
-              {...position.coverAsObject}
-              backgroundColor={colors.white}
-              pointerEvents="none"
+    <Container
+      height={height}
+      ref={skeletonTransitionRef}
+      transition={skeletonTransition}
+    >
+      {ready ? (
+        <Fragment>
+          <WalletFlatList
+            data={rows}
+            initialNumToRender={rows.length}
+            ref={scrollView}
+            renderItem={renderItem}
+            scrollEnabled={scrollEnabled}
+          />
+          <WalletListFooter>
+            <WalletOption
+              editMode={editMode}
+              icon="arrowBack"
+              label="􀁍 Create a new wallet"
+              onPress={onPressAddAccount}
             />
-          )}
-        </Transitioning.View>
-      </View>
-    </View>
+            <WalletOption
+              editMode={editMode}
+              icon="arrowBack"
+              label="􀂍 Add an existing wallet"
+              onPress={onPressImportSeedPhrase}
+            />
+          </WalletListFooter>
+        </Fragment>
+      ) : (
+        <EmptyWalletList />
+      )}
+    </Container>
   );
 }
-
-export default WalletList;
-
-WalletList.propTypes = {
-  accountAddress: PropTypes.string,
-  allWallets: PropTypes.object,
-  currentWallet: PropTypes.object,
-  height: PropTypes.number,
-  onChangeAccount: PropTypes.func,
-  onEditWallet: PropTypes.func,
-  onPressAddAccount: PropTypes.func,
-  onPressImportSeedPhrase: PropTypes.func,
-};

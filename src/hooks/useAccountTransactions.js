@@ -1,13 +1,18 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import NetworkTypes from '../helpers/networkTypes';
 import { buildTransactionsSectionsSelector } from '../helpers/transactions';
 import useContacts from './useContacts';
 import useRequests from './useRequests';
 
 export default function useAccountTransactions(initialized, isFocused) {
-  const { isLoadingTransactions, transactions } = useSelector(
-    ({ data: { isLoadingTransactions, transactions } }) => ({
+  const { isLoadingTransactions, network, transactions } = useSelector(
+    ({
+      data: { isLoadingTransactions, transactions },
+      settings: { network },
+    }) => ({
       isLoadingTransactions,
+      network,
       transactions,
     })
   );
@@ -30,7 +35,8 @@ export default function useAccountTransactions(initialized, isFocused) {
   const { sections } = buildTransactionsSectionsSelector(accountState);
 
   return {
-    isLoadingTransactions,
+    isLoadingTransactions:
+      network === NetworkTypes.mainnet ? isLoadingTransactions : false,
     sections,
     transactions,
     transactionsCount,

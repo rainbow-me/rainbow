@@ -1,57 +1,39 @@
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import { TextInput } from 'react-native';
+import React from 'react';
+import { TextInput as TextInputPrimitive } from 'react-native';
+import styled from 'styled-components/primitives';
 import { buildTextStyles, colors } from '../../styles';
 
-export default class Input extends PureComponent {
-  static propTypes = {
-    allowFontScaling: PropTypes.bool,
-    autoCapitalize: PropTypes.string,
-    autoCorrect: PropTypes.bool,
-    keyboardType: PropTypes.string,
-    placeholderTextColor: PropTypes.string,
-    spellCheck: PropTypes.bool,
-  };
+const TextInput = styled(TextInputPrimitive).attrs({
+  selectionColor: colors.appleBlue,
+})`
+  /* our Input uses same styling system as our <Text /> component */
+  ${buildTextStyles};
+`;
 
-  static defaultProps = {
-    allowFontScaling: false,
-    autoCapitalize: 'none',
-    autoCorrect: false,
-    placeholderTextColor: colors.placeholder,
-    spellCheck: true,
-  };
+const Input = (
+  {
+    allowFontScaling = false,
+    autoCapitalize = 'none',
+    autoCorrect = false,
+    keyboardType,
+    placeholderTextColor = colors.placeholder,
+    spellCheck = true,
+    ...props
+  },
+  ref
+) => {
+  return (
+    <TextInput
+      {...props}
+      allowFontScaling={allowFontScaling}
+      autoCapitalize={autoCapitalize}
+      autoCorrect={autoCorrect}
+      keyboardType={keyboardType}
+      placeholderTextColor={placeholderTextColor}
+      ref={ref}
+      spellCheck={spellCheck}
+    />
+  );
+};
 
-  clear = () => this.ref.current.clear();
-
-  focus = event => this.ref.current.focus(event);
-
-  isFocused = () => this.ref.current.isFocused();
-
-  ref = React.createRef();
-
-  render = () => {
-    const {
-      allowFontScaling,
-      autoCapitalize,
-      autoCorrect,
-      keyboardType,
-      placeholderTextColor,
-      spellCheck,
-      ...props
-    } = this.props;
-
-    return (
-      <TextInput
-        {...props}
-        allowFontScaling={allowFontScaling}
-        autoCapitalize={autoCapitalize}
-        autoCorrect={autoCorrect}
-        css={buildTextStyles}
-        keyboardType={keyboardType}
-        placeholderTextColor={placeholderTextColor}
-        ref={this.ref}
-        spellCheck={spellCheck}
-      />
-    );
-  };
-}
+export default React.forwardRef(Input);

@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { get, toLower } from 'lodash';
-import transactionStatusTypes from '../../helpers/transactionStatusTypes';
-import transactionTypes from '../../helpers/transactionTypes';
+import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import TransactionTypes from '../../helpers/transactionTypes';
 import {
   convertAmountToRawAmount,
   greaterThan,
@@ -58,16 +58,19 @@ const unlock = async (wallet, currentRap, index, parameters) => {
 
   logger.log('[unlock] add a new txn');
   await dispatch(
-    dataAddNewTransaction({
-      amount: 0,
-      asset: assetToUnlock,
-      from: wallet.address,
-      hash: approval.hash,
-      nonce: get(approval, 'nonce'),
-      status: transactionStatusTypes.approving,
-      to: get(approval, 'to'),
-      type: transactionTypes.authorize,
-    })
+    dataAddNewTransaction(
+      {
+        amount: 0,
+        asset: assetToUnlock,
+        from: wallet.address,
+        hash: approval.hash,
+        nonce: get(approval, 'nonce'),
+        status: TransactionStatusTypes.approving,
+        to: get(approval, 'to'),
+        type: TransactionTypes.authorize,
+      },
+      wallet.address
+    )
   );
   logger.log('[unlock] calling callback');
   currentRap.callback();
@@ -126,7 +129,9 @@ export const assetNeedsUnlocking = async (
   }
 
   const rawAmount = convertAmountToRawAmount(amount, assetToUnlock.decimals);
-  return !greaterThan(allowance, rawAmount);
+  const assetNeedsUnlocking = !greaterThan(allowance, rawAmount);
+  logger.log('asset needs unlocking?', assetNeedsUnlocking);
+  return assetNeedsUnlocking;
 };
 
 export default unlock;

@@ -1,14 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
-import { useNavigation } from 'react-navigation-hooks';
 import { compose } from 'recompact';
 import { onlyUpdateForKeys } from 'recompose';
 import { withFabSelection, withTransitionProps } from '../../hoc';
+import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { Icon } from '../icons';
-import { Centered } from '../layout';
 import FloatingActionButton from './FloatingActionButton';
 
 const FloatingActionButtonWithDisabled = withFabSelection(FloatingActionButton);
@@ -29,18 +28,16 @@ const SendFab = ({ disabled, isReadOnlyWallet, scaleTo, tapRef }) => {
   }, [navigate, isReadOnlyWallet]);
 
   return (
-    <Centered flex={0}>
-      <FloatingActionButtonWithDisabled
-        backgroundColor={colors.paleBlue}
-        disabled={disabled}
-        onPress={onPressHandler}
-        scaleTo={scaleTo}
-        shadows={FabShadow}
-        tapRef={tapRef}
-      >
-        <Icon height={22} marginBottom={4} name="send" width={23} />
-      </FloatingActionButtonWithDisabled>
-    </Centered>
+    <FloatingActionButtonWithDisabled
+      backgroundColor={colors.paleBlue}
+      disabled={disabled}
+      onPress={onPressHandler}
+      scaleTo={scaleTo}
+      shadows={FabShadow}
+      tapRef={tapRef}
+    >
+      <Icon height={22} marginBottom={4} name="send" width={23} />
+    </FloatingActionButtonWithDisabled>
   );
 };
 

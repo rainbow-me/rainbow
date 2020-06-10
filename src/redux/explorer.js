@@ -38,6 +38,7 @@ const messages = {
   },
   ADDRESS_TRANSACTIONS: {
     APPENDED: 'appended address transactions',
+    CHANGED: 'changed address transactions',
     RECEIVED: 'received address transactions',
     REMOVED: 'removed address transactions',
   },
@@ -211,7 +212,13 @@ const listenOnAddressMessages = socket => dispatch => {
     dispatch(transactionsReceived(message, true));
   });
 
+  socket.on(messages.ADDRESS_TRANSACTIONS.CHANGED, message => {
+    logger.log('txns changed', get(message, 'payload.transactions', []));
+    dispatch(transactionsReceived(message, true));
+  });
+
   socket.on(messages.ADDRESS_TRANSACTIONS.REMOVED, message => {
+    logger.log('txns removed', get(message, 'payload.transactions', []));
     dispatch(transactionsRemoved(message));
   });
 

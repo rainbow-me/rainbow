@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { TextInput } from 'react-native';
 import { useIsFocused } from 'react-navigation-hooks';
 import useInteraction from './useInteraction';
-import useMagicFocus from './useMagicFocus';
+import useMagicAutofocus from './useMagicAutofocus';
 import usePrevious from './usePrevious';
 
 const getNativeTag = field => get(field, '_nativeTag');
@@ -16,21 +16,9 @@ export default function useSwapInputRefs({ inputCurrency, outputCurrency }) {
   const nativeFieldRef = useRef();
   const outputFieldRef = useRef();
 
-  const [lastFocusedInput, handleFocus] = useMagicFocus(inputFieldRef.current);
-
-  const [createRefocusInteraction] = useInteraction();
-
-  const assignInputFieldRef = useCallback(ref => {
-    inputFieldRef.current = ref;
-  }, []);
-
-  const assignNativeFieldRef = useCallback(ref => {
-    nativeFieldRef.current = ref;
-  }, []);
-
-  const assignOutputFieldRef = useCallback(ref => {
-    outputFieldRef.current = ref;
-  }, []);
+  const [handleFocus, lastFocusedInput] = useMagicAutofocus(
+    inputFieldRef.current
+  );
 
   const findNextFocused = useCallback(
     ({ inputCurrency, outputCurrency }) => {
@@ -59,6 +47,7 @@ export default function useSwapInputRefs({ inputCurrency, outputCurrency }) {
     [lastFocusedInput]
   );
 
+  const [createRefocusInteraction] = useInteraction();
   const handleRefocusLastInput = useCallback(() => {
     createRefocusInteraction(() => {
       if (isScreenFocused) {
@@ -86,9 +75,6 @@ export default function useSwapInputRefs({ inputCurrency, outputCurrency }) {
   }, [handleRefocusLastInput, isScreenFocused, wasScreenFocused]);
 
   return {
-    assignInputFieldRef,
-    assignNativeFieldRef,
-    assignOutputFieldRef,
     handleFocus,
     inputFieldRef,
     nativeFieldRef,

@@ -1,24 +1,21 @@
 import GraphemeSplitter from 'grapheme-splitter';
-import { toUpper } from 'lodash';
-import { useSelector } from 'react-redux';
+import { get, toUpper } from 'lodash';
 import { removeFirstEmojiFromString } from '../helpers/emojiHandler';
 import { address } from '../utils/abbreviations';
+import useAccountSettings from './useAccountSettings';
+import useWallets from './useWallets';
 
-export default function useWallets() {
-  const selectedWallet = useSelector(({ wallets: { selected } }) => selected);
-  const accountData = useSelector(
-    ({ settings: { accountAddress, accountENS } }) => ({
-      accountAddress,
-      accountENS,
-    })
-  );
+export default function useAccountProfile() {
+  const { selectedWallet, walletNames } = useWallets();
+
+  const { accountAddress } = useAccountSettings();
 
   if (!selectedWallet) return {};
-  if (!accountData) return {};
+  if (!accountAddress) return {};
 
-  const { accountENS, accountAddress } = accountData;
+  if (!selectedWallet || !selectedWallet?.addresses?.length) return {};
 
-  if (!selectedWallet || !selectedWallet.addresses.length) return {};
+  const accountENS = get(walletNames, `${accountAddress}`);
 
   const selectedAccount = selectedWallet.addresses.find(
     account => account.address === accountAddress
@@ -34,7 +31,7 @@ export default function useWallets() {
 
   const labelOrAccountName =
     accountName === label ? toUpper(accountName) : label;
-  const accountEmoji = new GraphemeSplitter().splitGraphemes(
+  const accountSymbol = new GraphemeSplitter().splitGraphemes(
     labelOrAccountName || toUpper(accountENS) || `${index + 1}`
   )[0];
   const accountColor = color;
@@ -42,8 +39,8 @@ export default function useWallets() {
   return {
     accountAddress,
     accountColor,
-    accountEmoji,
     accountENS,
     accountName,
+    accountSymbol,
   };
 }

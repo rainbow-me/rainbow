@@ -1,226 +1,239 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
-import React, { useCallback, useRef, useState } from 'react';
-import { Linking, requireNativeComponent, View } from 'react-native';
-import { useNavigation } from 'react-navigation-hooks';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { Linking, requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
+import styled from 'styled-components/primitives';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { useAccountProfile } from '../../hooks';
+import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
 import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
-import LoadingState from '../activity-list/LoadingState';
 import { FloatingEmojis } from '../floating-emojis';
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
+
+const Container = styled.View`
+  flex: 1;
+  margin-top: 0;
+`;
+
+const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
+  distance: 250,
+  duration: 500,
+  fadeOut: false,
+  scaleTo: 0,
+  size: 50,
+  wiggleFactor: 0,
+})`
+  height: 0;
+  left: ${({ tapTarget }) => tapTarget[0] - 24};
+  position: absolute;
+  top: ${({ tapTarget }) => tapTarget[1] - tapTarget[3]};
+  width: ${({ tapTarget }) => tapTarget[2]};
+`;
 
 const TransactionList = ({
   addCashAvailable,
   contacts,
-  header,
   initialized,
   isLoading,
-  navigation,
   network,
   requests,
-  style,
   transactions,
 }) => {
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
+  const setOnNewEmoji = useCallback(
+    newOnNewEmoji => (onNewEmoji.current = newOnNewEmoji),
+    []
+  );
   const dispatch = useDispatch();
-  const { navigate } = useNavigation();
+  const { navigate, isFocused } = useNavigation();
   const {
     accountAddress,
-    accountEmoji,
     accountColor,
+    accountSymbol,
     accountName,
   } = useAccountProfile();
 
-  const onAddCashPress = () => {
-    navigation.navigate(Routes.ADD_CASH_SHEET);
+  const onAddCashPress = useCallback(() => {
+    navigate(Routes.ADD_CASH_SHEET);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-  };
+  }, [navigate]);
 
-  const onAvatarPress = () => {
-    navigation.navigate(Routes.AVATAR_BUILDER, {
+  const onAvatarPress = useCallback(() => {
+    navigate(Routes.AVATAR_BUILDER, {
       accountColor,
       accountName,
     });
-  };
+  }, [accountColor, accountName, navigate]);
 
-  const onReceivePress = () => {
-    navigation.navigate(Routes.RECEIVE_MODAL);
-  };
+  const onReceivePress = useCallback(() => {
+    navigate(Routes.RECEIVE_MODAL);
+  }, [navigate]);
 
-  const onRequestExpire = e => {
-    const { index } = e.nativeEvent;
-    const item = requests[index];
-    dispatch(removeRequest(item.requestId));
-  };
+  const onRequestExpire = useCallback(
+    e => {
+      const { index } = e.nativeEvent;
+      const item = requests[index];
+      item && item.requestId && dispatch(removeRequest(item.requestId));
+    },
+    [dispatch, requests]
+  );
 
-  const onRequestPress = e => {
-    const { index } = e.nativeEvent;
-    const item = requests[index];
-    navigation.navigate({
-      params: { transactionDetails: item },
-      routeName: Routes.CONFIRM_REQUEST,
-    });
-    return;
-  };
+  const onRequestPress = useCallback(
+    e => {
+      const { index } = e.nativeEvent;
+      const item = requests[index];
+      navigate({
+        params: { transactionDetails: item },
+        routeName: Routes.CONFIRM_REQUEST,
+      });
+      return;
+    },
+    [navigate, requests]
+  );
 
-  const onTransactionPress = e => {
-    const { index } = e.nativeEvent;
-    const item = transactions[index];
-    const { hash, from, to, status } = item;
+  const onTransactionPress = useCallback(
+    e => {
+      const { index } = e.nativeEvent;
+      const item = transactions[index];
+      const { hash, from, to, status } = item;
 
-    const isPurchasing = status === TransactionStatusTypes.purchasing;
-    const isSent = status === TransactionStatusTypes.sent;
+      const isPurchasing = status === TransactionStatusTypes.purchasing;
+      const isSent = status === TransactionStatusTypes.sent;
 
-    const headerInfo = {
-      address: '',
-      divider: isSent ? 'to' : 'from',
-      type: status.charAt(0).toUpperCase() + status.slice(1),
-    };
+      const headerInfo = {
+        address: '',
+        divider: isSent ? 'to' : 'from',
+        type: status.charAt(0).toUpperCase() + status.slice(1),
+      };
 
-    const contactAddress = isSent ? to : from;
-    const contact = contacts[contactAddress];
-    let contactColor = 0;
+      const contactAddress = isSent ? to : from;
+      const contact = contacts[contactAddress];
+      let contactColor = 0;
 
-    if (contact) {
-      headerInfo.address = contact.nickname;
-      contactColor = contact.color;
-    } else {
-      headerInfo.address = abbreviations.address(contactAddress, 4, 10);
-      contactColor = Math.floor(Math.random() * colors.avatarColor.length);
-    }
-
-    if (hash) {
-      let buttons = ['View on Etherscan', 'Cancel'];
-      if (!isPurchasing) {
-        buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
+      if (contact) {
+        headerInfo.address = contact.nickname;
+        contactColor = contact.color;
+      } else {
+        headerInfo.address = abbreviations.address(contactAddress, 4, 10);
+        contactColor = Math.floor(Math.random() * colors.avatarColor.length);
       }
 
-      showActionSheetWithOptions(
-        {
-          cancelButtonIndex: isPurchasing ? 1 : 2,
-          options: buttons,
-          title: isPurchasing
-            ? headerInfo.type
-            : `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
-        },
-        buttonIndex => {
-          if (!isPurchasing && buttonIndex === 0) {
-            navigation.navigate(Routes.EXPANDED_ASSET_SCREEN, {
-              address: contactAddress,
-              asset: item,
-              color: contactColor,
-              contact,
-              type: 'contact',
-            });
-          } else if (
-            (isPurchasing && buttonIndex === 0) ||
-            (!isPurchasing && buttonIndex === 1)
-          ) {
-            const normalizedHash = hash.replace(/-.*/g, '');
-            const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
-              network
-            );
-            Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
-          }
+      if (hash) {
+        let buttons = ['View on Etherscan', 'Cancel'];
+        if (!isPurchasing) {
+          buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
         }
-      );
-    }
-  };
 
-  const onCopyAddressPress = e => {
-    const { x, y, width, height } = e.nativeEvent;
-    setTapTarget([x, y, width, height]);
-    if (onNewEmoji && onNewEmoji.current) {
-      onNewEmoji.current();
-    }
-    Clipboard.setString(accountAddress);
-  };
+        showActionSheetWithOptions(
+          {
+            cancelButtonIndex: isPurchasing ? 1 : 2,
+            options: buttons,
+            title: isPurchasing
+              ? headerInfo.type
+              : `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
+          },
+          buttonIndex => {
+            if (!isPurchasing && buttonIndex === 0) {
+              navigate(Routes.MODAL_SCREEN, {
+                address: contactAddress,
+                asset: item,
+                color: contactColor,
+                contact,
+                type: 'contact',
+              });
+            } else if (
+              (isPurchasing && buttonIndex === 0) ||
+              (!isPurchasing && buttonIndex === 1)
+            ) {
+              const normalizedHash = hash.replace(/-.*/g, '');
+              const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
+                network
+              );
+              Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
+            }
+          }
+        );
+      }
+    },
+    [contacts, navigate, network, transactions]
+  );
+
+  const onCopyAddressPress = useCallback(
+    e => {
+      const { x, y, width, height } = e.nativeEvent;
+      setTapTarget([x, y, width, height]);
+      if (onNewEmoji && onNewEmoji.current) {
+        onNewEmoji.current();
+      }
+      Clipboard.setString(accountAddress);
+    },
+    [accountAddress]
+  );
 
   const onAccountNamePress = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
-  if ((!initialized && !navigation.isFocused()) || isLoading) {
-    return <LoadingState>{header}</LoadingState>;
-  }
+  const data = useMemo(
+    () => ({
+      requests,
+      transactions,
+    }),
+    [requests, transactions]
+  );
 
-  const data = {
-    requests,
-    transactions,
-  };
+  const loading = useMemo(() => (!initialized && !isFocused()) || isLoading, [
+    initialized,
+    isLoading,
+    isFocused,
+  ]);
 
   return (
-    <View style={style}>
-      <NativeTransactionListView
-        emoji={accountEmoji}
+    <Container>
+      <Container
         accountAddress={accountName}
         accountColor={colors.avatarColor[accountColor]}
-        accountName={accountEmoji}
+        accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
+        as={NativeTransactionListView}
         data={data}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
+        onAccountNamePress={onAccountNamePress}
         onAddCashPress={onAddCashPress}
         onAvatarPress={onAvatarPress}
         onCopyAddressPress={onCopyAddressPress}
-        onAccountNamePress={onAccountNamePress}
         onReceivePress={onReceivePress}
         onRequestExpire={onRequestExpire}
         onRequestPress={onRequestPress}
         onTransactionPress={onTransactionPress}
-        style={style}
+        isLoading={loading}
       />
-      <FloatingEmojis
-        distance={250}
-        duration={500}
-        fadeOut={false}
-        scaleTo={0}
-        size={50}
-        style={{
-          height: 0,
-          left: tapTarget[0] - 24,
-          position: 'absolute',
-          top: tapTarget[1] - tapTarget[3],
-          width: tapTarget[2],
-        }}
-        wiggleFactor={0}
-      >
-        {({ onNewEmoji: newOnNewEmoji }) => {
-          if (!onNewEmoji.current) {
-            onNewEmoji.current = newOnNewEmoji;
-          }
-          return null;
-        }}
-      </FloatingEmojis>
-    </View>
+      <FloatingEmojisRegion
+        setOnNewEmoji={setOnNewEmoji}
+        tapTarget={tapTarget}
+      />
+    </Container>
   );
 };
 
 TransactionList.propTypes = {
   addCashAvailable: PropTypes.bool,
   contacts: PropTypes.array,
-  header: PropTypes.node,
   initialized: PropTypes.bool,
   isLoading: PropTypes.bool,
-  navigation: PropTypes.object,
   network: PropTypes.string,
   requests: PropTypes.array,
-  style: PropTypes.object,
   transactions: PropTypes.array,
-};
-
-TransactionList.defaultProps = {
-  style: {},
 };
 
 export default TransactionList;

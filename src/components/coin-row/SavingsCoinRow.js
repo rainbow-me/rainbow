@@ -52,11 +52,9 @@ const TopRow = ({ name, supplyBalanceUnderlying, symbol }) => (
         {name}
       </CoinName>
     </FlexItem>
-    <FlexItem flex={0}>
-      <BalanceText>
-        {convertAmountToBalanceDisplay(supplyBalanceUnderlying, { symbol })}
-      </BalanceText>
-    </FlexItem>
+    <BalanceText>
+      {convertAmountToBalanceDisplay(supplyBalanceUnderlying, { symbol })}
+    </BalanceText>
   </Row>
 );
 

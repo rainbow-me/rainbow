@@ -1,13 +1,12 @@
-import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { useIsFocused, useNavigation } from 'react-navigation-hooks';
-import AddFundsInterstitial from '../components/AddFundsInterstitial';
+import { useIsFocused } from 'react-navigation-hooks';
+import styled from 'styled-components/primitives';
 import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
-import { FlexItem, Page } from '../components/layout';
+import { Page } from '../components/layout';
+import { LoadingOverlay } from '../components/modal';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
@@ -19,15 +18,23 @@ import {
   useRequests,
   useWallets,
 } from '../hooks';
+import { useNavigation } from '../navigation/Navigation';
+import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { colors, position } from '../styles';
 import Routes from './Routes/routesNames';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 
-const ProfileScreen = ({ navigation }) => {
+const ProfileScreenPage = styled(Page)`
+  ${position.size('100%')};
+  flex: 1;
+`;
+
+export default function ProfileScreen({ navigation }) {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
+  const { isCreatingAccount } = useWallets();
 
   const {
     isLoadingTransactions: isLoading,
@@ -37,8 +44,7 @@ const ProfileScreen = ({ navigation }) => {
   } = useAccountTransactions(activityListInitialized, isFocused);
   const { contacts } = useContacts();
   const { pendingRequestCount, requests } = useRequests();
-  const { accountAddress, accountENS, network } = useAccountSettings();
-  const { selected: selectedWallet } = useWallets();
+  const { network } = useAccountSettings();
 
   const isEmpty = !transactionsCount && !pendingRequestCount;
 
@@ -56,22 +62,16 @@ const ProfileScreen = ({ navigation }) => {
     navigate,
   ]);
 
-  let accountName = get(selectedWallet, 'name');
-  let accountColor = get(selectedWallet, 'color');
-
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
-  const addCashInDevNetworks =
-    __DEV__ &&
-    (network === NetworkTypes.kovan || network === NetworkTypes.mainnet);
-  const addCashInProdNetworks = !__DEV__ && network === NetworkTypes.mainnet;
-  const addCashAvailable =
-    Platform.OS === 'ios' && (addCashInDevNetworks || addCashInProdNetworks);
+  const addCashSupportedNetworks =
+    network === NetworkTypes.kovan || network === NetworkTypes.mainnet;
+  const addCashAvailable = Platform.OS === 'ios' && addCashSupportedNetworks;
 
   return (
-    <Page component={FlexItem} style={position.sizeAsObject('100%')}>
+    <ProfileScreenPage>
       <Header justify="space-between">
         <HeaderButton onPress={onPressSettings}>
           <Icon color={colors.black} name="gear" />
@@ -84,39 +84,21 @@ const ProfileScreen = ({ navigation }) => {
       </Header>
       {network === NetworkTypes.mainnet && nativeTransactionListAvailable ? (
         <TransactionList
-          accountAddress={accountAddress}
-          accountColor={accountColor}
-          accountENS={accountENS}
-          accountName={accountName}
           addCashAvailable={addCashAvailable}
           contacts={contacts}
-          header={
-            <ProfileMasthead
-              addCashAvailable={addCashAvailable}
-              navigation={navigation}
-              showBottomDivider={!isEmpty || isLoading}
-              onChangeWallet={onChangeWallet}
-            />
-          }
           initialized={activityListInitialized}
           isLoading={isLoading}
-          navigation={navigation}
           network={network}
           requests={requests}
-          style={{ flex: 1 }}
           transactions={transactions}
         />
       ) : (
         <ActivityList
-          accountAddress={accountAddress}
-          accountColor={accountColor}
-          accountName={accountName}
           addCashAvailable={addCashAvailable}
           header={
             <ProfileMasthead
               addCashAvailable={addCashAvailable}
               navigation={navigation}
-              showBottomDivider={!isEmpty || isLoading}
               onChangeWallet={onChangeWallet}
             />
           }
@@ -127,16 +109,12 @@ const ProfileScreen = ({ navigation }) => {
           sections={sections}
         />
       )}
-      {/* Show the interstitial only for mainnet */}
-      {isEmpty && !isLoading && network === NetworkTypes.mainnet && (
-        <AddFundsInterstitial network={network} />
+      {isCreatingAccount && (
+        <LoadingOverlay
+          paddingTop={sheetVerticalOffset}
+          title="Creating account..."
+        />
       )}
-    </Page>
+    </ProfileScreenPage>
   );
-};
-
-ProfileScreen.propTypes = {
-  navigation: PropTypes.object,
-};
-
-export default ProfileScreen;
+}

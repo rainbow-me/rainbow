@@ -7,6 +7,7 @@
 
 @import Firebase;
 #import "AppDelegate.h"
+#import <RNBranch/RNBranch.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
@@ -49,7 +50,7 @@ static void InitializeFlipper(UIApplication *application) {
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
   
-  
+  [RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES];
 
   // React Native - Defaults
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
@@ -138,9 +139,9 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
  restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
 {
- return [RCTLinkingManager application:application
-                  continueUserActivity:userActivity
-										restorationHandler:restorationHandler];
+  
+  return [RNBranch continueUserActivity:userActivity];
+
 }
 
 
@@ -155,12 +156,18 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
                                                          error:nil];
 
     SentryEvent *sentryEvent = [[SentryEvent alloc] initWithJSON:jsonData];
-    [SentryClient.sharedClient sendEvent:sentryEvent withCompletionHandler:^(NSError * _Nullable error) {
-      NSLog((@"ApplicationWillTerminate was called"));
-    }];
+    [SentrySDK captureEvent:sentryEvent];
   }
   
 }
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    if ([RNBranch application:app openURL:url options:options])  {
+        // do other deep link routing for other SDKs
+    }
+    return YES;
+}
+
 
 
 @end
