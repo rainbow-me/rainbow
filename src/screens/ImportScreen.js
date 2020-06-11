@@ -16,7 +16,6 @@ import { Emoji, Text } from '../components/text';
 import { colors, shadow } from '../styles';
 
 const {
-  add,
   and,
   block,
   clockRunning,
@@ -25,13 +24,8 @@ const {
   set,
   cond,
   interpolate,
-  multiply,
-  lessThan,
-  abs,
-  modulo,
   round,
   divide,
-  sub,
   startClock,
 } = Reanimated;
 
@@ -264,19 +258,6 @@ const RainbowTextMask = styled(Reanimated.View)`
   width: ${RAINBOW_TEXT_WIDTH};
 `;
 
-function match(condsAndResPairs, offset = 0) {
-  if (condsAndResPairs.length - offset === 1) {
-    return condsAndResPairs[offset];
-  } else if (condsAndResPairs.length - offset === 0) {
-    return undefined;
-  }
-  return cond(
-    condsAndResPairs[offset],
-    condsAndResPairs[offset + 1],
-    match(condsAndResPairs, offset + 2)
-  );
-}
-
 function runTiming(value) {
   const clock = new Clock();
   const state = {
@@ -306,50 +287,19 @@ function runTiming(value) {
   ]);
 }
 
-const colorsHSL = [
-  { h: 40, l: 0.5, s: 1 },
-  { h: 150, l: 0.44, s: 1 },
-  { h: 195, l: 0.43, s: 1 },
-  { h: 248, l: 0.68, s: 1 },
-  { h: 360, l: 0.64, s: 1 },
+const colorsRGB = [
+  { b: 74, g: 73, r: 255 },
+  { b: 0, g: 170, r: 255 },
+  { b: 111, g: 222, r: 0 },
+  { b: 217, g: 163, r: 0 },
+  { b: 255, g: 92, r: 115 },
 ];
 
-function colorHSV(h, s, v, fromShadow) {
-  const c = multiply(v, s);
-  const hh = divide(h, 60);
-  const x = multiply(c, sub(1, abs(sub(modulo(hh, 2), 1))));
-
-  const m = sub(v, c);
-
-  const colorRGB = (r, g, b) =>
-    // from some reason there's a different bit shifting with shadows
-    fromShadow
-      ? color(
-          round(multiply(255, add(g, m))),
-          round(multiply(255, add(b, m))),
-          255,
-          divide(round(multiply(256, add(r, m))), 256)
-        )
-      : color(
-          round(multiply(255, add(r, m))),
-          round(multiply(255, add(g, m))),
-          round(multiply(255, add(b, m)))
-        );
-
-  return match([
-    lessThan(h, 60),
-    colorRGB(c, x, 0),
-    lessThan(h, 120),
-    colorRGB(x, c, 0),
-    lessThan(h, 180),
-    colorRGB(0, c, x),
-    lessThan(h, 240),
-    colorRGB(0, x, c),
-    lessThan(h, 300),
-    colorRGB(x, 0, c),
-    colorRGB(c, 0, x),
-  ]);
-}
+const colorRGB = (r, g, b, fromShadow) =>
+  // from some reason there's a different bit shifting with shadows
+  fromShadow
+    ? color(round(r), round(b), 255, divide(round(r), 256))
+    : color(round(r), round(g), round(b));
 
 const springConfig = {
   bounciness: 7.30332,
@@ -360,30 +310,21 @@ const springConfig = {
 
 function colorAnimation(rValue, fromShadow) {
   const animation = runTiming(rValue.current);
-  const h = interpolate(animation, {
+  const r = interpolate(animation, {
     inputRange: [0, 1, 2, 3, 4, 5],
-    outputRange: [
-      ...colorsHSL.map(({ h }) => h),
-      colorsHSL[colorsHSL.length - 1].h,
-    ],
+    outputRange: [...colorsRGB.map(({ r }) => r), colorsRGB[0].r],
   });
 
-  const s = interpolate(animation, {
+  const g = interpolate(animation, {
     inputRange: [0, 1, 2, 3, 4, 5],
-    outputRange: [
-      ...colorsHSL.map(({ s }) => s),
-      colorsHSL[colorsHSL.length - 1].s,
-    ],
+    outputRange: [...colorsRGB.map(({ g }) => g), colorsRGB[0].g],
   });
 
-  const l = interpolate(animation, {
+  const b = interpolate(animation, {
     inputRange: [0, 1, 2, 3, 4, 5],
-    outputRange: [
-      ...colorsHSL.map(({ l }) => l),
-      colorsHSL[colorsHSL.length - 1].l,
-    ],
+    outputRange: [...colorsRGB.map(({ b }) => b), colorsRGB[0].b],
   });
-  return colorHSV(h, s, l, fromShadow);
+  return colorRGB(r, g, b, fromShadow);
 }
 
 export default function ImportScreen() {
