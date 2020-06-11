@@ -1,12 +1,10 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
+import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
-import { colors } from '../../styles';
-import Highlight from '../Highlight';
+import { colors, padding } from '../../styles';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
@@ -14,20 +12,54 @@ import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 
 const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
 
-const TokenFamilyHeaderAnimationDuration = 200;
-const TokenFamilyHeaderHeight = 50;
+export const TokenFamilyHeaderAnimationDuration = 200;
+export const TokenFamilyHeaderHeight = 50;
 
-const sx = StyleSheet.create({
-  text: {
-    marginBottom: 1,
-  },
-});
+const Content = styled(Row).attrs({
+  align: 'center',
+  justify: 'space-between',
+})`
+  ${({ isCoinRow }) => padding(0, isCoinRow ? 16 : 19)};
+  background-color: ${colors.white};
+  height: ${TokenFamilyHeaderHeight};
+  width: 100%;
+`;
+
+const ChildrenAmountText = styled(Text).attrs({
+  align: 'right',
+  letterSpacing: 'roundedTight',
+  size: 'large',
+})`
+  margin-bottom: 1;
+`;
+
+const RotatingArrowIcon = styled(AnimatedFastImage).attrs({
+  resizeMode: FastImage.resizeMode.contain,
+  source: CaretImageSource,
+})`
+  height: 17;
+  margin-bottom: 1;
+  right: 4;
+  width: 9;
+`;
+
+const TitleText = styled(TruncatedText).attrs({
+  align: 'left',
+  letterSpacing: 'roundedMedium',
+  lineHeight: 'normal',
+  size: 'large',
+  weight: 'semibold',
+})`
+  flex: 1;
+  margin-bottom: 1;
+  padding-left: ${({ isShowcase }) => (!isShowcase ? 9 : 0)};
+  padding-right: 9;
+`;
 
 const TokenFamilyHeader = ({
   childrenAmount,
   emoji,
   familyImage,
-  highlight,
   isCoinRow,
   isOpen,
   onPress,
@@ -38,21 +70,20 @@ const TokenFamilyHeader = ({
     easing: Easing.bezier(0.25, 0.1, 0.25, 1),
   });
 
+  const rotate = toRad(
+    interpolate(animation, {
+      inputRange: [0, 1],
+      outputRange: [90, 0],
+    })
+  );
+
   return (
     <ButtonPressAnimation
       key={`${emoji || familyImage || title}_${isOpen}`}
       onPress={onPress}
       scaleTo={1.05}
     >
-      <Row
-        align="center"
-        backgroundColor={colors.white}
-        height={TokenFamilyHeaderHeight}
-        justify="space-between"
-        paddingHorizontal={isCoinRow ? 16 : 19}
-        width="100%"
-      >
-        <Highlight visible={highlight} />
+      <Content isCoinRow={isCoinRow}>
         <RowWithMargins align="center" margin={emoji ? 5 : 9}>
           {emoji ? (
             <Emoji size="lmedium" name={emoji} />
@@ -64,76 +95,16 @@ const TokenFamilyHeader = ({
             />
           )}
         </RowWithMargins>
-        <TruncatedText
-          letterSpacing="roundedMedium"
-          lineHeight="normal"
-          size="large"
-          style={{
-            flex: 1,
-            marginBottom: 1,
-            paddingLeft: title !== 'Showcase' ? 9 : 0,
-            paddingRight: 9,
-            textAlign: 'left',
-          }}
-          weight="semibold"
-        >
-          {title}
-        </TruncatedText>
+        <TitleText isShowcase={title === 'Showcase'}>{title}</TitleText>
         <RowWithMargins align="center" margin={13}>
-          <Animated.View
-            style={{
-              opacity: animation,
-            }}
-          >
-            <Text
-              align="right"
-              color="dark"
-              letterSpacing="roundedTight"
-              size="large"
-              style={sx.text}
-            >
-              {childrenAmount}
-            </Text>
+          <Animated.View style={{ opacity: animation }}>
+            <ChildrenAmountText>{childrenAmount}</ChildrenAmountText>
           </Animated.View>
-          <AnimatedFastImage
-            resizeMode={FastImage.resizeMode.contain}
-            source={CaretImageSource}
-            style={{
-              height: 17,
-              marginBottom: 1,
-              right: 4,
-              transform: [
-                {
-                  rotate: toRad(
-                    interpolate(animation, {
-                      inputRange: [0, 1],
-                      outputRange: [90, 0],
-                    })
-                  ),
-                },
-              ],
-              width: 9,
-            }}
-          />
+          <RotatingArrowIcon style={{ transform: [{ rotate }] }} />
         </RowWithMargins>
-      </Row>
+      </Content>
     </ButtonPressAnimation>
   );
 };
 
-TokenFamilyHeader.animationDuration = TokenFamilyHeaderAnimationDuration;
-
-TokenFamilyHeader.height = TokenFamilyHeaderHeight;
-
-TokenFamilyHeader.propTypes = {
-  childrenAmount: PropTypes.number,
-  emoji: PropTypes.string,
-  familyImage: PropTypes.string,
-  highlight: PropTypes.bool,
-  isCoinRow: PropTypes.bool,
-  isOpen: PropTypes.bool,
-  onPress: PropTypes.func,
-  title: PropTypes.string,
-};
-
-export default TokenFamilyHeader;
+export default React.memo(TokenFamilyHeader);

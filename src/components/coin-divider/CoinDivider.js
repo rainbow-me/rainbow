@@ -8,7 +8,6 @@ import {
   useOpenSmallBalances,
 } from '../../hooks';
 import { colors, padding } from '../../styles';
-import Highlight from '../Highlight';
 import { Row, RowWithMargins } from '../layout';
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
@@ -46,7 +45,6 @@ const EditButtonWrapper = styled(Row).attrs({
 export default function CoinDivider({
   assetsAmount,
   balancesSum,
-  isCoinDivider,
   isSticky,
   nativeCurrency,
   onEndEdit,
@@ -80,7 +78,6 @@ export default function CoinDivider({
 
   return (
     <Container isSticky={isSticky} deviceWidth={deviceWidth}>
-      <Highlight highlight={isCoinDivider} />
       <Row>
         <View
           pointerEvents={

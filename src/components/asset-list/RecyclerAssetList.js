@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { LayoutAnimation, RefreshControl, View } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import { compose, pure } from 'recompact';
+import { compose } from 'recompact';
 import {
   BaseItemAnimator,
   DataProvider,
@@ -14,7 +14,6 @@ import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContai
 import {
   withAccountSettings,
   withCoinListEdited,
-  withFabSelection,
   withOpenBalances,
   withOpenFamilyTabs,
   withOpenInvestmentCards,
@@ -28,7 +27,7 @@ import {
 } from '../../utils';
 import { CoinDivider } from '../coin-divider';
 import { CoinRowHeight } from '../coin-row';
-import AssetListHeader from './AssetListHeader';
+import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import { ViewTypes } from './RecyclerViewTypes';
 
 const NOOP = () => undefined;
@@ -73,8 +72,6 @@ class LayoutItemAnimator extends BaseItemAnimator {
 
 let smallBalancedChanged = false;
 let smallBalancesIndex = 0;
-
-const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
 
 const hasRowChanged = (r1, r2) => {
   const isNewTitle = isNewValueForPath(r1, r2, 'title');
@@ -534,13 +531,13 @@ class RecyclerAssetList extends Component {
           );
 
           const startOfDesiredComponent =
-            this.rlv.getLayout(familyIndex).y - AssetListHeader.height;
+            this.rlv.getLayout(familyIndex).y - AssetListHeaderHeight;
 
           if (focusedFamilyHeight < globalDeviceDimensions) {
             const endOfDesiredComponent =
               startOfDesiredComponent +
               focusedFamilyHeight +
-              AssetListHeader.height;
+              AssetListHeaderHeight;
 
             if (endOfDesiredComponent > bottomHorizonOfScreen) {
               this.scrollToOffset(
@@ -586,7 +583,7 @@ class RecyclerAssetList extends Component {
       });
 
       const startOfDesiredComponent =
-        this.rlv.getLayout(familyIndex).y - AssetListHeader.height;
+        this.rlv.getLayout(familyIndex).y - AssetListHeaderHeight;
       this.scrollToOffset(startOfDesiredComponent, true);
     }
   }
@@ -676,7 +673,7 @@ class RecyclerAssetList extends Component {
     globalDeviceDimensions =
       deviceUtils.dimensions.height -
       topMargin -
-      AssetListHeader.height -
+      AssetListHeaderHeight -
       additionalPadding;
   };
 
@@ -766,7 +763,7 @@ class RecyclerAssetList extends Component {
 
   stickyRowRenderer = (_, data) => (
     <Fragment>
-      <AssetListHeaderRenderer {...data} isSticky />
+      <AssetListHeader {...data} isSticky />
       {this.state.showCoinListEditor ? (
         <CoinDivider
           assetsAmount={this.renderList.length}
@@ -821,7 +818,7 @@ class RecyclerAssetList extends Component {
               rowRenderer={this.rowRenderer}
               scrollIndicatorInsets={{
                 bottom: safeAreaInsetValues.bottom,
-                top: hideHeader ? 0 : AssetListHeader.height,
+                top: hideHeader ? 0 : AssetListHeaderHeight,
               }}
               scrollViewProps={{
                 refreshControl: fetchData && this.renderRefreshControl(),
@@ -841,7 +838,6 @@ class RecyclerAssetList extends Component {
 
 export default compose(
   withCoinListEdited,
-  withFabSelection,
   withOpenFamilyTabs,
   withOpenInvestmentCards,
   withOpenBalances,

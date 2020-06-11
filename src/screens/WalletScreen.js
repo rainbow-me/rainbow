@@ -6,9 +6,7 @@ import { useValues } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
-import { FabWrapper } from '../components/fab';
-import ExchangeFab from '../components/fab/ExchangeFab';
-import SendFab from '../components/fab/SendFab';
+import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
 import {
   CameraHeaderButton,
   DiscoverHeaderButton,
@@ -98,8 +96,6 @@ export default function WalletScreen() {
         fabs={fabs}
         isCoinListEdited={isCoinListEdited}
         isReadOnlyWallet={isReadOnlyWallet}
-        scrollViewTracker={scrollViewTracker}
-        sections={sections}
       >
         <PanGestureHandler enabled={isCoinListEdited}>
           <HeaderOpacityToggler isVisible={isCoinListEdited}>

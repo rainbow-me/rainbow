@@ -8,7 +8,7 @@ import {
   SmallBalancesWrapper,
 } from '../coin-divider';
 import { CoinRowHeight } from '../coin-row';
-import { FloatingActionButton } from '../fab';
+import { FloatingActionButtonSize } from '../fab';
 import {
   InvestmentCard,
   InvestmentCardHeader,
@@ -16,9 +16,9 @@ import {
 } from '../investment-cards';
 import { ListFooter } from '../list';
 import SavingsListWrapper from '../savings/SavingsListWrapper';
-import { TokenFamilyHeader } from '../token-family';
+import { TokenFamilyHeaderHeight } from '../token-family';
 import { UniqueTokenRow } from '../unique-token';
-import AssetListHeader from './AssetListHeader';
+import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 
 const firstCoinRowMarginTop = 6;
 let lastRenderList = [];
@@ -26,7 +26,7 @@ let lastRenderList = [];
 export const ViewTypes = {
   HEADER: {
     calculateHeight: ({ hideHeader }) =>
-      hideHeader ? 0 : AssetListHeader.height,
+      hideHeader ? 0 : AssetListHeaderHeight,
     index: 0,
     renderComponent: ({ data, isCoinListEdited }) => {
       return <AssetListHeader {...data} isCoinListEdited={isCoinListEdited} />;
@@ -103,13 +103,10 @@ export const ViewTypes = {
   },
 
   COIN_SAVINGS: {
-    calculateHeight: ({ isOpen, amountOfRows }) => {
-      const TokenFamilyHeaderHeight = TokenFamilyHeader.height;
-
-      return isOpen
+    calculateHeight: ({ isOpen, amountOfRows }) =>
+      isOpen
         ? TokenFamilyHeaderHeight + ListFooter.height + 61 * amountOfRows - 4
-        : TokenFamilyHeaderHeight + ListFooter.height - 10;
-    },
+        : TokenFamilyHeaderHeight + ListFooter.height - 10,
     index: 4,
     renderComponent: ({ data }) => {
       const { item = {} } = data;
@@ -133,14 +130,14 @@ export const ViewTypes = {
 
   UNIQUE_TOKEN_ROW: {
     calculateHeight: ({ amountOfRows, isFirst, isHeader, isOpen }) => {
-      const TokenFamilyHeaderHeight = isHeader ? TokenFamilyHeader.height : 0;
+      const SectionHeaderHeight = isHeader ? TokenFamilyHeaderHeight : 0;
       const firstRowExtraTopPadding = isFirst ? 4 : 0;
       const heightOfRows = amountOfRows * UniqueTokenRow.cardSize;
       const heightOfRowMargins = UniqueTokenRow.cardMargin * (amountOfRows - 1);
       const extraSpaceForDropShadow = 19;
 
       const height =
-        TokenFamilyHeaderHeight +
+        SectionHeaderHeight +
         firstRowExtraTopPadding +
         (isOpen
           ? heightOfRows + heightOfRowMargins + extraSpaceForDropShadow
@@ -167,7 +164,7 @@ export const ViewTypes = {
 
   FOOTER: {
     calculateHeight: ({ paddingBottom }) =>
-      paddingBottom - FloatingActionButton.size / 2,
+      paddingBottom - FloatingActionButtonSize / 2,
     index: 7,
   },
   UNKNOWN: {
