@@ -26,6 +26,7 @@ import ModalScreen from '../ModalScreen';
 import ProfileScreen from '../ProfileScreen';
 import QRScannerScreenWithData from '../QRScannerScreenWithData';
 import ReceiveModal from '../ReceiveModal';
+import RestoreSheet from '../RestoreSheet';
 import SavingsSheet from '../SavingsSheet';
 import SendSheet from '../SendSheet';
 import SettingsModal from '../SettingsModal';
@@ -99,6 +100,10 @@ const routesForMainNavigator = {
   [Routes.SWIPE_LAYOUT]: {
     navigationOptions: backgroundPreset,
     screen: SwipeStack,
+  },
+  [Routes.RESTORE_SHEET]: {
+    navigationOptions: bottomSheetPreset,
+    screen: RestoreSheet,
   },
   [Routes.WALLET_CONNECT_APPROVAL_SHEET]: {
     navigationOptions: expandedPreset,

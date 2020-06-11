@@ -1,5 +1,4 @@
 import React from 'react';
-import { View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import BackupIcon from '../../assets/backupIcon.png';
@@ -40,29 +39,27 @@ const DescriptionText = styled(Text).attrs({
 
 const BackupSheetFirstStep = ({ onIcloudBackup, onManualBackup }) => {
   return (
-    <View style={{ height: 420 }}>
-      <Centered direction="column" paddingTop={9} paddingBottom={15}>
-        <TopIcon />
-        <Title>Back up your wallet </Title>
-        <DescriptionText>
-          Don&apos;t lose your wallet! Save an encrypted copy to iCloud.
-        </DescriptionText>
-        <Divider color={colors.rowDividerLight} inset={[0, 42]} />
-        <ColumnWithMargins css={padding(19, 15)} margin={19} width="100%">
-          <RainbowButton
-            label="􀙶 Back up to iCloud"
-            onPress={onIcloudBackup}
-            type="add-cash"
-          />
-          <SheetButton
-            color={colors.white}
-            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
-            label="🤓 Back up manually"
-            onPress={onManualBackup}
-          />
-        </ColumnWithMargins>
-      </Centered>
-    </View>
+    <Centered direction="column" paddingTop={9} paddingBottom={15}>
+      <TopIcon />
+      <Title>Back up your wallet </Title>
+      <DescriptionText>
+        Don&apos;t lose your wallet! Save an encrypted copy to iCloud.
+      </DescriptionText>
+      <Divider color={colors.rowDividerLight} inset={[0, 42]} />
+      <ColumnWithMargins css={padding(19, 15)} margin={19} width="100%">
+        <RainbowButton
+          label="􀙶 Back up to iCloud"
+          onPress={onIcloudBackup}
+          type="add-cash"
+        />
+        <SheetButton
+          color={colors.white}
+          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+          label="🤓 Back up manually"
+          onPress={onManualBackup}
+        />
+      </ColumnWithMargins>
+    </Centered>
   );
 };
 

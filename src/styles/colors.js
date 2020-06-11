@@ -22,6 +22,7 @@ let base = {
   lightestGrey: '#E9EBEF', // '238, 233, 232'
   lightGrey: '#CDCFD4', // '205, 207, 212'
   mediumGrey: '#A1A5B3', // '161, 165, 179'
+  mintDark: '#00E0A9', // '0, 224, 169'
   orange: '#FF9900', // '255, 153, 0'
   orangeLight: '#FEBE44', // '254, 190, 68'
   paleBlue: '#579DFF', // 87, 157, 255

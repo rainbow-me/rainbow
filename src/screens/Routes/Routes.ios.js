@@ -27,6 +27,7 @@ import ModalScreen from '../ModalScreen';
 import ProfileScreen from '../ProfileScreen';
 import QRScannerScreenWithData from '../QRScannerScreenWithData';
 import ReceiveModal from '../ReceiveModal';
+import RestoreSheet from '../RestoreSheet';
 import SavingsSheet from '../SavingsSheet';
 import SendSheet from '../SendSheet';
 import SettingsModal from '../SettingsModal';
@@ -285,6 +286,18 @@ const routesForBottomSheetStack = {
     screen: ExpandedAssetSheetWrapper,
   },
   [Routes.RECEIVE_MODAL]: withCustomStack(ReceiveModal),
+  [Routes.RESTORE_SHEET]: {
+    navigationOptions: {
+      backgroundOpacity: 0.6,
+      cornerRadius: 0,
+      customStack: true,
+      headerHeight: 58,
+      springDamping: 1,
+      topOffset: 128,
+      transitionDuration: 0.25,
+    },
+    screen: RestoreSheet,
+  },
   [Routes.SETTINGS_MODAL]: withCustomStack(SettingsModal),
   [Routes.BACKUP_SHEET_TOP]: withCustomStack(BackupSheet),
   ...(isNativeStackAvailable && routesForNativeStack),
