@@ -110,11 +110,38 @@ index 7c27c15..d181379 100644
  - (UIView *)view
  {
 diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m b/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m
-index b397efb..b9194e9 100644
+index b397efb..83777bf 100644
 --- a/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m
 +++ b/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m
-@@ -315,10 +315,10 @@ - (void)setModalViewControllers:(NSArray<UIViewController *> *)controllers
+@@ -234,6 +234,14 @@ - (void)setModalViewControllers:(NSArray<UIViewController *> *)controllers
+   // find bottom-most controller that should stay on the stack for the duration of transition
+   NSUInteger changeRootIndex = 0;
+   UIViewController *changeRootController = _controller;
++  
++  // for QR scanner Bottom Sheet!
++  UIViewController *presentedRootViewController = changeRootController.presentedViewController;
++  if (presentedRootViewController != nil && ![presentedRootViewController isKindOfClass:RNCMScreen.class] && ![NSStringFromClass(presentedRootViewController.class) isEqualToString:@"RNCoolModals.PanModalViewController"]) {
++    changeRootController = presentedRootViewController;
++  }
++  
++  
+   for (NSUInteger i = 0; i < MIN(_presentedModals.count, controllers.count); i++) {
+     if (_presentedModals[i] == controllers[i]) {
+       changeRootController = controllers[i];
+@@ -305,20 +313,20 @@ - (void)setModalViewControllers:(NSArray<UIViewController *> *)controllers
+   };
+ 
+   UIViewController* presentedViewController = changeRootController.presentedViewController;
+-  if (![presentedViewController isKindOfClass:[RNCMScreen class]] && presentedViewController != nil) {
++  if (![presentedViewController isKindOfClass:[RNCMScreen class]] && presentedViewController != nil && [presentedViewController.view isKindOfClass:[RNCMScreenView class]]) {
+     RNCMScreenView* view = (RNCMScreenView*) presentedViewController.view;
+     presentedViewController = view.controller;
+     if ([_presentedModals containsObject:presentedViewController]) {
+       view.controller = nil;
+     }
+-
    }
++  
    if (presentedViewController != nil
        && ([_presentedModals containsObject:presentedViewController] )) {
 -    [changeRootController
@@ -129,7 +156,7 @@ index b397efb..b9194e9 100644
      finish();
    }
 diff --git a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-index b21a043..4b3c3e7 100644
+index b21a043..85768f0 100644
 --- a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 +++ b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 @@ -28,6 +28,7 @@ class PossiblyTouchesPassableUIView: UIView {
@@ -187,7 +214,7 @@ index b21a043..4b3c3e7 100644
 @@ -145,10 +160,29 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      return backgroundColor.withAlphaComponent(CGFloat(truncating: self.config?.value(forKey: "backgroundOpacity") as! NSNumber))
    }
-   
+ 
 +  var scrollIndicatorInsets: UIEdgeInsets {
 +      let top = shouldRoundTopCorners ? cornerRadius : 0
 +      let bottom = ignoreBottomOffset ? 0 : bottomLayoutOffset
