@@ -298,10 +298,6 @@ const BackupIcloudStep = () => {
             label={label}
             onPress={onConfirmBackup}
             disabled={!validPassword}
-            shadows={[
-              [0, 10, 30, colors.dark, 0.2],
-              [0, 5, 15, validPassword ? colors.swapPurple : colors.grey, 0.4],
-            ]}
           />
         )}
       </Column>

@@ -69,8 +69,8 @@ SheetButton.propTypes = {
 SheetButton.defaultProps = {
   borderRadius: 50,
   shadows: [
-    [0, 10, 30, colors.dark, 0.2],
-    [0, 5, 15, colors.swapPurple, 0.4],
+    [0, 10, 30, colors.dark, 0.1],
+    [0, 5, 15, colors.dark, 0.04],
   ],
   textColor: colors.white,
 };

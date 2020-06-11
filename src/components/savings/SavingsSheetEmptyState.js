@@ -75,6 +75,10 @@ const SavingsSheetEmptyState = ({
           color={colors.swapPurple}
           label="􀁍 Deposit from Wallet"
           onPress={onDeposit}
+          shadows={[
+            [0, 10, 30, colors.dark, 0.2],
+            [0, 5, 15, colors.swapPurple, 0.4],
+          ]}
         />
         {/*
           <SheetButton
