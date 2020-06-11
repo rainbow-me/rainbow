@@ -4,8 +4,8 @@ import { useOpenSmallBalances } from '../../hooks';
 import { OpacityToggler } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 
-const Content = styled.View.attrs(({ isSmallBalancesOpen }) => ({
-  pointerEvents: isSmallBalancesOpen ? 'auto' : 'none',
+const Content = styled.View.attrs(({ isOpen }) => ({
+  pointerEvents: isOpen ? 'auto' : 'none',
 }))`
   height: ${({ numberOfRows }) => numberOfRows * CoinRowHeight};
   margin-top: 13;
