@@ -1,9 +1,9 @@
 import MaskedView from '@react-native-community/masked-view';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
+import { Animated, Easing, StyleSheet, TouchableOpacity } from 'react-native';
 import Reanimated, {
   Clock,
-  Easing,
+  Easing as REasing,
   Value as RValue,
   timing,
 } from 'react-native-reanimated';
@@ -288,7 +288,7 @@ function runTiming(value) {
 
   const config = {
     duration: 2500,
-    easing: Easing.linear,
+    easing: REasing.linear,
     toValue: new RValue(1),
   };
 
@@ -388,7 +388,7 @@ function colorAnimation(rValue, fromShadow) {
 
 export default function ImportScreen() {
   const [visible, setVisible] = useState(false);
-  const contentAnimation = useAnimatedValue(0);
+  const contentAnimation = useAnimatedValue(1);
   const importButtonAnimation = useAnimatedValue(1);
 
   useEffect(() => {
@@ -400,7 +400,18 @@ export default function ImportScreen() {
       ...traversedRainbows.map(({ value, delay = 0 }) =>
         Animated.spring(value, { ...springConfig, delay })
       ),
-      Animated.spring(contentAnimation.current, springConfig),
+      Animated.sequence([
+        Animated.timing(contentAnimation.current, {
+          duration: 120,
+          easing: Easing.bezier(0.165, 0.84, 0.44, 1),
+          toValue: 1.2,
+        }),
+        Animated.spring(contentAnimation.current, {
+          friction: 8,
+          tension: 100,
+          toValue: 1,
+        }),
+      ]),
       Animated.loop(
         Animated.sequence([
           Animated.timing(importButtonAnimation.current, {
@@ -418,7 +429,7 @@ export default function ImportScreen() {
     ]).start();
     return () => {
       importButtonAnimation.current.setValue(1);
-      contentAnimation.current.setValue(0);
+      contentAnimation.current.setValue(1);
     };
   }, [contentAnimation, importButtonAnimation, visible]);
 
@@ -434,10 +445,7 @@ export default function ImportScreen() {
     () => ({
       transform: [
         {
-          scale: contentAnimation.current.interpolate({
-            inputRange: [0, 1],
-            outputRange: [1, 1.2],
-          }),
+          scale: contentAnimation.current,
         },
       ],
     }),
