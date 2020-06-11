@@ -10,6 +10,7 @@ import * as keychain from '../../model/keychain';
 import { setWalletBackedUp } from '../../redux/wallets';
 import { colors, padding } from '../../styles';
 import { logger } from '../../utils';
+import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Centered, ColumnWithMargins, Row } from '../layout';
@@ -35,6 +36,7 @@ const InputsWrapper = styled(View)`
 `;
 
 const PasswordInput = styled(Input).attrs({
+  blurOnSubmit: false,
   letterSpacing: 0.2,
   secureTextEntry: true,
   size: 'large',
@@ -222,23 +224,22 @@ const BackupIcloudStep = () => {
       const success = await keychain.backupToCloud(password);
       if (success) {
         await dispatch(setWalletBackedUp(wallet_id, 'cloud'));
-        Alert.alert('Your wallet has been backed up!');
         goBack();
+        Alert.alert('Your wallet has been backed up!');
       } else {
         Alert.alert('Error while trying to backup');
+        setTimeout(onPasswordSubmit, 1000);
       }
     } catch (e) {
       logger.log('Error while backing up', e);
     }
-  }, [dispatch, getParam, goBack, password, wallets]);
+  }, [dispatch, getParam, goBack, onPasswordSubmit, password, wallets]);
 
   const onConfirmPasswordSubmit = useCallback(() => {
     validPassword && onConfirmBackup();
   }, [onConfirmBackup, validPassword]);
 
-  const onPressInfo = useCallback(() => {
-    console.log('info');
-  }, []);
+  const onPressInfo = useCallback(() => null, []);
 
   const fromSettings = getParam('option', null);
 
@@ -293,17 +294,21 @@ const BackupIcloudStep = () => {
         </Shadow>
       </InputsWrapper>
       <ColumnWithMargins css={padding(19, 15, 0)} margin={19} width="100%">
-        <SheetButton
-          color={!validPassword && colors.grey}
-          gradientBackground={validPassword}
-          label={label}
-          onPress={onConfirmBackup}
-          disabled={!validPassword}
-          shadows={[
-            [0, 10, 30, colors.dark, 0.2],
-            [0, 5, 15, validPassword ? colors.swapPurple : colors.grey, 0.4],
-          ]}
-        />
+        {validPassword ? (
+          <RainbowButton label={label} onPress={onConfirmBackup} />
+        ) : (
+          <SheetButton
+            color={!validPassword && colors.grey}
+            gradientBackground={validPassword}
+            label={label}
+            onPress={onConfirmBackup}
+            disabled={!validPassword}
+            shadows={[
+              [0, 10, 30, colors.dark, 0.2],
+              [0, 5, 15, validPassword ? colors.swapPurple : colors.grey, 0.4],
+            ]}
+          />
+        )}
       </ColumnWithMargins>
     </Centered>
   );

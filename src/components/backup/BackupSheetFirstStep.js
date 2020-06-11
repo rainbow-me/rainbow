@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import BackupIcon from '../../assets/backupIcon.png';
 import { colors, padding } from '../../styles';
 import Divider from '../Divider';
+import { RainbowButton } from '../buttons';
 import { Centered, ColumnWithMargins } from '../layout';
 import { SheetButton } from '../sheet';
 import { Text } from '../text';
@@ -48,10 +49,10 @@ const BackupSheetFirstStep = ({ onIcloudBackup, onManualBackup }) => {
         </DescriptionText>
         <Divider color={colors.rowDividerLight} inset={[0, 42]} />
         <ColumnWithMargins css={padding(19, 15)} margin={19} width="100%">
-          <SheetButton
+          <RainbowButton
             label="􀙶 Back up to iCloud"
             onPress={onIcloudBackup}
-            gradientBackground
+            type="add-cash"
           />
           <SheetButton
             color={colors.white}

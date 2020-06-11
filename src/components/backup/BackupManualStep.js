@@ -4,7 +4,7 @@ import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import WalletTypes from '../../helpers/walletTypes';
-import { useClipboard, useDimensions, useWallets } from '../../hooks';
+import { useClipboard, useDimensions } from '../../hooks';
 import {
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
@@ -88,22 +88,17 @@ const Shadow = styled(ShadowStack)`
 const BackupManualStep = () => {
   const { setClipboard } = useClipboard();
   const dispatch = useDispatch();
-  const { goBack } = useNavigation();
-  const { wallets } = useWallets();
+  const { goBack, getParam } = useNavigation();
   const [seed, setSeed] = useState(null);
   const [type, setType] = useState(null);
-  const [walletId, setWalletId] = useState(null);
+  const walletId = getParam('wallet_id');
   const { width: deviceWidth } = useDimensions();
   let wordSectionHeight = 100;
 
   useEffect(() => {
     const loadSeed = async () => {
-      const nonImportedWalletId = Object.keys(wallets).find(
-        key => wallets[key].imported === false
-      );
-      const s = await loadSeedPhraseAndMigrateIfNeeded(nonImportedWalletId);
+      const s = await loadSeedPhraseAndMigrateIfNeeded(walletId);
       const walletType = identifyWalletType(s);
-      setWalletId(nonImportedWalletId);
       setType(walletType);
       setSeed(s);
     };

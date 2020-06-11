@@ -286,7 +286,7 @@ const routesForBottomSheetStack = {
   },
   [Routes.RECEIVE_MODAL]: withCustomStack(ReceiveModal),
   [Routes.SETTINGS_MODAL]: withCustomStack(SettingsModal),
-  [Routes.BACKUP_SHEET_TOP]: BackupSheet,
+  [Routes.BACKUP_SHEET_TOP]: withCustomStack(BackupSheet),
   ...(isNativeStackAvailable && routesForNativeStack),
 };
 

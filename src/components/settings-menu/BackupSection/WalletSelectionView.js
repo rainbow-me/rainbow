@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import Caret from '../../../assets/family-dropdown-arrow.png';
+import WalletTypes from '../../../helpers/walletTypes';
 import { useWallets } from '../../../hooks';
 import { colors, fonts } from '../../../styles';
 import { getFontSize } from '../../../styles/fonts';
@@ -77,62 +78,69 @@ const WalletSelectionView = ({ navigation }) => {
     [navigation]
   );
 
-  return Object.keys(wallets).map(key => {
-    const wallet = wallets[key];
-    const visibleAccounts = wallet.addresses.filter(a => a.visible);
-    const account = visibleAccounts[0];
-    const totalAccounts = visibleAccounts.length;
-    const { color, label, index, address } = account;
+  return Object.keys(wallets)
+    .filter(key => wallets[key].type !== WalletTypes.readOnly)
+    .map(key => {
+      const wallet = wallets[key];
+      const visibleAccounts = wallet.addresses.filter(a => a.visible);
+      const account = visibleAccounts[0];
+      const totalAccounts = visibleAccounts.length;
+      const { color, label, index, address } = account;
 
-    return (
-      <Column marginLeft={15} marginTop={22} key={key} justifyContent="center">
-        <ButtonPressAnimation
-          onPress={() =>
-            onPress(key, label || abbreviations.address(address, 4, 6))
-          }
-          scaleTo={0.98}
+      return (
+        <Column
+          marginLeft={15}
+          marginTop={22}
+          key={key}
+          justifyContent="center"
         >
-          <Row>
-            <Row flex>
-              <ContactAvatar
-                color={color}
-                marginRight={10}
-                size="medium"
-                value={label || `${index + 1}`}
-              />
-              <Column>
-                <Row>
-                  {label ? (
-                    <AccountLabel>{label}</AccountLabel>
-                  ) : (
-                    <Address address={address} />
+          <ButtonPressAnimation
+            onPress={() =>
+              onPress(key, label || abbreviations.address(address, 4, 6))
+            }
+            scaleTo={0.98}
+          >
+            <Row>
+              <Row flex={1}>
+                <ContactAvatar
+                  color={color}
+                  marginRight={10}
+                  size="medium"
+                  value={label || `${index + 1}`}
+                />
+                <Column>
+                  <Row>
+                    {label ? (
+                      <AccountLabel>{label}</AccountLabel>
+                    ) : (
+                      <Address address={address} />
+                    )}
+                  </Row>
+                  {totalAccounts > 1 && (
+                    <BottomRowText>
+                      And {totalAccounts - 1} more wallets
+                    </BottomRowText>
                   )}
-                </Row>
-                {totalAccounts && (
-                  <BottomRowText>
-                    And {totalAccounts} more wallets
-                  </BottomRowText>
-                )}
-              </Column>
-            </Row>
-            <Row marginRight={19}>
-              {wallet.isBackedUp ? (
-                wallet.backupType === 'cloud' ? (
-                  <CheckmarkIcon color={colors.green} />
+                </Column>
+              </Row>
+              <Row marginRight={19}>
+                {wallet.isBackedUp ? (
+                  wallet.backupType === 'cloud' ? (
+                    <CheckmarkIcon color={colors.green} />
+                  ) : (
+                    <CheckmarkIcon color={colors.grey} />
+                  )
                 ) : (
-                  <CheckmarkIcon color={colors.grey} />
-                )
-              ) : (
-                <WarningIcon />
-              )}
+                  <WarningIcon />
+                )}
 
-              <CaretIcon />
+                <CaretIcon />
+              </Row>
             </Row>
-          </Row>
-        </ButtonPressAnimation>
-      </Column>
-    );
-  });
+          </ButtonPressAnimation>
+        </Column>
+      );
+    });
 };
 
 export default WalletSelectionView;

@@ -71,11 +71,10 @@ const checkIfAllWalletsBackedUp = wallets => {
   if (!wallets) return false;
   let backedUp = true;
   Object.keys(wallets).forEach(key => {
-    if (wallets[key].backedUp === false && !wallets[key].imported) {
+    if (!wallets[key].imported && !wallets[key].backedUp) {
       backedUp = false;
     }
   });
-  console.log('backedUp', backedUp);
   return backedUp;
 };
 

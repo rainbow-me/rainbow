@@ -5,10 +5,16 @@ import styled from 'styled-components';
 import BackupIcon from '../../../assets/backupIcon.png';
 import Routes from '../../../screens/Routes/routesNames';
 import { colors, fonts, padding } from '../../../styles';
-import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
+import { RainbowButton } from '../../buttons';
+import { Centered, Column } from '../../layout';
 import { SheetButton } from '../../sheet';
 import { Text } from '../../text';
 
+const BackupButton = styled(RainbowButton).attrs({
+  width: 280,
+})`
+  margin-bottom: 12;
+`;
 const Title = styled(Text).attrs({
   size: 'big',
   weight: 'bold',
@@ -38,18 +44,22 @@ const DescriptionText = styled(Text).attrs({
 `;
 
 const NeedsBackupView = () => {
-  const { navigate } = useNavigation();
+  const { navigate, getParam } = useNavigation();
+
+  const wallet_id = getParam('wallet_id');
   const onIcloudBackup = useCallback(() => {
     navigate(Routes.BACKUP_SHEET_TOP, {
       option: 'icloud',
+      wallet_id,
     });
-  }, [navigate]);
+  }, [navigate, wallet_id]);
 
   const onManualBackup = useCallback(() => {
-    navigate(Routes.BACKUP_SHEET_TOP, {
+    navigate(Routes.BACKUP_SHEET, {
       option: 'manual',
+      wallet_id,
     });
-  }, [navigate]);
+  }, [navigate, wallet_id]);
 
   return (
     <Fragment>
@@ -63,29 +73,29 @@ const NeedsBackupView = () => {
         </Text>
       </Centered>
       <Column align="center" css={padding(0, 40, 0)} flex={1}>
-        <Centered direction="column" paddingTop={70} paddingBottom={15}>
+        <Column align="center" paddingTop={70} paddingBottom={15}>
           <TopIcon />
           <Title>Back up your wallet </Title>
           <DescriptionText>
             Don&apos;t risk your money! Back up your wallet so you can recover
             it if you lose this device.
           </DescriptionText>
-        </Centered>
-        <ColumnWithMargins css={padding(19, 20)} margin={19} width="100%">
-          <SheetButton
+        </Column>
+        <Column align="center">
+          <BackupButton
             label="􀙶 Back up to iCloud"
             onPress={onIcloudBackup}
-            gradientBackground
+            type="add-cash"
           />
-          <Row direction="column" paddingHorizontal={15} paddingTop={10}>
+          <Column paddingHorizontal={15} paddingTop={10}>
             <SheetButton
               color={colors.white}
               textColor={colors.alpha(colors.blueGreyDark, 0.8)}
               label="🤓 Back up manually"
               onPress={onManualBackup}
             />
-          </Row>
-        </ColumnWithMargins>
+          </Column>
+        </Column>
       </Column>
     </Fragment>
   );
