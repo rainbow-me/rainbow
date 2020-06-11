@@ -129,7 +129,7 @@ index b397efb..b9194e9 100644
      finish();
    }
 diff --git a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-index b21a043..955545c 100644
+index b21a043..4b3c3e7 100644
 --- a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 +++ b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 @@ -28,6 +28,7 @@ class PossiblyTouchesPassableUIView: UIView {
@@ -155,7 +155,7 @@ index b21a043..955545c 100644
 @@ -85,6 +91,11 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      }
    }
-   
+ 
 +  var ignoreBottomOffset: Bool {
 +    let res =  self.config?.value(forKey: "ignoreBottomOffset") as! Bool
 +    return res;
@@ -164,7 +164,7 @@ index b21a043..955545c 100644
    var isHapticFeedbackEnabled: Bool = false
  
    func findChildScrollViewDFS(view: UIView)-> UIScrollView? {
-@@ -115,17 +126,28 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -115,6 +126,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      }
    }
  
@@ -172,17 +172,7 @@ index b21a043..955545c 100644
    func panModalWillDismiss() {
      callWillDismiss()
    }
-   
-+  var scrollIndicatorInsets: UIEdgeInsets {
-+      let top = shouldRoundTopCorners ? cornerRadius : 0
-+    
-+    let bottom = CGFloat(0)
-+    return UIEdgeInsets(top: CGFloat(top), left: 0, bottom: bottom, right: 0)
-+  }
-+
-   func callWillDismiss() {
-     let selector = NSSelectorFromString("willDismiss")
-     config?.perform(selector)
+@@ -125,7 +137,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
    }
  
    func shouldRespond(to panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
@@ -194,8 +184,16 @@ index b21a043..955545c 100644
    }
  
    var allowsDragToDismiss: Bool {
-@@ -147,8 +169,21 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
- 
+@@ -145,10 +160,29 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+     return backgroundColor.withAlphaComponent(CGFloat(truncating: self.config?.value(forKey: "backgroundOpacity") as! NSNumber))
+   }
+   
++  var scrollIndicatorInsets: UIEdgeInsets {
++      let top = shouldRoundTopCorners ? cornerRadius : 0
++      let bottom = ignoreBottomOffset ? 0 : bottomLayoutOffset
++      return UIEdgeInsets(top: CGFloat(top), left: 0, bottom: bottom, right: 0)
++  }
++
    func shouldPrioritize(panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
      let headerHeight: CGFloat = CGFloat(truncating: self.config?.value(forKey: "headerHeight") as! NSNumber)
 -    let location = panModalGestureRecognizer.location(in: view)
@@ -218,7 +216,7 @@ index b21a043..955545c 100644
    }
  
    var isShortFormEnabledInternal = 2
-@@ -200,12 +235,17 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -200,12 +234,17 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      super.viewWillDisappear(animated)
    }
  
