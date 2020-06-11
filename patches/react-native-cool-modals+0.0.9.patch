@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-cool-modals/createNativeStackNavigator.js b/node_modules/react-native-cool-modals/createNativeStackNavigator.js
-index 334ef99..e3695c7 100644
+index 334ef99..774435b 100644
 --- a/node_modules/react-native-cool-modals/createNativeStackNavigator.js
 +++ b/node_modules/react-native-cool-modals/createNativeStackNavigator.js
 @@ -61,6 +61,7 @@ class StackView extends React.Component {
@@ -10,40 +10,82 @@ index 334ef99..e3695c7 100644
        customStack,
        topOffset,
        showDragIndicator,
-@@ -98,6 +99,7 @@ class StackView extends React.Component {
+@@ -68,6 +69,7 @@ class StackView extends React.Component {
+       allowsTapToDismiss,
+       anchorModaltoLongForm,
+       onWillDismiss,
++      onTouchTop,
+       backgroundColor,
+       backgroundOpacity,
+       blocksBackgroundTouches,
+@@ -78,6 +80,7 @@ class StackView extends React.Component {
+       springDamping,
+       startFromShortForm,
+       transitionDuration,
++      ignoreBottomOffset
+     } = options;
+ 
+     if (mode === 'modal' || mode === 'containedModal') {
+@@ -98,6 +101,9 @@ class StackView extends React.Component {
      const { screenProps } = this.props;
      return (
        <Screen
++        ignoreBottomOffset={ignoreBottomOffset}
++        onTouchTop={onTouchTop}
 +        dismissable={dismissable}
          onWillDismiss={onWillDismiss}
          allowsDragToDismiss={allowsDragToDismiss}
          allowsTapToDismiss={allowsTapToDismiss}
 diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreen.h b/node_modules/react-native-cool-modals/ios/RNCMScreen.h
-index 8648e95..fe585da 100644
+index 8648e95..ba87b33 100644
 --- a/node_modules/react-native-cool-modals/ios/RNCMScreen.h
 +++ b/node_modules/react-native-cool-modals/ios/RNCMScreen.h
-@@ -50,6 +50,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
+@@ -44,13 +44,16 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
+ @property (nonatomic, copy) RCTDirectEventBlock onAppear;
+ @property (nonatomic, copy) RCTDirectEventBlock onDismissed;
+ @property (nonatomic, copy) RCTDirectEventBlock onWillDismiss;
++@property (nonatomic, copy) RCTDirectEventBlock onTouchTop;
+ @property (weak, nonatomic) UIView *reactSuperview;
+ @property (nonatomic, retain) UIViewController *controller;
+ @property (nonatomic, readonly) BOOL dismissed;
  @property (nonatomic) BOOL active;
  @property (nonatomic) BOOL customStack;
  @property (nonatomic) BOOL gestureEnabled;
 +@property (nonatomic) BOOL dismissable;
  @property (nonatomic) BOOL showDragIndicator;
++@property (nonatomic) BOOL ignoreBottomOffset;
  @property (nonatomic) NSNumber* topOffset;
  @property (nonatomic) NSNumber* cornerRadius;
+ @property (nonatomic) RNSScreenStackAnimation stackAnimation;
 diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreen.m b/node_modules/react-native-cool-modals/ios/RNCMScreen.m
-index 7c27c15..afdf6e5 100644
+index 7c27c15..d181379 100644
 --- a/node_modules/react-native-cool-modals/ios/RNCMScreen.m
 +++ b/node_modules/react-native-cool-modals/ios/RNCMScreen.m
-@@ -45,7 +45,7 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
+@@ -45,7 +45,8 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
      _startFromShortForm = false;
      _modalBackgroundColor = [[UIColor alloc] initWithRed:0.0f green:0.0f blue:0.0f alpha:1];
      _backgroundOpacity = [[NSNumber alloc] initWithDouble:0.7];
 -
 +    _dismissable = YES;
++    _ignoreBottomOffset = NO;
    }
  
    return self;
-@@ -375,6 +375,7 @@ @implementation RNCMScreenManager
+@@ -55,6 +56,13 @@ - (void)willDismiss {
+   _onWillDismiss(nil);
+ }
+ 
++- (void)onTouchTopWrapper:(NSNumber*)dismissing {
++  BOOL dismissingValue = [dismissing boolValue];
++  if (_onTouchTop) {
++    _onTouchTop(@{ @"dismissing": dismissing });
++  }
++}
++
+ - (void)reactSetFrame:(CGRect)frame
+ {
+   if (![self.reactViewController.parentViewController
+@@ -375,12 +383,14 @@ @implementation RNCMScreenManager
  RCT_EXPORT_VIEW_PROPERTY(gestureEnabled, BOOL)
  RCT_EXPORT_VIEW_PROPERTY(showDragIndicator, BOOL)
  RCT_EXPORT_VIEW_PROPERTY(customStack, BOOL)
@@ -51,6 +93,22 @@ index 7c27c15..afdf6e5 100644
  RCT_EXPORT_VIEW_PROPERTY(topOffset, NSNumber)
  RCT_EXPORT_VIEW_PROPERTY(cornerRadius, NSNumber)
  RCT_EXPORT_VIEW_PROPERTY(stackPresentation, RNSScreenStackPresentation)
+ RCT_EXPORT_VIEW_PROPERTY(stackAnimation, RNSScreenStackAnimation)
+ RCT_EXPORT_VIEW_PROPERTY(onAppear, RCTDirectEventBlock);
+ RCT_EXPORT_VIEW_PROPERTY(onDismissed, RCTDirectEventBlock);
++RCT_EXPORT_VIEW_PROPERTY(onTouchTop, RCTDirectEventBlock)
+ 
+ RCT_EXPORT_VIEW_PROPERTY(onWillDismiss, RCTDirectEventBlock);
+ RCT_EXPORT_VIEW_PROPERTY(springDamping, NSNumber)
+@@ -395,6 +405,8 @@ @implementation RNCMScreenManager
+ RCT_EXPORT_VIEW_PROPERTY(allowsTapToDismiss, BOOL)
+ RCT_EXPORT_VIEW_PROPERTY(allowsDragToDismiss, BOOL)
+ RCT_EXPORT_VIEW_PROPERTY(startFromShortForm, BOOL)
++RCT_EXPORT_VIEW_PROPERTY(ignoreBottomOffset, BOOL)
++
+ 
+ - (UIView *)view
+ {
 diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m b/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m
 index b397efb..b9194e9 100644
 --- a/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m
@@ -71,10 +129,50 @@ index b397efb..b9194e9 100644
      finish();
    }
 diff --git a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-index b21a043..132924f 100644
+index b21a043..4b3c3e7 100644
 --- a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 +++ b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-@@ -125,7 +125,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -28,6 +28,7 @@ class PossiblyTouchesPassableUIView: UIView {
+ }
+ 
+ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSupport {
++  
+   weak var config: NSObject?
+   var length: CGFloat = 0
+   var topAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
+@@ -63,6 +64,11 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+     }
+   }
+ 
++  func onTouchTop(_ dismissing: Bool) {
++    let selector = NSSelectorFromString("onTouchTopWrapper:")
++    config?.perform(selector, with: NSNumber.init(value: dismissing))
++  }
++
+   override var bottomLayoutGuide: UILayoutSupport {
+     get {
+       if self.isViewLoaded {
+@@ -85,6 +91,11 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+     }
+   }
+ 
++  var ignoreBottomOffset: Bool {
++    let res =  self.config?.value(forKey: "ignoreBottomOffset") as! Bool
++    return res;
++  }
++
+   var isHapticFeedbackEnabled: Bool = false
+ 
+   func findChildScrollViewDFS(view: UIView)-> UIScrollView? {
+@@ -115,6 +126,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+     }
+   }
+ 
++
+   func panModalWillDismiss() {
+     callWillDismiss()
+   }
+@@ -125,7 +137,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
    }
  
    func shouldRespond(to panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
@@ -86,8 +184,16 @@ index b21a043..132924f 100644
    }
  
    var allowsDragToDismiss: Bool {
-@@ -147,8 +150,21 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
- 
+@@ -145,10 +160,29 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+     return backgroundColor.withAlphaComponent(CGFloat(truncating: self.config?.value(forKey: "backgroundOpacity") as! NSNumber))
+   }
+   
++  var scrollIndicatorInsets: UIEdgeInsets {
++      let top = shouldRoundTopCorners ? cornerRadius : 0
++      let bottom = ignoreBottomOffset ? 0 : bottomLayoutOffset
++      return UIEdgeInsets(top: CGFloat(top), left: 0, bottom: bottom, right: 0)
++  }
++
    func shouldPrioritize(panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
      let headerHeight: CGFloat = CGFloat(truncating: self.config?.value(forKey: "headerHeight") as! NSNumber)
 -    let location = panModalGestureRecognizer.location(in: view)
@@ -110,8 +216,27 @@ index b21a043..132924f 100644
    }
  
    var isShortFormEnabledInternal = 2
+@@ -200,12 +234,17 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+     super.viewWillDisappear(animated)
+   }
+ 
++  var prevHeight: CGFloat = 0;
+   override func viewDidLayoutSubviews() {
+     super.viewDidLayoutSubviews()
+     for i in 1...10 {
+       DispatchQueue.main.asyncAfter(deadline: .now() + 0.3 * Double(i)) {
+         if !self.disappared {
+-          self.panModalSetNeedsLayoutUpdate()
++          let newHeight: CGFloat = self.panScrollable?.layer.frame.height ?? 0
++          if !newHeight.isEqual(to: self.prevHeight) {
++            self.prevHeight = newHeight
++            self.panModalSetNeedsLayoutUpdate()
++          }
+         }
+       }
+     }
 diff --git a/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx b/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
-index c2f2e2b..7f6f332 100644
+index c2f2e2b..95e6f8d 100644
 --- a/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
 +++ b/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
 @@ -43,6 +43,7 @@ export default function NativeStackView({
@@ -122,10 +247,18 @@ index c2f2e2b..7f6f332 100644
              customStack,
              topOffset,
              showDragIndicator,
-@@ -62,6 +63,7 @@ export default function NativeStackView({
+@@ -58,10 +59,15 @@ export default function NativeStackView({
+             springDamping,
+             startFromShortForm,
+             transitionDuration,
++            onTouchTop,
++            ignoreBottomOffset
+           } = options;
  
            return (
                <Screen
++                  ignoreBottomOffset={ignoreBottomOffset}
++                  onTouchTop={onTouchTop}
 +                  dismissable={dismissable}
                    customStack={customStack}
                    topOffset={topOffset}
