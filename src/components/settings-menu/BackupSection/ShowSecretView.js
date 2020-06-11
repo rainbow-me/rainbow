@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
+import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components';
 import WalletTypes from '../../../helpers/walletTypes';
 import { useClipboard, useDimensions, useWallets } from '../../../hooks';
@@ -34,7 +35,8 @@ const Shadow = styled(ShadowStack)`
 
 const ShowSecretView = () => {
   const { setClipboard } = useClipboard();
-  const { wallets } = useWallets();
+  const { getParam } = useNavigation();
+  const { selectedWallet } = useWallets();
   const [seed, setSeed] = useState(null);
   const [type, setType] = useState(null);
   const { width: deviceWidth } = useDimensions();
@@ -42,10 +44,8 @@ const ShowSecretView = () => {
 
   useEffect(() => {
     const loadSeed = async () => {
-      const nonImportedWalletId = Object.keys(wallets).find(
-        key => wallets[key].imported === false
-      );
-      const s = await loadSeedPhraseAndMigrateIfNeeded(nonImportedWalletId);
+      const wallet_id = getParam('wallet_id', selectedWallet.id);
+      const s = await loadSeedPhraseAndMigrateIfNeeded(wallet_id);
       const walletType = identifyWalletType(s);
       setType(walletType);
       setSeed(s);
@@ -64,8 +64,8 @@ const ShowSecretView = () => {
       <Column
         // eslint-disable-next-line react/no-array-index-key
         key={`col_${colIndex}`}
-        marginLeft={11}
-        marginRight={11}
+        marginLeft={30}
+        marginRight={30}
       >
         {wordColumn.map((word, index) => (
           // eslint-disable-next-line react/no-array-index-key

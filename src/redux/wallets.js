@@ -104,14 +104,17 @@ export const isCreatingAccount = val => dispatch => {
   });
 };
 
-export const setWalletBackedUp = (wallet_id, method) => async getState => {
+export const setWalletBackedUp = (wallet_id, method) => async (
+  dispatch,
+  getState
+) => {
   const { wallets, selected } = getState().wallets;
   const newWallets = { ...wallets };
   newWallets[wallet_id].backedUp = true;
   newWallets[wallet_id].backupType = method;
-  walletsUpdate(newWallets);
+  dispatch(walletsUpdate(newWallets));
   if (selected.id === wallet_id) {
-    walletsSetSelected(newWallets[wallet_id]);
+    dispatch(walletsSetSelected(newWallets[wallet_id]));
   }
 };
 

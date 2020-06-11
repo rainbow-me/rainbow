@@ -3,8 +3,9 @@ import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import WalletTypes from '../../helpers/walletTypes';
-import { useClipboard, useDimensions } from '../../hooks';
+import { useClipboard, useDimensions, useWallets } from '../../hooks';
 import {
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
@@ -14,13 +15,7 @@ import { colors, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { FloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
-import {
-  Centered,
-  Column,
-  ColumnWithMargins,
-  Row,
-  RowWithMargins,
-} from '../layout';
+import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { SheetButton } from '../sheet';
 import { Text } from '../text';
 
@@ -86,12 +81,13 @@ const Shadow = styled(ShadowStack)`
 `;
 
 const BackupManualStep = () => {
+  const { selectedWallet } = useWallets();
   const { setClipboard } = useClipboard();
   const dispatch = useDispatch();
   const { goBack, getParam } = useNavigation();
   const [seed, setSeed] = useState(null);
   const [type, setType] = useState(null);
-  const walletId = getParam('wallet_id');
+  const walletId = getParam('wallet_id', selectedWallet.id);
   const { width: deviceWidth } = useDimensions();
   let wordSectionHeight = 100;
 
@@ -107,7 +103,7 @@ const BackupManualStep = () => {
   }, []);
 
   const onComplete = useCallback(async () => {
-    await dispatch(setWalletBackedUp(walletId, 'manual'));
+    await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.manual));
     goBack();
   }, [dispatch, goBack, walletId]);
 
@@ -121,8 +117,8 @@ const BackupManualStep = () => {
       <Column
         // eslint-disable-next-line react/no-array-index-key
         key={`col_${colIndex}`}
-        marginLeft={11}
-        marginRight={11}
+        marginLeft={30}
+        marginRight={30}
       >
         {wordColumn.map((word, index) => (
           // eslint-disable-next-line react/no-array-index-key
@@ -141,7 +137,7 @@ const BackupManualStep = () => {
   }
 
   return (
-    <Centered direction="column" paddingTop={9} paddingBottom={15}>
+    <Centered direction="column" paddingBottom={15}>
       <Row marginBottom={12} marginTop={15}>
         <TopIcon>􀉆</TopIcon>
       </Row>
@@ -218,7 +214,7 @@ const BackupManualStep = () => {
         </Shadow>
       </Row>
 
-      <ColumnWithMargins css={padding(19, 15)} margin={19} width="100%">
+      <Column css={padding(0, 15)} width="100%">
         <SheetButton
           color={colors.appleBlue}
           label={`􀁣 I’ve saved ${
@@ -226,7 +222,7 @@ const BackupManualStep = () => {
           }`}
           onPress={onComplete}
         />
-      </ColumnWithMargins>
+      </Column>
     </Centered>
   );
 };

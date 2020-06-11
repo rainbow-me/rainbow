@@ -5,6 +5,7 @@ import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
+import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import { useWallets } from '../../hooks';
 import * as keychain from '../../model/keychain';
 import { setWalletBackedUp } from '../../redux/wallets';
@@ -13,7 +14,7 @@ import { logger } from '../../utils';
 import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
-import { Centered, ColumnWithMargins, Row } from '../layout';
+import { Centered, Column, Row } from '../layout';
 import { SheetButton } from '../sheet';
 import { GradientText, Text } from '../text';
 
@@ -223,7 +224,7 @@ const BackupIcloudStep = () => {
       // 2 - backup all the wallets encrypted in icloud
       const success = await keychain.backupToCloud(password);
       if (success) {
-        await dispatch(setWalletBackedUp(wallet_id, 'cloud'));
+        await dispatch(setWalletBackedUp(wallet_id, WalletBackupTypes.cloud));
         goBack();
         Alert.alert('Your wallet has been backed up!');
       } else {
@@ -241,15 +242,9 @@ const BackupIcloudStep = () => {
 
   const onPressInfo = useCallback(() => null, []);
 
-  const fromSettings = getParam('option', null);
-
   return (
-    <Centered
-      direction="column"
-      paddingTop={9}
-      paddingBottom={fromSettings ? 40 : 0}
-    >
-      <Row marginBottom={12} marginTop={15}>
+    <Centered direction="column">
+      <Row paddingBottom={15} paddingTop={24}>
         <TopIcon />
       </Row>
       <Title>Choose a password</Title>
@@ -293,7 +288,7 @@ const BackupIcloudStep = () => {
             confirmPassword !== password && <WarningIcon />}
         </Shadow>
       </InputsWrapper>
-      <ColumnWithMargins css={padding(19, 15, 0)} margin={19} width="100%">
+      <Column css={padding(19, 15, 30)} width="100%">
         {validPassword ? (
           <RainbowButton label={label} onPress={onConfirmBackup} />
         ) : (
@@ -309,7 +304,7 @@ const BackupIcloudStep = () => {
             ]}
           />
         )}
-      </ColumnWithMargins>
+      </Column>
     </Centered>
   );
 };

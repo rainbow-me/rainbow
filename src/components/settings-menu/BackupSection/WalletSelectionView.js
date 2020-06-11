@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import Caret from '../../../assets/family-dropdown-arrow.png';
+import WalletBackupTypes from '../../../helpers/walletBackupTypes';
 import WalletTypes from '../../../helpers/walletTypes';
 import { useWallets } from '../../../hooks';
 import { colors, fonts } from '../../../styles';
@@ -124,8 +125,8 @@ const WalletSelectionView = ({ navigation }) => {
                 </Column>
               </Row>
               <Row marginRight={19}>
-                {wallet.isBackedUp ? (
-                  wallet.backupType === 'cloud' ? (
+                {wallet.backedUp ? (
+                  wallet.backupType === WalletBackupTypes.cloud ? (
                     <CheckmarkIcon color={colors.green} />
                   ) : (
                     <CheckmarkIcon color={colors.grey} />

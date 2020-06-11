@@ -2,6 +2,7 @@ import React, { Fragment, useCallback } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import WalletBackupTypes from '../../../helpers/walletBackupTypes';
 import WalletTypes from '../../../helpers/walletTypes';
 import { useWallets } from '../../../hooks';
 import { deleteCloudBackup } from '../../../redux/wallets';
@@ -58,11 +59,8 @@ const DescriptionText = styled(Text).attrs({
 const AlreadyBackedUpView = () => {
   const { navigate, getParam, setParams } = useNavigation();
   const dispatch = useDispatch();
-  const { wallets } = useWallets();
-  const wallet_id =
-    getParam('wallet_id', null) ||
-    Object.keys(wallets).find(key => wallets[key].imported === false);
-
+  const { wallets, selectedWallet } = useWallets();
+  const wallet_id = getParam('wallet_id', null) || selectedWallet.id;
   const onViewRecoveryPhrase = useCallback(() => {
     setParams({
       section: {
@@ -75,12 +73,13 @@ const AlreadyBackedUpView = () => {
     });
   }, [setParams, wallet_id, wallets]);
 
-  const isManualBackup = wallets[wallet_id].backupType === 'manual';
+  const isManualBackup =
+    wallets[wallet_id].backupType === WalletBackupTypes.manual;
 
   const onFooterAction = useCallback(async () => {
     if (isManualBackup) {
       navigate(Routes.BACKUP_SHEET_TOP, {
-        option: 'icloud',
+        option: WalletBackupTypes.cloud,
         wallet_id,
       });
     } else {

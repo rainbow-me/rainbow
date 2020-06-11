@@ -6,25 +6,27 @@ import BackupManualStep from '../components/backup/BackupManualStep';
 import BackupSheetFirstStep from '../components/backup/BackupSheetFirstStep';
 import { KeyboardFixedOpenLayout } from '../components/layout';
 import { Sheet } from '../components/sheet';
-
-const additionalPadding = 118;
+import WalletBackupTypes from '../helpers/walletBackupTypes';
 
 const BackupSheet = () => {
   const { getParam } = useNavigation();
   const [step, setStep] = useState(getParam('option', 'first'));
   const onIcloudBackup = useCallback(() => {
-    setStep('icloud');
+    setStep(WalletBackupTypes.cloud);
   }, []);
 
   const onManualBackup = useCallback(() => {
-    setStep('manual');
+    setStep(WalletBackupTypes.manual);
   }, []);
+
+  const fromSettings = getParam('option', null);
+  const nativeStackAdditionalPadding = fromSettings ? 0 : 80;
 
   const renderStep = useCallback(() => {
     switch (step) {
-      case 'icloud':
+      case WalletBackupTypes.cloud:
         return <BackupIcloudStep />;
-      case 'manual':
+      case WalletBackupTypes.manual:
         return <BackupManualStep />;
       default:
         return (
@@ -37,10 +39,12 @@ const BackupSheet = () => {
   }, [onIcloudBackup, onManualBackup, step]);
 
   const sheet = <Sheet>{renderStep()}</Sheet>;
-  if (step === 'icloud') {
+  if (step === WalletBackupTypes.cloud) {
     return (
       <HorizontalGestureBlocker>
-        <KeyboardFixedOpenLayout additionalPadding={additionalPadding}>
+        <KeyboardFixedOpenLayout
+          additionalPadding={nativeStackAdditionalPadding}
+        >
           {sheet}
         </KeyboardFixedOpenLayout>
       </HorizontalGestureBlocker>
