@@ -6,7 +6,9 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:rainbow.me</string>
+		<string>applinks:rnbw.app</string>
+		<string>applinks:rainbowdotme.app.link</string>
+		<string>applinks:rainbowdotme-alternate.app.link</string>
 	</array>
 	<key>com.apple.developer.in-app-payments</key>
 	<array>

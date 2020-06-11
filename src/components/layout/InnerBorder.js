@@ -1,11 +1,9 @@
 import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
-import PrimitiveWithoutOmittedProps from './PrimitiveWithoutOmittedProps';
 
-const InnerBorder = styled(PrimitiveWithoutOmittedProps).attrs({
-  blacklist: 'width',
-  pointerEvents: 'none',
-})`
+const InnerBorder = styled.View.withConfig({
+  shouldForwardProp: prop => prop !== 'width',
+}).attrs({ pointerEvents: 'none' })`
   ${position.cover};
   border-color: ${({ color }) => color || colors.black};
   border-radius: ${({ radius }) => radius || 0};

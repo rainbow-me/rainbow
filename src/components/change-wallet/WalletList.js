@@ -6,42 +6,34 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Transition, Transitioning } from 'react-native-reanimated';
-
+import styled from 'styled-components/primitives';
 import WalletTypes from '../../helpers/walletTypes';
 import { colors, position } from '../../styles';
-import Divider from '../Divider';
 import { EmptyAssetList } from '../asset-list';
 import { Column } from '../layout';
-import AddressOption from './AddressOption';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
 
 const listTopPadding = 7.5;
-const optionRowHeight = 55;
 const rowHeight = 59;
 
 const RowTypes = {
   ADDRESS: 1,
-  ADDRESS_OPTION: 2,
-  EMPTY: 3,
+  EMPTY: 2,
 };
 
-const sx = StyleSheet.create({
-  container: {
-    marginTop: -2,
-  },
-  flatList: {
-    flex: 1,
-    minHeight: 1,
-    paddingTop: listTopPadding,
-  },
-  skeleton: {
-    paddingTop: listTopPadding,
-  },
-});
+const getItemLayout = (data, index) => {
+  const { height } = data[index];
+  return {
+    index,
+    length: height,
+    offset: height * index,
+  };
+};
+
+const keyExtractor = item => item.id;
 
 const skeletonTransition = (
   <Transition.Sequence>
@@ -50,6 +42,34 @@ const skeletonTransition = (
     <Transition.In durationMs={0.001} interpolation="easeOut" type="fade" />
   </Transition.Sequence>
 );
+
+const Container = styled(Transitioning.View)`
+  height: ${({ height }) => height};
+  margin-top: -2;
+`;
+
+const EmptyWalletList = styled(EmptyAssetList).attrs({
+  descendingOpacity: true,
+  pointerEvents: 'none',
+})`
+  ${position.cover};
+  background-color: ${colors.white};
+  padding-top: ${listTopPadding};
+`;
+
+const WalletFlatList = styled(FlatList).attrs({
+  getItemLayout,
+  keyExtractor,
+  removeClippedSubviews: true,
+})`
+  flex: 1;
+  min-height: 1;
+  padding-top: ${listTopPadding};
+`;
+
+const WalletListFooter = styled(Column)`
+  padding-bottom: 6;
+`;
 
 export default function WalletList({
   accountAddress,
@@ -112,41 +132,9 @@ export default function WalletList({
             break;
         }
       });
-
-      // You can't add accounts for read only or private key wallets
-      if (
-        [WalletTypes.mnemonic, WalletTypes.seed].indexOf(wallet.type) !== -1 &&
-        filteredAccounts.length > 0
-      ) {
-        seedRows.push({
-          editMode,
-          height: optionRowHeight,
-          id: `add_account_${wallet.id}`,
-          label: '􀁍 Create a new wallet',
-          onPress: () => onPressAddAccount(wallet.id),
-          rowType: RowTypes.ADDRESS_OPTION,
-        });
-      }
     });
 
     const newRows = [...seedRows, ...privateKeyRows, ...readOnlyRows];
-
-    // You should always be able to create a new wallet
-    // for ex. if you only import pkey or read only wallet
-    const canCreateAccount = newRows.find(
-      r => r.rowType === RowTypes.ADDRESS_OPTION
-    );
-    if (!canCreateAccount) {
-      newRows.push({
-        editMode,
-        height: optionRowHeight,
-        id: 'add_account',
-        label: '􀁍 Create a new wallet',
-        onPress: () => onPressAddAccount(),
-        rowType: RowTypes.ADDRESS_OPTION,
-      });
-    }
-
     setRows(newRows);
   }, [
     accountAddress,
@@ -161,7 +149,7 @@ export default function WalletList({
   useEffect(() => {
     if (rows && rows.length && !ready) {
       setTimeout(() => {
-        skeletonTransitionRef.current.animateNextTransition();
+        skeletonTransitionRef.current?.animateNextTransition();
         setReady(true);
       }, 50);
     }
@@ -183,7 +171,7 @@ export default function WalletList({
 
     if (distanceToScroll > height - scrollThreshold && !doneScrolling) {
       setTimeout(() => {
-        scrollView?.current?.scrollToIndex({
+        scrollView.current?.scrollToIndex({
           animated: true,
           index: selectedItemIndex,
         });
@@ -193,38 +181,9 @@ export default function WalletList({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready]);
 
-  const getItemLayout = (data, index) => {
-    const { height } = data[index];
-    return {
-      index,
-      length: height,
-      offset: height * index,
-    };
-  };
-
-  const keyExtractor = item => item.id;
-
   const renderItem = useCallback(
-    ({ item, index }) => {
-      const isLastRow = index === rows.length - 1;
-
+    ({ item }) => {
       switch (item.rowType) {
-        case RowTypes.ADDRESS_OPTION:
-          return (
-            <Column height={item.height}>
-              <AddressOption
-                editMode={editMode}
-                label={item.label}
-                onPress={item.onPress}
-              />
-              {!isLastRow && (
-                <Divider
-                  color={colors.rowDividerExtraLight}
-                  inset={[0, 19, 0, 19]}
-                />
-              )}
-            </Column>
-          );
         case RowTypes.ADDRESS:
           return (
             <Column height={item.height}>
@@ -240,48 +199,42 @@ export default function WalletList({
           return null;
       }
     },
-    [editMode, onEditWallet, rows.length]
+    [editMode, onEditWallet]
   );
 
   return (
-    <View style={sx.container}>
-      <View style={{ height }}>
-        <Transitioning.View
-          flex={1}
-          ref={skeletonTransitionRef}
-          transition={skeletonTransition}
-        >
-          {ready ? (
-            <Fragment>
-              <FlatList
-                data={rows}
-                style={sx.flatList}
-                ref={scrollView}
-                renderItem={renderItem}
-                scrollEnabled={scrollEnabled}
-                getItemLayout={getItemLayout}
-                keyExtractor={keyExtractor}
-                removeClippedSubviews
-                initialNumToRender={rows.length}
-              />
-              <WalletOption
-                editMode={editMode}
-                icon="arrowBack"
-                label="􀂍 Add an existing wallet"
-                onPress={onPressImportSeedPhrase}
-              />
-            </Fragment>
-          ) : (
-            <EmptyAssetList
-              {...position.coverAsObject}
-              backgroundColor={colors.white}
-              descendingOpacity
-              pointerEvents="none"
-              style={sx.skeleton}
+    <Container
+      height={height}
+      ref={skeletonTransitionRef}
+      transition={skeletonTransition}
+    >
+      {ready ? (
+        <Fragment>
+          <WalletFlatList
+            data={rows}
+            initialNumToRender={rows.length}
+            ref={scrollView}
+            renderItem={renderItem}
+            scrollEnabled={scrollEnabled}
+          />
+          <WalletListFooter>
+            <WalletOption
+              editMode={editMode}
+              icon="arrowBack"
+              label="􀁍 Create a new wallet"
+              onPress={onPressAddAccount}
             />
-          )}
-        </Transitioning.View>
-      </View>
-    </View>
+            <WalletOption
+              editMode={editMode}
+              icon="arrowBack"
+              label="􀂍 Add an existing wallet"
+              onPress={onPressImportSeedPhrase}
+            />
+          </WalletListFooter>
+        </Fragment>
+      ) : (
+        <EmptyWalletList />
+      )}
+    </Container>
   );
 }

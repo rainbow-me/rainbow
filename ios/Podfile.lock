@@ -2,11 +2,14 @@ PODS:
   - Analytics (3.8.2)
   - Base64 (1.1.2)
   - boost-for-react-native (1.63.0)
+  - Branch (0.32.0):
+    - Branch/Core (= 0.32.0)
+  - Branch/Core (0.32.0)
   - BVLinearGradient (2.5.6):
     - React
   - CocoaAsyncSocket (7.6.4)
   - CocoaLibEvent (1.0.0)
-  - CodePush (6.2.0):
+  - CodePush (6.2.1):
     - Base64 (~> 1.1)
     - JWT (~> 3.0.0-beta.7)
     - React
@@ -350,17 +353,20 @@ PODS:
     - React
   - react-native-blur (0.8.0):
     - React
-  - react-native-camera (3.26.0):
+  - react-native-branch (5.0.0-beta.1):
+    - Branch (= 0.32.0)
     - React
-    - react-native-camera/RCT (= 3.26.0)
-    - react-native-camera/RN (= 3.26.0)
-  - react-native-camera/RCT (3.26.0):
+  - react-native-camera (3.28.0):
     - React
-  - react-native-camera/RN (3.26.0):
+    - react-native-camera/RCT (= 3.28.0)
+    - react-native-camera/RN (= 3.28.0)
+  - react-native-camera/RCT (3.28.0):
+    - React
+  - react-native-camera/RN (3.28.0):
     - React
   - react-native-mail (4.1.0):
     - React
-  - react-native-netinfo (5.9.1):
+  - react-native-netinfo (5.9.2):
     - React
   - react-native-randombytes (3.5.3):
     - React
@@ -454,7 +460,7 @@ PODS:
   - RNCoolModals (0.0.9):
     - PanModal
     - React
-  - RNCPushNotificationIOS (1.2.0):
+  - RNCPushNotificationIOS (1.2.2):
     - React
   - RNDeviceInfo (5.3.1):
     - React
@@ -493,9 +499,9 @@ PODS:
     - React
   - RNScreens (2.2.0):
     - React
-  - RNSentry (1.3.9):
+  - RNSentry (1.4.5):
     - React
-    - Sentry (~> 4.4.0)
+    - Sentry (~> 5.1.4)
   - RNStoreReview (0.1.5):
     - React
   - RNSVG (12.1.0):
@@ -510,9 +516,9 @@ PODS:
   - SDWebImageWebPCoder (0.4.1):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.5)
-  - Sentry (4.4.3):
-    - Sentry/Core (= 4.4.3)
-  - Sentry/Core (4.4.3)
+  - Sentry (5.1.4):
+    - Sentry/Core (= 5.1.4)
+  - Sentry/Core (5.1.4)
   - SexyTooltip (1.2.7):
     - pop (~> 1.0)
   - Shimmer (1.0.2)
@@ -575,6 +581,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-background-timer (from `../node_modules/react-native-background-timer`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
+  - react-native-branch (from `../node_modules/react-native-branch`)
   - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
@@ -633,6 +640,7 @@ SPEC REPOS:
     - Analytics
     - Base64
     - boost-for-react-native
+    - Branch
     - CocoaAsyncSocket
     - CocoaLibEvent
     - Crashlytics
@@ -720,6 +728,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-background-timer"
   react-native-blur:
     :path: "../node_modules/@react-native-community/blur"
+  react-native-branch:
+    :path: "../node_modules/react-native-branch"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
   react-native-mail:
@@ -830,10 +840,11 @@ SPEC CHECKSUMS:
   Analytics: 4c482aea5efcecaeb03adfc7fc22e350f5ca575c
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
+  Branch: 770a23c04d3f5410cf9231db099a444dd3060784
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
-  CodePush: 3285d39e9865e0a37a415417402bf568ce49268a
+  CodePush: 3968d9e97ed70a1c8b029266dd5b6aa69cee4b0a
   Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
@@ -884,9 +895,10 @@ SPEC CHECKSUMS:
   React-jsinspector: 512e560d0e985d0e8c479a54a4e5c147a9c83493
   react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: 2b74be8edc1103c4c46d1f4e5f41723d9ff052cc
+  react-native-branch: ed90b087f2ff6a2f81643ead0b321531877f2e69
+  react-native-camera: 8ab02aac456a7db830980cef5f3772644fe96e1f
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
-  react-native-netinfo: 4284e9f4ade9fc498f313b2e9e3f7fd4fa6e3082
+  react-native-netinfo: cb74e17062b2af5a16a4b137f32495f241df1a8e
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
@@ -911,7 +923,7 @@ SPEC CHECKSUMS:
   RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNCoolModals: 49df7bf454cb98802a208531a7fc4cec28cfc501
-  RNCPushNotificationIOS: 4d9ffd08f00ef6c1029ebbf4d72fc711eca3ff01
+  RNCPushNotificationIOS: 4c97a36dbec42dba411cc35e6dac25e34a805fde
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNFastImage: 35ae972d6727c84ee3f5c6897e07f84d0a3445e9
   RNFBApp: 7b539bb25520fa73d6a240f5c6ea569e27683645
@@ -926,13 +938,13 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: 22c5ecf474428766c6b148f96f2ff6155cd7225e
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
-  RNSentry: 9c9783b13fb5cba387fff55f085cc1da3854ce71
+  RNSentry: 0a70359ddacbfb9b1cbbb0971e54065b9f70ac57
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNTooltips: e13180e4339e2a85daabd09507f62a5a32d3dc8a
   SDWebImage: 84000f962cbfa70c07f19d2234cbfcf5d779b5dc
   SDWebImageWebPCoder: 36f8f47bd9879a8aea6044765c1351120fd8e3a8
-  Sentry: 14bdd673870e8cf64932b149fad5bbbf39a9b390
+  Sentry: 74f2ad93a20a5567a1badaedf5b3f60b142ad082
   SexyTooltip: e243da5a858c7160141cf35786a4033669d1efca
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SRSRadialGradient: 77bcb1ae812d0c77560e54ed9e52166df032db1d

@@ -29,7 +29,8 @@ import SavingsSheet from '../SavingsSheet';
 import SendSheet from '../SendSheet';
 import SettingsModal from '../SettingsModal';
 import TransactionConfirmationScreen from '../TransactionConfirmationScreen';
-import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
+import WalletConnectApprovalSheet from '../WalletConnectApprovalSheet';
+import WalletConnectRedirectSheet from '../WalletConnectRedirectSheet';
 import WalletScreen from '../WalletScreen';
 import WithdrawModal from '../WithdrawModal';
 import { createStackNavigator } from './helpers';
@@ -77,10 +78,6 @@ const routesForMainNavigator = {
     navigationOptions: expandedPreset,
     screen: ExpandedAssetSheet,
   },
-  [Routes.MODAL_SCREEN]: {
-    navigationOptions: overlayExpandedPreset,
-    screen: ModalScreen,
-  },
   [Routes.RECEIVE_MODAL]: {
     navigationOptions: expandedPreset,
     screen: ReceiveModal,
@@ -98,9 +95,13 @@ const routesForMainNavigator = {
     navigationOptions: backgroundPreset,
     screen: SwipeStack,
   },
-  [Routes.WALLET_CONNECT_CONFIRMATION_MODAL]: {
+  [Routes.WALLET_CONNECT_APPROVAL_SHEET]: {
     navigationOptions: expandedPreset,
-    screen: WalletConnectConfirmationModal,
+    screen: WalletConnectApprovalSheet,
+  },
+  [Routes.WALLET_CONNECT_REDIRECT_SHEET]: {
+    navigationOptions: bottomSheetPreset,
+    screen: WalletConnectRedirectSheet,
   },
 };
 
@@ -128,6 +129,10 @@ const routesForStack = {
     screen: ImportSeedPhraseSheetWithData,
   },
   MainNavigator,
+  [Routes.MODAL_SCREEN]: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ModalScreen,
+  },
   [Routes.SAVINGS_DEPOSIT_MODAL]: {
     navigationOptions: exchangePreset,
     params: {

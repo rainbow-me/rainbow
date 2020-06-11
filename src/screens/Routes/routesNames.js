@@ -30,7 +30,8 @@ const Routes = {
   SUPPORTED_COUNTRIES_MODAL_SCREEN: 'SupportedCountriesModalScreen',
   SWAP_DETAILS_SCREEN: 'SwapDetailsScreen',
   SWIPE_LAYOUT: 'SwipeLayout',
-  WALLET_CONNECT_CONFIRMATION_MODAL: 'WalletConnectConfirmationModal',
+  WALLET_CONNECT_APPROVAL_SHEET: 'WalletConnectApprovalSheet',
+  WALLET_CONNECT_REDIRECT_SHEET: 'WalletConnectRedirectSheet',
   WALLET_SCREEN: 'WalletScreen',
 };
 
