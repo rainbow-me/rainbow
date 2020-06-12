@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback } from 'react';
+import React, { Fragment, useCallback, useMemo } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -73,11 +73,22 @@ const AlreadyBackedUpView = () => {
     });
   }, [setParams, wallet_id, wallets]);
 
-  const isManualBackup =
-    wallets[wallet_id].backupType === WalletBackupTypes.manual;
+  const walletStatus = useMemo(() => {
+    let status = null;
+    if (wallets[wallet_id].backedUp) {
+      if (wallets[wallet_id].backupType === WalletBackupTypes.manual) {
+        status = 'manual_backup';
+      } else {
+        status = 'cloud_backup';
+      }
+    } else {
+      status = 'imported';
+    }
+    return status;
+  }, [wallet_id, wallets]);
 
   const onFooterAction = useCallback(async () => {
-    if (isManualBackup) {
+    if (['manual_backup', 'imported'].includes(walletStatus)) {
       navigate(Routes.BACKUP_SHEET_TOP, {
         option: WalletBackupTypes.cloud,
         wallet_id,
@@ -85,31 +96,39 @@ const AlreadyBackedUpView = () => {
     } else {
       await dispatch(deleteCloudBackup(wallet_id));
     }
-  }, [dispatch, isManualBackup, navigate, wallet_id]);
+  }, [dispatch, walletStatus, navigate, wallet_id]);
 
   return (
     <Fragment>
       <Centered>
         <Text
-          color={isManualBackup ? colors.grey : colors.green}
+          color={walletStatus === 'cloud_backup' ? colors.green : colors.grey}
           weight={fonts.weight.semibold}
           size={parseFloat(fonts.size.medium)}
         >
-          Backed up {isManualBackup && 'manually'}
+          {(walletStatus === 'cloud_backup' && `Backed up`) ||
+            (walletStatus === 'cloud_backup' && `Backed up manually`) ||
+            (walletStatus === 'imported' && `Imported`)}
         </Text>
       </Centered>
       <Column align="center" css={padding(0, 40, 0)} flex={1}>
         <Centered direction="column" paddingTop={70} paddingBottom={15}>
-          {isManualBackup ? (
+          {walletStatus !== 'cloud_backup' ? (
             <TopIconGrey>􀆅</TopIconGrey>
           ) : (
             <TopIconGreen>􀆅</TopIconGreen>
           )}
-          <Title>Your wallet is backed up</Title>
+          <Title>
+            {(walletStatus === 'imported' && `Your wallet was imported`) ||
+              `Your wallet is backed up`}
+          </Title>
           <DescriptionText>
-            {isManualBackup
-              ? `If you lose this device, you can restore your wallet with the recovery phrase you saved.`
-              : `If you lose this device, you can recover your encrypted wallet backup from iCloud`}
+            {(walletStatus === 'cloud_backup' &&
+              `If you lose this device, you can recover your encrypted wallet backup from iCloud`) ||
+              (walletStatus === 'manual_backup' &&
+                `If you lose this device, you can restore your wallet with the recovery phrase you saved.`) ||
+              (walletStatus === 'imported' &&
+                `If you lose this device, you can restore your wallet with the recovery phrase you used to import it.`)}
           </DescriptionText>
         </Centered>
         <ColumnWithMargins css={padding(19, 10)} margin={19} width="100%">
@@ -126,14 +145,18 @@ const AlreadyBackedUpView = () => {
         <ButtonPressAnimation onPress={onFooterAction}>
           <Text
             align="center"
-            color={isManualBackup ? colors.appleBlue : colors.red}
+            color={
+              walletStatus !== 'cloud_backup' ? colors.appleBlue : colors.red
+            }
             size="larger"
             style={{
               lineHeight: 24,
             }}
             weight="semibold"
           >
-            {isManualBackup ? `􀙶 Back up to iCloud` : `􀈒 Delete iCloud backup`}
+            {walletStatus !== 'cloud_backup'
+              ? `􀙶 Back up to iCloud`
+              : `􀈒 Delete iCloud backup`}
           </Text>
         </ButtonPressAnimation>
       </Centered>

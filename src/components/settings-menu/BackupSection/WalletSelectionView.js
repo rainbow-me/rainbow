@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import Caret from '../../../assets/family-dropdown-arrow.png';
@@ -14,7 +14,8 @@ import { BottomRowText } from '../../coin-row';
 import { ContactAvatar } from '../../contacts';
 import { Icon } from '../../icons';
 import { Column, Row } from '../../layout';
-import { TruncatedAddress } from '../../text';
+import { Text, TruncatedAddress } from '../../text';
+import AlreadyBackedUpView from './AlreadyBackedUpView';
 import NeedsBackupView from './NeedsBackupView';
 
 const IconWrapper = styled(View)`
@@ -23,7 +24,7 @@ const IconWrapper = styled(View)`
   position: absolute;
   right: 20;
   top: 12;
-  width: 22;
+  width: 24;
 `;
 
 const CaretIcon = styled(FastImage).attrs({
@@ -53,11 +54,19 @@ const AccountLabel = styled(Text).attrs({
   padding-bottom: 5;
 `;
 
+const WarningIconText = styled(Text).attrs({
+  color: colors.yellowOrange,
+  size: 22,
+})`
+  box-shadow: 0px 4px 12px rgba(254, 190, 68, 0.4);
+`;
+
 const WarningIcon = () => (
   <IconWrapper>
-    <Icon color={colors.yellowOrange} name="warningCircled" size={40} />
+    <WarningIconText>􀇿</WarningIconText>
   </IconWrapper>
 );
+
 const CheckmarkIcon = ({ color }) => (
   <IconWrapper>
     <Icon color={color} name="checkmarkCircled" size={22} />
@@ -68,15 +77,27 @@ const WalletSelectionView = ({ navigation }) => {
   const { wallets } = useWallets();
   const onPress = useCallback(
     (wallet_id, name) => {
-      navigation.setParams({
-        section: {
-          component: NeedsBackupView,
-          title: name,
-        },
-        wallet_id,
-      });
+      const wallet = wallets[wallet_id];
+      if (wallet.backedUp || wallet.imported) {
+        navigation.setParams({
+          section: {
+            component: AlreadyBackedUpView,
+            imported: wallet.imported,
+            title: name,
+          },
+          wallet_id,
+        });
+      } else {
+        navigation.setParams({
+          section: {
+            component: NeedsBackupView,
+            title: name,
+          },
+          wallet_id,
+        });
+      }
     },
-    [navigation]
+    [navigation, wallets]
   );
 
   return Object.keys(wallets)
@@ -131,6 +152,8 @@ const WalletSelectionView = ({ navigation }) => {
                   ) : (
                     <CheckmarkIcon color={colors.grey} />
                   )
+                ) : wallet.imported ? (
+                  <CheckmarkIcon color={colors.grey} />
                 ) : (
                   <WarningIcon />
                 )}

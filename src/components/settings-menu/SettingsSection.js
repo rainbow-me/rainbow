@@ -16,6 +16,7 @@ import {
   saveAppStoreReviewCount,
 } from '../../handlers/localstorage/globalSettings';
 import networkInfo from '../../helpers/networkInfo';
+import walletTypes from '../../helpers/walletTypes';
 import { useAccountSettings, useSendFeedback, useWallets } from '../../hooks';
 import { supportedLanguages } from '../../languages';
 import { colors, position } from '../../styles';
@@ -28,7 +29,7 @@ import {
   ListItemArrowGroup,
   ListItemDivider,
 } from '../list';
-import { Emoji } from '../text';
+import { Emoji, Text } from '../text';
 
 const SettingsExternalURLs = {
   review:
@@ -50,15 +51,21 @@ let versionNumberOfTaps = 0;
 
 const IconWrapper = styled(View)`
   height: 22;
-  margin-top: 2;
   right: 8.7;
   top: 0;
-  width: 22;
+  width: 24;
+`;
+
+const WarningIconText = styled(Text).attrs({
+  color: colors.yellowOrange,
+  size: 22,
+})`
+  box-shadow: 0px 4px 12px rgba(254, 190, 68, 0.4);
 `;
 
 const WarningIcon = () => (
   <IconWrapper>
-    <Icon color={colors.yellowOrange} name="warningCircled" size={40} />
+    <WarningIconText>􀇿</WarningIconText>
   </IconWrapper>
 );
 const CheckmarkIcon = () => (
@@ -67,15 +74,19 @@ const CheckmarkIcon = () => (
   </IconWrapper>
 );
 
-const checkIfAllWalletsBackedUp = wallets => {
+const checkAllWallets = wallets => {
   if (!wallets) return false;
-  let backedUp = true;
+  let areBackedUp = true;
+  let canBeBackedUp = false;
   Object.keys(wallets).forEach(key => {
-    if (!wallets[key].imported && !wallets[key].backedUp) {
-      backedUp = false;
+    if (!wallets[key].backedUp) {
+      areBackedUp = false;
+    }
+    if (!wallets[key].type !== walletTypes.readOnly) {
+      canBeBackedUp = true;
     }
   });
-  return backedUp;
+  return { areBackedUp, canBeBackedUp };
 };
 
 const SettingsSection = ({
@@ -130,9 +141,10 @@ const SettingsSection = ({
     );
   }, []);
 
-  const allWalletsBackedUp = useMemo(() => checkIfAllWalletsBackedUp(wallets), [
-    wallets,
-  ]);
+  const { areBackedUp, canBeBackedUp } = useMemo(
+    () => checkAllWallets(wallets),
+    [wallets]
+  );
 
   return (
     <ScrollView
@@ -141,17 +153,19 @@ const SettingsSection = ({
       style={position.coverAsObject}
     >
       <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={8}>
-        <ListItem
-          icon={<SettingIcon source={BackupIcon} />}
-          onPress={onPressBackup}
-          onPressIcloudBackup={onPressIcloudBackup}
-          onPressShowSecret={onPressShowSecret}
-          label="Backup"
-        >
-          <ListItemArrowGroup>
-            {allWalletsBackedUp ? <CheckmarkIcon /> : <WarningIcon />}
-          </ListItemArrowGroup>
-        </ListItem>
+        {canBeBackedUp && (
+          <ListItem
+            icon={<SettingIcon source={BackupIcon} />}
+            onPress={onPressBackup}
+            onPressIcloudBackup={onPressIcloudBackup}
+            onPressShowSecret={onPressShowSecret}
+            label="Backup"
+          >
+            <ListItemArrowGroup>
+              {areBackedUp ? <CheckmarkIcon /> : <WarningIcon />}
+            </ListItemArrowGroup>
+          </ListItem>
+        )}
         <ListItem
           icon={<SettingIcon source={NetworkIcon} />}
           onPress={onPressNetwork}
