@@ -2,8 +2,9 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
+import BiometryTypes from '../../helpers/biometryTypes';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import { BiometryTypes, useBiometryType, useMagicAutofocus } from '../../hooks';
+import { useBiometryType, useMagicAutofocus } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
 import { colors, padding } from '../../styles';
@@ -110,10 +111,9 @@ export default function WalletProfileCreator({
   }, [color]);
 
   const [handleDidFocus] = useMagicAutofocus(inputRef.current);
-  const handleTriggerFocusInput = useCallback(
-    () => inputRef?.current?.focus(),
-    [inputRef]
-  );
+  const handleTriggerFocusInput = useCallback(() => inputRef.current?.focus(), [
+    inputRef,
+  ]);
 
   const acceptAction = isNewProfile ? addProfileInfo : editProfile;
   const cancelAction = actionType === 'Import' ? cancelImport : cancelEdit;

@@ -1,41 +1,52 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import { position } from '../../styles';
+import styled from 'styled-components/primitives';
+import BiometryTypes from '../../helpers/biometryTypes';
+import { colors, position } from '../../styles';
+import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import Icon from './Icon';
 
-const BiometryTypeStyles = {
-  faceid: {
-    ...position.sizeAsObject(27),
-    marginBottom: 2,
-    marginLeft: 4,
-  },
-  passcode: {
-    height: 25,
-    marginBottom: 4,
-    marginLeft: 4,
-    width: 18,
-  },
-  touchid: {
-    ...position.sizeAsObject(31),
-    marginBottom: 1,
-  },
-};
+const BiometryTypeIcon = styled(Icon).attrs(({ type }) => ({
+  color: colors.white,
+  name: type.toLowerCase(),
+}))`
+  ${position.size('100%')}
+`;
 
-const BiometryIcon = ({ biometryType, ...props }) => {
-  if (!biometryType || biometryType === 'none') return null;
-  const type = biometryType.toLowerCase();
+const Container = styled(Centered).attrs({ align: 'start' })`
+  ${({ type }) =>
+    type === BiometryTypes.FaceID
+      ? `
+        ${position.size(27)};
+        margin-bottom: 2;
+        margin-left: 4;
+      `
+      : ''}
 
-  return (
-    <Centered {...props} {...BiometryTypeStyles[type]} align="start">
-      <Icon {...position.sizeAsObject('100%')} color="white" name={type} />
-    </Centered>
+  ${({ type }) =>
+    type === BiometryTypes.passcode
+      ? `
+        height: 25;
+        margin-bottom: 4;
+        margin-left: 4;
+        width: 18;
+      `
+      : ''}
+
+  ${({ type }) =>
+    type === BiometryTypes.TouchID
+      ? `
+        ${position.size(31)};
+        margin-bottom: 1;
+      `
+      : ''}
+`;
+
+const BiometryIcon = ({ biometryType, ...props }) =>
+  !biometryType || biometryType === 'none' ? null : (
+    <Container {...props} type={biometryType}>
+      <BiometryTypeIcon type={biometryType} />
+    </Container>
   );
-};
 
-BiometryIcon.propTypes = {
-  biometryType: PropTypes.string,
-};
-
-const arePropsEqual = (prev, next) => prev.biometryType === next.biometryType;
-export default React.memo(BiometryIcon, arePropsEqual);
+export default magicMemo(BiometryIcon, 'biometryType');

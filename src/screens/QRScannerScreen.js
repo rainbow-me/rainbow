@@ -21,7 +21,6 @@ const QRScannerScreen = ({
   enableScanning,
   isCameraAuthorized,
   isFocused,
-  modalVisible,
   onPressBackButton,
   onPressPasteSessionUri,
   onScanSuccess,
@@ -35,9 +34,7 @@ const QRScannerScreen = ({
   const insets = useSafeArea();
   return (
     <View>
-      {discoverSheetAvailable ? (
-        <DiscoverSheet modalVisible={modalVisible} />
-      ) : null}
+      {discoverSheetAvailable ? <DiscoverSheet /> : null}
       <Centered
         {...position.sizeAsObject('100%')}
         backgroundColor={colors.appleBlue}

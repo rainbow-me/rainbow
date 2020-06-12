@@ -14,6 +14,7 @@ import {
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
+import { LoadingOverlay } from '../components/modal';
 import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import networkInfo from '../helpers/networkInfo';
 import {
@@ -26,6 +27,7 @@ import {
   useWalletSectionsData,
 } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
+import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { position } from '../styles';
 
 export default function WalletScreen() {
@@ -36,7 +38,7 @@ export default function WalletScreen() {
   const { isCoinListEdited } = useCoinListEdited();
   const { updateKeyboardHeight } = useKeyboardHeight();
   const [scrollViewTracker] = useValues([0], []);
-  const { isReadOnlyWallet } = useWallets();
+  const { isCreatingAccount, isReadOnlyWallet } = useWallets();
 
   useEffect(() => {
     if (!initialized) {
@@ -95,6 +97,12 @@ export default function WalletScreen() {
           sections={sections}
         />
       </FabWrapper>
+      {isCreatingAccount && (
+        <LoadingOverlay
+          paddingTop={sheetVerticalOffset}
+          title="Creating account..."
+        />
+      )}
     </Page>
   );
 }

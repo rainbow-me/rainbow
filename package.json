@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.2.13-1",
+  "version": "1.2.14-1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -56,7 +56,7 @@
     "@react-native-firebase/crashlytics": "^6.2.0",
     "@react-native-firebase/messaging": "^6.2.0",
     "@segment/analytics-react-native": "^1.1.0",
-    "@sentry/react-native": "^1.2.0",
+    "@sentry/react-native": "^1.4.5",
     "@tradle/react-native-http": "^2.0.1",
     "@uniswap/sdk": "^1.0.0-beta.4",
     "@walletconnect/client": "1.0.0-rc.0",
@@ -188,7 +188,7 @@
     "stream-browserify": "^1.0.0",
     "string.fromcodepoint": "^0.2.1",
     "string_decoder": "^0.10.31",
-    "styled-components": "5.1.0",
+    "styled-components": "5.1.1",
     "stylelint": "^10.1.0",
     "timers-browserify": "^1.4.2",
     "tty-browserify": "0.0.0",
