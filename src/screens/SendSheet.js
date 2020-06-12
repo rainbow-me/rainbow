@@ -72,7 +72,7 @@ const SheetContainer = isNativeStackAvailable
 const SendSheet = ({ setAppearListener, ...props }) => {
   const dispatch = useDispatch();
   const { dataAddNewTransaction } = useTransactionConfirmation();
-  const { allAssets } = useAccountAssets();
+  const { allAssets, assets, shitcoins } = useAccountAssets();
   const {
     gasLimit,
     gasPrices,
@@ -420,10 +420,11 @@ const SendSheet = ({ setAppearListener, ...props }) => {
           )}
           {showAssetList && (
             <SendAssetList
-              allAssets={allAssets}
+              assets={assets}
               fetchData={fetchData}
               onSelectAsset={sendUpdateSelected}
               savings={savings}
+              shitcoins={shitcoins}
               uniqueTokens={sendableUniqueTokens}
             />
           )}

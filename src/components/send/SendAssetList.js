@@ -36,8 +36,11 @@ class SendAssetList extends React.Component {
   constructor(props) {
     super(props);
 
-    const { allAssets, savings, uniqueTokens } = props;
-    this.data = allAssets;
+    const { assets, savings, shitcoins, uniqueTokens } = props;
+    this.data = assets;
+    if (shitcoins && shitcoins.length > 0) {
+      this.data = this.data.concat([{ data: shitcoins, name: 'Shitcoins' }]);
+    }
     if (savings && savings.length > 0) {
       this.data = this.data.concat([{ data: savings, name: 'Savings' }]);
     }
@@ -50,6 +53,7 @@ class SendAssetList extends React.Component {
       }).cloneWithRows(this.data),
       openCards: [],
       openSavings: true,
+      openShitcoins: false,
     };
 
     const imageTokens = [];
@@ -67,11 +71,22 @@ class SendAssetList extends React.Component {
 
     this._layoutProvider = new LayoutProvider(
       i => {
-        if (i < allAssets.length - 1) {
+        if (i < assets.length - 1) {
           return 'COIN_ROW';
-        } else if (i === allAssets.length - 1) {
-          return savings && savings.length !== 0 ? 'COIN_ROW' : 'COIN_ROW_LAST';
-        } else if (i === allAssets.length && savings && savings.length > 0) {
+        } else if (i === assets.length - 1) {
+          return savings && savings.length !== 0 && shitcoins.length !== 0
+            ? 'COIN_ROW'
+            : 'COIN_ROW_LAST';
+        } else if (i === assets.length && shitcoins && shitcoins.length > 0) {
+          return {
+            size: this.state.openShitcoins ? rowHeight * shitcoins.length : 0,
+            type: 'SHITCOINS_ROW',
+          };
+        } else if (
+          (i === assets.length || i === assets.length + 1) &&
+          savings &&
+          savings.length > 0
+        ) {
           return {
             size: this.state.openSavings ? rowHeight * savings.length : 0,
             type: 'SAVINGS_ROW',
@@ -80,14 +95,20 @@ class SendAssetList extends React.Component {
           if (
             this.state.openCards[
               uniqueTokens[
-                i - allAssets.length - (savings && savings.length > 0 ? 1 : 0)
+                i -
+                  assets.length -
+                  (savings && savings.length > 0 ? 1 : 0) -
+                  (shitcoins && shitcoins.length > 0 ? 1 : 0)
               ].familyId
             ]
           ) {
             return {
               size:
                 uniqueTokens[
-                  i - allAssets.length - (savings && savings.length > 0 ? 1 : 0)
+                  i -
+                    assets.length -
+                    (savings && savings.length > 0 ? 1 : 0) -
+                    (shitcoins && shitcoins.length > 0 ? 1 : 0)
                 ].data.length + 1,
               type: 'COLLECTIBLE_ROW',
             };
@@ -102,6 +123,12 @@ class SendAssetList extends React.Component {
           dim.height = rowHeight;
         } else if (type === 'COIN_ROW_LAST') {
           dim.height = rowHeight + dividerHeight;
+        } else if (type.type === 'SHITCOINS_ROW') {
+          dim.height =
+            type.size -
+            (this.state.openShitcoins ? 0 : 10) +
+            familyHeaderHeight +
+            (savings && savings.length > 0 ? 0 : dividerHeight);
         } else if (type.type === 'SAVINGS_ROW') {
           dim.height = type.size + familyHeaderHeight + dividerHeight;
         } else if (type.type === 'COLLECTIBLE_ROW') {
@@ -176,6 +203,15 @@ class SendAssetList extends React.Component {
     this.setState({ openSavings: newOpenSavings });
   };
 
+  changeOpenShitcoins = () => {
+    const { openShitcoins } = this.state;
+    LayoutAnimation.configureNext(
+      LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+    );
+    const newOpenShitcoins = !openShitcoins;
+    this.setState({ openShitcoins: newOpenShitcoins });
+  };
+
   mapTokens = collectibles => {
     const items = collectibles.map(collectible => {
       const onPress = () => {
@@ -208,6 +244,23 @@ class SendAssetList extends React.Component {
         <SendSavingsCoinRow
           key={token.address}
           item={token}
+          onPress={onPress}
+        />
+      );
+    });
+    return items;
+  };
+
+  mapShitcoins = shitcoins => {
+    const items = shitcoins.map(token => {
+      const onPress = () => {
+        this.props.onSelectAsset(token);
+      };
+      return (
+        <SendCoinRow
+          top={0}
+          key={token.uniqueId}
+          {...token}
           onPress={onPress}
         />
       );
@@ -258,11 +311,28 @@ class SendAssetList extends React.Component {
     </View>
   );
 
+  shitcoinsRenderItem = item => (
+    <View marginTop={10}>
+      <SavingsListHeader
+        title="Shitcoins"
+        emoji="moneybag"
+        isOpen={this.state.openShitcoins}
+        onPress={() => {
+          this.changeOpenShitcoins();
+        }}
+      />
+      {this.state.openShitcoins && this.mapShitcoins(item.data)}
+      {this.props.savings && this.props.savings.length > 0 ? null : <Divider />}
+    </View>
+  );
+
   _renderRow(type, data) {
     if (type === 'COIN_ROW') {
       return this.balancesRenderItem(data);
     } else if (type === 'COIN_ROW_LAST') {
       return this.balancesRenderLastItem(data);
+    } else if (type.type === 'SHITCOINS_ROW') {
+      return this.shitcoinsRenderItem(data);
     } else if (type.type === 'SAVINGS_ROW') {
       return this.savingsRenderItem(data);
     } else if (type.type === 'COLLECTIBLE_ROW') {
