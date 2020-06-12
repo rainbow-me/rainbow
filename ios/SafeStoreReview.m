@@ -31,16 +31,13 @@
 
 -(id)init:(UIWindow*)owner
 {
-  NSLog(@"@#$@#inti$@");
   self = [super init];
   self.owner = owner;
   [[NSNotificationCenter defaultCenter] postNotificationName:UIWindowDidBecomeVisibleNotification object:self];
   return self;
-  
 }
 
 @end
-
 
 
 @implementation UIWindow (DismissNotification)
@@ -93,7 +90,6 @@ static NSString* partialDescForStoreReviewWindow =  @"SKStore";
 @end
 
 
-
 @interface RainbowRequestReviewManager : NSObject <RCTBridgeModule>
 @end
 
@@ -137,7 +133,6 @@ RCT_EXPORT_METHOD(requestReview:(RCTResponseSenderBlock)callback) {
       _callback = nil;
     }
   });
-  
 }
 
 @end
