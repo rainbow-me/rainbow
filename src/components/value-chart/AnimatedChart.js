@@ -4,6 +4,7 @@ import * as shape from 'd3-shape';
 import { maxBy, minBy } from 'lodash';
 import React, { Component } from 'react';
 import { Animated, View } from 'react-native';
+import { parsePath } from 'react-native-redash';
 import Svg, { Path } from 'react-native-svg';
 import { deviceUtils } from '../../utils';
 
@@ -11,7 +12,7 @@ const padding = 20;
 const additionalChartPadding = 999999;
 const width = deviceUtils.dimensions.width;
 
-export default class animations extends Component {
+export default class AnimatedChart extends Component {
   state = {
     animation: new Animated.Value(0),
   };
@@ -19,6 +20,7 @@ export default class animations extends Component {
   componentWillReceiveProps = nextProps => {
     if (nextProps.currentData?.points) {
       let data = nextProps.currentData.points;
+      data[data.length - 1].y = nextProps.currentValue;
 
       const maxValue = maxBy(data, 'y');
       const minValue = minBy(data, 'y');
@@ -48,6 +50,10 @@ export default class animations extends Component {
       ];
 
       const newLineShape = lineShape(data);
+
+      const path = parsePath(newLineShape);
+      nextProps.setCurrentPath(path);
+
       if (this.oldLineShape !== newLineShape) {
         let a, b;
         if (this.oldLineShape) {

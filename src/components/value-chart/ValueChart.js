@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { State } from 'react-native-gesture-handler';
 import Animated, { Clock, Easing, Value } from 'react-native-reanimated';
-import { contains, delay, timing } from 'react-native-redash';
+import { contains, delay, getPointAtLength, timing } from 'react-native-redash';
 import { deviceUtils } from '../../utils';
 import ActivityIndicator from '../ActivityIndicator';
 import { Centered, Column, Row } from '../layout';
@@ -19,6 +19,7 @@ const {
   onChange,
   block,
   event,
+  interpolate,
   cond,
   call,
   set,
@@ -27,6 +28,7 @@ const {
   lessThan,
   greaterThan,
   stopClock,
+  multiply,
 } = Animated;
 
 let allSegmentDividers = [];
@@ -261,7 +263,7 @@ export default class Chart extends PureComponent {
           x: x =>
             cond(
               and(greaterThan(x, 0), lessThan(x, width)),
-              set(this.touchX, x)
+              block([set(this.touchX, x)])
             ),
         },
       },
@@ -305,6 +307,7 @@ export default class Chart extends PureComponent {
 
   touchX = new Value(0);
   lastTouchX = new Value(0);
+  translateY = new Value(0);
 
   onPanGestureEvent = event(
     [
@@ -408,6 +411,16 @@ export default class Chart extends PureComponent {
               animatedValue={this.value}
               color={barColor}
               currentValue={currentValue}
+              setCurrentPath={path => {
+                this.dPath = path;
+                const length = interpolate(this.touchX, {
+                  inputRange: [20, width - 20],
+                  outputRange: [0, path.totalLength],
+                });
+                const { y } = getPointAtLength(path, length);
+                this.translateY = multiply(y, -1);
+                this.setState({});
+              }}
             />
           </Column>
           <Row height={180}>
@@ -426,6 +439,7 @@ export default class Chart extends PureComponent {
                   transform: [
                     {
                       translateX: Animated.add(this.touchX, new Value(-1.5)),
+                      translateY: this.translateY,
                     },
                   ],
                 },
