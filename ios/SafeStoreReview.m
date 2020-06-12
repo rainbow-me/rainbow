@@ -11,13 +11,6 @@
 #import <StoreKit/SKStoreReviewController.h>
 #import <objc/runtime.h>
 
-@interface MonitorObject:NSObject
-
-@property (nonatomic, weak) UIWindow* owner;
-
--(id)init:(UIWindow*)owner;
-
-@end
 
 
 @interface UIWindow (DismissNotification)
@@ -26,22 +19,11 @@
 
 @end
 
-@implementation MonitorObject
-
-
--(id)init:(UIWindow*)owner
-{
-  self = [super init];
-  self.owner = owner;
-  [[NSNotificationCenter defaultCenter] postNotificationName:UIWindowDidBecomeVisibleNotification object:self];
-  return self;
-}
-
-@end
-
-
 @implementation UIWindow (DismissNotification)
 
+
+
+static NSString* UIWindowDidBecomeVisibleReviewNotification = @"UIWindowDidBecomeVisibleNotification";
 static NSString* monitorObjectKey = @"monitorKey";
 static NSString* partialDescForStoreReviewWindow =  @"SKStore";
 + (void)load
@@ -81,9 +63,7 @@ static NSString* partialDescForStoreReviewWindow =  @"SKStore";
   
   if([self.description containsString:partialDescForStoreReviewWindow])
   {
-    MonitorObject *monObj = [[MonitorObject alloc] init:self];
-    objc_setAssociatedObject(self, &monitorObjectKey, monObj, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
+    [[NSNotificationCenter defaultCenter] postNotificationName:UIWindowDidBecomeVisibleReviewNotification object:self];
   }
 }
 
@@ -107,7 +87,7 @@ static NSString* partialDescForStoreReviewWindow =  @"SKStore";
   if (self) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(windowDidBecomeVisibleNotification:)
-                                                 name:UIWindowDidBecomeVisibleNotification
+                                                 name:UIWindowDidBecomeVisibleReviewNotification
                                                object:nil];
   }
   return self;
