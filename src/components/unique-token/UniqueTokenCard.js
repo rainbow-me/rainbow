@@ -1,19 +1,17 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import stylePropType from 'react-style-proptype';
-import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
+import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
-import { withFabSendAction } from '../../hoc';
-import { colors, shadow } from '../../styles';
+import { colors, shadow as shadowUtil } from '../../styles';
+import { magicMemo } from '../../utils';
 import Highlight from '../Highlight';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
 import UniqueTokenImage from './UniqueTokenImage';
 
 const UniqueTokenCardBorderRadius = 18;
+const UniqueTokenCardShadow = [0, 2, 3, colors.dark, 0.08];
 
 const Container = styled(ButtonPressAnimation)`
-  ${shadow.build(0, 2, 3, colors.dark, 0.08)};
+  ${({ shadow }) => shadowUtil.build(...shadow)};
 `;
 
 const Content = styled.View`
@@ -24,27 +22,33 @@ const Content = styled.View`
 `;
 
 const UniqueTokenCard = ({
-  borderEnabled,
+  borderEnabled = true,
   disabled,
-  enableHapticFeedback,
+  enableHapticFeedback = true,
   height,
   highlight,
   item: { background, image_preview_url, ...item },
   onPress,
   resizeMode,
-  scaleTo,
-  shadowStyle,
+  scaleTo = 0.96,
+  shadow = UniqueTokenCardShadow,
   style,
   width,
   ...props
 }) => {
+  const handlePress = useCallback(() => {
+    if (onPress) {
+      onPress(item);
+    }
+  }, [item, onPress]);
+
   return (
     <Container
       disabled={disabled}
       enableHapticFeedback={enableHapticFeedback}
-      onPress={onPress}
+      onPress={handlePress}
       scaleTo={scaleTo}
-      style={shadowStyle}
+      shadow={shadow}
     >
       <Content {...props} height={height} style={style} width={width}>
         <UniqueTokenImage
@@ -69,40 +73,10 @@ const UniqueTokenCard = ({
   );
 };
 
-UniqueTokenCard.propTypes = {
-  borderEnabled: PropTypes.bool,
-  disabled: PropTypes.bool,
-  enableHapticFeedback: PropTypes.bool,
-  height: PropTypes.number,
-  highlight: PropTypes.bool,
-  item: PropTypes.shape({
-    background: PropTypes.string,
-    image_preview_url: PropTypes.string,
-  }),
-  onPress: PropTypes.func,
-  resizeMode: PropTypes.string,
-  scaleTo: PropTypes.number,
-  shadowStyle: stylePropType,
-  size: PropTypes.number,
-  style: stylePropType,
-  width: PropTypes.number,
-};
-
-UniqueTokenCard.defaultProps = {
-  borderEnabled: true,
-  enableHapticFeedback: true,
-  scaleTo: 0.96,
-};
-
-export default compose(
-  withFabSendAction,
-  withHandlers({
-    onPress: ({ item, onPress }) => () => {
-      if (onPress) {
-        onPress(item);
-      }
-    },
-  }),
-  withProps(({ item: { uniqueId } }) => ({ uniqueId })),
-  onlyUpdateForKeys(['height', 'highlight', 'style', 'uniqueId', 'width'])
-)(UniqueTokenCard);
+export default magicMemo(UniqueTokenCard, [
+  'height',
+  'highlight',
+  'item.uniqueId',
+  'style',
+  'width',
+]);

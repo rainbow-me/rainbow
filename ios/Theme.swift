@@ -10,6 +10,9 @@ extension UIColor {
     struct Transactions {
       static let appleBlue = UIColor(red:0.05, green:0.46, blue:0.99, alpha:1.00)
       static let blueGreyDark = UIColor(red:0.24, green:0.26, blue:0.32, alpha:1.0)
+      static let blueGreyDark30 = UIColor(red:0.24, green:0.26, blue:0.32, alpha:0.3)
+      static let blueGreyDark35 = UIColor(red:0.24, green:0.26, blue:0.32, alpha:0.35)
+      static let blueGreyDark40 = UIColor(red:0.24, green:0.26, blue:0.32, alpha:0.4)
       static let blueGreyDark50 = UIColor(red:0.24, green:0.26, blue:0.32, alpha:0.5)
       static let blueGreyDark70 = UIColor(red:0.24, green:0.26, blue:0.32, alpha:0.7)
       static let dark = UIColor(red:0.15, green:0.16, blue:0.18, alpha:1.0)

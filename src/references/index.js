@@ -3,6 +3,7 @@ import savingAssets from './compound/saving-assets.json';
 import tokenOverridesData from './token-overrides.json';
 import uniswapPairsData from './uniswap/uniswap-pairs.json';
 
+export { default as chains } from './chains.json';
 export { default as compoundCERC20ABI } from './compound/compound-cerc20-abi.json';
 export { default as compoundCETHABI } from './compound/compound-ceth-abi.json';
 export { default as erc20ABI } from './erc20-abi.json';

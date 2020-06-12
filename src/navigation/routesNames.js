@@ -2,7 +2,8 @@ const Routes = {
   ADD_CASH_SCREEN_NAVIGATOR: 'AddCashSheetNavigator',
   ADD_CASH_SHEET: 'AddCashSheet',
   AVATAR_BUILDER: 'AvatarBuilder',
-  CHANGE_WALLET_MODAL: 'ChangeWalletModal',
+  CHANGE_WALLET_SHEET: 'ChangeWalletSheet',
+  CHANGE_WALLET_SHEET_NAVIGATOR: 'ChangeWalletSheetNavigator',
   CONFIRM_REQUEST: 'ConfirmRequest',
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',
   EXAMPLE_SCREEN: 'ExampleScreen',
@@ -30,7 +31,8 @@ const Routes = {
   SUPPORTED_COUNTRIES_MODAL_SCREEN: 'SupportedCountriesModalScreen',
   SWAP_DETAILS_SCREEN: 'SwapDetailsScreen',
   SWIPE_LAYOUT: 'SwipeLayout',
-  WALLET_CONNECT_CONFIRMATION_MODAL: 'WalletConnectConfirmationModal',
+  WALLET_CONNECT_APPROVAL_SHEET: 'WalletConnectApprovalSheet',
+  WALLET_CONNECT_REDIRECT_SHEET: 'WalletConnectRedirectSheet',
   WALLET_SCREEN: 'WalletScreen',
 };
 

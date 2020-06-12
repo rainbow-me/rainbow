@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
@@ -18,6 +18,7 @@ import { Sheet, SheetActionButton } from '../components/sheet';
 import { isSymbolStablecoin } from '../helpers/savings';
 import { convertAmountToNativeDisplay } from '../helpers/utilities';
 import { useAccountSettings, useWallets } from '../hooks';
+import { useNavigation } from '../navigation/Navigation';
 import Routes from '../navigation/routesNames';
 import { colors, padding } from '../styles';
 

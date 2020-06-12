@@ -172,16 +172,22 @@ android {
         multiDexEnabled true
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        
+        manifestPlaceholders = [
+		    BRANCH_KEY: "$System.env.BRANCH_KEY",
+	    ]
+        
         ndk {
             abiFilters 'armeabi-v7a', 'x86'
         }
+    
     }
 
     dexOptions {
         preDexLibraries true
         javaMaxHeapSize "2g" // Use gig increments depending on needs
         incremental true
-    }
+    } 
 
     splits {
         abi {
@@ -208,6 +214,7 @@ android {
             keyPassword pass
         }
     }
+
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
@@ -226,8 +233,6 @@ android {
         pickFirst "lib/arm64-v8a/libc++_shared.so"
         pickFirst "lib/x86/libc++_shared.so"
         pickFirst "lib/x86_64/libc++_shared.so"
-        pickFirst 'lib/x86_64/libjsc.so'
-        pickFirst 'lib/arm64-v8a/libjsc.so'
     }
 
 
@@ -252,18 +257,13 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02'
-
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.fbjni'
+      exclude group:'com.facebook.fbjni'
     }
-
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
     }
-
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
     }

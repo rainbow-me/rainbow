@@ -136,11 +136,7 @@ class SendHeader extends PureComponent {
   };
 
   navigateToContact = (contact = {}) => {
-    const { navigation, recipient } = this.props;
-    const refocusCallback =
-      this.props.selectedInputId &&
-      this.props.selectedInputId.isFocused() &&
-      this.props.selectedInputId.focus;
+    const { navigation, recipient, selectedInputId } = this.props;
 
     let color = get(contact, 'color');
     if (!isNumber(color)) {
@@ -154,7 +150,7 @@ class SendHeader extends PureComponent {
       asset: {},
       color,
       contact: isEmpty(contact.address) ? false : contact,
-      onRefocusInput: refocusCallback,
+      onRefocusInput: () => selectedInputId?.focus(),
       type: 'contact',
     });
   };

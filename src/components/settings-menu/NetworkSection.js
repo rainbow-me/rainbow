@@ -28,7 +28,7 @@ const NetworkSection = () => {
       await dispatch(settingsUpdateNetwork(network));
       InteractionManager.runAfterInteractions(async () => {
         await loadAccountData(network);
-        await initializeAccountData();
+        initializeAccountData();
         analytics.track('Changed network', { network });
       });
     },

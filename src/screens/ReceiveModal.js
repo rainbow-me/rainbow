@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import { toLower } from 'lodash';
 import React from 'react';
 import { Platform, Share } from 'react-native';
@@ -17,6 +16,7 @@ import {
 } from '../components/modal';
 import { Br, Monospace, Text } from '../components/text';
 import { useClipboard } from '../hooks';
+import { useNavigation } from '../navigation/Navigation';
 import { colors } from '../styles';
 import { haptics } from '../utils';
 

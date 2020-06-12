@@ -2,33 +2,24 @@ import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Linking, requireNativeComponent, View } from 'react-native';
+import { Linking, requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
-import {
-  isAvatarPickerAvailable,
-  isMultiwalletAvailable,
-} from '../../config/experimental';
+import { isAvatarPickerAvailable } from '../../config/experimental';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import { useAccountProfile } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../navigation/routesNames';
 import { removeRequest } from '../../redux/requests';
 import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
-import LoadingState from '../activity-list/LoadingState';
 import { FloatingEmojis } from '../floating-emojis';
-
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
-
-const formatAddress = address =>
-  address
-    ? abbreviations.address(address, 4, abbreviations.defaultNumCharsPerSection)
-    : '';
 
 const Container = styled.View`
   flex: 1;
-  margin-top: ${isMultiwalletAvailable ? 10 : 0};
+  margin-top: 0;
 `;
 
 const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
@@ -47,20 +38,14 @@ const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
 `;
 
 const TransactionList = ({
-  accountAddress,
-  accountColor,
-  accountENS,
-  accountName,
   addCashAvailable,
   contacts,
-  header,
   initialized,
   isLoading,
   network,
   requests,
   transactions,
 }) => {
-  const navigation = useNavigation();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
   const setOnNewEmoji = useCallback(
@@ -68,24 +53,31 @@ const TransactionList = ({
     []
   );
   const dispatch = useDispatch();
+  const { navigate, isFocused } = useNavigation();
+  const {
+    accountAddress,
+    accountColor,
+    accountSymbol,
+    accountName,
+  } = useAccountProfile();
 
   const onAddCashPress = useCallback(() => {
-    navigation.navigate(Routes.ADD_CASH_SCREEN_NAVIGATOR);
+    navigate(Routes.ADD_CASH_SCREEN_NAVIGATOR);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-  }, [navigation]);
+  }, [navigate]);
 
   const onAvatarPress = useCallback(() => {
-    navigation.navigate(Routes.AVATAR_BUILDER, {
+    navigate(Routes.AVATAR_BUILDER, {
       accountColor,
       accountName,
     });
-  }, [accountColor, accountName, navigation]);
+  }, [accountColor, accountName, navigate]);
 
   const onReceivePress = useCallback(() => {
-    navigation.navigate(Routes.RECEIVE_MODAL);
-  }, [navigation]);
+    navigate(Routes.RECEIVE_MODAL);
+  }, [navigate]);
 
   const onRequestExpire = useCallback(
     e => {
@@ -100,13 +92,13 @@ const TransactionList = ({
     e => {
       const { index } = e.nativeEvent;
       const item = requests[index];
-      navigation.navigate({
+      navigate({
         params: { transactionDetails: item },
         routeName: Routes.CONFIRM_REQUEST,
       });
       return;
     },
-    [navigation, requests]
+    [navigate, requests]
   );
 
   const onTransactionPress = useCallback(
@@ -152,7 +144,7 @@ const TransactionList = ({
           },
           buttonIndex => {
             if (!isPurchasing && buttonIndex === 0) {
-              navigation.navigate(Routes.MODAL_SCREEN, {
+              navigate(Routes.MODAL_SCREEN, {
                 address: contactAddress,
                 asset: item,
                 color: contactColor,
@@ -173,7 +165,7 @@ const TransactionList = ({
         );
       }
     },
-    [contacts, navigation, network, transactions]
+    [contacts, navigate, network, transactions]
   );
 
   const onCopyAddressPress = useCallback(
@@ -188,9 +180,9 @@ const TransactionList = ({
     [accountAddress]
   );
 
-  const onCopyTooltipPress = useCallback(() => {
-    Clipboard.setString(accountENS || accountAddress);
-  }, [accountAddress, accountENS]);
+  const onAccountNamePress = useCallback(() => {
+    navigate(Routes.CHANGE_WALLET_SHEET);
+  }, [navigate]);
 
   const data = useMemo(
     () => ({
@@ -200,34 +192,31 @@ const TransactionList = ({
     [requests, transactions]
   );
 
-  if ((!initialized && !navigation.isFocused()) || isLoading) {
-    return (
-      <View style={isMultiwalletAvailable ? { marginTop: 20 } : null}>
-        <LoadingState>{header}</LoadingState>
-      </View>
-    );
-  }
-
-  const addressOrEns = accountENS || formatAddress(accountAddress);
+  const loading = useMemo(() => (!initialized && !isFocused()) || isLoading, [
+    initialized,
+    isLoading,
+    isFocused,
+  ]);
 
   return (
     <Container>
       <Container
-        accountAddress={addressOrEns}
+        accountAddress={accountName}
         accountColor={colors.avatarColor[accountColor]}
-        accountName={accountName}
+        accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}
         data={data}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
+        onAccountNamePress={onAccountNamePress}
         onAddCashPress={onAddCashPress}
         onAvatarPress={onAvatarPress}
         onCopyAddressPress={onCopyAddressPress}
-        onCopyTooltipPress={onCopyTooltipPress}
         onReceivePress={onReceivePress}
         onRequestExpire={onRequestExpire}
         onRequestPress={onRequestPress}
         onTransactionPress={onTransactionPress}
+        isLoading={loading}
       />
       <FloatingEmojisRegion
         setOnNewEmoji={setOnNewEmoji}
@@ -238,13 +227,8 @@ const TransactionList = ({
 };
 
 TransactionList.propTypes = {
-  accountAddress: PropTypes.string,
-  accountColor: PropTypes.number,
-  accountENS: PropTypes.string,
-  accountName: PropTypes.string,
   addCashAvailable: PropTypes.bool,
   contacts: PropTypes.array,
-  header: PropTypes.node,
   initialized: PropTypes.bool,
   isLoading: PropTypes.bool,
   network: PropTypes.string,

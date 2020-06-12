@@ -34,12 +34,7 @@ const ModalHeader = ({
 }) => (
   <Container {...props}>
     {showBackButton && (
-      <ModalHeaderButton
-        label="Settings"
-        onPress={onPressBack}
-        showBackArrow
-        side="left"
-      />
+      <ModalHeaderButton label="Settings" onPress={onPressBack} side="left" />
     )}
     <TitleContainer>
       <TruncatedText

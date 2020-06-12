@@ -5,7 +5,6 @@ const SheetTitle = props => (
   <Text
     align="center"
     letterSpacing="roundedMedium"
-    lineHeight="loose"
     size="large"
     weight="bold"
     {...props}

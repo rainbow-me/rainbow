@@ -1,11 +1,17 @@
-import PropTypes from 'prop-types';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
-import { colors } from '../../styles';
+import { colors, position } from '../../styles';
+import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
+
+const Button = styled(Centered).attrs({
+  scaleTo: 0.8,
+})`
+  ${({ size }) => position.size(size)};
+`;
 
 const Container = styled.View`
   bottom: 0;
@@ -47,35 +53,25 @@ const transition = (
 );
 
 const ClearInputDecorator = ({ inputHeight, isVisible, onPress }) => {
-  const ref = useRef();
+  const transitionRef = useRef();
 
-  if (ref.current) {
-    ref.current.animateNextTransition();
-  }
+  useEffect(() => transitionRef.current?.animateNextTransition(), [isVisible]);
 
   return (
     <Container>
       {isVisible && (
-        <Transitioning.View ref={ref} transition={transition}>
-          <ButtonPressAnimation onPress={onPress} scaleTo={0.8}>
-            <Centered height={inputHeight} width={inputHeight}>
-              <Icon
-                color={colors.blueGreyDark}
-                name="clearInput"
-                opacity={0.3}
-              />
-            </Centered>
-          </ButtonPressAnimation>
+        <Transitioning.View ref={transitionRef} transition={transition}>
+          <Button
+            as={ButtonPressAnimation}
+            onPress={onPress}
+            size={inputHeight}
+          >
+            <Icon color={colors.blueGreyDark} name="clearInput" opacity={0.3} />
+          </Button>
         </Transitioning.View>
       )}
     </Container>
   );
 };
 
-ClearInputDecorator.propTypes = {
-  inputHeight: PropTypes.number,
-  isVisible: PropTypes.bool,
-  onPress: PropTypes.func,
-};
-
-export default React.memo(ClearInputDecorator);
+export default magicMemo(ClearInputDecorator, 'isVisible');

@@ -3,7 +3,7 @@ import { get } from 'lodash';
 import { useCallback, useEffect, useRef } from 'react';
 import { TextInput } from 'react-native';
 import useInteraction from './useInteraction';
-import useMagicFocus from './useMagicFocus';
+import useMagicAutofocus from './useMagicAutofocus';
 import usePrevious from './usePrevious';
 
 const getNativeTag = field => get(field, '_nativeTag');
@@ -17,9 +17,9 @@ export default function useSwapInputRefs({ inputCurrency, outputCurrency }) {
   const outputFieldRef = useRef();
 
   // TODO nav mike
-  const [lastFocusedInput, handleFocus] = useMagicFocus(inputFieldRef.current);
-
-  const [createRefocusInteraction] = useInteraction();
+  const [handleFocus, lastFocusedInput] = useMagicAutofocus(
+    inputFieldRef.current
+  );
 
   const findNextFocused = useCallback(
     ({ inputCurrency, outputCurrency }) => {
@@ -48,6 +48,7 @@ export default function useSwapInputRefs({ inputCurrency, outputCurrency }) {
     [lastFocusedInput]
   );
 
+  const [createRefocusInteraction] = useInteraction();
   const handleRefocusLastInput = useCallback(() => {
     createRefocusInteraction(() => {
       if (isScreenFocused) {

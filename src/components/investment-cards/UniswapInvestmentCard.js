@@ -1,10 +1,10 @@
-import { useNavigation } from '@react-navigation/native';
 import { floor } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { useAccountSettings, useOpenInvestmentCards } from '../../hooks';
+import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../navigation/routesNames';
 import { colors, padding } from '../../styles';
 import Divider from '../Divider';

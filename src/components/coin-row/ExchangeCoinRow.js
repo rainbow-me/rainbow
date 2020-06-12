@@ -1,11 +1,10 @@
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import styled, { css } from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
 import { padding } from '../../styles';
-import { haptics } from '../../utils';
+import { haptics, neverRerender } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FloatingEmojis } from '../floating-emojis';
@@ -18,13 +17,6 @@ import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 
 const CoinRowPaddingTop = 11;
 const CoinRowPaddingBottom = 11;
-
-const BalanceColumn = styled(ColumnWithMargins).attrs({
-  align: 'end',
-  margin: 4,
-})`
-  padding-right: 19;
-`;
 
 const FloatingFavoriteEmojis = styled(FloatingEmojis).attrs({
   centerVertically: true,
@@ -91,12 +83,12 @@ const ExchangeCoinRow = ({
         topRowRender={TopRow}
       >
         {showBalance && (
-          <BalanceColumn>
+          <ColumnWithMargins align="end" margin={4}>
             <BalanceText>
               {get(item, 'native.balance.display', '–')}
             </BalanceText>
             <BottomRowText>{get(item, 'balance.display', '')}</BottomRowText>
-          </BalanceColumn>
+          </ColumnWithMargins>
         )}
         {showFavoriteButton && (
           <FloatingFavoriteEmojis deviceWidth={deviceWidth}>
@@ -123,17 +115,4 @@ const ExchangeCoinRow = ({
   );
 };
 
-ExchangeCoinRow.propTypes = {
-  item: PropTypes.shape({
-    address: PropTypes.string,
-    favorite: PropTypes.bool,
-    symbol: PropTypes.string,
-  }),
-  onFavoriteAsset: PropTypes.func,
-  onPress: PropTypes.func,
-  showBalance: PropTypes.bool,
-  showFavoriteButton: PropTypes.bool,
-};
-
-const neverRerender = () => true;
-export default React.memo(ExchangeCoinRow, neverRerender);
+export default neverRerender(ExchangeCoinRow);

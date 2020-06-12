@@ -1,10 +1,10 @@
 import { useCallback, useRef } from 'react';
 import { findNodeHandle, TextInput } from 'react-native';
-import useNavigationWillFocusEffect from './useNavigationWillFocusEffect';
+import { useNavigationEvents } from 'react-navigation-hooks';
 
 const { currentlyFocusedField, focusTextInput } = TextInput.State;
 
-export default function useMagicFocus(autofocusTarget) {
+export default function useMagicAutofocus(autofocusTarget) {
   const focus = useRef(null);
 
   const handleFocus = useCallback(({ currentTarget }) => {
@@ -19,8 +19,23 @@ export default function useMagicFocus(autofocusTarget) {
     }
   }, [autofocusTarget]);
 
-  if (!focus.current) magicallyFocus();
-  useNavigationWillFocusEffect(magicallyFocus);
+  const handleNavigationEvents = useCallback(
+    ({ action: { type } }) => {
+      if (
+        // fake version of 'didFocus'
+        type === 'Navigation/COMPLETE_TRANSITION' ||
+        // fake version of 'willFocus'
+        (!focus.current && type === 'Navigation/NAVIGATE')
+      ) {
+        magicallyFocus();
+      }
+    },
+    [focus, magicallyFocus]
+  );
 
-  return [focus, handleFocus];
+  // ✨️ Make the magic happen
+  if (!focus.current) magicallyFocus();
+  useNavigationEvents(handleNavigationEvents);
+
+  return [handleFocus, focus];
 }

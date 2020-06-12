@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
@@ -13,6 +12,7 @@ import {
   formatSavingsAmount,
 } from '../../helpers/savings';
 import { useDimensions } from '../../hooks';
+import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../navigation/routesNames';
 import { colors, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';

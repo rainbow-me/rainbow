@@ -1,9 +1,11 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import styled from 'styled-components/primitives';
 import Caret from '../../assets/family-dropdown-arrow.png';
-import { colors } from '../../styles';
+import { useOpenSmallBalances } from '../../hooks';
+import { colors, padding } from '../../styles';
+import { magicMemo } from '../../utils';
 import {
   ButtonPressAnimation,
   OpacityToggler,
@@ -13,81 +15,95 @@ import {
 import { Row } from '../layout';
 import CoinDividerButtonLabel from './CoinDividerButtonLabel';
 
+const closedWidth = 52.5;
+
+const CaretIcon = styled(FastImage).attrs({
+  source: Caret,
+  tintColor: colors.blueGreyDark,
+})`
+  height: 17;
+  width: 9;
+`;
+
+const CaretContainer = styled.View`
+  opacity: 0.6;
+  padding-bottom: 1;
+`;
+
+const ContainerButton = styled(ButtonPressAnimation).attrs({
+  scaleTo: 0.9,
+})`
+  width: ${({ isSmallBalancesOpen }) =>
+    isSmallBalancesOpen ? 80 : closedWidth};
+`;
+
+const Content = styled(Row).attrs({
+  align: 'center',
+  justify: 'space-between',
+})`
+  ${padding(0, 10)};
+  border-radius: ${RoundButtonSizeToggler.capSize / 2};
+  height: ${({ height }) => height};
+  width: ${closedWidth};
+`;
+
 const CoinDividerOpenButton = ({
-  assetsAmount,
   coinDividerHeight,
   initialState,
-  isCoinListEdited,
+  isVisible,
   node,
-  openSmallBalances,
-  setOpenSmallBalances,
-}) => (
-  <ButtonPressAnimation
-    onPress={() => setOpenSmallBalances(!openSmallBalances)}
-    scaleTo={0.9}
-    style={{ width: openSmallBalances ? 80 : 52.5 }}
-  >
-    <OpacityToggler
-      endingOpacity={0}
-      startingOpacity={1}
-      isVisible={isCoinListEdited || assetsAmount === 0}
-    >
-      <Row
-        align="center"
-        borderRadius={RoundButtonSizeToggler.capSize / 2}
-        height={coinDividerHeight}
-        justify="space-between"
-        width={52.5}
-        paddingHorizontal={10}
-      >
-        <RoundButtonSizeToggler
-          animationNode={node}
-          endingWidth={28}
-          isAbsolute
-          reversed={!initialState}
-          startingWidth={3}
-          toggle={openSmallBalances}
-        />
-        <View>
-          <CoinDividerButtonLabel
-            isVisible={openSmallBalances}
-            label="All"
-            node={node}
-            steps={[1, 0]}
-          />
-          <CoinDividerButtonLabel
-            isVisible={openSmallBalances}
-            label="Less"
-            node={node}
-            steps={[0, 1]}
-          />
-        </View>
-        <View style={{ opacity: 0.6, paddingBottom: 1 }}>
-          <RotationArrow
-            endingOffset={20}
-            endingPosition={-90}
-            isOpen={openSmallBalances}
-          >
-            <FastImage
-              source={Caret}
-              style={{ height: 17, width: 9 }}
-              tintColor={colors.blueGreyDark}
-            />
-          </RotationArrow>
-        </View>
-      </Row>
-    </OpacityToggler>
-  </ButtonPressAnimation>
-);
+}) => {
+  const {
+    isSmallBalancesOpen,
+    toggleOpenSmallBalances,
+  } = useOpenSmallBalances();
 
-CoinDividerOpenButton.propTypes = {
-  assetsAmount: PropTypes.number,
-  coinDividerHeight: PropTypes.number,
-  initialState: PropTypes.bool,
-  isCoinListEdited: PropTypes.bool,
-  node: PropTypes.object,
-  openSmallBalances: PropTypes.bool,
-  setOpenSmallBalances: PropTypes.func,
+  return (
+    <ContainerButton
+      isSmallBalancesOpen={isSmallBalancesOpen}
+      onPress={toggleOpenSmallBalances}
+    >
+      <OpacityToggler
+        endingOpacity={0}
+        isVisible={isVisible}
+        startingOpacity={1}
+      >
+        <Content height={coinDividerHeight}>
+          <RoundButtonSizeToggler
+            animationNode={node}
+            endingWidth={28}
+            isAbsolute
+            reversed={!initialState}
+            startingWidth={3}
+            toggle={isSmallBalancesOpen}
+          />
+          <View>
+            <CoinDividerButtonLabel
+              isVisible={isSmallBalancesOpen}
+              label="All"
+              node={node}
+              steps={[1, 0]}
+            />
+            <CoinDividerButtonLabel
+              isVisible={isSmallBalancesOpen}
+              label="Less"
+              node={node}
+              steps={[0, 1]}
+            />
+          </View>
+          <CaretContainer>
+            <RotationArrow
+              endingOffset={20}
+              endingPosition={-90}
+              isOpen={isSmallBalancesOpen}
+            >
+              <CaretIcon />
+            </RotationArrow>
+          </CaretContainer>
+        </Content>
+      </OpacityToggler>
+    </ContainerButton>
+  );
 };
 
-export default CoinDividerOpenButton;
+export default magicMemo(CoinDividerOpenButton, 'isVisible');

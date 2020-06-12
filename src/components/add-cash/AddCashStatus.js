@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import { isEmpty, toLower } from 'lodash';
 import LottieView from 'lottie-react-native';
 import PropTypes from 'prop-types';
@@ -14,6 +13,7 @@ import {
   WYRE_ORDER_STATUS_TYPES,
 } from '../../helpers/wyreStatusTypes';
 import { useDimensions, usePrevious, useTimeout } from '../../hooks';
+import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../navigation/routesNames';
 import { getErrorOverride } from '../../references/wyre';
 import { position } from '../../styles';

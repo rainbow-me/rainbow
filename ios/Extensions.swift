@@ -200,24 +200,90 @@ extension CALayer {
     }
 }
 
-@IBDesignable class AddCashGradient: UIView {
+extension UITableView {
+    func showEmptyState(_ message: String) {
+        let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: self.bounds.size.width, height: self.bounds.size.height))
+        let emoji = "🏝️"
+        let paragraphStyle = NSMutableParagraphStyle()
+        messageLabel.text = "\n\n\n\n\n\n\n" + emoji + "\n" + message
+        messageLabel.numberOfLines = 0
+        messageLabel.textAlignment = .center
+        messageLabel.textColor = UIColor.RainbowTheme.Transactions.blueGreyDark35
+        messageLabel.sizeToFit()
+        paragraphStyle.alignment = .center
+        paragraphStyle.lineHeightMultiple = 1.25
+        
+        let emojiRange = (messageLabel.text! as NSString).range(of: emoji)
+        let attributedString = NSMutableAttributedString(string: messageLabel.text!, attributes: [NSAttributedString.Key.font : UIFont(name: "SFRounded-Semibold", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .semibold), NSAttributedString.Key.kern : 0.5, NSAttributedString.Key.paragraphStyle : paragraphStyle])
+        attributedString.setAttributes([NSAttributedString.Key.font : UIFont.systemFont(ofSize: 32)], range: emojiRange)
+        messageLabel.attributedText = attributedString
+        
+        self.backgroundView = messageLabel
+    }
+
+    func restore() {
+        self.backgroundView = nil
+    }
+}
+
+@IBDesignable class AddCashButton: UIView {
     @IBInspectable var innerColor: UIColor = UIColor.red
     @IBInspectable var middleColor: UIColor = UIColor.green
     @IBInspectable var outerColor: UIColor = UIColor.blue
-    @IBInspectable var cornerRadius: CGFloat = 0
+    @IBInspectable var enableShadows: Bool = false
 
-    override func draw(_ rect: CGRect) {
-        let path = UIBezierPath(roundedRect: rect, cornerRadius: cornerRadius)
-        path.addClip()
-      
-        let colors = [innerColor.cgColor, middleColor.cgColor, outerColor.cgColor] as CFArray
-        let endRadius = frame.width
-        let center = CGPoint(x: bounds.size.width, y: bounds.size.height / 2)
-        let locations = [CGFloat(0), CGFloat(0.635483871), CGFloat(1)]
-        let gradient = CGGradient(colorsSpace: nil, colors: colors, locations: locations)
-        let context = UIGraphicsGetCurrentContext()
-        let options: CGGradientDrawingOptions = [.drawsBeforeStartLocation, .drawsAfterEndLocation]
-
-        context?.drawRadialGradient(gradient!, startCenter: center, startRadius: 0.0, endCenter: center, endRadius: endRadius, options: options)
+    override func layoutSubviews() {
+        let gradientContainer = CALayer()
+        gradientContainer.frame = bounds
+        gradientContainer.cornerRadius = bounds.size.height / 2
+        gradientContainer.masksToBounds = true
+        gradientContainer.zPosition = -1
+        
+        let gradient = CAGradientLayer()
+        let yPosition = (bounds.size.width - bounds.size.height) / -2
+        let yRadius = 0.5 + 123 / 156
+        gradient.type = .radial
+        gradient.frame = CGRect(x: 0, y: yPosition, width: bounds.size.width, height: bounds.size.width)
+        gradient.colors = [innerColor.cgColor, middleColor.cgColor, outerColor.cgColor]
+        gradient.locations = [0, 0.544872, 1]
+        gradient.startPoint = CGPoint(x: 1, y: 0.5)
+        gradient.endPoint = CGPoint(x: 2, y: yRadius)
+        gradientContainer.addSublayer(gradient)
+        
+        self.layer.addSublayer(gradientContainer)
+        
+        if enableShadows {
+            let gradientShadowMask = CAShapeLayer()
+            let gradientShadowFrame = CGRect(x: bounds.size.width / 2, y: bounds.size.width - bounds.size.height / 2, width: bounds.size.width, height: bounds.size.height)
+            let gradientShadowRect = UIBezierPath(roundedRect: gradientShadowFrame, cornerRadius: bounds.size.height / 2)
+            gradientShadowMask.shadowOffset = CGSize(width: 0, height: 5)
+            gradientShadowMask.shadowOpacity = 0.4
+            gradientShadowMask.shadowPath = gradientShadowRect.cgPath
+            gradientShadowMask.shadowRadius = 7.5
+            
+            let gradientShadow = CAGradientLayer()
+            let yPosition = -(bounds.size.width - bounds.size.height / 2)
+            let yRadius = 0.5 + (123 / 156 / 2)
+            gradientShadow.type = .radial
+            gradientShadow.frame = CGRect(x: -bounds.size.width / 2, y: yPosition, width: bounds.size.width * 2, height: bounds.size.width * 2)
+            gradientShadow.colors = [innerColor.cgColor, middleColor.cgColor, outerColor.cgColor]
+            gradientShadow.locations = [0, 0.544872, 1]
+            gradientShadow.startPoint = CGPoint(x: 0.75, y: 0.5)
+            gradientShadow.endPoint = CGPoint(x: 1.25, y: yRadius)
+            gradientShadow.zPosition = -2
+            gradientShadow.mask = gradientShadowMask
+            
+            let shadow = CAShapeLayer()
+            let shadowRect = UIBezierPath(roundedRect: bounds, cornerRadius: bounds.size.height / 2)
+            shadow.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
+            shadow.shadowOffset = CGSize(width: 0, height: 10)
+            shadow.shadowOpacity = 0.2
+            shadow.shadowPath = shadowRect.cgPath
+            shadow.shadowRadius = 15
+            shadow.zPosition = -3
+            
+            self.layer.addSublayer(gradientShadow)
+            self.layer.addSublayer(shadow)
+        }
     }
 }

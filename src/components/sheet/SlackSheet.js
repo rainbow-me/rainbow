@@ -10,7 +10,6 @@ import SheetHandleFixedToTop, {
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   background-color: ${colors.white};
-  border-radius: ${({ borderRadius }) => borderRadius};
   bottom: 0;
   left: 0;
   overflow: hidden;
@@ -25,7 +24,7 @@ const Content = styled(ScrollView)`
 `;
 
 export default function SlackSheet({
-  borderRadius = 24,
+  borderRadius = 30,
   children,
   scrollEnabled = true,
   ...props

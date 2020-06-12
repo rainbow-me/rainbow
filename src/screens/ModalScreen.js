@@ -1,6 +1,5 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import React, { createElement } from 'react';
-import { StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
 import TouchableBackdrop from '../components/TouchableBackdrop';
@@ -11,6 +10,7 @@ import {
   WalletProfileCreator,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
+import { useNavigation } from '../navigation/Navigation';
 import { padding, position } from '../styles';
 
 const ModalTypes = {
@@ -32,7 +32,6 @@ export default function ModalScreen(props) {
 
   return (
     <Container insets={insets}>
-      <StatusBar barStyle="light-content" />
       <TouchableBackdrop onPress={goBack} />
       {createElement(ModalTypes[params.type], {
         ...params,

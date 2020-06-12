@@ -1,9 +1,8 @@
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { View } from 'react-primitives';
 import { compose } from 'recompact';
-import styled from 'styled-components/primitives';
+import styled, { css } from 'styled-components/primitives';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import {
   withCoinListEdited,
@@ -11,11 +10,10 @@ import {
   withEditOptions,
   withOpenBalances,
 } from '../../hoc';
-import { useDimensions } from '../../hooks';
 import { colors } from '../../styles';
 import { isNewValueForObjectPaths, isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { Column, FlexItem, Row } from '../layout';
+import { Column, FlexItem } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinCheckButton from './CoinCheckButton';
@@ -24,20 +22,29 @@ import CoinRow from './CoinRow';
 
 const editTranslateOffset = 32;
 
-const BalanceCoinRowExpandedStyles = `
+const formatPercentageString = percentString =>
+  percentString ? percentString.split('-').join('- ') : '-';
+
+const containerExpandedStyles = css`
   padding-bottom: 0;
   padding-top: 0;
+`;
+
+const BalanceCoinRowCoinCheckButton = styled(CoinCheckButton).attrs({
+  isAbsolute: true,
+})`
+  top: ${({ top }) => top};
+`;
+
+const Content = styled(ButtonPressAnimation)`
+  padding-left: ${({ isEditMode }) => (isEditMode ? editTranslateOffset : 0)};
 `;
 
 const PercentageText = styled(BottomRowText).attrs({
   align: 'right',
 })`
   ${({ isPositive }) => (isPositive ? `color: ${colors.green};` : null)};
-  margin-bottom: 0.5;
 `;
-
-const formatPercentageString = percentString =>
-  percentString ? percentString.split('-').join('- ') : '-';
 
 const BottomRow = ({ balance, isExpandedState, native }) => {
   const percentChange = get(native, 'change');
@@ -51,12 +58,16 @@ const BottomRow = ({ balance, isExpandedState, native }) => {
   return (
     <Fragment>
       <FlexItem flex={1}>
-        <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
+        <BottomRowText weight={isExpandedState ? 'medium' : 'regular'}>
+          {get(balance, 'display', '')}
+        </BottomRowText>
       </FlexItem>
       {!isExpandedState && (
-        <PercentageText isPositive={isPositive}>
-          {percentageChangeDisplay}
-        </PercentageText>
+        <View>
+          <PercentageText isPositive={isPositive}>
+            {percentageChangeDisplay}
+          </PercentageText>
+        </View>
       )}
     </Fragment>
   );
@@ -66,25 +77,28 @@ const TopRow = ({ isExpandedState, name, native, nativeCurrencySymbol }) => {
   const nativeDisplay = get(native, 'balance.display');
 
   return (
-    <Row align="center" justify="space-between">
+    <Fragment>
       <FlexItem flex={1}>
         <CoinName weight={isExpandedState ? 'semibold' : 'regular'}>
           {name}
         </CoinName>
       </FlexItem>
-      <BalanceText
-        color={nativeDisplay ? null : colors.blueGreyLight}
-        numberOfLines={1}
-        weight={isExpandedState ? 'medium' : 'regular'}
-      >
-        {nativeDisplay || `${nativeCurrencySymbol}0.00`}
-      </BalanceText>
-    </Row>
+      <View>
+        <BalanceText
+          color={nativeDisplay ? null : colors.blueGreyLight}
+          numberOfLines={1}
+          weight={isExpandedState ? 'medium' : 'regular'}
+        >
+          {nativeDisplay || `${nativeCurrencySymbol}0.00`}
+        </BalanceText>
+      </View>
+    </Fragment>
   );
 };
 
 const BalanceCoinRow = ({
   containerStyles,
+  firstCoinRowMarginTop,
   isCoinListEdited,
   isExpandedState,
   isFirstCoinRow,
@@ -96,9 +110,9 @@ const BalanceCoinRow = ({
   removeSelectedCoin,
   ...props
 }) => {
-  const { width: deviceWidth } = useDimensions();
   const [toggle, setToggle] = useState(false);
   const [previousPinned, setPreviousPinned] = useState(0);
+  const firstCoinRowCoinCheckMarginTop = firstCoinRowMarginTop + 9;
 
   useEffect(() => {
     if (toggle && (recentlyPinnedCount > previousPinned || !isCoinListEdited)) {
@@ -127,44 +141,34 @@ const BalanceCoinRow = ({
 
   return (
     <Column flex={1} justify={isFirstCoinRow ? 'end' : 'start'}>
-      <ButtonPressAnimation
+      <Content
         disabled={isExpandedState}
+        isEditMode={isCoinListEdited}
         onPress={isCoinListEdited ? handleEditModePress : handlePress}
         scaleTo={0.96}
       >
-        <View
-          left={isCoinListEdited ? editTranslateOffset : 0}
-          width={deviceWidth - (isCoinListEdited ? editTranslateOffset : 0)}
-        >
-          <CoinRow
-            containerStyles={
-              isExpandedState ? BalanceCoinRowExpandedStyles : containerStyles
-            }
-            isExpandedState={isExpandedState}
-            onPress={handlePress}
-            onPressSend={handlePressSend}
-            bottomRowRender={BottomRow}
-            topRowRender={TopRow}
-            {...item}
-            {...props}
-          />
-        </View>
-      </ButtonPressAnimation>
+        <CoinRow
+          containerStyles={
+            isExpandedState ? containerExpandedStyles : containerStyles
+          }
+          isExpandedState={isExpandedState}
+          onPress={handlePress}
+          onPressSend={handlePressSend}
+          bottomRowRender={BottomRow}
+          topRowRender={TopRow}
+          {...item}
+          {...props}
+        />
+      </Content>
       {isCoinListEdited ? (
-        <CoinCheckButton toggle={toggle} onPress={handleEditModePress} />
+        <BalanceCoinRowCoinCheckButton
+          onPress={handleEditModePress}
+          toggle={toggle}
+          top={isFirstCoinRow ? firstCoinRowCoinCheckMarginTop : 9}
+        />
       ) : null}
     </Column>
   );
-};
-
-BalanceCoinRow.propTypes = {
-  containerStyles: PropTypes.string,
-  isExpandedState: PropTypes.bool,
-  isFirstCoinRow: PropTypes.bool,
-  item: PropTypes.object,
-  onPress: PropTypes.func,
-  onPressSend: PropTypes.func,
-  openSmallBalances: PropTypes.bool,
 };
 
 const arePropsEqual = (prev, next) => {
@@ -173,13 +177,13 @@ const arePropsEqual = (prev, next) => {
 
   const isNewItem = itemIdentifier === nextItemIdentifier;
 
-  const recentlyPinnedCount =
+  const isNewRecentlyPinnedCount =
     !isNewValueForPath(prev, next, 'recentlyPinnedCount') &&
-    (get(prev, 'item.isPinned', false) || get(prev, 'item.isHidden', false));
+    (get(next, 'item.isPinned', true) || get(next, 'item.isHidden', true));
 
   return (
-    isNewItem ||
-    recentlyPinnedCount ||
+    isNewItem &&
+    isNewRecentlyPinnedCount &&
     !isNewValueForObjectPaths(prev, next, [
       'isCoinListEdited',
       'isFirstCoinRow',
@@ -190,12 +194,11 @@ const arePropsEqual = (prev, next) => {
   );
 };
 
-export default React.memo(
-  compose(
-    withOpenBalances,
-    withEditOptions,
-    withCoinListEdited,
-    withCoinRecentlyPinned
-  )(BalanceCoinRow),
-  arePropsEqual
-);
+const MemoizedBalanceCoinRow = React.memo(BalanceCoinRow, arePropsEqual);
+
+export default compose(
+  withOpenBalances,
+  withEditOptions,
+  withCoinListEdited,
+  withCoinRecentlyPinned
+)(MemoizedBalanceCoinRow);

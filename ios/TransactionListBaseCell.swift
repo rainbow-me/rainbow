@@ -44,11 +44,10 @@ class TransactionListBaseCell : UITableViewCell {
     let rect = CGRect(x: view.frame.minX, y: view.frame.minY, width: 40, height: 40)
     let roundedRect = UIBezierPath(roundedRect: rect, cornerRadius: 12)
     
-    shadowLayer.fillColor = UIColor.white.cgColor
-    shadowLayer.path = roundedRect.cgPath
     shadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
     shadowLayer.shadowOffset = CGSize(width: 0, height: 4)
     shadowLayer.shadowOpacity = 0.04
+    shadowLayer.shadowPath = roundedRect.cgPath
     shadowLayer.shadowRadius = 3
     shadowLayer.zPosition = -1
     
@@ -78,7 +77,7 @@ class TransactionListBaseCell : UITableViewCell {
     animateTapEnd()
   }
   
-  func generateTextImage(_ text: String) -> UIImage? {
+  func generateTextImage(_ text: String, textColor: UIColor = UIColor.white, backgroundColor: UIColor = UIColor.RainbowTheme.Transactions.blueGreyDark) -> UIImage? {
     let frame = CGRect(x: 0, y: 0, width: 120, height: 120)
     
     var fallbackFontSize = 11 * 3
@@ -95,8 +94,8 @@ class TransactionListBaseCell : UITableViewCell {
     
     let nameLabel = MyBoundedLabel(frame: frame)
     nameLabel.textAlignment = .center
-    nameLabel.backgroundColor = UIColor.RainbowTheme.Transactions.blueGreyDark
-    nameLabel.textColor = .white
+    nameLabel.backgroundColor = backgroundColor
+    nameLabel.textColor = textColor
     nameLabel.font = UIFont(name: "SFRounded-Semibold", size: CGFloat(fallbackFontSize))
     nameLabel.text = String(text.prefix(5))
     nameLabel.addCharacterSpacing(kernValue: fallbackLetterSpacing)

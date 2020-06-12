@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import { get } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import Animated from 'react-native-reanimated';
@@ -14,6 +13,7 @@ import {
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
+import { LoadingOverlay } from '../components/modal';
 import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import networkInfo from '../helpers/networkInfo';
 import {
@@ -25,6 +25,8 @@ import {
   useWallets,
   useWalletSectionsData,
 } from '../hooks';
+import { useNavigation } from '../navigation/Navigation';
+import { sheetVerticalOffset } from '../navigation/effects';
 import { position } from '../styles';
 
 export default function WalletScreen() {
@@ -35,11 +37,12 @@ export default function WalletScreen() {
   const { isCoinListEdited } = useCoinListEdited();
   const { updateKeyboardHeight } = useKeyboardHeight();
   const [scrollViewTracker] = useValues([0], []);
-  const { isReadOnlyWallet } = useWallets();
+  const { isCreatingAccount, isReadOnlyWallet } = useWallets();
 
   useEffect(() => {
     if (!initialized) {
-      initializeWallet();
+      // We run the migrations only once on app launch
+      initializeWallet(null, null, null, true);
       setInitialized(true);
     }
   }, [initializeWallet, initialized]);
@@ -93,6 +96,12 @@ export default function WalletScreen() {
           sections={sections}
         />
       </FabWrapper>
+      {isCreatingAccount && (
+        <LoadingOverlay
+          paddingTop={sheetVerticalOffset}
+          title="Creating account..."
+        />
+      )}
     </Page>
   );
 }

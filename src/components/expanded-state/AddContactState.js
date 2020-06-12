@@ -1,8 +1,9 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/primitives';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { useContacts, useDimensions } from '../../hooks';
+import { useNavigation } from '../../navigation/Navigation';
 import { colors, margin, padding } from '../../styles';
 import { abbreviations, magicMemo } from '../../utils';
 import Divider from '../Divider';
@@ -165,8 +166,8 @@ const AddContactState = ({
             <ButtonPressAnimation onPress={handleChangeColor} scaleTo={0.96}>
               <ContactAvatar
                 color={color}
-                large
                 marginBottom={19}
+                size="large"
                 value={value}
               />
             </ButtonPressAnimation>

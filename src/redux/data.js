@@ -13,6 +13,7 @@ import {
   partition,
   property,
   remove,
+  toLower,
   uniqBy,
   values,
 } from 'lodash';
@@ -25,9 +26,6 @@ import {
   getAssetPricesFromUniswap,
   getAssets,
   getLocalTransactions,
-  removeAssetPricesFromUniswap,
-  removeAssets,
-  removeLocalTransactions,
   saveAssetPricesFromUniswap,
   saveAssets,
   saveLocalTransactions,
@@ -48,6 +46,7 @@ import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswap';
 
 let pendingTransactionsHandle = null;
+const TXN_WATCHER_MAX_TRIES = 5 * 60;
 
 // -- Constants --------------------------------------- //
 
@@ -74,7 +73,6 @@ const DATA_ADD_NEW_TRANSACTION_SUCCESS =
   'data/DATA_ADD_NEW_TRANSACTION_SUCCESS';
 
 const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
-const DATA_RESET_STATE = 'data/DATA_RESET_STATE';
 
 // -- Actions ---------------------------------------- //
 export const dataLoadState = () => async (dispatch, getState) => {
@@ -112,24 +110,13 @@ export const dataLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const dataClearState = () => (dispatch, getState) => {
-  const { uniswapPricesSubscription } = getState().data;
-  const { accountAddress, network } = getState().settings;
-  uniswapPricesSubscription &&
-    uniswapPricesSubscription.unsubscribe &&
-    uniswapPricesSubscription.unsubscribe();
-  removeAssets(accountAddress, network);
-  removeAssetPricesFromUniswap(accountAddress, network);
-  removeLocalTransactions(accountAddress, network);
-  dispatch({ type: DATA_CLEAR_STATE });
-};
-
 export const dataResetState = () => (dispatch, getState) => {
   const { uniswapPricesSubscription } = getState().data;
   uniswapPricesSubscription &&
     uniswapPricesSubscription.unsubscribe &&
     uniswapPricesSubscription.unsubscribe();
-  dispatch({ type: DATA_RESET_STATE });
+  pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
+  dispatch({ type: DATA_CLEAR_STATE });
 };
 
 export const dataUpdateAssets = assets => (dispatch, getState) => {
@@ -394,10 +381,17 @@ export const assetPricesChanged = message => (dispatch, getState) => {
 
 export const dataAddNewTransaction = (
   txDetails,
+  accountAddressToUpdate = null,
   disableTxnWatcher = false
 ) => async (dispatch, getState) => {
   const { transactions } = getState().data;
   const { accountAddress, nativeCurrency, network } = getState().settings;
+  if (
+    accountAddressToUpdate &&
+    toLower(accountAddressToUpdate) !== toLower(accountAddress)
+  )
+    return;
+
   try {
     const parsedTransaction = await parseNewTransaction(
       txDetails,
@@ -410,7 +404,7 @@ export const dataAddNewTransaction = (
     });
     saveLocalTransactions(_transactions, accountAddress, network);
     if (!disableTxnWatcher) {
-      dispatch(watchPendingTransactions());
+      dispatch(watchPendingTransactions(accountAddress));
     }
     return parsedTransaction;
     // eslint-disable-next-line no-empty
@@ -506,14 +500,23 @@ const updatePurchases = updatedTransactions => dispatch => {
   dispatch(addCashUpdatePurchases(confirmedPurchases));
 };
 
-const watchPendingTransactions = () => async dispatch => {
+const watchPendingTransactions = (
+  accountAddressToWatch,
+  remainingTries = TXN_WATCHER_MAX_TRIES
+) => async (dispatch, getState) => {
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
+  if (remainingTries === 0) return;
+
+  const { accountAddress: currentAccountAddress } = getState().settings;
+  if (currentAccountAddress !== accountAddressToWatch) return;
 
   const done = await dispatch(dataWatchPendingTransactions());
 
   if (!done) {
     pendingTransactionsHandle = setTimeout(() => {
-      dispatch(watchPendingTransactions());
+      dispatch(
+        watchPendingTransactions(accountAddressToWatch, remainingTries - 1)
+      );
     }, 1000);
   }
 };
@@ -597,12 +600,6 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         ...INITIAL_STATE,
-      };
-    case DATA_RESET_STATE:
-      return {
-        ...state,
-        ...INITIAL_STATE,
-        isLoadingTransactions: true,
       };
     default:
       return state;

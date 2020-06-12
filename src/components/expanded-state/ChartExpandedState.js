@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import AssetInputTypes from '../../helpers/assetInputTypes';
 import { magicMemo } from '../../utils';
 import { BalanceCoinRow } from '../coin-row';
 import { ColumnWithDividers } from '../layout';
@@ -18,7 +19,7 @@ const ChartExpandedState = ({ asset }) => (
     <BalanceCoinRow isExpandedState item={asset} />
     <ColumnWithDividers dividerRenderer={SheetDivider}>
       <SheetActionButtonRow>
-        <SwapActionButton />
+        <SwapActionButton inputType={AssetInputTypes.in} />
         <SendActionButton />
       </SheetActionButtonRow>
       <TemporaryChartPlaceholder asset={asset} />

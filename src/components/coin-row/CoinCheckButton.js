@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { borders, colors, padding, position, shadow } from '../../styles';
@@ -6,14 +5,19 @@ import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { Icon } from '../icons';
-import { Centered } from '../layout';
-
-const CoinRowPaddingTop = 9;
-const CoinRowPaddingBottom = 10;
+import { Row } from '../layout';
 
 const Container = styled.View`
-  ${position.size(CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom)};
-  position: absolute;
+  ${position.size(CoinIconSize)};
+  position: ${({ isAbsolute }) => (isAbsolute ? 'absolute' : 'relative')};
+  top: 0;
+`;
+
+const Content = styled(Row).attrs(({ isAbsolute }) => ({
+  align: isAbsolute ? 'end' : 'center',
+  justify: 'center',
+}))`
+  ${position.size('100%')};
 `;
 
 const CircleOutline = styled.View`
@@ -30,28 +34,21 @@ const CheckmarkBackground = styled.View`
   background-color: ${colors.appleBlue};
 `;
 
-const CoinCheckButton = ({ onPress, toggle, ...props }) => (
-  <Container {...props}>
-    <ButtonPressAnimation onPress={onPress}>
-      <Centered {...position.sizeAsObject('100%')}>
-        <CircleOutline />
-        <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
-          <CheckmarkBackground>
-            <Icon name="checkmark" color="white" />
-          </CheckmarkBackground>
-        </OpacityToggler>
-      </Centered>
-    </ButtonPressAnimation>
+const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => (
+  <Container {...props} isAbsolute={isAbsolute}>
+    <Content
+      as={ButtonPressAnimation}
+      isAbsolute={isAbsolute}
+      onPress={onPress}
+    >
+      <CircleOutline />
+      <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
+        <CheckmarkBackground>
+          <Icon name="checkmark" color="white" />
+        </CheckmarkBackground>
+      </OpacityToggler>
+    </Content>
   </Container>
 );
-
-CoinCheckButton.propTypes = {
-  onPress: PropTypes.func,
-  toggle: PropTypes.bool,
-};
-
-CoinCheckButton.defaultProps = {
-  toggle: false,
-};
 
 export default magicMemo(CoinCheckButton, 'toggle');

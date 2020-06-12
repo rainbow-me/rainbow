@@ -9,6 +9,8 @@ import {
 const REQUESTS = 'requests';
 const WALLETCONNECT = 'walletconnect';
 
+export const walletConnectAccountLocalKeys = [REQUESTS, WALLETCONNECT];
+
 /**
  * @desc get all wallet connect sessions
  * @return {Object}
@@ -125,13 +127,3 @@ export const removeLocalRequest = async (address, network, requestId) => {
   delete updatedRequests[requestId];
   await saveLocalRequests(updatedRequests, address, network);
 };
-
-/**
- * @desc remove all requests
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @param  {String}   [requestId]
- * @return {Void}
- */
-export const removeLocalRequests = async (accountAddress, network) =>
-  removeAccountLocal(REQUESTS, accountAddress, network);

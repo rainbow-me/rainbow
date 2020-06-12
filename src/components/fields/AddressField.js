@@ -15,7 +15,8 @@ import { Row } from '../layout';
 import { Label } from '../text';
 
 const Placeholder = styled(Row)`
-  margin-top: ${Platform.OS === 'android' ? 13 : 0};
+  margin-top: ${Platform.OS === 'android' ? 14 : 0};
+  margin-left: ${Platform.OS === 'android' ? 3 : 0};
   position: absolute;
   top: 0;
   z-index: 1;

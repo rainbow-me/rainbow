@@ -1,43 +1,35 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { BaseButton } from 'react-native-gesture-handler';
-import { colors, padding, position } from '../../styles';
+import styled from 'styled-components/primitives';
+import { colors, padding } from '../../styles';
+import { magicMemo } from '../../utils';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
-import CoinRow from './CoinRow';
+import { CoinRowHeight } from './CoinRow';
 
 const FavoriteButtonPadding = 19;
 const FavoriteButtonWidth = FavoriteButtonPadding * 3;
 
+const FavoriteButton = styled(Centered)`
+  ${padding(0, FavoriteButtonPadding)};
+  bottom: 0;
+  flex: 0;
+  height: ${CoinRowHeight};
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: ${FavoriteButtonWidth};
+`;
+
 const CoinRowFavoriteButton = ({ isFavorited, onPress }) => (
-  <BaseButton
-    {...position.centeredAsObject}
-    css={`
-      ${padding(0, FavoriteButtonPadding)}
-      bottom: 0;
-      flex: 0;
-      height: ${CoinRow.height}
-      position: absolute;
-      right: 0;
-      top: 0;
-      width: ${FavoriteButtonWidth};
-    `}
-    onPress={onPress}
-  >
-    <Centered {...position.sizeAsObject('100%')}>
-      <Icon
-        color={
-          isFavorited ? colors.yellow : colors.alpha(colors.blueGreyDark, 0.12)
-        }
-        name="star"
-      />
-    </Centered>
-  </BaseButton>
+  <FavoriteButton as={BaseButton} onPress={onPress}>
+    <Icon
+      color={
+        isFavorited ? colors.yellow : colors.alpha(colors.blueGreyDark, 0.12)
+      }
+      name="star"
+    />
+  </FavoriteButton>
 );
 
-CoinRowFavoriteButton.propTypes = {
-  isFavorited: PropTypes.bool,
-  onPress: PropTypes.func,
-};
-
-export default React.memo(CoinRowFavoriteButton);
+export default magicMemo(CoinRowFavoriteButton, 'isFavorited');

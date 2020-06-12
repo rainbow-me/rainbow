@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { get } from 'lodash';
 import { toHex } from '../../handlers/web3';
+import ProtocolTypes from '../../helpers/protocolTypes';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import { convertAmountToRawAmount, isZero } from '../../helpers/utilities';
@@ -77,13 +78,14 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
     from: accountAddress,
     hash: deposit.hash,
     nonce: get(deposit, 'nonce'),
+    protocol: ProtocolTypes.compound.name,
     status: TransactionStatusTypes.depositing,
     to: get(deposit, 'to'),
     type: TransactionTypes.deposit,
   };
   logger.log('[deposit] adding new txn', newTransaction);
   // Disable the txn watcher because Compound can silently fail
-  await dispatch(dataAddNewTransaction(newTransaction, true));
+  await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
   logger.log('[deposit] calling the callback');
   currentRap.callback();
   currentRap.callback = NOOP;

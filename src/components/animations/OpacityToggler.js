@@ -54,7 +54,6 @@ export default class OpacityToggler extends Component {
     endingOpacity: 0,
     friction: 20,
     startingOpacity: 1,
-    style: {},
     tension: 200,
   };
 

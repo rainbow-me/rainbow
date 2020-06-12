@@ -9,7 +9,6 @@ import { requestsResetState } from '../redux/requests';
 import { savingsClearState } from '../redux/savings';
 import { uniqueTokensResetState } from '../redux/uniqueTokens';
 import { uniswapResetState } from '../redux/uniswap';
-import { walletConnectResetState } from '../redux/walletconnect';
 import { promiseUtils } from '../utils';
 
 export default function useResetAccountState() {
@@ -20,12 +19,11 @@ export default function useResetAccountState() {
     const p1 = dispatch(dataResetState());
     const p2 = dispatch(uniqueTokensResetState());
     const p3 = dispatch(resetOpenStateSettings());
-    const p4 = dispatch(walletConnectResetState());
-    const p5 = dispatch(nonceClearState());
-    const p6 = dispatch(requestsResetState());
-    const p7 = dispatch(uniswapResetState());
-    const p8 = dispatch(savingsClearState());
-    const p9 = dispatch(addCashClearState());
+    const p4 = dispatch(nonceClearState());
+    const p5 = dispatch(requestsResetState());
+    const p6 = dispatch(uniswapResetState());
+    const p7 = dispatch(savingsClearState());
+    const p8 = dispatch(addCashClearState());
     await promiseUtils.PromiseAllWithFails([
       p0,
       p1,
@@ -36,7 +34,6 @@ export default function useResetAccountState() {
       p6,
       p7,
       p8,
-      p9,
     ]);
   }, [dispatch]);
 

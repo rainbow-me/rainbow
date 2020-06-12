@@ -27,7 +27,7 @@ import {
   safeAreaInsetValues,
 } from '../../utils';
 import { CoinDivider } from '../coin-divider';
-import { CoinRow } from '../coin-row';
+import { CoinRowHeight } from '../coin-row';
 import AssetListHeader from './AssetListHeader';
 import { ViewTypes } from './RecyclerViewTypes';
 
@@ -46,6 +46,7 @@ class LayoutItemAnimator extends BaseItemAnimator {
   animateWillUnmount = NOOP;
   animateWillUpdate = () => {
     if (
+      this.rlv &&
       this.rlv.getContentDimension().height <
         this.rlv.getCurrentScrollOffset() + globalDeviceDimensions + 46 &&
       this.rlv.getCurrentScrollOffset() > 0
@@ -278,7 +279,8 @@ class RecyclerAssetList extends Component {
             if (this.coinDividerIndex !== index) {
               this.coinDividerIndex = index;
               if (this.props.isCoinListEdited) {
-                this.checkEditStickyHeader(this.rlv.getCurrentScrollOffset());
+                this.rlv &&
+                  this.checkEditStickyHeader(this.rlv.getCurrentScrollOffset());
               }
             }
             if (
@@ -476,7 +478,7 @@ class RecyclerAssetList extends Component {
 
     if (nativeCurrency !== prevProps.nativeCurrency) {
       setTimeout(() => {
-        this.rlv.scrollToTop(false);
+        this.rlv && this.rlv.scrollToTop(false);
       }, 200);
     }
 
@@ -496,7 +498,8 @@ class RecyclerAssetList extends Component {
     });
 
     const bottomHorizonOfScreen =
-      this.rlv.getCurrentScrollOffset() + globalDeviceDimensions;
+      ((this.rlv && this.rlv.getCurrentScrollOffset()) || 0) +
+      globalDeviceDimensions;
 
     // Auto-scroll to opened family logic 👇
     if (openFamilyTabs !== prevProps.openFamilyTabs && collectibles.data) {
@@ -557,12 +560,13 @@ class RecyclerAssetList extends Component {
 
     // Auto-scroll to end of the list if something was closed/disappeared 👇
     if (
+      this.rlv &&
       this.rlv.getContentDimension().height < bottomHorizonOfScreen + 46 &&
       this.rlv.getCurrentScrollOffset() > 0 &&
       !this.props.isCoinListEdited
     ) {
       setTimeout(() => {
-        this.rlv.scrollToEnd({ animated: true });
+        this.rlv && this.rlv.scrollToEnd({ animated: true });
       }, 10);
     }
 
@@ -604,7 +608,7 @@ class RecyclerAssetList extends Component {
   savingsSumValue = 0;
 
   checkEditStickyHeader = offsetY => {
-    const offsetHeight = CoinRow.height * (this.coinDividerIndex - 1) + 5;
+    const offsetHeight = CoinRowHeight * (this.coinDividerIndex - 1) + 5;
     if (this.props.isCoinListEdited && offsetY > offsetHeight) {
       this.setState({ showCoinListEditor: true });
     } else if (
@@ -617,7 +621,7 @@ class RecyclerAssetList extends Component {
 
   scrollToOffset = (position, animated) => {
     setTimeout(() => {
-      this.rlv.scrollToOffset(0, position, animated);
+      this.rlv && this.rlv.scrollToOffset(0, position, animated);
     }, 5);
   };
 

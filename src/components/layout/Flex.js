@@ -1,7 +1,4 @@
-import { pickBy } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { View } from 'react-primitives';
 import styled from 'styled-components/primitives';
 import { buildFlexStyles } from '../../styles';
 
@@ -27,25 +24,17 @@ const flexPropTypes = {
   wrap: PropTypes.bool,
 };
 
-const blacklist = Object.keys(flexPropTypes);
-const filterProps = (_, prop) => !blacklist.includes(prop);
-const FlexPrimitive = React.forwardRef((props, ref) => (
-  <View {...pickBy(props, filterProps)} ref={ref} />
-));
-FlexPrimitive.displayName = 'FlexPrimitive';
-
-const Flex = styled(FlexPrimitive)`
+const Flex = styled.View.withConfig({
+  // We need to prevent the buildFlexStyles-related props from being
+  // passed to the root element because our namespace collides with some native props
+  shouldForwardProp: (prop, defaultValidatorFn) =>
+    !Object.keys(flexPropTypes).includes(prop) && defaultValidatorFn(prop),
+})`
   ${buildFlexStyles};
 `;
 
 Flex.displayName = 'Flex';
 
 Flex.propTypes = flexPropTypes;
-
-Flex.defaultProps = {
-  align: 'stretch',
-  direction: 'row',
-  justify: 'start',
-};
 
 export default Flex;
