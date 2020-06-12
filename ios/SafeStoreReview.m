@@ -33,7 +33,7 @@ static NSString* partialDescForStoreReviewWindow =  @"SKStore";
     Class class = [self class];
     
     SEL originalSelector = @selector(setWindowLevel:);
-    SEL swizzledSelector = @selector(setWindowLevel_startMonitor:);
+    SEL swizzledSelector = @selector(setWindowLevel_notify:);
     
     Method originalMethod = class_getInstanceMethod(class, originalSelector);
     Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
@@ -58,8 +58,8 @@ static NSString* partialDescForStoreReviewWindow =  @"SKStore";
 
 #pragma mark - Method Swizzling
 
-- (void)setWindowLevel_startMonitor:(int)level{
-  [self setWindowLevel_startMonitor:level];
+- (void)setWindowLevel_notify:(int)level{
+  [self setWindowLevel_notify:level];
   
   if([self.description containsString:partialDescForStoreReviewWindow])
   {
