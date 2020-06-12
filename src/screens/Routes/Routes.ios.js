@@ -245,7 +245,7 @@ const routesForBottomSheetStack = {
       customStack: true,
       headerHeight: 58,
       springDamping: 1,
-      topOffset: 128,
+      topOffset: 10,
       transitionDuration: 0.25,
     },
     screen: BackupSheet,
@@ -253,7 +253,7 @@ const routesForBottomSheetStack = {
   [Routes.CHANGE_WALLET_SHEET]: {
     navigationOptions: {
       backgroundOpacity: 0.6,
-      cornerRadius: 0,
+      cornerRadius: 30,
       customStack: true,
       headerHeight: 58,
       springDamping: 1,

@@ -114,7 +114,7 @@ const TopIcon = () => (
     steps={[0, 0.5, 1]}
     size={52}
   >
-    <Text size={52}>􀙶</Text>
+    <Text size={52}>􀌍</Text>
   </GradientText>
 );
 

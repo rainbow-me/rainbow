@@ -19,8 +19,7 @@ const BackupSheet = () => {
     setStep(WalletBackupTypes.manual);
   }, []);
 
-  const fromSettings = getParam('option', null);
-  const nativeStackAdditionalPadding = fromSettings ? 0 : 80;
+  const nativeStackAdditionalPadding = 0;
 
   const renderStep = useCallback(() => {
     switch (step) {
