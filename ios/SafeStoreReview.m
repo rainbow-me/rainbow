@@ -109,10 +109,10 @@ static NSString* partialDescForStoreReviewWindow =  @"SKStore";
 {
   self = [super init];
   if (self) {
-     [[NSNotificationCenter defaultCenter] addObserver:self
-                                                selector:@selector(windowDidBecomeVisibleNotification:)
-                                                    name:UIWindowDidBecomeVisibleNotification
-                                                  object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(windowDidBecomeVisibleNotification:)
+                                                 name:UIWindowDidBecomeVisibleNotification
+                                               object:nil];
   }
   return self;
 }
