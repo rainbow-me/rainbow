@@ -4,7 +4,13 @@ import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { State } from 'react-native-gesture-handler';
 import Animated, { Clock, Easing, Value } from 'react-native-reanimated';
-import { contains, delay, getPointAtLength, timing } from 'react-native-redash';
+import {
+  clamp,
+  contains,
+  delay,
+  getPointAtLength,
+  timing,
+} from 'react-native-redash';
 import { deviceUtils } from '../../utils';
 import ActivityIndicator from '../ActivityIndicator';
 import { Centered, Column, Row } from '../layout';
@@ -16,6 +22,7 @@ const {
   and,
   or,
   eq,
+  sub,
   onChange,
   block,
   event,
@@ -29,6 +36,7 @@ const {
   greaterThan,
   stopClock,
   multiply,
+  Extrapolate,
 } = Animated;
 
 let allSegmentDividers = [];
@@ -307,6 +315,7 @@ export default class Chart extends PureComponent {
 
   touchX = new Value(0);
   lastTouchX = new Value(0);
+  translateX = new Value(0);
   translateY = new Value(0);
 
   onPanGestureEvent = event(
@@ -412,14 +421,17 @@ export default class Chart extends PureComponent {
               color={barColor}
               currentValue={currentValue}
               setCurrentPath={path => {
-                this.dPath = path;
-                const length = interpolate(this.touchX, {
-                  inputRange: [20, width - 20],
-                  outputRange: [0, path.totalLength],
+                console.log(path);
+                const cx = clamp(this.touchX, 0, width);
+                const length = interpolate(cx, {
+                  extrapolate: Extrapolate.EXTEND,
+                  inputRange: path.p0x,
+                  outputRange: path.start,
                 });
-                const { y } = getPointAtLength(path, length);
+                const { x, y } = getPointAtLength(path, length);
                 this.translateY = multiply(y, -1);
-                this.setState({});
+                this.translateX = x;
+                this.setState({ something: true });
               }}
             />
           </Column>
@@ -429,16 +441,17 @@ export default class Chart extends PureComponent {
                 {
                   backgroundColor: this.props.barColor,
                   borderRadius: 2,
-                  height: 180,
+                  height: 16,
+                  marginTop: 162,
                   position: 'absolute',
-                  width: 2,
+                  width: 16,
                   zIndex: 10,
                 },
                 {
                   opacity: this.opacity,
                   transform: [
                     {
-                      translateX: Animated.add(this.touchX, new Value(-1.5)),
+                      translateX: sub(this.translateX, 8),
                       translateY: this.translateY,
                     },
                   ],
