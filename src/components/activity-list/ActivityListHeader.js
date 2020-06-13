@@ -13,7 +13,7 @@ const ActivityListHeader = props => (
   <ListHeader
     {...props}
     isSticky
-    showDivider
+    showDivider={false}
     titleRenderer={ActivityListHeaderTitle}
   />
 );

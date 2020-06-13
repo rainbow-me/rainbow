@@ -6,26 +6,26 @@ import { getFirstGrapheme } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
 
-const DefaultContactAvatarShadow = [
+const defaultShadow = [
   [0, 4, 6, colors.dark, 0.04],
   [0, 1, 3, colors.dark, 0.08],
 ];
 
-const ContactAvatarSizeTypes = {
+const sizeTypes = {
   large: 'large',
   medium: 'medium',
   small: 'small',
 };
 
-const ContactAvatarSizeConfigs = {
+const sizeConfigs = {
   large: {
     dimensions: 60,
-    shadows: DefaultContactAvatarShadow,
+    shadows: defaultShadow,
     textSize: 'bigger',
   },
   medium: {
     dimensions: 40,
-    shadows: DefaultContactAvatarShadow,
+    shadows: defaultShadow,
     textSize: 'larger',
   },
   small: {
@@ -38,13 +38,8 @@ const ContactAvatarSizeConfigs = {
   },
 };
 
-const ContactAvatar = ({
-  color,
-  size = ContactAvatarSizeTypes.medium,
-  value,
-  ...props
-}) => {
-  const { dimensions, shadows, textSize } = ContactAvatarSizeConfigs[size];
+const ContactAvatar = ({ color, size = sizeTypes.medium, value, ...props }) => {
+  const { dimensions, shadows, textSize } = sizeConfigs[size];
 
   return (
     <ShadowStack
