@@ -1,5 +1,5 @@
 PODS:
-  - Analytics (3.8.2)
+  - Analytics (3.9.0)
   - Base64 (1.1.2)
   - boost-for-react-native (1.63.0)
   - Branch (0.32.0):
@@ -132,7 +132,7 @@ PODS:
     - GoogleUtilities/Network (~> 6.0)
     - "GoogleUtilities/NSData+zlib (~> 6.0)"
     - nanopb (= 0.3.9011)
-  - GoogleDataTransport (6.1.1)
+  - GoogleDataTransport (6.2.1)
   - GoogleDataTransportCCTSupport (3.0.0):
     - GoogleDataTransport (~> 6.0)
     - nanopb (~> 0.3.901)
@@ -184,7 +184,7 @@ PODS:
   - Permission-FaceID (2.1.5):
     - RNPermissions
   - pop (1.0.12)
-  - PromisesObjC (1.2.8)
+  - PromisesObjC (1.2.9)
   - Protobuf (3.12.0)
   - RCTRequired (0.62.2)
   - RCTTypeSafety (0.62.2):
@@ -356,13 +356,13 @@ PODS:
   - react-native-branch (5.0.0-beta.1):
     - Branch (= 0.32.0)
     - React
-  - react-native-camera (3.28.0):
+  - react-native-camera (3.29.0):
     - React
-    - react-native-camera/RCT (= 3.28.0)
-    - react-native-camera/RN (= 3.28.0)
-  - react-native-camera/RCT (3.28.0):
+    - react-native-camera/RCT (= 3.29.0)
+    - react-native-camera/RN (= 3.29.0)
+  - react-native-camera/RCT (3.29.0):
     - React
-  - react-native-camera/RN (3.28.0):
+  - react-native-camera/RN (3.29.0):
     - React
   - react-native-mail (4.1.0):
     - React
@@ -837,7 +837,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/osdnk/PanModal
 
 SPEC CHECKSUMS:
-  Analytics: 4c482aea5efcecaeb03adfc7fc22e350f5ca575c
+  Analytics: 67cce2129e4b0df5b532bf0c043043f292b32f5f
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 770a23c04d3f5410cf9231db099a444dd3060784
@@ -869,7 +869,7 @@ SPEC CHECKSUMS:
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   GoogleAppMeasurement: dfe55efa543e899d906309eaaac6ca26d249862f
-  GoogleDataTransport: ad884314b81cdb808fb1d23787b367ff8da4e28a
+  GoogleDataTransport: 9a8a16f79feffc7f42096743de2a7c4815e84020
   GoogleDataTransportCCTSupport: 0f39025e8cf51f168711bd3fb773938d7e62ddb5
   GoogleUtilities: 39530bc0ad980530298e9c4af8549e991fd033b1
   JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
@@ -882,7 +882,7 @@ SPEC CHECKSUMS:
   Permission-Camera: afad27bf90337684d4a86f3825112d648c8c4d3b
   Permission-FaceID: fbdeb41087f35887f0cade55396007fadee3a234
   pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
-  PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
+  PromisesObjC: b48e0338dbbac2207e611750777895f7a5811b75
   Protobuf: 2793fcd0622a00b546c60e7cbbcc493e043e9bb9
   RCTRequired: cec6a34b3ac8a9915c37e7e4ad3aa74726ce4035
   RCTTypeSafety: 93006131180074cffa227a1075802c89a49dd4ce
@@ -896,7 +896,7 @@ SPEC CHECKSUMS:
   react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-branch: ed90b087f2ff6a2f81643ead0b321531877f2e69
-  react-native-camera: 8ab02aac456a7db830980cef5f3772644fe96e1f
+  react-native-camera: 6796b6b2f08402ba226e04ac792327a96ad0fe74
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-netinfo: cb74e17062b2af5a16a4b137f32495f241df1a8e
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23

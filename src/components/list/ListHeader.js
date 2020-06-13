@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { createElement, Fragment } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
@@ -9,7 +8,7 @@ import { ContextMenu } from '../context-menu';
 import { Row } from '../layout';
 import { H1 } from '../text';
 
-const ListHeaderHeight = 44;
+export const ListHeaderHeight = 44;
 
 const BackgroundGradient = styled(LinearGradient).attrs({
   colors: [
@@ -42,15 +41,15 @@ const StickyBackgroundBlocker = styled.View`
   width: ${({ deviceDimensions }) => deviceDimensions.width};
 `;
 
-const ListHeader = ({
+export default function ListHeader({
   children,
   contextMenuOptions,
   isCoinListEdited,
   isSticky,
-  showDivider,
+  showDivider = true,
   title,
-  titleRenderer,
-}) => {
+  titleRenderer = H1,
+}) {
   const deviceDimensions = useDimensions();
 
   return (
@@ -72,23 +71,4 @@ const ListHeader = ({
       )}
     </Fragment>
   );
-};
-
-ListHeader.propTypes = {
-  children: PropTypes.node,
-  contextMenuOptions: PropTypes.object,
-  isCoinListEdited: PropTypes.bool,
-  isSticky: PropTypes.bool,
-  showDivider: PropTypes.bool,
-  title: PropTypes.string,
-  titleRenderer: PropTypes.func,
-};
-
-ListHeader.defaultProps = {
-  showDivider: true,
-  titleRenderer: H1,
-};
-
-ListHeader.height = ListHeaderHeight;
-
-export default ListHeader;
+}

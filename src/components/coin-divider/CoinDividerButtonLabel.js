@@ -15,12 +15,16 @@ const LabelText = styled(Text).attrs({
   top: -10.25;
 `;
 
-const CoinDividerButtonLabel = ({ isVisible, label, node, steps }) => (
+const CoinDividerButtonLabel = ({
+  endingOpacity,
+  isVisible,
+  label,
+  startingOpacity,
+}) => (
   <OpacityToggler
-    animationNode={node}
-    endingOpacity={steps[1]}
+    endingOpacity={endingOpacity}
     isVisible={isVisible}
-    startingOpacity={steps[0]}
+    startingOpacity={startingOpacity}
   >
     <LabelText>{label}</LabelText>
   </OpacityToggler>
