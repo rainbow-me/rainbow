@@ -1,4 +1,3 @@
-export { default as animations } from './animations';
 export { default as borders } from './borders';
 export { default as buildFlexStyles } from './buildFlexStyles';
 export { default as buildTextStyles } from './buildTextStyles';

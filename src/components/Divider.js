@@ -1,11 +1,10 @@
 import { constant, isNil, isNumber, times } from 'lodash';
-import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { borders, colors, position } from '../styles';
 import { magicMemo } from '../utils';
 
-const DefaultDividerSize = 2;
+export const DividerSize = 2;
 
 const buildInsetFromProps = inset => {
   if (!inset) return times(4, constant(0));
@@ -53,44 +52,27 @@ const Container = styled.View`
   width: ${({ horizontal, size }) => (horizontal ? '100%' : size)};
 `;
 
-const Divider = magicMemo(
-  ({ backgroundColor, color, horizontal, inset, size, ...props }) => (
-    <Container
+const Divider = ({
+  backgroundColor,
+  color = colors.rowDivider,
+  horizontal = true,
+  inset = [0, 0, 0, 19],
+  size = DividerSize,
+  ...props
+}) => (
+  <Container
+    {...props}
+    backgroundColor={backgroundColor}
+    horizontal={horizontal}
+    size={size}
+  >
+    <BorderLine
       {...props}
-      backgroundColor={backgroundColor}
+      color={color}
       horizontal={horizontal}
-      size={size}
-    >
-      <BorderLine
-        {...props}
-        color={color}
-        horizontal={horizontal}
-        inset={inset}
-      />
-    </Container>
-  ),
-  ['color', 'inset']
+      inset={inset}
+    />
+  </Container>
 );
 
-Divider.displayName = 'Divider';
-
-Divider.propTypes = {
-  color: PropTypes.string,
-  horizontal: PropTypes.bool,
-  inset: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.number),
-    PropTypes.bool,
-  ]),
-  size: PropTypes.number,
-};
-
-Divider.defaultProps = {
-  color: colors.rowDivider,
-  horizontal: true,
-  inset: [0, 0, 0, 19],
-  size: DefaultDividerSize,
-};
-
-Divider.size = DefaultDividerSize;
-
-export default Divider;
+export default magicMemo(Divider, ['color', 'inset']);

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import styled from 'styled-components/primitives';
@@ -27,7 +26,12 @@ const Link = ({ url }) => {
   const handlePress = useCallback(() => Linking.openURL(url), [url]);
 
   return (
-    <ButtonPressAnimation onPress={handlePress} scaleTo={1.1}>
+    <ButtonPressAnimation
+      compensateForTransformOrigin
+      onPress={handlePress}
+      scaleTo={1.1}
+      transformOrigin="left"
+    >
       <Container>
         <Icon color={colors.appleBlue} name="compass" />
         <Text color={colors.appleBlue} size="lmedium" weight="semibold">
@@ -36,10 +40,6 @@ const Link = ({ url }) => {
       </Container>
     </ButtonPressAnimation>
   );
-};
-
-Link.propTypes = {
-  url: PropTypes.string,
 };
 
 export default magicMemo(Link, 'url');

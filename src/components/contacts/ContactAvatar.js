@@ -1,44 +1,60 @@
 import { toUpper } from 'lodash';
-import PropTypes from 'prop-types';
 import React from 'react';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { borders, colors } from '../../styles';
 import { getFirstGrapheme } from '../../utils';
-import { Row } from '../layout';
+import { Centered } from '../layout';
 import { Text } from '../text';
 
-const ContactAvatar = ({ color, size, value, ...props }) => {
-  const dimensions = size === 'large' ? 60 : size === 'medium' ? 40 : 34;
-  const textSize =
-    size === 'large' ? 'bigger' : size === 'medium' ? 'larger' : 'large';
+const defaultShadow = [
+  [0, 4, 6, colors.dark, 0.04],
+  [0, 1, 3, colors.dark, 0.08],
+];
+
+const sizeTypes = {
+  large: 'large',
+  medium: 'medium',
+  small: 'small',
+};
+
+const sizeConfigs = {
+  large: {
+    dimensions: 60,
+    shadows: defaultShadow,
+    textSize: 'bigger',
+  },
+  medium: {
+    dimensions: 40,
+    shadows: defaultShadow,
+    textSize: 'larger',
+  },
+  small: {
+    dimensions: 34,
+    shadows: [
+      [0, 3, 5, colors.dark, 0.2],
+      [0, 6, 10, colors.dark, 0.14],
+    ],
+    textSize: 'large',
+  },
+};
+
+const ContactAvatar = ({ color, size = sizeTypes.medium, value, ...props }) => {
+  const { dimensions, shadows, textSize } = sizeConfigs[size];
+
   return (
     <ShadowStack
       {...props}
-      backgroundColor={colors.avatarColor[color]}
-      borderRadius={dimensions}
       {...borders.buildCircleAsObject(dimensions)}
-      shadows={[
-        [0, 4, 6, colors.dark, 0.04],
-        [0, 1, 3, colors.dark, 0.08],
-      ]}
+      backgroundColor={colors.avatarColor[color] || color}
+      shadows={shadows}
     >
-      <Row flex={1} justify="center" align="center">
+      <Centered flex={1}>
         <Text align="center" color="white" size={textSize} weight="bold">
           {value && getFirstGrapheme(toUpper(value))}
         </Text>
-      </Row>
+      </Centered>
     </ShadowStack>
   );
-};
-
-ContactAvatar.propTypes = {
-  color: PropTypes.number,
-  size: PropTypes.oneOf(['small', 'medium', 'large']),
-  value: PropTypes.string,
-};
-
-ContactAvatar.defaultPropTypes = {
-  size: 'medium',
 };
 
 export default React.memo(ContactAvatar);

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import { useShowcaseTokens } from '../../hooks';
@@ -33,22 +32,35 @@ const ToastContainer = styled(Column).attrs({
 
 const UniqueTokenExpandedState = ({ asset }) => {
   const {
+    asset_contract: {
+      description: familyDescription,
+      external_link: familyLink,
+      name: familyName,
+    },
+    description,
+    isSendable,
+    traits,
+    uniqueId,
+  } = asset;
+
+  const {
     addShowcaseToken,
     removeShowcaseToken,
     showcaseTokens,
   } = useShowcaseTokens();
 
-  const isShowcaseAsset = useMemo(() => {
-    return showcaseTokens.includes(asset.uniqueId);
-  }, [asset.uniqueId, showcaseTokens]);
+  const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId), [
+    showcaseTokens,
+    uniqueId,
+  ]);
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
-      removeShowcaseToken(asset.uniqueId);
+      removeShowcaseToken(uniqueId);
     } else {
-      addShowcaseToken(asset.uniqueId);
+      addShowcaseToken(uniqueId);
     }
-  }, [addShowcaseToken, asset.uniqueId, isShowcaseAsset, removeShowcaseToken]);
+  }, [addShowcaseToken, isShowcaseAsset, removeShowcaseToken, uniqueId]);
 
   return (
     <Fragment>
@@ -62,31 +74,31 @@ const UniqueTokenExpandedState = ({ asset }) => {
             label={isShowcaseAsset ? 'Remove' : 'Add'}
             onPress={handlePressShowcase}
           />
-          {asset.isSendable && <SendActionButton />}
+          {isSendable && <SendActionButton />}
         </SheetActionButtonRow>
         <SheetDivider />
         <ColumnWithDividers dividerRenderer={SheetDivider}>
-          {!!asset.description && (
+          {!!description && (
             <ExpandedStateSection title="Bio">
-              {asset.description}
+              {description}
             </ExpandedStateSection>
           )}
-          {!!asset.traits.length && (
+          {!!traits.length && (
             <ExpandedStateSection paddingBottom={14} title="Attributes">
               <UniqueTokenAttributes {...asset} />
             </ExpandedStateSection>
           )}
-          {!!asset.asset_contract.description && (
-            <ExpandedStateSection title={`About ${asset.asset_contract.name}`}>
-              <Column align="start">
+          {!!familyDescription && (
+            <ExpandedStateSection title={`About ${familyName}`}>
+              <Column>
                 <Text
                   color={colors.alpha(colors.blueGreyDark, 0.5)}
                   lineHeight="paragraphSmall"
                   size="lmedium"
                 >
-                  {asset.asset_contract.description}
+                  {familyDescription}
                 </Text>
-                <Link url={asset.asset_contract.external_link} />
+                {familyLink && <Link url={familyLink} />}
               </Column>
             </ExpandedStateSection>
           )}
@@ -97,10 +109,6 @@ const UniqueTokenExpandedState = ({ asset }) => {
       </ToastContainer>
     </Fragment>
   );
-};
-
-UniqueTokenExpandedState.propTypes = {
-  asset: PropTypes.object,
 };
 
 export default magicMemo(UniqueTokenExpandedState, 'asset');

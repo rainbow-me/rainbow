@@ -1,30 +1,21 @@
-import PropTypes from 'prop-types';
-import React, {
-  Children,
-  cloneElement,
-  createElement,
-  Fragment,
-  useMemo,
-} from 'react';
+import React, { Children, createElement, Fragment, useMemo } from 'react';
 import Divider from '../Divider';
 import Flex from './Flex';
 
-const LayoutWithDividers = ({
-  children,
-  dividerHorizontal,
-  dividerRenderer,
-  ...props
-}) => {
+const LayoutWithDividers = (
+  { children, dividerHorizontal, dividerRenderer = Divider, ...props },
+  ref
+) => {
   const dividerProps = useMemo(() => ({ horizontal: dividerHorizontal }), [
     dividerHorizontal,
   ]);
 
   return (
-    <Flex {...props}>
+    <Flex {...props} ref={ref}>
       {Children.toArray(children).map((child, index, array) => (
         // eslint-disable-next-line react/no-array-index-key
         <Fragment key={index}>
-          {cloneElement(child)}
+          {child}
           {index < array.length - 1
             ? createElement(dividerRenderer, dividerProps)
             : null}
@@ -34,14 +25,4 @@ const LayoutWithDividers = ({
   );
 };
 
-LayoutWithDividers.propTypes = {
-  children: PropTypes.node,
-  dividerHorizontal: PropTypes.bool,
-  dividerRenderer: PropTypes.func,
-};
-
-LayoutWithDividers.defaultProps = {
-  dividerRenderer: Divider,
-};
-
-export default LayoutWithDividers;
+export default React.forwardRef(LayoutWithDividers);

@@ -2,7 +2,6 @@ import React, { createElement } from 'react';
 import styled from 'styled-components/primitives';
 import { useAccountSettings, useCoinListEdited } from '../../hooks';
 import { padding } from '../../styles';
-import Highlight from '../Highlight';
 import { CoinIcon, CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
 
@@ -34,7 +33,6 @@ export default function CoinRow({
   coinIconRender = CoinIcon,
   containerStyles,
   contentStyles,
-  highlight,
   isHidden,
   isPinned,
   symbol,
@@ -46,12 +44,6 @@ export default function CoinRow({
 
   return (
     <Container css={containerStyles}>
-      <Highlight
-        borderRadius={18}
-        margin={2}
-        marginHorizontal={8}
-        visible={highlight}
-      />
       {createElement(coinIconRender, {
         address,
         isCoinListEdited,
