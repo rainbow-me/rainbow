@@ -52,7 +52,7 @@ export default class AnimatedChart extends Component {
 
       const newLineShape = lineShape(data);
 
-      const path = parsePath(newLineShape);
+      const parsedPath = parsePath(newLineShape);
 
       if (this.oldLineShape !== newLineShape) {
         let a, b;
@@ -86,15 +86,15 @@ export default class AnimatedChart extends Component {
         this.listenerId = listenerId;
 
         setTimeout(() => {
-          nextProps.setCurrentPath(path);
           this.handleAnimation();
           setTimeout(() => {
+            nextProps.setCurrentPath(parsedPath);
             const path = pathInterpolate(this.animatedIsDone ? 1 : 0);
             this._path.setNativeProps({
               d: path,
             });
-          }, chartAnimationDuration + 30);
-        }, 100);
+          }, chartAnimationDuration + 100);
+        }, 200);
       }
     }
   };

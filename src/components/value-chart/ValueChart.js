@@ -440,7 +440,7 @@ export default class Chart extends PureComponent {
                   zIndex: 10,
                 },
                 {
-                  opacity: this.opacity,
+                  opacity: cond(this.touchX, this.opacity, 0),
                   transform: [
                     {
                       translateX: sub(this.translateX, 8),
