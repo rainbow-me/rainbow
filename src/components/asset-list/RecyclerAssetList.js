@@ -560,7 +560,8 @@ class RecyclerAssetList extends Component {
       this.rlv &&
       this.rlv.getContentDimension().height < bottomHorizonOfScreen + 46 &&
       this.rlv.getCurrentScrollOffset() > 0 &&
-      !this.props.isCoinListEdited
+      (!this.props.isCoinListEdited ||
+        (!prevProps.isCoinListEdited && this.props.isCoinListEdited))
     ) {
       setTimeout(() => {
         this.rlv && this.rlv.scrollToEnd({ animated: true });
