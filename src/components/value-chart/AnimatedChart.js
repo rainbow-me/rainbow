@@ -11,6 +11,7 @@ import { deviceUtils } from '../../utils';
 const padding = 20;
 const additionalChartPadding = 999999;
 const width = deviceUtils.dimensions.width;
+const chartAnimationDuration = 200;
 
 export default class AnimatedChart extends Component {
   state = {
@@ -52,7 +53,6 @@ export default class AnimatedChart extends Component {
       const newLineShape = lineShape(data);
 
       const path = parsePath(newLineShape);
-      nextProps.setCurrentPath(path);
 
       if (this.oldLineShape !== newLineShape) {
         let a, b;
@@ -86,8 +86,15 @@ export default class AnimatedChart extends Component {
         this.listenerId = listenerId;
 
         setTimeout(() => {
+          nextProps.setCurrentPath(path);
           this.handleAnimation();
-        }, 200);
+          setTimeout(() => {
+            const path = pathInterpolate(this.animatedIsDone ? 1 : 0);
+            this._path.setNativeProps({
+              d: path,
+            });
+          }, chartAnimationDuration + 30);
+        }, 100);
       }
     }
   };
@@ -99,13 +106,13 @@ export default class AnimatedChart extends Component {
   handleAnimation = () => {
     if (!this.animatedIsDone) {
       Animated.timing(this.state.animation, {
-        duration: 200,
+        duration: chartAnimationDuration,
         toValue: 1,
       }).start();
       this.animatedIsDone = true;
     } else {
       Animated.timing(this.state.animation, {
-        duration: 200,
+        duration: chartAnimationDuration,
         toValue: 0,
       }).start();
       this.animatedIsDone = false;

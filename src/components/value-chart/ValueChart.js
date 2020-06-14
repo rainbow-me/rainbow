@@ -421,7 +421,6 @@ export default class Chart extends PureComponent {
               color={barColor}
               currentValue={currentValue}
               setCurrentPath={path => {
-                console.log(path);
                 const cx = clamp(this.touchX, 0, width);
                 const length = interpolate(cx, {
                   extrapolate: Extrapolate.EXTEND,
@@ -431,7 +430,7 @@ export default class Chart extends PureComponent {
                 const { x, y } = getPointAtLength(path, length);
                 this.translateY = multiply(y, -1);
                 this.translateX = x;
-                this.setState({ something: true });
+                this.setState({ path });
               }}
             />
           </Column>
@@ -440,7 +439,7 @@ export default class Chart extends PureComponent {
               style={[
                 {
                   backgroundColor: this.props.barColor,
-                  borderRadius: 2,
+                  borderRadius: 8,
                   height: 16,
                   marginTop: 162,
                   position: 'absolute',
@@ -505,12 +504,15 @@ export default class Chart extends PureComponent {
                         (width / (amountOfPathPoints + 20)) * 10 +
                         (x / width) * (width / (amountOfPathPoints + 20)) * 10;
                     }
-                    const calculatedIndex = Math.floor(
+                    let calculatedIndex = Math.round(
                       curX /
                         ((width - (width / (amountOfPathPoints + 20)) * 10) /
                           points.length)
                     );
-                    const calculatedValue = points[calculatedIndex].y;
+                    const calculatedValue =
+                      calculatedIndex < points.length - 1
+                        ? points[calculatedIndex].y
+                        : points[calculatedIndex - 1].y;
                     if (this.currentSelectedPoint !== calculatedValue) {
                       this.currentSelectedPoint = calculatedValue;
                       this.props.onValueUpdate(calculatedValue);
