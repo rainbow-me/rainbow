@@ -4,13 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { State } from 'react-native-gesture-handler';
 import Animated, { Clock, Easing, Value } from 'react-native-reanimated';
-import {
-  clamp,
-  contains,
-  delay,
-  getPointAtLength,
-  timing,
-} from 'react-native-redash';
+import { contains, delay, getPointAtLength, timing } from 'react-native-redash';
 import { deviceUtils } from '../../utils';
 import ActivityIndicator from '../ActivityIndicator';
 import { Centered, Column, Row } from '../layout';
@@ -421,8 +415,7 @@ export default class Chart extends PureComponent {
               color={barColor}
               currentValue={currentValue}
               setCurrentPath={path => {
-                const cx = clamp(this.touchX, 0, width);
-                const length = interpolate(cx, {
+                const length = interpolate(this.touchX, {
                   extrapolate: Extrapolate.EXTEND,
                   inputRange: path.p0x,
                   outputRange: path.start,
