@@ -12,6 +12,8 @@ import { Icon } from '../../icons';
 import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import { TruncatedText } from '../../text';
 
+const noPriceData = 'No price data';
+
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
 })`
@@ -40,7 +42,7 @@ const ChartExpandedStateHeader = ({
   chartPrice,
   color = colors.dark,
   isPositiveChange,
-  latestPrice = 'No price data',
+  latestPrice = noPriceData,
   name,
   shadowColor,
   symbol,
@@ -113,18 +115,20 @@ const ChartExpandedStateHeader = ({
           <Title>{name}</Title>
           <Subtitle>{formattedPrice}</Subtitle>
         </ColumnWithMargins>
-        <ColumnWithMargins align="end" margin={4}>
-          <RowWithMargins align="center" margin={4}>
-            <Icon
-              color={color}
-              direction={isPositiveChange ? 'left' : 'right'}
-              name="fatArrow"
-              width={15}
-            />
-            <Title color={color}>{formattedChange}</Title>
-          </RowWithMargins>
-          <Subtitle color={color}>Today</Subtitle>
-        </ColumnWithMargins>
+        {formattedPrice !== noPriceData && (
+          <ColumnWithMargins align="end" margin={4}>
+            <RowWithMargins align="center" margin={4}>
+              <Icon
+                color={color}
+                direction={isPositiveChange ? 'left' : 'right'}
+                name="fatArrow"
+                width={15}
+              />
+              <Title color={color}>{formattedChange}</Title>
+            </RowWithMargins>
+            <Subtitle color={color}>Today</Subtitle>
+          </ColumnWithMargins>
+        )}
       </Row>
     </Container>
   );
