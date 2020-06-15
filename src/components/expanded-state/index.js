@@ -1,7 +1,5 @@
 export { default as AddContactState } from './AddContactState';
 export { default as ChartExpandedState } from './ChartExpandedState';
-export { default as FloatingPanel } from './FloatingPanel';
-export { default as FloatingPanels } from './FloatingPanels';
 export { default as InvestmentExpandedState } from './InvestmentExpandedState';
 export { default as SupportedCountriesExpandedState } from './SupportedCountriesExpandedState';
 export { default as SwapDetailsState } from './SwapDetailsState';
