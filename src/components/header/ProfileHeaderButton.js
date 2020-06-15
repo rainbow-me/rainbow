@@ -30,7 +30,7 @@ export default function ProfileHeaderButton() {
     >
       <Centered>
         <ContactAvatar
-          color={accountColor || colors.skeleton}
+          color={isNaN(accountColor) ? colors.skeleton : accountColor}
           size="small"
           value={accountSymbol}
         />
