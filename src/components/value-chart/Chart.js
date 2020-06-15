@@ -62,7 +62,7 @@ const Chart = ({ asset, ...props }) => {
   );
 
   const currentChartIndex = Object.values(ChartTypes).indexOf(chartType);
-  const amountOfPathPoints = 30; // 👈️ TODO make this dynamic
+  const amountOfPathPoints = 80; // 👈️ TODO make this dynamic
 
   return (
     <Column
@@ -80,7 +80,7 @@ const Chart = ({ asset, ...props }) => {
         value={currentPrice}
       />
       <ValueChart
-        amountOfPathPoints={120}
+        amountOfPathPoints={amountOfPathPoints}
         barColor={positiveChange ? colors.chartGreen : colors.red}
         currentDataSource={currentChartIndex}
         currentValue={asset.native.price.amount}
