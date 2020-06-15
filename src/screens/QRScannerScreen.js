@@ -6,7 +6,7 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import { BubbleSheet } from '../components/bubble-sheet';
 import { Button } from '../components/buttons';
 import { DiscoverSheet } from '../components/discover-sheet';
-import { BackButton, Header } from '../components/header';
+import { BackButton, Header, HeaderHeight } from '../components/header';
 import { Centered } from '../components/layout';
 import { QRCodeScanner } from '../components/qrcode-scanner';
 import {
@@ -21,7 +21,6 @@ const QRScannerScreen = ({
   enableScanning,
   isCameraAuthorized,
   isFocused,
-  modalVisible,
   onPressBackButton,
   onPressPasteSessionUri,
   onScanSuccess,
@@ -35,9 +34,7 @@ const QRScannerScreen = ({
   const insets = useSafeArea();
   return (
     <View>
-      {discoverSheetAvailable ? (
-        <DiscoverSheet modalVisible={modalVisible} />
-      ) : null}
+      {discoverSheetAvailable ? <DiscoverSheet /> : null}
       <Centered
         {...position.sizeAsObject('100%')}
         backgroundColor={colors.appleBlue}
@@ -47,7 +44,7 @@ const QRScannerScreen = ({
         <QRCodeScanner
           {...props}
           contentPositionBottom={sheetHeight}
-          contentPositionTop={Header.height}
+          contentPositionTop={HeaderHeight}
           enableCamera={isFocused}
           enableScanning={enableScanning}
           isCameraAuthorized={isCameraAuthorized}

@@ -70,7 +70,7 @@ const RestoreSheetFirstStep = ({
         <SheetRow as={ButtonPressAnimation} onPress={onIcloudRestore}>
           <Column>
             <IcloudIcon />
-            <Title>Restore with iCloud </Title>
+            <Title>Restore from iCloud </Title>
             <DescriptionText>You have 2 wallets backed up</DescriptionText>
           </Column>
           <Row flex={1} justify="end" align="center" marginRight={19}>

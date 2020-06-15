@@ -9,8 +9,6 @@ export { default as withCoinRecentlyPinned } from './withCoinRecentlyPinned';
 export { default as withContacts } from './withContacts';
 export { default as withDeepLink } from './withDeepLink';
 export { default as withEditOptions } from './withEditOptions';
-export { default as withFabSelection } from './withFabSelection';
-export { default as withFabSendAction } from './withFabSendAction';
 export { default as withMessageSigningScreen } from './withMessageSigningScreen';
 export { default as withNeverRerender } from './withNeverRerender';
 export { default as withOpenBalances } from './withOpenBalances';
@@ -21,7 +19,6 @@ export { default as withRotationForDirection } from './withRotationForDirection'
 export { default as withSafeAreaViewInsetValues } from './withSafeAreaViewInsetValues';
 export { default as withSelectedInput } from './withSelectedInput';
 export { default as withStatusBarStyle } from './withStatusBarStyle';
-export { default as withTransitionProps } from './withTransitionProps';
 export { default as withWalletConnectConfirmationModal } from './withWalletConnectConfirmationModal';
 export { default as withWalletConnectConnections } from './withWalletConnectConnections';
 export { default as withWalletConnectOnSessionRequest } from './withWalletConnectOnSessionRequest';

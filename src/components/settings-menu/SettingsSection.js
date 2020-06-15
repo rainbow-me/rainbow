@@ -1,6 +1,12 @@
 import { get } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
-import { InteractionManager, Linking, ScrollView, View } from 'react-native';
+import {
+  InteractionManager,
+  Linking,
+  NativeModules,
+  ScrollView,
+  View,
+} from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
@@ -30,6 +36,8 @@ import {
   ListItemDivider,
 } from '../list';
 import { Emoji, Text } from '../text';
+
+const { RainbowRequestReview } = NativeModules;
 
 const SettingsExternalURLs = {
   review:
@@ -118,19 +126,28 @@ const SettingsSection = ({
   }, [onPressHiddenFeature]);
 
   const onPressReview = useCallback(async () => {
-    const maxRequestCount = 2;
-    const count = await getAppStoreReviewCount();
-    const shouldDeeplinkToAppStore =
-      count >= maxRequestCount || !StoreReview.isAvailable;
-
-    if (shouldDeeplinkToAppStore && !isEmulatorSync()) {
-      Linking.openURL(SettingsExternalURLs.review);
-    } else {
+    if (RainbowRequestReview) {
       onCloseModal();
-      InteractionManager.runAfterInteractions(StoreReview.requestReview);
-    }
+      RainbowRequestReview.requestReview(handled => {
+        if (!handled) {
+          Linking.openURL(SettingsExternalURLs.review);
+        }
+      });
+    } else {
+      const maxRequestCount = 2;
+      const count = await getAppStoreReviewCount();
+      const shouldDeeplinkToAppStore =
+        count >= maxRequestCount || !StoreReview.isAvailable;
 
-    return saveAppStoreReviewCount(count + 1);
+      if (shouldDeeplinkToAppStore && !isEmulatorSync()) {
+        Linking.openURL(SettingsExternalURLs.review);
+      } else {
+        onCloseModal();
+        InteractionManager.runAfterInteractions(StoreReview.requestReview);
+      }
+
+      return saveAppStoreReviewCount(count + 1);
+    }
   }, [onCloseModal]);
 
   const onPressTwitter = useCallback(async () => {

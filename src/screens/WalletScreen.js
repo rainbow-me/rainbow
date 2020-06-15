@@ -1,20 +1,21 @@
 import { get } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
-
+import styled from 'styled-components/primitives';
+import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
-import { FabWrapper } from '../components/fab';
-import ExchangeFab from '../components/fab/ExchangeFab';
-import SendFab from '../components/fab/SendFab';
+import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
 import {
   CameraHeaderButton,
+  DiscoverHeaderButton,
   Header,
-  HeaderGestureBlocker,
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
+import { discoverSheetAvailable } from '../config/experimental';
 import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import networkInfo from '../helpers/networkInfo';
 import {
@@ -26,14 +27,26 @@ import {
   useWallets,
   useWalletSectionsData,
 } from '../hooks';
-import { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { position } from '../styles';
+
+const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
+  endingOpacity: 0.4,
+  pointerEvents: isVisible ? 'none' : 'auto',
+  startingOpacity: 1,
+}))`
+  padding-top: 5;
+  z-index: 1;
+`;
+
+const WalletPage = styled(Page)`
+  ${position.size('100%')};
+  flex: 1;
+`;
 
 export default function WalletScreen() {
   const [initialized, setInitialized] = useState(false);
   const initializeWallet = useInitializeWallet();
-  const navigation = useNavigation();
   const refreshAccountData = useRefreshAccountData();
   const { isCoinListEdited } = useCoinListEdited();
   const { updateKeyboardHeight } = useKeyboardHeight();
@@ -65,12 +78,16 @@ export default function WalletScreen() {
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
-  const fabs = get(networkInfo[network], 'exchange_enabled')
-    ? [ExchangeFab, SendFab]
-    : [SendFab];
+  const fabs = useMemo(
+    () =>
+      get(networkInfo[network], 'exchange_enabled')
+        ? [ExchangeFab, SendFab]
+        : [SendFab],
+    [network]
+  );
 
   return (
-    <Page {...position.sizeAsObject('100%')} flex={1}>
+    <WalletPage>
       {/* Line below appears to be needed for having scrollViewTracker persistent while
       reattaching of react subviews */}
       <Animated.Code exec={scrollViewTracker} />
@@ -79,15 +96,19 @@ export default function WalletScreen() {
         fabs={fabs}
         isCoinListEdited={isCoinListEdited}
         isReadOnlyWallet={isReadOnlyWallet}
-        scrollViewTracker={scrollViewTracker}
-        sections={sections}
       >
-        <HeaderGestureBlocker enabled={isCoinListEdited}>
-          <Header marginTop={5} justify="space-between">
-            <ProfileHeaderButton />
-            <CameraHeaderButton navigation={navigation} />
-          </Header>
-        </HeaderGestureBlocker>
+        <PanGestureHandler enabled={isCoinListEdited}>
+          <HeaderOpacityToggler isVisible={isCoinListEdited}>
+            <Header justify="space-between">
+              <ProfileHeaderButton />
+              {discoverSheetAvailable ? (
+                <DiscoverHeaderButton />
+              ) : (
+                <CameraHeaderButton />
+              )}
+            </Header>
+          </HeaderOpacityToggler>
+        </PanGestureHandler>
         <AssetList
           fetchData={refreshAccountData}
           isEmpty={isEmpty}
@@ -103,6 +124,6 @@ export default function WalletScreen() {
           title="Creating account..."
         />
       )}
-    </Page>
+    </WalletPage>
   );
 }

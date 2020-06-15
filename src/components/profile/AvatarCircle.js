@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
@@ -7,12 +6,11 @@ import { ButtonPressAnimation } from '../animations';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
 
-const ProfileActionSize = 65;
+const AvatarCircleSize = 65;
 
 const AvatarCircleView = styled(Flex)`
-  height: 65px;
+  ${position.size(AvatarCircleSize)};
   margin-bottom: 16px;
-  width: 65px;
 `;
 
 const FirstLetter = styled(Text).attrs({
@@ -26,13 +24,13 @@ const FirstLetter = styled(Text).attrs({
   width: 65.5;
 `;
 
-const ProfileAction = ({
-  accountColor,
-  accountSymbol,
+export default function AvatarCircle({
+  accountColor = 0,
+  accountSymbol = '🤔',
   isAvatarPickerAvailable,
   onPress,
   overlayStyles,
-}) => {
+}) {
   const shadows = useMemo(
     () => ({
       default: [
@@ -56,9 +54,9 @@ const ProfileAction = ({
       scaleTo={isAvatarPickerAvailable ? 0.9 : 1}
     >
       <ShadowStack
-        {...position.sizeAsObject(ProfileActionSize)}
+        {...position.sizeAsObject(AvatarCircleSize)}
         backgroundColor={overlayStyles ? 'rgb(51, 54, 59)' : colors.white}
-        borderRadius={ProfileActionSize}
+        borderRadius={AvatarCircleSize}
         marginBottom={12}
         shadows={shadows[overlayStyles ? 'overlay' : 'default']}
       >
@@ -69,19 +67,4 @@ const ProfileAction = ({
       </ShadowStack>
     </ButtonPressAnimation>
   );
-};
-
-ProfileAction.propTypes = {
-  accountColor: PropTypes.number,
-  accountSymbol: PropTypes.string,
-  isAvatarPickerAvailable: PropTypes.bool,
-  onPress: PropTypes.func,
-  overlayStyles: PropTypes.bool,
-};
-
-ProfileAction.defaultProps = {
-  accountColor: 0,
-  accountSymbol: '🤔',
-};
-
-export default ProfileAction;
+}

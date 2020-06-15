@@ -417,7 +417,7 @@ export function SlackBottomSheetContent() {
   );
 }
 
-function DiscoverSheet({ modalVisible }) {
+function DiscoverSheet() {
   const [initialPosition, setInitialPosition] = useState('long');
   const position = useRef({ x: 0, y: 0 });
   const setPosition = useCallback(
@@ -429,7 +429,6 @@ function DiscoverSheet({ modalVisible }) {
   return Platform.OS === 'ios' ? (
     <SlackBottomSheet
       onDidDismiss={notifyUnmountBottomSheet}
-      visible={modalVisible}
       topOffset={100}
       unmountAnimation={false}
       initialAnimation={false}

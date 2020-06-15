@@ -1,202 +1,270 @@
 {
   "ETH": {
+    "color": "#29292E",
     "name": "Ethereum"
   },
   "0xE41d2489571d322189246DaFA5ebDe1F4699F498": {
+    "color": "#29292E",
     "name": "0x"
   },
   "0x960b236A07cf122663c4303350609A66A7B288C0": {
+    "color": "#06BCE5",
     "name": "Aragon"
   },
   "0x1985365e9f78359a9B6AD760e32412f4a445E862": {
+    "color": "#602A52",
     "name": "Augur"
   },
   "0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C": {
+    "color": "#00224D",
     "name": "Bancor"
   },
   "0x0D8775F648430679A709E98d2b0Cb6250d2887EF": {
+    "color": "#FF5000",
     "name": "Basic Attention Token"
   },
   "0x107c4504cd79C5d2696Ea0030a8dD4e92601B82e": {
+    "color": "#6067F1",
     "name": "Bloom"
   },
   "0x514910771AF9Ca656af840dff83E8264EcF986CA": {
+    "color": "#1A56F0",
     "name": "Chainlink"
   },
   "0x41e5560054824eA6B0732E656E3Ad64E20e94E45": {
+    "color": "#3AB03E",
     "name": "Civic"
   },
   "0x6c8c6b02e7b2be14d4fa6022dfd6d75921d90e4e": {
+    "color": "#9669ED",
     "name": "Compound Basic Attention Token",
     "symbol": "cBAT"
   },
   "0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643": {
+    "color": "#9669ED",
     "name": "Compound Dai",
     "symbol": "cDAI"
   },
   "0xF5DCe57282A584D2746FaF1593d3121Fcac444dC": {
+    "color": "#9669ED",
     "name": "Compound Sai",
     "symbol": "cSAI"
   },
   "0x39aa39c021dfbae8fac545936693ac917d5e7563": {
+    "color": "#9669ED",
     "name": "Compound USD Coin",
     "symbol": "cUSDC"
   },
   "0xc11b1268c1a384e55c48c2391d8d480264a3a7f4": {
+    "color": "#9669ED",
     "name": "Compound Wrapped Bitcoin",
     "symbol": "cWBTC"
   },
   "0xB4272071eCAdd69d933AdcD19cA99fe80664fc08": {
+    "color": "#CE0E2D",
     "name": "CryptoFranc"
   },
   "0x6b175474e89094c44da98b954eedeac495271d0f": {
+    "color": "#F0B340",
     "name": "Dai"
   },
   "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf": {
+    "color": "#25292E",
     "name": "DAOstack"
   },
   "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942": {
+    "color": "#FF2D55",
     "name": "Decentraland"
   },
   "0xe0b7927c4af23765cb51314a0e0521a9645f0e2a": {
+    "color": "#E0A83A",
     "name": "DigixDAO"
   },
   "0x4f3AfEC4E5a3F2A6a1A411DEF7D7dFe50eE057bF": {
+    "color": "#E0A83A",
     "name": "Digix Gold"
   },
   "0x4946Fcea7C692606e8908002e55A582af44AC121": {
+    "color": "#D79C93",
     "name": "FOAM"
   },
   "0x493c57c4763932315a328269e1adad09653b9081": {
+    "color": "#0F6AD7",
     "name": "Fulcrum Dai",
     "symbol": "iDAI"
   },
   "0x14094949152eddbfcd073717200da82fed8dc960": {
+    "color": "#0F6AD7",
     "name": "Fulcrum Sai",
     "symbol": "iSAI"
   },
   "0xf013406a0b1d544238083df0b93ad0d2cbe0f65f": {
+    "color": "#0F6AD7",
     "name": "Fulcrum USD Coin",
     "symbol": "iUSDC"
   },
   "0x419D0d8BdD9aF5e606Ae2232ed285Aff190E711b": {
+    "color": "#E40057",
     "name": "FunFair"
   },
   "0x6810e776880C02933D47DB1b9fc05908e5386b96": {
+    "color": "#00A6C4",
     "name": "Gnosis"
   },
   "0xa74476443119A942dE498590Fe1f2454d7D4aC0d": {
+    "color": "#002D64",
     "name": "Golem"
   },
   "0x12B19D3e2ccc14Da04FAe33e63652ce469b3F2FD": {
+    "color": "#53B7E8",
     "name": "Grid+"
   },
+  "0x2b591e99afe9f32eaa6214f7b7629768c40eeb39": {
+    "color": "#FF47A9",
+    "name": "HEX",
+    "shadowColor": "#FF9355",
+  },
   "0x6c6EE5e31d828De241282B9606C8e98Ea48526E2": {
+    "color": "#8834FF",
     "name": "Holo"
   },
   "0x607F4C5BB672230e8672085532f7e901544a7375": {
+    "color": "#EBBC2F",
     "name": "iExec"
   },
   "0x93ED3FBe21207Ec2E8f2d3c3de6e058Cb73Bc04d": {
+    "color": "#A2A1A3",
     "name": "Kleros"
   },
   "0xdd974D5C2e2928deA5F71b9825b8b646686BD200": {
-    "name": "Kyber Network"
+    "color": "#31CB9E",
+    "name": "Kyber"
   },
   "0x58b6A8A3302369DAEc383334672404Ee733aB239": {
+    "color": "#03E082",
     "name": "Livepeer"
   },
   "0xA4e8C3Ec456107eA67d3075bF9e3DF3A75823DB0": {
+    "color": "#4BC0C8",
     "name": "Loom"
   },
   "0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD": {
+    "color": "#005FFF",
     "name": "Loopring"
   },
   "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2": {
+    "color": "#1AAB9B",
     "name": "Maker"
   },
   "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0": {
-    "name": "Matic Network"
+    "color": "#2891F9",
+    "name": "Matic"
   },
   "0xec67005c4E498Ec7f55E092bd1d35cbC47C91892": {
+    "color": "#00224D",
     "name": "Melon"
   },
   "0xaAAf91D9b90dF800Df4F55c205fd6989c977E73a": {
+    "color": "#25292E",
     "name": "Monolith"
   },
   "0xB62132e35a6c13ee1EE0f84dC5d40bad8d815206": {
+    "color": "#2891F9",
     "name": "Nexo"
   },
   "0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671": {
+    "color": "#25292E",
     "name": "Numeraire"
   },
   "0x8E870D67F660D95d5be530380D0eC0bd388289E1": {
+    "color": "#4EAD46",
     "name": "Paxos Standard"
   },
   "0x6758B7d441a9739b98552B373703d8d3d14f9e62": {
-    "name": "POA Network",
+    "color": "#5332A0",
+    "name": "POA",
     "symbol": "POA20"
   },
   "0x255Aa6DF07540Cb5d3d297f0D0D4D84cb52bc8e6": {
+    "color": "#25292E",
     "name": "Raiden"
   },
   "0x408e41876cCCDC0F92210600ef50372656052a38": {
-    "name": "Republic"
+    "color": "#00224D",
+    "name": "Ren"
   },
   "0xB4EFd85c19999D84251304bDA99E90B92300Bd93": {
+    "color": "#FF626D",
     "name": "Rocket Pool"
   },
   "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359": {
+    "color": "#FEBE44",
     "name": "Sai",
     "symbol": "SAI"
   },
   "0x06f65b8cfcb13a9fe37d836fe9708da38ecb29b2": {
+    "color": "#1CD100",
     "name": "Saint Fame"
   },
   "0x4156D3342D5c385a87D264F90653733592000581": {
+    "color": "#03DBA9",
     "name": "SALT"
   },
   "0x42d6622deCe394b54999Fbd73D108123806f6a18": {
+    "color": "#FF3B81",
     "name": "SpankChain"
   },
   "0x744d70FDBE2Ba4CF95131626614a1763DF805B9E": {
+    "color": "#4360DF",
     "name": "Status"
   },
   "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC": {
+    "color": "#2683FF",
     "name": "Storj"
   },
   "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f": {
+    "color": "#25292E",
     "name": "Synthetix"
   },
   "0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb": {
+    "color": "#53B267",
     "name": "Synthetix ETH"
   },
   "0x57ab1ec28d129707052df4df418d58a2d46d5f51": {
+    "color": "#25292E",
     "name": "Synthetix USD"
   },
   "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+    "color": "#22A079",
     "name": "Tether"
   },
   "0x0000000000085d4780b73119b644ae5ecd22b376": {
+    "color": "#002868",
     "name": "TrueUSD"
   },
   "0x23B608675a2B2fB1890d3ABBd85c5775c51691d5": {
+    "color": "#E15EE5",
     "name": "Unisocks Edition 0"
   },
   "0x09cabEC1eAd1c0Ba254B09efb3EE13841712bE14": {
+    "color": "#E15EE5",
     "name": "Uniswap V1",
     "symbol": "UNI-V1:SAI"
   },
   "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48": {
+    "color": "#2775CA",
     "name": "USD Coin"
   },
   "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599": {
+    "color": "#FF9900",
     "name": "Wrapped Bitcoin"
   },
   "0x09fE5f0236F0Ea5D930197DCE254d77B04128075": {
+    "color": "#FF8FE5",
     "name": "Wrapped CryptoKitties"
   },
   "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": {
+    "color": "#25292E",
     "name": "Wrapped Ether"
   }
 }

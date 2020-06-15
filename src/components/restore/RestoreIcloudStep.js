@@ -122,7 +122,7 @@ const RestoreIcloudStep = () => {
       }
 
       if (passwordIsValid || password === '') {
-        newLabel = `􀑙 Restore with iCloud`;
+        newLabel = `􀑙 Restore from iCloud`;
       }
     }
 

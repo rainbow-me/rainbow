@@ -1,7 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-
 import styled from 'styled-components/primitives';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 import { useAccountProfile, useClipboard } from '../../hooks';
