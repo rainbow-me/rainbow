@@ -1,6 +1,5 @@
 import { interpolatePath } from 'd3-interpolate-path';
 import * as shape from 'd3-shape';
-// import * as interpolatePath from 'd3-interpolate-path';
 import { maxBy, minBy } from 'lodash';
 import React, { Component } from 'react';
 import { Animated, View } from 'react-native';
@@ -104,19 +103,11 @@ export default class AnimatedChart extends Component {
   };
 
   handleAnimation = () => {
-    if (!this.animatedIsDone) {
-      Animated.timing(this.state.animation, {
-        duration: chartAnimationDuration,
-        toValue: 1,
-      }).start();
-      this.animatedIsDone = true;
-    } else {
-      Animated.timing(this.state.animation, {
-        duration: chartAnimationDuration,
-        toValue: 0,
-      }).start();
-      this.animatedIsDone = false;
-    }
+    Animated.timing(this.state.animation, {
+      duration: chartAnimationDuration,
+      toValue: this.animatedIsDone ? 0 : 1,
+    }).start();
+    this.animatedIsDone = !this.animatedIsDone;
   };
 
   render() {

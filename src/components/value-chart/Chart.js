@@ -36,7 +36,7 @@ const Chart = ({ asset, color, latestPrice, setChartPrice, ...props }) => {
   }, [chart, hasChart]);
 
   const currentChartIndex = Object.values(ChartTypes).indexOf(chartType);
-  const amountOfPathPoints = 30; // 👈️ TODO make this dynamic
+  const amountOfPathPoints = 80; // 👈️ TODO make this dynamic
 
   return (
     <Column
