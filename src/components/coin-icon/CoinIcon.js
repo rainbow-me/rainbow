@@ -21,6 +21,7 @@ const CoinIcon = ({
   isPinned,
   showShadow = true,
   size = CoinIconSize,
+  shadow = coinIconShadow,
   symbol,
   ...props
 }) =>
@@ -34,7 +35,7 @@ const CoinIcon = ({
         {...borders.buildCircleAsObject(size)}
         backgroundColor={bgColor}
         opacity={isHidden ? 0.4 : 1}
-        shadows={coinIconShadow}
+        shadows={shadow}
       >
         <ReactCoinIcon
           address={address || ''}

@@ -3,6 +3,8 @@ import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import { darkMode } from '../config/debug';
 
+const buildRgba = (color, alpha) => `rgba(${chroma(color).rgb()},${alpha})`;
+
 let base = {
   appleBlue: '#0E76FD', // '14, 118, 253'
   black: '#000000', // '0, 0, 0'
@@ -61,6 +63,11 @@ const assetIcon = {
   red: '#C95050', // '201, 80, 80',
 };
 
+const lightGreyGradient = [
+  buildRgba('#ECF1F5', 0.5),
+  buildRgba('#DFE4EB', 0.5),
+];
+
 const sendScreen = {
   brightBlue: base.appleBlue, // 14, 118, 253
   grey: '#D8D8D8', // '216, 216, 216'
@@ -89,8 +96,6 @@ const vendor = {
   ledger: '#2F3137', // '47, 49, 55'
   walletconnect: '#4099FF', // '64, 153, 255'
 };
-
-const buildRgba = (color, alpha) => `rgba(${chroma(color).rgb()},${alpha})`;
 
 const isColorLight = targetColor =>
   chroma(targetColor || base.white).luminance() > 0.5;
@@ -155,6 +160,7 @@ const colors = {
   getFallbackTextColor,
   getTextColorForBackground,
   isColorLight,
+  lightGreyGradient,
   listHeaders,
   sendScreen,
   uniswapInvestmentCards,

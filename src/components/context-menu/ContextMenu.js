@@ -1,5 +1,4 @@
 import { omit, pick } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useRef, useState } from 'react';
 import ActionSheet from 'react-native-actionsheet';
 import { padding } from '../../styles';
@@ -23,7 +22,7 @@ const ContextButton = props => (
   </Centered>
 );
 
-function ContextMenu({
+export default function ContextMenu({
   activeOpacity = 0.2,
   cancelButtonIndex,
   children,
@@ -50,9 +49,7 @@ function ContextMenu({
     setTimeout(() => {
       if (isOpen) return;
       setIsOpen(true);
-      if (actionsheetRef.current && actionsheetRef.current.show) {
-        actionsheetRef.current.show();
-      }
+      actionsheetRef.current?.show();
     }, 40);
   }, [isOpen]);
 
@@ -80,14 +77,3 @@ function ContextMenu({
     </Fragment>
   );
 }
-
-ContextMenu.propTypes = {
-  activeOpacity: PropTypes.number,
-  cancelButtonIndex: PropTypes.number,
-  children: PropTypes.node,
-  dynamicOptions: PropTypes.func,
-  onPressActionSheet: PropTypes.func.isRequired,
-  options: PropTypes.arrayOf(PropTypes.string).isRequired,
-};
-
-export default ContextMenu;

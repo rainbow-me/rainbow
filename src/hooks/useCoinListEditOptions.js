@@ -1,6 +1,7 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  clearSelectedCoins,
   pushSelectedCoin as rawPushSelectedCoin,
   removeSelectedCoin as rawRemoveSelectedCoin,
   setHiddenCoins as rawSetHiddenCoins,
@@ -51,6 +52,9 @@ export default function useCoinListEditOptions() {
     data => dispatch(rawSetPinnedCoins(data)),
     [dispatch]
   );
+
+  // Clear selection queue on unmount.
+  useEffect(() => () => dispatch(clearSelectedCoins()), [dispatch]);
 
   return {
     pushSelectedCoin,

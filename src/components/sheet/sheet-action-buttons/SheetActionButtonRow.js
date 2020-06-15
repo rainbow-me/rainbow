@@ -1,6 +1,13 @@
 import React, { Children } from 'react';
+import styled from 'styled-components/primitives';
 import { padding } from '../../../styles';
 import { FlexItem, Row } from '../../layout';
+
+const Container = styled(Row)`
+  ${padding(19, 11.5, 24)}
+  width: 100%;
+  z-index: 2;
+`;
 
 function renderButton(child) {
   if (!child) return null;
@@ -8,9 +15,5 @@ function renderButton(child) {
 }
 
 export default function SheetActionButtonRow({ children }) {
-  return (
-    <Row css={padding(19, 11.5, 24)} width="100%" zIndex={2}>
-      {Children.map(children, renderButton)}
-    </Row>
-  );
+  return <Container>{Children.map(children, renderButton)}</Container>;
 }

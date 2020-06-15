@@ -1,27 +1,18 @@
-import { get, isEmpty } from 'lodash';
-import React, { useMemo, useState } from 'react';
-import { Easing } from 'react-native-reanimated';
-import {
-  bin,
-  bInterpolateColor,
-  useTimingTransition,
-} from 'react-native-redash';
+import { isEmpty } from 'lodash';
+import React, { useMemo } from 'react';
 import ChartTypes from '../../helpers/chartTypes';
-import { greaterThan, toFixedDecimals } from '../../helpers/utilities';
 import { useCharts } from '../../hooks';
 import { colors } from '../../styles';
 import { Column } from '../layout';
 import TimespanSelector from './TimespanSelector';
 import ValueChart from './ValueChart';
-import ValueText from './ValueText';
 
 const chartStroke = { detailed: 1.5, simplified: 3 };
 
-const Chart = ({ asset, ...props }) => {
+const Chart = ({ asset, latestPrice, setChartPrice, ...props }) => {
   const { chart, chartType, updateChartType } = useCharts(asset);
 
   const hasChart = !isEmpty(chart);
-  const change = get(asset, 'price.relative_change_24h', 0);
 
   const chartData = useMemo(() => {
     if (!chart || !hasChart) return [];
@@ -38,23 +29,6 @@ const Chart = ({ asset, ...props }) => {
     });
   }, [chart, hasChart]);
 
-  const [currentPrice, setCurrentPrice] = useState(0);
-  const positiveChange = greaterThan(change, 0);
-
-  const timespanIndicatorColorAnimation = useTimingTransition(
-    bin(positiveChange),
-    {
-      duration: 100,
-      ease: Easing.out(Easing.ease),
-    }
-  );
-
-  const timespanIndicatorColor = bInterpolateColor(
-    timespanIndicatorColorAnimation,
-    colors.red,
-    colors.chartGreen
-  );
-
   const currentChartIndex = Object.values(ChartTypes).indexOf(chartType);
   const amountOfPathPoints = 30; // 👈️ TODO make this dynamic
 
@@ -66,25 +40,20 @@ const Chart = ({ asset, ...props }) => {
       width="100%"
       {...props}
     >
-      <ValueText
-        change={toFixedDecimals(change, 2)}
-        direction={positiveChange}
-        headerText="PRICE"
-        value={currentPrice}
-      />
       <ValueChart
         amountOfPathPoints={amountOfPathPoints}
-        barColor={positiveChange ? colors.chartGreen : colors.red}
-        currentDataSource={0}
+        barColor={asset?.color}
+        currentDataSource={currentChartIndex}
+        currentValue={latestPrice}
         data={chartData}
         enableSelect
         importantPointsIndexInterval={amountOfPathPoints}
         mode="gesture-managed"
-        onValueUpdate={setCurrentPrice}
+        onValueUpdate={setChartPrice}
         stroke={chartStroke}
       />
       <TimespanSelector
-        color={timespanIndicatorColor}
+        color={asset?.color}
         defaultIndex={currentChartIndex}
         isLoading={false}
         reloadChart={updateChartType}

@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
-import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Linking, Share } from 'react-native';
+import styled from 'styled-components/primitives';
 import { buildUniqueTokenName } from '../../../helpers/assets';
 import { colors, padding } from '../../../styles';
 import { magicMemo } from '../../../utils';
@@ -10,14 +10,29 @@ import { ContextCircleButton } from '../../context-menu';
 import { ColumnWithMargins, FlexItem, Row, RowWithMargins } from '../../layout';
 import { Text } from '../../text';
 
-const paddingHorizontal = 19;
-const paddingVertical = 3;
-
 const contextButtonOptions = [
   'Share',
   'View on OpenSea',
   lang.t('wallet.action.cancel'),
 ];
+
+const paddingHorizontal = 19;
+
+const Container = styled(Row).attrs({
+  align: 'center',
+  justify: 'space-between',
+})`
+  ${padding(14, paddingHorizontal, paddingHorizontal)};
+`;
+
+const HeadingColumn = styled(ColumnWithMargins).attrs({
+  align: 'start',
+  justify: 'start',
+  margin: 3,
+  shrink: 1,
+})`
+  padding-right: ${paddingHorizontal};
+`;
 
 const UniqueTokenExpandedStateHeader = ({ asset }) => {
   const handleActionSheetPress = useCallback(
@@ -36,19 +51,9 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
   );
 
   return (
-    <Row
-      align="center"
-      css={padding(paddingVertical, paddingHorizontal, paddingHorizontal)}
-      justify="space-between"
-    >
-      <ColumnWithMargins
-        align="start"
-        flexShrink={1}
-        justify="start"
-        margin={paddingVertical}
-        paddingRight={paddingHorizontal}
-      >
-        <RowWithMargins align="center" margin={paddingVertical}>
+    <Container>
+      <HeadingColumn>
+        <RowWithMargins align="center" margin={3}>
           <Text
             color={colors.blueGreyDark50}
             letterSpacing="uppercase"
@@ -65,18 +70,14 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
             {buildUniqueTokenName(asset)}
           </Text>
         </FlexItem>
-      </ColumnWithMargins>
+      </HeadingColumn>
       <ContextCircleButton
         flex={0}
         onPressActionSheet={handleActionSheetPress}
         options={contextButtonOptions}
       />
-    </Row>
+    </Container>
   );
-};
-
-UniqueTokenExpandedStateHeader.propTypes = {
-  asset: PropTypes.object,
 };
 
 export default magicMemo(UniqueTokenExpandedStateHeader, 'asset');

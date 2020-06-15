@@ -7,7 +7,7 @@ import ContextMenu from './ContextMenu';
 
 const CircleButton = styled(RadialGradient).attrs({
   center: [0, 20],
-  colors: [colors.alpha('#ECF1F5', 0.4), colors.alpha('#DFE4EB', 0.5)],
+  colors: colors.lightGreyGradient,
 })`
   ${borders.buildCircle(40)};
   ${position.centered};

@@ -1,10 +1,12 @@
-import React from 'react';
+import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
+import { neverRerender } from '../../utils';
 import Divider from '../Divider';
 
-const SheetDivider = () => (
-  <Divider color={colors.rowDividerLight} zIndex={1} />
-);
+const SheetDivider = styled(Divider).attrs({
+  color: colors.rowDividerLight,
+})`
+  z-index: 1;
+`;
 
-const neverRerender = () => true;
-export default React.memo(SheetDivider, neverRerender);
+export default neverRerender(SheetDivider);

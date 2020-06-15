@@ -4,7 +4,11 @@ import Routes from '../../../navigation/routesNames';
 import { colors } from '../../../styles';
 import SheetActionButton from './SheetActionButton';
 
-export default function SwapActionButton({ inputType, ...props }) {
+export default function SwapActionButton({
+  color = colors.swapPurple,
+  inputType,
+  ...props
+}) {
   const navigate = useExpandedStateNavigation(inputType);
   const handlePress = useCallback(
     () =>
@@ -21,7 +25,7 @@ export default function SwapActionButton({ inputType, ...props }) {
   return (
     <SheetActionButton
       {...props}
-      color={colors.swapPurple}
+      color={color}
       label="􀖅 Swap"
       onPress={handlePress}
     />
