@@ -423,6 +423,7 @@ export default class Chart extends PureComponent {
                 const { x, y } = getPointAtLength(path, length);
                 this.translateY = multiply(y, -1);
                 this.translateX = x;
+                this.opacity.setValue(0);
                 this.setState({ path });
               }}
             />
