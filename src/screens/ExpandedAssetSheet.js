@@ -6,7 +6,7 @@ import styled from 'styled-components/primitives';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import {
   ChartExpandedState,
-  InvestmentExpandedState,
+  LiquidityPoolExpandedState,
   UniqueTokenExpandedState,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
@@ -16,7 +16,7 @@ import { position } from '../styles';
 const ScreenTypes = {
   token: ChartExpandedState,
   unique_token: UniqueTokenExpandedState,
-  uniswap: InvestmentExpandedState,
+  uniswap: LiquidityPoolExpandedState,
 };
 
 const Container = styled(Centered).attrs({ direction: 'column' })`

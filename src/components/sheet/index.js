@@ -10,8 +10,10 @@ export { default as SheetSubtitleCycler } from './SheetSubtitleCycler';
 export { default as SheetTitle } from './SheetTitle';
 export { default as SlackSheet } from './SlackSheet';
 export {
+  DepositActionButton,
   SendActionButton,
   SheetActionButton,
   SheetActionButtonRow,
   SwapActionButton,
+  WithdrawActionButton,
 } from './sheet-action-buttons';

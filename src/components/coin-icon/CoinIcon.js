@@ -8,7 +8,7 @@ import CoinIconIndicator from './CoinIconIndicator';
 
 export const CoinIconSize = 40;
 
-const coinIconShadow = [
+const defaultShadow = [
   [0, 4, 6, colors.dark, 0.04],
   [0, 1, 3, colors.dark, 0.08],
 ];
@@ -21,7 +21,7 @@ const CoinIcon = ({
   isPinned,
   showShadow = true,
   size = CoinIconSize,
-  shadow = coinIconShadow,
+  shadow = defaultShadow,
   symbol,
   ...props
 }) =>

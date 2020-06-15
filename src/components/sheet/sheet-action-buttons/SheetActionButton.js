@@ -51,13 +51,14 @@ const SheetActionButton = ({
   textColor = colors.white,
   ...props
 }) => {
-  const shadowsForButtonColor = useMemo(
-    () => [
-      [0, 10, 30, colors.dark, 0.2],
-      [0, 5, 15, color, 0.4],
-    ],
-    [color]
-  );
+  const shadowsForButtonColor = useMemo(() => {
+    const isWhite = color === colors.white;
+
+    return [
+      [0, 10, 30, colors.dark, isWhite ? 0.12 : 0.2],
+      [0, 5, 15, isWhite ? colors.dark : color, isWhite ? 0.08 : 0.4],
+    ];
+  }, [color]);
 
   return (
     <Button as={ButtonPressAnimation} size={size} {...props}>

@@ -322,7 +322,7 @@ export const getLiquidityInfo = async (
       );
 
       return {
-        balance,
+        balance: convertRawAmountToDecimalFormat(balance),
         ethBalance,
         ethReserve,
         token: {
@@ -332,7 +332,7 @@ export const getLiquidityInfo = async (
           symbol,
         },
         tokenAddress,
-        totalSupply,
+        totalSupply: convertRawAmountToDecimalFormat(totalSupply),
         uniqueId: `uniswap_${tokenAddress}`,
       };
     } catch (error) {
