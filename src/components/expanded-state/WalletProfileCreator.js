@@ -15,13 +15,12 @@ import TouchableBackdrop from '../TouchableBackdrop';
 import { ButtonPressAnimation } from '../animations';
 import { ContactAvatar } from '../contacts';
 import CopyTooltip from '../copy-tooltip';
+import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Centered, KeyboardFixedOpenLayout, RowWithMargins } from '../layout';
 import { Text, TruncatedAddress } from '../text';
 import PlaceholderText from '../text/PlaceholderText';
-import FloatingPanels from './FloatingPanels';
-import { AssetPanel } from './asset-panel';
 
 const sx = StyleSheet.create({
   addressAbbreviation: {

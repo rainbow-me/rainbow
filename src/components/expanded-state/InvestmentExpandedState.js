@@ -1,10 +1,8 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import { pure } from 'recompact';
 import { margin, position } from '../../styles';
+import { FloatingPanels } from '../floating-panels';
 import { UniswapInvestmentCard } from '../investment-cards';
 import { Centered } from '../layout';
-import FloatingPanels from './FloatingPanels';
 
 const InvestmentExpandedState = ({ asset }) => (
   <Centered {...position.coverAsObject} flex={1} height="100%">
@@ -20,8 +18,4 @@ const InvestmentExpandedState = ({ asset }) => (
   </Centered>
 );
 
-InvestmentExpandedState.propTypes = {
-  asset: PropTypes.object,
-};
-
-export default pure(InvestmentExpandedState);
+export default React.memo(InvestmentExpandedState);

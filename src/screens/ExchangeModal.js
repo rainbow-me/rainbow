@@ -21,7 +21,7 @@ import {
   SlippageWarning,
 } from '../components/exchange';
 import SwapInfo from '../components/exchange/SwapInfo';
-import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
+import { FloatingPanel, FloatingPanels } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
