@@ -86,9 +86,9 @@ export default class AnimatedChart extends Component {
         this.listenerId = listenerId;
 
         setTimeout(() => {
+          nextProps.setCurrentPath(parsedPath);
           this.handleAnimation();
           setTimeout(() => {
-            nextProps.setCurrentPath(parsedPath);
             const path = pathInterpolate(this.animatedIsDone ? 1 : 0);
             this._path.setNativeProps({
               d: path,
