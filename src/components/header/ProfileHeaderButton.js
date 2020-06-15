@@ -12,7 +12,6 @@ export default function ProfileHeaderButton() {
   const { navigate } = useNavigation();
   const { pendingRequestCount } = useRequests();
   const { accountSymbol, accountColor } = useAccountProfile();
-
   const onPress = useCallback(() => navigate(Routes.PROFILE_SCREEN), [
     navigate,
   ]);
@@ -30,7 +29,7 @@ export default function ProfileHeaderButton() {
     >
       <Centered>
         <ContactAvatar
-          color={accountColor || colors.skeleton}
+          color={(isNaN(accountColor) && colors.skeleton) || accountColor}
           size="small"
           value={accountSymbol}
         />
