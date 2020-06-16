@@ -121,7 +121,7 @@ export const parseTransactions = (
   };
 };
 
-const transformUniswapRefund = internalTransactions => {
+const transformTradeRefund = internalTransactions => {
   const [txnsOut, txnsIn] = partition(
     internalTransactions,
     txn => txn.direction === DirectionTypes.out
@@ -241,11 +241,8 @@ const parseTransaction = (
     internalTransactions = [ethInternalTransaction];
   }
 
-  if (
-    transaction.type === TransactionTypes.trade &&
-    transaction.protocol === ProtocolTypes.uniswap.name
-  ) {
-    internalTransactions = transformUniswapRefund(internalTransactions);
+  if (transaction.type === TransactionTypes.trade) {
+    internalTransactions = transformTradeRefund(internalTransactions);
   }
   internalTransactions = internalTransactions.map((internalTxn, index) => {
     const address = toLower(get(internalTxn, 'asset.asset_code'));
