@@ -242,6 +242,10 @@
     "color": "#002868",
     "name": "TrueUSD"
   },
+  "0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828": {
+    "color": "#FF4A4A",
+    "name": "UMA"
+  },
   "0x23B608675a2B2fB1890d3ABBd85c5775c51691d5": {
     "color": "#E15EE5",
     "name": "Unisocks Edition 0"
