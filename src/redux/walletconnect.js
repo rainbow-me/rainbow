@@ -182,13 +182,15 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       );
 
       if (request) {
-        return Navigation.handleAction({
-          params: {
-            openAutomatically: true,
-            transactionDetails: request,
-          },
-          routeName: Routes.CONFIRM_REQUEST,
-        });
+        setTimeout(() => {
+          Navigation.handleAction({
+            params: {
+              openAutomatically: true,
+              transactionDetails: request,
+            },
+            routeName: Routes.CONFIRM_REQUEST,
+          });
+        }, 300);
       }
     }
   });
