@@ -140,8 +140,8 @@ export default async function runMigrations() {
   }
 
   for (let i = currentVersion; i < migrations.length; i++) {
-    logger.log(`Migrations: Runing migration ${i}`);
-    migrations[i].apply(null);
+    logger.log(`Migrations: Running migration ${i}`);
+    await migrations[i].apply(null);
     logger.log(`Migrations: Migration ${i} completed succesfully`);
     await setMigrationVersion(i + 1);
   }
