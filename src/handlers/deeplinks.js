@@ -34,8 +34,12 @@ function handleWalletConnect(uri) {
   const { query } = new URL(uri);
   if (uri && query) {
     dispatch(
-      walletConnectOnSessionRequest(uri, () => {
-        dispatch(walletConnectRemovePendingRedirect('connect'));
+      walletConnectOnSessionRequest(uri, status => {
+        if (status === 'reject') {
+          dispatch(walletConnectRemovePendingRedirect('reject'));
+        } else {
+          dispatch(walletConnectRemovePendingRedirect('connect'));
+        }
       })
     );
   } else {

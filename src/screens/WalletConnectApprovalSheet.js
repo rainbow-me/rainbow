@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import URL from 'url-parse';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { Centered, Row, RowWithMargins } from '../components/layout';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
-import { useAppState } from '../hooks';
 
 import { colors, padding } from '../styles';
 
@@ -14,7 +13,7 @@ const WalletConnectApprovalSheet = () => {
   // if we can validate the host
   const authenticated = false;
   const { goBack, getParam } = useNavigation();
-  const { appState } = useAppState();
+  const handled = useRef(false);
   const { dappName, dappUrl, imageUrl } = getParam('meta');
   const callback = getParam('callback');
   const formattedDappUrl = useMemo(() => {
@@ -22,23 +21,35 @@ const WalletConnectApprovalSheet = () => {
     return urlObject.hostname;
   }, [dappUrl]);
 
+  // Reject if the modal is dismissed
+  useEffect(() => {
+    return () => {
+      if (!handled.current) {
+        callback &&
+          setTimeout(() => {
+            callback(false);
+          }, 300);
+      }
+    };
+  });
+
   const handleConnect = useCallback(() => {
+    handled.current = true;
     goBack();
     callback &&
       setTimeout(() => {
-        callback();
+        callback(true);
       }, 300);
   }, [callback, goBack]);
 
   const handleCancel = useCallback(() => {
+    handled.current = true;
     goBack();
-  }, [goBack]);
-
-  useEffect(() => {
-    if (appState === 'background') {
-      goBack();
-    }
-  }, [goBack, appState]);
+    callback &&
+      setTimeout(() => {
+        callback(false);
+      }, 300);
+  }, [callback, goBack]);
 
   return (
     <Sheet>
