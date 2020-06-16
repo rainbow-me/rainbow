@@ -6,6 +6,7 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
+		<string>applinks:rnbwapp.com</string>
 		<string>applinks:rnbw.app</string>
 		<string>applinks:rainbowdotme.app.link</string>
 		<string>applinks:rainbowdotme-alternate.app.link</string>
