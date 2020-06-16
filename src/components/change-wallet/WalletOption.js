@@ -1,43 +1,30 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { colors, fonts } from '../../styles';
-import { getFontSize } from '../../styles/fonts';
-import Divider from '../Divider';
+import styled from 'styled-components/primitives';
+import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
+import { Row } from '../layout';
+import { Text } from '../text';
 
-const sx = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  text: {
-    color: colors.appleBlue,
-    fontFamily: fonts.family.SFProRounded,
-    fontSize: getFontSize(fonts.size.lmedium),
-    fontWeight: fonts.weight.semibold,
-    height: 57,
-    letterSpacing: fonts.letterSpacing.roundedMedium,
-    marginBottom: 2,
-    padding: 19,
-  },
-  textDisabled: {
-    color: colors.alpha(colors.blueGreyDark, 0.2),
-  },
-});
+const Container = styled(Row).attrs({
+  align: 'center',
+  scaleTo: 0.98,
+})`
+  ${padding(15, 19)};
+`;
 
 const WalletOption = ({ editMode, label, onPress }) => (
-  <ButtonPressAnimation disabled={editMode} scaleTo={0.98} onPress={onPress}>
-    <Divider color={colors.rowDividerExtraLight} />
-    <View style={sx.container}>
-      <Text style={[sx.text, editMode ? sx.textDisabled : null]}>{label}</Text>
-    </View>
-  </ButtonPressAnimation>
+  <Container as={ButtonPressAnimation} disabled={editMode} onPress={onPress}>
+    <Text
+      color={
+        editMode ? colors.alpha(colors.blueGreyDark, 0.2) : colors.appleBlue
+      }
+      letterSpacing="roundedMedium"
+      size="lmedium"
+      weight="semibold"
+    >
+      {label}
+    </Text>
+  </Container>
 );
 
-WalletOption.propTypes = {
-  label: PropTypes.string.isRequired,
-  onPress: PropTypes.func,
-};
-
-export default WalletOption;
+export default React.memo(WalletOption);

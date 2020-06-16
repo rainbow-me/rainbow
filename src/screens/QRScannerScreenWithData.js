@@ -15,6 +15,7 @@ import {
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
 } from '../hoc';
+import { checkPushNotificationPermissions } from '../model/firebase';
 import store from '../redux/store';
 import { addressUtils } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
@@ -111,7 +112,11 @@ class QRScannerScreenWithData extends Component {
 
     if (data.startsWith('wc:')) {
       analytics.track('Scanned WalletConnect QR code');
-      await walletConnectOnSessionRequest(data);
+      await walletConnectOnSessionRequest(data, async () => {
+        setTimeout(() => {
+          checkPushNotificationPermissions();
+        }, 1000);
+      });
       return setSafeTimeout(this.handleReenableScanning, 2000);
     }
 

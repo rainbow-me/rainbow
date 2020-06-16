@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
 import analytics from '@segment/analytics-react-native';
 import { find, get } from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import { multiply } from '../helpers/utilities';
@@ -47,51 +47,86 @@ export default function useUniswapCurrencies({
   underlyingPrice,
 }) {
   const { allAssets } = useAccountAssets();
+
   const defaultInputAddress = get(defaultInputAsset, 'address');
-  let defaultInputItemInWallet = ethereumUtils.getAsset(
-    allAssets,
-    defaultInputAddress
-  );
 
-  let defaultChosenInputItem = defaultInputItemInWallet;
-
-  if (!defaultChosenInputItem && defaultInputAsset) {
-    const eth = ethereumUtils.getAsset(allAssets);
-    const priceOfEther = get(eth, 'native.price.amount', null);
-    defaultChosenInputItem = createMissingAsset(
-      defaultInputAsset,
-      underlyingPrice,
-      priceOfEther
+  const {
+    defaultChosenInputItem,
+    defaultInputItemInWallet,
+    defaultOutputItem,
+  } = useMemo(() => {
+    let defaultInputItemInWallet = ethereumUtils.getAsset(
+      allAssets,
+      defaultInputAddress
     );
-  }
-  if (!defaultInputItemInWallet && isWithdrawal) {
-    defaultInputItemInWallet = defaultChosenInputItem;
-  } else if (!defaultInputItemInWallet) {
-    defaultInputItemInWallet = ethereumUtils.getAsset(allAssets);
-  }
 
-  let defaultOutputItem = null;
+    // Only used for withdrawals
+    let defaultChosenInputItem = defaultInputItemInWallet;
 
-  if (
-    isDeposit &&
-    get(defaultInputItemInWallet, 'address') !== defaultInputAddress
-  ) {
-    defaultOutputItem = defaultChosenInputItem;
-  }
+    // If default input asset not found in wallet, create the missing asset
+    if (!defaultChosenInputItem && defaultInputAsset) {
+      const eth = ethereumUtils.getAsset(allAssets);
+      const priceOfEther = get(eth, 'native.price.amount', null);
+      defaultChosenInputItem = createMissingAsset(
+        defaultInputAsset,
+        underlyingPrice,
+        priceOfEther
+      );
+    }
+
+    // If default input asset not found in wallet and it is withdrawal
+    // Set the defaultInputItemInWallet to the created item
+    if (!defaultInputItemInWallet && isWithdrawal) {
+      defaultInputItemInWallet = defaultChosenInputItem;
+    } else if (!defaultInputItemInWallet) {
+      // If there is not default input item, set the default to ETH
+      defaultInputItemInWallet = ethereumUtils.getAsset(allAssets);
+    }
+
+    let defaultOutputItem = null;
+
+    // If it is a deposit and the asset in the wallet is not the same as the defult input asset,
+    // set the output
+    if (
+      isDeposit &&
+      get(defaultInputItemInWallet, 'address') !== defaultInputAddress
+    ) {
+      defaultOutputItem = defaultChosenInputItem;
+    }
+    return {
+      defaultChosenInputItem,
+      defaultInputItemInWallet,
+      defaultOutputItem,
+    };
+  }, [
+    allAssets,
+    defaultInputAddress,
+    defaultInputAsset,
+    isDeposit,
+    isWithdrawal,
+    underlyingPrice,
+  ]);
 
   const [inputCurrency, setInputCurrency] = useState(defaultInputItemInWallet);
   const [outputCurrency, setOutputCurrency] = useState(defaultOutputItem);
 
+  const prevDefaultOutputItem = usePrevious(defaultOutputItem);
+  const prevDefaultInputItemInWallet = usePrevious(defaultInputItemInWallet);
+
   useEffect(() => {
-    if (defaultOutputItem) {
-      updateUniswapInputCurrency(defaultInputItemInWallet);
+    if (defaultOutputItem && !prevDefaultOutputItem) {
       updateUniswapOutputCurrency(defaultOutputItem);
+    }
+  }, [defaultOutputItem, prevDefaultOutputItem, updateUniswapOutputCurrency]);
+
+  useEffect(() => {
+    if (defaultInputItemInWallet && !prevDefaultInputItemInWallet) {
+      updateUniswapInputCurrency(defaultInputItemInWallet);
     }
   }, [
     defaultInputItemInWallet,
-    defaultOutputItem,
+    prevDefaultInputItemInWallet,
     updateUniswapInputCurrency,
-    updateUniswapOutputCurrency,
   ]);
 
   const previousInputCurrency = usePrevious(inputCurrency);

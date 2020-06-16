@@ -2,14 +2,13 @@ import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withNavigation } from 'react-navigation';
-import { compose } from 'recompose';
+import { compose } from 'recompact';
 import {
   DataProvider,
   LayoutProvider,
   RecyclerListView,
 } from 'recyclerlistview';
 import { withSelectedInput } from '../../hoc';
-import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import Routes from '../../screens/Routes/routesNames';
 import { deviceUtils } from '../../utils';
 import { filterList } from '../../utils/search';
@@ -142,9 +141,7 @@ class SendContactList extends Component {
   };
 
   render = () => (
-    <FlyInAnimation
-      style={{ flex: 1, paddingBottom: sheetVerticalOffset, width: '100%' }}
-    >
+    <FlyInAnimation>
       {this.state.contacts.length === 0 ? (
         <SendEmptyState />
       ) : (

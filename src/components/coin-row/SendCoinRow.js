@@ -1,18 +1,18 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled, { css } from 'styled-components/primitives';
+import { css } from 'styled-components/primitives';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
-import { colors, padding, position } from '../../styles';
+import { colors, padding } from '../../styles';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import Text from '../text/Text';
+import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
 const selectedHeight = 78;
 
-const containerStyles = css`
+const containerStyles = `
   padding-left: 15;
   padding-top: 17;
 `;
@@ -20,13 +20,6 @@ const containerStyles = css`
 const containerSelectedStyles = css`
   ${padding(15, 15, 19)};
   height: ${selectedHeight};
-`;
-
-const TouchableContainer = styled(ButtonPressAnimation).attrs({
-  scaleTo: 0.96,
-})`
-  ${position.centered};
-  flex: 1;
 `;
 
 const BottomRow = ({ balance, native, nativeCurrencySymbol }) => {
@@ -46,7 +39,7 @@ const TopRow = ({ name, selected }) => (
 
 const SendCoinRow = magicMemo(
   ({ item, onPress, selected, ...props }) => (
-    <TouchableContainer onPress={onPress}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
       <CoinRow
         {...item}
         {...props}
@@ -55,7 +48,7 @@ const SendCoinRow = magicMemo(
         selected={selected}
         topRowRender={TopRow}
       />
-    </TouchableContainer>
+    </ButtonPressAnimation>
   ),
   'item',
   buildAssetUniqueIdentifier

@@ -5,11 +5,15 @@ import {
   saveLocalRequests,
 } from '../handlers/localstorage/walletconnect';
 import { getRequestDisplayDetails } from '../parsers/requests';
+import { logger } from '../utils';
 
 // -- Constants --------------------------------------- //
 const REQUESTS_UPDATE_REQUESTS_TO_APPROVE =
   'requests/REQUESTS_UPDATE_REQUESTS_TO_APPROVE';
 const REQUESTS_CLEAR_STATE = 'requests/REQUESTS_CLEAR_STATE';
+
+// Requests expire automatically after 1 hour
+const EXPIRATION_THRESHOLD_IN_MS = 1000 * 60 * 60;
 
 export const requestsLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
@@ -36,6 +40,12 @@ export const addRequestToApprove = (
     assets,
     nativeCurrency
   );
+  const oneHourAgoTs = Date.now() - EXPIRATION_THRESHOLD_IN_MS;
+  if (displayDetails.timestampInMs < oneHourAgoTs) {
+    logger.log('request expired!');
+    return;
+  }
+
   const dappName = peerMeta.name || 'Unknown Dapp';
   const imageUrl = get(peerMeta, 'icons[0]');
   const request = {

@@ -1,4 +1,3 @@
-import { get } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { useIsFocused } from 'react-navigation-hooks';
@@ -7,6 +6,7 @@ import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
+import { LoadingOverlay } from '../components/modal';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
@@ -19,6 +19,7 @@ import {
   useWallets,
 } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
+import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { colors, position } from '../styles';
 import Routes from './Routes/routesNames';
 
@@ -33,6 +34,7 @@ export default function ProfileScreen({ navigation }) {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
+  const { isCreatingAccount } = useWallets();
 
   const {
     isLoadingTransactions: isLoading,
@@ -42,8 +44,7 @@ export default function ProfileScreen({ navigation }) {
   } = useAccountTransactions(activityListInitialized, isFocused);
   const { contacts } = useContacts();
   const { pendingRequestCount, requests } = useRequests();
-  const { accountAddress, accountENS, network } = useAccountSettings();
-  const { selectedWallet } = useWallets();
+  const { network } = useAccountSettings();
 
   const isEmpty = !transactionsCount && !pendingRequestCount;
 
@@ -60,9 +61,6 @@ export default function ProfileScreen({ navigation }) {
   const onPressSettings = useCallback(() => navigate(Routes.SETTINGS_MODAL), [
     navigate,
   ]);
-
-  let accountName = get(selectedWallet, 'name');
-  let accountColor = get(selectedWallet, 'color');
 
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
@@ -86,10 +84,6 @@ export default function ProfileScreen({ navigation }) {
       </Header>
       {network === NetworkTypes.mainnet && nativeTransactionListAvailable ? (
         <TransactionList
-          accountAddress={accountAddress}
-          accountColor={accountColor}
-          accountENS={accountENS}
-          accountName={accountName}
           addCashAvailable={addCashAvailable}
           contacts={contacts}
           initialized={activityListInitialized}
@@ -100,9 +94,6 @@ export default function ProfileScreen({ navigation }) {
         />
       ) : (
         <ActivityList
-          accountAddress={accountAddress}
-          accountColor={accountColor}
-          accountName={accountName}
           addCashAvailable={addCashAvailable}
           header={
             <ProfileMasthead
@@ -116,6 +107,12 @@ export default function ProfileScreen({ navigation }) {
           navigation={navigation}
           network={network}
           sections={sections}
+        />
+      )}
+      {isCreatingAccount && (
+        <LoadingOverlay
+          paddingTop={sheetVerticalOffset}
+          title="Creating account..."
         />
       )}
     </ProfileScreenPage>

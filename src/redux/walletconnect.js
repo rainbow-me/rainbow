@@ -1,7 +1,16 @@
 import analytics from '@segment/analytics-react-native';
-import WalletConnect from '@walletconnect/react-native';
+import { captureException } from '@sentry/react-native';
+import WalletConnect from '@walletconnect/client';
 import lang from 'i18n-js';
-import { forEach, isEmpty, mapValues, omitBy, pickBy, values } from 'lodash';
+import {
+  forEach,
+  get,
+  isEmpty,
+  mapValues,
+  omitBy,
+  pickBy,
+  values,
+} from 'lodash';
 import { Alert } from 'react-native';
 import {
   getAllValidWalletConnectSessions,
@@ -10,10 +19,10 @@ import {
 } from '../handlers/localstorage/walletconnect';
 import { sendRpcCall } from '../handlers/web3';
 import WalletTypes from '../helpers/walletTypes';
-import {
-  checkPushNotificationPermissions,
-  getFCMToken,
-} from '../model/firebase';
+import { getFCMToken } from '../model/firebase';
+import { Navigation } from '../navigation';
+import Routes from '../screens/Routes/routesNames';
+import { logger } from '../utils';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
 
@@ -29,6 +38,11 @@ const WALLETCONNECT_REMOVE_SESSION =
 
 const WALLETCONNECT_INIT_SESSIONS = 'walletconnect/WALLETCONNECT_INIT_SESSIONS';
 const WALLETCONNECT_CLEAR_STATE = 'walletconnect/WALLETCONNECT_CLEAR_STATE';
+
+const WALLETCONNECT_SET_PENDING_REDIRECT =
+  'walletconnect/WALLETCONNECT_SET_PENDING_REDIRECT';
+const WALLETCONNECT_REMOVE_PENDING_REDIRECT =
+  'walletconnect/WALLETCONNECT_REMOVE_PENDING_REDIRECT';
 
 // -- Actions ---------------------------------------- //
 const getNativeOptions = async () => {
@@ -55,41 +69,70 @@ const getNativeOptions = async () => {
   return nativeOptions;
 };
 
+export const walletConnectSetPendingRedirect = () => dispatch => {
+  dispatch({
+    type: WALLETCONNECT_SET_PENDING_REDIRECT,
+  });
+};
+export const walletConnectRemovePendingRedirect = type => dispatch => {
+  dispatch({
+    type: WALLETCONNECT_REMOVE_PENDING_REDIRECT,
+  });
+
+  return Navigation.handleAction({
+    params: { type },
+    routeName: Routes.WALLET_CONNECT_REDIRECT_SHEET,
+  });
+};
+
 export const walletConnectOnSessionRequest = (
   uri,
   callback
 ) => async dispatch => {
   let walletConnector = null;
   try {
-    const nativeOptions = await getNativeOptions();
+    const { clientMeta, push } = await getNativeOptions();
     try {
-      walletConnector = new WalletConnect({ uri }, nativeOptions);
+      walletConnector = new WalletConnect({ clientMeta, uri }, push);
       walletConnector.on('session_request', (error, payload) => {
         if (error) {
+          logger.log('Error on session request', error);
           throw error;
         }
 
         const { peerId, peerMeta } = payload.params[0];
-        dispatch(setPendingRequest(peerId, walletConnector));
-        dispatch(walletConnectApproveSession(peerId, callback));
-        analytics.track('Approved new WalletConnect session', {
-          dappName: peerMeta.name,
-          dappUrl: peerMeta.url,
+        const imageUrl = get(peerMeta, 'icons[0]');
+
+        return Navigation.handleAction({
+          params: {
+            callback: () => {
+              dispatch(setPendingRequest(peerId, walletConnector));
+              dispatch(walletConnectApproveSession(peerId, callback));
+              analytics.track('Approved new WalletConnect session', {
+                dappName: peerMeta.name,
+                dappUrl: peerMeta.url,
+              });
+            },
+            meta: {
+              dappName: peerMeta.name,
+              dappUrl: peerMeta.url,
+              imageUrl,
+            },
+          },
+          routeName: Routes.WALLET_CONNECT_APPROVAL_SHEET,
         });
       });
     } catch (error) {
+      captureException(error);
       Alert.alert(lang.t('wallet.wallet_connect.error'));
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.wallet_connect.missing_fcm'));
   }
-  if (walletConnector) {
-    await checkPushNotificationPermissions();
-  }
 };
 
 const listenOnNewMessages = walletConnector => (dispatch, getState) => {
-  walletConnector.on('call_request', (error, payload) => {
+  walletConnector.on('call_request', async (error, payload) => {
     if (error) throw error;
     const { clientId, peerId, peerMeta } = walletConnector;
     const requestId = payload.id;
@@ -120,11 +163,21 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
         });
         return;
       }
-    }
 
-    dispatch(
-      addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)
-    );
+      const request = await dispatch(
+        addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)
+      );
+
+      if (request) {
+        return Navigation.handleAction({
+          params: {
+            openAutomatically: true,
+            transactionDetails: request,
+          },
+          routeName: Routes.CONFIRM_REQUEST,
+        });
+      }
+    }
   });
   walletConnector.on('disconnect', error => {
     if (error) throw error;
@@ -148,10 +201,10 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
       network
     );
 
-    const nativeOptions = await getNativeOptions();
+    const { clientMeta, push } = await getNativeOptions();
 
     newWalletConnectors = mapValues(allSessions, session => {
-      const walletConnector = new WalletConnect({ session }, nativeOptions);
+      const walletConnector = new WalletConnect({ clientMeta, session }, push);
       return dispatch(listenOnNewMessages(walletConnector));
     });
   } catch (error) {
@@ -341,6 +394,7 @@ export const walletConnectSendStatus = (peerId, requestId, result) => async (
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
+  pendingRedirect: false,
   pendingRequests: {},
   walletConnectors: {},
 };
@@ -359,6 +413,10 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, walletConnectors: action.payload };
     case WALLETCONNECT_CLEAR_STATE:
       return { ...state, ...INITIAL_STATE };
+    case WALLETCONNECT_SET_PENDING_REDIRECT:
+      return { ...state, pendingRedirect: true };
+    case WALLETCONNECT_REMOVE_PENDING_REDIRECT:
+      return { ...state, pendingRedirect: false };
     default:
       return state;
   }

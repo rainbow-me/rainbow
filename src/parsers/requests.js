@@ -28,6 +28,22 @@ export const getRequestDisplayDetails = (payload, assets, nativeCurrency) => {
     payload.method === SIGN_TRANSACTION
   ) {
     const transaction = get(payload, 'params[0]', null);
+
+    // Backwards compatibility with param name change
+    if (transaction.gas && !transaction.gasLimit) {
+      transaction.gasLimit = transaction.gas;
+    }
+
+    // We must pass a number through the bridge
+    if (!transaction.gasLimit) {
+      transaction.gasLimit = 0;
+    }
+
+    // Dapps usually won't send this
+    if (!transaction.nonce) {
+      transaction.nonce = 0;
+    }
+
     return getTransactionDisplayDetails(
       transaction,
       assets,
@@ -158,5 +174,5 @@ const getTransactionDisplayDetails = (
   return null;
 };
 
-const getTimestampFromPayload = payload =>
+export const getTimestampFromPayload = payload =>
   parseInt(payload.id.toString().slice(0, -3), 10);

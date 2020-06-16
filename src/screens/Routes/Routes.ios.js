@@ -1,6 +1,6 @@
 import { omit } from 'lodash';
 import React from 'react';
-import { StatusBar } from 'react-native';
+import { Keyboard, StatusBar } from 'react-native';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
@@ -11,6 +11,8 @@ import {
   backgroundPreset,
   bottomSheetPreset,
   emojiPreset,
+  exchangePreset,
+  expandedPreset,
   overlayExpandedPreset,
   sheetPreset,
 } from '../../navigation/transitions/effects';
@@ -28,17 +30,11 @@ import SavingsSheet from '../SavingsSheet';
 import SendSheet from '../SendSheet';
 import SettingsModal from '../SettingsModal';
 import TransactionConfirmationScreen from '../TransactionConfirmationScreen';
-import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
+import WalletConnectApprovalSheet from '../WalletConnectApprovalSheet';
+import WalletConnectRedirectSheet from '../WalletConnectRedirectSheet';
 import WalletScreen from '../WalletScreen';
 import WithdrawModal from '../WithdrawModal';
-import {
-  createStackNavigator,
-  exchangePresetWithTransitions,
-  expandedPresetWithTransitions,
-  onTransitionEnd,
-  onTransitionStart,
-  sheetPresetWithTransitions,
-} from './helpers';
+import { createStackNavigator } from './helpers';
 import {
   AddCashSheetWrapper,
   appearListener,
@@ -64,7 +60,7 @@ const SwipeStack = createMaterialTopTabNavigator(routesForSwipeStack, {
 
 const importSeedPhraseFlowRoutes = {
   [Routes.IMPORT_SEED_PHRASE_SHEET]: {
-    navigationOptions: sheetPresetWithTransitions,
+    navigationOptions: sheetPreset,
     screen: ImportSeedPhraseSheetWrapper,
   },
   [Routes.MODAL_SCREEN]: {
@@ -79,7 +75,7 @@ const sendFlowRoutes = {
     screen: ModalScreen,
   },
   [Routes.SEND_SHEET]: {
-    navigationOptions: sheetPresetWithTransitions,
+    navigationOptions: sheetPreset,
     screen: SendSheetWrapper,
   },
 };
@@ -97,7 +93,7 @@ const ImportSeedPhraseFlowNavigator = createStackNavigator(
 
 const routesForAddCash = {
   [Routes.ADD_CASH_SHEET]: {
-    navigationOptions: sheetPresetWithTransitions,
+    navigationOptions: sheetPreset,
     screen: AddCashSheetWrapper,
   },
   [Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN]: {
@@ -113,11 +109,11 @@ const routesForMainNavigator = {
     transparentCard: true,
   },
   [Routes.EXAMPLE_SCREEN]: {
-    navigationOptions: expandedPresetWithTransitions,
+    navigationOptions: expandedPreset,
     screen: ExampleScreen,
   },
   [Routes.EXCHANGE_MODAL]: {
-    navigationOptions: exchangePresetWithTransitions,
+    navigationOptions: exchangePreset,
     params: {
       isGestureBlocked: false,
     },
@@ -131,9 +127,13 @@ const routesForMainNavigator = {
     navigationOptions: backgroundPreset,
     screen: SwipeStack,
   },
-  [Routes.WALLET_CONNECT_CONFIRMATION_MODAL]: {
-    navigationOptions: expandedPresetWithTransitions,
-    screen: WalletConnectConfirmationModal,
+  [Routes.WALLET_CONNECT_APPROVAL_SHEET]: {
+    navigationOptions: expandedPreset,
+    screen: WalletConnectApprovalSheet,
+  },
+  [Routes.WALLET_CONNECT_REDIRECT_SHEET]: {
+    navigationOptions: bottomSheetPreset,
+    screen: WalletConnectRedirectSheet,
   },
   ...(isNativeStackAvailable && {
     [Routes.MODAL_SCREEN]: {
@@ -147,14 +147,14 @@ const MainNavigator = createStackNavigator(routesForMainNavigator);
 
 const routesForSavingsModals = {
   [Routes.SAVINGS_DEPOSIT_MODAL]: {
-    navigationOptions: exchangePresetWithTransitions,
+    navigationOptions: exchangePreset,
     params: {
       isGestureBlocked: false,
     },
     screen: SavingModalNavigator,
   },
   [Routes.SAVINGS_WITHDRAW_MODAL]: {
-    navigationOptions: exchangePresetWithTransitions,
+    navigationOptions: exchangePreset,
     params: {
       isGestureBlocked: false,
     },
@@ -186,7 +186,7 @@ const MainNavigationWrapper = createStackNavigator(
 
 const routesForNativeStackFallback = {
   [Routes.ADD_CASH_SHEET]: {
-    navigationOptions: sheetPresetWithTransitions,
+    navigationOptions: sheetPreset,
     screen: AddCashSheet,
   },
   [Routes.IMPORT_SEED_PHRASE_SHEET]: {
@@ -208,7 +208,6 @@ const routesForNativeStackFallback = {
       ...omit(sheetPreset, 'gestureResponseDistance'),
       onTransitionStart: () => {
         StatusBar.setBarStyle('light-content');
-        onTransitionStart();
       },
     },
     screen: SendSheet,
@@ -221,10 +220,6 @@ const routesForNativeStackFallback = {
 };
 
 const NativeStackFallback = createStackNavigator(routesForNativeStackFallback, {
-  defaultNavigationOptions: {
-    onTransitionEnd,
-    onTransitionStart,
-  },
   headerMode: 'none',
   initialRouteName: Routes.MAIN_NAVIGATOR,
   mode: 'modal',
@@ -244,8 +239,12 @@ const routesForBottomSheetStack = {
   [Routes.CHANGE_WALLET_SHEET]: {
     navigationOptions: {
       backgroundOpacity: 0.6,
+      cornerRadius: 0,
       customStack: true,
+      headerHeight: 58,
+      ignoreBottomOffset: true,
       springDamping: 1,
+      topOffset: 128,
       transitionDuration: 0.25,
     },
     screen: ChangeWalletSheet,
@@ -284,6 +283,13 @@ const MainNativeBottomSheetNavigation = createNativeStackNavigator(
     defaultNavigationOptions: {
       onAppear: () => appearListener.current && appearListener.current(),
       onDismissed: onDidPop,
+      onTouchTop: ({ nativeEvent: { dismissing } }) => {
+        if (dismissing) {
+          Keyboard.dismiss();
+        } else {
+          appearListener.current && appearListener.current();
+        }
+      },
       onWillDismiss: () => {
         onWillPop();
         sheetPreset.onTransitionStart({ closing: true });

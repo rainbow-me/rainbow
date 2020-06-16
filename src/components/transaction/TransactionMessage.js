@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
-import { pure } from 'recompose';
+import { pure } from 'recompact';
 import { colors } from '../../styles';
 import { SIGN_TYPED_DATA } from '../../utils/signingMethods';
 import { Text } from '../text';

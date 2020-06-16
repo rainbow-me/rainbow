@@ -6,9 +6,9 @@ import {
   TOP_MOVERS_FROM_STORAGE,
 } from '../handlers/localstorage/topMovers';
 import {
-  getWalletBalanceNames,
-  WALLET_BALANCE_NAMES_FROM_STORAGE,
-} from '../handlers/localstorage/walletBalanceNames';
+  getWalletBalances,
+  WALLET_BALANCES_FROM_STORAGE,
+} from '../handlers/localstorage/walletBalances';
 import { contactsLoadState } from '../redux/contacts';
 import { settingsLoadState } from '../redux/settings';
 import { logger, promiseUtils } from '../utils';
@@ -17,10 +17,7 @@ const loadTopMoversToCache = () =>
   queryCache.prefetchQuery(TOP_MOVERS_FROM_STORAGE, getTopMovers);
 
 const loadWalletBalanceNamesToCache = () =>
-  queryCache.prefetchQuery(
-    WALLET_BALANCE_NAMES_FROM_STORAGE,
-    getWalletBalanceNames
-  );
+  queryCache.prefetchQuery(WALLET_BALANCES_FROM_STORAGE, getWalletBalances);
 
 export default function useLoadGlobalData() {
   const dispatch = useDispatch();

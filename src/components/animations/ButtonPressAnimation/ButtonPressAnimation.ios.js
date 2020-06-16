@@ -17,9 +17,8 @@ import stylePropType from 'react-style-proptype';
 import { useMemoOne } from 'use-memo-one';
 import isNativeButtonAvailable from '../../../helpers/isNativeButtonAvailable';
 import { useInteraction, useTransformOrigin } from '../../../hooks';
-import { animations } from '../../../styles';
 import { directionPropType } from '../../../utils';
-import Button from '../../native-button';
+import NativeButton from './NativeButton';
 
 const {
   and,
@@ -380,7 +379,7 @@ function ButtonPressAnimationJS({
 }
 
 const ButtonPressAnimation = isNativeButtonAvailable
-  ? Button
+  ? NativeButton
   : ButtonPressAnimationJS;
 
 export default ButtonPressAnimation;
@@ -413,15 +412,15 @@ ButtonPressAnimation.defaultProps = {
   enableHapticFeedback: true,
   hapticType: 'selection',
   minLongPressDuration: 500,
-  scaleTo: animations.keyframes.button.to.scale,
+  scaleTo: 0.86,
 };
 
-Button.defaultProps = {
+NativeButton.defaultProps = {
   activeOpacity: 1,
   duration: 160,
   enableHapticFeedback: true,
   hapticType: 'selection',
   minLongPressDuration: 500,
-  scaleTo: animations.keyframes.button.to.scale,
+  scaleTo: 0.86,
   useLateHaptic: true,
 };

@@ -1,11 +1,10 @@
 import { upperFirst } from 'lodash';
 import { StyleSheet } from 'react-native';
-import { css } from 'styled-components';
 import buildLayoutStyles from './buildLayoutStyles';
 
 const position = {};
 
-position.cover = css`
+position.cover = `
   bottom: 0;
   left: 0;
   position: absolute;
@@ -13,7 +12,7 @@ position.cover = css`
   top: 0;
 `;
 
-position.centered = css`
+position.centered = `
   align-items: center;
   justify-content: center;
 `;
@@ -29,7 +28,7 @@ position.layout = (...args) => buildLayoutStyles(args);
 
 const buildSizeKey = (prefix, key) => (prefix ? upperFirst(key) : key);
 
-position.size = (size, prefix = '') => css`
+position.size = (size, prefix = '') => `
   ${prefix}${buildSizeKey(prefix, 'height')}: ${size};
   ${prefix}${buildSizeKey(prefix, 'width')}: ${size};
 `;

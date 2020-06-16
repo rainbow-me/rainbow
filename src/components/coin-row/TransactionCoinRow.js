@@ -1,11 +1,12 @@
 import { compact, get } from 'lodash';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
-import { useNavigation } from 'react-navigation-hooks';
+
 import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import { useAccountSettings } from '../../hooks';
+import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';

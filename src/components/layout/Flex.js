@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components/primitives';
 import { buildFlexStyles } from '../../styles';
-import PrimitiveWithoutOmittedProps from './PrimitiveWithoutOmittedProps';
 
 const flexPropTypes = {
   align: PropTypes.oneOf(['baseline', 'center', 'end', 'start', 'stretch']),
@@ -25,8 +24,11 @@ const flexPropTypes = {
   wrap: PropTypes.bool,
 };
 
-const Flex = styled(PrimitiveWithoutOmittedProps).attrs({
-  blacklist: Object.keys(flexPropTypes),
+const Flex = styled.View.withConfig({
+  // We need to prevent the buildFlexStyles-related props from being
+  // passed to the root element because our namespace collides with some native props
+  shouldForwardProp: (prop, defaultValidatorFn) =>
+    !Object.keys(flexPropTypes).includes(prop) && defaultValidatorFn(prop),
 })`
   ${buildFlexStyles};
 `;
@@ -34,11 +36,5 @@ const Flex = styled(PrimitiveWithoutOmittedProps).attrs({
 Flex.displayName = 'Flex';
 
 Flex.propTypes = flexPropTypes;
-
-Flex.defaultProps = {
-  align: 'stretch',
-  direction: 'row',
-  justify: 'start',
-};
 
 export default Flex;
