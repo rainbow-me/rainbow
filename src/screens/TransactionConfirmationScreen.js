@@ -106,19 +106,27 @@ const TransactionConfirmationScreen = ({ navigation }) => {
     });
   }, [startPollingGasPrices, navigation]);
 
-  const closeScreen = useCallback(() => {
-    navigation.goBack();
-    stopPollingGasPrices();
-    if (pendingRedirect) {
-      InteractionManager.runAfterInteractions(() => {
-        dispatch(walletConnectRemovePendingRedirect('sign'));
-      });
-    }
-  }, [navigation, stopPollingGasPrices, pendingRedirect, dispatch]);
+  const closeScreen = useCallback(
+    canceled => {
+      navigation.goBack();
+      stopPollingGasPrices();
+      if (pendingRedirect) {
+        InteractionManager.runAfterInteractions(() => {
+          let type = method === SEND_TRANSACTION ? 'transaction' : 'sign';
+
+          if (canceled) {
+            type = `${type}-canceled`;
+          }
+          dispatch(walletConnectRemovePendingRedirect(type));
+        });
+      }
+    },
+    [navigation, stopPollingGasPrices, pendingRedirect, method, dispatch]
+  );
 
   const onCancel = useCallback(async () => {
     try {
-      closeScreen();
+      closeScreen(true);
       if (callback) {
         callback({ error: 'User cancelled the request' });
       }
@@ -131,7 +139,7 @@ const TransactionConfirmationScreen = ({ navigation }) => {
       analytics.track(`Rejected WalletConnect ${rejectionType} request`);
     } catch (error) {
       logger.log('error while handling cancel request', error);
-      closeScreen();
+      closeScreen(true);
       Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
     }
   }, [
@@ -211,7 +219,7 @@ const TransactionConfirmationScreen = ({ navigation }) => {
         dispatch(removeRequest(requestId));
         await dispatch(walletConnectSendStatus(peerId, requestId, result));
       }
-      closeScreen();
+      closeScreen(false);
     } else {
       await onCancel();
     }
@@ -267,7 +275,7 @@ const TransactionConfirmationScreen = ({ navigation }) => {
       if (callback) {
         callback({ sig: flatFormatSignature });
       }
-      closeScreen();
+      closeScreen(false);
     } else {
       await onCancel();
     }
