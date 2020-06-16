@@ -74,7 +74,8 @@ class SendAssetList extends React.Component {
         if (i < assets.length - 1) {
           return 'COIN_ROW';
         } else if (i === assets.length - 1) {
-          return savings && savings.length !== 0 && shitcoins.length !== 0
+          return (savings && savings.length !== 0) ||
+            (shitcoins && shitcoins.length !== 0)
             ? 'COIN_ROW'
             : 'COIN_ROW_LAST';
         } else if (i === assets.length && shitcoins && shitcoins.length > 0) {
@@ -83,7 +84,8 @@ class SendAssetList extends React.Component {
             type: 'SHITCOINS_ROW',
           };
         } else if (
-          (i === assets.length || i === assets.length + 1) &&
+          (i === assets.length ||
+            (i === assets.length + 1 && shitcoins && shitcoins.length > 0)) &&
           savings &&
           savings.length > 0
         ) {
@@ -128,7 +130,8 @@ class SendAssetList extends React.Component {
             type.size -
             (this.state.openShitcoins ? 0 : 10) +
             familyHeaderHeight +
-            (savings && savings.length > 0 ? 0 : dividerHeight);
+            (savings && savings.length > 0 ? 0 : dividerHeight) -
+            (this.state.openShitcoins && savings && savings.length ? 10 : 0);
         } else if (type.type === 'SAVINGS_ROW') {
           dim.height = type.size + familyHeaderHeight + dividerHeight;
         } else if (type.type === 'COLLECTIBLE_ROW') {
@@ -232,7 +235,7 @@ class SendAssetList extends React.Component {
     const onPress = () => {
       this.props.onSelectAsset(item);
     };
-    return <SendCoinRow {...item} onPress={onPress} />;
+    return <SendCoinRow {...item} onPress={onPress} rowHeight={rowHeight} />;
   };
 
   mapSavings = savings => {
@@ -258,10 +261,11 @@ class SendAssetList extends React.Component {
       };
       return (
         <SendCoinRow
-          top={0}
           key={token.uniqueId}
-          {...token}
           onPress={onPress}
+          rowHeight={rowHeight}
+          top={0}
+          {...token}
         />
       );
     });
@@ -274,7 +278,7 @@ class SendAssetList extends React.Component {
     };
     return (
       <Fragment>
-        <SendCoinRow {...item} onPress={onPress} />
+        <SendCoinRow {...item} onPress={onPress} rowHeight={rowHeight} />
         <Divider />
       </Fragment>
     );
