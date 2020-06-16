@@ -30,6 +30,7 @@
 {
   json = [self NSArray:json];
   NSMutableArray *result = [[NSMutableArray alloc] init];
+  int index = 0;
   
   for (id t in json) {
     NSDictionary *data = [self NSDictionary:t];
@@ -79,6 +80,9 @@
     } else {
       transaction.minedAt = [[NSDate alloc] init];
     }
+    
+    transaction.originalIndex = [[NSNumber alloc] initWithInt:index];
+    index+=1;
     
     [result addObject:transaction];
   }
