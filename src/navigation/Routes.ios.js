@@ -7,6 +7,7 @@ import { createNativeStackNavigator } from 'react-native-cool-modals/native-stac
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletModal from '../screens/ChangeWalletModal';
+import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import DepositModal from '../screens/DepositModal';
 import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
 import ModalScreen from '../screens/ModalScreen';
@@ -15,7 +16,8 @@ import SavingsSheet from '../screens/SavingsSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
-import WalletConnectConfirmationModal from '../screens/WalletConnectConfirmationModal';
+import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
+import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import WithdrawModal from '../screens/WithdrawModal';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
@@ -26,10 +28,10 @@ import {
   stackNavigationConfig,
 } from './config';
 import {
+  bottomSheetPreset,
   emojiPreset,
   exchangePreset,
   expandedPreset,
-  expandedPresetReverse,
   overlayExpandedPreset,
   savingsPreset,
   sheetPreset,
@@ -125,19 +127,19 @@ function MainNavigator() {
         options={emojiPreset}
       />
       <Stack.Screen
-        name={Routes.WALLET_CONNECT_CONFIRMATION_MODAL}
-        component={WalletConnectConfirmationModal}
+        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
+        component={WalletConnectApprovalSheet}
         options={expandedPreset}
+      />
+      <Stack.Screen
+        name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
+        component={WalletConnectRedirectSheet}
+        options={bottomSheetPreset}
       />
       <Stack.Screen
         name={Routes.CONFIRM_REQUEST}
         component={TransactionConfirmationScreen}
         options={sheetPreset}
-      />
-      <Stack.Screen
-        name={Routes.CHANGE_WALLET_MODAL}
-        component={ChangeWalletModal}
-        options={expandedPresetReverse}
       />
       <Stack.Screen
         name={Routes.EXCHANGE_MODAL}
@@ -245,6 +247,17 @@ function NativeStackNavigator() {
         name={Routes.EXPANDED_ASSET_SHEET}
         component={ExpandedAssetSheetWrapper}
         {...expandedAssetSheetConfig}
+      />
+      <Stack.Screen
+        name={Routes.CHANGE_WALLET_SHEET}
+        component={ChangeWalletSheet}
+        options={{
+          allowsDragToDismiss: true,
+          backgroundOpacity: 0.6,
+          customStack: true,
+          springDamping: 1,
+          transitionDuration: 0.25,
+        }}
       />
       {isNativeStackAvailable && (
         <>
