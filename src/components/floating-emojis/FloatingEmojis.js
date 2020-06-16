@@ -1,5 +1,6 @@
+import { castArray } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, View } from 'react-native';
 import { useTimeout } from '../../hooks';
 import { position } from '../../styles';
@@ -29,6 +30,7 @@ const FloatingEmojis = ({
   wiggleFactor,
   ...props
 }) => {
+  const emojisArray = useMemo(() => castArray(emojis), [emojis]);
   const [floatingEmojis, setEmojis] = useState(EMPTY_ARRAY);
   const [startTimeout, stopTimeout] = useTimeout();
   const clearEmojis = useCallback(() => setEmojis(EMPTY_ARRAY), []);
@@ -49,9 +51,9 @@ const FloatingEmojis = ({
           emojiToRender:
             (existingEmojis.length + 1) % 7 === 0 && !disableRainbow
               ? 'rainbow'
-              : emojis.length === 1
-              ? emojis[0]
-              : emojis[getEmoji(emojis)],
+              : emojisArray.length === 1
+              ? emojisArray[0]
+              : emojisArray[getEmoji(emojisArray)],
           x: x ? x - getRandomNumber(-20, 20) : getRandomNumber(...range) + '%',
           y: y || 0,
         };
@@ -62,7 +64,7 @@ const FloatingEmojis = ({
       clearEmojis,
       disableRainbow,
       duration,
-      emojis,
+      emojisArray,
       range,
       startTimeout,
       stopTimeout,

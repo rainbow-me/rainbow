@@ -1,6 +1,6 @@
 import { toLower } from 'lodash';
 import { connect } from 'react-redux';
-import { compose, withProps } from 'recompose';
+import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
 import {
   settingsUpdateAccountColor,

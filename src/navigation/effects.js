@@ -1,8 +1,8 @@
 import React from 'react';
 import { Animated, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import Header from '../components/header/Header';
-import AvatarCircle from '../components/profile/AvatarCircle';
+import { HeaderHeightWithStatusBar } from '../components/header';
+import { AvatarCircle } from '../components/profile';
 import { transformOrigin } from '../helpers/transformOriginAnimated';
 import { colors } from '../styles';
 import { deviceUtils } from '../utils';
@@ -318,7 +318,7 @@ export const emojiPreset = {
         <View
           style={{
             alignItems: 'center',
-            top: Header.heightWithStatusBar,
+            top: HeaderHeightWithStatusBar,
           }}
         >
           <AvatarCircle overlayStyles />

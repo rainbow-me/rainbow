@@ -6,7 +6,7 @@ import styled from 'styled-components/primitives';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import ColorCircle from '../components/avatar-builder/ColorCircle';
 import EmojiSelector from '../components/avatar-builder/EmojiSelector';
-import Header from '../components/header/Header';
+import { HeaderHeightWithStatusBar } from '../components/header';
 import { Column, Row } from '../components/layout';
 import { saveAccountInfo } from '../handlers/localstorage/accountLocal';
 import { withAccountInfo, withAccountSettings } from '../hoc';
@@ -30,7 +30,7 @@ const springConfig = {
 const AvatarCircleHeight = 65;
 const AvatarCircleMarginTop = 2;
 const AvatarBuilderTopPoint =
-  Header.heightWithStatusBar + AvatarCircleHeight + AvatarCircleMarginTop;
+  HeaderHeightWithStatusBar + AvatarCircleHeight + AvatarCircleMarginTop;
 
 const Container = styled(Column)`
   background-color: ${colors.transparent};

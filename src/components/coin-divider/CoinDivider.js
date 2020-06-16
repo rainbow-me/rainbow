@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { LayoutAnimation, View } from 'react-native';
-import { SpringUtils } from 'react-native-reanimated';
-import { bin, useSpringTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import EditOptions from '../../helpers/editOptionTypes';
 import {
@@ -10,19 +8,12 @@ import {
   useOpenSmallBalances,
 } from '../../hooks';
 import { colors, padding } from '../../styles';
-import Highlight from '../Highlight';
 import { Row, RowWithMargins } from '../layout';
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
 
 export const CoinDividerHeight = 30;
-
-const springConfig = SpringUtils.makeConfigFromOrigamiTensionAndFriction({
-  ...SpringUtils.makeDefaultConfig(),
-  friction: 20,
-  tension: 200,
-});
 
 const Container = styled(Row).attrs({
   align: 'center',
@@ -51,14 +42,13 @@ const EditButtonWrapper = styled(Row).attrs({
   right: 0;
 `;
 
-const CoinDivider = ({
+export default function CoinDivider({
   assetsAmount,
   balancesSum,
-  isCoinDivider,
   isSticky,
   nativeCurrency,
   onEndEdit,
-}) => {
+}) {
   const { width: deviceWidth } = useDimensions();
   const {
     currentAction,
@@ -68,8 +58,6 @@ const CoinDivider = ({
     setPinnedCoins,
   } = useCoinListEditOptions();
   const { isSmallBalancesOpen } = useOpenSmallBalances();
-
-  const animation = useSpringTransition(bin(isSmallBalancesOpen), springConfig);
 
   const initialOpenState = useRef();
 
@@ -90,7 +78,6 @@ const CoinDivider = ({
 
   return (
     <Container isSticky={isSticky} deviceWidth={deviceWidth}>
-      <Highlight highlight={isCoinDivider} />
       <Row>
         <View
           pointerEvents={
@@ -101,7 +88,6 @@ const CoinDivider = ({
             coinDividerHeight={CoinDividerHeight}
             initialState={initialOpenState.current}
             isVisible={isCoinListEdited || assetsAmount === 0}
-            node={animation}
           />
         </View>
         <CoinDividerButtonRow isCoinListEdited={isCoinListEdited}>
@@ -126,7 +112,6 @@ const CoinDivider = ({
           assetsAmount={assetsAmount}
           balancesSum={balancesSum}
           nativeCurrency={nativeCurrency}
-          node={animation}
           openSmallBalances={isSmallBalancesOpen}
         />
         <EditButtonWrapper
@@ -135,7 +120,6 @@ const CoinDivider = ({
           }
         >
           <CoinDividerEditButton
-            animationNode={animation}
             isActive={isCoinListEdited}
             isVisible={isSmallBalancesOpen || assetsAmount === 0}
             onPress={handlePressEdit}
@@ -146,6 +130,4 @@ const CoinDivider = ({
       </Row>
     </Container>
   );
-};
-
-export default CoinDivider;
+}

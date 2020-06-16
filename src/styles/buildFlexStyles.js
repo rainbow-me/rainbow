@@ -1,4 +1,5 @@
 import { css } from 'styled-components/primitives';
+import position from './position';
 
 export const getFlexStylesFromShorthand = style =>
   style === 'end' || style === 'start' ? `flex-${style}` : style;
@@ -10,6 +11,9 @@ const buildFlexStyles = css`
   /* Align Self */
   ${({ self }) =>
     self ? `align-self: ${getFlexStylesFromShorthand(self)};` : ''}
+
+  /* Align Self */
+  ${({ cover }) => (cover ? position.cover : '')}
 
   /* Flex */
   ${({ flex }) => (flex !== undefined ? `flex: ${flex};` : '')}

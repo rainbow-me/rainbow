@@ -40,6 +40,7 @@ import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
+import { walletConnectLoadState } from './redux/walletconnect';
 import { logger } from './utils';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
@@ -92,7 +93,6 @@ class App extends Component {
     this.branchListener = branch.subscribe(({ error, params, uri }) => {
       if (error) {
         logger.error('Error from Branch: ' + error);
-        return;
       }
 
       if (params['+non_branch_link']) {
@@ -167,6 +167,7 @@ class App extends Component {
   handleAppStateChange = async nextAppState => {
     if (nextAppState === 'active') {
       PushNotificationIOS.removeAllDeliveredNotifications();
+      store.dispatch(walletConnectLoadState());
     }
 
     this.setState({ appState: nextAppState });
