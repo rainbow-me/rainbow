@@ -7,7 +7,7 @@ import { parsePath } from 'react-native-redash';
 import Svg, { Path } from 'react-native-svg';
 import { deviceUtils } from '../../utils';
 
-const padding = 20;
+const padding = 0;
 const additionalChartPadding = 999999;
 const width = deviceUtils.dimensions.width;
 const chartAnimationDuration = 200;
@@ -31,7 +31,7 @@ export default class AnimatedChart extends Component {
 
       const lineShape = shape
         .line()
-        .curve(shape.curveCatmullRom.alpha(0.5))
+        .curve(shape.curveMonotoneX)
         .x(
           d => (d.x - minX) / ((maxX - minX) / (width - 2 * padding)) + padding
         )
@@ -123,7 +123,7 @@ export default class AnimatedChart extends Component {
           <Path
             d={this.state.currentChart}
             stroke={this.props.color}
-            strokeWidth={1.5}
+            strokeWidth={3}
             ref={path => (this._path = path)}
           />
         </Svg>
