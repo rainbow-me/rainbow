@@ -54,9 +54,15 @@ static void InitializeFlipper(UIApplication *application) {
 #endif
 
 
-@implementation AppDelegate
+@implementation AppDelegate {
+  BOOL _hiddenSplashScreen;
+}
 
 - (void)hideSplashScreenAnimated {
+  if (_hiddenSplashScreen) {
+    return;
+  }
+  _hiddenSplashScreen = YES;
   UIView* subview = self.window.rootViewController.view.subviews.lastObject;
   UIView* rainbowIcon = subview.subviews.firstObject;
   [UIView animateWithDuration:0.5
@@ -107,6 +113,7 @@ static void InitializeFlipper(UIApplication *application) {
     object:nil];
   
   // Splashscreen - react-native-splash-screen
+  _hiddenSplashScreen = NO;
   [RNSplashScreen showSplash:@"LaunchScreen" inRootView:rootView];
   return YES;
 }
