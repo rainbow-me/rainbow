@@ -22,10 +22,13 @@ export default async function runMigrations() {
    * using the updated Keychain settings (THIS_DEVICE_ONLY)
    */
   const v0 = async () => {
+    logger.sentry('Start migration v0');
     const walletAddress = await loadAddress();
     if (walletAddress) {
+      logger.sentry('v0 migration - Save loaded address');
       await saveAddress(walletAddress);
     }
+    logger.sentry('Complete migration v0');
   };
 
   migrations.push(v0);
@@ -37,12 +40,14 @@ export default async function runMigrations() {
    * that were created / imported before we launched this feature
    */
   const v1 = async () => {
+    logger.sentry('Start migration v1');
     const { selected } = store.getState().wallets;
 
     if (!selected) {
       // Read from the old wallet data
       const address = await loadAddress();
       if (address) {
+        logger.sentry('v1 migration - address found');
         const id = `wallet_${new Date().getTime()}`;
         const currentWallet = {
           addresses: [
@@ -65,10 +70,12 @@ export default async function runMigrations() {
 
         const wallets = { [id]: currentWallet };
 
+        logger.sentry('v1 migration - update wallets and selected wallet');
         await store.dispatch(walletsUpdate(wallets));
         await store.dispatch(walletsSetSelected(currentWallet));
       }
     }
+    logger.sentry('Complete migration v1');
   };
 
   migrations.push(v1);
@@ -79,7 +86,13 @@ export default async function runMigrations() {
    * which are the only wallets allowed to create new accounts under it
    */
   const v2 = async () => {
+    logger.sentry('Start migration v2');
     const { wallets, selected } = store.getState().wallets;
+
+    if (!wallets) {
+      logger.sentry('Complete migration v2 early');
+      return;
+    }
 
     // Check if we have a primary wallet
     const primaryWallet = findKey(wallets, ['primary', true]);
@@ -88,6 +101,7 @@ export default async function runMigrations() {
     // if there's a wallet with seed phrase that wasn't imported
     // and set it as primary
     if (!primaryWallet) {
+      logger.sentry('v2 migration - primary wallet not found');
       let primaryWalletKey = null;
       Object.keys(wallets).some(key => {
         const wallet = wallets[key];
@@ -117,6 +131,7 @@ export default async function runMigrations() {
           ...updatedWallets[primaryWalletKey],
           primary: true,
         };
+        logger.sentry('v2 migration - update wallets');
         await store.dispatch(walletsUpdate(updatedWallets));
         // Additionally, we need to check if it's the selected wallet
         // and if that's the case, update it too
@@ -126,21 +141,22 @@ export default async function runMigrations() {
         }
       }
     }
+    logger.sentry('Complete migration v2');
   };
 
   migrations.push(v2);
 
   logger.sentry(
-    'Migrations: ready to run migrations starting on number',
-    currentVersion
+    `Migrations: ready to run migrations starting on number ${currentVersion}`
   );
+
   if (migrations.length === currentVersion) {
     logger.sentry(`Migrations: Nothing to run`);
     return;
   }
 
   for (let i = currentVersion; i < migrations.length; i++) {
-    logger.sentry(`Migrations: Running migration ${i}`);
+    logger.sentry(`Migrations: Running migration v${i}`);
     await migrations[i].apply(null);
     logger.sentry(`Migrations: Migration ${i} completed succesfully`);
     await setMigrationVersion(i + 1);
