@@ -1,39 +1,14 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { pure } from 'recompact';
+import styled from 'styled-components/primitives';
 import { padding } from '../../styles';
-import { TouchableScale } from '../animations';
-import { Flex } from '../layout';
+import { ButtonPressAnimation } from '../animations';
 
-const HeaderButton = ({
-  children,
-  onLongPress,
-  onPress,
-  transformOrigin,
-  ...props
-}) => (
-  <TouchableScale
-    activeScale={0.8}
-    hapticType="impactLight"
-    pressInFriction={50}
-    pressInTension={400}
-    pressOutFriction={30}
-    pressOutTension={300}
-    onLongPress={onLongPress}
-    onPress={onPress}
-    transformOrigin={transformOrigin}
-    useNativeDriver
-  >
-    <Flex css={padding(10, 19, 8)} {...props}>
-      {children}
-    </Flex>
-  </TouchableScale>
-);
+const HeaderButton = styled(ButtonPressAnimation).attrs(
+  ({ scaleTo = 0.8 }) => ({
+    compensateForTransformOrigin: true,
+    scaleTo,
+  })
+)`
+  ${padding(10, 19, 8)};
+`;
 
-HeaderButton.propTypes = {
-  ...TouchableScale.propTypes,
-  children: PropTypes.node,
-  onPress: PropTypes.func.isRequired,
-};
-
-export default pure(HeaderButton);
+export default HeaderButton;

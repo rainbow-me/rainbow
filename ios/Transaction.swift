@@ -31,6 +31,7 @@
 import Foundation
 
 @objcMembers class Transaction: NSObject {
+  var originalIndex: NSNumber!;
   var transactionDescription: String!
   var title: String!
   var type: String!

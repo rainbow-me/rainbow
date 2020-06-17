@@ -9,7 +9,6 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
@@ -349,9 +348,7 @@ class SendAssetList extends React.Component {
 
   render() {
     return (
-      <FlyInAnimation
-        style={{ flex: 1, paddingBottom: sheetVerticalOffset, width: '100%' }}
-      >
+      <FlyInAnimation>
         <RecyclerListView
           disableRecycling
           ref={ref => {

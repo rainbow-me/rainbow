@@ -1,18 +1,21 @@
-import { compose, onlyUpdateForKeys, pickProps, withProps } from 'recompact';
+import React from 'react';
+import styled from 'styled-components/primitives';
+import { magicMemo } from '../../utils';
 import { ListHeader } from '../list';
 import { Text } from '../text';
 
-const titleRenderer = withProps({
+const ActivityListHeaderTitle = styled(Text).attrs({
   size: 'larger',
   weight: 'bold',
-})(Text);
+})``;
 
-export default compose(
-  pickProps(Object.keys(ListHeader.propTypes)),
-  withProps({
-    isSticky: true,
-    showDivider: false,
-    titleRenderer,
-  }),
-  onlyUpdateForKeys(['title'])
-)(ListHeader);
+const ActivityListHeader = props => (
+  <ListHeader
+    {...props}
+    isSticky
+    showDivider={false}
+    titleRenderer={ActivityListHeaderTitle}
+  />
+);
+
+export default magicMemo(ActivityListHeader, 'title');

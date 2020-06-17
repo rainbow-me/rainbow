@@ -1,120 +1,41 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import Animated, {
-  Clock,
-  spring,
-  SpringUtils,
-  Value,
-} from 'react-native-reanimated';
+import React from 'react';
+import Animated, { SpringUtils } from 'react-native-reanimated';
+import { bin, useSpringTransition } from 'react-native-redash';
 import { interpolate } from './procs';
 
-const { add, block, clockRunning, cond, multiply, set, startClock } = Animated;
-
-function runTiming(clock, value, dest, friction, tension) {
-  const state = {
-    finished: new Value(1),
-    position: new Value(value),
-    time: new Value(0),
-    velocity: new Value(0),
-  };
-
-  const config = SpringUtils.makeConfigFromOrigamiTensionAndFriction({
-    ...SpringUtils.makeDefaultConfig(),
-    friction,
-    tension,
+const OpacityToggler = (
+  {
+    endingOpacity = 0,
+    friction = 20,
+    isVisible,
+    startingOpacity = 1,
+    style,
+    tension = 200,
+    ...props
+  },
+  ref
+) => {
+  const animation = useSpringTransition(bin(isVisible), {
+    ...SpringUtils.makeConfigFromOrigamiTensionAndFriction({
+      ...SpringUtils.makeDefaultConfig(),
+      friction,
+      tension,
+    }),
   });
 
-  const reset = [
-    set(state.finished, 0),
-    set(state.time, 0),
-    set(state.velocity, 0),
-  ];
+  const opacity = interpolate(animation, {
+    inputRange: [0, 1],
+    outputRange: [startingOpacity, endingOpacity],
+  });
 
-  return block([
-    cond(state.finished, [...reset, set(config.toValue, dest)]),
-    cond(clockRunning(clock), 0, startClock(clock)),
-    spring(clock, state, config),
-    state.position,
-  ]);
-}
+  return (
+    <Animated.View
+      {...props}
+      accessible
+      ref={ref}
+      style={[style, { opacity }]}
+    />
+  );
+};
 
-export default class OpacityToggler extends Component {
-  static propTypes = {
-    animationNode: PropTypes.any,
-    children: PropTypes.any,
-    endingOpacity: PropTypes.number,
-    friction: PropTypes.number,
-    isVisible: PropTypes.bool,
-    startingOpacity: PropTypes.number,
-    style: PropTypes.object,
-    tension: PropTypes.number,
-  };
-
-  static defaultProps = {
-    endingOpacity: 0,
-    friction: 20,
-    startingOpacity: 1,
-    tension: 200,
-  };
-
-  componentWillMount() {
-    if (!this.props.animationNode) {
-      this._isVisible = this.props.isVisible;
-    }
-  }
-
-  componentWillUpdate(prevProps) {
-    const {
-      animationNode,
-      endingOpacity,
-      friction,
-      isVisible,
-      startingOpacity,
-      tension,
-    } = this.props;
-
-    if (
-      prevProps.isVisible !== undefined &&
-      prevProps.isVisible !== isVisible &&
-      !animationNode
-    ) {
-      const clock = new Clock();
-      const base = runTiming(
-        clock,
-        isVisible ? -1 : 1,
-        isVisible ? 1 : -1,
-        friction,
-        tension
-      );
-      this._opacity = interpolate(base, {
-        inputRange: [-1, 1],
-        outputRange: [endingOpacity, startingOpacity],
-      });
-    }
-  }
-
-  render() {
-    const {
-      animationNode,
-      children,
-      endingOpacity,
-      startingOpacity,
-      style,
-    } = this.props;
-
-    let opacity = !this._isVisible ? startingOpacity : endingOpacity;
-
-    if (animationNode) {
-      opacity =
-        startingOpacity === 0
-          ? animationNode
-          : multiply(add(animationNode, -1), -1);
-    } else if (this._opacity) {
-      opacity = this._opacity;
-    }
-
-    return (
-      <Animated.View style={[style, { opacity }]}>{children}</Animated.View>
-    );
-  }
-}
+export default React.forwardRef(OpacityToggler);

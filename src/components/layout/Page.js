@@ -1,43 +1,30 @@
-import PropTypes from 'prop-types';
-import React, { createElement } from 'react';
+import React from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { View } from 'react-primitives';
+import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
 
-const Page = ({
-  color,
-  component,
-  showBottomInset,
-  showTopInset,
-  ...props
-}) => {
+const PageElement = styled.View`
+  ${position.size('100%')};
+  background-color: ${({ color }) => color};
+  padding-bottom: ${({ bottomInset }) => bottomInset};
+  padding-top: ${({ topInset }) => topInset};
+`;
+
+const Page = (
+  { color = colors.white, showBottomInset, showTopInset, ...props },
+  ref
+) => {
   const insets = useSafeArea();
 
   return (
-    <View
+    <PageElement
       {...props}
-      paddingBottom={showBottomInset ? insets.bottom : 0}
-      paddingTop={showTopInset ? insets.top : 0}
-    >
-      {createElement(component, {
-        ...props,
-        ...position.sizeAsObject('100%'),
-        backgroundColor: color,
-      })}
-    </View>
+      bottomInset={showBottomInset ? insets.bottom : 0}
+      color={color}
+      ref={ref}
+      topInset={showTopInset ? insets.top : 0}
+    />
   );
 };
 
-Page.propTypes = {
-  color: PropTypes.string,
-  component: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
-  showBottomInset: PropTypes.bool,
-  showTopInset: PropTypes.bool,
-};
-
-Page.defaultProps = {
-  color: colors.white,
-  component: View,
-};
-
-export default Page;
+export default React.forwardRef(Page);

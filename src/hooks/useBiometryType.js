@@ -4,16 +4,16 @@ import { isPinOrFingerprintSet } from 'react-native-device-info';
 import * as Keychain from 'react-native-keychain';
 import BiometryTypes from '../helpers/biometryTypes';
 import useAppState from './useAppState';
+import useIsMounted from './useIsMounted';
 import usePrevious from './usePrevious';
 
 export default function useBiometryType() {
   const { justBecameActive } = useAppState();
+  const isMounted = useIsMounted();
   const [biometryType, setBiometryType] = useState(null);
   const prevBiometricType = usePrevious(biometryType);
 
   useEffect(() => {
-    let mounted = true;
-
     const getSupportedBiometryType = async () => {
       let type = await Keychain.getSupportedBiometryType();
 
@@ -26,7 +26,7 @@ export default function useBiometryType() {
         );
       }
 
-      if (mounted && type !== prevBiometricType) {
+      if (isMounted.current && type !== prevBiometricType) {
         setBiometryType(type);
       }
     };
@@ -34,11 +34,7 @@ export default function useBiometryType() {
     if (!biometryType || justBecameActive) {
       getSupportedBiometryType();
     }
-
-    return () => {
-      mounted = false;
-    };
-  }, [biometryType, justBecameActive, prevBiometricType]);
+  }, [biometryType, isMounted, justBecameActive, prevBiometricType]);
 
   return biometryType;
 }
