@@ -13,7 +13,8 @@ const BodyText = styled(Text).attrs({
   lineHeight: 'loosest',
   size: 'big',
 })`
-  padding-bottom: 30;
+  padding-bottom: 23;
+  padding-top: 4;
 `;
 
 const emojisMap = {
@@ -48,11 +49,11 @@ const WalletConnectRedirectSheet = () => {
 
   return (
     <Sheet>
-      <Centered direction="column" paddingTop={9}>
+      <Centered direction="column" paddingTop={12}>
         <Text letterSpacing="zero" size="h2">
           {emojisMap[type]}
         </Text>
-        <Centered marginBottom={12} marginTop={15}>
+        <Centered marginTop={9}>
           <Text size="big" weight="bold">
             {titlesMap[type]}
           </Text>
