@@ -1,5 +1,4 @@
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
@@ -11,6 +10,13 @@ import { NoResults } from '../list';
 import { CurrencySelectModalHeaderHeight } from './CurrencySelectModalHeader';
 import ExchangeAssetList from './ExchangeAssetList';
 import { ExchangeSearchHeight } from './ExchangeSearch';
+
+const EmptyCurrencySelectionList = styled(EmptyAssetList).attrs({
+  pointerEvents: 'none',
+})`
+  ${position.cover};
+  background-color: ${colors.white};
+`;
 
 const NoCurrencyResults = styled(NoResults)`
   padding-bottom: ${CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2};
@@ -37,7 +43,7 @@ const CurrencySelectionList = ({
 
   useEffect(() => {
     if (showSkeleton && !loading) {
-      skeletonTransitionRef.current.animateNextTransition();
+      skeletonTransitionRef.current?.animateNextTransition();
       setShowSkeleton(false);
     }
   }, [loading, showSkeleton]);
@@ -61,22 +67,9 @@ const CurrencySelectionList = ({
           )}
         </Centered>
       )}
-      {(showSkeleton || !showList) && (
-        <EmptyAssetList
-          {...position.coverAsObject}
-          backgroundColor={colors.white}
-          pointerEvents="none"
-        />
-      )}
+      {(showSkeleton || !showList) && <EmptyCurrencySelectionList />}
     </Transitioning.View>
   );
-};
-
-CurrencySelectionList.propTypes = {
-  itemProps: PropTypes.object,
-  listItems: PropTypes.array,
-  query: PropTypes.string,
-  showList: PropTypes.bool,
 };
 
 export default magicMemo(CurrencySelectionList, ['listItems', 'showList']);

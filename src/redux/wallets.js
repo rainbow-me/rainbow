@@ -17,11 +17,12 @@ import {
 import { settingsUpdateAccountAddress } from '../redux/settings';
 
 // -- Constants --------------------------------------- //
-const WALLETS_UPDATE = 'wallets/ALL_WALLETS_UPDATE';
-const WALLETS_LOAD = 'wallets/ALL_WALLETS_LOAD';
-const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
+const WALLETS_LOAD = 'wallets/ALL_WALLETS_LOAD';
+const WALLETS_UPDATE = 'wallets/ALL_WALLETS_UPDATE';
 const WALLETS_UPDATE_NAMES = 'wallets/WALLETS_UPDATE_NAMES';
+const WALLETS_SET_IS_CREATING_ACCOUNT = 'wallets/SET_IS_CREATING_ACCOUNT';
+const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 
 // -- Actions ---------------------------------------- //
 export const walletsLoadState = () => async (dispatch, getState) => {
@@ -96,6 +97,13 @@ export const walletsSetSelected = wallet => dispatch => {
   });
 };
 
+export const isCreatingAccount = val => dispatch => {
+  dispatch({
+    payload: val,
+    type: WALLETS_SET_IS_CREATING_ACCOUNT,
+  });
+};
+
 export const addressSetSelected = address => () => saveAddress(address);
 
 export const createAccountForWallet = (id, color, name) => async (
@@ -162,6 +170,7 @@ export const fetchWalletNames = () => async (dispatch, getState) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
+  isCreatingAccount: false,
   selected: undefined,
   walletNames: {},
   wallets: null,
@@ -169,6 +178,8 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case WALLETS_SET_IS_CREATING_ACCOUNT:
+      return { ...state, isCreatingAccount: action.payload };
     case WALLETS_SET_SELECTED:
       return { ...state, selected: action.payload };
     case WALLETS_UPDATE:

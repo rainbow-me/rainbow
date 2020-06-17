@@ -1,25 +1,21 @@
-import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
-import { compose } from 'recompact';
-import { onlyUpdateForKeys } from 'recompose';
-import { withFabSelection, withTransitionProps } from '../../hoc';
 import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
+import { magicMemo } from '../../utils';
 import { Icon } from '../icons';
 import FloatingActionButton from './FloatingActionButton';
-
-const FloatingActionButtonWithDisabled = withFabSelection(FloatingActionButton);
 
 const FabShadow = [
   [0, 10, 30, colors.dark, 0.4],
   [0, 5, 15, colors.paleBlue, 0.5],
 ];
 
-const SendFab = ({ disabled, isReadOnlyWallet, scaleTo, tapRef }) => {
+const SendFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   const { navigate } = useNavigation();
-  const onPressHandler = useCallback(() => {
+
+  const handlePress = useCallback(() => {
     if (!isReadOnlyWallet) {
       navigate(Routes.SEND_SHEET);
     } else {
@@ -28,27 +24,16 @@ const SendFab = ({ disabled, isReadOnlyWallet, scaleTo, tapRef }) => {
   }, [navigate, isReadOnlyWallet]);
 
   return (
-    <FloatingActionButtonWithDisabled
+    <FloatingActionButton
+      {...props}
       backgroundColor={colors.paleBlue}
       disabled={disabled}
-      onPress={onPressHandler}
-      scaleTo={scaleTo}
+      onPress={handlePress}
       shadows={FabShadow}
-      tapRef={tapRef}
     >
       <Icon height={22} marginBottom={4} name="send" width={23} />
-    </FloatingActionButtonWithDisabled>
+    </FloatingActionButton>
   );
 };
 
-SendFab.propTypes = {
-  disabled: PropTypes.bool,
-  isReadOnlyWallet: PropTypes.bool,
-  scaleTo: PropTypes.number,
-  tapRef: PropTypes.object,
-};
-
-export default compose(
-  withTransitionProps,
-  onlyUpdateForKeys(['disabled', 'isReadOnlyWallet', 'sections'])
-)(SendFab);
+export default magicMemo(SendFab, ['disabled', 'isReadOnlyWallet']);

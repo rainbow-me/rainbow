@@ -11,13 +11,10 @@ import styled from 'styled-components/primitives';
 import { padding } from '../../styles';
 import { interpolate } from '../animations';
 import { CoinIcon } from '../coin-icon';
-import { Row } from '../layout';
+import { Centered } from '../layout';
 import { Text } from '../text';
 
-const Container = styled(Row).attrs({
-  align: 'center',
-  justify: 'center',
-})`
+const Container = styled(Centered)`
   ${padding(19, 19, 2)};
   width: 100%;
 `;

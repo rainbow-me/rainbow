@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { useCallback, useRef } from 'react';
 import { SectionList } from 'react-native-gesture-handler';
 import styled from 'styled-components/primitives';
@@ -12,7 +11,6 @@ import { Text } from '../text';
 const Header = styled.View`
   ${padding(12, 19, 6)};
   background-color: ${colors.white};
-  flex: 1;
 `;
 
 const HeaderTitle = styled(Text).attrs({
@@ -20,11 +18,7 @@ const HeaderTitle = styled(Text).attrs({
   opacity: 0.4,
   size: 'smaller',
   weight: 'semibold',
-})`
-  ${padding(12, 19, 6)};
-  background-color: ${colors.white};
-  flex: 1;
-`;
+})``;
 
 const ExchangeAssetSectionListHeader = ({ section }) =>
   section?.title ? (
@@ -95,13 +89,6 @@ const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
       sections={items.map(createItem)}
     />
   );
-};
-
-ExchangeAssetList.propTypes = {
-  itemProps: PropTypes.object,
-  items: PropTypes.array.isRequired,
-  onLayout: PropTypes.func,
-  query: PropTypes.string,
 };
 
 export default magicMemo(ExchangeAssetList, ['items', 'query']);

@@ -1,20 +1,31 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { withProps } from 'recompact';
+import React, { useCallback } from 'react';
+import styled from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
 import { colors } from '../../styles';
+import { neverRerender } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, FlexItem, Row } from '../layout';
 import { Text } from '../text';
 
 const KeyColor = colors.alpha(colors.blueGreyDark, 0.8);
-const defaultTransform = { transform: [{ scale: 0.5 }] };
+
+const KeyboardButtonContent = styled(Centered)`
+  height: ${({ height }) => height};
+  transform: scale(0.5);
+  width: 80;
+`;
+
+const KeyboardRow = styled(Row).attrs({
+  align: 'center',
+  justify: 'space-between',
+})`
+  width: 100%;
+`;
 
 const KeyboardButton = ({ children, ...props }) => {
   const { isTinyPhone } = useDimensions();
   const keyHeight = isTinyPhone ? 60 : 64;
-  const yTransformOrigin = 0.5 + 8 / keyHeight;
 
   return (
     <ButtonPressAnimation
@@ -22,31 +33,31 @@ const KeyboardButton = ({ children, ...props }) => {
       duration={35}
       pressOutDuration={75}
       scaleTo={1.6}
-      transformOrigin={[0.5, yTransformOrigin]}
+      transformOrigin={[0.5, 0.5 + 8 / keyHeight]}
     >
-      <Centered height={keyHeight} style={defaultTransform} width={80}>
+      <KeyboardButtonContent height={keyHeight}>
         {children}
-      </Centered>
+      </KeyboardButtonContent>
     </ButtonPressAnimation>
   );
 };
 
-const KeyboardRow = withProps({
-  align: 'center',
-  justify: 'space-between',
-  width: '100%',
-})(Row);
-
-const Numpad = ({ decimal, onPress, width }) => {
-  const renderCell = symbol => (
-    <KeyboardButton key={symbol} onPress={() => onPress(symbol.toString())}>
-      <Text align="center" color={KeyColor} size={44} weight="bold">
-        {symbol}
-      </Text>
-    </KeyboardButton>
+const Numpad = ({ decimal = true, onPress, width }) => {
+  const renderCell = useCallback(
+    symbol => (
+      <KeyboardButton key={symbol} onPress={() => onPress(symbol.toString())}>
+        <Text align="center" color={KeyColor} size={44} weight="bold">
+          {symbol}
+        </Text>
+      </KeyboardButton>
+    ),
+    [onPress]
   );
 
-  const renderRow = cells => <KeyboardRow>{cells.map(renderCell)}</KeyboardRow>;
+  const renderRow = useCallback(
+    cells => <KeyboardRow>{cells.map(renderCell)}</KeyboardRow>,
+    [renderCell]
+  );
 
   return (
     <Centered direction="column" width={width}>
@@ -64,16 +75,4 @@ const Numpad = ({ decimal, onPress, width }) => {
   );
 };
 
-Numpad.propTypes = {
-  decimal: PropTypes.bool,
-  onPress: PropTypes.func.isRequired,
-  width: PropTypes.number,
-};
-
-Numpad.defaultProps = {
-  decimal: true,
-};
-
-const neverRerender = () => true;
-
-export default React.memo(Numpad, neverRerender);
+export default neverRerender(Numpad);

@@ -2,10 +2,6 @@ import React, { useCallback } from 'react';
 import { Value } from 'react-native-reanimated';
 import { StackActions } from 'react-navigation';
 import { useNavigation as oldUseNavigation } from 'react-navigation-hooks';
-import { discoverSheetAvailable } from '../config/experimental';
-import { setModalVisible } from '../redux/modal';
-import store from '../redux/store';
-import Routes from '../screens/Routes/routesNames';
 
 let TopLevelNavigationRef = null;
 const transitionPosition = new Value(0);
@@ -71,21 +67,6 @@ export function withNavigation(Component) {
  * Also, we take care to hide discover sheet if needed
  */
 export function navigate(oldNavigate, ...args) {
-  if (
-    discoverSheetAvailable &&
-    typeof args[0] === 'string' &&
-    (args[0] === Routes.SETTINGS_MODAL ||
-      args[0] === Routes.RECEIVE_MODAL ||
-      args[0] === Routes.EXPANDED_ASSET_SHEET ||
-      args[0] === Routes.ADD_CASH_SHEET ||
-      args[0] === Routes.SEND_SHEET)
-  ) {
-    store.dispatch(setModalVisible(false));
-    if (bottomSheetState.mounted) {
-      bottomSheetState.pendingAction = () => navigate(oldNavigate, ...args);
-      return;
-    }
-  }
   if (typeof args[0] === 'string') {
     addActionAfterClosingSheet(() => oldNavigate(...args));
   } else {

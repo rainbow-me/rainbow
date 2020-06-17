@@ -1,57 +1,44 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { View } from 'react-native';
+import React, { useCallback } from 'react';
 import ShadowStack from 'react-native-shadow-stack';
-import { compose, withHandlers } from 'recompact';
-import { withCoinListEdited } from '../../hoc';
+import styled from 'styled-components/primitives';
+import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../screens/Routes/routesNames';
-import { borders, colors, position } from '../../styles';
-import { OpacityToggler } from '../animations';
+import { borders, colors } from '../../styles';
 import Icon from '../icons/Icon';
 import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
 
-const CameraHeaderButton = ({ onPress, isCoinListEdited }) => (
-  <OpacityToggler
-    endingOpacity={0.4}
-    isVisible={isCoinListEdited}
-    startingOpacity={1}
-  >
-    <View pointerEvents={isCoinListEdited ? 'none' : 'auto'}>
-      <HeaderButton
-        onPress={onPress}
-        transformOrigin="right"
-        testID="goToCamera"
+const CameraHeaderButtonShadows = [
+  [0, 3, 5, colors.dark, 0.2],
+  [0, 6, 10, colors.dark, 0.14],
+];
+
+const CameraIcon = styled(Icon).attrs({
+  color: colors.white,
+  name: 'camera',
+})`
+  margin-bottom: 1;
+  max-width: 18;
+`;
+
+export default function CameraHeaderButton() {
+  const { navigate } = useNavigation();
+
+  const onPress = useCallback(() => navigate(Routes.QR_SCANNER_SCREEN), [
+    navigate,
+  ]);
+
+  return (
+    <HeaderButton onPress={onPress} testID="goToCamera" transformOrigin="right">
+      <ShadowStack
+        {...borders.buildCircleAsObject(34)}
+        backgroundColor={colors.paleBlue}
+        shadows={CameraHeaderButtonShadows}
       >
-        <ShadowStack
-          {...borders.buildCircleAsObject(34)}
-          backgroundColor={colors.paleBlue}
-          shadows={[
-            [0, 3, 5, colors.dark, 0.2],
-            [0, 6, 10, colors.dark, 0.14],
-          ]}
-        >
-          <Centered css={position.cover}>
-            <Icon
-              color={colors.white}
-              name="camera"
-              style={{ marginBottom: 1, maxWidth: 18 }}
-            />
-          </Centered>
-        </ShadowStack>
-      </HeaderButton>
-    </View>
-  </OpacityToggler>
-);
-
-CameraHeaderButton.propTypes = {
-  onPress: PropTypes.func,
-};
-
-export default compose(
-  withHandlers({
-    onPress: ({ navigation }) => () =>
-      navigation.navigate(Routes.QR_SCANNER_SCREEN),
-  }),
-  withCoinListEdited
-)(CameraHeaderButton);
+        <Centered cover>
+          <CameraIcon />
+        </Centered>
+      </ShadowStack>
+    </HeaderButton>
+  );
+}
