@@ -361,7 +361,7 @@ export default class Chart extends PureComponent {
   };
 
   render() {
-    const { amountOfPathPoints, barColor, currentValue } = this.props;
+    const { barColor, currentValue } = this.props;
     const { currentData } = this.state;
     let maxValue = 0,
       minValue = 0,
@@ -480,37 +480,20 @@ export default class Chart extends PureComponent {
               ]),
               onChange(
                 this.touchX,
-                call([this.touchX], ([x]) => {
+                call([this.translateY], ([y]) => {
+                  const max = maxValue.y;
+                  const min = minValue.y;
+                  const height = 160;
                   const points = currentData?.points;
                   if (points) {
-                    let curX = 0;
-                    if (x < (width / (amountOfPathPoints + 20)) * 10) {
-                      curX = 0;
-                    } else if (
-                      x >
-                      width - (width / (amountOfPathPoints + 20)) * 10
-                    ) {
-                      curX =
-                        width - (width / (amountOfPathPoints + 20)) * 10 - 1;
-                    } else {
-                      curX =
-                        x -
-                        (width / (amountOfPathPoints + 20)) * 10 +
-                        (x / width) * (width / (amountOfPathPoints + 20)) * 10;
+                    const multiplier = (max - min) / height;
+                    let result = -y * multiplier + min;
+                    if (result > max) {
+                      result = max;
+                    } else if (result < min) {
+                      result = min;
                     }
-                    let calculatedIndex = Math.round(
-                      curX /
-                        ((width - (width / (amountOfPathPoints + 20)) * 10) /
-                          points.length)
-                    );
-                    const calculatedValue =
-                      calculatedIndex < points.length - 1
-                        ? points[calculatedIndex].y
-                        : points[calculatedIndex - 1].y;
-                    if (this.currentSelectedPoint !== calculatedValue) {
-                      this.currentSelectedPoint = calculatedValue;
-                      this.props.onValueUpdate(calculatedValue);
-                    }
+                    this.props.onValueUpdate(result);
                   }
                 })
               )
