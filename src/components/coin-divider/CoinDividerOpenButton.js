@@ -5,7 +5,6 @@ import { SpringUtils } from 'react-native-reanimated';
 import { bin, useSpringTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import Caret from '../../assets/family-dropdown-arrow.png';
-import { useOpenSmallBalances } from '../../hooks';
 import { colors, padding } from '../../styles';
 import { magicMemo } from '../../utils';
 import {
@@ -58,19 +57,16 @@ const Content = styled(Row).attrs({
 const CoinDividerOpenButton = ({
   coinDividerHeight,
   initialState,
+  isSmallBalancesOpen,
   isVisible,
+  onPress,
 }) => {
-  const {
-    isSmallBalancesOpen,
-    toggleOpenSmallBalances,
-  } = useOpenSmallBalances();
-
   const animation = useSpringTransition(bin(isSmallBalancesOpen), springConfig);
 
   return (
     <ContainerButton
       isSmallBalancesOpen={isSmallBalancesOpen}
-      onPress={toggleOpenSmallBalances}
+      onPress={onPress}
     >
       <OpacityToggler
         endingOpacity={0}

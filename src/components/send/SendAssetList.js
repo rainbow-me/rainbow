@@ -19,6 +19,7 @@ import {
 } from '../coin-row';
 import SavingsListHeader from '../savings/SavingsListHeader';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
+import SendAssetListSmallBalancesHeader from './SendAssetListSmallBalancesHeader';
 
 const dividerHeight = 18;
 const familyHeaderHeight = 62;
@@ -316,13 +317,9 @@ class SendAssetList extends React.Component {
 
   shitcoinsRenderItem = item => (
     <View marginTop={10}>
-      <SavingsListHeader
-        title="Shitcoins"
-        emoji="moneybag"
-        isOpen={this.state.openShitcoins}
-        onPress={() => {
-          this.changeOpenShitcoins();
-        }}
+      <SendAssetListSmallBalancesHeader
+        openShitcoins={this.state.openShitcoins}
+        onPress={this.changeOpenShitcoins}
       />
       {this.state.openShitcoins && this.mapShitcoins(item.data)}
       {this.props.savings && this.props.savings.length > 0 ? null : <Divider />}

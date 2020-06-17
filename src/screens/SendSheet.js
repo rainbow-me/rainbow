@@ -422,6 +422,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
             <SendAssetList
               assets={assets}
               fetchData={fetchData}
+              nativeCurrency={nativeCurrency}
               onSelectAsset={sendUpdateSelected}
               savings={savings}
               shitcoins={shitcoins}
