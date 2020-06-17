@@ -84,10 +84,10 @@ export default class AnimatedChart extends Component {
         });
         this.listenerId = listenerId;
 
-        setTimeout(() => {
+        this.animatePathTimeout = setTimeout(() => {
           nextProps.setCurrentPath(parsedPath);
           this.handleAnimation();
-          setTimeout(() => {
+          this.setPathTimeout = setTimeout(() => {
             const path = pathInterpolate(this.animatedIsDone ? 1 : 0);
             this._path.setNativeProps({
               d: path,
@@ -100,6 +100,12 @@ export default class AnimatedChart extends Component {
 
   componentWillUnmount = () => {
     this.state.animation.removeListener(this.listenerId);
+    if (this.animatePathTimeout) {
+      clearTimeout(this.animatePathTimeout);
+    }
+    if (this.setPathTimeout) {
+      clearTimeout(this.setPathTimeout);
+    }
   };
 
   handleAnimation = () => {
