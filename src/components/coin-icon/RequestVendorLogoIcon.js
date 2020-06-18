@@ -14,10 +14,7 @@ const RVLIShadows = {
     [0, 4, 6, colors.dark, 0.04],
     [0, 1, 3, colors.dark, 0.08],
   ],
-  large: [
-    [0, 8, 11, colors.dark, 0.04],
-    [0, 2, 6, colors.dark, 0.08],
-  ],
+  large: [[0, 6, 10, colors.dark, 0.14]],
 };
 
 const Content = styled(Centered)`

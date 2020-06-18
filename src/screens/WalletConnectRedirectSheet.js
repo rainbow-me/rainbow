@@ -9,11 +9,12 @@ import { colors } from '../styles';
 
 const BodyText = styled(Text).attrs({
   align: 'center',
-  color: colors.blueGreyDark50,
+  color: colors.alpha(colors.blueGreyDark, 0.6),
   lineHeight: 'loosest',
   size: 'big',
 })`
-  padding-bottom: 30;
+  padding-bottom: 23;
+  padding-top: 4;
 `;
 
 const emojisMap = {
@@ -47,12 +48,12 @@ const WalletConnectRedirectSheet = () => {
   }, [goBack, appState]);
 
   return (
-    <Sheet>
-      <Centered direction="column" paddingTop={9}>
+    <Sheet hideHandle>
+      <Centered direction="column" paddingTop={12}>
         <Text letterSpacing="zero" size="h2">
           {emojisMap[type]}
         </Text>
-        <Centered marginBottom={12} marginTop={15}>
+        <Centered marginTop={9}>
           <Text size="big" weight="bold">
             {titlesMap[type]}
           </Text>
