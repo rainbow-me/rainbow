@@ -28,6 +28,8 @@ export const measureTopRowText = text =>
     letterSpacing: fonts.letterSpacing.roundedMedium,
   });
 
+const PADDING_BETWEEN_ITEMS = 20;
+
 export const measureTopMoverCoinRow = async ({
   change,
   name,
@@ -42,8 +44,11 @@ export const measureTopMoverCoinRow = async ({
   const leftWidth = Math.max(nameWidth, priceWidth);
   const rightWidth = Math.max(changeWidth, symbolWidth);
 
-  return [TopMoverCoinIconSize, leftWidth, rightWidth].reduce(
-    (acc, val) => acc + val + TopMoverCoinRowMargin
+  return (
+    PADDING_BETWEEN_ITEMS +
+    [TopMoverCoinIconSize, leftWidth, rightWidth].reduce(
+      (acc, val) => acc + val + TopMoverCoinRowMargin
+    )
   );
 };
 
