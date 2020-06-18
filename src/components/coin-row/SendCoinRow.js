@@ -45,6 +45,7 @@ const SendCoinRow = magicMemo(
         {...props}
         bottomRowRender={BottomRow}
         containerStyles={selected ? containerSelectedStyles : containerStyles}
+        isHidden={false}
         selected={selected}
         topRowRender={TopRow}
       />

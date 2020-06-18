@@ -9,6 +9,7 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
+import { buildCoinsList } from '../../helpers/assets';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
@@ -36,11 +37,40 @@ class SendAssetList extends React.Component {
   constructor(props) {
     super(props);
 
-    const { assets, savings, shitcoins, uniqueTokens } = props;
-    this.data = assets;
-    if (shitcoins && shitcoins.length > 0) {
-      this.data = this.data.concat([{ data: shitcoins, name: 'Shitcoins' }]);
+    const {
+      allAssets,
+      hiddenCoins,
+      nativeCurrency,
+      pinnedCoins,
+      savings,
+      uniqueTokens,
+    } = props;
+
+    const { assets } = buildCoinsList(
+      allAssets,
+      nativeCurrency,
+      true,
+      pinnedCoins,
+      hiddenCoins
+    );
+    let smallBalances = [];
+    let shitcoins = [];
+
+    if (assets[assets.length - 1].smallBalancesContainer) {
+      smallBalances = assets.pop();
+      shitcoins = smallBalances.assets;
     }
+
+    if (assets[assets.length - 1].coinDivider) {
+      assets.pop(); // removes not needed coin divider
+    }
+
+    const visibleAssetsLength = assets.length;
+    this.data = assets;
+    if (smallBalances.assets.length > 0) {
+      this.data.push(smallBalances);
+    }
+
     if (savings && savings.length > 0) {
       this.data = this.data.concat([{ data: savings, name: 'Savings' }]);
     }
@@ -71,21 +101,27 @@ class SendAssetList extends React.Component {
 
     this._layoutProvider = new LayoutProvider(
       i => {
-        if (i < assets.length - 1) {
+        if (i < visibleAssetsLength - 1) {
           return 'COIN_ROW';
-        } else if (i === assets.length - 1) {
+        } else if (i === visibleAssetsLength - 1) {
           return (savings && savings.length !== 0) ||
             (shitcoins && shitcoins.length !== 0)
             ? 'COIN_ROW'
             : 'COIN_ROW_LAST';
-        } else if (i === assets.length && shitcoins && shitcoins.length > 0) {
+        } else if (
+          i === visibleAssetsLength &&
+          shitcoins &&
+          shitcoins.length > 0
+        ) {
           return {
             size: this.state.openShitcoins ? rowHeight * shitcoins.length : 0,
             type: 'SHITCOINS_ROW',
           };
         } else if (
-          (i === assets.length ||
-            (i === assets.length + 1 && shitcoins && shitcoins.length > 0)) &&
+          (i === visibleAssetsLength ||
+            (i === visibleAssetsLength + 1 &&
+              shitcoins &&
+              shitcoins.length > 0)) &&
           savings &&
           savings.length > 0
         ) {
@@ -98,7 +134,7 @@ class SendAssetList extends React.Component {
             this.state.openCards[
               uniqueTokens[
                 i -
-                  assets.length -
+                  visibleAssetsLength -
                   (savings && savings.length > 0 ? 1 : 0) -
                   (shitcoins && shitcoins.length > 0 ? 1 : 0)
               ].familyId
@@ -108,7 +144,7 @@ class SendAssetList extends React.Component {
               size:
                 uniqueTokens[
                   i -
-                    assets.length -
+                    visibleAssetsLength -
                     (savings && savings.length > 0 ? 1 : 0) -
                     (shitcoins && shitcoins.length > 0 ? 1 : 0)
                 ].data.length + 1,
@@ -321,7 +357,7 @@ class SendAssetList extends React.Component {
         openShitcoins={this.state.openShitcoins}
         onPress={this.changeOpenShitcoins}
       />
-      {this.state.openShitcoins && this.mapShitcoins(item.data)}
+      {this.state.openShitcoins && this.mapShitcoins(item.assets)}
       {this.props.savings && this.props.savings.length > 0 ? null : <Divider />}
     </View>
   );

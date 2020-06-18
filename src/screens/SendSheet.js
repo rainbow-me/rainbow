@@ -34,6 +34,7 @@ import { checkIsValidAddressOrENS } from '../helpers/validators';
 import {
   useAccountAssets,
   useAccountSettings,
+  useCoinListEditOptions,
   useContacts,
   useGas,
   useMaxInputBalance,
@@ -72,7 +73,7 @@ const SheetContainer = isNativeStackAvailable
 const SendSheet = ({ setAppearListener, ...props }) => {
   const dispatch = useDispatch();
   const { dataAddNewTransaction } = useTransactionConfirmation();
-  const { allAssets, assets, shitcoins } = useAccountAssets();
+  const { allAssets } = useAccountAssets();
   const {
     gasLimit,
     gasPrices,
@@ -95,6 +96,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
 
   const savings = useSendSavingsAccount();
   const fetchData = useRefreshAccountData();
+  const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
 
   const { navigate } = useNavigation();
   const [amountDetails, setAmountDetails] = useState({
@@ -420,12 +422,13 @@ const SendSheet = ({ setAppearListener, ...props }) => {
           )}
           {showAssetList && (
             <SendAssetList
-              assets={assets}
+              allAssets={allAssets}
               fetchData={fetchData}
+              hiddenCoins={hiddenCoins}
               nativeCurrency={nativeCurrency}
               onSelectAsset={sendUpdateSelected}
+              pinnedCoins={pinnedCoins}
               savings={savings}
-              shitcoins={shitcoins}
               uniqueTokens={sendableUniqueTokens}
             />
           )}
