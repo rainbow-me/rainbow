@@ -17,28 +17,27 @@ const sizeTypes = {
   small: 'small',
 };
 
-const sizeConfigs = {
-  large: {
-    dimensions: 60,
-    shadows: defaultShadow,
-    textSize: 'bigger',
-  },
-  medium: {
-    dimensions: 40,
-    shadows: defaultShadow,
-    textSize: 'larger',
-  },
-  small: {
-    dimensions: 34,
-    shadows: [
-      [0, 3, 5, colors.dark, 0.2],
-      [0, 6, 10, colors.dark, 0.14],
-    ],
-    textSize: 'large',
-  },
-};
-
 const ContactAvatar = ({ color, size = sizeTypes.medium, value, ...props }) => {
+  const sizeConfigs = {
+    large: {
+      dimensions: 60,
+      shadows: defaultShadow,
+      textSize: 'bigger',
+    },
+    medium: {
+      dimensions: 40,
+      shadows: defaultShadow,
+      textSize: 'larger',
+    },
+    small: {
+      dimensions: 34,
+      shadows: [
+        [0, 3, 5, colors.dark, 0.14],
+        [0, 6, 10, colors.avatarColor[color] || color, 0.2],
+      ],
+      textSize: 'large',
+    },
+  };
   const { dimensions, shadows, textSize } = sizeConfigs[size];
 
   return (
