@@ -9,7 +9,7 @@ import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import SheetHandle from './SheetHandle';
 
-const Sheet = ({ borderRadius, children }) => {
+const Sheet = ({ borderRadius, children, hideHandle }) => {
   const { width } = useDimensions();
   const { goBack } = useNavigation();
   const insets = useSafeArea();
@@ -24,7 +24,7 @@ const Sheet = ({ borderRadius, children }) => {
         width="100%"
       >
         <Centered paddingBottom={7} paddingTop={6}>
-          <SheetHandle />
+          {!hideHandle && <SheetHandle />}
         </Centered>
         {children}
       </Column>
@@ -35,6 +35,7 @@ const Sheet = ({ borderRadius, children }) => {
 Sheet.propTypes = {
   borderRadius: PropTypes.number,
   children: PropTypes.node,
+  hideHandle: PropTypes.bool,
 };
 
 Sheet.defaultProps = {
