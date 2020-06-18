@@ -24,6 +24,17 @@
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
+static void InitializeFlipper(UIApplication *application) {
+  FlipperClient *client = [FlipperClient sharedClient];
+  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:application withDescriptorMapper:layoutDescriptorMapper]];
+  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
+  [client addPlugin:[FlipperKitReactPlugin new]];
+  [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
+  [client start];
+}
+#endif
+
 @interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
 @end
 
@@ -42,29 +53,14 @@ RCT_EXPORT_METHOD(hideAnimated) {
 @end
 
 
-static void InitializeFlipper(UIApplication *application) {
-  FlipperClient *client = [FlipperClient sharedClient];
-  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
-  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:application withDescriptorMapper:layoutDescriptorMapper]];
-  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
-  [client addPlugin:[FlipperKitReactPlugin new]];
-  [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
-  [client start];
-}
-#endif
 
-
-@implementation AppDelegate {
-  BOOL _hiddenSplashScreen;
-}
-
+@implementation AppDelegate
 - (void)hideSplashScreenAnimated {
-  if (_hiddenSplashScreen) {
-    return;
-  }
-  _hiddenSplashScreen = YES;
   UIView* subview = self.window.rootViewController.view.subviews.lastObject;
   UIView* rainbowIcon = subview.subviews.firstObject;
+  if (![rainbowIcon isKindOfClass:UIImageView.class]) {
+    return;
+  }
   [UIView animateWithDuration:0.5
   animations:^{
       rainbowIcon.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.001, 0.001);
@@ -113,7 +109,6 @@ static void InitializeFlipper(UIApplication *application) {
     object:nil];
   
   // Splashscreen - react-native-splash-screen
-  _hiddenSplashScreen = NO;
   [RNSplashScreen showSplash:@"LaunchScreen" inRootView:rootView];
   return YES;
 }
