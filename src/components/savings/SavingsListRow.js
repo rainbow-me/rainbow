@@ -38,7 +38,6 @@ const SavingsListRowGradient = React.memo(
       borderRadius={49}
       colors={['#FFFFFF', '#F7F9FA']}
       end={{ x: 0.5, y: 1 }}
-      opacity={0.1}
       pointerEvents="none"
       start={{ x: 0.5, y: 0 }}
       style={position.coverAsObject}

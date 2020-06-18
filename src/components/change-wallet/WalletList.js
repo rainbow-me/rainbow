@@ -11,6 +11,7 @@ import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import WalletTypes from '../../helpers/walletTypes';
 import { colors, position } from '../../styles';
+import Divider from '../Divider';
 import { EmptyAssetList } from '../asset-list';
 import { Column } from '../layout';
 import AddressRow from './AddressRow';
@@ -57,18 +58,30 @@ const EmptyWalletList = styled(EmptyAssetList).attrs({
   padding-top: ${listTopPadding};
 `;
 
-const WalletFlatList = styled(FlatList).attrs({
+const WalletFlatList = styled(FlatList).attrs(({ showDividers }) => ({
+  contentContainerStyle: {
+    paddingBottom: showDividers ? 9.5 : 0,
+    paddingTop: listTopPadding,
+  },
   getItemLayout,
   keyExtractor,
   removeClippedSubviews: true,
-})`
+}))`
   flex: 1;
   min-height: 1;
-  padding-top: ${listTopPadding};
+`;
+
+const WalletListDivider = styled(Divider).attrs({
+  color: colors.rowDividerExtraLight,
+  inset: [0, 15],
+})`
+  margin-bottom: 1;
+  margin-top: -1;
 `;
 
 const WalletListFooter = styled(Column)`
   padding-bottom: 6;
+  padding-top: 4;
 `;
 
 export default function WalletList({
@@ -82,6 +95,7 @@ export default function WalletList({
   onPressImportSeedPhrase,
   onChangeAccount,
   scrollEnabled,
+  showDividers,
 }) {
   const [rows, setRows] = useState([]);
   const [ready, setReady] = useState(false);
@@ -216,7 +230,9 @@ export default function WalletList({
             ref={scrollView}
             renderItem={renderItem}
             scrollEnabled={scrollEnabled}
+            showDividers={showDividers}
           />
+          {showDividers && <WalletListDivider />}
           <WalletListFooter>
             <WalletOption
               editMode={editMode}

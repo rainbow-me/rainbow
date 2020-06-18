@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import URL from 'url-parse';
+import Divider from '../components/Divider';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { Centered, Row, RowWithMargins } from '../components/layout';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
-
 import { colors, padding } from '../styles';
 
 const WalletConnectApprovalSheet = () => {
@@ -52,51 +52,51 @@ const WalletConnectApprovalSheet = () => {
   }, [callback, goBack]);
 
   return (
-    <Sheet>
-      <Centered
-        direction="column"
-        paddingTop={20}
-        paddingLeft={20}
-        paddingRight={20}
-      >
+    <Sheet hideHandle>
+      <Centered direction="column" paddingHorizontal={19} paddingTop={17}>
         <RequestVendorLogoIcon
           backgroundColor="transparent"
+          borderRadius={18}
           dappName={dappName || ''}
           imageUrl={imageUrl || ''}
+          showLargeShadow
           size={60}
           style={{ marginBottom: 24 }}
         />
-        <Centered paddingLeft={20} paddingRight={20}>
+        <Centered paddingHorizontal={23}>
           <Row>
             <Text
-              size="big"
-              weight="normal"
               align="center"
-              color="blueGreyDark50"
+              color={colors.alpha(colors.blueGreyDark, 0.6)}
+              lineHeight={29}
+              size="big"
             >
-              <Text size="big" weight="bold" color="dark">
+              <Text color="dark" size="big" weight="bold">
                 {dappName}
               </Text>{' '}
               wants to connect to your wallet
             </Text>
           </Row>
         </Centered>
-        <Row marginTop={15} marginBottom={30}>
-          <Text size="large" weight="bold" color="appleBlue">
+        <Row marginBottom={30} marginTop={15}>
+          <Text color="appleBlue" lineHeight={29} size="large" weight="bold">
             {authenticated ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
           </Text>
         </Row>
-        <RowWithMargins css={padding(24, 15)} margin={15}>
+        <Divider color={colors.rowDividerLight} inset={[0, 84]} />
+        <RowWithMargins css={padding(24, 0, 21)} margin={15}>
           <SheetActionButton
-            textColor={colors.blueGreyDark}
+            textColor={colors.dark}
             color={colors.white}
             label="Cancel"
             onPress={handleCancel}
+            size="big"
           />
           <SheetActionButton
             color={colors.appleBlue}
             label="Connect"
             onPress={handleConnect}
+            size="big"
           />
         </RowWithMargins>
       </Centered>

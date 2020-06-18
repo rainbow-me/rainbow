@@ -127,14 +127,6 @@ const routesForMainNavigator = {
     navigationOptions: backgroundPreset,
     screen: SwipeStack,
   },
-  [Routes.WALLET_CONNECT_APPROVAL_SHEET]: {
-    navigationOptions: expandedPreset,
-    screen: WalletConnectApprovalSheet,
-  },
-  [Routes.WALLET_CONNECT_REDIRECT_SHEET]: {
-    navigationOptions: bottomSheetPreset,
-    screen: WalletConnectRedirectSheet,
-  },
   ...(isNativeStackAvailable && {
     [Routes.MODAL_SCREEN]: {
       navigationOptions: overlayExpandedPreset,
@@ -274,6 +266,26 @@ const routesForBottomSheetStack = {
   },
   [Routes.RECEIVE_MODAL]: withCustomStack(ReceiveModal),
   [Routes.SETTINGS_MODAL]: withCustomStack(SettingsModal),
+  [Routes.WALLET_CONNECT_APPROVAL_SHEET]: {
+    navigationOptions: {
+      backgroundOpacity: 0.6,
+      cornerRadius: 0,
+      customStack: true,
+      springDamping: 1,
+      transitionDuration: 0.25,
+    },
+    screen: WalletConnectApprovalSheet,
+  },
+  [Routes.WALLET_CONNECT_REDIRECT_SHEET]: {
+    navigationOptions: {
+      backgroundOpacity: 0.6,
+      cornerRadius: 0,
+      customStack: true,
+      springDamping: 1,
+      transitionDuration: 0.25,
+    },
+    screen: WalletConnectRedirectSheet,
+  },
   ...(isNativeStackAvailable && routesForNativeStack),
 };
 
