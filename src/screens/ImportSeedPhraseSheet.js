@@ -8,7 +8,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
+import {
+  Alert,
+  InteractionManager,
+  KeyboardAvoidingView,
+  Platform,
+  StatusBar,
+} from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import styled from 'styled-components/primitives';
@@ -23,12 +29,14 @@ import { Text } from '../components/text';
 import { web3Provider } from '../handlers/web3';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { isENSAddressFormat, isValidWallet } from '../helpers/validators';
+import WalletTypes from '../helpers/walletTypes';
 import {
   useAccountSettings,
   useClipboard,
   useInitializeWallet,
   usePrevious,
   useTimeout,
+  useWallets,
 } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/transitions/effects';
@@ -91,6 +99,7 @@ const ImportButton = ({ disabled, onPress, seedPhrase }) => (
 
 const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   const { accountAddress } = useAccountSettings();
+  const { selectedWallet } = useWallets();
   const { clipboard } = useClipboard();
   const { navigate, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
@@ -229,6 +238,14 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
                 hadPreviousAddressWithValue: isEmpty,
               });
               navigate(Routes.WALLET_SCREEN);
+              InteractionManager.runAfterInteractions(() => {
+                if (selectedWallet.type !== WalletTypes.readOnly) {
+                  navigate(Routes.BACKUP_SHEET_TOP, {
+                    option: 'imported',
+                    wallet_id: selectedWallet.id,
+                  });
+                }
+              });
             } else {
               toggleImporting(false);
             }
@@ -248,6 +265,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     navigate,
     resolvedAddress,
     seedPhrase,
+    selectedWallet.id,
     startAnalyticsTimeout,
     toggleImporting,
     wasImporting,
