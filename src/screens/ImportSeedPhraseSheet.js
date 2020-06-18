@@ -266,6 +266,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     resolvedAddress,
     seedPhrase,
     selectedWallet.id,
+    selectedWallet.type,
     startAnalyticsTimeout,
     toggleImporting,
     wasImporting,

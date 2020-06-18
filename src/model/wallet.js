@@ -13,6 +13,10 @@ import {
   canImplyAuthentication,
 } from 'react-native-keychain';
 import {
+  encryptAndSaveDataToCloud,
+  getDataFromCloud,
+} from '../handlers/cloudBackup';
+import {
   addHexPrefix,
   isHexString,
   isHexStringIgnorePrefix,
@@ -662,3 +666,38 @@ export const loadSeedPhraseAndMigrateIfNeeded = async id => {
     return null;
   }
 };
+
+export async function backupWalletToCloud(password, wallet) {
+  const now = Date.getTime();
+
+  const secret = await loadSeedPhraseAndMigrateIfNeeded(wallet.id);
+
+  const data = {
+    createdAt: now,
+    secrets: {
+      [`${wallet.id}`]: {
+        backedUpAt: now,
+        secret,
+        type: wallet.type,
+      },
+    },
+  };
+
+  return encryptAndSaveDataToCloud(data, password, `backup_${now}.json`);
+}
+
+export async function addWalletToCloudBackup(password, wallet, filename) {
+  const backup = await getDataFromCloud(password, filename);
+  const now = Date.getTime();
+
+  const secret = await loadSeedPhraseAndMigrateIfNeeded(wallet.id);
+
+  backup.updatedAt = now;
+  backup.secrets[wallet.id] = {
+    backedUpAt: now,
+    secret,
+    type: wallet.type,
+  };
+
+  return encryptAndSaveDataToCloud(backup, password, filename);
+}

@@ -3,6 +3,7 @@ import { Alert, Dimensions, View } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components';
+import { getDataFromCloud } from '../../handlers/cloudBackup';
 import * as keychain from '../../model/keychain';
 import { colors, padding } from '../../styles';
 import { logger } from '../../utils';
@@ -139,7 +140,9 @@ const RestoreIcloudStep = () => {
 
   const onSubmit = useCallback(async () => {
     try {
-      const success = await keychain.restoreCloudBackup(password);
+      const filename = '';
+      const data = await getDataFromCloud(filename);
+      const success = await keychain.restoreBackupIntoKeychain(data);
       if (success) {
         goBack();
         Alert.alert('Your wallet has been restored!');
@@ -151,7 +154,7 @@ const RestoreIcloudStep = () => {
     } catch (e) {
       logger.log('Error while backing up', e);
     }
-  }, [goBack, password]);
+  }, [goBack]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();

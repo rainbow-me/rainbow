@@ -8,6 +8,7 @@ import zxcvbn from 'zxcvbn';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import { useWallets } from '../../hooks';
 import * as keychain from '../../model/keychain';
+import { backupWalletToCloud } from '../../model/wallet';
 import { setWalletBackedUp } from '../../redux/wallets';
 import { colors, padding } from '../../styles';
 import { logger } from '../../utils';
@@ -222,9 +223,14 @@ const BackupIcloudStep = () => {
       // 1 - store the password in the keychain with sync = 1
       await keychain.saveBackupPassword(password);
       // 2 - backup all the wallets encrypted in icloud
-      const success = await keychain.backupToCloud(password);
-      if (success) {
-        await dispatch(setWalletBackedUp(wallet_id, WalletBackupTypes.cloud));
+      const backupFile = await backupWalletToCloud(
+        password,
+        wallets[wallet_id]
+      );
+      if (backupFile) {
+        await dispatch(
+          setWalletBackedUp(wallet_id, WalletBackupTypes.cloud, backupFile)
+        );
         goBack();
         Alert.alert('Your wallet has been backed up!');
       } else {

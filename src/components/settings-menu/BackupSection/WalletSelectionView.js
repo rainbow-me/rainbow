@@ -48,7 +48,7 @@ const Address = styled(TruncatedAddress).attrs({
 
 const AccountLabel = styled(Text).attrs({
   color: colors.dark,
-  weight: 'bold',
+  weight: 'normal',
 })`
   font-size: ${fonts.size.lmedium};
   padding-bottom: 5;
@@ -138,9 +138,33 @@ const WalletSelectionView = ({ navigation }) => {
                       <Address address={address} />
                     )}
                   </Row>
-                  {totalAccounts > 1 && (
-                    <BottomRowText>
+                  {totalAccounts > 1 ? (
+                    <BottomRowText weight={fonts.weight.medium}>
                       And {totalAccounts - 1} more wallets
+                    </BottomRowText>
+                  ) : wallet.backedUp ? (
+                    wallet.backupType === WalletBackupTypes.cloud ? (
+                      <BottomRowText
+                        color={colors.green}
+                        weight={fonts.weight.medium}
+                      >
+                        Backed up
+                      </BottomRowText>
+                    ) : (
+                      <BottomRowText weight={fonts.weight.medium}>
+                        Backed up manually
+                      </BottomRowText>
+                    )
+                  ) : wallet.imported ? (
+                    <BottomRowText weight={fonts.weight.medium}>
+                      Imported
+                    </BottomRowText>
+                  ) : (
+                    <BottomRowText
+                      color={colors.yellowOrange}
+                      weight={fonts.weight.medium}
+                    >
+                      Not Backed up
                     </BottomRowText>
                   )}
                 </Column>
