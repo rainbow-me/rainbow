@@ -23,8 +23,10 @@ import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import SendAssetListSmallBalancesHeader from './SendAssetListSmallBalancesHeader';
 
 const dividerHeight = 18;
+const familyRowHeight = 58;
 const familyHeaderHeight = 62;
 const rowHeight = 64;
+const smallBalancesHeader = 36;
 
 const Divider = styled.View`
   background-color: ${colors.lighterGrey};
@@ -84,6 +86,7 @@ class SendAssetList extends React.Component {
       openCards: [],
       openSavings: true,
       openShitcoins: false,
+      visibleAssetsLength: visibleAssetsLength,
     };
 
     const imageTokens = [];
@@ -163,15 +166,13 @@ class SendAssetList extends React.Component {
           dim.height = rowHeight + dividerHeight;
         } else if (type.type === 'SHITCOINS_ROW') {
           dim.height =
-            type.size -
-            (this.state.openShitcoins ? 0 : 10) +
-            familyHeaderHeight +
-            (savings && savings.length > 0 ? 0 : dividerHeight) -
-            (this.state.openShitcoins && savings && savings.length ? 10 : 0);
+            type.size +
+            smallBalancesHeader +
+            (savings && savings.length > 0 ? 0 : dividerHeight);
         } else if (type.type === 'SAVINGS_ROW') {
           dim.height = type.size + familyHeaderHeight + dividerHeight;
         } else if (type.type === 'COLLECTIBLE_ROW') {
-          dim.height = type.size * familyHeaderHeight;
+          dim.height = familyHeaderHeight + (type.size - 1) * familyRowHeight;
         } else if (type === 'COLLECTIBLE_ROW_CLOSED') {
           dim.height = familyHeaderHeight;
         } else {
@@ -197,18 +198,33 @@ class SendAssetList extends React.Component {
         if (openCards[i]) {
           familiesHeight +=
             familyHeaderHeight +
-            this.props.uniqueTokens[i].data.length * rowHeight;
+            this.props.uniqueTokens[i].data.length * familyRowHeight;
         } else {
           familiesHeight += familyHeaderHeight;
         }
       }
+      const smallBalanesheight =
+        this.props.allAssets.length === this.state.visibleAssetsLength
+          ? 0
+          : smallBalancesHeader +
+            (this.state.openShitcoins
+              ? (this.props.allAssets.length - this.state.visibleAssetsLength) *
+                rowHeight
+              : 0);
+      const savingsHeight =
+        this.props.savings?.length > 0
+          ? familyHeaderHeight +
+            (this.state.openSavings ? this.props.savings.length * rowHeight : 0)
+          : 0;
       const heightBelow =
-        this.props.allAssets.length * rowHeight +
+        this.state.visibleAssetsLength * rowHeight +
+        smallBalanesheight +
+        savingsHeight +
         familiesHeight +
         dividerHeight;
       const renderSize =
         familyHeaderHeight +
-        this.props.uniqueTokens[index].data.length * rowHeight;
+        this.props.uniqueTokens[index].data.length * familyRowHeight;
       const screenHeight = this.position + this.componentHeight;
       if (heightBelow + renderSize + 64 > screenHeight) {
         if (renderSize < this.componentHeight) {
