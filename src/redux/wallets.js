@@ -1,11 +1,12 @@
 import { toChecksumAddress } from 'ethereumjs-util';
 import { filter, flatMap, get, map, values } from 'lodash';
+import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import {
   getWalletNames,
   saveWalletNames,
 } from '../handlers/localstorage/walletNames';
 import { web3Provider } from '../handlers/web3';
-// eslint-disable-next-line import/no-cycle
+import WalletBackupTypes from '../helpers/walletBackupTypes';
 import {
   generateAccount,
   getAllWallets,
@@ -15,7 +16,6 @@ import {
   saveAllWallets,
   setSelectedWallet,
 } from '../model/wallet';
-// eslint-disable-next-line import/no-cycle
 import { settingsUpdateAccountAddress } from '../redux/settings';
 
 // -- Constants --------------------------------------- //
@@ -122,6 +122,10 @@ export const setWalletBackedUp = (
   dispatch(walletsUpdate(newWallets));
   if (selected.id === wallet_id) {
     dispatch(walletsSetSelected(newWallets[wallet_id]));
+  }
+
+  if (method === WalletBackupTypes.cloud) {
+    await backupUserDataIntoCloud({ wallets: newWallets });
   }
 };
 

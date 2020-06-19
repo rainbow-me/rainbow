@@ -12,7 +12,6 @@ import {
   AUTHENTICATION_TYPE,
   canImplyAuthentication,
 } from 'react-native-keychain';
-// eslint-disable-next-line import/no-cycle
 import {
   encryptAndSaveDataToCloud,
   getDataFromCloud,

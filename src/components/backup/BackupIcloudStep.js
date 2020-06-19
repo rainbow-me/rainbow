@@ -5,7 +5,6 @@ import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
-import { backupUserDataIntoCloud } from '../../handlers/cloudBackup';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import { useWallets } from '../../hooks';
 import * as keychain from '../../model/keychain';
@@ -281,7 +280,6 @@ const BackupIcloudStep = () => {
           backupFile
         );
 
-        await backupUserDataIntoCloud();
         logger.log(
           'onConfirmBackup:: backed up user data in the cloud!',
           backupFile

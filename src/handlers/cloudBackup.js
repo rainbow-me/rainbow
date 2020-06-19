@@ -3,8 +3,6 @@ import RNCloudFs from 'react-native-cloud-fs';
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
 import AesEncryptor from '../handlers/aesEncryption';
-// eslint-disable-next-line import/no-cycle
-import store from '../redux/store';
 import { logger } from '../utils';
 const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 const USERDATA_FILE = 'UserData.json';
@@ -112,15 +110,9 @@ export async function getDataFromCloud(backupPassword, filename = null) {
   }
 }
 
-export async function backupUserDataIntoCloud() {
+export async function backupUserDataIntoCloud(data) {
   const filename = USERDATA_FILE;
   const password = RAINBOW_MASTER_KEY;
-  const { wallets } = store.getState().wallets;
-
-  const data = {
-    wallets,
-  };
-
   return encryptAndSaveDataToCloud(data, password, filename);
 }
 
