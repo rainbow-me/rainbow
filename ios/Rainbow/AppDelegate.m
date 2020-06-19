@@ -64,6 +64,7 @@ RCT_EXPORT_METHOD(hideAnimated) {
   [UIView animateWithDuration:0.5
   animations:^{
       rainbowIcon.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.001, 0.001);
+      subview.alpha = 0.0;
   } completion:^(BOOL finished) {
       rainbowIcon.hidden = YES;
       [RNSplashScreen hide];
