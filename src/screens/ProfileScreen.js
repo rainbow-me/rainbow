@@ -112,7 +112,7 @@ export default function ProfileScreen({ navigation }) {
       {isCreatingAccount && (
         <LoadingOverlay
           paddingTop={sheetVerticalOffset}
-          title="Creating account..."
+          title="Creating wallet..."
         />
       )}
     </ProfileScreenPage>
