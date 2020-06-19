@@ -91,9 +91,9 @@ const SwipeableList = ({ components, speed }) => {
   return (
     <PanGestureHandler
       maxPointers={1}
-      activeOffsetX={3}
+      activeOffsetX={4}
       activeOffsetY={1000}
-      failOffsetY={10}
+      failOffsetY={[-10, 10]}
       onGestureEvent={onGestureEvent}
       onHandlerStateChange={onGestureEvent}
     >
