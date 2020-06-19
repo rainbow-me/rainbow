@@ -1,9 +1,8 @@
-import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { createElement, useCallback, useEffect } from 'react';
+import { Alert } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { PERMISSIONS, request } from 'react-native-permissions';
 import { Column } from '../components/layout';
 import { Modal, ModalHeader } from '../components/modal';
 import { AnimatedPager } from '../components/pager';
@@ -14,6 +13,7 @@ import {
   NetworkSection,
   SettingsSection,
 } from '../components/settings-menu';
+import { wipeKeychain } from '../model/keychain';
 
 const statusBarHeight = getStatusBarHeight(true);
 
@@ -40,16 +40,26 @@ const SettingsPages = {
   },
 };
 
-const requestFaceIDPermission = () =>
-  request(PERMISSIONS.IOS.FACE_ID)
-    .then(permission => {
-      if (permission !== 'granted') {
-        captureException(new Error(`FaceID permission: ${permission}`));
-      }
-    })
-    .catch(error => {
-      captureException(error);
-    });
+const onPressHiddenFeature = () => {
+  Alert.alert(
+    '🚨🚨🚨 WARNING  🚨🚨🚨',
+    `This feature is intended to be used only for developers! \n\n
+    You are about to reset all the wallet information from the keychain. \n
+    Do you really want to proceed?  If you're not sure, press NO`,
+    [
+      {
+        onPress: () => () => null,
+        style: 'cancel',
+        text: 'NO',
+      },
+      {
+        onPress: async () => await wipeKeychain(),
+        text: 'Yes',
+      },
+    ],
+    { cancelable: false }
+  );
+};
 
 const SettingsModal = ({ navigation }) => {
   const currentSettingsPage = get(
@@ -101,7 +111,7 @@ const SettingsModal = ({ navigation }) => {
             onCloseModal={onCloseModal}
             onPressBackup={onPressSection(SettingsPages.backup)}
             onPressCurrency={onPressSection(SettingsPages.currency)}
-            onPressHiddenFeature={requestFaceIDPermission}
+            onPressHiddenFeature={onPressHiddenFeature}
             onPressLanguage={onPressSection(SettingsPages.language)}
             onPressNetwork={onPressSection(SettingsPages.network)}
           />

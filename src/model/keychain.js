@@ -146,7 +146,7 @@ export async function fetchBackupPassword() {
 }
 
 // For dev purposes only
-export async function reset() {
+export async function wipeKeychain() {
   const results = await loadAllKeys();
   results.forEach(async result => {
     await resetInternetCredentials(result.username);
