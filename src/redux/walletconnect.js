@@ -11,7 +11,7 @@ import {
   pickBy,
   values,
 } from 'lodash';
-import { Alert } from 'react-native';
+import { Alert, InteractionManager } from 'react-native';
 import {
   getAllValidWalletConnectSessions,
   removeWalletConnectSessions,
@@ -22,7 +22,6 @@ import WalletTypes from '../helpers/walletTypes';
 import { getFCMToken } from '../model/firebase';
 import { Navigation } from '../navigation';
 import Routes from '../screens/Routes/routesNames';
-import { logger } from '../utils';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
 
@@ -95,15 +94,11 @@ export const walletConnectOnSessionRequest = (
     try {
       walletConnector = new WalletConnect({ clientMeta, uri }, push);
       walletConnector.on('session_request', (error, payload) => {
-        if (error) {
-          logger.log('Error on session request', error);
-          throw error;
-        }
-
+        if (error) throw error;
         const { peerId, peerMeta } = payload.params[0];
         const imageUrl = get(peerMeta, 'icons[0]');
 
-        setTimeout(() => {
+        InteractionManager.runAfterInteractions(() => {
           Navigation.handleAction({
             params: {
               callback: async approved => {
@@ -133,7 +128,7 @@ export const walletConnectOnSessionRequest = (
             },
             routeName: Routes.WALLET_CONNECT_APPROVAL_SHEET,
           });
-        }, 300);
+        });
       });
     } catch (error) {
       captureException(error);
@@ -176,26 +171,32 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
         });
         return;
       }
-
-      const request = await dispatch(
-        addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)
-      );
+      const { requests: pendingRequests } = getState().requests;
+      const request = !pendingRequests[requestId]
+        ? await dispatch(
+            addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)
+          )
+        : null;
 
       if (request) {
-        setTimeout(() => {
-          Navigation.handleAction({
-            params: {
-              openAutomatically: true,
-              transactionDetails: request,
-            },
-            routeName: Routes.CONFIRM_REQUEST,
-          });
-        }, 300);
+        InteractionManager.runAfterInteractions(() => {
+          setTimeout(() => {
+            Navigation.handleAction({
+              params: {
+                openAutomatically: true,
+                transactionDetails: request,
+              },
+              routeName: Routes.CONFIRM_REQUEST,
+            });
+          }, 1000);
+        });
       }
     }
   });
   walletConnector.on('disconnect', error => {
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
     dispatch(
       walletConnectDisconnectAllByDappName(walletConnector.peerMeta.name)
     );
@@ -206,11 +207,17 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
 export const walletConnectLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { walletConnectors } = getState().walletconnect;
-  if (!isEmpty(walletConnectors)) {
-    return;
-  }
   let newWalletConnectors = {};
   try {
+    if (!isEmpty(walletConnectors)) {
+      // Clear the event listeners before reconnecting
+      // to prevent having the same callbacks
+      Object.keys(walletConnectors).forEach(key => {
+        const connector = walletConnectors[key];
+        connector._eventManager = null;
+      });
+    }
+
     const allSessions = await getAllValidWalletConnectSessions(
       accountAddress,
       network
