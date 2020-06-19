@@ -18,7 +18,6 @@ const {
 } = Animated;
 
 const DECCELERATION = 0.998;
-const SPEED = 0.7;
 
 function runDecay(clock, value, velocity) {
   const state = {
@@ -47,7 +46,7 @@ const useReanimatedValue = initialValue => {
   return value.current;
 };
 
-const SwipeableList = ({ components }) => {
+const SwipeableList = ({ components, speed }) => {
   const dragX = useReanimatedValue(0);
   const state = useReanimatedValue(-1);
   const dragVX = useReanimatedValue(0);
@@ -79,7 +78,7 @@ const SwipeableList = ({ components }) => {
       [
         set(prevDragX, 0),
         set(transX, runDecay(clock, transX, dragVX)),
-        set(transX, add(transX, SPEED)),
+        set(transX, add(transX, speed)),
       ]
     )
   );
@@ -92,7 +91,9 @@ const SwipeableList = ({ components }) => {
   return (
     <PanGestureHandler
       maxPointers={1}
-      minDist={10}
+      activeOffsetX={3}
+      activeOffsetY={1000}
+      failOffsetY={10}
       onGestureEvent={onGestureEvent}
       onHandlerStateChange={onGestureEvent}
     >
@@ -126,7 +127,7 @@ const SwipeableList = ({ components }) => {
   );
 };
 
-const MarqueeList = ({ items = [] }) => {
+const MarqueeList = ({ items = [], speed }) => {
   const [itemWidths, setItemWidths] = useState(null);
 
   const updateItemWidths = useCallback(async () => {
@@ -160,6 +161,7 @@ const MarqueeList = ({ items = [] }) => {
   return (
     <>
       <SwipeableList
+        speed={speed}
         components={items.map((item, idx) => ({
           offset: offsets[idx],
           view: renderItemCallback({ item }),

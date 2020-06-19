@@ -37,8 +37,8 @@ export default function TopMoversSection() {
         Top Movers
       </Text>
       <Column>
-        <MarqueeList items={gainerItems} />
-        <MarqueeList items={loserItems} />
+        <MarqueeList items={gainerItems} speed={0.9} />
+        <MarqueeList items={loserItems} speed={-0.7} />
       </Column>
     </ColumnWithMargins>
   );
