@@ -42,7 +42,13 @@ const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => (
       onPress={onPress}
     >
       <CircleOutline />
-      <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
+      <OpacityToggler
+        friction={20}
+        isVisible={toggle}
+        tension={1000}
+        startingOpacity={0}
+        endingOpacity={1}
+      >
         <CheckmarkBackground>
           <Icon name="checkmark" color="white" />
         </CheckmarkBackground>
