@@ -10,6 +10,6 @@ export const compoundClient = new ApolloClient({
 export const uniswapClient = new ApolloClient({
   cache: new InMemoryCache(),
   link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswapbackup',
+    uri: 'https://api.thegraph.com/subgraphs/name/graphprotocol/uniswap',
   }),
 });

@@ -9,7 +9,7 @@ import { colors } from '../styles';
 
 const BodyText = styled(Text).attrs({
   align: 'center',
-  color: colors.blueGreyDark50,
+  color: colors.alpha(colors.blueGreyDark, 0.6),
   lineHeight: 'loosest',
   size: 'big',
 })`
@@ -48,7 +48,7 @@ const WalletConnectRedirectSheet = () => {
   }, [goBack, appState]);
 
   return (
-    <Sheet>
+    <Sheet hideHandle>
       <Centered direction="column" paddingTop={12}>
         <Text letterSpacing="zero" size="h2">
           {emojisMap[type]}

@@ -4,6 +4,7 @@ import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import Divider from '../components/Divider';
 import { ButtonPressAnimation } from '../components/animations';
 import WalletList from '../components/change-wallet/WalletList';
 import { Column } from '../components/layout';
@@ -31,7 +32,7 @@ import Routes from './Routes/routesNames';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const footerHeight = 111;
-const listPaddingBottom = 17;
+const listPaddingBottom = 6;
 const walletRowHeight = 59;
 const maxListHeight = deviceHeight - 220;
 
@@ -71,12 +72,16 @@ const ChangeWalletSheet = () => {
 
   const walletRowCount = getWalletRowCount(wallets);
 
+  let headerHeight = 30;
   let listHeight =
     walletRowHeight * walletRowCount + footerHeight + listPaddingBottom;
   let scrollEnabled = false;
+  let showDividers = false;
   if (listHeight > maxListHeight) {
+    headerHeight = 42;
     listHeight = maxListHeight;
     scrollEnabled = true;
+    showDividers = true;
   }
 
   const onChangeAccount = useCallback(
@@ -349,8 +354,11 @@ const ChangeWalletSheet = () => {
 
   return (
     <Sheet borderRadius={30}>
-      <Column height={42} justify="space-between">
+      <Column height={headerHeight} justify="space-between">
         <SheetTitle>Wallets</SheetTitle>
+        {showDividers && (
+          <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
+        )}
       </Column>
       <EditButton onPress={toggleEditMode}>
         <Text
@@ -375,6 +383,7 @@ const ChangeWalletSheet = () => {
         onPressAddAccount={onPressAddAccount}
         onPressImportSeedPhrase={onPressImportSeedPhrase}
         scrollEnabled={scrollEnabled}
+        showDividers={showDividers}
       />
     </Sheet>
   );
