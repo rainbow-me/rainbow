@@ -14,8 +14,8 @@ const Container = styled.View`
 `;
 
 const Content = styled(Row).attrs(({ isAbsolute }) => ({
-  align: isAbsolute ? 'end' : 'center',
-  justify: 'center',
+  align: 'center',
+  justify: isAbsolute ? 'end' : 'center',
 }))`
   ${position.size('100%')};
 `;
@@ -42,7 +42,13 @@ const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => (
       onPress={onPress}
     >
       <CircleOutline />
-      <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
+      <OpacityToggler
+        friction={20}
+        isVisible={toggle}
+        tension={1000}
+        startingOpacity={0}
+        endingOpacity={1}
+      >
         <CheckmarkBackground>
           <Icon name="checkmark" color="white" />
         </CheckmarkBackground>
