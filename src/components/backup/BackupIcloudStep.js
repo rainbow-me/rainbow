@@ -5,10 +5,14 @@ import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
+import { backupUserDataIntoCloud } from '../../handlers/cloudBackup';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import { useWallets } from '../../hooks';
 import * as keychain from '../../model/keychain';
-import { backupWalletToCloud } from '../../model/wallet';
+import {
+  addWalletToCloudBackup,
+  backupWalletToCloud,
+} from '../../model/wallet';
 import { setWalletBackedUp } from '../../redux/wallets';
 import { colors, padding } from '../../styles';
 import { logger } from '../../utils';
@@ -122,6 +126,7 @@ const TopIcon = () => (
 const BackupIcloudStep = () => {
   const { goBack, getParam } = useNavigation();
   const { wallets } = useWallets();
+  const [existingBackup, setExistingBackup] = useState(false);
   const dispatch = useDispatch();
   const [validPassword, setValidPassword] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
@@ -130,6 +135,26 @@ const BackupIcloudStep = () => {
   const [label, setLabel] = useState('􀙶 Confirm Backup');
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
+
+  useEffect(() => {
+    let backupFound = false;
+    let latestBackup = null;
+    Object.keys(wallets).forEach(key => {
+      const wallet = wallets[key];
+      // Check if there's a wallet backed up
+      if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
+        // If there is one, let's grab the latest backup
+        if (!latestBackup || wallet.backupDate > latestBackup) {
+          backupFound = wallet.backupFile;
+          latestBackup = wallet.backupDate;
+        }
+      }
+    });
+    if (backupFound) {
+      setExistingBackup(backupFound);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onPasswordFocus = useCallback(() => {
     setPasswordFocused(true);
@@ -220,17 +245,48 @@ const BackupIcloudStep = () => {
       Object.keys(wallets).find(key => wallets[key].imported === false);
 
     try {
-      // 1 - store the password in the keychain with sync = 1
+      logger.log('onConfirmBackup:: saving backup password', password);
       await keychain.saveBackupPassword(password);
-      // 2 - backup all the wallets encrypted in icloud
-      const backupFile = await backupWalletToCloud(
-        password,
-        wallets[wallet_id]
-      );
+      logger.log('onConfirmBackup:: saved');
+
+      let backupFile;
+      if (!existingBackup) {
+        logger.log(
+          'onConfirmBackup:: backing up to icloud',
+          password,
+          wallets[wallet_id]
+        );
+
+        backupFile = await backupWalletToCloud(password, wallets[wallet_id]);
+      } else {
+        logger.log(
+          'onConfirmBackup:: adding to icloud backup',
+          password,
+          wallets[wallet_id],
+          existingBackup
+        );
+        backupFile = await addWalletToCloudBackup(
+          password,
+          wallets[wallet_id],
+          existingBackup
+        );
+      }
       if (backupFile) {
+        logger.log('onConfirmBackup:: backup completed!', backupFile);
         await dispatch(
           setWalletBackedUp(wallet_id, WalletBackupTypes.cloud, backupFile)
         );
+        logger.log(
+          'onConfirmBackup:: backup saved in redux / keychain!',
+          backupFile
+        );
+
+        await backupUserDataIntoCloud();
+        logger.log(
+          'onConfirmBackup:: backed up user data in the cloud!',
+          backupFile
+        );
+
         goBack();
         Alert.alert('Your wallet has been backed up!');
       } else {
@@ -240,7 +296,15 @@ const BackupIcloudStep = () => {
     } catch (e) {
       logger.log('Error while backing up', e);
     }
-  }, [dispatch, getParam, goBack, onPasswordSubmit, password, wallets]);
+  }, [
+    dispatch,
+    existingBackup,
+    getParam,
+    goBack,
+    onPasswordSubmit,
+    password,
+    wallets,
+  ]);
 
   const onConfirmPasswordSubmit = useCallback(() => {
     validPassword && onConfirmBackup();

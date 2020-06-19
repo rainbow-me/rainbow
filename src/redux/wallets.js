@@ -5,6 +5,7 @@ import {
   saveWalletNames,
 } from '../handlers/localstorage/walletNames';
 import { web3Provider } from '../handlers/web3';
+// eslint-disable-next-line import/no-cycle
 import {
   generateAccount,
   getAllWallets,
@@ -14,6 +15,7 @@ import {
   saveAllWallets,
   setSelectedWallet,
 } from '../model/wallet';
+// eslint-disable-next-line import/no-cycle
 import { settingsUpdateAccountAddress } from '../redux/settings';
 
 // -- Constants --------------------------------------- //

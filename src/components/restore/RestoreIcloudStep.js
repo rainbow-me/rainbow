@@ -3,10 +3,8 @@ import { Alert, Dimensions, View } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components';
-import { getDataFromCloud } from '../../handlers/cloudBackup';
-import * as keychain from '../../model/keychain';
+import { restoreCloudBackup } from '../../model/wallet';
 import { colors, padding } from '../../styles';
-import { logger } from '../../utils';
 import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
@@ -94,7 +92,7 @@ const TopIcon = () => (
   </GradientText>
 );
 
-const RestoreIcloudStep = () => {
+const RestoreIcloudStep = ({ userData }) => {
   const { goBack } = useNavigation();
   const [validPassword, setValidPassword] = useState(false);
   const [invalidPassword, setInvalidPassword] = useState(false);
@@ -139,22 +137,16 @@ const RestoreIcloudStep = () => {
   );
 
   const onSubmit = useCallback(async () => {
-    try {
-      const filename = '';
-      const data = await getDataFromCloud(filename);
-      const success = await keychain.restoreBackupIntoKeychain(data);
-      if (success) {
-        goBack();
-        Alert.alert('Your wallet has been restored!');
-      } else {
-        setInvalidPassword(true);
-        Alert.alert('Error while trying to restore');
-        setTimeout(passwordRef.current?.focus(), 1000);
-      }
-    } catch (e) {
-      logger.log('Error while backing up', e);
+    const success = restoreCloudBackup(password, userData);
+    if (success) {
+      goBack();
+      Alert.alert('Your wallet has been restored!');
+    } else {
+      setInvalidPassword(true);
+      Alert.alert('Error while trying to restore');
+      setTimeout(passwordRef.current?.focus(), 1000);
     }
-  }, [goBack]);
+  }, [goBack, password, userData]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();

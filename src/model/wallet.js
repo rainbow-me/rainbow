@@ -12,6 +12,7 @@ import {
   AUTHENTICATION_TYPE,
   canImplyAuthentication,
 } from 'react-native-keychain';
+// eslint-disable-next-line import/no-cycle
 import {
   encryptAndSaveDataToCloud,
   getDataFromCloud,
@@ -24,6 +25,7 @@ import {
   toChecksumAddress,
   web3Provider,
 } from '../handlers/web3';
+import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import { colors } from '../styles';
 import { ethereumUtils, logger } from '../utils';
@@ -650,7 +652,6 @@ export const loadSeedPhraseAndMigrateIfNeeded = async id => {
     const isSeedPhraseMigrated = await keychain.loadString(
       seedPhraseMigratedKey
     );
-
     // We need to migrate the seedphrase & private key first
     // In that case we regenerate the existing private key to store it with the new format
     if (!isSeedPhraseMigrated) {
@@ -667,37 +668,128 @@ export const loadSeedPhraseAndMigrateIfNeeded = async id => {
   }
 };
 
+async function extractSecretsForWallet(wallet) {
+  const allKeys = await keychain.loadAllKeys();
+  const secrets = {};
+
+  const allowedPkeysKeys = wallet.accounts.map(
+    account => `${account.address}_${privateKeyKey}`
+  );
+
+  allKeys.forEach(item => {
+    // Ignore allWalletsKey
+    if (item.username === allWalletsKey) {
+      return;
+    }
+
+    // Ignore selected wallet
+    if (item.username === selectedWalletKey) {
+      return;
+    }
+
+    // Ignore icloud backup password
+    if (item.username === 'rainbowBackup') {
+      return;
+    }
+
+    // Ignore another wallets seeds
+    if (
+      item.username.indexOf(seedPhraseKey) !== -1 &&
+      item.username !== `${wallet.id}_${seedPhraseKey}`
+    ) {
+      return;
+    }
+
+    // Ignore other wallets PKeys
+    if (
+      item.username.indexOf(privateKeyKey) !== -1 &&
+      allowedPkeysKeys.indexOf(item.username) === -1
+    ) {
+      return;
+    }
+
+    secrets[item.username] = item.password;
+  });
+  return secrets;
+}
+
 export async function backupWalletToCloud(password, wallet) {
+  logger.log('backupWalletToCloud', password, wallet);
   const now = Date.getTime();
 
-  const secret = await loadSeedPhraseAndMigrateIfNeeded(wallet.id);
-
+  const secrets = await extractSecretsForWallet(wallet);
+  logger.log('backupWalletToCloud:: got secrets', secrets);
   const data = {
     createdAt: now,
-    secrets: {
-      [`${wallet.id}`]: {
-        backedUpAt: now,
-        secret,
-        type: wallet.type,
-      },
-    },
+    secrets,
   };
-
+  logger.log('backupWalletToCloud:: about to encrypt and save data', data);
   return encryptAndSaveDataToCloud(data, password, `backup_${now}.json`);
 }
 
 export async function addWalletToCloudBackup(password, wallet, filename) {
+  logger.log('addWalletToCloudBackup', password, wallet, filename);
+
   const backup = await getDataFromCloud(password, filename);
+  logger.log('addWalletToCloudBackup:: got data from cloud', backup);
+
   const now = Date.getTime();
 
-  const secret = await loadSeedPhraseAndMigrateIfNeeded(wallet.id);
+  const secrets = await extractSecretsForWallet(wallet);
+  logger.log('addWalletToCloudBackup:: got secrets', secrets);
 
   backup.updatedAt = now;
-  backup.secrets[wallet.id] = {
-    backedUpAt: now,
-    secret,
-    type: wallet.type,
+  // Merge existing secrets with the ones from this wallet
+  backup.secrets = {
+    ...backup.secrets,
+    ...secrets,
   };
-
+  logger.log('addWalletToCloudBackup:: about to encrypt and save data', backup);
   return encryptAndSaveDataToCloud(backup, password, filename);
+}
+
+export async function restoreCloudBackup(password, userData) {
+  try {
+    // 0 - Should we wipe the keychain before restoring? => TBD
+    // Kinda dangerous TBH
+
+    // 1 - Find out which is the latest backup
+    // In the future we might let the user choose which backup to import
+    // For now we figure it out on our own by defaulting to the latest
+    logger.log('restoreCloudBackup', password, userData);
+    logger.log('restoreCloudBackup :: finding latest backup...');
+
+    let latestBackup = null;
+    let filename = null;
+    Object.keys(userData.wallets).forEach(key => {
+      const wallet = userData.wallets[key];
+      // Check if there's a wallet backed up
+      if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
+        // If there is one, let's grab the latest backup
+        if (!latestBackup || wallet.backupDate > latestBackup) {
+          filename = wallet.backupFile;
+          latestBackup = wallet.backupDate;
+        }
+      }
+    });
+    logger.log('restoreCloudBackup :: latest backup: ', filename);
+
+    // 2- download that backup
+    const data = await getDataFromCloud(password, filename);
+    logger.log('restoreCloudBackup :: got data from the cloud', data);
+    const dataToRestore = {
+      // All wallets
+      rainbowAllWalletsKey: {
+        version: allWalletsVersion,
+        wallets: userData.wallets,
+      },
+      ...data.secrets,
+    };
+
+    logger.log('restoreCloudBackup ::about to restore', dataToRestore);
+
+    return keychain.restoreBackupIntoKeychain(dataToRestore);
+  } catch (e) {
+    logger.log('Error while backing up', e);
+  }
 }

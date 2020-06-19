@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import BackupIcon from '../../assets/backupIcon.png';
 import Caret from '../../assets/family-dropdown-arrow.png';
+import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import { colors, padding } from '../../styles';
 import Divider from '../Divider';
 
@@ -63,15 +64,40 @@ const RestoreSheetFirstStep = ({
   onIcloudRestore,
   onManualRestore,
   onWatchAddress,
+  userData,
 }) => {
+  const walletsBackedUp = useMemo(() => {
+    let count = 0;
+    userData.wallets.forEach(key => {
+      const wallet = userData.wallets[key];
+      if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
+        count++;
+      }
+    });
+    return count;
+  }, [userData.wallets]);
+
+  const onIcloudRestorePress = useCallback(() => {
+    walletsBackedUp > 0 && onIcloudRestore();
+  }, [onIcloudRestore, walletsBackedUp]);
+
   return (
     <React.Fragment>
       <Column direction="column" paddingBottom={40}>
-        <SheetRow as={ButtonPressAnimation} onPress={onIcloudRestore}>
+        <SheetRow as={ButtonPressAnimation} onPress={onIcloudRestorePress}>
           <Column>
             <IcloudIcon />
             <Title>Restore from iCloud </Title>
-            <DescriptionText>You have 2 wallets backed up</DescriptionText>
+            {walletsBackedUp > 0 ? (
+              <DescriptionText>
+                You have {walletsBackedUp}{' '}
+                {walletsBackedUp > 1 ? 'wallets' : 'wallet'} backed up
+              </DescriptionText>
+            ) : (
+              <DescriptionText>
+                You don&apos;t have any wallet backed up
+              </DescriptionText>
+            )}
           </Column>
           <Row flex={1} justify="end" align="center" marginRight={19}>
             <CaretIcon />
