@@ -121,7 +121,7 @@ export default function WalletScreen() {
       {isCreatingAccount && (
         <LoadingOverlay
           paddingTop={sheetVerticalOffset}
-          title="Creating account..."
+          title="Creating wallet..."
         />
       )}
     </WalletPage>

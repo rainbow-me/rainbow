@@ -30,8 +30,8 @@ const AccountName = styled(TruncatedText).attrs({
   weight: 'bold',
 })`
   height: 33;
-  margin-top: -3;
-  margin-bottom: 3;
+  margin-top: -1;
+  margin-bottom: 1;
   max-width: ${maxAddressWidth};
   padding-right: 6;
 `;
@@ -44,7 +44,7 @@ const AddCashButton = styled(RainbowButton).attrs({
 
 const DropdownArrow = styled(Centered)`
   height: 9;
-  margin-top: 9;
+  margin-top: 11;
   width: 21;
 `;
 

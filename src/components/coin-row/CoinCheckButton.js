@@ -30,7 +30,7 @@ const CircleOutline = styled.View`
 const CheckmarkBackground = styled.View`
   ${borders.buildCircle(22)}
   ${padding(4.5)}
-  ${shadow.build(0, 4, 6, colors.appleBlue, 0.4)}
+  ${shadow.build(0, 4, 12, colors.appleBlue, 0.4)}
   background-color: ${colors.appleBlue};
 `;
 
