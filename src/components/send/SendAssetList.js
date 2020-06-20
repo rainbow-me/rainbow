@@ -259,82 +259,59 @@ class SendAssetList extends React.Component {
   };
 
   changeOpenShitcoins = () => {
-    const { openShitcoins } = this.state;
     LayoutAnimation.configureNext(
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
     );
-    const newOpenShitcoins = !openShitcoins;
-    this.setState({ openShitcoins: newOpenShitcoins });
+    this.setState(prev => ({ openShitcoins: !prev.openShitcoins }));
   };
 
-  mapTokens = collectibles => {
-    const items = collectibles.map(collectible => {
-      const onPress = () => {
-        this.props.onSelectAsset(collectible);
-      };
-      return (
-        <CollectiblesSendRow
-          key={collectible.id}
-          item={collectible}
-          onPress={onPress}
-        />
-      );
-    });
-    return items;
-  };
+  mapTokens = collectibles =>
+    collectibles.map(collectible => (
+      <CollectiblesSendRow
+        item={collectible}
+        key={collectible.id}
+        onPress={() => this.props.onSelectAsset(collectible)}
+      />
+    ));
 
-  balancesRenderItem = item => {
-    const onPress = () => {
-      this.props.onSelectAsset(item);
-    };
-    return <SendCoinRow {...item} onPress={onPress} rowHeight={rowHeight} />;
-  };
+  balancesRenderItem = item => (
+    <SendCoinRow
+      {...item}
+      onPress={() => this.props.onSelectAsset(item)}
+      rowHeight={rowHeight}
+    />
+  );
 
-  mapSavings = savings => {
-    const items = savings.map(token => {
-      const onPress = () => {
-        this.props.onSelectAsset(token);
-      };
-      return (
-        <SendSavingsCoinRow
-          key={token.address}
-          item={token}
-          onPress={onPress}
-        />
-      );
-    });
-    return items;
-  };
+  mapSavings = savings =>
+    savings.map(token => (
+      <SendSavingsCoinRow
+        item={token}
+        key={token.address}
+        onPress={() => this.props.onSelectAsset(token)}
+      />
+    ));
 
-  mapShitcoins = shitcoins => {
-    const items = shitcoins.map(token => {
-      const onPress = () => {
-        this.props.onSelectAsset(token);
-      };
-      return (
-        <SendCoinRow
-          key={token.uniqueId}
-          onPress={onPress}
-          rowHeight={rowHeight}
-          top={0}
-          {...token}
-        />
-      );
-    });
-    return items;
-  };
+  mapShitcoins = shitcoins =>
+    shitcoins.map(token => (
+      <SendCoinRow
+        key={token.uniqueId}
+        onPress={() => this.props.onSelectAsset(token)}
+        rowHeight={rowHeight}
+        top={0}
+        {...token}
+      />
+    ));
 
-  balancesRenderLastItem = item => {
-    const onPress = () => {
-      this.props.onSelectAsset(item);
-    };
-    return (
-      <Fragment>
-        <SendCoinRow {...item} onPress={onPress} rowHeight={rowHeight} />
-        <Divider />
-      </Fragment>
-    );
-  };
+  balancesRenderLastItem = item => (
+    <Fragment>
+      <SendCoinRow
+        {...item}
+        onPress={() => this.props.onSelectAsset(item)}
+        rowHeight={rowHeight}
+      />
+      <Divider />
+    </Fragment>
+  );
 
   collectiblesRenderItem = item => {
     return (

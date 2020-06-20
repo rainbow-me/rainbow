@@ -60,11 +60,13 @@ const CoinDividerOpenButton = ({
   isSmallBalancesOpen,
   isVisible,
   onPress,
+  ...props
 }) => {
   const animation = useSpringTransition(bin(isSmallBalancesOpen), springConfig);
 
   return (
     <ContainerButton
+      {...props}
       isSmallBalancesOpen={isSmallBalancesOpen}
       onPress={onPress}
     >

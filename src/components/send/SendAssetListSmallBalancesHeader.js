@@ -1,30 +1,14 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
+import styled from 'styled-components/primitives';
 import CoinDividerOpenButton from '../coin-divider/CoinDividerOpenButton';
 
-const coinDividerHeight = 30;
-
-const Wrapper = styled.View`
-  margin-left: 16px;
+const SendAssetListSmallBalancesHeader = styled(CoinDividerOpenButton).attrs(
+  ({ openShitcoins }) => ({
+    coinDividerHeight: 30,
+    initialState: true,
+    isSmallBalancesOpen: openShitcoins,
+  })
+)`
+  margin-left: 16;
 `;
 
-const SendAssetListSmallBalancesHeader = ({ onPress, openShitcoins }) => {
-  return (
-    <Wrapper>
-      <CoinDividerOpenButton
-        coinDividerHeight={coinDividerHeight}
-        initialState
-        isSmallBalancesOpen={openShitcoins}
-        onPress={onPress}
-      />
-    </Wrapper>
-  );
-};
-
-SendAssetListSmallBalancesHeader.propTypes = {
-  onPress: PropTypes.bool,
-  openShitcoins: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-};
-
-export default React.memo(SendAssetListSmallBalancesHeader);
+export default SendAssetListSmallBalancesHeader;
