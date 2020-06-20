@@ -13,7 +13,30 @@ class MyBoundedLabel: UILabel {
   }
 }
 
+extension UIColor {
+    convenience init(red: Int, green: Int, blue: Int) {
+        let newRed = CGFloat(red)/255
+        let newGreen = CGFloat(green)/255
+        let newBlue = CGFloat(blue)/255
+        
+        self.init(red: newRed, green: newGreen, blue: newBlue, alpha: 1.0)
+    }
+}
+
+
 class TransactionListViewCell: TransactionListBaseCell {
+  // TODO use single source of truth
+  static var avatarColors = [
+    UIColor.init(red: 255, green: 73, blue: 74),
+    UIColor.init(red: 2, green: 211, blue: 255),
+    UIColor.init(red: 251, green: 96, blue: 196),
+    UIColor.init(red: 63, green: 106, blue: 255),
+    UIColor.init(red: 255, green: 217, blue: 99),
+    UIColor.init(red: 177, green: 64, blue: 255),
+    UIColor.init(red: 64, green: 235, blue: 193),
+    UIColor.init(red: 244, green: 110, blue: 56),
+    UIColor.init(red: 109, green: 126, blue: 143),
+]
   
   @IBOutlet weak var transactionType: UILabel!
   @IBOutlet weak var transactionIcon: UIImageView!
@@ -32,14 +55,15 @@ class TransactionListViewCell: TransactionListBaseCell {
     coinName.text = transaction.transactionDescription
     nativeDisplay.text = transaction.nativeDisplay
     balanceDisplay.text = transaction.balanceDisplay
-    
+
     balanceDisplay.addCharacterSpacing()
-    
+
     setStatusColor(transaction)
     setBottomRowStyles(transaction)
     setTextSpacing()
     setIcon(transaction)
 
+    
     if transaction.symbol != nil {
       if let img = UIImage.init(named: transaction.symbol.lowercased()) {
         coinImage.image = img
@@ -47,7 +71,9 @@ class TransactionListViewCell: TransactionListBaseCell {
         let url = URL(string: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/\(transaction.address!)/logo.png");
         coinImage.sd_setImage(with: url) { (image, error, cache, urls) in
           if (error != nil) {
-            self.coinImage.image = self.generateTextImage(transaction.symbol)
+            let colorIndex = transaction.symbol.lowercased().utf8.compactMap{ Int($0) }.reduce(0, +) % TransactionListViewCell.avatarColors.count
+            let color = TransactionListViewCell.avatarColors[colorIndex]
+            self.coinImage.image = self.generateTextImage(transaction.symbol, backgroundColor: color)
             self.coinImage.layer.cornerRadius = self.coinImage.frame.width * 0.5
           } else {
             self.coinImage.image = image
