@@ -34,6 +34,7 @@ import { checkIsValidAddressOrENS } from '../helpers/validators';
 import {
   useAccountAssets,
   useAccountSettings,
+  useCoinListEditOptions,
   useContacts,
   useGas,
   useMaxInputBalance,
@@ -95,6 +96,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
 
   const savings = useSendSavingsAccount();
   const fetchData = useRefreshAccountData();
+  const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
 
   const { navigate } = useNavigation();
   const [amountDetails, setAmountDetails] = useState({
@@ -422,7 +424,10 @@ const SendSheet = ({ setAppearListener, ...props }) => {
             <SendAssetList
               allAssets={allAssets}
               fetchData={fetchData}
+              hiddenCoins={hiddenCoins}
+              nativeCurrency={nativeCurrency}
               onSelectAsset={sendUpdateSelected}
+              pinnedCoins={pinnedCoins}
               savings={savings}
               uniqueTokens={sendableUniqueTokens}
             />
