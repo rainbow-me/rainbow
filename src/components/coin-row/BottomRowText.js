@@ -1,13 +1,9 @@
-import styled from 'styled-components/primitives';
+import { withProps } from 'recompact';
 import { colors } from '../../styles';
 import { TruncatedText } from '../text';
 
-const BottomRowText = styled(TruncatedText).attrs(
-  ({ align = 'left', color = colors.blueGreyDark50 }) => ({
-    align,
-    color,
-    size: 'smedium',
-  })
-)``;
-
-export default BottomRowText;
+export default withProps(({ align, color }) => ({
+  align: align || 'left',
+  color: color || colors.alpha(colors.blueGreyDark, 0.5),
+  size: 'smedium',
+}))(TruncatedText);
