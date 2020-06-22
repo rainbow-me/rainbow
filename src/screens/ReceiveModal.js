@@ -21,7 +21,7 @@ import { colors } from '../styles';
 import { haptics } from '../utils';
 
 const statusBarHeight = getStatusBarHeight(true);
-const QRCodeSize = Platform.OS === 'ios' ? 180 : 190;
+const QRCodeSize = Platform.OS === 'ios' ? 250 : 190;
 
 const AddressText = styled(Monospace).attrs({
   color: colors.alpha(colors.blueGreyDark, 0.6),
@@ -33,6 +33,13 @@ const AddressText = styled(Monospace).attrs({
   width: 100%;
 `;
 
+const TopHandle = styled.View`
+  width: 35px;
+  height: 5px;
+  border-radius: 3px;
+  background-color: ${colors.white};
+`;
+
 const ReceiveModal = () => {
   const { setClipboard } = useClipboard();
   const { goBack } = useNavigation();
@@ -41,63 +48,54 @@ const ReceiveModal = () => {
   );
 
   return (
-    <Modal height={472} marginBottom={statusBarHeight} onCloseModal={goBack}>
-      <ModalHeader onPressClose={goBack} title="Receive" />
-      <Divider inset={[0, 16]} />
-      <Column align="center" flex={1} justify="start" padding={25}>
-        <Text align="center" lineHeight="loose">
-          Send Ether, ERC-20 tokens, or
-          <Br />
-          collectibles to your wallet:
-        </Text>
-        <QRCodeDisplay
-          marginTop={22}
-          size={QRCodeSize}
-          value={accountAddress}
-        />
-        <Column marginTop={12} width={QRCodeSize}>
-          <AddressText>
-            {accountAddress.substring(0, accountAddress.length / 2)}
-          </AddressText>
-          <AddressText>
-            {accountAddress.substring(accountAddress.length / 2)}
-          </AddressText>
-        </Column>
+    // <Modal height={360} radius={39} marginBottom={statusBarHeight} onCloseModal={goBack} margin={20}>
+    <Column align="center">
+      <TopHandle />
+      <Column
+        align="center"
+        marginTop={19}
+        margin={24}
+        padding={24}
+        borderRadius={40}
+        backgroundColor={colors.white}
+      >
+        <QRCodeDisplay size={QRCodeSize} value={accountAddress} />
       </Column>
-      <ModalFooterButtonsRow>
-        <FloatingEmojis
-          distance={250}
-          duration={500}
-          fadeOut={false}
-          flex={1}
-          scaleTo={0}
-          size={50}
-          wiggleFactor={0}
-        >
-          {({ onNewEmoji }) => (
-            <ModalFooterButton
-              icon="copy"
-              label="Copy"
-              onPress={() => {
-                haptics.impactLight();
-                onNewEmoji();
-                setClipboard(accountAddress);
-              }}
-            />
-          )}
-        </FloatingEmojis>
-        <ModalFooterButton
-          icon="share"
-          label="Share"
-          onPress={() =>
-            Share.share({
-              message: accountAddress,
-              title: 'My account address:',
-            })
-          }
-        />
-      </ModalFooterButtonsRow>
-    </Modal>
+    </Column>
+    //   <ModalFooterButtonsRow>
+    //     <FloatingEmojis
+    //       distance={250}
+    //       duration={500}
+    //       fadeOut={false}
+    //       flex={1}
+    //       scaleTo={0}
+    //       size={50}
+    //       wiggleFactor={0}
+    //     >
+    //       {({ onNewEmoji }) => (
+    //         <ModalFooterButton
+    //           icon="copy"
+    //           label="Copy"
+    //           onPress={() => {
+    //             haptics.impactLight();
+    //             onNewEmoji();
+    //             setClipboard(accountAddress);
+    //           }}
+    //         />
+    //       )}
+    //     </FloatingEmojis>
+    //     <ModalFooterButton
+    //       icon="share"
+    //       label="Share"
+    //       onPress={() =>
+    //         Share.share({
+    //           message: accountAddress,
+    //           title: 'My account address:',
+    //         })
+    //       }
+    //     />
+    //   </ModalFooterButtonsRow>
+    // </Modal>
   );
 };
 
