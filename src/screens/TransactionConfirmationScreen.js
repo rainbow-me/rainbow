@@ -374,6 +374,7 @@ const TransactionConfirmationScreen = ({ navigation }) => {
           style={{ marginBottom: 24 }}
         />
         <Text
+          align="center"
           color="white"
           letterSpacing="roundedMedium"
           size="h4"

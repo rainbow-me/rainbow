@@ -167,6 +167,10 @@ class App extends Component {
   handleAppStateChange = async nextAppState => {
     if (nextAppState === 'active') {
       PushNotificationIOS.removeAllDeliveredNotifications();
+    }
+
+    // Restore WC connectors when going from BG => FG
+    if (this.state.appState === 'background' && nextAppState === 'active') {
       store.dispatch(walletConnectLoadState());
     }
 

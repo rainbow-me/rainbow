@@ -1171,31 +1171,31 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-3.3.0.tgz#e613747a43a31a6f3278f817ba96fdaaa7941f23"
   integrity sha512-tyzh79l4t/hxiyS9QD3LRmWMs8KVkZzjrkQ8U8+8To1wmvVCBtp8BenvNsDLTBO7CpO/YmiThpmIdEZMr1WuVw==
 
-"@react-native-firebase/app-types@6.7.1":
-  version "6.7.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app-types/-/app-types-6.7.1.tgz#93497885e6c112203db310636616647c16478da9"
-  integrity sha512-jfP2wdBUaptGXO6BC0g3RYMgmGLGOkdWhkGxPhZZy1uxIxN4IXPfeUKEPL0as6ZJqfdx0IMvSvtcp7ywoFNxyg==
+"@react-native-firebase/app-types@6.7.2":
+  version "6.7.2"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app-types/-/app-types-6.7.2.tgz#d2e1530af5702e00578914b41468898c10d3289c"
+  integrity sha512-pIwc6e0ZINw6PJqNVsAxzOVJUDg6au2TdulY+ZOYQ11SPDs5I2n9likoGrElPmJjajT4s9h87uz/6PWP2k9PxQ==
 
-"@react-native-firebase/app@^6.2.0":
-  version "6.7.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-6.7.1.tgz#0fe8bb9a82292d672da524763dc42e224dda4fde"
-  integrity sha512-MzRlcR+5+RCU3Za+QMV064oPpZhkXvLoZbB8CdYxI66Qd2XKAGUT0FoQlFaeXZxkrfisdhLbvRUYJo1TY/Iuxg==
+"@react-native-firebase/app@^7.2.1":
+  version "7.2.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-7.2.1.tgz#c17fa79694d4617a8af7570bec1566cbe630ef02"
+  integrity sha512-xwNOqA9AwDrHwAt0kt0zCs1BHBE9mvC1W8QfcBi/10Hp2rLlGzRMcds7W/mpONJEZ3dG6WHSfkRGNgt+FbVccQ==
   dependencies:
-    "@react-native-firebase/app-types" "6.7.1"
+    "@react-native-firebase/app-types" "6.7.2"
     opencollective-postinstall "^2.0.1"
     superstruct "^0.6.2"
 
-"@react-native-firebase/crashlytics@^6.2.0":
-  version "6.7.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/crashlytics/-/crashlytics-6.7.1.tgz#211f4a9a8738f3cc16cf4252f0dd90f96802f9c5"
-  integrity sha512-gqIiHldl9U4TEUiDkgTye6IT6PjFVuq533NeQc1OZ0xZVsJQzzdK01Ecp8CzrtTUhJWtKLH7TRLCMf8RPBUe6A==
+"@react-native-firebase/crashlytics@^7.1.5":
+  version "7.1.5"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/crashlytics/-/crashlytics-7.1.5.tgz#f880834cfef888e81352fe32e6d1c36e30ee00df"
+  integrity sha512-nqyuHGgJxvGMB9E8K2N5Mg64B3BjAjGzNIQDxyAWQfh4YkgjaFuDSygEUu2U+aEJwng25USmpf9kg7Z16qDbnw==
   dependencies:
     stacktrace-js "^2.0.0"
 
-"@react-native-firebase/messaging@^6.2.0":
-  version "6.7.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-6.7.1.tgz#d53b73791567366d95fb423f094e2057027cc9fa"
-  integrity sha512-j5aSUtdWapnfYCu57wAZ/xBWfh/ym68veplA/Fs+lTtKnBGmrFB5qbW2lKN0gRENC1MloOkD57rnLHEr5tTvUA==
+"@react-native-firebase/messaging@^7.1.6":
+  version "7.1.6"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-7.1.6.tgz#f02ce64d9c8ddcf2163dfc179c44a1d337787d86"
+  integrity sha512-XHe65Wk1QbmFhSYU3UxshsSAg79c+dox74flpxff+bZwpCH95TLrmublo3R3eIqSqu3s82fU3dRvAjd6rYjHbw==
 
 "@react-navigation/core@^3.7.6":
   version "3.7.6"
