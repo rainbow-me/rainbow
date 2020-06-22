@@ -6,14 +6,14 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components/primitives';
 import QRCodeDisplay from '../components/QRCodeDisplay';
 import { ButtonPressAnimation } from '../components/animations';
-// import { FloatingEmojis } from '../components/floating-emojis';
+import { FloatingEmojis } from '../components/floating-emojis';
 import { Icon } from '../components/icons';
 import { Centered, Column } from '../components/layout';
 import { Text, TruncatedAddress } from '../components/text';
-// import { useClipboard } from '../hooks';
+import { useClipboard } from '../hooks';
 // import { useNavigation } from '../navigation/Navigation';
 import { colors, fonts, position } from '../styles';
-// import { haptics } from '../utils';
+import { haptics } from '../utils';
 
 // const statusBarHeight = getStatusBarHeight(true);
 const QRCodeSize = Platform.OS === 'ios' ? 250 : 190;
@@ -63,8 +63,12 @@ const IconContainer = styled(Centered).attrs({
   ${position.size(18)};
 `;
 
+const AddressWrapper = styled.View`
+  height: 29px;
+`;
+
 const ReceiveModal = () => {
-  // const { setClipboard } = useClipboard();
+  const { setClipboard } = useClipboard();
   // const { goBack } = useNavigation();
   const accountAddress = useSelector(({ settings: { accountAddress } }) =>
     toLower(accountAddress)
@@ -84,13 +88,32 @@ const ReceiveModal = () => {
         >
           <QRCodeDisplay size={QRCodeSize} value={accountAddress} />
         </QRwrapper>
-        <AddressText
-          address={accountAddress}
-          firstSectionLength={10}
-          size="smaller"
-          truncationLength={4}
-          weight="medium"
-        />
+        <AddressWrapper>
+          <FloatingEmojis
+            distance={250}
+            duration={500}
+            fadeOut={false}
+            flex={1}
+            scaleTo={0}
+            size={50}
+            wiggleFactor={0}
+          >
+            {({ onNewEmoji }) => (
+              <AddressText
+                address={accountAddress}
+                firstSectionLength={10}
+                size="smaller"
+                truncationLength={4}
+                weight="medium"
+                onPress={() => {
+                  haptics.impactLight();
+                  onNewEmoji();
+                  setClipboard(accountAddress);
+                }}
+              />
+            )}
+          </FloatingEmojis>
+        </AddressWrapper>
         <ButtonPressAnimation
           onPress={() =>
             Share.share({
@@ -110,27 +133,6 @@ const ReceiveModal = () => {
         </ButtonPressAnimation>
       </Column>
     </Centered>
-    //     <FloatingEmojis
-    //       distance={250}
-    //       duration={500}
-    //       fadeOut={false}
-    //       flex={1}
-    //       scaleTo={0}
-    //       size={50}
-    //       wiggleFactor={0}
-    //     >
-    //       {({ onNewEmoji }) => (
-    //         <ModalFooterButton
-    //           icon="copy"
-    //           label="Copy"
-    //           onPress={() => {
-    //             haptics.impactLight();
-    //             onNewEmoji();
-    //             setClipboard(accountAddress);
-    //           }}
-    //         />
-    //       )}
-    //     </FloatingEmojis>
   );
 };
 
