@@ -6,7 +6,6 @@ import { StatusBar } from 'react-native';
 import { createNativeStackNavigator } from 'react-native-cool-modals/native-stack';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import AvatarBuilder from '../screens/AvatarBuilder';
-import ChangeWalletModal from '../screens/ChangeWalletModal';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import DepositModal from '../screens/DepositModal';
 import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
@@ -33,7 +32,6 @@ import {
   exchangePreset,
   expandedPreset,
   overlayExpandedPreset,
-  savingsPreset,
   sheetPreset,
 } from './effects';
 import { onTransitionStart } from './helpers';
@@ -119,7 +117,7 @@ function MainNavigator() {
       <Stack.Screen
         name={Routes.SAVINGS_SHEET}
         component={SavingsSheet}
-        options={savingsPreset}
+        options={bottomSheetPreset}
       />
       <Stack.Screen
         name={Routes.AVATAR_BUILDER}
@@ -199,6 +197,11 @@ function NativeStackFallbackNavigator() {
             StatusBar.setBarStyle('light-content');
           },
         }}
+      />
+      <Stack.Screen
+        name={Routes.ADD_CASH_SHEET}
+        component={AddCashSheetWrapper}
+        options={sheetPreset}
       />
       <Stack.Screen
         name={Routes.MODAL_SCREEN}

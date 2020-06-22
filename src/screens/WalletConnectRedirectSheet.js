@@ -1,6 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect } from 'react';
-import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import { Centered } from '../components/layout';
 import { Sheet } from '../components/sheet';

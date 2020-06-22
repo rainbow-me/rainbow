@@ -60,13 +60,14 @@ const SettingsModal = () => {
 
   const onCloseModal = useCallback(() => navigation.goBack(), [navigation]);
 
-  const onPressBack = useCallback(
-    () => navigation.setParams({ section: SettingsPages.default }),
-    [navigation]
-  );
+  const onPressBack = useCallback(() => {
+    navigation.setParams({ section: undefined });
+  }, [navigation]);
 
   const onPressSection = useCallback(
-    section => () => navigation.setParams({ section }),
+    section => () => {
+      navigation.setParams({ section });
+    },
     [navigation]
   );
 

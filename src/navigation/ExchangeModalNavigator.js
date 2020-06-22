@@ -9,7 +9,7 @@ import ModalScreen from '../screens/ModalScreen';
 import SwapModal from '../screens/SwapModal';
 import { useNavigation } from './Navigation';
 import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
-import { exchangeModalPreset } from './effects';
+import { exchangeModalPreset, swapDetailsPreset } from './effects';
 import { useReanimatedValue } from './helpers';
 import Routes from './routesNames';
 
@@ -32,6 +32,7 @@ function MainExchangeNavigator() {
       <Stack.Screen
         name={Routes.SWAP_DETAILS_SCREEN}
         component={SwapDetailsScreen}
+        options={swapDetailsPreset}
       />
     </Stack.Navigator>
   );

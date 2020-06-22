@@ -16,7 +16,6 @@ export default function useSwapInputRefs({ inputCurrency, outputCurrency }) {
   const nativeFieldRef = useRef();
   const outputFieldRef = useRef();
 
-  // TODO nav mike
   const [handleFocus, lastFocusedInput] = useMagicAutofocus(
     inputFieldRef.current
   );

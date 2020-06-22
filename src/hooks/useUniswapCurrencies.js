@@ -113,18 +113,6 @@ export default function useUniswapCurrencies({
   const prevDefaultOutputItem = usePrevious(defaultOutputItem);
   const prevDefaultInputItemInWallet = usePrevious(defaultInputItemInWallet);
 
-  useEffect(() => {
-    if (defaultOutputItem && !prevDefaultOutputItem) {
-      updateUniswapOutputCurrency(defaultOutputItem);
-    }
-  }, [defaultInputItemInWallet, defaultOutputItem, prevDefaultOutputItem]);
-
-  useEffect(() => {
-    if (defaultInputItemInWallet && !prevDefaultInputItemInWallet) {
-      updateUniswapInputCurrency(defaultInputItemInWallet);
-    }
-  }, [defaultInputItemInWallet, prevDefaultInputItemInWallet]);
-
   const previousInputCurrency = usePrevious(inputCurrency);
   const previousOutputCurrency = usePrevious(outputCurrency);
 
@@ -133,6 +121,27 @@ export default function useUniswapCurrencies({
     updateUniswapInputCurrency,
     updateUniswapOutputCurrency,
   } = useUniswapCurrencyReserves();
+
+  useEffect(() => {
+    if (defaultOutputItem && !prevDefaultOutputItem) {
+      updateUniswapOutputCurrency(defaultOutputItem);
+    }
+  }, [
+    defaultInputItemInWallet,
+    defaultOutputItem,
+    prevDefaultOutputItem,
+    updateUniswapOutputCurrency,
+  ]);
+
+  useEffect(() => {
+    if (defaultInputItemInWallet && !prevDefaultInputItemInWallet) {
+      updateUniswapInputCurrency(defaultInputItemInWallet);
+    }
+  }, [
+    defaultInputItemInWallet,
+    prevDefaultInputItemInWallet,
+    updateUniswapInputCurrency,
+  ]);
 
   const updateInputCurrency = useCallback(
     async (newInputCurrency, userSelected = true) => {

@@ -141,7 +141,7 @@ function MainNavigator() {
       <Stack.Screen
         name={Routes.SETTINGS_MODAL}
         component={SettingsModal}
-        options={expandedPreset}
+        options={(...p) => console.log(p) || expandedPreset}
       />
       <Stack.Screen
         name={Routes.WALLET_CONNECT_CONFIRMATION_MODAL}
