@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import {
   InteractionManager,
   NativeModules,
@@ -8,7 +7,7 @@ import {
 import SplashScreen from 'react-native-splash-screen';
 import { iconOnSplashScreenAnimated } from '../config/experimental';
 
-function hide() {
+export default function hideSplashScreen() {
   const { RainbowSplashScreen } = NativeModules;
   if (
     RainbowSplashScreen &&
@@ -19,16 +18,9 @@ function hide() {
   } else {
     SplashScreen.hide();
   }
-}
-
-export default function useHideSplashScreen() {
-  const onHideSplashScreen = useCallback(() => {
-    hide();
-    // show the StatusBar
-    (Platform.OS === 'ios' && StatusBar.setHidden(false, 'fade')) ||
-      InteractionManager.runAfterInteractions(() => {
-        StatusBar.setHidden(false, 'fade');
-      });
-  }, []);
-  return onHideSplashScreen;
+  // show the StatusBar
+  (Platform.OS === 'ios' && StatusBar.setHidden(false, 'fade')) ||
+    InteractionManager.runAfterInteractions(() => {
+      StatusBar.setHidden(false, 'fade');
+    });
 }
