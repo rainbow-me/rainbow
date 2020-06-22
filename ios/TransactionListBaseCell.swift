@@ -97,7 +97,7 @@ class TransactionListBaseCell : UITableViewCell {
     nameLabel.backgroundColor = backgroundColor
     nameLabel.textColor = textColor
     nameLabel.font = UIFont(name: "SFRounded-Semibold", size: CGFloat(fallbackFontSize))
-    nameLabel.text = String(text.prefix(5))
+    nameLabel.text = String(text.prefix(5)).uppercased()
     nameLabel.addCharacterSpacing(kernValue: fallbackLetterSpacing)
     nameLabel.setLineSpacing(lineHeightMultiple: 1.05)
     

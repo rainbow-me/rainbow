@@ -57,7 +57,10 @@ export default function CoinDivider({
     setIsCoinListEdited,
     setPinnedCoins,
   } = useCoinListEditOptions();
-  const { isSmallBalancesOpen } = useOpenSmallBalances();
+  const {
+    isSmallBalancesOpen,
+    toggleOpenSmallBalances,
+  } = useOpenSmallBalances();
 
   const initialOpenState = useRef();
 
@@ -87,7 +90,9 @@ export default function CoinDivider({
           <CoinDividerOpenButton
             coinDividerHeight={CoinDividerHeight}
             initialState={initialOpenState.current}
+            isSmallBalancesOpen={isSmallBalancesOpen}
             isVisible={isCoinListEdited || assetsAmount === 0}
+            onPress={toggleOpenSmallBalances}
           />
         </View>
         <CoinDividerButtonRow isCoinListEdited={isCoinListEdited}>
