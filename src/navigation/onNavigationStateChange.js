@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
-import { StatusBar } from 'react-native';
+import { Platform, StatusBar } from 'react-native';
 import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
@@ -15,21 +15,23 @@ export function onNavigationStateChange(currentState) {
   const prevRouteName = memRouteName;
   memRouteName = routeName;
 
-  const oldBottomSheetStackRoute = prevState?.routes[prevState.index].name;
-  const newBottomSheetStackRoute =
-    currentState?.routes[currentState.index].name;
+  if (Platform.OS === 'ios') {
+    const oldBottomSheetStackRoute = prevState?.routes[prevState.index].name;
+    const newBottomSheetStackRoute =
+      currentState?.routes[currentState.index].name;
 
-  const wasCustomSlackOpen =
-    oldBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
-    oldBottomSheetStackRoute === Routes.SETTINGS_MODAL;
-  const isCustomSlackOpen =
-    newBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
-    newBottomSheetStackRoute === Routes.SETTINGS_MODAL;
+    const wasCustomSlackOpen =
+      oldBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
+      oldBottomSheetStackRoute === Routes.SETTINGS_MODAL;
+    const isCustomSlackOpen =
+      newBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
+      newBottomSheetStackRoute === Routes.SETTINGS_MODAL;
 
-  if (wasCustomSlackOpen !== isCustomSlackOpen) {
-    StatusBar.setBarStyle(
-      wasCustomSlackOpen ? 'dark-content' : 'light-content'
-    );
+    if (wasCustomSlackOpen !== isCustomSlackOpen) {
+      StatusBar.setBarStyle(
+        wasCustomSlackOpen ? 'dark-content' : 'light-content'
+      );
+    }
   }
 
   if (

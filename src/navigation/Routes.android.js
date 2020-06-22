@@ -1,10 +1,10 @@
 import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
 import React from 'react';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletModal from '../screens/ChangeWalletModal';
-import ExampleScreen from '../screens/ExampleScreen';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
 import ModalScreen from '../screens/ModalScreen';
@@ -12,11 +12,12 @@ import ReceiveModal from '../screens/ReceiveModal';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
-import WalletConnectConfirmationModal from '../screens/WalletConnectConfirmationModal';
+import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
+import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import { SwipeNavigator } from './SwipeNavigator';
 import { defaultScreenStackOptions, stackNavigationConfig } from './config';
 import {
-  backgroundPreset,
+  bottomSheetPreset,
   emojiPreset,
   exchangePreset,
   expandedPreset,
@@ -24,76 +25,11 @@ import {
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
-import { createStackNavigator } from './helpers';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 
-const routesForStack = {
-  [Routes.AVATAR_BUILDER]: {
-    navigationOptions: emojiPreset,
-    screen: AvatarBuilder,
-    transparentCard: true,
-  },
-  [Routes.CHANGE_WALLET_MODAL]: {
-    navigationOptions: expandedPresetReverse,
-    screen: ChangeWalletModal,
-  },
-  [Routes.CONFIRM_REQUEST]: {
-    navigationOptions: sheetPreset,
-    screen: TransactionConfirmationScreen,
-  },
-  [Routes.EXAMPLE_SCREEN]: ExampleScreen,
-  [Routes.EXCHANGE_MODAL]: {
-    navigationOptions: exchangePreset,
-    params: {
-      isGestureBlocked: false,
-    },
-    screen: ExchangeModalNavigator,
-  },
-  [Routes.EXPANDED_ASSET_SHEET]: {
-    navigationOptions: expandedPreset,
-    screen: ExpandedAssetSheet,
-  },
-  [Routes.MODAL_SCREEN]: {
-    navigationOptions: overlayExpandedPreset,
-    screen: ModalScreen,
-  },
-  [Routes.RECEIVE_MODAL]: {
-    navigationOptions: expandedPreset,
-    screen: ReceiveModal,
-  },
-  [Routes.SETTINGS_MODAL]: {
-    navigationOptions: expandedPreset,
-    screen: SettingsModal,
-    transparentCard: true,
-  },
-  [Routes.SWIPE_LAYOUT]: {
-    navigationOptions: backgroundPreset,
-    screen: SwipeNavigator,
-  },
-  [Routes.WALLET_CONNECT_CONFIRMATION_MODAL]: {
-    navigationOptions: expandedPreset,
-    screen: WalletConnectConfirmationModal,
-  },
-  [Routes.ADD_CASH_SHEET]: {
-    navigationOptions: sheetPreset,
-    screen: AddCashSheet,
-  },
-  [Routes.IMPORT_SEED_PHRASE_SHEET]: {
-    navigationOptions: sheetPreset,
-    screen: ImportSeedPhraseSheetWithData,
-  },
-  [Routes.SEND_SHEET]: {
-    navigationOptions: {
-      ...omit(sheetPreset, 'gestureResponseDistance'),
-    },
-    screen: SendSheet,
-  },
-};
-const Stack = createStackNavigator(routesForStack, {
-  initialRouteName: 'MainNavigator',
-});
+const Stack = createStackNavigator();
 
 function MainNavigator() {
   return (
@@ -109,7 +45,7 @@ function MainNavigator() {
         options={emojiPreset}
       />
       <Stack.Screen
-        name={Routes.CHANGE_WALLET_MODAL}
+        name={Routes.CHANGE_WALLET_SHEET}
         component={ChangeWalletModal}
         options={expandedPresetReverse}
       />
@@ -144,9 +80,14 @@ function MainNavigator() {
         options={(...p) => console.log(p) || expandedPreset}
       />
       <Stack.Screen
-        name={Routes.WALLET_CONNECT_CONFIRMATION_MODAL}
-        component={WalletConnectConfirmationModal}
+        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
+        component={WalletConnectApprovalSheet}
         options={expandedPreset}
+      />
+      <Stack.Screen
+        name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
+        component={WalletConnectRedirectSheet}
+        options={bottomSheetPreset}
       />
       <Stack.Screen
         name={Routes.ADD_CASH_SHEET}
