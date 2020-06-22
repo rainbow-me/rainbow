@@ -9,7 +9,7 @@ import { ButtonPressAnimation } from '../components/animations';
 // import { FloatingEmojis } from '../components/floating-emojis';
 import { Icon } from '../components/icons';
 import { Centered, Column } from '../components/layout';
-import { Text } from '../components/text';
+import { Text, TruncatedAddress } from '../components/text';
 // import { useClipboard } from '../hooks';
 // import { useNavigation } from '../navigation/Navigation';
 import { colors, fonts, position } from '../styles';
@@ -18,15 +18,15 @@ import { colors, fonts, position } from '../styles';
 // const statusBarHeight = getStatusBarHeight(true);
 const QRCodeSize = Platform.OS === 'ios' ? 250 : 190;
 
-// const AddressText = styled(Monospace).attrs({
-//   color: colors.alpha(colors.blueGreyDark, 0.6),
-// })`
-//   font-size: 13.86;
-//   letter-spacing: null;
-//   line-height: 19;
-//   text-align: justify;
-//   width: 100%;
-// `;
+const AddressText = styled(TruncatedAddress).attrs({
+  color: colors.alpha(colors.white, 0.6),
+})`
+  font-size: 18px;
+  letter-spacing: null;
+  line-height: 19;
+  text-align: center;
+  width: 100%;
+`;
 
 const TopHandle = styled.View`
   width: 35px;
@@ -44,11 +44,16 @@ const ButtonWrapper = styled(Centered)`
   background-color: #25292e;
   justify-content: center;
   padding-bottom: 2px;
+  margin-top: 24px;
 `;
 
 const ButtonIcon = styled(Icon)`
   ${position.maxSize('110%')};
   margin-right: 9;
+`;
+
+const QRwrapper = styled(Column)`
+  box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.6);
 `;
 
 const IconContainer = styled(Centered).attrs({
@@ -66,36 +71,45 @@ const ReceiveModal = () => {
   );
 
   return (
-    <Column align="center">
-      <TopHandle />
-      <Column
-        align="center"
-        marginTop={19}
-        margin={24}
-        padding={24}
-        borderRadius={40}
-        backgroundColor={colors.white}
-      >
-        <QRCodeDisplay size={QRCodeSize} value={accountAddress} />
+    <Centered flex={1} bottom={16}>
+      <Column align="center">
+        <TopHandle />
+        <QRwrapper
+          align="center"
+          marginTop={19}
+          margin={24}
+          padding={24}
+          borderRadius={40}
+          backgroundColor={colors.white}
+        >
+          <QRCodeDisplay size={QRCodeSize} value={accountAddress} />
+        </QRwrapper>
+        <AddressText
+          address={accountAddress}
+          firstSectionLength={10}
+          size="smaller"
+          truncationLength={4}
+          weight="medium"
+        />
+        <ButtonPressAnimation
+          onPress={() =>
+            Share.share({
+              message: accountAddress,
+              title: 'My account address:',
+            })
+          }
+        >
+          <ButtonWrapper>
+            <IconContainer>
+              <ButtonIcon color="white" name="share" />
+            </IconContainer>
+            <Text color="white" size={fonts.size.larger} weight="semibold">
+              Share
+            </Text>
+          </ButtonWrapper>
+        </ButtonPressAnimation>
       </Column>
-      <ButtonPressAnimation
-        onPress={() =>
-          Share.share({
-            message: accountAddress,
-            title: 'My account address:',
-          })
-        }
-      >
-        <ButtonWrapper>
-          <IconContainer>
-            <ButtonIcon color="white" name="share" />
-          </IconContainer>
-          <Text color="white" size={fonts.size.larger} weight="semibold">
-            Share
-          </Text>
-        </ButtonWrapper>
-      </ButtonPressAnimation>
-    </Column>
+    </Centered>
     //     <FloatingEmojis
     //       distance={250}
     //       duration={500}
