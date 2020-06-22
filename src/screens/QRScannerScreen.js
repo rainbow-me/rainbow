@@ -1,9 +1,8 @@
-import { useIsFocused } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
-import Animated from 'react-native-reanimated';
+import Animated, { useCode } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 import { BubbleSheet } from '../components/bubble-sheet';
@@ -28,12 +27,14 @@ const DimmedView = styled(Animated.View)`
   width: 100%;
 `;
 
-const Backgroud = styled.View`
+const Background = styled.View`
   position: absolute;
   background-color: black;
   width: 100%;
   height: 100%;
 `;
+
+const { greaterThan, onChange, call } = Animated;
 
 const Dim = ({ children }) => (
   <DimmedView
@@ -42,6 +43,8 @@ const Dim = ({ children }) => (
     {children}
   </DimmedView>
 );
+
+const ENABLING_CAMERA_OFFSET = 1.01;
 
 const QRScannerScreen = ({
   enableScanning,
@@ -57,8 +60,18 @@ const QRScannerScreen = ({
 }) => {
   const { result: isEmulator } = useIsEmulator();
   const insets = useSafeArea();
-  const isFocused = useIsFocused();
   const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
+  const [isFocused, setIsFocused] = useState(false);
+  useCode(
+    () =>
+      onChange(
+        greaterThan(scrollPosition, ENABLING_CAMERA_OFFSET),
+        call([scrollPosition], ([pos]) =>
+          setIsFocused(pos > ENABLING_CAMERA_OFFSET)
+        )
+      ),
+    []
+  );
 
   return (
     <View>
@@ -69,7 +82,7 @@ const QRScannerScreen = ({
         direction="column"
         overflow="hidden"
       >
-        <Backgroud />
+        <Background />
         <Dim>
           <QRCodeScanner
             {...props}
