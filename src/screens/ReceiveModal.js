@@ -1,21 +1,20 @@
 import { toLower } from 'lodash';
 import React from 'react';
 import { Platform, Share } from 'react-native';
-// import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components/primitives';
 import QRCodeDisplay from '../components/QRCodeDisplay';
+import TouchableBackdrop from '../components/TouchableBackdrop';
 import { ButtonPressAnimation } from '../components/animations';
 import { FloatingEmojis } from '../components/floating-emojis';
 import { Icon } from '../components/icons';
 import { Centered, Column } from '../components/layout';
 import { Text, TruncatedAddress } from '../components/text';
 import { useAccountProfile, useClipboard } from '../hooks';
-// import { useNavigation } from '../navigation/Navigation';
+import { useNavigation } from '../navigation/Navigation';
 import { colors, fonts, position } from '../styles';
 import { haptics } from '../utils';
 
-// const statusBarHeight = getStatusBarHeight(true);
 const QRCodeSize = Platform.OS === 'ios' ? 250 : 190;
 
 const AddressText = styled(TruncatedAddress).attrs({
@@ -70,7 +69,7 @@ const AddressWrapper = styled.View`
 
 const ReceiveModal = () => {
   const { setClipboard } = useClipboard();
-  // const { goBack } = useNavigation();
+  const { goBack } = useNavigation();
   const accountAddress = useSelector(({ settings: { accountAddress } }) =>
     toLower(accountAddress)
   );
@@ -79,6 +78,7 @@ const ReceiveModal = () => {
   return (
     <Centered flex={1} bottom={16}>
       <Column align="center">
+        <TouchableBackdrop onPress={goBack} />
         <TopHandle />
         <QRwrapper
           align="center"
