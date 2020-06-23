@@ -87,7 +87,7 @@ function ImportSeedPhraseFlowNavigator() {
   );
 }
 
-function NewAddCashFlowNavigator() {
+function AddCashFlowNavigator() {
   return (
     <Stack.Navigator
       {...stackNavigationConfig}
@@ -274,7 +274,7 @@ function NativeStackNavigator() {
           />
           <NativeStack.Screen
             name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
-            component={NewAddCashFlowNavigator}
+            component={AddCashFlowNavigator}
           />
         </>
       )}

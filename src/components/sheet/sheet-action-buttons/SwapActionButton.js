@@ -6,9 +6,17 @@ import SheetActionButton from './SheetActionButton';
 
 export default function SwapActionButton({ inputType, ...props }) {
   const navigate = useExpandedStateNavigation(inputType);
-  const handlePress = useCallback(() => navigate(Routes.EXCHANGE_MODAL), [
-    navigate,
-  ]);
+  const handlePress = useCallback(
+    () =>
+      navigate(Routes.EXCHANGE_MODAL, params => ({
+        params: {
+          params,
+          screen: Routes.MAIN_EXCHANGE_SCREEN,
+        },
+        screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
+      })),
+    [navigate]
+  );
 
   return (
     <SheetActionButton

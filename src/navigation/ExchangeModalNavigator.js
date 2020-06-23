@@ -1,5 +1,5 @@
-import { createMaterialTopTabNavigator as newCreateMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { createStackNavigator as newCreateStackNavigator } from '@react-navigation/stack';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import React from 'react';
 import { useCallback, useMemo } from 'use-memo-one';
@@ -13,8 +13,8 @@ import { exchangeModalPreset, swapDetailsPreset } from './effects';
 import { useReanimatedValue } from './helpers';
 import Routes from './routesNames';
 
-const Tabs = newCreateMaterialTopTabNavigator();
-const Stack = newCreateStackNavigator();
+const Tabs = createMaterialTopTabNavigator();
+const Stack = createStackNavigator();
 
 function SwapDetailsScreen(props) {
   const Component = withBlockedHorizontalSwipe(ModalScreen);
@@ -38,7 +38,7 @@ function MainExchangeNavigator() {
   );
 }
 
-function NewExchangeModalNavigator() {
+function ExchangeModalNavigator() {
   const { setOptions } = useNavigation();
   const position = useReanimatedValue(0);
   const config = useMemo(() => exchangeTabNavigatorConfig(position), [
@@ -69,4 +69,4 @@ function NewExchangeModalNavigator() {
   );
 }
 
-export default NewExchangeModalNavigator;
+export default ExchangeModalNavigator;

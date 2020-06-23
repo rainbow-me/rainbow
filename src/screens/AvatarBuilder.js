@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import Animated, { spring, Value } from 'react-native-reanimated';
-import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import TouchableBackdrop from '../components/TouchableBackdrop';
@@ -10,6 +9,7 @@ import { HeaderHeightWithStatusBar } from '../components/header';
 import { Column, Row } from '../components/layout';
 import { saveAccountInfo } from '../handlers/localstorage/accountLocal';
 import { withAccountInfo, withAccountSettings } from '../hoc';
+import { withNavigation } from '../navigation/Navigation';
 import {
   settingsUpdateAccountColor,
   settingsUpdateAccountName,

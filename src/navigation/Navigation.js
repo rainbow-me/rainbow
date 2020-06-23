@@ -1,26 +1,14 @@
 import {
   useNavigation as oldUseNavigation,
   StackActions,
+  useIsFocused,
 } from '@react-navigation/native';
-
 import { get } from 'lodash';
 import React, { useCallback } from 'react';
 import { Value } from 'react-native-reanimated';
 
 let TopLevelNavigationRef = null;
 const transitionPosition = new Value(0);
-const bottomSheetState = { mounted: true, pendingAction: null };
-
-export function notifyUnmountBottomSheet() {
-  bottomSheetState.mounted = false;
-  const action = bottomSheetState.pendingAction;
-  bottomSheetState.pendingAction = null;
-  action && action();
-}
-
-export function notifyMountBottomSheet() {
-  bottomSheetState.mounted = true;
-}
 
 const poppingCounter = { isClosing: false, pendingActions: [] };
 
@@ -62,6 +50,14 @@ export function withNavigation(Component) {
   return function WithNavigationWrapper(props) {
     const navigation = useNavigation();
     return <Component {...props} navigation={navigation} />;
+  };
+}
+
+export function withNavigationFocus(Component) {
+  return function WithNavigationWrapper(props) {
+    const isFocused = useIsFocused();
+
+    return <Component {...props} isFocused={isFocused} />;
   };
 }
 
