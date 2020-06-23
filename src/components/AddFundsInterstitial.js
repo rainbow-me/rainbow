@@ -5,7 +5,7 @@ import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
-import Routes from '../screens/Routes/routesNames';
+import Routes from '../navigation/routesNames';
 import { colors, margin, padding } from '../styles';
 import { magicMemo } from '../utils';
 import Divider from './Divider';
@@ -71,7 +71,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
   );
 
   const handlePressImportWallet = useCallback(
-    () => navigate(Routes.IMPORT_SEED_PHRASE_SHEET),
+    () => navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR),
     [navigate]
   );
 

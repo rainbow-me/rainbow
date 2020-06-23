@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { NavigationActions } from 'react-navigation';
 import styled from 'styled-components/primitives';
 import { useNavigation } from '../../navigation/Navigation';
 import Icon from '../icons/Icon';
@@ -25,7 +24,7 @@ export default function BackButton({
         return onPress(event);
       }
 
-      return navigation.dispatch(NavigationActions.back());
+      return navigation.goBack();
     },
     [navigation, onPress]
   );

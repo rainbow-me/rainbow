@@ -1,6 +1,6 @@
+import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { useIsFocused } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
@@ -19,9 +19,9 @@ import {
   useWallets,
 } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
-import { sheetVerticalOffset } from '../navigation/transitions/effects';
+import { sheetVerticalOffset } from '../navigation/effects';
+import Routes from '../navigation/routesNames';
 import { colors, position } from '../styles';
-import Routes from './Routes/routesNames';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 
@@ -42,6 +42,7 @@ export default function ProfileScreen({ navigation }) {
     transactions,
     transactionsCount,
   } = useAccountTransactions(activityListInitialized, isFocused);
+
   const { contacts } = useContacts();
   const { pendingRequestCount, requests } = useRequests();
   const { network } = useAccountSettings();

@@ -3,7 +3,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { colors, padding, position } from '../../styles';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';

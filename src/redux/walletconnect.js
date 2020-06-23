@@ -21,7 +21,7 @@ import { sendRpcCall } from '../handlers/web3';
 import WalletTypes from '../helpers/walletTypes';
 import { getFCMToken } from '../model/firebase';
 import { Navigation } from '../navigation';
-import Routes from '../screens/Routes/routesNames';
+import Routes from '../navigation/routesNames';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
 
@@ -78,9 +78,8 @@ export const walletConnectRemovePendingRedirect = type => dispatch => {
     type: WALLETCONNECT_REMOVE_PENDING_REDIRECT,
   });
 
-  return Navigation.handleAction({
-    params: { type },
-    routeName: Routes.WALLET_CONNECT_REDIRECT_SHEET,
+  return Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
+    type,
   });
 };
 
@@ -99,34 +98,31 @@ export const walletConnectOnSessionRequest = (
         const imageUrl = get(peerMeta, 'icons[0]');
 
         InteractionManager.runAfterInteractions(() => {
-          Navigation.handleAction({
-            params: {
-              callback: async approved => {
-                if (approved) {
-                  dispatch(setPendingRequest(peerId, walletConnector));
-                  dispatch(walletConnectApproveSession(peerId, callback));
-                  analytics.track('Approved new WalletConnect session', {
-                    dappName: peerMeta.name,
-                    dappUrl: peerMeta.url,
-                  });
-                } else {
-                  await dispatch(
-                    walletConnectRejectSession(peerId, walletConnector)
-                  );
-                  callback && callback('reject');
-                  analytics.track('Rejected new WalletConnect session', {
-                    dappName: peerMeta.name,
-                    dappUrl: peerMeta.url,
-                  });
-                }
-              },
-              meta: {
-                dappName: peerMeta.name,
-                dappUrl: peerMeta.url,
-                imageUrl,
-              },
+          Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
+            callback: async approved => {
+              if (approved) {
+                dispatch(setPendingRequest(peerId, walletConnector));
+                dispatch(walletConnectApproveSession(peerId, callback));
+                analytics.track('Approved new WalletConnect session', {
+                  dappName: peerMeta.name,
+                  dappUrl: peerMeta.url,
+                });
+              } else {
+                await dispatch(
+                  walletConnectRejectSession(peerId, walletConnector)
+                );
+                callback && callback('reject');
+                analytics.track('Rejected new WalletConnect session', {
+                  dappName: peerMeta.name,
+                  dappUrl: peerMeta.url,
+                });
+              }
             },
-            routeName: Routes.WALLET_CONNECT_APPROVAL_SHEET,
+            meta: {
+              dappName: peerMeta.name,
+              dappUrl: peerMeta.url,
+              imageUrl,
+            },
           });
         });
       });
@@ -181,12 +177,9 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       if (request) {
         InteractionManager.runAfterInteractions(() => {
           setTimeout(() => {
-            Navigation.handleAction({
-              params: {
-                openAutomatically: true,
-                transactionDetails: request,
-              },
-              routeName: Routes.CONFIRM_REQUEST,
+            Navigation.handleAction(Routes.CONFIRM_REQUEST, {
+              openAutomatically: true,
+              transactionDetails: request,
             });
           }, 1000);
         });

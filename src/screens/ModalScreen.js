@@ -1,6 +1,6 @@
+import { useRoute } from '@react-navigation/native';
 import React, { createElement } from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { useNavigationState } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import {
@@ -28,7 +28,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
 export default function ModalScreen(props) {
   const insets = useSafeArea();
   const { goBack } = useNavigation();
-  const { params } = useNavigationState();
+  const { params } = useRoute();
 
   return (
     <Container insets={insets}>

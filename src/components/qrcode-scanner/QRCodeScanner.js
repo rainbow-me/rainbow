@@ -37,7 +37,7 @@ const QRCodeScanner = ({
   }, [contentPositionBottom, prevContentPositionBottom]);
 
   let cameraRenderer = null;
-  if (isEmulator) {
+  if (isEmulator && enableCamera) {
     cameraRenderer = (
       <FastImage
         source={SimulatorFakeCameraImageSource}

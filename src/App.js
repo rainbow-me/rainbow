@@ -37,10 +37,10 @@ import { withAccountSettings } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { Navigation } from './navigation';
+import RoutesComponent from './navigation/Routes';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
-import RoutesComponent from './screens/Routes';
 import { logger } from './utils';
 
 const WALLETCONNECT_SYNC_DELAY = 500;

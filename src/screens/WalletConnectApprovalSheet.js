@@ -1,5 +1,5 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useNavigation } from 'react-navigation-hooks';
 import URL from 'url-parse';
 import Divider from '../components/Divider';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
@@ -12,10 +12,13 @@ const WalletConnectApprovalSheet = () => {
   // TODO set this to true via everest.link graph
   // if we can validate the host
   const authenticated = false;
-  const { goBack, getParam } = useNavigation();
+  const { goBack } = useNavigation();
+  const { params } = useRoute();
   const handled = useRef(false);
-  const { dappName, dappUrl, imageUrl } = getParam('meta');
-  const callback = getParam('callback');
+  const meta = params?.meta || {};
+  const { dappName, dappUrl, imageUrl } = meta;
+  const callback = params?.callback;
+
   const formattedDappUrl = useMemo(() => {
     const urlObject = new URL(dappUrl);
     return urlObject.hostname;

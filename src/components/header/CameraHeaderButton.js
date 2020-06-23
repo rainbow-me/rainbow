@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { borders, colors } from '../../styles';
 import Icon from '../icons/Icon';
 import { Centered } from '../layout';
