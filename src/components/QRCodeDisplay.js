@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForPropTypes } from 'recompact';
 import image from '../assets/icon-pixel.png';
-import QRCode from './qrCode/QRCode';
+import QRCode from './qr-code/QRCode';
 
 const QRCodeDisplay = ({ size, value, ...props }) => (
   <QRCode
@@ -14,7 +14,7 @@ const QRCodeDisplay = ({ size, value, ...props }) => (
     logoMargin={-5}
     logoBackgroundColor="transparent"
     quietZone={100}
-    ecl="L"
+    ecl="M"
   />
 );
 
