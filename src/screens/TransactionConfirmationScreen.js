@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, InteractionManager, Vibration } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
-import { withNavigationFocus } from 'react-navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { compose } from 'recompact';
 import styled from 'styled-components';
@@ -28,6 +27,7 @@ import {
   signTransaction,
   signTypedDataMessage,
 } from '../model/wallet';
+import { withNavigationFocus } from '../navigation/Navigation';
 import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
 import { colors, position } from '../styles';
 import { gasUtils, logger } from '../utils';

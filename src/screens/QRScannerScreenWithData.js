@@ -15,6 +15,7 @@ import {
   withWalletConnectOnSessionRequest,
 } from '../hoc';
 import { checkPushNotificationPermissions } from '../model/firebase';
+import { withNavigationFocus } from '../navigation/Navigation';
 import Routes from '../navigation/routesNames';
 import store from '../redux/store';
 import { addressUtils } from '../utils';
@@ -35,13 +36,13 @@ class QRScannerScreenWithData extends Component {
   };
 
   static getDerivedStateFromProps(props, state) {
-    const isFocused = props.navigation.isFocused();
+    const { isFocused } = props;
     return { ...state, isFocused };
   }
 
   componentDidUpdate = (prevProps, prevState) => {
-    const wasFocused = prevState.isFocused;
-    const isFocused = this.state.isFocused;
+    const wasFocused = prevProps.isFocused;
+    const isFocused = this.props.isFocused;
 
     if (isFocused && !wasFocused && Platform.OS === 'ios') {
       request(PERMISSIONS.IOS.CAMERA).then(permission => {
@@ -133,8 +134,7 @@ class QRScannerScreenWithData extends Component {
       <QRScannerScreen
         {...this.props}
         {...this.state}
-        isFocused={this.state.isFocused}
-        enableScanning={this.state.enableScanning && this.state.isFocused}
+        enableScanning={this.state.enableScanning}
         onPressBackButton={this.handlePressBackButton}
         onPressPasteSessionUri={this.handlePressPasteSessionUri}
         onScanSuccess={this.handleScanSuccess}
@@ -145,7 +145,7 @@ class QRScannerScreenWithData extends Component {
 }
 
 export default compose(
-  // TODO withNavigationFocus,
+  withNavigationFocus,
   withWalletConnectOnSessionRequest,
   withSafeTimeout,
   withWalletConnectConnections

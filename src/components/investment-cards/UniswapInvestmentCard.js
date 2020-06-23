@@ -1,4 +1,6 @@
+import { useRoute } from '@react-navigation/native';
 import { floor } from 'lodash';
+
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components/primitives';
@@ -37,6 +39,7 @@ const UniswapInvestmentCard = ({
   const { openInvestmentCards } = useOpenInvestmentCards();
 
   const { navigate } = useNavigation();
+  const { name } = useRoute();
 
   const handleOpenExpandedState = useCallback(() => {
     navigate(Routes.EXPANDED_ASSET_SHEET, {
@@ -75,7 +78,7 @@ const UniswapInvestmentCard = ({
     ]
   );
 
-  const isExpandedState = false; //TODO nav
+  const isExpandedState = name === 'ExpandedAssetSheet';
 
   return (
     <InvestmentCard

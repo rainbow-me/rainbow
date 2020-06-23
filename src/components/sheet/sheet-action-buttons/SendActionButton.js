@@ -6,9 +6,14 @@ import SheetActionButton from './SheetActionButton';
 
 export default function SendActionButton(props) {
   const navigate = useExpandedStateNavigation();
-  const handlePress = useCallback(() => navigate(Routes.SEND_SHEET), [
-    navigate,
-  ]);
+  const handlePress = useCallback(
+    () =>
+      navigate(Routes.SEND_SHEET_NAVIGATOR, params => ({
+        params,
+        screen: Routes.SEND_SHEET,
+      })),
+    [navigate]
+  );
 
   return (
     <SheetActionButton

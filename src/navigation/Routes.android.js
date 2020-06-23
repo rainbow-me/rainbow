@@ -4,7 +4,7 @@ import { omit } from 'lodash';
 import React from 'react';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
-import ChangeWalletModal from '../screens/ChangeWalletModal';
+import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
 import ModalScreen from '../screens/ModalScreen';
@@ -46,7 +46,7 @@ function MainNavigator() {
       />
       <Stack.Screen
         name={Routes.CHANGE_WALLET_SHEET}
-        component={ChangeWalletModal}
+        component={ChangeWalletSheet}
         options={expandedPresetReverse}
       />
       <Stack.Screen
@@ -77,7 +77,7 @@ function MainNavigator() {
       <Stack.Screen
         name={Routes.SETTINGS_MODAL}
         component={SettingsModal}
-        options={(...p) => console.log(p) || expandedPreset}
+        options={expandedPreset}
       />
       <Stack.Screen
         name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
