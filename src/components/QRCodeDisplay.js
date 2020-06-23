@@ -14,7 +14,7 @@ const QRCodeDisplay = ({ size, value, ...props }) => (
     logoMargin={-5}
     logoBackgroundColor="transparent"
     quietZone={100}
-    ecl="Q"
+    ecl="L"
   />
 );
 

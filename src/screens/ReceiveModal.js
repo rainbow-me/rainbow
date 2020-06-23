@@ -10,7 +10,7 @@ import { FloatingEmojis } from '../components/floating-emojis';
 import { Icon } from '../components/icons';
 import { Centered, Column } from '../components/layout';
 import { Text, TruncatedAddress } from '../components/text';
-import { useClipboard } from '../hooks';
+import { useAccountProfile, useClipboard } from '../hooks';
 // import { useNavigation } from '../navigation/Navigation';
 import { colors, fonts, position } from '../styles';
 import { haptics } from '../utils';
@@ -64,7 +64,8 @@ const IconContainer = styled(Centered).attrs({
 `;
 
 const AddressWrapper = styled.View`
-  height: 29px;
+  height: 24px;
+  margin-top: 5px;
 `;
 
 const ReceiveModal = () => {
@@ -73,6 +74,7 @@ const ReceiveModal = () => {
   const accountAddress = useSelector(({ settings: { accountAddress } }) =>
     toLower(accountAddress)
   );
+  const { accountName } = useAccountProfile();
 
   return (
     <Centered flex={1} bottom={16}>
@@ -88,32 +90,45 @@ const ReceiveModal = () => {
         >
           <QRCodeDisplay size={QRCodeSize} value={accountAddress} />
         </QRwrapper>
-        <AddressWrapper>
-          <FloatingEmojis
-            distance={250}
-            duration={500}
-            fadeOut={false}
-            flex={1}
-            scaleTo={0}
-            size={50}
-            wiggleFactor={0}
+        <Column>
+          <Text
+            color="white"
+            size={fonts.size.bigger}
+            letterSpacing={0.5}
+            weight="bold"
+            align="center"
           >
-            {({ onNewEmoji }) => (
-              <AddressText
-                address={accountAddress}
-                firstSectionLength={10}
-                size="smaller"
-                truncationLength={4}
-                weight="medium"
-                onPress={() => {
-                  haptics.impactLight();
-                  onNewEmoji();
-                  setClipboard(accountAddress);
-                }}
-              />
-            )}
-          </FloatingEmojis>
-        </AddressWrapper>
+            {accountName}
+          </Text>
+          <AddressWrapper>
+            <FloatingEmojis
+              distance={250}
+              duration={500}
+              fadeOut={false}
+              flex={1}
+              scaleTo={0}
+              size={50}
+              wiggleFactor={0}
+            >
+              {({ onNewEmoji }) => (
+                <ButtonPressAnimation>
+                  <AddressText
+                    address={accountAddress}
+                    firstSectionLength={10}
+                    size="smaller"
+                    truncationLength={4}
+                    weight="medium"
+                    onPress={() => {
+                      haptics.impactLight();
+                      onNewEmoji();
+                      setClipboard(accountAddress);
+                    }}
+                  />
+                </ButtonPressAnimation>
+              )}
+            </FloatingEmojis>
+          </AddressWrapper>
+        </Column>
         <ButtonPressAnimation
           onPress={() =>
             Share.share({
