@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import QRCode from 'react-native-qrcode-svg';
 import { onlyUpdateForPropTypes } from 'recompact';
 import image from '../assets/icon-pixel.png';
+import QRCode from './qrCode/QRCode';
 
 const QRCodeDisplay = ({ size, value, ...props }) => (
   <QRCode
