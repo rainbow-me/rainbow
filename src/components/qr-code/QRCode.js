@@ -85,7 +85,7 @@ const QRCodeSVG = ({
               <Circle
                 cx={i * cellSize + cellSize / 2}
                 cy={j * cellSize + cellSize / 2}
-                r={cellSize / 3.5} // calculate size of single dots
+                r={cellSize / 3} // calculate size of single dots
                 fill="black"
               />
             );
