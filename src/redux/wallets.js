@@ -118,7 +118,7 @@ export const setWalletBackedUp = (
   if (backupFile) {
     newWallets[wallet_id].backupFile = backupFile;
   }
-  newWallets[wallet_id].backupDate = Date.getTime();
+  newWallets[wallet_id].backupDate = Date.now();
   dispatch(walletsUpdate(newWallets));
   if (selected.id === wallet_id) {
     dispatch(walletsSetSelected(newWallets[wallet_id]));

@@ -144,17 +144,19 @@ const ShowSecretView = () => {
         </FloatingEmojis>
       </Row>
       <Row>
-        <Shadow
-          height={wordSectionHeight}
-          width={deviceWidth - 130}
-          borderRadius={16}
-          shadows={[
-            [0, 10, 30, colors.dark, 0.1],
-            [0, 5, 15, colors.dark, 0.04],
-          ]}
-        >
-          <Row margin={19}>{secretLayout}</Row>
-        </Shadow>
+        {secretLayout && (
+          <Shadow
+            height={wordSectionHeight}
+            width={deviceWidth - 130}
+            borderRadius={16}
+            shadows={[
+              [0, 10, 30, colors.dark, 0.1],
+              [0, 5, 15, colors.dark, 0.04],
+            ]}
+          >
+            <Row margin={19}>{secretLayout}</Row>
+          </Shadow>
+        )}
       </Row>
     </Centered>
   );

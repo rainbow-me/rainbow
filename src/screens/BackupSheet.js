@@ -24,7 +24,7 @@ const BackupSheet = () => {
     goBack();
   }, [goBack]);
 
-  const nativeStackAdditionalPadding = 0;
+  const nativeStackAdditionalPadding = 75;
 
   const renderStep = useCallback(() => {
     switch (step) {

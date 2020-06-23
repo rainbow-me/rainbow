@@ -48,7 +48,7 @@ export default async function runMigrations() {
       const address = await loadAddress();
       if (address) {
         logger.sentry('v1 migration - address found');
-        const id = `wallet_${new Date().getTime()}`;
+        const id = `wallet_${Date.now()}`;
         const currentWallet = {
           addresses: [
             {

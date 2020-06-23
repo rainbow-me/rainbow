@@ -38,7 +38,7 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
     await RNFS.unlink(path);
     return filename;
   } catch (e) {
-    logger.log('Error while backing up', e);
+    logger.log('Error during encryptAndSaveDataToCloud', e);
     return false;
   }
 }

@@ -335,7 +335,7 @@ export const createWallet = async (seed = null, color = null, name = null) => {
       }
     }
 
-    const id = `wallet_${new Date().getTime()}`;
+    const id = `wallet_${Date.now()}`;
 
     // Save address
     await saveAddress(wallet.address);
@@ -671,7 +671,7 @@ async function extractSecretsForWallet(wallet) {
   const allKeys = await keychain.loadAllKeys();
   const secrets = {};
 
-  const allowedPkeysKeys = wallet.accounts.map(
+  const allowedPkeysKeys = wallet.addresses.map(
     account => `${account.address}_${privateKeyKey}`
   );
 
@@ -714,7 +714,7 @@ async function extractSecretsForWallet(wallet) {
 
 export async function backupWalletToCloud(password, wallet) {
   logger.log('backupWalletToCloud', password, wallet);
-  const now = Date.getTime();
+  const now = Date.now();
 
   const secrets = await extractSecretsForWallet(wallet);
   logger.log('backupWalletToCloud:: got secrets', secrets);
@@ -732,7 +732,7 @@ export async function addWalletToCloudBackup(password, wallet, filename) {
   const backup = await getDataFromCloud(password, filename);
   logger.log('addWalletToCloudBackup:: got data from cloud', backup);
 
-  const now = Date.getTime();
+  const now = Date.now();
 
   const secrets = await extractSecretsForWallet(wallet);
   logger.log('addWalletToCloudBackup:: got secrets', secrets);
@@ -789,6 +789,6 @@ export async function restoreCloudBackup(password, userData) {
 
     return keychain.restoreBackupIntoKeychain(dataToRestore);
   } catch (e) {
-    logger.log('Error while backing up', e);
+    logger.log('Error while restoring back up', e);
   }
 }

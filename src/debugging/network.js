@@ -60,7 +60,7 @@ export default function monitorNetwork(
         emptyLine();
 
         requestCache[internalCounter] = {
-          startTime: new Date().getTime(),
+          startTime: Date.now(),
         };
       }
     });
@@ -75,8 +75,7 @@ export default function monitorNetwork(
           const cachedRequest = requestCache[rid] || {};
           requestCache[rid] = null;
           const time =
-            (cachedRequest.startTime &&
-              new Date().getTime() - cachedRequest.startTime) ||
+            (cachedRequest.startTime && Date.now() - cachedRequest.startTime) ||
             null;
 
           separator();

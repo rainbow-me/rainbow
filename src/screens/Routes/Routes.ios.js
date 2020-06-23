@@ -238,7 +238,7 @@ const routesForBottomSheetStack = {
       headerHeight: 58,
       ignoreBottomOffset: true,
       springDamping: 1,
-      topOffset: 10,
+      topOffset: 0,
       transitionDuration: 0.25,
     },
     screen: BackupSheet,
