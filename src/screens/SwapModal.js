@@ -8,7 +8,7 @@ import createUnlockAndSwapRap, {
 import ExchangeModal from './ExchangeModal';
 
 const SwapModal = (props, ref) => {
-  const { params } = useRoute();
+  const { params = {} } = useRoute();
 
   const { inputAsset, outputAsset } = params;
 
