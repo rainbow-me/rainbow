@@ -26,7 +26,6 @@ import {
   signTransaction,
   signTypedDataMessage,
 } from '../model/wallet';
-import { withNavigationFocus } from '../navigation/Navigation';
 import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
 import { colors, position } from '../styles';
 import { gasUtils, logger } from '../utils';
