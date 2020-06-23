@@ -122,13 +122,10 @@ export default Component =>
           imageUrl,
           payload,
         };
-        return Navigation.handleAction({
-          params: {
-            callback: redirect,
-            openAutomatically: true,
-            transactionDetails: request,
-          },
-          routeName: Routes.CONFIRM_REQUEST,
+        return Navigation.handleAction(Routes.CONFIRM_REQUEST, {
+          callback: redirect,
+          openAutomatically: true,
+          transactionDetails: request,
         });
       },
     })

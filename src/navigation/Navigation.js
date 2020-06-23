@@ -1,11 +1,11 @@
 import {
   useNavigation as oldUseNavigation,
+  StackActions,
   useIsFocused,
 } from '@react-navigation/native';
 import { get } from 'lodash';
 import React, { useCallback } from 'react';
 import { Value } from 'react-native-reanimated';
-import { StackActions } from 'react-navigation';
 
 let TopLevelNavigationRef = null;
 const transitionPosition = new Value(0);
@@ -94,10 +94,10 @@ function getActiveRouteName(navigationState) {
  * Handle a navigation action or queue the action if navigation actions have been paused.
  * @param  {Object} action      The navigation action to run.
  */
-function handleAction(action) {
+function handleAction(name, params) {
   if (!TopLevelNavigationRef) return;
-  action = StackActions.push(action);
-  TopLevelNavigationRef.dispatch(action);
+  const action = StackActions.push(name, params);
+  TopLevelNavigationRef?.dispatch(action);
 }
 
 /**
