@@ -1,6 +1,6 @@
 import { get } from 'lodash';
-import React, { Fragment, Platform, useCallback } from 'react';
-import { Linking } from 'react-native';
+import React, { Fragment, useCallback } from 'react';
+import { Linking, Platform } from 'react-native';
 import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
