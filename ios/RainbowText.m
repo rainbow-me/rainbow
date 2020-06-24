@@ -25,12 +25,15 @@
 @implementation RainbowText {
   NSTimer* _timer;
   int _decimals;
-  double _value;
+  float _initialValue;
   double _interval;
-  double _stepPerMs;
+  float _stepPerDay;
   BOOL _isSymbolStablecoin;
   NSString* _symbol;
-  
+  NSNumberFormatter* _fmt;
+  int _it;
+  NSMutableDictionary<NSNumber*, NSNumber*>* _framesFromChanges;
+
 }
 
 - (void) setAnimationConfig:(NSDictionary*) config {
@@ -40,27 +43,33 @@
     return;
   }
   _decimals = ((NSNumber*) config[@"decimals"]).intValue;
-  _value = ((NSNumber*)config[@"initialValue"]).doubleValue;
+  _initialValue = ((NSNumber*)config[@"initialValue"]).floatValue;
   _interval = ((NSNumber*) config[@"interval"]).doubleValue;
-  _stepPerMs = ((NSNumber*) config[@"stepPerMs"]).doubleValue;;
+  _stepPerDay = ((NSNumber*) config[@"stepPerDay"]).floatValue;
   _isSymbolStablecoin = ((NSNumber*) config[@"isSymbolStablecoin"]).boolValue;
   _symbol = config[@"symbol"];
+  _framesFromChanges = [NSMutableDictionary new];
   _timer = [NSTimer scheduledTimerWithTimeInterval:_interval / 1000  target:self selector:@selector(animate) userInfo:nil repeats:YES];
+  _fmt = [[NSNumberFormatter alloc] init];
+  _it = 0;
+  _fmt.numberStyle = NSNumberFormatterDecimalStyle;
+  _fmt.maximumFractionDigits = 9;
+  _fmt.minimumFractionDigits = 9;
 }
 
 - (void) animate { //);
-  _value = _value + _stepPerMs * _interval;
-  NSLog(@"%f", _stepPerMs);
+  double value = _initialValue + _stepPerDay * _it * _interval / 24 / 60 / 60 / 1000;
+  _it++;
+
   NSString *newValue;
   if (_isSymbolStablecoin) {
-    newValue = [NSString stringWithFormat:@"$%f", _value];
+    newValue = [NSString stringWithFormat:@"$%@", [_fmt stringFromNumber:@(value)]];
   } else {
-    newValue = [NSString stringWithFormat:@"%f %@", _value, _symbol];
+    newValue = [NSString stringWithFormat:@"%@ %@", [_fmt stringFromNumber:@(value)], _symbol];
   }
-  ((RCTUITextField* )[self.subviews firstObject]).attributedText = [[NSAttributedString alloc] initWithString:newValue];
   
-  
-//  [((RCTUITextField* )[self.subviews firstObject]) setText:@"@sample"];
+  NSMutableAttributedString* as = [[NSMutableAttributedString alloc] initWithString:newValue];
+  ((RCTUITextField* )[self.subviews firstObject]).attributedText = as;
 
 }
 

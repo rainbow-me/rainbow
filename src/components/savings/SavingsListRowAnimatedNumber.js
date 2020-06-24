@@ -68,14 +68,14 @@ const SavingsListRowAnimatedNumber = ({
         Platform.OS === 'android' ? sx.animatedNumberAndroid : null,
       ]}
       time={interval}
-      value={formatter(Number(value))}
+      value={Number(value)}
       text={formatter(Number(value))}
       animationConfig={{
         decimals: 10,
         initialValue: Number(value),
-        interval: 50,
+        interval: 60,
         isSymbolStablecoin: isSymbolStablecoin(symbol),
-        stepPerMs: (value - initialValue) / MS_IN_1_DAY,
+        stepPerDay: Number(value) - Number(initialValue),
         symbol,
       }}
     />
