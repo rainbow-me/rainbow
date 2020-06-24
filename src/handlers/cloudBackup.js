@@ -8,6 +8,19 @@ const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 const USERDATA_FILE = 'UserData.json';
 const encryptor = new AesEncryptor();
 
+export async function deleteAllBackups() {
+  const backups = await RNCloudFs.listFiles({
+    scope: 'hidden',
+    targetPath: REMOTE_BACKUP_WALLET_DIR,
+  });
+  console.log('BACKUPS?', backups);
+  backups.files.forEach(async file => {
+    console.log('=== FILE ====', file.name);
+    await RNCloudFs.deleteFromCloud(file);
+    console.log('=== FILE DELETED', file.name);
+  });
+}
+
 export async function encryptAndSaveDataToCloud(data, password, filename) {
   // Encrypt the data
   const encryptedData = await encryptor.encrypt(password, JSON.stringify(data));

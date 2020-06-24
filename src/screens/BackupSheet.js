@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import HorizontalGestureBlocker from '../components/HorizontalGestureBlocker';
+import BackupConfirmPasswordStep from '../components/backup/BackupConfirmPasswordStep';
 import BackupIcloudStep from '../components/backup/BackupIcloudStep';
 import BackupImportedStep from '../components/backup/BackupImportedStep';
 import BackupManualStep from '../components/backup/BackupManualStep';
@@ -13,6 +14,7 @@ const BackupSheet = () => {
   const { getParam, goBack } = useNavigation();
   const [step, setStep] = useState(getParam('option', 'first'));
   const password = getParam('password', null);
+  const missingPassword = getParam('missingPassword', null);
   const onIcloudBackup = useCallback(() => {
     setStep(WalletBackupTypes.cloud);
   }, []);
@@ -37,7 +39,11 @@ const BackupSheet = () => {
           />
         );
       case WalletBackupTypes.cloud:
-        return <BackupIcloudStep password={password} />;
+        return missingPassword ? (
+          <BackupConfirmPasswordStep />
+        ) : (
+          <BackupIcloudStep password={password} />
+        );
       case WalletBackupTypes.manual:
         return <BackupManualStep />;
       default:
@@ -48,7 +54,14 @@ const BackupSheet = () => {
           />
         );
     }
-  }, [onIcloudBackup, onIgnoreBackup, onManualBackup, password, step]);
+  }, [
+    missingPassword,
+    onIcloudBackup,
+    onIgnoreBackup,
+    onManualBackup,
+    password,
+    step,
+  ]);
 
   const sheet = <Sheet>{renderStep()}</Sheet>;
   if (step === WalletBackupTypes.cloud) {

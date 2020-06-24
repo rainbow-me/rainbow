@@ -129,7 +129,6 @@ export async function restoreBackupIntoKeychain(backedUpData) {
 export async function saveBackupPassword(password) {
   try {
     await saveString(RAINBOW_BACKUP_KEY, password, {
-      accessControl: ACCESS_CONTROL.USER_PRESENCE,
       accessible: ACCESSIBLE.WHEN_UNLOCKED,
       synchronizable: true,
     });
@@ -141,6 +140,7 @@ export async function saveBackupPassword(password) {
 // Attempts to fetch the password to decrypt the backup from the iCloud keychain
 export async function fetchBackupPassword() {
   const results = await getInternetCredentials(RAINBOW_BACKUP_KEY, {
+    accessible: ACCESSIBLE.WHEN_UNLOCKED,
     synchronizable: true,
   });
 

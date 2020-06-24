@@ -43,7 +43,6 @@ export const walletsLoadState = () => async (dispatch, getState) => {
       await setSelectedWallet(selectedWallet);
     }
 
-    console.log('SELECTED WALLET?', selectedWallet);
     if (!selectedWallet) {
       const address = await loadAddress();
       Object.keys(wallets).some(key => {
@@ -60,7 +59,6 @@ export const walletsLoadState = () => async (dispatch, getState) => {
       });
     }
 
-    console.log('ADDRESS FROM KEYCHAIN?', addressFromKeychain);
     // Recover from broken state (account address not in selected wallet)
     if (!addressFromKeychain) {
       addressFromKeychain = await loadAddress();
@@ -69,7 +67,6 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     const selectedAddress = selectedWallet.addresses.find(a => {
       return a.visible && a.address === addressFromKeychain;
     });
-    console.log('SELECTED ADDRESS?', selectedAddress);
 
     if (!selectedAddress) {
       console.log(
@@ -80,20 +77,21 @@ export const walletsLoadState = () => async (dispatch, getState) => {
       await saveAddress(account.address);
     }
 
-    console.log('GUCCI');
-
     const walletNames = await getWalletNames();
 
     // Only for debugging purposes
 
     // Object.keys(wallets).forEach(key => {
-    //   if (!wallets[key].primary) {
-    //     delete wallets[key].backedUp;
-    //     delete wallets[key].backupDate;
-    //     delete wallets[key].backupFile;
-    //     delete wallets[key].backupType;
-    //   }
+    //   // if (!wallets[key].primary) {
+    //   delete wallets[key].backedUp;
+    //   delete wallets[key].backupDate;
+    //   delete wallets[key].backupFile;
+    //   delete wallets[key].backupType;
+    //   //}
     // });
+
+    // // // Delete all backups (debugging)
+    // deleteAllBackups();
 
     dispatch({
       payload: {

@@ -15,8 +15,8 @@ import { ContactAvatar } from '../../contacts';
 import { Icon } from '../../icons';
 import { Column, Row } from '../../layout';
 import { Text, TruncatedAddress } from '../../text';
-import AlreadyBackedUpView from './AlreadyBackedUpView';
-import NeedsBackupView from './NeedsBackupView';
+// eslint-disable-next-line import/no-cycle
+import BackupSection from '.';
 
 const IconWrapper = styled(View)`
   margin-bottom: 12;
@@ -81,7 +81,7 @@ const WalletSelectionView = ({ navigation }) => {
       if (wallet.backedUp || wallet.imported) {
         navigation.setParams({
           section: {
-            component: AlreadyBackedUpView,
+            component: BackupSection,
             imported: wallet.imported,
             title: name,
           },
@@ -90,7 +90,7 @@ const WalletSelectionView = ({ navigation }) => {
       } else {
         navigation.setParams({
           section: {
-            component: NeedsBackupView,
+            component: BackupSection,
             title: name,
           },
           wallet_id,

@@ -77,7 +77,8 @@ const SettingsModal = ({ navigation }) => {
   const onCloseModal = useCallback(() => navigation.goBack(), [navigation]);
 
   const onPressBack = useCallback(
-    () => navigation.setParams({ section: SettingsPages.default }),
+    () =>
+      navigation.setParams({ section: SettingsPages.default, wallet_id: null }),
     [navigation]
   );
 

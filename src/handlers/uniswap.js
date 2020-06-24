@@ -386,7 +386,7 @@ export const getChart = async (exchangeAddress, timeframe) => {
       }
     }
   } catch (err) {
-    logger.log('error: ', err);
+    logger.log('error uniswap: ', err);
   }
 
   return data;

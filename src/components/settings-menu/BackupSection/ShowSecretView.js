@@ -57,14 +57,14 @@ const ShowSecretView = () => {
   let columns = [];
   let secretLayout = null;
   if (seed && type === WalletTypes.mnemonic) {
-    wordSectionHeight = (seed && (seed.split(' ').length || 12) / 2) * 39;
+    wordSectionHeight = (seed && (seed.split(' ').length || 12) / 2) * 39 + 10;
     const words = seed.split(' ');
     columns = [words.slice(0, words.length / 2), words.slice(words.length / 2)];
     secretLayout = columns.map((wordColumn, colIndex) => (
       <Column
         // eslint-disable-next-line react/no-array-index-key
         key={`col_${colIndex}`}
-        marginLeft={30}
+        marginLeft={19}
         marginRight={30}
       >
         {wordColumn.map((word, index) => (
@@ -147,7 +147,7 @@ const ShowSecretView = () => {
         {secretLayout && (
           <Shadow
             height={wordSectionHeight}
-            width={deviceWidth - 130}
+            width={deviceWidth - 108}
             borderRadius={16}
             shadows={[
               [0, 10, 30, colors.dark, 0.1],
