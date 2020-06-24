@@ -2,8 +2,17 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Dimensions, View } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { useNavigation } from 'react-navigation-hooks';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { removeWalletData } from '../../handlers/localstorage/removeWallet';
+import {
+  useAccountSettings,
+  useInitializeWallet,
+  useWallets,
+} from '../../hooks';
+import { fetchBackupPassword, saveBackupPassword } from '../../model/keychain';
 import { restoreCloudBackup } from '../../model/wallet';
+import { walletsLoadState } from '../../redux/wallets';
 import { colors, padding } from '../../styles';
 import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
@@ -94,12 +103,27 @@ const TopIcon = () => (
 
 const RestoreIcloudStep = ({ userData }) => {
   const { goBack } = useNavigation();
+  const dispatch = useDispatch();
+  const initializeWallet = useInitializeWallet();
+  const { selectedWallet } = useWallets();
+  const { accountAddress } = useAccountSettings();
   const [validPassword, setValidPassword] = useState(false);
-  const [invalidPassword, setInvalidPassword] = useState(false);
+  const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
   const [label, setLabel] = useState('􀙶 Confirm Backup');
   const passwordRef = useRef();
+
+  useEffect(() => {
+    const fetchPasswordIfPossible = async () => {
+      const pwd = await fetchBackupPassword();
+      if (pwd) {
+        setPassword(pwd);
+      }
+    };
+
+    fetchPasswordIfPossible();
+  }, []);
 
   const onPasswordFocus = useCallback(() => {
     setPasswordFocused(true);
@@ -113,40 +137,65 @@ const RestoreIcloudStep = ({ userData }) => {
     let newLabel = '';
     let passwordIsValid = false;
 
-    if (invalidPassword) {
+    if (incorrectPassword) {
       newLabel = 'Incorrect Password';
     } else {
       if (password !== '' && password.length >= 8) {
         passwordIsValid = true;
       }
 
-      if (passwordIsValid || password === '') {
-        newLabel = `􀑙 Restore from iCloud`;
-      }
+      newLabel = `􀑙 Restore from iCloud`;
     }
 
     setValidPassword(passwordIsValid);
     setLabel(newLabel);
-  }, [invalidPassword, password, passwordFocused]);
+  }, [incorrectPassword, password, passwordFocused]);
 
   const onPasswordChange = useCallback(
     ({ nativeEvent: { text: inputText } }) => {
       setPassword(inputText);
+      setIncorrectPassword(false);
     },
     []
   );
 
   const onSubmit = useCallback(async () => {
-    const success = restoreCloudBackup(password, userData);
-    if (success) {
-      goBack();
-      Alert.alert('Your wallet has been restored!');
-    } else {
-      setInvalidPassword(true);
-      Alert.alert('Error while trying to restore');
-      setTimeout(passwordRef.current?.focus(), 1000);
+    try {
+      console.log('calling restoreCloudBackup with', password, userData);
+      const success = await restoreCloudBackup(password, userData);
+      if (success) {
+        // Store it in the keychain in case it was missing
+        await saveBackupPassword(password);
+        // Get rid of the current wallet
+        console.log('getting rid of the current wallet data');
+        await removeWalletData(accountAddress);
+
+        // Reload the wallets
+        console.log('reloading wallets');
+        await dispatch(walletsLoadState());
+        console.log('SELECTED WALLET IS NOW', selectedWallet);
+        await initializeWallet();
+        goBack();
+        setTimeout(() => {
+          Alert.alert('Congrats', 'Your wallet has been restored!');
+        }, 1000);
+      } else {
+        setIncorrectPassword(true);
+        // setTimeout(passwordRef.current?.focus(), 1000);
+      }
+    } catch (e) {
+      Alert.alert('Error while restoring backup');
+      console.log('after alert', e);
     }
-  }, [goBack, password, userData]);
+  }, [
+    accountAddress,
+    dispatch,
+    goBack,
+    initializeWallet,
+    password,
+    selectedWallet,
+    userData,
+  ]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
@@ -177,7 +226,7 @@ const RestoreIcloudStep = ({ userData }) => {
           {((password !== '' &&
             password.length < 8 &&
             !passwordRef.current.isFocused()) ||
-            invalidPassword) && <WarningIcon />}
+            incorrectPassword) && <WarningIcon />}
         </Shadow>
       </InputsWrapper>
       <Column css={padding(0, 15, 30)} width="100%">

@@ -53,7 +53,10 @@ const onPressHiddenFeature = () => {
         text: 'NO',
       },
       {
-        onPress: async () => await wipeKeychain(),
+        onPress: async () => {
+          await wipeKeychain();
+          Alert.alert('Now you can restart the app');
+        },
         text: 'Yes',
       },
     ],

@@ -1,13 +1,17 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
+import { Alert } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../../helpers/walletBackupTypes';
 import WalletTypes from '../../../helpers/walletTypes';
 import { useWallets } from '../../../hooks';
-import { deleteCloudBackup } from '../../../redux/wallets';
+import { fetchBackupPassword } from '../../../model/keychain';
+import { addWalletToCloudBackup } from '../../../model/wallet';
+import { deleteCloudBackup, setWalletBackedUp } from '../../../redux/wallets';
 import Routes from '../../../screens/Routes/routesNames';
 import { colors, fonts, padding } from '../../../styles';
+import { logger } from '../../../utils';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column, ColumnWithMargins } from '../../layout';
 import { SheetButton } from '../../sheet';
@@ -59,7 +63,7 @@ const DescriptionText = styled(Text).attrs({
 const AlreadyBackedUpView = () => {
   const { navigate, getParam, setParams } = useNavigation();
   const dispatch = useDispatch();
-  const { wallets, selectedWallet } = useWallets();
+  const { latestBackup, wallets, selectedWallet } = useWallets();
   const wallet_id = getParam('wallet_id', null) || selectedWallet.id;
   const onViewRecoveryPhrase = useCallback(() => {
     setParams({
@@ -89,14 +93,53 @@ const AlreadyBackedUpView = () => {
 
   const onFooterAction = useCallback(async () => {
     if (['manual_backup', 'imported'].includes(walletStatus)) {
-      navigate(Routes.BACKUP_SHEET_TOP, {
-        option: WalletBackupTypes.cloud,
-        wallet_id,
-      });
+      let password = null;
+      if (latestBackup) {
+        password = await fetchBackupPassword();
+        // If we can't get the password, we need to prompt it again
+        if (!password) {
+          navigate(Routes.BACKUP_SHEET_TOP, {
+            option: WalletBackupTypes.cloud,
+            wallet_id,
+          });
+        } else {
+          // We have the password and we need to add it to an existing backup
+          logger.log('password fetched correctly', password);
+          const backupFile = await addWalletToCloudBackup(
+            password,
+            wallets[wallet_id],
+            latestBackup
+          );
+          if (backupFile) {
+            logger.log('onConfirmBackup:: backup completed!', backupFile);
+            await dispatch(
+              setWalletBackedUp(wallet_id, WalletBackupTypes.cloud, backupFile)
+            );
+            logger.log(
+              'onConfirmBackup:: backup saved in redux / keychain!',
+              backupFile
+            );
+
+            logger.log(
+              'onConfirmBackup:: backed up user data in the cloud!',
+              backupFile
+            );
+          } else {
+            Alert.alert('Error while trying to backup');
+          }
+        }
+      } else {
+        // No password, No latest backup meaning
+        // it's a first time backup so we need to show the password sheet
+        navigate(Routes.BACKUP_SHEET_TOP, {
+          option: WalletBackupTypes.cloud,
+          wallet_id,
+        });
+      }
     } else {
       await dispatch(deleteCloudBackup(wallet_id));
     }
-  }, [dispatch, walletStatus, navigate, wallet_id]);
+  }, [walletStatus, latestBackup, navigate, wallet_id, wallets, dispatch]);
 
   return (
     <Fragment>

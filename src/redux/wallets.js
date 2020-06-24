@@ -35,6 +35,15 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     const selected = await getSelectedWallet();
     // Prevent irrecoverable state (no selected wallet)
     let selectedWallet = get(selected, 'wallet', undefined);
+    // Check if the selected wallet is among all the wallets
+    if (selectedWallet && !wallets[selectedWallet.id]) {
+      // If not then we should clear it and default to the first one
+      const firstWalletKey = Object.keys(wallets)[0];
+      selectedWallet = wallets[firstWalletKey];
+      await setSelectedWallet(selectedWallet);
+    }
+
+    console.log('SELECTED WALLET?', selectedWallet);
     if (!selectedWallet) {
       const address = await loadAddress();
       Object.keys(wallets).some(key => {
@@ -51,6 +60,7 @@ export const walletsLoadState = () => async (dispatch, getState) => {
       });
     }
 
+    console.log('ADDRESS FROM KEYCHAIN?', addressFromKeychain);
     // Recover from broken state (account address not in selected wallet)
     if (!addressFromKeychain) {
       addressFromKeychain = await loadAddress();
@@ -59,14 +69,31 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     const selectedAddress = selectedWallet.addresses.find(a => {
       return a.visible && a.address === addressFromKeychain;
     });
+    console.log('SELECTED ADDRESS?', selectedAddress);
 
     if (!selectedAddress) {
+      console.log(
+        '[DEBUG] We didnt find that wallet, selecting the first one!'
+      );
       const account = selectedWallet.addresses.find(a => a.visible);
       await dispatch(settingsUpdateAccountAddress(account.address));
       await saveAddress(account.address);
     }
 
+    console.log('GUCCI');
+
     const walletNames = await getWalletNames();
+
+    // Only for debugging purposes
+
+    // Object.keys(wallets).forEach(key => {
+    //   if (!wallets[key].primary) {
+    //     delete wallets[key].backedUp;
+    //     delete wallets[key].backupDate;
+    //     delete wallets[key].backupFile;
+    //     delete wallets[key].backupType;
+    //   }
+    // });
 
     dispatch({
       payload: {
@@ -125,7 +152,13 @@ export const setWalletBackedUp = (
   }
 
   if (method === WalletBackupTypes.cloud) {
-    await backupUserDataIntoCloud({ wallets: newWallets });
+    console.log('SAVING WALLET USERDATA');
+    try {
+      const userData = await backupUserDataIntoCloud({ wallets: newWallets });
+      console.log('WALLET  USERDATA SAVED', userData);
+    } catch (e) {
+      console.log('SAVING WALLET  USERDATA FAILED', e);
+    }
   }
 };
 

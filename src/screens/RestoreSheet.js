@@ -12,10 +12,11 @@ import Routes from './Routes/routesNames';
 const RestoreSheet = () => {
   const { getParam, goBack, navigate } = useNavigation();
   const [step, setStep] = useState(getParam('option', 'first'));
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState();
 
   useEffect(() => {
     const initialize = async () => {
+      console.log('fetching fetchUserDataFromCloud');
       const data = await fetchUserDataFromCloud();
       setUserData(data);
     };
@@ -37,8 +38,6 @@ const RestoreSheet = () => {
     navigate(Routes.IMPORT_SEED_PHRASE_SHEET);
   }, [goBack, navigate]);
 
-  const nativeStackAdditionalPadding = 80;
-
   const renderStep = useCallback(() => {
     switch (step) {
       case WalletBackupTypes.cloud:
@@ -59,11 +58,7 @@ const RestoreSheet = () => {
   if (step === WalletBackupTypes.cloud) {
     return (
       <HorizontalGestureBlocker>
-        <KeyboardFixedOpenLayout
-          additionalPadding={nativeStackAdditionalPadding}
-        >
-          {sheet}
-        </KeyboardFixedOpenLayout>
+        <KeyboardFixedOpenLayout>{sheet}</KeyboardFixedOpenLayout>
       </HorizontalGestureBlocker>
     );
   }

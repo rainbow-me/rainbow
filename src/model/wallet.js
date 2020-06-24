@@ -14,6 +14,7 @@ import {
 } from 'react-native-keychain';
 import {
   encryptAndSaveDataToCloud,
+  fetchUserDataFromCloud,
   getDataFromCloud,
 } from '../handlers/cloudBackup';
 import {
@@ -729,7 +730,7 @@ export async function backupWalletToCloud(password, wallet) {
 export async function addWalletToCloudBackup(password, wallet, filename) {
   logger.log('addWalletToCloudBackup', password, wallet, filename);
 
-  const backup = await getDataFromCloud(password, filename);
+  const backup = await fetchUserDataFromCloud();
   logger.log('addWalletToCloudBackup:: got data from cloud', backup);
 
   const now = Date.now();
@@ -776,6 +777,9 @@ export async function restoreCloudBackup(password, userData) {
     // 2- download that backup
     const data = await getDataFromCloud(password, filename);
     logger.log('restoreCloudBackup :: got data from the cloud', data);
+    if (!data) {
+      throw new Error('Invalid password');
+    }
     const dataToRestore = {
       // All wallets
       rainbowAllWalletsKey: {

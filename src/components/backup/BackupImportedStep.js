@@ -37,7 +37,7 @@ const DescriptionText = styled(Text).attrs({
   padding-right: 50;
 `;
 
-const BackupSheetFirstStep = ({ onIcloudBackup, onIgnoreBackup }) => {
+const BackupImportedStep = ({ onIcloudBackup, onIgnoreBackup }) => {
   return (
     <Centered direction="column" paddingTop={9} paddingBottom={15}>
       <TopIcon />
@@ -63,4 +63,4 @@ const BackupSheetFirstStep = ({ onIcloudBackup, onIgnoreBackup }) => {
   );
 };
 
-export default BackupSheetFirstStep;
+export default BackupImportedStep;

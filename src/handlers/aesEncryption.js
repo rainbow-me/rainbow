@@ -28,17 +28,23 @@ export default class AesEncryptor {
     AesEncryption.decrypt(encryptedData.cipher, key, encryptedData.iv);
 
   encrypt = async (password, string) => {
-    const salt = this.generateSalt(16);
-    const key = await this.keyFromPassword(password, salt);
-    const result = await this.encryptWithKey(string, key);
-    result.salt = salt;
-    return JSON.stringify(result);
+    try {
+      const salt = this.generateSalt(16);
+      const key = await this.keyFromPassword(password, salt);
+      const result = await this.encryptWithKey(string, key);
+      result.salt = salt;
+      return JSON.stringify(result);
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
   };
 
   decrypt = async (password, encryptedString) => {
-    const encryptedData = JSON.parse(encryptedString);
-    const key = await this.keyFromPassword(password, encryptedData.salt);
-    const data = await this.decryptWithKey(encryptedData, key);
-    return data;
+    try {
+      const encryptedData = JSON.parse(encryptedString);
+      const key = await this.keyFromPassword(password, encryptedData.salt);
+      const data = await this.decryptWithKey(encryptedData, key);
+      return data;
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
   };
 }

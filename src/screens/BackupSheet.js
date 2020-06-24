@@ -12,6 +12,7 @@ import WalletBackupTypes from '../helpers/walletBackupTypes';
 const BackupSheet = () => {
   const { getParam, goBack } = useNavigation();
   const [step, setStep] = useState(getParam('option', 'first'));
+  const password = getParam('password', null);
   const onIcloudBackup = useCallback(() => {
     setStep(WalletBackupTypes.cloud);
   }, []);
@@ -36,7 +37,7 @@ const BackupSheet = () => {
           />
         );
       case WalletBackupTypes.cloud:
-        return <BackupIcloudStep />;
+        return <BackupIcloudStep password={password} />;
       case WalletBackupTypes.manual:
         return <BackupManualStep />;
       default:
@@ -47,7 +48,7 @@ const BackupSheet = () => {
           />
         );
     }
-  }, [onIcloudBackup, onIgnoreBackup, onManualBackup, step]);
+  }, [onIcloudBackup, onIgnoreBackup, onManualBackup, password, step]);
 
   const sheet = <Sheet>{renderStep()}</Sheet>;
   if (step === WalletBackupTypes.cloud) {

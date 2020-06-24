@@ -105,19 +105,20 @@ export async function restoreBackupIntoKeychain(backedUpData) {
     };
   }
 
-  backedUpData.forEach(async item => {
+  Object.keys(backedUpData).forEach(async key => {
+    const value = backedUpData[key];
     let accessControl = publicAccessControlOptions;
     if (
-      (item.username.indexOf('rainbowSeedPhrase') !== -1 ||
-        item.username.indexOf('rainbowPrivateKey') !== -1) &&
-      item.username !== 'rainbowSeedPhraseMigratedKey'
+      (key.indexOf('rainbowSeedPhrase') !== -1 ||
+        key.indexOf('rainbowPrivateKey') !== -1) &&
+      key !== 'rainbowSeedPhraseMigratedKey'
     ) {
       accessControl = privateAccessControlOptions;
     }
-    if (typeof item.password === 'string') {
-      await saveString(item.username, item.password, accessControl);
+    if (typeof value === 'string') {
+      await saveString(key, value, accessControl);
     } else {
-      await saveObject(item.username, item.password, accessControl);
+      await saveObject(key, value, accessControl);
     }
   });
 
@@ -128,7 +129,8 @@ export async function restoreBackupIntoKeychain(backedUpData) {
 export async function saveBackupPassword(password) {
   try {
     await saveString(RAINBOW_BACKUP_KEY, password, {
-      ACCESSIBLE: ACCESSIBLE.WHEN_UNLOCKED,
+      accessControl: ACCESS_CONTROL.USER_PRESENCE,
+      accessible: ACCESSIBLE.WHEN_UNLOCKED,
       synchronizable: true,
     });
   } catch (e) {

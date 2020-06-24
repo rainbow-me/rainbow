@@ -78,10 +78,6 @@ const SavingsListRow = ({
     ? parseFloat(apy).toFixed(2)
     : Math.floor(apy * 10) / 10;
 
-  const onLongPress = useCallback(() => navigate(Routes.RESTORE_SHEET), [
-    navigate,
-  ]);
-
   const onButtonPress = useCallback(() => {
     navigate(Routes.BACKUP_SHEET, {
       cTokenBalance,
@@ -148,11 +144,7 @@ const SavingsListRow = ({
   const displayValue = formatSavingsAmount(value);
 
   return !underlying || !underlying.address ? null : (
-    <ButtonPressAnimation
-      onLongPress={onLongPress}
-      onPress={onButtonPress}
-      scaleTo={0.96}
-    >
+    <ButtonPressAnimation onPress={onButtonPress} scaleTo={0.96}>
       <Centered direction="column" marginBottom={15}>
         <SavingsListRowShadowStack deviceWidth={deviceWidth}>
           <SavingsListRowGradient />

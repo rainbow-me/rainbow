@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
@@ -68,14 +69,15 @@ const RestoreSheetFirstStep = ({
 }) => {
   const walletsBackedUp = useMemo(() => {
     let count = 0;
-    userData.wallets.forEach(key => {
-      const wallet = userData.wallets[key];
-      if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
-        count++;
-      }
-    });
+    userData &&
+      Object.keys(userData.wallets).forEach(key => {
+        const wallet = userData.wallets[key];
+        if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
+          count++;
+        }
+      });
     return count;
-  }, [userData.wallets]);
+  }, [userData]);
 
   const onIcloudRestorePress = useCallback(() => {
     walletsBackedUp > 0 && onIcloudRestore();
@@ -84,20 +86,23 @@ const RestoreSheetFirstStep = ({
   return (
     <React.Fragment>
       <Column direction="column" paddingBottom={40}>
-        <SheetRow as={ButtonPressAnimation} onPress={onIcloudRestorePress}>
+        <SheetRow
+          as={ButtonPressAnimation}
+          onPress={onIcloudRestorePress}
+          disabled={walletsBackedUp < 1}
+        >
           <Column>
             <IcloudIcon />
             <Title>Restore from iCloud </Title>
-            {walletsBackedUp > 0 ? (
-              <DescriptionText>
-                You have {walletsBackedUp}{' '}
-                {walletsBackedUp > 1 ? 'wallets' : 'wallet'} backed up
-              </DescriptionText>
-            ) : (
-              <DescriptionText>
-                You don&apos;t have any wallet backed up
-              </DescriptionText>
-            )}
+            <DescriptionText>
+              {isEmpty(userData)
+                ? ' Checking iCloud for backups...'
+                : walletsBackedUp > 0
+                ? `You have ${walletsBackedUp} ${
+                    walletsBackedUp > 1 ? 'wallets' : 'wallet'
+                  } backed up`
+                : `You don't have any wallets backed up`}
+            </DescriptionText>
           </Column>
           <Row flex={1} justify="end" align="center" marginRight={19}>
             <CaretIcon />

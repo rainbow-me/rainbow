@@ -124,36 +124,19 @@ const TopIcon = () => (
 
 const BackupIcloudStep = () => {
   const { goBack, getParam } = useNavigation();
-  const { wallets } = useWallets();
-  const [existingBackup, setExistingBackup] = useState(false);
+  const loadedPassword = getParam('password', '');
+  const { latestBackup, wallets } = useWallets();
   const dispatch = useDispatch();
   const [validPassword, setValidPassword] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [label, setLabel] = useState('􀙶 Confirm Backup');
+  const [password, setPassword] = useState(loadedPassword);
+  const [confirmPassword, setConfirmPassword] = useState(loadedPassword);
+
+  const [label, setLabel] = useState(
+    loadedPassword ? '􀙶 Add to iCloud Backup' : '􀙶 Confirm Backup'
+  );
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
-
-  useEffect(() => {
-    let backupFound = false;
-    let latestBackup = null;
-    Object.keys(wallets).forEach(key => {
-      const wallet = wallets[key];
-      // Check if there's a wallet backed up
-      if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
-        // If there is one, let's grab the latest backup
-        if (!latestBackup || wallet.backupDate > latestBackup) {
-          backupFound = wallet.backupFile;
-          latestBackup = wallet.backupDate;
-        }
-      }
-    });
-    if (backupFound) {
-      setExistingBackup(backupFound);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const onPasswordFocus = useCallback(() => {
     setPasswordFocused(true);
@@ -179,7 +162,7 @@ const BackupIcloudStep = () => {
 
     let newLabel = '';
     if (passwordIsValid || (password === '' && confirmPassword === '')) {
-      newLabel = `􀙶 Confirm Backup`;
+      newLabel = loadedPassword ? '􀙶 Add to iCloud Backup' : '􀙶 Confirm Backup';
     } else if (
       password !== '' &&
       password.length < 8 &&
@@ -223,7 +206,7 @@ const BackupIcloudStep = () => {
 
     setValidPassword(passwordIsValid);
     setLabel(newLabel);
-  }, [confirmPassword, password, passwordFocused]);
+  }, [confirmPassword, loadedPassword, password, passwordFocused]);
 
   const onPasswordChange = useCallback(
     ({ nativeEvent: { text: inputText } }) => {
@@ -249,7 +232,7 @@ const BackupIcloudStep = () => {
       logger.log('onConfirmBackup:: saved');
 
       let backupFile;
-      if (!existingBackup) {
+      if (!latestBackup) {
         logger.log(
           'onConfirmBackup:: backing up to icloud',
           password,
@@ -262,12 +245,12 @@ const BackupIcloudStep = () => {
           'onConfirmBackup:: adding to icloud backup',
           password,
           wallets[wallet_id],
-          existingBackup
+          latestBackup
         );
         backupFile = await addWalletToCloudBackup(
           password,
           wallets[wallet_id],
-          existingBackup
+          latestBackup
         );
       }
       if (backupFile) {
@@ -286,7 +269,6 @@ const BackupIcloudStep = () => {
         );
 
         goBack();
-        Alert.alert('Your wallet has been backed up!');
       } else {
         Alert.alert('Error while trying to backup');
         setTimeout(onPasswordSubmit, 1000);
@@ -296,7 +278,7 @@ const BackupIcloudStep = () => {
     }
   }, [
     dispatch,
-    existingBackup,
+    latestBackup,
     getParam,
     goBack,
     onPasswordSubmit,
