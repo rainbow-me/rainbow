@@ -187,7 +187,8 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
               onSuccess(args);
             }
           },
-          onRefocusInput: setAppearListener(focusListener),
+          onRefocusInput:
+            Platform.OS === 'ios' ? setAppearListener(focusListener) : null,
           profile: {
             name,
           },
@@ -225,7 +226,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     if (!wasImporting && isImporting) {
       startAnalyticsTimeout(async () => {
         const input = resolvedAddress ? resolvedAddress : seedPhrase.trim();
-        initializeWallet(input, color, name || '')
+        initializeWallet(input, color, name ? name : '')
           .then(success => {
             if (success) {
               analytics.track('Imported seed phrase', {
@@ -284,7 +285,11 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             onChangeText={handleSetSeedPhrase}
             onSubmitEditing={onPressImportButton}
             placeholder="Seed phrase, private key, Ethereum address or ENS name"
-            ref={isNativeStackAvailable ? inputRef : inputRefListener}
+            ref={
+              isNativeStackAvailable || Platform.OS === 'android'
+                ? inputRef
+                : inputRefListener
+            }
             returnKeyType="done"
             size="large"
             spellCheck={false}
