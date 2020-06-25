@@ -67,19 +67,6 @@
 }
 
 
-- (void)setFrame:(CGRect)frame {
-  [super setFrame:frame];
-  [self.subviews.firstObject setFrame:frame];
-  self.subviews.firstObject.frame = frame;
-}
-
--(void)setBounds:(CGRect)bounds {
-  [super setBounds:bounds];
-  [self.subviews.firstObject setBounds:bounds];
-  self.subviews.firstObject.bounds = bounds;
-}
-
-
 - (instancetype)init {
   if (self = [super init]) {
     _timer = nil;
