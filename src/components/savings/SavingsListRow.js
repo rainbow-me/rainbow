@@ -153,24 +153,22 @@ const SavingsListRow = ({
             css={padding(9, 10, 10, 11)}
             justify="space-between"
           >
-            <Row align="center" justify="space-between">
-              {underlying.symbol && supplyBalanceUnderlying ? (
-                <Centered marginRight={6}>
-                  <CoinIcon size={26} symbol={underlying.symbol} />
-                </Centered>
-              ) : null}
-              {supplyBalanceUnderlying && !isNaN(displayValue) ? (
-                <SavingsListRowAnimatedNumber
-                  initialValue={initialValue}
-                  interval={ANIMATE_NUMBER_INTERVAL}
-                  steps={steps}
-                  symbol={underlying.symbol}
-                  value={displayValue}
-                />
-              ) : (
-                <SavingsListRowEmptyState onPress={onButtonPress} />
-              )}
-            </Row>
+            {underlying.symbol && supplyBalanceUnderlying ? (
+              <Centered marginRight={6}>
+                <CoinIcon size={26} symbol={underlying.symbol} />
+              </Centered>
+            ) : null}
+            {supplyBalanceUnderlying && !isNaN(displayValue) ? (
+              <SavingsListRowAnimatedNumber
+                initialValue={initialValue}
+                interval={ANIMATE_NUMBER_INTERVAL}
+                steps={steps}
+                symbol={underlying.symbol}
+                value={displayValue}
+              />
+            ) : (
+              <SavingsListRowEmptyState onPress={onButtonPress} />
+            )}
             <APYPill value={apyTruncated} />
           </Row>
         </SavingsListRowShadowStack>
