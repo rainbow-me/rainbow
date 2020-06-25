@@ -13,7 +13,7 @@ import { ButtonPressAnimation } from '../components/animations';
 import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { Emoji, Text } from '../components/text';
-import { useHideSplashScreen } from '../hooks';
+import hideSplashScreen from '../helpers/hideSplashScreen';
 import { colors, shadow } from '../styles';
 
 const {
@@ -331,7 +331,6 @@ function colorAnimation(rValue, fromShadow) {
 export default function WelcomeScreen() {
   const contentAnimation = useAnimatedValue(1);
   const importButtonAnimation = useAnimatedValue(1);
-  const hideSplashScreen = useHideSplashScreen();
 
   useEffect(() => {
     hideSplashScreen();
