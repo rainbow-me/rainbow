@@ -108,12 +108,8 @@ const SavingsListRow = ({
     underlyingPrice,
   ]);
 
-  console.log(supplyRate);
-
   useEffect(() => {
     if (!supplyBalanceUnderlying) return;
-
-    console.log(supplyRate);
 
     const futureValue = calculateCompoundInterestInDays(
       initialValue,

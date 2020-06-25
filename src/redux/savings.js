@@ -169,8 +169,6 @@ const subscribeToCompoundData = async (dispatch, getState) => {
           tokenOverrides
         );
 
-        console.log(savingsAccountData);
-
         dispatch({
           payload: {
             accountTokens: savingsAccountData,
