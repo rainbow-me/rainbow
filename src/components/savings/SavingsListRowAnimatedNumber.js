@@ -1,7 +1,8 @@
 import AnimatedNumber from '@rainbow-me/react-native-animated-number';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, requireNativeComponent, StyleSheet } from 'react-native';
+import isRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
 import { formatSavingsAmount, isSymbolStablecoin } from '../../helpers/savings';
 import { colors, fonts } from '../../styles';
 
@@ -13,15 +14,21 @@ const sx = StyleSheet.create({
   },
   text: {
     color: colors.dark,
+    flex: 1,
     fontFamily: fonts.family.SFProRounded,
     fontSize: parseFloat(fonts.size.lmedium),
     fontWeight: fonts.weight.bold,
+    height: 30,
     letterSpacing: fonts.letterSpacing.roundedTightest,
     marginBottom: 0.5,
     marginRight: 4,
     textAlign: 'left',
   },
 });
+
+const TextComponent = isRainbowTextAvailable
+  ? requireNativeComponent('RainbowText')
+  : AnimatedNumber;
 
 const SavingsListRowAnimatedNumber = ({
   initialValue,
@@ -39,7 +46,7 @@ const SavingsListRowAnimatedNumber = ({
   );
 
   return (
-    <AnimatedNumber
+    <TextComponent
       formatter={formatter}
       initialValue={Number(initialValue)}
       steps={steps}
@@ -49,6 +56,15 @@ const SavingsListRowAnimatedNumber = ({
       ]}
       time={interval}
       value={Number(value)}
+      text={formatter(Number(value))}
+      animationConfig={{
+        decimals: 10,
+        initialValue: Number(value),
+        interval: 60,
+        isSymbolStablecoin: isSymbolStablecoin(symbol),
+        stepPerDay: Number(value) - Number(initialValue),
+        symbol,
+      }}
     />
   );
 };

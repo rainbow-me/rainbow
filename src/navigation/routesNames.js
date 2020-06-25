@@ -9,11 +9,14 @@ const Routes = {
   EXAMPLE_SCREEN: 'ExampleScreen',
   EXCHANGE_MODAL: 'ExchangeModal',
   EXPANDED_ASSET_SHEET: 'ExpandedAssetSheet',
+  IMPORT_SCREEN: 'ImportScreen',
   IMPORT_SEED_PHRASE_SHEET: 'ImportSeedPhraseSheet',
   IMPORT_SEED_PHRASE_SHEET_NAVIGATOR: 'ImportSeedPhraseSheetNavigator',
+  MAIN_EXCHANGE_NAVIGATOR: 'MainExchangeNavigator',
   MAIN_EXCHANGE_SCREEN: 'MainExchangeScreen',
   MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR: 'MainNativeBottomSheetNavigation',
   MAIN_NAVIGATOR: 'MainNavigator',
+  MAIN_NAVIGATOR_WRAPPER: 'MainNavigatorWrapper',
   MODAL_SCREEN: 'ModalScreen',
   NATIVE_STACK: 'NativeStack',
   PROFILE_SCREEN: 'ProfileScreen',
@@ -32,6 +35,7 @@ const Routes = {
   WALLET_CONNECT_APPROVAL_SHEET: 'WalletConnectApprovalSheet',
   WALLET_CONNECT_REDIRECT_SHEET: 'WalletConnectRedirectSheet',
   WALLET_SCREEN: 'WalletScreen',
+  WELCOME_SCREEN: 'WelcomeScreen',
 };
 
 export default Routes;

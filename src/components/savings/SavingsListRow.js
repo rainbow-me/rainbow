@@ -13,7 +13,7 @@ import {
 } from '../../helpers/savings';
 import { useDimensions } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { colors, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
@@ -38,7 +38,6 @@ const SavingsListRowGradient = React.memo(
       borderRadius={49}
       colors={['#FFFFFF', '#F7F9FA']}
       end={{ x: 0.5, y: 1 }}
-      opacity={0.1}
       pointerEvents="none"
       start={{ x: 0.5, y: 0 }}
       style={position.coverAsObject}
@@ -154,24 +153,22 @@ const SavingsListRow = ({
             css={padding(9, 10, 10, 11)}
             justify="space-between"
           >
-            <Row align="center" justify="space-between">
-              {underlying.symbol && supplyBalanceUnderlying ? (
-                <Centered marginRight={6}>
-                  <CoinIcon size={26} symbol={underlying.symbol} />
-                </Centered>
-              ) : null}
-              {supplyBalanceUnderlying && !isNaN(displayValue) ? (
-                <SavingsListRowAnimatedNumber
-                  initialValue={initialValue}
-                  interval={ANIMATE_NUMBER_INTERVAL}
-                  steps={steps}
-                  symbol={underlying.symbol}
-                  value={displayValue}
-                />
-              ) : (
-                <SavingsListRowEmptyState onPress={onButtonPress} />
-              )}
-            </Row>
+            {underlying.symbol && supplyBalanceUnderlying ? (
+              <Centered marginRight={6}>
+                <CoinIcon size={26} symbol={underlying.symbol} />
+              </Centered>
+            ) : null}
+            {supplyBalanceUnderlying && !isNaN(displayValue) ? (
+              <SavingsListRowAnimatedNumber
+                initialValue={initialValue}
+                interval={ANIMATE_NUMBER_INTERVAL}
+                steps={steps}
+                symbol={underlying.symbol}
+                value={displayValue}
+              />
+            ) : (
+              <SavingsListRowEmptyState onPress={onButtonPress} />
+            )}
             <APYPill value={apyTruncated} />
           </Row>
         </SavingsListRowShadowStack>

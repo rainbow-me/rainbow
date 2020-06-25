@@ -1,6 +1,5 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
-import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { createElement, useCallback } from 'react';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { PERMISSIONS, request } from 'react-native-permissions';
@@ -51,25 +50,24 @@ const requestFaceIDPermission = () =>
       captureException(error);
     });
 
-const SettingsModal = ({ navigation }) => {
-  const currentSettingsPage = get(
-    navigation,
-    'state.params.section',
-    SettingsPages.default
-  );
+const SettingsModal = () => {
+  const navigation = useNavigation();
+  const { params } = useRoute();
+  const currentSettingsPage = params?.section ?? SettingsPages.default;
 
   const { component, title } = currentSettingsPage;
   const isDefaultPage = title === SettingsPages.default.title;
 
   const onCloseModal = useCallback(() => navigation.goBack(), [navigation]);
 
-  const onPressBack = useCallback(
-    () => navigation.setParams({ section: SettingsPages.default }),
-    [navigation]
-  );
+  const onPressBack = useCallback(() => {
+    navigation.setParams({ section: undefined });
+  }, [navigation]);
 
   const onPressSection = useCallback(
-    section => () => navigation.setParams({ section }),
+    section => () => {
+      navigation.setParams({ section });
+    },
     [navigation]
   );
 
@@ -103,10 +101,6 @@ const SettingsModal = ({ navigation }) => {
       </Column>
     </Modal>
   );
-};
-
-SettingsModal.propTypes = {
-  navigation: PropTypes.object,
 };
 
 export default SettingsModal;

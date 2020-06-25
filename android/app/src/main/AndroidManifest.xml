@@ -28,9 +28,12 @@
           <action android:name="android.intent.action.VIEW" />
           <category android:name="android.intent.category.DEFAULT" />
           <category android:name="android.intent.category.BROWSABLE" />
+          <data android:scheme="https" android:host="rnbwapp.com" />
           <data android:scheme="https" android:host="rnbw.app" />
           <data android:scheme="https" android:host="rainbowdotme.app.link" />
+          <data android:scheme="https" android:host="rnbwappdotcom.app.link" />
           <data android:scheme="https" android:host="rainbowdotme-alternate.app.link" />
+          <data android:scheme="https" android:host="rnbwappdotcom-alternate.app.link" />
         </intent-filter>
         <intent-filter>
           <data android:scheme="rainbow" />
@@ -49,7 +52,7 @@
           <action android:name="android.intent.action.VIEW" />
           <category android:name="android.intent.category.DEFAULT" />
           <category android:name="android.intent.category.BROWSABLE" />
-          <data android:scheme="https" android:host="rnbw.app" />
+          <data android:scheme="https" android:host="rnbwapp.com" />
         </intent-filter>
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />

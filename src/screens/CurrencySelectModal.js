@@ -1,3 +1,9 @@
+import {
+  useFocusEffect,
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import { concat, map } from 'lodash';
 import matchSorter from 'match-sorter';
 import React, {
@@ -9,12 +15,6 @@ import React, {
 } from 'react';
 import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { NavigationEvents } from 'react-navigation';
-import {
-  useIsFocused,
-  useNavigation,
-  useNavigationParam,
-} from 'react-navigation-hooks';
 import GestureBlocker from '../components/GestureBlocker';
 import { interpolate } from '../components/animations';
 import {
@@ -26,15 +26,14 @@ import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import {
-  usePrevious,
   useTimeout,
   useUniswapAssets,
   useUniswapAssetsInWallet,
 } from '../hooks';
+import Routes from '../navigation/routesNames';
 import { position } from '../styles';
 import { filterList, filterScams } from '../utils/search';
 import { exchangeModalBorderRadius } from './ExchangeModal';
-import Routes from './Routes/routesNames';
 
 const headerlessSection = data => [{ data, title: '' }];
 
@@ -47,11 +46,12 @@ export default function CurrencySelectModal() {
     searchQuery,
   ]);
 
-  const { dangerouslyGetParent, navigate } = useNavigation();
-  const onSelectCurrency = useNavigationParam('onSelectCurrency');
-  const restoreFocusOnSwapModal = useNavigationParam('restoreFocusOnSwapModal');
-  const transitionPosition = useNavigationParam('position');
-  const type = useNavigationParam('type');
+  const { navigate } = useNavigation();
+  const { params } = useRoute();
+  const onSelectCurrency = params?.onSelectCurrency;
+  const restoreFocusOnSwapModal = params?.restoreFocusOnSwapModal;
+  const transitionPosition = params?.position;
+  const type = params?.type;
 
   const {
     curatedAssets,
@@ -99,12 +99,6 @@ export default function CurrencySelectModal() {
     []
   );
 
-  const dangerouslySetIsGestureBlocked = useCallback(
-    // dangerouslyGetParent is a bad pattern in general, but in this case is exactly what we expect
-    isGestureBlocked => dangerouslyGetParent().setParams({ isGestureBlocked }),
-    [dangerouslyGetParent]
-  );
-
   const handleSelectAsset = useCallback(
     item => {
       onSelectCurrency(item);
@@ -113,42 +107,19 @@ export default function CurrencySelectModal() {
     [onSelectCurrency, navigate]
   );
 
-  const handleDidBlur = useCallback(() => {
-    handleApplyFavoritesQueue();
-    setSearchQuery('');
-  }, [handleApplyFavoritesQueue]);
-
-  const handleWillBlur = useCallback(
-    () => dangerouslySetIsGestureBlocked(false),
-    [dangerouslySetIsGestureBlocked]
-  );
-
-  const handleWillFocus = useCallback(() => {
-    dangerouslySetIsGestureBlocked(true);
-    searchInputRef?.current?.focus();
-  }, [dangerouslySetIsGestureBlocked, searchInputRef]);
-
   const isFocused = useIsFocused();
-  const wasFocused = usePrevious(isFocused);
 
-  useEffect(() => {
-    if (!wasFocused && isFocused) {
-      handleWillFocus();
-    } else if (wasFocused && !isFocused) {
-      handleWillBlur();
+  useFocusEffect(() => {
+    params?.toggleGestureEnabled(false);
+    return () => {
+      params?.toggleGestureEnabled(true);
       InteractionManager.runAfterInteractions(() => {
-        handleDidBlur();
+        handleApplyFavoritesQueue();
+        setSearchQuery('');
         restoreFocusOnSwapModal();
       });
-    }
-  }, [
-    handleDidBlur,
-    handleWillBlur,
-    handleWillFocus,
-    isFocused,
-    restoreFocusOnSwapModal,
-    wasFocused,
-  ]);
+    };
+  });
 
   const itemProps = useMemo(
     () => ({
@@ -230,8 +201,8 @@ export default function CurrencySelectModal() {
           {
             opacity: interpolate(transitionPosition, {
               extrapolate: Animated.Extrapolate.CLAMP,
-              inputRange: [0, 1],
-              outputRange: [0, 1],
+              inputRange: [0, 0.8, 1],
+              outputRange: [0, 1, 1],
             }),
           },
         ]}
@@ -243,11 +214,6 @@ export default function CurrencySelectModal() {
           radius={exchangeModalBorderRadius}
         >
           <GestureBlocker type="top" />
-          <NavigationEvents
-            onDidBlur={handleDidBlur}
-            onWillBlur={handleWillBlur}
-            onWillFocus={handleWillFocus}
-          />
           <Column flex={1}>
             <CurrencySelectModalHeader />
             <ExchangeSearch

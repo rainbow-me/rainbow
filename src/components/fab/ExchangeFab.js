@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { colors } from '../../styles';
 import { magicMemo } from '../../utils';
 import { Icon } from '../icons';

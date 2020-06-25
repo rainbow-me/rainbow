@@ -1,7 +1,7 @@
+import { useIsFocused } from '@react-navigation/native';
 import { get } from 'lodash';
 import { useCallback, useEffect, useRef } from 'react';
 import { TextInput } from 'react-native';
-import { useIsFocused } from 'react-navigation-hooks';
 import useInteraction from './useInteraction';
 import useMagicAutofocus from './useMagicAutofocus';
 import usePrevious from './usePrevious';

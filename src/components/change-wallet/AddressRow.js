@@ -127,7 +127,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
         scaleTo={editMode ? 1 : 0.98}
       >
         <Row align="center">
-          <Row align="center" flex={1}>
+          <Row align="center" flex={1} height={59}>
             <ContactAvatar
               color={accountColor}
               marginRight={10}

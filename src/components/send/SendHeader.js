@@ -3,11 +3,11 @@ import { get, isEmpty, isNumber, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { Keyboard } from 'react-native';
-import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withNeverRerender, withSelectedInput } from '../../hoc';
-import Routes from '../../screens/Routes/routesNames';
+import { withNavigation } from '../../navigation/Navigation';
+import Routes from '../../navigation/routesNames';
 import { colors, padding } from '../../styles';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import Divider from '../Divider';
@@ -145,6 +145,7 @@ class SendHeader extends PureComponent {
 
     Keyboard.dismiss();
     navigation.navigate(Routes.MODAL_SCREEN, {
+      additionalPadding: true,
       address: recipient,
       asset: {},
       color,
