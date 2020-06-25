@@ -1,6 +1,6 @@
+import { useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
-import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components';
 import WalletTypes from '../../../helpers/walletTypes';
 import { useClipboard, useDimensions, useWallets } from '../../../hooks';
@@ -35,7 +35,7 @@ const Shadow = styled(ShadowStack)`
 
 const ShowSecretView = () => {
   const { setClipboard } = useClipboard();
-  const { getParam } = useNavigation();
+  const { params } = useRoute();
   const { selectedWallet } = useWallets();
   const [seed, setSeed] = useState(null);
   const [type, setType] = useState(null);
@@ -44,7 +44,7 @@ const ShowSecretView = () => {
 
   useEffect(() => {
     const loadSeed = async () => {
-      const wallet_id = getParam('wallet_id', selectedWallet.id);
+      const wallet_id = params?.wallet_id || selectedWallet.id;
       const s = await loadSeedPhraseAndMigrateIfNeeded(wallet_id);
       const walletType = identifyWalletType(s);
       setType(walletType);

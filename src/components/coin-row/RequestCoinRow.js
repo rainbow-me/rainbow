@@ -1,11 +1,11 @@
 import { addHours, differenceInMinutes, isPast } from 'date-fns';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
 import { compose, onlyUpdateForKeys, withProps } from 'recompact';
+import { withNavigation } from '../../navigation/Navigation';
+import Routes from '../../navigation/routesNames';
 import { removeRequest } from '../../redux/requests';
-import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { RequestCoinIcon } from '../coin-icon';

@@ -1,7 +1,7 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Dimensions, View } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
-import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
@@ -123,8 +123,9 @@ const TopIcon = () => (
 );
 
 const BackupIcloudStep = () => {
-  const { goBack, getParam } = useNavigation();
-  const loadedPassword = getParam('password', '');
+  const { goBack } = useNavigation();
+  const { params } = useRoute();
+  const loadedPassword = params?.password || '';
   const { latestBackup, wallets } = useWallets();
   const dispatch = useDispatch();
   const [validPassword, setValidPassword] = useState(false);
@@ -223,7 +224,7 @@ const BackupIcloudStep = () => {
   );
   const onConfirmBackup = useCallback(async () => {
     let wallet_id =
-      getParam('wallet_id', null) ||
+      params?.wallet_id ||
       Object.keys(wallets).find(key => wallets[key].imported === false);
 
     try {
@@ -277,13 +278,13 @@ const BackupIcloudStep = () => {
       logger.log('Error while backing up', e);
     }
   }, [
-    dispatch,
+    params?.wallet_id,
+    wallets,
+    password,
     latestBackup,
-    getParam,
+    dispatch,
     goBack,
     onPasswordSubmit,
-    password,
-    wallets,
   ]);
 
   const onConfirmPasswordSubmit = useCallback(() => {

@@ -1,6 +1,5 @@
-import { get } from 'lodash';
-import PropTypes from 'prop-types';
-import React, { createElement, useCallback, useEffect } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { createElement, useCallback } from 'react';
 import { Alert } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { Column } from '../components/layout';
@@ -64,12 +63,10 @@ const onPressHiddenFeature = () => {
   );
 };
 
-const SettingsModal = ({ navigation }) => {
-  const currentSettingsPage = get(
-    navigation,
-    'state.params.section',
-    SettingsPages.default
-  );
+const SettingsModal = () => {
+  const navigation = useNavigation();
+  const { params } = useRoute();
+  const currentSettingsPage = params?.section ?? SettingsPages.default;
 
   const { component, title } = currentSettingsPage;
   const isDefaultPage = title === SettingsPages.default.title;
@@ -83,16 +80,11 @@ const SettingsModal = ({ navigation }) => {
   );
 
   const onPressSection = useCallback(
-    section => () => navigation.setParams({ section }),
+    section => () => {
+      navigation.setParams({ section });
+    },
     [navigation]
   );
-
-  useEffect(() => {
-    return () => {
-      navigation.setParams({ wallet_id: null });
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <Modal
@@ -124,10 +116,6 @@ const SettingsModal = ({ navigation }) => {
       </Column>
     </Modal>
   );
-};
-
-SettingsModal.propTypes = {
-  navigation: PropTypes.object,
 };
 
 export default SettingsModal;

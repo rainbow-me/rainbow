@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useAccountProfile, useRequests } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { colors } from '../../styles';
 import { NumberBadge } from '../badge';
 import { ContactAvatar } from '../contacts';

@@ -27,7 +27,7 @@ import {
   useWallets,
   useWalletSectionsData,
 } from '../hooks';
-import { sheetVerticalOffset } from '../navigation/transitions/effects';
+import { sheetVerticalOffset } from '../navigation/effects';
 import { position } from '../styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({

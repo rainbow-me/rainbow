@@ -1,5 +1,5 @@
+import { useRoute } from '@react-navigation/native';
 import React from 'react';
-import { useNavigation } from 'react-navigation-hooks';
 import WalletTypes from '../../../helpers/walletTypes';
 import { useWallets } from '../../../hooks';
 import AlreadyBackedUpView from './AlreadyBackedUpView';
@@ -9,8 +9,8 @@ import WalletSelectionView from './WalletSelectionView';
 
 const BackupSection = ({ navigation }) => {
   const { wallets, selectedWallet } = useWallets();
-  const { getParam } = useNavigation();
-  const wallet_id = getParam('wallet_id');
+  const { params } = useRoute();
+  const wallet_id = params?.wallet_id;
   const activeWallet = (wallet_id && wallets[wallet_id]) || selectedWallet;
   console.log('active wallet =>', activeWallet);
   if (

@@ -1,5 +1,5 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
-import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components';
 import { Centered } from '../components/layout';
 import { Sheet } from '../components/sheet';
@@ -36,10 +36,11 @@ const titlesMap = {
 };
 
 const WalletConnectRedirectSheet = () => {
-  const { goBack, getParam } = useNavigation();
+  const { goBack } = useNavigation();
   const { appState } = useAppState();
+  const { params } = useRoute();
 
-  const type = getParam('type');
+  const type = params?.type;
 
   useEffect(() => {
     if (appState === 'background') {

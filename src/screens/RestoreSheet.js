@@ -1,5 +1,5 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useNavigation } from 'react-navigation-hooks';
 import HorizontalGestureBlocker from '../components/HorizontalGestureBlocker';
 import { KeyboardFixedOpenLayout } from '../components/layout';
 import RestoreIcloudStep from '../components/restore/RestoreIcloudStep';
@@ -7,11 +7,12 @@ import RestoreSheetFirstStep from '../components/restore/RestoreSheetFirstStep';
 import { Sheet } from '../components/sheet';
 import { fetchUserDataFromCloud } from '../handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
-import Routes from './Routes/routesNames';
+import Routes from '../navigation/routesNames';
 
 const RestoreSheet = () => {
-  const { getParam, goBack, navigate } = useNavigation();
-  const [step, setStep] = useState(getParam('option', 'first'));
+  const { goBack, navigate } = useNavigation();
+  const { params } = useRoute();
+  const [step, setStep] = useState(params?.option || 'first');
   const [userData, setUserData] = useState();
 
   useEffect(() => {

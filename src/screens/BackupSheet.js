@@ -1,5 +1,5 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import { useNavigation } from 'react-navigation-hooks';
 import HorizontalGestureBlocker from '../components/HorizontalGestureBlocker';
 import BackupConfirmPasswordStep from '../components/backup/BackupConfirmPasswordStep';
 import BackupIcloudStep from '../components/backup/BackupIcloudStep';
@@ -11,10 +11,11 @@ import { Sheet } from '../components/sheet';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 
 const BackupSheet = () => {
-  const { getParam, goBack } = useNavigation();
-  const [step, setStep] = useState(getParam('option', 'first'));
-  const password = getParam('password', null);
-  const missingPassword = getParam('missingPassword', null);
+  const { goBack } = useNavigation();
+  const { params } = useRoute();
+  const [step, setStep] = useState(params?.option || 'first');
+  const password = params?.password || null;
+  const missingPassword = params?.missingPassword || null;
   const onIcloudBackup = useCallback(() => {
     setStep(WalletBackupTypes.cloud);
   }, []);

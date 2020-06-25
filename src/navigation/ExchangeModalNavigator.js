@@ -1,81 +1,72 @@
-import { get } from 'lodash';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+
 import React from 'react';
-import { Value } from 'react-native-reanimated';
-import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
+import { useCallback, useMemo } from 'use-memo-one';
 import { withBlockedHorizontalSwipe } from '../hoc';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ModalScreen from '../screens/ModalScreen';
-import { createStackNavigator } from '../screens/Routes/helpers';
-import Routes from '../screens/Routes/routesNames';
 import SwapModal from '../screens/SwapModal';
-import { deviceUtils } from '../utils';
-import { swapDetailsPreset } from './transitions/effects';
+import { useNavigation } from './Navigation';
+import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
+import { exchangeModalPreset, swapDetailsPreset } from './effects';
+import { useReanimatedValue } from './helpers';
+import Routes from './routesNames';
 
-const ExchangeModalTabPosition = new Value(0);
+const Tabs = createMaterialTopTabNavigator();
+const Stack = createStackNavigator();
 
-const ExchangeModalNavigator = createMaterialTopTabNavigator(
-  {
-    MainExchangeNavigator: {
-      screen: createStackNavigator(
-        {
-          [Routes.MAIN_EXCHANGE_SCREEN]: {
-            params: {
-              position: ExchangeModalTabPosition,
-            },
-            screen: SwapModal,
-          },
-          [Routes.SWAP_DETAILS_SCREEN]: {
-            navigationOptions: {
-              ...swapDetailsPreset,
-            },
-            screen: withBlockedHorizontalSwipe(ModalScreen),
-          },
-        },
-        {
-          initialRouteName: Routes.MAIN_EXCHANGE_SCREEN,
-          transparentCard: true,
-        }
-      ),
-    },
-    [Routes.CURRENCY_SELECT_SCREEN]: {
-      params: {
-        position: ExchangeModalTabPosition,
-      },
-      screen: CurrencySelectModal,
-    },
-  },
-  {
-    headerMode: 'none',
-    initialLayout: deviceUtils.dimensions,
-    mode: 'modal',
-    position: ExchangeModalTabPosition,
-    springConfig: {
-      damping: 40,
-      mass: 1,
-      overshootClamping: false,
-      restDisplacementThreshold: 0.01,
-      restSpeedThreshold: 0.01,
-      stiffness: 300,
-    },
-    swipeDistanceMinimum: 0,
-    swipeVelocityImpact: 1,
-    swipeVelocityScale: 1,
-    tabBarComponent: null,
-    transparentCard: true,
-  }
-);
+function SwapDetailsScreen(props) {
+  const Component = withBlockedHorizontalSwipe(ModalScreen);
+  return <Component {...props} />;
+}
 
-// I need it for changing navigationOptions dynamically
-// for preventing swipe down to close on CurrencySelectScreen
-// TODO
-// eslint-disable-next-line react/display-name
-const EnhancedExchangeModalNavigator = React.memo(props => (
-  <ExchangeModalNavigator {...props} />
-));
-EnhancedExchangeModalNavigator.router = ExchangeModalNavigator.router;
-EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => ({
-  ...navigation.state.params,
-  gestureEnabled: !get(navigation, 'state.params.isGestureBlocked'),
-});
+function MainExchangeNavigator() {
+  return (
+    <Stack.Navigator
+      {...stackNavigationConfig}
+      screenOptions={exchangeModalPreset}
+      initialRouteName={Routes.MAIN_EXCHANGE_SCREEN}
+    >
+      <Stack.Screen name={Routes.MAIN_EXCHANGE_SCREEN} component={SwapModal} />
+      <Stack.Screen
+        name={Routes.SWAP_DETAILS_SCREEN}
+        component={SwapDetailsScreen}
+        options={swapDetailsPreset}
+      />
+    </Stack.Navigator>
+  );
+}
 
-export default EnhancedExchangeModalNavigator;
+function ExchangeModalNavigator() {
+  const { setOptions } = useNavigation();
+  const position = useReanimatedValue(0);
+  const config = useMemo(() => exchangeTabNavigatorConfig(position), [
+    position,
+  ]);
+  const toggleGestureEnabled = useCallback(
+    gestureEnabled => setOptions({ gestureEnabled }),
+    [setOptions]
+  );
+  return (
+    <Tabs.Navigator {...config}>
+      <Tabs.Screen
+        name={Routes.MAIN_EXCHANGE_NAVIGATOR}
+        component={MainExchangeNavigator}
+        initialParams={{
+          position,
+        }}
+      />
+      <Tabs.Screen
+        name={Routes.CURRENCY_SELECT_SCREEN}
+        component={CurrencySelectModal}
+        initialParams={{
+          position,
+          toggleGestureEnabled,
+        }}
+      />
+    </Tabs.Navigator>
+  );
+}
+
+export default ExchangeModalNavigator;

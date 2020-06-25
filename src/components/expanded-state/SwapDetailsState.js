@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { useNavigation } from '../../navigation/Navigation';
-import { swapDetailsTransitionPosition } from '../../navigation/transitions/effects';
+import { swapDetailsTransitionPosition } from '../../navigation/effects';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { FloatingEmojisTapper } from '../floating-emojis';
 import { ColumnWithMargins, KeyboardFixedOpenLayout } from '../layout';

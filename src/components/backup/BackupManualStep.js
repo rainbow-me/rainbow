@@ -1,6 +1,6 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
-import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
@@ -84,10 +84,11 @@ const BackupManualStep = () => {
   const { selectedWallet } = useWallets();
   const { setClipboard } = useClipboard();
   const dispatch = useDispatch();
-  const { goBack, getParam } = useNavigation();
+  const { goBack } = useNavigation();
+  const { params } = useRoute();
   const [seed, setSeed] = useState(null);
   const [type, setType] = useState(null);
-  const walletId = getParam('wallet_id', selectedWallet.id);
+  const walletId = params?.wallet_id || selectedWallet.id;
   const { width: deviceWidth } = useDimensions();
   let wordSectionHeight = 100;
 
@@ -176,7 +177,7 @@ const BackupManualStep = () => {
                 align="center"
                 backgroundColor={colors.transparent}
                 height={34}
-                justify="flex-start"
+                justify="start"
                 margin={6}
                 paddingBottom={2}
               >

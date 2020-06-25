@@ -1,10 +1,10 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { Fragment, useCallback } from 'react';
 import FastImage from 'react-native-fast-image';
-import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components';
 import BackupIcon from '../../../assets/backupIcon.png';
 import WalletBackupTypes from '../../../helpers/walletBackupTypes';
-import Routes from '../../../screens/Routes/routesNames';
+import Routes from '../../../navigation/routesNames';
 import { colors, fonts, padding } from '../../../styles';
 import { RainbowButton } from '../../buttons';
 import { Centered, Column } from '../../layout';
@@ -45,18 +45,19 @@ const DescriptionText = styled(Text).attrs({
 `;
 
 const NeedsBackupView = () => {
-  const { navigate, getParam } = useNavigation();
+  const { navigate } = useNavigation();
+  const { params } = useRoute();
 
-  const wallet_id = getParam('wallet_id');
+  const wallet_id = params?.wallet_id;
   const onIcloudBackup = useCallback(() => {
-    navigate(Routes.BACKUP_SHEET_TOP, {
+    navigate(Routes.BACKUP_SHEET, {
       option: WalletBackupTypes.cloud,
       wallet_id,
     });
   }, [navigate, wallet_id]);
 
   const onManualBackup = useCallback(() => {
-    navigate(Routes.BACKUP_SHEET_TOP, {
+    navigate(Routes.BACKUP_SHEET, {
       option: WalletBackupTypes.manual,
       wallet_id,
     });

@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import { isAvatarPickerAvailable } from '../../config/experimental';
+import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { useAccountProfile, useClipboard } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { colors } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
 import Divider from '../Divider';
@@ -80,7 +81,11 @@ export default function ProfileMasthead({
   }, [accountColor, accountName, navigate, recyclerListRef]);
 
   const handlePressAddCash = useCallback(() => {
-    navigate(Routes.ADD_CASH_SHEET);
+    navigate(
+      isNativeStackAvailable
+        ? Routes.ADD_CASH_SCREEN_NAVIGATOR
+        : Routes.ADD_CASH_SHEET
+    );
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });

@@ -39,10 +39,10 @@ import {
   useWallets,
 } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
-import { sheetVerticalOffset } from '../navigation/transitions/effects';
+import { sheetVerticalOffset } from '../navigation/effects';
+import Routes from '../navigation/routesNames';
 import { borders, colors, padding, shadow } from '../styles';
 import { logger } from '../utils';
-import Routes from './Routes/routesNames';
 
 const keyboardVerticalOffset =
   Platform.OS === 'android'
@@ -135,8 +135,10 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
 
   useEffect(() => {
     setAppearListener && setAppearListener(focusListener);
-    return () => setAppearListener && setAppearListener(null);
-  });
+    return () => {
+      setAppearListener && setAppearListener(null);
+    };
+  }, [focusListener, setAppearListener]);
 
   const handleSetSeedPhrase = useCallback(
     text => {
@@ -186,6 +188,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
       const ConfirmImportAlert = (name, onSuccess, navigate) =>
         navigate(Routes.MODAL_SCREEN, {
           actionType: 'Import',
+          additionalPadding: true,
           asset: [],
           isNewProfile: true,
           onCloseModal: args => {
@@ -240,7 +243,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
               navigate(Routes.WALLET_SCREEN);
               InteractionManager.runAfterInteractions(() => {
                 if (selectedWallet.type !== WalletTypes.readOnly) {
-                  navigate(Routes.BACKUP_SHEET_TOP, {
+                  navigate(Routes.BACKUP_SHEET, {
                     option: 'imported',
                     wallet_id: selectedWallet.id,
                   });
@@ -332,5 +335,4 @@ ImportSeedPhraseSheet.propTypes = {
   setAppearListener: PropTypes.func,
 };
 
-const neverRerender = () => true;
-export default React.memo(ImportSeedPhraseSheet, neverRerender);
+export default ImportSeedPhraseSheet;

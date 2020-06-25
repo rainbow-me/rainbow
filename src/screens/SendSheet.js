@@ -1,3 +1,4 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { get, isEmpty, isString, toLower } from 'lodash';
 import PropTypes from 'prop-types';
@@ -10,7 +11,6 @@ import {
   StatusBar,
 } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
-import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
@@ -45,9 +45,9 @@ import {
   useTransactionConfirmation,
 } from '../hooks';
 import { sendTransaction } from '../model/wallet';
+import Routes from '../navigation/routesNames';
 import { borders, colors } from '../styles';
 import { deviceUtils, gasUtils } from '../utils';
-import Routes from './Routes/routesNames';
 
 const sheetHeight = deviceUtils.dimensions.height - 10;
 
@@ -347,7 +347,8 @@ const SendSheet = ({ setAppearListener, ...props }) => {
     }
   }, [isValidAddress, selected.type, showAssetForm, showAssetList]);
 
-  const assetOverride = useNavigationParam('asset');
+  const { params } = useRoute();
+  const assetOverride = params?.asset;
   const prevAssetOverride = usePrevious(assetOverride);
 
   useEffect(() => {
@@ -356,7 +357,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
     }
   }, [assetOverride, prevAssetOverride, sendUpdateSelected]);
 
-  const recipientOverride = useNavigationParam('address');
+  const recipientOverride = params?.address;
 
   useEffect(() => {
     if (recipientOverride && !recipient) {

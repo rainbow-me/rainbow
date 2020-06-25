@@ -1,6 +1,6 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
-import { useNavigation } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../../helpers/walletBackupTypes';
@@ -8,8 +8,8 @@ import WalletTypes from '../../../helpers/walletTypes';
 import { useWallets } from '../../../hooks';
 import { fetchBackupPassword } from '../../../model/keychain';
 import { addWalletToCloudBackup } from '../../../model/wallet';
+import Routes from '../../../navigation/routesNames';
 import { deleteCloudBackup, setWalletBackedUp } from '../../../redux/wallets';
-import Routes from '../../../screens/Routes/routesNames';
 import { colors, fonts, padding } from '../../../styles';
 import { logger } from '../../../utils';
 import { ButtonPressAnimation } from '../../animations';
@@ -61,10 +61,11 @@ const DescriptionText = styled(Text).attrs({
 `;
 
 const AlreadyBackedUpView = () => {
-  const { navigate, getParam, setParams } = useNavigation();
+  const { navigate, setParams } = useNavigation();
+  const { params } = useRoute();
   const dispatch = useDispatch();
   const { latestBackup, wallets, selectedWallet } = useWallets();
-  const wallet_id = getParam('wallet_id', null) || selectedWallet.id;
+  const wallet_id = params?.wallet_id || selectedWallet.id;
   const onViewRecoveryPhrase = useCallback(() => {
     setParams({
       section: {
@@ -99,7 +100,7 @@ const AlreadyBackedUpView = () => {
         console.log('password??', password);
         // If we can't get the password, we need to prompt it again
         if (!password) {
-          navigate(Routes.BACKUP_SHEET_TOP, {
+          navigate(Routes.BACKUP_SHEET, {
             missingPassword: true,
             option: WalletBackupTypes.cloud,
             wallet_id,
@@ -133,7 +134,7 @@ const AlreadyBackedUpView = () => {
       } else {
         // No password, No latest backup meaning
         // it's a first time backup so we need to show the password sheet
-        navigate(Routes.BACKUP_SHEET_TOP, {
+        navigate(Routes.BACKUP_SHEET, {
           option: WalletBackupTypes.cloud,
           wallet_id,
         });

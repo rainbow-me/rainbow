@@ -4,7 +4,7 @@ import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import AssetTypes from '../../helpers/assetTypes';
 import { useAsset, useDimensions } from '../../hooks';
-import { sheetVerticalOffset } from '../../navigation/transitions/effects';
+import { sheetVerticalOffset } from '../../navigation/effects';
 import { colors, padding, position } from '../../styles';
 import { SendCoinRow } from '../coin-row';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';

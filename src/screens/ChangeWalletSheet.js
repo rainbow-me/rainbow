@@ -16,6 +16,7 @@ import { useAccountSettings, useInitializeWallet, useWallets } from '../hooks';
 import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
 import { createWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
+import Routes from '../navigation/routesNames';
 import {
   addressSetSelected,
   createAccountForWallet,
@@ -28,7 +29,6 @@ import {
 import { colors, fonts } from '../styles';
 import { abbreviations, deviceUtils, logger } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
-import Routes from './Routes/routesNames';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const footerHeight = 111;
