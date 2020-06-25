@@ -17,7 +17,6 @@ const OpacityToggler = (
 ) => {
   const animation = useSpringTransition(bin(isVisible), {
     ...SpringUtils.makeConfigFromOrigamiTensionAndFriction({
-      ...SpringUtils.makeDefaultConfig(),
       friction,
       tension,
     }),
