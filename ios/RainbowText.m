@@ -7,17 +7,10 @@
 //
 
 #import <React/RCTViewManager.h>
-#import <React/RCTTextViewManager.h>
-#import <React/RCTTextView.h>
-#import <React/RCTSinglelineTextInputViewManager.h>
-#import <React/RCTSinglelineTextInputView.h>
-#import <React/RCTUIManager.h>
-#import <React/RCTLog.h>
-#import <React/RCTUITextField.h>
 #import <React/RCTBridgeModule.h>
 
 
-@interface RainbowText:RCTSinglelineTextInputView
+@interface RainbowText:UILabel
 
 @end
 
@@ -31,9 +24,8 @@
   BOOL _isSymbolStablecoin;
   NSString* _symbol;
   NSNumberFormatter* _fmt;
-  int _it;
-  NSMutableDictionary<NSNumber*, NSNumber*>* _framesFromChanges;
-
+  CFAbsoluteTime _time;
+  
 }
 
 - (void) setAnimationConfig:(NSDictionary*) config {
@@ -48,19 +40,19 @@
   _stepPerDay = ((NSNumber*) config[@"stepPerDay"]).floatValue;
   _isSymbolStablecoin = ((NSNumber*) config[@"isSymbolStablecoin"]).boolValue;
   _symbol = config[@"symbol"];
-  _framesFromChanges = [NSMutableDictionary new];
   _timer = [NSTimer scheduledTimerWithTimeInterval:_interval / 1000  target:self selector:@selector(animate) userInfo:nil repeats:YES];
   _fmt = [[NSNumberFormatter alloc] init];
-  _it = 0;
   _fmt.numberStyle = NSNumberFormatterDecimalStyle;
   _fmt.maximumFractionDigits = 9;
   _fmt.minimumFractionDigits = 9;
+  _time = NSDate.date.timeIntervalSince1970;
+  self.font = [UIFont fontWithName:@"SFRounded-Bold" size:16];
 }
 
-- (void) animate { //);
-  double value = _initialValue + _stepPerDay * _it * _interval / 24 / 60 / 60 / 1000;
-  _it++;
-
+- (void) animate {
+  double diff = _time - NSDate.date.timeIntervalSince1970;
+  double value = _initialValue + _stepPerDay * diff / 24 / 60 / 60;
+  
   NSString *newValue;
   if (_isSymbolStablecoin) {
     newValue = [NSString stringWithFormat:@"$%@", [_fmt stringFromNumber:@(value)]];
@@ -68,24 +60,41 @@
     newValue = [NSString stringWithFormat:@"%@ %@", [_fmt stringFromNumber:@(value)], _symbol];
   }
   
-  NSMutableAttributedString* as = [[NSMutableAttributedString alloc] initWithString:newValue];
-  ((RCTUITextField* )[self.subviews firstObject]).attributedText = as;
-
+  self.attributedText = [[NSAttributedString alloc] initWithString:newValue attributes: @{
+    NSKernAttributeName : @(0.2f)
+  }];
+  
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge {
-  if (self = [super initWithBridge:bridge]) {
-   // _isTraversed = NO;
+
+- (void)setFrame:(CGRect)frame {
+  [super setFrame:frame];
+  [self.subviews.firstObject setFrame:frame];
+  self.subviews.firstObject.frame = frame;
+}
+
+-(void)setBounds:(CGRect)bounds {
+  [super setBounds:bounds];
+  [self.subviews.firstObject setBounds:bounds];
+  self.subviews.firstObject.bounds = bounds;
+}
+
+
+- (instancetype)init {
+  if (self = [super init]) {
     _timer = nil;
+    UILabel *label = [[UILabel alloc] init];
+    label.text = @"123";
+    [self addSubview:label];
+    
   }
   
   return self;
 }
 
-
 @end
 
-@interface RainbowTextManager : RCTSinglelineTextInputViewManager<RCTBridgeModule>
+@interface RainbowTextManager : RCTViewManager
 
 @end
 
@@ -99,7 +108,8 @@ RCT_EXPORT_MODULE(RainbowText)
 
 - (UIView *)view
 {
-  return [[RainbowText alloc] initWithBridge:self.bridge];
+  
+  return [[RainbowText alloc] init];
 }
 
 @end

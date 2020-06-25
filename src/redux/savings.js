@@ -103,6 +103,15 @@ const subscribeToCompoundData = async (dispatch, getState) => {
       ? await getSavings(accountAddress, network)
       : [];
 
+    console.log(savingsAccountLocal);
+
+    dispatch({
+      payload: {
+        accountTokens: savingsAccountLocal,
+      },
+      type: SAVINGS_UPDATE_COMPOUND_DATA,
+    });
+
     const newQuery = compoundClient.watchQuery({
       fetchPolicy: 'network-only',
       pollInterval: COMPOUND_QUERY_INTERVAL, // 15 seconds
@@ -168,6 +177,8 @@ const subscribeToCompoundData = async (dispatch, getState) => {
           markets[CDAI_CONTRACT],
           tokenOverrides
         );
+
+        console.log(savingsAccountData);
 
         dispatch({
           payload: {

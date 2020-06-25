@@ -1,16 +1,13 @@
 import AnimatedNumber from '@rainbow-me/react-native-animated-number';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback } from 'react';
 import {
-  findNodeHandle,
   NativeModules,
   Platform,
   requireNativeComponent,
   StyleSheet,
-  Text,
-  TextInput,
-  UIManager,
 } from 'react-native';
+import isRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
 import { formatSavingsAmount, isSymbolStablecoin } from '../../helpers/savings';
 import { colors, fonts } from '../../styles';
 
@@ -26,9 +23,11 @@ const sx = StyleSheet.create({
   },
   text: {
     color: colors.dark,
+    flex: 1,
     fontFamily: fonts.family.SFProRounded,
     fontSize: parseFloat(fonts.size.lmedium),
     fontWeight: fonts.weight.bold,
+    height: 30,
     letterSpacing: fonts.letterSpacing.roundedTightest,
     marginBottom: 0.5,
     marginRight: 4,
@@ -36,7 +35,7 @@ const sx = StyleSheet.create({
   },
 });
 
-const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
+const TextComponent = isRainbowTextAvailable ? RainbowText : AnimatedNumber;
 
 const SavingsListRowAnimatedNumber = ({
   initialValue,
@@ -45,7 +44,6 @@ const SavingsListRowAnimatedNumber = ({
   symbol,
   value,
 }) => {
-  const ref = useRef();
   const formatter = useCallback(
     val =>
       isSymbolStablecoin(symbol)
@@ -54,12 +52,8 @@ const SavingsListRowAnimatedNumber = ({
     [symbol]
   );
 
-  //useEffect(() => ref.current.animate(), []);
-
-  console.log((value - initialValue) / MS_IN_1_DAY);
-
   return (
-    <RainbowText
+    <TextComponent
       formatter={formatter}
       initialValue={Number(initialValue)}
       steps={steps}
