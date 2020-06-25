@@ -7,9 +7,10 @@ import { Text } from '../text';
 
 const Container = styled(Row).attrs({
   align: 'center',
-  scaleTo: 0.98,
+  scaleTo: 0.97,
 })`
-  ${padding(15, 19)};
+  ${padding(0, 19)};
+  height: 49;
 `;
 
 const WalletOption = ({ editMode, label, onPress }) => (

@@ -6,11 +6,12 @@ import { Linking, requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { isAvatarPickerAvailable } from '../../config/experimental';
+import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { useAccountProfile } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
+import Routes from '../../navigation/routesNames';
 import { removeRequest } from '../../redux/requests';
-import Routes from '../../screens/Routes/routesNames';
 import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
@@ -62,7 +63,11 @@ const TransactionList = ({
   } = useAccountProfile();
 
   const onAddCashPress = useCallback(() => {
-    navigate(Routes.ADD_CASH_SHEET);
+    navigate(
+      isNativeStackAvailable
+        ? Routes.ADD_CASH_SCREEN_NAVIGATOR
+        : Routes.ADD_CASH_SHEET
+    );
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });

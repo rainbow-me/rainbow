@@ -10,3 +10,4 @@ export const nativeTransactionListAvailable = true;
 export const nativeButtonPressAnimationAvailable = true;
 export const isAvatarPickerAvailable = false;
 export const iconOnSplashScreenAnimated = false;
+export const isRainbowTextAvailable = true;

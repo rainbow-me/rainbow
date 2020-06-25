@@ -7,7 +7,6 @@ import React, { Component } from 'react';
 import { Alert as NativeAlert, Platform, Vibration } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import { PERMISSIONS, request } from 'react-native-permissions';
-import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
 import { Alert, Prompt } from '../components/alerts';
 import WalletTypes from '../helpers/walletTypes';
@@ -16,14 +15,14 @@ import {
   withWalletConnectOnSessionRequest,
 } from '../hoc';
 import { checkPushNotificationPermissions } from '../model/firebase';
+import { withNavigationFocus } from '../navigation/Navigation';
+import Routes from '../navigation/routesNames';
 import store from '../redux/store';
 import { addressUtils } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
-import Routes from './Routes/routesNames';
 
 class QRScannerScreenWithData extends Component {
   static propTypes = {
-    isFocused: PropTypes.bool,
     navigation: PropTypes.object,
     setSafeTimeout: PropTypes.func,
     walletConnectOnSessionRequest: PropTypes.func,
@@ -37,13 +36,13 @@ class QRScannerScreenWithData extends Component {
   };
 
   static getDerivedStateFromProps(props, state) {
-    const isFocused = props.navigation.isFocused();
+    const { isFocused } = props;
     return { ...state, isFocused };
   }
 
   componentDidUpdate = (prevProps, prevState) => {
-    const wasFocused = prevState.isFocused;
-    const isFocused = this.state.isFocused;
+    const wasFocused = prevProps.isFocused;
+    const isFocused = this.props.isFocused;
 
     if (isFocused && !wasFocused && Platform.OS === 'ios') {
       request(PERMISSIONS.IOS.CAMERA).then(permission => {
@@ -135,8 +134,7 @@ class QRScannerScreenWithData extends Component {
       <QRScannerScreen
         {...this.props}
         {...this.state}
-        isFocused={this.state.isFocused}
-        enableScanning={this.state.enableScanning && this.state.isFocused}
+        enableScanning={this.state.enableScanning}
         onPressBackButton={this.handlePressBackButton}
         onPressPasteSessionUri={this.handlePressPasteSessionUri}
         onScanSuccess={this.handleScanSuccess}

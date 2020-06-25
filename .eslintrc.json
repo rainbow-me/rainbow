@@ -4,7 +4,7 @@
     "react": { "version": "16" },
     "import/resolver": {
       "node": {
-        "extensions": [".js", ".ios.js", ".android.js", ".native.js"]
+        "extensions": [".js", ".ios.js", ".android.js", ".native.js", ".tsx"]
       }
     }
   },

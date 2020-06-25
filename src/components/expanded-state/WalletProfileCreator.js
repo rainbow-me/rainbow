@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -6,7 +7,7 @@ import BiometryTypes from '../../helpers/biometryTypes';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { useBiometryType, useMagicAutofocus } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { colors, padding } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
 import Divider from '../Divider';
@@ -53,9 +54,11 @@ export default function WalletProfileCreator({
   const inputRef = useRef(null);
   const text = useRef(null);
 
+  console.log(dangerouslyGetParent());
+  const { params } = useRoute();
+
   const additionalPadding =
-    dangerouslyGetParent().state.routeName ===
-      Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR && isNativeStackAvailable
+    params?.additionalPadding && isNativeStackAvailable
       ? nativeStackAdditionalPadding
       : 0;
 

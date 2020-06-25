@@ -365,7 +365,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       
       cell.onItemPress = onTransactionPress
       cell.layer.anchorPoint = transformOrigin
-      cell.row = indexPath.row
+      cell.row = transaction.originalIndex.intValue
       cell.scaleTo = scaleTo
       cell.set(transaction: transaction)
       cell.selectionStyle = .none

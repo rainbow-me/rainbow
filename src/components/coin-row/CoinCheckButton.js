@@ -14,8 +14,8 @@ const Container = styled.View`
 `;
 
 const Content = styled(Row).attrs(({ isAbsolute }) => ({
-  align: isAbsolute ? 'end' : 'center',
-  justify: 'center',
+  align: 'center',
+  justify: isAbsolute ? 'end' : 'center',
 }))`
   ${position.size('100%')};
 `;
@@ -30,7 +30,7 @@ const CircleOutline = styled.View`
 const CheckmarkBackground = styled.View`
   ${borders.buildCircle(22)}
   ${padding(4.5)}
-  ${shadow.build(0, 4, 6, colors.appleBlue, 0.4)}
+  ${shadow.build(0, 4, 12, colors.appleBlue, 0.4)}
   background-color: ${colors.appleBlue};
 `;
 
@@ -42,7 +42,13 @@ const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => (
       onPress={onPress}
     >
       <CircleOutline />
-      <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
+      <OpacityToggler
+        endingOpacity={1}
+        friction={20}
+        isVisible={toggle}
+        startingOpacity={0}
+        tension={1000}
+      >
         <CheckmarkBackground>
           <Icon name="checkmark" color="white" />
         </CheckmarkBackground>
