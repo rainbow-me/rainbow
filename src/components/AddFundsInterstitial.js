@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
-import { Linking } from 'react-native';
+import { Linking, Platform } from 'react-native';
 import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
@@ -71,7 +71,12 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
   );
 
   const handlePressImportWallet = useCallback(
-    () => navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR),
+    () =>
+      navigate(
+        Platform.OS === 'ios'
+          ? Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR
+          : Routes.IMPORT_SEED_PHRASE_SHEET
+      ),
     [navigate]
   );
 
