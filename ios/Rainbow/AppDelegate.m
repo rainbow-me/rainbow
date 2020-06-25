@@ -61,9 +61,11 @@ RCT_EXPORT_METHOD(hideAnimated) {
   if (![rainbowIcon isKindOfClass:UIImageView.class]) {
     return;
   }
-  [UIView animateWithDuration:0.5
+  [UIView animateWithDuration:0.1
+                        delay:0.0
+                      options:UIViewAnimationOptionCurveEaseIn
   animations:^{
-      rainbowIcon.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.001, 0.001);
+      rainbowIcon.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.0000000001, 0.0000000001);
       subview.alpha = 0.0;
   } completion:^(BOOL finished) {
       rainbowIcon.hidden = YES;
