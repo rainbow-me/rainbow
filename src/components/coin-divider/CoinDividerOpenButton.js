@@ -70,11 +70,7 @@ const CoinDividerOpenButton = ({
       isSmallBalancesOpen={isSmallBalancesOpen}
       onPress={onPress}
     >
-      <OpacityToggler
-        endingOpacity={0}
-        isVisible={isVisible}
-        startingOpacity={1}
-      >
+      <OpacityToggler isVisible={isVisible}>
         <Content height={coinDividerHeight}>
           <RoundButtonSizeToggler
             animationNode={animation}
@@ -86,16 +82,12 @@ const CoinDividerOpenButton = ({
           />
           <View>
             <CoinDividerButtonLabel
-              endingOpacity={0}
               isVisible={isSmallBalancesOpen}
               label="All"
-              startingOpacity={1}
             />
             <CoinDividerButtonLabel
-              endingOpacity={1}
-              isVisible={isSmallBalancesOpen}
+              isVisible={!isSmallBalancesOpen}
               label="Less"
-              startingOpacity={0}
             />
           </View>
           <CaretContainer>

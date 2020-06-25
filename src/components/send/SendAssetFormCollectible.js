@@ -36,8 +36,6 @@ const Gradient = styled(LinearGradient).attrs(({ isTallPhone }) => ({
 `;
 
 const GradientToggler = styled(OpacityToggler).attrs({
-  endingOpacity: 1,
-  startingOpacity: 0,
   tension: 500,
 })`
   ${position.cover};
@@ -123,7 +121,7 @@ export default function SendAssetFormCollectible({
             {buttonRenderer}
             {txSpeedRenderer}
           </ButtonWrapper>
-          <GradientToggler isVisible={isGradientVisible}>
+          <GradientToggler isVisible={!isGradientVisible}>
             <Gradient isTallPhone={isTallPhone} />
           </GradientToggler>
         </Footer>

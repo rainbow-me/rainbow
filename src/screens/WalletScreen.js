@@ -33,7 +33,6 @@ import { position } from '../styles';
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
   pointerEvents: isVisible ? 'none' : 'auto',
-  startingOpacity: 1,
 }))`
   padding-top: 5;
   z-index: 1;

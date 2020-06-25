@@ -50,9 +50,7 @@ export default class SizeToggler extends Component {
   };
 
   static defaultProps = {
-    endingOpacity: 0,
     friction: 20,
-    startingOpacity: 1,
     tension: 200,
   };
 
