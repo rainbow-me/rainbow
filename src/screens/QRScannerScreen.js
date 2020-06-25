@@ -1,3 +1,4 @@
+import { useIsFocused } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
@@ -6,7 +7,7 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import { BubbleSheet } from '../components/bubble-sheet';
 import { Button } from '../components/buttons';
 import { DiscoverSheet } from '../components/discover-sheet';
-import { BackButton, Header } from '../components/header';
+import { BackButton, Header, HeaderHeight } from '../components/header';
 import { Centered } from '../components/layout';
 import { QRCodeScanner } from '../components/qrcode-scanner';
 import {
@@ -20,8 +21,6 @@ import { isNewValueForObjectPaths } from '../utils';
 const QRScannerScreen = ({
   enableScanning,
   isCameraAuthorized,
-  isFocused,
-  modalVisible,
   onPressBackButton,
   onPressPasteSessionUri,
   onScanSuccess,
@@ -33,11 +32,11 @@ const QRScannerScreen = ({
 }) => {
   const { result: isEmulator } = useIsEmulator();
   const insets = useSafeArea();
+  const isFocused = useIsFocused();
+
   return (
     <View>
-      {discoverSheetAvailable ? (
-        <DiscoverSheet modalVisible={modalVisible} />
-      ) : null}
+      {discoverSheetAvailable ? <DiscoverSheet /> : null}
       <Centered
         {...position.sizeAsObject('100%')}
         backgroundColor={colors.appleBlue}
@@ -47,9 +46,9 @@ const QRScannerScreen = ({
         <QRCodeScanner
           {...props}
           contentPositionBottom={sheetHeight}
-          contentPositionTop={Header.height}
+          contentPositionTop={HeaderHeight}
           enableCamera={isFocused}
-          enableScanning={enableScanning}
+          enableScanning={enableScanning && isFocused}
           isCameraAuthorized={isCameraAuthorized}
           isEmulator={isEmulator}
           onSuccess={onScanSuccess}
@@ -106,7 +105,6 @@ const arePropsEqual = (prev, next) =>
   !isNewValueForObjectPaths(prev, next, [
     'enableScanning',
     'isCameraAuthorized',
-    'isFocused',
     'sheetHeight',
     'walletConnectorsCount',
     'modalVisible',

@@ -24,6 +24,7 @@ export { default as neverRerender } from './neverRerender';
 export { default as parseObjectToUrlQueryString } from './parseObjectToUrlQueryString';
 export { default as parseQueryParams } from './parseQueryParams';
 export { default as promiseUtils } from './promise';
+export { default as pseudoRandomArrayItemFromString } from './pseudoRandomArrayItemFromString';
 export { default as reduceArrayToObject } from './reduceArrayToObject';
 export { default as safeAreaInsetValues } from './safeAreaInsetValues';
 export { default as sentryUtils } from './sentry';

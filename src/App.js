@@ -37,9 +37,10 @@ import { withAccountSettings } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { Navigation } from './navigation';
+import RoutesComponent from './navigation/Routes';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
-import RoutesComponent from './screens/Routes';
+import { walletConnectLoadState } from './redux/walletconnect';
 import { logger } from './utils';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
@@ -92,7 +93,6 @@ class App extends Component {
     this.branchListener = branch.subscribe(({ error, params, uri }) => {
       if (error) {
         logger.error('Error from Branch: ' + error);
-        return;
       }
 
       if (params['+non_branch_link']) {
@@ -167,6 +167,11 @@ class App extends Component {
   handleAppStateChange = async nextAppState => {
     if (nextAppState === 'active') {
       PushNotificationIOS.removeAllDeliveredNotifications();
+    }
+
+    // Restore WC connectors when going from BG => FG
+    if (this.state.appState === 'background' && nextAppState === 'active') {
+      store.dispatch(walletConnectLoadState());
     }
 
     this.setState({ appState: nextAppState });

@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
-
 import { withProps } from 'recompact';
 import jumpingDaiAnimation from '../../assets/lottie/jumping-dai.json';
 import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';
@@ -15,8 +14,8 @@ import {
 } from '../../helpers/wyreStatusTypes';
 import { useDimensions, usePrevious, useTimeout } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
+import Routes from '../../navigation/routesNames';
 import { getErrorOverride } from '../../references/wyre';
-import Routes from '../../screens/Routes/routesNames';
 import { position } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { FloatingEmojisTapper } from '../floating-emojis';

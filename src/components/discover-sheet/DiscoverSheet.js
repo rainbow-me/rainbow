@@ -1,15 +1,13 @@
+import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useRef, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BaseButton } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
-import { useIsFocused } from 'react-navigation-hooks';
+
 import BottomSheet from 'reanimated-bottom-sheet';
-import {
-  notifyUnmountBottomSheet,
-  useNavigation,
-} from '../../navigation/Navigation';
+import { useNavigation } from '../../navigation/Navigation';
 
 // eslint-disable-next-line import/no-named-as-default-member
 const { SpringUtils } = Animated;
@@ -417,7 +415,7 @@ export function SlackBottomSheetContent() {
   );
 }
 
-function DiscoverSheet({ modalVisible }) {
+function DiscoverSheet() {
   const [initialPosition, setInitialPosition] = useState('long');
   const position = useRef({ x: 0, y: 0 });
   const setPosition = useCallback(
@@ -428,8 +426,6 @@ function DiscoverSheet({ modalVisible }) {
   // noinspection JSConstructorReturnsPrimitive
   return Platform.OS === 'ios' ? (
     <SlackBottomSheet
-      onDidDismiss={notifyUnmountBottomSheet}
-      visible={modalVisible}
       topOffset={100}
       unmountAnimation={false}
       initialAnimation={false}

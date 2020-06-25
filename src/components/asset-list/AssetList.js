@@ -1,14 +1,14 @@
-import PropTypes from 'prop-types';
+import lang from 'i18n-js';
 import React from 'react';
-import isEqual from 'react-fast-compare';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { FabWrapper, FloatingActionButton } from '../fab';
+import { magicMemo } from '../../utils';
+import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../fab';
 import { ListFooter } from '../list';
 import EmptyAssetList from './EmptyAssetList';
 import RecyclerAssetList from './RecyclerAssetList';
 
 const FabSizeWithPadding =
-  FloatingActionButton.size + FabWrapper.bottomPosition * 2;
+  FloatingActionButtonSize + FabWrapperBottomPosition * 2;
 
 const AssetList = ({
   fetchData,
@@ -28,6 +28,7 @@ const AssetList = ({
       hideHeader={hideHeader}
       isWalletEthZero={isWalletEthZero}
       network={network}
+      title={lang.t('account.tab_balances')}
     />
   ) : (
     <RecyclerAssetList
@@ -41,19 +42,4 @@ const AssetList = ({
   );
 };
 
-AssetList.propTypes = {
-  fetchData: PropTypes.func.isRequired,
-  hideHeader: PropTypes.bool,
-  isEmpty: PropTypes.bool,
-  isWalletEthZero: PropTypes.bool,
-  scrollViewTracker: PropTypes.object,
-  sections: PropTypes.arrayOf(PropTypes.object),
-};
-
-const arePropsEqual = (prev, next) =>
-  prev.isEmpty === next.isEmpty &&
-  prev.isWalletEthZero === next.isWalletEthZero &&
-  prev.sections.length === next.sections.length &&
-  isEqual(prev.sections, next.sections);
-
-export default React.memo(AssetList, arePropsEqual);
+export default magicMemo(AssetList, ['isEmpty', 'isWalletEthZero', 'sections']);

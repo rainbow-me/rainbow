@@ -136,7 +136,7 @@
                     </accessibility>
                 </view>
                 <view contentMode="scaleToFill" horizontalHuggingPriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="5Zx-ay-mQu" userLabel="Account Name View">
-                    <rect key="frame" x="0.0" y="76" width="375" height="31"/>
+                    <rect key="frame" x="0.0" y="78" width="375" height="31"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="0xDEADBEEF123Ab28Dfe3" textAlignment="justified" lineBreakMode="tailTruncation" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LxS-BQ-P6T">
                             <rect key="frame" x="29.666666666666657" y="0.3333333333333286" width="287.66666666666674" height="31"/>
@@ -182,7 +182,7 @@
             </subviews>
             <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
             <constraints>
-                <constraint firstItem="5Zx-ay-mQu" firstAttribute="top" secondItem="DP6-u7-aX1" secondAttribute="top" constant="76" id="LI0-hm-FD5"/>
+                <constraint firstItem="5Zx-ay-mQu" firstAttribute="top" secondItem="DP6-u7-aX1" secondAttribute="top" constant="78" id="LI0-hm-FD5"/>
                 <constraint firstItem="5Zx-ay-mQu" firstAttribute="centerX" secondItem="DP6-u7-aX1" secondAttribute="centerX" id="RYZ-rI-jAt"/>
             </constraints>
             <nil key="simulatedTopBarMetrics"/>

@@ -1,9 +1,10 @@
 import React from 'react';
 import { View } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { SpringUtils } from 'react-native-reanimated';
+import { bin, useSpringTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import Caret from '../../assets/family-dropdown-arrow.png';
-import { useOpenSmallBalances } from '../../hooks';
 import { colors, padding } from '../../styles';
 import { magicMemo } from '../../utils';
 import {
@@ -16,6 +17,12 @@ import { Row } from '../layout';
 import CoinDividerButtonLabel from './CoinDividerButtonLabel';
 
 const closedWidth = 52.5;
+
+const springConfig = SpringUtils.makeConfigFromOrigamiTensionAndFriction({
+  ...SpringUtils.makeDefaultConfig(),
+  friction: 20,
+  tension: 200,
+});
 
 const CaretIcon = styled(FastImage).attrs({
   source: Caret,
@@ -50,18 +57,18 @@ const Content = styled(Row).attrs({
 const CoinDividerOpenButton = ({
   coinDividerHeight,
   initialState,
+  isSmallBalancesOpen,
   isVisible,
-  node,
+  onPress,
+  ...props
 }) => {
-  const {
-    isSmallBalancesOpen,
-    toggleOpenSmallBalances,
-  } = useOpenSmallBalances();
+  const animation = useSpringTransition(bin(isSmallBalancesOpen), springConfig);
 
   return (
     <ContainerButton
+      {...props}
       isSmallBalancesOpen={isSmallBalancesOpen}
-      onPress={toggleOpenSmallBalances}
+      onPress={onPress}
     >
       <OpacityToggler
         endingOpacity={0}
@@ -70,7 +77,7 @@ const CoinDividerOpenButton = ({
       >
         <Content height={coinDividerHeight}>
           <RoundButtonSizeToggler
-            animationNode={node}
+            animationNode={animation}
             endingWidth={28}
             isAbsolute
             reversed={!initialState}
@@ -79,16 +86,16 @@ const CoinDividerOpenButton = ({
           />
           <View>
             <CoinDividerButtonLabel
+              endingOpacity={0}
               isVisible={isSmallBalancesOpen}
               label="All"
-              node={node}
-              steps={[1, 0]}
+              startingOpacity={1}
             />
             <CoinDividerButtonLabel
+              endingOpacity={1}
               isVisible={isSmallBalancesOpen}
               label="Less"
-              node={node}
-              steps={[0, 1]}
+              startingOpacity={0}
             />
           </View>
           <CaretContainer>

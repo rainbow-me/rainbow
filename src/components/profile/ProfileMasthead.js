@@ -1,12 +1,12 @@
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-
 import styled from 'styled-components/primitives';
 import { isAvatarPickerAvailable } from '../../config/experimental';
+import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { useAccountProfile, useClipboard } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { colors } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
 import Divider from '../Divider';
@@ -31,8 +31,8 @@ const AccountName = styled(TruncatedText).attrs({
   weight: 'bold',
 })`
   height: 33;
-  margin-top: -3;
-  margin-bottom: 3;
+  margin-top: -1;
+  margin-bottom: 1;
   max-width: ${maxAddressWidth};
   padding-right: 6;
 `;
@@ -45,7 +45,7 @@ const AddCashButton = styled(RainbowButton).attrs({
 
 const DropdownArrow = styled(Centered)`
   height: 9;
-  margin-top: 9;
+  margin-top: 11;
   width: 21;
 `;
 
@@ -81,7 +81,11 @@ export default function ProfileMasthead({
   }, [accountColor, accountName, navigate, recyclerListRef]);
 
   const handlePressAddCash = useCallback(() => {
-    navigate(Routes.ADD_CASH_SHEET);
+    navigate(
+      isNativeStackAvailable
+        ? Routes.ADD_CASH_SCREEN_NAVIGATOR
+        : Routes.ADD_CASH_SHEET
+    );
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });

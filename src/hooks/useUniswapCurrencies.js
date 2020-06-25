@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import { multiply } from '../helpers/utilities';
-import Routes from '../screens/Routes/routesNames';
+import Routes from '../navigation/routesNames';
 import { ethereumUtils, isNewValueForPath, logger } from '../utils';
 import useAccountAssets from './useAccountAssets';
 import usePrevious from './usePrevious';
@@ -113,11 +113,25 @@ export default function useUniswapCurrencies({
   const prevDefaultOutputItem = usePrevious(defaultOutputItem);
   const prevDefaultInputItemInWallet = usePrevious(defaultInputItemInWallet);
 
+  const previousInputCurrency = usePrevious(inputCurrency);
+  const previousOutputCurrency = usePrevious(outputCurrency);
+
+  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
+  const {
+    updateUniswapInputCurrency,
+    updateUniswapOutputCurrency,
+  } = useUniswapCurrencyReserves();
+
   useEffect(() => {
     if (defaultOutputItem && !prevDefaultOutputItem) {
       updateUniswapOutputCurrency(defaultOutputItem);
     }
-  }, [defaultOutputItem, prevDefaultOutputItem, updateUniswapOutputCurrency]);
+  }, [
+    defaultInputItemInWallet,
+    defaultOutputItem,
+    prevDefaultOutputItem,
+    updateUniswapOutputCurrency,
+  ]);
 
   useEffect(() => {
     if (defaultInputItemInWallet && !prevDefaultInputItemInWallet) {
@@ -128,15 +142,6 @@ export default function useUniswapCurrencies({
     prevDefaultInputItemInWallet,
     updateUniswapInputCurrency,
   ]);
-
-  const previousInputCurrency = usePrevious(inputCurrency);
-  const previousOutputCurrency = usePrevious(outputCurrency);
-
-  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
-  const {
-    updateUniswapInputCurrency,
-    updateUniswapOutputCurrency,
-  } = useUniswapCurrencyReserves();
 
   const updateInputCurrency = useCallback(
     async (newInputCurrency, userSelected = true) => {

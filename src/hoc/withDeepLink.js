@@ -2,8 +2,8 @@ import { Linking } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
 import { Navigation } from '../navigation';
+import Routes from '../navigation/routesNames';
 import { getRequestDisplayDetails } from '../parsers/requests';
-import Routes from '../screens/Routes/routesNames';
 import { parseObjectToUrlQueryString } from '../utils';
 import {
   PERSONAL_SIGN,
@@ -122,13 +122,10 @@ export default Component =>
           imageUrl,
           payload,
         };
-        return Navigation.handleAction({
-          params: {
-            callback: redirect,
-            openAutomatically: true,
-            transactionDetails: request,
-          },
-          routeName: Routes.CONFIRM_REQUEST,
+        return Navigation.handleAction(Routes.CONFIRM_REQUEST, {
+          callback: redirect,
+          openAutomatically: true,
+          transactionDetails: request,
         });
       },
     })

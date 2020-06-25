@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import { colors, shadow as shadowUtil } from '../../styles';
 import { magicMemo } from '../../utils';
-import Highlight from '../Highlight';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
 import UniqueTokenImage from './UniqueTokenImage';
@@ -26,7 +25,6 @@ const UniqueTokenCard = ({
   disabled,
   enableHapticFeedback = true,
   height,
-  highlight,
   item: { background, image_preview_url, ...item },
   onPress,
   resizeMode,
@@ -64,10 +62,6 @@ const UniqueTokenCard = ({
             width={0.5}
           />
         )}
-        <Highlight
-          backgroundColor={colors.alpha(colors.white, 0.33)}
-          visible={highlight}
-        />
       </Content>
     </Container>
   );
@@ -75,7 +69,6 @@ const UniqueTokenCard = ({
 
 export default magicMemo(UniqueTokenCard, [
   'height',
-  'highlight',
   'item.uniqueId',
   'style',
   'width',

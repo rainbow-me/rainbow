@@ -13,7 +13,7 @@ import {
 } from '../../helpers/savings';
 import { useDimensions } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../screens/Routes/routesNames';
+import Routes from '../../navigation/routesNames';
 import { colors, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
@@ -38,7 +38,6 @@ const SavingsListRowGradient = React.memo(
       borderRadius={49}
       colors={['#FFFFFF', '#F7F9FA']}
       end={{ x: 0.5, y: 1 }}
-      opacity={0.1}
       pointerEvents="none"
       start={{ x: 0.5, y: 0 }}
       style={position.coverAsObject}

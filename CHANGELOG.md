@@ -7,11 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 ### Added
-* Experimental multi wallet support
+
+### Changed
 
 ### Removed
 
+## [1.2.15](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.15)
+### Added
+* Multi-wallet support
+* WalletConnect deeplinking support
+
 ### Changed
+* WalletConnect upgrade and fixes
 * Paging for OpenSea requests to fetch more NFTs
 
 ## [1.2.12](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.12)

@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
@@ -9,7 +10,6 @@ import React, {
   useState,
 } from 'react';
 import Animated from 'react-native-reanimated';
-import { useNavigationParam } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import HorizontalGestureBlocker from '../components/HorizontalGestureBlocker';
 import { interpolate } from '../components/animations';
@@ -39,12 +39,12 @@ import {
   useUniswapMarketDetails,
 } from '../hooks';
 import { loadWallet } from '../model/wallet';
+import Routes from '../navigation/routesNames';
 import { executeRap } from '../raps/common';
 import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, position } from '../styles';
 import { backgroundTask, isNewValueForPath, logger } from '../utils';
-import Routes from './Routes/routesNames';
 
 export const exchangeModalBorderRadius = 30;
 
@@ -65,7 +65,8 @@ const ExchangeModal = ({
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
 
-  const tabPosition = useNavigationParam('position');
+  const { params } = useRoute();
+  const tabPosition = params?.position;
 
   const defaultGasLimit = isDeposit
     ? ethUnits.basic_deposit
@@ -449,8 +450,8 @@ const ExchangeModal = ({
             style={{
               opacity: interpolate(tabPosition, {
                 extrapolate: Animated.Extrapolate.CLAMP,
-                inputRange: [0, 1],
-                outputRange: [1, 0],
+                inputRange: [0, 0.2, 1],
+                outputRange: [1, 1, 0],
               }),
             }}
           >

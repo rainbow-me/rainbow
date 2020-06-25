@@ -1,79 +1,57 @@
 import MaskedView from '@react-native-community/masked-view';
-import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
-import { deviceUtils } from '../../utils';
+import styled from 'styled-components/primitives';
+import { useDimensions } from '../../hooks';
+import { colors } from '../../styles';
 import { Text } from '../text';
 
-const width = deviceUtils.dimensions.width;
+const FontSizeMultiple = 0.24;
+const HeightMultiple = 0.288;
 
-const fontSize = Math.round(width * 0.24);
-const lineHeight = Math.round(width * 0.288);
+const GradientBackground = styled(RadialGradient).attrs(({ width }) => {
+  const radius = width - 48;
 
-const sx = StyleSheet.create({
-  gradient: {
-    height: lineHeight,
-    width: '100%',
-  },
-  maskElement: {
-    left: '-50%',
-    width: '200%',
-  },
-});
+  return {
+    center: [radius, 53.5],
+    colors: ['#FFB114', '#FF54BB', '#00F0FF', '#34F3FF'],
+    radius,
+    stops: [0.2049, 0.6354, 0.8318, 0.9541],
+  };
+})`
+  height: ${({ width }) => Math.round(width * HeightMultiple)};
+  width: 100%;
+`;
 
-const gradientColors = ['#FFB114', '#FF54BB', '#00F0FF', '#34F3FF'];
-const gradientStops = [0.2049, 0.6354, 0.8318, 0.9541];
-const NumpadValueGradient = () => {
-  const gradientXPoint = width - 48;
-  const gradientPoints = [gradientXPoint, 53.5];
+const TextMask = styled(Animated.View)`
+  left: -50%;
+  width: 200%;
+`;
 
-  return (
-    <RadialGradient
-      center={gradientPoints}
-      colors={gradientColors}
-      radius={gradientXPoint}
-      stops={gradientStops}
-      style={sx.gradient}
-    />
-  );
-};
-
-const NumpadValueText = props => {
-  return (
-    <Text
-      {...props}
-      align="center"
-      color="white"
-      letterSpacing="roundedTightest"
-      lineHeight={lineHeight}
-      size={fontSize}
-      weight="bold"
-    />
-  );
-};
+const ValueText = styled(Text).attrs(({ width }) => ({
+  align: 'center',
+  color: colors.white,
+  letterSpacing: 'roundedTightest',
+  lineHeight: Math.round(width * HeightMultiple),
+  size: Math.round(width * FontSizeMultiple),
+  weight: 'bold',
+}))``;
 
 const NumpadValue = ({ scale, translateX, value, ...props }) => {
+  const { width } = useDimensions();
+
   const maskElement = (
-    <Animated.View
-      style={[sx.maskElement, { transform: [{ scale, translateX }] }]}
-    >
-      <NumpadValueText>{'$' + (value ? value : '0')}</NumpadValueText>
-    </Animated.View>
+    <TextMask style={{ transform: [{ scale, translateX }] }}>
+      <ValueText width={width}>{'$' + (value ? value : '0')}</ValueText>
+    </TextMask>
   );
 
   return (
     <MaskedView maskElement={maskElement} width="100%" {...props}>
-      <NumpadValueGradient />
+      <GradientBackground width={width} />
     </MaskedView>
   );
-};
-
-NumpadValue.propTypes = {
-  scale: PropTypes.object,
-  translateX: PropTypes.object,
-  value: PropTypes.string,
 };
 
 export default React.memo(NumpadValue);

@@ -1,12 +1,12 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
-import { colors } from '../../styles';
+import { colors, position } from '../../styles';
 import { OpacityToggler } from '../animations';
-import { Centered } from '../layout';
 import { Text } from '../text';
 
-const Container = styled(Centered)`
+const Container = styled(OpacityToggler)`
+  ${position.centered};
   height: 30;
 `;
 
@@ -18,22 +18,17 @@ const ValueText = styled(Text).attrs({
   padding-bottom: 1;
 `;
 
-export default function CoinDividerAssetsValue({
+const CoinDividerAssetsValue = ({
   assetsAmount,
   balancesSum,
   nativeCurrency,
-  node,
   openSmallBalances,
-}) {
-  return (
-    <Container
-      animationNode={node}
-      as={OpacityToggler}
-      isVisible={openSmallBalances || assetsAmount === 0}
-    >
-      <ValueText>
-        {convertAmountToNativeDisplay(balancesSum, nativeCurrency)}
-      </ValueText>
-    </Container>
-  );
-}
+}) => (
+  <Container isVisible={openSmallBalances || assetsAmount === 0}>
+    <ValueText>
+      {convertAmountToNativeDisplay(balancesSum, nativeCurrency)}
+    </ValueText>
+  </Container>
+);
+
+export default React.memo(CoinDividerAssetsValue);
