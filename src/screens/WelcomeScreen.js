@@ -1,6 +1,6 @@
 import MaskedView from '@react-native-community/masked-view';
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Easing, StyleSheet } from 'react-native';
 import Reanimated, {
   Clock,
   Easing as REasing,
@@ -13,6 +13,7 @@ import { ButtonPressAnimation } from '../components/animations';
 import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { Emoji, Text } from '../components/text';
+import { useHideSplashScreen } from '../hooks';
 import { colors, shadow } from '../styles';
 
 const {
@@ -327,16 +328,13 @@ function colorAnimation(rValue, fromShadow) {
   return colorRGB(r, g, b, fromShadow);
 }
 
-export default function ImportScreen() {
-  const [visible, setVisible] = useState(false);
+export default function WelcomeScreen() {
   const contentAnimation = useAnimatedValue(1);
   const importButtonAnimation = useAnimatedValue(1);
+  const hideSplashScreen = useHideSplashScreen();
 
   useEffect(() => {
-    if (!visible) {
-      return;
-    }
-
+    hideSplashScreen();
     Animated.parallel([
       ...traversedRainbows.map(({ value, delay = 0 }) =>
         Animated.spring(value, { ...springConfig, delay })
@@ -372,7 +370,7 @@ export default function ImportScreen() {
       importButtonAnimation.current.setValue(1);
       contentAnimation.current.setValue(1);
     };
-  }, [contentAnimation, importButtonAnimation, visible]);
+  }, [contentAnimation, importButtonAnimation]);
 
   const buttonStyle = useMemoOne(
     () => ({
@@ -443,17 +441,14 @@ export default function ImportScreen() {
 
   return (
     <Container>
-      {visible &&
-        traversedRainbows.map(({ source, style, id }) => (
-          <RainbowImage source={source} style={style} key={`rainbow${id}`} />
-        ))}
+      {traversedRainbows.map(({ source, style, id }) => (
+        <RainbowImage source={source} style={style} key={`rainbow${id}`} />
+      ))}
 
       <ContentWrapper style={contentStyle}>
-        <TouchableOpacity onPress={() => setVisible(!visible)}>
-          <MaskedView maskElement={<RainbowText />}>
-            <RainbowTextMask style={textStyle} />
-          </MaskedView>
-        </TouchableOpacity>
+        <MaskedView maskElement={<RainbowText />}>
+          <RainbowTextMask style={textStyle} />
+        </MaskedView>
 
         <ButtonWrapper style={buttonStyle}>
           <RainbowButton {...importButtonProps} />

@@ -35,6 +35,7 @@ const Routes = {
   WALLET_CONNECT_APPROVAL_SHEET: 'WalletConnectApprovalSheet',
   WALLET_CONNECT_REDIRECT_SHEET: 'WalletConnectRedirectSheet',
   WALLET_SCREEN: 'WalletScreen',
+  WELCOME_SCREEN: 'WelcomeScreen',
 };
 
 export default Routes;
