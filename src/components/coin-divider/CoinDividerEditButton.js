@@ -38,7 +38,7 @@ const CoinDividerEditButton = ({
   }, [onPress, shouldReloadList]);
 
   return (
-    <OpacityToggler endingOpacity={1} isVisible={isVisible} startingOpacity={0}>
+    <OpacityToggler isVisible={!isVisible}>
       <ButtonPressAnimation
         onPress={handlePress}
         scaleTo={textOpacityAlwaysOn || isActive ? 0.9 : 1}
