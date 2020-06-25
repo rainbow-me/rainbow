@@ -37,7 +37,7 @@ const OverlayBlur = styled(BlurView).attrs({
 
 const Title = styled(Text).attrs({
   color: colors.blueGreyDark,
-  lineHeight: 'none',
+  lineHeight: Platform.OS === 'ios' ? 'none' : '24px',
   size: 'large',
   weight: 'semibold',
 })`
@@ -53,7 +53,7 @@ const LoadingOverlay = ({ title, ...props }) => (
     <Overlay>
       <Centered zIndex={2}>
         <ActivityIndicator />
-        {title && <Title>{title}</Title>}
+        {title ? <Title>{title}</Title> : null}
       </Centered>
       <OverlayBlur />
     </Overlay>
