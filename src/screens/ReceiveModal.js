@@ -15,10 +15,10 @@ import { colors } from '../styles';
 const QRCodeSize = Platform.OS === 'ios' ? 250 : 190;
 
 const TopHandle = styled.View`
-  width: 35px;
-  height: 5px;
-  border-radius: 3px;
   background-color: ${colors.white};
+  border-radius: 2.5px;
+  height: 5px;
+  width: 36px;
 `;
 
 const QRwrapper = styled(Column)`
@@ -39,11 +39,11 @@ const ReceiveModal = () => {
         <TopHandle />
         <QRwrapper
           align="center"
-          marginTop={19}
-          margin={24}
-          padding={24}
-          borderRadius={40}
           backgroundColor={colors.white}
+          borderRadius={39}
+          margin={24}
+          marginTop={19}
+          padding={24}
         >
           <QRCodeDisplay size={QRCodeSize} value={accountAddress} />
         </QRwrapper>

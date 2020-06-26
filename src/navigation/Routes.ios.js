@@ -250,7 +250,11 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         name={Routes.RECEIVE_MODAL}
         component={ReceiveModal}
-        {...sharedCoolModalConfig}
+        options={{
+          backgroundColor: '#3B3E43',
+          backgroundOpacity: 1,
+          customStack: true,
+        }}
       />
       <NativeStack.Screen
         name={Routes.SETTINGS_MODAL}
