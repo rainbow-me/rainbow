@@ -4,6 +4,7 @@ import { omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { createNativeStackNavigator } from 'react-native-cool-modals/native-stack';
+import { isNewOnboardingFlowAvailable } from '../config/experimental';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
@@ -17,6 +18,7 @@ import SettingsModal from '../screens/SettingsModal';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
+import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
@@ -109,11 +111,16 @@ function AddCashFlowNavigator() {
 function MainNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName={Routes.SWIPE_LAYOUT}
+      initialRouteName={
+        isNewOnboardingFlowAvailable
+          ? Routes.WELCOME_SCREEN
+          : Routes.SWIPE_LAYOUT
+      }
       {...stackNavigationConfig}
       screenOptions={defaultScreenStackOptions}
     >
       <Stack.Screen name={Routes.SWIPE_LAYOUT} component={SwipeNavigator} />
+      <Stack.Screen name={Routes.WELCOME_SCREEN} component={WelcomeScreen} />
       <Stack.Screen
         name={Routes.SAVINGS_SHEET}
         component={SavingsSheet}

@@ -3,6 +3,7 @@ import { isNil } from 'lodash';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
+import hideSplashScreen from '../helpers/hideSplashScreen';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
 import {
@@ -12,7 +13,6 @@ import {
 import { walletsLoadState } from '../redux/wallets';
 import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
-import useHideSplashScreen from './useHideSplashScreen';
 import useInitializeAccountData from './useInitializeAccountData';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalData from './useLoadGlobalData';
@@ -20,7 +20,6 @@ import useResetAccountState from './useResetAccountState';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
-  const onHideSplashScreen = useHideSplashScreen();
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
   const loadGlobalData = useLoadGlobalData();
@@ -77,14 +76,14 @@ export default function useInitializeWallet() {
           await loadAccountData(network);
         }
 
-        onHideSplashScreen();
+        hideSplashScreen();
         logger.sentry('Hide splash screen');
         initializeAccountData();
         return walletAddress;
       } catch (error) {
         logger.sentry('Error while initializing wallet');
         // TODO specify error states more granular
-        onHideSplashScreen();
+        hideSplashScreen();
         captureException(error);
         Alert.alert('Something went wrong while importing. Please try again!');
         return null;
@@ -97,7 +96,6 @@ export default function useInitializeWallet() {
       loadAccountData,
       loadGlobalData,
       network,
-      onHideSplashScreen,
     ]
   );
 

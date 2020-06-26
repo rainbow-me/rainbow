@@ -9,6 +9,7 @@ const Routes = {
   EXAMPLE_SCREEN: 'ExampleScreen',
   EXCHANGE_MODAL: 'ExchangeModal',
   EXPANDED_ASSET_SHEET: 'ExpandedAssetSheet',
+  IMPORT_SCREEN: 'ImportScreen',
   IMPORT_SEED_PHRASE_SHEET: 'ImportSeedPhraseSheet',
   IMPORT_SEED_PHRASE_SHEET_NAVIGATOR: 'ImportSeedPhraseSheetNavigator',
   MAIN_EXCHANGE_NAVIGATOR: 'MainExchangeNavigator',
@@ -34,6 +35,7 @@ const Routes = {
   WALLET_CONNECT_APPROVAL_SHEET: 'WalletConnectApprovalSheet',
   WALLET_CONNECT_REDIRECT_SHEET: 'WalletConnectRedirectSheet',
   WALLET_SCREEN: 'WalletScreen',
+  WELCOME_SCREEN: 'WelcomeScreen',
 };
 
 export default Routes;
