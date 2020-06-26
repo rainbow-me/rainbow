@@ -53,6 +53,7 @@ export const nativeStackConfig = {
 export const sharedCoolModalConfig = {
   options: {
     customStack: true,
+    ignoreBottomOffset: true,
     onAppear: null,
   },
 };
