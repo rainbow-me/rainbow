@@ -59,27 +59,33 @@ const statusBarHeight = getStatusBarHeight(true);
 const SettingsPages = {
   backup: {
     component: BackupSection,
-    title: 'BackupSection',
+    key: 'BackupSection',
+    title: 'Backup',
   },
   currency: {
     component: CurrencySection,
-    title: 'CurrencySection',
+    key: 'CurrencySection',
+    title: 'Currency',
   },
   default: {
     component: null,
-    title: 'SettingsSection',
+    key: 'SettingsSection',
+    title: 'Settings',
   },
   dev: {
     component: __DEV__ ? DevSection : null,
-    title: 'DevSection',
+    key: 'DevSection',
+    title: 'Dev',
   },
   language: {
     component: LanguageSection,
-    title: 'LanguageSection',
+    key: 'LanguageSection',
+    title: 'Language',
   },
   network: {
     component: NetworkSection,
-    title: 'NetworkSection',
+    key: 'NetworkSection',
+    title: 'Network',
   },
 };
 
@@ -120,7 +126,7 @@ const SettingsModal = () => {
   const onPressSection = useCallback(
     section => () => {
       setCurrentSettingsPage(section);
-      navigation.navigate(section.title);
+      navigation.navigate(section.key);
     },
     [navigation, setCurrentSettingsPage]
   );
@@ -159,10 +165,11 @@ const SettingsModal = () => {
             )}
           </Stack.Screen>
           {Object.values(SettingsPages).map(
-            ({ component, title }) =>
+            ({ component, title, key }) =>
               component && (
                 <Stack.Screen
-                  name={title}
+                  name={key}
+                  title={title}
                   component={component}
                   options={{
                     cardStyleInterpolator,
