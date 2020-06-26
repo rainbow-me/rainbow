@@ -9,7 +9,7 @@ import { colors } from '@rainbow-me/styles';
 
 const chartStroke = { detailed: 1.5, simplified: 3 };
 
-const Chart = ({ asset, latestPrice, setChartPrice, ...props }) => {
+const Chart = ({ asset, color, latestPrice, setChartPrice, ...props }) => {
   const { chart, chartType, updateChartType } = useCharts(asset);
 
   const hasChart = !isEmpty(chart);
@@ -42,7 +42,7 @@ const Chart = ({ asset, latestPrice, setChartPrice, ...props }) => {
     >
       <ValueChart
         amountOfPathPoints={amountOfPathPoints}
-        barColor={asset?.color}
+        barColor={color}
         currentDataSource={currentChartIndex}
         currentValue={latestPrice}
         data={chartData}
@@ -53,7 +53,7 @@ const Chart = ({ asset, latestPrice, setChartPrice, ...props }) => {
         stroke={chartStroke}
       />
       <TimespanSelector
-        color={asset?.color}
+        color={color}
         defaultIndex={currentChartIndex}
         isLoading={false}
         reloadChart={updateChartType}

@@ -8,6 +8,7 @@ export default function TokenInfoItem({
   align = 'left',
   asset,
   children,
+  color,
   title,
   ...props
 }) {
@@ -19,7 +20,7 @@ export default function TokenInfoItem({
     >
       <TokenInfoHeading align={align}>{title}</TokenInfoHeading>
       {asset ? (
-        <TokenInfoBalanceValue {...asset} align={align} />
+        <TokenInfoBalanceValue align={align} color={color} {...asset} />
       ) : (
         <TokenInfoValue align={align}>{children}</TokenInfoValue>
       )}

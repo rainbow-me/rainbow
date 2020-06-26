@@ -175,6 +175,7 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
+    "rn-dominant-color": "^1.7.0",
     "rn-nodeify": "10.2.0",
     "socket.io-client": "^2.3.0",
     "stream-browserify": "^1.0.0",
