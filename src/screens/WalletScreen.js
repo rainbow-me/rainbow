@@ -1,6 +1,5 @@
 import { get } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
 import styled from 'styled-components/primitives';
@@ -96,18 +95,16 @@ export default function WalletScreen() {
         isCoinListEdited={isCoinListEdited}
         isReadOnlyWallet={isReadOnlyWallet}
       >
-        <PanGestureHandler enabled={isCoinListEdited}>
-          <HeaderOpacityToggler isVisible={isCoinListEdited}>
-            <Header justify="space-between">
-              <ProfileHeaderButton />
-              {discoverSheetAvailable ? (
-                <DiscoverHeaderButton />
-              ) : (
-                <CameraHeaderButton />
-              )}
-            </Header>
-          </HeaderOpacityToggler>
-        </PanGestureHandler>
+        <HeaderOpacityToggler isVisible={isCoinListEdited}>
+          <Header justify="space-between">
+            <ProfileHeaderButton />
+            {discoverSheetAvailable ? (
+              <DiscoverHeaderButton />
+            ) : (
+              <CameraHeaderButton />
+            )}
+          </Header>
+        </HeaderOpacityToggler>
         <AssetList
           fetchData={refreshAccountData}
           isEmpty={isEmpty}

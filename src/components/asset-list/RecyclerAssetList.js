@@ -2,7 +2,6 @@ import { findIndex, get, has, isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { LayoutAnimation, RefreshControl, View } from 'react-native';
-import { PanGestureHandler } from 'react-native-gesture-handler';
 import { compose } from 'recompact';
 import {
   BaseItemAnimator,
@@ -438,7 +437,7 @@ class RecyclerAssetList extends Component {
             ctx.push({
               familySectionIndex: index,
               item: { ...item, ...section.perData },
-              renderItem: section.renderItem,
+              renderItem: section.renderItem, // 8% of CPU
             });
           }
         });
@@ -446,7 +445,7 @@ class RecyclerAssetList extends Component {
         ctx = ctx.concat(
           section.data.map(item => ({
             item: { ...item, ...section.perData },
-            renderItem: section.renderItem,
+            renderItem: section.renderItem, // 1% of CPU
           }))
         );
       }
@@ -466,9 +465,10 @@ class RecyclerAssetList extends Component {
     };
   }
 
-  componentDidMount = () => {
+  componentDidMount() {
+    this.animator = new LayoutItemAnimator(this.rlv);
     this.isCancelled = false;
-  };
+  }
 
   componentDidUpdate(prevProps) {
     const { openFamilyTabs, nativeCurrency, sections } = this.props;
@@ -595,17 +595,13 @@ class RecyclerAssetList extends Component {
 
   rlv = React.createRef();
 
-  contentSize = 0;
-
   layoutMeasurement = 0;
 
   position = 0;
 
   renderList = [];
-  savingsList = [];
-  savingsSumValue = 0;
 
-  checkEditStickyHeader = offsetY => {
+  checkEditStickyHeader(offsetY) {
     const offsetHeight = CoinRowHeight * (this.coinDividerIndex - 1) + 5;
     if (this.props.isCoinListEdited && offsetY > offsetHeight) {
       this.setState({ showCoinListEditor: true });
@@ -615,13 +611,13 @@ class RecyclerAssetList extends Component {
     ) {
       this.setState({ showCoinListEditor: false });
     }
-  };
+  }
 
-  scrollToOffset = (position, animated) => {
+  scrollToOffset(position, animated) {
     setTimeout(() => {
       this.rlv && this.rlv.scrollToOffset(0, position, animated);
     }, 5);
-  };
+  }
 
   getStableId = index => {
     const { dataProvider } = this.state;
@@ -666,7 +662,7 @@ class RecyclerAssetList extends Component {
     this.rlv = ref;
   };
 
-  handleOnLayout = ({ nativeEvent }) => {
+  handleOnLayout({ nativeEvent }) {
     // set globalDeviceDimensions
     // used in LayoutItemAnimator and auto-scroll logic above 👇
     const topMargin = nativeEvent.layout.y;
@@ -676,9 +672,9 @@ class RecyclerAssetList extends Component {
       topMargin -
       AssetListHeaderHeight -
       additionalPadding;
-  };
+  }
 
-  handleRefresh = () => {
+  handleRefresh() {
     if (this.state.isRefreshing) return;
 
     this.setState({ isRefreshing: true }, () => {
@@ -695,7 +691,7 @@ class RecyclerAssetList extends Component {
           }
         });
     });
-  };
+  }
 
   handleScroll = (_nativeEventObject, _, offsetY) => {
     if (this.props.isCoinListEdited) {
@@ -703,13 +699,15 @@ class RecyclerAssetList extends Component {
     }
   };
 
-  renderRefreshControl = () => (
-    <RefreshControl
-      onRefresh={this.handleRefresh}
-      refreshing={this.state.isRefreshing}
-      tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
-    />
-  );
+  renderRefreshControl() {
+    return (
+      <RefreshControl
+        onRefresh={this.handleRefresh}
+        refreshing={this.state.isRefreshing}
+        tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
+      />
+    );
+  }
 
   rowRenderer = (type, data, index) => {
     if (isNil(data) || isNil(index)) {
@@ -800,38 +798,34 @@ class RecyclerAssetList extends Component {
         overflow="hidden"
         onLayout={this.handleOnLayout}
       >
-        <PanGestureHandler enabled={isCoinListEdited}>
-          <StickyContainer
-            overrideRowRenderer={this.stickyRowRenderer}
-            stickyHeaderIndices={
-              isCoinListEdited ? [0] : stickyComponentsIndices
-            }
-          >
-            <RecyclerListView
-              dataProvider={dataProvider}
-              extendedState={{ headersIndices }}
-              externalScrollView={externalScrollView}
-              itemAnimator={new LayoutItemAnimator(this.rlv)}
-              layoutProvider={this.layoutProvider}
-              onScroll={this.handleScroll}
-              ref={this.handleListRef}
-              renderAheadOffset={renderAheadOffset}
-              rowRenderer={this.rowRenderer}
-              scrollIndicatorInsets={{
-                bottom: safeAreaInsetValues.bottom,
-                top: hideHeader ? 0 : AssetListHeaderHeight,
-              }}
-              scrollViewProps={{
-                refreshControl: fetchData && this.renderRefreshControl(),
-              }}
-              style={{
-                backgroundColor: colors.white,
-                flex: 1,
-                minHeight: 1,
-              }}
-            />
-          </StickyContainer>
-        </PanGestureHandler>
+        <StickyContainer
+          overrideRowRenderer={this.stickyRowRenderer}
+          stickyHeaderIndices={isCoinListEdited ? [0] : stickyComponentsIndices}
+        >
+          <RecyclerListView
+            dataProvider={dataProvider}
+            extendedState={{ headersIndices }}
+            externalScrollView={externalScrollView}
+            itemAnimator={this.animator}
+            layoutProvider={this.layoutProvider}
+            onScroll={this.handleScroll}
+            ref={this.handleListRef}
+            renderAheadOffset={renderAheadOffset}
+            rowRenderer={this.rowRenderer}
+            scrollIndicatorInsets={{
+              bottom: safeAreaInsetValues.bottom,
+              top: hideHeader ? 0 : AssetListHeaderHeight,
+            }}
+            scrollViewProps={{
+              refreshControl: fetchData && this.renderRefreshControl(),
+            }}
+            style={{
+              backgroundColor: colors.white,
+              flex: 1,
+              minHeight: 1,
+            }}
+          />
+        </StickyContainer>
       </View>
     );
   }
