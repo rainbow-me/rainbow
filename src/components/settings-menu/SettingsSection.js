@@ -199,11 +199,13 @@ const SettingsSection = ({
           onPress={onPressReview}
         />
       </ColumnWithDividers>
-      <ListItem
-        onPress={onPressDev}
-        justify="center"
-        label="🐙 Developer settings 🐙"
-      />
+      {__DEV__ && (
+        <ListItem
+          onPress={onPressDev}
+          justify="center"
+          label="🐙 Developer settings 🐙"
+        />
+      )}
       <Column align="center" flex={1} justify="end" paddingBottom={19}>
         <TouchableWithoutFeedback onPress={handleVersionPress}>
           <AppVersionStamp />

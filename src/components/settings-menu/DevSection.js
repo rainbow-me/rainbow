@@ -1,7 +1,11 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import Clipboard from '@react-native-community/clipboard';
 import React, { useCallback, useContext } from 'react';
+import { ScrollView } from 'react-native';
+import { DEV_SEEDS } from 'react-native-dotenv';
 import { DevContext } from '../../helpers/DevContext';
-import { RadioList, RadioListItem } from '../radio-list';
+import { ListFooter, ListItem } from '../list';
+import { RadioListItem } from '../radio-list';
 
 const DevSection = () => {
   const { config, setConfig } = useContext(DevContext);
@@ -14,35 +18,35 @@ const DevSection = () => {
   );
 
   return (
-    <>
-      <RadioListItem
-        label="Clear async storage"
-        selected={false}
-        onPress={AsyncStorage.clear}
+    <ScrollView>
+      <ListItem label="💥 Clear async storage" onPress={AsyncStorage.clear} />
+      <ListItem
+        onPress={() => {
+          // we cannot do import in prod
+          const RNRestart = require('react-native-restart');
+          RNRestart && RNRestart.default.Restart();
+        }}
+        label="🔄 Restart app"
       />
-      <RadioListItem
-        label="Restore default experimental config"
-        selected={false}
+      <ListItem
+        label="🤷 Restore default experimental config"
         onPress={() => AsyncStorage.removeItem('experimentalConfig')}
       />
-      {/*<RadioListItem label="Restart app" selected={false} onPress={() => {}} />*/}
-      {/*<RadioListItem label="Copy dev seeds" selected={false} onPress={() => {}} />*/}
-      <RadioList
-        extraData={config}
-        items={Object.keys(config).map(key => ({
-          key: key,
-          label: key,
-          value: key,
-        }))}
-        renderItem={props => (
-          <RadioListItem
-            {...props}
-            selected={!!config[props.value]}
-            onPress={() => onNetworkChange(props.value)}
-          />
-        )}
+      <ListItem
+        label="‍💻 Copy dev seeds"
+        onPress={() => Clipboard.setString(DEV_SEEDS)}
       />
-    </>
+      <ListFooter />
+
+      {Object.keys(config).map(key => (
+        <RadioListItem
+          label={key}
+          key={key}
+          selected={!!config[key]}
+          onPress={() => onNetworkChange(key)}
+        />
+      ))}
+    </ScrollView>
   );
 };
 
