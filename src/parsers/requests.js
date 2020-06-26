@@ -44,6 +44,11 @@ export const getRequestDisplayDetails = (payload, assets, nativeCurrency) => {
       transaction.nonce = 0;
     }
 
+    // Fallback for dapps sending no data
+    if (!transaction.data) {
+      transaction.data = '0x';
+    }
+
     return getTransactionDisplayDetails(
       transaction,
       assets,
