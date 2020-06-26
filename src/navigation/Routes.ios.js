@@ -1,15 +1,16 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
-import React from 'react';
+import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import { createNativeStackNavigator } from 'react-native-cool-modals/native-stack';
+// eslint-disable-next-line import/no-cycle
+import { InitialRouteContext } from '../App';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import DepositModal from '../screens/DepositModal';
-import EntryScreen from '../screens/EntryScreen';
 import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
 import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
@@ -111,19 +112,20 @@ function AddCashFlowNavigator() {
 }
 
 function MainNavigator() {
+  const initialRoute = useContext(InitialRouteContext);
+
   return (
     <Stack.Navigator
-      initialRouteName={Routes.ENTRY_SCREEN}
+      initialRouteName={initialRoute}
       {...stackNavigationConfig}
       screenOptions={defaultScreenStackOptions}
     >
-      <Stack.Screen name={Routes.ENTRY_SCREEN} component={EntryScreen} />
       <Stack.Screen name={Routes.SWIPE_LAYOUT} component={SwipeNavigator} />
       <Stack.Screen name={Routes.WELCOME_SCREEN} component={WelcomeScreen} />
       <Stack.Screen
         name={Routes.BACKUP_SHEET}
         component={BackupSheet}
-        options={bottomSheetPreset}
+        options={sheetPreset}
       />
       <Stack.Screen
         name={Routes.SAVINGS_SHEET}

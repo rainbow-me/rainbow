@@ -7,7 +7,7 @@ import BackupImportedStep from '../components/backup/BackupImportedStep';
 import BackupManualStep from '../components/backup/BackupManualStep';
 import BackupSheetFirstStep from '../components/backup/BackupSheetFirstStep';
 import { KeyboardFixedOpenLayout } from '../components/layout';
-import { Sheet } from '../components/sheet';
+import { SlackSheet } from '../components/sheet';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 
 const BackupSheet = () => {
@@ -64,7 +64,7 @@ const BackupSheet = () => {
     step,
   ]);
 
-  const sheet = <Sheet>{renderStep()}</Sheet>;
+  const sheet = <SlackSheet>{renderStep()}</SlackSheet>;
   if (step === WalletBackupTypes.cloud) {
     return (
       <HorizontalGestureBlocker>

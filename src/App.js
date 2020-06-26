@@ -5,7 +5,7 @@ import { init as initSentry, setRelease } from '@sentry/react-native';
 import { get } from 'lodash';
 import nanoid from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, createContext } from 'react';
 import { AppRegistry, AppState, unstable_enableLogBox } from 'react-native';
 import branch from 'react-native-branch';
 // eslint-disable-next-line import/default
@@ -31,13 +31,17 @@ import {
   showNetworkResponses,
 } from './config/debug';
 
+import { isNewOnboardingFlowAvailable } from './config/experimental';
 import monitorNetwork from './debugging/network';
 import handleDeeplink from './handlers/deeplinks';
 import { withAccountSettings } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
+import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
+// eslint-disable-next-line import/no-cycle
 import RoutesComponent from './navigation/Routes';
+import Routes from './navigation/routesNames';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
@@ -64,14 +68,17 @@ CodePush.getUpdateMetadata().then(update => {
 
 enableScreens();
 
+export const InitialRouteContext = createContext(null);
+
 class App extends Component {
   static propTypes = {
     requestsForTopic: PropTypes.func,
   };
 
-  state = { appState: AppState.currentState };
+  state = { appState: AppState.currentState, initialRoute: null };
 
   async componentDidMount() {
+    this.identifyFlow();
     AppState.addEventListener('change', this.handleAppStateChange);
     await this.handleInitializeAnalytics();
     saveFCMToken();
@@ -116,7 +123,18 @@ class App extends Component {
     this.backgroundNotificationListener();
     this.branchListener();
   }
-
+  identifyFlow = async () => {
+    if (isNewOnboardingFlowAvailable) {
+      const address = await loadAddress();
+      if (address) {
+        this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
+      } else {
+        this.setState({ initialRoute: Routes.WELCOME_SCREEN });
+      }
+    } else {
+      this.setState({ initialRoute: Routes.WELCOME_SCREEN });
+    }
+  };
   onRemoteNotification = notification => {
     const topic = get(notification, 'data.topic');
     setTimeout(() => {
@@ -189,7 +207,11 @@ class App extends Component {
     <SafeAreaProvider>
       <Provider store={store}>
         <FlexItem>
-          <RoutesComponent ref={this.handleNavigatorRef} />
+          {this.state.initialRoute && (
+            <InitialRouteContext.Provider value={this.state.initialRoute}>
+              <RoutesComponent ref={this.handleNavigatorRef} />
+            </InitialRouteContext.Provider>
+          )}
           <OfflineToast />
           <TestnetToast network={this.props.network} />
         </FlexItem>
