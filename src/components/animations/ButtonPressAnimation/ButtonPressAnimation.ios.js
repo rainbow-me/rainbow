@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { Platform } from 'react-native';
 import {
   createNativeWrapper,
   PureNativeButton,
@@ -15,7 +16,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import stylePropType from 'react-style-proptype';
 import { useMemoOne } from 'use-memo-one';
-import isNativeButtonAvailable from '../../../helpers/isNativeButtonAvailable';
+import useNativeButtonAvailable from '../../../helpers/isNativeButtonAvailable';
 import { useInteraction, useTransformOrigin } from '../../../hooks';
 import { directionPropType } from '../../../utils';
 import NativeButton from './NativeButton';
@@ -86,7 +87,7 @@ function usePressHandler({
   return [handlePress, createHandle, removeHandle];
 }
 
-const maybeProc = isNativeButtonAvailable ? a => a : proc;
+const maybeProc = Platform.OS === 'ios' ? a => a : proc;
 
 const ButtonPressAnimationProc = maybeProc(function(
   animationState,
@@ -378,9 +379,13 @@ function ButtonPressAnimationJS({
   );
 }
 
-const ButtonPressAnimation = isNativeButtonAvailable
-  ? NativeButton
-  : ButtonPressAnimationJS;
+const ButtonPressAnimation = props => {
+  const isNativeButtonAvailable = useNativeButtonAvailable();
+  const Component = isNativeButtonAvailable
+    ? NativeButton
+    : ButtonPressAnimationJS;
+  return <Component {...props} />;
+};
 
 export default ButtonPressAnimation;
 
@@ -400,9 +405,10 @@ ButtonPressAnimation.propTypes = {
   pressOutDuration: PropTypes.number,
   scaleTo: PropTypes.number,
   style: stylePropType,
-  transformOrigin: isNativeButtonAvailable
-    ? PropTypes.arrayOf(PropTypes.number)
-    : directionPropType,
+  transformOrigin: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.number),
+    directionPropType,
+  ]),
   useLateHaptic: PropTypes.bool,
 };
 

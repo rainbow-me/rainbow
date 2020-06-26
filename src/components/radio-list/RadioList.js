@@ -34,7 +34,7 @@ export default class RadioList extends PureComponent {
     createElement(this.props.renderItem, {
       ...item,
       onPress: this.handleChange,
-      selected: item.value === this.state.selected,
+      selected: item.forceSelected || item.value === this.state.selected,
     });
 
   render = () => <List {...this.props} renderItem={this.renderItem} />;

@@ -4,7 +4,9 @@ import { omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { createNativeStackNavigator } from 'react-native-cool-modals/native-stack';
-import { isNewOnboardingFlowAvailable } from '../config/experimental';
+import useExperimentalFlag, {
+  NEW_ONBOARDING,
+} from '../config/experimentalHooks';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
@@ -109,6 +111,8 @@ function AddCashFlowNavigator() {
 }
 
 function MainNavigator() {
+  const isNewOnboardingFlowAvailable = useExperimentalFlag(NEW_ONBOARDING);
+
   return (
     <Stack.Navigator
       initialRouteName={

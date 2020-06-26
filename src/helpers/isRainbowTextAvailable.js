@@ -1,5 +1,12 @@
 import { UIManager } from 'react-native';
-import { isRainbowTextAvailable } from '../config/experimental';
+import useExperimentalFlag, { RAINBOW_TEXT } from '../config/experimentalHooks';
 
-export default isRainbowTextAvailable &&
-  !!UIManager.getViewManagerConfig('RainbowText');
+const useNativeButtonAvailable = () => {
+  const isRainbowTextAvailable = useExperimentalFlag(RAINBOW_TEXT);
+
+  return (
+    isRainbowTextAvailable && !!UIManager.getViewManagerConfig('RainbowText')
+  );
+};
+
+export default useNativeButtonAvailable;

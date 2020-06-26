@@ -20,6 +20,7 @@ const Content = styled(Column).attrs({ shrink: 0 })`
   height: ${({ height }) => height};
   margin-top: ${({ fixedToTop }) => (fixedToTop ? 91 : 0)};
   width: 100%;
+  overflow: hidden;
 `;
 
 export default function Modal({
