@@ -45,19 +45,19 @@ const QRCodeSVG = ({
     for (let i = 0; i < 3; i++) {
       dots.push(
         <Rect
-          width={cellSize * (7 - i * 2)}
+          fill={i % 2 !== 0 ? 'white' : 'black'}
           height={cellSize * (7 - i * 2)}
+          rx={(i - 3) * -6 + (i === 0 ? 2 : 0)} // calculated border radius for corner squares
+          ry={(i - 3) * -6 + (i === 0 ? 2 : 0)} // calculated border radius for corner squares
+          width={cellSize * (7 - i * 2)}
           x={x1 + cellSize * i}
           y={y1 + cellSize * i}
-          fill={i % 2 !== 0 ? 'white' : 'black'}
-          rx={(i - 3) * -6 + (i === 0 ? 1 : 0)} // calculated border radius for corner squares
-          ry={(i - 3) * -6 + (i === 0 ? 1 : 0)} // calculated border radius for corner squares
         />
       );
     }
   });
 
-  const clearArenaSize = Math.floor(logoSize / cellSize);
+  const clearArenaSize = Math.floor((logoSize + 3) / cellSize);
   const matrixMiddleStart = matrix.length / 2 - clearArenaSize / 2;
   const matrixMiddleEnd = matrix.length / 2 + clearArenaSize / 2 - 1;
 
@@ -85,8 +85,8 @@ const QRCodeSVG = ({
               <Circle
                 cx={i * cellSize + cellSize / 2}
                 cy={j * cellSize + cellSize / 2}
-                r={cellSize / 3} // calculate size of single dots
                 fill="black"
+                r={cellSize / 3} // calculate size of single dots
               />
             );
           }
@@ -99,32 +99,32 @@ const QRCodeSVG = ({
   const logoWrapperSize = logoSize + logoMargin * 2;
 
   return (
-    <Svg width={size} height={size}>
+    <Svg height={size} width={size}>
       <Defs>
         <ClipPath id="clip-wrapper">
-          <Rect width={logoWrapperSize} height={logoWrapperSize} />
+          <Rect height={logoWrapperSize} width={logoWrapperSize} />
         </ClipPath>
         <ClipPath id="clip-logo">
-          <Rect width={logoSize} height={logoSize} />
+          <Rect height={logoSize} width={logoSize} />
         </ClipPath>
       </Defs>
-      <Rect width={size} height={size} fill="white" />
+      <Rect fill="white" height={size} width={size} />
       {dots}
       {logo && (
         <G x={logoPosition} y={logoPosition}>
           <Rect
-            width={logoWrapperSize}
-            height={logoWrapperSize}
-            fill={logoBackgroundColor}
             clipPath="url(#clip-wrapper)"
+            fill={logoBackgroundColor}
+            height={logoWrapperSize}
+            width={logoWrapperSize}
           />
           <G x={logoMargin} y={logoMargin}>
             <Image
-              width={logoSize}
-              height={logoSize}
-              preserveAspectRatio="xMidYMid slice"
-              href={logo}
               clipPath="url(#clip-logo)"
+              height={logoSize}
+              href={logo}
+              preserveAspectRatio="xMidYMid slice"
+              width={logoSize}
             />
           </G>
         </G>
