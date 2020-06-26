@@ -17,11 +17,7 @@ export default function SavingsListWrapper({ assets, totalValue = '0' }) {
         showSumValue
       />
       <View pointerEvents={isSavingsOpen ? 'auto' : 'none'}>
-        <OpacityToggler
-          endingOpacity={1}
-          isVisible={isSavingsOpen}
-          startingOpacity={0}
-        >
+        <OpacityToggler isVisible={!isSavingsOpen}>
           {assets.map(
             item =>
               item &&
