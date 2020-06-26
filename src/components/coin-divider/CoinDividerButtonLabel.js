@@ -15,17 +15,8 @@ const LabelText = styled(Text).attrs({
   top: -10.25;
 `;
 
-const CoinDividerButtonLabel = ({
-  endingOpacity,
-  isVisible,
-  label,
-  startingOpacity,
-}) => (
-  <OpacityToggler
-    endingOpacity={endingOpacity}
-    isVisible={isVisible}
-    startingOpacity={startingOpacity}
-  >
+const CoinDividerButtonLabel = ({ isVisible, label }) => (
+  <OpacityToggler isVisible={isVisible}>
     <LabelText>{label}</LabelText>
   </OpacityToggler>
 );

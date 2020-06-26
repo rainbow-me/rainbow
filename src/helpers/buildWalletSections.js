@@ -10,12 +10,8 @@ import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import EditOptions from '../helpers/editOptionTypes';
-import {
-  add,
-  convertAmountToNativeDisplay,
-  multiply,
-} from '../helpers/utilities';
 import { withNavigation } from '../navigation/Navigation';
+import Routes from '../navigation/routesNames';
 import {
   setHiddenCoins,
   setIsCoinListEdited,
@@ -23,7 +19,6 @@ import {
 } from '../redux/editOptions';
 import { setOpenSmallBalances } from '../redux/openStateSettings';
 import store from '../redux/store';
-import Routes from '../screens/Routes/routesNames';
 import { ethereumUtils } from '../utils';
 import {
   amountOfShowedCoins,
@@ -31,6 +26,7 @@ import {
   buildUniqueTokenList,
 } from './assets';
 import networkTypes from './networkTypes';
+import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;

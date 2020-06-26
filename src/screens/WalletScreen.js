@@ -1,6 +1,5 @@
 import { get } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
 import styled from 'styled-components/primitives';
@@ -27,13 +26,12 @@ import {
   useWallets,
   useWalletSectionsData,
 } from '../hooks';
-import { sheetVerticalOffset } from '../navigation/transitions/effects';
+import { sheetVerticalOffset } from '../navigation/effects';
 import { position } from '../styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
   pointerEvents: isVisible ? 'none' : 'auto',
-  startingOpacity: 1,
 }))`
   padding-top: 5;
   z-index: 1;
@@ -97,18 +95,16 @@ export default function WalletScreen() {
         isCoinListEdited={isCoinListEdited}
         isReadOnlyWallet={isReadOnlyWallet}
       >
-        <PanGestureHandler enabled={isCoinListEdited}>
-          <HeaderOpacityToggler isVisible={isCoinListEdited}>
-            <Header justify="space-between">
-              <ProfileHeaderButton />
-              {discoverSheetAvailable ? (
-                <DiscoverHeaderButton />
-              ) : (
-                <CameraHeaderButton />
-              )}
-            </Header>
-          </HeaderOpacityToggler>
-        </PanGestureHandler>
+        <HeaderOpacityToggler isVisible={isCoinListEdited}>
+          <Header justify="space-between">
+            <ProfileHeaderButton />
+            {discoverSheetAvailable ? (
+              <DiscoverHeaderButton />
+            ) : (
+              <CameraHeaderButton />
+            )}
+          </Header>
+        </HeaderOpacityToggler>
         <AssetList
           fetchData={refreshAccountData}
           isEmpty={isEmpty}
@@ -121,7 +117,7 @@ export default function WalletScreen() {
       {isCreatingAccount && (
         <LoadingOverlay
           paddingTop={sheetVerticalOffset}
-          title="Creating account..."
+          title="Creating wallet..."
         />
       )}
     </WalletPage>

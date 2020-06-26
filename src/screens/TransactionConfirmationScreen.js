@@ -1,14 +1,12 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get, isNil, omit } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, InteractionManager, Vibration } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
-import { withNavigationFocus } from 'react-navigation';
 import { useDispatch, useSelector } from 'react-redux';
-import { compose } from 'recompact';
 import styled from 'styled-components';
 import { Button, HoldToAuthorizeButton } from '../components/buttons';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
@@ -64,11 +62,14 @@ const TransactionType = styled(Text).attrs({ size: 'h5' })`
   margin-top: 6;
 `;
 
-const TransactionConfirmationScreen = ({ navigation }) => {
+const TransactionConfirmationScreen = () => {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
   const { gasPrices, startPollingGasPrices, stopPollingGasPrices } = useGas();
   const dispatch = useDispatch();
+  const { params: routeParams } = useRoute();
+  const { goBack } = useNavigation();
+
   const pendingRedirect = useSelector(
     ({ walletconnect }) => walletconnect.pendingRedirect
   );
@@ -91,12 +92,12 @@ const TransactionConfirmationScreen = ({ navigation }) => {
       peerId,
       requestId,
     },
-  } = navigation.state.params;
+  } = routeParams;
 
   const request = displayDetails.request;
 
   useEffect(() => {
-    const openAutomatically = get(navigation, 'state.params.openAutomatically');
+    const openAutomatically = routeParams?.openAutomatically;
     if (openAutomatically && !isEmulatorSync()) {
       Vibration.vibrate();
     }
@@ -104,21 +105,29 @@ const TransactionConfirmationScreen = ({ navigation }) => {
     InteractionManager.runAfterInteractions(() => {
       startPollingGasPrices();
     });
-  }, [startPollingGasPrices, navigation]);
+  }, [routeParams?.openAutomatically, startPollingGasPrices]);
 
-  const closeScreen = useCallback(() => {
-    navigation.goBack();
-    stopPollingGasPrices();
-    if (pendingRedirect) {
-      InteractionManager.runAfterInteractions(() => {
-        dispatch(walletConnectRemovePendingRedirect('sign'));
-      });
-    }
-  }, [navigation, stopPollingGasPrices, pendingRedirect, dispatch]);
+  const closeScreen = useCallback(
+    canceled => {
+      goBack();
+      stopPollingGasPrices();
+      if (pendingRedirect) {
+        InteractionManager.runAfterInteractions(() => {
+          let type = method === SEND_TRANSACTION ? 'transaction' : 'sign';
+
+          if (canceled) {
+            type = `${type}-canceled`;
+          }
+          dispatch(walletConnectRemovePendingRedirect(type));
+        });
+      }
+    },
+    [goBack, stopPollingGasPrices, pendingRedirect, method, dispatch]
+  );
 
   const onCancel = useCallback(async () => {
     try {
-      closeScreen();
+      closeScreen(true);
       if (callback) {
         callback({ error: 'User cancelled the request' });
       }
@@ -131,7 +140,7 @@ const TransactionConfirmationScreen = ({ navigation }) => {
       analytics.track(`Rejected WalletConnect ${rejectionType} request`);
     } catch (error) {
       logger.log('error while handling cancel request', error);
-      closeScreen();
+      closeScreen(true);
       Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
     }
   }, [
@@ -211,7 +220,7 @@ const TransactionConfirmationScreen = ({ navigation }) => {
         dispatch(removeRequest(requestId));
         await dispatch(walletConnectSendStatus(peerId, requestId, result));
       }
-      closeScreen();
+      closeScreen(false);
     } else {
       await onCancel();
     }
@@ -267,7 +276,7 @@ const TransactionConfirmationScreen = ({ navigation }) => {
       if (callback) {
         callback({ sig: flatFormatSignature });
       }
-      closeScreen();
+      closeScreen(false);
     } else {
       await onCancel();
     }
@@ -366,6 +375,7 @@ const TransactionConfirmationScreen = ({ navigation }) => {
           style={{ marginBottom: 24 }}
         />
         <Text
+          align="center"
           color="white"
           letterSpacing="roundedMedium"
           size="h4"
@@ -391,8 +401,4 @@ const TransactionConfirmationScreen = ({ navigation }) => {
   );
 };
 
-TransactionConfirmationScreen.propTypes = {
-  navigation: PropTypes.any,
-};
-
-export default compose(withNavigationFocus)(TransactionConfirmationScreen);
+export default TransactionConfirmationScreen;

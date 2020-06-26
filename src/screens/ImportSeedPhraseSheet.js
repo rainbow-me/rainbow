@@ -31,10 +31,10 @@ import {
   useTimeout,
 } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
-import { sheetVerticalOffset } from '../navigation/transitions/effects';
+import { sheetVerticalOffset } from '../navigation/effects';
+import Routes from '../navigation/routesNames';
 import { borders, colors, padding, shadow } from '../styles';
 import { logger } from '../utils';
-import Routes from './Routes/routesNames';
 
 const keyboardVerticalOffset =
   Platform.OS === 'android'
@@ -126,8 +126,10 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
 
   useEffect(() => {
     setAppearListener && setAppearListener(focusListener);
-    return () => setAppearListener && setAppearListener(null);
-  });
+    return () => {
+      setAppearListener && setAppearListener(null);
+    };
+  }, [focusListener, setAppearListener]);
 
   const handleSetSeedPhrase = useCallback(
     text => {
@@ -177,6 +179,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
       const ConfirmImportAlert = (name, onSuccess, navigate) =>
         navigate(Routes.MODAL_SCREEN, {
           actionType: 'Import',
+          additionalPadding: true,
           asset: [],
           isNewProfile: true,
           onCloseModal: args => {
@@ -184,7 +187,8 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
               onSuccess(args);
             }
           },
-          onRefocusInput: setAppearListener(focusListener),
+          onRefocusInput:
+            Platform.OS === 'ios' ? setAppearListener(focusListener) : null,
           profile: {
             name,
           },
@@ -222,7 +226,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     if (!wasImporting && isImporting) {
       startAnalyticsTimeout(async () => {
         const input = resolvedAddress ? resolvedAddress : seedPhrase.trim();
-        initializeWallet(input, color, name || '')
+        initializeWallet(input, color, name ? name : '')
           .then(success => {
             if (success) {
               analytics.track('Imported seed phrase', {
@@ -281,7 +285,11 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             onChangeText={handleSetSeedPhrase}
             onSubmitEditing={onPressImportButton}
             placeholder="Seed phrase, private key, Ethereum address or ENS name"
-            ref={isNativeStackAvailable ? inputRef : inputRefListener}
+            ref={
+              isNativeStackAvailable || Platform.OS === 'android'
+                ? inputRef
+                : inputRefListener
+            }
             returnKeyType="done"
             size="large"
             spellCheck={false}
@@ -313,5 +321,4 @@ ImportSeedPhraseSheet.propTypes = {
   setAppearListener: PropTypes.func,
 };
 
-const neverRerender = () => true;
-export default React.memo(ImportSeedPhraseSheet, neverRerender);
+export default ImportSeedPhraseSheet;

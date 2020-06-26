@@ -287,6 +287,12 @@
     "decimals": 18,
     "exchangeAddress": "0x5048b9d01097498fd72f3f14bc9bc74a5aac8fa7"
   },
+  "0x04fa0d235c4abf4bcf4787af4cf447de572ef828": {
+    "symbol": "UMA",
+    "name": "UMA",
+    "decimals": 18,
+    "exchangeAddress": "0x6264c8d158f32bd8c01b8a0102b57dfcfcfb8561"
+  },
   "0x23B608675a2B2fB1890d3ABBd85c5775c51691d5": {
     "symbol": "SOCKS",
     "name": "Unisocks Edition 0",

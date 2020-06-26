@@ -1,24 +1,35 @@
 import React from 'react';
-import { Animated, StatusBar, View } from 'react-native';
+import { Animated, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { HeaderHeightWithStatusBar } from '../../components/header';
-import { AvatarCircle } from '../../components/profile';
-import { colors } from '../../styles';
-import { deviceUtils } from '../../utils';
-import { transformOrigin } from './transformOriginAnimated';
+import { HeaderHeightWithStatusBar } from '../components/header';
+import { AvatarCircle } from '../components/profile';
+import { transformOrigin } from '../helpers/transformOriginAnimated';
+import { colors } from '../styles';
+import { deviceUtils } from '../utils';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
 export let swapDetailsTransitionPosition = new Animated.Value(0);
 
-const backgroundInterpolator = ({ current: { progress: current } }) => {
+const backgroundInterpolator = ({
+  current: { progress: current },
+  layouts: { screen },
+}) => {
   const cardOpacity = current.interpolate({
     inputRange: [0, 1],
     outputRange: [0, 1],
   });
 
+  const translateY = current.interpolate({
+    inputRange: [0, 1, 2],
+    outputRange: [screen.height, 0, 0],
+  });
+
   return {
     cardStyle: {
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
       opacity: cardOpacity,
     },
   };
@@ -280,17 +291,10 @@ const gestureResponseDistance = {
   vertical: deviceUtils.dimensions.height,
 };
 
-export const onTransitionStart = props => {
-  if (props.closing) {
-    StatusBar.setBarStyle('dark-content');
-  } else {
-    StatusBar.setBarStyle('light-content');
-  }
-};
-
 export const backgroundPreset = {
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: backgroundInterpolator,
+  gestureResponseDistance,
 };
 
 export const emojiPreset = {
@@ -330,7 +334,6 @@ export const emojiPreset = {
   gestureDirection: 'vertical-inverted',
   gestureEnabled: false,
   gestureResponseDistance,
-  onTransitionStart,
   transitionSpec: { close: closeSpec, open: emojiOpenSpec },
 };
 
@@ -342,7 +345,6 @@ export const exchangePreset = {
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
-  onTransitionStart,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
@@ -354,7 +356,6 @@ export const expandedPreset = {
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
-  onTransitionStart,
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 
@@ -388,7 +389,6 @@ export const expandedPresetReverse = {
   cardTransparent: true,
   gestureDirection: 'vertical-inverted',
   gestureResponseDistance,
-  onTransitionStart,
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 
@@ -400,8 +400,17 @@ export const sheetPreset = {
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
-  onTransitionStart,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+};
+
+export const exchangeModalPreset = {
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: () => ({
+    overlayStyle: {
+      backgroundColor: 'transparent',
+    },
+  }),
+  gestureResponseDistance,
 };
 
 export const swapDetailsPreset = {

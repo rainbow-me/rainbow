@@ -49,6 +49,7 @@ export const getTransactionReceipt = txHash =>
 export const isHexString = value => ethers.utils.isHexString(value);
 
 export const isHexStringIgnorePrefix = value => {
+  if (!value) return false;
   const trimmedValue = value.trim();
   const updatedValue = addHexPrefix(trimmedValue);
   return isHexString(updatedValue);

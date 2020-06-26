@@ -1,7 +1,7 @@
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
-
 import Divider from '../components/Divider';
 import { SavingsCoinRow } from '../components/coin-row';
 import {
@@ -19,26 +19,24 @@ import { isSymbolStablecoin } from '../helpers/savings';
 import { convertAmountToNativeDisplay } from '../helpers/utilities';
 import { useAccountSettings, useWallets } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
+import Routes from '../navigation/routesNames';
 import { colors, padding } from '../styles';
-import Routes from './Routes/routesNames';
 
 const SavingsSheet = () => {
-  const { getParam, navigate, goBack } = useNavigation();
+  const { navigate, goBack } = useNavigation();
+  const { params } = useRoute();
   const { isReadOnlyWallet } = useWallets();
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
-  const cTokenBalance = getParam('cTokenBalance');
-  const isEmpty = getParam('isEmpty');
-  const underlyingBalanceNativeValue = getParam('underlyingBalanceNativeValue');
-  const underlying = getParam('underlying');
-  const underlyingPrice = getParam('underlyingPrice');
-  const lifetimeSupplyInterestAccrued = getParam(
-    'lifetimeSupplyInterestAccrued'
-  );
-  const lifetimeSupplyInterestAccruedNative = getParam(
-    'lifetimeSupplyInterestAccruedNative'
-  );
-  const supplyBalanceUnderlying = getParam('supplyBalanceUnderlying');
-  const supplyRate = getParam('supplyRate');
+  const cTokenBalance = params['cTokenBalance'];
+  const isEmpty = params['isEmpty'];
+  const underlyingBalanceNativeValue = params['underlyingBalanceNativeValue'];
+  const underlying = params['underlying'];
+  const underlyingPrice = params['underlyingPrice'];
+  const lifetimeSupplyInterestAccrued = params['lifetimeSupplyInterestAccrued'];
+  const lifetimeSupplyInterestAccruedNative =
+    params['lifetimeSupplyInterestAccruedNative'];
+  const supplyBalanceUnderlying = params['supplyBalanceUnderlying'];
+  const supplyRate = params['supplyRate'];
 
   const balance = nativeCurrencySymbol + underlyingBalanceNativeValue;
   const lifetimeAccruedInterest = convertAmountToNativeDisplay(
