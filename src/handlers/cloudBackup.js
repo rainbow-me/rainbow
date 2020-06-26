@@ -13,11 +13,8 @@ export async function deleteAllBackups() {
     scope: 'hidden',
     targetPath: REMOTE_BACKUP_WALLET_DIR,
   });
-  console.log('BACKUPS?', backups);
   backups.files.forEach(async file => {
-    console.log('=== FILE ====', file.name);
     await RNCloudFs.deleteFromCloud(file);
-    console.log('=== FILE DELETED', file.name);
   });
 }
 
@@ -27,7 +24,6 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
   try {
     // Store it on the FS first
     const path = `${RNFS.DocumentDirectoryPath}/${filename}`;
-    console.log('File stored locally at ', path);
     await RNFS.writeFile(path, encryptedData, 'utf8');
     const sourceUri = { path };
     const destinationPath = `${REMOTE_BACKUP_WALLET_DIR}/${filename}`;
@@ -40,7 +36,6 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
       sourcePath: sourceUri,
       targetPath: destinationPath,
     });
-    console.log('File copied to cloud at ', destinationPath);
     // Now we need to verify the file has been stored in the cloud
     const exists = await RNCloudFs.fileExists({
       scope,
@@ -50,10 +45,8 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
     if (!exists) {
       return false;
     }
-    console.log('File exists', exists);
 
     await RNFS.unlink(path);
-    console.log('File deleted', path);
     return filename;
   } catch (e) {
     logger.log('Error during encryptAndSaveDataToCloud', e);
@@ -133,7 +126,6 @@ export async function getDataFromCloud(backupPassword, filename = null) {
 export async function backupUserDataIntoCloud(data) {
   const filename = USERDATA_FILE;
   const password = RAINBOW_MASTER_KEY;
-  console.log('Saving user data into cloud', data, password, filename);
   return encryptAndSaveDataToCloud(data, password, filename);
 }
 

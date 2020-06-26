@@ -12,7 +12,6 @@ const BackupSection = ({ navigation }) => {
   const { params } = useRoute();
   const wallet_id = params?.wallet_id;
   const activeWallet = (wallet_id && wallets[wallet_id]) || selectedWallet;
-  console.log('active wallet =>', activeWallet);
   if (
     !wallet_id &&
     Object.keys(wallets).filter(

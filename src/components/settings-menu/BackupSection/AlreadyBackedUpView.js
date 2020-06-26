@@ -97,7 +97,6 @@ const AlreadyBackedUpView = () => {
       let password = null;
       if (latestBackup) {
         password = await fetchBackupPassword();
-        console.log('password??', password);
         // If we can't get the password, we need to prompt it again
         if (!password) {
           navigate(Routes.BACKUP_SHEET, {

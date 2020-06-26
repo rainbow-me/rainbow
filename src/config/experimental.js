@@ -9,5 +9,5 @@ export const chartExpandedAvailable = false;
 export const nativeTransactionListAvailable = true;
 export const nativeButtonPressAnimationAvailable = true;
 export const isAvatarPickerAvailable = false;
-export const isNewOnboardingFlowAvailable = false;
+export const isNewOnboardingFlowAvailable = true;
 export const isRainbowTextAvailable = true;

@@ -29,7 +29,6 @@ import { Text } from '../components/text';
 import { web3Provider } from '../handlers/web3';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { isENSAddressFormat, isValidWallet } from '../helpers/validators';
-import WalletTypes from '../helpers/walletTypes';
 import {
   useAccountSettings,
   useClipboard,
@@ -101,7 +100,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet } = useWallets();
   const { clipboard } = useClipboard();
-  const { navigate, setParams } = useNavigation();
+  const { goBack, navigate, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
@@ -241,14 +240,17 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
               analytics.track('Imported seed phrase', {
                 hadPreviousAddressWithValue: isEmpty,
               });
-              navigate(Routes.WALLET_SCREEN);
+              goBack();
               InteractionManager.runAfterInteractions(() => {
-                if (selectedWallet.type !== WalletTypes.readOnly) {
-                  navigate(Routes.BACKUP_SHEET, {
-                    option: 'imported',
-                    wallet_id: selectedWallet.id,
-                  });
-                }
+                navigate(Routes.SWIPE_LAYOUT);
+                setTimeout(() => {
+                  // If it's not read only, show the backup sheet
+                  if (!(isENSAddressFormat(input) || isValidAddress(input))) {
+                    navigate(Routes.BACKUP_SHEET, {
+                      option: 'imported',
+                    });
+                  }
+                }, 1000);
               });
             } else {
               toggleImporting(false);
@@ -262,6 +264,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     }
   }, [
     color,
+    goBack,
     initializeWallet,
     isEmpty,
     isImporting,

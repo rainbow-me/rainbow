@@ -1,5 +1,6 @@
 import MaskedView from '@react-native-community/masked-view';
-import React, { useEffect, useRef } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { Animated, Easing, StyleSheet } from 'react-native';
 import Reanimated, {
   Clock,
@@ -14,6 +15,7 @@ import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { Emoji, Text } from '../components/text';
 import { useHideSplashScreen } from '../hooks';
+import Routes from '../navigation/routesNames';
 import { colors, shadow } from '../styles';
 
 const {
@@ -329,8 +331,9 @@ function colorAnimation(rValue, fromShadow) {
 }
 
 export default function WelcomeScreen() {
+  const { navigate } = useNavigation();
   const contentAnimation = useAnimatedValue(1);
-  const importButtonAnimation = useAnimatedValue(1);
+  const createWalletButtonAnimation = useAnimatedValue(1);
   const hideSplashScreen = useHideSplashScreen();
 
   useEffect(() => {
@@ -353,12 +356,12 @@ export default function WelcomeScreen() {
       ]),
       Animated.loop(
         Animated.sequence([
-          Animated.timing(importButtonAnimation.current, {
+          Animated.timing(createWalletButtonAnimation.current, {
             duration: 1000,
             toValue: 1.02,
             useNativeDriver: true,
           }),
-          Animated.timing(importButtonAnimation.current, {
+          Animated.timing(createWalletButtonAnimation.current, {
             duration: 1000,
             toValue: 0.98,
             useNativeDriver: true,
@@ -367,17 +370,17 @@ export default function WelcomeScreen() {
       ),
     ]).start();
     return () => {
-      importButtonAnimation.current.setValue(1);
+      createWalletButtonAnimation.current.setValue(1);
       contentAnimation.current.setValue(1);
     };
-  }, [contentAnimation, importButtonAnimation]);
+  }, [contentAnimation, hideSplashScreen, createWalletButtonAnimation]);
 
   const buttonStyle = useMemoOne(
     () => ({
-      transform: [{ scale: importButtonAnimation.current }],
+      transform: [{ scale: createWalletButtonAnimation.current }],
       zIndex: 10,
     }),
-    [importButtonAnimation]
+    [createWalletButtonAnimation]
   );
 
   const contentStyle = useMemoOne(
@@ -388,18 +391,23 @@ export default function WelcomeScreen() {
         },
       ],
     }),
-    [importButtonAnimation]
+    [createWalletButtonAnimation]
   );
 
   const rValue = useReanimatedValue(0);
 
   const backgroundColor = useMemoOne(() => colorAnimation(rValue, false), []);
 
-  const importButtonProps = useMemoOne(() => {
+  const onCreateWallet = useCallback(() => {
+    navigate(Routes.SWIPE_LAYOUT);
+  }, []);
+
+  const createWalletButtonProps = useMemoOne(() => {
     const color = colorAnimation(rValue, true);
     return {
       emoji: 'european_castle',
       height: 54,
+      onPress: onCreateWallet,
       shadowStyle: {
         backgroundColor: backgroundColor,
         shadowColor: color,
@@ -414,6 +422,10 @@ export default function WelcomeScreen() {
     };
   }, [rValue]);
 
+  const showRestoreSheet = useCallback(() => {
+    navigate(Routes.RESTORE_SHEET);
+  }, []);
+
   const existingWalletButtonProps = useMemoOne(() => {
     return {
       darkShadowStyle: {
@@ -421,6 +433,7 @@ export default function WelcomeScreen() {
       },
       emoji: 'old_key',
       height: 56,
+      onPress: showRestoreSheet,
       shadowStyle: {
         opacity: 0,
       },
@@ -451,7 +464,7 @@ export default function WelcomeScreen() {
         </MaskedView>
 
         <ButtonWrapper style={buttonStyle}>
-          <RainbowButton {...importButtonProps} />
+          <RainbowButton {...createWalletButtonProps} />
         </ButtonWrapper>
         <ButtonWrapper>
           <RainbowButton {...existingWalletButtonProps} />

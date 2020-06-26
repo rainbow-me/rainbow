@@ -5,11 +5,7 @@ import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { removeWalletData } from '../../handlers/localstorage/removeWallet';
-import {
-  useAccountSettings,
-  useInitializeWallet,
-  useWallets,
-} from '../../hooks';
+import { useAccountSettings, useInitializeWallet } from '../../hooks';
 import { fetchBackupPassword, saveBackupPassword } from '../../model/keychain';
 import { restoreCloudBackup } from '../../model/wallet';
 import { walletsLoadState } from '../../redux/wallets';
@@ -105,7 +101,6 @@ const RestoreIcloudStep = ({ userData }) => {
   const { goBack } = useNavigation();
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
-  const { selectedWallet } = useWallets();
   const { accountAddress } = useAccountSettings();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
@@ -161,19 +156,15 @@ const RestoreIcloudStep = ({ userData }) => {
 
   const onSubmit = useCallback(async () => {
     try {
-      console.log('calling restoreCloudBackup with', password, userData);
       const success = await restoreCloudBackup(password, userData);
       if (success) {
         // Store it in the keychain in case it was missing
         await saveBackupPassword(password);
         // Get rid of the current wallet
-        console.log('getting rid of the current wallet data');
         await removeWalletData(accountAddress);
 
         // Reload the wallets
-        console.log('reloading wallets');
         await dispatch(walletsLoadState());
-        console.log('SELECTED WALLET IS NOW', selectedWallet);
         await initializeWallet();
         goBack();
         setTimeout(() => {
@@ -185,17 +176,8 @@ const RestoreIcloudStep = ({ userData }) => {
       }
     } catch (e) {
       Alert.alert('Error while restoring backup');
-      console.log('after alert', e);
     }
-  }, [
-    accountAddress,
-    dispatch,
-    goBack,
-    initializeWallet,
-    password,
-    selectedWallet,
-    userData,
-  ]);
+  }, [accountAddress, dispatch, goBack, initializeWallet, password, userData]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();

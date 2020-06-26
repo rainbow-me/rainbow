@@ -17,6 +17,7 @@ import {
   setSelectedWallet,
 } from '../model/wallet';
 import { settingsUpdateAccountAddress } from '../redux/settings';
+import { logger } from '../utils';
 
 // -- Constants --------------------------------------- //
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
@@ -69,9 +70,6 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     });
 
     if (!selectedAddress) {
-      console.log(
-        '[DEBUG] We didnt find that wallet, selecting the first one!'
-      );
       const account = selectedWallet.addresses.find(a => a.visible);
       await dispatch(settingsUpdateAccountAddress(account.address));
       await saveAddress(account.address);
@@ -150,12 +148,10 @@ export const setWalletBackedUp = (
   }
 
   if (method === WalletBackupTypes.cloud) {
-    console.log('SAVING WALLET USERDATA');
     try {
-      const userData = await backupUserDataIntoCloud({ wallets: newWallets });
-      console.log('WALLET  USERDATA SAVED', userData);
+      await backupUserDataIntoCloud({ wallets: newWallets });
     } catch (e) {
-      console.log('SAVING WALLET  USERDATA FAILED', e);
+      logger.error('SAVING WALLET USERDATA FAILED', e);
     }
   }
 };

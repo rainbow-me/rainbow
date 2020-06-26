@@ -17,7 +17,6 @@ const RestoreSheet = () => {
 
   useEffect(() => {
     const initialize = async () => {
-      console.log('fetching fetchUserDataFromCloud');
       const data = await fetchUserDataFromCloud();
       setUserData(data);
     };
@@ -31,12 +30,12 @@ const RestoreSheet = () => {
 
   const onManualRestore = useCallback(() => {
     goBack();
-    navigate(Routes.IMPORT_SEED_PHRASE_SHEET);
+    navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
   }, [goBack, navigate]);
 
   const onWatchAddress = useCallback(() => {
     goBack();
-    navigate(Routes.IMPORT_SEED_PHRASE_SHEET);
+    navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
   }, [goBack, navigate]);
 
   const renderStep = useCallback(() => {

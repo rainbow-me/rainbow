@@ -131,7 +131,11 @@ const RestoreSheetFirstStep = ({
         </SheetRow>
         <Divider color={colors.rowDividerLight} inset={[0, 30]} />
 
-        <SheetRow scaleTo={0.9} onPress={onWatchAddress}>
+        <SheetRow
+          as={ButtonPressAnimation}
+          scaleTo={0.9}
+          onPress={onWatchAddress}
+        >
           <Column>
             <TextIcon color={colors.mintDark}>􀒒</TextIcon>
             <Title>Watch an Ethereum address </Title>
