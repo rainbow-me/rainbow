@@ -8,7 +8,7 @@ import TouchableBackdrop from '../components/TouchableBackdrop';
 import { Centered, Column } from '../components/layout';
 import ShareButton from '../components/qr-code/ShareButton';
 import ShareInfo from '../components/qr-code/ShareInfo';
-import { useAccountProfile } from '../hooks';
+import { useAccountProfile, useClipboard } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { colors } from '../styles';
 
@@ -26,11 +26,12 @@ const QRwrapper = styled(Column)`
 `;
 
 const ReceiveModal = () => {
-  const { goBack } = useNavigation();
   const accountAddress = useSelector(({ settings: { accountAddress } }) =>
     toLower(accountAddress)
   );
   const { accountName } = useAccountProfile();
+  const { goBack } = useNavigation();
+  const { setClipboard } = useClipboard();
 
   return (
     <Centered flex={1} bottom={16}>
@@ -47,7 +48,11 @@ const ReceiveModal = () => {
         >
           <QRCodeDisplay size={QRCodeSize} value={accountAddress} />
         </QRwrapper>
-        <ShareInfo accountAddress={accountAddress} accountName={accountName} />
+        <ShareInfo
+          accountAddress={accountAddress}
+          accountName={accountName}
+          onPress={() => setClipboard(accountAddress)}
+        />
         <ShareButton
           onPress={() =>
             Share.share({

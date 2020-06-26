@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForPropTypes } from 'recompact';
 import styled from 'styled-components/primitives';
-import { useClipboard } from '../../hooks';
 import { colors, fonts } from '../../styles';
 import { haptics } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -25,9 +24,7 @@ const AddressWrapper = styled.View`
   margin-top: 5px;
 `;
 
-const ShareInfo = ({ accountAddress, accountName }) => {
-  const { setClipboard } = useClipboard();
-
+const ShareInfo = ({ accountAddress, accountName, onPress }) => {
   return (
     <Column>
       <Text
@@ -60,7 +57,7 @@ const ShareInfo = ({ accountAddress, accountName }) => {
                 onPress={() => {
                   haptics.impactLight();
                   onNewEmoji();
-                  setClipboard(accountAddress);
+                  onPress();
                 }}
               />
             </ButtonPressAnimation>
