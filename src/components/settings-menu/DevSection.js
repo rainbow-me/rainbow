@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import Clipboard from '@react-native-community/clipboard';
 import React, { useCallback, useContext } from 'react';
 import { ScrollView } from 'react-native';
-import { DEV_SEEDS } from 'react-native-dotenv';
+// uncomment after adding DEV_SEEDS to env
+// import Clipboard from '@react-native-community/clipboard';
+// import { DEV_SEEDS } from 'react-native-dotenv';
 import { DevContext } from '../../helpers/DevContext';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
@@ -32,10 +33,10 @@ const DevSection = () => {
         label="🤷 Restore default experimental config"
         onPress={() => AsyncStorage.removeItem('experimentalConfig')}
       />
-      <ListItem
-        label="‍💻 Copy dev seeds"
-        onPress={() => Clipboard.setString(DEV_SEEDS)}
-      />
+      {/*<ListItem*/}
+      {/*  label="‍💻 Copy dev seeds"*/}
+      {/*  onPress={() => Clipboard.setString(DEV_SEEDS)}*/}
+      {/*/>*/}
       <ListFooter />
 
       {Object.keys(config).map(key => (
