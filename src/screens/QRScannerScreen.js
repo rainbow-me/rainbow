@@ -14,7 +14,9 @@ import {
   WalletConnectExplainer,
   WalletConnectList,
 } from '../components/walletconnect-list';
-import { discoverSheetAvailable } from '../config/experimental';
+import useExperimentalFlag, {
+  DISCOVER_SHEET,
+} from '../config/experimentalHooks';
 import { colors, position } from '../styles';
 import { isNewValueForObjectPaths } from '../utils';
 
@@ -33,6 +35,7 @@ const QRScannerScreen = ({
   const { result: isEmulator } = useIsEmulator();
   const insets = useSafeArea();
   const isFocused = useIsFocused();
+  const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
 
   return (
     <View>

@@ -2,7 +2,7 @@ import AnimatedNumber from '@rainbow-me/react-native-animated-number';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Platform, requireNativeComponent, StyleSheet } from 'react-native';
-import isRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
+import useRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
 import { formatSavingsAmount, isSymbolStablecoin } from '../../helpers/savings';
 import { colors, fonts } from '../../styles';
 
@@ -26,10 +26,6 @@ const sx = StyleSheet.create({
   },
 });
 
-const TextComponent = isRainbowTextAvailable
-  ? requireNativeComponent('RainbowText')
-  : AnimatedNumber;
-
 const SavingsListRowAnimatedNumber = ({
   initialValue,
   interval,
@@ -44,6 +40,11 @@ const SavingsListRowAnimatedNumber = ({
         : `${formatSavingsAmount(val)} ${symbol}`,
     [symbol]
   );
+
+  const isRainbowTextAvailable = useRainbowTextAvailable();
+  const TextComponent = isRainbowTextAvailable
+    ? requireNativeComponent('RainbowText')
+    : AnimatedNumber;
 
   return (
     <TextComponent

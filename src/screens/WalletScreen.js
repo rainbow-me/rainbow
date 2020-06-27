@@ -14,7 +14,9 @@ import {
 } from '../components/header';
 import { Page } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
-import { discoverSheetAvailable } from '../config/experimental';
+import useExperimentalFlag, {
+  DISCOVER_SHEET,
+} from '../config/experimentalHooks';
 import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import networkInfo from '../helpers/networkInfo';
 import {
@@ -43,6 +45,7 @@ const WalletPage = styled(Page)`
 `;
 
 export default function WalletScreen() {
+  const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
   const [initialized, setInitialized] = useState(false);
   const initializeWallet = useInitializeWallet();
   const refreshAccountData = useRefreshAccountData();
