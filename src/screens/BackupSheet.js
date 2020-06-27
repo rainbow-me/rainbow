@@ -11,9 +11,9 @@ import WalletBackupTypes from '../helpers/walletBackupTypes';
 
 const switchSheetContentTransition = (
   <Transition.Sequence>
-    <Transition.Out interpolation="easeOut" type="fade" />
-    <Transition.Change durationMs={500} interpolation="easeOut" />
-    <Transition.In durationMs={500} interpolation="easeOut" type="fade" />
+    <Transition.Out durationMs={0.1} interpolation="easeOut" type="fade" />
+    <Transition.Change durationMs={150} interpolation="easeOut" />
+    <Transition.In durationMs={400} interpolation="easeOut" type="fade" />
   </Transition.Sequence>
 );
 
@@ -38,7 +38,7 @@ const BackupSheet = () => {
     goBack();
   }, [goBack]);
 
-  const renderStep = () => {
+  const renderStep = useCallback(() => {
     switch (step) {
       case 'imported':
         return (
@@ -63,7 +63,14 @@ const BackupSheet = () => {
           />
         );
     }
-  };
+  }, [
+    missingPassword,
+    onIcloudBackup,
+    onIgnoreBackup,
+    onManualBackup,
+    password,
+    step,
+  ]);
 
   return (
     <SlackSheet>
