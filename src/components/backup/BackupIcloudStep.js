@@ -1,10 +1,18 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Dimensions, View } from 'react-native';
+import {
+  Alert,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+  StatusBar,
+  View,
+} from 'react-native';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
+import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import { useWallets } from '../../hooks';
 import * as keychain from '../../model/keychain';
@@ -13,14 +21,32 @@ import {
   backupWalletToCloud,
 } from '../../model/wallet';
 import { setWalletBackedUp } from '../../redux/wallets';
-import { colors, padding } from '../../styles';
-import { logger } from '../../utils';
+import { borders, colors, padding } from '../../styles';
+import { deviceUtils, logger } from '../../utils';
 import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
-import { Centered, Column, Row } from '../layout';
+import { Column, Row } from '../layout';
 import { SheetButton } from '../sheet';
 import { GradientText, Text } from '../text';
+
+const sheetHeight = deviceUtils.dimensions.height - 150;
+
+const SheetContainer = isNativeStackAvailable
+  ? styled(Column)`
+      background-color: ${colors.white};
+      height: ${sheetHeight};
+    `
+  : styled(Column)`
+      ${borders.buildRadius('top', 16)};
+      background-color: ${colors.white};
+      height: 100%;
+    `;
+
+const Container = styled(Column)`
+  background-color: ${colors.transparent};
+  height: 100%;
+`;
 
 const Shadow = styled(ShadowStack).attrs({
   borderRadius: 16,
@@ -138,6 +164,12 @@ const BackupIcloudStep = () => {
   );
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
+
+  useEffect(() => {
+    setTimeout(() => {
+      passwordRef.current.focus();
+    }, 1);
+  }, []);
 
   const onPasswordFocus = useCallback(() => {
     setPasswordFocused(true);
@@ -294,65 +326,72 @@ const BackupIcloudStep = () => {
   const onPressInfo = useCallback(() => null, []);
 
   return (
-    <Centered direction="column">
-      <Row paddingBottom={15} paddingTop={24}>
-        <TopIcon />
-      </Row>
-      <Title>Choose a password</Title>
-      <DescriptionText>
-        Please use a password you&apos;ll remember.
-        <ImportantText>&nbsp;It can&apos;t be recovered!</ImportantText>
-        &nbsp;
-        <InfoIcon onPress={onPressInfo}>􀅵</InfoIcon>
-      </DescriptionText>
-      <InputsWrapper>
-        <Shadow>
-          <PasswordInput
-            placeholder="Backup Password"
-            autoFocus
-            onFocus={onPasswordFocus}
-            onBlur={onPasswordBlur}
-            onSubmitEditing={onPasswordSubmit}
-            onChange={onPasswordChange}
-            returnKeyType="next"
-            ref={passwordRef}
-            value={password}
-          />
-          {password.length >= 8 && <GreenCheckmarkIcon />}
-          {password !== '' &&
-            password.length < 8 &&
-            !passwordRef.current.isFocused() && <WarningIcon />}
-        </Shadow>
-        <Shadow>
-          <PasswordInput
-            placeholder="Confirm Password"
-            onChange={onConfirmPasswordChange}
-            onSubmitEditing={onConfirmPasswordSubmit}
-            returnKeyType="done"
-            ref={confirmPasswordRef}
-            value={confirmPassword}
-          />
-          {validPassword && <GreenCheckmarkIcon />}
-          {confirmPassword !== '' &&
-            confirmPassword.length >= 8 &&
-            confirmPassword.length >= password.length &&
-            confirmPassword !== password && <WarningIcon />}
-        </Shadow>
-      </InputsWrapper>
-      <Column css={padding(19, 15, 30)} width="100%">
-        {validPassword ? (
-          <RainbowButton label={label} onPress={onConfirmBackup} />
-        ) : (
-          <SheetButton
-            color={!validPassword && colors.grey}
-            gradientBackground={validPassword}
-            label={label}
-            onPress={onConfirmBackup}
-            disabled={!validPassword}
-          />
-        )}
-      </Column>
-    </Centered>
+    <SheetContainer>
+      <StatusBar barStyle="light-content" />
+      <KeyboardAvoidingView
+        enabled={Platform.OS !== 'android'}
+        behavior="padding"
+      >
+        <Container align="center">
+          <Row paddingBottom={15} paddingTop={24}>
+            <TopIcon />
+          </Row>
+          <Title>Choose a password</Title>
+          <DescriptionText>
+            Please use a password you&apos;ll remember.
+            <ImportantText>&nbsp;It can&apos;t be recovered!</ImportantText>
+            &nbsp;
+            <InfoIcon onPress={onPressInfo}>􀅵</InfoIcon>
+          </DescriptionText>
+          <InputsWrapper>
+            <Shadow>
+              <PasswordInput
+                placeholder="Backup Password"
+                onFocus={onPasswordFocus}
+                onBlur={onPasswordBlur}
+                onSubmitEditing={onPasswordSubmit}
+                onChange={onPasswordChange}
+                returnKeyType="next"
+                ref={passwordRef}
+                value={password}
+              />
+              {password.length >= 8 && <GreenCheckmarkIcon />}
+              {password !== '' &&
+                password.length < 8 &&
+                !passwordRef.current.isFocused() && <WarningIcon />}
+            </Shadow>
+            <Shadow>
+              <PasswordInput
+                placeholder="Confirm Password"
+                onChange={onConfirmPasswordChange}
+                onSubmitEditing={onConfirmPasswordSubmit}
+                returnKeyType="done"
+                ref={confirmPasswordRef}
+                value={confirmPassword}
+              />
+              {validPassword && <GreenCheckmarkIcon />}
+              {confirmPassword !== '' &&
+                confirmPassword.length >= 8 &&
+                confirmPassword.length >= password.length &&
+                confirmPassword !== password && <WarningIcon />}
+            </Shadow>
+          </InputsWrapper>
+          <Column css={padding(19, 15, 40)} width="100%">
+            {validPassword ? (
+              <RainbowButton label={label} onPress={onConfirmBackup} />
+            ) : (
+              <SheetButton
+                color={!validPassword && colors.grey}
+                gradientBackground={validPassword}
+                label={label}
+                onPress={onConfirmBackup}
+                disabled={!validPassword}
+              />
+            )}
+          </Column>
+        </Container>
+      </KeyboardAvoidingView>
+    </SheetContainer>
   );
 };
 

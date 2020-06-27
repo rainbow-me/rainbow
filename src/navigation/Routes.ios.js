@@ -123,11 +123,6 @@ function MainNavigator() {
       <Stack.Screen name={Routes.SWIPE_LAYOUT} component={SwipeNavigator} />
       <Stack.Screen name={Routes.WELCOME_SCREEN} component={WelcomeScreen} />
       <Stack.Screen
-        name={Routes.BACKUP_SHEET}
-        component={BackupSheet}
-        options={sheetPreset}
-      />
-      <Stack.Screen
         name={Routes.SAVINGS_SHEET}
         component={SavingsSheet}
         options={bottomSheetPreset}
@@ -279,6 +274,11 @@ function NativeStackNavigator() {
           springDamping: 1,
           transitionDuration: 0.25,
         }}
+      />
+      <Stack.Screen
+        name={Routes.BACKUP_SHEET}
+        component={BackupSheet}
+        options={expandedAssetSheetConfig}
       />
       {isNativeStackAvailable && (
         <>

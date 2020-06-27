@@ -1,26 +1,36 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useCallback, useState } from 'react';
-import HorizontalGestureBlocker from '../components/HorizontalGestureBlocker';
+import React, { useCallback, useRef, useState } from 'react';
+import { Transition, Transitioning } from 'react-native-reanimated';
 import BackupConfirmPasswordStep from '../components/backup/BackupConfirmPasswordStep';
 import BackupIcloudStep from '../components/backup/BackupIcloudStep';
 import BackupImportedStep from '../components/backup/BackupImportedStep';
 import BackupManualStep from '../components/backup/BackupManualStep';
 import BackupSheetFirstStep from '../components/backup/BackupSheetFirstStep';
-import { KeyboardFixedOpenLayout } from '../components/layout';
 import { SlackSheet } from '../components/sheet';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 
+const switchSheetContentTransition = (
+  <Transition.Sequence>
+    <Transition.Out interpolation="easeOut" type="fade" />
+    <Transition.Change durationMs={500} interpolation="easeOut" />
+    <Transition.In durationMs={500} interpolation="easeOut" type="fade" />
+  </Transition.Sequence>
+);
+
 const BackupSheet = () => {
   const { goBack } = useNavigation();
+  const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
   const [step, setStep] = useState(params?.option || 'first');
   const password = params?.password || null;
   const missingPassword = params?.missingPassword || null;
   const onIcloudBackup = useCallback(() => {
+    switchSheetContentTransitionRef.current?.animateNextTransition();
     setStep(WalletBackupTypes.cloud);
   }, []);
 
   const onManualBackup = useCallback(() => {
+    switchSheetContentTransitionRef.current?.animateNextTransition();
     setStep(WalletBackupTypes.manual);
   }, []);
 
@@ -28,9 +38,7 @@ const BackupSheet = () => {
     goBack();
   }, [goBack]);
 
-  const nativeStackAdditionalPadding = 75;
-
-  const renderStep = useCallback(() => {
+  const renderStep = () => {
     switch (step) {
       case 'imported':
         return (
@@ -55,29 +63,18 @@ const BackupSheet = () => {
           />
         );
     }
-  }, [
-    missingPassword,
-    onIcloudBackup,
-    onIgnoreBackup,
-    onManualBackup,
-    password,
-    step,
-  ]);
+  };
 
-  const sheet = <SlackSheet>{renderStep()}</SlackSheet>;
-  if (step === WalletBackupTypes.cloud) {
-    return (
-      <HorizontalGestureBlocker>
-        <KeyboardFixedOpenLayout
-          additionalPadding={nativeStackAdditionalPadding}
-        >
-          {sheet}
-        </KeyboardFixedOpenLayout>
-      </HorizontalGestureBlocker>
-    );
-  }
-
-  return sheet;
+  return (
+    <SlackSheet>
+      <Transitioning.View
+        ref={switchSheetContentTransitionRef}
+        transition={switchSheetContentTransition}
+      >
+        {renderStep()}
+      </Transitioning.View>
+    </SlackSheet>
+  );
 };
 
 export default React.memo(BackupSheet);

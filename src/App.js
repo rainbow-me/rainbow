@@ -134,6 +134,11 @@ class App extends Component {
     } else {
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
     }
+    setTimeout(() => {
+      Navigation.handleAction(Routes.BACKUP_SHEET, {
+        option: 'imported',
+      });
+    }, 1000);
   };
   onRemoteNotification = notification => {
     const topic = get(notification, 'data.topic');
