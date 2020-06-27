@@ -152,11 +152,6 @@ function MainNavigator() {
         component={ExchangeModalNavigator}
         options={exchangePreset}
       />
-      <Stack.Screen
-        name={Routes.RESTORE_SHEET}
-        component={RestoreSheet}
-        options={bottomSheetPreset}
-      />
       {isNativeStackAvailable && (
         <Stack.Screen
           name={Routes.MODAL_SCREEN}
@@ -278,6 +273,11 @@ function NativeStackNavigator() {
       <Stack.Screen
         name={Routes.BACKUP_SHEET}
         component={BackupSheet}
+        options={expandedAssetSheetConfig}
+      />
+      <Stack.Screen
+        name={Routes.RESTORE_SHEET}
+        component={RestoreSheet}
         options={expandedAssetSheetConfig}
       />
       {isNativeStackAvailable && (

@@ -1,16 +1,24 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
-import HorizontalGestureBlocker from '../components/HorizontalGestureBlocker';
-import { KeyboardFixedOpenLayout } from '../components/layout';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Transition, Transitioning } from 'react-native-reanimated';
 import RestoreIcloudStep from '../components/restore/RestoreIcloudStep';
 import RestoreSheetFirstStep from '../components/restore/RestoreSheetFirstStep';
-import { Sheet } from '../components/sheet';
+import { SlackSheet } from '../components/sheet';
 import { fetchUserDataFromCloud } from '../handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import Routes from '../navigation/routesNames';
 
+const switchSheetContentTransition = (
+  <Transition.Sequence>
+    <Transition.Out durationMs={0.1} interpolation="easeOut" type="fade" />
+    <Transition.Change durationMs={150} interpolation="easeOut" />
+    <Transition.In durationMs={400} interpolation="easeOut" type="fade" />
+  </Transition.Sequence>
+);
+
 const RestoreSheet = () => {
   const { goBack, navigate } = useNavigation();
+  const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
   const [step, setStep] = useState(params?.option || 'first');
   const [userData, setUserData] = useState();
@@ -25,6 +33,7 @@ const RestoreSheet = () => {
   }, []);
 
   const onIcloudRestore = useCallback(() => {
+    switchSheetContentTransitionRef.current?.animateNextTransition();
     setStep(WalletBackupTypes.cloud);
   }, []);
 
@@ -54,16 +63,16 @@ const RestoreSheet = () => {
     }
   }, [onIcloudRestore, onManualRestore, onWatchAddress, step, userData]);
 
-  const sheet = <Sheet>{renderStep()}</Sheet>;
-  if (step === WalletBackupTypes.cloud) {
-    return (
-      <HorizontalGestureBlocker>
-        <KeyboardFixedOpenLayout>{sheet}</KeyboardFixedOpenLayout>
-      </HorizontalGestureBlocker>
-    );
-  }
-
-  return sheet;
+  return (
+    <SlackSheet>
+      <Transitioning.View
+        ref={switchSheetContentTransitionRef}
+        transition={switchSheetContentTransition}
+      >
+        {renderStep()}
+      </Transitioning.View>
+    </SlackSheet>
+  );
 };
 
 export default React.memo(RestoreSheet);
