@@ -273,7 +273,7 @@ function NativeStackNavigator() {
       <Stack.Screen
         name={Routes.BACKUP_SHEET}
         component={BackupSheet}
-        options={expandedAssetSheetConfig}
+        {...sharedCoolModalConfig}
       />
       <Stack.Screen
         name={Routes.RESTORE_SHEET}
