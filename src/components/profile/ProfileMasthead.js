@@ -1,5 +1,4 @@
 import analytics from '@segment/analytics-react-native';
-import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import useExperimentalFlag, {
@@ -62,7 +61,7 @@ export default function ProfileMasthead({
   accountAddress,
   addCashAvailable,
   recyclerListRef,
-  showBottomDivider,
+  showBottomDivider = true,
 }) {
   const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
@@ -161,13 +160,3 @@ export default function ProfileMasthead({
     </Column>
   );
 }
-
-ProfileMasthead.propTypes = {
-  accountAddress: PropTypes.string,
-  addCashAvailable: PropTypes.bool,
-  showBottomDivider: PropTypes.bool,
-};
-
-ProfileMasthead.defaultProps = {
-  showBottomDivider: true,
-};
