@@ -1,9 +1,10 @@
-import { useIsFocused } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
+import Animated, { useCode } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
+import styled from 'styled-components/native';
 import { BubbleSheet } from '../components/bubble-sheet';
 import { Button } from '../components/buttons';
 import { DiscoverSheet } from '../components/discover-sheet';
@@ -17,8 +18,33 @@ import {
 import useExperimentalFlag, {
   DISCOVER_SHEET,
 } from '../config/experimentalHooks';
+import { scrollPosition } from '../navigation/helpers';
 import { colors, position } from '../styles';
-import { isNewValueForObjectPaths } from '../utils';
+import { magicMemo } from '../utils';
+
+const DimmedView = styled(Animated.View)`
+  flex: 1;
+  width: 100%;
+`;
+
+const Background = styled.View`
+  background-color: black;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+`;
+
+const { greaterThan, onChange, call } = Animated;
+
+const Dim = ({ children }) => (
+  <DimmedView
+    style={{ opacity: Animated.min(Animated.sub(scrollPosition, 1), 0.9) }}
+  >
+    {children}
+  </DimmedView>
+);
+
+const ENABLING_CAMERA_OFFSET = 1.01;
 
 const QRScannerScreen = ({
   enableScanning,
@@ -34,8 +60,18 @@ const QRScannerScreen = ({
 }) => {
   const { result: isEmulator } = useIsEmulator();
   const insets = useSafeArea();
-  const isFocused = useIsFocused();
   const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
+  const [isFocused, setIsFocused] = useState(false);
+  useCode(
+    () =>
+      onChange(
+        greaterThan(scrollPosition, ENABLING_CAMERA_OFFSET),
+        call([scrollPosition], ([pos]) =>
+          setIsFocused(pos > ENABLING_CAMERA_OFFSET)
+        )
+      ),
+    []
+  );
 
   return (
     <View>
@@ -46,17 +82,20 @@ const QRScannerScreen = ({
         direction="column"
         overflow="hidden"
       >
-        <QRCodeScanner
-          {...props}
-          contentPositionBottom={sheetHeight}
-          contentPositionTop={HeaderHeight}
-          enableCamera={isFocused}
-          enableScanning={enableScanning && isFocused}
-          isCameraAuthorized={isCameraAuthorized}
-          isEmulator={isEmulator}
-          onSuccess={onScanSuccess}
-          showCrosshairText={!!walletConnectorsCount}
-        />
+        <Background />
+        <Dim>
+          <QRCodeScanner
+            {...props}
+            contentPositionBottom={sheetHeight}
+            contentPositionTop={HeaderHeight}
+            enableCamera={isFocused}
+            enableScanning={enableScanning}
+            isCameraAuthorized={isCameraAuthorized}
+            isEmulator={isEmulator}
+            onSuccess={onScanSuccess}
+            showCrosshairText={!!walletConnectorsCount}
+          />
+        </Dim>
         {discoverSheetAvailable ? null : (
           <BubbleSheet bottom={insets.bottom ? 21 : 0} onLayout={onSheetLayout}>
             {walletConnectorsCount ? (
@@ -90,27 +129,10 @@ const QRScannerScreen = ({
   );
 };
 
-QRScannerScreen.propTypes = {
-  enableScanning: PropTypes.bool,
-  isCameraAuthorized: PropTypes.bool,
-  isFocused: PropTypes.bool.isRequired,
-  modalVisible: PropTypes.bool.isRequired,
-  onPressBackButton: PropTypes.func,
-  onPressPasteSessionUri: PropTypes.func,
-  onScanSuccess: PropTypes.func,
-  onSheetLayout: PropTypes.func,
-  sheetHeight: PropTypes.number,
-  walletConnectorsByDappName: PropTypes.arrayOf(PropTypes.object),
-  walletConnectorsCount: PropTypes.number,
-};
-
-const arePropsEqual = (prev, next) =>
-  !isNewValueForObjectPaths(prev, next, [
-    'enableScanning',
-    'isCameraAuthorized',
-    'sheetHeight',
-    'walletConnectorsCount',
-    'modalVisible',
-  ]);
-
-export default React.memo(QRScannerScreen, arePropsEqual);
+export default magicMemo(QRScannerScreen, [
+  'enableScanning',
+  'isCameraAuthorized',
+  'modalVisible',
+  'sheetHeight',
+  'walletConnectorsCount',
+]);
