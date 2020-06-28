@@ -28,10 +28,10 @@ const DimmedView = styled(Animated.View)`
 `;
 
 const Background = styled.View`
-  position: absolute;
   background-color: black;
-  width: 100%;
   height: 100%;
+  position: absolute;
+  width: 100%;
 `;
 
 const { greaterThan, onChange, call } = Animated;
