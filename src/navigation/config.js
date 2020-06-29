@@ -1,4 +1,4 @@
-import { Platform, StatusBar } from 'react-native';
+import { Keyboard, Platform, StatusBar } from 'react-native';
 import { deviceUtils } from '../utils';
 import { onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
@@ -31,6 +31,13 @@ export const nativeStackConfig = {
       appearListener.current && appearListener.current();
     },
     onDismissed: onDidPop,
+    onTouchTop: ({ nativeEvent: { dismissing } }) => {
+      if (dismissing) {
+        Keyboard.dismiss();
+      } else {
+        appearListener.current && appearListener.current();
+      }
+    },
     onWillDismiss: () => {
       onWillPop();
       StatusBar.setBarStyle('dark-content');
