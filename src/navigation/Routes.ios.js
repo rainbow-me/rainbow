@@ -259,7 +259,7 @@ function NativeStackNavigator() {
         component={ExpandedAssetSheetWrapper}
         {...expandedAssetSheetConfig}
       />
-      <Stack.Screen
+      <NativeStack.Screen
         name={Routes.CHANGE_WALLET_SHEET}
         component={ChangeWalletSheet}
         options={{
@@ -270,12 +270,18 @@ function NativeStackNavigator() {
           transitionDuration: 0.25,
         }}
       />
-      <Stack.Screen
+      <NativeStack.Screen
         name={Routes.BACKUP_SHEET}
         component={BackupSheet}
-        {...sharedCoolModalConfig}
+        options={{
+          allowsDragToDismiss: false,
+          customStack: true,
+          isShortFormEnabled: true,
+          onAppear: null,
+          startFromShortForm: true,
+        }}
       />
-      <Stack.Screen
+      <NativeStack.Screen
         name={Routes.RESTORE_SHEET}
         component={RestoreSheet}
         options={expandedAssetSheetConfig}
