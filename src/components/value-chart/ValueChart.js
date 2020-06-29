@@ -2,15 +2,27 @@ import deepEqual from 'fbjs/lib/areEqual';
 import { maxBy, minBy } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
+import { TextInput } from 'react-native';
 import { State } from 'react-native-gesture-handler';
 import Animated, { Clock, Easing, Value } from 'react-native-reanimated';
 import { contains, delay, getPointAtLength, timing } from 'react-native-redash';
+import { fonts } from '../../styles';
 import { deviceUtils } from '../../utils';
 import ActivityIndicator from '../ActivityIndicator';
 import { Centered, Column, Row } from '../layout';
 import AnimatedChart from './AnimatedChart';
 import GestureWrapper from './GestureWrapper';
 import TimestampText from './TimestampText';
+import ValueText from './ValueText';
+
+const dateOptions = {
+  day: 'numeric',
+  hour: '2-digit',
+  hour12: true,
+  minute: '2-digit',
+  month: 'short',
+  weekday: 'short',
+};
 
 const {
   and,
@@ -169,9 +181,6 @@ export default class Chart extends PureComponent {
 
     /* specify what kind of chart will be displayed */
     mode: PropTypes.oneOf(['gesture-managed', 'detailed', 'simplified']),
-
-    /* callback that returns value of original data x for touched y */
-    onValueUpdate: PropTypes.func,
   };
 
   static defaultProps = {
@@ -386,6 +395,30 @@ export default class Chart extends PureComponent {
 
     return (
       <Fragment>
+        <ValueText
+          change="2.3"
+          currentValue="123123"
+          date={123123123}
+          direction
+          headerText="PRICE"
+          value={72}
+          ref={ref => (this.textRef = ref)}
+        >
+          <TextInput
+            ref={ref => (this.dataTextRef = ref)}
+            pointerEvent="none"
+            editable={false}
+          />
+          <TextInput
+            ref={ref => (this.valueTextRef = ref)}
+            pointerEvent="none"
+            editable={false}
+            style={{
+              size: fonts.size.h2,
+              weight: fonts.weight.bold,
+            }}
+          />
+        </ValueText>
         <GestureWrapper
           enabled={this.props.enableSelect}
           onHandlerStateChange={this.onHandlerStateChange}
@@ -473,27 +506,55 @@ export default class Chart extends PureComponent {
                   // This is the value displayed in <ValueText />
                   const points = currentData?.points;
                   if (points) {
-                    this.props.onValueUpdate(points[points.length - 1].y);
+                    this.dataTextRef.setNativeProps({
+                      text: new Date(
+                        points[points.length - 1].y * 1000
+                      ).toLocaleDateString('en-US', dateOptions),
+                    });
+                    this.valueTextRef.setNativeProps({
+                      text: points[points.length - 1].y.toFixed(5).toString(),
+                    });
                   }
                 }),
                 set(this.shouldSpring, 0),
               ]),
               onChange(
                 this.touchX,
-                call([this.translateY], ([y]) => {
-                  const max = maxValue.y;
-                  const min = minValue.y;
-                  const height = 160;
-                  const points = currentData?.points;
-                  if (points) {
-                    const multiplier = (max - min) / height;
-                    let result = -y * multiplier + min;
-                    if (result > max) {
-                      result = max;
-                    } else if (result < min) {
-                      result = min;
+                call([this.translateX, this.translateY], ([x, y]) => {
+                  const curX = x - (x % 10);
+                  if (curX !== this.currentX) {
+                    this.currentX = curX;
+                    const max = maxValue.y;
+                    const min = minValue.y;
+                    const height = 160;
+                    const points = currentData?.points;
+                    if (points) {
+                      const maxDate = points[points.length - 1].x;
+                      const minDate = points[0].x;
+                      const multiplierX = (maxDate - minDate) / (width - 5);
+                      const multiplierY = (max - min) / height;
+                      const date = x * multiplierX + minDate;
+                      let result = -y * multiplierY + min;
+                      if (result > max) {
+                        result = max;
+                      } else if (result < min) {
+                        result = min;
+                      }
+                      // 11:40 AM Thu, Jun 25
+                      this.dataTextRef.setNativeProps({
+                        text: new Date(date * 1000).toLocaleString('en-US', {
+                          day: 'numeric',
+                          hour: '2-digit',
+                          hour12: true,
+                          minute: '2-digit',
+                          month: 'short',
+                          weekday: 'short',
+                        }),
+                      });
+                      this.valueTextRef.setNativeProps({
+                        text: result.toFixed(5).toString(),
+                      });
                     }
-                    this.props.onValueUpdate(result);
                   }
                 })
               )

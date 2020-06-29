@@ -49,6 +49,7 @@ const Chart = ({ asset, color, latestPrice, setChartPrice, ...props }) => {
       <ValueChart
         amountOfPathPoints={amountOfPathPoints}
         barColor={color}
+        change={toFixedDecimals(change, 2)}
         currentDataSource={currentChartIndex}
         currentValue={latestPrice}
         data={chartData}
@@ -68,4 +69,4 @@ const Chart = ({ asset, color, latestPrice, setChartPrice, ...props }) => {
   );
 };
 
-export default React.memo(Chart);
+export default Chart;
