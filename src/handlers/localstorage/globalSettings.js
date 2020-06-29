@@ -30,7 +30,7 @@ export const getNativeCurrency = () => getGlobal(NATIVE_CURRENCY, 'USD');
 export const saveNativeCurrency = nativeCurrency =>
   saveGlobal(NATIVE_CURRENCY, nativeCurrency);
 
-export const getImageMetadata = () => getGlobal(IMAGE_METADATA);
+export const getImageMetadata = () => getGlobal(IMAGE_METADATA, {});
 
 export const saveImageMetadata = imageMetadata =>
   saveGlobal(IMAGE_METADATA, imageMetadata);
