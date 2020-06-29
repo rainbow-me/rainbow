@@ -27,10 +27,9 @@ import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
-import { SheetButton } from '../sheet';
 import { GradientText, Text } from '../text';
 
-const sheetHeight = deviceUtils.dimensions.height - 150;
+const sheetHeight = deviceUtils.dimensions.height - 108;
 
 const SheetContainer = isNativeStackAvailable
   ? styled(Column)`
@@ -49,11 +48,11 @@ const Container = styled(Column)`
 `;
 
 const Shadow = styled(ShadowStack).attrs({
-  borderRadius: 16,
-  height: 49,
+  borderRadius: 23,
+  height: 46,
   shadows: [
-    [0, 10, 30, colors.dark, 0.1],
-    [0, 5, 15, colors.dark, 0.04],
+    [0, 5, 15, colors.dark, 0.06],
+    [0, 10, 30, colors.dark, 0.12],
   ],
   width: Dimensions.get('window').width - 130,
 })`
@@ -63,25 +62,25 @@ const Shadow = styled(ShadowStack).attrs({
 
 const InputsWrapper = styled(View)`
   align-items: center;
-  height: 150;
+  height: 111;
 `;
 
 const PasswordInput = styled(Input).attrs({
   blurOnSubmit: false,
-  letterSpacing: 0.2,
+  placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.4),
   secureTextEntry: true,
   size: 'large',
-  weight: 'normal',
+  type: 'password',
+  weight: 'semibold',
 })`
   padding-left: 19;
-  padding-right: 40;
-  padding-top: 15;
-  padding-bottom: 15;
+  padding-right: 46;
+  padding-top: 11;
 `;
 
 const IconWrapper = styled(View)`
-  margin-bottom: 12;
   height: 22;
+  margin-bottom: 12;
   position: absolute;
   right: 12;
   top: 12;
@@ -92,7 +91,7 @@ const Title = styled(Text).attrs({
   size: 'big',
   weight: 'bold',
 })`
-  margin-bottom: 12;
+  margin-bottom: 10;
 `;
 
 const DescriptionText = styled(Text).attrs({
@@ -101,25 +100,25 @@ const DescriptionText = styled(Text).attrs({
   lineHeight: 'looser',
   size: 'large',
 })`
-  padding-bottom: 30;
+  padding-bottom: 39;
   padding-left: 50;
   padding-right: 50;
 `;
 
 const ImportantText = styled(Text).attrs({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
+  color: colors.alpha(colors.blueGreyDark, 0.6),
   lineHeight: 'looser',
   size: 'large',
-  weight: '600',
+  weight: 'medium',
 })``;
 
-const InfoIcon = styled(Text).attrs({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.15),
-  lineHeight: 'looser',
-  size: 'large',
-})``;
+// const InfoIcon = styled(Text).attrs({
+//   align: 'center',
+//   color: colors.alpha(colors.blueGreyDark, 0.15),
+//   lineHeight: 'looser',
+//   size: 'large',
+// })``;
 
 const WarningIcon = () => (
   <IconWrapper>
@@ -134,17 +133,15 @@ const GreenCheckmarkIcon = () => (
 
 const TopIcon = () => (
   <GradientText
-    align="center"
     angle={false}
-    letterSpacing="roundedTight"
-    weight="bold"
-    colors={['#FFB114', '#FF54BB', '#00F0FF']}
-    end={{ x: 0, y: 0 }}
-    start={{ x: 1, y: 1 }}
-    steps={[0, 0.5, 1]}
-    size={52}
+    colors={['#FFB114', '#FF54BB', '#7EA4DE']}
+    end={{ x: 0, y: 0.5 }}
+    start={{ x: 1, y: 0.5 }}
+    steps={[0, 0.774321, 1]}
   >
-    <Text size={52}>􀌍</Text>
+    <Text align="center" size={43} weight="medium">
+      􀌍
+    </Text>
   </GradientText>
 );
 
@@ -160,7 +157,7 @@ const BackupIcloudStep = () => {
   const [confirmPassword, setConfirmPassword] = useState(loadedPassword);
 
   const [label, setLabel] = useState(
-    loadedPassword ? '􀙶 Add to iCloud Backup' : '􀙶 Confirm Backup'
+    !validPassword ? '􀙶 Add to iCloud Backup' : '􀙶 Confirm Backup'
   );
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
@@ -194,13 +191,9 @@ const BackupIcloudStep = () => {
     }
 
     let newLabel = '';
-    if (passwordIsValid || (password === '' && confirmPassword === '')) {
+    if (passwordIsValid) {
       newLabel = loadedPassword ? '􀙶 Add to iCloud Backup' : '􀙶 Confirm Backup';
-    } else if (
-      password !== '' &&
-      password.length < 8 &&
-      passwordRef.current.isFocused()
-    ) {
+    } else if (password.length < 8) {
       newLabel = 'Minimum 8 characters';
     } else if (
       password !== '' &&
@@ -323,7 +316,7 @@ const BackupIcloudStep = () => {
     validPassword && onConfirmBackup();
   }, [onConfirmBackup, validPassword]);
 
-  const onPressInfo = useCallback(() => null, []);
+  // const onPressInfo = useCallback(() => null, []);
 
   return (
     <SheetContainer>
@@ -333,7 +326,7 @@ const BackupIcloudStep = () => {
         behavior="padding"
       >
         <Container align="center">
-          <Row paddingBottom={15} paddingTop={24}>
+          <Row paddingBottom={15} paddingTop={9}>
             <TopIcon />
           </Row>
           <Title>Choose a password</Title>
@@ -341,7 +334,7 @@ const BackupIcloudStep = () => {
             Please use a password you&apos;ll remember.
             <ImportantText>&nbsp;It can&apos;t be recovered!</ImportantText>
             &nbsp;
-            <InfoIcon onPress={onPressInfo}>􀅵</InfoIcon>
+            {/* <InfoIcon onPress={onPressInfo}>􀅵</InfoIcon> */}
           </DescriptionText>
           <InputsWrapper>
             <Shadow>
@@ -376,18 +369,12 @@ const BackupIcloudStep = () => {
                 confirmPassword !== password && <WarningIcon />}
             </Shadow>
           </InputsWrapper>
-          <Column css={padding(19, 15, 40)} width="100%">
-            {validPassword ? (
-              <RainbowButton label={label} onPress={onConfirmBackup} />
-            ) : (
-              <SheetButton
-                color={!validPassword && colors.grey}
-                gradientBackground={validPassword}
-                label={label}
-                onPress={onConfirmBackup}
-                disabled={!validPassword}
-              />
-            )}
+          <Column css={padding(49, 15, 40)} width="100%">
+            <RainbowButton
+              disabled={!validPassword}
+              label={label}
+              onPress={onConfirmBackup}
+            />
           </Column>
         </Container>
       </KeyboardAvoidingView>
