@@ -8,6 +8,7 @@
 
 #import <React/RCTViewManager.h>
 #import <React/RCTBridgeModule.h>
+#import <CoreText/CoreText.h>
 
 
 @interface RainbowText:UILabel
@@ -46,7 +47,22 @@
   _fmt.maximumFractionDigits = 9;
   _fmt.minimumFractionDigits = 9;
   _time = NSDate.date.timeIntervalSince1970;
-  self.font = [UIFont fontWithName:@"SFRounded-Bold" size:16];
+  UIFont* font = [UIFont fontWithName:@"SFRounded-Bold" size:16];
+  
+  UIFontDescriptor *const existingDescriptor = [font fontDescriptor];
+
+  NSDictionary *const fontAttributes = @{
+
+  UIFontDescriptorFeatureSettingsAttribute: @[
+   @{
+     UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
+     UIFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)
+    }
+  ]};
+
+  UIFontDescriptor *const monospacedDescriptor = [existingDescriptor  fontDescriptorByAddingAttributes: fontAttributes];
+  
+  self.font = [UIFont fontWithDescriptor: monospacedDescriptor size: [font pointSize]];
 }
 
 - (void) animate {
