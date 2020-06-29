@@ -67,7 +67,7 @@ index 8648e95..0307579 100644
  @property (nonatomic) NSNumber* cornerRadius;
  @property (nonatomic) RNSScreenStackAnimation stackAnimation;
 diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreen.m b/node_modules/react-native-cool-modals/ios/RNCMScreen.m
-index 7c27c15..1207609 100644
+index 7c27c15..6c720f0 100644
 --- a/node_modules/react-native-cool-modals/ios/RNCMScreen.m
 +++ b/node_modules/react-native-cool-modals/ios/RNCMScreen.m
 @@ -6,6 +6,7 @@
@@ -88,10 +88,19 @@ index 7c27c15..1207609 100644
    }
  
    return self;
-@@ -55,6 +57,20 @@ - (void)willDismiss {
+@@ -55,6 +57,29 @@ - (void)willDismiss {
    _onWillDismiss(nil);
  }
  
++- (void) setIsShortFormEnabled:(BOOL)isShortFormEnabled {
++  _isShortFormEnabled = isShortFormEnabled;
++  SEL selector = NSSelectorFromString(@"panModalSetNeedsLayoutUpdateWrapper");
++  UIViewController* controller = [self.controller valueForKey:@"_parentVC"];
++
++  [controller performSelector:selector];
++  
++}
++
 +- (void)jumpTo:(nonnull NSNumber*)point {
 +  SEL selector = NSSelectorFromString(@"jumpToLong:");
 +  UIViewController* controller = [self.controller valueForKey:@"_parentVC"];
@@ -109,7 +118,7 @@ index 7c27c15..1207609 100644
  - (void)reactSetFrame:(CGRect)frame
  {
    if (![self.reactViewController.parentViewController
-@@ -370,17 +386,31 @@ - (void)notifyFinishTransitioning
+@@ -370,17 +395,31 @@ - (void)notifyFinishTransitioning
  
  @implementation RNCMScreenManager
  
@@ -141,7 +150,7 @@ index 7c27c15..1207609 100644
  
  RCT_EXPORT_VIEW_PROPERTY(onWillDismiss, RCTDirectEventBlock);
  RCT_EXPORT_VIEW_PROPERTY(springDamping, NSNumber)
-@@ -395,6 +425,8 @@ @implementation RNCMScreenManager
+@@ -395,6 +434,8 @@ @implementation RNCMScreenManager
  RCT_EXPORT_VIEW_PROPERTY(allowsTapToDismiss, BOOL)
  RCT_EXPORT_VIEW_PROPERTY(allowsDragToDismiss, BOOL)
  RCT_EXPORT_VIEW_PROPERTY(startFromShortForm, BOOL)
@@ -197,7 +206,7 @@ index b397efb..83777bf 100644
      finish();
    }
 diff --git a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-index b21a043..d29a661 100644
+index b21a043..cd0b28b 100644
 --- a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 +++ b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 @@ -28,6 +28,7 @@ class PossiblyTouchesPassableUIView: UIView {
@@ -213,7 +222,7 @@ index b21a043..d29a661 100644
    }
    
 +  @objc func jumpTo(long: NSNumber) {
-+    print("SSSS")
++    self.panModalSetNeedsLayoutUpdate()
 +    if (long.boolValue) {
 +      panModalTransition(to: .longForm);
 +    } else {
@@ -300,7 +309,18 @@ index b21a043..d29a661 100644
    }
  
    var isShortFormEnabledInternal = 2
-@@ -200,12 +243,17 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -161,6 +204,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+     return self.config?.value(forKey: "isShortFormEnabled") as! Bool
+   }
+   
++  @objc func panModalSetNeedsLayoutUpdateWrapper {
++    panModalSetNeedsLayoutUpdate()
++  }
++
+   var shortFormHeight: PanModalHeight {
+     let height: CGFloat = CGFloat(truncating: self.config?.value(forKey: "shortFormHeight") as! NSNumber)
+     return isShortFormEnabled ? .contentHeight(height) : longFormHeight
+@@ -200,12 +247,17 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      super.viewWillDisappear(animated)
    }
  

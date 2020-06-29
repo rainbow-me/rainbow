@@ -8,7 +8,6 @@ import { createNativeStackNavigator } from 'react-native-cool-modals/native-stac
 import { InitialRouteContext } from '../App';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import AvatarBuilder from '../screens/AvatarBuilder';
-import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import DepositModal from '../screens/DepositModal';
 import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
@@ -42,6 +41,7 @@ import {
 import { onTransitionStart } from './helpers';
 import {
   AddCashSheetWrapper,
+  BackupSheetWrapper,
   ExpandedAssetSheetWrapper,
   ImportSeedPhraseSheetWrapper,
   SendSheetWrapper,
@@ -272,12 +272,12 @@ function NativeStackNavigator() {
       />
       <NativeStack.Screen
         name={Routes.BACKUP_SHEET}
-        component={BackupSheet}
+        component={BackupSheetWrapper}
         options={{
-          allowsDragToDismiss: false,
           customStack: true,
           isShortFormEnabled: true,
           onAppear: null,
+          shortFormHeight: 400,
           startFromShortForm: true,
         }}
       />

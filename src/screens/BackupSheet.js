@@ -24,7 +24,7 @@ const StyledSheet = styled(SlackSheet)`
   height: 100%;
 `;
 
-const BackupSheet = () => {
+const BackupSheet = ({ setAppearListener }) => {
   const { jumpToLong } = useContext(ModalContext);
   const { setOptions, goBack } = useNavigation();
   const switchSheetContentTransitionRef = useRef();
@@ -33,16 +33,18 @@ const BackupSheet = () => {
   const password = params?.password || null;
   const missingPassword = params?.missingPassword || null;
   const onIcloudBackup = useCallback(() => {
-    //switchSheetContentTransitionRef.current?.animateNextTransition();
-    jumpToLong();
-    setOptions({ isShortFormEnabled: false });
+    switchSheetContentTransitionRef.current?.animateNextTransition();
     setStep(WalletBackupTypes.cloud);
-  }, [jumpToLong]);
+    setOptions({ isShortFormEnabled: false });
+    jumpToLong();
+  }, [jumpToLong, setOptions]);
 
   const onManualBackup = useCallback(() => {
     switchSheetContentTransitionRef.current?.animateNextTransition();
     setStep(WalletBackupTypes.manual);
-  }, []);
+    setOptions({ isShortFormEnabled: false });
+    jumpToLong();
+  }, [jumpToLong, setOptions]);
 
   const onIgnoreBackup = useCallback(() => {
     goBack();
@@ -59,9 +61,12 @@ const BackupSheet = () => {
         );
       case WalletBackupTypes.cloud:
         return missingPassword ? (
-          <BackupConfirmPasswordStep />
+          <BackupConfirmPasswordStep setAppearListener={setAppearListener} />
         ) : (
-          <BackupIcloudStep password={password} />
+          <BackupIcloudStep
+            password={password}
+            setAppearListener={setAppearListener}
+          />
         );
       case WalletBackupTypes.manual:
         return <BackupManualStep />;
@@ -79,10 +84,20 @@ const BackupSheet = () => {
     onIgnoreBackup,
     onManualBackup,
     password,
+    setAppearListener,
     step,
   ]);
 
-  return <StyledSheet>{renderStep()}</StyledSheet>;
+  return (
+    <StyledSheet>
+      <Transitioning.View
+        ref={switchSheetContentTransitionRef}
+        transition={switchSheetContentTransition}
+      >
+        {renderStep()}
+      </Transitioning.View>
+    </StyledSheet>
+  );
 };
 
-export default React.memo(BackupSheet);
+export default BackupSheet;
