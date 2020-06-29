@@ -5,13 +5,13 @@ import WalletTypes from '../helpers/walletTypes';
 
 export default function useWallets() {
   const {
-    isCreatingAccount,
+    isDoingSomething,
     selectedWallet,
     walletNames,
     wallets,
   } = useSelector(
-    ({ wallets: { isCreatingAccount, selected, walletNames, wallets } }) => ({
-      isCreatingAccount,
+    ({ wallets: { isDoingSomething, selected, walletNames, wallets } }) => ({
+      isDoingSomething,
       selectedWallet: selected || {},
       walletNames,
       wallets,
@@ -35,7 +35,7 @@ export default function useWallets() {
   }
 
   return {
-    isCreatingAccount,
+    isDoingSomething,
     isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
     latestBackup,
     selectedWallet,

@@ -14,13 +14,14 @@ import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
+import WalletLoadingStates from '../../helpers/walletLoadingStates';
 import { useWallets } from '../../hooks';
 import * as keychain from '../../model/keychain';
 import {
   addWalletToCloudBackup,
   backupWalletToCloud,
 } from '../../model/wallet';
-import { setWalletBackedUp } from '../../redux/wallets';
+import { isDoingSomething, setWalletBackedUp } from '../../redux/wallets';
 import { borders, colors, padding } from '../../styles';
 import { deviceUtils, logger } from '../../utils';
 import { RainbowButton } from '../buttons';
@@ -260,9 +261,7 @@ const BackupIcloudStep = () => {
       Object.keys(wallets).find(key => wallets[key].imported === false);
 
     try {
-      logger.log('onConfirmBackup:: saving backup password', password);
-      await keychain.saveBackupPassword(password);
-      logger.log('onConfirmBackup:: saved');
+      await dispatch(isDoingSomething(WalletLoadingStates.BACKING_UP_WALLET));
 
       let backupFile;
       if (!latestBackup) {
@@ -287,6 +286,10 @@ const BackupIcloudStep = () => {
         );
       }
       if (backupFile) {
+        logger.log('onConfirmBackup:: saving backup password', password);
+        await keychain.saveBackupPassword(password);
+        logger.log('onConfirmBackup:: saved');
+
         logger.log('onConfirmBackup:: backup completed!', backupFile);
         await dispatch(
           setWalletBackedUp(wallet_id, WalletBackupTypes.cloud, backupFile)
@@ -305,9 +308,11 @@ const BackupIcloudStep = () => {
       } else {
         Alert.alert('Error while trying to backup');
         setTimeout(onPasswordSubmit, 1000);
+        dispatch(isDoingSomething(null));
       }
     } catch (e) {
       logger.log('Error while backing up', e);
+      dispatch(isDoingSomething(null));
     }
   }, [
     params?.wallet_id,

@@ -17,6 +17,7 @@ import { LoadingOverlay } from '../components/modal';
 import { discoverSheetAvailable } from '../config/experimental';
 import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import networkInfo from '../helpers/networkInfo';
+import WalletLoadingStates from '../helpers/walletLoadingStates';
 import {
   useAccountSettings,
   useCoinListEdited,
@@ -49,7 +50,7 @@ export default function WalletScreen() {
   const { isCoinListEdited } = useCoinListEdited();
   const { updateKeyboardHeight } = useKeyboardHeight();
   const [scrollViewTracker] = useValues([0], []);
-  const { isCreatingAccount, isReadOnlyWallet } = useWallets();
+  const { isDoingSomething, isReadOnlyWallet } = useWallets();
 
   useEffect(() => {
     if (!initialized) {
@@ -114,10 +115,10 @@ export default function WalletScreen() {
           sections={sections}
         />
       </FabWrapper>
-      {isCreatingAccount && (
+      {isDoingSomething && (
         <LoadingOverlay
           paddingTop={sheetVerticalOffset}
-          title="Creating wallet..."
+          title={WalletLoadingStates[isDoingSomething]}
         />
       )}
     </WalletPage>

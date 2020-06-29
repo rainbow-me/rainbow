@@ -29,6 +29,7 @@ import { Text } from '../components/text';
 import { web3Provider } from '../handlers/web3';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { isENSAddressFormat, isValidWallet } from '../helpers/validators';
+import walletLoadingStates from '../helpers/walletLoadingStates';
 import {
   useAccountSettings,
   useClipboard,
@@ -330,7 +331,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
         {isImporting && (
           <LoadingOverlay
             paddingTop={keyboardVerticalOffset}
-            title="Importing..."
+            title={walletLoadingStates.IMPORTING_WALLET}
           />
         )}
       </KeyboardAvoidingView>

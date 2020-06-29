@@ -4,12 +4,17 @@ import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../../helpers/walletBackupTypes';
+import WalletLoadingStates from '../../../helpers/walletLoadingStates';
 import WalletTypes from '../../../helpers/walletTypes';
 import { useWallets } from '../../../hooks';
 import { fetchBackupPassword } from '../../../model/keychain';
 import { addWalletToCloudBackup } from '../../../model/wallet';
 import Routes from '../../../navigation/routesNames';
-import { deleteCloudBackup, setWalletBackedUp } from '../../../redux/wallets';
+import {
+  deleteCloudBackup,
+  isDoingSomething,
+  setWalletBackedUp,
+} from '../../../redux/wallets';
 import { colors, fonts, padding } from '../../../styles';
 import { logger } from '../../../utils';
 import { ButtonPressAnimation } from '../../animations';
@@ -105,6 +110,9 @@ const AlreadyBackedUpView = () => {
             wallet_id,
           });
         } else {
+          await dispatch(
+            isDoingSomething(WalletLoadingStates.BACKING_UP_WALLET)
+          );
           // We have the password and we need to add it to an existing backup
           logger.log('password fetched correctly', password);
           const backupFile = await addWalletToCloudBackup(
