@@ -17,10 +17,11 @@ export default function useImageMetadata(imageUrl) {
   );
 
   const imageMetadataSelector = useCallback(
-    state => state.imageMetadata[imageUrl],
+    state => state.imageMetadata.imageMetadata[imageUrl],
     [imageUrl]
   );
   const metadata = useSelector(imageMetadataSelector);
+
   const isCached = !!metadata && !!metadata?.color;
 
   const onCacheImageMetadata = useCallback(
