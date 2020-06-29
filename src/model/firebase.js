@@ -6,7 +6,6 @@ import { getLocal, saveLocal } from '../handlers/localstorage/common';
 import { logger } from '../utils';
 
 export const getFCMToken = async () => {
-  await messaging().registerDeviceForRemoteMessages();
   const fcmTokenLocal = await getLocal('rainbowFcmToken');
 
   const fcmToken = get(fcmTokenLocal, 'data', null);
