@@ -1,5 +1,5 @@
 import { get, isEmpty } from 'lodash';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Easing } from 'react-native-reanimated';
 import {
   bin,
@@ -13,7 +13,6 @@ import { colors } from '../../styles';
 import { Column } from '../layout';
 import TimespanSelector from './TimespanSelector';
 import ValueChart from './ValueChart';
-import ValueText from './ValueText';
 
 const chartStroke = { detailed: 1.5, simplified: 3 };
 
@@ -44,7 +43,6 @@ const Chart = ({ asset, ...props }) => {
     });
   }, [chart, hasChart]);
 
-  const [currentPrice, setCurrentPrice] = useState(0);
   const positiveChange = greaterThan(change, 0);
 
   const timespanIndicatorColorAnimation = useTimingTransition(
@@ -72,14 +70,8 @@ const Chart = ({ asset, ...props }) => {
       width="100%"
       {...props}
     >
-      <ValueText
-        change={toFixedDecimals(change, 2)}
-        currentValue={asset.native.price.display}
-        direction={positiveChange}
-        headerText="PRICE"
-        value={currentPrice}
-      />
       <ValueChart
+        change={toFixedDecimals(change, 2)}
         amountOfPathPoints={amountOfPathPoints}
         barColor={positiveChange ? colors.chartGreen : colors.red}
         currentDataSource={currentChartIndex}
@@ -87,7 +79,6 @@ const Chart = ({ asset, ...props }) => {
         data={chartData}
         importantPointsIndexInterval={amountOfPathPoints}
         mode="gesture-managed"
-        onValueUpdate={setCurrentPrice}
         stroke={chartStroke}
       />
       <TimespanSelector
@@ -102,4 +93,4 @@ const Chart = ({ asset, ...props }) => {
   );
 };
 
-export default React.memo(Chart);
+export default Chart;

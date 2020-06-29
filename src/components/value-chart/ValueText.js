@@ -17,8 +17,15 @@ const Subtitle = props => (
 
 const Title = props => <TruncatedText {...props} size="h2" weight="bold" />;
 
-const ValueText = ({ change, currentValue, direction, headerText, value }) => {
-  const amountOfDecimal = (currentValue.split('.')[1] || []).length;
+const ValueText = ({
+  change,
+  currentValue,
+  date,
+  direction,
+  headerText,
+  value,
+  children,
+}) => {
   const transitionRef = useRef();
 
   if (transitionRef.current) {
@@ -33,8 +40,10 @@ const ValueText = ({ change, currentValue, direction, headerText, value }) => {
     <Column height={85} paddingLeft={15} width="100%">
       {value ? (
         <Fragment>
-          <Subtitle>{headerText}</Subtitle>
-          <Title>${value.toFixed(amountOfDecimal)}</Title>
+          <Subtitle>
+            {headerText} - {date}
+          </Subtitle>
+          {children}
           <RowWithMargins align="center" margin={2} marginTop={2}>
             <Icon
               color={direction ? colors.chartGreen : colors.red}
