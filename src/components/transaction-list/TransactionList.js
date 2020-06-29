@@ -99,10 +99,7 @@ const TransactionList = ({
     e => {
       const { index } = e.nativeEvent;
       const item = requests[index];
-      navigate({
-        params: { transactionDetails: item },
-        routeName: Routes.CONFIRM_REQUEST,
-      });
+      navigate(Routes.CONFIRM_REQUEST, { transactionDetails: item });
       return;
     },
     [navigate, requests]
