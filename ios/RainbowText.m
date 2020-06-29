@@ -50,7 +50,7 @@
 }
 
 - (void) animate {
-  double diff = _time - NSDate.date.timeIntervalSince1970;
+  double diff = NSDate.date.timeIntervalSince1970 - _time;
   double value = _initialValue + _stepPerDay * diff / 24 / 60 / 60;
   
   NSString *newValue;
