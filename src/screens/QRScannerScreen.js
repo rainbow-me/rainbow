@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
