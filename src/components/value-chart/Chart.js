@@ -81,6 +81,7 @@ const Chart = ({ asset, ...props }) => {
         importantPointsIndexInterval={amountOfPathPoints}
         mode="gesture-managed"
         nativeCurrency={nativeCurrencySymbol}
+        positiveChange={positiveChange}
         stroke={chartStroke}
       />
       <TimespanSelector
