@@ -1,13 +1,14 @@
 import React, { Fragment } from 'react';
 import Animated from 'react-native-reanimated';
-import { bin, useSpringTransition } from 'react-native-redash';
+import { useSpringTransition } from 'react-native-redash';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
+import { useDimensions } from '../../hooks';
 import { colors, padding, position, shadow } from '../../styles';
 import { interpolate } from '../animations';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
-import { Text } from '../text';
+import { TruncatedText } from '../text';
 
 const springConfig = {
   damping: 14,
@@ -28,6 +29,7 @@ const Container = styled(RowWithMargins).attrs({
   background-color: ${({ color }) => color};
   border-radius: 20;
   bottom: ${({ insets }) => (insets.bottom || 40) + 3};
+  max-width: ${({ deviceWidth }) => deviceWidth - 38};
   position: absolute;
   z-index: 100;
 `;
@@ -41,9 +43,10 @@ export default function Toast({
   text,
   textColor = colors.white,
 }) {
+  const { width: deviceWidth } = useDimensions();
   const insets = useSafeArea();
 
-  const animation = useSpringTransition(bin(isVisible), springConfig);
+  const animation = useSpringTransition(isVisible, springConfig);
 
   const opacity = interpolate(animation, {
     inputRange: [0, 1],
@@ -57,13 +60,13 @@ export default function Toast({
 
   return (
     <Animated.View style={{ opacity, transform: [{ translateY }] }}>
-      <Container color={color} insets={insets}>
+      <Container color={color} deviceWidth={deviceWidth} insets={insets}>
         {children || (
           <Fragment>
             {icon && <Icon color={textColor} marginTop={3} name={icon} />}
-            <Text color={textColor} size="smedium" weight="semibold">
+            <TruncatedText color={textColor} size="smedium" weight="semibold">
               {text}
-            </Text>
+            </TruncatedText>
           </Fragment>
         )}
       </Container>

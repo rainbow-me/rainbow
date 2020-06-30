@@ -6,16 +6,19 @@ import { neverRerender } from '../../utils';
 
 export const HandleHeight = 5;
 
+const defaultColor = colors.alpha(colors.blueGreyDark, 0.3);
+
 const SheetHandle = styled.View.attrs(({ showBlur }) => ({
   as: showBlur && Platform.OS === 'ios' ? VibrancyView : View,
   blurAmount: 20,
   blurType: 'light',
 }))`
-  background-color: ${colors.alpha(colors.blueGreyDark, 0.3)};
+  background-color: ${({ color = defaultColor }) => color};
   border-radius: 3;
   height: ${HandleHeight};
   overflow: hidden;
   width: 36;
+  z-index: 9;
 `;
 
 export default neverRerender(SheetHandle);
