@@ -111,11 +111,9 @@ class QRScannerScreenWithData extends Component {
 
     if (data.startsWith('wc:')) {
       analytics.track('Scanned WalletConnect QR code');
-      await walletConnectOnSessionRequest(data, async () => {
-        setTimeout(() => {
-          checkPushNotificationPermissions();
-        }, 1000);
-      });
+
+      await checkPushNotificationPermissions();
+      setTimeout(async () => await walletConnectOnSessionRequest(data), 1000);
       return setSafeTimeout(this.handleReenableScanning, 2000);
     }
 

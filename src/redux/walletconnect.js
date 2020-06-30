@@ -22,6 +22,7 @@ import WalletTypes from '../helpers/walletTypes';
 import { getFCMToken } from '../model/firebase';
 import { Navigation } from '../navigation';
 import Routes from '../navigation/routesNames';
+import { logger } from '../utils';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
 
@@ -46,7 +47,15 @@ const WALLETCONNECT_REMOVE_PENDING_REDIRECT =
 // -- Actions ---------------------------------------- //
 const getNativeOptions = async () => {
   const language = 'en'; // TODO use lang from settings
-  const token = await getFCMToken();
+  let token = null;
+  try {
+    token = await getFCMToken();
+  } catch (error) {
+    logger.log(
+      'Error getting FCM token, ignoring token for WC connection',
+      error
+    );
+  }
 
   const nativeOptions = {
     clientMeta: {
@@ -56,13 +65,15 @@ const getNativeOptions = async () => {
       ssl: true,
       url: 'https://rainbow.me',
     },
-    push: {
-      language,
-      peerMeta: true,
-      token,
-      type: 'fcm',
-      url: 'https://wcpush.rainbow.me',
-    },
+    push: token
+      ? {
+          language,
+          peerMeta: true,
+          token,
+          type: 'fcm',
+          url: 'https://wcpush.rainbow.me',
+        }
+      : undefined,
   };
 
   return nativeOptions;
