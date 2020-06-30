@@ -1,7 +1,8 @@
 import { isEmpty } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import ChartTypes from '../../helpers/chartTypes';
-import { useCharts } from '../../hooks';
+import { toFixedDecimals } from '../../helpers/utilities';
+import { useAccountSettings, useCharts } from '../../hooks';
 import { Column } from '../layout';
 import TimespanSelector from './TimespanSelector';
 import ValueChart from './ValueChart';
@@ -11,6 +12,7 @@ const chartStroke = { detailed: 1.5, simplified: 3 };
 
 const Chart = ({ asset, color, latestPrice, setChartPrice, ...props }) => {
   const { chart, chartType, updateChartType } = useCharts(asset);
+  const { nativeCurrencySymbol } = useAccountSettings();
 
   useEffect(() => {
     return () => {
@@ -56,6 +58,7 @@ const Chart = ({ asset, color, latestPrice, setChartPrice, ...props }) => {
         enableSelect
         importantPointsIndexInterval={amountOfPathPoints}
         mode="gesture-managed"
+        nativeCurrency={nativeCurrencySymbol}
         onValueUpdate={setChartPrice}
         stroke={chartStroke}
       />
