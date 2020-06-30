@@ -146,7 +146,14 @@ const TopIcon = () => (
   </GradientText>
 );
 
-const BackupIcloudStep = () => {
+const BackupIcloudStep = ({ setAppearListener }) => {
+  const currentlyFocusedInput = useRef();
+  const refocus = useCallback(() => {
+    currentlyFocusedInput.current?.focus();
+  }, []);
+  useEffect(() => {
+    setAppearListener(refocus);
+  }, [setAppearListener, refocus]);
   const { goBack } = useNavigation();
   const { params } = useRoute();
   const loadedPassword = params?.password || '';
@@ -171,6 +178,11 @@ const BackupIcloudStep = () => {
 
   const onPasswordFocus = useCallback(() => {
     setPasswordFocused(true);
+    currentlyFocusedInput.current = passwordRef.current;
+  }, []);
+
+  const onConfirmPasswordFocus = useCallback(() => {
+    currentlyFocusedInput.current = confirmPasswordRef.current;
   }, []);
 
   const onPasswordBlur = useCallback(() => {
@@ -361,6 +373,7 @@ const BackupIcloudStep = () => {
             <Shadow>
               <PasswordInput
                 placeholder="Confirm Password"
+                onFocus={onConfirmPasswordFocus}
                 onChange={onConfirmPasswordChange}
                 onSubmitEditing={onConfirmPasswordSubmit}
                 returnKeyType="done"
