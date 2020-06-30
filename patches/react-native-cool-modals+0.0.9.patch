@@ -3,7 +3,7 @@ index 334ef99..774435b 100644
 --- a/node_modules/react-native-cool-modals/createNativeStackNavigator.js
 +++ b/node_modules/react-native-cool-modals/createNativeStackNavigator.js
 @@ -61,6 +61,7 @@ class StackView extends React.Component {
- 
+
      let stackPresentation = 'push';
      const {
 +      dismissable,
@@ -24,7 +24,7 @@ index 334ef99..774435b 100644
        transitionDuration,
 +      ignoreBottomOffset
      } = options;
- 
+
      if (mode === 'modal' || mode === 'containedModal') {
 @@ -98,6 +101,9 @@ class StackView extends React.Component {
      const { screenProps } = this.props;
@@ -69,12 +69,12 @@ index 7c27c15..d181379 100644
 +    _dismissable = YES;
 +    _ignoreBottomOffset = NO;
    }
- 
+
    return self;
 @@ -55,6 +56,13 @@ - (void)willDismiss {
    _onWillDismiss(nil);
  }
- 
+
 +- (void)onTouchTopWrapper:(NSNumber*)dismissing {
 +  BOOL dismissingValue = [dismissing boolValue];
 +  if (_onTouchTop) {
@@ -97,7 +97,7 @@ index 7c27c15..d181379 100644
  RCT_EXPORT_VIEW_PROPERTY(onAppear, RCTDirectEventBlock);
  RCT_EXPORT_VIEW_PROPERTY(onDismissed, RCTDirectEventBlock);
 +RCT_EXPORT_VIEW_PROPERTY(onTouchTop, RCTDirectEventBlock)
- 
+
  RCT_EXPORT_VIEW_PROPERTY(onWillDismiss, RCTDirectEventBlock);
  RCT_EXPORT_VIEW_PROPERTY(springDamping, NSNumber)
 @@ -395,6 +405,8 @@ @implementation RNCMScreenManager
@@ -106,7 +106,7 @@ index 7c27c15..d181379 100644
  RCT_EXPORT_VIEW_PROPERTY(startFromShortForm, BOOL)
 +RCT_EXPORT_VIEW_PROPERTY(ignoreBottomOffset, BOOL)
 +
- 
+
  - (UIView *)view
  {
 diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m b/node_modules/react-native-cool-modals/ios/RNCMScreenStack.m
@@ -117,20 +117,20 @@ index b397efb..83777bf 100644
    // find bottom-most controller that should stay on the stack for the duration of transition
    NSUInteger changeRootIndex = 0;
    UIViewController *changeRootController = _controller;
-+  
++
 +  // for QR scanner Bottom Sheet!
 +  UIViewController *presentedRootViewController = changeRootController.presentedViewController;
 +  if (presentedRootViewController != nil && ![presentedRootViewController isKindOfClass:RNCMScreen.class] && ![NSStringFromClass(presentedRootViewController.class) isEqualToString:@"RNCoolModals.PanModalViewController"]) {
 +    changeRootController = presentedRootViewController;
 +  }
-+  
-+  
++
++
    for (NSUInteger i = 0; i < MIN(_presentedModals.count, controllers.count); i++) {
      if (_presentedModals[i] == controllers[i]) {
        changeRootController = controllers[i];
 @@ -305,20 +313,20 @@ - (void)setModalViewControllers:(NSArray<UIViewController *> *)controllers
    };
- 
+
    UIViewController* presentedViewController = changeRootController.presentedViewController;
 -  if (![presentedViewController isKindOfClass:[RNCMScreen class]] && presentedViewController != nil) {
 +  if (![presentedViewController isKindOfClass:[RNCMScreen class]] && presentedViewController != nil && [presentedViewController.view isKindOfClass:[RNCMScreenView class]]) {
@@ -141,7 +141,7 @@ index b397efb..83777bf 100644
      }
 -
    }
-+  
++
    if (presentedViewController != nil
        && ([_presentedModals containsObject:presentedViewController] )) {
 -    [changeRootController
@@ -161,16 +161,16 @@ index b21a043..85768f0 100644
 +++ b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 @@ -28,6 +28,7 @@ class PossiblyTouchesPassableUIView: UIView {
  }
- 
+
  class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSupport {
-+  
++
    weak var config: NSObject?
    var length: CGFloat = 0
    var topAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
 @@ -63,6 +64,11 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      }
    }
- 
+
 +  func onTouchTop(_ dismissing: Bool) {
 +    let selector = NSSelectorFromString("onTouchTopWrapper:")
 +    config?.perform(selector, with: NSNumber.init(value: dismissing))
@@ -182,26 +182,26 @@ index b21a043..85768f0 100644
 @@ -85,6 +91,11 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      }
    }
- 
+
 +  var ignoreBottomOffset: Bool {
 +    let res =  self.config?.value(forKey: "ignoreBottomOffset") as! Bool
 +    return res;
 +  }
 +
    var isHapticFeedbackEnabled: Bool = false
- 
+
    func findChildScrollViewDFS(view: UIView)-> UIScrollView? {
 @@ -115,6 +126,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      }
    }
- 
+
 +
    func panModalWillDismiss() {
      callWillDismiss()
    }
 @@ -125,7 +137,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
    }
- 
+
    func shouldRespond(to panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
 -    return !hiding
 +    if (hiding) {
@@ -209,12 +209,12 @@ index b21a043..85768f0 100644
 +    }
 +    return self.config?.value(forKey: "dismissable") as! Bool
    }
- 
+
    var allowsDragToDismiss: Bool {
 @@ -145,10 +160,29 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      return backgroundColor.withAlphaComponent(CGFloat(truncating: self.config?.value(forKey: "backgroundOpacity") as! NSNumber))
    }
- 
+
 +  var scrollIndicatorInsets: UIEdgeInsets {
 +      let top = shouldRoundTopCorners ? cornerRadius : 0
 +      let bottom = ignoreBottomOffset ? 0 : bottomLayoutOffset
@@ -225,28 +225,28 @@ index b21a043..85768f0 100644
      let headerHeight: CGFloat = CGFloat(truncating: self.config?.value(forKey: "headerHeight") as! NSNumber)
 -    let location = panModalGestureRecognizer.location(in: view)
 -    return location.y < headerHeight
-+    
++
 +    var locationY = panModalGestureRecognizer.location(in: view).y
-+    
++
 +    /// HACK
-+    
++
 +    let initialLocationAbsY = (panModalGestureRecognizer as! UIPanGestureRecognizerWithInitialPosition).initialTouchLocation.y;
 +    let currLocationAbsY = panModalGestureRecognizer.location(in: view.superview!.superview).y
-+    
++
 +    let displacementY = currLocationAbsY - initialLocationAbsY
-+    
++
 +    locationY -= displacementY
-+    
++
 +    // END HACK
-+    
++
 +    return locationY < headerHeight
    }
- 
+
    var isShortFormEnabledInternal = 2
 @@ -200,12 +234,17 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      super.viewWillDisappear(animated)
    }
- 
+
 +  var prevHeight: CGFloat = 0;
    override func viewDidLayoutSubviews() {
      super.viewDidLayoutSubviews()
@@ -263,25 +263,26 @@ index b21a043..85768f0 100644
        }
      }
 diff --git a/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx b/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
-index c2f2e2b..95e6f8d 100644
+index c2f2e2b..791c14f 100644
 --- a/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
 +++ b/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
 @@ -43,6 +43,7 @@ export default function NativeStackView({
            } = options;
- 
+
            const {
 +            dismissable,
              customStack,
              topOffset,
              showDragIndicator,
-@@ -58,10 +59,15 @@ export default function NativeStackView({
+@@ -58,10 +59,16 @@ export default function NativeStackView({
              springDamping,
              startFromShortForm,
              transitionDuration,
 +            onTouchTop,
-+            ignoreBottomOffset
++            ignoreBottomOffset,
++            backgroundColor
            } = options;
- 
+
            return (
                <Screen
 +                  ignoreBottomOffset={ignoreBottomOffset}
@@ -290,3 +291,13 @@ index c2f2e2b..95e6f8d 100644
                    customStack={customStack}
                    topOffset={topOffset}
                    showDragIndicator={showDragIndicator}
+@@ -69,7 +76,8 @@ export default function NativeStackView({
+                   allowsTapToDismiss={allowsTapToDismiss}
+                   anchorModaltoLongForm={anchorModaltoLongForm}
+                   onWillDismiss={onWillDismiss}
+-                  modalBackgroundOpacity={backgroundOpacity}
++                  modalBackgroundColor={backgroundColor}
++                  backgroundOpacity={backgroundOpacity}
+                   cornerRadius={cornerRadius}
+                   headerHeight={headerHeight}
+                   isShortFormEnabled={isShortFormEnabled}
