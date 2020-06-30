@@ -1,12 +1,13 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { Alert, Animated, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { Restart } from 'react-native-restart';
 import styled from 'styled-components/native';
-import { Modal, ModalHeader } from '../components/modal';
+import { Modal } from '../components/modal';
+import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
   CurrencySection,
   LanguageSection,
@@ -97,6 +98,7 @@ const SettingsPages = {
 const Container = styled.View`
   overflow: hidden;
   flex: 1;
+  top: -40;
 `;
 
 const Stack = createStackNavigator();
@@ -126,23 +128,9 @@ const onPressHiddenFeature = () => {
 };
 
 const SettingsModal = () => {
-  const navigation = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const { wallets, selectedWallet } = useWallets();
   const { params } = useRoute();
-
-  const [currentSettingsPage, setCurrentSettingsPage] = useState(
-    SettingsPages.default
-  );
-
-  const { title } = currentSettingsPage;
-  const isDefaultPage = title === SettingsPages.default.title;
-
-  const onCloseModal = useCallback(() => navigation.goBack(), [navigation]);
-
-  const onPressBack = useCallback(() => {
-    setCurrentSettingsPage(SettingsPages.default);
-    navigation.navigate('SettingsSection');
-  }, [navigation]);
 
   const onPressSection = useCallback(
     section => () => {
@@ -165,36 +153,30 @@ const SettingsModal = () => {
           route = 'NeedsBackupView';
         }
       }
-      setCurrentSettingsPage(section);
-      navigation.navigate(route);
+      navigate(route);
     },
-    [navigation, params?.wallet_id, selectedWallet, wallets]
+    [navigate, params?.wallet_id, selectedWallet, wallets]
+  );
+
+  const renderHeaderRight = useCallback(
+    () => <ModalHeaderButton label="Done" onPress={goBack} side="right" />,
+    [goBack]
   );
 
   return (
-    <Modal
-      marginBottom={statusBarHeight}
-      minHeight={580}
-      onCloseModal={onCloseModal}
-    >
+    <Modal marginBottom={statusBarHeight} minHeight={580} onCloseModal={goBack}>
       <Container>
-        <ModalHeader
-          onPressBack={onPressBack}
-          onPressClose={onCloseModal}
-          showBackButton={!isDefaultPage}
-          title={title}
-        />
         <Stack.Navigator
-          headerMode="none"
           screenOptions={{
             cardStyle: { backgroundColor: colors.white },
             gestureEnabled: false,
+            headerRight: renderHeaderRight,
           }}
         >
-          <Stack.Screen name="SettingsSection">
+          <Stack.Screen name="SettingsSection" options={{ title: 'Settings' }}>
             {() => (
               <SettingsSection
-                onCloseModal={onCloseModal}
+                onCloseModal={goBack}
                 onPressBackup={onPressSection(SettingsPages.backup)}
                 onPressCurrency={onPressSection(SettingsPages.currency)}
                 onPressHiddenFeature={onPressHiddenFeature}
@@ -209,10 +191,10 @@ const SettingsModal = () => {
               component && (
                 <Stack.Screen
                   name={key}
-                  title={title}
                   component={component}
                   options={{
                     cardStyleInterpolator,
+                    title,
                   }}
                 />
               )
@@ -220,10 +202,10 @@ const SettingsModal = () => {
 
           <Stack.Screen
             name="WalletSelectionView"
-            title="Backup"
             component={WalletSelectionView}
             options={{
               cardStyleInterpolator,
+              title: 'Backup',
             }}
           />
           <Stack.Screen
