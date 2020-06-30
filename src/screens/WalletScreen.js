@@ -17,7 +17,6 @@ import { LoadingOverlay } from '../components/modal';
 import { discoverSheetAvailable } from '../config/experimental';
 import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import networkInfo from '../helpers/networkInfo';
-import WalletLoadingStates from '../helpers/walletLoadingStates';
 import {
   useAccountSettings,
   useCoinListEdited,
@@ -118,7 +117,7 @@ export default function WalletScreen() {
       {isWalletLoading && (
         <LoadingOverlay
           paddingTop={sheetVerticalOffset}
-          title={WalletLoadingStates[isWalletLoading]}
+          title={isWalletLoading}
         />
       )}
     </WalletPage>

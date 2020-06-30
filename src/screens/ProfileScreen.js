@@ -11,7 +11,6 @@ import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
-import WalletLoadingStates from '../helpers/walletLoadingStates';
 import {
   useAccountSettings,
   useAccountTransactions,
@@ -114,7 +113,7 @@ export default function ProfileScreen({ navigation }) {
       {isWalletLoading && (
         <LoadingOverlay
           paddingTop={sheetVerticalOffset}
-          title={WalletLoadingStates[isWalletLoading]}
+          title={isWalletLoading}
         />
       )}
     </ProfileScreenPage>

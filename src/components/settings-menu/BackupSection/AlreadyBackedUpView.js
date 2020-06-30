@@ -157,6 +157,8 @@ const AlreadyBackedUpView = () => {
     }
   }, [walletStatus, latestBackup, navigate, wallet_id, wallets, dispatch]);
 
+  console.log('ALREADY BACKEDUP VIEW', isWalletLoading);
+
   return (
     <Fragment>
       <Centered>
@@ -219,9 +221,7 @@ const AlreadyBackedUpView = () => {
           </Text>
         </ButtonPressAnimation>
       </Centered>
-      {isWalletLoading && (
-        <LoadingOverlay title={WalletLoadingStates[isWalletLoading]} />
-      )}
+      {isWalletLoading && <LoadingOverlay title={isWalletLoading} />}
     </Fragment>
   );
 };

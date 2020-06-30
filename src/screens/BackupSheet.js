@@ -8,14 +8,12 @@ import BackupIcloudStep from '../components/backup/BackupIcloudStep';
 import BackupImportedStep from '../components/backup/BackupImportedStep';
 import BackupManualStep from '../components/backup/BackupManualStep';
 import BackupSheetFirstStep from '../components/backup/BackupSheetFirstStep';
-import { LoadingOverlay } from '../components/modal';
 import { SlackSheet } from '../components/sheet';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import walletLoadingStates from '../helpers/walletLoadingStates';
 import { useWallets } from '../hooks';
 import { fetchBackupPassword } from '../model/keychain';
 import { addWalletToCloudBackup } from '../model/wallet';
-import { sheetVerticalOffset } from '../navigation/effects';
 import { setIsWalletLoading, setWalletBackedUp } from '../redux/wallets';
 import { logger } from '../utils';
 
@@ -32,12 +30,7 @@ const BackupSheet = () => {
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
   const dispatch = useDispatch();
-  const {
-    isWalletLoading,
-    selectedWallet,
-    wallets,
-    latestBackup,
-  } = useWallets();
+  const { selectedWallet, wallets, latestBackup } = useWallets();
   const [step, setStep] = useState(params?.option || 'first');
   const wallet_id = params?.wallet_id || selectedWallet.id;
   const missingPassword = params?.missingPassword || null;
@@ -87,15 +80,7 @@ const BackupSheet = () => {
       switchSheetContentTransitionRef.current?.animateNextTransition();
       setStep(WalletBackupTypes.cloud);
     }
-  }, [
-    dispatch,
-    goBack,
-    latestBackup,
-    setIsWalletLoading,
-    setParams,
-    wallet_id,
-    wallets,
-  ]);
+  }, [dispatch, goBack, latestBackup, setParams, wallet_id, wallets]);
 
   const onManualBackup = useCallback(() => {
     switchSheetContentTransitionRef.current?.animateNextTransition();
@@ -141,12 +126,6 @@ const BackupSheet = () => {
       >
         {renderStep()}
       </Transitioning.View>
-      {isWalletLoading && (
-        <LoadingOverlay
-          paddingTop={sheetVerticalOffset}
-          title={walletLoadingStates[isWalletLoading]}
-        />
-      )}
     </SlackSheet>
   );
 };

@@ -1,15 +1,11 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import { LoadingOverlay } from '../components/modal';
 import RestoreIcloudStep from '../components/restore/RestoreIcloudStep';
 import RestoreSheetFirstStep from '../components/restore/RestoreSheetFirstStep';
 import { SlackSheet } from '../components/sheet';
 import { fetchUserDataFromCloud } from '../handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
-import walletLoadingStates from '../helpers/walletLoadingStates';
-import { useWallets } from '../hooks';
-import { sheetVerticalOffset } from '../navigation/effects';
 import Routes from '../navigation/routesNames';
 
 const switchSheetContentTransition = (
@@ -21,7 +17,6 @@ const switchSheetContentTransition = (
 );
 
 const RestoreSheet = () => {
-  const { isWalletLoading } = useWallets();
   const { goBack, navigate } = useNavigation();
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
@@ -76,12 +71,6 @@ const RestoreSheet = () => {
       >
         {renderStep()}
       </Transitioning.View>
-      {isWalletLoading && (
-        <LoadingOverlay
-          paddingTop={sheetVerticalOffset}
-          title={walletLoadingStates[isWalletLoading]}
-        />
-      )}
     </SlackSheet>
   );
 };

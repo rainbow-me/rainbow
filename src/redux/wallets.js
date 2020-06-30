@@ -1,6 +1,9 @@
 import { toChecksumAddress } from 'ethereumjs-util';
 import { filter, flatMap, get, map, values } from 'lodash';
-import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
+import {
+  backupUserDataIntoCloud,
+  deleteAllBackups,
+} from '../handlers/cloudBackup';
 import {
   getWalletNames,
   saveWalletNames,
@@ -78,18 +81,20 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     const walletNames = await getWalletNames();
 
     // Only for debugging purposes
+    const clearBackups = false;
+    if (clearBackups) {
+      Object.keys(wallets).forEach(key => {
+        // if (!wallets[key].primary) {
+        delete wallets[key].backedUp;
+        delete wallets[key].backupDate;
+        delete wallets[key].backupFile;
+        delete wallets[key].backupType;
+        //}
+      });
 
-    // Object.keys(wallets).forEach(key => {
-    //   // if (!wallets[key].primary) {
-    //   delete wallets[key].backedUp;
-    //   delete wallets[key].backupDate;
-    //   delete wallets[key].backupFile;
-    //   delete wallets[key].backupType;
-    //   //}
-    // });
-
-    // // // Delete all backups (debugging)
-    // deleteAllBackups();
+      // Delete all backups (debugging)
+      deleteAllBackups();
+    }
 
     dispatch({
       payload: {
@@ -123,6 +128,7 @@ export const walletsSetSelected = wallet => dispatch => {
 };
 
 export const setIsWalletLoading = val => dispatch => {
+  console.log('WALLET LOADING STATE UPDATED', val);
   dispatch({
     payload: val,
     type: WALLETS_SET_IS_LOADING,
@@ -147,7 +153,10 @@ export const setWalletBackedUp = (
     dispatch(walletsSetSelected(newWallets[wallet_id]));
   }
 
-  dispatch(setIsWalletLoading(null));
+  // Reset the loading state 1 second later
+  setTimeout(() => {
+    dispatch(setIsWalletLoading(null));
+  }, 1000);
 
   if (method === WalletBackupTypes.cloud) {
     try {

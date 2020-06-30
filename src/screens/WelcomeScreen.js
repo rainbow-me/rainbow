@@ -16,7 +16,6 @@ import { RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { Emoji, Text } from '../components/text';
 import hideSplashScreen from '../helpers/hideSplashScreen';
-import walletLoadingStates from '../helpers/walletLoadingStates';
 import { useWallets } from '../hooks';
 import Routes from '../navigation/routesNames';
 import { colors, shadow } from '../styles';
@@ -473,9 +472,7 @@ export default function WelcomeScreen() {
           <RainbowButton {...existingWalletButtonProps} />
         </ButtonWrapper>
       </ContentWrapper>
-      {isWalletLoading && (
-        <LoadingOverlay title={walletLoadingStates[isWalletLoading]} />
-      )}
+      {isWalletLoading && <LoadingOverlay title={isWalletLoading} />}
     </Container>
   );
 }
