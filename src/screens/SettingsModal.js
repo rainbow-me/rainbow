@@ -228,7 +228,6 @@ const SettingsModal = () => {
           />
           <Stack.Screen
             name="AlreadyBackedUpView"
-            title="Backup"
             component={AlreadyBackedUpView}
             options={({ route }) => ({
               title: route.params.title,
@@ -237,7 +236,6 @@ const SettingsModal = () => {
           />
           <Stack.Screen
             name="NeedsBackupView"
-            title="Backup"
             component={NeedsBackupView}
             options={({ route }) => ({
               title: route.params.title,
@@ -246,17 +244,12 @@ const SettingsModal = () => {
           />
           <Stack.Screen
             name="ShowSecretView"
-            title="Backup"
             component={ShowSecretView}
             options={({ route }) => ({
               title: route.params.title,
               ...cardStyleInterpolator,
             })}
           />
-          {
-            // TODO - Add all the backup related screens here
-            // and update navigation calls
-          }
         </Stack.Navigator>
       </Container>
     </Modal>
