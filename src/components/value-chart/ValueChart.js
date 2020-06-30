@@ -6,7 +6,7 @@ import { TextInput } from 'react-native';
 import { State } from 'react-native-gesture-handler';
 import Animated, { Clock, Easing, Value } from 'react-native-reanimated';
 import { contains, delay, getPointAtLength, timing } from 'react-native-redash';
-import { fonts } from '../../styles';
+import { colors, fonts } from '../../styles';
 import { deviceUtils } from '../../utils';
 import ActivityIndicator from '../ActivityIndicator';
 import { Centered, Column, Row } from '../layout';
@@ -370,7 +370,7 @@ export default class Chart extends PureComponent {
   };
 
   render() {
-    const { barColor, currentValue } = this.props;
+    const { barColor, currentValue, nativeCurrency } = this.props;
     const { currentData } = this.state;
     let maxValue = 0,
       minValue = 0,
@@ -398,25 +398,29 @@ export default class Chart extends PureComponent {
         <ValueText
           change="2.3"
           currentValue="123123"
-          date={123123123}
           direction
           headerText="PRICE"
           value={72}
           ref={ref => (this.textRef = ref)}
+          date={
+            <TextInput
+              color={colors.blueGreyDark50}
+              letterSpacing={fonts.letterSpacing.zero}
+              size={fonts.size.smedium}
+              fontWeight={fonts.weight.medium}
+              ref={ref => (this.dataTextRef = ref)}
+              pointerEvent="none"
+              editable={false}
+            />
+          }
         >
-          <TextInput
-            ref={ref => (this.dataTextRef = ref)}
-            pointerEvent="none"
-            editable={false}
-          />
           <TextInput
             ref={ref => (this.valueTextRef = ref)}
             pointerEvent="none"
             editable={false}
-            style={{
-              size: fonts.size.h2,
-              weight: fonts.weight.bold,
-            }}
+            fontFamily={fonts.family.SFProRounded}
+            fontWeight={fonts.weight.bold}
+            fontSize={32}
           />
         </ValueText>
         <GestureWrapper
@@ -507,12 +511,16 @@ export default class Chart extends PureComponent {
                   const points = currentData?.points;
                   if (points) {
                     this.dataTextRef.setNativeProps({
-                      text: new Date(
-                        points[points.length - 1].y * 1000
-                      ).toLocaleDateString('en-US', dateOptions),
+                      text:
+                        ' - ' +
+                        new Date(
+                          points[points.length - 1].x * 1000
+                        ).toLocaleDateString('en-US', dateOptions),
                     });
                     this.valueTextRef.setNativeProps({
-                      text: points[points.length - 1].y.toFixed(5).toString(),
+                      text: `${nativeCurrency}${points[points.length - 1].y
+                        .toFixed(5)
+                        .toString()}`,
                     });
                   }
                 }),
@@ -531,7 +539,7 @@ export default class Chart extends PureComponent {
                     if (points) {
                       const maxDate = points[points.length - 1].x;
                       const minDate = points[0].x;
-                      const multiplierX = (maxDate - minDate) / (width - 5);
+                      const multiplierX = (maxDate - minDate) / width;
                       const multiplierY = (max - min) / height;
                       const date = x * multiplierX + minDate;
                       let result = -y * multiplierY + min;
@@ -540,19 +548,18 @@ export default class Chart extends PureComponent {
                       } else if (result < min) {
                         result = min;
                       }
-                      // 11:40 AM Thu, Jun 25
                       this.dataTextRef.setNativeProps({
-                        text: new Date(date * 1000).toLocaleString('en-US', {
-                          day: 'numeric',
-                          hour: '2-digit',
-                          hour12: true,
-                          minute: '2-digit',
-                          month: 'short',
-                          weekday: 'short',
-                        }),
+                        text:
+                          ' - ' +
+                          new Date(date * 1000).toLocaleString(
+                            'en-US',
+                            dateOptions
+                          ),
                       });
                       this.valueTextRef.setNativeProps({
-                        text: result.toFixed(5).toString(),
+                        text: `${nativeCurrency}${result
+                          .toFixed(5)
+                          .toString()}`,
                       });
                     }
                   }

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Fragment, useMemo, useRef } from 'react';
 import { colors } from '../../styles';
 import { Icon } from '../icons';
-import { Column, RowWithMargins } from '../layout';
+import { Column, Row, RowWithMargins } from '../layout';
 import { Text, TruncatedText } from '../text';
 
 const Subtitle = props => (
@@ -12,6 +12,7 @@ const Subtitle = props => (
     letterSpacing="uppercase"
     size="smedium"
     weight="semibold"
+    paddingRight={20}
   />
 );
 
@@ -40,9 +41,10 @@ const ValueText = ({
     <Column height={85} paddingLeft={15} width="100%">
       {value ? (
         <Fragment>
-          <Subtitle>
-            {headerText} - {date}
-          </Subtitle>
+          <Row>
+            <Subtitle>{headerText}</Subtitle>
+            {date}
+          </Row>
           {children}
           <RowWithMargins align="center" margin={2} marginTop={2}>
             <Icon

@@ -8,7 +8,7 @@ import {
 } from 'react-native-redash';
 import ChartTypes from '../../helpers/chartTypes';
 import { greaterThan, toFixedDecimals } from '../../helpers/utilities';
-import { useCharts } from '../../hooks';
+import { useAccountSettings, useCharts } from '../../hooks';
 import { colors } from '../../styles';
 import { Column } from '../layout';
 import TimespanSelector from './TimespanSelector';
@@ -18,6 +18,7 @@ const chartStroke = { detailed: 1.5, simplified: 3 };
 
 const Chart = ({ asset, ...props }) => {
   const { chart, chartType, updateChartType } = useCharts(asset);
+  const { nativeCurrencySymbol } = useAccountSettings();
 
   useEffect(() => {
     return () => {
@@ -79,6 +80,7 @@ const Chart = ({ asset, ...props }) => {
         data={chartData}
         importantPointsIndexInterval={amountOfPathPoints}
         mode="gesture-managed"
+        nativeCurrency={nativeCurrencySymbol}
         stroke={chartStroke}
       />
       <TimespanSelector
