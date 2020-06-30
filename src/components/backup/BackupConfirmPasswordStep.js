@@ -128,7 +128,7 @@ const TopIcon = () => (
   </GradientText>
 );
 
-const BackupConfirmPasswordStep = () => {
+const BackupConfirmPasswordStep = ({ setAppearListener }) => {
   const { goBack } = useNavigation();
   const { params } = useRoute();
   const dispatch = useDispatch();
@@ -139,6 +139,12 @@ const BackupConfirmPasswordStep = () => {
   const [label, setLabel] = useState('􀙶 Confirm Backup');
   const passwordRef = useRef();
   const { latestBackup, wallets } = useWallets();
+  const refocus = useCallback(() => {
+    passwordRef.current?.focus();
+  }, []);
+  useEffect(() => {
+    setAppearListener(refocus);
+  }, [setAppearListener, refocus]);
 
   useEffect(() => {
     const fetchPasswordIfPossible = async () => {

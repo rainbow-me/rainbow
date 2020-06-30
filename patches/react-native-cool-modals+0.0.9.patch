@@ -37,9 +37,18 @@ index 334ef99..774435b 100644
          allowsDragToDismiss={allowsDragToDismiss}
          allowsTapToDismiss={allowsTapToDismiss}
 diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreen.h b/node_modules/react-native-cool-modals/ios/RNCMScreen.h
-index 8648e95..ba87b33 100644
+index 8648e95..0307579 100644
 --- a/node_modules/react-native-cool-modals/ios/RNCMScreen.h
 +++ b/node_modules/react-native-cool-modals/ios/RNCMScreen.h
+@@ -36,7 +36,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
+ 
+ @end
+ 
+-@interface RNCMScreenManager : RCTViewManager
++@interface RNCMScreenManager : RCTViewManager<RCTBridgeModule>
+ @end
+ 
+ @interface RNCMScreenView : RCTView
 @@ -44,13 +44,16 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
  @property (nonatomic, copy) RCTDirectEventBlock onAppear;
  @property (nonatomic, copy) RCTDirectEventBlock onDismissed;
@@ -58,10 +67,18 @@ index 8648e95..ba87b33 100644
  @property (nonatomic) NSNumber* cornerRadius;
  @property (nonatomic) RNSScreenStackAnimation stackAnimation;
 diff --git a/node_modules/react-native-cool-modals/ios/RNCMScreen.m b/node_modules/react-native-cool-modals/ios/RNCMScreen.m
-index 7c27c15..d181379 100644
+index 7c27c15..6c720f0 100644
 --- a/node_modules/react-native-cool-modals/ios/RNCMScreen.m
 +++ b/node_modules/react-native-cool-modals/ios/RNCMScreen.m
-@@ -45,7 +45,8 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
+@@ -6,6 +6,7 @@
+ #import <React/RCTShadowView.h>
+ #import <React/RCTTouchHandler.h>
+ #import "RNCoolModals-Swift.h"
++#import <objc/runtime.h>
+ 
+ @interface RNCMScreenView () <UIAdaptivePresentationControllerDelegate, RCTInvalidating>
+ @end
+@@ -45,7 +46,8 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
      _startFromShortForm = false;
      _modalBackgroundColor = [[UIColor alloc] initWithRed:0.0f green:0.0f blue:0.0f alpha:1];
      _backgroundOpacity = [[NSNumber alloc] initWithDouble:0.7];
@@ -71,10 +88,26 @@ index 7c27c15..d181379 100644
    }
  
    return self;
-@@ -55,6 +56,13 @@ - (void)willDismiss {
+@@ -55,6 +57,29 @@ - (void)willDismiss {
    _onWillDismiss(nil);
  }
  
++- (void) setIsShortFormEnabled:(BOOL)isShortFormEnabled {
++  _isShortFormEnabled = isShortFormEnabled;
++  SEL selector = NSSelectorFromString(@"panModalSetNeedsLayoutUpdateWrapper");
++  UIViewController* controller = [self.controller valueForKey:@"_parentVC"];
++
++  [controller performSelector:selector];
++  
++}
++
++- (void)jumpTo:(nonnull NSNumber*)point {
++  SEL selector = NSSelectorFromString(@"jumpToLong:");
++  UIViewController* controller = [self.controller valueForKey:@"_parentVC"];
++  
++  [controller performSelector:selector withObject:point];
++}
++
 +- (void)onTouchTopWrapper:(NSNumber*)dismissing {
 +  BOOL dismissingValue = [dismissing boolValue];
 +  if (_onTouchTop) {
@@ -85,7 +118,24 @@ index 7c27c15..d181379 100644
  - (void)reactSetFrame:(CGRect)frame
  {
    if (![self.reactViewController.parentViewController
-@@ -375,12 +383,14 @@ @implementation RNCMScreenManager
+@@ -370,17 +395,31 @@ - (void)notifyFinishTransitioning
+ 
+ @implementation RNCMScreenManager
+ 
++RCT_EXPORT_METHOD(jumpTo:(nonnull NSNumber*)point tag:(nonnull NSNumber*) reactTag) {
++    [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
++        UIView *view = viewRegistry[reactTag];
++        if (!view || ![view isKindOfClass:[RNCMScreenView class]]) {
++            RCTLogError(@"Cannot find RNCMScreenView with tag #%@", reactTag);
++            return;
++        }
++        [(RNCMScreenView *) view jumpTo:point];
++    }];
++
++}
++
+ RCT_EXPORT_MODULE()
+ 
  RCT_EXPORT_VIEW_PROPERTY(gestureEnabled, BOOL)
  RCT_EXPORT_VIEW_PROPERTY(showDragIndicator, BOOL)
  RCT_EXPORT_VIEW_PROPERTY(customStack, BOOL)
@@ -100,7 +150,7 @@ index 7c27c15..d181379 100644
  
  RCT_EXPORT_VIEW_PROPERTY(onWillDismiss, RCTDirectEventBlock);
  RCT_EXPORT_VIEW_PROPERTY(springDamping, NSNumber)
-@@ -395,6 +405,8 @@ @implementation RNCMScreenManager
+@@ -395,6 +434,8 @@ @implementation RNCMScreenManager
  RCT_EXPORT_VIEW_PROPERTY(allowsTapToDismiss, BOOL)
  RCT_EXPORT_VIEW_PROPERTY(allowsDragToDismiss, BOOL)
  RCT_EXPORT_VIEW_PROPERTY(startFromShortForm, BOOL)
@@ -156,7 +206,7 @@ index b397efb..83777bf 100644
      finish();
    }
 diff --git a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-index b21a043..85768f0 100644
+index b21a043..eefa4e1 100644
 --- a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 +++ b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 @@ -28,6 +28,7 @@ class PossiblyTouchesPassableUIView: UIView {
@@ -167,7 +217,23 @@ index b21a043..85768f0 100644
    weak var config: NSObject?
    var length: CGFloat = 0
    var topAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
-@@ -63,6 +64,11 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -56,6 +57,15 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+     panModalTransition(to: .hidden)
+   }
+ 
++  @objc func jumpTo(long: NSNumber) {
++    self.panModalSetNeedsLayoutUpdate()
++    if (long.boolValue) {
++      panModalTransition(to: .longForm);
++    } else {
++      panModalTransition(to: .shortForm);
++    }
++  }
++
+   @objc func unhackParent() {
+     let ppview = view.superview!.superview!
+     if ppview is PossiblyTouchesPassableUIView {
+@@ -63,6 +73,11 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      }
    }
  
@@ -179,7 +245,7 @@ index b21a043..85768f0 100644
    override var bottomLayoutGuide: UILayoutSupport {
      get {
        if self.isViewLoaded {
-@@ -85,6 +91,11 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -85,6 +100,11 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      }
    }
  
@@ -191,7 +257,7 @@ index b21a043..85768f0 100644
    var isHapticFeedbackEnabled: Bool = false
  
    func findChildScrollViewDFS(view: UIView)-> UIScrollView? {
-@@ -115,6 +126,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -115,6 +135,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      }
    }
  
@@ -199,7 +265,7 @@ index b21a043..85768f0 100644
    func panModalWillDismiss() {
      callWillDismiss()
    }
-@@ -125,7 +137,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -125,7 +146,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
    }
  
    func shouldRespond(to panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
@@ -211,7 +277,7 @@ index b21a043..85768f0 100644
    }
  
    var allowsDragToDismiss: Bool {
-@@ -145,10 +160,29 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -145,10 +169,29 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      return backgroundColor.withAlphaComponent(CGFloat(truncating: self.config?.value(forKey: "backgroundOpacity") as! NSNumber))
    }
  
@@ -243,7 +309,18 @@ index b21a043..85768f0 100644
    }
  
    var isShortFormEnabledInternal = 2
-@@ -200,12 +234,17 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+@@ -161,6 +204,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
+     return self.config?.value(forKey: "isShortFormEnabled") as! Bool
+   }
+ 
++  @objc func panModalSetNeedsLayoutUpdateWrapper() {
++    panModalSetNeedsLayoutUpdate()
++  }
++
+   var shortFormHeight: PanModalHeight {
+     let height: CGFloat = CGFloat(truncating: self.config?.value(forKey: "shortFormHeight") as! NSNumber)
+     return isShortFormEnabled ? .contentHeight(height) : longFormHeight
+@@ -200,12 +247,17 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      super.viewWillDisappear(animated)
    }
  
@@ -262,31 +339,266 @@ index b21a043..85768f0 100644
          }
        }
      }
+diff --git a/node_modules/react-native-cool-modals/native-stack/navigators/createNativeStackNavigator.tsx b/node_modules/react-native-cool-modals/native-stack/navigators/createNativeStackNavigator.tsx
+index c26b459..79a431d 100644
+--- a/node_modules/react-native-cool-modals/native-stack/navigators/createNativeStackNavigator.tsx
++++ b/node_modules/react-native-cool-modals/native-stack/navigators/createNativeStackNavigator.tsx
+@@ -39,6 +39,8 @@ function NativeStackNavigator(props: NativeStackNavigatorProps) {
+     screenOptions,
+   });
+ 
++
++
+   React.useEffect(
+     () =>
+       navigation.addListener &&
+@@ -65,13 +67,14 @@ function NativeStackNavigator(props: NativeStackNavigatorProps) {
+     [navigation, state.index, state.key]
+   );
+ 
++
+   return (
+-    <NativeStackView
+-      {...rest}
+-      state={state}
+-      navigation={navigation}
+-      descriptors={descriptors}
+-    />
++      <NativeStackView
++        {...rest}
++        state={state}
++        navigation={navigation}
++        descriptors={descriptors}
++      />
+   );
+ }
+ 
 diff --git a/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx b/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
-index c2f2e2b..95e6f8d 100644
+index c2f2e2b..8368475 100644
 --- a/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
 +++ b/node_modules/react-native-cool-modals/native-stack/views/NativeStackView.tsx
-@@ -43,6 +43,7 @@ export default function NativeStackView({
-           } = options;
+@@ -24,105 +24,141 @@ type Props = {
+   descriptors: NativeStackDescriptorMap;
+ };
  
-           const {
-+            dismissable,
-             customStack,
-             topOffset,
-             showDragIndicator,
-@@ -58,10 +59,15 @@ export default function NativeStackView({
-             springDamping,
-             startFromShortForm,
-             transitionDuration,
-+            onTouchTop,
-+            ignoreBottomOffset
-           } = options;
+-export default function NativeStackView({
+-                                          state,
+-                                          navigation,
+-                                          descriptors,
+-                                        }: Props) {
+-  const { colors } = useTheme();
  
-           return (
-               <Screen
-+                  ignoreBottomOffset={ignoreBottomOffset}
-+                  onTouchTop={onTouchTop}
-+                  dismissable={dismissable}
-                   customStack={customStack}
-                   topOffset={topOffset}
-                   showDragIndicator={showDragIndicator}
+-  return (
+-      <ScreenStack style={styles.container}>
+-        {state.routes.map(route => {
+-          const { options, render: renderScene } = descriptors[route.key];
+-          const {
+-            gestureEnabled,
+-            stackPresentation = 'push',
+-            stackAnimation,
+-            contentStyle,
+-          } = options;
+-
+-          const {
+-            customStack,
+-            topOffset,
+-            showDragIndicator,
+-            allowsDragToDismiss,
+-            allowsTapToDismiss,
+-            anchorModaltoLongForm,
+-            onWillDismiss,
+-            backgroundOpacity,
+-            cornerRadius,
+-            headerHeight,
+-            isShortFormEnabled,
+-            shortFormHeight,
+-            springDamping,
+-            startFromShortForm,
+-            transitionDuration,
+-          } = options;
+-
+-          return (
+-              <Screen
+-                  customStack={customStack}
+-                  topOffset={topOffset}
+-                  showDragIndicator={showDragIndicator}
+-                  allowsDragToDismiss={allowsDragToDismiss}
+-                  allowsTapToDismiss={allowsTapToDismiss}
+-                  anchorModaltoLongForm={anchorModaltoLongForm}
+-                  onWillDismiss={onWillDismiss}
+-                  modalBackgroundOpacity={backgroundOpacity}
+-                  cornerRadius={cornerRadius}
+-                  headerHeight={headerHeight}
+-                  isShortFormEnabled={isShortFormEnabled}
+-                  shortFormHeight={shortFormHeight}
+-                  springDamping={springDamping}
+-                  startFromShortForm={startFromShortForm}
+-                  transitionDuration={transitionDuration}
+-                  key={route.key}
+-                  style={StyleSheet.absoluteFill}
+-                  gestureEnabled={gestureEnabled}
+-                  stackPresentation={stackPresentation}
+-                  stackAnimation={stackAnimation}
+-                  onAppear={() => {
++export const ModalContext = React.createContext()
++
++import { findNodeHandle, NativeModules } from 'react-native'
++
++function ScreenView({state, navigation, descriptors, route, colors}) {
++    const ref = React.useRef()
++    const onComponentRef = React.useCallback(e => {
++        ref.current = e && e._nativeTag;
++    }, [])
++
++    const context = React.useMemo(() => ({
++        jumpToLong: () => ref.current && NativeModules.RNCMScreenManager.jumpTo(true, ref.current),
++        jumpToShort: () => ref.current && NativeModules.RNCMScreenManager.jumpTo(false, ref.current)
++    }), [])
++
++
++    const { options, render: renderScene } = descriptors[route.key];
++    const {
++        gestureEnabled,
++        stackPresentation = 'push',
++        stackAnimation,
++        contentStyle,
++    } = options;
++
++    const {
++        dismissable,
++        customStack,
++        topOffset,
++        showDragIndicator,
++        allowsDragToDismiss,
++        allowsTapToDismiss,
++        anchorModaltoLongForm,
++        onWillDismiss,
++        backgroundOpacity,
++        cornerRadius,
++        headerHeight,
++        isShortFormEnabled,
++        shortFormHeight,
++        springDamping,
++        startFromShortForm,
++        transitionDuration,
++        onTouchTop,
++        ignoreBottomOffset
++    } = options;
++
++    return (
++        <ModalContext.Provider value={context}>
++            <Screen
++                onComponentRef={onComponentRef}
++                ignoreBottomOffset={ignoreBottomOffset}
++                onTouchTop={onTouchTop}
++                dismissable={dismissable}
++                customStack={customStack}
++                topOffset={topOffset}
++                showDragIndicator={showDragIndicator}
++                allowsDragToDismiss={allowsDragToDismiss}
++                allowsTapToDismiss={allowsTapToDismiss}
++                anchorModaltoLongForm={anchorModaltoLongForm}
++                onWillDismiss={onWillDismiss}
++                modalBackgroundOpacity={backgroundOpacity}
++                cornerRadius={cornerRadius}
++                headerHeight={headerHeight}
++                isShortFormEnabled={isShortFormEnabled}
++                shortFormHeight={shortFormHeight}
++                springDamping={springDamping}
++                startFromShortForm={startFromShortForm}
++                transitionDuration={transitionDuration}
++                key={route.key}
++                style={StyleSheet.absoluteFill}
++                gestureEnabled={gestureEnabled}
++                stackPresentation={stackPresentation}
++                stackAnimation={stackAnimation}
++                onAppear={() => {
+                     options?.onAppear?.()
+                     navigation.emit({
+-                      type: 'appear',
+-                      target: route.key,
++                        type: 'appear',
++                        target: route.key,
+                     });
+-                  }}
+-                  onDismissed={() => {
++                }}
++                onDismissed={() => {
+                     options?.onDismissed?.()
+                     navigation.emit({
+-                      type: 'dismiss',
+-                      target: route.key,
++                        type: 'dismiss',
++                        target: route.key,
+                     });
+ 
+                     navigation.dispatch({
+-                      ...StackActions.pop(),
+-                      source: route.key,
+-                      target: state.key,
++                        ...StackActions.pop(),
++                        source: route.key,
++                        target: state.key,
+                     });
+-                  }}
+-                  onFinishTransitioning={() => {
++                }}
++                onFinishTransitioning={() => {
+                     navigation.emit({
+-                      type: 'finishTransitioning',
+-                      target: route.key,
++                        type: 'finishTransitioning',
++                        target: route.key,
+                     });
+-                  }}>
++                }}>
+                 <View
+                     style={[
+-                      styles.container,
+-                      {
+-                        backgroundColor:
+-                            stackPresentation !== 'transparentModal'
+-                                ? colors.background
+-                                : undefined,
+-                      },
+-                      contentStyle,
++                        styles.container,
++                        {
++                            backgroundColor:
++                                stackPresentation !== 'transparentModal'
++                                    ? colors.background
++                                    : undefined,
++                        },
++                        contentStyle,
+                     ]}>
+-                  {renderScene()}
++                    {renderScene()}
+                 </View>
+-              </Screen>
+-          );
++            </Screen>
++        </ModalContext.Provider>
++    );
++}
++
++export default function NativeStackView({
++                                          state,
++                                          navigation,
++                                          descriptors,
++                                        }: Props) {
++  const { colors } = useTheme();
++
++  return (
++      <ScreenStack style={styles.container}>
++        {state.routes.map(route => {
++            return <ScreenView
++                state={state}
++                navigation={navigation}
++                descriptors={descriptors}
++                route={route}
++                colors={colors}
++            />
++
+         })}
+       </ScreenStack>
+   );

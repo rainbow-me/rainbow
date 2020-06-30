@@ -1,8 +1,10 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 import { Alert } from 'react-native';
+import { ModalContext } from 'react-native-cool-modals/native-stack/views/NativeStackView';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
+import styled from 'styled-components/primitives';
 import BackupConfirmPasswordStep from '../components/backup/BackupConfirmPasswordStep';
 import BackupIcloudStep from '../components/backup/BackupIcloudStep';
 import BackupImportedStep from '../components/backup/BackupImportedStep';
@@ -25,8 +27,14 @@ const switchSheetContentTransition = (
   </Transition.Sequence>
 );
 
-const BackupSheet = () => {
-  const { goBack, setParams } = useNavigation();
+const StyledSheet = styled(SlackSheet)`
+  top: 0;
+  height: 100%;
+`;
+
+const BackupSheet = ({ setAppearListener }) => {
+  const { jumpToLong } = useContext(ModalContext);
+  const { setOptions, goBack, setParams } = useNavigation();
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
   const dispatch = useDispatch();
@@ -45,6 +53,8 @@ const BackupSheet = () => {
           missingPassword: true,
           option: WalletBackupTypes.cloud,
         });
+        setOptions({ isShortFormEnabled: false });
+        jumpToLong();
       } else {
         await dispatch(
           setIsWalletLoading(walletLoadingStates.BACKING_UP_WALLET)
@@ -79,13 +89,26 @@ const BackupSheet = () => {
     } else {
       switchSheetContentTransitionRef.current?.animateNextTransition();
       setStep(WalletBackupTypes.cloud);
+      setOptions({ isShortFormEnabled: false });
+      jumpToLong();
     }
-  }, [dispatch, goBack, latestBackup, setParams, wallet_id, wallets]);
+  }, [
+    dispatch,
+    goBack,
+    latestBackup,
+    setParams,
+    wallet_id,
+    wallets,
+    jumpToLong,
+    setOptions,
+  ]);
 
   const onManualBackup = useCallback(() => {
     switchSheetContentTransitionRef.current?.animateNextTransition();
     setStep(WalletBackupTypes.manual);
-  }, []);
+    setOptions({ isShortFormEnabled: false });
+    jumpToLong();
+  }, [jumpToLong, setOptions]);
 
   const onIgnoreBackup = useCallback(() => {
     goBack();
@@ -102,9 +125,9 @@ const BackupSheet = () => {
         );
       case WalletBackupTypes.cloud:
         return missingPassword ? (
-          <BackupConfirmPasswordStep />
+          <BackupConfirmPasswordStep setAppearListener={setAppearListener} />
         ) : (
-          <BackupIcloudStep />
+          <BackupIcloudStep setAppearListener={setAppearListener} />
         );
       case WalletBackupTypes.manual:
         return <BackupManualStep />;
@@ -116,18 +139,25 @@ const BackupSheet = () => {
           />
         );
     }
-  }, [missingPassword, onIcloudBackup, onIgnoreBackup, onManualBackup, step]);
+  }, [
+    missingPassword,
+    onIcloudBackup,
+    onIgnoreBackup,
+    onManualBackup,
+    setAppearListener,
+    step,
+  ]);
 
   return (
-    <SlackSheet>
+    <StyledSheet>
       <Transitioning.View
         ref={switchSheetContentTransitionRef}
         transition={switchSheetContentTransition}
       >
         {renderStep()}
       </Transitioning.View>
-    </SlackSheet>
+    </StyledSheet>
   );
 };
 
-export default React.memo(BackupSheet);
+export default BackupSheet;
