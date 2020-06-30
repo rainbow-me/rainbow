@@ -14,13 +14,14 @@ import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
+import WalletLoadingStates from '../../helpers/walletLoadingStates';
 import { useWallets } from '../../hooks';
 import * as keychain from '../../model/keychain';
 import {
   addWalletToCloudBackup,
   backupWalletToCloud,
 } from '../../model/wallet';
-import { setWalletBackedUp } from '../../redux/wallets';
+import { setIsWalletLoading, setWalletBackedUp } from '../../redux/wallets';
 import { borders, colors, padding } from '../../styles';
 import { deviceUtils, logger } from '../../utils';
 import { RainbowButton } from '../buttons';
@@ -265,9 +266,7 @@ const BackupIcloudStep = ({ setAppearListener }) => {
       Object.keys(wallets).find(key => wallets[key].imported === false);
 
     try {
-      logger.log('onConfirmBackup:: saving backup password', password);
-      await keychain.saveBackupPassword(password);
-      logger.log('onConfirmBackup:: saved');
+      await dispatch(setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET));
 
       let backupFile;
       if (!latestBackup) {
@@ -292,6 +291,10 @@ const BackupIcloudStep = ({ setAppearListener }) => {
         );
       }
       if (backupFile) {
+        logger.log('onConfirmBackup:: saving backup password', password);
+        await keychain.saveBackupPassword(password);
+        logger.log('onConfirmBackup:: saved');
+
         logger.log('onConfirmBackup:: backup completed!', backupFile);
         await dispatch(
           setWalletBackedUp(wallet_id, WalletBackupTypes.cloud, backupFile)
@@ -310,9 +313,11 @@ const BackupIcloudStep = ({ setAppearListener }) => {
       } else {
         Alert.alert('Error while trying to backup');
         setTimeout(onPasswordSubmit, 1000);
+        dispatch(setIsWalletLoading(null));
       }
     } catch (e) {
       logger.log('Error while backing up', e);
+      dispatch(setIsWalletLoading(null));
     }
   }, [
     params?.wallet_id,

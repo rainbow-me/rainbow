@@ -11,6 +11,7 @@ import { Column } from '../components/layout';
 import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
+import WalletLoadingStates from '../helpers/walletLoadingStates';
 import WalletTypes from '../helpers/walletTypes';
 import { useAccountSettings, useInitializeWallet, useWallets } from '../hooks';
 import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
@@ -20,7 +21,7 @@ import Routes from '../navigation/routesNames';
 import {
   addressSetSelected,
   createAccountForWallet,
-  isCreatingAccount,
+  setIsWalletLoading,
   walletsLoadState,
   walletsSetSelected,
   walletsUpdate,
@@ -269,7 +270,9 @@ const ChangeWalletSheet = () => {
             isNewProfile: true,
             onCloseModal: async args => {
               if (args) {
-                dispatch(isCreatingAccount(true));
+                dispatch(
+                  setIsWalletLoading(WalletLoadingStates.CREATING_ACCOUNT)
+                );
                 const name = get(args, 'name', '');
                 const color = get(args, 'color', colors.getRandomColor());
                 // Check if the selected wallet is the primary
@@ -320,7 +323,7 @@ const ChangeWalletSheet = () => {
                 }
               }
               creatingWallet.current = false;
-              dispatch(isCreatingAccount(false));
+              dispatch(setIsWalletLoading(null));
             },
             profile: {
               color: null,
@@ -331,7 +334,7 @@ const ChangeWalletSheet = () => {
         }, 50);
       });
     } catch (e) {
-      dispatch(isCreatingAccount(false));
+      dispatch(setIsWalletLoading(null));
       logger.log('Error while trying to add account', e);
     }
   }, [

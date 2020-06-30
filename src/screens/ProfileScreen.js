@@ -9,7 +9,7 @@ import { Page } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
-import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
+import useNativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
 import {
   useAccountSettings,
@@ -34,7 +34,8 @@ export default function ProfileScreen({ navigation }) {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
-  const { isCreatingAccount } = useWallets();
+  const { isWalletLoading } = useWallets();
+  const nativeTransactionListAvailable = useNativeTransactionListAvailable();
 
   const {
     isLoadingTransactions: isLoading,
@@ -110,10 +111,10 @@ export default function ProfileScreen({ navigation }) {
           sections={sections}
         />
       )}
-      {isCreatingAccount && (
+      {isWalletLoading && (
         <LoadingOverlay
           paddingTop={sheetVerticalOffset}
-          title="Creating wallet..."
+          title={isWalletLoading}
         />
       )}
     </ProfileScreenPage>

@@ -1,6 +1,9 @@
 import { toChecksumAddress } from 'ethereumjs-util';
 import { filter, flatMap, get, map, values } from 'lodash';
-import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
+import {
+  backupUserDataIntoCloud,
+  deleteAllBackups,
+} from '../handlers/cloudBackup';
 import {
   getWalletNames,
   saveWalletNames,
@@ -24,7 +27,7 @@ const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
 const WALLETS_LOAD = 'wallets/ALL_WALLETS_LOAD';
 const WALLETS_UPDATE = 'wallets/ALL_WALLETS_UPDATE';
 const WALLETS_UPDATE_NAMES = 'wallets/WALLETS_UPDATE_NAMES';
-const WALLETS_SET_IS_CREATING_ACCOUNT = 'wallets/SET_IS_CREATING_ACCOUNT';
+const WALLETS_SET_IS_LOADING = 'wallets/WALLETS_SET_IS_LOADING';
 const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 
 // -- Actions ---------------------------------------- //
@@ -78,18 +81,20 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     const walletNames = await getWalletNames();
 
     // Only for debugging purposes
+    const clearBackups = false;
+    if (clearBackups) {
+      Object.keys(wallets).forEach(key => {
+        // if (!wallets[key].primary) {
+        delete wallets[key].backedUp;
+        delete wallets[key].backupDate;
+        delete wallets[key].backupFile;
+        delete wallets[key].backupType;
+        //}
+      });
 
-    // Object.keys(wallets).forEach(key => {
-    //   // if (!wallets[key].primary) {
-    //   delete wallets[key].backedUp;
-    //   delete wallets[key].backupDate;
-    //   delete wallets[key].backupFile;
-    //   delete wallets[key].backupType;
-    //   //}
-    // });
-
-    // // // Delete all backups (debugging)
-    // deleteAllBackups();
+      // Delete all backups (debugging)
+      deleteAllBackups();
+    }
 
     dispatch({
       payload: {
@@ -122,10 +127,11 @@ export const walletsSetSelected = wallet => dispatch => {
   });
 };
 
-export const isCreatingAccount = val => dispatch => {
+export const setIsWalletLoading = val => dispatch => {
+  console.log('WALLET LOADING STATE UPDATED', val);
   dispatch({
     payload: val,
-    type: WALLETS_SET_IS_CREATING_ACCOUNT,
+    type: WALLETS_SET_IS_LOADING,
   });
 };
 
@@ -146,6 +152,11 @@ export const setWalletBackedUp = (
   if (selected.id === wallet_id) {
     dispatch(walletsSetSelected(newWallets[wallet_id]));
   }
+
+  // Reset the loading state 1 second later
+  setTimeout(() => {
+    dispatch(setIsWalletLoading(null));
+  }, 1000);
 
   if (method === WalletBackupTypes.cloud) {
     try {
@@ -226,7 +237,7 @@ export const fetchWalletNames = () => async (dispatch, getState) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  isCreatingAccount: false,
+  isWalletLoading: null,
   selected: undefined,
   walletNames: {},
   wallets: null,
@@ -234,8 +245,8 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case WALLETS_SET_IS_CREATING_ACCOUNT:
-      return { ...state, isCreatingAccount: action.payload };
+    case WALLETS_SET_IS_LOADING:
+      return { ...state, isWalletLoading: action.payload };
     case WALLETS_SET_SELECTED:
       return { ...state, selected: action.payload };
     case WALLETS_UPDATE:

@@ -14,7 +14,9 @@ import {
 } from '../components/header';
 import { Page } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
-import { discoverSheetAvailable } from '../config/experimental';
+import useExperimentalFlag, {
+  DISCOVER_SHEET,
+} from '../config/experimentalHooks';
 import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import networkInfo from '../helpers/networkInfo';
 import {
@@ -43,13 +45,14 @@ const WalletPage = styled(Page)`
 `;
 
 export default function WalletScreen() {
+  const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
   const [initialized, setInitialized] = useState(false);
   const initializeWallet = useInitializeWallet();
   const refreshAccountData = useRefreshAccountData();
   const { isCoinListEdited } = useCoinListEdited();
   const { updateKeyboardHeight } = useKeyboardHeight();
   const [scrollViewTracker] = useValues([0], []);
-  const { isCreatingAccount, isReadOnlyWallet } = useWallets();
+  const { isWalletLoading, isReadOnlyWallet } = useWallets();
 
   useEffect(() => {
     if (!initialized) {
@@ -114,10 +117,10 @@ export default function WalletScreen() {
           sections={sections}
         />
       </FabWrapper>
-      {isCreatingAccount && (
+      {isWalletLoading && (
         <LoadingOverlay
           paddingTop={sheetVerticalOffset}
-          title="Creating wallet..."
+          title={isWalletLoading}
         />
       )}
     </WalletPage>

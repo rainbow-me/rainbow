@@ -4,16 +4,22 @@ import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../../helpers/walletBackupTypes';
+import WalletLoadingStates from '../../../helpers/walletLoadingStates';
 import WalletTypes from '../../../helpers/walletTypes';
 import { useWallets } from '../../../hooks';
 import { fetchBackupPassword } from '../../../model/keychain';
 import { addWalletToCloudBackup } from '../../../model/wallet';
 import Routes from '../../../navigation/routesNames';
-import { deleteCloudBackup, setWalletBackedUp } from '../../../redux/wallets';
+import {
+  deleteCloudBackup,
+  setIsWalletLoading,
+  setWalletBackedUp,
+} from '../../../redux/wallets';
 import { colors, fonts, padding } from '../../../styles';
 import { logger } from '../../../utils';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column, ColumnWithMargins } from '../../layout';
+import { LoadingOverlay } from '../../modal';
 import { SheetButton } from '../../sheet';
 import { Text } from '../../text';
 import ShowSecretView from './ShowSecretView';
@@ -64,7 +70,12 @@ const AlreadyBackedUpView = () => {
   const { navigate, setParams } = useNavigation();
   const { params } = useRoute();
   const dispatch = useDispatch();
-  const { latestBackup, wallets, selectedWallet } = useWallets();
+  const {
+    isWalletLoading,
+    latestBackup,
+    wallets,
+    selectedWallet,
+  } = useWallets();
   const wallet_id = params?.wallet_id || selectedWallet.id;
   const onViewRecoveryPhrase = useCallback(() => {
     setParams({
@@ -105,6 +116,9 @@ const AlreadyBackedUpView = () => {
             wallet_id,
           });
         } else {
+          await dispatch(
+            setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET)
+          );
           // We have the password and we need to add it to an existing backup
           logger.log('password fetched correctly', password);
           const backupFile = await addWalletToCloudBackup(
@@ -142,6 +156,8 @@ const AlreadyBackedUpView = () => {
       await dispatch(deleteCloudBackup(wallet_id));
     }
   }, [walletStatus, latestBackup, navigate, wallet_id, wallets, dispatch]);
+
+  console.log('ALREADY BACKEDUP VIEW', isWalletLoading);
 
   return (
     <Fragment>
@@ -205,6 +221,7 @@ const AlreadyBackedUpView = () => {
           </Text>
         </ButtonPressAnimation>
       </Centered>
+      {isWalletLoading && <LoadingOverlay title={isWalletLoading} />}
     </Fragment>
   );
 };

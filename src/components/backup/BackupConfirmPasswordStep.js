@@ -13,13 +13,14 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
+import WalletLoadingStates from '../../helpers/walletLoadingStates';
 import { useWallets } from '../../hooks';
 import { fetchBackupPassword, saveBackupPassword } from '../../model/keychain';
 import {
   addWalletToCloudBackup,
   backupWalletToCloud,
 } from '../../model/wallet';
-import { setWalletBackedUp } from '../../redux/wallets';
+import { setIsWalletLoading, setWalletBackedUp } from '../../redux/wallets';
 import { borders, colors, padding } from '../../styles';
 import { deviceUtils, logger } from '../../utils';
 import { RainbowButton } from '../buttons';
@@ -196,6 +197,7 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
       Object.keys(wallets).find(key => wallets[key].imported === false);
 
     try {
+      await dispatch(setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET));
       let backupFile;
       if (!latestBackup) {
         logger.log(
@@ -243,6 +245,7 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
     } catch (e) {
       logger.log('Error while backing up', e);
       setTimeout(passwordRef.current.focus());
+      await dispatch(setIsWalletLoading(null));
     }
   }, [dispatch, goBack, latestBackup, params?.wallet_id, password, wallets]);
 

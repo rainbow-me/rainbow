@@ -62,9 +62,8 @@ class RequestCoinRow extends React.PureComponent {
   };
 
   handlePressOpen = () => {
-    this.props.navigation.navigate({
-      params: { transactionDetails: this.props.item },
-      routeName: Routes.CONFIRM_REQUEST,
+    this.props.navigation.navigate(Routes.CONFIRM_REQUEST, {
+      transactionDetails: this.props.item,
     });
   };
 

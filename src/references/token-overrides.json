@@ -35,6 +35,11 @@
     "color": "#3AB03E",
     "name": "Civic"
   },
+  "0xc00e94cb662c3520282e6f5717214004a7f26888": {
+    "color": "#00D395",
+    "name": "Compound",
+    "shadowColor": "#25292E",
+  },
   "0x6c8c6b02e7b2be14d4fa6022dfd6d75921d90e4e": {
     "color": "#9669ED",
     "name": "Compound Basic Attention Token",
@@ -134,7 +139,7 @@
     "name": "iExec"
   },
   "0x93ED3FBe21207Ec2E8f2d3c3de6e058Cb73Bc04d": {
-    "color": "#A2A1A3",
+    "color": "#838285",
     "name": "Kleros"
   },
   "0xdd974D5C2e2928deA5F71b9825b8b646686BD200": {
