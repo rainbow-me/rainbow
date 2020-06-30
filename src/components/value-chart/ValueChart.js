@@ -295,6 +295,15 @@ export default class Chart extends PureComponent {
 
   componentDidMount = () => {
     this.reloadChart(0, true);
+    this.dataTextRef.setNativeProps({
+      text:
+        ' - ' + new Date(Date.now()).toLocaleDateString('en-US', dateOptions),
+    });
+    this.valueTextRef.setNativeProps({
+      text: `${this.props.nativeCurrency}${this.props.currentValue
+        .toFixed(5)
+        .toString()}`,
+    });
   };
 
   getSnapshotBeforeUpdate(prevProps) {
@@ -370,7 +379,13 @@ export default class Chart extends PureComponent {
   };
 
   render() {
-    const { barColor, currentValue, nativeCurrency } = this.props;
+    const {
+      barColor,
+      change,
+      currentValue,
+      nativeCurrency,
+      positiveChange,
+    } = this.props;
     const { currentData } = this.state;
     let maxValue = 0,
       minValue = 0,
@@ -396,9 +411,9 @@ export default class Chart extends PureComponent {
     return (
       <Fragment>
         <ValueText
-          change="2.3"
-          currentValue="123123"
-          direction
+          change={change}
+          currentValue={currentValue}
+          direction={positiveChange}
           headerText="PRICE"
           value={72}
           ref={ref => (this.textRef = ref)}
