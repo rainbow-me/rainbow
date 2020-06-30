@@ -18,7 +18,7 @@ const Label = styled(Text).attrs({
   size: 'larger',
   weight: 'bold',
 })`
-  margin-bottom: 2;
+  margin-bottom: 4;
 `;
 
 export default function ShareButton({ accountAddress, ...props }) {
