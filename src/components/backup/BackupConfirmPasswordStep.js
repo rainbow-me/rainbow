@@ -20,7 +20,7 @@ import {
   addWalletToCloudBackup,
   backupWalletToCloud,
 } from '../../model/wallet';
-import { isDoingSomething, setWalletBackedUp } from '../../redux/wallets';
+import { setIsWalletLoading, setWalletBackedUp } from '../../redux/wallets';
 import { borders, colors, padding } from '../../styles';
 import { deviceUtils, logger } from '../../utils';
 import { RainbowButton } from '../buttons';
@@ -191,7 +191,7 @@ const BackupConfirmPasswordStep = () => {
       Object.keys(wallets).find(key => wallets[key].imported === false);
 
     try {
-      await dispatch(isDoingSomething(WalletLoadingStates.BACKING_UP_WALLET));
+      await dispatch(setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET));
       let backupFile;
       if (!latestBackup) {
         logger.log(
@@ -239,7 +239,7 @@ const BackupConfirmPasswordStep = () => {
     } catch (e) {
       logger.log('Error while backing up', e);
       setTimeout(passwordRef.current.focus());
-      await dispatch(isDoingSomething(null));
+      await dispatch(setIsWalletLoading(null));
     }
   }, [dispatch, goBack, latestBackup, params?.wallet_id, password, wallets]);
 

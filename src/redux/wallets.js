@@ -24,7 +24,7 @@ const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
 const WALLETS_LOAD = 'wallets/ALL_WALLETS_LOAD';
 const WALLETS_UPDATE = 'wallets/ALL_WALLETS_UPDATE';
 const WALLETS_UPDATE_NAMES = 'wallets/WALLETS_UPDATE_NAMES';
-const WALLETS_SET_IS_DOING_SOMETHING = 'wallets/SET_IS_CREATING_ACCOUNT';
+const WALLETS_SET_IS_LOADING = 'wallets/WALLETS_SET_IS_LOADING';
 const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 
 // -- Actions ---------------------------------------- //
@@ -122,10 +122,10 @@ export const walletsSetSelected = wallet => dispatch => {
   });
 };
 
-export const isDoingSomething = val => dispatch => {
+export const setIsWalletLoading = val => dispatch => {
   dispatch({
     payload: val,
-    type: WALLETS_SET_IS_DOING_SOMETHING,
+    type: WALLETS_SET_IS_LOADING,
   });
 };
 
@@ -147,7 +147,7 @@ export const setWalletBackedUp = (
     dispatch(walletsSetSelected(newWallets[wallet_id]));
   }
 
-  dispatch(isDoingSomething(null));
+  dispatch(setIsWalletLoading(null));
 
   if (method === WalletBackupTypes.cloud) {
     try {
@@ -228,7 +228,7 @@ export const fetchWalletNames = () => async (dispatch, getState) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  isDoingSomething: null,
+  isWalletLoading: null,
   selected: undefined,
   walletNames: {},
   wallets: null,
@@ -236,8 +236,8 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case WALLETS_SET_IS_DOING_SOMETHING:
-      return { ...state, isDoingSomething: action.payload };
+    case WALLETS_SET_IS_LOADING:
+      return { ...state, isWalletLoading: action.payload };
     case WALLETS_SET_SELECTED:
       return { ...state, selected: action.payload };
     case WALLETS_UPDATE:

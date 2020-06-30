@@ -335,7 +335,7 @@ function colorAnimation(rValue, fromShadow) {
 
 export default function WelcomeScreen() {
   hideSplashScreen();
-  const { isDoingSomething } = useWallets();
+  const { isWalletLoading } = useWallets();
   const { navigate } = useNavigation();
   const contentAnimation = useAnimatedValue(1);
   const createWalletButtonAnimation = useAnimatedValue(1);
@@ -473,8 +473,8 @@ export default function WelcomeScreen() {
           <RainbowButton {...existingWalletButtonProps} />
         </ButtonWrapper>
       </ContentWrapper>
-      {isDoingSomething && (
-        <LoadingOverlay title={walletLoadingStates[isDoingSomething]} />
+      {isWalletLoading && (
+        <LoadingOverlay title={walletLoadingStates[isWalletLoading]} />
       )}
     </Container>
   );

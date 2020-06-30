@@ -21,7 +21,7 @@ import Routes from '../navigation/routesNames';
 import {
   addressSetSelected,
   createAccountForWallet,
-  isDoingSomething,
+  setIsWalletLoading,
   walletsLoadState,
   walletsSetSelected,
   walletsUpdate,
@@ -271,7 +271,7 @@ const ChangeWalletSheet = () => {
             onCloseModal: async args => {
               if (args) {
                 dispatch(
-                  isDoingSomething(WalletLoadingStates.CREATING_ACCOUNT)
+                  setIsWalletLoading(WalletLoadingStates.CREATING_ACCOUNT)
                 );
                 const name = get(args, 'name', '');
                 const color = get(args, 'color', colors.getRandomColor());
@@ -323,7 +323,7 @@ const ChangeWalletSheet = () => {
                 }
               }
               creatingWallet.current = false;
-              dispatch(isDoingSomething(null));
+              dispatch(setIsWalletLoading(null));
             },
             profile: {
               color: null,
@@ -334,7 +334,7 @@ const ChangeWalletSheet = () => {
         }, 50);
       });
     } catch (e) {
-      dispatch(isDoingSomething(null));
+      dispatch(setIsWalletLoading(null));
       logger.log('Error while trying to add account', e);
     }
   }, [

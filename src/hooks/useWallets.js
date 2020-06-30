@@ -4,14 +4,9 @@ import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 
 export default function useWallets() {
-  const {
-    isDoingSomething,
-    selectedWallet,
-    walletNames,
-    wallets,
-  } = useSelector(
-    ({ wallets: { isDoingSomething, selected, walletNames, wallets } }) => ({
-      isDoingSomething,
+  const { isWalletLoading, selectedWallet, walletNames, wallets } = useSelector(
+    ({ wallets: { isWalletLoading, selected, walletNames, wallets } }) => ({
+      isWalletLoading,
       selectedWallet: selected || {},
       walletNames,
       wallets,
@@ -35,8 +30,8 @@ export default function useWallets() {
   }
 
   return {
-    isDoingSomething,
     isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
+    isWalletLoading,
     latestBackup,
     selectedWallet,
     walletNames,

@@ -35,7 +35,7 @@ export default function ProfileScreen({ navigation }) {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
-  const { isDoingSomething } = useWallets();
+  const { isWalletLoading } = useWallets();
 
   const {
     isLoadingTransactions: isLoading,
@@ -111,10 +111,10 @@ export default function ProfileScreen({ navigation }) {
           sections={sections}
         />
       )}
-      {isDoingSomething && (
+      {isWalletLoading && (
         <LoadingOverlay
           paddingTop={sheetVerticalOffset}
-          title={WalletLoadingStates[isDoingSomething]}
+          title={WalletLoadingStates[isWalletLoading]}
         />
       )}
     </ProfileScreenPage>

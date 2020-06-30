@@ -8,13 +8,15 @@ import BackupIcloudStep from '../components/backup/BackupIcloudStep';
 import BackupImportedStep from '../components/backup/BackupImportedStep';
 import BackupManualStep from '../components/backup/BackupManualStep';
 import BackupSheetFirstStep from '../components/backup/BackupSheetFirstStep';
+import { LoadingOverlay } from '../components/modal';
 import { SlackSheet } from '../components/sheet';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import walletLoadingStates from '../helpers/walletLoadingStates';
 import { useWallets } from '../hooks';
 import { fetchBackupPassword } from '../model/keychain';
 import { addWalletToCloudBackup } from '../model/wallet';
-import { isDoingSomething, setWalletBackedUp } from '../redux/wallets';
+import { sheetVerticalOffset } from '../navigation/effects';
+import { setIsWalletLoading, setWalletBackedUp } from '../redux/wallets';
 import { logger } from '../utils';
 
 const switchSheetContentTransition = (
@@ -30,15 +32,18 @@ const BackupSheet = () => {
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
   const dispatch = useDispatch();
-  const { selectedWallet, wallets, latestBackup } = useWallets();
+  const {
+    isWalletLoading,
+    selectedWallet,
+    wallets,
+    latestBackup,
+  } = useWallets();
   const [step, setStep] = useState(params?.option || 'first');
   const wallet_id = params?.wallet_id || selectedWallet.id;
   const missingPassword = params?.missingPassword || null;
   const onIcloudBackup = useCallback(async () => {
-    console.log('latestBackup?', latestBackup);
     if (latestBackup) {
       let password = await fetchBackupPassword();
-      console.log('password?', password);
       // If we can't get the password, we need to prompt it again
       if (!password) {
         switchSheetContentTransitionRef.current?.animateNextTransition();
@@ -47,18 +52,17 @@ const BackupSheet = () => {
           missingPassword: true,
           option: WalletBackupTypes.cloud,
         });
-        console.log('went to prompt password', password);
       } else {
-        await dispatch(isDoingSomething(walletLoadingStates.BACKING_UP_WALLET));
+        await dispatch(
+          setIsWalletLoading(walletLoadingStates.BACKING_UP_WALLET)
+        );
         // We have the password and we need to add it to an existing backup
-        logger.log('password fetched correctly', password);
         const backupFile = await addWalletToCloudBackup(
           password,
           wallets[wallet_id],
           latestBackup
         );
         if (backupFile) {
-          logger.log('onConfirmBackup:: backup completed!', backupFile);
           await dispatch(
             setWalletBackedUp(wallet_id, WalletBackupTypes.cloud, backupFile)
           );
@@ -83,7 +87,15 @@ const BackupSheet = () => {
       switchSheetContentTransitionRef.current?.animateNextTransition();
       setStep(WalletBackupTypes.cloud);
     }
-  }, [dispatch, goBack, latestBackup, setParams, wallet_id, wallets]);
+  }, [
+    dispatch,
+    goBack,
+    latestBackup,
+    setIsWalletLoading,
+    setParams,
+    wallet_id,
+    wallets,
+  ]);
 
   const onManualBackup = useCallback(() => {
     switchSheetContentTransitionRef.current?.animateNextTransition();
@@ -129,6 +141,12 @@ const BackupSheet = () => {
       >
         {renderStep()}
       </Transitioning.View>
+      {isWalletLoading && (
+        <LoadingOverlay
+          paddingTop={sheetVerticalOffset}
+          title={walletLoadingStates[isWalletLoading]}
+        />
+      )}
     </SlackSheet>
   );
 };

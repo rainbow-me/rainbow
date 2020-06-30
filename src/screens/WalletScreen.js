@@ -50,7 +50,7 @@ export default function WalletScreen() {
   const { isCoinListEdited } = useCoinListEdited();
   const { updateKeyboardHeight } = useKeyboardHeight();
   const [scrollViewTracker] = useValues([0], []);
-  const { isDoingSomething, isReadOnlyWallet } = useWallets();
+  const { isWalletLoading, isReadOnlyWallet } = useWallets();
 
   useEffect(() => {
     if (!initialized) {
@@ -115,10 +115,10 @@ export default function WalletScreen() {
           sections={sections}
         />
       </FabWrapper>
-      {isDoingSomething && (
+      {isWalletLoading && (
         <LoadingOverlay
           paddingTop={sheetVerticalOffset}
-          title={WalletLoadingStates[isDoingSomething]}
+          title={WalletLoadingStates[isWalletLoading]}
         />
       )}
     </WalletPage>
