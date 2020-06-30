@@ -1,13 +1,13 @@
 import { StackActions, useTheme } from '@react-navigation/native';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
-import Componens from './screens';
+import Components from './screens';
 
 export default function NativeStackView({ state, navigation, descriptors }) {
   const { colors } = useTheme();
 
   return (
-    <Componens.ScreenStack style={styles.container}>
+    <Components.ScreenStack style={styles.container}>
       {state.routes.map(route => {
         const { options, render: renderScene } = descriptors[route.key];
         const {
@@ -25,7 +25,7 @@ export default function NativeStackView({ state, navigation, descriptors }) {
           showDragIndicator,
           allowsDragToDismiss,
           allowsTapToDismiss,
-          anchorModaltoLongForm,
+          anchorModalToLongForm,
           onWillDismiss,
           backgroundOpacity,
           cornerRadius,
@@ -40,7 +40,7 @@ export default function NativeStackView({ state, navigation, descriptors }) {
         } = options;
 
         return (
-          <Componens.Screen
+          <Components.Screen
             ignoreBottomOffset={ignoreBottomOffset}
             onTouchTop={onTouchTop}
             dismissable={dismissable}
@@ -49,7 +49,7 @@ export default function NativeStackView({ state, navigation, descriptors }) {
             showDragIndicator={showDragIndicator}
             allowsDragToDismiss={allowsDragToDismiss}
             allowsTapToDismiss={allowsTapToDismiss}
-            anchorModaltoLongForm={anchorModaltoLongForm}
+            anchorModalToLongForm={anchorModalToLongForm}
             onWillDismiss={onWillDismiss}
             modalBackgroundColor={backgroundColor}
             backgroundOpacity={backgroundOpacity}
@@ -106,10 +106,10 @@ export default function NativeStackView({ state, navigation, descriptors }) {
             >
               {renderScene()}
             </View>
-          </Componens.Screen>
+          </Components.Screen>
         );
       })}
-    </Componens.ScreenStack>
+    </Components.ScreenStack>
   );
 }
 
