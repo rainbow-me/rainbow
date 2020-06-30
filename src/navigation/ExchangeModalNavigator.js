@@ -1,7 +1,7 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useCallback, useMemo } from 'use-memo-one';
 import { withBlockedHorizontalSwipe } from '../hoc';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
@@ -22,13 +22,30 @@ function SwapDetailsScreen(props) {
 }
 
 function MainExchangeNavigator() {
+  const isFocused = useIsFocused();
+  const {
+    params: { position },
+  } = useRoute();
+
+  useEffect(() => {
+    if (isFocused) {
+      position.setValue(0);
+    }
+  }, [isFocused, position]);
+
   return (
     <Stack.Navigator
       {...stackNavigationConfig}
       screenOptions={exchangeModalPreset}
       initialRouteName={Routes.MAIN_EXCHANGE_SCREEN}
     >
-      <Stack.Screen name={Routes.MAIN_EXCHANGE_SCREEN} component={SwapModal} />
+      <Stack.Screen
+        name={Routes.MAIN_EXCHANGE_SCREEN}
+        component={SwapModal}
+        initialParams={{
+          position,
+        }}
+      />
       <Stack.Screen
         name={Routes.SWAP_DETAILS_SCREEN}
         component={SwapDetailsScreen}
