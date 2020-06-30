@@ -11,7 +11,7 @@ import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import DepositModal from '../screens/DepositModal';
-import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
+import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
 import SavingsSheet from '../screens/SavingsSheet';
@@ -201,7 +201,7 @@ function NativeStackFallbackNavigator() {
       <Stack.Screen name={Routes.MAIN_NAVIGATOR} component={MainNavigator} />
       <Stack.Screen
         name={Routes.IMPORT_SEED_PHRASE_SHEET}
-        component={ImportSeedPhraseSheetWithData}
+        component={ImportSeedPhraseSheet}
         options={{
           ...sheetPreset,
           onTransitionStart: () => {
