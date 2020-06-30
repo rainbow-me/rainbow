@@ -73,11 +73,6 @@ export function onNavigationStateChange(currentState) {
     StatusBar.setBarStyle('dark-content', true);
   }
 
-  if (routeName === 'SettingsModal') {
-    const subRoute = Navigation.getActiveRoute().params?.section?.title;
-    return analytics.screen(`${routeName}${subRoute ? `>${subRoute}` : ''}`);
-  }
-
   if (routeName !== prevRouteName) {
     let paramsToTrack = null;
 

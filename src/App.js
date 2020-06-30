@@ -31,9 +31,9 @@ import {
   showNetworkResponses,
 } from './config/debug';
 
-import { isNewOnboardingFlowAvailable } from './config/experimental';
 import monitorNetwork from './debugging/network';
 import handleDeeplink from './handlers/deeplinks';
+import DevContextWrapper from './helpers/DevContext';
 import { withAccountSettings } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
@@ -124,16 +124,13 @@ class App extends Component {
     this.branchListener();
   }
   identifyFlow = async () => {
-    if (isNewOnboardingFlowAvailable) {
-      const address = await loadAddress();
-      if (address) {
-        this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
-      } else {
-        this.setState({ initialRoute: Routes.WELCOME_SCREEN });
-      }
+    const address = await loadAddress();
+    if (address) {
+      this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
     } else {
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
     }
+
     setTimeout(() => {
       Navigation.handleAction(Routes.BACKUP_SHEET, {
         option: 'imported',
@@ -209,19 +206,21 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   render = () => (
-    <SafeAreaProvider>
-      <Provider store={store}>
-        <FlexItem>
-          {this.state.initialRoute && (
-            <InitialRouteContext.Provider value={this.state.initialRoute}>
-              <RoutesComponent ref={this.handleNavigatorRef} />
-            </InitialRouteContext.Provider>
-          )}
-          <OfflineToast />
-          <TestnetToast network={this.props.network} />
-        </FlexItem>
-      </Provider>
-    </SafeAreaProvider>
+    <DevContextWrapper>
+      <SafeAreaProvider>
+        <Provider store={store}>
+          <FlexItem>
+            {this.state.initialRoute && (
+              <InitialRouteContext.Provider value={this.state.initialRoute}>
+                <RoutesComponent ref={this.handleNavigatorRef} />
+              </InitialRouteContext.Provider>
+            )}
+            <OfflineToast />
+            <TestnetToast network={this.props.network} />
+          </FlexItem>
+        </Provider>
+      </SafeAreaProvider>
+    </DevContextWrapper>
   );
 }
 

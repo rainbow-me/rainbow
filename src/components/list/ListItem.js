@@ -22,6 +22,7 @@ const propTypes = {
   children: PropTypes.node,
   icon: PropTypes.oneOfType([Icon.propTypes.name, PropTypes.node]),
   iconMargin: PropTypes.number,
+  justify: PropTypes.bool,
   label: PropTypes.string.isRequired,
   onPress: PropTypes.func,
 };
@@ -38,7 +39,16 @@ const enhance = compose(
 );
 
 const ListItem = enhance(
-  ({ activeOpacity, children, icon, iconMargin, label, onPress, ...props }) => (
+  ({
+    activeOpacity,
+    children,
+    icon,
+    iconMargin,
+    label,
+    onPress,
+    justify,
+    ...props
+  }) => (
     <ButtonPressAnimation
       activeOpacity={activeOpacity}
       enableHapticFeedback={false}
@@ -52,7 +62,12 @@ const ListItem = enhance(
         justify="space-between"
         {...props}
       >
-        <RowWithMargins align="center" flex={1} margin={iconMargin}>
+        <RowWithMargins
+          align="center"
+          justify={justify}
+          flex={1}
+          margin={iconMargin}
+        >
           {icon && <Centered>{renderIcon(icon)}</Centered>}
           <TruncatedText
             flex={1}

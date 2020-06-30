@@ -3,7 +3,7 @@ import { isNil } from 'lodash';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
-import hideSplashScreen from '../helpers/hideSplashScreen';
+import useHideSplashScreen from '../helpers/hideSplashScreen';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
 import {
@@ -26,6 +26,7 @@ export default function useInitializeWallet() {
   const initializeAccountData = useInitializeAccountData();
 
   const { network } = useAccountSettings();
+  const hideSplashScreen = useHideSplashScreen();
 
   const initializeWallet = useCallback(
     async (
@@ -92,9 +93,10 @@ export default function useInitializeWallet() {
     [
       resetAccountState,
       dispatch,
+      hideSplashScreen,
       initializeAccountData,
-      loadAccountData,
       loadGlobalData,
+      loadAccountData,
       network,
     ]
   );

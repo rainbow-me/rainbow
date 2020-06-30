@@ -2,7 +2,9 @@ import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
-import { isAvatarPickerAvailable } from '../../config/experimental';
+import useExperimentalFlag, {
+  AVATAR_PICKER,
+} from '../../config/experimentalHooks';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { useAccountProfile, useClipboard } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
@@ -62,6 +64,8 @@ export default function ProfileMasthead({
   recyclerListRef,
   showBottomDivider,
 }) {
+  const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
+
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
   const { accountColor, accountSymbol, accountName } = useAccountProfile();
@@ -78,7 +82,13 @@ export default function ProfileMasthead({
       },
       recyclerListRef.getCurrentScrollOffset() > 0 ? 200 : 1
     );
-  }, [accountColor, accountName, navigate, recyclerListRef]);
+  }, [
+    accountColor,
+    accountName,
+    isAvatarPickerAvailable,
+    navigate,
+    recyclerListRef,
+  ]);
 
   const handlePressAddCash = useCallback(() => {
     navigate(

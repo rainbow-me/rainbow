@@ -5,7 +5,9 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Linking, requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
-import { isAvatarPickerAvailable } from '../../config/experimental';
+import useExperimentalFlag, {
+  AVATAR_PICKER,
+} from '../../config/experimentalHooks';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { useAccountProfile } from '../../hooks';
@@ -97,10 +99,7 @@ const TransactionList = ({
     e => {
       const { index } = e.nativeEvent;
       const item = requests[index];
-      navigate({
-        params: { transactionDetails: item },
-        routeName: Routes.CONFIRM_REQUEST,
-      });
+      navigate(Routes.CONFIRM_REQUEST, { transactionDetails: item });
       return;
     },
     [navigate, requests]
@@ -202,6 +201,8 @@ const TransactionList = ({
     isLoading,
     isFocused,
   ]);
+
+  const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
   return (
     <Container>
