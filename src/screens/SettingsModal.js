@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useState } from 'react';
 import { Alert, Animated } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import { Restart } from 'react-native-restart';
 import styled from 'styled-components/native';
 import { Modal, ModalHeader } from '../components/modal';
 import {
@@ -110,7 +111,7 @@ const onPressHiddenFeature = () => {
       {
         onPress: async () => {
           await wipeKeychain();
-          Alert.alert('Now you can restart the app');
+          Restart();
         },
         text: 'Yes',
       },

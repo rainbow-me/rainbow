@@ -3,6 +3,7 @@ import Clipboard from '@react-native-community/clipboard';
 import React, { useCallback, useContext } from 'react';
 import { ScrollView } from 'react-native';
 import { DEV_SEEDS } from 'react-native-dotenv';
+import { Restart } from 'react-native-restart';
 import { DevContext } from '../../helpers/DevContext';
 import { wipeKeychain } from '../../model/keychain';
 import { ListFooter, ListItem } from '../list';
@@ -22,14 +23,7 @@ const DevSection = () => {
     <ScrollView>
       <ListItem label="💥 Clear async storage" onPress={AsyncStorage.clear} />
       <ListItem label="💣 Reset Keychain" onPress={wipeKeychain} />
-      <ListItem
-        onPress={() => {
-          // we cannot do import in prod
-          const RNRestart = require('react-native-restart');
-          RNRestart && RNRestart.default.Restart();
-        }}
-        label="🔄 Restart app"
-      />
+      <ListItem onPress={Restart} label="🔄 Restart app" />
       <ListItem
         label="🤷 Restore default experimental config"
         onPress={() => AsyncStorage.removeItem('experimentalConfig')}
