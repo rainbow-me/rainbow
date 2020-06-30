@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
-import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { useNavigation } from '../../navigation/Navigation';
 import Routes from '../../navigation/routesNames';
 import { colors } from '../../styles';
@@ -18,9 +17,7 @@ const SendFab = ({ disabled, isReadOnlyWallet, ...props }) => {
 
   const handlePress = useCallback(() => {
     if (!isReadOnlyWallet) {
-      navigate(
-        isNativeStackAvailable ? Routes.SEND_SHEET_NAVIGATOR : Routes.SEND_SHEET
-      );
+      navigate(Routes.SEND_FLOW);
     } else {
       Alert.alert(`You need to import the wallet in order to do this`);
     }
