@@ -1,7 +1,7 @@
 import React from 'react';
 import AddCashSheet from '../screens/AddCashSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
-import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
+import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import SendSheet from '../screens/SendSheet';
 
 export const appearListener = { current: null };
@@ -16,9 +16,7 @@ export function ExpandedAssetSheetWrapper(...props) {
 }
 
 export function ImportSeedPhraseSheetWrapper(...props) {
-  return (
-    <ImportSeedPhraseSheetWithData {...props} setAppearListener={setListener} />
-  );
+  return <ImportSeedPhraseSheet {...props} setAppearListener={setListener} />;
 }
 
 export function SendSheetWrapper(...props) {
