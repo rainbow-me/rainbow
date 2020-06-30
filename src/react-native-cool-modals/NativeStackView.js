@@ -18,6 +18,7 @@ export default function NativeStackView({ state, navigation, descriptors }) {
         } = options;
 
         const {
+          backgroundColor,
           dismissable,
           customStack,
           topOffset,
@@ -50,7 +51,8 @@ export default function NativeStackView({ state, navigation, descriptors }) {
             allowsTapToDismiss={allowsTapToDismiss}
             anchorModaltoLongForm={anchorModaltoLongForm}
             onWillDismiss={onWillDismiss}
-            modalBackgroundOpacity={backgroundOpacity}
+            modalBackgroundColor={backgroundColor}
+            backgroundOpacity={backgroundOpacity}
             cornerRadius={cornerRadius}
             headerHeight={headerHeight}
             isShortFormEnabled={isShortFormEnabled}
