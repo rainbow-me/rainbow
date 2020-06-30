@@ -23,7 +23,7 @@ export const saveFCMToken = async () => {
       saveLocal('rainbowFcmToken', { data: fcmToken });
     }
   } catch (error) {
-    logger.log('error getting fcm token');
+    logger.log('error getting fcm token - cannot save', error);
   }
 };
 
@@ -32,24 +32,46 @@ export const hasPermission = () => messaging().hasPermission();
 export const requestPermission = () => messaging().requestPermission();
 
 export const checkPushNotificationPermissions = async () => {
-  const permissionStatus = await hasPermission();
+  return new Promise(async resolve => {
+    let permissionStatus = null;
+    try {
+      permissionStatus = await hasPermission();
+    } catch (error) {
+      logger.log(
+        'Error checking if a user has push notifications permission',
+        error
+      );
+    }
 
-  if (permissionStatus !== messaging.AuthorizationStatus.AUTHORIZED) {
-    Alert({
-      buttons: [
-        {
-          onPress: requestPermission,
-          text: 'Okay',
-        },
-        {
-          style: 'cancel',
-          text: 'Dismiss',
-        },
-      ],
-      message: lang.t('wallet.push_notifications.please_enable_body'),
-      title: lang.t('wallet.push_notifications.please_enable_title'),
-    });
-  }
+    if (permissionStatus !== messaging.AuthorizationStatus.AUTHORIZED) {
+      Alert({
+        buttons: [
+          {
+            onPress: async () => {
+              try {
+                await requestPermission();
+                await saveFCMToken();
+              } catch (error) {
+                logger.log('User rejected push notifications permissions');
+              } finally {
+                resolve(true);
+              }
+            },
+            text: 'Okay',
+          },
+          {
+            onPress: async () => {
+              resolve(true);
+            },
+            style: 'cancel',
+            text: 'Dismiss',
+          },
+        ],
+        message: lang.t('wallet.push_notifications.please_enable_body'),
+        title: lang.t('wallet.push_notifications.please_enable_title'),
+      });
+    }
+  });
 };
 
 export const registerTokenRefreshListener = () =>

@@ -109,6 +109,7 @@
     "process": "^0.11.10",
     "prop-types": "^15.7.2",
     "punycode": "^1.4.1",
+    "qrcode": "^1.4.4",
     "qs": "^6.9.4",
     "querystring-es3": "^0.2.1",
     "react": "16.11.0",

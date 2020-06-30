@@ -1,5 +1,4 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import styled from 'styled-components/primitives';
 import { useShowcaseTokens } from '../../hooks';
 import { colors } from '../../styles';
 import { magicMemo } from '../../utils';
@@ -13,22 +12,13 @@ import {
   SlackSheet,
 } from '../sheet';
 import { Text } from '../text';
-import { ShowcaseToast } from '../toasts';
+import { ShowcaseToast, ToastPositionContainer } from '../toasts';
 import { UniqueTokenAttributes } from '../unique-token';
 import ExpandedStateSection from './ExpandedStateSection';
 import {
   UniqueTokenExpandedStateHeader,
   UniqueTokenExpandedStateImage,
 } from './unique-token';
-
-const ToastContainer = styled(Column).attrs({
-  pointerEvents: 'none',
-})`
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  right: 0;
-`;
 
 const UniqueTokenExpandedState = ({ asset }) => {
   const {
@@ -104,9 +94,9 @@ const UniqueTokenExpandedState = ({ asset }) => {
           )}
         </ColumnWithDividers>
       </SlackSheet>
-      <ToastContainer>
+      <ToastPositionContainer>
         <ShowcaseToast isShowcaseAsset={isShowcaseAsset} />
-      </ToastContainer>
+      </ToastPositionContainer>
     </Fragment>
   );
 };
