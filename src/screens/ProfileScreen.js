@@ -9,7 +9,7 @@ import { Page } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
-import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
+import useNativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
 import {
   useAccountSettings,
@@ -35,6 +35,7 @@ export default function ProfileScreen({ navigation }) {
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
   const { isCreatingAccount } = useWallets();
+  const nativeTransactionListAvailable = useNativeTransactionListAvailable();
 
   const {
     isLoadingTransactions: isLoading,

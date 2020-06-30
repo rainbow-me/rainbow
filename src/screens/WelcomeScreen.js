@@ -13,7 +13,7 @@ import { ButtonPressAnimation } from '../components/animations';
 import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { Emoji, Text } from '../components/text';
-import hideSplashScreen from '../helpers/hideSplashScreen';
+import useHideSplashScreen from '../helpers/hideSplashScreen';
 import { colors, shadow } from '../styles';
 
 const {
@@ -331,6 +331,7 @@ function colorAnimation(rValue, fromShadow) {
 export default function WelcomeScreen() {
   const contentAnimation = useAnimatedValue(1);
   const importButtonAnimation = useAnimatedValue(1);
+  const hideSplashScreen = useHideSplashScreen();
 
   useEffect(() => {
     hideSplashScreen();
@@ -369,7 +370,7 @@ export default function WelcomeScreen() {
       importButtonAnimation.current.setValue(1);
       contentAnimation.current.setValue(1);
     };
-  }, [contentAnimation, importButtonAnimation]);
+  }, [contentAnimation, hideSplashScreen, importButtonAnimation]);
 
   const buttonStyle = useMemoOne(
     () => ({

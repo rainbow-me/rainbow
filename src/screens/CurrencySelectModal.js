@@ -38,6 +38,17 @@ import { exchangeModalBorderRadius } from './ExchangeModal';
 const headerlessSection = data => [{ data, title: '' }];
 
 export default function CurrencySelectModal() {
+  const isFocused = useIsFocused();
+  const { params } = useRoute();
+  const onSelectCurrency = params?.onSelectCurrency;
+  const restoreFocusOnSwapModal = params?.restoreFocusOnSwapModal;
+  const transitionPosition = params.position;
+
+  useEffect(() => {
+    if (isFocused) {
+      transitionPosition.setValue(1);
+    }
+  }, [isFocused, transitionPosition]);
   const searchInputRef = useRef();
   const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
@@ -47,10 +58,6 @@ export default function CurrencySelectModal() {
   ]);
 
   const { navigate } = useNavigation();
-  const { params } = useRoute();
-  const onSelectCurrency = params?.onSelectCurrency;
-  const restoreFocusOnSwapModal = params?.restoreFocusOnSwapModal;
-  const transitionPosition = params?.position;
   const type = params?.type;
 
   const {
@@ -106,8 +113,6 @@ export default function CurrencySelectModal() {
     },
     [onSelectCurrency, navigate]
   );
-
-  const isFocused = useIsFocused();
 
   useFocusEffect(() => {
     params?.toggleGestureEnabled(false);

@@ -1,5 +1,12 @@
 import { UIManager } from 'react-native';
-import { nativeButtonPressAnimationAvailable } from '../config/experimental';
+import useExperimentalFlag, { NATIVE_BPA } from '../config/experimentalHooks';
 
-export default nativeButtonPressAnimationAvailable &&
-  !!UIManager.getViewManagerConfig('Button');
+const useNativeButtonAvailable = () => {
+  const nativeTransactionListAvailable = useExperimentalFlag(NATIVE_BPA);
+
+  return (
+    nativeTransactionListAvailable && !!UIManager.getViewManagerConfig('Button')
+  );
+};
+
+export default useNativeButtonAvailable;

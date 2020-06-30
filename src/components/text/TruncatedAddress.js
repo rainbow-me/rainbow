@@ -1,5 +1,4 @@
-import React from 'react';
-import { isENSAddressFormat } from '../../helpers/validators';
+import React, { useMemo } from 'react';
 import { abbreviations } from '../../utils';
 import Text from './Text';
 
@@ -9,13 +8,17 @@ export default function TruncatedAddress({
   truncationLength,
   ...props
 }) {
-  let text = 'Error displaying address';
-
-  if (address) {
-    text = isENSAddressFormat(address)
-      ? address
-      : abbreviations.address(address, truncationLength, firstSectionLength);
-  }
+  const text = useMemo(
+    () =>
+      address
+        ? abbreviations.formatAddressForDisplay(
+            address,
+            truncationLength,
+            firstSectionLength
+          )
+        : 'Error displaying address',
+    [address, firstSectionLength, truncationLength]
+  );
 
   return (
     <Text

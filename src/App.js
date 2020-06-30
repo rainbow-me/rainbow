@@ -33,6 +33,7 @@ import {
 
 import monitorNetwork from './debugging/network';
 import handleDeeplink from './handlers/deeplinks';
+import DevContextWrapper from './helpers/DevContext';
 import { withAccountSettings } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
@@ -186,15 +187,17 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   render = () => (
-    <SafeAreaProvider>
-      <Provider store={store}>
-        <FlexItem>
-          <RoutesComponent ref={this.handleNavigatorRef} />
-          <OfflineToast />
-          <TestnetToast network={this.props.network} />
-        </FlexItem>
-      </Provider>
-    </SafeAreaProvider>
+    <DevContextWrapper>
+      <SafeAreaProvider>
+        <Provider store={store}>
+          <FlexItem>
+            <RoutesComponent ref={this.handleNavigatorRef} />
+            <OfflineToast />
+            <TestnetToast network={this.props.network} />
+          </FlexItem>
+        </Provider>
+      </SafeAreaProvider>
+    </DevContextWrapper>
   );
 }
 
