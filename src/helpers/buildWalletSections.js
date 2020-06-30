@@ -55,9 +55,6 @@ const enhanceRenderItem = compose(
         type: assetType,
       });
     },
-    onPressSend: ({ navigation }) => asset => {
-      navigation.navigate(Routes.SEND_SHEET, { asset });
-    },
   })
 );
 
