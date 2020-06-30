@@ -30,7 +30,7 @@
     _stackAnimation = RNSScreenStackAnimationDefault;
     _gestureEnabled = YES;
     _dismissed = NO;
-
+    
     _startFromShortForm = false;
     _topOffset = [[NSNumber alloc] initWithInt: 42];
     _isShortFormEnabled = false;
@@ -51,13 +51,30 @@
     _dismissable = YES;
     _ignoreBottomOffset = NO;
   }
-
+  
   return self;
 }
 
 - (void)willDismiss {
   _onWillDismiss(nil);
 }
+
+- (void) setIsShortFormEnabled:(BOOL)isShortFormEnabled {
+  _isShortFormEnabled = isShortFormEnabled;
+  SEL selector = NSSelectorFromString(@"panModalSetNeedsLayoutUpdateWrapper");
+  UIViewController* controller = [self.controller valueForKey:@"_parentVC"];
+  
+  [controller performSelector:selector];
+  
+}
+
+- (void)jumpTo:(nonnull NSNumber*)point {
+  SEL selector = NSSelectorFromString(@"jumpToLong:");
+  UIViewController* controller = [self.controller valueForKey:@"_parentVC"];
+  
+  [controller performSelector:selector withObject:point];
+}
+
 
 - (void)onTouchTopWrapper:(NSNumber*)dismissing {
   BOOL dismissingValue = [dismissing boolValue];
@@ -151,7 +168,7 @@
 - (void)setStackAnimation:(RNSScreenStackAnimation)stackAnimation
 {
   _stackAnimation = stackAnimation;
-
+  
   switch (stackAnimation) {
     case RNSScreenStackAnimationFade:
       _controller.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
@@ -168,12 +185,12 @@
 
 - (void)setGestureEnabled:(BOOL)gestureEnabled
 {
-  #ifdef __IPHONE_13_0
-    if (@available(iOS 13.0, *)) {
-      _controller.modalInPresentation = !gestureEnabled;
-    }
-  #endif
-
+#ifdef __IPHONE_13_0
+  if (@available(iOS 13.0, *)) {
+    _controller.modalInPresentation = !gestureEnabled;
+  }
+#endif
+  
   _gestureEnabled = gestureEnabled;
 }
 
@@ -276,7 +293,7 @@
 - (void)invalidate
 {
   if (self.stackPresentation != RNSScreenStackPresentationModal) {
-     _controller = nil;
+    _controller = nil;
   }
 }
 
@@ -302,9 +319,9 @@
 }
 
 - (void)presentModally:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^)(void))completion topOffset:(CGFloat)topOffset showDragIndicator:(BOOL)showDragIndicator slackStack:(BOOL)slackStack cornerRadius:(NSNumber*)cornerRadius
-    config: (NSObject*) config {
+                config: (NSObject*) config {
   return [_parentVC presentModally:viewControllerToPresent animated:flag completion:completion topOffset:topOffset showDragIndicator:showDragIndicator slackStack:slackStack cornerRadius:cornerRadius config:config];
-
+  
 }
 
 - (void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion {
@@ -323,7 +340,7 @@
 {
   [super viewDidLayoutSubviews];
   [_parentVC viewDidLayoutSubviews];
-
+  
   if (!CGRectEqualToRect(_lastViewFrame, self.view.frame)) {
     _lastViewFrame = self.view.frame;
     [((RNCMScreenView *)self.viewIfLoaded) updateBounds];
@@ -359,7 +376,6 @@
 {
   [super viewDidDisappear:animated];
   if (self.parentViewController == nil && self.presentingViewController == nil) {
-    // screen dismissed, send event
     [((RNCMScreenView *)self.view) notifyDismissed];
   }
   _parentVC = nil;
@@ -368,7 +384,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
   [super viewDidAppear:animated];
-  //[((RNCMScreenView *)self.view) notifyAppear];
 }
 
 - (void)notifyFinishTransitioning
@@ -380,6 +395,19 @@
 @end
 
 @implementation RNCMScreenManager
+
+RCT_EXPORT_METHOD(jumpTo:(nonnull NSNumber*)point tag:(nonnull NSNumber*) reactTag) {
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[reactTag];
+    if (!view || ![view isKindOfClass:[RNCMScreenView class]]) {
+      RCTLogError(@"Cannot find RNCMScreenView with tag #%@", reactTag);
+      return;
+    }
+    [(RNCMScreenView *) view jumpTo:point];
+  }];
+  
+}
+
 
 RCT_EXPORT_MODULE()
 
@@ -422,21 +450,21 @@ RCT_EXPORT_VIEW_PROPERTY(ignoreBottomOffset, BOOL)
 @implementation RCTConvert (RNSScreen)
 
 RCT_ENUM_CONVERTER(RNSScreenStackPresentation, (@{
-                                                  @"push": @(RNSScreenStackPresentationPush),
-                                                  @"modal": @(RNSScreenStackPresentationModal),
-                                                  @"fullScreenModal": @(RNSScreenStackPresentationFullScreenModal),
-                                                  @"formSheet": @(RNSScreenStackPresentationFormSheet),
-                                                  @"containedModal": @(RNSScreenStackPresentationContainedModal),
-                                                  @"transparentModal": @(RNSScreenStackPresentationTransparentModal),
-                                                  @"containedTransparentModal": @(RNSScreenStackPresentationContainedTransparentModal)
-                                                  }), RNSScreenStackPresentationPush, integerValue)
+  @"push": @(RNSScreenStackPresentationPush),
+  @"modal": @(RNSScreenStackPresentationModal),
+  @"fullScreenModal": @(RNSScreenStackPresentationFullScreenModal),
+  @"formSheet": @(RNSScreenStackPresentationFormSheet),
+  @"containedModal": @(RNSScreenStackPresentationContainedModal),
+  @"transparentModal": @(RNSScreenStackPresentationTransparentModal),
+  @"containedTransparentModal": @(RNSScreenStackPresentationContainedTransparentModal)
+                                                }), RNSScreenStackPresentationPush, integerValue)
 
 RCT_ENUM_CONVERTER(RNSScreenStackAnimation, (@{
-                                                  @"default": @(RNSScreenStackAnimationDefault),
-                                                  @"none": @(RNSScreenStackAnimationNone),
-                                                  @"fade": @(RNSScreenStackAnimationFade),
-                                                  @"flip": @(RNSScreenStackAnimationFlip),
-                                                  }), RNSScreenStackAnimationDefault, integerValue)
+  @"default": @(RNSScreenStackAnimationDefault),
+  @"none": @(RNSScreenStackAnimationNone),
+  @"fade": @(RNSScreenStackAnimationFade),
+  @"flip": @(RNSScreenStackAnimationFlip),
+                                             }), RNSScreenStackAnimationDefault, integerValue)
 
 
 @end

@@ -36,7 +36,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 
 @end
 
-@interface RNCMScreenManager : RCTViewManager
+@interface RNCMScreenManager : RCTViewManager<RCTBridgeModule>
 @end
 
 @interface RNCMScreenView : RCTView
