@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/core';
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -15,8 +16,6 @@ import { ContactAvatar } from '../../contacts';
 import { Icon } from '../../icons';
 import { Column, Row } from '../../layout';
 import { Text, TruncatedAddress } from '../../text';
-// eslint-disable-next-line import/no-cycle
-import BackupSection from '.';
 
 const IconWrapper = styled(View)`
   margin-bottom: 12;
@@ -73,31 +72,26 @@ const CheckmarkIcon = ({ color }) => (
   </IconWrapper>
 );
 
-const WalletSelectionView = ({ navigation }) => {
+const WalletSelectionView = () => {
+  const { navigate } = useNavigation();
   const { wallets } = useWallets();
   const onPress = useCallback(
     (wallet_id, name) => {
       const wallet = wallets[wallet_id];
       if (wallet.backedUp || wallet.imported) {
-        navigation.setParams({
-          section: {
-            component: BackupSection,
-            imported: wallet.imported,
-            title: name,
-          },
+        navigate('AlreadyBackedUpView', {
+          imported: wallet.imported,
+          title: name,
           wallet_id,
         });
       } else {
-        navigation.setParams({
-          section: {
-            component: BackupSection,
-            title: name,
-          },
+        navigate('NeedsBackupView', {
+          title: name,
           wallet_id,
         });
       }
     },
-    [navigation, wallets]
+    [navigate, wallets]
   );
 
   return Object.keys(wallets)

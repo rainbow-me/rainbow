@@ -22,7 +22,6 @@ import { Centered, Column, ColumnWithMargins } from '../../layout';
 import { LoadingOverlay } from '../../modal';
 import { SheetButton } from '../../sheet';
 import { Text } from '../../text';
-import ShowSecretView from './ShowSecretView';
 
 const Title = styled(Text).attrs({
   size: 'big',
@@ -67,7 +66,7 @@ const DescriptionText = styled(Text).attrs({
 `;
 
 const AlreadyBackedUpView = () => {
-  const { navigate, setParams } = useNavigation();
+  const { navigate } = useNavigation();
   const { params } = useRoute();
   const dispatch = useDispatch();
   const {
@@ -78,16 +77,13 @@ const AlreadyBackedUpView = () => {
   } = useWallets();
   const wallet_id = params?.wallet_id || selectedWallet.id;
   const onViewRecoveryPhrase = useCallback(() => {
-    setParams({
-      section: {
-        component: ShowSecretView,
-        title: `Recovery ${
-          WalletTypes.mnemonic === wallets[wallet_id].type ? 'Phrase' : 'Key'
-        }`,
-      },
+    navigate('ShowSecretView', {
+      title: `Recovery ${
+        WalletTypes.mnemonic === wallets[wallet_id].type ? 'Phrase' : 'Key'
+      }`,
       wallet_id,
     });
-  }, [setParams, wallet_id, wallets]);
+  }, [navigate, wallet_id, wallets]);
 
   const walletStatus = useMemo(() => {
     let status = null;
@@ -156,8 +152,6 @@ const AlreadyBackedUpView = () => {
       await dispatch(deleteCloudBackup(wallet_id));
     }
   }, [walletStatus, latestBackup, navigate, wallet_id, wallets, dispatch]);
-
-  console.log('ALREADY BACKEDUP VIEW', isWalletLoading);
 
   return (
     <Fragment>

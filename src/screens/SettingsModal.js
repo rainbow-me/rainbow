@@ -1,20 +1,25 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import React, { useCallback, useState } from 'react';
-import { Alert, Animated } from 'react-native';
+import { Alert, Animated, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { Restart } from 'react-native-restart';
 import styled from 'styled-components/native';
 import { Modal, ModalHeader } from '../components/modal';
 import {
-  BackupSection,
   CurrencySection,
   LanguageSection,
   NetworkSection,
   SettingsSection,
 } from '../components/settings-menu';
+import AlreadyBackedUpView from '../components/settings-menu/BackupSection/AlreadyBackedUpView';
+import NeedsBackupView from '../components/settings-menu/BackupSection/NeedsBackupView';
+import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
+import WalletSelectionView from '../components/settings-menu/BackupSection/WalletSelectionView';
 import DevSection from '../components/settings-menu/DevSection';
+import WalletTypes from '../helpers/walletTypes';
+import { useWallets } from '../hooks';
 import { wipeKeychain } from '../model/keychain';
 import { colors } from '../styles';
 
@@ -58,7 +63,7 @@ const statusBarHeight = getStatusBarHeight(true);
 
 const SettingsPages = {
   backup: {
-    component: BackupSection,
+    component: View,
     key: 'BackupSection',
     title: 'Backup',
   },
@@ -122,6 +127,9 @@ const onPressHiddenFeature = () => {
 
 const SettingsModal = () => {
   const navigation = useNavigation();
+  const { wallets, selectedWallet } = useWallets();
+  const { params } = useRoute();
+
   const [currentSettingsPage, setCurrentSettingsPage] = useState(
     SettingsPages.default
   );
@@ -134,14 +142,33 @@ const SettingsModal = () => {
   const onPressBack = useCallback(() => {
     setCurrentSettingsPage(SettingsPages.default);
     navigation.navigate('SettingsSection');
-  }, [navigation, setCurrentSettingsPage]);
+  }, [navigation]);
 
   const onPressSection = useCallback(
     section => () => {
+      let route = section.key;
+
+      if (section === SettingsPages.backup) {
+        const wallet_id = params?.wallet_id;
+        const activeWallet =
+          (wallet_id && wallets[wallet_id]) || selectedWallet;
+        if (
+          !wallet_id &&
+          Object.keys(wallets).filter(
+            key => wallets[key].type !== WalletTypes.readOnly
+          ).length > 1
+        ) {
+          route = 'WalletSelectionView';
+        } else if (activeWallet.backedUp || activeWallet.imported) {
+          route = 'AlreadyBackedUpView';
+        } else {
+          route = 'NeedsBackupView';
+        }
+      }
       setCurrentSettingsPage(section);
-      navigation.navigate(section.key);
+      navigation.navigate(route);
     },
-    [navigation, setCurrentSettingsPage]
+    [navigation, params?.wallet_id, selectedWallet, wallets]
   );
 
   return (
@@ -190,6 +217,46 @@ const SettingsModal = () => {
                 />
               )
           )}
+
+          <Stack.Screen
+            name="WalletSelectionView"
+            title="Backup"
+            component={WalletSelectionView}
+            options={{
+              cardStyleInterpolator,
+            }}
+          />
+          <Stack.Screen
+            name="AlreadyBackedUpView"
+            title="Backup"
+            component={AlreadyBackedUpView}
+            options={({ route }) => ({
+              title: route.params.title,
+              ...cardStyleInterpolator,
+            })}
+          />
+          <Stack.Screen
+            name="NeedsBackupView"
+            title="Backup"
+            component={NeedsBackupView}
+            options={({ route }) => ({
+              title: route.params.title,
+              ...cardStyleInterpolator,
+            })}
+          />
+          <Stack.Screen
+            name="ShowSecretView"
+            title="Backup"
+            component={ShowSecretView}
+            options={({ route }) => ({
+              title: route.params.title,
+              ...cardStyleInterpolator,
+            })}
+          />
+          {
+            // TODO - Add all the backup related screens here
+            // and update navigation calls
+          }
         </Stack.Navigator>
       </Container>
     </Modal>
