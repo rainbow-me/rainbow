@@ -206,7 +206,7 @@ index b397efb..83777bf 100644
      finish();
    }
 diff --git a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
-index b21a043..cd0b28b 100644
+index b21a043..eefa4e1 100644
 --- a/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 +++ b/node_modules/react-native-cool-modals/ios/UIViewController+slack.swift
 @@ -28,6 +28,7 @@ class PossiblyTouchesPassableUIView: UIView {
@@ -220,7 +220,7 @@ index b21a043..cd0b28b 100644
 @@ -56,6 +57,15 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      panModalTransition(to: .hidden)
    }
-   
+ 
 +  @objc func jumpTo(long: NSNumber) {
 +    self.panModalSetNeedsLayoutUpdate()
 +    if (long.boolValue) {
@@ -312,8 +312,8 @@ index b21a043..cd0b28b 100644
 @@ -161,6 +204,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
      return self.config?.value(forKey: "isShortFormEnabled") as! Bool
    }
-   
-+  @objc func panModalSetNeedsLayoutUpdateWrapper {
+ 
++  @objc func panModalSetNeedsLayoutUpdateWrapper() {
 +    panModalSetNeedsLayoutUpdate()
 +  }
 +
