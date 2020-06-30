@@ -26,6 +26,7 @@ export default function NativeStackView({ state, navigation, descriptors }) {
           allowsDragToDismiss,
           allowsTapToDismiss,
           anchorModalToLongForm,
+          longFormHeight,
           onWillDismiss,
           backgroundOpacity,
           cornerRadius,
@@ -41,6 +42,7 @@ export default function NativeStackView({ state, navigation, descriptors }) {
 
         return (
           <Components.Screen
+            longFormHeight={longFormHeight}
             ignoreBottomOffset={ignoreBottomOffset}
             onTouchTop={onTouchTop}
             dismissable={dismissable}

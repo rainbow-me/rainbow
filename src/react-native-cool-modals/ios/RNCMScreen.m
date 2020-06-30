@@ -34,11 +34,11 @@
     _startFromShortForm = false;
     _topOffset = [[NSNumber alloc] initWithInt: 42];
     _isShortFormEnabled = false;
-    _longFormHeight = nil;
+    _longFormHeight = [[NSNumber alloc] initWithDouble:UIScreen.mainScreen.bounds.size.height];
     _cornerRadius = [[NSNumber alloc] initWithInt: 8.0];
     _springDamping = [[NSNumber alloc] initWithDouble: 0.8];
     _transitionDuration = [[NSNumber alloc] initWithDouble: 0.5];
-    _anchorModalToLongForm = true;
+    _anchorModalToLongForm = false;
     _allowsDragToDismiss = true;
     _allowsTapToDismiss = true;
     _showDragIndicator = true;
@@ -400,6 +400,7 @@ RCT_EXPORT_VIEW_PROPERTY(springDamping, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(transitionDuration, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(modalBackgroundColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(backgroundOpacity, NSNumber)
+RCT_EXPORT_VIEW_PROPERTY(longFormHeight, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(headerHeight, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(shortFormHeight, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(isShortFormEnabled, BOOL)

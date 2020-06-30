@@ -4,7 +4,7 @@ import { onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
 
 export const expandedAssetSheetConfig = {
-  options: {
+  options: ({ route: { params = {} } }) => ({
     allowsDragToDismiss: true,
     allowsTapToDismiss: true,
     backgroundOpacity: 0.7,
@@ -13,12 +13,13 @@ export const expandedAssetSheetConfig = {
     customStack: true,
     gestureEnabled: true,
     headerHeight: 50,
+    longFormHeight: params.longFormHeight,
     onAppear: null,
     scrollEnabled: true,
     springDamping: 0.8755,
     topOffset: 0,
     transitionDuration: 0.42,
-  },
+  }),
 };
 
 export const nativeStackConfig = {

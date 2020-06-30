@@ -28,7 +28,7 @@ class PossiblyTouchesPassableUIView: UIView {
 }
 
 class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSupport {
-  
+
   weak var config: NSObject?
   var length: CGFloat = 0
   var topAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
@@ -168,20 +168,20 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
 
   func shouldPrioritize(panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
     let headerHeight: CGFloat = CGFloat(truncating: self.config?.value(forKey: "headerHeight") as! NSNumber)
-    
+
     var locationY = panModalGestureRecognizer.location(in: view).y
-    
+
     /// HACK
-    
+
     let initialLocationAbsY = (panModalGestureRecognizer as! UIPanGestureRecognizerWithInitialPosition).initialTouchLocation.y;
     let currLocationAbsY = panModalGestureRecognizer.location(in: view.superview!.superview).y
-    
+
     let displacementY = currLocationAbsY - initialLocationAbsY
-    
+
     locationY -= displacementY
-    
+
     // END HACK
-    
+
     return locationY < headerHeight
   }
 
@@ -221,7 +221,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var longFormHeight: PanModalHeight {
-    return .contentHeight(UIScreen.main.bounds.height)
+    return .contentHeight(CGFloat(truncating: self.config?.value(forKey: "longFormHeight") as! NSNumber));
   }
 
   override func viewDidAppear(_ animated: Bool) {
