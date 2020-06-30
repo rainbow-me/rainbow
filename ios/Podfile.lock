@@ -466,9 +466,6 @@ PODS:
     - React
   - RNCMaskedView (0.1.10):
     - React
-  - RNCoolModals (0.0.9):
-    - PanModal
-    - React
   - RNCPushNotificationIOS (1.2.2):
     - React
   - RNDeviceInfo (5.3.1):
@@ -618,7 +615,6 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
-  - RNCoolModals (from `../node_modules/react-native-cool-modals`)
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
@@ -794,8 +790,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/clipboard"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
-  RNCoolModals:
-    :path: "../node_modules/react-native-cool-modals"
   RNCPushNotificationIOS:
     :path: "../node_modules/@react-native-community/push-notification-ios"
   RNDeviceInfo:
@@ -936,7 +930,6 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: d059c3ee71738c39834a627476322a5a8cd5bf36
   RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
-  RNCoolModals: 49df7bf454cb98802a208531a7fc4cec28cfc501
   RNCPushNotificationIOS: 4c97a36dbec42dba411cc35e6dac25e34a805fde
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNFastImage: 35ae972d6727c84ee3f5c6897e07f84d0a3445e9

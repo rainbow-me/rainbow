@@ -5,6 +5,9 @@
     "import/resolver": {
       "node": {
         "extensions": [".js", ".ios.js", ".android.js", ".native.js", ".tsx"]
+      },
+      "babel-module": {
+        "alias": {}
       }
     }
   },

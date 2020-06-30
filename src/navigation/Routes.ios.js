@@ -3,7 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import { createNativeStackNavigator } from 'react-native-cool-modals/native-stack';
 import useExperimentalFlag, {
   NEW_ONBOARDING,
 } from '../config/experimentalHooks';
@@ -48,6 +47,7 @@ import {
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
