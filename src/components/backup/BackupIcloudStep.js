@@ -172,7 +172,7 @@ const BackupIcloudStep = ({ setAppearListener }) => {
 
   useEffect(() => {
     setTimeout(() => {
-      passwordRef.current.focus();
+      passwordRef.current?.focus();
     }, 1);
   }, []);
 
