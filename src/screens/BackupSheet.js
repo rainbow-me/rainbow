@@ -62,7 +62,7 @@ const BackupSheet = ({ setAppearListener }) => {
           isShortFormEnabled: false,
           longFormHeight: 10000,
         });
-        jumpToLong();
+        setImmediate(jumpToLong);
       } else {
         await dispatch(
           setIsWalletLoading(walletLoadingStates.BACKING_UP_WALLET)
@@ -101,7 +101,7 @@ const BackupSheet = ({ setAppearListener }) => {
         isShortFormEnabled: false,
         longFormHeight: 10000,
       });
-      jumpToLong();
+      setImmediate(jumpToLong);
     }
   }, [
     dispatch,
