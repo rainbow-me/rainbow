@@ -3,7 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import { createNativeStackNavigator } from 'react-native-cool-modals/native-stack';
 import useExperimentalFlag, {
   NEW_ONBOARDING,
 } from '../config/experimentalHooks';
@@ -11,7 +10,7 @@ import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import DepositModal from '../screens/DepositModal';
-import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
+import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
 import SavingsSheet from '../screens/SavingsSheet';
@@ -48,6 +47,7 @@ import {
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -201,7 +201,7 @@ function NativeStackFallbackNavigator() {
       <Stack.Screen name={Routes.MAIN_NAVIGATOR} component={MainNavigator} />
       <Stack.Screen
         name={Routes.IMPORT_SEED_PHRASE_SHEET}
-        component={ImportSeedPhraseSheetWithData}
+        component={ImportSeedPhraseSheet}
         options={{
           ...sheetPreset,
           onTransitionStart: () => {

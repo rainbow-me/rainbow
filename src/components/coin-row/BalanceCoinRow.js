@@ -21,6 +21,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
 const editTranslateOffset = 32;
+const AssetSheetHeight = 400;
 
 const formatPercentageString = percentString =>
   percentString ? percentString.split('-').join('- ') : '-';
@@ -132,7 +133,7 @@ const BalanceCoinRow = ({
   }, [item.uniqueId, pushSelectedCoin, removeSelectedCoin, setToggle, toggle]);
 
   const handlePress = useCallback(() => {
-    onPress && onPress(item);
+    onPress && onPress(item, { longFormHeight: AssetSheetHeight });
   }, [onPress, item]);
 
   const handlePressSend = useCallback(() => {
