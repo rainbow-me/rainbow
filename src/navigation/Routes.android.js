@@ -6,7 +6,7 @@ import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
-import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
+import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
 import SendSheet from '../screens/SendSheet';
@@ -96,7 +96,7 @@ function MainNavigator() {
       />
       <Stack.Screen
         name={Routes.IMPORT_SEED_PHRASE_SHEET}
-        component={ImportSeedPhraseSheetWithData}
+        component={ImportSeedPhraseSheet}
         options={sheetPreset}
       />
       <Stack.Screen

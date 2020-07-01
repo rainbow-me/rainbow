@@ -1,27 +1,32 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 
-const ProfileAction = ({ icon, iconSize, onPress, text, ...props }) => (
+const Container = styled(RowWithMargins).attrs({
+  align: 'center',
+  justify: 'start',
+  margin: 6,
+})`
+  background-color: ${colors.transparent};
+  height: 34;
+  padding-bottom: 2;
+`;
+
+const ProfileActionIcon = styled(Icon).attrs({
+  color: colors.appleBlue,
+})`
+  ${({ iconSize }) => position.size(iconSize)};
+  margin-top: 0.5;
+`;
+
+const ProfileAction = ({ icon, iconSize = 16, onPress, text, ...props }) => (
   <ButtonPressAnimation onPress={onPress} {...props}>
-    <RowWithMargins
-      align="center"
-      backgroundColor={colors.transparent}
-      height={34}
-      justify="flex-start"
-      margin={6}
-      paddingBottom={2}
-    >
-      <Icon
-        color={colors.appleBlue}
-        marginTop={0.5}
-        name={icon}
-        style={position.sizeAsObject(iconSize)}
-      />
+    <Container>
+      <ProfileActionIcon iconSize={iconSize} name={icon} />
       <Text
         color="appleBlue"
         letterSpacing="roundedMedium"
@@ -31,19 +36,8 @@ const ProfileAction = ({ icon, iconSize, onPress, text, ...props }) => (
       >
         {text}
       </Text>
-    </RowWithMargins>
+    </Container>
   </ButtonPressAnimation>
 );
-
-ProfileAction.propTypes = {
-  icon: Icon.propTypes.name,
-  iconSize: PropTypes.number,
-  onPress: PropTypes.func,
-  text: PropTypes.string,
-};
-
-ProfileAction.defaultProps = {
-  iconSize: 16,
-};
 
 export default React.memo(ProfileAction);

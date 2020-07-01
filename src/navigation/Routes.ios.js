@@ -3,14 +3,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
 import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
-import { createNativeStackNavigator } from 'react-native-cool-modals/native-stack';
 // eslint-disable-next-line import/no-cycle
 import { InitialRouteContext } from '../App';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import DepositModal from '../screens/DepositModal';
-import ImportSeedPhraseSheetWithData from '../screens/ImportSeedPhraseSheetWithData';
+import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
 import RestoreSheet from '../screens/RestoreSheet';
@@ -49,6 +48,7 @@ import {
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -198,7 +198,7 @@ function NativeStackFallbackNavigator() {
       <Stack.Screen name={Routes.MAIN_NAVIGATOR} component={MainNavigator} />
       <Stack.Screen
         name={Routes.IMPORT_SEED_PHRASE_SHEET}
-        component={ImportSeedPhraseSheetWithData}
+        component={ImportSeedPhraseSheet}
         options={{
           ...sheetPreset,
           onTransitionStart: () => {
@@ -247,7 +247,11 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         name={Routes.RECEIVE_MODAL}
         component={ReceiveModal}
-        {...sharedCoolModalConfig}
+        options={{
+          backgroundColor: '#3B3E43',
+          backgroundOpacity: 1,
+          customStack: true,
+        }}
       />
       <NativeStack.Screen
         name={Routes.SETTINGS_MODAL}

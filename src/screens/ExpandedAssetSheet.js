@@ -22,6 +22,7 @@ const ScreenTypes = {
 const Container = styled(Centered).attrs({ direction: 'column' })`
   ${position.cover};
   top: ${({ insets }) => insets.top + 10};
+  ${({ height }) => (height ? `height: ${height + 300}` : null)};
 `;
 
 export default function ExpandedAssetSheet(props) {
@@ -32,7 +33,7 @@ export default function ExpandedAssetSheet(props) {
   const selectedAsset = useAsset(params.asset);
 
   return (
-    <Container insets={insets}>
+    <Container insets={insets} height={params.longFormHeight}>
       <StatusBar barStyle="light-content" />
       <TouchableBackdrop onPress={goBack} />
       {createElement(ScreenTypes[params.type], {

@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.2.23](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.23)
+### Changed
+* Fixes and improvements to WalletConnect
+
 ## [1.2.15](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.15)
 ### Added
 * Multi-wallet support

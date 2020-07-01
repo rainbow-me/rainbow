@@ -1,7 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useContext, useRef, useState } from 'react';
 import { Alert, InteractionManager } from 'react-native';
-import { ModalContext } from 'react-native-cool-modals/native-stack/views/NativeStackView';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
@@ -22,6 +21,7 @@ import { addWalletToCloudBackup } from '../model/wallet';
 import Routes from '../navigation/routesNames';
 import { setIsWalletLoading, setWalletBackedUp } from '../redux/wallets';
 import { logger } from '../utils';
+import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
 const switchSheetContentTransition = (
   <Transition.Sequence>
