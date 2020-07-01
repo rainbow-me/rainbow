@@ -8,6 +8,7 @@
 
 #import <React/RCTViewManager.h>
 #import <React/RCTBridgeModule.h>
+#import <CoreText/CoreText.h>
 
 
 @interface RainbowText:UILabel
@@ -43,14 +44,29 @@
   _timer = [NSTimer scheduledTimerWithTimeInterval:_interval / 1000  target:self selector:@selector(animate) userInfo:nil repeats:YES];
   _fmt = [[NSNumberFormatter alloc] init];
   _fmt.numberStyle = NSNumberFormatterDecimalStyle;
-  _fmt.maximumFractionDigits = 9;
-  _fmt.minimumFractionDigits = 9;
+  _fmt.maximumFractionDigits = _decimals;
+  _fmt.minimumFractionDigits = _decimals;
   _time = NSDate.date.timeIntervalSince1970;
-  self.font = [UIFont fontWithName:@"SFRounded-Bold" size:16];
+  UIFont* font = [UIFont fontWithName:@"SFRounded-Bold" size:16];
+  
+  UIFontDescriptor *const existingDescriptor = [font fontDescriptor];
+
+  NSDictionary *const fontAttributes = @{
+
+  UIFontDescriptorFeatureSettingsAttribute: @[
+   @{
+     UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
+     UIFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)
+    }
+  ]};
+
+  UIFontDescriptor *const monospacedDescriptor = [existingDescriptor  fontDescriptorByAddingAttributes: fontAttributes];
+  
+  self.font = [UIFont fontWithDescriptor: monospacedDescriptor size: [font pointSize]];
 }
 
 - (void) animate {
-  double diff = _time - NSDate.date.timeIntervalSince1970;
+  double diff = NSDate.date.timeIntervalSince1970 - _time;
   double value = _initialValue + _stepPerDay * diff / 24 / 60 / 60;
   
   NSString *newValue;
