@@ -8,7 +8,6 @@ import styled from 'styled-components/primitives';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '../../config/experimentalHooks';
-import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { useAccountProfile } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
@@ -65,11 +64,7 @@ const TransactionList = ({
   } = useAccountProfile();
 
   const onAddCashPress = useCallback(() => {
-    navigate(
-      isNativeStackAvailable
-        ? Routes.ADD_CASH_SCREEN_NAVIGATOR
-        : Routes.ADD_CASH_SHEET
-    );
+    navigate(Routes.ADD_CASH_FLOW);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });

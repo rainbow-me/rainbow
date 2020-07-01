@@ -105,7 +105,6 @@ const BalanceCoinRow = ({
   isFirstCoinRow,
   item,
   onPress,
-  onPressSend,
   pushSelectedCoin,
   recentlyPinnedCount,
   removeSelectedCoin,
@@ -136,10 +135,6 @@ const BalanceCoinRow = ({
     onPress && onPress(item, { longFormHeight: AssetSheetHeight });
   }, [onPress, item]);
 
-  const handlePressSend = useCallback(() => {
-    onPressSend && onPressSend(item);
-  }, [onPressSend, item]);
-
   return (
     <Column flex={1} justify={isFirstCoinRow ? 'end' : 'start'}>
       <Content
@@ -153,8 +148,6 @@ const BalanceCoinRow = ({
             isExpandedState ? containerExpandedStyles : containerStyles
           }
           isExpandedState={isExpandedState}
-          onPress={handlePress}
-          onPressSend={handlePressSend}
           bottomRowRender={BottomRow}
           topRowRender={TopRow}
           {...item}

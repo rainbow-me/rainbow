@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import React, { useCallback, useRef, useState } from 'react';
-import { InteractionManager, Platform } from 'react-native';
+import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -345,11 +345,7 @@ const ChangeWalletSheet = () => {
   ]);
 
   const onPressImportSeedPhrase = useCallback(() => {
-    navigate(
-      Platform.OS === 'ios'
-        ? Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR
-        : Routes.IMPORT_SEED_PHRASE_SHEET
-    );
+    navigate(Routes.IMPORT_SEED_PHRASE_FLOW);
   }, [navigate]);
 
   const toggleEditMode = useCallback(() => {
