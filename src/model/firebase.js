@@ -70,6 +70,8 @@ export const checkPushNotificationPermissions = async () => {
         message: lang.t('wallet.push_notifications.please_enable_body'),
         title: lang.t('wallet.push_notifications.please_enable_title'),
       });
+    } else {
+      resolve(true);
     }
   });
 };
