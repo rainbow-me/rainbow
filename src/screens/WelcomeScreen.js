@@ -337,7 +337,7 @@ function colorAnimation(rValue, fromShadow) {
 
 export default function WelcomeScreen() {
   const { isWalletLoading } = useWallets();
-  const { navigate } = useNavigation();
+  const { replace, navigate } = useNavigation();
   const contentAnimation = useAnimatedValue(1);
   const hideSplashScreen = useHideSplashScreen();
   const createWalletButtonAnimation = useAnimatedValue(1);
@@ -406,8 +406,8 @@ export default function WelcomeScreen() {
 
   const onCreateWallet = useCallback(async () => {
     await saveUserBackupState('ready');
-    navigate(Routes.SWIPE_LAYOUT);
-  }, [navigate]);
+    replace(Routes.SWIPE_LAYOUT);
+  }, [replace]);
 
   const createWalletButtonProps = useMemoOne(() => {
     const color = colorAnimation(rValue, true);
