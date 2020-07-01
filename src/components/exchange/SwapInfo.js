@@ -8,11 +8,11 @@ import {
   useTimingTransition,
 } from 'react-native-redash';
 import styled from 'styled-components/primitives';
-import { padding } from '../../styles';
 import { interpolate } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered } from '../layout';
 import { Text } from '../text';
+import { padding } from '@rainbow-me/styles';
 
 const Container = styled(Centered)`
   ${padding(19, 19, 2)};

@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { withNeverRerender } from '../../../hoc';
-import { colors, position } from '../../../styles';
 import { Icon } from '../../icons';
 import { Centered, FlexItem } from '../../layout';
 import { TruncatedText } from '../../text';
 import FloatingPanel from '../FloatingPanel';
+import { colors, position } from '@rainbow-me/styles';
 
 const sx = StyleSheet.create({
   container: {

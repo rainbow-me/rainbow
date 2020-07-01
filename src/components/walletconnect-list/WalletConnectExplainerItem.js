@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { pure } from 'recompact';
-import { colors, padding } from '../../styles';
 import { Column, FlexItem, Row } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const WalletConnectExplainerItem = ({ children, content, emoji, title }) => (
   <Row align="start" css={padding(0, 36, 0, 0)}>

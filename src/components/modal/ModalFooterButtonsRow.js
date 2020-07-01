@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Children, Fragment } from 'react';
 import styled from 'styled-components';
-import { colors } from '../../styles';
 import Divider from '../Divider';
 import { Row } from '../layout';
+import { colors } from '@rainbow-me/styles';
 
 const Container = styled(Row)`
   border-top-color: ${colors.rowDivider};

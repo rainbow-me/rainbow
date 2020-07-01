@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { colors, padding } from '../../styles';
 import { Centered, RowWithMargins } from '../layout';
 import { DollarFigure, Text } from '../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => (
   <Centered css={padding(17, 0, 3)} direction="column">

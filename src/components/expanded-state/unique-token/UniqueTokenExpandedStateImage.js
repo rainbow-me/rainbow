@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { useDimensions, useImageDimensionsCache } from '../../../hooks';
-import { margin, padding, position } from '../../../styles';
 import { magicMemo } from '../../../utils';
 import { Centered } from '../../layout';
 import { UniqueTokenImage } from '../../unique-token';
+import { margin, padding, position } from '@rainbow-me/styles';
 
 const paddingHorizontal = 19;
 

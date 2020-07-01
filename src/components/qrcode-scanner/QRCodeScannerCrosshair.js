@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
-import { position } from '../../styles';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
+import { position } from '@rainbow-me/styles';
 
 const CrossHairAspectRatio = 259 / 375;
 

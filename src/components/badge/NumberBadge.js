@@ -6,11 +6,11 @@ import {
   useSpringTransition,
 } from 'react-native-redash';
 import styled from 'styled-components/primitives';
-import { borders, colors, position } from '../../styles';
 import { magicMemo } from '../../utils';
 import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
+import { borders, colors, position } from '@rainbow-me/styles';
 
 const Container = styled(Animated.View)`
   ${position.centered};

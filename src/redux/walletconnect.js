@@ -21,10 +21,10 @@ import { sendRpcCall } from '../handlers/web3';
 import WalletTypes from '../helpers/walletTypes';
 import { getFCMToken } from '../model/firebase';
 import { Navigation } from '../navigation';
-import Routes from '../navigation/routesNames';
-import { logger } from '../utils';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
+import Routes from '@rainbow-me/routes';
+import logger from 'logger';
 
 // -- Constants --------------------------------------- //
 

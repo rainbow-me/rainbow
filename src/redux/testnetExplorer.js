@@ -4,8 +4,8 @@ import { web3Provider } from '../handlers/web3';
 import networkInfo from '../helpers/networkInfo';
 import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
 import testnetAssets from '../references/testnet-assets.json';
-import { logger } from '../utils';
 import { addressAssetsReceived } from './data';
+import logger from 'logger';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 

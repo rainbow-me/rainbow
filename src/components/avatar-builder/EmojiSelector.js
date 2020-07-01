@@ -29,10 +29,10 @@ import {
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import 'string.fromcodepoint';
 import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
-import { colors, fonts, position } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { Categories } from './Categories';
 import TabBar from './TabBar';
+import { colors, fonts, position } from '@rainbow-me/styles';
 
 // TODO width attribute is temporary solution that will be removed as soon as I figure out why proper scaling does not work
 

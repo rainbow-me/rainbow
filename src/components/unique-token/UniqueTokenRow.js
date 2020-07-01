@@ -3,11 +3,11 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import { useWallets } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../navigation/routesNames';
-import { padding, position } from '../../styles';
 import { deviceUtils, magicMemo } from '../../utils';
 import { Row } from '../layout';
 import UniqueTokenCard from './UniqueTokenCard';
+import Routes from '@rainbow-me/routes';
+import { padding, position } from '@rainbow-me/styles';
 
 const CardMargin = 15;
 const RowPadding = 19;

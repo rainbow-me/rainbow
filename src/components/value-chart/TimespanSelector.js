@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import ChartTypes from '../../helpers/chartTypes';
-import { colors, padding } from '../../styles';
 import { JellySelector } from '../jelly-selector';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const TimespanItemLabel = styled(Text).attrs({
   align: 'center',

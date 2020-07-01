@@ -11,7 +11,8 @@ import { showcaseTokensLoadState } from '../redux/showcaseTokens';
 import { uniqueTokensLoadState } from '../redux/uniqueTokens';
 import { uniswapLoadState } from '../redux/uniswap';
 import { walletConnectLoadState } from '../redux/walletconnect';
-import { logger, promiseUtils } from '../utils';
+import { promiseUtils } from '../utils';
+import logger from 'logger';
 
 export default function useLoadAccountData() {
   const dispatch = useDispatch();

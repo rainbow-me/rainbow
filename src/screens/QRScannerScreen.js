@@ -18,8 +18,8 @@ import useExperimentalFlag, {
   DISCOVER_SHEET,
 } from '../config/experimentalHooks';
 import { scrollPosition } from '../navigation/helpers';
-import { colors, position } from '../styles';
 import { magicMemo } from '../utils';
+import { colors, position } from '@rainbow-me/styles';
 
 const DimmedView = styled(Animated.View)`
   flex: 1;

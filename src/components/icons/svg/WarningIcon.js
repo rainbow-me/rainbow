@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
-import { colors } from '../../../styles';
 import Svg from '../Svg';
+import { colors } from '@rainbow-me/styles';
 
 const WarningIcon = ({ color, ...props }) => (
   <Svg height="14" width="15" viewBox="0 0 14 15" {...props}>

@@ -1,6 +1,6 @@
 import React, { Children } from 'react';
-import { padding } from '../../../styles';
 import { FlexItem, Row } from '../../layout';
+import { padding } from '@rainbow-me/styles';
 
 function renderButton(child) {
   if (!child) return null;

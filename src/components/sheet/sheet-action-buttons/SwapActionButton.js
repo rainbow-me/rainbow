@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { useExpandedStateNavigation } from '../../../hooks';
-import Routes from '../../../navigation/routesNames';
-import { colors } from '../../../styles';
 import SheetActionButton from './SheetActionButton';
+import Routes from '@rainbow-me/routes';
+import { colors } from '@rainbow-me/styles';
 
 export default function SwapActionButton({ inputType, ...props }) {
   const navigate = useExpandedStateNavigation(inputType);

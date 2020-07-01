@@ -4,11 +4,11 @@ import FastImage from 'react-native-fast-image';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
-import { colors, margin, padding, position } from '../../styles';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
+import { colors, margin, padding, position } from '@rainbow-me/styles';
 
 const Content = styled(RowWithMargins).attrs({ align: 'center', margin: 7 })`
   ${padding(9.5, 14, 11, 15)};

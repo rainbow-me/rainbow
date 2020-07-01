@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateImageDimensionsCache } from '../redux/imageDimensionsCache';
-import { position } from '../styles';
 import useDimensions from './useDimensions';
+import { position } from '@rainbow-me/styles';
 
 export default function useImageDimensionsCache(imageUrl) {
   const dispatch = useDispatch();

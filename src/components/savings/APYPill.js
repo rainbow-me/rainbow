@@ -3,9 +3,9 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import RadialGradient from 'react-native-radial-gradient';
-import { colors, position } from '../../styles';
 import { Centered } from '../layout';
 import { GradientText } from '../text';
+import { colors, position } from '@rainbow-me/styles';
 
 const sx = StyleSheet.create({
   container: {

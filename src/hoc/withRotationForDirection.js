@@ -1,6 +1,6 @@
 import { mapProps } from 'recompact';
-import { calcDirectionToDegrees } from '../styles';
 import { reduceArrayToObject } from '../utils';
+import { calcDirectionToDegrees } from '@rainbow-me/styles';
 
 const withRotationForDirection = Component =>
   mapProps(({ direction, style, ...props }) => {

@@ -7,8 +7,6 @@ import useExperimentalFlag, {
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { useAccountProfile, useClipboard } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../navigation/routesNames';
-import { colors } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -19,6 +17,8 @@ import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
+import Routes from '@rainbow-me/routes';
+import { colors } from '@rainbow-me/styles';
 
 const dropdownArrowWidth = 21;
 const maxAddressWidth = deviceUtils.dimensions.width - dropdownArrowWidth - 60;

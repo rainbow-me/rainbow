@@ -3,7 +3,6 @@ import React, { useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import styled, { css } from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
-import { padding } from '../../styles';
 import { haptics, neverRerender } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
@@ -14,6 +13,7 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import CoinRowFavoriteButton from './CoinRowFavoriteButton';
+import { padding } from '@rainbow-me/styles';
 
 const CoinRowPaddingTop = 11;
 const CoinRowPaddingBottom = 11;

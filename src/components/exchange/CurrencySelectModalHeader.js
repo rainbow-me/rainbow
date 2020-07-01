@@ -2,11 +2,11 @@ import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../navigation/routesNames';
-import { borders, colors, padding } from '../../styles';
 import { BackButton } from '../header';
 import { Centered } from '../layout';
 import { TruncatedText } from '../text';
+import Routes from '@rainbow-me/routes';
+import { borders, colors, padding } from '@rainbow-me/styles';
 
 const BackButtonWrapper = styled(Centered)`
   bottom: 0;

@@ -1,8 +1,8 @@
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
-import { colors, padding } from '../styles';
 import { TruncatedText } from './text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const borderRadius = 10.5;
 

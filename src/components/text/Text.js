@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components/primitives';
-import { buildTextStyles } from '../../styles';
+import { buildTextStyles } from '@rainbow-me/styles';
 
 const Text = styled.Text.attrs({ allowFontScaling: false })`
   ${buildTextStyles};

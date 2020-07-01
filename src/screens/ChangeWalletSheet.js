@@ -16,7 +16,6 @@ import { useAccountSettings, useInitializeWallet, useWallets } from '../hooks';
 import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
 import { createWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
-import Routes from '../navigation/routesNames';
 import {
   addressSetSelected,
   createAccountForWallet,
@@ -26,9 +25,12 @@ import {
   walletsUpdate,
 } from '../redux/wallets';
 
-import { colors, fonts } from '../styles';
-import { abbreviations, deviceUtils, logger } from '../utils';
+import { abbreviations, deviceUtils } from '../utils';
+
 import { showActionSheetWithOptions } from '../utils/actionsheet';
+import Routes from '@rainbow-me/routes';
+import { colors, fonts } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const footerHeight = 111;

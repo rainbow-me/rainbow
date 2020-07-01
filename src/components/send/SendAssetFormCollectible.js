@@ -3,10 +3,10 @@ import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
 import { useDimensions, useImageDimensionsCache } from '../../hooks';
-import { colors, padding, position } from '../../styles';
 import { OpacityToggler } from '../animations';
 import { Column, ColumnWithMargins } from '../layout';
 import { UniqueTokenCard } from '../unique-token';
+import { colors, padding, position } from '@rainbow-me/styles';
 
 const defaultImageDimensions = { height: 512, width: 512 };
 

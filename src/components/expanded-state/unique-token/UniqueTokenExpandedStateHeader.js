@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Linking, Share } from 'react-native';
 import { buildUniqueTokenName } from '../../../helpers/assets';
-import { colors, padding } from '../../../styles';
 import { magicMemo } from '../../../utils';
 import Pill from '../../Pill';
 import { ContextCircleButton } from '../../context-menu';
 import { ColumnWithMargins, FlexItem, Row, RowWithMargins } from '../../layout';
 import { Text } from '../../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const paddingHorizontal = 19;
 const paddingVertical = 3;

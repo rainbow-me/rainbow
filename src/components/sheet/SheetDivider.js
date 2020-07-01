@@ -1,6 +1,6 @@
 import React from 'react';
-import { colors } from '../../styles';
 import Divider from '../Divider';
+import { colors } from '@rainbow-me/styles';
 
 const SheetDivider = () => (
   <Divider color={colors.rowDividerLight} zIndex={1} />

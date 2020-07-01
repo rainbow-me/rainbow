@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
 import BiometryTypes from '../../helpers/biometryTypes';
-import { colors, position } from '../../styles';
 import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import Icon from './Icon';
+import { colors, position } from '@rainbow-me/styles';
 
 const BiometryTypeIcon = styled(Icon).attrs(({ type }) => ({
   color: colors.white,

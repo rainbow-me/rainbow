@@ -3,7 +3,6 @@ import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 import { chartExpandedAvailable } from '../config/experimental';
 import NetworkTypes from '../helpers/networkTypes';
-import { logger } from '../utils';
 import { addressChartsReceived } from './charts';
 import {
   addressAssetsReceived,
@@ -16,6 +15,7 @@ import {
   testnetExplorerClearState,
   testnetExplorerInit,
 } from './testnetExplorer';
+import logger from 'logger';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';

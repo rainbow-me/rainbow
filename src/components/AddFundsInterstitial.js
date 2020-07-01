@@ -5,13 +5,13 @@ import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
-import Routes from '../navigation/routesNames';
-import { colors, margin, padding } from '../styles';
 import { magicMemo } from '../utils';
 import Divider from './Divider';
 import { Button } from './buttons';
 import { Centered } from './layout';
 import { Text } from './text';
+import Routes from '@rainbow-me/routes';
+import { colors, margin, padding } from '@rainbow-me/styles';
 
 const ButtonContainerHeight = 193;
 const ButtonContainerWidth = 250;

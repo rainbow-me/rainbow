@@ -42,7 +42,7 @@ import RoutesComponent from './navigation/Routes';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
-import { logger } from './utils';
+import { logger } from 'logger';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
 

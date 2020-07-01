@@ -6,11 +6,11 @@ import {
   isSymbolStablecoin,
 } from '../../helpers/savings';
 import { handleSignificantDecimals } from '../../helpers/utilities';
-import { colors, padding } from '../../styles';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { AnimatedNumber, Emoji, Text } from '../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const CrystalBallEmoji = styled(Emoji).attrs({
   name: 'crystal_ball',

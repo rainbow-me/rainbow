@@ -5,7 +5,6 @@ import { SpringUtils } from 'react-native-reanimated';
 import { bin, useSpringTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import Caret from '../../assets/family-dropdown-arrow.png';
-import { colors, padding } from '../../styles';
 import { magicMemo } from '../../utils';
 import {
   ButtonPressAnimation,
@@ -15,6 +14,7 @@ import {
 } from '../animations';
 import { Row } from '../layout';
 import CoinDividerButtonLabel from './CoinDividerButtonLabel';
+import { colors, padding } from '@rainbow-me/styles';
 
 const closedWidth = 52.5;
 

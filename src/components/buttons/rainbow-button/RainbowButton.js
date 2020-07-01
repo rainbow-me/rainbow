@@ -4,13 +4,13 @@ import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
 import AddCashIconSource from '../../../assets/addCashIcon.png';
 import { useDimensions } from '../../../hooks';
-import { colors, position, shadow } from '../../../styles';
 import { magicMemo } from '../../../utils';
 import { ButtonPressAnimation } from '../../animations';
 import { RowWithMargins } from '../../layout';
 import { Text } from '../../text';
 import RainbowButtonBackground from './RainbowButtonBackground';
 import RainbowButtonTypes from './RainbowButtonTypes';
+import { colors, position, shadow } from '@rainbow-me/styles';
 
 const AddCashIcon = styled(FastImage).attrs({
   resizeMode: FastImage.resizeMode.contain,

@@ -3,7 +3,7 @@ import React from 'react';
 import { UIActivityIndicator } from 'react-native-indicators';
 import { View } from 'react-primitives';
 import stylePropType from 'react-style-proptype';
-import { colors, position } from '../styles';
+import { colors, position } from '@rainbow-me/styles';
 
 const ActivityIndicator = ({ color, isInteraction, size, style }) => (
   <View style={[position.sizeAsObject(size), style]}>

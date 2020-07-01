@@ -23,7 +23,6 @@ import {
 import networkInfo from '../../helpers/networkInfo';
 import { useAccountSettings, useSendFeedback, useWallets } from '../../hooks';
 import { supportedLanguages } from '../../languages';
-import { position } from '../../styles';
 import AppVersionStamp from '../AppVersionStamp';
 import { Column, ColumnWithDividers } from '../layout';
 import {
@@ -33,6 +32,7 @@ import {
   ListItemDivider,
 } from '../list';
 import { Emoji } from '../text';
+import { position } from '@rainbow-me/styles';
 
 const { RainbowRequestReview } = NativeModules;
 

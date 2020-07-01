@@ -4,10 +4,10 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import { useDimensions } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 
-import { borders, colors } from '../../styles';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import SheetHandle from './SheetHandle';
+import { borders, colors } from '@rainbow-me/styles';
 
 const Sheet = ({ borderRadius, children, hideHandle }) => {
   const { width } = useDimensions();

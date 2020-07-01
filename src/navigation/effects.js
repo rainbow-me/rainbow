@@ -4,8 +4,8 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { AvatarCircle } from '../components/profile';
 import { transformOrigin } from '../helpers/transformOriginAnimated';
-import { colors } from '../styles';
 import { deviceUtils } from '../utils';
+import { colors } from '@rainbow-me/styles';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;

@@ -10,12 +10,12 @@ import { FlatList } from 'react-native-gesture-handler';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import WalletTypes from '../../helpers/walletTypes';
-import { colors, position } from '../../styles';
 import Divider from '../Divider';
 import { EmptyAssetList } from '../asset-list';
 import { Column } from '../layout';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
+import { colors, position } from '@rainbow-me/styles';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;

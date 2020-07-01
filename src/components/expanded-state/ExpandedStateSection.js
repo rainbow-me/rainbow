@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { colors } from '../../styles';
 import { ColumnWithMargins } from '../layout';
 import { Text } from '../text';
+import { colors } from '@rainbow-me/styles';
 
 const ExpandedStateSection = ({ children, title, ...props }) => (
   <ColumnWithMargins

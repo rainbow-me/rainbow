@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import VersionNumber from 'react-native-version-number';
-import { colors } from '../styles';
 import { Text } from './text';
+import { colors } from '@rainbow-me/styles';
 
 const AppVersionStamp = ({ color, ...props }) => (
   <Text

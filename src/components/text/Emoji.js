@@ -1,8 +1,8 @@
 import nodeEmoji from 'node-emoji';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { fonts } from '../../styles';
 import Text from './Text';
+import { fonts } from '@rainbow-me/styles';
 
 const Emoji = ({ children, name, ...props }) => (
   <Text {...props} isEmoji>

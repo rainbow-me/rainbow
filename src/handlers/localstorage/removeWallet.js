@@ -1,11 +1,11 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import { concat, flatten, keys, map } from 'lodash';
 import NetworkTypes from '../../helpers/networkTypes';
-import { logger } from '../../utils';
 import { accountLocalKeys } from './accountLocal';
 import { getKey } from './common';
 import { uniswapAccountLocalKeys } from './uniswap';
 import { walletConnectAccountLocalKeys } from './walletconnect';
+import logger from 'logger';
 
 export const removeWalletData = async accountAddress => {
   logger.log('[remove wallet]', accountAddress);

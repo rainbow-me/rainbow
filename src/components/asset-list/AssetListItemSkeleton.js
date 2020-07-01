@@ -11,11 +11,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import { colors, padding, position } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { interpolate } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
+import { colors, padding, position } from '@rainbow-me/styles';
 
 const { block, cond, set, startClock, stopClock } = Animated;
 

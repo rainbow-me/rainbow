@@ -4,13 +4,13 @@ import styled from 'styled-components/primitives';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { useDimensions } from '../../hooks';
 import { supportedCountries } from '../../references/wyre';
-import { colors, padding } from '../../styles';
 import { neverRerender } from '../../utils';
 import { FloatingEmojisTapper } from '../floating-emojis';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import FloatingPanels from './FloatingPanels';
 import { AssetPanel } from './asset-panel';
+import { colors, padding } from '@rainbow-me/styles';
 
 const Panel = styled(FloatingPanels)`
   margin-bottom: ${({ deviceDimensions: { isTallPhone } }) =>

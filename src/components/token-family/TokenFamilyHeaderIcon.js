@@ -4,10 +4,10 @@ import { FallbackIcon } from 'react-coin-icon';
 import ShadowStack from 'react-native-shadow-stack';
 import stylePropType from 'react-style-proptype';
 import styled from 'styled-components/primitives';
-import { borders, colors } from '../../styles';
 import { initials } from '../../utils';
 import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
 import { Emoji } from '../text';
+import { borders, colors } from '@rainbow-me/styles';
 
 const shadows = [
   [0, 4, 6, colors.dark, 0.04],

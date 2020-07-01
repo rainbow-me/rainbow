@@ -3,10 +3,10 @@ import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
 import { useOpenInvestmentCards } from '../../hooks';
-import { colors, padding, position, shadow } from '../../styles';
 import { ButtonPressAnimation, SizeToggler } from '../animations';
 import { Column, InnerBorder } from '../layout';
 import InvestmentCardHeader from './InvestmentCardHeader';
+import { colors, padding, position, shadow } from '@rainbow-me/styles';
 
 const InvestmentCardBorderRadius = 24.5;
 

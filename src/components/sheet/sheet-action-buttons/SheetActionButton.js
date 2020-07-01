@@ -2,11 +2,11 @@ import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
-import { colors, padding, position } from '../../../styles';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
+import { colors, padding, position } from '@rainbow-me/styles';
 
 const Button = styled(Centered).attrs(({ size }) => ({
   scaleTo: size === 'big' ? 0.9 : 0.96,

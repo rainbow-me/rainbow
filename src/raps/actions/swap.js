@@ -19,7 +19,8 @@ import {
   TRANSFER_EVENT_KECCAK,
   TRANSFER_EVENT_TOPIC_LENGTH,
 } from '../../references';
-import { ethereumUtils, gasUtils, logger } from '../../utils';
+import { ethereumUtils, gasUtils } from '../../utils';
+import logger from 'logger';
 
 const NOOP = () => undefined;
 

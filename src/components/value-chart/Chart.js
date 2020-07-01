@@ -9,11 +9,11 @@ import {
 import ChartTypes from '../../helpers/chartTypes';
 import { greaterThan, toFixedDecimals } from '../../helpers/utilities';
 import { useCharts } from '../../hooks';
-import { colors } from '../../styles';
 import { Column } from '../layout';
 import TimespanSelector from './TimespanSelector';
 import ValueChart from './ValueChart';
 import ValueText from './ValueText';
+import { colors } from '@rainbow-me/styles';
 
 const chartStroke = { detailed: 1.5, simplified: 3 };
 

@@ -4,15 +4,15 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose, onlyUpdateForKeys, withProps } from 'recompact';
 import { withNavigation } from '../../navigation/Navigation';
-import Routes from '../../navigation/routesNames';
 import { removeRequest } from '../../redux/requests';
-import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { RequestCoinIcon } from '../coin-icon';
 import { RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import Routes from '@rainbow-me/routes';
+import { colors } from '@rainbow-me/styles';
 
 const BottomRow = ({ dappName, expirationColor }) => (
   <CoinName color={expirationColor} weight="semibold">
