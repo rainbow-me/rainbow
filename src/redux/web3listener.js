@@ -23,10 +23,7 @@ const web3UpdateReserves = () => async (dispatch, getState) => {
 
 export const web3ListenerInit = () => dispatch => {
   web3Provider.pollingInterval = 10000;
-  web3Provider.on('block', () => {
-    console.log('YOOOOO FETCHING BLOCKS!');
-    dispatch(web3UpdateReserves());
-  });
+  web3Provider.on('block', () => dispatch(web3UpdateReserves()));
 };
 
 export const web3ListenerStop = () => () => {

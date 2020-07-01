@@ -33,6 +33,11 @@ import {
 
 import monitorNetwork from './debugging/network';
 import handleDeeplink from './handlers/deeplinks';
+import {
+  getUserBackupState,
+  // eslint-disable-next-line no-unused-vars
+  saveUserBackupState,
+} from './handlers/localstorage/globalSettings';
 import DevContextWrapper from './helpers/DevContext';
 import { withAccountSettings } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
@@ -123,19 +128,26 @@ class App extends Component {
     this.backgroundNotificationListener();
     this.branchListener();
   }
+
   identifyFlow = async () => {
     const address = await loadAddress();
     if (address) {
       this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
+
+      // New users should see the backup sheet right after app launch
+      // Uncomment the line below to get in the existing user state(before icloud)
+      // await saveUserBackupState(null);
+      const backupState = await getUserBackupState();
+      if (!backupState) {
+        setTimeout(() => {
+          Navigation.handleAction(Routes.BACKUP_SHEET, {
+            option: 'existing_user',
+          });
+        }, 1000);
+      }
     } else {
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
     }
-
-    setTimeout(() => {
-      Navigation.handleAction(Routes.BACKUP_SHEET, {
-        option: 'imported',
-      });
-    }, 1000);
   };
   onRemoteNotification = notification => {
     const topic = get(notification, 'data.topic');

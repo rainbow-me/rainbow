@@ -6,6 +6,12 @@ const KEYBOARD_HEIGHT = 'keyboardHeight';
 const LANGUAGE = 'language';
 const NATIVE_CURRENCY = 'nativeCurrency';
 const NETWORK = 'network';
+const USER_BACKUP_STATE = 'userBackupState';
+
+export const getUserBackupState = () => getGlobal(USER_BACKUP_STATE, 0);
+
+export const saveUserBackupState = userBackupState =>
+  saveGlobal(USER_BACKUP_STATE, userBackupState);
 
 export const getAppStoreReviewCount = () => getGlobal(APPSTORE_REVIEW_COUNT, 0);
 

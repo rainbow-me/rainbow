@@ -1,7 +1,7 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Alert, Animated, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { Restart } from 'react-native-restart';
@@ -132,11 +132,10 @@ const SettingsModal = () => {
   const { wallets, selectedWallet } = useWallets();
   const { params } = useRoute();
 
-  const onPressSection = useCallback(
-    section => () => {
-      let route = section.key;
-
-      if (section === SettingsPages.backup) {
+  const getRealRoute = useCallback(
+    key => {
+      let route = key;
+      if (key === SettingsPages.backup.key) {
         const wallet_id = params?.wallet_id;
         const activeWallet =
           (wallet_id && wallets[wallet_id]) || selectedWallet;
@@ -153,15 +152,31 @@ const SettingsModal = () => {
           route = 'NeedsBackupView';
         }
       }
+      return route;
+    },
+    [params?.wallet_id, selectedWallet, wallets]
+  );
+
+  const onPressSection = useCallback(
+    section => () => {
+      const route = getRealRoute(section.key);
       navigate(route);
     },
-    [navigate, params?.wallet_id, selectedWallet, wallets]
+    [getRealRoute, navigate]
   );
 
   const renderHeaderRight = useCallback(
     () => <ModalHeaderButton label="Done" onPress={goBack} side="right" />,
     [goBack]
   );
+
+  useEffect(() => {
+    if (params?.initialRoute) {
+      const route = getRealRoute(params?.initialRoute);
+      navigate(route);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Modal marginBottom={statusBarHeight} minHeight={580} onCloseModal={goBack}>

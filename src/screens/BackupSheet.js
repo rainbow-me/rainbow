@@ -1,21 +1,25 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useContext, useRef, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, InteractionManager } from 'react-native';
 import { ModalContext } from 'react-native-cool-modals/native-stack/views/NativeStackView';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import BackupConfirmPasswordStep from '../components/backup/BackupConfirmPasswordStep';
+import BackupExistingUser from '../components/backup/BackupExistingUser';
 import BackupIcloudStep from '../components/backup/BackupIcloudStep';
 import BackupImportedStep from '../components/backup/BackupImportedStep';
 import BackupManualStep from '../components/backup/BackupManualStep';
 import BackupSheetFirstStep from '../components/backup/BackupSheetFirstStep';
 import { SlackSheet } from '../components/sheet';
+import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import walletLoadingStates from '../helpers/walletLoadingStates';
+import WalletTypes from '../helpers/walletTypes';
 import { useWallets } from '../hooks';
 import { fetchBackupPassword } from '../model/keychain';
 import { addWalletToCloudBackup } from '../model/wallet';
+import Routes from '../navigation/routesNames';
 import { setIsWalletLoading, setWalletBackedUp } from '../redux/wallets';
 import { logger } from '../utils';
 
@@ -30,11 +34,12 @@ const switchSheetContentTransition = (
 const StyledSheet = styled(SlackSheet)`
   top: 0;
   height: 100%;
+  padding-bottom: 50px;
 `;
 
 const BackupSheet = ({ setAppearListener }) => {
   const { jumpToLong } = useContext(ModalContext);
-  const { setOptions, goBack, setParams } = useNavigation();
+  const { navigate, setOptions, goBack, setParams } = useNavigation();
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
   const dispatch = useDispatch();
@@ -114,8 +119,35 @@ const BackupSheet = ({ setAppearListener }) => {
     goBack();
   }, [goBack]);
 
+  const onAlreadyBackedUp = useCallback(async () => {
+    /// Flag all the wallets as backed up manually
+    Object.keys(wallets).forEach(async wallet_id => {
+      if (wallets[wallet_id].type !== WalletTypes.readOnly) {
+        await dispatch(setWalletBackedUp(wallet_id, WalletBackupTypes.manual));
+      }
+    });
+    await saveUserBackupState('done');
+    goBack();
+  }, [dispatch, goBack, wallets]);
+
+  const onBackupNow = useCallback(async () => {
+    goBack();
+    InteractionManager.runAfterInteractions(() => {
+      navigate(Routes.SETTINGS_MODAL, {
+        initialRoute: 'BackupSection',
+      });
+    });
+  }, [goBack, navigate]);
+
   const renderStep = useCallback(() => {
     switch (step) {
+      case 'existing_user':
+        return (
+          <BackupExistingUser
+            onBackupNow={onBackupNow}
+            onAlreadyBackedUp={onAlreadyBackedUp}
+          />
+        );
       case 'imported':
         return (
           <BackupImportedStep
@@ -141,6 +173,8 @@ const BackupSheet = ({ setAppearListener }) => {
     }
   }, [
     missingPassword,
+    onAlreadyBackedUp,
+    onBackupNow,
     onIcloudBackup,
     onIgnoreBackup,
     onManualBackup,

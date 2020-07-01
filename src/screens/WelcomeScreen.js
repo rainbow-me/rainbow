@@ -15,6 +15,7 @@ import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { Emoji, Text } from '../components/text';
+import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import useHideSplashScreen from '../helpers/hideSplashScreen';
 import { useWallets } from '../hooks';
 import Routes from '../navigation/routesNames';
@@ -401,9 +402,10 @@ export default function WelcomeScreen() {
 
   const backgroundColor = useMemoOne(() => colorAnimation(rValue, false), []);
 
-  const onCreateWallet = useCallback(() => {
+  const onCreateWallet = useCallback(async () => {
+    await saveUserBackupState('ready');
     navigate(Routes.SWIPE_LAYOUT);
-  }, []);
+  }, [navigate]);
 
   const createWalletButtonProps = useMemoOne(() => {
     const color = colorAnimation(rValue, true);

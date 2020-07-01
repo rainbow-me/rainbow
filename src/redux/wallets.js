@@ -5,6 +5,10 @@ import {
   deleteAllBackups,
 } from '../handlers/cloudBackup';
 import {
+  getUserBackupState,
+  saveUserBackupState,
+} from '../handlers/localstorage/globalSettings';
+import {
   getWalletNames,
   saveWalletNames,
 } from '../handlers/localstorage/walletNames';
@@ -128,7 +132,6 @@ export const walletsSetSelected = wallet => dispatch => {
 };
 
 export const setIsWalletLoading = val => dispatch => {
-  console.log('WALLET LOADING STATE UPDATED', val);
   dispatch({
     payload: val,
     type: WALLETS_SET_IS_LOADING,
@@ -165,6 +168,11 @@ export const setWalletBackedUp = (
       logger.error('SAVING WALLET USERDATA FAILED', e);
     }
   }
+  const previousBackupState = await getUserBackupState();
+  // New users who go through the flow get the "ready" flag
+  // Existing users who got the backup feature and complete the flow
+  // get the "done" flag
+  await saveUserBackupState(previousBackupState ? 'done' : 'ready');
 };
 
 export const deleteCloudBackup = wallet_id => async () => {

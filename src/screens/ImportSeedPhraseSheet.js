@@ -26,6 +26,7 @@ import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
+import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import { web3Provider } from '../handlers/web3';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { isENSAddressFormat, isValidWallet } from '../helpers/validators';
@@ -242,7 +243,8 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
                 hadPreviousAddressWithValue: isEmpty,
               });
               goBack();
-              InteractionManager.runAfterInteractions(() => {
+              InteractionManager.runAfterInteractions(async () => {
+                await saveUserBackupState('ready');
                 navigate(Routes.SWIPE_LAYOUT);
                 setTimeout(() => {
                   // If it's not read only, show the backup sheet
