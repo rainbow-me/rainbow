@@ -8,7 +8,7 @@ const NATIVE_CURRENCY = 'nativeCurrency';
 const NETWORK = 'network';
 const USER_BACKUP_STATE = 'userBackupState';
 
-export const getUserBackupState = () => getGlobal(USER_BACKUP_STATE, 0);
+export const getUserBackupState = () => getGlobal(USER_BACKUP_STATE, null);
 
 export const saveUserBackupState = userBackupState =>
   saveGlobal(USER_BACKUP_STATE, userBackupState);

@@ -10,11 +10,7 @@ import { useWallets } from '../../../hooks';
 import { fetchBackupPassword } from '../../../model/keychain';
 import { addWalletToCloudBackup } from '../../../model/wallet';
 import Routes from '../../../navigation/routesNames';
-import {
-  deleteCloudBackup,
-  setIsWalletLoading,
-  setWalletBackedUp,
-} from '../../../redux/wallets';
+import { setIsWalletLoading, setWalletBackedUp } from '../../../redux/wallets';
 import { colors, fonts, padding } from '../../../styles';
 import { logger } from '../../../utils';
 import { ButtonPressAnimation } from '../../animations';
@@ -148,8 +144,9 @@ const AlreadyBackedUpView = () => {
           wallet_id,
         });
       }
-    } else {
-      await dispatch(deleteCloudBackup(wallet_id));
+      // No deletion for now
+      // } else {
+      //   await dispatch(deleteCloudBackup(wallet_id));
     }
   }, [walletStatus, latestBackup, navigate, wallet_id, wallets, dispatch]);
 
@@ -196,25 +193,27 @@ const AlreadyBackedUpView = () => {
         </ColumnWithMargins>
       </Column>
 
-      <Centered css={padding(42, 15)}>
-        <ButtonPressAnimation onPress={onFooterAction}>
-          <Text
-            align="center"
-            color={
-              walletStatus !== 'cloud_backup' ? colors.appleBlue : colors.red
-            }
-            size="larger"
-            style={{
-              lineHeight: 24,
-            }}
-            weight="semibold"
-          >
-            {walletStatus !== 'cloud_backup'
-              ? `􀙶 Back up to iCloud`
-              : `􀈒 Delete iCloud backup`}
-          </Text>
-        </ButtonPressAnimation>
-      </Centered>
+      {walletStatus !== 'cloud_backup' && (
+        <Centered css={padding(42, 15)}>
+          <ButtonPressAnimation onPress={onFooterAction}>
+            <Text
+              align="center"
+              color={
+                walletStatus !== 'cloud_backup' ? colors.appleBlue : colors.red
+              }
+              size="larger"
+              style={{
+                lineHeight: 24,
+              }}
+              weight="semibold"
+            >
+              {walletStatus !== 'cloud_backup'
+                ? `􀙶 Back up to iCloud`
+                : `􀈒 Delete iCloud backup`}
+            </Text>
+          </ButtonPressAnimation>
+        </Centered>
+      )}
       {isWalletLoading && <LoadingOverlay title={isWalletLoading} />}
     </Fragment>
   );

@@ -39,6 +39,7 @@ import {
   saveUserBackupState,
 } from './handlers/localstorage/globalSettings';
 import DevContextWrapper from './helpers/DevContext';
+import BackupStateTypes from './helpers/backupStateTypes';
 import { withAccountSettings } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
@@ -134,15 +135,20 @@ class App extends Component {
     if (address) {
       this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
 
-      // New users should see the backup sheet right after app launch
+      // Previously existing users should see the backup sheet right after app launch
       // Uncomment the line below to get in the existing user state(before icloud)
-      // await saveUserBackupState(null);
+      // await saveUserBackupState(BackupStateTypes.pending);
       const backupState = await getUserBackupState();
-      if (!backupState) {
+      if (backupState === BackupStateTypes.immediate) {
         setTimeout(() => {
           Navigation.handleAction(Routes.BACKUP_SHEET, {
             option: 'existing_user',
           });
+        }, 1000);
+        // New users who are now holding value need to go through the flow
+      } else if (backupState === BackupStateTypes.pending) {
+        setTimeout(() => {
+          Navigation.handleAction(Routes.BACKUP_SHEET);
         }, 1000);
       }
     } else {

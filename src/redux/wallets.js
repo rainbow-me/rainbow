@@ -4,15 +4,13 @@ import {
   backupUserDataIntoCloud,
   deleteAllBackups,
 } from '../handlers/cloudBackup';
-import {
-  getUserBackupState,
-  saveUserBackupState,
-} from '../handlers/localstorage/globalSettings';
+import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import {
   getWalletNames,
   saveWalletNames,
 } from '../handlers/localstorage/walletNames';
 import { web3Provider } from '../handlers/web3';
+import BackupStateTypes from '../helpers/backupStateTypes';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import {
   generateAccount,
@@ -168,11 +166,7 @@ export const setWalletBackedUp = (
       logger.error('SAVING WALLET USERDATA FAILED', e);
     }
   }
-  const previousBackupState = await getUserBackupState();
-  // New users who go through the flow get the "ready" flag
-  // Existing users who got the backup feature and complete the flow
-  // get the "done" flag
-  await saveUserBackupState(previousBackupState ? 'done' : 'ready');
+  await saveUserBackupState(BackupStateTypes.done);
 };
 
 export const deleteCloudBackup = wallet_id => async () => {
