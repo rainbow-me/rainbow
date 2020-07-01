@@ -3,7 +3,6 @@ import { Animated, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { AvatarCircle } from '../components/profile';
-import { transformOrigin } from '../helpers/transformOriginAnimated';
 import { deviceUtils } from '../utils';
 import { colors } from '@rainbow-me/styles';
 
@@ -142,47 +141,6 @@ const savingsStyleInterpolator = ({
     overlayStyle: {
       backgroundColor: colors.dark,
       opacity: backgroundOpacity,
-    },
-  };
-};
-
-const changeWalletStyleInterpolator = targetOpacity => ({
-  current: { progress: current },
-  layouts: { screen },
-}) => {
-  const backgroundOpacity = current.interpolate({
-    inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, targetOpacity, targetOpacity],
-  });
-
-  const cardOpacity = current.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.01, 1],
-  });
-
-  const scale = current.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.21, 1],
-  });
-
-  return {
-    cardStyle: {
-      opacity: cardOpacity,
-      transform: transformOrigin(
-        {
-          x: 0,
-          y: -(screen.height / 2) + statusBarHeight + 62,
-        },
-        { scale }
-      ),
-    },
-    overlayStyle: {
-      backgroundColor: '#141414',
-      opacity: backgroundOpacity,
-      shadowColor: colors.black,
-      shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.4,
-      shadowRadius: 25,
     },
   };
 };
@@ -379,17 +337,6 @@ export const bottomSheetPreset = {
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
-};
-
-export const expandedPresetReverse = {
-  cardOverlayEnabled: true,
-  cardShadowEnabled: true,
-  cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: changeWalletStyleInterpolator(0.7),
-  cardTransparent: true,
-  gestureDirection: 'vertical-inverted',
-  gestureResponseDistance,
-  transitionSpec: { close: closeSpec, open: openSpec },
 };
 
 export const sheetPreset = {
