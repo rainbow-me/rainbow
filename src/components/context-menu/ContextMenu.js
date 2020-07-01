@@ -2,10 +2,10 @@ import { omit, pick } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useRef, useState } from 'react';
 import ActionSheet from 'react-native-actionsheet';
-import { padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
+import { padding } from '@rainbow-me/styles';
 
 const ActionSheetProps = [
   'cancelButtonIndex',

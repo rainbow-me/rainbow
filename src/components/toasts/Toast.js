@@ -4,11 +4,11 @@ import { useSpringTransition } from 'react-native-redash';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
-import { colors, padding, position, shadow } from '../../styles';
 import { interpolate } from '../animations';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
+import { colors, padding, position, shadow } from '@rainbow-me/styles';
 
 const springConfig = {
   damping: 14,

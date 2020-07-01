@@ -18,7 +18,6 @@ import {
   withOpenInvestmentCards,
   withOpenSavings,
 } from '../../hoc';
-import { colors } from '../../styles';
 import {
   deviceUtils,
   isNewValueForPath,
@@ -28,6 +27,7 @@ import { CoinDivider } from '../coin-divider';
 import { CoinRowHeight } from '../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import { ViewTypes } from './RecyclerViewTypes';
+import { colors } from '@rainbow-me/styles';
 
 const NOOP = () => undefined;
 let globalDeviceDimensions = 0;

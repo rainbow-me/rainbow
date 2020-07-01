@@ -3,7 +3,6 @@ import React, { Fragment } from 'react';
 import { compose, onlyUpdateForKeys, shouldUpdate, withProps } from 'recompact';
 import { css } from 'styled-components/primitives';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
-import { colors, padding } from '../../styles';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RequestVendorLogoIcon } from '../coin-icon';
@@ -11,6 +10,7 @@ import { Centered, InnerBorder } from '../layout';
 import { TruncatedText } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import { colors, padding } from '@rainbow-me/styles';
 
 const dividerHeight = 22;
 const selectedHeight = 78;

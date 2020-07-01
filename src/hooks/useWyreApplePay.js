@@ -12,10 +12,10 @@ import {
   addCashOrderCreationFailure,
   addCashResetCurrentOrder,
 } from '../redux/addCash';
-import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
 import usePurchaseTransactionStatus from './usePurchaseTransactionStatus';
 import useTimeout from './useTimeout';
+import logger from 'logger';
 
 export default function useWyreApplePay() {
   const dispatch = useDispatch();

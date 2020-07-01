@@ -1,8 +1,8 @@
 import { PropTypes } from 'prop-types';
 import React from 'react';
 import { withNeverRerender } from '../../hoc';
-import { colors } from '../../styles';
 import Divider from '../Divider';
+import { colors } from '@rainbow-me/styles';
 
 const ListItemDivider = ({ inset }) => (
   <Divider color={colors.rowDividerLight} inset={[0, inset]} />

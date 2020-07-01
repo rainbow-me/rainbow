@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
 import { withRotationForDirection } from '../../../hoc';
-import { colors } from '../../../styles';
 import Svg from '../Svg';
+import { colors } from '@rainbow-me/styles';
 
 const FatArrowIcon = ({ color, ...props }) => (
   <Svg fill="none" height="19" width="16" viewBox="0 0 16 19" {...props}>

@@ -3,10 +3,10 @@ import React, { useCallback } from 'react';
 import Animated, { Easing } from 'react-native-reanimated';
 import { bInterpolateColor, useTimingTransition } from 'react-native-redash';
 import ShadowStack from 'react-native-shadow-stack';
-import { colors, position } from '../../styles';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Icon } from '../icons';
 import { Centered, InnerBorder } from '../layout';
+import { colors, position } from '@rainbow-me/styles';
 
 const AnimatedCenter = Animated.createAnimatedComponent(Centered);
 const AnimatedShadowStack = Animated.createAnimatedComponent(ShadowStack);

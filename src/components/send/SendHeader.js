@@ -7,8 +7,6 @@ import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withNeverRerender, withSelectedInput } from '../../hoc';
 import { withNavigation } from '../../navigation/Navigation';
-import Routes from '../../navigation/routesNames';
-import { colors, padding } from '../../styles';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import Divider from '../Divider';
 import { AddContactButton, PasteAddressButton } from '../buttons';
@@ -16,6 +14,8 @@ import { AddressField } from '../fields';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Label } from '../text';
+import Routes from '@rainbow-me/routes';
+import { colors, padding } from '@rainbow-me/styles';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   ${padding(19, 15)}

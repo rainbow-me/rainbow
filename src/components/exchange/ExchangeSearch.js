@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
-import { colors, margin, padding } from '../../styles';
 import { Icon } from '../icons';
 import { ClearInputDecorator, Input } from '../inputs';
 import { InnerBorder, Row } from '../layout';
+import { colors, margin, padding } from '@rainbow-me/styles';
 
 export const ExchangeSearchHeight = 40;
 

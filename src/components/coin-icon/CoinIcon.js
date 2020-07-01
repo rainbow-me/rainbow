@@ -1,10 +1,10 @@
 import React, { Fragment } from 'react';
 import ReactCoinIcon from 'react-coin-icon';
 import ShadowStack from 'react-native-shadow-stack';
-import { borders, colors } from '../../styles';
 import { magicMemo } from '../../utils';
 import CoinIconFallback from './CoinIconFallback';
 import CoinIconIndicator from './CoinIconIndicator';
+import { borders, colors } from '@rainbow-me/styles';
 
 export const CoinIconSize = 40;
 

@@ -10,7 +10,6 @@ import {
   withEditOptions,
   withOpenBalances,
 } from '../../hoc';
-import { colors } from '../../styles';
 import { isNewValueForObjectPaths, isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Column, FlexItem } from '../layout';
@@ -19,6 +18,7 @@ import BottomRowText from './BottomRowText';
 import CoinCheckButton from './CoinCheckButton';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import { colors } from '@rainbow-me/styles';
 
 const editTranslateOffset = 32;
 const AssetSheetHeight = 400;

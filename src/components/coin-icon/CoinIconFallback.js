@@ -3,9 +3,9 @@ import { FallbackIcon } from 'react-coin-icon';
 import FastImage from 'react-native-fast-image';
 import styled, { css } from 'styled-components/primitives';
 import { toChecksumAddress } from '../../handlers/web3';
-import { colors, fonts, position } from '../../styles';
 import { pseudoRandomArrayItemFromString } from '../../utils';
 import { Centered } from '../layout';
+import { colors, fonts, position } from '@rainbow-me/styles';
 
 const fallbackTextStyles = css`
   font-family: ${fonts.family.SFProRounded};

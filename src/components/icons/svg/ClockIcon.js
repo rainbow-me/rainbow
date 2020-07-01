@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Circle, G, Path } from 'react-native-svg';
-import { colors } from '../../../styles';
 import Svg from '../Svg';
+import { colors } from '@rainbow-me/styles';
 
 const ClockIcon = ({ color, ...props }) => (
   <Svg viewBox="0 0 30 30" {...props}>

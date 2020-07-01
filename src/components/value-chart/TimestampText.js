@@ -1,6 +1,6 @@
 import styled from 'styled-components/primitives';
-import { colors } from '../../styles';
 import { Text } from '../text';
+import { colors } from '@rainbow-me/styles';
 
 const TimestampText = styled(Text).attrs({
   align: 'center',

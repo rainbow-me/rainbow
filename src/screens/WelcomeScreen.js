@@ -14,7 +14,7 @@ import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { Emoji, Text } from '../components/text';
 import useHideSplashScreen from '../helpers/hideSplashScreen';
-import { colors, shadow } from '../styles';
+import { colors, shadow } from '@rainbow-me/styles';
 
 const {
   and,

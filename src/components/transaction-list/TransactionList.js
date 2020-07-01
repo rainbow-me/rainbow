@@ -11,12 +11,12 @@ import useExperimentalFlag, {
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { useAccountProfile } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../navigation/routesNames';
 import { removeRequest } from '../../redux/requests';
-import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { FloatingEmojis } from '../floating-emojis';
+import Routes from '@rainbow-me/routes';
+import { colors } from '@rainbow-me/styles';
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
 const Container = styled.View`

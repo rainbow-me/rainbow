@@ -11,7 +11,8 @@ import {
 } from '../handlers/localstorage/walletBalances';
 import { contactsLoadState } from '../redux/contacts';
 import { settingsLoadState } from '../redux/settings';
-import { logger, promiseUtils } from '../utils';
+import { promiseUtils } from '../utils';
+import logger from 'logger';
 
 const loadTopMoversToCache = () =>
   queryCache.prefetchQuery(TOP_MOVERS_FROM_STORAGE, getTopMovers);

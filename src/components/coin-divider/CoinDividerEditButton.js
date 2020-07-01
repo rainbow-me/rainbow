@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
 import { LayoutAnimation } from 'react-native';
 import styled from 'styled-components/primitives';
-import { colors, padding, shadow } from '../../styles';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';
+import { colors, padding, shadow } from '@rainbow-me/styles';
 
 const ButtonContent = styled(Row).attrs({
   justify: 'center',

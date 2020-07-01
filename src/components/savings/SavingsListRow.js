@@ -13,14 +13,14 @@ import {
 } from '../../helpers/savings';
 import { useDimensions } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../navigation/routesNames';
-import { colors, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, Row } from '../layout';
 import APYPill from './APYPill';
 import SavingsListRowAnimatedNumber from './SavingsListRowAnimatedNumber';
 import SavingsListRowEmptyState from './SavingsListRowEmptyState';
+import Routes from '@rainbow-me/routes';
+import { colors, padding, position } from '@rainbow-me/styles';
 
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
 const ANIMATE_NUMBER_INTERVAL = 60;

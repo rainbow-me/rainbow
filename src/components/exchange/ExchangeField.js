@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react';
 import { Platform, TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
-import { colors } from '../../styles';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
+import { colors } from '@rainbow-me/styles';
 
 const CoinSize = 40;
 const ExchangeFieldHeight = Platform.OS === 'android' ? 64 : 40;

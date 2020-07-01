@@ -14,8 +14,8 @@ import { Text, TruncatedAddress } from '../components/text';
 import { CopyToast, ToastPositionContainer } from '../components/toasts';
 import { useAccountProfile } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
-import { colors, padding, shadow } from '../styles';
 import { abbreviations } from '../utils';
+import { colors, padding, shadow } from '@rainbow-me/styles';
 
 const QRCodeSize = Platform.OS === 'ios' ? 250 : 190;
 

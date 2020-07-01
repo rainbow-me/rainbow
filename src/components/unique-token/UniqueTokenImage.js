@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import { buildUniqueTokenName } from '../../helpers/assets';
-import { colors, position } from '../../styles';
 import { magicMemo } from '../../utils';
 import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
 import { Centered } from '../layout';
 import { Monospace } from '../text';
+import { colors, position } from '@rainbow-me/styles';
 
 const FallbackTextColorVariants = {
   dark: colors.alpha(colors.blueGreyDark, 0.5),

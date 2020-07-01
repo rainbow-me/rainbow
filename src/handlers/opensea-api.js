@@ -1,7 +1,7 @@
 import axios from 'axios';
 import NetworkTypes from '../helpers/networkTypes';
 import { parseAccountUniqueTokens } from '../parsers/uniqueTokens';
-import { logger } from '../utils';
+import logger from 'logger';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
 export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { colors } from '../../styles';
+import { colors } from '@rainbow-me/styles';
 
 const ListFooterHeight = 27;
 

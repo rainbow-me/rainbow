@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { withHandlers } from 'recompact';
 import styled from 'styled-components';
-import { colors, position } from '../../styles';
 import Icon from '../icons/Icon';
 import { Centered } from '../layout';
 import { ListItem } from '../list';
+import { colors, position } from '@rainbow-me/styles';
 
 const CheckmarkSize = 20;
 

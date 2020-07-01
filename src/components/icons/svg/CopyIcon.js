@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
-import { colors } from '../../../styles';
 import Svg from '../Svg';
+import { colors } from '@rainbow-me/styles';
 
 const CopyIcon = ({ color, ...props }) => (
   <Svg fill="none" height="16" width="16" viewBox="0 0 16 16" {...props}>

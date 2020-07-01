@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/native';
 import AssetInputTypes from '../../helpers/assetInputTypes';
-import { colors } from '../../styles';
 import { magicMemo } from '../../utils';
 import { BalanceCoinRow } from '../coin-row';
 import { ColumnWithDividers } from '../layout';
@@ -16,6 +15,7 @@ import {
 
 // import Chart from '../value-chart/Chart';
 import TemporaryChartPlaceholder from '../value-chart/TemporaryChartPlaceholder';
+import { colors } from '@rainbow-me/styles';
 
 const Whitespace = styled.View`
   background-color: ${colors.white};

@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Linking } from 'react-native';
 import { compose, pure, withHandlers } from 'recompact';
-import { colors, padding } from '../../styles';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const WalletConnectLearnMoreButton = ({ onPressLearnMore }) => (
   <Row align="start">

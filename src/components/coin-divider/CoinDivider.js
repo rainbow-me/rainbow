@@ -7,11 +7,11 @@ import {
   useDimensions,
   useOpenSmallBalances,
 } from '../../hooks';
-import { colors, padding } from '../../styles';
 import { Row, RowWithMargins } from '../layout';
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
+import { colors, padding } from '@rainbow-me/styles';
 
 export const CoinDividerHeight = 30;
 

@@ -39,12 +39,13 @@ import {
   useUniswapMarketDetails,
 } from '../hooks';
 import { loadWallet } from '../model/wallet';
-import Routes from '../navigation/routesNames';
 import { executeRap } from '../raps/common';
 import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
-import { colors, position } from '../styles';
-import { backgroundTask, isNewValueForPath, logger } from '../utils';
+import { backgroundTask, isNewValueForPath } from '../utils';
+import Routes from '@rainbow-me/routes';
+import { colors, position } from '@rainbow-me/styles';
+import logger from 'logger';
 
 export const exchangeModalBorderRadius = 30;
 

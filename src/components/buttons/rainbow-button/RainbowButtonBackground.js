@@ -3,9 +3,9 @@ import React, { Fragment } from 'react';
 import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
-import { colors, margin } from '../../../styles';
 import { magicMemo } from '../../../utils';
 import RainbowButtonTypes from './RainbowButtonTypes';
+import { colors, margin } from '@rainbow-me/styles';
 
 const RainbowGradientColors = {
   inner: {

@@ -3,11 +3,11 @@ import LinearGradient from 'react-native-linear-gradient';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../navigation/routesNames';
-import { colors, padding, position } from '../../styles';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import HeaderButton from './HeaderButton';
+import Routes from '@rainbow-me/routes';
+import { colors, padding, position } from '@rainbow-me/styles';
 
 const DiscoverButtonShadows = [
   [0, 7, 21, colors.dark, 0.06],

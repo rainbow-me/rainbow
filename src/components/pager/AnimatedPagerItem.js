@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Animated, StyleSheet } from 'react-native';
-import { position } from '../../styles';
 import { FlexItem } from '../layout';
+import { position } from '@rainbow-me/styles';
 
 const styles = StyleSheet.create({
   item: {

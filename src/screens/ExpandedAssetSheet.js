@@ -11,7 +11,7 @@ import {
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import { useAsset } from '../hooks';
-import { position } from '../styles';
+import { position } from '@rainbow-me/styles';
 
 const ScreenTypes = {
   token: ChartExpandedState,

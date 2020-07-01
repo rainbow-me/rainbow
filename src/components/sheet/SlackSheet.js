@@ -2,11 +2,11 @@ import React, { useMemo } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
-import { borders, colors } from '../../styles';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, {
   SheetHandleFixedToTopHeight,
 } from './SheetHandleFixedToTop';
+import { borders, colors } from '@rainbow-me/styles';
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   ${({ radius }) => borders.buildRadius('top', radius)};

@@ -7,14 +7,14 @@ import styled from 'styled-components/primitives';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { useAccountSettings, useOpenInvestmentCards } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../navigation/routesNames';
-import { colors, padding } from '../../styles';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { ColumnWithMargins, Row } from '../layout';
 import { Text } from '../text';
 import InvestmentCard from './InvestmentCard';
 import InvestmentCardPill from './InvestmentCardPill';
+import Routes from '@rainbow-me/routes';
+import { colors, padding } from '@rainbow-me/styles';
 
 const UniswapInvestmentCardHeight = 114;
 

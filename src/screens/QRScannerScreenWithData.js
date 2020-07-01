@@ -17,10 +17,10 @@ import {
 } from '../hoc';
 import { checkPushNotificationPermissions } from '../model/firebase';
 import { withNavigationFocus } from '../navigation/Navigation';
-import Routes from '../navigation/routesNames';
 import store from '../redux/store';
 import { addressUtils } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
+import Routes from '@rainbow-me/routes';
 
 class QRScannerScreenWithData extends Component {
   static propTypes = {

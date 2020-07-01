@@ -6,6 +6,9 @@ module.exports = function(api) {
       'babel-plugin-module-resolver',
       {
         alias: {
+          '@rainbow-me/routes': './src/navigation/routesNames',
+          '@rainbow-me/styles': './src/styles',
+          'logger': './src/utils/logger',
           'react-native-cool-modals': './src/react-native-cool-modals',
         },
         root: ['./src'],

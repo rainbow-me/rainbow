@@ -32,9 +32,9 @@ import {
 } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/effects';
-import Routes from '../navigation/routesNames';
-import { borders, colors, padding, shadow } from '../styles';
-import { logger } from '../utils';
+import Routes from '@rainbow-me/routes';
+import { borders, colors, padding, shadow } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const keyboardVerticalOffset =
   Platform.OS === 'android'

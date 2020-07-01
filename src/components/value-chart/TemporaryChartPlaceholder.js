@@ -2,10 +2,10 @@ import { get } from 'lodash';
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { greaterThan, toFixedDecimals } from '../../helpers/utilities';
-import { colors, padding } from '../../styles';
 import { Icon } from '../icons';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const Container = styled(Row).attrs({
   align: 'center',

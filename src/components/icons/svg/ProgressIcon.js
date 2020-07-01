@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import { G, Path } from 'react-native-svg';
-import { colors, position } from '../../../styles';
 import { Centered } from '../../layout';
 import Svg from '../Svg';
+import { colors, position } from '@rainbow-me/styles';
 
 const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 

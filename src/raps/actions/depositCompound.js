@@ -14,7 +14,8 @@ import {
   ethUnits,
   savingsAssetsListByUnderlying,
 } from '../../references';
-import { gasUtils, logger } from '../../utils';
+import { gasUtils } from '../../utils';
+import logger from 'logger';
 
 const NOOP = () => undefined;
 

@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Dimensions, InteractionManager, StyleSheet } from 'react-native';
 import ReactNativeQRCodeScanner from 'react-native-qrcode-scanner';
-import { position } from '../../styles';
-import { logger } from '../../utils';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
+import { position } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const sx = StyleSheet.create({
   disableSection: {

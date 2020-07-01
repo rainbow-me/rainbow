@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Fragment, useMemo, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import { colors } from '../../styles';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { Text, TruncatedText } from '../text';
+import { colors } from '@rainbow-me/styles';
 
 const Subtitle = props => (
   <TruncatedText

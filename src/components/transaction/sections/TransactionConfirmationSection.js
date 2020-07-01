@@ -2,12 +2,12 @@ import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { colors, fonts, padding } from '../../../styles';
 import { CoinIcon } from '../../coin-icon';
 import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import { Nbsp, Text, TruncatedAddress, TruncatedText } from '../../text';
 import TransactionRow from '../TransactionRow';
 import TransactionSheet from '../TransactionSheet';
+import { colors, fonts, padding } from '@rainbow-me/styles';
 
 const Amount = styled(TruncatedText).attrs({
   color: colors.alpha(colors.blueGreyDark, 0.6),

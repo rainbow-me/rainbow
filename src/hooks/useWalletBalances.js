@@ -10,8 +10,8 @@ import { web3Provider } from '../handlers/web3';
 import networkInfo from '../helpers/networkInfo';
 import { fromWei, handleSignificantDecimals } from '../helpers/utilities';
 import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
-import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
+import logger from 'logger';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 

@@ -7,8 +7,6 @@ import BiometryTypes from '../../helpers/biometryTypes';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { useBiometryType, useMagicAutofocus } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../navigation/routesNames';
-import { colors, padding } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
 import Divider from '../Divider';
 import TouchableBackdrop from '../TouchableBackdrop';
@@ -22,6 +20,8 @@ import { Text, TruncatedAddress } from '../text';
 import PlaceholderText from '../text/PlaceholderText';
 import FloatingPanels from './FloatingPanels';
 import { AssetPanel } from './asset-panel';
+import Routes from '@rainbow-me/routes';
+import { colors, padding } from '@rainbow-me/styles';
 
 const sx = StyleSheet.create({
   addressAbbreviation: {

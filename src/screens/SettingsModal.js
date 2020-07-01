@@ -16,7 +16,7 @@ import {
   SettingsSection,
 } from '../components/settings-menu';
 import DevSection from '../components/settings-menu/DevSection';
-import { colors } from '../styles';
+import { colors } from '@rainbow-me/styles';
 
 function cardStyleInterpolator({
   current,

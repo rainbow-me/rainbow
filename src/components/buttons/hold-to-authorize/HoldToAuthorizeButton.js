@@ -12,11 +12,11 @@ import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import BiometryTypes from '../../../helpers/biometryTypes';
 import { useBiometryType } from '../../../hooks';
-import { colors, padding } from '../../../styles';
 import { haptics } from '../../../utils';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
 import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
+import { colors, padding } from '@rainbow-me/styles';
 
 const { divide, multiply, proc } = Animated;
 
