@@ -8,21 +8,24 @@ export default function TokenInfoItem({
   align = 'left',
   asset,
   children,
-  color,
   title,
+  weight,
   ...props
 }) {
   return (
     <ColumnWithMargins
+      flex={asset ? 1 : 0}
       justify={align === 'left' ? 'start' : 'end'}
       margin={5}
       {...props}
     >
       <TokenInfoHeading align={align}>{title}</TokenInfoHeading>
       {asset ? (
-        <TokenInfoBalanceValue align={align} color={color} {...asset} />
+        <TokenInfoBalanceValue align={align} asset={asset} />
       ) : (
-        <TokenInfoValue align={align}>{children}</TokenInfoValue>
+        <TokenInfoValue align={align} weight={weight}>
+          {children}
+        </TokenInfoValue>
       )}
     </ColumnWithMargins>
   );

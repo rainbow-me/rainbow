@@ -1,19 +1,14 @@
 import React, { useMemo } from 'react';
+import { useColorForAsset } from '../../hooks';
 import { magicMemo } from '../../utils';
 import { CoinIcon } from '../coin-icon';
 import { RowWithMargins } from '../layout';
 import TokenInfoValue from './TokenInfoValue';
 
-const TokenInfoBalanceValue = ({
-  address,
-  align,
-  balance,
-  color,
-  shadowColor,
-  symbol,
-  value,
-  ...props
-}) => {
+const TokenInfoBalanceValue = ({ align, asset, ...props }) => {
+  const { address, balance, shadowColor, symbol, value } = asset;
+
+  const color = useColorForAsset(asset);
   const coinIconShadow = useMemo(() => [[0, 3, 9, shadowColor || color, 0.2]], [
     color,
     shadowColor,
@@ -24,8 +19,8 @@ const TokenInfoBalanceValue = ({
       {...props}
       align="center"
       direction={align === 'left' ? 'row' : 'row-reverse'}
-      marginKey={align === 'left' ? 'marginRight' : 'marginLeft'}
       margin={5}
+      marginKey={align === 'left' ? 'marginRight' : 'marginLeft'}
     >
       <CoinIcon
         address={address}
@@ -38,4 +33,4 @@ const TokenInfoBalanceValue = ({
   );
 };
 
-export default magicMemo(TokenInfoBalanceValue, ['balance.display', 'value']);
+export default magicMemo(TokenInfoBalanceValue, 'asset');

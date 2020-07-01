@@ -3,10 +3,10 @@ import { colors } from '../../styles';
 import { TruncatedText } from '../text';
 
 const TokenInfoValue = styled(TruncatedText).attrs(
-  ({ color = colors.dark }) => ({
+  ({ color = colors.dark, weight = 'semibold' }) => ({
     color,
     size: 'larger',
-    weight: 'semibold',
+    weight,
   })
 )``;
 

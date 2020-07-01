@@ -2,10 +2,12 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { FallbackIcon } from 'react-coin-icon';
 import styled from 'styled-components/primitives';
 import { useImageMetadata } from '../../hooks';
-import { pseudoRandomArrayItemFromString } from '../../utils';
+import {
+  getUrlForTrustIconFallback,
+  pseudoRandomArrayItemFromString,
+} from '../../utils';
 import ImageWithCachedMetadata from '../ImageWithCachedMetadata';
 import { Centered } from '../layout';
-import getUrlForTrustIconFallback from './getUrlForTrustIconFallback';
 import { colors, fonts, position } from '@rainbow-me/styles';
 
 const fallbackTextStyles = `

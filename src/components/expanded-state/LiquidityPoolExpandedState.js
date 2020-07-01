@@ -41,7 +41,7 @@ const LiquidityPoolExpandedState = ({
 
   return (
     <SlackSheet scrollEnabled={false}>
-      <LiquidityPoolExpandedStateHeader {...tokenAsset} />
+      <LiquidityPoolExpandedStateHeader asset={tokenAsset} />
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>
@@ -63,8 +63,8 @@ const LiquidityPoolExpandedState = ({
         </TokenInfoRow>
       </TokenInfoSection>
       <SheetActionButtonRow>
-        <DepositActionButton />
-        <WithdrawActionButton />
+        <DepositActionButton symbol={tokenAsset.symbol} />
+        <WithdrawActionButton symbol={tokenAsset.symbol} />
       </SheetActionButtonRow>
     </SlackSheet>
   );

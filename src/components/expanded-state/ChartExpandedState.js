@@ -1,11 +1,9 @@
-import React, { useMemo, useState } from 'react';
-import styled from 'styled-components/primitives';
+import React, { useState } from 'react';
 import { chartExpandedAvailable } from '../../config/experimental';
 import AssetInputTypes from '../../helpers/assetInputTypes';
 import { greaterThan } from '../../helpers/utilities';
-import { useImageMetadata } from '../../hooks';
-import { magicMemo, pseudoRandomArrayItemFromString } from '../../utils';
-import { getUrlForTrustIconFallback } from '../coin-icon';
+import { useColorForAsset } from '../../hooks';
+import { magicMemo } from '../../utils';
 import {
   SendActionButton,
   SheetActionButtonRow,
@@ -13,7 +11,6 @@ import {
   SlackSheet,
   SwapActionButton,
 } from '../sheet';
-import { EmDash } from '../text';
 import {
   TokenInfoBalanceValue,
   TokenInfoItem,
@@ -23,25 +20,6 @@ import {
 import Chart from '../value-chart/Chart';
 import { ChartExpandedStateHeader } from './chart';
 import { colors } from '@rainbow-me/styles';
-
-const Whitespace = styled.View`
-  background-color: ${colors.white};
-  flex: 1;
-  height: 300;
-`;
-
-function useColorForAsset({ address, color, symbol }) {
-  const fallbackUrl = getUrlForTrustIconFallback(address);
-  const { color: fallbackColor } = useImageMetadata(fallbackUrl);
-
-  return useMemo(
-    () =>
-      color ||
-      fallbackColor ||
-      pseudoRandomArrayItemFromString(symbol, colors.avatarColor),
-    [color, fallbackColor, symbol]
-  );
-}
 
 const ChartExpandedState = ({ asset }) => {
   const [chartPrice, setChartPrice] = useState(0);
@@ -73,19 +51,20 @@ const ChartExpandedState = ({ asset }) => {
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>
-          <TokenInfoItem asset={asset} color={color} title="Balance">
+          <TokenInfoItem asset={asset} title="Balance">
             <TokenInfoBalanceValue />
           </TokenInfoItem>
-          <TokenInfoItem title="Value">
-            {asset?.native?.balance.display || <EmDash />}
-          </TokenInfoItem>
+          {asset?.native?.price.display && (
+            <TokenInfoItem title="Value" weight="bold">
+              {asset?.native?.balance.display}
+            </TokenInfoItem>
+          )}
         </TokenInfoRow>
       </TokenInfoSection>
       <SheetActionButtonRow>
         <SwapActionButton color={color} inputType={AssetInputTypes.in} />
         <SendActionButton color={color} />
       </SheetActionButtonRow>
-      <Whitespace />
     </SlackSheet>
   );
 };

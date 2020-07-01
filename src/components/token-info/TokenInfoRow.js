@@ -13,7 +13,7 @@ const Container = styled(Row).attrs({
   width: 100%;
 `;
 
-function renderButton(child, index) {
+function renderChild(child, index) {
   if (!child) return null;
 
   return (
@@ -26,7 +26,7 @@ function renderButton(child, index) {
 export default function TokenInfoRow({ children, ...props }) {
   return (
     <Container {...props}>
-      {Children.toArray(children).map(renderButton)}
+      {Children.toArray(children).map(renderChild)}
     </Container>
   );
 }

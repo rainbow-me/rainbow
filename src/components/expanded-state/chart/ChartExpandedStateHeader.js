@@ -2,7 +2,10 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import EditOptions from '../../../helpers/editOptionTypes';
-import { toFixedDecimals } from '../../../helpers/utilities';
+import {
+  convertAmountToNativeDisplay,
+  toFixedDecimals,
+} from '../../../helpers/utilities';
 import { useAccountSettings, useCoinListEditOptions } from '../../../hooks';
 import { colors, padding } from '../../../styles';
 import { magicMemo } from '../../../utils';
@@ -48,17 +51,23 @@ const ChartExpandedStateHeader = ({
   symbol,
   uniqueId,
 }) => {
-  const { nativeCurrencySymbol } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
   const {
+    clearSelectedCoins,
     currentAction,
     pushSelectedCoin,
     setHiddenCoins,
     setPinnedCoins,
   } = useCoinListEditOptions();
 
+  // Ensure this expanded state's asset is always actively inside
+  // the CoinListEditOptions selection queue
   useEffect(() => {
     pushSelectedCoin(uniqueId);
   }, [currentAction, pushSelectedCoin, uniqueId]);
+
+  // Clear CoinListEditOptions selection queue on unmount.
+  useEffect(() => () => clearSelectedCoins(), [clearSelectedCoins]);
 
   const coinIconShadow = useMemo(
     () => [[0, 4, 12, shadowColor || color, 0.3]],
@@ -79,12 +88,13 @@ const ChartExpandedStateHeader = ({
     [change]
   );
 
-  const formattedPrice = useMemo(() => {
-    const decimals = ((latestPrice || '').split('.')[1] || []).length;
-    return chartPrice
-      ? `${nativeCurrencySymbol}${chartPrice.toFixed(decimals)}`
-      : latestPrice;
-  }, [chartPrice, latestPrice, nativeCurrencySymbol]);
+  const formattedPrice = useMemo(
+    () =>
+      chartPrice
+        ? convertAmountToNativeDisplay(chartPrice, nativeCurrency)
+        : latestPrice,
+    [chartPrice, latestPrice, nativeCurrency]
+  );
 
   const handleActionSheetPress = useCallback(
     buttonIndex => {
@@ -99,6 +109,8 @@ const ChartExpandedStateHeader = ({
     [setHiddenCoins, setPinnedCoins]
   );
 
+  const isNoPriceData = formattedPrice === noPriceData;
+
   return (
     <Container>
       <Row align="center" justify="space-between">
@@ -111,11 +123,11 @@ const ChartExpandedStateHeader = ({
         />
       </Row>
       <Row align="center" justify="space-between">
-        <ColumnWithMargins align="start" margin={4}>
-          <Title>{name}</Title>
-          <Subtitle>{formattedPrice}</Subtitle>
+        <ColumnWithMargins align="start" flex={1} margin={4}>
+          <Title>{isNoPriceData ? name : formattedPrice}</Title>
+          <Subtitle>{isNoPriceData ? formattedPrice : name}</Subtitle>
         </ColumnWithMargins>
-        {formattedPrice !== noPriceData && (
+        {!isNoPriceData && (
           <ColumnWithMargins align="end" margin={4}>
             <RowWithMargins align="center" margin={4}>
               <Icon
@@ -134,4 +146,9 @@ const ChartExpandedStateHeader = ({
   );
 };
 
-export default magicMemo(ChartExpandedStateHeader, 'chartPrice');
+export default magicMemo(ChartExpandedStateHeader, [
+  'chartPrice',
+  'color',
+  'latestPrice',
+  'shadowColor',
+]);

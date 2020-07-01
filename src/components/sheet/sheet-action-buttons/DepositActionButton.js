@@ -1,28 +1,28 @@
-import React from 'react';
+import analytics from '@segment/analytics-react-native';
+import React, { useCallback } from 'react';
 import { colors } from '../../../styles';
 import { neverRerender } from '../../../utils';
-import {
-  FloatingEmojis,
-  FloatingEmojisTapHandler,
-} from '../../floating-emojis';
+import { ComingSoonFloatingEmojis } from '../../floating-emojis';
 import SheetActionButton from './SheetActionButton';
 
-const emojis = ['soon', 'soon', 'soon', 'soon', 'unicorn', 'soon', 'rainbow'];
+function DepositActionButton({ color = colors.dark, symbol, ...props }) {
+  const handlePress = useCallback(() => {
+    analytics.track('Tapped placeholder Deposit button', {
+      category: 'liquidity pool',
+      label: symbol,
+    });
+  }, [symbol]);
 
-const DepositActionButton = ({ color = colors.dark, ...props }) => (
-  <FloatingEmojis
-    distance={350}
-    duration={2000}
-    emojis={emojis}
-    size={36}
-    wiggleFactor={0}
-  >
-    {({ onNewEmoji }) => (
-      <FloatingEmojisTapHandler onNewEmoji={onNewEmoji}>
-        <SheetActionButton {...props} color={color} label="􀁍 Deposit" />
-      </FloatingEmojisTapHandler>
-    )}
-  </FloatingEmojis>
-);
+  return (
+    <ComingSoonFloatingEmojis>
+      <SheetActionButton
+        {...props}
+        color={color}
+        label="􀁍 Deposit"
+        onPress={handlePress}
+      />
+    </ComingSoonFloatingEmojis>
+  );
+}
 
 export default neverRerender(DepositActionButton);

@@ -1,4 +1,4 @@
-import { toChecksumAddress } from '../../handlers/web3';
+import { toChecksumAddress } from '../handlers/web3';
 
 export default function getUrlForTrustIconFallback(address) {
   const checksummedAddress = toChecksumAddress(address);

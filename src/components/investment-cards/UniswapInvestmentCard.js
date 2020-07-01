@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/native';
 import { floor } from 'lodash';
-
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components/primitives';
@@ -16,6 +15,7 @@ import InvestmentCardPill from './InvestmentCardPill';
 import Routes from '@rainbow-me/routes';
 import { colors, padding } from '@rainbow-me/styles';
 
+const AssetSheetHeight = 400;
 const UniswapInvestmentCardHeight = 114;
 
 const gradientColors = [
@@ -44,6 +44,7 @@ const UniswapInvestmentCard = ({
   const handleOpenExpandedState = useCallback(() => {
     navigate(Routes.EXPANDED_ASSET_SHEET, {
       asset: item,
+      longFormHeight: AssetSheetHeight,
       type: assetType,
     });
   }, [assetType, item, navigate]);

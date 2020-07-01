@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import styled from 'styled-components/primitives';
-import { tokenOverrides } from '../../../references';
+import { useColorForAsset } from '../../../hooks';
 import { colors, padding } from '../../../styles';
+import { magicMemo } from '../../../utils';
 import { CoinIcon, CoinIconSize } from '../../coin-icon';
 import { ColumnWithMargins, Row } from '../../layout';
 import { TruncatedText } from '../../text';
@@ -28,12 +29,10 @@ const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
   weight: 'bold',
 }))``;
 
-export default function LiquidityPoolExpandedStateHeader({ address, symbol }) {
-  const { color = colors.dark, shadowColor } = useMemo(
-    () => tokenOverrides[address.toLowerCase()] || {},
-    [address]
-  );
+function LiquidityPoolExpandedStateHeader({ asset }) {
+  const { address, shadowColor, symbol } = asset;
 
+  const color = useColorForAsset(asset);
   const coinIconShadow = useMemo(
     () => [[0, 4, 12, shadowColor || color, 0.3]],
     [color, shadowColor]
@@ -53,3 +52,5 @@ export default function LiquidityPoolExpandedStateHeader({ address, symbol }) {
     </Container>
   );
 }
+
+export default magicMemo(LiquidityPoolExpandedStateHeader, 'asset');
