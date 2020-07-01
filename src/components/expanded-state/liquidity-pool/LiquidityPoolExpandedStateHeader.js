@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import { useColorForAsset } from '../../../hooks';
-import { colors, padding } from '../../../styles';
 import { magicMemo } from '../../../utils';
 import { CoinIcon, CoinIconSize } from '../../coin-icon';
 import { ColumnWithMargins, Row } from '../../layout';
 import { TruncatedText } from '../../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,

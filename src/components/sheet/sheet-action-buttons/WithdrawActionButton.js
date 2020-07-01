@@ -1,9 +1,9 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useState } from 'react';
-import { colors } from '../../../styles';
 import { neverRerender } from '../../../utils';
 import { ComingSoonFloatingEmojis } from '../../floating-emojis';
 import SheetActionButton from './SheetActionButton';
+import { colors } from '@rainbow-me/styles';
 
 function WithdrawActionButton({ color = colors.white, symbol, ...props }) {
   const [didTrack, setDidTrack] = useState(false);

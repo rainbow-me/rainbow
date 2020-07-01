@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { padding } from '../../styles';
 import { neverRerender } from '../../utils';
 import { Centered } from '../layout';
 import SheetHandle, { HandleHeight } from './SheetHandle';
+import { padding } from '@rainbow-me/styles';
 
 const paddingBottom = 8;
 const paddingTop = 6;

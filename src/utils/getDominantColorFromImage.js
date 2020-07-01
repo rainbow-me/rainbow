@@ -1,6 +1,6 @@
 import chroma from 'chroma-js';
 import { getColorFromURL } from 'rn-dominant-color';
-import { colors } from '../styles';
+import { colors } from '@rainbow-me/styles';
 
 // WCAG specification which states that a
 // contrast ratio of at least 4.5:1 should

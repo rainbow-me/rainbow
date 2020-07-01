@@ -7,13 +7,13 @@ import {
   toFixedDecimals,
 } from '../../../helpers/utilities';
 import { useAccountSettings, useCoinListEditOptions } from '../../../hooks';
-import { colors, padding } from '../../../styles';
 import { magicMemo } from '../../../utils';
 import { CoinIcon } from '../../coin-icon';
 import { ContextCircleButton } from '../../context-menu';
 import { Icon } from '../../icons';
 import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import { TruncatedText } from '../../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const noPriceData = 'No price data';
 

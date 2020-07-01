@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
-import { colors } from '../../styles';
 import { magicMemo } from '../../utils';
 import JellySelectorItem from './JellySelectorItem';
 import JellySelectorRow from './JellySelectorRow';
@@ -11,6 +10,7 @@ import {
   JellySelectorColorIndicator,
   JellySelectorIndicator,
 } from './jelly-selector-indicator';
+import { colors } from '@rainbow-me/styles';
 
 const springTo = (node, toValue) =>
   // eslint-disable-next-line import/no-named-as-default-member
