@@ -60,14 +60,14 @@ const ChartExpandedStateHeader = ({
     setPinnedCoins,
   } = useCoinListEditOptions();
 
-  // Ensure this expanded state's asset is always actively inside
-  // the CoinListEditOptions selection queue
   useEffect(() => {
+    // Ensure this expanded state's asset is always actively inside
+    // the CoinListEditOptions selection queue
     pushSelectedCoin(uniqueId);
-  }, [currentAction, pushSelectedCoin, uniqueId]);
 
-  // Clear CoinListEditOptions selection queue on unmount.
-  useEffect(() => () => clearSelectedCoins(), [clearSelectedCoins]);
+    // Clear CoinListEditOptions selection queue on unmount.
+    return () => clearSelectedCoins();
+  }, [clearSelectedCoins, currentAction, pushSelectedCoin, uniqueId]);
 
   const coinIconShadow = useMemo(
     () => [[0, 4, 12, shadowColor || color, 0.3]],

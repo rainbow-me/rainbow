@@ -50,16 +50,6 @@ export default function CoinDivider({
   onEndEdit,
 }) {
   const { width: deviceWidth } = useDimensions();
-  const {
-    isSmallBalancesOpen,
-    toggleOpenSmallBalances,
-  } = useOpenSmallBalances();
-
-  const initialOpenState = useRef();
-  useEffect(() => {
-    initialOpenState.current = isSmallBalancesOpen;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const {
     clearSelectedCoins,
@@ -70,8 +60,21 @@ export default function CoinDivider({
     setPinnedCoins,
   } = useCoinListEditOptions();
 
-  // Clear CoinListEditOptions selection queue on unmount.
-  useEffect(() => () => clearSelectedCoins(), [clearSelectedCoins]);
+  const {
+    isSmallBalancesOpen,
+    toggleOpenSmallBalances,
+  } = useOpenSmallBalances();
+
+  const initialOpenState = useRef();
+
+  useEffect(() => {
+    initialOpenState.current = isSmallBalancesOpen;
+
+    // Clear CoinListEditOptions selection queue on unmount.
+    return () => clearSelectedCoins();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clearSelectedCoins]);
 
   const handlePressEdit = useCallback(() => {
     if (isCoinListEdited && onEndEdit) {
