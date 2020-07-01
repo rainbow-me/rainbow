@@ -10,7 +10,7 @@ const CHARTS_LOAD_FAILURE = 'charts/CHARTS_LOAD_FAILURE';
 const CHARTS_UPDATE = 'charts/CHARTS_UPDATE';
 const CHARTS_CLEAR_STATE = 'charts/CHARTS_CLEAR_STATE';
 
-const DEFAULT_CHART_TYPE = ChartTypes.year;
+export const DEFAULT_CHART_TYPE = ChartTypes.year;
 
 // -- Actions ---------------------------------------- //
 export const chartsLoadState = () => async (dispatch, getState) => {

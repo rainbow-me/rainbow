@@ -10,6 +10,7 @@ import {
   WALLET_BALANCES_FROM_STORAGE,
 } from '../handlers/localstorage/walletBalances';
 import { contactsLoadState } from '../redux/contacts';
+import { imageMetadataCacheLoadState } from '../redux/imageMetadata';
 import { settingsLoadState } from '../redux/settings';
 import { promiseUtils } from '../utils';
 import logger from 'logger';
@@ -30,7 +31,8 @@ export default function useLoadGlobalData() {
     const p2 = dispatch(contactsLoadState());
     const p3 = loadTopMoversToCache();
     const p4 = loadWalletBalanceNamesToCache();
-    promises.push(p1, p2, p3, p4);
+    const p5 = dispatch(imageMetadataCacheLoadState());
+    promises.push(p1, p2, p3, p4, p5);
 
     return promiseUtils.PromiseAllWithFails(promises);
   }, [dispatch]);

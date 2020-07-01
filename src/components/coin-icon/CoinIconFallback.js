@@ -1,49 +1,46 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { FallbackIcon } from 'react-coin-icon';
-import FastImage from 'react-native-fast-image';
-import styled, { css } from 'styled-components/primitives';
-import { toChecksumAddress } from '../../handlers/web3';
-import { pseudoRandomArrayItemFromString } from '../../utils';
+import styled from 'styled-components/primitives';
+import { useImageMetadata } from '../../hooks';
+import {
+  getUrlForTrustIconFallback,
+  pseudoRandomArrayItemFromString,
+} from '../../utils';
+import ImageWithCachedMetadata from '../ImageWithCachedMetadata';
 import { Centered } from '../layout';
 import { colors, fonts, position } from '@rainbow-me/styles';
 
-const fallbackTextStyles = css`
+const fallbackTextStyles = `
   font-family: ${fonts.family.SFProRounded};
   letter-spacing: ${fonts.letterSpacing.roundedTight};
   margin-bottom: 1;
   text-align: center;
 `;
 
-const FallbackImage = styled(FastImage)`
+const FallbackImage = styled(ImageWithCachedMetadata)`
   ${position.cover};
-  background-color: ${colors.white};
-  opacity: ${({ showFallbackImage }) => (showFallbackImage ? 1 : 0)};
+  background-color: ${({ showFallbackImage }) =>
+    showFallbackImage ? colors.white : colors.transparent};
 `;
-
-const getFallbackIconUrl = address => {
-  const checksummedAddress = toChecksumAddress(address);
-  return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${checksummedAddress}/logo.png`;
-};
 
 const CoinIconFallback = fallbackProps => {
   const { bgColor, height, width, address, symbol } = fallbackProps;
 
-  const [showFallbackImage, setShowFallbackImage] = useState(false);
+  const [showFallbackImage, setShowFallbackImage] = useState(true);
   const handleError = useCallback(() => setShowFallbackImage(false), []);
   const handleLoad = useCallback(() => setShowFallbackImage(true), []);
 
+  const imageUrl = useMemo(() => getUrlForTrustIconFallback(address), [
+    address,
+  ]);
+
+  const { color: imageColor } = useImageMetadata(imageUrl);
   const fallbackIconColor = useMemo(
     () =>
-      bgColor || pseudoRandomArrayItemFromString(symbol, colors.avatarColor),
-    [bgColor, symbol]
-  );
-
-  const fallbackImageSource = useMemo(
-    () => ({
-      cache: FastImage.cacheControl.web,
-      uri: getFallbackIconUrl(address),
-    }),
-    [address]
+      imageColor ||
+      bgColor ||
+      pseudoRandomArrayItemFromString(symbol, colors.avatarColor),
+    [bgColor, imageColor, symbol]
   );
 
   return (
@@ -51,16 +48,15 @@ const CoinIconFallback = fallbackProps => {
       <FallbackIcon
         {...fallbackProps}
         bgColor={fallbackIconColor}
-        opacity={showFallbackImage ? 0 : 1}
         symbol={symbol || ''}
         textStyles={fallbackTextStyles}
       />
       <FallbackImage
         {...fallbackProps}
+        imageUrl={imageUrl}
         onError={handleError}
         onLoad={handleLoad}
         showFallbackImage={showFallbackImage}
-        source={fallbackImageSource}
       />
     </Centered>
   );

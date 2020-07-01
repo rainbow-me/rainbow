@@ -6,26 +6,28 @@ import styled from 'styled-components/primitives';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import {
   ChartExpandedState,
-  InvestmentExpandedState,
+  LiquidityPoolExpandedState,
   UniqueTokenExpandedState,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
-import { useAsset } from '../hooks';
+import { useAsset, useDimensions } from '../hooks';
 import { position } from '@rainbow-me/styles';
 
 const ScreenTypes = {
   token: ChartExpandedState,
   unique_token: UniqueTokenExpandedState,
-  uniswap: InvestmentExpandedState,
+  uniswap: LiquidityPoolExpandedState,
 };
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   ${position.cover};
   top: ${({ insets }) => insets.top + 10};
-  ${({ height }) => (height ? `height: ${height + 300}` : null)};
+  ${({ deviceHeight, height }) =>
+    height ? `height: ${height + deviceHeight}` : null};
 `;
 
 export default function ExpandedAssetSheet(props) {
+  const { height: deviceHeight } = useDimensions();
   const insets = useSafeArea();
   const { goBack } = useNavigation();
   const { params } = useRoute();
@@ -33,7 +35,11 @@ export default function ExpandedAssetSheet(props) {
   const selectedAsset = useAsset(params.asset);
 
   return (
-    <Container insets={insets} height={params.longFormHeight}>
+    <Container
+      deviceHeight={deviceHeight}
+      height={params.longFormHeight}
+      insets={insets}
+    >
       <StatusBar barStyle="light-content" />
       <TouchableBackdrop onPress={goBack} />
       {createElement(ScreenTypes[params.type], {

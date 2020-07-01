@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { useDimensions, useImageDimensionsCache } from '../../../hooks';
+import { useDimensions, useImageMetadata } from '../../../hooks';
 import { magicMemo } from '../../../utils';
 import { Centered } from '../../layout';
 import { UniqueTokenImage } from '../../unique-token';
@@ -24,7 +24,7 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
   const { width: deviceWidth } = useDimensions();
 
   const imageUrl = asset.image_preview_url;
-  const { imageDimensions } = useImageDimensionsCache(imageUrl);
+  const { dimensions: imageDimensions } = useImageMetadata(imageUrl);
 
   const maxImageWidth = deviceWidth - paddingHorizontal * 2;
   const maxImageHeight = maxImageWidth * 1.5;

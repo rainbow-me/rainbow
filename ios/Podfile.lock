@@ -1,5 +1,5 @@
 PODS:
-  - Analytics (3.9.0)
+  - Analytics (4.0.2)
   - Base64 (1.1.2)
   - boost-for-react-native (1.63.0)
   - Branch (0.32.0):
@@ -363,17 +363,17 @@ PODS:
   - react-native-branch (5.0.0-beta.1):
     - Branch (= 0.32.0)
     - React
-  - react-native-camera (3.29.0):
+  - react-native-camera (3.31.0):
     - React
-    - react-native-camera/RCT (= 3.29.0)
-    - react-native-camera/RN (= 3.29.0)
-  - react-native-camera/RCT (3.29.0):
+    - react-native-camera/RCT (= 3.31.0)
+    - react-native-camera/RN (= 3.31.0)
+  - react-native-camera/RCT (3.31.0):
     - React
-  - react-native-camera/RN (3.29.0):
+  - react-native-camera/RN (3.31.0):
     - React
   - react-native-mail (4.1.0):
     - React
-  - react-native-netinfo (5.9.2):
+  - react-native-netinfo (5.9.4):
     - React
   - react-native-randombytes (3.5.3):
     - React
@@ -470,19 +470,21 @@ PODS:
     - React
   - RNDeviceInfo (5.3.1):
     - React
+  - RNDominantColor (1.7.0):
+    - React
   - RNFastImage (8.1.5):
     - React
     - SDWebImage (~> 5.0)
     - SDWebImageWebPCoder (~> 0.4.1)
-  - RNFBApp (7.2.1):
+  - RNFBApp (7.3.1):
     - Firebase/CoreOnly (~> 6.25.0)
     - React
-  - RNFBCrashlytics (7.1.5):
+  - RNFBCrashlytics (7.1.7):
     - Crashlytics (~> 3.14.0)
     - Fabric (~> 1.10.2)
     - React
     - RNFBApp
-  - RNFBMessaging (7.1.6):
+  - RNFBMessaging (7.2.1):
     - Firebase/Analytics (~> 6.25.0)
     - Firebase/Messaging (~> 6.25.0)
     - React
@@ -504,7 +506,7 @@ PODS:
     - React
   - RNScreens (2.2.0):
     - React
-  - RNSentry (1.4.5):
+  - RNSentry (1.5.0):
     - React
     - Sentry (~> 5.1.4)
   - RNStoreReview (0.1.5):
@@ -515,15 +517,15 @@ PODS:
     - pop (~> 1.0)
     - React
     - SexyTooltip
-  - SDWebImage (5.8.0):
-    - SDWebImage/Core (= 5.8.0)
-  - SDWebImage/Core (5.8.0)
+  - SDWebImage (5.8.2):
+    - SDWebImage/Core (= 5.8.2)
+  - SDWebImage/Core (5.8.2)
   - SDWebImageWebPCoder (0.4.1):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.5)
-  - Sentry (5.1.4):
-    - Sentry/Core (= 5.1.4)
-  - Sentry/Core (5.1.4)
+  - Sentry (5.1.6):
+    - Sentry/Core (= 5.1.6)
+  - Sentry/Core (5.1.6)
   - SexyTooltip (1.2.7):
     - pop (~> 1.0)
   - Shimmer (1.0.2)
@@ -617,6 +619,7 @@ DEPENDENCIES:
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
+  - RNDominantColor (from `../node_modules/rn-dominant-color`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
@@ -794,6 +797,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/push-notification-ios"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
+  RNDominantColor:
+    :path: "../node_modules/rn-dominant-color"
   RNFastImage:
     :path: "../node_modules/react-native-fast-image"
   RNFBApp:
@@ -843,7 +848,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/osdnk/PanModal
 
 SPEC CHECKSUMS:
-  Analytics: 67cce2129e4b0df5b532bf0c043043f292b32f5f
+  Analytics: 8eb3f744811eabd5eb94d50de1bd33c0369f10ab
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 770a23c04d3f5410cf9231db099a444dd3060784
@@ -903,9 +908,9 @@ SPEC CHECKSUMS:
   react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-branch: ed90b087f2ff6a2f81643ead0b321531877f2e69
-  react-native-camera: 6796b6b2f08402ba226e04ac792327a96ad0fe74
+  react-native-camera: b5c8c7a71feecfdd5b39f0dbbf6b64b957ed55f2
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
-  react-native-netinfo: cb74e17062b2af5a16a4b137f32495f241df1a8e
+  react-native-netinfo: cd479ab1b67cdd1cb1403a99ecdb24190a6dd7ef
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-restart: d19a0f8d053d065fe64cd2baebb6487111c77149
   react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
@@ -932,10 +937,11 @@ SPEC CHECKSUMS:
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNCPushNotificationIOS: 4c97a36dbec42dba411cc35e6dac25e34a805fde
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
+  RNDominantColor: 72126cb96ffedf4bcd564ed00e2e578f5b93e0d6
   RNFastImage: 35ae972d6727c84ee3f5c6897e07f84d0a3445e9
-  RNFBApp: def13f6392e7c9839c938879f065ec0088c4496a
-  RNFBCrashlytics: ce4deb00692924b6c796e438a3c573baf07ed5c8
-  RNFBMessaging: 933b5ffa7612c54843f946c266043220e966f06c
+  RNFBApp: cd70a6c061bc485994e28c7d58ab760538850f0e
+  RNFBCrashlytics: a4aceced113c1d81c6aed885774b7e648fa2f25b
+  RNFBMessaging: d149d0b48f6d6a449afb05876a1466b4e4494280
   RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
@@ -945,13 +951,13 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: 22c5ecf474428766c6b148f96f2ff6155cd7225e
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
-  RNSentry: 0a70359ddacbfb9b1cbbb0971e54065b9f70ac57
+  RNSentry: edba19169f665609fb092ba5eaf4be3c0776f50a
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNTooltips: e13180e4339e2a85daabd09507f62a5a32d3dc8a
-  SDWebImage: 84000f962cbfa70c07f19d2234cbfcf5d779b5dc
+  SDWebImage: f923a89d7344af399ba77b87a523ae747408207a
   SDWebImageWebPCoder: 36f8f47bd9879a8aea6044765c1351120fd8e3a8
-  Sentry: 74f2ad93a20a5567a1badaedf5b3f60b142ad082
+  Sentry: e5796ec31a481474d2f94553213278470f9e302d
   SexyTooltip: e243da5a858c7160141cf35786a4033669d1efca
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SRSRadialGradient: 77bcb1ae812d0c77560e54ed9e52166df032db1d

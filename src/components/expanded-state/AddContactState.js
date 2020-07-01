@@ -11,11 +11,10 @@ import { ButtonPressAnimation } from '../animations';
 import { Button } from '../buttons';
 import { ContactAvatar, showDeleteContactActionSheet } from '../contacts';
 import CopyTooltip from '../copy-tooltip';
+import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { Input } from '../inputs';
 import { Centered, KeyboardFixedOpenLayout } from '../layout';
 import { PlaceholderText, Text, TruncatedAddress } from '../text';
-import FloatingPanels from './FloatingPanels';
-import { AssetPanel } from './asset-panel';
 import { colors, margin, padding } from '@rainbow-me/styles';
 
 const nativeStackAdditionalPadding = 80;

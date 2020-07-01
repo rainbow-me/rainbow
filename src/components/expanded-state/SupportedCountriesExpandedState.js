@@ -6,10 +6,9 @@ import { useDimensions } from '../../hooks';
 import { supportedCountries } from '../../references/wyre';
 import { neverRerender } from '../../utils';
 import { FloatingEmojisTapper } from '../floating-emojis';
+import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import FloatingPanels from './FloatingPanels';
-import { AssetPanel } from './asset-panel';
 import { colors, padding } from '@rainbow-me/styles';
 
 const Panel = styled(FloatingPanels)`

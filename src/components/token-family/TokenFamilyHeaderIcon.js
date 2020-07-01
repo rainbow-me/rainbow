@@ -1,11 +1,9 @@
-import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import { FallbackIcon } from 'react-coin-icon';
 import ShadowStack from 'react-native-shadow-stack';
-import stylePropType from 'react-style-proptype';
 import styled from 'styled-components/primitives';
 import { initials } from '../../utils';
-import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
+import ImageWithCachedMetadata from '../ImageWithCachedMetadata';
 import { Emoji } from '../text';
 import { borders, colors } from '@rainbow-me/styles';
 
@@ -30,36 +28,27 @@ const TokenFamilyHeaderIcon = ({
   isCoinRow,
   style,
 }) => {
-  const imageSource = useMemo(() => ({ uri: familyImage }), [familyImage]);
-  const size = borders.buildCircleAsObject(isCoinRow ? 40 : 32);
+  const circleStyle = useMemo(
+    () => borders.buildCircleAsObject(isCoinRow ? 40 : 32),
+    [isCoinRow]
+  );
 
   return familyName === 'Showcase' ? (
     <TrophyEmoji />
   ) : (
     <ShadowStack
-      {...size}
+      {...circleStyle}
       backgroundColor={familyImage ? colors.white : colors.purpleLight}
       shadows={shadows}
       style={style}
     >
       {familyImage ? (
-        <ImageWithCachedDimensions
-          id={familyImage}
-          source={imageSource}
-          style={size}
-        />
+        <ImageWithCachedMetadata imageUrl={familyImage} style={circleStyle} />
       ) : (
-        <FallbackIcon {...size} symbol={initials(familyName)} />
+        <FallbackIcon {...circleStyle} symbol={initials(familyName)} />
       )}
     </ShadowStack>
   );
-};
-
-TokenFamilyHeaderIcon.propTypes = {
-  familyImage: PropTypes.string,
-  familyName: PropTypes.string,
-  isCoinRow: PropTypes.bool,
-  style: stylePropType,
 };
 
 export default React.memo(TokenFamilyHeaderIcon);
