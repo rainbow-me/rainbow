@@ -1,17 +1,22 @@
 import analytics from '@segment/analytics-react-native';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { colors } from '../../../styles';
 import { neverRerender } from '../../../utils';
 import { ComingSoonFloatingEmojis } from '../../floating-emojis';
 import SheetActionButton from './SheetActionButton';
 
 function WithdrawActionButton({ color = colors.white, symbol, ...props }) {
+  const [didTrack, setDidTrack] = useState(false);
+
   const handlePress = useCallback(() => {
-    analytics.track('Tapped placeholder Withdraw button', {
-      category: 'liquidity pool',
-      label: symbol,
-    });
-  }, [symbol]);
+    if (!didTrack) {
+      analytics.track('Tapped placeholder Withdraw button', {
+        category: 'liquidity pool',
+        label: symbol,
+      });
+      setDidTrack(true);
+    }
+  }, [didTrack, symbol]);
 
   return (
     <ComingSoonFloatingEmojis>
