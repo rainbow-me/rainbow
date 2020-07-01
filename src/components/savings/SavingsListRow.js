@@ -23,7 +23,7 @@ import SavingsListRowAnimatedNumber from './SavingsListRowAnimatedNumber';
 import SavingsListRowEmptyState from './SavingsListRowEmptyState';
 
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
-const ANIMATE_NUMBER_INTERVAL = 30;
+const ANIMATE_NUMBER_INTERVAL = 60;
 
 const SavingsListRowShadows = [
   [0, 10, 30, colors.dark, 0.1],

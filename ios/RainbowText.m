@@ -44,8 +44,8 @@
   _timer = [NSTimer scheduledTimerWithTimeInterval:_interval / 1000  target:self selector:@selector(animate) userInfo:nil repeats:YES];
   _fmt = [[NSNumberFormatter alloc] init];
   _fmt.numberStyle = NSNumberFormatterDecimalStyle;
-  _fmt.maximumFractionDigits = 9;
-  _fmt.minimumFractionDigits = 9;
+  _fmt.maximumFractionDigits = _decimals;
+  _fmt.minimumFractionDigits = _decimals;
   _time = NSDate.date.timeIntervalSince1970;
   UIFont* font = [UIFont fontWithName:@"SFRounded-Bold" size:16];
   

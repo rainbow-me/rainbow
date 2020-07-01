@@ -60,7 +60,7 @@ const SavingsListRowAnimatedNumber = ({
       animationConfig={{
         decimals: 10,
         initialValue: Number(initialValue),
-        interval: 30,
+        interval,
         isSymbolStablecoin: isSymbolStablecoin(symbol),
         stepPerDay: Number(value) - Number(initialValue),
         symbol,
