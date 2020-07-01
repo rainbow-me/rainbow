@@ -25,8 +25,8 @@ export function Portal({ children }) {
   const [Component, setComponentState] = useState(null);
   const [blockTouches, setBlockTouches] = useState(false);
   const hide = useCallback(() => {
-    // setComponentState(<React.Fragment />);
-    // setBlockTouches(false);
+    setComponentState(<React.Fragment />);
+    setBlockTouches(false);
   }, []);
   const setComponent = useCallback((value, blockTouches) => {
     setComponentState(value);
