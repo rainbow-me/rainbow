@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { borders, colors, position } from '../../styles';
-import { haptics, magicMemo } from '../../utils';
+import { magicMemo } from '../../utils';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
 
@@ -32,7 +32,6 @@ const FloatingActionButton = ({
 }) => {
   const handlePress = useCallback(
     event => {
-      haptics.impactLight();
       if (onPress) onPress(event);
     },
     [onPress]
@@ -40,7 +39,6 @@ const FloatingActionButton = ({
 
   const handlePressIn = useCallback(
     event => {
-      haptics.impactLight();
       if (onPressIn) onPressIn(event);
     },
     [onPressIn]
@@ -49,6 +47,7 @@ const FloatingActionButton = ({
   return (
     <ButtonPressAnimation
       disabled={disabled}
+      hapticType="impactLight"
       onPress={handlePress}
       onPressIn={handlePressIn}
       scaleTo={scaleTo}
@@ -71,6 +70,6 @@ const FloatingActionButton = ({
 
 export default magicMemo(FloatingActionButton, [
   'disabled',
-  'scaleTo',
   'onPress',
+  'scaleTo',
 ]);

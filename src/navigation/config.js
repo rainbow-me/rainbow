@@ -1,10 +1,10 @@
-import { Platform, StatusBar } from 'react-native';
+import { Keyboard, Platform, StatusBar } from 'react-native';
 import { deviceUtils } from '../utils';
 import { onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
 
 export const expandedAssetSheetConfig = {
-  options: {
+  options: ({ route: { params = {} } }) => ({
     allowsDragToDismiss: true,
     allowsTapToDismiss: true,
     backgroundOpacity: 0.7,
@@ -13,12 +13,13 @@ export const expandedAssetSheetConfig = {
     customStack: true,
     gestureEnabled: true,
     headerHeight: 50,
+    longFormHeight: params.longFormHeight,
     onAppear: null,
     scrollEnabled: true,
     springDamping: 0.8755,
     topOffset: 0,
     transitionDuration: 0.42,
-  },
+  }),
 };
 
 export const nativeStackConfig = {
@@ -31,6 +32,13 @@ export const nativeStackConfig = {
       appearListener.current && appearListener.current();
     },
     onDismissed: onDidPop,
+    onTouchTop: ({ nativeEvent: { dismissing } }) => {
+      if (dismissing) {
+        Keyboard.dismiss();
+      } else {
+        appearListener.current && appearListener.current();
+      }
+    },
     onWillDismiss: () => {
       onWillPop();
       StatusBar.setBarStyle('dark-content');

@@ -80,7 +80,6 @@ RCT_EXPORT_METHOD(hideAnimated) {
   #endif
   
   [FIRApp configure];
-  [application registerForRemoteNotifications];
   // Define UNUserNotificationCenter
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;

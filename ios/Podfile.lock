@@ -466,9 +466,6 @@ PODS:
     - React
   - RNCMaskedView (0.1.10):
     - React
-  - RNCoolModals (0.0.9):
-    - PanModal
-    - React
   - RNCPushNotificationIOS (1.2.2):
     - React
   - RNDeviceInfo (5.3.1):
@@ -573,7 +570,7 @@ DEPENDENCIES:
   - libwebp
   - lottie-ios (from `../node_modules/lottie-ios`)
   - lottie-react-native (from `../node_modules/lottie-react-native`)
-  - PanModal (from `https://github.com/osdnk/PanModal`, commit `f94e495897d6892f6eb021e453f393be698aae46`)
+  - PanModal (from `https://github.com/osdnk/PanModal`, commit `eb9ff73833957de5c7ff30ccf08d3037266783d8`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera.podspec`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -618,7 +615,6 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
-  - RNCoolModals (from `../node_modules/react-native-cool-modals`)
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
@@ -710,7 +706,7 @@ EXTERNAL SOURCES:
   lottie-react-native:
     :path: "../node_modules/lottie-react-native"
   PanModal:
-    :commit: f94e495897d6892f6eb021e453f393be698aae46
+    :commit: eb9ff73833957de5c7ff30ccf08d3037266783d8
     :git: https://github.com/osdnk/PanModal
   Permission-Camera:
     :path: "../node_modules/react-native-permissions/ios/Camera.podspec"
@@ -794,8 +790,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/clipboard"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
-  RNCoolModals:
-    :path: "../node_modules/react-native-cool-modals"
   RNCPushNotificationIOS:
     :path: "../node_modules/@react-native-community/push-notification-ios"
   RNDeviceInfo:
@@ -845,7 +839,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   PanModal:
-    :commit: f94e495897d6892f6eb021e453f393be698aae46
+    :commit: eb9ff73833957de5c7ff30ccf08d3037266783d8
     :git: https://github.com/osdnk/PanModal
 
 SPEC CHECKSUMS:
@@ -936,7 +930,6 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: d059c3ee71738c39834a627476322a5a8cd5bf36
   RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
-  RNCoolModals: 49df7bf454cb98802a208531a7fc4cec28cfc501
   RNCPushNotificationIOS: 4c97a36dbec42dba411cc35e6dac25e34a805fde
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNFastImage: 35ae972d6727c84ee3f5c6897e07f84d0a3445e9
@@ -968,6 +961,6 @@ SPEC CHECKSUMS:
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: ac082f5e222f4b3ce2e09b73a7a3073fef509192
+PODFILE CHECKSUM: 4366d67a8cc8fc17d64e4e0d56ac2e9b5d9e026a
 
 COCOAPODS: 1.9.1
