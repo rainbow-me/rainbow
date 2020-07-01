@@ -280,6 +280,7 @@ function NativeStackNavigator() {
         options={{
           customStack: true,
           isShortFormEnabled: true,
+          longFormHeight: 400,
           onAppear: null,
           shortFormHeight: 400,
           startFromShortForm: true,

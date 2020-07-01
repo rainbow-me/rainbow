@@ -58,8 +58,11 @@ const BackupSheet = ({ setAppearListener }) => {
           missingPassword: true,
           option: WalletBackupTypes.cloud,
         });
-        setOptions({ isShortFormEnabled: false });
-        jumpToLong();
+        setOptions({
+          isShortFormEnabled: false,
+          longFormHeight: 10000,
+        });
+        setImmediate(jumpToLong);
       } else {
         await dispatch(
           setIsWalletLoading(walletLoadingStates.BACKING_UP_WALLET)
@@ -94,8 +97,11 @@ const BackupSheet = ({ setAppearListener }) => {
     } else {
       switchSheetContentTransitionRef.current?.animateNextTransition();
       setStep(WalletBackupTypes.cloud);
-      setOptions({ isShortFormEnabled: false });
-      jumpToLong();
+      setOptions({
+        isShortFormEnabled: false,
+        longFormHeight: 10000,
+      });
+      setImmediate(jumpToLong);
     }
   }, [
     dispatch,
@@ -111,8 +117,12 @@ const BackupSheet = ({ setAppearListener }) => {
   const onManualBackup = useCallback(() => {
     switchSheetContentTransitionRef.current?.animateNextTransition();
     setStep(WalletBackupTypes.manual);
-    setOptions({ isShortFormEnabled: false });
-    jumpToLong();
+    setOptions({
+      isShortFormEnabled: false,
+      longFormHeight: 10000,
+    });
+    // wait for layout of sheet
+    setImmediate(jumpToLong);
   }, [jumpToLong, setOptions]);
 
   const onIgnoreBackup = useCallback(() => {
