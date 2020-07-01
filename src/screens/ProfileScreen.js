@@ -7,6 +7,7 @@ import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
+import { LoadingOverlayWrapper } from '../components/modal/LoadingOverlay';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
 import useNativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
@@ -21,6 +22,7 @@ import {
 import { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/effects';
 import Routes from '../navigation/routesNames';
+import { usePortal } from '../react-native-cool-modals/Portal';
 import { colors, position } from '../styles';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
@@ -36,7 +38,23 @@ export default function ProfileScreen({ navigation }) {
   const { navigate } = useNavigation();
   const { isCreatingAccount } = useWallets();
   const nativeTransactionListAvailable = useNativeTransactionListAvailable();
+  const { setComponent, hide } = usePortal();
 
+  useEffect(() => {
+    if (isCreatingAccount) {
+      setComponent(
+        <LoadingOverlayWrapper>
+          <LoadingOverlay
+            paddingTop={sheetVerticalOffset}
+            title="Creating wallet..."
+          />
+        </LoadingOverlayWrapper>,
+        false
+      );
+    } else {
+      hide();
+    }
+  }, [hide, isCreatingAccount, setComponent]);
   const {
     isLoadingTransactions: isLoading,
     sections,
@@ -109,12 +127,6 @@ export default function ProfileScreen({ navigation }) {
           navigation={navigation}
           network={network}
           sections={sections}
-        />
-      )}
-      {isCreatingAccount && (
-        <LoadingOverlay
-          paddingTop={sheetVerticalOffset}
-          title="Creating wallet..."
         />
       )}
     </ProfileScreenPage>
