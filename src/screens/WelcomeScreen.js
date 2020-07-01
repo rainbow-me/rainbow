@@ -293,18 +293,20 @@ function runTiming(value) {
   ]);
 }
 
+/* eslint-disable sort-keys */
 const colorsRGB = [
-  { b: 74, g: 73, r: 255 },
-  { b: 0, g: 170, r: 255 },
-  { b: 111, g: 222, r: 0 },
-  { b: 217, g: 163, r: 0 },
-  { b: 255, g: 92, r: 115 },
+  { r: 255, g: 73, b: 74 },
+  { r: 255, g: 170, b: 0 },
+  { r: 0, g: 222, b: 111 },
+  { r: 0, g: 163, b: 217 },
+  { r: 115, g: 92, b: 255 },
 ];
+/* eslint-enable sort-keys */
 
 const colorRGB = (r, g, b, fromShadow) =>
   // from some reason there's a different bit shifting with shadows
   fromShadow
-    ? color(round(r), round(b), 255, divide(round(r), 256))
+    ? color(round(g), round(b), 255, divide(round(r), 256))
     : color(round(r), round(g), round(b));
 
 const springConfig = {
