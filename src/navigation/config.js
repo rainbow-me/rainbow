@@ -64,6 +64,7 @@ export const stackNavigationConfig = {
 };
 
 export const defaultScreenStackOptions = {
+  animationTypeForReplace: 'pop',
   gestureEnabled: true,
 };
 
