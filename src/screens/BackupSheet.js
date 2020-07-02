@@ -183,6 +183,12 @@ const BackupSheet = ({ setAppearListener }) => {
         longFormHeight: missingPassword ? 715 : 750,
       });
       setImmediate(jumpToLong);
+    } else if (step === WalletBackupTypes.manual) {
+      setOptions({
+        isShortFormEnabled: false,
+        longFormHeight: 770,
+      });
+      setImmediate(jumpToLong);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

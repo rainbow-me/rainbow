@@ -111,7 +111,7 @@ const BackupManualStep = () => {
   let columns = [];
   let secretLayout = null;
   if (seed && type === WalletTypes.mnemonic) {
-    wordSectionHeight = (seed && (seed.split(' ').length || 12) / 2) * 45;
+    wordSectionHeight = (seed && (seed.split(' ').length || 12) / 2) * 41;
     const words = seed.split(' ');
     columns = [words.slice(0, words.length / 2), words.slice(words.length / 2)];
     secretLayout = columns.map((wordColumn, colIndex) => (
