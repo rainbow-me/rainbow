@@ -111,7 +111,7 @@ const BackupManualStep = () => {
   let columns = [];
   let secretLayout = null;
   if (seed && type === WalletTypes.mnemonic) {
-    wordSectionHeight = (seed && (seed.split(' ').length || 12) / 2) * 39;
+    wordSectionHeight = (seed && (seed.split(' ').length || 12) / 2) * 45;
     const words = seed.split(' ');
     columns = [words.slice(0, words.length / 2), words.slice(words.length / 2)];
     secretLayout = columns.map((wordColumn, colIndex) => (
@@ -179,7 +179,7 @@ const BackupManualStep = () => {
                 height={34}
                 justify="start"
                 margin={6}
-                paddingBottom={2}
+                paddingBottom={5}
               >
                 <Icon
                   color={colors.appleBlue}
@@ -205,7 +205,7 @@ const BackupManualStep = () => {
         <Shadow
           height={wordSectionHeight}
           width={deviceWidth - 130}
-          borderRadius={16}
+          borderRadius={25}
           shadows={[
             [0, 10, 30, colors.dark, 0.1],
             [0, 5, 15, colors.dark, 0.04],

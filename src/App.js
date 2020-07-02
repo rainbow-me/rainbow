@@ -138,12 +138,12 @@ class App extends Component {
 
       // Previously existing users should see the backup sheet right after app launch
       // Uncomment the line below to get in the existing user state(before icloud)
-      await saveUserBackupState(BackupStateTypes.done);
+      await saveUserBackupState(BackupStateTypes.immediate);
       const backupState = await getUserBackupState();
       if (backupState === BackupStateTypes.immediate) {
         setTimeout(() => {
           Navigation.handleAction(Routes.BACKUP_SHEET, {
-            option: 'existing_user',
+            // option: 'existing_user',
           });
         }, 1000);
         // New users who are now get an incoming tx
@@ -151,7 +151,6 @@ class App extends Component {
       } else if (backupState === BackupStateTypes.ready) {
         const incomingTxListener = new EventEmitter();
         incomingTxListener.on('incoming_transaction', async type => {
-          console.log('[YOOOOOOO] got incoming tx...', type);
           await saveUserBackupState(BackupStateTypes.pending);
           setTimeout(
             () => {
@@ -166,7 +165,6 @@ class App extends Component {
         // Received will trigger when there's incoming transactions
         // during startup
         // store.dispatch(addNewSubscriber(incomingTxListener, 'received'));
-        console.log('[YOOOOOOO] subscribed to incoming txs');
       } else if (backupState === BackupStateTypes.pending) {
         setTimeout(() => {
           Navigation.handleAction(Routes.BACKUP_SHEET);

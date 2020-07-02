@@ -119,7 +119,7 @@ const BackupSheet = ({ setAppearListener }) => {
     setStep(WalletBackupTypes.manual);
     setOptions({
       isShortFormEnabled: false,
-      longFormHeight: 10000,
+      longFormHeight: 770,
     });
     // wait for layout of sheet
     setImmediate(jumpToLong);
