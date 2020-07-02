@@ -1,4 +1,3 @@
-import { isEmpty } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
@@ -95,7 +94,7 @@ const RestoreSheetFirstStep = ({
             <IcloudIcon />
             <Title>Restore from iCloud </Title>
             <DescriptionText>
-              {isEmpty(userData)
+              {typeof userData === undefined
                 ? ' Checking iCloud for backups...'
                 : walletsBackedUp > 0
                 ? `You have ${walletsBackedUp} ${
