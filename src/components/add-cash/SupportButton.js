@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const SupportButton = ({ label, onPress, ...props }) => {
   return (

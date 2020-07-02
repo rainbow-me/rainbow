@@ -11,7 +11,6 @@ import { UniswapInvestmentCard } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import EditOptions from '../helpers/editOptionTypes';
 import { withNavigation } from '../navigation/Navigation';
-import Routes from '../navigation/routesNames';
 import {
   setHiddenCoins,
   setIsCoinListEdited,
@@ -27,6 +26,7 @@ import {
 } from './assets';
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
+import Routes from '@rainbow-me/routes';
 
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
@@ -55,9 +55,6 @@ const enhanceRenderItem = compose(
         type: assetType,
         ...params,
       });
-    },
-    onPressSend: ({ navigation }) => asset => {
-      navigation.navigate(Routes.SEND_SHEET, { asset });
     },
   })
 );

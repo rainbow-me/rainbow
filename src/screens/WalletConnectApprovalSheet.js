@@ -6,7 +6,7 @@ import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { Centered, Row, RowWithMargins } from '../components/layout';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
-import { colors, padding } from '../styles';
+import { colors, padding } from '@rainbow-me/styles';
 
 const WalletConnectApprovalSheet = () => {
   // TODO set this to true via everest.link graph

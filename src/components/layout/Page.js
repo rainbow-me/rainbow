@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
-import { colors, position } from '../../styles';
+import { colors, position } from '@rainbow-me/styles';
 
 const PageElement = styled.View`
   ${position.size('100%')};

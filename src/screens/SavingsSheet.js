@@ -19,8 +19,8 @@ import { isSymbolStablecoin } from '../helpers/savings';
 import { convertAmountToNativeDisplay } from '../helpers/utilities';
 import { useAccountSettings, useWallets } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
-import Routes from '../navigation/routesNames';
-import { colors, padding } from '../styles';
+import Routes from '@rainbow-me/routes';
+import { colors, padding } from '@rainbow-me/styles';
 
 const SavingsSheet = () => {
   const { navigate, goBack } = useNavigation();

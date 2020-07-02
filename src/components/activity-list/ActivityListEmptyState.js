@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components/primitives';
-import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
+import { colors } from '@rainbow-me/styles';
 
 const verticalOffset = (deviceUtils.dimensions.height - 420) / 3;
 

@@ -6,7 +6,7 @@ import { explorerInit } from '../redux/explorer';
 import { savingsLoadState } from '../redux/savings';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { uniswapGetAllExchanges, uniswapPairsInit } from '../redux/uniswap';
-import { logger } from '../utils';
+import logger from 'logger';
 
 export default function useInitializeAccountData() {
   const dispatch = useDispatch();

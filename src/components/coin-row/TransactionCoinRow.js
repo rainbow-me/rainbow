@@ -6,8 +6,6 @@ import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import { useAccountSettings } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../navigation/routesNames';
-import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { ButtonPressAnimation } from '../animations';
@@ -17,6 +15,8 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
+import Routes from '@rainbow-me/routes';
+import { colors } from '@rainbow-me/styles';
 
 const containerStyles = css`
   padding-left: 19;

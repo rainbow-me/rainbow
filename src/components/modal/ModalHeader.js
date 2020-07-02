@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
-import { borders, colors, position } from '../../styles';
 import { Centered, Row } from '../layout';
 import { TruncatedText } from '../text';
 import ModalHeaderButton from './ModalHeaderButton';
+import { borders, colors, position } from '@rainbow-me/styles';
 
 export const ModalHeaderHeight = 50;
 

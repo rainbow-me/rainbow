@@ -2,9 +2,9 @@ import React from 'react';
 import { StatusBar } from 'react-native';
 import styled from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
-import { colors, padding, position } from '../../styles';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
+import { colors, padding, position } from '@rainbow-me/styles';
 
 const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   direction: 'column',

@@ -5,12 +5,12 @@ import FastImage from 'react-native-fast-image';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import DeleteIcon from '../../assets/swipeToDelete.png';
 import EditIcon from '../../assets/swipeToEdit.png';
-import { colors, margin, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import ContactRow from './ContactRow';
 import showDeleteContactActionSheet from './showDeleteContactActionSheet';
+import { colors, margin, position } from '@rainbow-me/styles';
 
 const AnimatedCentered = Animated.createAnimatedComponent(Centered);
 

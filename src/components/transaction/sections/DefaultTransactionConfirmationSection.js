@@ -2,11 +2,11 @@ import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, mapProps, pure } from 'recompact';
-import { colors } from '../../../styles';
 import { Text, TruncatedAddress } from '../../text';
 import TransactionMessage from '../TransactionMessage';
 import TransactionRow from '../TransactionRow';
 import TransactionSheet from '../TransactionSheet';
+import { colors } from '@rainbow-me/styles';
 
 const DefaultTransactionConfirmationSection = ({
   address,

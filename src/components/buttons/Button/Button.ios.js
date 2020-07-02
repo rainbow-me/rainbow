@@ -2,10 +2,10 @@ import { isArray, isString, pick } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { colors, padding } from '../../../styles';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const ButtonSizeTypes = {
   default: {

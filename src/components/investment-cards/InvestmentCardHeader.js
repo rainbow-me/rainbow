@@ -3,10 +3,10 @@ import React from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
 import CaretAsset from '../../assets/family-dropdown-arrow.png';
-import { colors, padding } from '../../styles';
 import { RotationArrow } from '../animations';
 import { Column, Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const InvestmentCardHeaderHeight = 49;
 

@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import styled from 'styled-components/primitives';
-import { colors } from '../styles';
 import { magicMemo } from '../utils';
 import { ButtonPressAnimation } from './animations';
 import { Icon } from './icons';
 import { RowWithMargins } from './layout';
 import { Text } from './text';
+import { colors } from '@rainbow-me/styles';
 
 const formatURLForDisplay = url => {
   const pretty = url.split('://')[1].replace('www.', '');

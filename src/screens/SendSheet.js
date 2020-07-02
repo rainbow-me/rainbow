@@ -45,9 +45,9 @@ import {
   useTransactionConfirmation,
 } from '../hooks';
 import { sendTransaction } from '../model/wallet';
-import Routes from '../navigation/routesNames';
-import { borders, colors } from '../styles';
 import { deviceUtils, gasUtils } from '../utils';
+import Routes from '@rainbow-me/routes';
+import { borders, colors } from '@rainbow-me/styles';
 
 const sheetHeight = deviceUtils.dimensions.height - 10;
 

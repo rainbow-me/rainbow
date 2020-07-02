@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { css } from 'styled-components/primitives';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
-import { colors, padding } from '../../styles';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import { colors, padding } from '@rainbow-me/styles';
 
 const selectedHeight = 78;
 

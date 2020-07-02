@@ -27,8 +27,8 @@ import {
   signTypedDataMessage,
 } from '../model/wallet';
 import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
-import { colors, position } from '../styles';
-import { gasUtils, logger } from '../utils';
+import { gasUtils } from '../utils';
+
 import {
   isMessageDisplayType,
   isSignFirstParamType,
@@ -39,6 +39,8 @@ import {
   SIGN,
   SIGN_TYPED_DATA,
 } from '../utils/signingMethods';
+import { colors, position } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const CancelButtonContainer = styled.View`
   bottom: 19;

@@ -1,14 +1,14 @@
 import React, { Fragment } from 'react';
 import ReactCoinIcon from 'react-coin-icon';
 import ShadowStack from 'react-native-shadow-stack';
-import { borders, colors } from '../../styles';
 import { magicMemo } from '../../utils';
 import CoinIconFallback from './CoinIconFallback';
 import CoinIconIndicator from './CoinIconIndicator';
+import { borders, colors } from '@rainbow-me/styles';
 
 export const CoinIconSize = 40;
 
-const coinIconShadow = [
+const defaultShadow = [
   [0, 4, 6, colors.dark, 0.04],
   [0, 1, 3, colors.dark, 0.08],
 ];
@@ -21,6 +21,7 @@ const CoinIcon = ({
   isPinned,
   showShadow = true,
   size = CoinIconSize,
+  shadow = defaultShadow,
   symbol,
   ...props
 }) =>
@@ -34,7 +35,7 @@ const CoinIcon = ({
         {...borders.buildCircleAsObject(size)}
         backgroundColor={bgColor}
         opacity={isHidden ? 0.4 : 1}
-        shadows={coinIconShadow}
+        shadows={shadow}
       >
         <ReactCoinIcon
           address={address || ''}

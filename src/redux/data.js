@@ -38,12 +38,14 @@ import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
 import { tokenOverrides } from '../references';
-import { ethereumUtils, isLowerCaseMatch, logger } from '../utils';
+import { ethereumUtils, isLowerCaseMatch } from '../utils';
+
 /* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
 /* eslint-disable-next-line import/no-cycle */
 import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswap';
+import logger from 'logger';
 
 let pendingTransactionsHandle = null;
 const TXN_WATCHER_MAX_TRIES = 5 * 60;

@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { colors, position, shadow } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
+import { colors, position, shadow } from '@rainbow-me/styles';
 
 const ButtonBorderRadius = 15;
 

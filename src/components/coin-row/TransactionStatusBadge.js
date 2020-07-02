@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForPropTypes } from 'recompact';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import { colors, position } from '../../styles';
 import Spinner from '../Spinner';
 import Icon from '../icons/Icon';
 import { Row } from '../layout';
 import { Text } from '../text';
+import { colors, position } from '@rainbow-me/styles';
 
 const StatusProps = {
   [TransactionStatusTypes.approved]: {

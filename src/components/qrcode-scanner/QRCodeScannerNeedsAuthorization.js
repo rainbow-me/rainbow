@@ -3,10 +3,10 @@ import React from 'react';
 import { Linking } from 'react-native';
 import { compose, withHandlers } from 'recompact';
 import { withNeverRerender } from '../../hoc';
-import { colors, margin, padding, position } from '../../styles';
 import { Button } from '../buttons';
 import { Column } from '../layout';
 import { ErrorText, Monospace } from '../text';
+import { colors, margin, padding, position } from '@rainbow-me/styles';
 
 const QRCodeScannerNeedsAuthorization = ({ onPressSettings }) => (
   <Column

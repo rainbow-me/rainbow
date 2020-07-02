@@ -1,10 +1,10 @@
 import { toUpper } from 'lodash';
 import React from 'react';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
-import { borders, colors } from '../../styles';
 import { getFirstGrapheme } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
+import { borders, colors } from '@rainbow-me/styles';
 
 const defaultShadow = [
   [0, 4, 6, colors.dark, 0.04],

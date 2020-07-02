@@ -22,7 +22,7 @@ import DevSection from '../components/settings-menu/DevSection';
 import WalletTypes from '../helpers/walletTypes';
 import { useWallets } from '../hooks';
 import { wipeKeychain } from '../model/keychain';
-import { colors } from '../styles';
+import { colors } from '@rainbow-me/styles';
 
 function cardStyleInterpolator({
   current,

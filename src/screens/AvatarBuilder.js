@@ -15,8 +15,8 @@ import {
   settingsUpdateAccountName,
 } from '../redux/settings';
 import store from '../redux/store';
-import { colors } from '../styles';
 import { deviceUtils } from '../utils';
+import { colors } from '@rainbow-me/styles';
 
 const springConfig = {
   damping: 38,

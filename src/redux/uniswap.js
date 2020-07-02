@@ -27,7 +27,7 @@ import {
 } from '../handlers/uniswap';
 import networkTypes from '../helpers/networkTypes';
 import { DefaultUniswapFavorites, uniswapPairs } from '../references';
-import { logger } from '../utils';
+import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';

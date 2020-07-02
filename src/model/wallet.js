@@ -26,9 +26,11 @@ import {
 } from '../handlers/web3';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
-import { colors } from '../styles';
-import { ethereumUtils, logger } from '../utils';
+import { ethereumUtils } from '../utils';
+
 import * as keychain from './keychain';
+import { colors } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const seedPhraseKey = 'rainbowSeedPhrase';
 const privateKeyKey = 'rainbowPrivateKey';

@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, withHandlers } from 'recompact';
 import { withWalletConnectConnections } from '../../hoc';
-import { colors, padding } from '../../styles';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContextMenu } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
 import { TruncatedText } from '../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;

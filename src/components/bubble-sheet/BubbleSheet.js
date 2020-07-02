@@ -1,6 +1,6 @@
 import React from 'react';
-import { colors, shadow } from '../../styles';
 import { Column } from '../layout';
+import { colors, shadow } from '@rainbow-me/styles';
 
 const BubbleSheetBorderRadius = 30;
 

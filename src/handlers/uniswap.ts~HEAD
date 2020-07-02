@@ -47,7 +47,7 @@ import {
   exchangeABI,
   uniswapTestnetAssets,
 } from '../references';
-import { logger } from '../utils';
+import logger from 'logger';
 import { toHex, web3Provider } from './web3';
 
 const DefaultMaxSlippageInBips = 200;

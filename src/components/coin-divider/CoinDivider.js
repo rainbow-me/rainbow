@@ -7,11 +7,11 @@ import {
   useDimensions,
   useOpenSmallBalances,
 } from '../../hooks';
-import { colors, padding } from '../../styles';
 import { Row, RowWithMargins } from '../layout';
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
+import { colors, padding } from '@rainbow-me/styles';
 
 export const CoinDividerHeight = 30;
 
@@ -50,13 +50,16 @@ export default function CoinDivider({
   onEndEdit,
 }) {
   const { width: deviceWidth } = useDimensions();
+
   const {
+    clearSelectedCoins,
     currentAction,
     isCoinListEdited,
     setHiddenCoins,
     setIsCoinListEdited,
     setPinnedCoins,
   } = useCoinListEditOptions();
+
   const {
     isSmallBalancesOpen,
     toggleOpenSmallBalances,
@@ -66,8 +69,12 @@ export default function CoinDivider({
 
   useEffect(() => {
     initialOpenState.current = isSmallBalancesOpen;
+
+    // Clear CoinListEditOptions selection queue on unmount.
+    return () => clearSelectedCoins();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [clearSelectedCoins]);
 
   const handlePressEdit = useCallback(() => {
     if (isCoinListEdited && onEndEdit) {

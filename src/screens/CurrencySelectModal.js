@@ -30,10 +30,10 @@ import {
   useUniswapAssets,
   useUniswapAssetsInWallet,
 } from '../hooks';
-import Routes from '../navigation/routesNames';
-import { position } from '../styles';
 import { filterList, filterScams } from '../utils/search';
 import { exchangeModalBorderRadius } from './ExchangeModal';
+import Routes from '@rainbow-me/routes';
+import { position } from '@rainbow-me/styles';
 
 const headerlessSection = data => [{ data, title: '' }];
 

@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
-import { colors } from '../../../styles';
 import Svg from '../Svg';
+import { colors } from '@rainbow-me/styles';
 
 const PlusCircledIcon = ({ color, size, ...props }) => (
   <Svg height={size} viewBox="0 0 19 19" width={size} {...props}>

@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Platform } from 'react-native';
 import styled from 'styled-components/primitives';
-import { colors, padding, position } from '../../styles';
 import ActivityIndicator from '../ActivityIndicator';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
+import { colors, padding, position } from '@rainbow-me/styles';
 
 const Container = styled.View`
   ${Platform.OS === 'android'

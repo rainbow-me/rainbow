@@ -4,7 +4,6 @@ import styled from 'styled-components/primitives';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { useContacts, useDimensions } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import { colors, margin, padding } from '../../styles';
 import { abbreviations, magicMemo } from '../../utils';
 import Divider from '../Divider';
 import TouchableBackdrop from '../TouchableBackdrop';
@@ -12,11 +11,11 @@ import { ButtonPressAnimation } from '../animations';
 import { Button } from '../buttons';
 import { ContactAvatar, showDeleteContactActionSheet } from '../contacts';
 import CopyTooltip from '../copy-tooltip';
+import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { Input } from '../inputs';
 import { Centered, KeyboardFixedOpenLayout } from '../layout';
 import { PlaceholderText, Text, TruncatedAddress } from '../text';
-import FloatingPanels from './FloatingPanels';
-import { AssetPanel } from './asset-panel';
+import { colors, margin, padding } from '@rainbow-me/styles';
 
 const nativeStackAdditionalPadding = 80;
 

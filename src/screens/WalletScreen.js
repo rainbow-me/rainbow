@@ -29,7 +29,7 @@ import {
   useWalletSectionsData,
 } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/effects';
-import { position } from '../styles';
+import { position } from '@rainbow-me/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,

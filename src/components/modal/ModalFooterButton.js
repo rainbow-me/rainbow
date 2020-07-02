@@ -1,10 +1,10 @@
 import React from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import styled from 'styled-components';
-import { colors, position } from '../../styles';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
+import { colors, position } from '@rainbow-me/styles';
 
 const ButtonIcon = styled(Icon)`
   ${position.maxSize('100%')};

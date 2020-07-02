@@ -8,7 +8,7 @@ import data from './data';
 import editOptions from './editOptions';
 import explorer from './explorer';
 import gas from './gas';
-import imageDimensionsCache from './imageDimensionsCache';
+import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';
 import nonce from './nonce';
 import openStateSettings from './openStateSettings';
@@ -32,7 +32,7 @@ export default combineReducers({
   editOptions,
   explorer,
   gas,
-  imageDimensionsCache,
+  imageMetadata,
   keyboardHeight,
   nonce,
   openStateSettings,

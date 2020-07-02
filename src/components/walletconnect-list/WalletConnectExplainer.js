@@ -1,10 +1,10 @@
 import React from 'react';
 import { withNeverRerender } from '../../hoc';
-import { margin, padding } from '../../styles';
 import Divider from '../Divider';
 import { Centered, Column } from '../layout';
 import WalletConnectExplainerItem from './WalletConnectExplainerItem';
 import WalletConnectLearnMoreButton from './WalletConnectLearnMoreButton';
+import { margin, padding } from '@rainbow-me/styles';
 
 const WalletConnectExplainer = () => (
   <Column css={padding(21, 0, 26, 19)}>

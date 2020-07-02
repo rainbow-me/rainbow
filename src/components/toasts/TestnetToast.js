@@ -2,10 +2,10 @@ import React from 'react';
 import networkInfo from '../../helpers/networkInfo';
 import networkTypes from '../../helpers/networkTypes';
 import { useAccountSettings } from '../../hooks';
-import { colors } from '../../styles';
 import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';
+import { colors } from '@rainbow-me/styles';
 
 const TestnetToast = () => {
   const { network } = useAccountSettings();

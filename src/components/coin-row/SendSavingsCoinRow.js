@@ -1,10 +1,10 @@
 import React from 'react';
 import { css } from 'styled-components/primitives';
-import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import { colors, padding } from '@rainbow-me/styles';
 
 const selectedHeight = 78;
 

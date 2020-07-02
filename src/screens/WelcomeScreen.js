@@ -19,7 +19,7 @@ import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import useHideSplashScreen from '../helpers/hideSplashScreen';
 import { useWallets } from '../hooks';
 import Routes from '../navigation/routesNames';
-import { colors, shadow } from '../styles';
+import { colors, shadow } from '@rainbow-me/styles';
 
 const {
   and,

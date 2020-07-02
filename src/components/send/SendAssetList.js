@@ -10,7 +10,6 @@ import {
 } from 'recyclerlistview';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import { buildCoinsList } from '../../helpers/assets';
-import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
 import {
@@ -21,6 +20,7 @@ import {
 import SavingsListHeader from '../savings/SavingsListHeader';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import SendAssetListSmallBalancesHeader from './SendAssetListSmallBalancesHeader';
+import { colors } from '@rainbow-me/styles';
 
 const dividerHeight = 18;
 const familyRowHeight = 58;

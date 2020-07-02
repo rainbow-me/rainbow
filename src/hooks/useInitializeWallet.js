@@ -11,12 +11,12 @@ import {
   settingsUpdateAccountAddress,
 } from '../redux/settings';
 import { walletsLoadState } from '../redux/wallets';
-import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
 import useInitializeAccountData from './useInitializeAccountData';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalData from './useLoadGlobalData';
 import useResetAccountState from './useResetAccountState';
+import logger from 'logger';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();

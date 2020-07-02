@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { useDimensions, useImageDimensionsCache } from '../../../hooks';
-import { margin, padding, position } from '../../../styles';
+import { useDimensions, useImageMetadata } from '../../../hooks';
 import { magicMemo } from '../../../utils';
 import { Centered } from '../../layout';
 import { UniqueTokenImage } from '../../unique-token';
+import { margin, padding, position } from '@rainbow-me/styles';
 
 const paddingHorizontal = 19;
 
@@ -24,7 +24,7 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
   const { width: deviceWidth } = useDimensions();
 
   const imageUrl = asset.image_preview_url;
-  const { imageDimensions } = useImageDimensionsCache(imageUrl);
+  const { dimensions: imageDimensions } = useImageMetadata(imageUrl);
 
   const maxImageWidth = deviceWidth - paddingHorizontal * 2;
   const maxImageHeight = maxImageWidth * 1.5;

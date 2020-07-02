@@ -25,7 +25,6 @@ import networkInfo from '../../helpers/networkInfo';
 import walletTypes from '../../helpers/walletTypes';
 import { useAccountSettings, useSendFeedback, useWallets } from '../../hooks';
 import { supportedLanguages } from '../../languages';
-import { colors, position } from '../../styles';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
 import { Column, ColumnWithDividers } from '../layout';
@@ -36,6 +35,7 @@ import {
   ListItemDivider,
 } from '../list';
 import { Emoji, Text } from '../text';
+import { colors, position } from '@rainbow-me/styles';
 
 const { RainbowRequestReview } = NativeModules;
 

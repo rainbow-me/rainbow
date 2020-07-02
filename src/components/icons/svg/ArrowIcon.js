@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
 import { withRotationForDirection } from '../../../hoc';
-import { colors } from '../../../styles';
 import Svg from '../Svg';
+import { colors } from '@rainbow-me/styles';
 
 const ArrowIcon = ({ color, height, width, ...props }) => (
   <Svg height={height} width={width} {...props}>

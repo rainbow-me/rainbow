@@ -9,10 +9,11 @@ import { web3SetHttpProvider } from '../handlers/web3';
 import networkTypes from '../helpers/networkTypes';
 import { updateLanguage } from '../languages';
 
-import { ethereumUtils, logger } from '../utils';
+import { ethereumUtils } from '../utils';
 import { dataResetState } from './data';
 import { explorerClearState, explorerInit } from './explorer';
 import { walletConnectUpdateSessions } from './walletconnect';
+import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //
 

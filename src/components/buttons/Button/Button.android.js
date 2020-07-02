@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import styled from 'styled-components/primitives';
-import { colors, padding } from '../../../styles';
 import { Centered } from '../../layout';
 import { Text } from '../../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const ButtonSizeTypes = {
   default: {

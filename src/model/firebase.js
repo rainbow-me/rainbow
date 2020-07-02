@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import { get } from 'lodash';
 import { Alert } from '../components/alerts';
 import { getLocal, saveLocal } from '../handlers/localstorage/common';
-import { logger } from '../utils';
+import logger from 'logger';
 
 export const getFCMToken = async () => {
   const fcmTokenLocal = await getLocal('rainbowFcmToken');
@@ -70,6 +70,8 @@ export const checkPushNotificationPermissions = async () => {
         message: lang.t('wallet.push_notifications.please_enable_body'),
         title: lang.t('wallet.push_notifications.please_enable_title'),
       });
+    } else {
+      resolve(true);
     }
   });
 };

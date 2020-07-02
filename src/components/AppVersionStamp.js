@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 // eslint-disable-next-line import/default
 import CodePush from 'react-native-code-push';
 import VersionNumber from 'react-native-version-number';
-import { colors } from '../styles';
 import { Text } from './text';
+import { colors } from '@rainbow-me/styles';
 
 async function getAppVersion() {
   const [{ appVersion }, update] = await Promise.all([

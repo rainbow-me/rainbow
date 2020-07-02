@@ -10,7 +10,7 @@ import {
   resetInternetCredentials,
   setInternetCredentials,
 } from 'react-native-keychain';
-import { logger } from '../utils';
+import logger from 'logger';
 const RAINBOW_BACKUP_KEY = 'rainbowBackup';
 
 // NOTE: implement access control for iOS keychain
