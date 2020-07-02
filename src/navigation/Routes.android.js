@@ -21,7 +21,6 @@ import {
   emojiPreset,
   exchangePreset,
   expandedPreset,
-  expandedPresetReverse,
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
@@ -47,7 +46,7 @@ function MainNavigator() {
       <Stack.Screen
         name={Routes.CHANGE_WALLET_SHEET}
         component={ChangeWalletSheet}
-        options={expandedPresetReverse}
+        options={expandedPreset}
       />
       <Stack.Screen
         name={Routes.CONFIRM_REQUEST}

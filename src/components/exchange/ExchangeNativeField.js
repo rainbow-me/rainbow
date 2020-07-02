@@ -2,10 +2,10 @@ import React, { useCallback, useState } from 'react';
 import { Platform, TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
 import supportedNativeCurrencies from '../../references/native-currencies.json';
-import { colors, fonts } from '../../styles';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
+import { colors, fonts } from '@rainbow-me/styles';
 
 const CurrencySymbol = styled(Text).attrs({
   size: 'large',

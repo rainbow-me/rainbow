@@ -5,12 +5,12 @@ import { LayoutAnimation } from 'react-native';
 import styled from 'styled-components/primitives';
 import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
 import { useAccountSettings, useGas } from '../../hooks';
-import { colors, padding } from '../../styles';
 import { gasUtils, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
+import { colors, padding } from '@rainbow-me/styles';
 
 const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',

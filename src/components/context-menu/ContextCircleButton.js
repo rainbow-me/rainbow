@@ -1,13 +1,13 @@
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
-import { borders, colors, position } from '../../styles';
 import { Icon } from '../icons';
 import ContextMenu from './ContextMenu';
+import { borders, colors, position } from '@rainbow-me/styles';
 
 const CircleButton = styled(RadialGradient).attrs({
   center: [0, 20],
-  colors: [colors.alpha('#ECF1F5', 0.4), colors.alpha('#DFE4EB', 0.5)],
+  colors: colors.lightGreyGradient,
 })`
   ${borders.buildCircle(40)};
   ${position.centered};

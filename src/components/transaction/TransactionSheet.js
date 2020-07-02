@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Children, Fragment } from 'react';
 import styled from 'styled-components/primitives';
-import { borders, colors, padding } from '../../styles';
 import { safeAreaInsetValues } from '../../utils';
 import Divider from '../Divider';
 import { Column } from '../layout';
+import { borders, colors, padding } from '@rainbow-me/styles';
 
 const Container = styled(Column).attrs({ justify: 'end' })`
   ${borders.buildRadius('top', 20)}

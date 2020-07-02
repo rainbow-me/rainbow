@@ -4,7 +4,7 @@ import {
   resetInternetCredentials,
   setInternetCredentials,
 } from 'react-native-keychain';
-import { logger } from '../utils';
+import logger from 'logger';
 
 // NOTE: implement access control for iOS keychain
 export async function saveString(key, value, accessControlOptions) {

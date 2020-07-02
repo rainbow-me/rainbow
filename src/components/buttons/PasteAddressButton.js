@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { checkIsValidAddressOrENS } from '../../helpers/validators';
 import { withAppState } from '../../hoc';
-import { colors } from '../../styles';
 import Button from './Button';
+import { colors } from '@rainbow-me/styles';
 
 class PasteAddressButton extends PureComponent {
   static propTypes = {

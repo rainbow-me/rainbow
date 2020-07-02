@@ -7,11 +7,13 @@ import { add } from '../helpers/utilities';
 import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
 import { ethUnits, savingsAssetsListByUnderlying } from '../references';
-import { contractUtils, logger } from '../utils';
+import { contractUtils } from '../utils';
+
 import { getDepositGasLimit } from './actions/depositCompound';
 import { isValidSwapInput } from './actions/swap';
 import { assetNeedsUnlocking } from './actions/unlock';
 import { createNewAction, createNewRap, RapActionTypes } from './common';
+import logger from 'logger';
 
 export const estimateSwapAndDepositCompound = async ({
   inputAmount,

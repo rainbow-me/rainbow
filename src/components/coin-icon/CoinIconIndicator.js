@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { borders, colors, shadow } from '../../styles';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
+import { borders, colors, shadow } from '@rainbow-me/styles';
 
 const IndicatorIcon = styled(Icon).attrs(({ isPinned }) => ({
   color: colors.white,

@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 import { Platform, requireNativeComponent, StyleSheet } from 'react-native';
 import useRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
 import { formatSavingsAmount, isSymbolStablecoin } from '../../helpers/savings';
-import { colors, fonts } from '../../styles';
+import { colors, fonts } from '@rainbow-me/styles';
 
 const sx = StyleSheet.create({
   animatedNumberAndroid: {
@@ -57,11 +57,10 @@ const SavingsListRowAnimatedNumber = ({
       ]}
       time={interval}
       value={Number(value)}
-      text={formatter(Number(value))}
       animationConfig={{
         decimals: 10,
-        initialValue: Number(value),
-        interval: 60,
+        initialValue: Number(initialValue),
+        interval,
         isSymbolStablecoin: isSymbolStablecoin(symbol),
         stepPerDay: Number(value) - Number(initialValue),
         symbol,

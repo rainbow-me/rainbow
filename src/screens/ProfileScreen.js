@@ -21,9 +21,9 @@ import {
 } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/effects';
-import Routes from '../navigation/routesNames';
 import { usePortal } from '../react-native-cool-modals/Portal';
-import { colors, position } from '../styles';
+import Routes from '@rainbow-me/routes';
+import { colors, position } from '@rainbow-me/styles';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 

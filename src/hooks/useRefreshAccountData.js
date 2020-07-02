@@ -6,8 +6,8 @@ import NetworkTypes from '../helpers/networkTypes';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { uniswapUpdateState } from '../redux/uniswap';
 import { fetchWalletNames } from '../redux/wallets';
-import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
+import logger from 'logger';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();

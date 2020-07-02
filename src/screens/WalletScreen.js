@@ -30,8 +30,8 @@ import {
   useWalletSectionsData,
 } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/effects';
-import { usePortal } from '../react-native-cool-modals/Portal';
-import { position } from '../styles';
+import { usePortal } from 'react-native-cool-modals/Portal';
+import { position } from '@rainbow-me/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,

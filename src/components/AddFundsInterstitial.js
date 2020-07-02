@@ -1,17 +1,17 @@
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
-import { Linking, Platform } from 'react-native';
+import { Linking } from 'react-native';
 import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
-import Routes from '../navigation/routesNames';
-import { colors, margin, padding } from '../styles';
 import { magicMemo } from '../utils';
 import Divider from './Divider';
 import { Button } from './buttons';
 import { Centered } from './layout';
 import { Text } from './text';
+import Routes from '@rainbow-me/routes';
+import { colors, margin, padding } from '@rainbow-me/styles';
 
 const ButtonContainerHeight = 193;
 const ButtonContainerWidth = 250;
@@ -71,12 +71,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
   );
 
   const handlePressImportWallet = useCallback(
-    () =>
-      navigate(
-        Platform.OS === 'ios'
-          ? Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR
-          : Routes.IMPORT_SEED_PHRASE_SHEET
-      ),
+    () => navigate(Routes.IMPORT_SEED_PHRASE_FLOW),
     [navigate]
   );
 

@@ -3,14 +3,14 @@ import { Alert } from 'react-native';
 import styled from 'styled-components/primitives';
 import { calculateAPY } from '../../helpers/savings';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../navigation/routesNames';
-import { colors, padding } from '../../styles';
 import { magicMemo } from '../../utils';
 import Divider from '../Divider';
 import { CoinIcon } from '../coin-icon';
 import { Centered, ColumnWithMargins } from '../layout';
 import { SheetButton } from '../sheet';
 import { Br, GradientText, Text } from '../text';
+import Routes from '@rainbow-me/routes';
+import { colors, padding } from '@rainbow-me/styles';
 
 const APYHeadingText = styled(Text).attrs({
   size: 'big',

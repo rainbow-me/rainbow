@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
-import { colors, shadow as shadowUtil } from '../../styles';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
 import UniqueTokenImage from './UniqueTokenImage';
+import { colors, shadow as shadowUtil } from '@rainbow-me/styles';
 
 const UniqueTokenCardBorderRadius = 18;
 const UniqueTokenCardShadow = [0, 2, 3, colors.dark, 0.08];

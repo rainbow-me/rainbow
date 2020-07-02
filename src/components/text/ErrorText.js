@@ -1,8 +1,8 @@
 import React from 'react';
-import { colors } from '../../styles';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import Monospace from './Monospace';
+import { colors } from '@rainbow-me/styles';
 
 export default function ErrorText({ color = colors.red, error }) {
   return (

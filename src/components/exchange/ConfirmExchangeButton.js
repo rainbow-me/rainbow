@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
-import { colors } from '../../styles';
 import { HoldToAuthorizeButton } from '../buttons';
 import { SlippageWarningTheshold } from './SlippageWarning';
+import { colors } from '@rainbow-me/styles';
 
 const ConfirmExchangeButtonShadows = [
   [0, 3, 5, colors.black, 0.2],

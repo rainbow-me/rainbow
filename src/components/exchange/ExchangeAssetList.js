@@ -3,10 +3,10 @@ import { SectionList } from 'react-native-gesture-handler';
 import styled from 'styled-components/primitives';
 import { usePrevious } from '../../hooks';
 import { exchangeModalBorderRadius } from '../../screens/ExchangeModal';
-import { colors, padding } from '../../styles';
 import { magicMemo } from '../../utils';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
 import { Text } from '../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const Header = styled.View`
   ${padding(12, 19, 6)};

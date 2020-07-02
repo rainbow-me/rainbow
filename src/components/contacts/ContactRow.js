@@ -2,12 +2,12 @@ import React from 'react';
 import styled from 'styled-components/primitives';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 import { useDimensions } from '../../hooks';
-import { colors, margin } from '../../styles';
 import { abbreviations, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
+import { colors, margin } from '@rainbow-me/styles';
 
 const ContactAddress = styled(TruncatedAddress).attrs({
   align: 'left',

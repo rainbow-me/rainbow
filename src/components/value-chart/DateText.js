@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { colors } from '../../styles';
+import { colors } from '@rainbow-me/styles';
 
 class DateText extends React.Component {
   state = {

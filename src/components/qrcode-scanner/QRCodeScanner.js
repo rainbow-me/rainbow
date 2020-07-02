@@ -4,12 +4,12 @@ import FastImage from 'react-native-fast-image';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import SimulatorFakeCameraImageSource from '../../assets/simulator-fake-camera-image.jpg';
 import { usePrevious } from '../../hooks';
-import { colors, position } from '../../styles';
 import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { ErrorText } from '../text';
 import QRCodeScannerCamera from './QRCodeScannerCamera';
 import QRCodeScannerCrosshair from './QRCodeScannerCrosshair';
+import { colors, position } from '@rainbow-me/styles';
 
 const transition = (
   <Transition.Change durationMs={200} interpolation="easeInOut" />

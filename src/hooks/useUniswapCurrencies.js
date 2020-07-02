@@ -5,12 +5,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import { multiply } from '../helpers/utilities';
-import Routes from '../navigation/routesNames';
-import { ethereumUtils, isNewValueForPath, logger } from '../utils';
+import { ethereumUtils, isNewValueForPath } from '../utils';
+
 import useAccountAssets from './useAccountAssets';
 import usePrevious from './usePrevious';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 import useUniswapCurrencyReserves from './useUniswapCurrencyReserves';
+import Routes from '@rainbow-me/routes';
+import logger from 'logger';
 
 const isSameAsset = (newInputCurrency, previousInputCurrency) =>
   !isNewValueForPath(newInputCurrency, previousInputCurrency, 'address');

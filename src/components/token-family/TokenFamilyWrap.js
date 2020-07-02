@@ -3,10 +3,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { useTimeout } from '../../hooks';
-import { colors } from '../../styles';
 import TokenFamilyHeader, {
   TokenFamilyHeaderAnimationDuration,
 } from './TokenFamilyHeader';
+import { colors } from '@rainbow-me/styles';
 
 export const TokenFamilyWrapPaddingTop = 6;
 

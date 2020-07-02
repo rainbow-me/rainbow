@@ -9,8 +9,8 @@ import {
   isZero,
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
-import { logger } from '../utils';
 import useUniswapMarketPrice from './useUniswapMarketPrice';
+import logger from 'logger';
 
 export default function useSwapInputs({
   defaultInputAsset,

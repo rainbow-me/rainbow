@@ -1,6 +1,6 @@
 import styled from 'styled-components/primitives';
-import { colors } from '../../styles';
 import Text from './Text';
+import { colors } from '@rainbow-me/styles';
 
 const labelStyles = {
   color: colors.blueGreyDark,

@@ -6,11 +6,11 @@ import styled from 'styled-components';
 import SeedPhraseImageSource from '../../assets/seed-phrase-icon.png';
 import { useWallets } from '../../hooks';
 import { loadSeedPhraseAndMigrateIfNeeded } from '../../model/wallet';
-import { colors, padding, position, shadow } from '../../styles';
 import { Button } from '../buttons';
 import CopyTooltip from '../copy-tooltip';
 import { Centered, Column } from '../layout';
 import { Br, Monospace, Text } from '../text';
+import { colors, padding, position, shadow } from '@rainbow-me/styles';
 
 const Content = styled(Centered)`
   margin-bottom: 34;

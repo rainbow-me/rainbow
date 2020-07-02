@@ -9,8 +9,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import styled from 'styled-components/primitives';
-import { borders, colors, position } from '../../styles';
 import { interpolate } from './procs';
+import { borders, colors, position } from '@rainbow-me/styles';
 
 const {
   add,

@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
-import { colors } from '../../../styles';
 import Svg from '../Svg';
+import { colors } from '@rainbow-me/styles';
 
 const HiddenIcon = ({ color, ...props }) => (
   <Svg height="10" width="14" viewBox="0 0 14 10" {...props}>

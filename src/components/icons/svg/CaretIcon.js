@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
 import { withRotationForDirection } from '../../../hoc';
-import { colors } from '../../../styles';
 import { directionPropType } from '../../../utils';
 import Svg from '../Svg';
+import { colors } from '@rainbow-me/styles';
 
 const CaretIcon = ({ color, size, ...props }) => (
   <Svg

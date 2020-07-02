@@ -2,11 +2,11 @@ import React, { createElement, Fragment } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
-import { colors, padding, position } from '../../styles';
 import Divider from '../Divider';
 import { ContextMenu } from '../context-menu';
 import { Row } from '../layout';
 import { H1 } from '../text';
+import { colors, padding, position } from '@rainbow-me/styles';
 
 export const ListHeaderHeight = 44;
 

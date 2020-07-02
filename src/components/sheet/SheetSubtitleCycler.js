@@ -5,11 +5,11 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
 import { bInterpolateColor, useTimingTransition } from 'react-native-redash';
 import { useInterval, useTimeout, useTransformOrigin } from '../../hooks';
-import { colors, position } from '../../styles';
 import { magicMemo } from '../../utils';
 import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
+import { colors, position } from '@rainbow-me/styles';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 

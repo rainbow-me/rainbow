@@ -2,11 +2,12 @@ import React, { useMemo } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
-import { borders, colors } from '../../styles';
+import { useDimensions } from '../../hooks';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, {
   SheetHandleFixedToTopHeight,
 } from './SheetHandleFixedToTop';
+import { borders, colors } from '@rainbow-me/styles';
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   ${({ radius }) => borders.buildRadius('top', radius)};
@@ -24,14 +25,24 @@ const Content = styled(ScrollView)`
   width: 100%;
 `;
 
+const Whitespace = styled.View`
+  background-color: ${colors.white};
+  flex: 1;
+  height: ${({ deviceHeight }) => deviceHeight};
+`;
+
 export default function SlackSheet({
   borderRadius = 30,
   children,
   scrollEnabled = true,
   ...props
 }) {
+  const { height: deviceHeight } = useDimensions();
   const insets = useSafeArea();
-  const bottomInset = insets.bottom || scrollEnabled ? 34 : 10;
+  const bottomInset = useMemo(
+    () => (insets.bottom || scrollEnabled ? 34 : 10),
+    [insets.bottom, scrollEnabled]
+  );
 
   const contentContainerStyle = useMemo(
     () => ({
@@ -58,6 +69,7 @@ export default function SlackSheet({
         scrollIndicatorInsets={scrollIndicatorInsets}
       >
         {children}
+        {!scrollEnabled && <Whitespace deviceHeight={deviceHeight} />}
       </Content>
     </Container>
   );

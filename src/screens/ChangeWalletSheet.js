@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import React, { useCallback, useRef, useState } from 'react';
-import { InteractionManager, Platform } from 'react-native';
+import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -16,7 +16,6 @@ import { useAccountSettings, useInitializeWallet, useWallets } from '../hooks';
 import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
 import { createWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
-import Routes from '../navigation/routesNames';
 import {
   addressSetSelected,
   createAccountForWallet,
@@ -26,9 +25,12 @@ import {
   walletsUpdate,
 } from '../redux/wallets';
 
-import { colors, fonts } from '../styles';
-import { abbreviations, deviceUtils, logger } from '../utils';
+import { abbreviations, deviceUtils } from '../utils';
+
 import { showActionSheetWithOptions } from '../utils/actionsheet';
+import Routes from '@rainbow-me/routes';
+import { colors, fonts } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const footerHeight = 111;
@@ -345,11 +347,7 @@ const ChangeWalletSheet = () => {
   ]);
 
   const onPressImportSeedPhrase = useCallback(() => {
-    navigate(
-      Platform.OS === 'ios'
-        ? Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR
-        : Routes.IMPORT_SEED_PHRASE_SHEET
-    );
+    navigate(Routes.IMPORT_SEED_PHRASE_FLOW);
   }, [navigate]);
 
   const toggleEditMode = useCallback(() => {

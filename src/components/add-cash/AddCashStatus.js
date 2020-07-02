@@ -14,15 +14,15 @@ import {
 } from '../../helpers/wyreStatusTypes';
 import { useDimensions, usePrevious, useTimeout } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../navigation/routesNames';
 import { getErrorOverride } from '../../references/wyre';
-import { position } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { FloatingEmojisTapper } from '../floating-emojis';
 import { Centered } from '../layout';
 import { Br, Emoji, Text } from '../text';
 import NeedHelpButton from './NeedHelpButton';
 import SupportButton from './SupportButton';
+import Routes from '@rainbow-me/routes';
+import { position } from '@rainbow-me/styles';
 
 const StatusMessageText = withProps({
   align: 'center',

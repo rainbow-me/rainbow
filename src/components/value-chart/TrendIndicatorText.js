@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { colors } from '../../styles';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
+import { colors } from '@rainbow-me/styles';
 
 const TrendIndicatorText = ({ children, direction }) => (
   <RowWithMargins align="center" margin={2}>

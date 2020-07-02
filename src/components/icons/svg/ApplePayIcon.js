@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
-import { colors } from '../../../styles';
 import Svg from '../Svg';
+import { colors } from '@rainbow-me/styles';
 
 const ApplePayIcon = ({ color, ...props }) => (
   <Svg height="23" width="55" viewBox="0 0 55 23" {...props}>

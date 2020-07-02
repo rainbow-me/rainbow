@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
-import { padding } from '../../styles';
 import { ColumnWithMargins } from '../layout';
 import { Smallcaps } from '../text';
+import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({ margin: 5 })`
   ${padding(19)};

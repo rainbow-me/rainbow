@@ -31,6 +31,7 @@ export const transformPool = (liquidityPool, ethPrice, nativeCurrency) => {
     balance,
     ethBalance,
     token: { balance: tokenBalance, name: tokenName, symbol: tokenSymbol },
+    tokenAddress,
     totalSupply,
     uniqueId,
   } = liquidityPool;
@@ -54,12 +55,15 @@ export const transformPool = (liquidityPool, ethPrice, nativeCurrency) => {
     ethBalance: floor(parseFloat(ethBalance), 4) || '< 0.0001',
     nativeDisplay,
     percentageOwned,
+    tokenAddress,
     tokenBalance: floor(parseFloat(tokenBalance), 4) || '< 0.0001',
     tokenName,
     tokenSymbol,
     totalBalanceAmount,
     totalNativeDisplay,
+    uniBalance: floor(balance, 7),
     uniqueId,
+    uniTotalSupply: floor(totalSupply, 7),
   };
 };
 

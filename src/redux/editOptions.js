@@ -55,6 +55,9 @@ export const setIsCoinListEdited = newIsCoinListEdited => (
   });
 };
 
+export const clearSelectedCoins = () => dispatch =>
+  dispatch(updateCurrentAction([]));
+
 export const pushSelectedCoin = selectedCoin => (dispatch, getState) => {
   const { selectedCoins } = getState().editOptions;
   const updatedSelectedCoins = concat(selectedCoins, selectedCoin);

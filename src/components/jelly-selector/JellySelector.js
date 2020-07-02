@@ -1,5 +1,4 @@
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -11,6 +10,7 @@ import {
   JellySelectorColorIndicator,
   JellySelectorIndicator,
 } from './jelly-selector-indicator';
+import { colors } from '@rainbow-me/styles';
 
 const springTo = (node, toValue) =>
   // eslint-disable-next-line import/no-named-as-default-member
@@ -36,12 +36,13 @@ function resetPositionCalculations() {
 
 const JellySelector = ({
   backgroundColor,
-  defaultIndex,
+  color = colors.dark,
+  defaultIndex = 0,
   disableSelection,
   height,
   items,
   onSelect,
-  renderIndicator,
+  renderIndicator = JellySelectorColorIndicator,
   renderItem,
   renderRow,
   ...props
@@ -109,6 +110,7 @@ const JellySelector = ({
       <JellySelectorRow renderRow={renderRow}>
         {items.map((item, index) => (
           <JellySelectorItem
+            color={color}
             index={index}
             isSelected={selected === index}
             item={item}
@@ -122,23 +124,6 @@ const JellySelector = ({
       </JellySelectorRow>
     </View>
   );
-};
-
-JellySelector.propTypes = {
-  backgroundColor: PropTypes.string,
-  defaultIndex: PropTypes.number,
-  disableSelection: PropTypes.bool,
-  height: PropTypes.number.isRequired,
-  items: PropTypes.array,
-  onSelect: PropTypes.func,
-  renderIndicator: PropTypes.func,
-  renderItem: PropTypes.func,
-  renderRow: PropTypes.func,
-};
-
-JellySelector.defaultProps = {
-  defaultIndex: 0,
-  renderIndicator: JellySelectorColorIndicator,
 };
 
 export default magicMemo(JellySelector, [

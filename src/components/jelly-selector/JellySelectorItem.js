@@ -10,6 +10,7 @@ export default function JellySelectorItem({
   renderItem,
   style,
   width,
+  ...props
 }) {
   const handleLayout = useCallback(e => onLayout(e, index), [index, onLayout]);
   const handlePress = useCallback(e => onPress(e, index), [index, onPress]);
@@ -26,6 +27,7 @@ export default function JellySelectorItem({
       {createElement(renderItem, {
         isSelected,
         item,
+        ...props,
       })}
     </ButtonPressAnimation>
   );

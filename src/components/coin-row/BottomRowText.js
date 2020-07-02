@@ -1,6 +1,6 @@
 import { withProps } from 'recompact';
-import { colors } from '../../styles';
 import { TruncatedText } from '../text';
+import { colors } from '@rainbow-me/styles';
 
 export default withProps(({ align, color }) => ({
   align: align || 'left',

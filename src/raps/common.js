@@ -2,11 +2,11 @@ import analytics from '@segment/analytics-react-native';
 import { get, join, map } from 'lodash';
 import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
-import { logger } from '../utils';
 import depositCompound from './actions/depositCompound';
 import swap from './actions/swap';
 import unlock from './actions/unlock';
 import withdrawCompound from './actions/withdrawCompound';
+import logger from 'logger';
 
 const NOOP = () => undefined;
 

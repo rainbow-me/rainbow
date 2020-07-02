@@ -1,8 +1,8 @@
 import { get } from 'lodash';
 import { getReserve } from '../handlers/uniswap';
 import { web3Provider } from '../handlers/web3';
-import { logger } from '../utils';
 import { uniswapUpdateTokenReserves } from './uniswap';
+import logger from 'logger';
 
 // -- Actions ---------------------------------------- //
 const web3UpdateReserves = () => async (dispatch, getState) => {

@@ -3,7 +3,6 @@ import React, { useCallback } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
-import { colors, fonts } from '../../styles';
 import { getFontSize } from '../../styles/fonts';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -12,6 +11,7 @@ import CoinCheckButton from '../coin-row/CoinCheckButton';
 import { ContactAvatar } from '../contacts';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { TruncatedAddress, TruncatedText } from '../text';
+import { colors, fonts } from '@rainbow-me/styles';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 
