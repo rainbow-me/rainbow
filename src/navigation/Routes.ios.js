@@ -289,7 +289,14 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         name={Routes.RESTORE_SHEET}
         component={RestoreSheet}
-        options={expandedAssetSheetConfig}
+        options={{
+          customStack: true,
+          isShortFormEnabled: true,
+          longFormHeight: 715,
+          onAppear: null,
+          shortFormHeight: 550,
+          startFromShortForm: true,
+        }}
       />
       {isNativeStackAvailable && (
         <>

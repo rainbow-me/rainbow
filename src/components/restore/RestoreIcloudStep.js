@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Dimensions,
+  InteractionManager,
   KeyboardAvoidingView,
   Platform,
   StatusBar,
@@ -16,6 +17,7 @@ import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { useAccountSettings, useInitializeWallet } from '../../hooks';
 import { fetchBackupPassword, saveBackupPassword } from '../../model/keychain';
 import { restoreCloudBackup } from '../../model/wallet';
+import Routes from '../../navigation/routesNames';
 import { walletsLoadState } from '../../redux/wallets';
 import { borders, colors, padding } from '../../styles';
 import { deviceUtils } from '../../utils';
@@ -125,7 +127,7 @@ const TopIcon = () => (
 );
 
 const RestoreIcloudStep = ({ userData }) => {
-  const { goBack } = useNavigation();
+  const { goBack, replace } = useNavigation();
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
   const { accountAddress } = useAccountSettings();
@@ -194,9 +196,9 @@ const RestoreIcloudStep = ({ userData }) => {
         await dispatch(walletsLoadState());
         await initializeWallet();
         goBack();
-        setTimeout(() => {
-          Alert.alert('Congrats', 'Your wallet has been restored!');
-        }, 1000);
+        InteractionManager.runAfterInteractions(() => {
+          replace(Routes.SWIPE_LAYOUT);
+        });
       } else {
         setIncorrectPassword(true);
         // setTimeout(passwordRef.current?.focus(), 1000);
@@ -204,7 +206,15 @@ const RestoreIcloudStep = ({ userData }) => {
     } catch (e) {
       Alert.alert('Error while restoring backup');
     }
-  }, [accountAddress, dispatch, goBack, initializeWallet, password, userData]);
+  }, [
+    accountAddress,
+    dispatch,
+    goBack,
+    initializeWallet,
+    password,
+    replace,
+    userData,
+  ]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
