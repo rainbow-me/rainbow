@@ -1,85 +1,10 @@
 import { differenceInMinutes } from 'date-fns';
-import { omit, pickBy } from 'lodash';
-import {
-  getAccountLocal,
-  removeAccountLocal,
-  saveAccountLocal,
-} from './common';
+import { pickBy } from 'lodash';
+import { getAccountLocal, saveAccountLocal } from './common';
 
 const REQUESTS = 'requests';
-const WALLETCONNECT = 'walletconnect';
 
-export const walletConnectAccountLocalKeys = [REQUESTS, WALLETCONNECT];
-
-/**
- * @desc get all wallet connect sessions
- * @return {Object}
- */
-export const getAllValidWalletConnectSessions = async (
-  accountAddress,
-  network
-) => {
-  const allSessions = await getAllWalletConnectSessions(
-    accountAddress,
-    network
-  );
-  return pickBy(allSessions, value => value.connected);
-};
-
-/**
- * @desc get all wallet connect sessions
- * @return {Object}
- */
-const getAllWalletConnectSessions = (accountAddress, network) =>
-  getAccountLocal(WALLETCONNECT, accountAddress, network, {});
-
-/**
- * @desc save wallet connect session
- * @param  {String}   [peerId]
- * @param  {Object}   [session]
- */
-export const saveWalletConnectSession = async (
-  peerId,
-  session,
-  accountAddress,
-  network
-) => {
-  const allSessions = await getAllValidWalletConnectSessions(
-    accountAddress,
-    network
-  );
-  allSessions[peerId] = session;
-  await saveAccountLocal(WALLETCONNECT, allSessions, accountAddress, network);
-};
-
-/**
- * @desc remove wallet connect sessions
- * @param  {String}   [sessionId]
- */
-export const removeWalletConnectSessions = async (
-  sessionIds,
-  accountAddress,
-  network
-) => {
-  const allSessions = await getAllWalletConnectSessions(
-    accountAddress,
-    network
-  );
-  const resultingSessions = omit(allSessions, sessionIds);
-  await saveAccountLocal(
-    WALLETCONNECT,
-    resultingSessions,
-    accountAddress,
-    network
-  );
-};
-
-/**
- * @desc remove all wallet connect sessions
- * @param  {String}   [sessionId]
- */
-export const removeWalletConnect = (accountAddress, network) =>
-  removeAccountLocal(WALLETCONNECT, accountAddress, network);
+export const walletConnectAccountLocalKeys = [REQUESTS];
 
 const isRequestStillValid = request => {
   if (
