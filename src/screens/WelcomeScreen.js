@@ -15,9 +15,7 @@ import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { Emoji, Text } from '../components/text';
-import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import useHideSplashScreen from '../helpers/hideSplashScreen';
-import WalletBackupTypes from '../helpers/walletBackupTypes';
 import { useWallets } from '../hooks';
 import Routes from '../navigation/routesNames';
 import { colors, shadow } from '@rainbow-me/styles';
@@ -406,7 +404,6 @@ export default function WelcomeScreen() {
   const backgroundColor = useMemoOne(() => colorAnimation(rValue, false), []);
 
   const onCreateWallet = useCallback(async () => {
-    await saveUserBackupState(WalletBackupTypes.ready);
     replace(Routes.SWIPE_LAYOUT);
   }, [replace]);
 
