@@ -1,9 +1,6 @@
 import { toChecksumAddress } from 'ethereumjs-util';
 import { filter, flatMap, get, map, values } from 'lodash';
-import {
-  backupUserDataIntoCloud,
-  deleteAllBackups,
-} from '../handlers/cloudBackup';
+import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import {
   getWalletNames,
@@ -81,22 +78,6 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     }
 
     const walletNames = await getWalletNames();
-
-    // Only for debugging purposes
-    const clearBackups = false;
-    if (clearBackups) {
-      Object.keys(wallets).forEach(key => {
-        // if (!wallets[key].primary) {
-        delete wallets[key].backedUp;
-        delete wallets[key].backupDate;
-        delete wallets[key].backupFile;
-        delete wallets[key].backupType;
-        //}
-      });
-
-      // Delete all backups (debugging)
-      deleteAllBackups();
-    }
 
     dispatch({
       payload: {

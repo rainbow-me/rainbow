@@ -13,8 +13,9 @@ import {
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
-import { LoadingOverlay } from '../components/modal';
-import { LoadingOverlayWrapper } from '../components/modal/LoadingOverlay';
+import LoadingOverlay, {
+  LoadingOverlayWrapper,
+} from '../components/modal/LoadingOverlay';
 import useExperimentalFlag, {
   DISCOVER_SHEET,
 } from '../config/experimentalHooks';

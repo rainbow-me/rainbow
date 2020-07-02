@@ -17,7 +17,9 @@ import { colors, fonts, padding } from '../../../styles';
 import { logger } from '../../../utils';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column, ColumnWithMargins } from '../../layout';
-import { LoadingOverlay, LoadingOverlayWrapper } from '../../modal';
+import LoadingOverlay, {
+  LoadingOverlayWrapper,
+} from '../../modal/LoadingOverlay';
 import { SheetButton } from '../../sheet';
 import { Text } from '../../text';
 

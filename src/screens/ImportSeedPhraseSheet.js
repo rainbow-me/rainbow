@@ -24,8 +24,9 @@ import { Button } from '../components/buttons';
 import { Icon } from '../components/icons';
 import { Input } from '../components/inputs';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
-import { LoadingOverlay } from '../components/modal';
-import { LoadingOverlayWrapper } from '../components/modal/LoadingOverlay';
+import LoadingOverlay, {
+  LoadingOverlayWrapper,
+} from '../components/modal/LoadingOverlay';
 import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
 import { saveUserBackupState } from '../handlers/localstorage/globalSettings';

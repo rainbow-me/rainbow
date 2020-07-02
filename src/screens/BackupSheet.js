@@ -16,7 +16,9 @@ import BackupIcloudStep from '../components/backup/BackupIcloudStep';
 import BackupImportedStep from '../components/backup/BackupImportedStep';
 import BackupManualStep from '../components/backup/BackupManualStep';
 import BackupSheetFirstStep from '../components/backup/BackupSheetFirstStep';
-import { LoadingOverlay, LoadingOverlayWrapper } from '../components/modal';
+import LoadingOverlay, {
+  LoadingOverlayWrapper,
+} from '../components/modal/LoadingOverlay';
 import { SlackSheet } from '../components/sheet';
 import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import BackupStateTypes from '../helpers/backupStateTypes';

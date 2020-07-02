@@ -6,8 +6,9 @@ import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
-import { LoadingOverlay } from '../components/modal';
-import { LoadingOverlayWrapper } from '../components/modal/LoadingOverlay';
+import LoadingOverlay, {
+  LoadingOverlayWrapper,
+} from '../components/modal/LoadingOverlay';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
 import useNativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
