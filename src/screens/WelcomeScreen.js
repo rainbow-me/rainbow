@@ -13,10 +13,8 @@ import { useMemoOne } from 'use-memo-one';
 import { ButtonPressAnimation } from '../components/animations';
 import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
-import { LoadingOverlay } from '../components/modal';
 import { Emoji, Text } from '../components/text';
 import useHideSplashScreen from '../helpers/hideSplashScreen';
-import { useWallets } from '../hooks';
 import Routes from '../navigation/routesNames';
 import { colors, shadow } from '@rainbow-me/styles';
 
@@ -199,18 +197,22 @@ const rainbows = [
 ];
 
 const traversedRainbows = rainbows.map(
-  ({
-    delay,
-    initialRotate = '0deg',
-    rotate = '0deg',
-    scale = 1,
-    source,
-    x = 0,
-    y = 0,
-  }) => {
+  (
+    {
+      delay,
+      initialRotate = '0deg',
+      rotate = '0deg',
+      scale = 1,
+      source,
+      x = 0,
+      y = 0,
+    },
+    index
+  ) => {
     const animatedValue = new Animated.Value(0);
     return {
       delay,
+      id: index,
       source,
       style: {
         opacity: animatedValue.interpolate({
@@ -335,7 +337,6 @@ function colorAnimation(rValue, fromShadow) {
 }
 
 export default function WelcomeScreen() {
-  const { isWalletLoading } = useWallets();
   const { replace, navigate } = useNavigation();
   const contentAnimation = useAnimatedValue(1);
   const hideSplashScreen = useHideSplashScreen();
@@ -475,7 +476,6 @@ export default function WelcomeScreen() {
           <RainbowButton {...existingWalletButtonProps} />
         </ButtonWrapper>
       </ContentWrapper>
-      {isWalletLoading && <LoadingOverlay title={isWalletLoading} />}
     </Container>
   );
 }

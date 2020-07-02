@@ -173,7 +173,6 @@ const RestoreIcloudStep = ({ userData }) => {
         setPassword(pwd);
       }
     };
-
     fetchPasswordIfPossible();
   }, []);
 
@@ -213,7 +212,7 @@ const RestoreIcloudStep = ({ userData }) => {
 
   const onSubmit = useCallback(async () => {
     try {
-      await dispatch(setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET));
+      await dispatch(setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET));
       const success = await restoreCloudBackup(password, userData);
       if (success) {
         // Store it in the keychain in case it was missing
@@ -227,8 +226,9 @@ const RestoreIcloudStep = ({ userData }) => {
         await dispatch(walletsLoadState());
         await initializeWallet();
         goBack();
-        InteractionManager.runAfterInteractions(() => {
+        InteractionManager.runAfterInteractions(async () => {
           replace(Routes.SWIPE_LAYOUT);
+          await dispatch(setIsWalletLoading(null));
         });
       } else {
         setIncorrectPassword(true);

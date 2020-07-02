@@ -134,45 +134,49 @@ class App extends Component {
     const address = await loadAddress();
     if (address) {
       this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
-
-      // Previously existing users should see the backup sheet right after app launch
-      // Uncomment the line below to get in the existing user state(before icloud)
-      // await saveUserBackupState(BackupStateTypes.immediate);
-      const backupState = await getUserBackupState();
-      if (backupState === BackupStateTypes.immediate) {
-        setTimeout(() => {
-          Navigation.handleAction(Routes.BACKUP_SHEET, {
-            // option: 'existing_user',
-          });
-        }, 1000);
-        // New users who are now get an incoming tx
-        // now need to go through the backup flow
-      } else if (backupState === BackupStateTypes.ready) {
-        const incomingTxListener = new EventEmitter();
-        incomingTxListener.on('incoming_transaction', async type => {
-          await saveUserBackupState(BackupStateTypes.pending);
-          setTimeout(
-            () => {
-              Navigation.handleAction(Routes.BACKUP_SHEET);
-            },
-            type === 'appended' ? 30000 : 1000
-          );
-          incomingTxListener.removeAllListeners();
-        });
-        // Incoming handles new transactions during runtime
-        store.dispatch(addNewSubscriber(incomingTxListener, 'appended'));
-        // Received will trigger when there's incoming transactions
-        // during startup
-        // store.dispatch(addNewSubscriber(incomingTxListener, 'received'));
-      } else if (backupState === BackupStateTypes.pending) {
-        setTimeout(() => {
-          Navigation.handleAction(Routes.BACKUP_SHEET);
-        }, 1000);
-      }
+      this.setupIncomingNotificationListeners();
     } else {
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
     }
   };
+
+  setupIncomingNotificationListeners = async () => {
+    // Previously existing users should see the backup sheet right after app launch
+    // Uncomment the line below to get in the existing user state(before icloud)
+    // await saveUserBackupState(BackupStateTypes.immediate);
+    const backupState = await getUserBackupState();
+    if (backupState === BackupStateTypes.immediate) {
+      setTimeout(() => {
+        Navigation.handleAction(Routes.BACKUP_SHEET, {
+          option: 'existing_user',
+        });
+      }, 1000);
+      // New users who are now get an incoming tx
+      // now need to go through the backup flow
+    } else if (backupState === BackupStateTypes.ready) {
+      const incomingTxListener = new EventEmitter();
+      incomingTxListener.on('incoming_transaction', async type => {
+        await saveUserBackupState(BackupStateTypes.pending);
+        setTimeout(
+          () => {
+            Navigation.handleAction(Routes.BACKUP_SHEET);
+          },
+          type === 'appended' ? 30000 : 1000
+        );
+        incomingTxListener.removeAllListeners();
+      });
+      // Incoming handles new transactions during runtime
+      store.dispatch(addNewSubscriber(incomingTxListener, 'appended'));
+      // Received will trigger when there's incoming transactions
+      // during startup
+      // store.dispatch(addNewSubscriber(incomingTxListener, 'received'));
+    } else if (backupState === BackupStateTypes.pending) {
+      setTimeout(() => {
+        Navigation.handleAction(Routes.BACKUP_SHEET);
+      }, 1000);
+    }
+  };
+
   onRemoteNotification = notification => {
     const topic = get(notification, 'data.topic');
     setTimeout(() => {

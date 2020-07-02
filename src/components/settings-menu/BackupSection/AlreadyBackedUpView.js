@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { Fragment, useCallback, useMemo } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -9,13 +9,15 @@ import WalletTypes from '../../../helpers/walletTypes';
 import { useWallets } from '../../../hooks';
 import { fetchBackupPassword } from '../../../model/keychain';
 import { addWalletToCloudBackup } from '../../../model/wallet';
+import { sheetVerticalOffset } from '../../../navigation/effects';
 import Routes from '../../../navigation/routesNames';
+import { usePortal } from '../../../react-native-cool-modals/Portal';
 import { setIsWalletLoading, setWalletBackedUp } from '../../../redux/wallets';
 import { colors, fonts, padding } from '../../../styles';
 import { logger } from '../../../utils';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column, ColumnWithMargins } from '../../layout';
-import { LoadingOverlay } from '../../modal';
+import { LoadingOverlay, LoadingOverlayWrapper } from '../../modal';
 import { SheetButton } from '../../sheet';
 import { Text } from '../../text';
 
@@ -72,6 +74,25 @@ const AlreadyBackedUpView = () => {
     selectedWallet,
   } = useWallets();
   const wallet_id = params?.wallet_id || selectedWallet.id;
+
+  const { setComponent, hide } = usePortal();
+
+  useEffect(() => {
+    if (isWalletLoading) {
+      setComponent(
+        <LoadingOverlayWrapper>
+          <LoadingOverlay
+            paddingTop={sheetVerticalOffset}
+            title={isWalletLoading}
+          />
+        </LoadingOverlayWrapper>,
+        false
+      );
+    } else {
+      hide();
+    }
+  }, [hide, isWalletLoading, setComponent]);
+
   const onViewRecoveryPhrase = useCallback(() => {
     navigate('ShowSecretView', {
       title: `Recovery ${
@@ -206,7 +227,6 @@ const AlreadyBackedUpView = () => {
           </ButtonPressAnimation>
         </Centered>
       )}
-      {isWalletLoading && <LoadingOverlay title={isWalletLoading} />}
     </Fragment>
   );
 };
