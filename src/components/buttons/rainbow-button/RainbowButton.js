@@ -4,7 +4,6 @@ import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
 import AddCashIconSource from '../../../assets/addCashIcon.png';
 import { useDimensions } from '../../../hooks';
-import { magicMemo } from '../../../utils';
 import { ButtonPressAnimation } from '../../animations';
 import { RowWithMargins } from '../../layout';
 import { Text } from '../../text';
@@ -114,11 +113,4 @@ const RainbowButton = ({
   );
 };
 
-export default magicMemo(RainbowButton, [
-  'disabled',
-  'height',
-  'label',
-  'strokeWidth',
-  'type',
-  'width',
-]);
+export default RainbowButton;
