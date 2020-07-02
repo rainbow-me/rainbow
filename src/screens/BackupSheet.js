@@ -1,5 +1,11 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useCallback, useContext, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Alert, InteractionManager } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
@@ -148,6 +154,17 @@ const BackupSheet = ({ setAppearListener }) => {
       });
     });
   }, [goBack, navigate]);
+
+  useEffect(() => {
+    if (step === WalletBackupTypes.cloud) {
+      setOptions({
+        isShortFormEnabled: false,
+        longFormHeight: missingPassword ? 715 : 750,
+      });
+      setImmediate(jumpToLong);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const renderStep = useCallback(() => {
     switch (step) {
