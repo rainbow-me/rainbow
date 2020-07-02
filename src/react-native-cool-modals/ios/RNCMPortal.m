@@ -55,7 +55,7 @@ RCT_EXPORT_VIEW_PROPERTY(blockTouches, BOOL)
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
-  if (self.portalView.blockTouches) {
+  if (self.portalView.blockTouches || self.subviews.count > 1) {
     return [super hitTest:point withEvent:event];
   }
   return nil;
