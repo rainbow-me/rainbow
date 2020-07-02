@@ -226,7 +226,7 @@ const SettingsModal = () => {
             name="AlreadyBackedUpView"
             component={AlreadyBackedUpView}
             options={({ route }) => ({
-              title: route.params.title,
+              title: route.params?.title || 'Backup',
               ...cardStyleInterpolator,
             })}
           />
@@ -234,7 +234,7 @@ const SettingsModal = () => {
             name="NeedsBackupView"
             component={NeedsBackupView}
             options={({ route }) => ({
-              title: route.params.title,
+              title: route.params?.title || 'Backup',
               ...cardStyleInterpolator,
             })}
           />
@@ -242,7 +242,7 @@ const SettingsModal = () => {
             name="ShowSecretView"
             component={ShowSecretView}
             options={({ route }) => ({
-              title: route.params.title,
+              title: route.params?.title || 'Backup',
               ...cardStyleInterpolator,
             })}
           />
