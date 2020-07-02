@@ -72,6 +72,8 @@ const DATA_LOAD_TRANSACTIONS_FAILURE = 'data/DATA_LOAD_TRANSACTIONS_FAILURE';
 const DATA_ADD_NEW_TRANSACTION_SUCCESS =
   'data/DATA_ADD_NEW_TRANSACTION_SUCCESS';
 
+const DATA_ADD_NEW_SUBSCRIBER = 'data/DATA_ADD_NEW_SUBSCRIBER';
+
 const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 
 // -- Actions ---------------------------------------- //
@@ -150,6 +152,8 @@ export const transactionsReceived = (message, appended = false) => async (
   const { accountAddress, nativeCurrency, network } = getState().settings;
   const { purchaseTransactions } = getState().addCash;
   const { transactions, tokenOverrides } = getState().data;
+  const { subscribers } = getState().data;
+
   const { parsedTransactions, potentialNftTransaction } = parseTransactions(
     transactionData,
     accountAddress,
@@ -171,6 +175,10 @@ export const transactionsReceived = (message, appended = false) => async (
   });
   dispatch(updatePurchases(parsedTransactions));
   saveLocalTransactions(parsedTransactions, accountAddress, network);
+  const type = appended ? 'appended' : 'received';
+  subscribers[type].forEach(listener => {
+    listener.emit('incoming_transaction', type);
+  });
 };
 
 export const transactionsRemoved = message => (dispatch, getState) => {
@@ -521,6 +529,19 @@ const watchPendingTransactions = (
   }
 };
 
+export const addNewSubscriber = (subscriber, type) => (dispatch, getState) => {
+  const { subscribers } = getState().data;
+  const newSubscribers = {
+    ...subscribers,
+  };
+
+  newSubscribers[type].push(subscriber);
+  dispatch({
+    payload: newSubscribers,
+    type: DATA_ADD_NEW_SUBSCRIBER,
+  });
+};
+
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   assetPricesFromUniswap: {},
@@ -528,6 +549,10 @@ const INITIAL_STATE = {
   genericAssets: {},
   isLoadingAssets: true,
   isLoadingTransactions: true,
+  subscribers: {
+    appended: [],
+    received: [],
+  },
   tokenOverrides: tokenOverrides,
   transactions: [],
   uniswapPricesQuery: null,
@@ -595,6 +620,11 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         transactions: action.payload,
+      };
+    case DATA_ADD_NEW_SUBSCRIBER:
+      return {
+        ...state,
+        subscribers: action.payload,
       };
     case DATA_CLEAR_STATE:
       return {

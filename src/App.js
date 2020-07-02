@@ -1,3 +1,4 @@
+import { EventEmitter } from 'events';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
@@ -35,7 +36,6 @@ import monitorNetwork from './debugging/network';
 import handleDeeplink from './handlers/deeplinks';
 import {
   getUserBackupState,
-  // eslint-disable-next-line no-unused-vars
   saveUserBackupState,
 } from './handlers/localstorage/globalSettings';
 import DevContextWrapper from './helpers/DevContext';
@@ -48,6 +48,7 @@ import { Navigation } from './navigation';
 // eslint-disable-next-line import/no-cycle
 import RoutesComponent from './navigation/Routes';
 import Routes from './navigation/routesNames';
+import { addNewSubscriber } from './redux/data';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
@@ -137,7 +138,7 @@ class App extends Component {
 
       // Previously existing users should see the backup sheet right after app launch
       // Uncomment the line below to get in the existing user state(before icloud)
-      // await saveUserBackupState(BackupStateTypes.pending);
+      await saveUserBackupState(BackupStateTypes.done);
       const backupState = await getUserBackupState();
       if (backupState === BackupStateTypes.immediate) {
         setTimeout(() => {
@@ -145,7 +146,27 @@ class App extends Component {
             option: 'existing_user',
           });
         }, 1000);
-        // New users who are now holding value need to go through the flow
+        // New users who are now get an incoming tx
+        // now need to go through the backup flow
+      } else if (backupState === BackupStateTypes.ready) {
+        const incomingTxListener = new EventEmitter();
+        incomingTxListener.on('incoming_transaction', async type => {
+          console.log('[YOOOOOOO] got incoming tx...', type);
+          await saveUserBackupState(BackupStateTypes.pending);
+          setTimeout(
+            () => {
+              Navigation.handleAction(Routes.BACKUP_SHEET);
+            },
+            type === 'appended' ? 30000 : 1000
+          );
+          incomingTxListener.removeAllListeners();
+        });
+        // Incoming handles new transactions during runtime
+        store.dispatch(addNewSubscriber(incomingTxListener, 'appended'));
+        // Received will trigger when there's incoming transactions
+        // during startup
+        // store.dispatch(addNewSubscriber(incomingTxListener, 'received'));
+        console.log('[YOOOOOOO] subscribed to incoming txs');
       } else if (backupState === BackupStateTypes.pending) {
         setTimeout(() => {
           Navigation.handleAction(Routes.BACKUP_SHEET);
