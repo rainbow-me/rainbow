@@ -201,43 +201,30 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
       let backupFile;
       if (!latestBackup) {
         logger.log(
-          'onConfirmBackup:: backing up to icloud',
-          password,
+          'BackupConfirmPasswordStep:: backing up to icloud',
           wallets[wallet_id]
         );
 
         backupFile = await backupWalletToCloud(password, wallets[wallet_id]);
       } else {
         logger.log(
-          'onConfirmBackup:: adding to icloud backup',
-          password,
+          'BackupConfirmPasswordStep:: adding to icloud backup',
           wallets[wallet_id],
           latestBackup
         );
         backupFile = await addWalletToCloudBackup(
-          password,
           wallets[wallet_id],
           latestBackup
         );
       }
       if (backupFile) {
-        logger.log('onConfirmBackup:: backup completed!', backupFile);
+        logger.log('BackupConfirmPasswordStep:: saving backup password');
         await saveBackupPassword(password);
-        logger.log('onConfirmBackup:: saving backup password', password);
-        logger.log('onConfirmBackup:: saved');
+        logger.log('BackupConfirmPasswordStep:: backup completed!', backupFile);
         await dispatch(
           setWalletBackedUp(wallet_id, WalletBackupTypes.cloud, backupFile)
         );
-        logger.log(
-          'onConfirmBackup:: backup saved in redux / keychain!',
-          backupFile
-        );
-
-        logger.log(
-          'onConfirmBackup:: backed up user data in the cloud!',
-          backupFile
-        );
-
+        logger.log('BackupConfirmPasswordStep:: backup saved everywhere!');
         goBack();
       } else {
         Alert.alert('Error while trying to backup');
@@ -246,6 +233,7 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
       logger.log('Error while backing up', e);
       passwordRef.current?.focus();
       await dispatch(setIsWalletLoading(null));
+      Alert.alert('Error while trying to backup');
     }
   }, [dispatch, goBack, latestBackup, params?.wallet_id, password, wallets]);
 

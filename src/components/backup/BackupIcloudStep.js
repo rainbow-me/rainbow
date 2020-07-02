@@ -271,16 +271,14 @@ const BackupIcloudStep = ({ setAppearListener }) => {
       let backupFile;
       if (!latestBackup) {
         logger.log(
-          'onConfirmBackup:: backing up to icloud',
-          password,
+          'BackupIcloudStep:: backing up to icloud',
           wallets[wallet_id]
         );
 
         backupFile = await backupWalletToCloud(password, wallets[wallet_id]);
       } else {
         logger.log(
-          'onConfirmBackup:: adding to icloud backup',
-          password,
+          'BackupIcloudStep:: adding to icloud backup',
           wallets[wallet_id],
           latestBackup
         );
@@ -291,24 +289,15 @@ const BackupIcloudStep = ({ setAppearListener }) => {
         );
       }
       if (backupFile) {
-        logger.log('onConfirmBackup:: saving backup password', password);
+        logger.log('BackupIcloudStep:: saving backup password');
         await keychain.saveBackupPassword(password);
-        logger.log('onConfirmBackup:: saved');
+        logger.log('BackupIcloudStep:: saved');
 
-        logger.log('onConfirmBackup:: backup completed!', backupFile);
+        logger.log('BackupIcloudStep:: backup completed!', backupFile);
         await dispatch(
           setWalletBackedUp(wallet_id, WalletBackupTypes.cloud, backupFile)
         );
-        logger.log(
-          'onConfirmBackup:: backup saved in redux / keychain!',
-          backupFile
-        );
-
-        logger.log(
-          'onConfirmBackup:: backed up user data in the cloud!',
-          backupFile
-        );
-
+        logger.log('BackupIcloudStep:: backup saved everywhere!');
         goBack();
       } else {
         Alert.alert('Error while trying to backup');
@@ -318,6 +307,7 @@ const BackupIcloudStep = ({ setAppearListener }) => {
     } catch (e) {
       logger.log('Error while backing up', e);
       dispatch(setIsWalletLoading(null));
+      Alert.alert('Error while trying to backup');
     }
   }, [
     params?.wallet_id,

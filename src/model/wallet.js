@@ -671,6 +671,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async id => {
 
 async function extractSecretsForWallet(wallet) {
   const allKeys = await keychain.loadAllKeys();
+  if (!allKeys) throw new Error("Couldn't read secrets from keychain");
   const secrets = {};
 
   const allowedPkeysKeys = wallet.addresses.map(

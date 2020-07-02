@@ -83,15 +83,7 @@ const BackupSheet = ({ setAppearListener }) => {
           await dispatch(
             setWalletBackedUp(wallet_id, WalletBackupTypes.cloud, backupFile)
           );
-          logger.log(
-            'onConfirmBackup:: backup saved in redux / keychain!',
-            backupFile
-          );
-
-          logger.log(
-            'onConfirmBackup:: backed up user data in the cloud!',
-            backupFile
-          );
+          logger.log('BackupSheet:: backup saved everywhere!');
           goBack();
           setTimeout(() => {
             Alert.alert('Your wallet has been backed up succesfully!');

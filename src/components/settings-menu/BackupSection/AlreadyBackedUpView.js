@@ -112,26 +112,18 @@ const AlreadyBackedUpView = () => {
             setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET)
           );
           // We have the password and we need to add it to an existing backup
-          logger.log('password fetched correctly', password);
+          logger.log('AlreadyBackedUpView::password fetched correctly');
           const backupFile = await addWalletToCloudBackup(
             password,
             wallets[wallet_id],
             latestBackup
           );
           if (backupFile) {
-            logger.log('onConfirmBackup:: backup completed!', backupFile);
+            logger.log('AlreadyBackedUpView:: backup completed!', backupFile);
             await dispatch(
               setWalletBackedUp(wallet_id, WalletBackupTypes.cloud, backupFile)
             );
-            logger.log(
-              'onConfirmBackup:: backup saved in redux / keychain!',
-              backupFile
-            );
-
-            logger.log(
-              'onConfirmBackup:: backed up user data in the cloud!',
-              backupFile
-            );
+            logger.log('AlreadyBackedUpView:: backup saved everywhere!');
           } else {
             Alert.alert('Error while trying to backup');
           }

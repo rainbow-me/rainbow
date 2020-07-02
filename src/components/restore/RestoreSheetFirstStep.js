@@ -89,7 +89,7 @@ const RestoreSheetFirstStep = ({
         <SheetRow
           as={ButtonPressAnimation}
           onPress={onIcloudRestorePress}
-          // disabled={walletsBackedUp < 1}
+          disabled={walletsBackedUp < 1}
         >
           <Column>
             <IcloudIcon />
