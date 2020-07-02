@@ -19,7 +19,6 @@ import {
 } from '../token-info';
 import Chart from '../value-chart/Chart';
 import { ChartExpandedStateHeader } from './chart';
-import { colors } from '@rainbow-me/styles';
 
 const ChartExpandedState = ({ asset }) => {
   const [chartPrice, setChartPrice] = useState(0);

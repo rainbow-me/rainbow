@@ -19,13 +19,8 @@ import { Input } from '../inputs';
 import { Centered, KeyboardFixedOpenLayout, RowWithMargins } from '../layout';
 import { Text, TruncatedAddress } from '../text';
 import PlaceholderText from '../text/PlaceholderText';
-<<<<<<< HEAD
-import FloatingPanels from './FloatingPanels';
-import { AssetPanel } from './asset-panel';
 import Routes from '@rainbow-me/routes';
 import { colors, padding } from '@rainbow-me/styles';
-=======
->>>>>>> 6499fdbf... move FloatingPanel components into their own directory
 
 const sx = StyleSheet.create({
   addressAbbreviation: {
