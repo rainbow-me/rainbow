@@ -25,6 +25,7 @@ import { Icon } from '../components/icons';
 import { Input } from '../components/inputs';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
+import { LoadingOverlayWrapper } from '../components/modal/LoadingOverlay';
 import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
 import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
@@ -47,6 +48,7 @@ import { sheetVerticalOffset } from '../navigation/effects';
 import Routes from '@rainbow-me/routes';
 import { borders, colors, padding, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
+import { usePortal } from 'react-native-cool-modals/Portal';
 
 const keyboardVerticalOffset =
   Platform.OS === 'android'
@@ -293,6 +295,24 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     wasImporting,
   ]);
 
+  const { setComponent, hide } = usePortal();
+
+  useEffect(() => {
+    if (isImporting) {
+      setComponent(
+        <LoadingOverlayWrapper>
+          <LoadingOverlay
+            paddingTop={keyboardVerticalOffset}
+            title={walletLoadingStates.IMPORTING_WALLET}
+          />
+        </LoadingOverlayWrapper>,
+        true
+      );
+    } else {
+      hide();
+    }
+  }, [hide, isImporting, setComponent]);
+
   return (
     <Container>
       <StatusBar barStyle="light-content" />
@@ -341,12 +361,6 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             seedPhrase={seedPhrase}
           />
         </Row>
-        {isImporting && (
-          <LoadingOverlay
-            paddingTop={keyboardVerticalOffset}
-            title={walletLoadingStates.IMPORTING_WALLET}
-          />
-        )}
       </KeyboardAvoidingView>
     </Container>
   );

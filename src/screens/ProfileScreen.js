@@ -7,6 +7,7 @@ import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
+import { LoadingOverlayWrapper } from '../components/modal/LoadingOverlay';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
 import useNativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
@@ -20,6 +21,7 @@ import {
 } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/effects';
+import { usePortal } from '../react-native-cool-modals/Portal';
 import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
 
@@ -36,7 +38,23 @@ export default function ProfileScreen({ navigation }) {
   const { navigate } = useNavigation();
   const { isWalletLoading } = useWallets();
   const nativeTransactionListAvailable = useNativeTransactionListAvailable();
+  const { setComponent, hide } = usePortal();
 
+  useEffect(() => {
+    if (isWalletLoading) {
+      setComponent(
+        <LoadingOverlayWrapper>
+          <LoadingOverlay
+            paddingTop={sheetVerticalOffset}
+            title={isWalletLoading}
+          />
+        </LoadingOverlayWrapper>,
+        false
+      );
+    } else {
+      hide();
+    }
+  }, [hide, isWalletLoading, setComponent]);
   const {
     isLoadingTransactions: isLoading,
     sections,
@@ -109,12 +127,6 @@ export default function ProfileScreen({ navigation }) {
           navigation={navigation}
           network={network}
           sections={sections}
-        />
-      )}
-      {isWalletLoading && (
-        <LoadingOverlay
-          paddingTop={sheetVerticalOffset}
-          title={isWalletLoading}
         />
       )}
     </ProfileScreenPage>

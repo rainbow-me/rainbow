@@ -23,7 +23,7 @@ const DevSection = () => {
     <ScrollView>
       <ListItem label="💥 Clear async storage" onPress={AsyncStorage.clear} />
       <ListItem label="💣 Reset Keychain" onPress={wipeKeychain} />
-      <ListItem onPress={Restart} label="🔄 Restart app" />
+      <ListItem label="🔄 Restart app" onPress={Restart} />
       <ListItem
         label="🤷 Restore default experimental config"
         onPress={() => AsyncStorage.removeItem('experimentalConfig')}
