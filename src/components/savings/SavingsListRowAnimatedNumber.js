@@ -58,6 +58,8 @@ const SavingsListRowAnimatedNumber = ({
       time={interval}
       value={Number(value)}
       animationConfig={{
+        color: '#20df20', // HEX
+        colorThrottle: 1,
         decimals: 10,
         initialValue: Number(initialValue),
         interval,
