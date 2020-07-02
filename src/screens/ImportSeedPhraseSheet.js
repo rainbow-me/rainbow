@@ -289,6 +289,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     selectedWallet.type,
     startAnalyticsTimeout,
     toggleImporting,
+    wallets,
     wasImporting,
   ]);
 

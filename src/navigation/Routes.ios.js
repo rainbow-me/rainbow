@@ -3,8 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
 import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
-// eslint-disable-next-line import/no-cycle
-import { InitialRouteContext } from '../App';
+import { InitialRouteContext } from '../context/initialRoute';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';

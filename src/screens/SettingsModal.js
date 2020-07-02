@@ -175,8 +175,7 @@ const SettingsModal = () => {
       const route = getRealRoute(params?.initialRoute);
       navigate(route);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getRealRoute, navigate, params?.initialRoute]);
 
   return (
     <Modal marginBottom={statusBarHeight} minHeight={580} onCloseModal={goBack}>

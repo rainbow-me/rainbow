@@ -115,14 +115,8 @@ const BackupManualStep = () => {
     const words = seed.split(' ');
     columns = [words.slice(0, words.length / 2), words.slice(words.length / 2)];
     secretLayout = columns.map((wordColumn, colIndex) => (
-      <Column
-        // eslint-disable-next-line react/no-array-index-key
-        key={`col_${colIndex}`}
-        marginLeft={30}
-        marginRight={30}
-      >
+      <Column key={`col_${colIndex}`} marginLeft={30} marginRight={30}>
         {wordColumn.map((word, index) => (
-          // eslint-disable-next-line react/no-array-index-key
           <RowWithMargins marginBottom={9} key={`word_${index}`}>
             <SeedWordNumberText>
               {index + 1 + colIndex * wordColumn.length} &nbsp;

@@ -6,11 +6,12 @@ import { init as initSentry, setRelease } from '@sentry/react-native';
 import { get } from 'lodash';
 import nanoid from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
-import React, { Component, createContext } from 'react';
+import React, { Component } from 'react';
 import { AppRegistry, AppState, unstable_enableLogBox } from 'react-native';
 import branch from 'react-native-branch';
 // eslint-disable-next-line import/default
 import CodePush from 'react-native-code-push';
+
 import {
   REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
@@ -31,7 +32,7 @@ import {
   showNetworkRequests,
   showNetworkResponses,
 } from './config/debug';
-
+import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
 import handleDeeplink from './handlers/deeplinks';
 import {
@@ -45,7 +46,6 @@ import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
-// eslint-disable-next-line import/no-cycle
 import RoutesComponent from './navigation/Routes';
 import Routes from './navigation/routesNames';
 import { addNewSubscriber } from './redux/data';
@@ -74,8 +74,6 @@ CodePush.getUpdateMetadata().then(update => {
 });
 
 enableScreens();
-
-export const InitialRouteContext = createContext(null);
 
 class App extends Component {
   static propTypes = {
