@@ -190,7 +190,9 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             }
           },
           onRefocusInput:
-            Platform.OS === 'ios' ? setAppearListener(focusListener) : null,
+            Platform.OS === 'ios'
+              ? setAppearListener(focusListener)
+              : () => null,
           profile: {
             name,
           },
