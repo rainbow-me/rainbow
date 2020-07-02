@@ -21,6 +21,6 @@ export const defaultConfig = {
   [NATIVE_BPA]: true,
   [NATIVE_TRANSACTION_LIST]: true,
   [NEW_ONBOARDING]: false,
-  [NEW_SPLASH_SCREEN]: false,
+  [NEW_SPLASH_SCREEN]: true,
   [RAINBOW_TEXT]: true,
 };
