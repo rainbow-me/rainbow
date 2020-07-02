@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
+import { isEmpty as isObjectEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, {
   useCallback,
@@ -28,9 +29,11 @@ import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
 import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import { web3Provider } from '../handlers/web3';
+import BackupStateTypes from '../helpers/backupStateTypes';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { isENSAddressFormat, isValidWallet } from '../helpers/validators';
 import walletLoadingStates from '../helpers/walletLoadingStates';
+import WalletTypes from '../helpers/walletTypes';
 import {
   useAccountSettings,
   useClipboard,
@@ -100,7 +103,7 @@ const ImportButton = ({ disabled, onPress, seedPhrase }) => (
 
 const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   const { accountAddress } = useAccountSettings();
-  const { selectedWallet } = useWallets();
+  const { selectedWallet, wallets } = useWallets();
   const { clipboard } = useClipboard();
   const { goBack, navigate, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
@@ -236,6 +239,11 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     if (!wasImporting && isImporting) {
       startAnalyticsTimeout(async () => {
         const input = resolvedAddress ? resolvedAddress : seedPhrase.trim();
+        const previousWalletCount = !isObjectEmpty(wallets)
+          ? Object.keys(wallets).filter(
+              wallet => wallet.type !== WalletTypes.readOnly
+            ).length
+          : 0;
         initializeWallet(input, color, name ? name : '')
           .then(success => {
             if (success) {
@@ -244,7 +252,9 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
               });
               goBack();
               InteractionManager.runAfterInteractions(async () => {
-                await saveUserBackupState('ready');
+                if (previousWalletCount === 0) {
+                  await saveUserBackupState(BackupStateTypes.done);
+                }
                 navigate(Routes.SWIPE_LAYOUT);
                 setTimeout(() => {
                   // If it's not read only, show the backup sheet

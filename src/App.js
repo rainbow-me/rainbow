@@ -138,7 +138,7 @@ class App extends Component {
 
       // Previously existing users should see the backup sheet right after app launch
       // Uncomment the line below to get in the existing user state(before icloud)
-      await saveUserBackupState(BackupStateTypes.immediate);
+      // await saveUserBackupState(BackupStateTypes.immediate);
       const backupState = await getUserBackupState();
       if (backupState === BackupStateTypes.immediate) {
         setTimeout(() => {

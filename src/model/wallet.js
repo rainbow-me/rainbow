@@ -16,6 +16,7 @@ import {
   encryptAndSaveDataToCloud,
   getDataFromCloud,
 } from '../handlers/cloudBackup';
+import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import {
   addHexPrefix,
   isHexString,
@@ -24,6 +25,7 @@ import {
   toChecksumAddress,
   web3Provider,
 } from '../handlers/web3';
+import BackupStateTypes from '../helpers/backupStateTypes';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import { ethereumUtils } from '../utils';
@@ -425,6 +427,10 @@ export const createWallet = async (seed = null, color = null, name = null) => {
       primary,
       type,
     };
+
+    if (!isImported) {
+      await saveUserBackupState(BackupStateTypes.ready);
+    }
 
     setSelectedWallet(allWallets[id]);
     await saveAllWallets(allWallets);

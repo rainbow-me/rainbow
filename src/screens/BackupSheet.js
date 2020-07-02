@@ -18,6 +18,7 @@ import BackupManualStep from '../components/backup/BackupManualStep';
 import BackupSheetFirstStep from '../components/backup/BackupSheetFirstStep';
 import { SlackSheet } from '../components/sheet';
 import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
+import BackupStateTypes from '../helpers/backupStateTypes';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import walletLoadingStates from '../helpers/walletLoadingStates';
 import WalletTypes from '../helpers/walletTypes';
@@ -134,7 +135,7 @@ const BackupSheet = ({ setAppearListener }) => {
         await dispatch(setWalletBackedUp(wallet_id, WalletBackupTypes.manual));
       }
     });
-    await saveUserBackupState('done');
+    await saveUserBackupState(BackupStateTypes.done);
     goBack();
   }, [dispatch, goBack, wallets]);
 
