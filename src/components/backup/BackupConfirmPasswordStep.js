@@ -246,6 +246,7 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
       logger.log('Error while backing up', e);
       passwordRef.current?.focus();
       await dispatch(setIsWalletLoading(null));
+      Alert.alert('Error while trying to backup');
     }
   }, [dispatch, goBack, latestBackup, params?.wallet_id, password, wallets]);
 

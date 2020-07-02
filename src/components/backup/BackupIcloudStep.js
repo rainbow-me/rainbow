@@ -318,6 +318,7 @@ const BackupIcloudStep = ({ setAppearListener }) => {
     } catch (e) {
       logger.log('Error while backing up', e);
       dispatch(setIsWalletLoading(null));
+      Alert.alert('Error while trying to backup');
     }
   }, [
     params?.wallet_id,
