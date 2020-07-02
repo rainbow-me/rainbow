@@ -16,17 +16,25 @@ import { saveUserBackupState } from '../../handlers/localstorage/globalSettings'
 import { removeWalletData } from '../../handlers/localstorage/removeWallet';
 import BackupStateTypes from '../../helpers/backupStateTypes';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import { useAccountSettings, useInitializeWallet } from '../../hooks';
+import WalletLoadingStates from '../../helpers/walletLoadingStates';
+import {
+  useAccountSettings,
+  useInitializeWallet,
+  useWallets,
+} from '../../hooks';
 import { fetchBackupPassword, saveBackupPassword } from '../../model/keychain';
 import { restoreCloudBackup } from '../../model/wallet';
+import { sheetVerticalOffset } from '../../navigation/effects';
 import Routes from '../../navigation/routesNames';
-import { walletsLoadState } from '../../redux/wallets';
+import { usePortal } from '../../react-native-cool-modals/Portal';
+import { setIsWalletLoading, walletsLoadState } from '../../redux/wallets';
 import { borders, colors, padding } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
+import LoadingOverlay, { LoadingOverlayWrapper } from '../modal/LoadingOverlay';
 import { SheetButton } from '../sheet';
 import { GradientText, Text } from '../text';
 
@@ -131,6 +139,7 @@ const TopIcon = () => (
 const RestoreIcloudStep = ({ userData }) => {
   const { goBack, replace } = useNavigation();
   const dispatch = useDispatch();
+  const { isWalletLoading } = useWallets();
   const initializeWallet = useInitializeWallet();
   const { accountAddress } = useAccountSettings();
   const [validPassword, setValidPassword] = useState(false);
@@ -139,6 +148,23 @@ const RestoreIcloudStep = ({ userData }) => {
   const [password, setPassword] = useState('');
   const [label, setLabel] = useState('􀙶 Confirm Backup');
   const passwordRef = useRef();
+  const { setComponent, hide } = usePortal();
+
+  useEffect(() => {
+    if (isWalletLoading) {
+      setComponent(
+        <LoadingOverlayWrapper>
+          <LoadingOverlay
+            paddingTop={sheetVerticalOffset}
+            title={isWalletLoading}
+          />
+        </LoadingOverlayWrapper>,
+        false
+      );
+    } else {
+      hide();
+    }
+  }, [hide, isWalletLoading, setComponent]);
 
   useEffect(() => {
     const fetchPasswordIfPossible = async () => {
@@ -187,6 +213,7 @@ const RestoreIcloudStep = ({ userData }) => {
 
   const onSubmit = useCallback(async () => {
     try {
+      await dispatch(setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET));
       const success = await restoreCloudBackup(password, userData);
       if (success) {
         // Store it in the keychain in case it was missing
@@ -205,9 +232,10 @@ const RestoreIcloudStep = ({ userData }) => {
         });
       } else {
         setIncorrectPassword(true);
-        // setTimeout(passwordRef.current?.focus(), 1000);
+        await dispatch(setIsWalletLoading(null));
       }
     } catch (e) {
+      await dispatch(setIsWalletLoading(null));
       Alert.alert('Error while restoring backup');
     }
   }, [

@@ -16,6 +16,7 @@ import BackupIcloudStep from '../components/backup/BackupIcloudStep';
 import BackupImportedStep from '../components/backup/BackupImportedStep';
 import BackupManualStep from '../components/backup/BackupManualStep';
 import BackupSheetFirstStep from '../components/backup/BackupSheetFirstStep';
+import { LoadingOverlay, LoadingOverlayWrapper } from '../components/modal';
 import { SlackSheet } from '../components/sheet';
 import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import BackupStateTypes from '../helpers/backupStateTypes';
@@ -25,7 +26,9 @@ import WalletTypes from '../helpers/walletTypes';
 import { useWallets } from '../hooks';
 import { fetchBackupPassword } from '../model/keychain';
 import { addWalletToCloudBackup } from '../model/wallet';
+import { sheetVerticalOffset } from '../navigation/effects';
 import Routes from '../navigation/routesNames';
+import { usePortal } from '../react-native-cool-modals/Portal';
 import { setIsWalletLoading, setWalletBackedUp } from '../redux/wallets';
 import { logger } from '../utils';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
@@ -50,10 +53,33 @@ const BackupSheet = ({ setAppearListener }) => {
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
   const dispatch = useDispatch();
-  const { selectedWallet, wallets, latestBackup } = useWallets();
+  const {
+    selectedWallet,
+    wallets,
+    latestBackup,
+    isWalletLoading,
+  } = useWallets();
   const [step, setStep] = useState(params?.option || 'first');
   const wallet_id = params?.wallet_id || selectedWallet.id;
   const missingPassword = params?.missingPassword || null;
+  const { setComponent, hide } = usePortal();
+
+  useEffect(() => {
+    if (isWalletLoading) {
+      setComponent(
+        <LoadingOverlayWrapper>
+          <LoadingOverlay
+            paddingTop={sheetVerticalOffset}
+            title={isWalletLoading}
+          />
+        </LoadingOverlayWrapper>,
+        false
+      );
+    } else {
+      hide();
+    }
+  }, [hide, isWalletLoading, setComponent]);
+
   const onIcloudBackup = useCallback(async () => {
     if (latestBackup) {
       let password = await fetchBackupPassword();
