@@ -65,7 +65,7 @@
   float b = (rgbValue & 0xFF)/255.0;
 
   _colorsMap = [NSMutableArray new];
-  for (float i = 1.0f; i > 0; i -= 0.1f) {
+  for (float i = 1.0f; i > 0; i -= 0.05f) {
     [_colorsMap addObject:[UIColor colorWithRed: r * i green:g * i blue:b * i alpha:1]];
   }
 
@@ -112,7 +112,7 @@
       if (_prevString == nil) {
         _prevString = newString;
       }
-      if (_annealingColor.count == 10) {
+      if (_annealingColor.count == 20) {
         [_annealingColor removeObjectAtIndex:0];
       }
       for (NSUInteger i = 0; i < len; i++){
