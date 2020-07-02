@@ -18,6 +18,7 @@ import { Icon } from '../components/icons';
 import { Input } from '../components/inputs';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
+import { LoadingOverlayWrapper } from '../components/modal/LoadingOverlay';
 import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
 import { web3Provider } from '../handlers/web3';
@@ -33,6 +34,7 @@ import {
 import { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/effects';
 import Routes from '@rainbow-me/routes';
+import { usePortal } from 'react-native-cool-modals/Portal';
 import { borders, colors, padding, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
 
@@ -257,6 +259,24 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     wasImporting,
   ]);
 
+  const { setComponent, hide } = usePortal();
+
+  useEffect(() => {
+    if (isImporting) {
+      setComponent(
+        <LoadingOverlayWrapper>
+          <LoadingOverlay
+            paddingTop={keyboardVerticalOffset}
+            title="Importing..."
+          />
+        </LoadingOverlayWrapper>,
+        true
+      );
+    } else {
+      hide();
+    }
+  }, [hide, isImporting, setComponent]);
+
   return (
     <Container>
       <StatusBar barStyle="light-content" />
@@ -305,12 +325,6 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             seedPhrase={seedPhrase}
           />
         </Row>
-        {isImporting && (
-          <LoadingOverlay
-            paddingTop={keyboardVerticalOffset}
-            title="Importing..."
-          />
-        )}
       </KeyboardAvoidingView>
     </Container>
   );

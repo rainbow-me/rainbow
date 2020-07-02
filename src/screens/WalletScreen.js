@@ -14,6 +14,7 @@ import {
 } from '../components/header';
 import { Page } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
+import { LoadingOverlayWrapper } from '../components/modal/LoadingOverlay';
 import useExperimentalFlag, {
   DISCOVER_SHEET,
 } from '../config/experimentalHooks';
@@ -29,6 +30,7 @@ import {
   useWalletSectionsData,
 } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/effects';
+import { usePortal } from 'react-native-cool-modals/Portal';
 import { position } from '@rainbow-me/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
@@ -87,6 +89,24 @@ export default function WalletScreen() {
     [network]
   );
 
+  const { setComponent, hide } = usePortal();
+
+  useEffect(() => {
+    if (isCreatingAccount) {
+      setComponent(
+        <LoadingOverlayWrapper>
+          <LoadingOverlay
+            paddingTop={sheetVerticalOffset}
+            title="Creating wallet..."
+          />
+        </LoadingOverlayWrapper>,
+        true
+      );
+    } else {
+      hide();
+    }
+  }, [hide, isCreatingAccount, setComponent]);
+
   return (
     <WalletPage>
       {/* Line below appears to be needed for having scrollViewTracker persistent while
@@ -117,12 +137,6 @@ export default function WalletScreen() {
           sections={sections}
         />
       </FabWrapper>
-      {isCreatingAccount && (
-        <LoadingOverlay
-          paddingTop={sheetVerticalOffset}
-          title="Creating wallet..."
-        />
-      )}
     </WalletPage>
   );
 }

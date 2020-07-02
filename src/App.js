@@ -43,6 +43,7 @@ import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { logger } from 'logger';
+import { Portal } from 'react-native-cool-modals/Portal';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
 
@@ -188,15 +189,17 @@ class App extends Component {
 
   render = () => (
     <DevContextWrapper>
-      <SafeAreaProvider>
-        <Provider store={store}>
-          <FlexItem>
-            <RoutesComponent ref={this.handleNavigatorRef} />
-            <OfflineToast />
-            <TestnetToast network={this.props.network} />
-          </FlexItem>
-        </Provider>
-      </SafeAreaProvider>
+      <Portal>
+        <SafeAreaProvider>
+          <Provider store={store}>
+            <FlexItem>
+              <RoutesComponent ref={this.handleNavigatorRef} />
+              <OfflineToast />
+              <TestnetToast network={this.props.network} />
+            </FlexItem>
+          </Provider>
+        </SafeAreaProvider>
+      </Portal>
     </DevContextWrapper>
   );
 }
