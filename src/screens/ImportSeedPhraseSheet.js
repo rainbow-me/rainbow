@@ -318,9 +318,16 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             value={seedPhrase}
             weight="semibold"
             width="100%"
+            marginBottom={Platform.OS === 'android' ? 55 : 0}
           />
         </Centered>
-        <Row align="start" justify="end">
+        <Row
+          align="start"
+          bottom={Platform.OS === 'android' ? 55 : 0}
+          justify="end"
+          position={Platform.OS === 'android' ? 'absolute' : 'relative'}
+          right={0}
+        >
           <ImportButton
             disabled={seedPhrase ? !isSecretValid : !isClipboardValidSecret}
             onPress={onPressImportButton}
