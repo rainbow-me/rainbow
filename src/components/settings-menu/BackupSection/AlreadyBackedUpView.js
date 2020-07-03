@@ -164,7 +164,6 @@ const AlreadyBackedUpView = () => {
       //   await dispatch(deleteCloudBackup(wallet_id));
     }
   }, [walletStatus, latestBackup, navigate, wallet_id, wallets, dispatch]);
-
   return (
     <Fragment>
       <Centered>
@@ -174,7 +173,7 @@ const AlreadyBackedUpView = () => {
           size={parseFloat(fonts.size.medium)}
         >
           {(walletStatus === 'cloud_backup' && `Backed up`) ||
-            (walletStatus === 'cloud_backup' && `Backed up manually`) ||
+            (walletStatus === 'manual_backup' && `Backed up manually`) ||
             (walletStatus === 'imported' && `Imported`)}
         </Text>
       </Centered>

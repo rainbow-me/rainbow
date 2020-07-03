@@ -14,8 +14,7 @@ import {
   NetworkSection,
   SettingsSection,
 } from '../components/settings-menu';
-import AlreadyBackedUpView from '../components/settings-menu/BackupSection/AlreadyBackedUpView';
-import NeedsBackupView from '../components/settings-menu/BackupSection/NeedsBackupView';
+import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
 import WalletSelectionView from '../components/settings-menu/BackupSection/WalletSelectionView';
 import DevSection from '../components/settings-menu/DevSection';
@@ -129,7 +128,7 @@ const onPressHiddenFeature = () => {
 
 const SettingsModal = () => {
   const { goBack, navigate } = useNavigation();
-  const { wallets, selectedWallet } = useWallets();
+  const { wallets } = useWallets();
   const { params } = useRoute();
 
   const getRealRoute = useCallback(
@@ -137,8 +136,6 @@ const SettingsModal = () => {
       let route = key;
       if (key === SettingsPages.backup.key) {
         const wallet_id = params?.wallet_id;
-        const activeWallet =
-          (wallet_id && wallets[wallet_id]) || selectedWallet;
         if (
           !wallet_id &&
           Object.keys(wallets).filter(
@@ -146,16 +143,20 @@ const SettingsModal = () => {
           ).length > 1
         ) {
           route = 'WalletSelectionView';
-        } else if (activeWallet.backedUp || activeWallet.imported) {
-          route = 'AlreadyBackedUpView';
         } else {
-          route = 'NeedsBackupView';
+          route = 'SettingsBackupView';
         }
       }
       return route;
     },
-    [params?.wallet_id, selectedWallet, wallets]
+    [params?.wallet_id, wallets]
   );
+
+  // useEffect(() => {
+  //   if (params?.replaceRoute) {
+  //     replace(route);
+  //   }
+  // }, [params?.replaceRoute]);
 
   const onPressSection = useCallback(
     section => () => {
@@ -223,16 +224,8 @@ const SettingsModal = () => {
             }}
           />
           <Stack.Screen
-            name="AlreadyBackedUpView"
-            component={AlreadyBackedUpView}
-            options={({ route }) => ({
-              title: route.params?.title || 'Backup',
-              ...cardStyleInterpolator,
-            })}
-          />
-          <Stack.Screen
-            name="NeedsBackupView"
-            component={NeedsBackupView}
+            name="SettingsBackupView"
+            component={SettingsBackupView}
             options={({ route }) => ({
               title: route.params?.title || 'Backup',
               ...cardStyleInterpolator,

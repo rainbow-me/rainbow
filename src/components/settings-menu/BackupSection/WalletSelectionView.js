@@ -79,14 +79,16 @@ const WalletSelectionView = () => {
     (wallet_id, name) => {
       const wallet = wallets[wallet_id];
       if (wallet.backedUp || wallet.imported) {
-        navigate('AlreadyBackedUpView', {
+        navigate('SettingsBackupView', {
           imported: wallet.imported,
           title: name,
+          type: 'AlreadyBackedUpView',
           wallet_id,
         });
       } else {
-        navigate('NeedsBackupView', {
+        navigate('SettingsBackupView', {
           title: name,
+          type: 'NeedsBackupView',
           wallet_id,
         });
       }
