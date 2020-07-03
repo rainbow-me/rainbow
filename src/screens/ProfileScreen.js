@@ -51,8 +51,7 @@ export default function ProfileScreen({ navigation }) {
         </LoadingOverlayWrapper>,
         false
       );
-    } else {
-      hide();
+      return hide;
     }
   }, [hide, isCreatingAccount, setComponent]);
   const {
@@ -78,9 +77,10 @@ export default function ProfileScreen({ navigation }) {
     navigate,
   ]);
 
-  const onPressSettings = useCallback(() => navigate(Routes.SETTINGS_MODAL), [
-    navigate,
-  ]);
+  const onPressSettings = useCallback(
+    () => navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR),
+    [navigate]
+  );
 
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);

@@ -272,8 +272,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
         </LoadingOverlayWrapper>,
         true
       );
-    } else {
-      hide();
+      return hide;
     }
   }, [hide, isImporting, setComponent]);
 
