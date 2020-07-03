@@ -61,18 +61,12 @@
 
 - (void) setIsShortFormEnabled:(BOOL)isShortFormEnabled {
   _isShortFormEnabled = isShortFormEnabled;
-  SEL selector = NSSelectorFromString(@"panModalSetNeedsLayoutUpdateWrapper");
-  UIViewController* controller = [self.controller valueForKey:@"_parentVC"];
-  
-  [controller performSelector:selector];
+  [[_controller parentVC] panModalSetNeedsLayoutUpdateWrapper];
   
 }
 
 - (void)jumpTo:(nonnull NSNumber*)point {
-  SEL selector = NSSelectorFromString(@"jumpToLong:");
-  UIViewController* controller = [self.controller valueForKey:@"_parentVC"];
-  
-  [controller performSelector:selector withObject:point];
+  [[_controller parentVC] jumpToLong:point];
 }
 
 
@@ -322,9 +316,8 @@
   return self;
 }
 
-- (void)presentModally:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^)(void))completion topOffset:(CGFloat)topOffset showDragIndicator:(BOOL)showDragIndicator slackStack:(BOOL)slackStack cornerRadius:(NSNumber*)cornerRadius
-                config: (NSObject*) config {
-  return [_parentVC presentModally:viewControllerToPresent animated:flag completion:completion topOffset:topOffset showDragIndicator:showDragIndicator slackStack:slackStack cornerRadius:cornerRadius config:config];
+- (void)presentModally:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^)(void))completion  slackStack:(BOOL)slackStack {
+  return [_parentVC presentModally:viewControllerToPresent animated:flag completion:completion slackStack:slackStack];
   
 }
 
@@ -394,6 +387,10 @@
 {
   [_previousFirstResponder becomeFirstResponder];
   _previousFirstResponder = nil;
+}
+
+- (PanModalViewController*) parentVC {
+  return (PanModalViewController*) _parentVC;
 }
 
 @end

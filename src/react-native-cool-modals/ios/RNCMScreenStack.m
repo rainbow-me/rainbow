@@ -310,8 +310,7 @@
           if (lastModal) {
             afterTransitions();
           };
-        } topOffset:[((RNCMScreenView *)next.view).topOffset floatValue] showDragIndicator:((RNCMScreenView *)next.view).showDragIndicator slackStack: ((RNCMScreenView*) next.view).customStack cornerRadius:((RNCMScreenView*) next.view).cornerRadius
-            config:((RNCMScreenView *)next.view)];
+        }   slackStack: ((RNCMScreenView*) next.view).customStack];
         previous = next;
       }
     }
