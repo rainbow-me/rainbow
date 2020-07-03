@@ -226,6 +226,8 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     toggleImporting,
   ]);
 
+  const { setComponent, hide } = usePortal();
+
   useEffect(() => {
     if (!wasImporting && isImporting) {
       startAnalyticsTimeout(async () => {
@@ -237,6 +239,9 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
                 hadPreviousAddressWithValue: isEmpty,
               });
               navigate(Routes.WALLET_SCREEN);
+              if (Platform.OS === 'android') {
+                hide();
+              }
             } else {
               toggleImporting(false);
             }
@@ -249,6 +254,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     }
   }, [
     color,
+    hide,
     initializeWallet,
     isEmpty,
     isImporting,
@@ -260,8 +266,6 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     toggleImporting,
     wasImporting,
   ]);
-
-  const { setComponent, hide } = usePortal();
 
   useEffect(() => {
     if (isImporting) {
