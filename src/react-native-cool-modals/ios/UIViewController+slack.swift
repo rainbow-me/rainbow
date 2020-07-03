@@ -50,6 +50,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     viewController = viewControllerToPresent
   }
   
+  func panModalDidDismiss() {
+    self.view!.perform(NSSelectorFromString("removeController"));
+  }
+  
   @objc func hide() {
     hiding = true
     // callWillDismiss()

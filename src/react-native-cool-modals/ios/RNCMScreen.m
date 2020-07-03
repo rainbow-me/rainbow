@@ -292,6 +292,12 @@
 
 - (void)invalidate
 {
+  if (self.stackPresentation != RNSScreenStackPresentationModal) {
+    _controller = nil;
+  }
+}
+
+- (void)removeController {
   _controller = nil;
 }
 

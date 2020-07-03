@@ -321,9 +321,6 @@
   if (![presentedViewController isKindOfClass:[RNCMScreen class]] && presentedViewController != nil && [presentedViewController.view isKindOfClass:[RNCMScreenView class]]) {
     RNCMScreenView* view = (RNCMScreenView*) presentedViewController.view;
     presentedViewController = view.controller;
-    if ([_presentedModals containsObject:presentedViewController]) {
-      view.controller = nil;
-    }
   }
   
   if (presentedViewController != nil
