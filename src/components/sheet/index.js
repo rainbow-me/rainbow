@@ -1,5 +1,4 @@
 export { default as Sheet } from './Sheet';
-export { default as SheetButton } from './SheetButton';
 export { default as SheetDivider } from './SheetDivider';
 export { default as SheetHandle } from './SheetHandle';
 export {

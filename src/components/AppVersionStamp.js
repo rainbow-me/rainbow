@@ -13,11 +13,11 @@ async function getAppVersion() {
   ]);
 
   if (!update) {
-    return `v${appVersion} (${VersionNumber.buildVersion})`;
+    return `${appVersion} (${VersionNumber.buildVersion})`;
   }
 
   const label = update.label.substring(1);
-  return `v${appVersion} (${VersionNumber.buildVersion}) rev.${label}`;
+  return `${appVersion} (${VersionNumber.buildVersion}) rev.${label}`;
 }
 
 const AppVersionStamp = ({ color, ...props }) => {

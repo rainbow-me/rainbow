@@ -8,41 +8,49 @@ import { useWallets } from '../../../hooks';
 import Routes from '../../../navigation/routesNames';
 import { colors, fonts, padding } from '../../../styles';
 import { RainbowButton } from '../../buttons';
-import { Centered, Column } from '../../layout';
-import { SheetButton } from '../../sheet';
+import { Column } from '../../layout';
+import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
 
 const BackupButton = styled(RainbowButton).attrs({
-  width: 280,
+  type: 'small',
+  width: 221,
 })`
-  margin-bottom: 12;
+  margin-bottom: 19;
 `;
+
+const DescriptionText = styled(Text).attrs({
+  align: 'center',
+  color: colors.alpha(colors.blueGreyDark, 0.5),
+  lineHeight: 'loosest',
+  size: 'large',
+})`
+  margin-bottom: 42;
+`;
+
+const Subtitle = styled(Text).attrs({
+  align: 'center',
+  color: colors.orangeLight,
+  size: fonts.size.smedium,
+  weight: fonts.weight.medium,
+})`
+  margin-top: -10;
+`;
+
 const Title = styled(Text).attrs({
-  size: 'big',
+  align: 'center',
+  size: 'larger',
   weight: 'bold',
 })`
-  margin-bottom: 12;
+  margin-bottom: 8;
 `;
 
 const TopIcon = styled(FastImage).attrs({
   resizeMode: FastImage.resizeMode.contain,
   source: BackupIcon,
 })`
-  height: 85;
-  width: 85;
-  margin-bottom: 12;
-  margin-top: 0;
-`;
-
-const DescriptionText = styled(Text).attrs({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  lineHeight: 'looser',
-  size: 'large',
-})`
-  padding-bottom: 30;
-  padding-left: 20;
-  padding-right: 20;
+  height: 74;
+  width: 75;
 `;
 
 const NeedsBackupView = () => {
@@ -73,17 +81,9 @@ const NeedsBackupView = () => {
 
   return (
     <Fragment>
-      <Centered>
-        <Text
-          color={colors.yellow}
-          weight={fonts.weight.semibold}
-          size={parseFloat(fonts.size.medium)}
-        >
-          Not backed up
-        </Text>
-      </Centered>
-      <Column align="center" css={padding(0, 40, 0)} flex={1}>
-        <Column align="center" paddingTop={70} paddingBottom={15}>
+      <Subtitle>Not backed up</Subtitle>
+      <Column align="center" css={padding(0, 42, 0)} flex={1}>
+        <Column align="center" paddingTop={70}>
           <TopIcon />
           <Title>Back up your wallet </Title>
           <DescriptionText>
@@ -92,19 +92,13 @@ const NeedsBackupView = () => {
           </DescriptionText>
         </Column>
         <Column align="center">
-          <BackupButton
-            label="􀙶 Back up to iCloud"
-            onPress={onIcloudBackup}
-            type="add-cash"
+          <BackupButton label="􀙶 Back up to iCloud" onPress={onIcloudBackup} />
+          <SheetActionButton
+            color={colors.white}
+            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+            label="🤓 Back up manually"
+            onPress={onManualBackup}
           />
-          <Column paddingHorizontal={15} paddingTop={10}>
-            <SheetButton
-              color={colors.white}
-              textColor={colors.alpha(colors.blueGreyDark, 0.8)}
-              label="🤓 Back up manually"
-              onPress={onManualBackup}
-            />
-          </Column>
         </Column>
       </Column>
     </Fragment>

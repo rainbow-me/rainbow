@@ -20,14 +20,33 @@ import { Centered, Column, ColumnWithMargins } from '../../layout';
 import LoadingOverlay, {
   LoadingOverlayWrapper,
 } from '../../modal/LoadingOverlay';
-import { SheetButton } from '../../sheet';
+import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
 
+const DescriptionText = styled(Text).attrs({
+  align: 'center',
+  color: colors.alpha(colors.blueGreyDark, 0.5),
+  lineHeight: 'loosest',
+  size: 'large',
+})`
+  padding-bottom: 30;
+`;
+
+const Subtitle = styled(Text).attrs({
+  align: 'center',
+  color: colors.alpha(colors.blueGreyDark, 0.5),
+  size: fonts.size.smedium,
+  weight: fonts.weight.medium,
+})`
+  margin-top: -10;
+`;
+
 const Title = styled(Text).attrs({
-  size: 'big',
+  align: 'center',
+  size: 'larger',
   weight: 'bold',
 })`
-  margin-bottom: 12;
+  margin-bottom: 8;
 `;
 
 const TopIcon = styled(Text).attrs({
@@ -40,10 +59,8 @@ const TopIcon = styled(Text).attrs({
   margin-top: 0;
   border-radius: 30;
   overflow: hidden;
-  padding-top: 10;
-  padding-bottom: 10;
-  padding-left: 10;
-  padding-right: 10;
+  padding-horizontal: 12;
+  padding-vertical: 12;
 `;
 
 const TopIconGreen = styled(TopIcon)`
@@ -52,17 +69,6 @@ const TopIconGreen = styled(TopIcon)`
 
 const TopIconGrey = styled(TopIcon)`
   background-color: ${colors.grey};
-`;
-
-const DescriptionText = styled(Text).attrs({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  lineHeight: 'looser',
-  size: 'large',
-})`
-  padding-bottom: 30;
-  padding-left: 20;
-  padding-right: 20;
 `;
 
 const AlreadyBackedUpView = () => {
@@ -167,17 +173,13 @@ const AlreadyBackedUpView = () => {
   return (
     <Fragment>
       <Centered>
-        <Text
-          color={walletStatus === 'cloud_backup' ? colors.green : colors.grey}
-          weight={fonts.weight.semibold}
-          size={parseFloat(fonts.size.medium)}
-        >
+        <Subtitle>
           {(walletStatus === 'cloud_backup' && `Backed up`) ||
             (walletStatus === 'manual_backup' && `Backed up manually`) ||
             (walletStatus === 'imported' && `Imported`)}
-        </Text>
+        </Subtitle>
       </Centered>
-      <Column align="center" css={padding(0, 40, 0)} flex={1}>
+      <Column align="center" css={padding(0, 42, 0)} flex={1}>
         <Centered direction="column" paddingTop={70} paddingBottom={15}>
           {walletStatus !== 'cloud_backup' ? (
             <TopIconGrey>􀆅</TopIconGrey>
@@ -190,19 +192,19 @@ const AlreadyBackedUpView = () => {
           </Title>
           <DescriptionText>
             {(walletStatus === 'cloud_backup' &&
-              `If you lose this device, you can recover your encrypted wallet backup from iCloud`) ||
+              `If you lose this device, you can recover your encrypted wallet backup from iCloud.`) ||
               (walletStatus === 'manual_backup' &&
                 `If you lose this device, you can restore your wallet with the recovery phrase you saved.`) ||
               (walletStatus === 'imported' &&
-                `If you lose this device, you can restore your wallet with the recovery phrase you used to import it.`)}
+                `If you lose this device, you can restore your wallet with the key you originally imported.`)}
           </DescriptionText>
         </Centered>
-        <ColumnWithMargins css={padding(19, 10)} margin={19} width="100%">
-          <SheetButton
+        <ColumnWithMargins css={padding(19, 10)} margin={19}>
+          <SheetActionButton
             color={colors.white}
-            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
-            label="🗝 View recovery phrase"
+            label="🗝 View recovery key"
             onPress={onViewRecoveryPhrase}
+            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />
         </ColumnWithMargins>
       </Column>

@@ -6,24 +6,25 @@ import { colors, padding } from '../../styles';
 import Divider from '../Divider';
 import { RainbowButton } from '../buttons';
 import { Centered, ColumnWithMargins } from '../layout';
-import { SheetButton } from '../sheet';
+import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
 
 const Title = styled(Text).attrs({
+  align: 'center',
   size: 'big',
   weight: 'bold',
 })`
-  margin-bottom: 12;
+  margin-bottom: 11;
 `;
 
 const TopIcon = styled(FastImage).attrs({
   resizeMode: FastImage.resizeMode.contain,
   source: BackupIcon,
 })`
-  height: 85;
-  width: 85;
-  margin-bottom: 12;
-  margin-top: 0;
+  height: 74;
+  margin-bottom: -1;
+  margin-top: 8;
+  width: 75;
 `;
 
 const DescriptionText = styled(Text).attrs({
@@ -32,31 +33,27 @@ const DescriptionText = styled(Text).attrs({
   lineHeight: 'looser',
   size: 'large',
 })`
+  padding-horizontal: 42;
   padding-bottom: 30;
-  padding-left: 50;
-  padding-right: 50;
 `;
 
 const BackupSheetFirstStep = ({ onIcloudBackup, onManualBackup }) => {
   return (
-    <Centered direction="column" paddingTop={9} paddingBottom={15}>
+    <Centered direction="column">
       <TopIcon />
       <Title>Back up your wallet </Title>
       <DescriptionText>
         Don&apos;t lose your wallet! Save an encrypted copy to iCloud.
       </DescriptionText>
       <Divider color={colors.rowDividerLight} inset={[0, 42]} />
-      <ColumnWithMargins css={padding(19, 15)} margin={19} width="100%">
-        <RainbowButton
-          label="􀙶 Back up to iCloud"
-          onPress={onIcloudBackup}
-          type="add-cash"
-        />
-        <SheetButton
+      <ColumnWithMargins css={padding(19, 15, 0)} margin={19} width="100%">
+        <RainbowButton label="􀙶 Back up to iCloud" onPress={onIcloudBackup} />
+        <SheetActionButton
           color={colors.white}
-          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           label="🤓 Back up manually"
           onPress={onManualBackup}
+          size="big"
+          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
         />
       </ColumnWithMargins>
     </Centered>

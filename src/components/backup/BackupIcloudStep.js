@@ -123,7 +123,7 @@ const ImportantText = styled(Text).attrs({
 
 const WarningIcon = () => (
   <IconWrapper>
-    <Icon color={colors.yellowOrange} name="warningCircled" size={22} />
+    <Icon color={colors.orangeLight} name="warningCircled" size={22} />
   </IconWrapper>
 );
 const GreenCheckmarkIcon = () => (
@@ -165,7 +165,7 @@ const BackupIcloudStep = ({ setAppearListener }) => {
   const [confirmPassword, setConfirmPassword] = useState(loadedPassword);
 
   const [label, setLabel] = useState(
-    !validPassword ? '􀙶 Add to iCloud Backup' : '􀙶 Confirm Backup'
+    !validPassword ? '􀙶 Add to iCloud Backup' : '􀎽 Confirm Backup'
   );
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
@@ -205,7 +205,7 @@ const BackupIcloudStep = ({ setAppearListener }) => {
 
     let newLabel = '';
     if (passwordIsValid) {
-      newLabel = loadedPassword ? '􀙶 Add to iCloud Backup' : '􀙶 Confirm Backup';
+      newLabel = loadedPassword ? '􀙶 Add to iCloud Backup' : '􀎽 Confirm Backup';
     } else if (password.length < 8) {
       newLabel = 'Minimum 8 characters';
     } else if (

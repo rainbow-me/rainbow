@@ -16,7 +16,7 @@ import { ButtonPressAnimation } from '../animations';
 import { FloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import { Centered, Column, Row, RowWithMargins } from '../layout';
-import { SheetButton } from '../sheet';
+import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
 
 const Title = styled(Text).attrs({
@@ -210,12 +210,14 @@ const BackupManualStep = () => {
       </Row>
 
       <Column css={padding(0, 15)} width="100%">
-        <SheetButton
+        <SheetActionButton
           color={colors.appleBlue}
           label={`􀁣 I’ve saved ${
             type === WalletTypes.privateKey ? 'my key' : 'these words'
           }`}
           onPress={onComplete}
+          size="big"
+          weight="bold"
         />
       </Column>
     </Centered>
