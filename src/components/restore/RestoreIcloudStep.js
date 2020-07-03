@@ -145,7 +145,7 @@ const RestoreIcloudStep = ({ userData }) => {
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
-  const [label, setLabel] = useState('􀙶 Confirm Backup');
+  const [label, setLabel] = useState('􀎽 Confirm Backup');
   const passwordRef = useRef();
   const { setComponent, hide } = usePortal();
 
