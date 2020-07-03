@@ -1,5 +1,5 @@
 import { toChecksumAddress } from 'ethereumjs-util';
-import { filter, flatMap, get, map, values } from 'lodash';
+import { filter, flatMap, get, map, toLower, values } from 'lodash';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import {
@@ -9,6 +9,7 @@ import {
 import { web3Provider } from '../handlers/web3';
 import BackupStateTypes from '../helpers/backupStateTypes';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
+import { keychainEventEmitter } from '../model/keychain';
 import {
   generateAccount,
   getAllWallets,
@@ -79,8 +80,39 @@ export const walletsLoadState = () => async (dispatch, getState) => {
 
     const walletNames = await getWalletNames();
 
+    // Event listener for lost keychain items
+    //  to mark the wallets as damaged
+    keychainEventEmitter.on('keychainItemLostError', key => {
+      let walletId;
+      const { wallets, selected } = getState().wallets;
+      // We need to derive the wallet id from the keychain item key
+      if (key.indexOf('_rainbowSeedPhrase') !== -1) {
+        walletId = key.replace('_rainbowSeedPhrase', '');
+      } else if (key.indexOf('_rainbowPrivateKey') !== -1) {
+        const address = key.replace('_rainbowPrivateKey', '');
+        Object.keys(wallets).forEach(id => {
+          const wallet = wallets[id];
+          wallet.addresses.forEach(account => {
+            if (toLower(account.address) === toLower(address)) {
+              walletId = id;
+            }
+          });
+        });
+      }
+
+      if (walletId) {
+        wallets[walletId].damaged = true;
+        dispatch(walletsUpdate(wallets));
+        // Update selected wallet if needed
+        if (walletId === selected.id) {
+          dispatch(walletsSetSelected(wallets[walletId]));
+        }
+      }
+    });
+
     dispatch({
       payload: {
+        keychainEventEmitter,
         selected: selectedWallet,
         walletNames,
         wallets,
@@ -221,6 +253,7 @@ export const fetchWalletNames = () => async (dispatch, getState) => {
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   isWalletLoading: null,
+  keychainEventEmitter: null,
   selected: undefined,
   walletNames: {},
   wallets: null,
@@ -239,6 +272,7 @@ export default (state = INITIAL_STATE, action) => {
     case WALLETS_LOAD:
       return {
         ...state,
+        keychainEventEmitter: action.payload.keychainEventEmitter,
         selected: action.payload.selected,
         walletNames: action.payload.walletNames,
         wallets: action.payload.wallets,

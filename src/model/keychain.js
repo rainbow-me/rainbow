@@ -1,3 +1,4 @@
+import { EventEmitter } from 'events';
 import { captureException } from '@sentry/react-native';
 import DeviceInfo from 'react-native-device-info';
 import {
@@ -12,6 +13,12 @@ import {
 } from 'react-native-keychain';
 import logger from 'logger';
 const RAINBOW_BACKUP_KEY = 'rainbowBackup';
+const KEYCHAIN_ITEM_LOST_ERROR =
+  'Error: The user name or passphrase you entered is not correct.';
+//'Error: User canceled the operation.';
+// ^^ Swap these error messages to test the flow by cancelling the faceID flow
+
+export const keychainEventEmitter = new EventEmitter();
 
 // NOTE: implement access control for iOS keychain
 export async function saveString(key, value, accessControlOptions) {
@@ -33,15 +40,13 @@ export async function loadString(key, authenticationPrompt) {
     }
     logger.log(`Keychain: string does not exist for key: ${key}`);
   } catch (err) {
-    if (
-      `${err}` ===
-      'Error: The user name or passphrase you entered is not correct.'
-    ) {
+    if (`${err}` === KEYCHAIN_ITEM_LOST_ERROR) {
       const customError = new Error('Keychain item not available!');
       logger.sentry(
         `Error: The user name or passphrase you entered is not correct.`,
         err
       );
+      keychainEventEmitter.emit('keychainItemLostError', key);
       captureException(customError);
     } else {
       logger.log(
@@ -58,20 +63,7 @@ export async function loadAllKeys(authenticationPrompt) {
     const { results } = await getAllInternetCredentials(authenticationPrompt);
     return results;
   } catch (err) {
-    if (
-      `${err}` ===
-      'Error: The user name or passphrase you entered is not correct.'
-    ) {
-      const customError = new Error(
-        'Keychain item not available in loadAllKeys!'
-      );
-      logger.sentry(
-        `Error: The user name or passphrase you entered is not correct.`,
-        err
-      );
-      captureException(customError);
-    }
-    logger.log(`Keychain: failed to load all items`, err);
+    logger.log(`Keychain: failed to loadAllKeys error: ${err}`);
     captureException(err);
   }
   return null;
@@ -148,6 +140,14 @@ export async function restoreBackupIntoKeychain(backedUpData) {
       await saveObject(key, value, accessControl);
     }
   });
+
+  // Save the migration flag
+  // to prevent this flow in the future
+  await saveString(
+    'rainbowSeedPhraseMigratedKey',
+    'true',
+    publicAccessControlOptions
+  );
 
   return true;
 }
