@@ -1,11 +1,11 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-
 import React, { useCallback, useEffect } from 'react';
-import { Alert, Animated, View } from 'react-native';
+import { Alert, Animated, Platform, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { Restart } from 'react-native-restart';
 import styled from 'styled-components/native';
+import { Icon } from '../components/icons';
 import { Modal } from '../components/modal';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
@@ -19,9 +19,9 @@ import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecret
 import WalletSelectionView from '../components/settings-menu/BackupSection/WalletSelectionView';
 import DevSection from '../components/settings-menu/DevSection';
 import WalletTypes from '../helpers/walletTypes';
-import { useWallets } from '../hooks';
+import { useDimensions, useWallets } from '../hooks';
 import { wipeKeychain } from '../model/keychain';
-import { colors } from '@rainbow-me/styles';
+import { colors, fonts } from '@rainbow-me/styles';
 
 function cardStyleInterpolator({
   current,
@@ -31,7 +31,6 @@ function cardStyleInterpolator({
 }) {
   const translateFocused = Animated.multiply(
     current.progress.interpolate({
-      extrapolate: 'clamp',
       inputRange: [0, 1],
       outputRange: [screen.width, 0],
     }),
@@ -40,7 +39,6 @@ function cardStyleInterpolator({
   const translateUnfocused = next
     ? Animated.multiply(
         next.progress.interpolate({
-          extrapolate: 'clamp',
           inputRange: [0, 1],
           outputRange: [0, -screen.width],
         }),
@@ -94,13 +92,32 @@ const SettingsPages = {
   },
 };
 
+const BackArrow = styled(Icon).attrs({
+  color: colors.appleBlue,
+  direction: 'left',
+  name: 'caret',
+})`
+  margin-left: 15;
+  margin-right: 5;
+  margin-top: ${Platform.OS === 'android' ? 2 : 0.5};
+`;
+const BackImage = () => <BackArrow />;
+
 const Container = styled.View`
-  overflow: hidden;
   flex: 1;
-  top: -40;
+  overflow: hidden;
 `;
 
 const Stack = createStackNavigator();
+
+const transitionConfig = {
+  damping: 35,
+  mass: 1,
+  overshootClamping: false,
+  restDisplacementThreshold: 0.01,
+  restSpeedThreshold: 0.01,
+  stiffness: 450,
+};
 
 const onPressHiddenFeature = () => {
   Alert.alert(
@@ -130,6 +147,7 @@ const SettingsModal = () => {
   const { goBack, navigate } = useNavigation();
   const { wallets } = useWallets();
   const { params } = useRoute();
+  const { width: deviceWidth } = useDimensions();
 
   const getRealRoute = useCallback(
     key => {
@@ -179,13 +197,51 @@ const SettingsModal = () => {
   }, [getRealRoute, navigate, params?.initialRoute]);
 
   return (
-    <Modal marginBottom={statusBarHeight} minHeight={580} onCloseModal={goBack}>
+    <Modal
+      marginBottom={statusBarHeight}
+      minHeight={580}
+      onCloseModal={goBack}
+      radius={18}
+    >
       <Container>
         <Stack.Navigator
           screenOptions={{
-            cardStyle: { backgroundColor: colors.white },
-            gestureEnabled: false,
+            cardShadowEnabled: false,
+            cardStyle: { backgroundColor: colors.white, overflow: 'visible' },
+            gestureEnabled: true,
+            gestureResponseDistance: { horizontal: deviceWidth },
+            headerBackImage: BackImage,
+            headerBackTitle: 'Back',
+            headerBackTitleStyle: {
+              fontFamily: fonts.family.SFProRounded,
+              fontSize: parseFloat(fonts.size.large),
+              fontWeight: fonts.weight.medium,
+              letterSpacing: fonts.letterSpacing.roundedMedium,
+              textAlign: 'center',
+            },
             headerRight: renderHeaderRight,
+            headerStatusBarHeight: 0,
+            headerStyle: {
+              backgroundColor: 'transparent',
+              height: 49,
+              shadowColor: 'transparent',
+            },
+            headerTitleStyle: {
+              fontFamily: fonts.family.SFProRounded,
+              fontSize: parseFloat(fonts.size.large),
+              fontWeight: fonts.weight.bold,
+              letterSpacing: fonts.letterSpacing.roundedMedium,
+            },
+            transitionSpec: {
+              close: {
+                animation: 'spring',
+                config: transitionConfig,
+              },
+              open: {
+                animation: 'spring',
+                config: transitionConfig,
+              },
+            },
           }}
         >
           <Stack.Screen name="SettingsSection" options={{ title: 'Settings' }}>
@@ -194,10 +250,10 @@ const SettingsModal = () => {
                 onCloseModal={goBack}
                 onPressBackup={onPressSection(SettingsPages.backup)}
                 onPressCurrency={onPressSection(SettingsPages.currency)}
+                onPressDev={onPressSection(SettingsPages.dev)}
                 onPressHiddenFeature={onPressHiddenFeature}
                 onPressLanguage={onPressSection(SettingsPages.language)}
                 onPressNetwork={onPressSection(SettingsPages.network)}
-                onPressDev={onPressSection(SettingsPages.dev)}
               />
             )}
           </Stack.Screen>
@@ -205,8 +261,8 @@ const SettingsModal = () => {
             ({ component, title, key }) =>
               component && (
                 <Stack.Screen
-                  name={key}
                   component={component}
+                  name={key}
                   options={{
                     cardStyleInterpolator,
                     title,
@@ -216,8 +272,8 @@ const SettingsModal = () => {
           )}
 
           <Stack.Screen
-            name="WalletSelectionView"
             component={WalletSelectionView}
+            name="WalletSelectionView"
             options={{
               cardStyleInterpolator,
               title: 'Backup',
@@ -227,16 +283,16 @@ const SettingsModal = () => {
             name="SettingsBackupView"
             component={SettingsBackupView}
             options={({ route }) => ({
+              cardStyleInterpolator,
               title: route.params?.title || 'Backup',
-              ...cardStyleInterpolator,
             })}
           />
           <Stack.Screen
-            name="ShowSecretView"
             component={ShowSecretView}
+            name="ShowSecretView"
             options={({ route }) => ({
+              cardStyleInterpolator,
               title: route.params?.title || 'Backup',
-              ...cardStyleInterpolator,
             })}
           />
         </Stack.Navigator>

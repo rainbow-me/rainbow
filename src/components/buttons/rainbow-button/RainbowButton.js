@@ -40,7 +40,7 @@ const ButtonLabel = styled(Text).attrs(({ type }) => ({
   align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
   color: colors.white,
   letterSpacing:
-    type === RainbowButtonTypes.addCash ? 'roundedTight' : 'roundedMedium',
+    type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
   size: type === RainbowButtonTypes.small ? 'large' : 'larger',
   weight: 'bold',
 }))``;

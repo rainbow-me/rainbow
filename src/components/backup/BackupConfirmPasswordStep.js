@@ -27,10 +27,9 @@ import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
-import { SheetButton } from '../sheet';
 import { GradientText, Text } from '../text';
 
-const sheetHeight = deviceUtils.dimensions.height - 200;
+const sheetHeight = deviceUtils.dimensions.height - 108;
 
 const SheetContainer = isNativeStackAvailable
   ? styled(Column)`
@@ -108,7 +107,7 @@ const DescriptionText = styled(Text).attrs({
 
 const WarningIcon = () => (
   <IconWrapper>
-    <Icon color={colors.yellowOrange} name="warningCircled" size={22} />
+    <Icon color={colors.orangeLight} name="warningCircled" size={22} />
   </IconWrapper>
 );
 
@@ -231,7 +230,7 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
       }
     } catch (e) {
       logger.log('Error while backing up', e);
-      passwordRef.current?.focus();
+      setTimeout(passwordRef.current.focus());
       await dispatch(setIsWalletLoading(null));
       Alert.alert('Error while trying to backup');
     }
@@ -276,17 +275,11 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
             </Shadow>
           </InputsWrapper>
           <Column css={padding(0, 15, 0)} width="100%">
-            {validPassword ? (
-              <RainbowButton label={label} onPress={onPasswordSubmit} />
-            ) : (
-              <SheetButton
-                color={!validPassword && colors.grey}
-                gradientBackground={validPassword}
-                label={label}
-                onPress={onPasswordSubmit}
-                disabled={!validPassword}
-              />
-            )}
+            <RainbowButton
+              disabled={!validPassword}
+              label={label}
+              onPress={onPasswordSubmit}
+            />
           </Column>
         </Container>
       </KeyboardAvoidingView>

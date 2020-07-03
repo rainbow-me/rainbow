@@ -25,7 +25,6 @@ import {
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
   nativeStackConfig,
-  sharedCoolModalConfig,
   stackNavigationConfig,
 } from './config';
 import {
@@ -255,7 +254,13 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         name={Routes.SETTINGS_MODAL}
         component={SettingsModal}
-        {...sharedCoolModalConfig}
+        options={{
+          backgroundColor: '#25292E',
+          backgroundOpacity: 0.7,
+          cornerRadius: 0,
+          customStack: true,
+          ignoreBottomOffset: true,
+        }}
       />
       <NativeStack.Screen
         name={Routes.EXPANDED_ASSET_SHEET}
@@ -267,7 +272,8 @@ function NativeStackNavigator() {
         component={ChangeWalletSheet}
         options={{
           allowsDragToDismiss: true,
-          backgroundOpacity: 0.6,
+          backgroundColor: '#25292E',
+          backgroundOpacity: 0.7,
           customStack: true,
           springDamping: 1,
           transitionDuration: 0.25,
@@ -277,11 +283,12 @@ function NativeStackNavigator() {
         name={Routes.BACKUP_SHEET}
         component={BackupSheetWrapper}
         options={{
+          cornerRadius: 30,
           customStack: true,
           isShortFormEnabled: true,
-          longFormHeight: 400,
+          longFormHeight: 394,
           onAppear: null,
-          shortFormHeight: 400,
+          shortFormHeight: 394,
           startFromShortForm: true,
         }}
       />

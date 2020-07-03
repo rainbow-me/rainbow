@@ -37,6 +37,11 @@ const ContactAvatar = ({ color, size = sizeTypes.medium, value, ...props }) => {
       ],
       textSize: 'large',
     },
+    smedium: {
+      dimensions: 36,
+      shadows: [[0, 4, 12, colors.avatarColor[color] || color, 0.4]],
+      textSize: 'large',
+    },
   };
   const { dimensions, shadows, textSize } = sizeConfigs[size];
 

@@ -8,13 +8,13 @@ import WalletBackupTypes from '../../../helpers/walletBackupTypes';
 import WalletTypes from '../../../helpers/walletTypes';
 import { useWallets } from '../../../hooks';
 import { colors, fonts } from '../../../styles';
-import { getFontSize } from '../../../styles/fonts';
 import { abbreviations } from '../../../utils';
+import Divider from '../../Divider';
 import { ButtonPressAnimation } from '../../animations';
 import { BottomRowText } from '../../coin-row';
 import { ContactAvatar } from '../../contacts';
 import { Icon } from '../../icons';
-import { Column, Row } from '../../layout';
+import { Column, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedAddress } from '../../text';
 
 const IconWrapper = styled(View)`
@@ -28,7 +28,7 @@ const IconWrapper = styled(View)`
 
 const CaretIcon = styled(FastImage).attrs({
   source: Caret,
-  tintColor: colors.blueGreyDark,
+  tintColor: colors.alpha(colors.blueGreyDark, 0.6),
 })`
   height: 17;
   margin-top: 15;
@@ -38,23 +38,19 @@ const CaretIcon = styled(FastImage).attrs({
 const Address = styled(TruncatedAddress).attrs({
   color: colors.dark,
   firstSectionLength: 6,
-  size: getFontSize(fonts.size.lmedium),
+  size: fonts.size.lmedium,
   truncationLength: 4,
-  weight: 'medium',
-})`
-  padding-bottom: 5;
-`;
+  weight: 'regular',
+})``;
 
 const AccountLabel = styled(Text).attrs({
   color: colors.dark,
-  weight: 'normal',
-})`
-  font-size: ${fonts.size.lmedium};
-  padding-bottom: 5;
-`;
+  size: fonts.size.lmedium,
+  weight: 'regular',
+})``;
 
 const WarningIconText = styled(Text).attrs({
-  color: colors.yellowOrange,
+  color: colors.orangeLight,
   size: 22,
 })`
   box-shadow: 0px 4px 12px rgba(254, 190, 68, 0.4);
@@ -106,27 +102,23 @@ const WalletSelectionView = () => {
       const { color, label, index, address } = account;
 
       return (
-        <Column
-          marginLeft={15}
-          marginTop={22}
-          key={key}
-          justifyContent="center"
-        >
+        <Column key={key}>
           <ButtonPressAnimation
             onPress={() =>
               onPress(key, label || abbreviations.address(address, 4, 6))
             }
             scaleTo={0.98}
           >
-            <Row>
-              <Row flex={1}>
+            <Row height={56}>
+              <Row alignSelf="center" flex={1} marginLeft={15}>
                 <ContactAvatar
+                  alignSelf="center"
                   color={color}
                   marginRight={10}
-                  size="medium"
+                  size="smedium"
                   value={label || `${index + 1}`}
                 />
-                <Column>
+                <ColumnWithMargins margin={3} marginBottom={0.5}>
                   <Row>
                     {label ? (
                       <AccountLabel>{label}</AccountLabel>
@@ -140,10 +132,7 @@ const WalletSelectionView = () => {
                     </BottomRowText>
                   ) : wallet.backedUp ? (
                     wallet.backupType === WalletBackupTypes.cloud ? (
-                      <BottomRowText
-                        color={colors.green}
-                        weight={fonts.weight.medium}
-                      >
+                      <BottomRowText weight={fonts.weight.medium}>
                         Backed up
                       </BottomRowText>
                     ) : (
@@ -157,15 +146,15 @@ const WalletSelectionView = () => {
                     </BottomRowText>
                   ) : (
                     <BottomRowText
-                      color={colors.yellowOrange}
+                      color={colors.orangeLight}
                       weight={fonts.weight.medium}
                     >
-                      Not Backed up
+                      Not backed up
                     </BottomRowText>
                   )}
-                </Column>
+                </ColumnWithMargins>
               </Row>
-              <Row marginRight={19}>
+              <Row alignSelf="center" height={47} marginRight={18}>
                 {wallet.backedUp ? (
                   wallet.backupType === WalletBackupTypes.cloud ? (
                     <CheckmarkIcon color={colors.green} />
@@ -182,6 +171,10 @@ const WalletSelectionView = () => {
               </Row>
             </Row>
           </ButtonPressAnimation>
+          <Divider
+            color={colors.alpha(colors.blueGreyDark, 0.01)}
+            inset={[0, 15, 0]}
+          />
         </Column>
       );
     });

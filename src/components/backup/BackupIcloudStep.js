@@ -123,7 +123,7 @@ const ImportantText = styled(Text).attrs({
 
 const WarningIcon = () => (
   <IconWrapper>
-    <Icon color={colors.yellowOrange} name="warningCircled" size={22} />
+    <Icon color={colors.orangeLight} name="warningCircled" size={22} />
   </IconWrapper>
 );
 const GreenCheckmarkIcon = () => (

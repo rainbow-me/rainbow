@@ -16,14 +16,18 @@ import BackupIcon from '../../assets/settingsBackup.png';
 import CurrencyIcon from '../../assets/settingsCurrency.png';
 import LanguageIcon from '../../assets/settingsLanguage.png';
 import NetworkIcon from '../../assets/settingsNetwork.png';
-// import SecurityIcon from '../../assets/security-icon.png';
 import {
   getAppStoreReviewCount,
   saveAppStoreReviewCount,
 } from '../../handlers/localstorage/globalSettings';
 import networkInfo from '../../helpers/networkInfo';
 import walletTypes from '../../helpers/walletTypes';
-import { useAccountSettings, useSendFeedback, useWallets } from '../../hooks';
+import {
+  useAccountSettings,
+  useDimensions,
+  useSendFeedback,
+  useWallets,
+} from '../../hooks';
 import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
@@ -48,9 +52,9 @@ const SettingsExternalURLs = {
 
 // ⚠️ Beware: magic numbers lol
 const SettingIcon = styled(FastImage)`
-  ${position.size(44)};
-  margin-left: -6;
-  margin-right: -4;
+  ${position.size(60)};
+  margin-left: -16;
+  margin-right: -11;
   margin-top: 8;
 `;
 
@@ -58,14 +62,14 @@ let versionPressHandle = null;
 let versionNumberOfTaps = 0;
 
 const IconWrapper = styled(View)`
-  height: 22;
-  right: 8.7;
-  top: 0;
-  width: 24;
+  height: 21;
+  right: 7;
+  top: -1;
+  width: 22;
 `;
 
 const WarningIconText = styled(Text).attrs({
-  color: colors.yellowOrange,
+  color: colors.orangeLight,
   size: 22,
 })`
   box-shadow: 0px 4px 12px rgba(254, 190, 68, 0.4);
@@ -110,6 +114,7 @@ const SettingsSection = ({
 }) => {
   const { wallets } = useWallets();
   const { language, nativeCurrency, network } = useAccountSettings();
+  const { isTallPhone } = useDimensions();
 
   const onSendFeedback = useSendFeedback();
 
@@ -167,6 +172,7 @@ const SettingsSection = ({
   return (
     <ScrollView
       contentContainerStyle={position.sizeAsObject('100%')}
+      scrollEnabled={!isTallPhone}
       scrollEventThrottle={32}
       style={position.coverAsObject}
     >
@@ -174,10 +180,10 @@ const SettingsSection = ({
         {canBeBackedUp && (
           <ListItem
             icon={<SettingIcon source={BackupIcon} />}
+            label="Backup"
             onPress={onPressBackup}
             onPressIcloudBackup={onPressIcloudBackup}
             onPressShowSecret={onPressShowSecret}
-            label="Backup"
           >
             <ListItemArrowGroup>
               {areBackedUp ? <CheckmarkIcon /> : <WarningIcon />}
@@ -186,8 +192,8 @@ const SettingsSection = ({
         )}
         <ListItem
           icon={<SettingIcon source={NetworkIcon} />}
-          onPress={onPressNetwork}
           label="Network"
+          onPress={onPressNetwork}
         >
           <ListItemArrowGroup>
             {get(networkInfo, `[${network}].name`)}
@@ -195,33 +201,23 @@ const SettingsSection = ({
         </ListItem>
         <ListItem
           icon={<SettingIcon source={CurrencyIcon} />}
-          onPress={onPressCurrency}
           label="Currency"
+          onPress={onPressCurrency}
         >
           <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
         </ListItem>
         <ListItem
           icon={<SettingIcon source={LanguageIcon} />}
-          onPress={onPressLanguage}
           label="Language"
+          onPress={onPressLanguage}
         >
           <ListItemArrowGroup>
             {supportedLanguages[language] || ''}
           </ListItemArrowGroup>
         </ListItem>
-        {/*
-          <ListItemDivider />
-          <ListItem
-            icon={<SettingIcon source={SecurityIcon} />}
-            onPress={onPressSecurity}
-            label="Security"
-          >
-            <ListItemArrowGroup />
-          </ListItem>
-        */}
       </ColumnWithDividers>
       <ListFooter />
-      <ColumnWithDividers dividerRenderer={ListItemDivider}>
+      <ColumnWithDividers dividerRenderer={ListItemDivider} paddingBottom={10}>
         <ListItem
           icon={<Emoji name="rainbow" />}
           label="Follow Us on Twitter"
@@ -230,7 +226,7 @@ const SettingsSection = ({
         />
         <ListItem
           icon={<Emoji name="speech_balloon" />}
-          label="Leave Feedback️"
+          label="Leave Feedback"
           onPress={onSendFeedback}
         />
         <ListItem
@@ -238,15 +234,15 @@ const SettingsSection = ({
           label="Review Rainbow"
           onPress={onPressReview}
         />
+        {__DEV__ && (
+          <ListItem
+            icon={<Emoji name="octopus" />}
+            label="Developer Settings"
+            onPress={onPressDev}
+          />
+        )}
       </ColumnWithDividers>
-      {__DEV__ && (
-        <ListItem
-          onPress={onPressDev}
-          justify="center"
-          label="🐙 Developer settings 🐙"
-        />
-      )}
-      <Column align="center" flex={1} justify="end" paddingBottom={19}>
+      <Column align="center">
         <TouchableWithoutFeedback onPress={handleVersionPress}>
           <AppVersionStamp />
         </TouchableWithoutFeedback>

@@ -35,10 +35,9 @@ import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import LoadingOverlay, { LoadingOverlayWrapper } from '../modal/LoadingOverlay';
-import { SheetButton } from '../sheet';
 import { GradientText, Text } from '../text';
 
-const sheetHeight = deviceUtils.dimensions.height - 200;
+const sheetHeight = deviceUtils.dimensions.height - 108;
 
 const SheetContainer = isNativeStackAvailable
   ? styled(Column)`
@@ -287,17 +286,11 @@ const RestoreIcloudStep = ({ userData }) => {
             </Shadow>
           </InputsWrapper>
           <Column css={padding(0, 15, 30)} width="100%">
-            {validPassword ? (
-              <RainbowButton label={label} onPress={onSubmit} />
-            ) : (
-              <SheetButton
-                color={!validPassword && colors.grey}
-                gradientBackground={validPassword}
-                label={label}
-                onPress={onSubmit}
-                disabled={!validPassword}
-              />
-            )}
+            <RainbowButton
+              disabled={!validPassword}
+              label={label}
+              onPress={onSubmit}
+            />
           </Column>
         </Container>
       </KeyboardAvoidingView>

@@ -8,19 +8,23 @@ import {
   FloatingEmojis,
   FloatingEmojisTapHandler,
 } from '../components/floating-emojis';
-import { Column, RowWithMargins } from '../components/layout';
+import { Column } from '../components/layout';
 import {
   SavingsPredictionStepper,
   SavingsSheetEmptyState,
   SavingsSheetHeader,
 } from '../components/savings';
-import { Sheet, SheetActionButton } from '../components/sheet';
+import {
+  Sheet,
+  SheetActionButton,
+  SheetActionButtonRow,
+} from '../components/sheet';
 import { isSymbolStablecoin } from '../helpers/savings';
 import { convertAmountToNativeDisplay } from '../helpers/utilities';
 import { useAccountSettings, useWallets } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors } from '@rainbow-me/styles';
 
 const SavingsSheet = () => {
   const { navigate, goBack } = useNavigation();
@@ -138,7 +142,7 @@ const SavingsSheet = () => {
             balance={balance}
             lifetimeAccruedInterest={lifetimeAccruedInterest}
           />
-          <RowWithMargins css={padding(24, 15)} margin={15}>
+          <SheetActionButtonRow>
             <SheetActionButton
               color={colors.dark}
               label="􀁏 Withdraw"
@@ -149,8 +153,8 @@ const SavingsSheet = () => {
               label="􀁍 Deposit"
               onPress={onDeposit}
             />
-          </RowWithMargins>
-          <Divider zIndex={0} />
+          </SheetActionButtonRow>
+          <Divider color={colors.rowDividerLight} zIndex={0} />
           <FloatingEmojis
             disableHorizontalMovement
             distance={600}
