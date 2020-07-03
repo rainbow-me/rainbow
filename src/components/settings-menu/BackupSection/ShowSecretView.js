@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import styled from 'styled-components';
 import WalletTypes from '../../../helpers/walletTypes';
@@ -13,6 +13,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { FloatingEmojis } from '../../floating-emojis';
 import { Icon } from '../../icons';
 import { Centered, Column, Row, RowWithMargins } from '../../layout';
+import { SheetButton } from '../../sheet';
 import { Text } from '../../text';
 
 const PrivateKeyText = styled(Text).attrs({
@@ -37,19 +38,26 @@ const ShowSecretView = () => {
   const { setClipboard } = useClipboard();
   const { params } = useRoute();
   const { selectedWallet } = useWallets();
+  const [error, setError] = useState(false);
   const [seed, setSeed] = useState(null);
   const [type, setType] = useState(null);
   const { width: deviceWidth } = useDimensions();
   let wordSectionHeight = 100;
 
-  useEffect(() => {
-    const loadSeed = async () => {
-      const wallet_id = params?.wallet_id || selectedWallet.id;
-      const s = await loadSeedPhraseAndMigrateIfNeeded(wallet_id);
+  const loadSeed = useCallback(async () => {
+    const wallet_id = params?.wallet_id || selectedWallet.id;
+    const s = await loadSeedPhraseAndMigrateIfNeeded(wallet_id);
+    if (s) {
       const walletType = identifyWalletType(s);
       setType(walletType);
       setSeed(s);
-    };
+      setError(false);
+    } else {
+      setError(true);
+    }
+  }, [params?.wallet_id, selectedWallet.id]);
+
+  useEffect(() => {
     loadSeed();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -93,49 +101,51 @@ const ShowSecretView = () => {
   return (
     <Centered direction="column" paddingTop={90} paddingBottom={15}>
       <Row>
-        <FloatingEmojis
-          distance={250}
-          duration={500}
-          fadeOut={false}
-          scaleTo={0}
-          size={50}
-          wiggleFactor={0}
-        >
-          {({ onNewEmoji }) => (
-            <ButtonPressAnimation
-              scaleTo={0.88}
-              onPress={() => {
-                onNewEmoji();
-                setClipboard(seed);
-              }}
-            >
-              <RowWithMargins
-                align="center"
-                backgroundColor={colors.transparent}
-                height={34}
-                justify="flex-start"
-                margin={6}
-                paddingBottom={2}
+        {secretLayout && (
+          <FloatingEmojis
+            distance={250}
+            duration={500}
+            fadeOut={false}
+            scaleTo={0}
+            size={50}
+            wiggleFactor={0}
+          >
+            {({ onNewEmoji }) => (
+              <ButtonPressAnimation
+                scaleTo={0.88}
+                onPress={() => {
+                  onNewEmoji();
+                  setClipboard(seed);
+                }}
               >
-                <Icon
-                  color={colors.appleBlue}
-                  marginTop={0.5}
-                  name="copy"
-                  style={position.sizeAsObject(16)}
-                />
-                <Text
-                  color="appleBlue"
-                  letterSpacing="roundedMedium"
-                  lineHeight={19}
-                  size="large"
-                  weight="bold"
+                <RowWithMargins
+                  align="center"
+                  backgroundColor={colors.transparent}
+                  height={34}
+                  justify="flex-start"
+                  margin={6}
+                  paddingBottom={2}
                 >
-                  Copy to clipboard
-                </Text>
-              </RowWithMargins>
-            </ButtonPressAnimation>
-          )}
-        </FloatingEmojis>
+                  <Icon
+                    color={colors.appleBlue}
+                    marginTop={0.5}
+                    name="copy"
+                    style={position.sizeAsObject(16)}
+                  />
+                  <Text
+                    color="appleBlue"
+                    letterSpacing="roundedMedium"
+                    lineHeight={19}
+                    size="large"
+                    weight="bold"
+                  >
+                    Copy to clipboard
+                  </Text>
+                </RowWithMargins>
+              </ButtonPressAnimation>
+            )}
+          </FloatingEmojis>
+        )}
       </Row>
       <Row>
         {secretLayout && (
@@ -150,6 +160,23 @@ const ShowSecretView = () => {
           >
             <Row margin={19}>{secretLayout}</Row>
           </Shadow>
+        )}
+        {error && (
+          <Centered>
+            <Column marginTop={40} paddingLeft={24} paddingRight={24}>
+              <Text align="center" size="large" weight="normal">
+                You need to authenticate in order to access your recovery{' '}
+                {type === WalletTypes.privateKey ? 'key' : 'phrase'}
+              </Text>
+              <Column margin={24} marginTop={40}>
+                <SheetButton
+                  color={colors.appleBlue}
+                  label="Try again"
+                  onPress={loadSeed}
+                />
+              </Column>
+            </Column>
+          </Centered>
         )}
       </Row>
     </Centered>
