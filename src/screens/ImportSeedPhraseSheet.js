@@ -34,9 +34,9 @@ import {
 import { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/effects';
 import Routes from '@rainbow-me/routes';
-import { usePortal } from 'react-native-cool-modals/Portal';
 import { borders, colors, padding, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
+import { usePortal } from 'react-native-cool-modals/Portal';
 
 const keyboardVerticalOffset =
   Platform.OS === 'android'
