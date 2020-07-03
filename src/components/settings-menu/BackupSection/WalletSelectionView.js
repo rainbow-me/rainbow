@@ -70,7 +70,7 @@ const CheckmarkIcon = ({ color }) => (
 
 const WalletSelectionView = () => {
   const { navigate } = useNavigation();
-  const { wallets } = useWallets();
+  const { walletNames, wallets } = useWallets();
   const onPress = useCallback(
     (wallet_id, name) => {
       const wallet = wallets[wallet_id];
@@ -100,6 +100,14 @@ const WalletSelectionView = () => {
       const account = visibleAccounts[0];
       const totalAccounts = visibleAccounts.length;
       const { color, label, index, address } = account;
+      let labelOrName = label;
+      if (!label) {
+        if (walletNames[address]) {
+          labelOrName = walletNames[address];
+        }
+      }
+
+      console.log(walletNames);
 
       return (
         <Column key={key}>
@@ -116,12 +124,12 @@ const WalletSelectionView = () => {
                   color={color}
                   marginRight={10}
                   size="smedium"
-                  value={label || `${index + 1}`}
+                  value={labelOrName || `${index + 1}`}
                 />
                 <ColumnWithMargins margin={3} marginBottom={0.5}>
                   <Row>
-                    {label ? (
-                      <AccountLabel>{label}</AccountLabel>
+                    {labelOrName ? (
+                      <AccountLabel>{labelOrName}</AccountLabel>
                     ) : (
                       <Address address={address} />
                     )}
