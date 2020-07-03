@@ -83,6 +83,15 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     // Event listener for lost keychain items
     //  to mark the wallets as damaged
     keychainEventEmitter.on('keychainItemLostError', key => {
+      if (!key) {
+        logger.log('keychainItemLostError detected while getting all keys');
+        // We might wanna disable the backup feature here
+        // and mark all the non imported wallets as damaged
+        // Still need to confirm that this actually triggers
+        // when trying it on a real device
+        return;
+      }
+
       let walletId;
       const { wallets, selected } = getState().wallets;
       // We need to derive the wallet id from the keychain item key

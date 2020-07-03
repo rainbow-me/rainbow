@@ -63,8 +63,18 @@ export async function loadAllKeys(authenticationPrompt) {
     const { results } = await getAllInternetCredentials(authenticationPrompt);
     return results;
   } catch (err) {
-    logger.log(`Keychain: failed to loadAllKeys error: ${err}`);
-    captureException(err);
+    if (`${err}` === KEYCHAIN_ITEM_LOST_ERROR) {
+      const customError = new Error('Keychain item not available in All Keys!');
+      logger.sentry(
+        `Error: The user name or passphrase you entered is not correct.`,
+        err
+      );
+      keychainEventEmitter.emit('keychainItemLostError', null);
+      captureException(customError);
+    } else {
+      logger.log(`Keychain: failed to loadAllKeys error: ${err}`);
+      captureException(err);
+    }
   }
   return null;
 }
