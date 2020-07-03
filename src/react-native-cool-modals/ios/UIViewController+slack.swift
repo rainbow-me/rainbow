@@ -29,7 +29,11 @@ class PossiblyTouchesPassableUIView: UIView {
 
 class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSupport {
   
-  weak var config: NSObject?
+  var config : RNCMScreenView {
+    get {
+      return viewController!.view! as! RNCMScreenView
+    }
+  }
   var length: CGFloat = 0
   var topAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
   var bottomAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
@@ -39,15 +43,16 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   
   weak var viewController: UIViewController?
   var panScrollableCache: UIScrollView?
-  var showDragIndicatorVal: Bool = false
-  var topOffsetVal: CGFloat = 0.0
-  var cornerRadiusValue: CGFloat = 8.0
   
   convenience init(_ viewControllerToPresent: UIViewController) {
     self.init(nibName: nil, bundle: nil)
     
     viewControllerToPresent.setValue(self, forKey: "_parentVC")
     viewController = viewControllerToPresent
+  }
+  
+  func panModalDidDismiss() {
+    config.removeController()
   }
   
   @objc func hide() {
@@ -80,7 +85,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   
   func onTouchTop(_ dismissing: Bool) {
     let selector = NSSelectorFromString("onTouchTopWrapper:")
-    config?.perform(selector, with: NSNumber.init(value: dismissing))
+    config.perform(selector, with: NSNumber.init(value: dismissing))
   }
   
   override var bottomLayoutGuide: UILayoutSupport {
@@ -100,14 +105,11 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
   
   var cornerRadius: CGFloat {
-    get {
-      return cornerRadiusValue
-    }
+    return CGFloat(truncating: config.cornerRadius!)
   }
   
   var ignoreBottomOffset: Bool {
-    let res =  self.config?.value(forKey: "ignoreBottomOffset") as! Bool
-    return res;
+    return self.config.ignoreBottomOffset;
   }
   
   var isHapticFeedbackEnabled: Bool = false
@@ -146,32 +148,31 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
   
   func callWillDismiss() {
-    let selector = NSSelectorFromString("willDismiss")
-    config?.perform(selector)
+    config.willDismiss()
   }
   
   func shouldRespond(to panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
     if (hiding) {
       return false
     }
-    return self.config?.value(forKey: "dismissable") as! Bool
+    return self.config.dismissable
   }
   
   var allowsDragToDismiss: Bool {
-    return self.config?.value(forKey: "allowsDragToDismiss") as! Bool
+    return self.config.allowsDragToDismiss
   }
   
   var allowsTapToDismiss: Bool {
-    return self.config?.value(forKey: "allowsTapToDismiss") as! Bool
+    return self.config.allowsTapToDismiss
   }
   
   var anchorModalToLongForm: Bool {
-    return self.config?.value(forKey: "anchorModalToLongForm") as! Bool
+    return self.config.anchorModalToLongForm
   }
   
   var panModalBackgroundColor: UIColor {
-    let backgroundColor: UIColor = self.config?.value(forKey: "modalBackgroundColor") as! UIColor
-    return backgroundColor.withAlphaComponent(CGFloat(truncating: self.config?.value(forKey: "backgroundOpacity") as! NSNumber))
+    let backgroundColor: UIColor = self.config.modalBackgroundColor
+    return backgroundColor.withAlphaComponent(CGFloat(truncating: self.config.backgroundOpacity))
   }
   
   var scrollIndicatorInsets: UIEdgeInsets {
@@ -181,7 +182,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
   
   func shouldPrioritize(panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
-    let headerHeight: CGFloat = CGFloat(truncating: self.config?.value(forKey: "headerHeight") as! NSNumber)
+    let headerHeight: CGFloat = CGFloat(truncating: self.config.headerHeight)
     
     var locationY = panModalGestureRecognizer.location(in: view).y
     
@@ -201,33 +202,33 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   
   var isShortFormEnabledInternal = 2
   var isShortFormEnabled: Bool {
-    let startFromShortForm = self.config?.value(forKey: "startFromShortForm") as! Bool
+    let startFromShortForm = self.config.startFromShortForm
     if isShortFormEnabledInternal > 0 && !startFromShortForm {
       isShortFormEnabledInternal -= 1
       return false
     }
-    return self.config?.value(forKey: "isShortFormEnabled") as! Bool
+    return self.config.isShortFormEnabled
   }
   
   var shortFormHeight: PanModalHeight {
-    let height: CGFloat = CGFloat(truncating: self.config?.value(forKey: "shortFormHeight") as! NSNumber)
+    let height: CGFloat = CGFloat(truncating: self.config.shortFormHeight)
     return isShortFormEnabled ? .contentHeight(height) : longFormHeight
   }
   
   var springDamping: CGFloat {
-    return CGFloat(truncating: self.config?.value(forKey: "springDamping") as! NSNumber)
+    return CGFloat(truncating: self.config.springDamping)
   }
   
   var transitionDuration: Double {
-    return Double(truncating: self.config?.value(forKey: "transitionDuration") as! NSNumber)
+    return Double(truncating: self.config.transitionDuration)
   }
   
   var showDragIndicator: Bool {
-    return showDragIndicatorVal
+    return config.showDragIndicator
   }
   
   var topOffset: CGFloat {
-    return topOffsetVal
+    return CGFloat(truncating: config.topOffset)
   }
   
   var panScrollable: UIScrollView? {
@@ -235,12 +236,11 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
   
   var longFormHeight: PanModalHeight {
-    return .contentHeight(CGFloat(truncating: self.config?.value(forKey: "longFormHeight") as! NSNumber));
+    return .contentHeight(CGFloat(truncating: self.config.longFormHeight))
   }
   
   override func viewDidAppear(_ animated: Bool) {
-    let selector = NSSelectorFromString("notifyAppear")
-    viewController?.view.perform(selector)
+    config.notifyAppear()
   }
   
   override func viewWillDisappear(_ animated: Bool) {
@@ -275,22 +275,12 @@ extension UIViewController {
   @objc public func presentModally(_ viewControllerToPresent: UIViewController,
                                    animated flag: Bool,
                                    completion: (() -> Void)? = nil,
-                                   topOffset: CGFloat,
-                                   showDragIndicator: Bool,
-                                   slackStack:Bool,
-                                   cornerRadius:NSNumber? = nil,
-                                   config: NSObject) -> Void
+                                   slackStack:Bool) -> Void
     
   {
     let controller = PanModalViewController(viewControllerToPresent)
     controller.transitioningDelegate = slackStack ? viewControllerToPresent.transitioningDelegate : nil
     controller.modalPresentationStyle = slackStack ? viewControllerToPresent.modalPresentationStyle : .pageSheet
-    controller.topOffsetVal = topOffset
-    controller.config = config
-    controller.showDragIndicatorVal = showDragIndicator
-    if (cornerRadius != nil) {
-      controller.cornerRadiusValue = CGFloat(truncating: cornerRadius!)
-    }
     self.present(controller, animated: flag, completion: completion)
   }
 }
