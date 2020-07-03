@@ -36,6 +36,9 @@ const Logger = {
     }
   },
   sentry(...args) {
+    if (__DEV__) {
+      console.log(...args);
+    }
     if (args.length === 1 && typeof args[0] === 'string') {
       sentryUtils.addInfoBreadcrumb.apply(null, args);
     } else {

@@ -35,12 +35,12 @@ export async function loadString(key, authenticationPrompt) {
   } catch (err) {
     if (
       `${err}` ===
-      'Error: The specified item could not be found in the keychain.'
+      'Error: The user name or passphrase you entered is not correct.'
     ) {
-      const customError = new Error('Keychain item not found!');
+      const customError = new Error('Keychain item not available!');
       logger.sentry(
-        `Error: The specified item could not be found in the keychain.`,
-        key
+        `Error: The user name or passphrase you entered is not correct.`,
+        err
       );
       captureException(customError);
     } else {
@@ -58,6 +58,19 @@ export async function loadAllKeys(authenticationPrompt) {
     const { results } = await getAllInternetCredentials(authenticationPrompt);
     return results;
   } catch (err) {
+    if (
+      `${err}` ===
+      'Error: The user name or passphrase you entered is not correct.'
+    ) {
+      const customError = new Error(
+        'Keychain item not available in loadAllKeys!'
+      );
+      logger.sentry(
+        `Error: The user name or passphrase you entered is not correct.`,
+        err
+      );
+      captureException(customError);
+    }
     logger.log(`Keychain: failed to load all items`, err);
     captureException(err);
   }
