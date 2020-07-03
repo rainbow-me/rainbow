@@ -61,12 +61,12 @@
 
 - (void) setIsShortFormEnabled:(BOOL)isShortFormEnabled {
   _isShortFormEnabled = isShortFormEnabled;
-  [[_controller parentVC] panModalSetNeedsLayoutUpdateWrapper];
+  [(PanModalViewController*) [_controller parentVC] panModalSetNeedsLayoutUpdateWrapper];
   
 }
 
 - (void)jumpTo:(nonnull NSNumber*)point {
-  [[_controller parentVC] jumpToLong:point];
+  [(PanModalViewController*) [_controller parentVC] jumpToLong:point];
 }
 
 

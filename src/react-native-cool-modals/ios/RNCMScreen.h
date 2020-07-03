@@ -33,7 +33,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 @property (nonatomic, strong) id<UIViewControllerTransitioningDelegate> transDelegate;
 - (instancetype)initWithView:(UIView *)view;
 - (void)notifyFinishTransitioning;
-- (PanModalViewController*) parentVC;
+- (UIViewController*) parentVC;
 
 @end
 
