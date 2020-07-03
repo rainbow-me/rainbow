@@ -702,7 +702,7 @@ async function extractSecretsForWallet(wallet) {
 
     // Ignore another wallets seeds
     if (
-      item.username.indexOf(seedPhraseKey) !== -1 &&
+      item.username.indexOf(`_${seedPhraseKey}`) !== -1 &&
       item.username !== `${wallet.id}_${seedPhraseKey}`
     ) {
       return;
