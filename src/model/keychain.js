@@ -33,8 +33,22 @@ export async function loadString(key, authenticationPrompt) {
     }
     logger.log(`Keychain: string does not exist for key: ${key}`);
   } catch (err) {
-    logger.log(`Keychain: failed to load string for key: ${key} error: ${err}`);
-    captureException(err);
+    if (
+      `${err}` ===
+      'Error: The specified item could not be found in the keychain.'
+    ) {
+      const customError = new Error('Keychain item not found!');
+      logger.sentry(
+        `Error: The specified item could not be found in the keychain.`,
+        key
+      );
+      captureException(customError);
+    } else {
+      logger.log(
+        `Keychain: failed to load string for key: ${key} error: ${err}`
+      );
+      captureException(err);
+    }
   }
   return null;
 }
