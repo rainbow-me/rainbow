@@ -73,7 +73,7 @@ const ListItem = enhance(
             {label}
           </TruncatedText>
         </RowWithMargins>
-        {children && <Centered flexShrink={0}>{children}</Centered>}
+        {children && <Centered flex={1}>{children}</Centered>}
       </Row>
     </ButtonPressAnimation>
   )

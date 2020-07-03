@@ -107,8 +107,6 @@ const WalletSelectionView = () => {
         }
       }
 
-      console.log(walletNames);
-
       return (
         <Column key={key}>
           <ButtonPressAnimation

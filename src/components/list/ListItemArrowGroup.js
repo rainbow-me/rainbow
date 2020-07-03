@@ -10,7 +10,7 @@ import { colors } from '@rainbow-me/styles';
 const ListItemArrowGroup = ({ children }) => (
   <RowWithMargins
     align="center"
-    flex={0}
+    flex={1}
     justify="end"
     margin={7}
     opacity={0.6}
