@@ -77,10 +77,9 @@ export default function ProfileScreen({ navigation }) {
     navigate,
   ]);
 
-  const onPressSettings = useCallback(
-    () => navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR),
-    [navigate]
-  );
+  const onPressSettings = useCallback(() => navigate(Routes.SETTINGS_MODAL), [
+    navigate,
+  ]);
 
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
