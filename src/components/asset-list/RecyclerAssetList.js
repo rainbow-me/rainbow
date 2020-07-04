@@ -674,7 +674,7 @@ class RecyclerAssetList extends Component {
       additionalPadding;
   }
 
-  handleRefresh() {
+  handleRefresh = () => {
     if (this.state.isRefreshing) return;
 
     this.setState({ isRefreshing: true }, () => {
@@ -691,7 +691,7 @@ class RecyclerAssetList extends Component {
           }
         });
     });
-  }
+  };
 
   handleScroll = (_nativeEventObject, _, offsetY) => {
     if (this.props.isCoinListEdited) {
