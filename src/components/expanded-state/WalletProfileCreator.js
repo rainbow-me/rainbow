@@ -130,7 +130,10 @@ export default function WalletProfileCreator({
   return (
     <KeyboardFixedOpenLayout additionalPadding={additionalPadding}>
       <TouchableBackdrop />
-      <FloatingPanels maxWidth={deviceUtils.dimensions.width - 110}>
+      <FloatingPanels
+        maxWidth={deviceUtils.dimensions.width - 110}
+        testID="wallet-info-modal"
+      >
         <AssetPanel>
           <Centered css={padding(24, 24, 5)} direction="column">
             <ButtonPressAnimation onPress={handleChangeColor} scaleTo={0.96}>
@@ -186,6 +189,7 @@ export default function WalletProfileCreator({
               onPress={acceptAction}
               paddingBottom={19}
               paddingTop={15}
+              testID="wallet-info-submit-button"
               width="100%"
             >
               <RowWithMargins align="center" justify="center" margin={7}>
@@ -219,6 +223,7 @@ export default function WalletProfileCreator({
               onPress={cancelAction}
               paddingBottom={19}
               paddingTop={15}
+              testID="wallet-info-cancel-button"
               width="100%"
             >
               <Text

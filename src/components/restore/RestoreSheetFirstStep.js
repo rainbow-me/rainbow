@@ -108,7 +108,11 @@ const RestoreSheetFirstStep = ({
           </Row>
         </SheetRow>
         <Divider color={colors.rowDividerLight} inset={[0, 10]} />
-        <SheetRow as={ButtonPressAnimation} onPress={onManualRestore}>
+        <SheetRow
+          as={ButtonPressAnimation}
+          onPress={onManualRestore}
+          testID="restore-with-key-button"
+        >
           <Column>
             <TextIcon color={colors.swapPurple}>􀑚</TextIcon>
             <Title css={padding(0, 80, 0, 0)}>
@@ -134,6 +138,7 @@ const RestoreSheetFirstStep = ({
           as={ButtonPressAnimation}
           scaleTo={0.9}
           onPress={onWatchAddress}
+          testID="watch-address-button"
         >
           <Column>
             <TextIcon color={colors.mintDark}>􀒒</TextIcon>

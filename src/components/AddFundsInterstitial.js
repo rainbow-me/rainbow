@@ -81,6 +81,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
         <InterstitialButton
           backgroundColor={colors.appleBlue}
           onPress={handlePressAddFunds}
+          testID="add-funds-button"
         >
           Add Funds
         </InterstitialButton>

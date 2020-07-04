@@ -239,6 +239,7 @@ const SettingsSection = ({
             icon={<Emoji name="octopus" />}
             label="Developer Settings"
             onPress={onPressDev}
+            testID="dev-section-button"
           />
         )}
       </ColumnWithDividers>

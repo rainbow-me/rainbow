@@ -15,7 +15,6 @@ const Page = (
   ref
 ) => {
   const insets = useSafeArea();
-
   return (
     <PageElement
       {...props}

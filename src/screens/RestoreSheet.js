@@ -6,8 +6,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { InteractionManager } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components';
+import { Row } from '../components/layout';
 import RestoreIcloudStep from '../components/restore/RestoreIcloudStep';
 import RestoreSheetFirstStep from '../components/restore/RestoreSheetFirstStep';
 import { SlackSheet } from '../components/sheet';
@@ -41,8 +44,13 @@ const RestoreSheet = () => {
 
   useEffect(() => {
     const initialize = async () => {
-      const data = await fetchUserDataFromCloud();
-      setUserData(data);
+      const isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
+      if (!isSimulator) {
+        const data = await fetchUserDataFromCloud();
+        setUserData(data);
+      } else {
+        setUserData(null);
+      }
     };
     initialize();
   }, []);
@@ -59,12 +67,16 @@ const RestoreSheet = () => {
 
   const onManualRestore = useCallback(() => {
     goBack();
-    navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
+    InteractionManager.runAfterInteractions(() => {
+      navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
+    });
   }, [goBack, navigate]);
 
   const onWatchAddress = useCallback(() => {
     goBack();
-    navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
+    InteractionManager.runAfterInteractions(() => {
+      navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
+    });
   }, [goBack, navigate]);
 
   const renderStep = useCallback(() => {
@@ -89,7 +101,7 @@ const RestoreSheet = () => {
         ref={switchSheetContentTransitionRef}
         transition={switchSheetContentTransition}
       >
-        {renderStep()}
+        <Row testID="restore-sheet">{renderStep()}</Row>
       </Transitioning.View>
     </StyledSheet>
   );

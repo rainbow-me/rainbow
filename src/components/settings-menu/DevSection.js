@@ -45,7 +45,11 @@ const DevSection = () => {
   return (
     <ScrollView>
       <ListItem label="💥 Clear async storage" onPress={AsyncStorage.clear} />
-      <ListItem label="💣 Reset Keychain" onPress={wipeKeychain} />
+      <ListItem
+        label="💣 Reset Keychain"
+        onPress={wipeKeychain}
+        testID="reset-keychain-button"
+      />
       <ListItem label="🔄 Restart app" onPress={Restart} />
       <ListItem label="🗑️ Remove all backups" onPress={removeBackups} />
       <ListItem

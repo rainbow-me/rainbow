@@ -2,6 +2,7 @@ import MaskedView from '@react-native-community/masked-view';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Animated, Easing, StyleSheet } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Clock,
   Easing as REasing,
@@ -92,9 +93,10 @@ const RainbowButton = ({
   style,
   textColor,
   text,
+  ...props
 }) => {
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.9} {...props}>
       <DarkShadow style={darkShadowStyle} />
       <Shadow style={shadowStyle} />
       <ButtonContainer height={height} style={style}>
@@ -360,20 +362,24 @@ export default function WelcomeScreen() {
           toValue: 1,
         }),
       ]),
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(createWalletButtonAnimation.current, {
-            duration: 1000,
-            toValue: 1.02,
-            useNativeDriver: true,
-          }),
-          Animated.timing(createWalletButtonAnimation.current, {
-            duration: 1000,
-            toValue: 0.98,
-            useNativeDriver: true,
-          }),
-        ])
-      ),
+      // We need to disable looping animations
+      // There's no way to disable sync yet
+      // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
+      !IS_TESTING &&
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(createWalletButtonAnimation.current, {
+              duration: 1000,
+              toValue: 1.02,
+              useNativeDriver: true,
+            }),
+            Animated.timing(createWalletButtonAnimation.current, {
+              duration: 1000,
+              toValue: 0.98,
+              useNativeDriver: true,
+            }),
+          ])
+        ),
     ]).start();
     return () => {
       createWalletButtonAnimation.current.setValue(1);
@@ -430,7 +436,7 @@ export default function WelcomeScreen() {
 
   const showRestoreSheet = useCallback(() => {
     navigate(Routes.RESTORE_SHEET);
-  }, []);
+  }, [navigate]);
 
   const existingWalletButtonProps = useMemoOne(() => {
     return {
@@ -459,7 +465,7 @@ export default function WelcomeScreen() {
   }, [rValue]);
 
   return (
-    <Container>
+    <Container testID="welcome-screen">
       {traversedRainbows.map(({ source, style, id }) => (
         <RainbowImage source={source} style={style} key={`rainbow${id}`} />
       ))}
@@ -470,10 +476,16 @@ export default function WelcomeScreen() {
         </MaskedView>
 
         <ButtonWrapper style={buttonStyle}>
-          <RainbowButton {...createWalletButtonProps} />
+          <RainbowButton
+            {...createWalletButtonProps}
+            testID="new-wallet-button"
+          />
         </ButtonWrapper>
         <ButtonWrapper>
-          <RainbowButton {...existingWalletButtonProps} />
+          <RainbowButton
+            {...existingWalletButtonProps}
+            testID="already-have-wallet-button"
+          />
         </ButtonWrapper>
       </ContentWrapper>
     </Container>

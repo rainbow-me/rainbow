@@ -3789,10 +3789,10 @@ detect-newline@^2.1.0:
   resolved "https://registry.yarnpkg.com/detect-newline/-/detect-newline-2.1.0.tgz#f41f1c10be4b00e87b5f13da680759f2c5bfd3e2"
   integrity sha1-9B8cEL5LAOh7XxPaaAdZ8sW/0+I=
 
-detox@^16.5.0:
-  version "16.9.2"
-  resolved "https://registry.yarnpkg.com/detox/-/detox-16.9.2.tgz#3b99be3df54ef0f35ffe12d3aa87b556d00a50d3"
-  integrity sha512-yi74zL3hHFRU131B5tgZiYh0hPWvpryntllAKEpxRGRRuz+11s2+TjpuS0M02jGOdDMFBk5BzcXFGM57FWbWNA==
+detox@^17.0.2:
+  version "17.0.2"
+  resolved "https://registry.yarnpkg.com/detox/-/detox-17.0.2.tgz#188ad89e83b6a1de8c4f733072095d44aeca22a7"
+  integrity sha512-90nTa8Z3N5veiySWA6Teawbv7Q3llGC+sWHPV06mwtSPz07Dw38VE7Nz1yAAlQndzIevbWMFwJNjCDFhF5+5eg==
   dependencies:
     bunyan "^1.8.12"
     bunyan-debug-stream "^1.1.0"
@@ -3931,6 +3931,11 @@ dotenv@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-2.0.0.tgz#bd759c357aaa70365e01c96b7b0bec08a6e0d949"
   integrity sha1-vXWcNXqqcDZeAclrewvsCKbg2Uk=
+
+dotenv@^8.2.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.2.0.tgz#97e619259ada750eea3e4ea3e26bceea5424b16a"
+  integrity sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==
 
 drbg.js@^1.0.1:
   version "1.0.1"

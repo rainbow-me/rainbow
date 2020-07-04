@@ -160,9 +160,8 @@ const RestoreIcloudStep = ({ userData }) => {
         </LoadingOverlayWrapper>,
         false
       );
-    } else {
-      hide();
     }
+    return hide;
   }, [hide, isWalletLoading, setComponent]);
 
   useEffect(() => {

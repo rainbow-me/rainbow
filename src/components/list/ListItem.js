@@ -42,11 +42,12 @@ const ListItem = enhance(
   ({
     activeOpacity,
     children,
+    justify,
     icon,
     iconMargin,
     label,
     onPress,
-    justify,
+    testID,
     ...props
   }) => (
     <ButtonPressAnimation
@@ -54,6 +55,7 @@ const ListItem = enhance(
       enableHapticFeedback={false}
       onPress={onPress}
       scaleTo={0.975}
+      testID={testID}
     >
       <Row
         align="center"

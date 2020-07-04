@@ -134,7 +134,11 @@ class App extends Component {
     const address = await loadAddress();
     if (address) {
       this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
-      this.setupIncomingNotificationListeners();
+      // We need to wait until the wallet initializes
+      // otherwise the backup flag might not be set yet
+      setTimeout(() => {
+        this.setupIncomingNotificationListeners();
+      }, 5000);
     } else {
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
     }

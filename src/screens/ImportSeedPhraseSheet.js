@@ -92,12 +92,17 @@ const StyledInput = styled(Input)`
 `;
 
 const ImportButton = ({ disabled, onPress, seedPhrase }) => (
-  <StyledImportButton disabled={disabled} onPress={onPress} overflow="visible">
+  <StyledImportButton
+    disabled={disabled}
+    onPress={onPress}
+    overflow="visible"
+    testID="import-sheet-button"
+  >
     <RowWithMargins align="center" margin={5}>
       {!!seedPhrase && (
         <Icon color={colors.white} direction="right" name="arrowCircled" />
       )}
-      <Text color="white" weight="semibold">
+      <Text color="white" weight="semibold" testID="import-sheet-button-label">
         {seedPhrase ? 'Import' : 'Paste'}
       </Text>
     </RowWithMargins>
@@ -315,7 +320,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   }, [hide, isImporting, setComponent]);
 
   return (
-    <Container>
+    <Container testID="import-sheet">
       <StatusBar barStyle="light-content" />
       <SheetHandle marginBottom={7} marginTop={6} />
       <Text size="large" weight="bold">
@@ -350,6 +355,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             returnKeyType="done"
             size="large"
             spellCheck={false}
+            testID="import-sheet-input"
             value={seedPhrase}
             weight="semibold"
             width="100%"
@@ -360,6 +366,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             disabled={seedPhrase ? !isSecretValid : !isClipboardValidSecret}
             onPress={onPressImportButton}
             seedPhrase={seedPhrase}
+            testID="import-sheet-button"
           />
         </Row>
       </KeyboardAvoidingView>

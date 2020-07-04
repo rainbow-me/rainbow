@@ -77,9 +77,8 @@ const BackupSheet = ({ setAppearListener }) => {
         </LoadingOverlayWrapper>,
         false
       );
-    } else {
-      hide();
     }
+    return hide;
   }, [hide, isWalletLoading, setComponent]);
 
   const onIcloudBackup = useCallback(async () => {

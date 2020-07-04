@@ -103,13 +103,12 @@ export default function WalletScreen() {
         </LoadingOverlayWrapper>,
         true
       );
-    } else {
-      hide();
     }
+    return hide;
   }, [hide, isWalletLoading, setComponent]);
 
   return (
-    <WalletPage>
+    <WalletPage testID="wallet-screen">
       {/* Line below appears to be needed for having scrollViewTracker persistent while
       reattaching of react subviews */}
       <Animated.Code exec={scrollViewTracker} />

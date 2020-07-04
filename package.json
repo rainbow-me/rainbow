@@ -211,7 +211,8 @@
     "babel-plugin-rewire": "^1.2.0",
     "babel-plugin-styled-components": "^1.10.7",
     "babel-plugin-transform-remove-console": "^6.9.4",
-    "detox": "^16.5.0",
+    "detox": "^17.0.2",
+    "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
     "eslint-config-satya164": "^3.1.6",
     "eslint-import-resolver-babel-module": "^5.1.2",
@@ -244,7 +245,7 @@
         "build": "xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 11 Pro"
+          "type": "iPhone 11"
         }
       },
       "ios.sim.debug": {
@@ -252,7 +253,7 @@
         "build": "xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 11 Pro"
+          "type": "iPhone 11"
         }
       },
       "android.emu.debug": {
