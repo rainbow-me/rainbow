@@ -9,6 +9,7 @@ import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
+import SavingsSheet from '../screens/SavingsSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
@@ -97,6 +98,11 @@ function MainNavigator() {
         name={Routes.IMPORT_SEED_PHRASE_SHEET}
         component={ImportSeedPhraseSheet}
         options={sheetPreset}
+      />
+      <Stack.Screen
+        name={Routes.SAVINGS_SHEET}
+        component={SavingsSheet}
+        options={bottomSheetPreset}
       />
       <Stack.Screen
         name={Routes.SEND_SHEET}
