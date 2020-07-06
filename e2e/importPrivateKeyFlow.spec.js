@@ -2,7 +2,7 @@
 /* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
 
-describe('Import from seed flow', () => {
+describe('Import from private key flow', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });

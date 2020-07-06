@@ -2,7 +2,7 @@
 /* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
 
-describe('Import from seed flow', () => {
+describe('Watch address flow', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
