@@ -286,7 +286,7 @@
 
 - (void)invalidate
 {
-  if (self.stackPresentation != RNSScreenStackPresentationModal || !_customStack) {
+  if (self.stackPresentation != RNSScreenStackPresentationModal) {
     _controller = nil;
   }
 }
