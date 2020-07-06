@@ -3,7 +3,7 @@ import {
   getLocalRequests,
   removeLocalRequest,
   saveLocalRequests,
-} from '../handlers/localstorage/walletconnect';
+} from '../handlers/localstorage/walletconnectRequests';
 import { getRequestDisplayDetails } from '../parsers/requests';
 import logger from 'logger';
 
