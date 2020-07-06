@@ -52,8 +52,7 @@ export default function ProfileScreen({ navigation }) {
         </LoadingOverlayWrapper>,
         false
       );
-    } else {
-      hide();
+      return hide;
     }
   }, [hide, isWalletLoading, setComponent]);
   const {

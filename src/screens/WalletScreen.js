@@ -103,8 +103,7 @@ export default function WalletScreen() {
         </LoadingOverlayWrapper>,
         true
       );
-    } else {
-      hide();
+      return hide;
     }
   }, [hide, isWalletLoading, setComponent]);
 

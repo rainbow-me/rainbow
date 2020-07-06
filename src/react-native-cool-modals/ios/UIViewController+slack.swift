@@ -50,14 +50,9 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     viewControllerToPresent.setValue(self, forKey: "_parentVC")
     viewController = viewControllerToPresent
   }
-  
-  func panModalDidDismiss() {
-    config.removeController()
-  }
-  
+
   @objc func hide() {
     hiding = true
-    // callWillDismiss()
     hackParent()
     panModalTransition(to: .hidden)
   }
@@ -244,6 +239,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
   
   override func viewWillDisappear(_ animated: Bool) {
+    config.removeController()
     disappared = true
     super.viewWillDisappear(animated)
   }
