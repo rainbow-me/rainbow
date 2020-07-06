@@ -18,6 +18,7 @@ const Input = (
     keyboardType,
     placeholderTextColor = colors.placeholder,
     spellCheck = true,
+    testID,
     ...props
   },
   ref
@@ -32,6 +33,7 @@ const Input = (
       placeholderTextColor={placeholderTextColor}
       ref={ref}
       spellCheck={spellCheck}
+      testID={testID}
     />
   );
 };

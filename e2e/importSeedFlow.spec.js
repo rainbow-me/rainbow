@@ -45,7 +45,14 @@ describe('Import from seed flow', () => {
     await Helpers.checkIfVisible('wallet-screen');
   });
 
+  it('Should show the backup sheet', async () => {
+    await Helpers.delay(3000);
+    await Helpers.checkIfVisible('backup-sheet');
+    await Helpers.tap('backup-sheet-imported-cancel-button');
+  });
+
   it('Should say "poopcoin.eth" in the Profile Screen header', async () => {
+    await Helpers.delay(1000);
     await Helpers.swipe('wallet-screen', 'right');
     await Helpers.delay(2000);
     await Helpers.checkIfElementByTextIsVisible('poopcoin.eth');

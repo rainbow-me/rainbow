@@ -9,7 +9,7 @@ export const expandedAssetSheetConfig = {
     allowsTapToDismiss: true,
     backgroundOpacity: 0.7,
     blocksBackgroundTouches: true,
-    cornerRadius: 24,
+    cornerRadius: 30,
     customStack: true,
     gestureEnabled: true,
     headerHeight: 50,
@@ -53,6 +53,7 @@ export const nativeStackConfig = {
 export const sharedCoolModalConfig = {
   options: {
     customStack: true,
+    ignoreBottomOffset: true,
     onAppear: null,
   },
 };

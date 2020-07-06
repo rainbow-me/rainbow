@@ -236,7 +236,7 @@ const BackupSheet = ({ setAppearListener }) => {
   ]);
 
   return (
-    <StyledSheet>
+    <StyledSheet testID="backup-sheet">
       <Transitioning.View
         ref={switchSheetContentTransitionRef}
         transition={switchSheetContentTransition}

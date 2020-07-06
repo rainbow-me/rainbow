@@ -31,12 +31,21 @@ describe('Import from seed flow', () => {
   });
 
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
+    await Helpers.delay(2000);
+    await Helpers.checkIfVisible('wallet-info-input');
     await Helpers.typeText('wallet-info-input', 'PKEY');
     await Helpers.tap('wallet-info-submit-button');
     await Helpers.checkIfVisible('wallet-screen');
   });
 
+  it('Should show the backup sheet', async () => {
+    await Helpers.delay(3000);
+    await Helpers.checkIfVisible('backup-sheet');
+    await Helpers.tap('backup-sheet-imported-cancel-button');
+  });
+
   it('Should say "PKEY" in the Profile Screen header', async () => {
+    await Helpers.delay(1000);
     await Helpers.swipe('wallet-screen', 'right');
     await Helpers.delay(2000);
     await Helpers.checkIfElementByTextIsVisible('PKEY');

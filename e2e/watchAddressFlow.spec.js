@@ -36,9 +36,10 @@ describe('Import from seed flow', () => {
   });
 
   it('Should say "vitalik.eth" in the Profile Screen header', async () => {
+    await Helpers.delay(3000);
     await Helpers.swipe('wallet-screen', 'right');
     await Helpers.delay(2000);
-    await Helpers.checkIfElementByTextIsVisible('0x4d14...dF85');
+    await Helpers.checkIfElementByTextIsVisible('vitalik.eth');
   });
 
   afterAll(async () => {

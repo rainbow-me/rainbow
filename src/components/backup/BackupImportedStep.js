@@ -54,6 +54,7 @@ const BackupImportedStep = ({ onIcloudBackup, onIgnoreBackup }) => {
           onPress={onIgnoreBackup}
           size="big"
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+          testID="backup-sheet-imported-cancel-button"
         />
       </ColumnWithMargins>
     </Centered>

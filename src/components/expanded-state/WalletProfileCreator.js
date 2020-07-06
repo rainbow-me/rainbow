@@ -156,6 +156,7 @@ export default function WalletProfileCreator({
               size="big"
               spellCheck={false}
               style={sx.walletNameInput}
+              testID="wallet-info-input"
               textAlign="center"
               value={value}
               weight="bold"
