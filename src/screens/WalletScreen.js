@@ -30,8 +30,8 @@ import {
   useWalletSectionsData,
 } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/effects';
-import { usePortal } from 'react-native-cool-modals/Portal';
 import { position } from '@rainbow-me/styles';
+import { usePortal } from 'react-native-cool-modals/Portal';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
@@ -102,8 +102,7 @@ export default function WalletScreen() {
         </LoadingOverlayWrapper>,
         true
       );
-    } else {
-      hide();
+      return hide;
     }
   }, [hide, isCreatingAccount, setComponent]);
 

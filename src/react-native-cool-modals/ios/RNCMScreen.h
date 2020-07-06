@@ -33,6 +33,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 @property (nonatomic, strong) id<UIViewControllerTransitioningDelegate> transDelegate;
 - (instancetype)initWithView:(UIView *)view;
 - (void)notifyFinishTransitioning;
+- (UIViewController*) parentVC;
 
 @end
 
@@ -61,7 +62,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 
 
 @property (nonatomic) BOOL isShortFormEnabled;
-@property (nonatomic, nullable) NSNumber *longFormHeight;
+@property (nonatomic, nonnull) NSNumber *longFormHeight;
 @property (nonatomic, nonnull) NSNumber *springDamping;
 @property (nonatomic, nonnull) NSNumber *transitionDuration;
 @property (nonatomic, nonnull) UIColor *modalBackgroundColor;
@@ -75,7 +76,9 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 @property (nonatomic) BOOL startFromShortForm;
 
 - (void)notifyFinishTransitioning;
-
+- (void)willDismiss;
+- (void)notifyAppear;
+- (void)removeController;
 @end
 
 @interface UIView (RNSScreen)
