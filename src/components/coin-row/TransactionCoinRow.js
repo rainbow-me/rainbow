@@ -5,6 +5,7 @@ import { Linking } from 'react-native';
 import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
+import { isENSAddressFormat } from '../../helpers/validators';
 import { useAccountSettings } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { abbreviations, ethereumUtils } from '../../utils';
@@ -135,8 +136,10 @@ export default function TransactionCoinRow({ item, ...props }) {
       headerInfo.address = contact.nickname;
       contactColor = contact.color;
     } else {
-      headerInfo.address = abbreviations.address(contactAddress, 4, 10);
-      contactColor = Math.floor(Math.random() * colors.avatarColor.length);
+      headerInfo.address = isENSAddressFormat(contactAddress)
+        ? contactAddress
+        : abbreviations.address(contactAddress, 4, 10);
+      contactColor = colors.getRandomColor();
     }
 
     if (hash) {

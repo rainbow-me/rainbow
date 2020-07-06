@@ -11,6 +11,7 @@ import useExperimentalFlag, {
 } from '../../config/experimentalHooks';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
+import { isENSAddressFormat } from '../../helpers/validators';
 import { useAccountProfile } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
@@ -163,8 +164,10 @@ const TransactionList = ({
         headerInfo.address = contact.nickname;
         contactColor = contact.color;
       } else {
-        headerInfo.address = abbreviations.address(contactAddress, 4, 10);
-        contactColor = Math.floor(Math.random() * colors.avatarColor.length);
+        headerInfo.address = isENSAddressFormat(contactAddress)
+          ? contactAddress
+          : abbreviations.address(contactAddress, 4, 10);
+        contactColor = colors.getRandomColor();
       }
 
       if (hash) {
