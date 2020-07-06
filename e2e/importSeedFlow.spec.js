@@ -3,10 +3,6 @@
 import * as Helpers from './helpers';
 
 describe('Import from seed flow', () => {
-  beforeAll(async () => {
-    await device.reloadReactNative();
-  });
-
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
@@ -43,7 +39,9 @@ describe('Import from seed flow', () => {
   });
 
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
+    await Helpers.delay(1000);
     await Helpers.tap('wallet-info-submit-button');
+    await Helpers.delay(1000);
     await Helpers.checkIfVisible('wallet-screen');
   });
 

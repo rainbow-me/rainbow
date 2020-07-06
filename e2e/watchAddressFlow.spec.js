@@ -3,10 +3,6 @@
 import * as Helpers from './helpers';
 
 describe('Import from seed flow', () => {
-  beforeAll(async () => {
-    await device.reloadReactNative();
-  });
-
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });

@@ -3,10 +3,6 @@
 import * as Helpers from './helpers';
 
 describe('New Wallet flow', () => {
-  beforeAll(async () => {
-    await device.reloadReactNative();
-  });
-
   it('should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
