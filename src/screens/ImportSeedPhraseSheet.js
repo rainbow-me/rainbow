@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/core';
 import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
 import { isEmpty as isObjectEmpty } from 'lodash';
@@ -113,7 +114,8 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, wallets } = useWallets();
   const { clipboard } = useClipboard();
-  const { goBack, navigate, setParams } = useNavigation();
+  const { params } = useRoute();
+  const { goBack, navigate, replace, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
@@ -263,7 +265,9 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
                 if (previousWalletCount === 0) {
                   await saveUserBackupState(BackupStateTypes.done);
                 }
-                navigate(Routes.SWIPE_LAYOUT);
+                if (params?.isOnboarding) {
+                  replace(Routes.SWIPE_LAYOUT);
+                }
                 setTimeout(() => {
                   // If it's not read only, show the backup sheet
                   if (!(isENSAddressFormat(input) || isValidAddress(input))) {
@@ -291,6 +295,8 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     isImporting,
     name,
     navigate,
+    params?.isOnboarding,
+    replace,
     resolvedAddress,
     seedPhrase,
     selectedWallet.id,
