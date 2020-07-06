@@ -5,6 +5,7 @@ import React from 'react';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
+import DepositModal from '../screens/DepositModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
@@ -15,6 +16,7 @@ import SettingsModal from '../screens/SettingsModal';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
+import WithdrawModal from '../screens/WithdrawModal';
 import { SwipeNavigator } from './SwipeNavigator';
 import { defaultScreenStackOptions, stackNavigationConfig } from './config';
 import {
@@ -103,6 +105,16 @@ function MainNavigator() {
         name={Routes.SAVINGS_SHEET}
         component={SavingsSheet}
         options={bottomSheetPreset}
+      />
+      <Stack.Screen
+        name={Routes.SAVINGS_WITHDRAW_MODAL}
+        component={WithdrawModal}
+        options={exchangePreset}
+      />
+      <Stack.Screen
+        name={Routes.SAVINGS_DEPOSIT_MODAL}
+        component={DepositModal}
+        options={exchangePreset}
       />
       <Stack.Screen
         name={Routes.SEND_SHEET}
