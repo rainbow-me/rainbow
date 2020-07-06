@@ -68,7 +68,7 @@ const RestoreSheet = () => {
   const onManualRestore = useCallback(() => {
     goBack();
     InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR, {
+      navigate(Routes.IMPORT_SEED_PHRASE_FLOW, {
         isOnboarding: true,
       });
     });
@@ -77,7 +77,7 @@ const RestoreSheet = () => {
   const onWatchAddress = useCallback(() => {
     goBack();
     InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR, {
+      navigate(Routes.IMPORT_SEED_PHRASE_FLOW, {
         isOnboarding: true,
       });
     });

@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 
 import { Button } from '../components/buttons';
@@ -35,7 +36,6 @@ import { web3Provider } from '../handlers/web3';
 import BackupStateTypes from '../helpers/backupStateTypes';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { isENSAddressFormat, isValidWallet } from '../helpers/validators';
-import walletLoadingStates from '../helpers/walletLoadingStates';
 import WalletTypes from '../helpers/walletTypes';
 import {
   useAccountSettings,
@@ -47,6 +47,7 @@ import {
 } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/effects';
+import { setIsWalletLoading } from '../redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { borders, colors, padding, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
@@ -112,7 +113,8 @@ const ImportButton = ({ disabled, onPress, seedPhrase }) => (
 
 const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   const { accountAddress } = useAccountSettings();
-  const { selectedWallet, wallets } = useWallets();
+  const { isWalletLoading, selectedWallet, wallets } = useWallets();
+  const dispatch = useDispatch();
   const { clipboard } = useClipboard();
   const { params } = useRoute();
   const { goBack, navigate, replace, setParams } = useNavigation();
@@ -165,9 +167,13 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   const toggleImporting = useCallback(
     newImportingState => {
       setImporting(newImportingState);
-      setParams({ gesturesEnabled: !newImportingState });
+      const existingParams = !isObjectEmpty(params) ? params : {};
+      setParams({
+        ...existingParams,
+        gesturesEnabled: !newImportingState,
+      });
     },
-    [setParams]
+    [params, setParams]
   );
 
   const onPressImportButton = useCallback(async () => {
@@ -263,9 +269,8 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
               goBack();
               InteractionManager.runAfterInteractions(async () => {
                 if (previousWalletCount === 0) {
+                  await dispatch(setIsWalletLoading(null));
                   await saveUserBackupState(BackupStateTypes.done);
-                }
-                if (params?.isOnboarding) {
                   replace(Routes.SWIPE_LAYOUT);
                 }
                 setTimeout(() => {
@@ -275,7 +280,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
                       option: 'imported',
                     });
                   }
-                }, 1000);
+                }, 2000);
               });
             } else {
               toggleImporting(false);
@@ -289,13 +294,13 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     }
   }, [
     color,
+    dispatch,
     goBack,
     initializeWallet,
     isEmpty,
     isImporting,
     name,
     navigate,
-    params?.isOnboarding,
     replace,
     resolvedAddress,
     seedPhrase,
@@ -310,20 +315,19 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   const { setComponent, hide } = usePortal();
 
   useEffect(() => {
-    if (isImporting) {
+    if (isWalletLoading) {
       setComponent(
         <LoadingOverlayWrapper>
           <LoadingOverlay
-            paddingTop={keyboardVerticalOffset}
-            title={walletLoadingStates.IMPORTING_WALLET}
+            paddingTop={sheetVerticalOffset}
+            title={isWalletLoading}
           />
         </LoadingOverlayWrapper>,
-        true
+        false
       );
-    } else {
-      hide();
     }
-  }, [hide, isImporting, setComponent]);
+    return hide;
+  }, [hide, isWalletLoading, setComponent]);
 
   return (
     <Container testID="import-sheet">
