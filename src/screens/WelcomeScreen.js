@@ -365,7 +365,7 @@ export default function WelcomeScreen() {
       // We need to disable looping animations
       // There's no way to disable sync yet
       // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
-      !IS_TESTING &&
+      IS_TESTING !== 'true' &&
         Animated.loop(
           Animated.sequence([
             Animated.timing(createWalletButtonAnimation.current, {
