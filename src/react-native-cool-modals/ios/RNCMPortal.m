@@ -79,8 +79,8 @@ RCT_EXPORT_VIEW_PROPERTY(blockTouches, BOOL)
   if (@available(iOS 13.0, *)) {
     self.window.windowScene = nil;
   }
-  self.window = nil;
   [self.window.rootViewController.view removeReactSubview:self.reactSubviews[0]];
+  self.window = nil;
   [super removeFromSuperview];
   
 }
@@ -90,8 +90,8 @@ RCT_EXPORT_VIEW_PROPERTY(blockTouches, BOOL)
   if (@available(iOS 13.0, *)) {
     self.window.windowScene = nil;
   }
-  self.window = nil;
   [self.window.rootViewController.view removeReactSubview:subview];
+  self.window = nil;
   [super removeReactSubview:subview];
 }
 @end
