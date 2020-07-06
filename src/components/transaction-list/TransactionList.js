@@ -1,5 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
+import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Linking, requireNativeComponent } from 'react-native';
@@ -9,6 +10,7 @@ import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '../../config/experimentalHooks';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import TransactionTypes from '../../helpers/transactionTypes';
 import { useAccountProfile } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
@@ -104,10 +106,48 @@ const TransactionList = ({
     e => {
       const { index } = e.nativeEvent;
       const item = transactions[index];
-      const { hash, from, to, status } = item;
+      const { hash, from, minedAt, pending, to, status, type } = item;
 
-      const isPurchasing = status === TransactionStatusTypes.purchasing;
-      const isSent = status === TransactionStatusTypes.sent;
+      const calculateTimestampOfToday = () => {
+        var d = new Date();
+        d.setHours(0, 0, 0, 0);
+        return d.getTime();
+      };
+      const calculateTimestampOfYesterday = () => {
+        var d = new Date();
+        d.setDate(d.getDate() - 1);
+        d.setHours(0, 0, 0, 0);
+        return d.getTime();
+      };
+      const calculateTimestampOfThisYear = () => {
+        var d = new Date();
+        d.setFullYear(d.getFullYear(), 0, 1);
+        d.setHours(0, 0, 0, 0);
+        return d.getTime();
+      };
+      const todayTimestamp = calculateTimestampOfToday();
+      const yesterdayTimestamp = calculateTimestampOfYesterday();
+      const thisYearTimestamp = calculateTimestampOfThisYear();
+
+      const timestamp = new Date(minedAt * 1000);
+      const date = format(
+        timestamp,
+        timestamp > todayTimestamp
+          ? `'Today'`
+          : timestamp > yesterdayTimestamp
+          ? `'Yesterday'`
+          : `'on' MMM d${timestamp > thisYearTimestamp ? '' : ' yyyy'}`
+      );
+
+      const hasAddableContact =
+        (status === TransactionStatusTypes.received &&
+          type !== TransactionTypes.trade) ||
+        status === TransactionStatusTypes.receiving ||
+        status === TransactionStatusTypes.sending ||
+        status === TransactionStatusTypes.sent;
+      const isSent =
+        status === TransactionStatusTypes.sending ||
+        status === TransactionStatusTypes.sent;
 
       const headerInfo = {
         address: '',
@@ -129,20 +169,26 @@ const TransactionList = ({
 
       if (hash) {
         let buttons = ['View on Etherscan', 'Cancel'];
-        if (!isPurchasing) {
+        if (hasAddableContact) {
           buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
         }
 
         showActionSheetWithOptions(
           {
-            cancelButtonIndex: isPurchasing ? 1 : 2,
+            cancelButtonIndex: hasAddableContact ? 2 : 1,
             options: buttons,
-            title: isPurchasing
-              ? headerInfo.type
-              : `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
+            title: pending
+              ? `${headerInfo.type}${
+                  hasAddableContact
+                    ? ' ' + headerInfo.divider + ' ' + headerInfo.address
+                    : ''
+                }`
+              : hasAddableContact
+              ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
+              : `${headerInfo.type} ${date}`,
           },
           buttonIndex => {
-            if (!isPurchasing && buttonIndex === 0) {
+            if (hasAddableContact && buttonIndex === 0) {
               navigate(Routes.MODAL_SCREEN, {
                 address: contactAddress,
                 asset: item,
@@ -151,8 +197,8 @@ const TransactionList = ({
                 type: 'contact',
               });
             } else if (
-              (isPurchasing && buttonIndex === 0) ||
-              (!isPurchasing && buttonIndex === 1)
+              (!hasAddableContact && buttonIndex === 0) ||
+              (hasAddableContact && buttonIndex === 1)
             ) {
               const normalizedHash = hash.replace(/-.*/g, '');
               const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(

@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { compact, get } from 'lodash';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
@@ -73,14 +74,53 @@ const TopRow = ({ balance, pending, status, title }) => (
 );
 
 export default function TransactionCoinRow({ item, ...props }) {
-  const { contact, hash } = item;
+  const { contact } = item;
   const { network } = useAccountSettings();
   const { navigate } = useNavigation();
 
   const onPressTransaction = useCallback(async () => {
-    const { from, to, status } = item;
-    const isPurchasing = status === TransactionStatusTypes.purchasing;
-    const isSent = status === TransactionStatusTypes.sent;
+    const { hash, from, minedAt, pending, to, status, type } = item;
+
+    const calculateTimestampOfToday = () => {
+      var d = new Date();
+      d.setHours(0, 0, 0, 0);
+      return d.getTime();
+    };
+    const calculateTimestampOfYesterday = () => {
+      var d = new Date();
+      d.setDate(d.getDate() - 1);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime();
+    };
+    const calculateTimestampOfThisYear = () => {
+      var d = new Date();
+      d.setFullYear(d.getFullYear(), 0, 1);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime();
+    };
+    const todayTimestamp = calculateTimestampOfToday();
+    const yesterdayTimestamp = calculateTimestampOfYesterday();
+    const thisYearTimestamp = calculateTimestampOfThisYear();
+
+    const timestamp = new Date(minedAt * 1000);
+    const date = format(
+      timestamp,
+      timestamp > todayTimestamp
+        ? `'Today'`
+        : timestamp > yesterdayTimestamp
+        ? `'Yesterday'`
+        : `'on' MMM d${timestamp > thisYearTimestamp ? '' : ' yyyy'}`
+    );
+
+    const hasAddableContact =
+      (status === TransactionStatusTypes.received &&
+        type !== TransactionTypes.trade) ||
+      status === TransactionStatusTypes.receiving ||
+      status === TransactionStatusTypes.sending ||
+      status === TransactionStatusTypes.sent;
+    const isSent =
+      status === TransactionStatusTypes.sending ||
+      status === TransactionStatusTypes.sent;
 
     const headerInfo = {
       address: '',
@@ -94,27 +134,33 @@ export default function TransactionCoinRow({ item, ...props }) {
     if (contact) {
       headerInfo.address = contact.nickname;
       contactColor = contact.color;
-    } else if (!isPurchasing) {
+    } else {
       headerInfo.address = abbreviations.address(contactAddress, 4, 10);
-      contactColor = colors.getRandomColor();
+      contactColor = Math.floor(Math.random() * colors.avatarColor.length);
     }
 
     if (hash) {
       let buttons = ['View on Etherscan', 'Cancel'];
-      if (!isPurchasing) {
+      if (hasAddableContact) {
         buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
       }
 
       showActionSheetWithOptions(
         {
-          cancelButtonIndex: isPurchasing ? 1 : 2,
+          cancelButtonIndex: hasAddableContact ? 2 : 1,
           options: buttons,
-          title: isPurchasing
-            ? headerInfo.type
-            : `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
+          title: pending
+            ? `${headerInfo.type}${
+                hasAddableContact
+                  ? ' ' + headerInfo.divider + ' ' + headerInfo.address
+                  : ''
+              }`
+            : hasAddableContact
+            ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
+            : `${headerInfo.type} ${date}`,
         },
         buttonIndex => {
-          if (!isPurchasing && buttonIndex === 0) {
+          if (hasAddableContact && buttonIndex === 0) {
             navigate(Routes.MODAL_SCREEN, {
               address: contactAddress,
               asset: item,
@@ -123,8 +169,8 @@ export default function TransactionCoinRow({ item, ...props }) {
               type: 'contact',
             });
           } else if (
-            (isPurchasing && buttonIndex === 0) ||
-            (!isPurchasing && buttonIndex === 1)
+            (!hasAddableContact && buttonIndex === 0) ||
+            (hasAddableContact && buttonIndex === 1)
           ) {
             const normalizedHash = hash.replace(/-.*/g, '');
             const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
@@ -135,7 +181,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         }
       );
     }
-  }, [contact, hash, item, navigate, network]);
+  }, [contact, item, navigate, network]);
 
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>
