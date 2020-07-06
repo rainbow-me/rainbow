@@ -28,6 +28,7 @@ const LanguageSection = ({ language, onSelectLanguage }) => (
   <RadioList
     extraData={language}
     items={languageListItems}
+    marginTop={7}
     onChange={onSelectLanguage}
     renderItem={renderLanguageListItem}
     value={language}

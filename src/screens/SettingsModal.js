@@ -147,7 +147,7 @@ const SettingsModal = () => {
   const { goBack, navigate } = useNavigation();
   const { wallets } = useWallets();
   const { params } = useRoute();
-  const { width: deviceWidth } = useDimensions();
+  const { isTallPhone, width: deviceWidth } = useDimensions();
 
   const getRealRoute = useCallback(
     key => {
@@ -198,8 +198,8 @@ const SettingsModal = () => {
 
   return (
     <Modal
-      marginBottom={statusBarHeight}
-      minHeight={580}
+      marginBottom={isTallPhone && statusBarHeight}
+      minHeight={500}
       onCloseModal={goBack}
       radius={18}
     >

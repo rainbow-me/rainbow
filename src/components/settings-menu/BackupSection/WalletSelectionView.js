@@ -1,6 +1,5 @@
 import { useNavigation } from '@react-navigation/core';
 import React, { useCallback } from 'react';
-import { View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import Caret from '../../../assets/family-dropdown-arrow.png';
@@ -16,15 +15,6 @@ import { ContactAvatar } from '../../contacts';
 import { Icon } from '../../icons';
 import { Column, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedAddress } from '../../text';
-
-const IconWrapper = styled(View)`
-  margin-bottom: 12;
-  height: 22;
-  position: absolute;
-  right: 20;
-  top: 12;
-  width: 24;
-`;
 
 const CaretIcon = styled(FastImage).attrs({
   source: Caret,
@@ -49,24 +39,22 @@ const AccountLabel = styled(Text).attrs({
   weight: 'regular',
 })``;
 
-const WarningIconText = styled(Text).attrs({
-  color: colors.orangeLight,
-  size: 22,
+const CheckmarkIcon = styled(Icon).attrs({
+  color: colors.blueGreyDark50,
+  name: 'checkmarkCircled',
 })`
-  box-shadow: 0px 4px 12px rgba(254, 190, 68, 0.4);
+  align-self: center;
+  margin-bottom: 1px;
+  margin-right: 6px;
+  box-shadow: 0px 4px 6px ${colors.alpha(colors.blueGreyDark50, 0.4)};
 `;
 
-const WarningIcon = () => (
-  <IconWrapper>
-    <WarningIconText>􀇿</WarningIconText>
-  </IconWrapper>
-);
-
-const CheckmarkIcon = ({ color }) => (
-  <IconWrapper>
-    <Icon color={color} name="checkmarkCircled" size={22} />
-  </IconWrapper>
-);
+const WarningIcon = styled(Icon).attrs({
+  color: colors.orangeLight,
+  name: 'warning',
+})`
+  box-shadow: 0px 4px 6px ${colors.alpha(colors.orangeLight, 0.4)};
+`;
 
 const WalletSelectionView = () => {
   const { navigate } = useNavigation();
