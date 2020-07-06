@@ -134,7 +134,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
 
   const inputRefListener = useCallback(
     value => {
-      value && startFocusTimeout(value.focus, 100);
+      value && startFocusTimeout(() => value.focus(), 100);
       inputRef.current = value;
     },
     [startFocusTimeout]
