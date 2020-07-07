@@ -3,7 +3,7 @@ import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { isValidAddress, toBuffer } from 'ethereumjs-util';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { findKey, get, isEmpty } from 'lodash';
+import { find, findKey, get, isEmpty, some } from 'lodash';
 import { Alert } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {
@@ -314,25 +314,33 @@ export const createWallet = async (seed = null, color = null, name = null) => {
     const allWalletsResult = await getAllWallets();
     const allWallets = get(allWalletsResult, 'wallets', {});
 
+    let existingWalletId = null;
     if (isImported) {
       // Checking if the generated account already exists
-      const alreadyExisting = Object.keys(allWallets).some(key => {
-        const someWallet = allWallets[key];
-        return someWallet.addresses.some(account => {
-          return (
+      const alreadyExistingWallet = find(allWallets, someWallet =>
+        find(
+          someWallet.addresses,
+          account =>
             toChecksumAddress(account.address) ===
-              toChecksumAddress(wallet.address) && someWallet.type === type
-          );
-        });
-      });
+            toChecksumAddress(wallet.address)
+        )
+      );
 
-      if (alreadyExisting) {
+      existingWalletId = alreadyExistingWallet?.id;
+
+      // Checking if an existing account is visible
+      const isVisible =
+        alreadyExistingWallet &&
+        some(alreadyExistingWallet.addresses, account => !!account.visible);
+
+      // Don't allow adding a readOnly wallet that you have already visible
+      if (isVisible && type === WalletTypes.readOnly) {
         Alert.alert('Oops!', 'Looks like you already imported this wallet!');
         return null;
       }
     }
 
-    const id = `wallet_${new Date().getTime()}`;
+    const id = existingWalletId || `wallet_${new Date().getTime()}`;
 
     // Save address
     await saveAddress(wallet.address);
