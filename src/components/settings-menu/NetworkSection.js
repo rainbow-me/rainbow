@@ -45,6 +45,7 @@ const NetworkSection = () => {
         selected: toLower(network) === toLower(value),
         value,
       }))}
+      marginTop={7}
       renderItem={RadioListItem}
       value={network}
       onChange={onNetworkChange}
