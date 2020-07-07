@@ -36,7 +36,7 @@ import TransactionTypes from '../helpers/transactionTypes';
 import { divide, isZero } from '../helpers/utilities';
 import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
-import { parseTransactions } from '../parsers/transactions';
+import { getTitle, parseTransactions } from '../parsers/transactions';
 import { tokenOverrides } from '../references';
 import { ethereumUtils, isLowerCaseMatch } from '../utils';
 
@@ -460,6 +460,12 @@ export const dataWatchPendingTransactions = () => async (
           } else {
             updatedPending.status = TransactionStatusTypes.failed;
           }
+          const title = getTitle({
+            protocol: tx.protocol,
+            status: updatedPending.status,
+            type: tx.type,
+          });
+          updatedPending.title = title;
           updatedPending.pending = false;
           updatedPending.minedAt = minedAt;
         }
