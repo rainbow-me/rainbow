@@ -179,7 +179,7 @@ const SettingsSection = ({
             onPressShowSecret={onPressShowSecret}
           >
             <ListItemArrowGroup>
-              {!areBackedUp ? <CheckmarkIcon /> : <WarningIcon />}
+              {areBackedUp ? <CheckmarkIcon /> : <WarningIcon />}
             </ListItemArrowGroup>
           </ListItem>
         )}
