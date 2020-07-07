@@ -69,7 +69,7 @@ const lightGreyGradient = [
 ];
 
 const sendScreen = {
-  brightBlue: base.appleBlue, // 14, 118, 253
+  brightBlue: base.appleBlue, // '14, 118, 253'
   grey: '#D8D8D8', // '216, 216, 216'
   lightGrey: '#FAFAFA', // '250, 250, 250'
 };
@@ -116,6 +116,7 @@ const getFallbackTextColor = bg =>
   });
 
 const transparent = {
+  appleBlueTransparent: buildRgba(base.appleBlue, 0.2), // '50, 50, 93'
   purpleTransparent: buildRgba(base.purple, 0.7), // '50, 50, 93'
   whiteTransparent: buildRgba(base.white, 0.8), // '255, 255, 255'
 };
