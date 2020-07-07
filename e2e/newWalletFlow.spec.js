@@ -25,9 +25,5 @@ describe('New Wallet flow', () => {
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
-    // await Helpers.tap('settings-button');
-    // await Helpers.waitAndTap('dev-section-button');
-    // await Helpers.waitAndTap('reset-keychain-button');
-    // await Helpers.delay(2000);
   });
 });

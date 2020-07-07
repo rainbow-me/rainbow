@@ -15,9 +15,8 @@ jasmine.getEnv().addReporter(adapter);
 jasmine.getEnv().addReporter(specReporter);
 
 beforeAll(async () => {
-  await detox.init(config, { launchApp: false });
-  await device.launchApp({ permissions: { camera: 'YES' } });
-}, 30000);
+  await detox.init(config);
+});
 
 beforeEach(async () => {
   await adapter.beforeEach();
