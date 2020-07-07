@@ -8,6 +8,13 @@ const LANGUAGE = 'language';
 const NATIVE_CURRENCY = 'nativeCurrency';
 const NETWORK = 'network';
 const USER_BACKUP_STATE = 'userBackupState';
+const KEYCHAIN_INTEGRITY_STATE = 'keychainIntegrityState';
+
+export const getKeychainIntegrityState = () =>
+  getGlobal(KEYCHAIN_INTEGRITY_STATE, null);
+
+export const saveKeychainIntegrityState = state =>
+  saveGlobal(KEYCHAIN_INTEGRITY_STATE, state);
 
 export const getUserBackupState = () => getGlobal(USER_BACKUP_STATE, null);
 

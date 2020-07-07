@@ -1,5 +1,5 @@
 import { toChecksumAddress } from 'ethereumjs-util';
-import { filter, flatMap, get, map, toLower, values } from 'lodash';
+import { filter, flatMap, get, map, values } from 'lodash';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import {
@@ -9,11 +9,12 @@ import {
 import { web3Provider } from '../handlers/web3';
 import BackupStateTypes from '../helpers/backupStateTypes';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
-import { keychainEventEmitter } from '../model/keychain';
+import WalletTypes from '../helpers/walletTypes';
 import {
   generateAccount,
   getAllWallets,
   getSelectedWallet,
+  hasKey,
   loadAddress,
   saveAddress,
   saveAllWallets,
@@ -80,48 +81,8 @@ export const walletsLoadState = () => async (dispatch, getState) => {
 
     const walletNames = await getWalletNames();
 
-    // Event listener for lost keychain items
-    //  to mark the wallets as damaged
-    keychainEventEmitter.on('keychainItemLostError', key => {
-      if (!key) {
-        logger.log('keychainItemLostError detected while getting all keys');
-        // We might wanna disable the backup feature here
-        // and mark all the non imported wallets as damaged
-        // Still need to confirm that this actually triggers
-        // when trying it on a real device
-        return;
-      }
-
-      let walletId;
-      const { wallets, selected } = getState().wallets;
-      // We need to derive the wallet id from the keychain item key
-      if (key.indexOf('_rainbowSeedPhrase') !== -1) {
-        walletId = key.replace('_rainbowSeedPhrase', '');
-      } else if (key.indexOf('_rainbowPrivateKey') !== -1) {
-        const address = key.replace('_rainbowPrivateKey', '');
-        Object.keys(wallets).forEach(id => {
-          const wallet = wallets[id];
-          wallet.addresses.forEach(account => {
-            if (toLower(account.address) === toLower(address)) {
-              walletId = id;
-            }
-          });
-        });
-      }
-
-      if (walletId) {
-        wallets[walletId].damaged = true;
-        dispatch(walletsUpdate(wallets));
-        // Update selected wallet if needed
-        if (walletId === selected.id) {
-          dispatch(walletsSetSelected(wallets[walletId]));
-        }
-      }
-    });
-
     dispatch({
       payload: {
-        keychainEventEmitter,
         selected: selectedWallet,
         walletNames,
         wallets,
@@ -259,10 +220,34 @@ export const fetchWalletNames = () => async (dispatch, getState) => {
   saveWalletNames(updatedWalletNames);
 };
 
+export const identifyBrokenWallet = () => async (dispatch, getState) => {
+  const { wallets, selected } = getState().wallets;
+  Object.keys(wallets)
+    .filter(key => wallets[key].type !== WalletTypes.readOnly)
+    .forEach(async key => {
+      let keyFound = false;
+      const wallet = wallets[key];
+      if (wallet.type === WalletTypes.privateKey) {
+        const account = wallet.addresses[0];
+        keyFound = await hasKey(`${account.address}_rainbowPrivateKey`);
+      } else {
+        keyFound = await hasKey(`${key}_rainbowSeedPhrase`);
+      }
+
+      if (!keyFound) {
+        wallet.damaged = true;
+        dispatch(walletsUpdate(wallets));
+        // Update selected wallet if needed
+        if (wallet.id === selected.id) {
+          dispatch(walletsSetSelected(wallets[wallet.id]));
+        }
+      }
+    });
+};
+
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   isWalletLoading: null,
-  keychainEventEmitter: null,
   selected: undefined,
   walletNames: {},
   wallets: null,
@@ -281,7 +266,6 @@ export default (state = INITIAL_STATE, action) => {
     case WALLETS_LOAD:
       return {
         ...state,
-        keychainEventEmitter: action.payload.keychainEventEmitter,
         selected: action.payload.selected,
         walletNames: action.payload.walletNames,
         wallets: action.payload.wallets,
