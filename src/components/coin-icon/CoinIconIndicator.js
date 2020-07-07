@@ -15,7 +15,7 @@ const IndicatorIcon = styled(Icon).attrs(({ isPinned }) => ({
 
 const IndicatorIconContainer = styled(Centered)`
   ${borders.buildCircle(20)};
-  ${shadow.build(0, 4, 6, colors.blueGreyDark, 0.4)}
+  ${shadow.build(0, 4, 12, colors.blueGreyDark, 0.4)}
   background-color: ${colors.blueGreyDark50};
   bottom: 3;
   left: 10;

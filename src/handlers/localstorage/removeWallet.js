@@ -4,7 +4,7 @@ import NetworkTypes from '../../helpers/networkTypes';
 import { accountLocalKeys } from './accountLocal';
 import { getKey } from './common';
 import { uniswapAccountLocalKeys } from './uniswap';
-import { walletConnectAccountLocalKeys } from './walletconnect';
+import { walletConnectAccountLocalKeys } from './walletconnectRequests';
 import logger from 'logger';
 
 export const removeWalletData = async accountAddress => {

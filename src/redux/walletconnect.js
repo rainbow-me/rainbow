@@ -16,7 +16,7 @@ import {
   getAllValidWalletConnectSessions,
   removeWalletConnectSessions,
   saveWalletConnectSession,
-} from '../handlers/localstorage/walletconnect';
+} from '../handlers/localstorage/walletconnectSessions';
 import { sendRpcCall } from '../handlers/web3';
 import WalletTypes from '../helpers/walletTypes';
 import { getFCMToken } from '../model/firebase';
@@ -209,7 +209,6 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
 };
 
 export const walletConnectLoadState = () => async (dispatch, getState) => {
-  const { accountAddress, network } = getState().settings;
   const { walletConnectors } = getState().walletconnect;
   let newWalletConnectors = {};
   try {
@@ -222,10 +221,7 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
       });
     }
 
-    const allSessions = await getAllValidWalletConnectSessions(
-      accountAddress,
-      network
-    );
+    const allSessions = await getAllValidWalletConnectSessions();
 
     const { clientMeta, push } = await getNativeOptions();
 
@@ -307,7 +303,7 @@ export const removeWalletConnector = peerId => (dispatch, getState) => {
 };
 
 export const walletConnectUpdateSessions = () => (dispatch, getState) => {
-  const { accountAddress, chainId, network } = getState().settings;
+  const { accountAddress, chainId } = getState().settings;
   const { walletConnectors } = getState().walletconnect;
 
   Object.keys(walletConnectors).forEach(key => {
@@ -318,12 +314,7 @@ export const walletConnectUpdateSessions = () => (dispatch, getState) => {
     };
     connector.updateSession(newSessionData);
 
-    saveWalletConnectSession(
-      connector.peerId,
-      connector.session,
-      accountAddress,
-      network
-    );
+    saveWalletConnectSession(connector.peerId, connector.session);
   });
 };
 
@@ -331,7 +322,7 @@ export const walletConnectApproveSession = (peerId, callback) => (
   dispatch,
   getState
 ) => {
-  const { accountAddress, chainId, network } = getState().settings;
+  const { accountAddress, chainId } = getState().settings;
   const walletConnector = dispatch(getPendingRequest(peerId));
   walletConnector.approveSession({
     accounts: [accountAddress],
@@ -339,12 +330,7 @@ export const walletConnectApproveSession = (peerId, callback) => (
   });
 
   dispatch(removePendingRequest(peerId));
-  saveWalletConnectSession(
-    walletConnector.peerId,
-    walletConnector.session,
-    accountAddress,
-    network
-  );
+  saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
 
   const listeningWalletConnector = dispatch(
     listenOnNewMessages(walletConnector)
@@ -369,7 +355,6 @@ export const walletConnectDisconnectAllByDappName = dappName => async (
   getState
 ) => {
   const { walletConnectors } = getState().walletconnect;
-  const { accountAddress, network } = getState().settings;
   const matchingWalletConnectors = values(
     pickBy(walletConnectors, session => session.peerMeta.name === dappName)
   );
@@ -380,7 +365,7 @@ export const walletConnectDisconnectAllByDappName = dappName => async (
         walletConnector => walletConnector.peerId
       )
     );
-    await removeWalletConnectSessions(peerIds, accountAddress, network);
+    await removeWalletConnectSessions(peerIds);
     forEach(matchingWalletConnectors, walletConnector =>
       walletConnector.killSession()
     );

@@ -74,11 +74,11 @@ class TransactionListViewCell: TransactionListBaseCell {
             let colorIndex = transaction.symbol.lowercased().utf8.compactMap{ Int($0) }.reduce(0, +) % TransactionListViewCell.avatarColors.count
             let color = TransactionListViewCell.avatarColors[colorIndex]
             self.coinImage.image = self.generateTextImage(transaction.symbol, backgroundColor: color)
-            self.coinImage.layer.cornerRadius = self.coinImage.frame.width * 0.5
           } else {
             self.coinImage.image = image
             self.coinImage.layer.backgroundColor = UIColor.white.cgColor
           }
+          self.coinImage.layer.cornerRadius = self.coinImage.frame.width * 0.5
         }
       }
     }
