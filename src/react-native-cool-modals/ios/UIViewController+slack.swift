@@ -130,6 +130,9 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   
   override var view: UIView! {
     get {
+      if (viewController == nil) {
+        return UIView()
+      }
       return viewController!.view
     }
     set {

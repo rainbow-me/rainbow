@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import URL from 'url-parse';
 import Divider from '../components/Divider';
@@ -6,6 +6,7 @@ import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { Centered, Row, RowWithMargins } from '../components/layout';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
+import { useNavigation } from '../navigation/Navigation';
 import { colors, padding } from '@rainbow-me/styles';
 
 const WalletConnectApprovalSheet = () => {
