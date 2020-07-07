@@ -4,11 +4,11 @@ import * as Helpers from './helpers';
 
 describe('Import from seed flow', () => {
   it('Should show the welcome screen', async () => {
+    await device.disableSynchronization();
     await Helpers.checkIfVisible('welcome-screen');
   });
 
   it('Should show the "Restore Sheet" after tapping on "I already have a wallet"', async () => {
-    await device.disableSynchronization();
     await Helpers.tap('already-have-wallet-button');
     await Helpers.delay(2000);
     await Helpers.checkIfExists('restore-sheet');
@@ -23,15 +23,14 @@ describe('Import from seed flow', () => {
   it("Shouldn't do anything when I type jibberish", async () => {
     await Helpers.tap('import-sheet-input');
     await Helpers.checkIfHasText('import-sheet-button-label', 'Paste');
-    await Helpers.typeText('import-sheet-input', 'asdajksdlakjsd');
+    await Helpers.typeText('import-sheet-input', 'asdajksdlakjsd', false);
     await Helpers.checkIfHasText('import-sheet-button-label', 'Import');
     await Helpers.checkIfDisabled('import-sheet-button');
   });
 
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
     await Helpers.clearField('import-sheet-input');
-    await Helpers.checkIfHasText('import-sheet-button-label', 'Paste');
-    await Helpers.typeText('import-sheet-input', process.env.DEV_SEEDS);
+    await Helpers.typeText('import-sheet-input', process.env.DEV_SEEDS, false);
     await Helpers.delay(1000);
     await Helpers.checkIfHasText('import-sheet-button-label', 'Import');
     await Helpers.tap('import-sheet-button');

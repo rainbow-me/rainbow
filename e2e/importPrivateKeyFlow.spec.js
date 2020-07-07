@@ -23,7 +23,7 @@ describe('Import from private key flow', () => {
   it('Should show the "Add wallet modal" after tapping import with a valid private key"', async () => {
     await Helpers.clearField('import-sheet-input');
     await Helpers.checkIfHasText('import-sheet-button-label', 'Paste');
-    await Helpers.typeText('import-sheet-input', process.env.DEV_PKEY);
+    await Helpers.typeText('import-sheet-input', process.env.DEV_PKEY, false);
     await Helpers.delay(1000);
     await Helpers.checkIfHasText('import-sheet-button-label', 'Import');
     await Helpers.tap('import-sheet-button');
@@ -33,7 +33,7 @@ describe('Import from private key flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.delay(2000);
     await Helpers.checkIfVisible('wallet-info-input');
-    await Helpers.typeText('wallet-info-input', 'PKEY');
+    await Helpers.typeText('wallet-info-input', 'PKEY', false);
     await Helpers.tap('wallet-info-submit-button');
     await Helpers.checkIfVisible('wallet-screen');
   });

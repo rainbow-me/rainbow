@@ -27,8 +27,10 @@ export function tapItemAtIndex(elementID, index) {
     .tap();
 }
 
-export async function typeText(elementId, text) {
-  await tap(elementId);
+export async function typeText(elementId, text, focus = true) {
+  if (focus) {
+    await tap(elementId);
+  }
   return element(by.id(elementId)).typeText(text);
 }
 
