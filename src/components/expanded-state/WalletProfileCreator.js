@@ -45,7 +45,7 @@ export default function WalletProfileCreator({
   profile,
 }) {
   const biometryType = useBiometryType();
-  const { dangerouslyGetParent, goBack, navigate } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const [color, setColor] = useState(
     (profile.color !== null && profile.color) || colors.getRandomColor()
   );
@@ -53,7 +53,6 @@ export default function WalletProfileCreator({
   const inputRef = useRef(null);
   const text = useRef(null);
 
-  console.log(dangerouslyGetParent());
   const { params } = useRoute();
 
   const additionalPadding =

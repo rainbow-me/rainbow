@@ -310,8 +310,7 @@
           if (lastModal) {
             afterTransitions();
           };
-        } topOffset:[((RNCMScreenView *)next.view).topOffset floatValue] showDragIndicator:((RNCMScreenView *)next.view).showDragIndicator slackStack: ((RNCMScreenView*) next.view).customStack cornerRadius:((RNCMScreenView*) next.view).cornerRadius
-            config:((RNCMScreenView *)next.view)];
+        }   slackStack: ((RNCMScreenView*) next.view).customStack];
         previous = next;
       }
     }
@@ -321,9 +320,6 @@
   if (![presentedViewController isKindOfClass:[RNCMScreen class]] && presentedViewController != nil && [presentedViewController.view isKindOfClass:[RNCMScreenView class]]) {
     RNCMScreenView* view = (RNCMScreenView*) presentedViewController.view;
     presentedViewController = view.controller;
-    if ([_presentedModals containsObject:presentedViewController]) {
-      view.controller = nil;
-    }
   }
   
   if (presentedViewController != nil

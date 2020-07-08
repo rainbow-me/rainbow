@@ -10,12 +10,13 @@ import ImageWithCachedMetadata from '../ImageWithCachedMetadata';
 import { Centered } from '../layout';
 import { colors, fonts, position } from '@rainbow-me/styles';
 
-const fallbackTextStyles = `
-  font-family: ${fonts.family.SFProRounded};
-  letter-spacing: ${fonts.letterSpacing.roundedTight};
-  margin-bottom: 1;
-  text-align: center;
-`;
+const fallbackTextStyles = {
+  align: 'center',
+  fontFamily: fonts.family.SFProRounded,
+  fontWeight: fonts.weight.bold,
+  letterSpacing: fonts.letterSpacing.roundedTight,
+  marginBottom: 1,
+};
 
 const FallbackImage = styled(ImageWithCachedMetadata)`
   ${position.cover};

@@ -34,9 +34,9 @@ import {
 import { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/effects';
 import Routes from '@rainbow-me/routes';
-import { usePortal } from 'react-native-cool-modals/Portal';
 import { borders, colors, padding, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
+import { usePortal } from 'react-native-cool-modals/Portal';
 
 const keyboardVerticalOffset =
   Platform.OS === 'android'
@@ -120,7 +120,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
 
   const inputRefListener = useCallback(
     value => {
-      value && startFocusTimeout(value.focus, 100);
+      value && startFocusTimeout(() => value.focus(), 100);
       inputRef.current = value;
     },
     [startFocusTimeout]
@@ -272,8 +272,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
         </LoadingOverlayWrapper>,
         true
       );
-    } else {
-      hide();
+      return hide;
     }
   }, [hide, isImporting, setComponent]);
 
