@@ -19,6 +19,7 @@
 @implementation RainbowText {
   NSTimer* _timer;
   int _decimals;
+  int _duration;
   float _initialValue;
   double _interval;
   float _stepPerDay;
@@ -28,9 +29,6 @@
   CFAbsoluteTime _time;
   NSMutableArray<NSArray<NSNumber*>*>* _annealingColor;
   NSMutableArray *_colorsMap;
-  int _colorThrottle;
-  int _currentThrottle;
-  NSString* _prevString;
 }
 
 - (void) setAnimationConfig:(NSDictionary*) config {
@@ -42,9 +40,8 @@
   _decimals = ((NSNumber*) config[@"decimals"]).intValue;
   _initialValue = ((NSNumber*)config[@"initialValue"]).floatValue;
   _interval = ((NSNumber*) config[@"interval"]).doubleValue;
-  _colorThrottle = ((NSNumber*) config[@"colorThrottle"]).intValue;
-  _currentThrottle = 0;
   _stepPerDay = ((NSNumber*) config[@"stepPerDay"]).floatValue;
+  _duration = ((NSNumber*) config[@"duration"]).intValue;
   NSString* color = ((NSNumber*) config[@"color"]).stringValue;
   _isSymbolStablecoin = ((NSNumber*) config[@"isSymbolStablecoin"]).boolValue;
   _symbol = config[@"symbol"];
@@ -65,8 +62,9 @@
   float b = (rgbValue & 0xFF)/255.0;
 
   _colorsMap = [NSMutableArray new];
-  for (float i = 1.0f; i > 0; i -= 0.05f) {
-    [_colorsMap addObject:[UIColor colorWithRed: r * i green:g * i blue:b * i alpha:1]];
+  for (int i = _duration; i > 0; i--) {
+    float factor = i / (float)_duration;
+    [_colorsMap addObject:[UIColor colorWithRed: r * factor green:g * factor blue:b * factor alpha:1]];
   }
 
   UIFont* font = [UIFont fontWithName:@"SFRounded-Bold" size:16];
@@ -108,22 +106,17 @@
 
   if (newString.length == self.attributedText.string.length) {
     NSUInteger len = newString.length;
-    if (_currentThrottle == 0) {
-      if (_prevString == nil) {
-        _prevString = newString;
-      }
-      if (_annealingColor.count == 20) {
-        [_annealingColor removeObjectAtIndex:0];
-      }
-      for (NSUInteger i = 0; i < len; i++){
-        if ([newString characterAtIndex: i] != [_prevString characterAtIndex: i]){
-          [whatHasChanged addObject:@(i)];
-        }
-      }
-
-      [_annealingColor addObject:whatHasChanged];
-      _prevString = self.attributedText.string;
+    NSString *prevString = self.attributedText.string;
+    if (_annealingColor.count == _duration) {
+      [_annealingColor removeObjectAtIndex:0];
     }
+    for (NSUInteger i = 0; i < len; i++){
+      if ([newString characterAtIndex: i] != [prevString characterAtIndex: i]){
+        [whatHasChanged addObject:@(i)];
+      }
+    }
+
+    [_annealingColor addObject:whatHasChanged];
 
     NSUInteger queueLen = _annealingColor.count;
 
@@ -136,8 +129,6 @@
   }
 
   self.attributedText = attributedText;
-  _currentThrottle++;
-  _currentThrottle%=(_colorThrottle + 1);
 }
 
 
@@ -145,7 +136,6 @@
   if (self = [super init]) {
     _timer = nil;
     UILabel *label = [[UILabel alloc] init];
-    label.text = @"123";
     [self addSubview:label];
 
   }

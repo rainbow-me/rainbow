@@ -59,8 +59,8 @@ const SavingsListRowAnimatedNumber = ({
       value={Number(value)}
       animationConfig={{
         color: '#20df20', // HEX
-        colorThrottle: 1,
         decimals: 10,
+        duration: 500, // in intervals
         initialValue: Number(initialValue),
         interval,
         isSymbolStablecoin: isSymbolStablecoin(symbol),
