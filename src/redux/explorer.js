@@ -68,6 +68,7 @@ const addressSubscription = (address, currency, action = 'subscribe') => [
     payload: {
       address,
       currency: toLower(currency),
+      min_percentage: 1,
       transactions_limit: TRANSACTIONS_LIMIT,
     },
     scope: ['assets', 'transactions'],
@@ -80,6 +81,7 @@ const assetsSubscription = (assetCodes, currency, action = 'subscribe') => [
     payload: {
       asset_codes: assetCodes,
       currency: toLower(currency),
+      min_percentage: 1,
     },
     scope: ['prices'],
   },
