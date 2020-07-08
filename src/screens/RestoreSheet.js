@@ -1,17 +1,10 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components';
 import RestoreIcloudStep from '../components/restore/RestoreIcloudStep';
 import RestoreSheetFirstStep from '../components/restore/RestoreSheetFirstStep';
 import { SlackSheet } from '../components/sheet';
-import { fetchUserDataFromCloud } from '../handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import Routes from '../navigation/routesNames';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
@@ -37,15 +30,6 @@ const RestoreSheet = () => {
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
   const [step, setStep] = useState(params?.option || 'first');
-  const [userData, setUserData] = useState();
-
-  useEffect(() => {
-    const initialize = async () => {
-      const data = await fetchUserDataFromCloud();
-      setUserData(data);
-    };
-    initialize();
-  }, []);
 
   const onIcloudRestore = useCallback(() => {
     switchSheetContentTransitionRef.current?.animateNextTransition();
@@ -70,18 +54,24 @@ const RestoreSheet = () => {
   const renderStep = useCallback(() => {
     switch (step) {
       case WalletBackupTypes.cloud:
-        return <RestoreIcloudStep userData={userData} />;
+        return <RestoreIcloudStep userData={params?.userData} />;
       default:
         return (
           <RestoreSheetFirstStep
             onIcloudRestore={onIcloudRestore}
             onManualRestore={onManualRestore}
             onWatchAddress={onWatchAddress}
-            userData={userData}
+            userData={params?.userData}
           />
         );
     }
-  }, [onIcloudRestore, onManualRestore, onWatchAddress, step, userData]);
+  }, [
+    onIcloudRestore,
+    onManualRestore,
+    onWatchAddress,
+    params?.userData,
+    step,
+  ]);
 
   return (
     <StyledSheet>
