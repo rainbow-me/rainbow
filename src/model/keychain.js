@@ -166,7 +166,7 @@ export async function restoreBackupIntoKeychain(backedUpData) {
 // Attempts to save the password to decrypt the backup from the iCloud keychain
 export async function saveBackupPassword(password) {
   try {
-    await setSharedWebCredentials('rainbow.me', 'backup', password);
+    await setSharedWebCredentials('rainbow.me', 'Backup Password', password);
   } catch (e) {
     logger.log('Error while backing up password', e);
   }
