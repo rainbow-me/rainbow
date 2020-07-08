@@ -1,4 +1,4 @@
-import { get, isNil, keys, toLower } from 'lodash';
+import { get, isNil, keys, throttle, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 import { chartExpandedAvailable } from '../config/experimental';
@@ -147,6 +147,8 @@ export const explorerClearState = () => (dispatch, getState) => {
   dispatch({ type: EXPLORER_CLEAR_STATE });
 };
 
+const THIRTY_SECONDS = 30000;
+
 export const explorerInit = () => async (dispatch, getState) => {
   const { network, accountAddress, nativeCurrency } = getState().settings;
   const { pairs } = getState().uniswap;
@@ -200,9 +202,12 @@ const listenOnAssetMessages = socket => dispatch => {
     dispatch(assetPricesReceived(message));
   });
 
-  socket.on(messages.ASSETS.CHANGED, message => {
-    dispatch(assetPricesChanged(message));
-  });
+  socket.on(
+    messages.ASSETS.CHANGED,
+    throttle(message => {
+      dispatch(assetPricesChanged(message));
+    }, THIRTY_SECONDS)
+  );
 };
 
 const listenOnAddressMessages = socket => dispatch => {
@@ -233,9 +238,12 @@ const listenOnAddressMessages = socket => dispatch => {
     dispatch(addressAssetsReceived(message, true));
   });
 
-  socket.on(messages.ADDRESS_ASSETS.CHANGED, message => {
-    dispatch(addressAssetsReceived(message, false, true));
-  });
+  socket.on(
+    messages.ADDRESS_ASSETS.CHANGED,
+    throttle(message => {
+      dispatch(addressAssetsReceived(message, false, true));
+    }, THIRTY_SECONDS)
+  );
 
   socket.on(messages.ADDRESS_ASSETS.REMOVED, message => {
     dispatch(addressAssetsReceived(message, false, false, true));
