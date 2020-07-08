@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import BiometryTypes from '../../helpers/biometryTypes';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import { useBiometryType, useMagicAutofocus } from '../../hooks';
+import { useBiometryType } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { abbreviations, deviceUtils } from '../../utils';
 import Divider from '../Divider';
@@ -111,10 +111,13 @@ export default function WalletProfileCreator({
     setColor(newColor);
   }, [color]);
 
-  const [handleDidFocus] = useMagicAutofocus(inputRef.current);
   const handleTriggerFocusInput = useCallback(() => inputRef.current?.focus(), [
     inputRef,
   ]);
+
+  useEffect(() => {
+    setTimeout(() => inputRef.current.focus(), 100);
+  }, []);
 
   const acceptAction = isNewProfile ? addProfileInfo : editProfile;
   const cancelAction = actionType === 'Import' ? cancelImport : cancelEdit;
@@ -146,7 +149,6 @@ export default function WalletProfileCreator({
               autoCapitalize="words"
               letterSpacing="roundedTight"
               onChange={handleChange}
-              onFocus={handleDidFocus}
               onSubmitEditing={acceptAction}
               ref={inputRef}
               returnKeyType="done"
