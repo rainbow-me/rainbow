@@ -43,18 +43,18 @@ const CheckmarkIcon = styled(Icon).attrs({
   name: 'checkmarkCircled',
 })`
   align-self: center;
-  margin-bottom: 1px;
-  margin-right: 6px;
   box-shadow: 0px 4px 6px ${colors.alpha(colors.blueGreyDark50, 0.4)};
+  margin-bottom: 1px;
+  margin-right: 7px;
 `;
 
 const WarningIcon = styled(Icon).attrs({
   color: colors.orangeLight,
   name: 'warning',
 })`
-  margin-top: 10px;
-  margin-right: 5px;
+  align-self: center;
   box-shadow: 0px 4px 6px ${colors.alpha(colors.orangeLight, 0.4)};
+  margin-right: 7px;
 `;
 
 const WalletSelectionView = () => {

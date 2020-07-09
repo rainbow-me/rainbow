@@ -71,7 +71,7 @@ const WarningIcon = styled(Icon).attrs({
   name: 'warning',
 })`
   box-shadow: 0px 4px 6px ${colors.alpha(colors.orangeLight, 0.4)};
-  margin-top: 1px;
+  margin-top: 1;
 `;
 
 const checkAllWallets = wallets => {
@@ -111,7 +111,7 @@ const SettingsSection = ({
 }) => {
   const { wallets } = useWallets();
   const { language, nativeCurrency, network } = useAccountSettings();
-  const { isTallPhone } = useDimensions();
+  const { isTinyPhone } = useDimensions();
 
   const onSendFeedback = useSendFeedback();
 
@@ -171,8 +171,7 @@ const SettingsSection = ({
 
   return (
     <ScrollView
-      contentContainerStyle={position.sizeAsObject('100%')}
-      scrollEnabled={!isTallPhone}
+      scrollEnabled={isTinyPhone}
       scrollEventThrottle={32}
       style={position.coverAsObject}
     >

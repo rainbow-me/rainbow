@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { Alert } from 'react-native';
+import { Alert, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../../helpers/walletBackupTypes';
@@ -17,7 +17,7 @@ import { setIsWalletLoading, setWalletBackedUp } from '../../../redux/wallets';
 import { colors, fonts, padding } from '../../../styles';
 import { logger } from '../../../utils';
 import { ButtonPressAnimation } from '../../animations';
-import { Centered, Column, ColumnWithMargins } from '../../layout';
+import { Centered, Column } from '../../layout';
 import LoadingOverlay, {
   LoadingOverlayWrapper,
 } from '../../modal/LoadingOverlay';
@@ -30,7 +30,8 @@ const DescriptionText = styled(Text).attrs({
   lineHeight: 'loosest',
   size: 'large',
 })`
-  padding-bottom: 30;
+  margin-bottom: 42;
+  padding-horizontal: 23;
 `;
 
 const Subtitle = styled(Text).attrs({
@@ -48,28 +49,25 @@ const Title = styled(Text).attrs({
   weight: 'bold',
 })`
   margin-bottom: 8;
+  padding-horizontal: 11;
 `;
 
-const TopIcon = styled(Text).attrs({
-  align: 'center',
-  color: 'white',
-  size: 30,
-  weight: 'bold',
-})`
+const TopIcon = styled(View)`
+  border-radius: 25;
+  height: 50;
   margin-bottom: 19;
-  margin-top: 0;
-  border-radius: 30;
-  overflow: hidden;
-  padding-horizontal: 12;
-  padding-vertical: 12;
+  padding-top: 13;
+  width: 50;
 `;
 
 const TopIconGreen = styled(TopIcon)`
   background-color: ${colors.green};
+  box-shadow: 0 4px 6px ${colors.alpha(colors.green, 0.4)};
 `;
 
 const TopIconGrey = styled(TopIcon)`
-  background-color: ${colors.grey};
+  background-color: ${colors.blueGreyDark50};
+  box-shadow: 0 4px 6px ${colors.alpha(colors.blueGreyDark50, 0.4)};
 `;
 
 const AlreadyBackedUpView = () => {
@@ -180,12 +178,20 @@ const AlreadyBackedUpView = () => {
             (walletStatus === 'imported' && `Imported`)}
         </Subtitle>
       </Centered>
-      <Column align="center" css={padding(0, 42, 0)} flex={1}>
-        <Centered direction="column" paddingTop={70} paddingBottom={15}>
+      <Column align="center" css={padding(0, 19, 30)} flex={1} justify="center">
+        <Centered direction="column">
           {walletStatus !== 'cloud_backup' ? (
-            <TopIconGrey>􀆅</TopIconGrey>
+            <TopIconGrey>
+              <Text align="center" color="white" size="larger" weight="bold">
+                􀆅
+              </Text>
+            </TopIconGrey>
           ) : (
-            <TopIconGreen>􀆅</TopIconGreen>
+            <TopIconGreen>
+              <Text align="center" color="white" size="larger" weight="bold">
+                􀆅
+              </Text>
+            </TopIconGreen>
           )}
           <Title>
             {(walletStatus === 'imported' && `Your wallet was imported`) ||
@@ -200,28 +206,26 @@ const AlreadyBackedUpView = () => {
                 `If you lose this device, you can restore your wallet with the key you originally imported.`)}
           </DescriptionText>
         </Centered>
-        <ColumnWithMargins css={padding(19, 10)} margin={19}>
+        <Column>
           <SheetActionButton
             color={colors.white}
             label="🗝 View recovery key"
             onPress={onViewRecoveryPhrase}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />
-        </ColumnWithMargins>
+        </Column>
       </Column>
 
       {walletStatus !== 'cloud_backup' && (
-        <Centered css={padding(42, 15)}>
+        <Centered css={padding(0, 15, 42)}>
           <ButtonPressAnimation onPress={onFooterAction}>
             <Text
               align="center"
               color={
                 walletStatus !== 'cloud_backup' ? colors.appleBlue : colors.red
               }
-              size="larger"
-              style={{
-                lineHeight: 24,
-              }}
+              letterSpacing="roundedMedium"
+              size={walletStatus !== 'cloud_backup' ? 'large' : 'lmedium'}
               weight="semibold"
             >
               {walletStatus !== 'cloud_backup'

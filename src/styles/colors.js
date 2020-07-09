@@ -29,7 +29,7 @@ let base = {
   orangeLight: '#FEBE44', // '254, 190, 68'
   paleBlue: '#579DFF', // 87, 157, 255
   pink: '#FF54BB', // 255, 84, 187
-  purple: '#32325D', // '50, 50, 93'
+  purple: '#735CFF', // '115, 92, 255'
   purpleLight: '#FFD9FE', // '255, 217, 254'
   red: '#FF494A', // '255, 73, 74'
   rowDivider: 'rgba(60, 66, 82, 0.03)', // '60, 66, 82, 0.03'

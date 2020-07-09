@@ -297,12 +297,14 @@ function NativeStackNavigator() {
         name={Routes.RESTORE_SHEET}
         component={RestoreSheet}
         options={{
+          backgroundColor: '#25292E',
+          backgroundOpacity: 0.6,
+          cornerRadius: 39,
           customStack: true,
-          isShortFormEnabled: true,
-          longFormHeight: 715,
+          ignoreBottomOffset: true,
+          isShortFormEnabled: false,
+          longFormHeight: 505,
           onAppear: null,
-          shortFormHeight: 550,
-          startFromShortForm: true,
         }}
       />
       {isNativeStackAvailable && (

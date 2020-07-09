@@ -19,19 +19,16 @@ import { Text } from '../../text';
 const PrivateKeyText = styled(Text).attrs({
   align: 'center',
   color: 'dark',
-  letterSpacing: 0.6,
   lineHeight: 'looser',
   size: 'lmedium',
   weight: 'semibold',
 })`
-  padding-left: 30;
-  padding-right: 30;
+  padding-horizontal: 30;
 `;
 
 const Shadow = styled(ShadowStack)`
   elevation: 15;
-  margin-bottom: 85;
-  margin-top: 19;
+  margin-top: 24;
 `;
 
 const ShowSecretView = () => {
@@ -135,8 +132,7 @@ const ShowSecretView = () => {
                   <Text
                     color="appleBlue"
                     letterSpacing="roundedMedium"
-                    lineHeight={19}
-                    size="large"
+                    size="lmedium"
                     weight="bold"
                   >
                     Copy to clipboard
@@ -150,25 +146,25 @@ const ShowSecretView = () => {
       <Row>
         {secretLayout && (
           <Shadow
+            borderRadius={25}
             height={wordSectionHeight}
-            width={deviceWidth - 108}
-            borderRadius={16}
             shadows={[
               [0, 10, 30, colors.dark, 0.1],
               [0, 5, 15, colors.dark, 0.04],
             ]}
+            width={deviceWidth - 138}
           >
-            <Row margin={19}>{secretLayout}</Row>
+            <Row marginVertical={19}>{secretLayout}</Row>
           </Shadow>
         )}
         {error && (
           <Centered>
-            <Column marginTop={40} paddingLeft={24} paddingRight={24}>
+            <Column marginTop={40} paddingHorizontal={24}>
               <Text align="center" size="large" weight="normal">
                 You need to authenticate in order to access your recovery{' '}
                 {type === WalletTypes.privateKey ? 'key' : 'phrase'}
               </Text>
-              <Column margin={24} marginTop={40}>
+              <Column margin={24} marginTop={0}>
                 <SheetButton
                   color={colors.appleBlue}
                   label="Try again"

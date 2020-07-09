@@ -26,7 +26,6 @@ const switchSheetContentTransition = (
 const StyledSheet = styled(SlackSheet)`
   top: 0;
   height: 100%;
-  padding-bottom: 50px;
 `;
 
 const RestoreSheet = () => {
