@@ -334,7 +334,15 @@ export const createWallet = async (seed = null, color = null, name = null) => {
         some(alreadyExistingWallet.addresses, account => !!account.visible);
 
       // Don't allow adding a readOnly wallet that you have already visible
-      if (isVisible && type === WalletTypes.readOnly) {
+      // or a private key that you already have visible as a seed or mnemonic
+      const isPrivateKeyOverwritingSeedMnemonic =
+        type === WalletTypes.privateKey &&
+        (alreadyExistingWallet.type === WalletTypes.seed ||
+          alreadyExistingWallet.type === WalletTypes.mnemonic);
+      if (
+        isVisible &&
+        (type === WalletTypes.readOnly || isPrivateKeyOverwritingSeedMnemonic)
+      ) {
         Alert.alert('Oops!', 'Looks like you already imported this wallet!');
         return null;
       }
