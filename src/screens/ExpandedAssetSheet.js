@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import React, { createElement } from 'react';
 import { StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -11,6 +11,7 @@ import {
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import { useAsset, useDimensions } from '../hooks';
+import { useNavigation } from '../navigation/Navigation';
 import { position } from '@rainbow-me/styles';
 
 const ScreenTypes = {

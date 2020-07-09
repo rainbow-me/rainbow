@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect } from 'react';
 import { Alert, Animated, Platform, View } from 'react-native';
@@ -21,6 +21,7 @@ import DevSection from '../components/settings-menu/DevSection';
 import WalletTypes from '../helpers/walletTypes';
 import { useDimensions, useWallets } from '../hooks';
 import { wipeKeychain } from '../model/keychain';
+import { useNavigation } from '../navigation/Navigation';
 import { colors, fonts } from '@rainbow-me/styles';
 
 function cardStyleInterpolator({
