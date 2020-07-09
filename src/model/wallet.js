@@ -3,7 +3,7 @@ import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { isValidAddress, toBuffer } from 'ethereumjs-util';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { find, findKey, get, isEmpty, some } from 'lodash';
+import { find, findKey, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {
@@ -316,31 +316,26 @@ export const createWallet = async (seed = null, color = null, name = null) => {
 
     let existingWalletId = null;
     if (isImported) {
-      // Checking if the generated account already exists
+      // Checking if the generated account already exists and is visible
       const alreadyExistingWallet = find(allWallets, someWallet =>
         find(
           someWallet.addresses,
           account =>
             toChecksumAddress(account.address) ===
-            toChecksumAddress(wallet.address)
+              toChecksumAddress(wallet.address) && account.visible
         )
       );
 
       existingWalletId = alreadyExistingWallet?.id;
 
-      // Checking if an existing account is visible
-      const isVisible =
-        alreadyExistingWallet &&
-        some(alreadyExistingWallet.addresses, account => !!account.visible);
-
       // Don't allow adding a readOnly wallet that you have already visible
       // or a private key that you already have visible as a seed or mnemonic
       const isPrivateKeyOverwritingSeedMnemonic =
         type === WalletTypes.privateKey &&
-        (alreadyExistingWallet.type === WalletTypes.seed ||
-          alreadyExistingWallet.type === WalletTypes.mnemonic);
+        (alreadyExistingWallet?.type === WalletTypes.seed ||
+          alreadyExistingWallet?.type === WalletTypes.mnemonic);
       if (
-        isVisible &&
+        alreadyExistingWallet &&
         (type === WalletTypes.readOnly || isPrivateKeyOverwritingSeedMnemonic)
       ) {
         Alert.alert('Oops!', 'Looks like you already imported this wallet!');
@@ -403,13 +398,15 @@ export const createWallet = async (seed = null, color = null, name = null) => {
         });
 
         // Remove any discovered wallets if they already exist
-        // and copy over label and color
+        // and copy over label and color if account was visible
         let color = colors.getRandomColor();
         let label = '';
 
         if (discoveredAccount) {
-          color = discoveredAccount.color;
-          label = discoveredAccount.label;
+          if (discoveredAccount.visible) {
+            color = discoveredAccount.color;
+            label = discoveredAccount.label;
+          }
           delete allWallets[discoveredWalletId];
         }
 
