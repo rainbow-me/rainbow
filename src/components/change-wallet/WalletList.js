@@ -34,7 +34,7 @@ const getItemLayout = (data, index) => {
   };
 };
 
-const keyExtractor = item => item.id;
+const keyExtractor = item => `${item.wallet_id}-${item.id}`;
 
 const skeletonTransition = (
   <Transition.Sequence>
