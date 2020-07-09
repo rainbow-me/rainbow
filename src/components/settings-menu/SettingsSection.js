@@ -78,8 +78,12 @@ const checkAllWallets = wallets => {
   if (!wallets) return false;
   let areBackedUp = true;
   let canBeBackedUp = false;
-  let areImported = false;
+  let allBackedUp = true;
   Object.keys(wallets).forEach(key => {
+    if (!wallets[key].backedUp && wallets[key].type !== walletTypes.readOnly) {
+      allBackedUp = false;
+    }
+
     if (
       !wallets[key].backedUp &&
       wallets[key].type !== walletTypes.readOnly &&
@@ -90,12 +94,8 @@ const checkAllWallets = wallets => {
     if (!wallets[key].type !== walletTypes.readOnly) {
       canBeBackedUp = true;
     }
-
-    if (!wallets[key].backedUp && wallets[key].imported) {
-      areImported = true;
-    }
   });
-  return { areBackedUp, areImported, canBeBackedUp };
+  return { allBackedUp, areBackedUp, canBeBackedUp };
 };
 
 const SettingsSection = ({
@@ -161,13 +161,12 @@ const SettingsSection = ({
     );
   }, []);
 
-  const { areBackedUp, areImported, canBeBackedUp } = useMemo(
+  const { allBackedUp, areBackedUp, canBeBackedUp } = useMemo(
     () => checkAllWallets(wallets),
     [wallets]
   );
 
-  const backupStatusColor =
-    areBackedUp && !areImported ? colors.green : colors.blueGreyDark50;
+  const backupStatusColor = allBackedUp ? colors.green : colors.blueGreyDark50;
 
   return (
     <ScrollView
