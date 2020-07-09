@@ -8,11 +8,12 @@ import {
   getAllInternetCredentials,
   getInternetCredentials,
   hasInternetCredentials,
+  requestSharedWebCredentials,
   resetInternetCredentials,
   setInternetCredentials,
+  setSharedWebCredentials,
 } from 'react-native-keychain';
 import logger from 'logger';
-const RAINBOW_BACKUP_KEY = 'rainbowBackup';
 
 // NOTE: implement access control for iOS keychain
 export async function saveString(key, value, accessControlOptions) {
@@ -148,10 +149,7 @@ export async function restoreBackupIntoKeychain(backedUpData) {
 // Attempts to save the password to decrypt the backup from the iCloud keychain
 export async function saveBackupPassword(password) {
   try {
-    await saveString(RAINBOW_BACKUP_KEY, password, {
-      accessible: ACCESSIBLE.WHEN_UNLOCKED,
-      synchronizable: true,
-    });
+    await setSharedWebCredentials('rainbow.me', 'Backup Password', password);
   } catch (e) {
     logger.log('Error while backing up password', e);
   }
@@ -159,18 +157,23 @@ export async function saveBackupPassword(password) {
 
 // Attempts to fetch the password to decrypt the backup from the iCloud keychain
 export async function fetchBackupPassword() {
-  const results = await getInternetCredentials(RAINBOW_BACKUP_KEY, {
-    accessible: ACCESSIBLE.WHEN_UNLOCKED,
-    synchronizable: true,
-  });
-
-  return results.password;
+  try {
+    const results = await requestSharedWebCredentials();
+    return results.password;
+  } catch (e) {
+    logger.log('Error while fetching backup password', e);
+  }
 }
 
 // For dev purposes only
 export async function wipeKeychain() {
-  const results = await loadAllKeys();
-  results.forEach(async result => {
-    await resetInternetCredentials(result.username);
-  });
+  try {
+    const results = await loadAllKeys();
+    results.forEach(async result => {
+      await resetInternetCredentials(result.username);
+    });
+    logger.log('keychain wiped!');
+  } catch (e) {
+    logger.log('error while wiping keychain', e);
+  }
 }

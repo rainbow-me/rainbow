@@ -260,6 +260,7 @@ function NativeStackNavigator() {
           cornerRadius: 0,
           customStack: true,
           ignoreBottomOffset: true,
+          topOffset: 0,
         }}
       />
       <NativeStack.Screen

@@ -1,6 +1,6 @@
 import MaskedView from '@react-native-community/masked-view';
 import { useNavigation } from '@react-navigation/native';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet } from 'react-native';
 import Reanimated, {
   Clock,
@@ -14,6 +14,7 @@ import { ButtonPressAnimation } from '../components/animations';
 import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { Emoji, Text } from '../components/text';
+import { fetchUserDataFromCloud } from '../handlers/cloudBackup';
 import useHideSplashScreen from '../helpers/hideSplashScreen';
 import Routes from '../navigation/routesNames';
 import { colors, shadow } from '@rainbow-me/styles';
@@ -341,6 +342,7 @@ export default function WelcomeScreen() {
   const contentAnimation = useAnimatedValue(1);
   const hideSplashScreen = useHideSplashScreen();
   const createWalletButtonAnimation = useAnimatedValue(1);
+  const [userData, setUserData] = useState();
 
   useEffect(() => {
     hideSplashScreen();
@@ -375,6 +377,13 @@ export default function WelcomeScreen() {
         ])
       ),
     ]).start();
+
+    const initialize = async () => {
+      const data = await fetchUserDataFromCloud();
+      setUserData(data);
+    };
+    initialize();
+
     return () => {
       createWalletButtonAnimation.current.setValue(1);
       contentAnimation.current.setValue(1);
@@ -429,8 +438,10 @@ export default function WelcomeScreen() {
   }, [rValue]);
 
   const showRestoreSheet = useCallback(() => {
-    navigate(Routes.RESTORE_SHEET);
-  }, []);
+    navigate(Routes.RESTORE_SHEET, {
+      userData,
+    });
+  }, [navigate, userData]);
 
   const existingWalletButtonProps = useMemoOne(() => {
     return {
