@@ -1,6 +1,5 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Linking, requireNativeComponent } from 'react-native';
@@ -11,6 +10,7 @@ import useExperimentalFlag, {
 } from '../../config/experimentalHooks';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
+import { getHumanReadableDate } from '../../helpers/transactions';
 import { isENSAddressFormat } from '../../helpers/validators';
 import { useAccountProfile } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
@@ -109,36 +109,7 @@ const TransactionList = ({
       const item = transactions[index];
       const { hash, from, minedAt, pending, to, status, type } = item;
 
-      const calculateTimestampOfToday = () => {
-        var d = new Date();
-        d.setHours(0, 0, 0, 0);
-        return d.getTime();
-      };
-      const calculateTimestampOfYesterday = () => {
-        var d = new Date();
-        d.setDate(d.getDate() - 1);
-        d.setHours(0, 0, 0, 0);
-        return d.getTime();
-      };
-      const calculateTimestampOfThisYear = () => {
-        var d = new Date();
-        d.setFullYear(d.getFullYear(), 0, 1);
-        d.setHours(0, 0, 0, 0);
-        return d.getTime();
-      };
-      const todayTimestamp = calculateTimestampOfToday();
-      const yesterdayTimestamp = calculateTimestampOfYesterday();
-      const thisYearTimestamp = calculateTimestampOfThisYear();
-
-      const timestamp = new Date(minedAt * 1000);
-      const date = format(
-        timestamp,
-        timestamp > todayTimestamp
-          ? `'Today'`
-          : timestamp > yesterdayTimestamp
-          ? `'Yesterday'`
-          : `'on' MMM d${timestamp > thisYearTimestamp ? '' : ' yyyy'}`
-      );
+      const date = getHumanReadableDate(minedAt);
 
       const hasAddableContact =
         (status === TransactionStatusTypes.received &&

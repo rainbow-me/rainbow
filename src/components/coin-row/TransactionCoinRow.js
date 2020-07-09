@@ -1,10 +1,10 @@
-import { format } from 'date-fns';
 import { compact, get } from 'lodash';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
+import { getHumanReadableDate } from '../../helpers/transactions';
 import { isENSAddressFormat } from '../../helpers/validators';
 import { useAccountSettings } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
@@ -82,36 +82,7 @@ export default function TransactionCoinRow({ item, ...props }) {
   const onPressTransaction = useCallback(async () => {
     const { hash, from, minedAt, pending, to, status, type } = item;
 
-    const calculateTimestampOfToday = () => {
-      var d = new Date();
-      d.setHours(0, 0, 0, 0);
-      return d.getTime();
-    };
-    const calculateTimestampOfYesterday = () => {
-      var d = new Date();
-      d.setDate(d.getDate() - 1);
-      d.setHours(0, 0, 0, 0);
-      return d.getTime();
-    };
-    const calculateTimestampOfThisYear = () => {
-      var d = new Date();
-      d.setFullYear(d.getFullYear(), 0, 1);
-      d.setHours(0, 0, 0, 0);
-      return d.getTime();
-    };
-    const todayTimestamp = calculateTimestampOfToday();
-    const yesterdayTimestamp = calculateTimestampOfYesterday();
-    const thisYearTimestamp = calculateTimestampOfThisYear();
-
-    const timestamp = new Date(minedAt * 1000);
-    const date = format(
-      timestamp,
-      timestamp > todayTimestamp
-        ? `'Today'`
-        : timestamp > yesterdayTimestamp
-        ? `'Yesterday'`
-        : `'on' MMM d${timestamp > thisYearTimestamp ? '' : ' yyyy'}`
-    );
+    const date = getHumanReadableDate(minedAt);
 
     const hasAddableContact =
       (status === TransactionStatusTypes.received &&
