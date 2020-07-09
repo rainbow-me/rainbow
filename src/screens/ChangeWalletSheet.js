@@ -311,8 +311,8 @@ const ChangeWalletSheet = () => {
                     return false;
                   });
 
-                // If we found it, use it to create the new account
-                if (primaryWalletKey) {
+                // If we found it and it's not damaged use it to create the new account
+                if (primaryWalletKey && !wallets[primaryWalletKey].damaged) {
                   await dispatch(
                     createAccountForWallet(primaryWalletKey, color, name)
                   );
