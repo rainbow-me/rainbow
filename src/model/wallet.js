@@ -385,7 +385,6 @@ export const createWallet = async (seed = null, color = null, name = null) => {
           nextWallet.address
         );
 
-        // If nextWallet.address already exists in allWallets, then set visible to false
         const discoveredAccountExists = find(allWallets, someWallet =>
           find(
             someWallet.addresses,
@@ -394,6 +393,11 @@ export const createWallet = async (seed = null, color = null, name = null) => {
               toChecksumAddress(nextWallet.address)
           )
         );
+
+        // Remove any discovered wallets if they already exist
+        if (discoveredAccountExists) {
+          delete allWallets[discoveredAccountExists.id];
+        }
 
         if (hasTxHistory) {
           // Save private key
@@ -404,7 +408,7 @@ export const createWallet = async (seed = null, color = null, name = null) => {
             color: colors.getRandomColor(),
             index: index,
             label: '',
-            visible: !discoveredAccountExists,
+            visible: true,
           });
           index++;
         } else {
