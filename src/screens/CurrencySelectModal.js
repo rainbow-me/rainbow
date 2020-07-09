@@ -1,7 +1,6 @@
 import {
   useFocusEffect,
   useIsFocused,
-  useNavigation,
   useRoute,
 } from '@react-navigation/native';
 import { concat, map } from 'lodash';
@@ -30,6 +29,7 @@ import {
   useUniswapAssets,
   useUniswapAssetsInWallet,
 } from '../hooks';
+import { useNavigation } from '../navigation/Navigation';
 import { filterList, filterScams } from '../utils/search';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 import Routes from '@rainbow-me/routes';

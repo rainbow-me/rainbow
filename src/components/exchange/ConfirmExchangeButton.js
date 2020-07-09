@@ -30,7 +30,7 @@ const ConfirmExchangeButton = ({
   if (!isSufficientBalance) {
     label = 'Insufficient Funds';
   } else if (!isSufficientGas) {
-    label = 'Insufficient Gas';
+    label = 'Insufficient ETH';
   } else if (slippage > SlippageWarningTheshold) {
     label = 'Swap Anyway';
   } else if (disabled) {

@@ -367,7 +367,7 @@ export const getDescription = ({ name, status, type }) => {
   }
 };
 
-const getTransactionLabel = ({
+export const getTransactionLabel = ({
   direction,
   pending,
   protocol,

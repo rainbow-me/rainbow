@@ -64,30 +64,34 @@ RCT_EXPORT_VIEW_PROPERTY(blockTouches, BOOL)
 @end
 
 @implementation PortalView
-- (instancetype)init {
-  if (self = [super init]) {
-    self.window = [[CustomUIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    self.window.rootViewController = [[UIViewController alloc] init];
-    [self.window setWindowLevel:((AppDelegate* )UIApplication.sharedApplication.delegate).window.windowLevel + 1];
-    [self.window makeKeyAndVisible];
-    self.window.rootViewController.view = [[UIView alloc] init];
-    ((CustomUIWindow *) self.window).portalView = self;
-  }
-  return self;
-}
-
 -(void)addSubview:(UIView *)view {
+  self.window = [[CustomUIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+     self.window.rootViewController = [[UIViewController alloc] init];
+     [self.window setWindowLevel:((AppDelegate* )UIApplication.sharedApplication.delegate).window.windowLevel + 1];
+     [self.window makeKeyAndVisible];
+     self.window.rootViewController.view = [[UIView alloc] init];
+     ((CustomUIWindow *) self.window).portalView = self;
   [self.window.rootViewController.view addSubview:view];
 }
 
 -(void)removeFromSuperview {
+  [self.window setHidden:YES];
+  if (@available(iOS 13.0, *)) {
+    self.window.windowScene = nil;
+  }
   [self.window.rootViewController.view removeReactSubview:self.reactSubviews[0]];
+  self.window = nil;
   [super removeFromSuperview];
   
 }
 
 -(void)removeReactSubview:(UIView *)subview {
+  [self.window setHidden:YES];
+  if (@available(iOS 13.0, *)) {
+    self.window.windowScene = nil;
+  }
   [self.window.rootViewController.view removeReactSubview:subview];
+  self.window = nil;
   [super removeReactSubview:subview];
 }
 @end

@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
@@ -26,6 +26,7 @@ import {
   signTransaction,
   signTypedDataMessage,
 } from '../model/wallet';
+import { useNavigation } from '../navigation/Navigation';
 import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
 import { gasUtils } from '../utils';
 
