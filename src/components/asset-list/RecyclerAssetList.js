@@ -572,10 +572,10 @@ class RecyclerAssetList extends Component {
     if (
       collectibles.data &&
       prevCollectibles.data &&
-      collectibles.data[0].familyName === 'Showcase' &&
-      (collectibles.data[0].childrenAmount !==
-        prevCollectibles.data[0].childrenAmount ||
-        prevCollectibles.data[0].familyName !== 'Showcase')
+      collectibles.data[0]?.familyName === 'Showcase' &&
+      (collectibles.data[0]?.childrenAmount !==
+        prevCollectibles.data[0]?.childrenAmount ||
+        prevCollectibles.data[0]?.familyName !== 'Showcase')
     ) {
       const familyIndex = findIndex(this.state.dataProvider._data, function(
         data

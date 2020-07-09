@@ -75,8 +75,8 @@ const uniswapRenderItem = item => (
 );
 
 const filterWalletSections = sections =>
-  sections.filter(({ data, header }) =>
-    data ? get(header, 'totalItems') : true
+  sections.filter(({ data, header }, index) =>
+    index && data ? get(header, 'totalItems') : true
   );
 
 const buildWalletSections = (
@@ -87,6 +87,8 @@ const buildWalletSections = (
   const sections = [balanceSection, uniswapSection, uniqueTokenFamiliesSection];
 
   const filteredSections = filterWalletSections(sections);
+  // if (filteredSections.length === 1) {
+  // }
   const isEmpty = !filteredSections.length;
 
   return {
