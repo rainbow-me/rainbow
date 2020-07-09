@@ -384,6 +384,17 @@ export const createWallet = async (seed = null, color = null, name = null) => {
         const hasTxHistory = await ethereumUtils.hasPreviousTransactions(
           nextWallet.address
         );
+
+        // If nextWallet.address already exists in allWallets, then set visible to false
+        const discoveredAccountExists = find(allWallets, someWallet =>
+          find(
+            someWallet.addresses,
+            account =>
+              toChecksumAddress(account.address) ===
+              toChecksumAddress(nextWallet.address)
+          )
+        );
+
         if (hasTxHistory) {
           // Save private key
           await savePrivateKey(nextWallet.address, nextWallet.privateKey);
@@ -393,7 +404,7 @@ export const createWallet = async (seed = null, color = null, name = null) => {
             color: colors.getRandomColor(),
             index: index,
             label: '',
-            visible: true,
+            visible: !discoveredAccountExists,
           });
           index++;
         } else {
