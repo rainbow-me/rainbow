@@ -184,32 +184,34 @@ export default function WalletProfileCreator({
                 inset={false}
               />
             </Centered>
-            <ButtonPressAnimation
-              onPress={acceptAction}
-              paddingBottom={19}
-              paddingTop={15}
-              width="100%"
-            >
-              <RowWithMargins align="center" justify="center" margin={7}>
-                {showBiometryIcon && (
-                  <Icon
-                    color={colors.appleBlue}
-                    name={biometryIcon}
-                    size={biometryIcon === 'passcode' ? 19 : 20}
-                  />
-                )}
-                <Text
-                  align="center"
-                  color="appleBlue"
-                  letterSpacing="rounded"
-                  size="larger"
-                  weight="semibold"
-                >
-                  {showFaceIDCharacter && '􀎽 '}
-                  {isNewProfile ? `${actionType} Wallet` : 'Done'}
-                </Text>
-              </RowWithMargins>
-            </ButtonPressAnimation>
+            <Centered height={58}>
+              <ButtonPressAnimation
+                onPress={acceptAction}
+                paddingBottom={19}
+                paddingTop={15}
+                width="100%"
+              >
+                <RowWithMargins align="center" justify="center" margin={7}>
+                  {showBiometryIcon && (
+                    <Icon
+                      color={colors.appleBlue}
+                      name={biometryIcon}
+                      size={biometryIcon === 'passcode' ? 19 : 20}
+                    />
+                  )}
+                  <Text
+                    align="center"
+                    color="appleBlue"
+                    letterSpacing="rounded"
+                    size="larger"
+                    weight="semibold"
+                  >
+                    {showFaceIDCharacter && '􀎽 '}
+                    {isNewProfile ? `${actionType} Wallet` : 'Done'}
+                  </Text>
+                </RowWithMargins>
+              </ButtonPressAnimation>
+            </Centered>
             <Centered>
               <Divider
                 borderRadius={1}
@@ -217,22 +219,24 @@ export default function WalletProfileCreator({
                 inset={false}
               />
             </Centered>
-            <ButtonPressAnimation
-              onPress={cancelAction}
-              paddingBottom={19}
-              paddingTop={15}
-              width="100%"
-            >
-              <Text
-                align="center"
-                color={colors.alpha(colors.blueGreyDark, 0.6)}
-                letterSpacing="roundedMedium"
-                size="larger"
-                weight="medium"
+            <Centered height={58}>
+              <ButtonPressAnimation
+                onPress={cancelAction}
+                paddingBottom={19}
+                paddingTop={15}
+                width="100%"
               >
-                Cancel
-              </Text>
-            </ButtonPressAnimation>
+                <Text
+                  align="center"
+                  color={colors.alpha(colors.blueGreyDark, 0.6)}
+                  letterSpacing="roundedMedium"
+                  size="larger"
+                  weight="medium"
+                >
+                  Cancel
+                </Text>
+              </ButtonPressAnimation>
+            </Centered>
           </Centered>
         </AssetPanel>
       </FloatingPanels>

@@ -18,6 +18,8 @@ const Container = styled.View`
     : ''}
   ${position.size('100%')};
   z-index: 999;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Overlay = styled(Centered)`
