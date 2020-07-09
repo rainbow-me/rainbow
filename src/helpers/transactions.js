@@ -136,10 +136,6 @@ const buildTransactionsSections = (
 };
 
 export function getHumanReadableDate(date) {
-  const todayTimestamp = calculateTimestampOfToday();
-  const yesterdayTimestamp = calculateTimestampOfYesterday();
-  const thisYearTimestamp = calculateTimestampOfThisYear();
-
   const timestamp = new Date(date * 1000);
 
   return format(
