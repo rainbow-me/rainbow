@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { captureException } from '@sentry/react-native';
@@ -16,6 +15,7 @@ import {
   SettingsSection,
 } from '../components/settings-menu';
 import DevSection from '../components/settings-menu/DevSection';
+import { useNavigation } from '../navigation/Navigation';
 import { colors } from '@rainbow-me/styles';
 
 function cardStyleInterpolator({
