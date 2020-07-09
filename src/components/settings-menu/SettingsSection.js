@@ -61,7 +61,6 @@ let versionPressHandle = null;
 let versionNumberOfTaps = 0;
 
 const CheckmarkIcon = styled(Icon).attrs({
-  color: colors.blueGreyDark50,
   name: 'checkmarkCircled',
 })`
   box-shadow: 0px 4px 6px ${colors.alpha(colors.blueGreyDark50, 0.4)};
@@ -79,6 +78,7 @@ const checkAllWallets = wallets => {
   if (!wallets) return false;
   let areBackedUp = true;
   let canBeBackedUp = false;
+  let areImported = false;
   Object.keys(wallets).forEach(key => {
     if (
       !wallets[key].backedUp &&
@@ -90,8 +90,12 @@ const checkAllWallets = wallets => {
     if (!wallets[key].type !== walletTypes.readOnly) {
       canBeBackedUp = true;
     }
+
+    if (!wallets[key].backedUp && wallets[key].imported) {
+      areImported = true;
+    }
   });
-  return { areBackedUp, canBeBackedUp };
+  return { areBackedUp, areImported, canBeBackedUp };
 };
 
 const SettingsSection = ({
@@ -157,10 +161,13 @@ const SettingsSection = ({
     );
   }, []);
 
-  const { areBackedUp, canBeBackedUp } = useMemo(
+  const { areBackedUp, areImported, canBeBackedUp } = useMemo(
     () => checkAllWallets(wallets),
     [wallets]
   );
+
+  const backupStatusColor =
+    areBackedUp && !areImported ? colors.green : colors.blueGreyDark50;
 
   return (
     <ScrollView
@@ -179,7 +186,11 @@ const SettingsSection = ({
             onPressShowSecret={onPressShowSecret}
           >
             <ListItemArrowGroup>
-              {areBackedUp ? <CheckmarkIcon /> : <WarningIcon />}
+              {areBackedUp ? (
+                <CheckmarkIcon color={backupStatusColor} />
+              ) : (
+                <WarningIcon />
+              )}
             </ListItemArrowGroup>
           </ListItem>
         )}

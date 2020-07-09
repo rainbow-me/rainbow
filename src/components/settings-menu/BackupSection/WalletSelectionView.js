@@ -40,7 +40,6 @@ const AccountLabel = styled(Text).attrs({
 })``;
 
 const CheckmarkIcon = styled(Icon).attrs({
-  color: colors.blueGreyDark50,
   name: 'checkmarkCircled',
 })`
   align-self: center;
@@ -53,6 +52,8 @@ const WarningIcon = styled(Icon).attrs({
   color: colors.orangeLight,
   name: 'warning',
 })`
+  margin-top: 10px;
+  margin-right: 5px;
   box-shadow: 0px 4px 6px ${colors.alpha(colors.orangeLight, 0.4)};
 `;
 
@@ -153,10 +154,10 @@ const WalletSelectionView = () => {
                   wallet.backupType === WalletBackupTypes.cloud ? (
                     <CheckmarkIcon color={colors.green} />
                   ) : (
-                    <CheckmarkIcon color={colors.grey} />
+                    <CheckmarkIcon color={colors.blueGreyDark50} />
                   )
                 ) : wallet.imported ? (
-                  <CheckmarkIcon color={colors.grey} />
+                  <CheckmarkIcon color={colors.blueGreyDark50} />
                 ) : (
                   <WarningIcon />
                 )}
