@@ -27,6 +27,7 @@ const DescriptionText = styled(Text).attrs({
   size: 'large',
 })`
   margin-bottom: 42;
+  padding-horizontal: 23;
 `;
 
 const Subtitle = styled(Text).attrs({
@@ -44,6 +45,7 @@ const Title = styled(Text).attrs({
   weight: 'bold',
 })`
   margin-bottom: 8;
+  padding-horizontal: 11;
 `;
 
 const TopIcon = styled(FastImage).attrs({
@@ -83,8 +85,8 @@ const NeedsBackupView = () => {
   return (
     <Fragment>
       <Subtitle>Not backed up</Subtitle>
-      <Column align="center" css={padding(0, 42, 0)} flex={1}>
-        <Column align="center" paddingTop={70}>
+      <Column align="center" css={padding(0, 19, 42)} flex={1} justify="center">
+        <Column align="center">
           <TopIcon />
           <Title>Back up your wallet </Title>
           <DescriptionText>

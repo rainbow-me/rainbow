@@ -1,62 +1,75 @@
 import React, { useCallback, useMemo } from 'react';
-import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
-import BackupIcon from '../../assets/backupIcon.png';
-import Caret from '../../assets/family-dropdown-arrow.png';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
-import { colors, padding } from '../../styles';
+import { colors } from '../../styles';
+import { deviceUtils } from '../../utils';
 import Divider from '../Divider';
-
 import { ButtonPressAnimation } from '../animations';
-import { Column, Row } from '../layout';
-import { Text } from '../text';
-const CaretIcon = styled(FastImage).attrs({
-  source: Caret,
-  tintColor: colors.blueGreyDark,
+import Icon from '../icons/Icon';
+import { Column, Row, RowWithMargins } from '../layout';
+import { GradientText, Text } from '../text';
+
+const deviceWidth = deviceUtils.dimensions.width;
+
+const Container = styled(Column)`
+  margin-top: -8;
+`;
+
+const CaretIcon = styled(Icon).attrs({
+  name: 'caret',
 })`
-  height: 18;
-  width: 10;
+  margin-bottom: 5.25;
 `;
 
 const SheetRow = styled(Row).attrs({
-  scaleTo: 0.98,
+  scaleTo: 0.975,
 })`
-  ${padding(19, 19, 0)};
+  padding-horizontal: 30;
+  padding-top: 11;
+  width: 100%;
 `;
 
+const TitleRow = styled(RowWithMargins)`
+  align-items: center;
+  justify-content: space-between;
+  width: ${deviceWidth - 60};
+`;
+
+const RainbowText = styled(GradientText).attrs({
+  angle: false,
+  colors: ['#FFB114', '#FF54BB', '#7EA4DE'],
+  end: { x: 0, y: 0.5 },
+  start: { x: 1, y: 0.5 },
+  steps: [0, 0.774321, 1],
+})``;
+
 const TextIcon = styled(Text).attrs({
-  size: 'h3',
+  size: 29,
+  weight: 'medium',
 })`
-  width: 38;
-  height: 38;
+  height: 35;
   margin-bottom: 7;
-  margin-top: 0;
+  margin-top: 8;
 `;
 
 const Title = styled(Text).attrs({
-  lineHeight: 'loosest',
+  letterSpacing: 'roundedMedium',
+  lineHeight: 27,
   size: 'larger',
   weight: 'bold',
 })`
   margin-bottom: 6;
-`;
-
-const IcloudIcon = styled(FastImage).attrs({
-  source: BackupIcon,
-})`
-  height: 45;
-  width: 45;
-  margin-bottom: 7;
-  margin-left: -7;
-  margin-top: 0;
+  max-width: 276;
 `;
 
 const DescriptionText = styled(Text).attrs({
   align: 'left',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  lineHeight: 'looser',
+  color: colors.alpha(colors.blueGreyDark, 0.4),
+  lineHeight: 22,
   size: 'smedium',
+  weight: 'medium',
 })`
+  max-width: 276;
   padding-bottom: 24;
 `;
 
@@ -84,13 +97,22 @@ const RestoreSheetFirstStep = ({
 
   return (
     <React.Fragment>
-      <Column direction="column" paddingBottom={40}>
+      <Container>
         {walletsBackedUp > 0 && (
           <React.Fragment>
             <SheetRow as={ButtonPressAnimation} onPress={onIcloudRestorePress}>
               <Column>
-                <IcloudIcon />
-                <Title>Restore from iCloud </Title>
+                <Row>
+                  <RainbowText>
+                    <TextIcon>􀌍</TextIcon>
+                  </RainbowText>
+                </Row>
+                <TitleRow>
+                  <RainbowText>
+                    <Title>Restore from iCloud</Title>
+                  </RainbowText>
+                  <CaretIcon />
+                </TitleRow>
                 <DescriptionText>
                   {typeof userData === undefined
                     ? ' Checking iCloud for backups...'
@@ -101,34 +123,23 @@ const RestoreSheetFirstStep = ({
                     : `You don't have any wallets backed up`}
                 </DescriptionText>
               </Column>
-              <Row flex={1} justify="end" align="center" marginRight={19}>
-                <CaretIcon />
-              </Row>
             </SheetRow>
-            <Divider color={colors.rowDividerLight} inset={[0, 10]} />
+            <Divider color={colors.rowDividerExtraLight} inset={[0, 30]} />
           </React.Fragment>
         )}
         <SheetRow as={ButtonPressAnimation} onPress={onManualRestore}>
           <Column>
-            <TextIcon color={colors.swapPurple}>􀑚</TextIcon>
-            <Title css={padding(0, 80, 0, 0)}>
-              Restore with a recovery phrase or private key
-            </Title>
-            <DescriptionText css={padding(0, 80, 24, 0)}>
-              Use your recovery phrase from Rainbow or any other walet
+            <TextIcon color={colors.purple}>􀑚</TextIcon>
+            <TitleRow justify="space-between" width="100%">
+              <Title>Restore with a recovery phrase or private key</Title>
+              <CaretIcon />
+            </TitleRow>
+            <DescriptionText>
+              Use your recovery phrase from Rainbow or another crypto wallet
             </DescriptionText>
           </Column>
-          <Row
-            flex={1}
-            justify="end"
-            align="center"
-            marginLeft={0}
-            marginRight={19}
-          >
-            <CaretIcon />
-          </Row>
         </SheetRow>
-        <Divider color={colors.rowDividerLight} inset={[0, 30]} />
+        <Divider color={colors.rowDividerExtraLight} inset={[0, 30]} />
 
         <SheetRow
           as={ButtonPressAnimation}
@@ -137,16 +148,16 @@ const RestoreSheetFirstStep = ({
         >
           <Column>
             <TextIcon color={colors.mintDark}>􀒒</TextIcon>
-            <Title>Watch an Ethereum address </Title>
+            <TitleRow justify="space-between" width="100%">
+              <Title>Watch an Ethereum address </Title>
+              <CaretIcon />
+            </TitleRow>
             <DescriptionText>
               Watch a public address or ENS name
             </DescriptionText>
           </Column>
-          <Row flex={1} justify="end" align="center" marginRight={19}>
-            <CaretIcon />
-          </Row>
         </SheetRow>
-      </Column>
+      </Container>
     </React.Fragment>
   );
 };
