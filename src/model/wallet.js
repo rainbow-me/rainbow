@@ -385,18 +385,32 @@ export const createWallet = async (seed = null, color = null, name = null) => {
           nextWallet.address
         );
 
-        const discoveredAccountExists = find(allWallets, someWallet =>
-          find(
+        let discoveredAccount = null;
+        let discoveredWalletId = null;
+        find(allWallets, someWallet => {
+          const existingAccount = find(
             someWallet.addresses,
             account =>
               toChecksumAddress(account.address) ===
               toChecksumAddress(nextWallet.address)
-          )
-        );
+          );
+          if (existingAccount) {
+            discoveredAccount = existingAccount;
+            discoveredWalletId = someWallet.id;
+            return true;
+          }
+          return false;
+        });
 
         // Remove any discovered wallets if they already exist
-        if (discoveredAccountExists) {
-          delete allWallets[discoveredAccountExists.id];
+        // and copy over label and color
+        let color = colors.getRandomColor();
+        let label = '';
+
+        if (discoveredAccount) {
+          color = discoveredAccount.color;
+          label = discoveredAccount.label;
+          delete allWallets[discoveredWalletId];
         }
 
         if (hasTxHistory) {
@@ -405,9 +419,9 @@ export const createWallet = async (seed = null, color = null, name = null) => {
           addresses.push({
             address: nextWallet.address,
             avatar: null,
-            color: colors.getRandomColor(),
-            index: index,
-            label: '',
+            color,
+            index,
+            label,
             visible: true,
           });
           index++;
