@@ -8,7 +8,7 @@ export const scrollPosition = new Value(1);
 
 export function ScrollPagerWrapper(props) {
   return Platform.select({
-    android: <ViewPagerAdapter {...props} />,
+    android: <ViewPagerAdapter {...props} overScrollMode="never" />,
     ios: <ScrollPager {...props} overscroll={false} />,
   });
 }
