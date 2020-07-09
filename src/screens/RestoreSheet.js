@@ -29,7 +29,7 @@ const StyledSheet = styled(SlackSheet)`
 `;
 
 const RestoreSheet = () => {
-  const { navigate, setOptions, goBack } = useNavigation();
+  const { navigate, setOptions } = useNavigation();
 
   const { jumpToLong } = useContext(ModalContext);
   const switchSheetContentTransitionRef = useRef();
@@ -40,7 +40,7 @@ const RestoreSheet = () => {
     if (!params?.userData) {
       setOptions({
         isShortFormEnabled: false,
-        longFormHeight: 420,
+        longFormHeight: 363,
       });
     }
   }, [params?.userData, setOptions]);
@@ -56,14 +56,12 @@ const RestoreSheet = () => {
   }, [jumpToLong, setOptions]);
 
   const onManualRestore = useCallback(() => {
-    goBack();
     navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
-  }, [goBack, navigate]);
+  }, [navigate]);
 
   const onWatchAddress = useCallback(() => {
-    goBack();
     navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
-  }, [goBack, navigate]);
+  }, [navigate]);
 
   const renderStep = useCallback(() => {
     switch (step) {

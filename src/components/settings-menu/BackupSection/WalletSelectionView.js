@@ -43,9 +43,20 @@ const CheckmarkIcon = styled(Icon).attrs({
   name: 'checkmarkCircled',
 })`
   align-self: center;
-  box-shadow: 0px 4px 6px ${colors.alpha(colors.blueGreyDark50, 0.4)};
   margin-bottom: 1px;
   margin-right: 7px;
+`;
+
+const GreenCheck = styled(CheckmarkIcon).attrs({
+  color: colors.green,
+})`
+  box-shadow: 0px 4px 6px ${colors.alpha(colors.green, 0.4)};
+`;
+
+const GreyCheck = styled(CheckmarkIcon).attrs({
+  color: colors.blueGreyDark50,
+})`
+  box-shadow: 0px 4px 6px ${colors.alpha(colors.blueGreyDark50, 0.4)};
 `;
 
 const WarningIcon = styled(Icon).attrs({
@@ -152,12 +163,12 @@ const WalletSelectionView = () => {
               <Row alignSelf="center" height={47} marginRight={18}>
                 {wallet.backedUp ? (
                   wallet.backupType === WalletBackupTypes.cloud ? (
-                    <CheckmarkIcon color={colors.green} />
+                    <GreenCheck />
                   ) : (
-                    <CheckmarkIcon color={colors.blueGreyDark50} />
+                    <GreyCheck />
                   )
                 ) : wallet.imported ? (
-                  <CheckmarkIcon color={colors.blueGreyDark50} />
+                  <GreyCheck />
                 ) : (
                   <WarningIcon />
                 )}
