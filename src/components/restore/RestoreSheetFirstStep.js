@@ -85,29 +85,29 @@ const RestoreSheetFirstStep = ({
   return (
     <React.Fragment>
       <Column direction="column" paddingBottom={40}>
-        <SheetRow
-          as={ButtonPressAnimation}
-          onPress={onIcloudRestorePress}
-          disabled={walletsBackedUp < 1}
-        >
-          <Column>
-            <IcloudIcon />
-            <Title>Restore from iCloud </Title>
-            <DescriptionText>
-              {typeof userData === undefined
-                ? ' Checking iCloud for backups...'
-                : walletsBackedUp > 0
-                ? `You have ${walletsBackedUp} ${
-                    walletsBackedUp > 1 ? 'wallets' : 'wallet'
-                  } backed up`
-                : `You don't have any wallets backed up`}
-            </DescriptionText>
-          </Column>
-          <Row flex={1} justify="end" align="center" marginRight={19}>
-            <CaretIcon />
-          </Row>
-        </SheetRow>
-        <Divider color={colors.rowDividerLight} inset={[0, 10]} />
+        {walletsBackedUp > 0 && (
+          <React.Fragment>
+            <SheetRow as={ButtonPressAnimation} onPress={onIcloudRestorePress}>
+              <Column>
+                <IcloudIcon />
+                <Title>Restore from iCloud </Title>
+                <DescriptionText>
+                  {typeof userData === undefined
+                    ? ' Checking iCloud for backups...'
+                    : walletsBackedUp > 0
+                    ? `You have ${walletsBackedUp} ${
+                        walletsBackedUp > 1 ? 'wallets' : 'wallet'
+                      } backed up`
+                    : `You don't have any wallets backed up`}
+                </DescriptionText>
+              </Column>
+              <Row flex={1} justify="end" align="center" marginRight={19}>
+                <CaretIcon />
+              </Row>
+            </SheetRow>
+            <Divider color={colors.rowDividerLight} inset={[0, 10]} />
+          </React.Fragment>
+        )}
         <SheetRow as={ButtonPressAnimation} onPress={onManualRestore}>
           <Column>
             <TextIcon color={colors.swapPurple}>􀑚</TextIcon>

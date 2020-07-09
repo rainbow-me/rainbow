@@ -342,7 +342,7 @@ export default function WelcomeScreen() {
   const contentAnimation = useAnimatedValue(1);
   const hideSplashScreen = useHideSplashScreen();
   const createWalletButtonAnimation = useAnimatedValue(1);
-  const [userData, setUserData] = useState();
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     hideSplashScreen();
@@ -385,7 +385,9 @@ export default function WelcomeScreen() {
     initialize();
 
     return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       createWalletButtonAnimation.current.setValue(1);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       contentAnimation.current.setValue(1);
     };
   }, [contentAnimation, hideSplashScreen, createWalletButtonAnimation]);
@@ -422,7 +424,6 @@ export default function WelcomeScreen() {
     return {
       emoji: 'european_castle',
       height: 54,
-      onPress: onCreateWallet,
       shadowStyle: {
         backgroundColor: backgroundColor,
         shadowColor: color,
@@ -450,7 +451,6 @@ export default function WelcomeScreen() {
       },
       emoji: 'old_key',
       height: 56,
-      onPress: showRestoreSheet,
       shadowStyle: {
         opacity: 0,
       },
@@ -481,10 +481,16 @@ export default function WelcomeScreen() {
         </MaskedView>
 
         <ButtonWrapper style={buttonStyle}>
-          <RainbowButton {...createWalletButtonProps} />
+          <RainbowButton
+            onPress={onCreateWallet}
+            {...createWalletButtonProps}
+          />
         </ButtonWrapper>
         <ButtonWrapper>
-          <RainbowButton {...existingWalletButtonProps} />
+          <RainbowButton
+            onPress={showRestoreSheet}
+            {...existingWalletButtonProps}
+          />
         </ButtonWrapper>
       </ContentWrapper>
     </Container>

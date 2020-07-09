@@ -1,5 +1,11 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useCallback, useContext, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components';
 import RestoreIcloudStep from '../components/restore/RestoreIcloudStep';
@@ -30,6 +36,15 @@ const RestoreSheet = () => {
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
   const [step, setStep] = useState(params?.option || 'first');
+
+  useEffect(() => {
+    if (!params?.userData) {
+      setOptions({
+        isShortFormEnabled: false,
+        longFormHeight: 420,
+      });
+    }
+  }, [params?.userData, setOptions]);
 
   const onIcloudRestore = useCallback(() => {
     switchSheetContentTransitionRef.current?.animateNextTransition();
