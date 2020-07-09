@@ -1,10 +1,11 @@
 import React from 'react';
-import { TextInput as TextInputPrimitive } from 'react-native';
+import { Platform, TextInput as TextInputPrimitive } from 'react-native';
 import styled from 'styled-components/primitives';
 import { buildTextStyles, colors } from '@rainbow-me/styles';
 
 const TextInput = styled(TextInputPrimitive).attrs({
-  selectionColor: colors.appleBlue,
+  selectionColor:
+    Platform.OS === 'ios' ? colors.appleBlue : colors.appleBlueTransparent,
 })`
   /* our Input uses same styling system as our <Text /> component */
   ${buildTextStyles};

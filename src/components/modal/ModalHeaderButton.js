@@ -46,8 +46,10 @@ const ModalHeaderButton = ({ label, onPress, side }) => (
     onPress={onPress}
     side={side}
   >
-    {side === 'left' && <BackArrow />}
-    <Text side={side}>{label}</Text>
+    <Row>
+      {side === 'left' && <BackArrow />}
+      <Text side={side}>{label}</Text>
+    </Row>
   </Container>
 );
 

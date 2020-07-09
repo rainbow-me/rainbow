@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { Platform } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
@@ -163,7 +164,9 @@ export default function WalletList({
   useEffect(() => {
     if (rows && rows.length && !ready) {
       setTimeout(() => {
-        skeletonTransitionRef.current?.animateNextTransition();
+        if (Platform.OS === 'ios') {
+          skeletonTransitionRef.current?.animateNextTransition();
+        }
         setReady(true);
       }, 50);
     }

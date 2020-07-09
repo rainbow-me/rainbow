@@ -190,7 +190,9 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             }
           },
           onRefocusInput:
-            Platform.OS === 'ios' ? setAppearListener(focusListener) : null,
+            Platform.OS === 'ios'
+              ? setAppearListener(focusListener)
+              : () => null,
           profile: {
             name,
           },
@@ -224,6 +226,8 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     toggleImporting,
   ]);
 
+  const { setComponent, hide } = usePortal();
+
   useEffect(() => {
     if (!wasImporting && isImporting) {
       startAnalyticsTimeout(async () => {
@@ -235,6 +239,9 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
                 hadPreviousAddressWithValue: isEmpty,
               });
               navigate(Routes.WALLET_SCREEN);
+              if (Platform.OS === 'android') {
+                hide();
+              }
             } else {
               toggleImporting(false);
             }
@@ -247,6 +254,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     }
   }, [
     color,
+    hide,
     initializeWallet,
     isEmpty,
     isImporting,
@@ -258,8 +266,6 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     toggleImporting,
     wasImporting,
   ]);
-
-  const { setComponent, hide } = usePortal();
 
   useEffect(() => {
     if (isImporting) {
@@ -315,9 +321,16 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             value={seedPhrase}
             weight="semibold"
             width="100%"
+            marginBottom={Platform.OS === 'android' ? 55 : 0}
           />
         </Centered>
-        <Row align="start" justify="end">
+        <Row
+          align="start"
+          bottom={Platform.OS === 'android' ? 55 : 0}
+          justify="end"
+          position={Platform.OS === 'android' ? 'absolute' : 'relative'}
+          right={0}
+        >
           <ImportButton
             disabled={seedPhrase ? !isSecretValid : !isClipboardValidSecret}
             onPress={onPressImportButton}

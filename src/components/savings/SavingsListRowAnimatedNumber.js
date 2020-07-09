@@ -21,6 +21,7 @@ const sx = StyleSheet.create({
     height: 30,
     letterSpacing: fonts.letterSpacing.roundedTightest,
     marginBottom: 0.5,
+    marginLeft: 6,
     marginRight: 4,
     textAlign: 'left',
   },
