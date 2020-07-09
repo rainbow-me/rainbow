@@ -21,7 +21,7 @@ import CoinRow from './CoinRow';
 import { colors } from '@rainbow-me/styles';
 
 const editTranslateOffset = 32;
-const AssetSheetHeight = 400;
+const AssetSheetHeight = 300;
 
 const formatPercentageString = percentString =>
   percentString ? percentString.split('-').join('- ') : '-';
