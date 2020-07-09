@@ -40,7 +40,7 @@ export default function SlackSheet({
   const { height: deviceHeight } = useDimensions();
   const insets = useSafeArea();
   const bottomInset = useMemo(
-    () => (insets.bottom || scrollEnabled ? 34 : 10),
+    () => (insets.bottom || scrollEnabled ? 51 : 30),
     [insets.bottom, scrollEnabled]
   );
 

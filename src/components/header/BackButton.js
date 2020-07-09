@@ -7,7 +7,7 @@ import HeaderButton from './HeaderButton';
 
 const Container = styled(Row).attrs({ align: 'center' })`
   height: 24;
-  padding-bottom: 0;
+  width: 10;
 `;
 
 export default function BackButton({

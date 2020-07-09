@@ -10,7 +10,7 @@ import { colors, padding } from '@rainbow-me/styles';
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
 })`
-  ${padding(0, 19, 19)};
+  ${padding(0, 19, 24)};
 `;
 
 const ETHCoinIcon = styled(CoinIcon).attrs({
@@ -29,8 +29,22 @@ const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
   weight: 'bold',
 }))``;
 
+const Subtitle = styled(TruncatedText).attrs({
+  color: colors.alpha(colors.blueGreyDark, 0.8),
+  letterSpacing: 'roundedTight',
+  size: 'larger',
+  weight: 'medium',
+})``;
+
+const PerShareText = styled(TruncatedText).attrs({
+  color: colors.alpha(colors.blueGreyDark, 0.5),
+  letterSpacing: 'roundedMedium',
+  size: 'larger',
+  weight: 'regular',
+})``;
+
 function LiquidityPoolExpandedStateHeader({ asset }) {
-  const { address, shadowColor, symbol } = asset;
+  const { address, pricePerShare, shadowColor, symbol } = asset;
 
   const color = useColorForAsset(asset);
   const coinIconShadow = useMemo(
@@ -47,6 +61,10 @@ function LiquidityPoolExpandedStateHeader({ asset }) {
       <Row align="center" justify="space-between">
         <ColumnWithMargins align="start" margin={4}>
           <Title>{`${symbol}-ETH Pool`}</Title>
+          <Subtitle>
+            {pricePerShare}
+            <PerShareText> per share</PerShareText>
+          </Subtitle>
         </ColumnWithMargins>
       </Row>
     </Container>
