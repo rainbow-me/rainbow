@@ -53,8 +53,8 @@ export default function CoinRow({
         ...accountSettings,
         ...props,
       })}
-      <Content isHidden={isHidden} style={contentStyles}>
-        <Row align="center" justify="space-between">
+      <Content isHidden={isHidden} style={contentStyles} justify="center">
+        <Row align="center" justify="space-between" height={18}>
           {topRowRender({ symbol, ...accountSettings, ...props })}
         </Row>
         <Row align="center" justify="space-between" marginBottom={0.5}>
