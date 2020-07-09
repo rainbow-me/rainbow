@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import BackupIcon from '../../../assets/backupIcon.png';
 import WalletBackupTypes from '../../../helpers/walletBackupTypes';
 import { useWallets } from '../../../hooks';
+import { Navigation } from '../../../navigation';
 import Routes from '../../../navigation/routesNames';
 import { colors, fonts, padding } from '../../../styles';
 import { RainbowButton } from '../../buttons';
@@ -54,7 +55,7 @@ const TopIcon = styled(FastImage).attrs({
 `;
 
 const NeedsBackupView = () => {
-  const { navigate, setParams } = useNavigation();
+  const { setParams } = useNavigation();
   const { params } = useRoute();
   const { wallets, selectedWallet } = useWallets();
   const wallet_id = params?.wallet_id || selectedWallet.id;
@@ -66,18 +67,18 @@ const NeedsBackupView = () => {
   }, [setParams, wallet_id, wallets]);
 
   const onIcloudBackup = useCallback(() => {
-    navigate(Routes.BACKUP_SHEET, {
+    Navigation.handleAction(Routes.BACKUP_SHEET, {
       option: WalletBackupTypes.cloud,
       wallet_id,
     });
-  }, [navigate, wallet_id]);
+  }, [wallet_id]);
 
   const onManualBackup = useCallback(() => {
-    navigate(Routes.BACKUP_SHEET, {
+    Navigation.handleAction(Routes.BACKUP_SHEET, {
       option: WalletBackupTypes.manual,
       wallet_id,
     });
-  }, [navigate, wallet_id]);
+  }, [wallet_id]);
 
   return (
     <Fragment>

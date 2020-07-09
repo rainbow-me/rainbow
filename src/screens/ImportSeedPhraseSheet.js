@@ -44,7 +44,7 @@ import {
   useTimeout,
   useWallets,
 } from '../hooks';
-import { useNavigation } from '../navigation/Navigation';
+import Navigation, { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/effects';
 import Routes from '@rainbow-me/routes';
 import { borders, colors, padding, shadow } from '@rainbow-me/styles';
@@ -262,7 +262,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
                 setTimeout(() => {
                   // If it's not read only, show the backup sheet
                   if (!(isENSAddressFormat(input) || isValidAddress(input))) {
-                    navigate(Routes.BACKUP_SHEET, {
+                    Navigation.handleAction(Routes.BACKUP_SHEET, {
                       option: 'imported',
                     });
                   }

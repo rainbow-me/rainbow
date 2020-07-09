@@ -9,6 +9,7 @@ import WalletTypes from '../../../helpers/walletTypes';
 import { useWallets } from '../../../hooks';
 import { fetchBackupPassword } from '../../../model/keychain';
 import { addWalletToCloudBackup } from '../../../model/wallet';
+import { Navigation } from '../../../navigation';
 import { sheetVerticalOffset } from '../../../navigation/effects';
 import Routes from '../../../navigation/routesNames';
 import { usePortal } from '../../../react-native-cool-modals/Portal';
@@ -131,7 +132,7 @@ const AlreadyBackedUpView = () => {
         password = await fetchBackupPassword();
         // If we can't get the password, we need to prompt it again
         if (!password) {
-          navigate(Routes.BACKUP_SHEET, {
+          Navigation.handleAction(Routes.BACKUP_SHEET, {
             missingPassword: true,
             option: WalletBackupTypes.cloud,
             wallet_id,
@@ -160,7 +161,7 @@ const AlreadyBackedUpView = () => {
       } else {
         // No password, No latest backup meaning
         // it's a first time backup so we need to show the password sheet
-        navigate(Routes.BACKUP_SHEET, {
+        Navigation.handleAction(Routes.BACKUP_SHEET, {
           option: WalletBackupTypes.cloud,
           wallet_id,
         });
@@ -169,7 +170,7 @@ const AlreadyBackedUpView = () => {
       // } else {
       //   await dispatch(deleteCloudBackup(wallet_id));
     }
-  }, [walletStatus, latestBackup, navigate, wallet_id, wallets, dispatch]);
+  }, [walletStatus, latestBackup, wallet_id, wallets, dispatch]);
   return (
     <Fragment>
       <Centered>
