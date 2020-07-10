@@ -50,7 +50,7 @@ const Badge = ({
   value,
   ...props
 }) => {
-  const [delayedIsVisible, setDelayedIsVisible] = React.useState(true);
+  const [delayedIsVisible, setDelayedIsVisible] = React.useState(isVisible);
   useEffect(() => {
     const timeout = setTimeout(() => setDelayedIsVisible(isVisible), delay);
     return () => clearTimeout(timeout);
