@@ -1,5 +1,3 @@
-/* eslint-disable react/no-array-index-key */
-
 import { StackActions, useTheme } from '@react-navigation/native';
 import * as React from 'react';
 import { NativeModules, StyleSheet, View } from 'react-native';
