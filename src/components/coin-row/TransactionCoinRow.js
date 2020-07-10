@@ -4,7 +4,10 @@ import { Linking } from 'react-native';
 import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
-import { getHumanReadableDate } from '../../helpers/transactions';
+import {
+  getHumanReadableDate,
+  hasAddableContact,
+} from '../../helpers/transactions';
 import { isENSAddressFormat } from '../../helpers/validators';
 import { useAccountSettings } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
@@ -84,15 +87,10 @@ export default function TransactionCoinRow({ item, ...props }) {
 
     const date = getHumanReadableDate(minedAt);
 
-    const hasAddableContact =
-      (status === TransactionStatusTypes.received &&
-        type !== TransactionTypes.trade) ||
-      status === TransactionStatusTypes.receiving ||
-      status === TransactionStatusTypes.sending ||
-      status === TransactionStatusTypes.sent;
     const isSent =
       status === TransactionStatusTypes.sending ||
       status === TransactionStatusTypes.sent;
+    const showContactInfo = hasAddableContact(status, type);
 
     const headerInfo = {
       address: '',
@@ -115,26 +113,26 @@ export default function TransactionCoinRow({ item, ...props }) {
 
     if (hash) {
       let buttons = ['View on Etherscan', 'Cancel'];
-      if (hasAddableContact) {
+      if (showContactInfo) {
         buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
       }
 
       showActionSheetWithOptions(
         {
-          cancelButtonIndex: hasAddableContact ? 2 : 1,
+          cancelButtonIndex: showContactInfo ? 2 : 1,
           options: buttons,
           title: pending
             ? `${headerInfo.type}${
-                hasAddableContact
+                showContactInfo
                   ? ' ' + headerInfo.divider + ' ' + headerInfo.address
                   : ''
               }`
-            : hasAddableContact
+            : showContactInfo
             ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
             : `${headerInfo.type} ${date}`,
         },
         buttonIndex => {
-          if (hasAddableContact && buttonIndex === 0) {
+          if (showContactInfo && buttonIndex === 0) {
             navigate(Routes.MODAL_SCREEN, {
               address: contactAddress,
               asset: item,
@@ -143,8 +141,8 @@ export default function TransactionCoinRow({ item, ...props }) {
               type: 'contact',
             });
           } else if (
-            (!hasAddableContact && buttonIndex === 0) ||
-            (hasAddableContact && buttonIndex === 1)
+            (!showContactInfo && buttonIndex === 0) ||
+            (showContactInfo && buttonIndex === 1)
           ) {
             const normalizedHash = hash.replace(/-.*/g, '');
             const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(

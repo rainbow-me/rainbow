@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { get, groupBy, isEmpty, map, toLower } from 'lodash';
 import { createSelector } from 'reselect';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
+import TransactionTypes from '../helpers/transactionTypes';
 
 const contactsSelector = state => state.contacts;
 const requestsSelector = state => state.requests;
@@ -146,6 +147,19 @@ export function getHumanReadableDate(date) {
       ? `'Yesterday'`
       : `'on' MMM d${timestamp > thisYearTimestamp ? '' : ' yyyy'}`
   );
+}
+
+export function hasAddableContact(status, type) {
+  if (
+    (status === TransactionStatusTypes.received &&
+      type !== TransactionTypes.trade) ||
+    status === TransactionStatusTypes.receiving ||
+    status === TransactionStatusTypes.sending ||
+    status === TransactionStatusTypes.sent
+  ) {
+    return true;
+  }
+  return false;
 }
 
 export const buildTransactionsSectionsSelector = createSelector(
