@@ -73,7 +73,7 @@ const SavingsListRowAnimatedNumber = ({
         symbol,
       }}
     >
-      {formatter(initialValue)}
+      {isRainbowTextAvailable ? null : formatter(initialValue)}
     </TextComponent>
   );
 };
