@@ -75,8 +75,8 @@ const uniswapRenderItem = item => (
 );
 
 const filterWalletSections = sections =>
-  sections.filter(({ data, header }, index) =>
-    index && data ? get(header, 'totalItems') : true
+  sections.filter(({ data, header }) =>
+    data ? get(header, 'totalItems') : true
   );
 
 const buildWalletSections = (
@@ -84,16 +84,18 @@ const buildWalletSections = (
   uniqueTokenFamiliesSection,
   uniswapSection
 ) => {
-  const sections = [balanceSection, uniswapSection, uniqueTokenFamiliesSection];
+  const sections = [uniswapSection, uniqueTokenFamiliesSection];
 
   const filteredSections = filterWalletSections(sections);
-  // if (filteredSections.length === 1) {
-  // }
-  const isEmpty = !filteredSections.length;
+  const finalSections =
+    filteredSections.length > 0
+      ? [balanceSection, ...filteredSections]
+      : filterWalletSections([balanceSection]);
+  const isEmpty = !finalSections.length;
 
   return {
     isEmpty,
-    sections: filteredSections,
+    sections: finalSections,
   };
 };
 
@@ -177,7 +179,9 @@ const coinEditContextMenu = (
     );
   return {
     contextMenuOptions:
-      allAssets.length <= amountOfShowedCoins && noSmallBalances
+      allAssets.length <= amountOfShowedCoins &&
+      allAssets.length > 0 &&
+      noSmallBalances
         ? {
             cancelButtonIndex: 0,
             dynamicOptions: () => {
