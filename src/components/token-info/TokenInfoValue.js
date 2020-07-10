@@ -5,6 +5,7 @@ import { colors } from '@rainbow-me/styles';
 const TokenInfoValue = styled(TruncatedText).attrs(
   ({ color = colors.dark, weight = 'semibold' }) => ({
     color,
+    letterSpacing: 'roundedTight',
     size: 'larger',
     weight,
   })

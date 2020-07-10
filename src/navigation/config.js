@@ -16,9 +16,7 @@ export const expandedAssetSheetConfig = {
     longFormHeight: params.longFormHeight,
     onAppear: null,
     scrollEnabled: true,
-    springDamping: 0.8755,
     topOffset: 0,
-    transitionDuration: 0.42,
   }),
 };
 

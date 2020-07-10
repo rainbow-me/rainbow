@@ -114,17 +114,19 @@ export default function CurrencySelectModal() {
     [onSelectCurrency, navigate]
   );
 
-  useFocusEffect(() => {
-    params?.toggleGestureEnabled(false);
-    return () => {
-      params?.toggleGestureEnabled(true);
-      InteractionManager.runAfterInteractions(() => {
-        handleApplyFavoritesQueue();
-        setSearchQuery('');
-        restoreFocusOnSwapModal();
-      });
-    };
-  });
+  useFocusEffect(
+    useCallback(() => {
+      params?.toggleGestureEnabled(false);
+      return () => {
+        params?.toggleGestureEnabled(true);
+        InteractionManager.runAfterInteractions(() => {
+          handleApplyFavoritesQueue();
+          setSearchQuery('');
+          restoreFocusOnSwapModal();
+        });
+      };
+    }, [handleApplyFavoritesQueue, params, restoreFocusOnSwapModal])
+  );
 
   const itemProps = useMemo(
     () => ({

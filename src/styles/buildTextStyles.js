@@ -4,13 +4,43 @@ import { css } from 'styled-components/primitives';
 import colors from './colors';
 import fonts from './fonts';
 
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function selectBestFontFit(mono, weight) {
+  if (weight) {
+    return weight <= 400
+      ? 'Regular'
+      : mono
+      ? 'Medium'
+      : capitalizeFirstLetter(weight);
+  } else {
+    return 'Regular';
+  }
+}
+
 const buildTextStyles = css`
   /* Color */
   color: ${({ color }) => colors.get(color) || colors.dark};
 
   /* Font Family */
-  ${({ isEmoji, family = 'SFProRounded', mono }) =>
-    isEmoji ? '' : `font-family: ${fonts.family[mono ? 'SFMono' : family]};`}
+  ${({ isEmoji, family = 'SFProRounded', mono, weight }) =>
+    isEmoji
+      ? ''
+      : `font-family: ${
+          fonts.family[
+            mono
+              ? `SFMono${
+                  Platform.OS === 'android'
+                    ? `-${selectBestFontFit(mono, weight)}`
+                    : ''
+                }`
+              : family
+          ]
+        }${
+          Platform.OS === 'android' ? `-${selectBestFontFit(mono, weight)}` : ''
+        };`}
 
   /* Font Size */
   font-size: ${({ size = 'medium' }) =>

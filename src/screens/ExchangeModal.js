@@ -9,6 +9,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { Platform } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import HorizontalGestureBlocker from '../components/HorizontalGestureBlocker';
@@ -449,11 +450,14 @@ const ExchangeModal = ({
           <AnimatedFloatingPanels
             margin={0}
             style={{
-              opacity: interpolate(tabPosition, {
-                extrapolate: Animated.Extrapolate.CLAMP,
-                inputRange: [0, 0.2, 1],
-                outputRange: [1, 1, 0],
-              }),
+              opacity:
+                Platform.OS === 'android'
+                  ? 1
+                  : interpolate(tabPosition, {
+                      extrapolate: Animated.Extrapolate.CLAMP,
+                      inputRange: [0, 0.2, 1],
+                      outputRange: [1, 1, 0],
+                    }),
             }}
           >
             <FloatingPanel

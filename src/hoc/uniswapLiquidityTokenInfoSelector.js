@@ -50,11 +50,16 @@ export const transformPool = (liquidityPool, ethPrice, nativeCurrency) => {
     totalBalanceAmount,
     nativeCurrency
   );
+  const pricePerShare = convertAmountToNativeDisplay(
+    divide(totalBalanceAmount, balance),
+    nativeCurrency
+  );
 
   return {
     ethBalance: floor(parseFloat(ethBalance), 4) || '< 0.0001',
     nativeDisplay,
     percentageOwned,
+    pricePerShare,
     tokenAddress,
     tokenBalance: floor(parseFloat(tokenBalance), 4) || '< 0.0001',
     tokenName,
