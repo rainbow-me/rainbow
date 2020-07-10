@@ -20,7 +20,7 @@ const noPriceData = 'No price data';
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
 })`
-  ${padding(0, 19, 30)};
+  ${padding(0, 19, 24)};
 `;
 
 const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
@@ -33,7 +33,7 @@ const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
 const Subtitle = styled(TruncatedText).attrs(
   ({ color = colors.alpha(colors.blueGreyDark, 0.8) }) => ({
     color,
-    letterSpacing: 'roundedTight',
+    letterSpacing: 'roundedMedium',
     size: 'larger',
     weight: 'medium',
   })
@@ -123,12 +123,12 @@ const ChartExpandedStateHeader = ({
         />
       </Row>
       <Row align="center" justify="space-between">
-        <ColumnWithMargins align="start" flex={1} margin={4}>
+        <ColumnWithMargins align="start" flex={1} margin={2}>
           <Title>{isNoPriceData ? name : formattedPrice}</Title>
           <Subtitle>{isNoPriceData ? formattedPrice : name}</Subtitle>
         </ColumnWithMargins>
         {!isNoPriceData && (
-          <ColumnWithMargins align="end" margin={4}>
+          <ColumnWithMargins align="end" margin={2}>
             <RowWithMargins align="center" margin={4}>
               <Icon
                 color={color}
@@ -136,9 +136,13 @@ const ChartExpandedStateHeader = ({
                 name="fatArrow"
                 width={15}
               />
-              <Title color={color}>{formattedChange}</Title>
+              <Title align="right" color={color}>
+                {formattedChange}
+              </Title>
             </RowWithMargins>
-            <Subtitle color={color}>Today</Subtitle>
+            <Subtitle align="right" color={color}>
+              Today
+            </Subtitle>
           </ColumnWithMargins>
         )}
       </Row>

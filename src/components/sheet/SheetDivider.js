@@ -4,7 +4,7 @@ import Divider from '../Divider';
 import { colors } from '@rainbow-me/styles';
 
 const SheetDivider = styled(Divider).attrs({
-  color: colors.rowDividerLight,
+  color: colors.rowDividerExtraLight,
 })`
   z-index: 1;
 `;
