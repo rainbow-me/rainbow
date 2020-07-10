@@ -1639,7 +1639,7 @@ index 5b21829..2bddf3e 100644
 +export * from "./Vectors";
 +export * from "./Hooks";
 diff --git a/node_modules/react-native-redash/package.json b/node_modules/react-native-redash/package.json
-index 763f425..a3f1818 100644
+index 590592a..a3f1818 100644
 --- a/node_modules/react-native-redash/package.json
 +++ b/node_modules/react-native-redash/package.json
 @@ -1,96 +1,122 @@
@@ -1685,7 +1685,7 @@ index 763f425..a3f1818 100644
 -  "_resolved": "https://registry.npmjs.org/react-native-redash/-/react-native-redash-9.6.0.tgz",
 -  "_shasum": "4fde2075c52b2dd0646436d50a326fd9989f4393",
 -  "_spec": "react-native-redash@9.6.0",
--  "_where": "/private/var/folders/gr/yykqqgm95x9d37v2h3vq72_m0000gn/T/tmp-36832CX7hatBTr41t",
+-  "_where": "/private/var/folders/gr/yykqqgm95x9d37v2h3vq72_m0000gn/T/tmp-41150ElN0BjXopX3G",
 -  "author": {
 -    "name": "William Candillon"
 +  "repository": {
@@ -4014,7 +4014,7 @@ index 149f4c4..c142f0e 100644
 +  scale: Animated.Adaptable<number>
 +) => vec.multiply(tr, scale);
 diff --git a/node_modules/react-native-redash/src/Transitions.ts b/node_modules/react-native-redash/src/Transitions.ts
-index fa8a2fa..3834591 100644
+index fa8a2fa..18a62c0 100644
 --- a/node_modules/react-native-redash/src/Transitions.ts
 +++ b/node_modules/react-native-redash/src/Transitions.ts
 @@ -1,6 +1,6 @@
@@ -4025,7 +4025,7 @@ index fa8a2fa..3834591 100644
  
  import { bin } from "./Math";
  import { SpringConfig, TimingConfig } from "./Animations";
-@@ -14,11 +14,15 @@ const {
+@@ -14,28 +14,32 @@ const {
    Clock,
    spring,
    startClock,
@@ -4040,9 +4040,15 @@ index fa8a2fa..3834591 100644
 +const defaultSpringConfig = SpringUtils.makeDefaultConfig();
 +
  export const withTransition = (
-   value: Animated.Node<number>,
-   timingConfig: TimingConfig = {},
-@@ -29,13 +33,13 @@ export const withTransition = (
+-  value: Animated.Node<number>,
+-  timingConfig: TimingConfig = {},
+-  gestureState: Animated.Value<State> = new Value(State.UNDETERMINED)
++    value: Animated.Node<number>,
++    timingConfig: TimingConfig = {},
++    gestureState: Animated.Value<State> = new Value(State.UNDETERMINED)
+ ) => {
+   const clock = new Clock();
+   const state = {
      finished: new Value(0),
      frameTime: new Value(0),
      position: new Value(0),
@@ -4058,7 +4064,7 @@ index fa8a2fa..3834591 100644
    };
    return block([
      startClock(clock),
-@@ -43,20 +47,25 @@ export const withTransition = (
+@@ -43,29 +47,31 @@ export const withTransition = (
        set(state.frameTime, 0),
        set(state.time, 0),
        set(state.finished, 0),
@@ -4067,27 +4073,31 @@ index fa8a2fa..3834591 100644
 +      startClock(clock),
      ]),
      cond(
-       eq(gestureState, State.ACTIVE),
-       [set(state.position, value)],
-       timing(clock, state, config)
+-      eq(gestureState, State.ACTIVE),
+-      [set(state.position, value)],
+-      timing(clock, state, config)
++        eq(gestureState, State.ACTIVE),
++        [set(state.position, value)],
++        timing(clock, state, config)
      ),
 -    state.position
 +    cond(state.finished, stopClock(clock)),
-+    Animated.call([], () => {
-+      console.log('ev')
-+    }),
 +    state.position,
    ]);
  };
  
  export const withSpringTransition = (
-   value: Animated.Node<number>,
+-  value: Animated.Node<number>,
 -  springConfig: SpringConfig = {},
-+  springConfig: SpringConfig = defaultSpringConfig,
-   velocity: Animated.Adaptable<number> = 0,
-   gestureState: Animated.Value<State> = new Value(State.UNDETERMINED)
+-  velocity: Animated.Adaptable<number> = 0,
+-  gestureState: Animated.Value<State> = new Value(State.UNDETERMINED)
++    value: Animated.Node<number>,
++    springConfig: SpringConfig = defaultSpringConfig,
++    velocity: Animated.Adaptable<number> = 0,
++    gestureState: Animated.Value<State> = new Value(State.UNDETERMINED)
  ) => {
-@@ -65,7 +74,7 @@ export const withSpringTransition = (
+   const clock = new Clock();
+   const state = {
      finished: new Value(0),
      velocity: new Value(0),
      position: new Value(0),
@@ -4096,7 +4106,7 @@ index fa8a2fa..3834591 100644
    };
    const config = {
      toValue: new Value(0),
-@@ -75,17 +84,25 @@ export const withSpringTransition = (
+@@ -75,49 +81,52 @@ export const withSpringTransition = (
      overshootClamping: false,
      restSpeedThreshold: 1,
      restDisplacementThreshold: 1,
@@ -4111,22 +4121,26 @@ index fa8a2fa..3834591 100644
 +    ]),
      set(config.toValue, value),
      cond(
-       eq(gestureState, State.ACTIVE),
-       [set(state.velocity, velocity), set(state.position, value)],
-       spring(clock, state, config)
+-      eq(gestureState, State.ACTIVE),
+-      [set(state.velocity, velocity), set(state.position, value)],
+-      spring(clock, state, config)
++        eq(gestureState, State.ACTIVE),
++        [set(state.velocity, velocity), set(state.position, value)],
++        spring(clock, state, config)
      ),
 -    state.position
 +    cond(state.finished, stopClock(clock)),
-+    Animated.call([], () => {
-+      console.log('ev')
-+    }),
 +    state.position,
    ]);
  };
  
-@@ -95,29 +112,27 @@ export const useTransition = (
-   state: boolean | number,
-   config: TimingConfig = {}
+ export const withTimingTransition = withTransition;
+ 
+ export const useTransition = (
+-  state: boolean | number,
+-  config: TimingConfig = {}
++    state: boolean | number,
++    config: TimingConfig = {}
  ) => {
 -  const value = useMemoOne(() => new Value(0), []);
 -  useCode(() => set(value, typeof state === "boolean" ? bin(state) : state), [
@@ -4144,9 +4158,10 @@ index fa8a2fa..3834591 100644
  };
  
  export const useSpringTransition = (
-   state: boolean | number,
+-  state: boolean | number,
 -  config: SpringConfig = {}
-+  config: SpringConfig = defaultSpringConfig
++    state: boolean | number,
++    config: SpringConfig = defaultSpringConfig
  ) => {
 -  const value = useMemoOne(() => new Value(0), []);
 -  useCode(() => set(value, typeof state === "boolean" ? bin(state) : state), [
