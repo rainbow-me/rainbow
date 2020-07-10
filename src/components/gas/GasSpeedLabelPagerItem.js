@@ -6,9 +6,9 @@ import Animated, {
   Transition,
   Transitioning,
 } from 'react-native-reanimated';
-import { useTimingTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import { gasUtils } from '../../utils';
+import { useTimingTransition } from '../../utils/transitions';
 import { interpolate } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';
