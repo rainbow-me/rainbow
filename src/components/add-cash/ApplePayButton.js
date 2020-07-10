@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import Animated, { Easing } from 'react-native-reanimated';
-import { bInterpolateColor } from 'react-native-redash';
+import { mixColor } from 'react-native-redash';
 import ShadowStack from 'react-native-shadow-stack';
 import { useTimingTransition } from '../../utils/transitions';
 import { ButtonPressAnimation, interpolate } from '../animations';
@@ -45,7 +45,7 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
     ease: Easing.out(Easing.ease),
   });
 
-  const backgroundColor = bInterpolateColor(
+  const backgroundColor = mixColor(
     disabledAnimation,
     colors.blueGreyDark50,
     colors.dark
