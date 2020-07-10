@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { chartExpandedAvailable } from '../../config/experimental';
 import AssetInputTypes from '../../helpers/assetInputTypes';
-import { greaterThan } from '../../helpers/utilities';
+import { greaterThan, isEqual } from '../../helpers/utilities';
 import { useColorForAsset } from '../../hooks';
 import { magicMemo } from '../../utils';
 import {
@@ -27,6 +27,7 @@ const ChartExpandedState = ({ asset }) => {
 
   const change = asset?.price?.relative_change_24h || 0;
   const isPositiveChange = greaterThan(change, 0);
+  const noChange = isEqual(change, 0);
 
   return (
     <SlackSheet scrollEnabled={false}>
@@ -37,6 +38,7 @@ const ChartExpandedState = ({ asset }) => {
         color={color}
         isPositiveChange={isPositiveChange}
         latestPrice={asset?.native?.price.display}
+        noChange={noChange}
       />
       {chartExpandedAvailable && (
         <Chart

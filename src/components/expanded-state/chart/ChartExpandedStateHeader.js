@@ -1,6 +1,9 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components/primitives';
+import useExperimentalFlag, {
+  RED_GREEN_PRICE_CHANGE,
+} from '../../../config/experimentalHooks';
 import EditOptions from '../../../helpers/editOptionTypes';
 import {
   convertAmountToNativeDisplay,
@@ -47,6 +50,7 @@ const ChartExpandedStateHeader = ({
   isPositiveChange,
   latestPrice = noPriceData,
   name,
+  noChange,
   shadowColor,
   symbol,
   uniqueId,
@@ -111,6 +115,13 @@ const ChartExpandedStateHeader = ({
 
   const isNoPriceData = formattedPrice === noPriceData;
 
+  const redGreenPriceChange = useExperimentalFlag(RED_GREEN_PRICE_CHANGE);
+  const redGreenColor = isPositiveChange
+    ? colors.green
+    : noChange
+    ? colors.alpha(colors.blueGreyDark, 0.8)
+    : colors.red;
+
   return (
     <Container>
       <Row align="center" justify="space-between">
@@ -131,16 +142,22 @@ const ChartExpandedStateHeader = ({
           <ColumnWithMargins align="end" margin={2}>
             <RowWithMargins align="center" margin={4}>
               <Icon
-                color={color}
+                color={redGreenPriceChange ? redGreenColor : color}
                 direction={isPositiveChange ? 'left' : 'right'}
                 name="fatArrow"
                 width={15}
               />
-              <Title align="right" color={color}>
+              <Title
+                align="right"
+                color={redGreenPriceChange ? redGreenColor : color}
+              >
                 {formattedChange}
               </Title>
             </RowWithMargins>
-            <Subtitle align="right" color={color}>
+            <Subtitle
+              align="right"
+              color={redGreenPriceChange ? redGreenColor : color}
+            >
               Today
             </Subtitle>
           </ColumnWithMargins>
