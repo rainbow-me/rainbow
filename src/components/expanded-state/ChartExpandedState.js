@@ -20,6 +20,8 @@ import {
 import Chart from '../value-chart/Chart';
 import { ChartExpandedStateHeader } from './chart';
 
+export const SheetHeight = 309;
+
 const ChartExpandedState = ({ asset }) => {
   const [chartPrice, setChartPrice] = useState(0);
 
@@ -30,7 +32,7 @@ const ChartExpandedState = ({ asset }) => {
   const noChange = isEqual(change, 0);
 
   return (
-    <SlackSheet scrollEnabled={false}>
+    <SlackSheet contentHeight={SheetHeight} scrollEnabled={false}>
       <ChartExpandedStateHeader
         {...asset}
         change={change}

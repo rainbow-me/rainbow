@@ -134,12 +134,12 @@ const ChartExpandedStateHeader = ({
         />
       </Row>
       <Row align="center" justify="space-between">
-        <ColumnWithMargins align="start" flex={1} margin={2}>
+        <ColumnWithMargins align="start" flex={1} margin={1}>
           <Title>{isNoPriceData ? name : formattedPrice}</Title>
           <Subtitle>{isNoPriceData ? formattedPrice : name}</Subtitle>
         </ColumnWithMargins>
         {!isNoPriceData && (
-          <ColumnWithMargins align="end" margin={2}>
+          <ColumnWithMargins align="end" margin={1}>
             <RowWithMargins align="center" margin={4}>
               <Icon
                 color={redGreenPriceChange ? redGreenColor : color}

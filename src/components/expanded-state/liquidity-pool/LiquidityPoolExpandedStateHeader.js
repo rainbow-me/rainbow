@@ -17,7 +17,7 @@ const ETHCoinIcon = styled(CoinIcon).attrs({
   shadow: [[0, 4, 12, colors.dark, 0.3]],
 })`
   bottom: 0;
-  left: ${CoinIconSize - 6};
+  left: ${CoinIconSize - 10};
   position: absolute;
   top: 0;
 `;
@@ -36,13 +36,6 @@ const Subtitle = styled(TruncatedText).attrs({
   weight: 'medium',
 })``;
 
-const PerShareText = styled(TruncatedText).attrs({
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  letterSpacing: 'roundedMedium',
-  size: 'larger',
-  weight: 'regular',
-})``;
-
 function LiquidityPoolExpandedStateHeader({ asset }) {
   const { address, pricePerShare, shadowColor, symbol } = asset;
 
@@ -59,12 +52,9 @@ function LiquidityPoolExpandedStateHeader({ asset }) {
         <CoinIcon address={address} shadow={coinIconShadow} symbol={symbol} />
       </Row>
       <Row align="center" justify="space-between">
-        <ColumnWithMargins align="start" margin={4}>
-          <Title>{`${symbol}-ETH Pool`}</Title>
-          <Subtitle>
-            {pricePerShare}
-            <PerShareText> per share</PerShareText>
-          </Subtitle>
+        <ColumnWithMargins align="start" margin={1}>
+          <Title>{pricePerShare}</Title>
+          <Subtitle>{`${symbol}-ETH Pool Share`}</Subtitle>
         </ColumnWithMargins>
       </Row>
     </Container>

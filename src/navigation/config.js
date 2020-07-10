@@ -1,7 +1,9 @@
 import { Keyboard, Platform, StatusBar } from 'react-native';
-import { deviceUtils } from '../utils';
+import { deviceUtils, safeAreaInsetValues } from '../utils';
 import { onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
+
+const topInset = safeAreaInsetValues.top + 5;
 
 export const expandedAssetSheetConfig = {
   options: ({ route: { params = {} } }) => ({
@@ -9,14 +11,14 @@ export const expandedAssetSheetConfig = {
     allowsTapToDismiss: true,
     backgroundOpacity: 0.7,
     blocksBackgroundTouches: true,
-    cornerRadius: 30,
+    cornerRadius: 39,
     customStack: true,
     gestureEnabled: true,
-    headerHeight: 50,
+    headerHeight: 0,
     longFormHeight: params.longFormHeight,
     onAppear: null,
     scrollEnabled: true,
-    topOffset: 0,
+    topOffset: topInset,
   }),
 };
 

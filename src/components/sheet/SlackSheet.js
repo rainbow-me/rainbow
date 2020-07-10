@@ -21,6 +21,8 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
 
 const Content = styled(ScrollView)`
   background-color: ${colors.white};
+  ${({ contentHeight, deviceHeight }) =>
+    contentHeight ? `height: ${deviceHeight + contentHeight}` : null};
   padding-top: ${SheetHandleFixedToTopHeight};
   width: 100%;
 `;
@@ -34,13 +36,14 @@ const Whitespace = styled.View`
 export default function SlackSheet({
   borderRadius = 30,
   children,
+  contentHeight,
   scrollEnabled = true,
   ...props
 }) {
   const { height: deviceHeight } = useDimensions();
   const insets = useSafeArea();
   const bottomInset = useMemo(
-    () => (insets.bottom || scrollEnabled ? 51 : 30),
+    () => (insets.bottom || scrollEnabled ? 42 : 30),
     [insets.bottom, scrollEnabled]
   );
 
@@ -63,7 +66,9 @@ export default function SlackSheet({
     <Container {...props} radius={borderRadius}>
       <SheetHandleFixedToTop showBlur={scrollEnabled} />
       <Content
-        contentContainerStyle={contentContainerStyle}
+        contentContainerStyle={scrollEnabled && contentContainerStyle}
+        contentHeight={contentHeight}
+        deviceHeight={deviceHeight}
         directionalLockEnabled
         scrollEnabled={scrollEnabled}
         scrollIndicatorInsets={scrollIndicatorInsets}
