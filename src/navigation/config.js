@@ -14,7 +14,7 @@ export const expandedAssetSheetConfig = {
     cornerRadius: 39,
     customStack: true,
     gestureEnabled: true,
-    headerHeight: 0,
+    headerHeight: 25,
     longFormHeight: params.longFormHeight,
     onAppear: null,
     scrollEnabled: true,
