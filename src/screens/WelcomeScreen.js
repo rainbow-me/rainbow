@@ -1,7 +1,8 @@
 import MaskedView from '@react-native-community/masked-view';
 import { useNavigation } from '@react-navigation/native';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Clock,
@@ -15,6 +16,7 @@ import { ButtonPressAnimation } from '../components/animations';
 import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { Emoji, Text } from '../components/text';
+import { fetchUserDataFromCloud } from '../handlers/cloudBackup';
 import useHideSplashScreen from '../helpers/hideSplashScreen';
 import Routes from '../navigation/routesNames';
 import { colors, shadow } from '@rainbow-me/styles';
@@ -343,6 +345,7 @@ export default function WelcomeScreen() {
   const contentAnimation = useAnimatedValue(1);
   const hideSplashScreen = useHideSplashScreen();
   const createWalletButtonAnimation = useAnimatedValue(1);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     hideSplashScreen();
@@ -381,8 +384,22 @@ export default function WelcomeScreen() {
           ])
         ),
     ]).start();
+
+    const initialize = async () => {
+      const isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
+      if (!isSimulator) {
+        const data = await fetchUserDataFromCloud();
+        setUserData(data);
+      } else {
+        setUserData(null);
+      }
+    };
+    initialize();
+
     return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       createWalletButtonAnimation.current.setValue(1);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       contentAnimation.current.setValue(1);
     };
   }, [contentAnimation, hideSplashScreen, createWalletButtonAnimation]);
@@ -419,7 +436,6 @@ export default function WelcomeScreen() {
     return {
       emoji: 'european_castle',
       height: 54,
-      onPress: onCreateWallet,
       shadowStyle: {
         backgroundColor: backgroundColor,
         shadowColor: color,
@@ -435,8 +451,10 @@ export default function WelcomeScreen() {
   }, [rValue]);
 
   const showRestoreSheet = useCallback(() => {
-    navigate(Routes.RESTORE_SHEET);
-  }, [navigate]);
+    navigate(Routes.RESTORE_SHEET, {
+      userData,
+    });
+  }, [navigate, userData]);
 
   const existingWalletButtonProps = useMemoOne(() => {
     return {
@@ -445,7 +463,6 @@ export default function WelcomeScreen() {
       },
       emoji: 'old_key',
       height: 56,
-      onPress: showRestoreSheet,
       shadowStyle: {
         opacity: 0,
       },
@@ -477,12 +494,14 @@ export default function WelcomeScreen() {
 
         <ButtonWrapper style={buttonStyle}>
           <RainbowButton
+            onPress={onCreateWallet}
             {...createWalletButtonProps}
             testID="new-wallet-button"
           />
         </ButtonWrapper>
         <ButtonWrapper>
           <RainbowButton
+            onPress={showRestoreSheet}
             {...existingWalletButtonProps}
             testID="already-have-wallet-button"
           />

@@ -212,6 +212,7 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
           latestBackup
         );
         backupFile = await addWalletToCloudBackup(
+          password,
           wallets[wallet_id],
           latestBackup
         );

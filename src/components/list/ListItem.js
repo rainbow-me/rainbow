@@ -64,12 +64,7 @@ const ListItem = enhance(
         justify="space-between"
         {...props}
       >
-        <RowWithMargins
-          align="center"
-          justify={justify}
-          flex={1}
-          margin={iconMargin}
-        >
+        <RowWithMargins align="center" justify={justify} margin={iconMargin}>
           {icon && <Centered>{renderIcon(icon)}</Centered>}
           <TruncatedText flex={1} paddingRight={15} size="large">
             {label}

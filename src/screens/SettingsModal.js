@@ -1,8 +1,7 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect } from 'react';
 import { Alert, Animated, Platform, View } from 'react-native';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { Restart } from 'react-native-restart';
 import styled from 'styled-components/native';
 import { Icon } from '../components/icons';
@@ -21,6 +20,7 @@ import DevSection from '../components/settings-menu/DevSection';
 import WalletTypes from '../helpers/walletTypes';
 import { useDimensions, useWallets } from '../hooks';
 import { wipeKeychain } from '../model/keychain';
+import { useNavigation } from '../navigation/Navigation';
 import { colors, fonts } from '@rainbow-me/styles';
 
 function cardStyleInterpolator({
@@ -56,8 +56,6 @@ function cardStyleInterpolator({
     },
   };
 }
-
-const statusBarHeight = getStatusBarHeight(true);
 
 const SettingsPages = {
   backup: {
@@ -147,7 +145,7 @@ const SettingsModal = () => {
   const { goBack, navigate } = useNavigation();
   const { wallets } = useWallets();
   const { params } = useRoute();
-  const { width: deviceWidth } = useDimensions();
+  const { isTinyPhone, width: deviceWidth } = useDimensions();
 
   const getRealRoute = useCallback(
     key => {
@@ -198,8 +196,7 @@ const SettingsModal = () => {
 
   return (
     <Modal
-      marginBottom={statusBarHeight}
-      minHeight={580}
+      minHeight={isTinyPhone ? 500 : 600}
       onCloseModal={goBack}
       radius={18}
     >
@@ -275,6 +272,7 @@ const SettingsModal = () => {
             component={WalletSelectionView}
             name="WalletSelectionView"
             options={{
+              cardStyle: { backgroundColor: colors.white, marginTop: 6 },
               cardStyleInterpolator,
               title: 'Backup',
             }}

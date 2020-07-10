@@ -19,6 +19,7 @@
 @implementation RainbowText {
   NSTimer* _timer;
   int _decimals;
+  int _duration;
   float _initialValue;
   double _interval;
   float _stepPerDay;
@@ -26,7 +27,8 @@
   NSString* _symbol;
   NSNumberFormatter* _fmt;
   CFAbsoluteTime _time;
-  
+  NSMutableArray<NSArray<NSNumber*>*>* _annealingColor;
+  NSMutableArray *_colorsMap;
 }
 
 - (void) setAnimationConfig:(NSDictionary*) config {
@@ -39,6 +41,8 @@
   _initialValue = ((NSNumber*)config[@"initialValue"]).floatValue;
   _interval = ((NSNumber*) config[@"interval"]).doubleValue;
   _stepPerDay = ((NSNumber*) config[@"stepPerDay"]).floatValue;
+  _duration = ((NSNumber*) config[@"duration"]).intValue;
+  NSString* color = ((NSNumber*) config[@"color"]).stringValue;
   _isSymbolStablecoin = ((NSNumber*) config[@"isSymbolStablecoin"]).boolValue;
   _symbol = config[@"symbol"];
   _timer = [NSTimer scheduledTimerWithTimeInterval:_interval / 1000  target:self selector:@selector(animate) userInfo:nil repeats:YES];
@@ -47,39 +51,84 @@
   _fmt.maximumFractionDigits = _decimals;
   _fmt.minimumFractionDigits = _decimals;
   _time = NSDate.date.timeIntervalSince1970;
+  _annealingColor = [NSMutableArray new];
+
+  unsigned rgbValue = 0;
+  NSScanner *scanner = [NSScanner scannerWithString:color];
+  [scanner setScanLocation:1];
+  [scanner scanHexInt:&rgbValue];
+  float r = ((rgbValue & 0xFF0000) >> 16)/255.0;
+  float g = ((rgbValue & 0xFF00) >> 8)/255.0;
+  float b = (rgbValue & 0xFF)/255.0;
+
+  _colorsMap = [NSMutableArray new];
+  for (int i = _duration; i > 0; i--) {
+    float factor = i / (float)_duration;
+    [_colorsMap addObject:[UIColor colorWithRed: r * factor green:g * factor blue:b * factor alpha:1]];
+  }
+
   UIFont* font = [UIFont fontWithName:@"SFRounded-Bold" size:16];
-  
+
   UIFontDescriptor *const existingDescriptor = [font fontDescriptor];
 
   NSDictionary *const fontAttributes = @{
 
-  UIFontDescriptorFeatureSettingsAttribute: @[
-   @{
-     UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
-     UIFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)
-    }
-  ]};
+    UIFontDescriptorFeatureSettingsAttribute: @[
+        @{
+          UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
+          UIFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)
+        }
+    ]};
 
   UIFontDescriptor *const monospacedDescriptor = [existingDescriptor  fontDescriptorByAddingAttributes: fontAttributes];
-  
+
   self.font = [UIFont fontWithDescriptor: monospacedDescriptor size: [font pointSize]];
 }
 
 - (void) animate {
+
   double diff = NSDate.date.timeIntervalSince1970 - _time;
   double value = _initialValue + _stepPerDay * diff / 24 / 60 / 60;
-  
+
   NSString *newValue;
   if (_isSymbolStablecoin) {
     newValue = [NSString stringWithFormat:@"$%@", [_fmt stringFromNumber:@(value)]];
   } else {
     newValue = [NSString stringWithFormat:@"%@ %@", [_fmt stringFromNumber:@(value)], _symbol];
   }
-  
-  self.attributedText = [[NSAttributedString alloc] initWithString:newValue attributes: @{
-    NSKernAttributeName : @(0.2f)
+
+  NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:newValue attributes: @{
+    NSKernAttributeName:@(0.2f)
   }];
-  
+
+  NSString* newString = attributedText.string;
+  NSMutableArray<NSNumber *>* whatHasChanged = [[NSMutableArray alloc] init];
+
+  if (newString.length == self.attributedText.string.length) {
+    NSUInteger len = newString.length;
+    NSString *prevString = self.attributedText.string;
+    if (_annealingColor.count == _duration) {
+      [_annealingColor removeObjectAtIndex:0];
+    }
+    for (NSUInteger i = 0; i < len; i++){
+      if ([newString characterAtIndex: i] != [prevString characterAtIndex: i]){
+        [whatHasChanged addObject:@(i)];
+      }
+    }
+
+    [_annealingColor addObject:whatHasChanged];
+
+    NSUInteger queueLen = _annealingColor.count;
+
+    for (int colorIdx = 0; colorIdx < queueLen; colorIdx++) {
+      NSArray *changedIdxs = _annealingColor[colorIdx];
+      for (NSNumber *inx in changedIdxs) {
+        [attributedText  setAttributes:@{NSForegroundColorAttributeName:_colorsMap[_annealingColor.count - colorIdx - 1], NSKernAttributeName:@(0.2f)} range:NSMakeRange(inx.intValue, len - inx.intValue - (_isSymbolStablecoin ? 0 : _symbol.length))];
+      }
+    }
+  }
+
+  self.attributedText = attributedText;
 }
 
 
@@ -87,11 +136,10 @@
   if (self = [super init]) {
     _timer = nil;
     UILabel *label = [[UILabel alloc] init];
-    label.text = @"123";
     [self addSubview:label];
-    
+
   }
-  
+
   return self;
 }
 
@@ -111,7 +159,7 @@ RCT_EXPORT_MODULE(RainbowText)
 
 - (UIView *)view
 {
-  
+
   return [[RainbowText alloc] init];
 }
 

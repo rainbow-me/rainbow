@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { get, isEmpty, isString, toLower } from 'lodash';
 import PropTypes from 'prop-types';
@@ -45,6 +45,7 @@ import {
   useTransactionConfirmation,
 } from '../hooks';
 import { sendTransaction } from '../model/wallet';
+import { useNavigation } from '../navigation/Navigation';
 import { deviceUtils, gasUtils } from '../utils';
 import Routes from '@rainbow-me/routes';
 import { borders, colors } from '@rainbow-me/styles';

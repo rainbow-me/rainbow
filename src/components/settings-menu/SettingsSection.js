@@ -5,7 +5,6 @@ import {
   Linking,
   NativeModules,
   ScrollView,
-  View,
 } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
@@ -38,7 +37,7 @@ import {
   ListItemArrowGroup,
   ListItemDivider,
 } from '../list';
-import { Emoji, Text } from '../text';
+import { Emoji } from '../text';
 import { colors, position } from '@rainbow-me/styles';
 
 const { RainbowRequestReview } = NativeModules;
@@ -61,36 +60,30 @@ const SettingIcon = styled(FastImage)`
 let versionPressHandle = null;
 let versionNumberOfTaps = 0;
 
-const IconWrapper = styled(View)`
-  height: 21;
-  right: 7;
-  top: -1;
-  width: 22;
-`;
-
-const WarningIconText = styled(Text).attrs({
-  color: colors.orangeLight,
-  size: 22,
+const CheckmarkIcon = styled(Icon).attrs({
+  name: 'checkmarkCircled',
 })`
-  box-shadow: 0px 4px 12px rgba(254, 190, 68, 0.4);
+  box-shadow: 0px 4px 6px ${colors.alpha(colors.blueGreyDark50, 0.4)};
 `;
 
-const WarningIcon = () => (
-  <IconWrapper>
-    <WarningIconText>􀇿</WarningIconText>
-  </IconWrapper>
-);
-const CheckmarkIcon = () => (
-  <IconWrapper>
-    <Icon color={colors.green} name="checkmarkCircled" size={22} />
-  </IconWrapper>
-);
+const WarningIcon = styled(Icon).attrs({
+  color: colors.orangeLight,
+  name: 'warning',
+})`
+  box-shadow: 0px 4px 6px ${colors.alpha(colors.orangeLight, 0.4)};
+  margin-top: 1;
+`;
 
 const checkAllWallets = wallets => {
   if (!wallets) return false;
   let areBackedUp = true;
   let canBeBackedUp = false;
+  let allBackedUp = true;
   Object.keys(wallets).forEach(key => {
+    if (!wallets[key].backedUp && wallets[key].type !== walletTypes.readOnly) {
+      allBackedUp = false;
+    }
+
     if (
       !wallets[key].backedUp &&
       wallets[key].type !== walletTypes.readOnly &&
@@ -102,7 +95,7 @@ const checkAllWallets = wallets => {
       canBeBackedUp = true;
     }
   });
-  return { areBackedUp, canBeBackedUp };
+  return { allBackedUp, areBackedUp, canBeBackedUp };
 };
 
 const SettingsSection = ({
@@ -118,7 +111,7 @@ const SettingsSection = ({
 }) => {
   const { wallets } = useWallets();
   const { language, nativeCurrency, network } = useAccountSettings();
-  const { isTallPhone } = useDimensions();
+  const { isTinyPhone } = useDimensions();
 
   const onSendFeedback = useSendFeedback();
 
@@ -168,19 +161,20 @@ const SettingsSection = ({
     );
   }, []);
 
-  const { areBackedUp, canBeBackedUp } = useMemo(
+  const { allBackedUp, areBackedUp, canBeBackedUp } = useMemo(
     () => checkAllWallets(wallets),
     [wallets]
   );
 
+  const backupStatusColor = allBackedUp ? colors.green : colors.blueGreyDark50;
+
   return (
     <ScrollView
-      contentContainerStyle={position.sizeAsObject('100%')}
-      scrollEnabled={!isTallPhone}
+      scrollEnabled={isTinyPhone}
       scrollEventThrottle={32}
       style={position.coverAsObject}
     >
-      <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={8}>
+      <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
         {canBeBackedUp && (
           <ListItem
             icon={<SettingIcon source={BackupIcon} />}
@@ -190,10 +184,21 @@ const SettingsSection = ({
             onPressShowSecret={onPressShowSecret}
           >
             <ListItemArrowGroup>
-              {areBackedUp ? <CheckmarkIcon /> : <WarningIcon />}
+              {areBackedUp ? (
+                <CheckmarkIcon color={backupStatusColor} />
+              ) : (
+                <WarningIcon />
+              )}
             </ListItemArrowGroup>
           </ListItem>
         )}
+        <ListItem
+          icon={<SettingIcon source={CurrencyIcon} />}
+          label="Currency"
+          onPress={onPressCurrency}
+        >
+          <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
+        </ListItem>
         <ListItem
           icon={<SettingIcon source={NetworkIcon} />}
           label="Network"
@@ -202,13 +207,6 @@ const SettingsSection = ({
           <ListItemArrowGroup>
             {get(networkInfo, `[${network}].name`)}
           </ListItemArrowGroup>
-        </ListItem>
-        <ListItem
-          icon={<SettingIcon source={CurrencyIcon} />}
-          label="Currency"
-          onPress={onPressCurrency}
-        >
-          <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
         </ListItem>
         <ListItem
           icon={<SettingIcon source={LanguageIcon} />}

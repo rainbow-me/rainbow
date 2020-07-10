@@ -1,4 +1,3 @@
-import { EventEmitter } from 'events';
 import { captureException } from '@sentry/react-native';
 import DeviceInfo from 'react-native-device-info';
 import {
@@ -8,17 +7,13 @@ import {
   canImplyAuthentication,
   getAllInternetCredentials,
   getInternetCredentials,
+  hasInternetCredentials,
+  requestSharedWebCredentials,
   resetInternetCredentials,
   setInternetCredentials,
+  setSharedWebCredentials,
 } from 'react-native-keychain';
 import logger from 'logger';
-const RAINBOW_BACKUP_KEY = 'rainbowBackup';
-const KEYCHAIN_ITEM_LOST_ERROR =
-  'Error: The user name or passphrase you entered is not correct.';
-//'Error: User canceled the operation.';
-// ^^ Swap these error messages to test the flow by cancelling the faceID flow
-
-export const keychainEventEmitter = new EventEmitter();
 
 // NOTE: implement access control for iOS keychain
 export async function saveString(key, value, accessControlOptions) {
@@ -40,20 +35,8 @@ export async function loadString(key, authenticationPrompt) {
     }
     logger.log(`Keychain: string does not exist for key: ${key}`);
   } catch (err) {
-    if (`${err}` === KEYCHAIN_ITEM_LOST_ERROR) {
-      const customError = new Error('Keychain item not available!');
-      logger.sentry(
-        `Error: The user name or passphrase you entered is not correct.`,
-        err
-      );
-      keychainEventEmitter.emit('keychainItemLostError', key);
-      captureException(customError);
-    } else {
-      logger.log(
-        `Keychain: failed to load string for key: ${key} error: ${err}`
-      );
-      captureException(err);
-    }
+    logger.log(`Keychain: failed to load string for key: ${key} error: ${err}`);
+    captureException(err);
   }
   return null;
 }
@@ -63,18 +46,19 @@ export async function loadAllKeys(authenticationPrompt) {
     const { results } = await getAllInternetCredentials(authenticationPrompt);
     return results;
   } catch (err) {
-    if (`${err}` === KEYCHAIN_ITEM_LOST_ERROR) {
-      const customError = new Error('Keychain item not available in All Keys!');
-      logger.sentry(
-        `Error: The user name or passphrase you entered is not correct.`,
-        err
-      );
-      keychainEventEmitter.emit('keychainItemLostError', null);
-      captureException(customError);
-    } else {
-      logger.log(`Keychain: failed to loadAllKeys error: ${err}`);
-      captureException(err);
-    }
+    logger.log(`Keychain: failed to loadAllKeys error: ${err}`);
+    captureException(err);
+  }
+  return null;
+}
+
+export async function hasKey(key) {
+  try {
+    const result = await hasInternetCredentials(key);
+    return result;
+  } catch (err) {
+    logger.log(`Keychain: failed to check if key exists -  error: ${err}`);
+    captureException(err);
   }
   return null;
 }
@@ -165,10 +149,7 @@ export async function restoreBackupIntoKeychain(backedUpData) {
 // Attempts to save the password to decrypt the backup from the iCloud keychain
 export async function saveBackupPassword(password) {
   try {
-    await saveString(RAINBOW_BACKUP_KEY, password, {
-      accessible: ACCESSIBLE.WHEN_UNLOCKED,
-      synchronizable: true,
-    });
+    await setSharedWebCredentials('rainbow.me', 'Backup Password', password);
   } catch (e) {
     logger.log('Error while backing up password', e);
   }
@@ -176,18 +157,23 @@ export async function saveBackupPassword(password) {
 
 // Attempts to fetch the password to decrypt the backup from the iCloud keychain
 export async function fetchBackupPassword() {
-  const results = await getInternetCredentials(RAINBOW_BACKUP_KEY, {
-    accessible: ACCESSIBLE.WHEN_UNLOCKED,
-    synchronizable: true,
-  });
-
-  return results.password;
+  try {
+    const results = await requestSharedWebCredentials();
+    return results.password;
+  } catch (e) {
+    logger.log('Error while fetching backup password', e);
+  }
 }
 
 // For dev purposes only
 export async function wipeKeychain() {
-  const results = await loadAllKeys();
-  results.forEach(async result => {
-    await resetInternetCredentials(result.username);
-  });
+  try {
+    const results = await loadAllKeys();
+    results.forEach(async result => {
+      await resetInternetCredentials(result.username);
+    });
+    logger.log('keychain wiped!');
+  } catch (e) {
+    logger.log('error while wiping keychain', e);
+  }
 }

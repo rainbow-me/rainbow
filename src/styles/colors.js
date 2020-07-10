@@ -29,7 +29,7 @@ let base = {
   orangeLight: '#FEBE44', // '254, 190, 68'
   paleBlue: '#579DFF', // 87, 157, 255
   pink: '#FF54BB', // 255, 84, 187
-  purple: '#32325D', // '50, 50, 93'
+  purple: '#735CFF', // '115, 92, 255'
   purpleLight: '#FFD9FE', // '255, 217, 254'
   red: '#FF494A', // '255, 73, 74'
   rowDivider: 'rgba(60, 66, 82, 0.03)', // '60, 66, 82, 0.03'
@@ -70,7 +70,7 @@ const lightGreyGradient = [
 ];
 
 const sendScreen = {
-  brightBlue: base.appleBlue, // 14, 118, 253
+  brightBlue: base.appleBlue, // '14, 118, 253'
   grey: '#D8D8D8', // '216, 216, 216'
   lightGrey: '#FAFAFA', // '250, 250, 250'
 };
@@ -117,6 +117,7 @@ const getFallbackTextColor = bg =>
   });
 
 const transparent = {
+  appleBlueTransparent: buildRgba(base.appleBlue, 0.2), // '50, 50, 93'
   purpleTransparent: buildRgba(base.purple, 0.7), // '50, 50, 93'
   whiteTransparent: buildRgba(base.white, 0.8), // '255, 255, 255'
 };

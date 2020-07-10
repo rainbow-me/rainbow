@@ -21,6 +21,7 @@ const sx = StyleSheet.create({
     height: 30,
     letterSpacing: fonts.letterSpacing.roundedTightest,
     marginBottom: 0.5,
+    marginLeft: 6,
     marginRight: 4,
     textAlign: 'left',
   },
@@ -58,7 +59,9 @@ const SavingsListRowAnimatedNumber = ({
       time={interval}
       value={Number(value)}
       animationConfig={{
+        color: '#2CCC00', // HEX
         decimals: 10,
+        duration: 200, // in intervals
         initialValue: Number(initialValue),
         interval,
         isSymbolStablecoin: isSymbolStablecoin(symbol),

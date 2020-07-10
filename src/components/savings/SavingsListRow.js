@@ -154,7 +154,7 @@ const SavingsListRow = ({
             justify="space-between"
           >
             {underlying.symbol && supplyBalanceUnderlying ? (
-              <Centered marginRight={6}>
+              <Centered>
                 <CoinIcon size={26} symbol={underlying.symbol} />
               </Centered>
             ) : null}

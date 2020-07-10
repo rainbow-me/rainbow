@@ -6,15 +6,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { Row } from '../components/layout';
 import RestoreIcloudStep from '../components/restore/RestoreIcloudStep';
 import RestoreSheetFirstStep from '../components/restore/RestoreSheetFirstStep';
 import { SlackSheet } from '../components/sheet';
-import { fetchUserDataFromCloud } from '../handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import Routes from '../navigation/routesNames';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
@@ -30,30 +27,24 @@ const switchSheetContentTransition = (
 const StyledSheet = styled(SlackSheet)`
   top: 0;
   height: 100%;
-  padding-bottom: 50px;
 `;
 
 const RestoreSheet = () => {
-  const { navigate, setOptions, goBack } = useNavigation();
+  const { navigate, setOptions } = useNavigation();
 
   const { jumpToLong } = useContext(ModalContext);
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
   const [step, setStep] = useState(params?.option || 'first');
-  const [userData, setUserData] = useState();
 
   useEffect(() => {
-    const initialize = async () => {
-      const isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
-      if (!isSimulator) {
-        const data = await fetchUserDataFromCloud();
-        setUserData(data);
-      } else {
-        setUserData(null);
-      }
-    };
-    initialize();
-  }, []);
+    if (!params?.userData) {
+      setOptions({
+        isShortFormEnabled: false,
+        longFormHeight: 363,
+      });
+    }
+  }, [params?.userData, setOptions]);
 
   const onIcloudRestore = useCallback(() => {
     switchSheetContentTransitionRef.current?.animateNextTransition();
@@ -66,38 +57,38 @@ const RestoreSheet = () => {
   }, [jumpToLong, setOptions]);
 
   const onManualRestore = useCallback(() => {
-    goBack();
-    InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.IMPORT_SEED_PHRASE_FLOW, {
-        isOnboarding: true,
-      });
+    navigate(Routes.IMPORT_SEED_PHRASE_FLOW, {
+      isOnboarding: true,
     });
-  }, [goBack, navigate]);
+  }, [navigate]);
 
   const onWatchAddress = useCallback(() => {
-    goBack();
-    InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.IMPORT_SEED_PHRASE_FLOW, {
-        isOnboarding: true,
-      });
+    navigate(Routes.IMPORT_SEED_PHRASE_FLOW, {
+      isOnboarding: true,
     });
-  }, [goBack, navigate]);
+  }, [navigate]);
 
   const renderStep = useCallback(() => {
     switch (step) {
       case WalletBackupTypes.cloud:
-        return <RestoreIcloudStep userData={userData} />;
+        return <RestoreIcloudStep userData={params?.userData} />;
       default:
         return (
           <RestoreSheetFirstStep
             onIcloudRestore={onIcloudRestore}
             onManualRestore={onManualRestore}
             onWatchAddress={onWatchAddress}
-            userData={userData}
+            userData={params?.userData}
           />
         );
     }
-  }, [onIcloudRestore, onManualRestore, onWatchAddress, step, userData]);
+  }, [
+    onIcloudRestore,
+    onManualRestore,
+    onWatchAddress,
+    params?.userData,
+    step,
+  ]);
 
   return (
     <StyledSheet>

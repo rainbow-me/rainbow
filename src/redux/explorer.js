@@ -175,6 +175,8 @@ export const explorerInit = () => async (dispatch, getState) => {
     type: EXPLORER_UPDATE_SOCKETS,
   });
 
+  dispatch(listenOnAddressMessages(newAddressSocket));
+
   newAddressSocket.on(messages.CONNECT, () => {
     newAddressSocket.emit(
       ...addressSubscription(accountAddress, nativeCurrency)
@@ -184,11 +186,12 @@ export const explorerInit = () => async (dispatch, getState) => {
         ...chartsSubscription(accountAddress, nativeCurrency, chartType)
       );
     }
-    dispatch(listenOnAddressMessages(newAddressSocket));
   });
+
+  dispatch(listenOnAssetMessages(newAssetsSocket));
+
   newAssetsSocket.on(messages.CONNECT, () => {
     newAssetsSocket.emit(...assetsSubscription(keys(pairs), nativeCurrency));
-    dispatch(listenOnAssetMessages(newAssetsSocket));
   });
 };
 
