@@ -271,7 +271,7 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
   } else {
     const newQuery = uniswapClient.watchQuery({
       fetchPolicy: 'network-only',
-      pollInterval: 15000, // 15 seconds
+      pollInterval: 300000, // 300 seconds
       query: UNISWAP_PRICES_QUERY,
       variables: {
         addresses,
