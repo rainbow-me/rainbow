@@ -8,6 +8,7 @@ import { useAccountSettings, useOpenInvestmentCards } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
+import { LiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
 import { ColumnWithMargins, Row } from '../layout';
 import { Text } from '../text';
 import InvestmentCard from './InvestmentCard';
@@ -15,7 +16,6 @@ import InvestmentCardPill from './InvestmentCardPill';
 import Routes from '@rainbow-me/routes';
 import { colors, padding } from '@rainbow-me/styles';
 
-const AssetSheetHeight = 400;
 const UniswapInvestmentCardHeight = 114;
 
 const gradientColors = [
@@ -44,7 +44,8 @@ const UniswapInvestmentCard = ({
   const handleOpenExpandedState = useCallback(() => {
     navigate(Routes.EXPANDED_ASSET_SHEET, {
       asset: item,
-      longFormHeight: AssetSheetHeight,
+      cornerRadius: 10,
+      longFormHeight: LiquidityPoolExpandedStateSheetHeight,
       type: assetType,
     });
   }, [assetType, item, navigate]);
