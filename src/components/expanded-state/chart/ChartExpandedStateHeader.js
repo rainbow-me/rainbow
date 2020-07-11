@@ -7,6 +7,8 @@ import useExperimentalFlag, {
 import EditOptions from '../../../helpers/editOptionTypes';
 import {
   convertAmountToNativeDisplay,
+  greaterThan,
+  isEqual,
   toFixedDecimals,
 } from '../../../helpers/utilities';
 import { useAccountSettings, useCoinListEditOptions } from '../../../hooks';
@@ -26,13 +28,6 @@ const Container = styled(ColumnWithMargins).attrs({
   ${padding(0, 19, 24)};
 `;
 
-const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
-  color,
-  letterSpacing: 'roundedTight',
-  size: 'big',
-  weight: 'bold',
-}))``;
-
 const Subtitle = styled(TruncatedText).attrs(
   ({ color = colors.alpha(colors.blueGreyDark, 0.8) }) => ({
     color,
@@ -42,15 +37,20 @@ const Subtitle = styled(TruncatedText).attrs(
   })
 )``;
 
+const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
+  color,
+  letterSpacing: 'roundedTight',
+  size: 'big',
+  weight: 'bold',
+}))``;
+
 const ChartExpandedStateHeader = ({
   address,
   change,
   chartPrice,
   color = colors.dark,
-  isPositiveChange,
   latestPrice = noPriceData,
   name,
-  noChange,
   shadowColor,
   symbol,
   uniqueId,
@@ -115,10 +115,18 @@ const ChartExpandedStateHeader = ({
 
   const isNoPriceData = formattedPrice === noPriceData;
 
+  const { isNoChange, isPositiveChange } = useMemo(
+    () => ({
+      isNoChange: isEqual(change, 0),
+      isPositiveChange: greaterThan(change, 0),
+    }),
+    [change]
+  );
+
   const redGreenPriceChange = useExperimentalFlag(RED_GREEN_PRICE_CHANGE);
   const redGreenColor = isPositiveChange
     ? colors.green
-    : noChange
+    : isNoChange
     ? colors.alpha(colors.blueGreyDark, 0.8)
     : colors.red;
 

@@ -3,8 +3,6 @@ import { deviceUtils, safeAreaInsetValues } from '../utils';
 import { onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
 
-const topInset = safeAreaInsetValues.top + 5;
-
 export const expandedAssetSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     allowsDragToDismiss: true,
@@ -18,7 +16,7 @@ export const expandedAssetSheetConfig = {
     longFormHeight: params.longFormHeight,
     onAppear: null,
     scrollEnabled: true,
-    topOffset: topInset,
+    topOffset: safeAreaInsetValues.top + 5,
   }),
 };
 

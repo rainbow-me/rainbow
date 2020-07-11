@@ -12,7 +12,7 @@ import {
 } from '../../hoc';
 import { isNewValueForObjectPaths, isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { SheetHeight } from '../expanded-state/ChartExpandedState';
+import { ChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, FlexItem } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
@@ -116,7 +116,7 @@ const BalanceCoinRow = ({
   }, [item.uniqueId, pushSelectedCoin, removeSelectedCoin, setToggle, toggle]);
 
   const handlePress = useCallback(() => {
-    onPress && onPress(item, { longFormHeight: SheetHeight });
+    onPress && onPress(item, { longFormHeight: ChartExpandedStateSheetHeight });
   }, [onPress, item]);
 
   return (

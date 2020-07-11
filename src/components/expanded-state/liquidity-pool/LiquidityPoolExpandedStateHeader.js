@@ -22,12 +22,12 @@ const ETHCoinIcon = styled(CoinIcon).attrs({
   top: 0;
 `;
 
-const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
-  color,
-  letterSpacing: 'roundedTight',
-  size: 'big',
-  weight: 'bold',
-}))``;
+const PerShareText = styled(TruncatedText).attrs({
+  color: colors.blueGreyDark50,
+  letterSpacing: 'roundedMedium',
+  size: 'larger',
+  weight: 'regular',
+})``;
 
 const Subtitle = styled(TruncatedText).attrs({
   color: colors.alpha(colors.blueGreyDark, 0.8),
@@ -36,12 +36,12 @@ const Subtitle = styled(TruncatedText).attrs({
   weight: 'medium',
 })``;
 
-const PerShareText = styled(TruncatedText).attrs({
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  letterSpacing: 'roundedMedium',
-  size: 'larger',
-  weight: 'regular',
-})``;
+const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
+  color,
+  letterSpacing: 'roundedTight',
+  size: 'big',
+  weight: 'bold',
+}))``;
 
 function LiquidityPoolExpandedStateHeader({ asset }) {
   const { address, pricePerShare, shadowColor, symbol } = asset;

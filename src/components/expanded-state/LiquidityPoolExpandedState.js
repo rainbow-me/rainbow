@@ -16,7 +16,7 @@ import {
 } from '../token-info';
 import { LiquidityPoolExpandedStateHeader } from './liquidity-pool';
 
-export const SheetHeight = 369;
+export const LiquidityPoolExpandedStateSheetHeight = 369;
 
 const LiquidityPoolExpandedState = ({
   asset: { ethBalance, totalNativeDisplay, uniBalance, ...asset },
@@ -42,7 +42,10 @@ const LiquidityPoolExpandedState = ({
   }, [asset]);
 
   return (
-    <SlackSheet contentHeight={SheetHeight} scrollEnabled={false}>
+    <SlackSheet
+      contentHeight={LiquidityPoolExpandedStateSheetHeight}
+      scrollEnabled={false}
+    >
       <LiquidityPoolExpandedStateHeader asset={tokenAsset} />
       <SheetDivider />
       <TokenInfoSection>

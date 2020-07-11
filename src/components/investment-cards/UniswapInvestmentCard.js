@@ -8,7 +8,7 @@ import { useAccountSettings, useOpenInvestmentCards } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
-import { SheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
+import { LiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
 import { ColumnWithMargins, Row } from '../layout';
 import { Text } from '../text';
 import InvestmentCard from './InvestmentCard';
@@ -45,7 +45,7 @@ const UniswapInvestmentCard = ({
     navigate(Routes.EXPANDED_ASSET_SHEET, {
       asset: item,
       cornerRadius: 10,
-      longFormHeight: SheetHeight,
+      longFormHeight: LiquidityPoolExpandedStateSheetHeight,
       type: assetType,
     });
   }, [assetType, item, navigate]);
