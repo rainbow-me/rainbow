@@ -8,7 +8,7 @@ import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
 import { CDAI_CONTRACT } from '../references';
 
 // -- Constants --------------------------------------- //
-const COMPOUND_QUERY_INTERVAL = 300000;
+const COMPOUND_QUERY_INTERVAL = 10000;
 const SAVINGS_UPDATE_COMPOUND_DATA = 'savings/SAVINGS_UPDATE_COMPOUND_DATA';
 const SAVINGS_UPDATE_COMPOUND_SUBSCRIPTION =
   'savings/SAVINGS_UPDATE_COMPOUND_SUBSCRIPTION';
@@ -105,7 +105,7 @@ const subscribeToCompoundData = async (dispatch, getState) => {
 
     const newQuery = compoundClient.watchQuery({
       fetchPolicy: 'network-only',
-      pollInterval: COMPOUND_QUERY_INTERVAL, // 300 seconds
+      pollInterval: COMPOUND_QUERY_INTERVAL, // 15 seconds
       query: COMPOUND_ACCOUNT_AND_MARKET_QUERY,
       skip: !toLower(accountAddress),
       variables: { id: toLower(accountAddress) },
