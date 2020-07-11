@@ -101,7 +101,7 @@ export const executeRap = async (wallet, rap) => {
 
 export const createNewRap = (actions, callback = NOOP) => {
   const { dispatch } = store;
-  const now = Date.now();
+  const now = new Date().getTime();
   const currentRap = {
     actions,
     callback,

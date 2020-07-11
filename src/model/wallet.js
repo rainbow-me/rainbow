@@ -359,7 +359,7 @@ export const createWallet = async (seed = null, color = null, name = null) => {
       }
     }
 
-    const id = existingWalletId || `wallet_${Date.now()}`;
+    const id = existingWalletId || `wallet_${new Date().getTime()}`;
 
     // Save address
     await saveAddress(wallet.address);
@@ -809,12 +809,6 @@ export async function addWalletToCloudBackup(password, wallet, filename) {
 
 export async function restoreCloudBackup(password, userData) {
   try {
-    // 0 - Should we wipe the keychain before restoring? => TBD
-    // Kinda dangerous TBH
-
-    // 1 - Find out which is the latest backup
-    // In the future we might let the user choose which backup to import
-    // For now we figure it out on our own by defaulting to the latest
     logger.log('restoreCloudBackup', password, userData);
     logger.log('restoreCloudBackup :: finding latest backup...');
 
