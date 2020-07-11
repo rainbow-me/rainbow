@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
-import { bInterpolateColor, useTimingTransition } from 'react-native-redash';
+import { mixColor } from 'react-native-redash';
 import { useInterval, useTimeout, useTransformOrigin } from '../../hooks';
 import { magicMemo } from '../../utils';
+import { useTimingTransition } from '../../utils/transitions';
 import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
@@ -30,7 +31,7 @@ const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
     <Animated.View {...position.coverAsObject} style={{ opacity }}>
       <AnimatedText
         align="center"
-        color={bInterpolateColor(
+        color={mixColor(
           textColorAnimation,
           colors.blueGreyDark50,
           colors.brightRed

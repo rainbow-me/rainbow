@@ -1,8 +1,8 @@
 import React from 'react';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import Animated, { Easing } from 'react-native-reanimated';
-import { useTimingTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
+import { useTimingTransition } from '../../utils/transitions';
 import { interpolate } from './procs';
 
 const statusBarHeight = getStatusBarHeight(true);
