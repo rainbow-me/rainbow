@@ -7,10 +7,9 @@ import { Centered } from '../layout';
 import SheetHandleFixedToTop, {
   SheetHandleFixedToTopHeight,
 } from './SheetHandleFixedToTop';
-import { borders, colors } from '@rainbow-me/styles';
+import { colors } from '@rainbow-me/styles';
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
-  ${({ radius }) => borders.buildRadius('top', radius)};
   background-color: ${colors.white};
   bottom: 0;
   left: 0;
@@ -63,7 +62,7 @@ export default function SlackSheet({
   );
 
   return (
-    <Container {...props} radius={borderRadius}>
+    <Container {...props}>
       <SheetHandleFixedToTop showBlur={scrollEnabled} />
       <Content
         contentContainerStyle={scrollEnabled && contentContainerStyle}

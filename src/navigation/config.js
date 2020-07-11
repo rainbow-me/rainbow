@@ -11,7 +11,7 @@ export const expandedAssetSheetConfig = {
     allowsTapToDismiss: true,
     backgroundOpacity: 0.7,
     blocksBackgroundTouches: true,
-    cornerRadius: 39,
+    cornerRadius: params.longFormHeight ? 39 : 30,
     customStack: true,
     gestureEnabled: true,
     headerHeight: 25,
