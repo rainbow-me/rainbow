@@ -210,6 +210,7 @@
     "eslint": "^6.8.0",
     "eslint-config-satya164": "^3.1.6",
     "eslint-import-resolver-babel-module": "^5.1.2",
+    "eslint-plugin-better-styled-components": "^1.1.2",
     "eslint-plugin-import": "^2.20.2",
     "jest": "^24.9.0",
     "metro-react-native-babel-preset": "^0.59.0",

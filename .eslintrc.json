@@ -1,5 +1,8 @@
 {
   "extends": "satya164",
+  "plugins": [
+      "eslint-plugin-better-styled-components"
+  ],
   "settings": {
     "react": { "version": "16" },
     "import/resolver": {
@@ -23,6 +26,9 @@
     }],
     "sort-keys": ["error", "asc", { "caseSensitive": false, "natural": false }],
     "jest/no-truthy-falsy": 0,
+    "react/jsx-sort-props": ["error", {
+      "ignoreCase": false
+    }],
     "react-native/no-inline-styles": 0,
     "import/named": 0,
     "import/no-named-as-default": 0,
@@ -55,7 +61,8 @@
     ],
     "react/display-name": 2,
     "jest/no-test-prefixes": 0,
-    "jest/no-disabled-tests": 0
+    "jest/no-disabled-tests": 0,
+    "better-styled-components/sort-declarations-alphabetically": 0
   },
   "env": { "browser": true, "node": true }
 }
