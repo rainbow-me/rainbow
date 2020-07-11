@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import Animated, { SpringUtils } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
+import { useTimeout } from '../../hooks';
 import { magicMemo } from '../../utils';
 import { useSpringTransition } from '../../utils/transitions';
 import { interpolate } from '../animations';
@@ -50,11 +51,10 @@ const Badge = ({
   value,
   ...props
 }) => {
-  const [delayedIsVisible, setDelayedIsVisible] = React.useState(isVisible);
-  useEffect(() => {
-    const timeout = setTimeout(() => setDelayedIsVisible(isVisible), delay);
-    return () => clearTimeout(timeout);
-  }, [delay, isVisible]);
+  const [delayedIsVisible, setDelayedIsVisible] = useState(isVisible);
+  const [startDelayTimeout] = useTimeout();
+
+  startDelayTimeout(() => setDelayedIsVisible(isVisible), delay);
 
   const animation = useSpringTransition(delayedIsVisible, BadgeSpringConfig);
 
