@@ -59,6 +59,7 @@ import { logger } from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
+const BACKUP_SHEET_DELAY_MS = 3000;
 
 if (__DEV__) {
   console.disableYellowBox = reactNativeDisableYellowBox;
@@ -168,7 +169,7 @@ class App extends Component {
         Navigation.handleAction(Routes.BACKUP_SHEET, {
           option: 'existing_user',
         });
-      }, 1000);
+      }, BACKUP_SHEET_DELAY_MS);
       // New users who are now get an incoming tx
       // now need to go through the backup flow
     } else if (backupState === BackupStateTypes.ready) {
@@ -179,7 +180,7 @@ class App extends Component {
           () => {
             Navigation.handleAction(Routes.BACKUP_SHEET);
           },
-          type === 'appended' ? 30000 : 1000
+          type === 'appended' ? 30000 : BACKUP_SHEET_DELAY_MS
         );
         incomingTxListener.removeAllListeners();
       });
@@ -187,10 +188,10 @@ class App extends Component {
       store.dispatch(addNewSubscriber(incomingTxListener, 'appended'));
       // Received will trigger when there's incoming transactions
       // during startup
-      // store.dispatch(addNewSubscriber(incomingTxListener, 'received'));
+      store.dispatch(addNewSubscriber(incomingTxListener, 'received'));
     } else if (backupState === BackupStateTypes.pending) {
       setTimeout(() => {
-        Navigation.handleAction(Routes.BACKUP_SHEET);
+        Navigation.handleAction(Routes.BACKUP_SHEET_DELAY_MS);
       }, 1000);
     }
   };
