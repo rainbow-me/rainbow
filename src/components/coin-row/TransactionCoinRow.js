@@ -4,6 +4,11 @@ import { Linking } from 'react-native';
 import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
+import {
+  getHumanReadableDate,
+  hasAddableContact,
+} from '../../helpers/transactions';
+import { isENSAddressFormat } from '../../helpers/validators';
 import { useAccountSettings } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { abbreviations, ethereumUtils } from '../../utils';
@@ -73,14 +78,19 @@ const TopRow = ({ balance, pending, status, title }) => (
 );
 
 export default function TransactionCoinRow({ item, ...props }) {
-  const { contact, hash } = item;
+  const { contact } = item;
   const { network } = useAccountSettings();
   const { navigate } = useNavigation();
 
   const onPressTransaction = useCallback(async () => {
-    const { from, to, status } = item;
-    const isPurchasing = status === TransactionStatusTypes.purchasing;
-    const isSent = status === TransactionStatusTypes.sent;
+    const { hash, from, minedAt, pending, to, status, type } = item;
+
+    const date = getHumanReadableDate(minedAt);
+
+    const isSent =
+      status === TransactionStatusTypes.sending ||
+      status === TransactionStatusTypes.sent;
+    const showContactInfo = hasAddableContact(status, type);
 
     const headerInfo = {
       address: '',
@@ -94,27 +104,35 @@ export default function TransactionCoinRow({ item, ...props }) {
     if (contact) {
       headerInfo.address = contact.nickname;
       contactColor = contact.color;
-    } else if (!isPurchasing) {
-      headerInfo.address = abbreviations.address(contactAddress, 4, 10);
+    } else {
+      headerInfo.address = isENSAddressFormat(contactAddress)
+        ? contactAddress
+        : abbreviations.address(contactAddress, 4, 10);
       contactColor = colors.getRandomColor();
     }
 
     if (hash) {
       let buttons = ['View on Etherscan', 'Cancel'];
-      if (!isPurchasing) {
+      if (showContactInfo) {
         buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
       }
 
       showActionSheetWithOptions(
         {
-          cancelButtonIndex: isPurchasing ? 1 : 2,
+          cancelButtonIndex: showContactInfo ? 2 : 1,
           options: buttons,
-          title: isPurchasing
-            ? headerInfo.type
-            : `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
+          title: pending
+            ? `${headerInfo.type}${
+                showContactInfo
+                  ? ' ' + headerInfo.divider + ' ' + headerInfo.address
+                  : ''
+              }`
+            : showContactInfo
+            ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
+            : `${headerInfo.type} ${date}`,
         },
         buttonIndex => {
-          if (!isPurchasing && buttonIndex === 0) {
+          if (showContactInfo && buttonIndex === 0) {
             navigate(Routes.MODAL_SCREEN, {
               address: contactAddress,
               asset: item,
@@ -123,8 +141,8 @@ export default function TransactionCoinRow({ item, ...props }) {
               type: 'contact',
             });
           } else if (
-            (isPurchasing && buttonIndex === 0) ||
-            (!isPurchasing && buttonIndex === 1)
+            (!showContactInfo && buttonIndex === 0) ||
+            (showContactInfo && buttonIndex === 1)
           ) {
             const normalizedHash = hash.replace(/-.*/g, '');
             const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
@@ -135,7 +153,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         }
       );
     }
-  }, [contact, hash, item, navigate, network]);
+  }, [contact, item, navigate, network]);
 
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>

@@ -17,17 +17,17 @@ const ETHCoinIcon = styled(CoinIcon).attrs({
   shadow: [[0, 4, 12, colors.dark, 0.3]],
 })`
   bottom: 0;
-  left: ${CoinIconSize - 6};
+  left: ${CoinIconSize - 10};
   position: absolute;
   top: 0;
 `;
 
-const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
-  color,
-  letterSpacing: 'roundedTight',
-  size: 'big',
-  weight: 'bold',
-}))``;
+const PerShareText = styled(TruncatedText).attrs({
+  color: colors.blueGreyDark50,
+  letterSpacing: 'roundedMedium',
+  size: 'larger',
+  weight: 'regular',
+})``;
 
 const Subtitle = styled(TruncatedText).attrs({
   color: colors.alpha(colors.blueGreyDark, 0.8),
@@ -36,12 +36,12 @@ const Subtitle = styled(TruncatedText).attrs({
   weight: 'medium',
 })``;
 
-const PerShareText = styled(TruncatedText).attrs({
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  letterSpacing: 'roundedMedium',
-  size: 'larger',
-  weight: 'regular',
-})``;
+const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
+  color,
+  letterSpacing: 'roundedTight',
+  size: 'big',
+  weight: 'bold',
+}))``;
 
 function LiquidityPoolExpandedStateHeader({ asset }) {
   const { address, pricePerShare, shadowColor, symbol } = asset;
@@ -59,7 +59,7 @@ function LiquidityPoolExpandedStateHeader({ asset }) {
         <CoinIcon address={address} shadow={coinIconShadow} symbol={symbol} />
       </Row>
       <Row align="center" justify="space-between">
-        <ColumnWithMargins align="start" margin={4}>
+        <ColumnWithMargins align="start" margin={2}>
           <Title>{`${symbol}-ETH Pool`}</Title>
           <Subtitle>
             {pricePerShare}

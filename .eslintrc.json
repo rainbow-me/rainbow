@@ -54,6 +54,7 @@
       }
     ],
     "react/display-name": 2,
+    "react/no-array-index-key": 0,
     "jest/no-test-prefixes": 0,
     "jest/no-disabled-tests": 0
   },

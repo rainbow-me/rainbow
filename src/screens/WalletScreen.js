@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import Animated from 'react-native-reanimated';
-import { useValues } from 'react-native-redash';
+import { useValue } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
@@ -53,7 +53,7 @@ export default function WalletScreen() {
   const refreshAccountData = useRefreshAccountData();
   const { isCoinListEdited } = useCoinListEdited();
   const { updateKeyboardHeight } = useKeyboardHeight();
-  const [scrollViewTracker] = useValues([0], []);
+  const scrollViewTracker = useValue(0);
   const { isCreatingAccount, isReadOnlyWallet } = useWallets();
 
   useEffect(() => {

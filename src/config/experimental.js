@@ -12,8 +12,9 @@ export const DISCOVER_SHEET = 'discoverSheet';
 export const NATIVE_BPA = 'nativeButtonPressAnimation';
 export const NATIVE_TRANSACTION_LIST = 'nativeTransactionList';
 export const NEW_ONBOARDING = 'newOnboardingFlow';
-export const RAINBOW_TEXT = 'rainbowText';
 export const NEW_SPLASH_SCREEN = 'newSplashScreen';
+export const RAINBOW_TEXT = 'rainbowText';
+export const RED_GREEN_PRICE_CHANGE = 'redGreenPriceChange';
 
 export const defaultConfig = {
   [AVATAR_PICKER]: false,
@@ -23,4 +24,5 @@ export const defaultConfig = {
   [NEW_ONBOARDING]: false,
   [NEW_SPLASH_SCREEN]: true,
   [RAINBOW_TEXT]: true,
+  [RED_GREEN_PRICE_CHANGE]: true,
 };

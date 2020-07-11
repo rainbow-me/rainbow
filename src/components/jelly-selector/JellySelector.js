@@ -48,7 +48,7 @@ const JellySelector = ({
   ...props
 }) => {
   const [selected, setSelected] = useState(defaultIndex);
-  const [translateX, width] = useValues([0, 0], []);
+  const [translateX, width] = useValues(0, 0);
 
   useEffect(() => {
     resetPositionCalculations();

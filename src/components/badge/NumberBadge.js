@@ -1,12 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Animated, { SpringUtils } from 'react-native-reanimated';
-import {
-  bin,
-  delay as delayUtil,
-  useSpringTransition,
-} from 'react-native-redash';
 import styled from 'styled-components/primitives';
+import { useTimeout } from '../../hooks';
 import { magicMemo } from '../../utils';
+import { useSpringTransition } from '../../utils/transitions';
 import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
@@ -54,10 +51,12 @@ const Badge = ({
   value,
   ...props
 }) => {
-  const animation = useSpringTransition(
-    delayUtil(bin(isVisible), delay),
-    BadgeSpringConfig
-  );
+  const [delayedIsVisible, setDelayedIsVisible] = useState(isVisible);
+  const [startDelayTimeout] = useTimeout();
+
+  startDelayTimeout(() => setDelayedIsVisible(isVisible), delay);
+
+  const animation = useSpringTransition(delayedIsVisible, BadgeSpringConfig);
 
   const translateY = interpolate(animation, {
     inputRange: [0, 1],

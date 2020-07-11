@@ -22,7 +22,6 @@ const ScreenTypes = {
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   ${position.cover};
-  top: ${({ insets }) => insets.top + 10};
   ${({ deviceHeight, height }) =>
     height ? `height: ${height + deviceHeight}` : null};
 `;
