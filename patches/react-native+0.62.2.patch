@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
-index 831a1b5..91a302b 100644
+index 831a1b5..76fdaab 100644
 --- a/node_modules/react-native/React/Views/RCTView.m
 +++ b/node_modules/react-native/React/Views/RCTView.m
 @@ -780,6 +780,11 @@ - (void)displayLayer:(CALayer *)layer
@@ -7,7 +7,7 @@ index 831a1b5..91a302b 100644
      layer.needsDisplayOnBoundsChange = NO;
      layer.mask = nil;
 +    if (@available(iOS 13.0, *)) {
-+      if (layer.cornerRadius < (MIN(self.bounds.size.height, self.bounds.size.width) / 2)) {
++      if (layer.cornerRadius < MIN(self.bounds.size.height, self.bounds.size.width) / 2) {
 +        layer.cornerCurve = kCACornerCurveContinuous;
 +      }
 +    }
