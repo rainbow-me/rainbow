@@ -44,8 +44,8 @@ import {
   useTimeout,
   useWallets,
 } from '../hooks';
-import Navigation, { useNavigation } from '../navigation/Navigation';
 import { getWallet } from '../model/wallet';
+import Navigation, { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/effects';
 import Routes from '@rainbow-me/routes';
 import { borders, colors, padding, shadow } from '@rainbow-me/styles';
@@ -356,6 +356,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
               Platform.OS === 'android' ? 'visible-password' : 'default'
             }
             lineHeight="looser"
+            marginBottom={Platform.OS === 'android' ? 55 : 0}
             multiline
             numberOfLines={3}
             onChangeText={handleSetSeedPhrase}
@@ -372,7 +373,6 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             value={seedPhrase}
             weight="semibold"
             width="100%"
-            marginBottom={Platform.OS === 'android' ? 55 : 0}
           />
         </Centered>
         <Row

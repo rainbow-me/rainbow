@@ -53,6 +53,16 @@ const SavingsListRowAnimatedNumber = ({
 
   return (
     <TextComponent
+      animationConfig={{
+        color: '#2CCC00', // HEX
+        decimals: 10,
+        duration: 800, // in intervals
+        initialValue: Number(initialValue),
+        interval,
+        isSymbolStablecoin: isSymbolStablecoin(symbol),
+        stepPerDay: Number(value) - Number(initialValue),
+        symbol,
+      }}
       formatter={formatter}
       initialValue={Number(initialValue)}
       steps={steps}
@@ -62,16 +72,6 @@ const SavingsListRowAnimatedNumber = ({
       ]}
       time={interval}
       value={Number(value)}
-      animationConfig={{
-        color: '#2CCC00', // HEX
-        decimals: 10,
-        duration: 200, // in intervals
-        initialValue: Number(initialValue),
-        interval,
-        isSymbolStablecoin: isSymbolStablecoin(symbol),
-        stepPerDay: Number(value) - Number(initialValue),
-        symbol,
-      }}
     >
       {isRainbowTextAvailable ? null : formatter(initialValue)}
     </TextComponent>

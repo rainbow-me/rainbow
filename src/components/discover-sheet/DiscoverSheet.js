@@ -401,13 +401,13 @@ export function SlackBottomSheetContent() {
   return (
     <View style={StyleSheet.absoluteFillObject}>
       <ScrollView
+        contentContainerStyle={{ marginBottom: 20 }}
         style={{
           backgroundColor: 'white',
           marginBottom: -20,
           opacity: 1,
           paddingTop: 12,
         }}
-        contentContainerStyle={{ marginBottom: 20 }}
       >
         <Lorem />
       </ScrollView>
@@ -426,32 +426,32 @@ function DiscoverSheet() {
   // noinspection JSConstructorReturnsPrimitive
   return Platform.OS === 'ios' ? (
     <SlackBottomSheet
-      topOffset={100}
-      unmountAnimation={false}
-      initialAnimation={false}
-      presentGlobally={false}
-      backgroundOpacity={0}
       allowsDragToDismiss={false}
       allowsTapToDismiss={false}
+      backgroundOpacity={0}
+      blocksBackgroundTouches={false}
+      initialAnimation={false}
+      interactsWithOuterScrollView
       isHapticFeedbackEnabled={false}
       onWillTransition={({ type }) => setInitialPosition(type)}
-      blocksBackgroundTouches={false}
-      startFromShortForm={initialPosition === 'short'}
-      interactsWithOuterScrollView
+      presentGlobally={false}
       scrollsToTopOnTapStatusBar={isFocused}
+      startFromShortForm={initialPosition === 'short'}
+      topOffset={100}
+      unmountAnimation={false}
     >
       <View style={StyleSheet.absoluteFillObject}>
         <ScrollView
+          contentContainerStyle={{ marginBottom: 20 }}
+          contentOffset={position.current}
+          onMomentumScrollEnd={setPosition}
+          onScrollEndDrag={setPosition}
           style={{
             backgroundColor: 'white',
             marginBottom: -20,
             opacity: 1,
             paddingTop: 12,
           }}
-          contentOffset={position.current}
-          onScrollEndDrag={setPosition}
-          onMomentumScrollEnd={setPosition}
-          contentContainerStyle={{ marginBottom: 20 }}
         >
           <Lorem />
         </ScrollView>
@@ -460,8 +460,8 @@ function DiscoverSheet() {
   ) : (
     <BottomSheet
       borderRadius={20}
-      renderContent={renderInner}
       overdragResistanceFactor={0}
+      renderContent={renderInner}
       snapPoints={[300, 744]}
       springConfig={discoverSheetSpring}
     />

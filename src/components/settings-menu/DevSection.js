@@ -60,10 +60,10 @@ const DevSection = () => {
 
       {Object.keys(config).map(key => (
         <RadioListItem
-          label={key}
           key={key}
-          selected={!!config[key]}
+          label={key}
           onPress={() => onNetworkChange(key)}
+          selected={!!config[key]}
         />
       ))}
     </ScrollView>

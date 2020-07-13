@@ -236,15 +236,15 @@ const SettingsSection = ({
           label="Review Rainbow"
           onPress={onPressReview}
         />
-        {__DEV__ && (
-          <ListItem
-            icon={<Emoji name="octopus" />}
-            label="Developer Settings"
-            onPress={onPressDev}
-          />
-        )}
       </ColumnWithDividers>
-      <Column align="center">
+      {__DEV__ && (
+        <ListItem
+          justify="center"
+          label="🐙 Developer settings 🐙"
+          onPress={onPressDev}
+        />
+      )}
+      <Column align="center" flex={1} justify="end" paddingBottom={19}>
         <TouchableWithoutFeedback onPress={handleVersionPress}>
           <AppVersionStamp />
         </TouchableWithoutFeedback>

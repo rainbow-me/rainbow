@@ -41,9 +41,9 @@ function NativeStackNavigator(props) {
   return (
     <NativeStackView
       {...rest}
-      state={state}
-      navigation={navigation}
       descriptors={descriptors}
+      navigation={navigation}
+      state={state}
     />
   );
 }

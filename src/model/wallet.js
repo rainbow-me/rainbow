@@ -359,7 +359,7 @@ export const createWallet = async (seed = null, color = null, name = null) => {
       }
     }
 
-    const id = existingWalletId || `wallet_${new Date().getTime()}`;
+    const id = existingWalletId || `wallet_${Date.now()}`;
 
     // Save address
     await saveAddress(wallet.address);

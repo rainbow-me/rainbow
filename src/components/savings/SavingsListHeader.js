@@ -7,6 +7,7 @@ import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { useAccountSettings } from '../../hooks';
+
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';

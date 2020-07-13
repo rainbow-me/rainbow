@@ -264,6 +264,7 @@ const SettingsModal = () => {
                     cardStyleInterpolator,
                     title,
                   }}
+                  title={title}
                 />
               )
           )}
@@ -278,8 +279,8 @@ const SettingsModal = () => {
             }}
           />
           <Stack.Screen
-            name="SettingsBackupView"
             component={SettingsBackupView}
+            name="SettingsBackupView"
             options={({ route }) => ({
               cardStyleInterpolator,
               title: route.params?.title || 'Backup',

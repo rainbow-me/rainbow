@@ -400,8 +400,8 @@ const SendSheet = ({ setAppearListener, ...props }) => {
     <SheetContainer>
       <StatusBar barStyle="light-content" />
       <KeyboardAvoidingView
-        enabled={Platform.OS !== 'android'}
         behavior="padding"
+        enabled={Platform.OS !== 'android'}
       >
         <Container align="center">
           <SendHeader

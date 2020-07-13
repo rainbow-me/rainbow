@@ -4,6 +4,7 @@ import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
+
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
@@ -86,7 +87,7 @@ const TokenFamilyHeader = ({
       <Content isCoinRow={isCoinRow}>
         <RowWithMargins align="center" margin={emoji ? 5 : 9}>
           {emoji ? (
-            <Emoji size="lmedium" name={emoji} />
+            <Emoji name={emoji} size="lmedium" />
           ) : (
             <TokenFamilyHeaderIcon
               familyImage={familyImage}

@@ -17,7 +17,7 @@ const CheckmarkIcon = styled(Icon).attrs({
 `;
 
 const RadioListItem = ({ disabled, onPress, selected, ...props }) => (
-  <ListItem opacity={disabled ? 0.42 : 1} onPress={onPress} {...props}>
+  <ListItem onPress={onPress} opacity={disabled ? 0.42 : 1} {...props}>
     {selected && <CheckmarkIcon />}
   </ListItem>
 );

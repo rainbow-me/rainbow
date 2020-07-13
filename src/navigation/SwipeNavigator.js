@@ -16,18 +16,18 @@ export function SwipeNavigator() {
 
   return (
     <Swipe.Navigator
-      position={scrollPosition}
-      initialRouteName={Routes.WALLET_SCREEN}
-      tabBar={renderTabBar}
       initialLayout={deviceUtils.dimensions}
+      initialRouteName={Routes.WALLET_SCREEN}
       pager={ScrollPagerWrapper}
+      position={scrollPosition}
       swipeEnabled={!isCoinListEdited}
+      tabBar={renderTabBar}
     >
-      <Swipe.Screen name={Routes.PROFILE_SCREEN} component={ProfileScreen} />
-      <Swipe.Screen name={Routes.WALLET_SCREEN} component={WalletScreen} />
+      <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} />
+      <Swipe.Screen component={WalletScreen} name={Routes.WALLET_SCREEN} />
       <Swipe.Screen
-        name={Routes.QR_SCANNER_SCREEN}
         component={QRScannerScreenWithData}
+        name={Routes.QR_SCANNER_SCREEN}
       />
     </Swipe.Navigator>
   );
