@@ -1,8 +1,5 @@
 {
   "extends": "satya164",
-  "plugins": [
-      "eslint-plugin-better-styled-components"
-  ],
   "settings": {
     "react": { "version": "16" },
     "import/resolver": {
@@ -61,8 +58,7 @@
     ],
     "react/display-name": 2,
     "jest/no-test-prefixes": 0,
-    "jest/no-disabled-tests": 0,
-    "better-styled-components/sort-declarations-alphabetically": 0
+    "jest/no-disabled-tests": 0
   },
   "env": { "browser": true, "node": true }
 }
