@@ -4,4 +4,7 @@
         <item name="android:windowDisablePreview">true</item>
         
     </style>
+    <style name="NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+    </style>
 </resources>
