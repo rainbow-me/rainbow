@@ -12,7 +12,10 @@ export default function useStatusBarManaging() {
         if (closing) {
           StatusBar.popStackEntry(ref.current);
         } else {
-          ref.current = StatusBar.pushStackEntry({ barStyle: 'light-content' });
+          ref.current = StatusBar.pushStackEntry({
+            animated: true,
+            barStyle: 'light-content',
+          });
           StatusBar.setBarStyle('light-content');
         }
       }
