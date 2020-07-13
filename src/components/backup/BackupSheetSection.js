@@ -37,21 +37,25 @@ const DescriptionText = styled(Text).attrs({
   padding-bottom: 30;
 `;
 
-const BackupSheetFirstStep = ({ onIcloudBackup, onManualBackup }) => {
+const BackupSheetSection = ({
+  descriptionText,
+  onPrimaryAction,
+  onSecondaryAction,
+  primaryLabel,
+  secondaryLabel,
+}) => {
   return (
     <Centered direction="column">
       <TopIcon />
-      <Title>Back up your wallet </Title>
-      <DescriptionText>
-        Don&apos;t lose your wallet! Save an encrypted copy to iCloud.
-      </DescriptionText>
+      <Title>Back up your wallets</Title>
+      <DescriptionText>{descriptionText}</DescriptionText>
       <Divider color={colors.rowDividerLight} inset={[0, 42]} />
       <ColumnWithMargins css={padding(19, 15, 0)} margin={19} width="100%">
-        <RainbowButton label="􀙶 Back up to iCloud" onPress={onIcloudBackup} />
+        <RainbowButton label={primaryLabel} onPress={onPrimaryAction} />
         <SheetActionButton
           color={colors.white}
-          label="🤓 Back up manually"
-          onPress={onManualBackup}
+          label={secondaryLabel}
+          onPress={onSecondaryAction}
           size="big"
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
         />
@@ -60,4 +64,4 @@ const BackupSheetFirstStep = ({ onIcloudBackup, onManualBackup }) => {
   );
 };
 
-export default BackupSheetFirstStep;
+export default BackupSheetSection;

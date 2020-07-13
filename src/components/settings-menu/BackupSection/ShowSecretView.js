@@ -10,17 +10,16 @@ import {
 } from '../../../model/wallet';
 import { colors, position } from '../../../styles';
 import { ButtonPressAnimation } from '../../animations';
-import { FloatingEmojis } from '../../floating-emojis';
+import { CopyFloatingEmojis } from '../../floating-emojis';
 import { Icon } from '../../icons';
 import { Centered, Column, Row, RowWithMargins } from '../../layout';
 import { SheetButton } from '../../sheet';
 import { Text } from '../../text';
+import { SecretDisplayItem } from '../../secret-display';
 
-const PrivateKeyText = styled(Text).attrs({
+const PrivateKeyText = styled(SecretDisplayItem).attrs({
   align: 'center',
   color: 'dark',
-  lineHeight: 'looser',
-  size: 'lmedium',
   weight: 'semibold',
 })`
   padding-horizontal: 30;
@@ -65,31 +64,7 @@ const ShowSecretView = () => {
     wordSectionHeight = (seed && (seed.split(' ').length || 12) / 2) * 39 + 10;
     const words = seed.split(' ');
     columns = [words.slice(0, words.length / 2), words.slice(words.length / 2)];
-    secretLayout = columns.map((wordColumn, colIndex) => (
-      <Column key={`col_${colIndex}`} marginLeft={19} marginRight={30}>
-        {wordColumn.map((word, index) => (
-          <RowWithMargins marginBottom={9} key={`word_${index}`}>
-            <Text
-              align="left"
-              color="appleBlue"
-              lineHeight="looser"
-              size="lmedium"
-            >
-              {index + 1 + colIndex * wordColumn.length} &nbsp;
-              <Text
-                align="left"
-                color="blueGreyDark"
-                lineHeight="looser"
-                size="lmedium"
-                weight="bold"
-              >
-                {word}
-              </Text>
-            </Text>
-          </RowWithMargins>
-        ))}
-      </Column>
-    ));
+    secretLayout = ;
   } else if (type === WalletTypes.privateKey) {
     wordSectionHeight = 150;
     secretLayout = <PrivateKeyText>{seed}</PrivateKeyText>;
@@ -99,48 +74,30 @@ const ShowSecretView = () => {
     <Centered direction="column" paddingTop={90} paddingBottom={15}>
       <Row>
         {secretLayout && (
-          <FloatingEmojis
-            distance={250}
-            duration={500}
-            fadeOut={false}
-            scaleTo={0}
-            size={50}
-            wiggleFactor={0}
-          >
-            {({ onNewEmoji }) => (
-              <ButtonPressAnimation
-                scaleTo={0.88}
-                onPress={() => {
-                  onNewEmoji();
-                  setClipboard(seed);
-                }}
+          <CopyFloatingEmojis scaleTo={0.88} textToCopy={seed}>
+            <RowWithMargins
+              align="center"
+              height={34}
+              justify="start"
+              margin={6}
+              paddingBottom={2}
+            >
+              <Icon
+                color={colors.appleBlue}
+                marginTop={0.5}
+                name="copy"
+                style={position.sizeAsObject(16)}
+              />
+              <Text
+                color="appleBlue"
+                letterSpacing="roundedMedium"
+                size="lmedium"
+                weight="bold"
               >
-                <RowWithMargins
-                  align="center"
-                  backgroundColor={colors.transparent}
-                  height={34}
-                  justify="flex-start"
-                  margin={6}
-                  paddingBottom={2}
-                >
-                  <Icon
-                    color={colors.appleBlue}
-                    marginTop={0.5}
-                    name="copy"
-                    style={position.sizeAsObject(16)}
-                  />
-                  <Text
-                    color="appleBlue"
-                    letterSpacing="roundedMedium"
-                    size="lmedium"
-                    weight="bold"
-                  >
-                    Copy to clipboard
-                  </Text>
-                </RowWithMargins>
-              </ButtonPressAnimation>
-            )}
-          </FloatingEmojis>
+                Copy to clipboard
+              </Text>
+            </RowWithMargins>
+          </CopyFloatingEmojis>
         )}
       </Row>
       <Row>
@@ -154,7 +111,22 @@ const ShowSecretView = () => {
             ]}
             width={deviceWidth - 138}
           >
-            <Row marginVertical={19}>{secretLayout}</Row>
+            <Row marginVertical={19}>
+              {columns.map((wordColumn, colIndex) => (
+                <Column key={`col_${colIndex}`} marginLeft={19} marginRight={30}>
+                  {wordColumn.map((word, index) => {
+                    const number = index + 1 + colIndex * wordColumn.length;
+                    return (
+                      <SecretDisplayItem
+                        key={number}
+                        number={number}
+                        word={word}
+                      />
+                    );
+                  })}
+                </Column>
+              ))}
+              </Row>
           </Shadow>
         )}
         {error && (
