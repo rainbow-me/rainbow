@@ -152,10 +152,6 @@ export const setWalletBackedUp = (
   await saveUserBackupState(BackupStateTypes.done);
 };
 
-export const deleteCloudBackup = wallet_id => async () => {
-  throw new Error('I still need to code it!', wallet_id);
-};
-
 export const addressSetSelected = address => () => saveAddress(address);
 
 export const createAccountForWallet = (id, color, name) => async (

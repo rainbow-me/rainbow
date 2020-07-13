@@ -168,12 +168,6 @@ const SettingsModal = () => {
     [params?.wallet_id, wallets]
   );
 
-  // useEffect(() => {
-  //   if (params?.replaceRoute) {
-  //     replace(route);
-  //   }
-  // }, [params?.replaceRoute]);
-
   const onPressSection = useCallback(
     section => () => {
       const route = getRealRoute(section.key);

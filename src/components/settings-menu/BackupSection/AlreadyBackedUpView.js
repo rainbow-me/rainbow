@@ -164,9 +164,6 @@ const AlreadyBackedUpView = () => {
           wallet_id,
         });
       }
-      // No deletion for now
-      // } else {
-      //   await dispatch(deleteCloudBackup(wallet_id));
     }
   }, [walletStatus, latestBackup, wallet_id, wallets, dispatch]);
   return (
