@@ -11,11 +11,11 @@ import { Centered } from '../layout';
 import { colors, fonts, position } from '@rainbow-me/styles';
 
 const fallbackTextStyles = {
-  align: 'center',
   fontFamily: fonts.family.SFProRounded,
   fontWeight: fonts.weight.bold,
   letterSpacing: fonts.letterSpacing.roundedTight,
-  marginBottom: 1,
+  marginBottom: 0.5,
+  textAlign: 'center',
 };
 
 const FallbackImage = styled(ImageWithCachedMetadata)`
