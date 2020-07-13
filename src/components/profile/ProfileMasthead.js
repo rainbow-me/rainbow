@@ -57,7 +57,6 @@ const ProfileMastheadDivider = styled(Divider).attrs({
 `;
 
 export default function ProfileMasthead({
-  accountAddress,
   addCashAvailable,
   recyclerListRef,
   showBottomDivider = true,
@@ -66,7 +65,12 @@ export default function ProfileMasthead({
 
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
-  const { accountColor, accountSymbol, accountName } = useAccountProfile();
+  const {
+    accountAddress,
+    accountColor,
+    accountSymbol,
+    accountName,
+  } = useAccountProfile();
 
   const handlePressAvatar = useCallback(() => {
     if (!isAvatarPickerAvailable) return;

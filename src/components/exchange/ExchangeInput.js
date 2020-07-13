@@ -114,5 +114,6 @@ export default magicMemo(React.forwardRef(ExchangeInput), [
   'editable',
   'placeholder',
   'placeholderTextColor',
+  'onChangeText',
   'value',
 ]);

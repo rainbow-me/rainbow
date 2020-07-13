@@ -9,7 +9,7 @@ import {
 const { floor, divide, multiply } = Animated;
 
 export default function useTransformOrigin(transformOrigin, onLayoutProp) {
-  const [height, width] = useValues([0, 0], []);
+  const [height, width] = useValues(0, 0);
 
   const onLayout = useCallback(
     event => {

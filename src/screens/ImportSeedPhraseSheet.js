@@ -31,6 +31,7 @@ import {
   usePrevious,
   useTimeout,
 } from '../hooks';
+import { getWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/effects';
 import Routes from '@rainbow-me/routes';
@@ -175,6 +176,16 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
         const ens = await web3Provider.lookupAddress(input);
         if (ens && ens !== input) {
           name = ens;
+        }
+      } else {
+        try {
+          const { wallet } = getWallet(input);
+          const ens = await web3Provider.lookupAddress(wallet?.address);
+          if (ens && ens !== input) {
+            name = ens;
+          }
+        } catch (error) {
+          logger.log('Error looking up ENS for imported HD type wallet', error);
         }
       }
 

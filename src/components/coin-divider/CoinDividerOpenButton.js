@@ -2,10 +2,11 @@ import React from 'react';
 import { View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { SpringUtils } from 'react-native-reanimated';
-import { bin, useSpringTransition } from 'react-native-redash';
+import { bin } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { magicMemo } from '../../utils';
+import { useSpringTransition } from '../../utils/transitions';
 import {
   ButtonPressAnimation,
   OpacityToggler,

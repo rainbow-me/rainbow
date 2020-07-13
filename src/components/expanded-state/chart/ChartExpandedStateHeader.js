@@ -1,9 +1,14 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components/primitives';
+import useExperimentalFlag, {
+  RED_GREEN_PRICE_CHANGE,
+} from '../../../config/experimentalHooks';
 import EditOptions from '../../../helpers/editOptionTypes';
 import {
   convertAmountToNativeDisplay,
+  greaterThan,
+  isEqual,
   toFixedDecimals,
 } from '../../../helpers/utilities';
 import { useAccountSettings, useCoinListEditOptions } from '../../../hooks';
@@ -23,13 +28,6 @@ const Container = styled(ColumnWithMargins).attrs({
   ${padding(0, 19, 24)};
 `;
 
-const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
-  color,
-  letterSpacing: 'roundedTight',
-  size: 'big',
-  weight: 'bold',
-}))``;
-
 const Subtitle = styled(TruncatedText).attrs(
   ({ color = colors.alpha(colors.blueGreyDark, 0.8) }) => ({
     color,
@@ -39,12 +37,18 @@ const Subtitle = styled(TruncatedText).attrs(
   })
 )``;
 
+const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
+  color,
+  letterSpacing: 'roundedTight',
+  size: 'big',
+  weight: 'bold',
+}))``;
+
 const ChartExpandedStateHeader = ({
   address,
   change,
   chartPrice,
   color = colors.dark,
-  isPositiveChange,
   latestPrice = noPriceData,
   name,
   shadowColor,
@@ -111,6 +115,21 @@ const ChartExpandedStateHeader = ({
 
   const isNoPriceData = formattedPrice === noPriceData;
 
+  const { isNoChange, isPositiveChange } = useMemo(
+    () => ({
+      isNoChange: isEqual(change, 0),
+      isPositiveChange: greaterThan(change, 0),
+    }),
+    [change]
+  );
+
+  const redGreenPriceChange = useExperimentalFlag(RED_GREEN_PRICE_CHANGE);
+  const redGreenColor = isPositiveChange
+    ? colors.green
+    : isNoChange
+    ? colors.alpha(colors.blueGreyDark, 0.8)
+    : colors.red;
+
   return (
     <Container>
       <Row align="center" justify="space-between">
@@ -123,24 +142,30 @@ const ChartExpandedStateHeader = ({
         />
       </Row>
       <Row align="center" justify="space-between">
-        <ColumnWithMargins align="start" flex={1} margin={2}>
+        <ColumnWithMargins align="start" flex={1} margin={1}>
           <Title>{isNoPriceData ? name : formattedPrice}</Title>
           <Subtitle>{isNoPriceData ? formattedPrice : name}</Subtitle>
         </ColumnWithMargins>
         {!isNoPriceData && (
-          <ColumnWithMargins align="end" margin={2}>
+          <ColumnWithMargins align="end" margin={1}>
             <RowWithMargins align="center" margin={4}>
               <Icon
-                color={color}
+                color={redGreenPriceChange ? redGreenColor : color}
                 direction={isPositiveChange ? 'left' : 'right'}
                 name="fatArrow"
                 width={15}
               />
-              <Title align="right" color={color}>
+              <Title
+                align="right"
+                color={redGreenPriceChange ? redGreenColor : color}
+              >
                 {formattedChange}
               </Title>
             </RowWithMargins>
-            <Subtitle align="right" color={color}>
+            <Subtitle
+              align="right"
+              color={redGreenPriceChange ? redGreenColor : color}
+            >
               Today
             </Subtitle>
           </ColumnWithMargins>

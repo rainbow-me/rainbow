@@ -32,6 +32,62 @@ export function onNavigationStateChange(currentState) {
         wasCustomSlackOpen ? 'dark-content' : 'light-content'
       );
     }
+  } else {
+    if (
+      prevRouteName !== Routes.CHANGE_WALLET_SHEET &&
+      routeName === Routes.CHANGE_WALLET_SHEET
+    ) {
+      StatusBar.setBarStyle('light-content', true);
+    }
+
+    if (
+      prevRouteName === Routes.CHANGE_WALLET_SHEET &&
+      routeName !== Routes.CHANGE_WALLET_SHEET
+    ) {
+      StatusBar.setBarStyle('dark-content', true);
+    }
+
+    if (
+      prevRouteName !== Routes.RECEIVE_MODAL &&
+      routeName === Routes.RECEIVE_MODAL
+    ) {
+      StatusBar.setBarStyle('light-content', true);
+    }
+
+    if (
+      prevRouteName === Routes.RECEIVE_MODAL &&
+      routeName !== Routes.RECEIVE_MODAL
+    ) {
+      StatusBar.setBarStyle('dark-content', true);
+    }
+
+    if (
+      prevRouteName !== Routes.SAVINGS_SHEET &&
+      routeName === Routes.SAVINGS_SHEET
+    ) {
+      StatusBar.setBarStyle('light-content', true);
+    }
+
+    if (
+      prevRouteName === Routes.SAVINGS_SHEET &&
+      routeName !== Routes.SAVINGS_SHEET
+    ) {
+      StatusBar.setBarStyle('dark-content', true);
+    }
+
+    if (
+      prevRouteName !== Routes.MODAL_SCREEN &&
+      routeName === Routes.MODAL_SCREEN
+    ) {
+      StatusBar.setBarStyle('light-content', true);
+    }
+
+    if (
+      prevRouteName === Routes.MODAL_SCREEN &&
+      routeName !== Routes.MODAL_SCREEN
+    ) {
+      StatusBar.setBarStyle('dark-content', true);
+    }
   }
 
   if (
