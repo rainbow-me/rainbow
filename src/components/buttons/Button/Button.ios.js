@@ -62,8 +62,8 @@ const Button = ({
     {...pick(props, Object.keys(ButtonPressAnimation.propTypes))}
     backgroundColor={backgroundColor}
     disabled={disabled}
-    style={[props.style, { borderRadius: type === 'rounded' ? 14 : 50 }]}
     onPress={onPress}
+    style={[props.style, { borderRadius: type === 'rounded' ? 14 : 50 }]}
   >
     <Container
       {...props}

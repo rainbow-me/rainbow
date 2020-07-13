@@ -305,6 +305,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
               Platform.OS === 'android' ? 'visible-password' : 'default'
             }
             lineHeight="looser"
+            marginBottom={Platform.OS === 'android' ? 55 : 0}
             multiline
             numberOfLines={3}
             onChangeText={handleSetSeedPhrase}
@@ -321,7 +322,6 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             value={seedPhrase}
             weight="semibold"
             width="100%"
-            marginBottom={Platform.OS === 'android' ? 55 : 0}
           />
         </Centered>
         <Row

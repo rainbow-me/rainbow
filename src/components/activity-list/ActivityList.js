@@ -22,10 +22,10 @@ const ActivityList = ({
       accountColor={accountColor}
       accountName={accountName}
       addCashAvailable={addCashAvailable}
-      navigation={navigation}
-      isEmpty={isEmpty}
       header={header}
+      isEmpty={isEmpty}
       isLoading={isLoading}
+      navigation={navigation}
       sections={sections}
     />
   ) : (

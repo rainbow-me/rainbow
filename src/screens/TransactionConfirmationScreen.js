@@ -334,8 +334,8 @@ const TransactionConfirmationScreen = () => {
       return (
         <MessageSigningSection
           message={request}
-          sendButton={renderSendButton()}
           method={method}
+          sendButton={renderSendButton()}
         />
       );
     }

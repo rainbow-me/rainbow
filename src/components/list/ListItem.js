@@ -64,8 +64,8 @@ const ListItem = enhance(
       >
         <RowWithMargins
           align="center"
-          justify={justify}
           flex={1}
+          justify={justify}
           margin={iconMargin}
         >
           {icon && <Centered>{renderIcon(icon)}</Centered>}

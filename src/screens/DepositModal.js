@@ -15,8 +15,8 @@ const DepositModal = ({ navigation, ...props }) => {
   return (
     <ExchangeModal
       createRap={createSwapAndDepositCompoundRap}
-      estimateRap={estimateSwapAndDepositCompound}
       defaultInputAsset={defaultInputAsset}
+      estimateRap={estimateSwapAndDepositCompound}
       inputHeaderTitle="Deposit"
       navigation={navigation}
       showOutputField={false}

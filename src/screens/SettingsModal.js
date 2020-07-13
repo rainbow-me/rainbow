@@ -157,10 +157,10 @@ const SettingsModal = () => {
                 onCloseModal={onCloseModal}
                 onPressBackup={onPressSection(SettingsPages.backup)}
                 onPressCurrency={onPressSection(SettingsPages.currency)}
+                onPressDev={onPressSection(SettingsPages.dev)}
                 onPressHiddenFeature={requestFaceIDPermission}
                 onPressLanguage={onPressSection(SettingsPages.language)}
                 onPressNetwork={onPressSection(SettingsPages.network)}
-                onPressDev={onPressSection(SettingsPages.dev)}
               />
             )}
           </Stack.Screen>
@@ -168,12 +168,12 @@ const SettingsModal = () => {
             ({ component, title, key }) =>
               component && (
                 <Stack.Screen
-                  name={key}
-                  title={title}
                   component={component}
+                  name={key}
                   options={{
                     cardStyleInterpolator,
                   }}
+                  title={title}
                 />
               )
           )}

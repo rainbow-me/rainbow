@@ -49,15 +49,6 @@ const SavingsListRowAnimatedNumber = ({
 
   return (
     <TextComponent
-      formatter={formatter}
-      initialValue={Number(initialValue)}
-      steps={steps}
-      style={[
-        sx.text,
-        Platform.OS === 'android' ? sx.animatedNumberAndroid : null,
-      ]}
-      time={interval}
-      value={Number(value)}
       animationConfig={{
         color: '#2CCC00', // HEX
         decimals: 10,
@@ -68,6 +59,15 @@ const SavingsListRowAnimatedNumber = ({
         stepPerDay: Number(value) - Number(initialValue),
         symbol,
       }}
+      formatter={formatter}
+      initialValue={Number(initialValue)}
+      steps={steps}
+      style={[
+        sx.text,
+        Platform.OS === 'android' ? sx.animatedNumberAndroid : null,
+      ]}
+      time={interval}
+      value={Number(value)}
     />
   );
 };

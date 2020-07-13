@@ -129,10 +129,10 @@ const AddCashPending = ({ currency }) => (
         <LottieView
           autoPlay
           loop
-          style={{ height: 263 }}
           source={
             currency === 'eth' ? jumpingEthAnimation : jumpingDaiAnimation
           }
+          style={{ height: 263 }}
         />
       </Centered>
       <StatusMessageText>

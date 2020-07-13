@@ -124,8 +124,8 @@ const SettingsSection = ({
         {!isReadOnlyWallet && (
           <ListItem
             icon={<SettingIcon source={BackupIcon} />}
-            onPress={onPressBackup}
             label="Backup"
+            onPress={onPressBackup}
           >
             <ListItemArrowGroup>
               {/*
@@ -146,8 +146,8 @@ const SettingsSection = ({
         )}
         <ListItem
           icon={<SettingIcon source={NetworkIcon} />}
-          onPress={onPressNetwork}
           label="Network"
+          onPress={onPressNetwork}
         >
           <ListItemArrowGroup>
             {get(networkInfo, `[${network}].name`)}
@@ -155,15 +155,15 @@ const SettingsSection = ({
         </ListItem>
         <ListItem
           icon={<SettingIcon source={CurrencyIcon} />}
-          onPress={onPressCurrency}
           label="Currency"
+          onPress={onPressCurrency}
         >
           <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
         </ListItem>
         <ListItem
           icon={<SettingIcon source={LanguageIcon} />}
-          onPress={onPressLanguage}
           label="Language"
+          onPress={onPressLanguage}
         >
           <ListItemArrowGroup>
             {supportedLanguages[language] || ''}
@@ -201,9 +201,9 @@ const SettingsSection = ({
       </ColumnWithDividers>
       {__DEV__ && (
         <ListItem
-          onPress={onPressDev}
           justify="center"
           label="🐙 Developer settings 🐙"
+          onPress={onPressDev}
         />
       )}
       <Column align="center" flex={1} justify="end" paddingBottom={19}>

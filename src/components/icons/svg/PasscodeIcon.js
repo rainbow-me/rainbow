@@ -19,7 +19,7 @@ const PasscodeIcon = ({ color, size, ...props }) => (
         <Stop offset="100%" stopColor={color} stopOpacity=".64" />
       </LinearGradient>
     </Defs>
-    <G fill-rule="nonzero" fill="none">
+    <G fill="none" fill-rule="nonzero">
       <Path
         d="M8.998 0c3.494 0 6.818 2.404 6.818 7.396v4.195c.98.096-3.564.11-13.636.04V7.395C2.18 2.404 5.504 0 8.998 0zm0 2.418c-2.351 0-4.296 1.681-4.296 4.742v3.36l8.592-.014V7.16c0-3.06-1.958-4.742-4.296-4.742z"
         fill="url(#gradient)"
