@@ -70,8 +70,8 @@ export default function ContextMenu({
             ? cancelButtonIndex
             : options.length - 1
         }
-        options={dynamicOptions ? dynamicOptions() : options}
         onPress={handlePressActionSheet}
+        options={dynamicOptions ? dynamicOptions() : options}
         ref={actionsheetRef}
       />
     </Fragment>

@@ -95,8 +95,8 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
             <Icon
               color={colors.white}
               flex={1}
-              name="applePay"
               marginBottom={2}
+              name="applePay"
             />
           </Centered>
           <InnerBorder radius={ApplePayButtonBorderRadius} />

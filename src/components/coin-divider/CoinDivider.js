@@ -87,7 +87,7 @@ export default function CoinDivider({
   }, [isCoinListEdited, onEndEdit, setIsCoinListEdited]);
 
   return (
-    <Container isSticky={isSticky} deviceWidth={deviceWidth}>
+    <Container deviceWidth={deviceWidth} isSticky={isSticky}>
       <Row>
         <View
           pointerEvents={

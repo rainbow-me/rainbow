@@ -65,8 +65,8 @@ class AvatarBuilder extends PureComponent {
   avatarColors = colors.avatarColor.map((color, index) => (
     <ColorCircle
       backgroundColor={color}
-      key={color}
       isSelected={index - 4 === 0}
+      key={color}
       onPressColor={() => {
         let destination = (index - 4) * 39;
         spring(this.springAnim, {
@@ -105,11 +105,11 @@ class AvatarBuilder extends PureComponent {
           top={AvatarBuilderTopPoint}
         >
           <Row
+            height={38 + colorCircleTopPadding + colorCircleBottomPadding}
             justify="center"
             maxWidth={375}
-            height={38 + colorCircleTopPadding + colorCircleBottomPadding}
-            paddingTop={colorCircleTopPadding + 7}
             paddingBottom={colorCircleBottomPadding + 7}
+            paddingTop={colorCircleTopPadding + 7}
             width="100%"
           >
             <Animated.View
@@ -118,11 +118,11 @@ class AvatarBuilder extends PureComponent {
               borderRadius={19}
               borderWidth={3}
               height={38}
-              top={colorCircleTopPadding}
               position="absolute"
               style={{
                 transform: [{ translateX: this.springAnim }],
               }}
+              top={colorCircleTopPadding}
               width={38}
             />
             {this.avatarColors}

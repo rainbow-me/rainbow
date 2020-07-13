@@ -18,10 +18,10 @@ const ColorCircle = ({ backgroundColor, isSelected, onPressColor }) => (
       width={39}
     >
       <View
+        alignSelf="center"
         backgroundColor={backgroundColor}
         borderRadius={15}
         height={24}
-        alignSelf="center"
         isSelected={isSelected}
         shadowColor={colors.black}
         shadowOffset={{ height: 4, width: 0 }}

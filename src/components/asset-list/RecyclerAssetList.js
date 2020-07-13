@@ -795,8 +795,8 @@ class RecyclerAssetList extends Component {
       <View
         backgroundColor={colors.white}
         flex={1}
-        overflow="hidden"
         onLayout={this.handleOnLayout}
+        overflow="hidden"
       >
         <StickyContainer
           overrideRowRenderer={this.stickyRowRenderer}

@@ -106,10 +106,10 @@ const QRScannerScreen = ({
         )}
         <Header justify="space-between" position="absolute" top={0}>
           <BackButton
-            testID="goToBalancesFromScanner"
             color={colors.white}
             direction="left"
             onPress={onPressBackButton}
+            testID="goToBalancesFromScanner"
           />
           {isEmulator && (
             <Button

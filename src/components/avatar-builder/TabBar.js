@@ -28,22 +28,22 @@ const TabBar = ({ categoryKeys, activeCategory, onPress }) => {
           {category === activeCategory && (
             <LinearGradient
               borderRadius={15}
-              overflow="hidden"
               colors={['#FFB114', '#FF54BB', '#00F0FF']}
               end={{ x: 0, y: 0.5 }}
+              opacity={0.1}
+              overflow="hidden"
               pointerEvents="none"
               start={{ x: 1, y: 0.5 }}
-              opacity={0.1}
               style={position.coverAsObject}
             />
           )}
           <Icon
-            name={category.icon}
             color={
               category === activeCategory
                 ? null
                 : colors.alpha(colors.blueGreyDark, 0.4)
             }
+            name={category.icon}
           />
         </ButtonPressAnimation>
       );

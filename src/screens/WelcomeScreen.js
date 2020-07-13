@@ -442,7 +442,7 @@ export default function WelcomeScreen() {
   return (
     <Container>
       {traversedRainbows.map(({ source, style, id }) => (
-        <RainbowImage source={source} style={style} key={`rainbow${id}`} />
+        <RainbowImage key={`rainbow${id}`} source={source} style={style} />
       ))}
 
       <ContentWrapper style={contentStyle}>

@@ -21,12 +21,12 @@ const DevSection = () => {
     <ScrollView>
       <ListItem label="💥 Clear async storage" onPress={AsyncStorage.clear} />
       <ListItem
+        label="🔄 Restart app"
         onPress={() => {
           // we cannot do import in prod
           const RNRestart = require('react-native-restart');
           RNRestart && RNRestart.default.Restart();
         }}
-        label="🔄 Restart app"
       />
       <ListItem
         label="🤷 Restore default experimental config"
@@ -40,10 +40,10 @@ const DevSection = () => {
 
       {Object.keys(config).map(key => (
         <RadioListItem
-          label={key}
           key={key}
-          selected={!!config[key]}
+          label={key}
           onPress={() => onNetworkChange(key)}
+          selected={!!config[key]}
         />
       ))}
     </ScrollView>

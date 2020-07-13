@@ -87,7 +87,7 @@ const TokenFamilyHeader = ({
       <Content isCoinRow={isCoinRow}>
         <RowWithMargins align="center" margin={emoji ? 5 : 9}>
           {emoji ? (
-            <Emoji size="lmedium" name={emoji} />
+            <Emoji name={emoji} size="lmedium" />
           ) : (
             <TokenFamilyHeaderIcon
               familyImage={familyImage}

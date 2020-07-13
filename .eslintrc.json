@@ -23,6 +23,9 @@
     }],
     "sort-keys": ["error", "asc", { "caseSensitive": false, "natural": false }],
     "jest/no-truthy-falsy": 0,
+    "react/jsx-sort-props": ["error", {
+      "ignoreCase": false
+    }],
     "react-native/no-inline-styles": 0,
     "import/named": 0,
     "import/no-named-as-default": 0,
