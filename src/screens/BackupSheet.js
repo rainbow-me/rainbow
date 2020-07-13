@@ -77,9 +77,8 @@ const BackupSheet = ({ setAppearListener }) => {
         </LoadingOverlayWrapper>,
         false
       );
-    } else {
-      hide();
     }
+    return hide;
   }, [hide, isWalletLoading, setComponent]);
 
   const onIcloudBackup = useCallback(async () => {
@@ -198,8 +197,8 @@ const BackupSheet = ({ setAppearListener }) => {
       case 'existing_user':
         return (
           <BackupExistingUser
-            onBackupNow={onBackupNow}
             onAlreadyBackedUp={onAlreadyBackedUp}
+            onBackupNow={onBackupNow}
           />
         );
       case 'imported':

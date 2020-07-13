@@ -95,9 +95,8 @@ const AlreadyBackedUpView = () => {
         </LoadingOverlayWrapper>,
         false
       );
-    } else {
-      hide();
     }
+    return hide;
   }, [hide, isWalletLoading, setComponent]);
 
   const onViewRecoveryPhrase = useCallback(() => {
