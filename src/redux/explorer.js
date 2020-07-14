@@ -230,7 +230,7 @@ const listenOnAddressMessages = socket => dispatch => {
       dispatch(savingsIncrementNumberOfJustFinishedDepositsOrWithdrawals());
       setTimeout(() => {
         dispatch(savingsDecrementNumberOfJustFinishedDepositsOrWithdrawals());
-      }, 3000);
+      }, 60000);
     }
     dispatch(transactionsReceived(message, true));
   });

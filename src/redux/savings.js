@@ -86,7 +86,7 @@ export const savingsIncrementNumberOfJustFinishedDepositsOrWithdrawals = () => (
     savingsQuery,
   } = getState().savings;
   if (numberOfJustFinishedDepositsOrWithdrawals === 0) {
-    savingsQuery.setOptions({ pollInterval: 2000 });
+    savingsQuery.setOptions({ pollInterval: 10000 });
   }
   dispatch({
     payload: {
