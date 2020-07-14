@@ -14,7 +14,7 @@ const Title = styled(Text).attrs({
   size: 'big',
   weight: 'bold',
 })`
-  margin-bottom: 11;
+  margin-bottom: 12;
 `;
 
 const TopIcon = styled(FastImage).attrs({
@@ -38,6 +38,7 @@ const DescriptionText = styled(Text).attrs({
 `;
 
 const BackupSheetSection = ({
+  titleText,
   descriptionText,
   onPrimaryAction,
   onSecondaryAction,
@@ -45,9 +46,9 @@ const BackupSheetSection = ({
   secondaryLabel,
 }) => {
   return (
-    <Centered direction="column">
+    <Centered direction="column" paddingBottom={15}>
       <TopIcon />
-      <Title>Back up your wallets</Title>
+      <Title>{titleText}</Title>
       <DescriptionText>{descriptionText}</DescriptionText>
       <Divider color={colors.rowDividerLight} inset={[0, 42]} />
       <ColumnWithMargins css={padding(19, 15, 0)} margin={19} width="100%">

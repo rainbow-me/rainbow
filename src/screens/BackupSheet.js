@@ -196,26 +196,23 @@ const BackupSheet = ({ setAppearListener }) => {
       case 'existing_user':
         return (
           <BackupSheetSection
-            descriptionText={`
-              Don't risk your money! Back up your wallet in case you lose this
-              device.
-            `}
+            descriptionText={`Don't risk your money! Back up your wallet in case you lose this device.`}
             onPrimaryAction={onBackupNow}
             onSecondaryAction={onAlreadyBackedUp}
             primaryLabel="Back up now"
             secondaryLabel="􀁣 Already backed up"
+            titleText="Back up your wallets"
           />
         );
       case 'imported':
         return (
           <BackupSheetSection
-            descriptionText={`
-              Don't lose your wallet! Save an encrypted copy to iCloud.
-            `}
+            descriptionText={`Don't lose your wallet! Save an encrypted copy to iCloud.`}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={onIgnoreBackup}
             primaryLabel="􀙶 Back up to iCloud"
             secondaryLabel="No thanks"
+            titleText="Would you like to back up?"
           />
         );
       case WalletBackupTypes.cloud:
@@ -229,13 +226,12 @@ const BackupSheet = ({ setAppearListener }) => {
       default:
         return (
           <BackupSheetSection
-            descriptionText={`
-              Don't lose your wallet! Save an encrypted copy to iCloud.
-            `}
+            descriptionText={`Don't lose your wallet! Save an encrypted copy to iCloud.`}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={onManualBackup}
             primaryLabel="􀙶 Back up to iCloud"
             secondaryLabel="🤓 Back up manually"
+            titleText="Back up your wallet"
           />
         );
     }

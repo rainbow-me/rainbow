@@ -22,7 +22,7 @@ const CopyFloatingEmojis = ({ children, onPress, textToCopy, ...props }) => {
           hapticType="impactLight"
           onPress={() => {
             onNewEmoji();
-            onPress(textToCopy);
+            onPress && onPress(textToCopy);
             setClipboard(textToCopy);
           }}
         >

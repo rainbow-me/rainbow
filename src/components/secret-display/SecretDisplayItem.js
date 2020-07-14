@@ -1,23 +1,9 @@
-import { useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
-import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
+import React from 'react';
 import styled from 'styled-components';
-import WalletTypes from '../../helpers/walletTypes';
-import { useClipboard, useDimensions, useWallets } from '../../hooks';
-import {
-  identifyWalletType,
-  loadSeedPhraseAndMigrateIfNeeded,
-} from '../../model/wallet';
-import { colors, position } from '../../styles';
-import { ButtonPressAnimation } from '../animations';
-import { CopyFloatingEmojis } from '../floating-emojis';
-import { Icon } from '../icons';
-import { Centered, Column, Row, RowWithMargins } from '../layout';
-import { SheetButton } from '../sheet';
+import { RowWithMargins } from '../layout';
 import { Nbsp, Text } from '../text';
 
 const SecretDisplayItemText = styled(Text).attrs({
-
   lineHeight: 'looser',
   size: 'lmedium',
 })``;
@@ -25,15 +11,15 @@ const SecretDisplayItemText = styled(Text).attrs({
 export default function SecretDisplayItem({
   align = 'left',
   number,
-  word,
+  children,
 }) {
   return (
     <RowWithMargins marginBottom={9}>
       <SecretDisplayItemText align={align} color="appleBlue">
         {number}
-        <Nbsp />
+        {number && <Nbsp />}
         <SecretDisplayItemText align={align} color="blueGreyDark" weight="bold">
-          {word}
+          {children}
         </SecretDisplayItemText>
       </SecretDisplayItemText>
     </RowWithMargins>
