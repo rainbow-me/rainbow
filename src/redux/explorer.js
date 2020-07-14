@@ -222,11 +222,17 @@ const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_TRANSACTIONS.CHANGED, message => {
     logger.log('txns changed', get(message, 'payload.transactions', []));
 
-    const transaction = get(message, 'payload.transactions[0]');
-    if (
-      (transaction?.type === 'deposit' || transaction?.type === 'withdraw') &&
-      transaction?.status === 'confirmed'
-    ) {
+    const transactions = get(message, 'payload.transactions', []);
+    let isFoundConfirmed = false;
+    for (let transaction of transactions) {
+      if (
+        (transaction?.type === 'deposit' || transaction?.type === 'withdraw') &&
+        transaction?.status === 'confirmed'
+      ) {
+        isFoundConfirmed = true;
+      }
+    }
+    if (isFoundConfirmed) {
       dispatch(savingsIncrementNumberOfJustFinishedDepositsOrWithdrawals());
       setTimeout(() => {
         dispatch(savingsDecrementNumberOfJustFinishedDepositsOrWithdrawals());
