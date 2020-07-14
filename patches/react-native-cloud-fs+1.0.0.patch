@@ -1,5 +1,427 @@
+diff --git a/node_modules/react-native-cloud-fs/android/build/.transforms/719e681ffa50086260c994be554fac23.bin b/node_modules/react-native-cloud-fs/android/build/.transforms/719e681ffa50086260c994be554fac23.bin
+new file mode 100644
+index 0000000..849b2a6
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/.transforms/719e681ffa50086260c994be554fac23.bin
+@@ -0,0 +1 @@
++o/full
+diff --git a/node_modules/react-native-cloud-fs/android/build/.transforms/719e681ffa50086260c994be554fac23/full/classes.dex b/node_modules/react-native-cloud-fs/android/build/.transforms/719e681ffa50086260c994be554fac23/full/classes.dex
+new file mode 100644
+index 0000000..43d7027
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/.transforms/719e681ffa50086260c994be554fac23/full/classes.dex differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/.transforms/f392815bb0c41fdc2d6eb62ee80bdcf7.bin b/node_modules/react-native-cloud-fs/android/build/.transforms/f392815bb0c41fdc2d6eb62ee80bdcf7.bin
+new file mode 100644
+index 0000000..1ed65e0
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/.transforms/f392815bb0c41fdc2d6eb62ee80bdcf7.bin
+@@ -0,0 +1 @@
++i/
+diff --git a/node_modules/react-native-cloud-fs/android/build/generated/source/buildConfig/debug/org/rncloudfs/BuildConfig.java b/node_modules/react-native-cloud-fs/android/build/generated/source/buildConfig/debug/org/rncloudfs/BuildConfig.java
+new file mode 100644
+index 0000000..ceeeb3a
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/generated/source/buildConfig/debug/org/rncloudfs/BuildConfig.java
+@@ -0,0 +1,18 @@
++/**
++ * Automatically generated file. DO NOT MODIFY
++ */
++package org.rncloudfs;
++
++public final class BuildConfig {
++  public static final boolean DEBUG = Boolean.parseBoolean("true");
++  public static final String LIBRARY_PACKAGE_NAME = "org.rncloudfs";
++  /**
++   * @deprecated APPLICATION_ID is misleading in libraries. For the library package name use LIBRARY_PACKAGE_NAME
++   */
++  @Deprecated
++  public static final String APPLICATION_ID = "org.rncloudfs";
++  public static final String BUILD_TYPE = "debug";
++  public static final String FLAVOR = "";
++  public static final int VERSION_CODE = 1;
++  public static final String VERSION_NAME = "1.0";
++}
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml b/node_modules/react-native-cloud-fs/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
+new file mode 100644
+index 0000000..952c37b
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
+@@ -0,0 +1,11 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="org.rncloudfs"
++    android:versionCode="1"
++    android:versionName="1.0" >
++
++    <uses-sdk
++        android:minSdkVersion="16"
++        android:targetSdkVersion="22" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json b/node_modules/react-native-cloud-fs/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json
+new file mode 100644
+index 0000000..69a027b
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json
+@@ -0,0 +1 @@
++[{"outputType":{"type":"AAPT_FRIENDLY_MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"react-native-cloud-fs-debug.aar","fullName":"debug","baseName":"debug"},"path":"AndroidManifest.xml","properties":{"packageId":"org.rncloudfs","split":""}}]
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json b/node_modules/react-native-cloud-fs/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
+new file mode 100644
+index 0000000..9e26dfe
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
+@@ -0,0 +1 @@
++{}
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/compile_library_classes/debug/classes.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/compile_library_classes/debug/classes.jar
+new file mode 100644
+index 0000000..c4605be
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/compile_library_classes/debug/classes.jar differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar
+new file mode 100644
+index 0000000..be3b913
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/full_jar/debug/createFullJarDebug/full.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/full_jar/debug/createFullJarDebug/full.jar
+new file mode 100644
+index 0000000..c4605be
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/full_jar/debug/createFullJarDebug/full.jar differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state
+new file mode 100644
+index 0000000..ed4f4a8
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+new file mode 100644
+index 0000000..7598363
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/debug/jniLibs"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+new file mode 100644
+index 0000000..a0c31ab
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/debug/shaders"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugAssets/merger.xml b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+new file mode 100644
+index 0000000..81356dc
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/assets"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/build/intermediates/shader_assets/debug/compileDebugShaders/out"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/debug/assets"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
+new file mode 100644
+index 0000000..dfa3853
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
+@@ -0,0 +1 @@
++#Tue Jul 14 16:18:39 EDT 2020
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugResources/merger.xml b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugResources/merger.xml
+new file mode 100644
+index 0000000..ff5c3c4
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugResources/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/build/generated/res/rs/debug"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/build/generated/res/rs/debug"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/debug/res"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/BuildConfig.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/BuildConfig.class
+new file mode 100644
+index 0000000..af496a2
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/BuildConfig.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/CopyToGoogleDriveTask$1.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/CopyToGoogleDriveTask$1.class
+new file mode 100644
+index 0000000..7b5a83c
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/CopyToGoogleDriveTask$1.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/CopyToGoogleDriveTask.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/CopyToGoogleDriveTask.class
+new file mode 100644
+index 0000000..7dd345a
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/CopyToGoogleDriveTask.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/GoogleDriveApiClient$1.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/GoogleDriveApiClient$1.class
+new file mode 100644
+index 0000000..b414d5a
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/GoogleDriveApiClient$1.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/GoogleDriveApiClient$2.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/GoogleDriveApiClient$2.class
+new file mode 100644
+index 0000000..d21fd44
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/GoogleDriveApiClient$2.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/GoogleDriveApiClient$FileVisitor.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/GoogleDriveApiClient$FileVisitor.class
+new file mode 100644
+index 0000000..c904097
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/GoogleDriveApiClient$FileVisitor.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/GoogleDriveApiClient$NotFoundException.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/GoogleDriveApiClient$NotFoundException.class
+new file mode 100644
+index 0000000..b5d319c
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/GoogleDriveApiClient$NotFoundException.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/GoogleDriveApiClient.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/GoogleDriveApiClient.class
+new file mode 100644
+index 0000000..1f3ba33
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/GoogleDriveApiClient.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$1.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$1.class
+new file mode 100644
+index 0000000..f59bcbf
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$1.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$2.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$2.class
+new file mode 100644
+index 0000000..e3295ed
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$2.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$CreateFileTask$1$1.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$CreateFileTask$1$1.class
+new file mode 100644
+index 0000000..98b4bd0
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$CreateFileTask$1$1.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$CreateFileTask$1.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$CreateFileTask$1.class
+new file mode 100644
+index 0000000..3a00bae
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$CreateFileTask$1.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$CreateFileTask.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$CreateFileTask.class
+new file mode 100644
+index 0000000..35ad04e
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$CreateFileTask.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$ErrorDialogFragment.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$ErrorDialogFragment.class
+new file mode 100644
+index 0000000..fe42a9a
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$ErrorDialogFragment.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$FileExistsTask$1.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$FileExistsTask$1.class
+new file mode 100644
+index 0000000..f059190
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$FileExistsTask$1.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$FileExistsTask.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$FileExistsTask.class
+new file mode 100644
+index 0000000..d12d7c7
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$FileExistsTask.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$InputDataSource.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$InputDataSource.class
+new file mode 100644
+index 0000000..2ce5ad1
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$InputDataSource.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$ListFilesTask$1.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$ListFilesTask$1.class
+new file mode 100644
+index 0000000..256432e
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$ListFilesTask$1.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$ListFilesTask.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$ListFilesTask.class
+new file mode 100644
+index 0000000..caad47a
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$ListFilesTask.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$SourceUri.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$SourceUri.class
+new file mode 100644
+index 0000000..53336f9
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule$SourceUri.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule.class
+new file mode 100644
+index 0000000..dda2f3c
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsPackage.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsPackage.class
+new file mode 100644
+index 0000000..210c179
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsPackage.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/library_java_res/debug/res.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/library_java_res/debug/res.jar
+new file mode 100644
+index 0000000..15cb0ec
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/library_java_res/debug/res.jar differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/library_manifest/debug/AndroidManifest.xml b/node_modules/react-native-cloud-fs/android/build/intermediates/library_manifest/debug/AndroidManifest.xml
+new file mode 100644
+index 0000000..952c37b
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/library_manifest/debug/AndroidManifest.xml
+@@ -0,0 +1,11 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="org.rncloudfs"
++    android:versionCode="1"
++    android:versionName="1.0" >
++
++    <uses-sdk
++        android:minSdkVersion="16"
++        android:targetSdkVersion="22" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/local_only_symbol_list/debug/parseDebugLibraryResources/R-def.txt b/node_modules/react-native-cloud-fs/android/build/intermediates/local_only_symbol_list/debug/parseDebugLibraryResources/R-def.txt
+new file mode 100644
+index 0000000..78ac5b8
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/local_only_symbol_list/debug/parseDebugLibraryResources/R-def.txt
+@@ -0,0 +1,2 @@
++R_DEF: Internal format may change without notice
++local
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt b/node_modules/react-native-cloud-fs/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
+new file mode 100644
+index 0000000..676999c
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
+@@ -0,0 +1,13 @@
++1<?xml version="1.0" encoding="utf-8"?>
++2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++3    package="org.rncloudfs"
++4    android:versionCode="1"
++5    android:versionName="1.0" >
++6
++7    <uses-sdk
++8        android:minSdkVersion="16"
++8-->/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++9        android:targetSdkVersion="22" />
++9-->/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++10
++11</manifest>
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/merged_manifests/debug/output.json b/node_modules/react-native-cloud-fs/android/build/intermediates/merged_manifests/debug/output.json
+new file mode 100644
+index 0000000..c885c96
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/merged_manifests/debug/output.json
+@@ -0,0 +1 @@
++[{"outputType":{"type":"MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"react-native-cloud-fs-debug.aar","fullName":"debug","baseName":"debug"},"path":"../../library_manifest/debug/AndroidManifest.xml","properties":{"packageId":"org.rncloudfs","split":""}}]
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/res/symbol-table-with-package/debug/package-aware-r.txt b/node_modules/react-native-cloud-fs/android/build/intermediates/res/symbol-table-with-package/debug/package-aware-r.txt
+new file mode 100644
+index 0000000..498c804
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/res/symbol-table-with-package/debug/package-aware-r.txt
+@@ -0,0 +1 @@
++org.rncloudfs
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/runtime_library_classes/debug/classes.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/runtime_library_classes/debug/classes.jar
+new file mode 100644
+index 0000000..c4605be
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/runtime_library_classes/debug/classes.jar differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/symbols/debug/R.txt b/node_modules/react-native-cloud-fs/android/build/intermediates/symbols/debug/R.txt
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/react-native-cloud-fs/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/react-native-cloud-fs/android/build/outputs/logs/manifest-merger-debug-report.txt
+new file mode 100644
+index 0000000..099985b
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/outputs/logs/manifest-merger-debug-report.txt
+@@ -0,0 +1,37 @@
++-- Merging decision tree log ---
++manifest
++ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++	package
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:3:11-34
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++	android:versionName
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++	android:versionCode
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++	xmlns:android
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:11-69
++uses-sdk
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++	android:targetSdkVersion
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++	android:minSdkVersion
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/CopyToGoogleDriveTask.java b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/CopyToGoogleDriveTask.java
+index 81bb3e7..0f77968 100644
+--- a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/CopyToGoogleDriveTask.java
++++ b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/CopyToGoogleDriveTask.java
+@@ -2,7 +2,7 @@ package org.rncloudfs;
+ 
+ import android.os.AsyncTask;
+ import android.os.Bundle;
+-import android.support.annotation.Nullable;
++import androidx.annotation.Nullable;
+ import android.util.Log;
+ 
+ import com.facebook.react.bridge.Promise;
+diff --git a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/GoogleDriveApiClient.java b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/GoogleDriveApiClient.java
+index d917d3e..f78f8bd 100644
+--- a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/GoogleDriveApiClient.java
++++ b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/GoogleDriveApiClient.java
+@@ -2,8 +2,8 @@ package org.rncloudfs;
+ 
+ import android.content.Context;
+ import android.content.pm.ApplicationInfo;
+-import android.support.annotation.NonNull;
+-import android.support.annotation.Nullable;
++import androidx.annotation.NonNull;
++import androidx.annotation.Nullable;
+ import android.text.TextUtils;
+ import android.util.Log;
+ 
+diff --git a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsModule.java b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsModule.java
+index 18d26c3..c7872d6 100644
+--- a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsModule.java
++++ b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsModule.java
+@@ -9,8 +9,8 @@ import android.content.IntentSender;
+ import android.net.Uri;
+ import android.os.AsyncTask;
+ import android.os.Bundle;
+-import android.support.annotation.NonNull;
+-import android.support.annotation.Nullable;
++import androidx.annotation.NonNull;
++import androidx.annotation.Nullable;
+ import android.util.Log;
+ import android.webkit.MimeTypeMap;
+ 
+diff --git a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsPackage.java b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsPackage.java
+index 6ac68d4..05e49e4 100644
+--- a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsPackage.java
++++ b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsPackage.java
+@@ -1,28 +1,28 @@
+ package org.rncloudfs;
+ 
++import java.util.*;
++
+ import com.facebook.react.ReactPackage;
+-import com.facebook.react.bridge.JavaScriptModule;
+ import com.facebook.react.bridge.NativeModule;
++import com.facebook.react.bridge.JavaScriptModule;
+ import com.facebook.react.bridge.ReactApplicationContext;
+ import com.facebook.react.uimanager.ViewManager;
+ 
+-import java.util.Arrays;
+-import java.util.Collections;
+-import java.util.List;
+-
+ public class RNCloudFsPackage implements ReactPackage {
+     @Override
+     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+-      return Arrays.<NativeModule>asList(new RNCloudFsModule(reactContext));
++      List<NativeModule> modules = new ArrayList<>();
++      modules.add(new RNCloudFsModule(reactContext));
++      return modules;
+     }
+ 
+-    @Override
++    // deprecated >= RN 0.47.0
+     public List<Class<? extends JavaScriptModule>> createJSModules() {		
+-      return Collections.emptyList();
++        return Collections.emptyList();		
+     }
+ 
+     @Override
+     public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+-      return Collections.emptyList();
++      return Arrays.<ViewManager>asList();
+     }
+ }
 diff --git a/node_modules/react-native-cloud-fs/ios/RNCloudFs.m b/node_modules/react-native-cloud-fs/ios/RNCloudFs.m
-index f978a65..75aa4f8 100644
+index f978a65..066b712 100644
 --- a/node_modules/react-native-cloud-fs/ios/RNCloudFs.m
 +++ b/node_modules/react-native-cloud-fs/ios/RNCloudFs.m
 @@ -157,6 +157,22 @@ - (dispatch_queue_t)methodQueue
@@ -46,7 +468,7 @@ index f978a65..75aa4f8 100644
 -        NSString *name = [targetFile lastPathComponent];
  
          NSURL* uniqueFile = targetFile;
-         
+ 
 -        int count = 1;
 -        while([fileManager fileExistsAtPath:uniqueFile.path]) {
 -            NSString *uniqueName = [NSString stringWithFormat:@"%i.%@", count, name];
