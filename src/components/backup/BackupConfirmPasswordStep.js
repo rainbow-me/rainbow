@@ -191,8 +191,8 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
   );
 
   const onSubmit = useCallback(async () => {
-    let wallet_id =
-      params?.wallet_id ||
+    let walletId =
+      params?.walletId ||
       Object.keys(wallets).find(key => wallets[key].imported === false);
 
     try {
@@ -201,19 +201,19 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
       if (!latestBackup) {
         logger.log(
           'BackupConfirmPasswordStep:: backing up to icloud',
-          wallets[wallet_id]
+          wallets[walletId]
         );
 
-        backupFile = await backupWalletToCloud(password, wallets[wallet_id]);
+        backupFile = await backupWalletToCloud(password, wallets[walletId]);
       } else {
         logger.log(
           'BackupConfirmPasswordStep:: adding to icloud backup',
-          wallets[wallet_id],
+          wallets[walletId],
           latestBackup
         );
         backupFile = await addWalletToCloudBackup(
           password,
-          wallets[wallet_id],
+          wallets[walletId],
           latestBackup
         );
       }
@@ -222,7 +222,7 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
         await saveBackupPassword(password);
         logger.log('BackupConfirmPasswordStep:: backup completed!', backupFile);
         await dispatch(
-          setWalletBackedUp(wallet_id, WalletBackupTypes.cloud, backupFile)
+          setWalletBackedUp(walletId, WalletBackupTypes.cloud, backupFile)
         );
         logger.log('BackupConfirmPasswordStep:: backup saved everywhere!');
         goBack();
@@ -235,7 +235,7 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
       await dispatch(setIsWalletLoading(null));
       Alert.alert('Error while trying to backup');
     }
-  }, [dispatch, goBack, latestBackup, params?.wallet_id, password, wallets]);
+  }, [dispatch, goBack, latestBackup, params?.walletId, password, wallets]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();

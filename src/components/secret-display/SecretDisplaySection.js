@@ -39,8 +39,8 @@ const SecretDisplaySection = ({ onWalletTypeIdentified, secretLoaded }) => {
   let wordSectionHeight = 100;
 
   const loadSeed = useCallback(async () => {
-    const wallet_id = params?.wallet_id || selectedWallet.id;
-    const s = await loadSeedPhraseAndMigrateIfNeeded(wallet_id);
+    const walletId = params?.walletId || selectedWallet.id;
+    const s = await loadSeedPhraseAndMigrateIfNeeded(walletId);
     if (s) {
       const walletType = identifyWalletType(s);
       setType(walletType);
@@ -54,7 +54,7 @@ const SecretDisplaySection = ({ onWalletTypeIdentified, secretLoaded }) => {
     }
   }, [
     onWalletTypeIdentified,
-    params?.wallet_id,
+    params?.walletId,
     secretLoaded,
     selectedWallet.id,
   ]);

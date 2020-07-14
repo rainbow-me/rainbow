@@ -50,7 +50,7 @@ const BackupManualStep = () => {
   const { params } = useRoute();
   const [type, setType] = useState(null);
   const [secretLoaded, setSecretLoaded] = useState(false);
-  const walletId = params?.wallet_id || selectedWallet.id;
+  const walletId = params?.walletId || selectedWallet.id;
 
   const onComplete = useCallback(async () => {
     await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.manual));

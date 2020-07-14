@@ -35,7 +35,7 @@ const getItemLayout = (data, index) => {
   };
 };
 
-const keyExtractor = item => `${item.wallet_id}-${item.id}`;
+const keyExtractor = item => `${item.walletId}-${item.id}`;
 
 const skeletonTransition = (
   <Transition.Sequence>
@@ -130,7 +130,7 @@ export default function WalletList({
             wallet.id === get(currentWallet, 'id'),
           onPress: () => onChangeAccount(wallet.id, account.address),
           rowType: RowTypes.ADDRESS,
-          wallet_id: wallet.id,
+          walletId: wallet.id,
         };
         switch (wallet.type) {
           case WalletTypes.mnemonic:

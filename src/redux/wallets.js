@@ -120,21 +120,21 @@ export const setIsWalletLoading = val => dispatch => {
 };
 
 export const setWalletBackedUp = (
-  wallet_id,
+  walletId,
   method,
   backupFile = null
 ) => async (dispatch, getState) => {
   const { wallets, selected } = getState().wallets;
   const newWallets = { ...wallets };
-  newWallets[wallet_id].backedUp = true;
-  newWallets[wallet_id].backupType = method;
+  newWallets[walletId].backedUp = true;
+  newWallets[walletId].backupType = method;
   if (backupFile) {
-    newWallets[wallet_id].backupFile = backupFile;
+    newWallets[walletId].backupFile = backupFile;
   }
-  newWallets[wallet_id].backupDate = Date.now();
+  newWallets[walletId].backupDate = Date.now();
   dispatch(walletsUpdate(newWallets));
-  if (selected.id === wallet_id) {
-    dispatch(walletsSetSelected(newWallets[wallet_id]));
+  if (selected.id === walletId) {
+    dispatch(walletsSetSelected(newWallets[walletId]));
   }
 
   // Reset the loading state 1 second later

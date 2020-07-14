@@ -60,27 +60,27 @@ const NeedsBackupView = () => {
   const { navigate, setParams } = useNavigation();
   const { params } = useRoute();
   const { wallets, selectedWallet } = useWallets();
-  const wallet_id = params?.wallet_id || selectedWallet.id;
+  const walletId = params?.walletId || selectedWallet.id;
 
   useEffect(() => {
-    if (wallets[wallet_id]?.backedUp) {
+    if (wallets[walletId]?.backedUp) {
       setParams({ type: 'AlreadyBackedUpView' });
     }
-  }, [setParams, wallet_id, wallets]);
+  }, [setParams, walletId, wallets]);
 
   const onIcloudBackup = useCallback(() => {
     navigate(Routes.BACKUP_SHEET, {
       option: WalletBackupTypes.cloud,
-      wallet_id,
+      walletId,
     });
-  }, [navigate, wallet_id]);
+  }, [navigate, walletId]);
 
   const onManualBackup = useCallback(() => {
     navigate(Routes.BACKUP_SHEET, {
       option: WalletBackupTypes.manual,
-      wallet_id,
+      walletId,
     });
-  }, [navigate, wallet_id]);
+  }, [navigate, walletId]);
 
   return (
     <Fragment>
@@ -98,9 +98,9 @@ const NeedsBackupView = () => {
           <BackupButton label="􀙶 Back up to iCloud" onPress={onIcloudBackup} />
           <SheetActionButton
             color={colors.white}
-            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
             label="🤓 Back up manually"
             onPress={onManualBackup}
+            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />
         </Column>
       </Column>

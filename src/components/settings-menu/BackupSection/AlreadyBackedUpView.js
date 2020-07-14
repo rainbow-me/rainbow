@@ -80,7 +80,7 @@ const AlreadyBackedUpView = () => {
     wallets,
     selectedWallet,
   } = useWallets();
-  const wallet_id = params?.wallet_id || selectedWallet.id;
+  const walletId = params?.walletId || selectedWallet.id;
 
   const { setComponent, hide } = usePortal();
 
@@ -102,16 +102,16 @@ const AlreadyBackedUpView = () => {
   const onViewRecoveryPhrase = useCallback(() => {
     navigate('ShowSecretView', {
       title: `Recovery ${
-        WalletTypes.mnemonic === wallets[wallet_id].type ? 'Phrase' : 'Key'
+        WalletTypes.mnemonic === wallets[walletId].type ? 'Phrase' : 'Key'
       }`,
-      wallet_id,
+      walletId,
     });
-  }, [navigate, wallet_id, wallets]);
+  }, [navigate, walletId, wallets]);
 
   const walletStatus = useMemo(() => {
     let status = null;
-    if (wallets[wallet_id].backedUp) {
-      if (wallets[wallet_id].backupType === WalletBackupTypes.manual) {
+    if (wallets[walletId].backedUp) {
+      if (wallets[walletId].backupType === WalletBackupTypes.manual) {
         status = 'manual_backup';
       } else {
         status = 'cloud_backup';
@@ -120,7 +120,7 @@ const AlreadyBackedUpView = () => {
       status = 'imported';
     }
     return status;
-  }, [wallet_id, wallets]);
+  }, [walletId, wallets]);
 
   const onFooterAction = useCallback(async () => {
     if (['manual_backup', 'imported'].includes(walletStatus)) {
@@ -132,7 +132,7 @@ const AlreadyBackedUpView = () => {
           Navigation.handleAction(Routes.BACKUP_SHEET, {
             missingPassword: true,
             option: WalletBackupTypes.cloud,
-            wallet_id,
+            walletId,
           });
         } else {
           await dispatch(
@@ -142,13 +142,13 @@ const AlreadyBackedUpView = () => {
           logger.log('AlreadyBackedUpView::password fetched correctly');
           const backupFile = await addWalletToCloudBackup(
             password,
-            wallets[wallet_id],
+            wallets[walletId],
             latestBackup
           );
           if (backupFile) {
             logger.log('AlreadyBackedUpView:: backup completed!', backupFile);
             await dispatch(
-              setWalletBackedUp(wallet_id, WalletBackupTypes.cloud, backupFile)
+              setWalletBackedUp(walletId, WalletBackupTypes.cloud, backupFile)
             );
             logger.log('AlreadyBackedUpView:: backup saved everywhere!');
           } else {
@@ -160,11 +160,11 @@ const AlreadyBackedUpView = () => {
         // it's a first time backup so we need to show the password sheet
         Navigation.handleAction(Routes.BACKUP_SHEET, {
           option: WalletBackupTypes.cloud,
-          wallet_id,
+          walletId,
         });
       }
     }
-  }, [walletStatus, latestBackup, wallet_id, wallets, dispatch]);
+  }, [walletStatus, latestBackup, walletId, wallets, dispatch]);
   return (
     <Fragment>
       <Centered>

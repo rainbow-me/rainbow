@@ -60,7 +60,7 @@ const BackupSheet = ({ setAppearListener }) => {
     isWalletLoading,
   } = useWallets();
   const [step, setStep] = useState(params?.option || 'first');
-  const wallet_id = params?.wallet_id || selectedWallet.id;
+  const walletId = params?.walletId || selectedWallet.id;
   const missingPassword = params?.missingPassword || null;
   const { setComponent, hide } = usePortal();
 
@@ -102,12 +102,12 @@ const BackupSheet = ({ setAppearListener }) => {
         // We have the password and we need to add it to an existing backup
         const backupFile = await addWalletToCloudBackup(
           password,
-          wallets[wallet_id],
+          wallets[walletId],
           latestBackup
         );
         if (backupFile) {
           await dispatch(
-            setWalletBackedUp(wallet_id, WalletBackupTypes.cloud, backupFile)
+            setWalletBackedUp(walletId, WalletBackupTypes.cloud, backupFile)
           );
           logger.log('BackupSheet:: backup saved everywhere!');
           goBack();
@@ -132,7 +132,7 @@ const BackupSheet = ({ setAppearListener }) => {
     goBack,
     latestBackup,
     setParams,
-    wallet_id,
+    walletId,
     wallets,
     jumpToLong,
     setOptions,
@@ -155,9 +155,9 @@ const BackupSheet = ({ setAppearListener }) => {
 
   const onAlreadyBackedUp = useCallback(async () => {
     /// Flag all the wallets as backed up manually
-    Object.keys(wallets).forEach(async wallet_id => {
-      if (wallets[wallet_id].type !== WalletTypes.readOnly) {
-        await dispatch(setWalletBackedUp(wallet_id, WalletBackupTypes.manual));
+    Object.keys(wallets).forEach(async walletId => {
+      if (wallets[walletId].type !== WalletTypes.readOnly) {
+        await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.manual));
       }
     });
     await saveUserBackupState(BackupStateTypes.done);
