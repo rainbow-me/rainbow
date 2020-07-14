@@ -79,6 +79,32 @@ const filterWalletSections = sections =>
     data ? get(header, 'totalItems') : true
   );
 
+const addEth = section => {
+  const zeroEthRow = {
+    address: 'eth',
+    balance: {
+      amount: '0',
+      display: '0 ETH',
+    },
+    color: '#29292E',
+    decimals: 18,
+    icon_url: 'https://s3.amazonaws.com/token-icons/eth.png',
+    is_displayable: true,
+    isCoin: true,
+    isPinned: true,
+    isSmall: false,
+    name: 'Ethereum',
+    symbol: 'ETH',
+    type: 'token',
+    uniqueId: 'eth',
+  };
+
+  if (section.data.length === 1) {
+    section.data.unshift(zeroEthRow);
+  }
+  return section;
+};
+
 const buildWalletSections = (
   balanceSection,
   uniqueTokenFamiliesSection,
@@ -89,7 +115,7 @@ const buildWalletSections = (
   const filteredSections = filterWalletSections(sections);
   const finalSections =
     filteredSections.length > 0
-      ? [balanceSection, ...filteredSections]
+      ? [addEth(balanceSection), ...filteredSections]
       : filterWalletSections([balanceSection]);
   const isEmpty = !finalSections.length;
 
