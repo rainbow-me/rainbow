@@ -42,7 +42,9 @@ const BackupSheetSection = ({
   descriptionText,
   onPrimaryAction,
   onSecondaryAction,
+  primaryButtonTestId,
   primaryLabel,
+  secondaryButtonTestId,
   secondaryLabel,
 }) => {
   return (
@@ -52,12 +54,17 @@ const BackupSheetSection = ({
       <DescriptionText>{descriptionText}</DescriptionText>
       <Divider color={colors.rowDividerLight} inset={[0, 42]} />
       <ColumnWithMargins css={padding(19, 15, 0)} margin={19} width="100%">
-        <RainbowButton label={primaryLabel} onPress={onPrimaryAction} />
+        <RainbowButton
+          label={primaryLabel}
+          onPress={onPrimaryAction}
+          testID={primaryButtonTestId}
+        />
         <SheetActionButton
           color={colors.white}
           label={secondaryLabel}
           onPress={onSecondaryAction}
           size="big"
+          testID={secondaryButtonTestId}
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
         />
       </ColumnWithMargins>

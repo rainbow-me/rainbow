@@ -210,6 +210,7 @@ const BackupSheet = ({ setAppearListener }) => {
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={onIgnoreBackup}
             primaryLabel="􀙶 Back up to iCloud"
+            secondaryButtonTestId="backup-sheet-imported-cancel-button"
             secondaryLabel="No thanks"
             titleText="Would you like to back up?"
           />
