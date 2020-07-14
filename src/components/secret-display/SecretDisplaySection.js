@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import styled from 'styled-components';
 import WalletTypes from '../../helpers/walletTypes';
-import { useWallets } from '../../hooks';
+import { useDimensions, useWallets } from '../../hooks';
 import {
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
@@ -13,7 +13,7 @@ import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import { Centered, Column, Row, RowWithMargins } from '../layout';
 import SecretDisplayItem from '../secret-display/SecretDisplayItem';
-import { SheetButton } from '../sheet';
+import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
 
 const PrivateKeyText = styled(SecretDisplayItem).attrs({
@@ -29,12 +29,13 @@ const Shadow = styled(ShadowStack)`
   margin-top: 24;
 `;
 
-const SecretDisplaySection = ({ onWalletTypeIdentified }) => {
+const SecretDisplaySection = ({ onWalletTypeIdentified, secretLoaded }) => {
   const { params } = useRoute();
   const { selectedWallet } = useWallets();
   const [error, setError] = useState(false);
   const [seed, setSeed] = useState(null);
   const [type, setType] = useState(null);
+  const { width: deviceWidth } = useDimensions();
   let wordSectionHeight = 100;
 
   const loadSeed = useCallback(async () => {
@@ -46,14 +47,22 @@ const SecretDisplaySection = ({ onWalletTypeIdentified }) => {
       onWalletTypeIdentified && onWalletTypeIdentified(walletType);
       setSeed(s);
       setError(false);
+      secretLoaded && secretLoaded(true);
     } else {
       setError(true);
+      secretLoaded && secretLoaded(false);
     }
-  }, [onWalletTypeIdentified, params?.wallet_id, selectedWallet.id]);
+  }, [
+    onWalletTypeIdentified,
+    params?.wallet_id,
+    secretLoaded,
+    selectedWallet.id,
+  ]);
 
   useEffect(() => {
     loadSeed();
-  }, [loadSeed]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   let columns = [];
   if (seed && type === WalletTypes.mnemonic) {
@@ -62,6 +71,31 @@ const SecretDisplaySection = ({ onWalletTypeIdentified }) => {
     columns = [words.slice(0, words.length / 2), words.slice(words.length / 2)];
   } else if (type === WalletTypes.privateKey) {
     wordSectionHeight = 151;
+  }
+
+  if (error) {
+    return (
+      <Centered>
+        <Column marginTop={40} paddingHorizontal={60}>
+          <Text
+            align="center"
+            color="blueGreyDark"
+            size="large"
+            weight="normal"
+          >
+            You need to authenticate in order to access your recovery{' '}
+            {type === WalletTypes.privateKey ? 'key' : 'phrase'}
+          </Text>
+          <Column margin={24} marginTop={20}>
+            <SheetActionButton
+              color={colors.appleBlue}
+              label="Try again"
+              onPress={loadSeed}
+            />
+          </Column>
+        </Column>
+      </Centered>
+    );
   }
 
   return (
@@ -102,9 +136,9 @@ const SecretDisplaySection = ({ onWalletTypeIdentified }) => {
                 [0, 10, 30, colors.dark, 0.1],
                 [0, 5, 15, colors.dark, 0.04],
               ]}
-              width={237}
+              width={deviceWidth - 138}
             >
-              <Row marginVertical={19}>
+              <Row justify="space-between" marginVertical={19}>
                 {type === WalletTypes.privateKey ? (
                   <Column marginLeft={30} marginRight={30}>
                     <PrivateKeyText>{seed}</PrivateKeyText>
@@ -114,7 +148,7 @@ const SecretDisplaySection = ({ onWalletTypeIdentified }) => {
                     <Column
                       key={`col_${colIndex}`}
                       marginLeft={30}
-                      marginRight={5}
+                      marginRight={30}
                     >
                       {wordColumn.map((word, index) => {
                         const number = index + 1 + colIndex * wordColumn.length;
@@ -131,23 +165,6 @@ const SecretDisplaySection = ({ onWalletTypeIdentified }) => {
             </Shadow>
           </Row>
         </React.Fragment>
-      )}
-      {error && (
-        <Centered>
-          <Column marginTop={40} paddingHorizontal={24}>
-            <Text align="center" size="large" weight="normal">
-              You need to authenticate in order to access your recovery{' '}
-              {type === WalletTypes.privateKey ? 'key' : 'phrase'}
-            </Text>
-            <Column margin={24} marginTop={0}>
-              <SheetButton
-                color={colors.appleBlue}
-                label="Try again"
-                onPress={loadSeed}
-              />
-            </Column>
-          </Column>
-        </Centered>
       )}
     </Centered>
   );

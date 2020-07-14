@@ -49,6 +49,7 @@ const BackupManualStep = () => {
   const { goBack } = useNavigation();
   const { params } = useRoute();
   const [type, setType] = useState(null);
+  const [secretLoaded, setSecretLoaded] = useState(false);
   const walletId = params?.wallet_id || selectedWallet.id;
 
   const onComplete = useCallback(async () => {
@@ -81,18 +82,23 @@ const BackupManualStep = () => {
         </DescriptionText>
       </Column>
       <Column>
-        <SecretDisplaySection onWalletTypeIdentified={setType} />
+        <SecretDisplaySection
+          onWalletTypeIdentified={setType}
+          secretLoaded={setSecretLoaded}
+        />
       </Column>
       <Column css={padding(0, 15)} flex={1} justify="end" width="100%">
-        <SheetActionButton
-          color={colors.appleBlue}
-          label={`􀁣 I’ve saved ${
-            type === WalletTypes.privateKey ? 'my key' : 'these words'
-          }`}
-          onPress={onComplete}
-          size="big"
-          weight="bold"
-        />
+        {secretLoaded && (
+          <SheetActionButton
+            color={colors.appleBlue}
+            label={`􀁣 I’ve saved ${
+              type === WalletTypes.privateKey ? 'my key' : 'these words'
+            }`}
+            onPress={onComplete}
+            size="big"
+            weight="bold"
+          />
+        )}
       </Column>
     </Centered>
   );
