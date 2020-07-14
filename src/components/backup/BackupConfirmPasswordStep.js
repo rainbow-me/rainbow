@@ -72,10 +72,10 @@ const PasswordInput = styled(Input).attrs({
   size: 'large',
   weight: 'normal',
 })`
+  padding-bottom: 15;
   padding-left: 19;
   padding-right: 40;
   padding-top: 15;
-  padding-bottom: 15;
 `;
 
 const IconWrapper = styled(View)`
@@ -115,13 +115,13 @@ const TopIcon = () => (
   <GradientText
     align="center"
     angle={false}
-    letterSpacing="roundedTight"
-    weight="bold"
     colors={['#FFB114', '#FF54BB', '#00F0FF']}
     end={{ x: 0, y: 0 }}
+    letterSpacing="roundedTight"
+    size={52}
     start={{ x: 1, y: 1 }}
     steps={[0, 0.5, 1]}
-    size={52}
+    weight="bold"
   >
     <Text size={52}>􀙶</Text>
   </GradientText>
@@ -245,8 +245,8 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
     <SheetContainer>
       <StatusBar barStyle="light-content" />
       <KeyboardAvoidingView
-        enabled={Platform.OS !== 'android'}
         behavior="padding"
+        enabled={Platform.OS !== 'android'}
       >
         <Container align="center">
           <Row paddingBottom={15} paddingTop={24}>
@@ -259,14 +259,14 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
           <InputsWrapper>
             <Shadow>
               <PasswordInput
-                placeholder="Backup Password"
                 autoFocus
-                onFocus={onPasswordFocus}
                 onBlur={onPasswordBlur}
-                onSubmitEditing={onPasswordSubmit}
                 onChange={onPasswordChange}
-                returnKeyType="next"
+                onFocus={onPasswordFocus}
+                onSubmitEditing={onPasswordSubmit}
+                placeholder="Backup Password"
                 ref={passwordRef}
+                returnKeyType="next"
                 value={password}
               />
               {((password !== '' &&
