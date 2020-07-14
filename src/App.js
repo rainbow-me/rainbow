@@ -198,8 +198,8 @@ class App extends Component {
       store.dispatch(addNewSubscriber(incomingTxListener, 'received'));
     } else if (backupState === BackupStateTypes.pending) {
       setTimeout(() => {
-        Navigation.handleAction(Routes.BACKUP_SHEET_DELAY_MS);
-      }, 1000);
+        Navigation.handleAction(Routes.BACKUP_SHEET);
+      }, BACKUP_SHEET_DELAY_MS);
     }
   };
 

@@ -10,12 +10,10 @@ import { Alert, InteractionManager } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
+import { BackupSheetSection } from '../components/backup';
 import BackupConfirmPasswordStep from '../components/backup/BackupConfirmPasswordStep';
-import BackupExistingUser from '../components/backup/BackupExistingUser';
 import BackupIcloudStep from '../components/backup/BackupIcloudStep';
-import BackupImportedStep from '../components/backup/BackupImportedStep';
 import BackupManualStep from '../components/backup/BackupManualStep';
-import BackupSheetFirstStep from '../components/backup/BackupSheetFirstStep';
 import LoadingOverlay, {
   LoadingOverlayWrapper,
 } from '../components/modal/LoadingOverlay';
@@ -36,11 +34,11 @@ import { logger } from '../utils';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
 const switchSheetContentTransition = (
-  <Transition.Sequence>
+  <Transition.Together>
     <Transition.Out durationMs={0.1} interpolation="easeOut" type="fade" />
     <Transition.Change durationMs={150} interpolation="easeOut" />
     <Transition.In durationMs={400} interpolation="easeOut" type="fade" />
-  </Transition.Sequence>
+  </Transition.Together>
 );
 
 const StyledSheet = styled(SlackSheet)`
@@ -197,16 +195,24 @@ const BackupSheet = ({ setAppearListener }) => {
     switch (step) {
       case 'existing_user':
         return (
-          <BackupExistingUser
-            onBackupNow={onBackupNow}
-            onAlreadyBackedUp={onAlreadyBackedUp}
+          <BackupSheetSection
+            descriptionText={`Don't risk your money! Back up your wallet in case you lose this device.`}
+            onPrimaryAction={onBackupNow}
+            onSecondaryAction={onAlreadyBackedUp}
+            primaryLabel="Back up now"
+            secondaryLabel="􀁣 Already backed up"
+            titleText="Back up your wallets"
           />
         );
       case 'imported':
         return (
-          <BackupImportedStep
-            onIcloudBackup={onIcloudBackup}
-            onIgnoreBackup={onIgnoreBackup}
+          <BackupSheetSection
+            descriptionText={`Don't lose your wallet! Save an encrypted copy to iCloud.`}
+            onPrimaryAction={onIcloudBackup}
+            onSecondaryAction={onIgnoreBackup}
+            primaryLabel="􀙶 Back up to iCloud"
+            secondaryLabel="No thanks"
+            titleText="Would you like to back up?"
           />
         );
       case WalletBackupTypes.cloud:
@@ -219,9 +225,13 @@ const BackupSheet = ({ setAppearListener }) => {
         return <BackupManualStep />;
       default:
         return (
-          <BackupSheetFirstStep
-            onIcloudBackup={onIcloudBackup}
-            onManualBackup={onManualBackup}
+          <BackupSheetSection
+            descriptionText={`Don't lose your wallet! Save an encrypted copy to iCloud.`}
+            onPrimaryAction={onIcloudBackup}
+            onSecondaryAction={onManualBackup}
+            primaryLabel="􀙶 Back up to iCloud"
+            secondaryLabel="🤓 Back up manually"
+            titleText="Back up your wallet"
           />
         );
     }

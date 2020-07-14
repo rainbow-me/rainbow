@@ -72,10 +72,10 @@ const PasswordInput = styled(Input).attrs({
   size: 'large',
   weight: 'normal',
 })`
+  padding-bottom: 15;
   padding-left: 19;
   padding-right: 40;
   padding-top: 15;
-  padding-bottom: 15;
 `;
 
 const IconWrapper = styled(View)`
@@ -245,8 +245,8 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
     <SheetContainer>
       <StatusBar barStyle="light-content" />
       <KeyboardAvoidingView
-        enabled={Platform.OS !== 'android'}
         behavior="padding"
+        enabled={Platform.OS !== 'android'}
       >
         <Container align="center">
           <Row paddingBottom={15} paddingTop={24}>
