@@ -80,28 +80,46 @@ const filterWalletSections = sections =>
   );
 
 const addEth = section => {
-  const zeroEthRow = {
-    address: 'eth',
-    balance: {
-      amount: '0',
-      display: '0 ETH',
-    },
-    color: '#29292E',
-    decimals: 18,
-    icon_url: 'https://s3.amazonaws.com/token-icons/eth.png',
-    is_displayable: true,
-    isCoin: true,
-    isPinned: true,
-    isSmall: false,
-    name: 'Ethereum',
-    symbol: 'ETH',
-    type: 'token',
-    uniqueId: 'eth',
-  };
+  const assets = store.getState().data.genericAssets;
 
-  if (section.data.length === 1) {
-    section.data.unshift(zeroEthRow);
+  if (assets.eth) {
+    const { relative_change_24h, value } = assets.eth.price;
+    const zeroEthRow = {
+      address: 'eth',
+      balance: {
+        amount: '0',
+        display: '0 ETH',
+      },
+      color: '#29292E',
+      decimals: 18,
+      icon_url: 'https://s3.amazonaws.com/token-icons/eth.png',
+      is_displayable: true,
+      isCoin: true,
+      isPinned: true,
+      isSmall: false,
+      name: 'Ethereum',
+      native: {
+        balance: {
+          amount: '0',
+          display: '$0',
+        },
+        change: `${relative_change_24h.toFixed(2)}%`,
+        price: {
+          amount: value,
+          display: String(value),
+        },
+      },
+      price: assets.eth.price,
+      symbol: 'ETH',
+      type: 'token',
+      uniqueId: 'eth',
+    };
+
+    if (section.data.length === 1) {
+      section.data.unshift(zeroEthRow);
+    }
   }
+
   return section;
 };
 
