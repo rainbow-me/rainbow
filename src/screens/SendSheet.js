@@ -93,6 +93,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
     accountAddress,
     nativeCurrency,
     nativeCurrencySymbol,
+    network,
   } = useAccountSettings();
 
   const savings = useSendSavingsAccount();
@@ -428,6 +429,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
               fetchData={fetchData}
               hiddenCoins={hiddenCoins}
               nativeCurrency={nativeCurrency}
+              network={network}
               onSelectAsset={sendUpdateSelected}
               pinnedCoins={pinnedCoins}
               savings={savings}
