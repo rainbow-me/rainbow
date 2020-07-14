@@ -8,11 +8,13 @@ import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
 import { CDAI_CONTRACT } from '../references';
 
 // -- Constants --------------------------------------- //
-const COMPOUND_QUERY_INTERVAL = 10000;
+const COMPOUND_QUERY_INTERVAL = 120000;
 const SAVINGS_UPDATE_COMPOUND_DATA = 'savings/SAVINGS_UPDATE_COMPOUND_DATA';
 const SAVINGS_UPDATE_COMPOUND_SUBSCRIPTION =
   'savings/SAVINGS_UPDATE_COMPOUND_SUBSCRIPTION';
 const SAVINGS_CLEAR_STATE = 'savings/SAVINGS_CLEAR_STATE';
+const SAVINGS_SET_NUMBER_OF_JUST_FINISHED_DEPOSITS_OR_WITHDRAWAL =
+  'savings/SAVINGS_SET_NUMBER_OF_JUST_FINISHED_DEPOSITS_OR_WITHDRAWAL';
 
 const getMarketData = (marketData, tokenOverrides) => {
   const underlying = getUnderlyingData(marketData, tokenOverrides);
@@ -75,6 +77,46 @@ export const savingsClearState = () => (dispatch, getState) => {
   dispatch({ type: SAVINGS_CLEAR_STATE });
 };
 
+export const savingsIncrementNumberOfJustFinishedDepositsOrWithdrawals = () => (
+  dispatch,
+  getState
+) => {
+  const {
+    numberOfJustFinishedDepositsOrWithdrawals,
+    savingsQuery,
+  } = getState().savings;
+  if (numberOfJustFinishedDepositsOrWithdrawals === 0) {
+    savingsQuery.setOptions({ pollInterval: 10000 });
+  }
+  dispatch({
+    payload: {
+      numberOfJustFinishedDepositsOrWithdrawals:
+        numberOfJustFinishedDepositsOrWithdrawals + 1,
+    },
+    type: SAVINGS_SET_NUMBER_OF_JUST_FINISHED_DEPOSITS_OR_WITHDRAWAL,
+  });
+};
+
+export const savingsDecrementNumberOfJustFinishedDepositsOrWithdrawals = () => (
+  dispatch,
+  getState
+) => {
+  const {
+    numberOfJustFinishedDepositsOrWithdrawals,
+    savingsQuery,
+  } = getState().savings;
+  if (numberOfJustFinishedDepositsOrWithdrawals === 1) {
+    savingsQuery.setOptions({ pollInterval: COMPOUND_QUERY_INTERVAL });
+  }
+  dispatch({
+    payload: {
+      numberOfJustFinishedDepositsOrWithdrawals:
+        numberOfJustFinishedDepositsOrWithdrawals - 1,
+    },
+    type: SAVINGS_SET_NUMBER_OF_JUST_FINISHED_DEPOSITS_OR_WITHDRAWAL,
+  });
+};
+
 const subscribeToCompoundData = async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { tokenOverrides } = getState().data;
@@ -105,7 +147,7 @@ const subscribeToCompoundData = async (dispatch, getState) => {
 
     const newQuery = compoundClient.watchQuery({
       fetchPolicy: 'network-only',
-      pollInterval: COMPOUND_QUERY_INTERVAL, // 15 seconds
+      pollInterval: COMPOUND_QUERY_INTERVAL, // 120 seconds
       query: COMPOUND_ACCOUNT_AND_MARKET_QUERY,
       skip: !toLower(accountAddress),
       variables: { id: toLower(accountAddress) },
@@ -156,7 +198,6 @@ const subscribeToCompoundData = async (dispatch, getState) => {
         });
 
         accountTokens = orderBy(accountTokens, ['ethPrice'], ['desc']);
-
         if (accountTokens.length) {
           saveSavings(accountTokens, accountAddress, network);
           savingsAccountData = accountTokens;
@@ -192,6 +233,7 @@ const subscribeToCompoundData = async (dispatch, getState) => {
 const INITIAL_STATE = {
   accountTokens: [],
   daiMarketData: {},
+  numberOfJustFinishedDepositsOrWithdrawals: 0,
   savingsQuery: null,
   savingsSubscription: null,
 };
@@ -214,6 +256,12 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         ...INITIAL_STATE,
+      };
+    case SAVINGS_SET_NUMBER_OF_JUST_FINISHED_DEPOSITS_OR_WITHDRAWAL:
+      return {
+        ...state,
+        numberOfJustFinishedDepositsOrWithdrawals:
+          action.payload.numberOfJustFinishedDepositsOrWithdrawals,
       };
     default:
       return state;
