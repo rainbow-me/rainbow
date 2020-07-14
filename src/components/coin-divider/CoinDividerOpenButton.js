@@ -6,6 +6,7 @@ import { bin, useSpringTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { magicMemo } from '../../utils';
+
 import {
   ButtonPressAnimation,
   OpacityToggler,

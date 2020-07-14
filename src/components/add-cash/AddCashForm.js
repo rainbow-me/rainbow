@@ -141,8 +141,8 @@ const AddCashForm = ({
           <AddCashSelector
             currencies={currencies}
             initialCurrencyIndex={initialCurrencyIndex}
-            onSelect={onCurrencyChange}
             isWalletEthZero={isWalletEthZero}
+            onSelect={onCurrencyChange}
           />
         </ColumnWithMargins>
       </Centered>

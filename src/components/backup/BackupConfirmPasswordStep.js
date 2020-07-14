@@ -72,10 +72,10 @@ const PasswordInput = styled(Input).attrs({
   size: 'large',
   weight: 'normal',
 })`
+  padding-bottom: 15;
   padding-left: 19;
   padding-right: 40;
   padding-top: 15;
-  padding-bottom: 15;
 `;
 
 const IconWrapper = styled(View)`
@@ -115,13 +115,13 @@ const TopIcon = () => (
   <GradientText
     align="center"
     angle={false}
-    letterSpacing="roundedTight"
-    weight="bold"
     colors={['#FFB114', '#FF54BB', '#00F0FF']}
     end={{ x: 0, y: 0 }}
+    letterSpacing="roundedTight"
+    size={52}
     start={{ x: 1, y: 1 }}
     steps={[0, 0.5, 1]}
-    size={52}
+    weight="bold"
   >
     <Text size={52}>􀙶</Text>
   </GradientText>
@@ -191,8 +191,8 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
   );
 
   const onSubmit = useCallback(async () => {
-    let wallet_id =
-      params?.wallet_id ||
+    let walletId =
+      params?.walletId ||
       Object.keys(wallets).find(key => wallets[key].imported === false);
 
     try {
@@ -201,19 +201,19 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
       if (!latestBackup) {
         logger.log(
           'BackupConfirmPasswordStep:: backing up to icloud',
-          wallets[wallet_id]
+          wallets[walletId]
         );
 
-        backupFile = await backupWalletToCloud(password, wallets[wallet_id]);
+        backupFile = await backupWalletToCloud(password, wallets[walletId]);
       } else {
         logger.log(
           'BackupConfirmPasswordStep:: adding to icloud backup',
-          wallets[wallet_id],
+          wallets[walletId],
           latestBackup
         );
         backupFile = await addWalletToCloudBackup(
           password,
-          wallets[wallet_id],
+          wallets[walletId],
           latestBackup
         );
       }
@@ -222,7 +222,7 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
         await saveBackupPassword(password);
         logger.log('BackupConfirmPasswordStep:: backup completed!', backupFile);
         await dispatch(
-          setWalletBackedUp(wallet_id, WalletBackupTypes.cloud, backupFile)
+          setWalletBackedUp(walletId, WalletBackupTypes.cloud, backupFile)
         );
         logger.log('BackupConfirmPasswordStep:: backup saved everywhere!');
         goBack();
@@ -235,7 +235,7 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
       await dispatch(setIsWalletLoading(null));
       Alert.alert('Error while trying to backup');
     }
-  }, [dispatch, goBack, latestBackup, params?.wallet_id, password, wallets]);
+  }, [dispatch, goBack, latestBackup, params?.walletId, password, wallets]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
@@ -245,8 +245,8 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
     <SheetContainer>
       <StatusBar barStyle="light-content" />
       <KeyboardAvoidingView
-        enabled={Platform.OS !== 'android'}
         behavior="padding"
+        enabled={Platform.OS !== 'android'}
       >
         <Container align="center">
           <Row paddingBottom={15} paddingTop={24}>
@@ -259,14 +259,14 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
           <InputsWrapper>
             <Shadow>
               <PasswordInput
-                placeholder="Backup Password"
                 autoFocus
-                onFocus={onPasswordFocus}
                 onBlur={onPasswordBlur}
-                onSubmitEditing={onPasswordSubmit}
                 onChange={onPasswordChange}
-                returnKeyType="next"
+                onFocus={onPasswordFocus}
+                onSubmitEditing={onPasswordSubmit}
+                placeholder="Backup Password"
                 ref={passwordRef}
+                returnKeyType="next"
                 value={password}
               />
               {((password !== '' &&

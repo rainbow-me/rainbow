@@ -148,7 +148,7 @@
     "react-native-radial-gradient": "rainbow-me/react-native-radial-gradient#de98a182a4e5fb8db850cd94960d23c68035f9c6",
     "react-native-randombytes": "^3.5.3",
     "react-native-reanimated": "1.7.0",
-    "react-native-redash": "9.6.0",
+    "react-native-redash": "14.2.2",
     "react-native-restart": "^0.0.17",
     "react-native-safe-area-context": "^0.5.0",
     "react-native-safe-area-view": "mikedemarais/react-native-safe-area-view",

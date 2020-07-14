@@ -151,9 +151,9 @@ const SettingsModal = () => {
     key => {
       let route = key;
       if (key === SettingsPages.backup.key) {
-        const wallet_id = params?.wallet_id;
+        const walletId = params?.walletId;
         if (
-          !wallet_id &&
+          !walletId &&
           Object.keys(wallets).filter(
             key => wallets[key].type !== WalletTypes.readOnly
           ).length > 1
@@ -165,14 +165,8 @@ const SettingsModal = () => {
       }
       return route;
     },
-    [params?.wallet_id, wallets]
+    [params?.walletId, wallets]
   );
-
-  // useEffect(() => {
-  //   if (params?.replaceRoute) {
-  //     replace(route);
-  //   }
-  // }, [params?.replaceRoute]);
 
   const onPressSection = useCallback(
     section => () => {
@@ -264,6 +258,7 @@ const SettingsModal = () => {
                     cardStyleInterpolator,
                     title,
                   }}
+                  title={title}
                 />
               )
           )}
@@ -278,8 +273,8 @@ const SettingsModal = () => {
             }}
           />
           <Stack.Screen
-            name="SettingsBackupView"
             component={SettingsBackupView}
+            name="SettingsBackupView"
             options={({ route }) => ({
               cardStyleInterpolator,
               title: route.params?.title || 'Backup',

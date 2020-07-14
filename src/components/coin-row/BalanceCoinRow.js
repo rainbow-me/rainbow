@@ -12,6 +12,7 @@ import {
 } from '../../hoc';
 import { isNewValueForObjectPaths, isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
+import { ChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, FlexItem } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
@@ -21,7 +22,6 @@ import CoinRow from './CoinRow';
 import { colors } from '@rainbow-me/styles';
 
 const editTranslateOffset = 32;
-const AssetSheetHeight = 300;
 
 const formatPercentageString = percentString =>
   percentString ? percentString.split('-').join('- ') : '-';
@@ -116,7 +116,7 @@ const BalanceCoinRow = ({
   }, [item.uniqueId, pushSelectedCoin, removeSelectedCoin, setToggle, toggle]);
 
   const handlePress = useCallback(() => {
-    onPress && onPress(item, { longFormHeight: AssetSheetHeight });
+    onPress && onPress(item, { longFormHeight: ChartExpandedStateSheetHeight });
   }, [onPress, item]);
 
   return (

@@ -46,9 +46,9 @@ const NetworkSection = () => {
         value,
       }))}
       marginTop={7}
+      onChange={onNetworkChange}
       renderItem={RadioListItem}
       value={network}
-      onChange={onNetworkChange}
     />
   );
 };

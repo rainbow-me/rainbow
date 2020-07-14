@@ -261,8 +261,8 @@ const BackupIcloudStep = ({ setAppearListener }) => {
     []
   );
   const onConfirmBackup = useCallback(async () => {
-    let wallet_id =
-      params?.wallet_id ||
+    let walletId =
+      params?.walletId ||
       Object.keys(wallets).find(key => wallets[key].imported === false);
 
     try {
@@ -272,19 +272,19 @@ const BackupIcloudStep = ({ setAppearListener }) => {
       if (!latestBackup) {
         logger.log(
           'BackupIcloudStep:: backing up to icloud',
-          wallets[wallet_id]
+          wallets[walletId]
         );
 
-        backupFile = await backupWalletToCloud(password, wallets[wallet_id]);
+        backupFile = await backupWalletToCloud(password, wallets[walletId]);
       } else {
         logger.log(
           'BackupIcloudStep:: adding to icloud backup',
-          wallets[wallet_id],
+          wallets[walletId],
           latestBackup
         );
         backupFile = await addWalletToCloudBackup(
           password,
-          wallets[wallet_id],
+          wallets[walletId],
           latestBackup
         );
       }
@@ -295,7 +295,7 @@ const BackupIcloudStep = ({ setAppearListener }) => {
 
         logger.log('BackupIcloudStep:: backup completed!', backupFile);
         await dispatch(
-          setWalletBackedUp(wallet_id, WalletBackupTypes.cloud, backupFile)
+          setWalletBackedUp(walletId, WalletBackupTypes.cloud, backupFile)
         );
         logger.log('BackupIcloudStep:: backup saved everywhere!');
         goBack();
@@ -310,7 +310,7 @@ const BackupIcloudStep = ({ setAppearListener }) => {
       Alert.alert('Error while trying to backup');
     }
   }, [
-    params?.wallet_id,
+    params?.walletId,
     wallets,
     password,
     latestBackup,
@@ -329,8 +329,8 @@ const BackupIcloudStep = ({ setAppearListener }) => {
     <SheetContainer>
       <StatusBar barStyle="light-content" />
       <KeyboardAvoidingView
-        enabled={Platform.OS !== 'android'}
         behavior="padding"
+        enabled={Platform.OS !== 'android'}
       >
         <Container align="center">
           <Row paddingBottom={15} paddingTop={9}>
@@ -346,13 +346,13 @@ const BackupIcloudStep = ({ setAppearListener }) => {
           <InputsWrapper>
             <Shadow>
               <PasswordInput
-                placeholder="Backup Password"
-                onFocus={onPasswordFocus}
                 onBlur={onPasswordBlur}
-                onSubmitEditing={onPasswordSubmit}
                 onChange={onPasswordChange}
-                returnKeyType="next"
+                onFocus={onPasswordFocus}
+                onSubmitEditing={onPasswordSubmit}
+                placeholder="Backup Password"
                 ref={passwordRef}
+                returnKeyType="next"
                 value={password}
               />
               {password.length >= 8 && <GreenCheckmarkIcon />}
@@ -362,12 +362,12 @@ const BackupIcloudStep = ({ setAppearListener }) => {
             </Shadow>
             <Shadow>
               <PasswordInput
-                placeholder="Confirm Password"
-                onFocus={onConfirmPasswordFocus}
                 onChange={onConfirmPasswordChange}
+                onFocus={onConfirmPasswordFocus}
                 onSubmitEditing={onConfirmPasswordSubmit}
-                returnKeyType="done"
+                placeholder="Confirm Password"
                 ref={confirmPasswordRef}
+                returnKeyType="done"
                 value={confirmPassword}
               />
               {validPassword && <GreenCheckmarkIcon />}

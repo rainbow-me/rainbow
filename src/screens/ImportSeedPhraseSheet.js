@@ -45,6 +45,7 @@ import {
   useTimeout,
   useWallets,
 } from '../hooks';
+import { getWallet } from '../model/wallet';
 import Navigation, { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/effects';
 import { setIsWalletLoading } from '../redux/wallets';
@@ -104,7 +105,7 @@ const ImportButton = ({ disabled, onPress, seedPhrase }) => (
       {!!seedPhrase && (
         <Icon color={colors.white} direction="right" name="arrowCircled" />
       )}
-      <Text color="white" weight="semibold" testID="import-sheet-button-label">
+      <Text color="white" testID="import-sheet-button-label" weight="semibold">
         {seedPhrase ? 'Import' : 'Paste'}
       </Text>
     </RowWithMargins>
@@ -202,6 +203,16 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
         const ens = await web3Provider.lookupAddress(input);
         if (ens && ens !== input) {
           name = ens;
+        }
+      } else {
+        try {
+          const { wallet } = getWallet(input);
+          const ens = await web3Provider.lookupAddress(wallet?.address);
+          if (ens && ens !== input) {
+            name = ens;
+          }
+        } catch (error) {
+          logger.log('Error looking up ENS for imported HD type wallet', error);
         }
       }
 
@@ -361,6 +372,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
               Platform.OS === 'android' ? 'visible-password' : 'default'
             }
             lineHeight="looser"
+            marginBottom={Platform.OS === 'android' ? 55 : 0}
             multiline
             numberOfLines={3}
             onChangeText={handleSetSeedPhrase}
@@ -378,7 +390,6 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             value={seedPhrase}
             weight="semibold"
             width="100%"
-            marginBottom={Platform.OS === 'android' ? 55 : 0}
           />
         </Centered>
         <Row

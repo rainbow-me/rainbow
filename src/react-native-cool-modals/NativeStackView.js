@@ -57,32 +57,20 @@ function ScreenView({ state, navigation, descriptors, route, colors }) {
   return (
     <ModalContext.Provider value={context}>
       <Components.Screen
-        longFormHeight={longFormHeight}
-        onComponentRef={onComponentRef}
-        ignoreBottomOffset={ignoreBottomOffset}
-        onTouchTop={onTouchTop}
-        dismissable={dismissable}
-        customStack={customStack}
-        topOffset={topOffset}
-        showDragIndicator={showDragIndicator}
         allowsDragToDismiss={allowsDragToDismiss}
         allowsTapToDismiss={allowsTapToDismiss}
         anchorModalToLongForm={anchorModalToLongForm}
-        onWillDismiss={onWillDismiss}
-        modalBackgroundColor={backgroundColor}
         backgroundOpacity={backgroundOpacity}
         cornerRadius={cornerRadius}
-        headerHeight={headerHeight}
-        isShortFormEnabled={isShortFormEnabled}
-        shortFormHeight={shortFormHeight}
-        springDamping={springDamping}
-        startFromShortForm={startFromShortForm}
-        transitionDuration={transitionDuration}
-        key={route.key}
-        style={StyleSheet.absoluteFill}
+        customStack={customStack}
+        dismissable={dismissable}
         gestureEnabled={gestureEnabled}
-        stackPresentation={stackPresentation}
-        stackAnimation={stackAnimation}
+        headerHeight={headerHeight}
+        ignoreBottomOffset={ignoreBottomOffset}
+        isShortFormEnabled={isShortFormEnabled}
+        key={route.key}
+        longFormHeight={longFormHeight}
+        modalBackgroundColor={backgroundColor}
         onAppear={() => {
           options?.onAppear?.();
           navigation.emit({
@@ -90,6 +78,7 @@ function ScreenView({ state, navigation, descriptors, route, colors }) {
             type: 'appear',
           });
         }}
+        onComponentRef={onComponentRef}
         onDismissed={() => {
           options?.onDismissed?.();
           navigation.emit({
@@ -109,6 +98,17 @@ function ScreenView({ state, navigation, descriptors, route, colors }) {
             type: 'finishTransitioning',
           });
         }}
+        onTouchTop={onTouchTop}
+        onWillDismiss={onWillDismiss}
+        shortFormHeight={shortFormHeight}
+        showDragIndicator={showDragIndicator}
+        springDamping={springDamping}
+        stackAnimation={stackAnimation}
+        stackPresentation={stackPresentation}
+        startFromShortForm={startFromShortForm}
+        style={StyleSheet.absoluteFill}
+        topOffset={topOffset}
+        transitionDuration={transitionDuration}
       >
         <View
           style={[
@@ -137,12 +137,12 @@ export default function NativeStackView({ state, navigation, descriptors }) {
       {state.routes.map((route, i) => {
         return (
           <ScreenView
-            key={`screen${i}`}
-            state={state}
-            navigation={navigation}
-            descriptors={descriptors}
-            route={route}
             colors={colors}
+            descriptors={descriptors}
+            key={`screen${i}`}
+            navigation={navigation}
+            route={route}
+            state={state}
           />
         );
       })}

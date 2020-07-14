@@ -40,85 +40,85 @@ function MainNavigator() {
       {...stackNavigationConfig}
       screenOptions={defaultScreenStackOptions}
     >
-      <Stack.Screen name={Routes.SWIPE_LAYOUT} component={SwipeNavigator} />
+      <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} />
       <Stack.Screen
-        name={Routes.AVATAR_BUILDER}
         component={AvatarBuilder}
+        name={Routes.AVATAR_BUILDER}
         options={emojiPreset}
       />
       <Stack.Screen
-        name={Routes.CHANGE_WALLET_SHEET}
         component={ChangeWalletSheet}
+        name={Routes.CHANGE_WALLET_SHEET}
         options={expandedPreset}
       />
       <Stack.Screen
-        name={Routes.CONFIRM_REQUEST}
         component={TransactionConfirmationScreen}
+        name={Routes.CONFIRM_REQUEST}
         options={sheetPreset}
       />
       <Stack.Screen
-        name={Routes.EXCHANGE_MODAL}
         component={ExchangeModalNavigator}
+        name={Routes.EXCHANGE_MODAL}
         options={exchangePreset}
       />
       <Stack.Screen
-        name={Routes.EXPANDED_ASSET_SHEET}
         component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET}
         options={expandedPreset}
       />
       <Stack.Screen
-        name={Routes.MODAL_SCREEN}
         component={ModalScreen}
+        name={Routes.MODAL_SCREEN}
         options={overlayExpandedPreset}
       />
       <Stack.Screen
-        name={Routes.RECEIVE_MODAL}
         component={ReceiveModal}
+        name={Routes.RECEIVE_MODAL}
         options={expandedPreset}
       />
       <Stack.Screen
-        name={Routes.SETTINGS_MODAL}
         component={SettingsModal}
+        name={Routes.SETTINGS_MODAL}
         options={expandedPreset}
       />
       <Stack.Screen
-        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
         component={WalletConnectApprovalSheet}
+        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
         options={expandedPreset}
       />
       <Stack.Screen
-        name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
         component={WalletConnectRedirectSheet}
+        name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
         options={bottomSheetPreset}
       />
       <Stack.Screen
-        name={Routes.ADD_CASH_SHEET}
         component={AddCashSheet}
+        name={Routes.ADD_CASH_SHEET}
         options={sheetPreset}
       />
       <Stack.Screen
-        name={Routes.IMPORT_SEED_PHRASE_SHEET}
         component={ImportSeedPhraseSheet}
+        name={Routes.IMPORT_SEED_PHRASE_SHEET}
         options={sheetPreset}
       />
       <Stack.Screen
-        name={Routes.SAVINGS_SHEET}
         component={SavingsSheet}
+        name={Routes.SAVINGS_SHEET}
         options={bottomSheetPreset}
       />
       <Stack.Screen
-        name={Routes.SAVINGS_WITHDRAW_MODAL}
         component={WithdrawModal}
+        name={Routes.SAVINGS_WITHDRAW_MODAL}
         options={exchangePreset}
       />
       <Stack.Screen
-        name={Routes.SAVINGS_DEPOSIT_MODAL}
         component={DepositModal}
+        name={Routes.SAVINGS_DEPOSIT_MODAL}
         options={exchangePreset}
       />
       <Stack.Screen
-        name={Routes.SEND_SHEET}
         component={SendSheet}
+        name={Routes.SEND_SHEET}
         options={{
           ...omit(sheetPreset, 'gestureResponseDistance'),
         }}
@@ -128,7 +128,7 @@ function MainNavigator() {
 }
 
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
-  <NavigationContainer ref={ref} onStateChange={onNavigationStateChange}>
+  <NavigationContainer onStateChange={onNavigationStateChange} ref={ref}>
     <MainNavigator />
   </NavigationContainer>
 ));

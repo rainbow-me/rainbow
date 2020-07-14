@@ -286,36 +286,45 @@ export const identifyWalletType = walletSeed => {
   return type;
 };
 
+export const getWallet = walletSeed => {
+  let wallet = null;
+  let hdnode = null;
+  let isHDWallet = false;
+  const type = identifyWalletType(walletSeed);
+  if (!type) throw new Error('Unknown Wallet Type');
+  switch (type) {
+    case WalletTypes.privateKey:
+      wallet = new ethers.Wallet(walletSeed);
+      break;
+    case WalletTypes.mnemonic:
+      hdnode = ethers.utils.HDNode.fromMnemonic(walletSeed);
+      isHDWallet = true;
+      break;
+    case WalletTypes.seed:
+      hdnode = ethers.utils.HDNode.fromSeed(walletSeed);
+      isHDWallet = true;
+      break;
+    case WalletTypes.readOnly:
+      wallet = { address: toChecksumAddress(walletSeed), privateKey: null };
+      break;
+    default:
+  }
+
+  // Always generate the first account if HD node
+  if (isHDWallet) {
+    const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/0`);
+    wallet = new ethers.Wallet(node.privateKey);
+  }
+
+  return { hdnode, isHDWallet, type, wallet };
+};
+
 export const createWallet = async (seed = null, color = null, name = null) => {
   const isImported = !!seed;
   const walletSeed = seed || generateSeedPhrase();
-  let wallet = null;
-  let hdnode = null;
   let addresses = [];
   try {
-    const type = identifyWalletType(walletSeed);
-    if (!type) throw new Error('Unknown Wallet Type');
-    switch (type) {
-      case WalletTypes.privateKey:
-        wallet = new ethers.Wallet(walletSeed);
-        break;
-      case WalletTypes.mnemonic:
-        hdnode = ethers.utils.HDNode.fromMnemonic(walletSeed);
-        break;
-      case WalletTypes.seed:
-        hdnode = ethers.utils.HDNode.fromSeed(walletSeed);
-        break;
-      case WalletTypes.readOnly:
-        wallet = { address: toChecksumAddress(walletSeed), privateKey: null };
-        break;
-      default:
-    }
-
-    // Always generate the first account
-    if (!wallet && [WalletTypes.mnemonic, WalletTypes.seed].includes(type)) {
-      const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/0`);
-      wallet = new ethers.Wallet(node.privateKey);
-    }
+    const { hdnode, isHDWallet, type, wallet } = getWallet(walletSeed);
 
     // Get all wallets
     const allWalletsResult = await getAllWallets();
@@ -374,7 +383,7 @@ export const createWallet = async (seed = null, color = null, name = null) => {
       visible: true,
     });
 
-    if (hdnode && isImported) {
+    if (isHDWallet && isImported) {
       let index = 1;
       let lookup = true;
       // Starting on index 1, we are gonna hit etherscan API and check the tx history
@@ -800,12 +809,6 @@ export async function addWalletToCloudBackup(password, wallet, filename) {
 
 export async function restoreCloudBackup(password, userData) {
   try {
-    // 0 - Should we wipe the keychain before restoring? => TBD
-    // Kinda dangerous TBH
-
-    // 1 - Find out which is the latest backup
-    // In the future we might let the user choose which backup to import
-    // For now we figure it out on our own by defaulting to the latest
     logger.log('restoreCloudBackup', password, userData);
     logger.log('restoreCloudBackup :: finding latest backup...');
 

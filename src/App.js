@@ -7,7 +7,12 @@ import { get } from 'lodash';
 import nanoid from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { AppRegistry, AppState, unstable_enableLogBox } from 'react-native';
+import {
+  AppRegistry,
+  AppState,
+  StatusBar,
+  unstable_enableLogBox,
+} from 'react-native';
 import branch from 'react-native-branch';
 // eslint-disable-next-line import/default
 import CodePush from 'react-native-code-push';
@@ -59,6 +64,9 @@ import { logger } from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
+const BACKUP_SHEET_DELAY_MS = 3000;
+
+StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
 
 if (__DEV__) {
   console.disableYellowBox = reactNativeDisableYellowBox;
@@ -172,7 +180,7 @@ class App extends Component {
         Navigation.handleAction(Routes.BACKUP_SHEET, {
           option: 'existing_user',
         });
-      }, 1000);
+      }, BACKUP_SHEET_DELAY_MS);
       // New users who are now get an incoming tx
       // now need to go through the backup flow
     } else if (backupState === BackupStateTypes.ready) {
@@ -183,7 +191,7 @@ class App extends Component {
           () => {
             Navigation.handleAction(Routes.BACKUP_SHEET);
           },
-          type === 'appended' ? 30000 : 1000
+          type === 'appended' ? 30000 : BACKUP_SHEET_DELAY_MS
         );
         incomingTxListener.removeAllListeners();
       });
@@ -191,11 +199,11 @@ class App extends Component {
       store.dispatch(addNewSubscriber(incomingTxListener, 'appended'));
       // Received will trigger when there's incoming transactions
       // during startup
-      // store.dispatch(addNewSubscriber(incomingTxListener, 'received'));
+      store.dispatch(addNewSubscriber(incomingTxListener, 'received'));
     } else if (backupState === BackupStateTypes.pending) {
       setTimeout(() => {
         Navigation.handleAction(Routes.BACKUP_SHEET);
-      }, 1000);
+      }, BACKUP_SHEET_DELAY_MS);
     }
   };
 

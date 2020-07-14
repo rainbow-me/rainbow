@@ -14,7 +14,6 @@ const CopyTooltip = ({ children, textToCopy, tooltipText }) => {
     <Fragment>
       <View ref={parent}>
         <TouchableOpacity
-          ref={target}
           onPress={() => {
             Clipboard.setString(textToCopy);
             setVisible(true);
@@ -23,21 +22,22 @@ const CopyTooltip = ({ children, textToCopy, tooltipText }) => {
               setVisible(false);
             }, 1500);
           }}
+          ref={target}
         >
           {children}
         </TouchableOpacity>
       </View>
       <Tooltips
-        text={tooltipText}
-        visible={visible}
-        parent={parent.current}
-        target={target.current}
-        shadow={false}
-        textSize={14}
-        textColor={colors.white}
-        tintColor={colors.blueGreyDark}
         corner={100}
+        parent={parent.current}
         position={3}
+        shadow={false}
+        target={target.current}
+        text={tooltipText}
+        textColor={colors.white}
+        textSize={14}
+        tintColor={colors.blueGreyDark}
+        visible={visible}
       />
     </Fragment>
   );

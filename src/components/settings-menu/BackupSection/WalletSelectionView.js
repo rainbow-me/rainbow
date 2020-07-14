@@ -72,20 +72,20 @@ const WalletSelectionView = () => {
   const { navigate } = useNavigation();
   const { walletNames, wallets } = useWallets();
   const onPress = useCallback(
-    (wallet_id, name) => {
-      const wallet = wallets[wallet_id];
+    (walletId, name) => {
+      const wallet = wallets[walletId];
       if (wallet.backedUp || wallet.imported) {
         navigate('SettingsBackupView', {
           imported: wallet.imported,
           title: name,
           type: 'AlreadyBackedUpView',
-          wallet_id,
+          walletId,
         });
       } else {
         navigate('SettingsBackupView', {
           title: name,
           type: 'NeedsBackupView',
-          wallet_id,
+          walletId,
         });
       }
     },

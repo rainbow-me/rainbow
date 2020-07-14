@@ -101,7 +101,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
     isSelected,
     isReadOnly,
     label,
-    wallet_id,
+    walletId,
   } = data;
 
   let cleanedUpBalance = balance;
@@ -115,8 +115,8 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
   }
 
   const onOptionsPress = useCallback(() => {
-    onEditWallet(wallet_id, address, cleanedUpLabel);
-  }, [address, cleanedUpLabel, onEditWallet, wallet_id]);
+    onEditWallet(walletId, address, cleanedUpLabel);
+  }, [address, cleanedUpLabel, onEditWallet, walletId]);
 
   return (
     <View style={sx.accountRow}>
@@ -164,7 +164,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
               </LinearGradient>
             )}
             {!editMode && isSelected && (
-              <CoinCheckButton toggle={isSelected} style={sx.coinCheckIcon} />
+              <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
             )}
             {editMode && <OptionsIcon onPress={onOptionsPress} />}
           </Column>
