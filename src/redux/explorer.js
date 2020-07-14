@@ -1,10 +1,10 @@
-import { get, isNil, keys, toLower } from 'lodash';
+import { get, isNil, keys, map, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 import { chartExpandedAvailable } from '../config/experimental';
 import NetworkTypes from '../helpers/networkTypes';
 import { logger } from '../utils';
-import { addressChartsReceived } from './charts';
+import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 import {
   addressAssetsReceived,
   assetPricesChanged,
@@ -22,7 +22,6 @@ const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
 const EXPLORER_CLEAR_STATE = 'explorer/EXPLORER_CLEAR_STATE';
 
 const TRANSACTIONS_LIMIT = 1000;
-const ASSET_CHARTS_LIMIT = 10000;
 
 const messages = {
   ADDRESS_ASSETS: {
@@ -31,16 +30,16 @@ const messages = {
     RECEIVED: 'received address assets',
     REMOVED: 'removed address assets',
   },
-  ADDRESS_CHARTS: {
-    APPENDED: 'appended chart points',
-    CHANGED: 'changed chart points',
-    RECEIVED: 'received address charts',
-  },
   ADDRESS_TRANSACTIONS: {
     APPENDED: 'appended address transactions',
     CHANGED: 'changed address transactions',
     RECEIVED: 'received address transactions',
     REMOVED: 'removed address transactions',
+  },
+  ASSET_CHARTS: {
+    APPENDED: 'appended chart points',
+    CHANGED: 'changed chart points',
+    RECEIVED: 'received assets charts',
   },
   ASSETS: {
     CHANGED: 'changed assets prices',
@@ -85,20 +84,18 @@ const assetsSubscription = (assetCodes, currency, action = 'subscribe') => [
   },
 ];
 
-const chartsSubscription = (
-  address,
+export const chartsRetrieval = (
+  assetCodes,
   currency,
   chartType,
-  action = 'subscribe'
+  action = 'get'
 ) => [
   action,
   {
     payload: {
-      address,
-      chart_type: chartType,
+      asset_codes: assetCodes,
+      charts_type: chartType,
       currency: toLower(currency),
-      max_assets: ASSET_CHARTS_LIMIT,
-      min_percentage: 0,
     },
     scope: ['charts'],
   },
@@ -110,26 +107,16 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
     addressSubscribed,
     assetsSocket,
   } = getState().explorer;
-  const { chartType } = getState().charts;
   const { nativeCurrency } = getState().settings;
   const { pairs } = getState().uniswap;
   if (!isNil(addressSocket)) {
     addressSocket.emit(
       ...addressSubscription(addressSubscribed, nativeCurrency, 'unsubscribe')
     );
-    if (chartExpandedAvailable) {
-      addressSocket.emit(
-        ...chartsSubscription(
-          addressSubscribed,
-          nativeCurrency,
-          chartType,
-          'unsubscribe'
-        )
-      );
-    }
     addressSocket.close();
   }
   if (!isNil(assetsSocket)) {
+    // TODO JIN - do we not care about unsubscribing uniswap assets given multi-wallets?
     assetsSocket.emit(
       ...assetsSubscription(keys(pairs), nativeCurrency, 'unsubscribe')
     );
@@ -150,7 +137,7 @@ export const explorerClearState = () => (dispatch, getState) => {
 export const explorerInit = () => async (dispatch, getState) => {
   const { network, accountAddress, nativeCurrency } = getState().settings;
   const { pairs } = getState().uniswap;
-  const { chartType } = getState().charts;
+  const { assets } = getState().data;
   const { addressSocket, assetsSocket } = getState().explorer;
 
   // if there is another socket unsubscribe first
@@ -175,20 +162,24 @@ export const explorerInit = () => async (dispatch, getState) => {
     type: EXPLORER_UPDATE_SOCKETS,
   });
 
+  dispatch(listenOnAddressMessages(newAddressSocket));
+
   newAddressSocket.on(messages.CONNECT, () => {
     newAddressSocket.emit(
       ...addressSubscription(accountAddress, nativeCurrency)
     );
-    if (chartExpandedAvailable) {
-      newAddressSocket.emit(
-        ...chartsSubscription(accountAddress, nativeCurrency, chartType)
-      );
-    }
-    dispatch(listenOnAddressMessages(newAddressSocket));
   });
+
+  dispatch(listenOnAssetMessages(newAssetsSocket));
+
   newAssetsSocket.on(messages.CONNECT, () => {
     newAssetsSocket.emit(...assetsSubscription(keys(pairs), nativeCurrency));
-    dispatch(listenOnAssetMessages(newAssetsSocket));
+    if (chartExpandedAvailable) {
+      const assetCodes = map(assets, 'address');
+      newAssetsSocket.emit(
+        ...chartsRetrieval(assetCodes, nativeCurrency, DEFAULT_CHART_TYPE)
+      );
+    }
   });
 };
 
@@ -199,6 +190,11 @@ const listenOnAssetMessages = socket => dispatch => {
 
   socket.on(messages.ASSETS.CHANGED, message => {
     dispatch(assetPricesChanged(message));
+  });
+
+  socket.on(messages.ASSET_CHARTS.RECEIVED, message => {
+    logger.log('charts received', get(message, 'payload.charts', {}));
+    dispatch(assetChartsReceived(message));
   });
 };
 
@@ -236,18 +232,6 @@ const listenOnAddressMessages = socket => dispatch => {
 
   socket.on(messages.ADDRESS_ASSETS.REMOVED, message => {
     dispatch(addressAssetsReceived(message, false, false, true));
-  });
-
-  socket.on(messages.ADDRESS_CHARTS.RECEIVED, message => {
-    dispatch(addressChartsReceived(message));
-  });
-
-  socket.on(messages.ADDRESS_CHARTS.APPENDED, message => {
-    dispatch(addressChartsReceived(message, true));
-  });
-
-  socket.on(messages.ADDRESS_CHARTS.CHANGED, message => {
-    dispatch(addressChartsReceived(message, false, true));
   });
 };
 
