@@ -76,7 +76,7 @@ const RainbowButtonBackground = ({
   width,
 }) => {
   const maskElement = (
-    <InnerButton strokeWidth={strokeWidth} height={height} width={width} />
+    <InnerButton height={height} strokeWidth={strokeWidth} width={width} />
   );
   const innerGradientCenter = [
     width - strokeWidth * 2,

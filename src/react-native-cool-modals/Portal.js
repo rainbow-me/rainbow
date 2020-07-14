@@ -47,8 +47,8 @@ export function Portal({ children }) {
     <NativePortalContext.Provider value={contextValue}>
       {children}
       <NativePortal
-        pointerEvents={pointerEvents}
         blockTouches={blockTouches}
+        pointerEvents={pointerEvents}
         style={[StyleSheet.absoluteFillObject]}
       >
         {Component}

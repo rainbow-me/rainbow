@@ -347,8 +347,8 @@ class SendAssetList extends React.Component {
   shitcoinsRenderItem = item => (
     <View marginTop={10}>
       <SendAssetListSmallBalancesHeader
-        openShitcoins={this.state.openShitcoins}
         onPress={this.changeOpenShitcoins}
+        openShitcoins={this.state.openShitcoins}
       />
       {this.state.openShitcoins && this.mapShitcoins(item.assets)}
       {this.props.savings && this.props.savings.length > 0 ? null : <Divider />}
@@ -376,17 +376,17 @@ class SendAssetList extends React.Component {
     return (
       <FlyInAnimation>
         <RecyclerListView
-          disableRecycling
-          ref={ref => {
-            this.rlv = ref;
-          }}
-          rowRenderer={this._renderRow}
           dataProvider={this.state.dataProvider}
+          disableRecycling
           layoutProvider={this._layoutProvider}
           onScroll={event => {
             this.componentHeight = event.nativeEvent.layoutMeasurement.height;
             this.position = event.nativeEvent.contentOffset.y;
           }}
+          ref={ref => {
+            this.rlv = ref;
+          }}
+          rowRenderer={this._renderRow}
           style={{ minHeight: 1 }}
         />
       </FlyInAnimation>

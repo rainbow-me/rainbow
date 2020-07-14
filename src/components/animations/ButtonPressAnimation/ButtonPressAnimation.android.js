@@ -11,11 +11,11 @@ export default function ButtonPressAnimation({
 }) {
   return (
     <TouchableOpacity
+      disabled={disabled}
       onLongPress={onLongPress}
       onPress={onPress}
       onPressStart={onPressStart}
       style={style}
-      disabled={disabled}
     >
       {children}
     </TouchableOpacity>

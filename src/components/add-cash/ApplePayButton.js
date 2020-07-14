@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import Animated, { Easing } from 'react-native-reanimated';
-import { mixColor } from 'react-native-redash';
+import { mixColor, useTimingTransition } from 'react-native-redash';
 import ShadowStack from 'react-native-shadow-stack';
-import { useTimingTransition } from '../../utils/transitions';
+
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Icon } from '../icons';
 import { Centered, InnerBorder } from '../layout';
@@ -95,8 +95,8 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
             <Icon
               color={colors.white}
               flex={1}
-              name="applePay"
               marginBottom={2}
+              name="applePay"
             />
           </Centered>
           <InnerBorder radius={ApplePayButtonBorderRadius} />

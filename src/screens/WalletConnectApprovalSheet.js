@@ -90,11 +90,11 @@ const WalletConnectApprovalSheet = () => {
         <Divider color={colors.rowDividerLight} inset={[0, 84]} />
         <RowWithMargins css={padding(24, 0, 21)} margin={15}>
           <SheetActionButton
-            textColor={colors.dark}
             color={colors.white}
             label="Cancel"
             onPress={handleCancel}
             size="big"
+            textColor={colors.dark}
           />
           <SheetActionButton
             color={colors.appleBlue}

@@ -164,7 +164,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
               </LinearGradient>
             )}
             {!editMode && isSelected && (
-              <CoinCheckButton toggle={isSelected} style={sx.coinCheckIcon} />
+              <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
             )}
             {editMode && <OptionsIcon onPress={onOptionsPress} />}
           </Column>

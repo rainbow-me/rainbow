@@ -73,7 +73,7 @@ const SheetActionButton = ({
       </ShadowStack>
       <Content size={size}>
         {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
-        {icon && <Icon color="white" name={icon} size={18} height={18} />}
+        {icon && <Icon color="white" height={18} name={icon} size={18} />}
         <Text
           align="center"
           color={textColor}

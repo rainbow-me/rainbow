@@ -152,8 +152,8 @@ export default withNavigation(
             onChangeText={this.onChangeText}
             ref={this.handleInputRef}
             selectTextOnFocus
-            spellCheck={false}
             size="bmedium"
+            spellCheck={false}
             style={{
               flexGrow: 1,
               marginTop: 1,

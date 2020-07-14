@@ -6,7 +6,12 @@ import { get } from 'lodash';
 import nanoid from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { AppRegistry, AppState, unstable_enableLogBox } from 'react-native';
+import {
+  AppRegistry,
+  AppState,
+  StatusBar,
+  unstable_enableLogBox,
+} from 'react-native';
 import branch from 'react-native-branch';
 // eslint-disable-next-line import/default
 import CodePush from 'react-native-code-push';
@@ -46,6 +51,8 @@ import { logger } from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
+
+StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
 
 if (__DEV__) {
   console.disableYellowBox = reactNativeDisableYellowBox;

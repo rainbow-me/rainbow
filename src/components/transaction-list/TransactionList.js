@@ -226,6 +226,7 @@ const TransactionList = ({
         as={NativeTransactionListView}
         data={data}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
+        isLoading={loading}
         onAccountNamePress={onAccountNamePress}
         onAddCashPress={onAddCashPress}
         onAvatarPress={onAvatarPress}
@@ -234,7 +235,6 @@ const TransactionList = ({
         onRequestExpire={onRequestExpire}
         onRequestPress={onRequestPress}
         onTransactionPress={onTransactionPress}
-        isLoading={loading}
       />
       <FloatingEmojisRegion
         setOnNewEmoji={setOnNewEmoji}

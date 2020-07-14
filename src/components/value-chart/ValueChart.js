@@ -639,6 +639,12 @@ export default class Chart extends PureComponent {
           <AnimatedCircle
             cx={element.x}
             cy={element.y}
+            fill={
+              chartData[element.index].startSeparatator[
+                startingValues[element.index]++
+              ].fill
+            }
+            opacity={element.opacity}
             r={
               chartData[element.index].startSeparatator[
                 startingValues[element.index]
@@ -654,12 +660,6 @@ export default class Chart extends PureComponent {
                 startingValues[element.index]
               ].strokeWidth
             }
-            fill={
-              chartData[element.index].startSeparatator[
-                startingValues[element.index]++
-              ].fill
-            }
-            opacity={element.opacity}
           />
         );
       }
@@ -702,9 +702,9 @@ export default class Chart extends PureComponent {
       <Fragment>
         <GestureWrapper
           enabled={this.props.enableSelect}
-          onTapGestureEvent={this.onTapGestureEvent}
-          onPanGestureEvent={this.onPanGestureEvent}
           onHandlerStateChange={this.onHandlerStateChange}
+          onPanGestureEvent={this.onPanGestureEvent}
+          onTapGestureEvent={this.onTapGestureEvent}
         >
           <Animated.View style={{ opacity: this.loadingValue }}>
             <TimestampText

@@ -36,19 +36,19 @@ function MainExchangeNavigator() {
   return (
     <Stack.Navigator
       {...stackNavigationConfig}
-      screenOptions={exchangeModalPreset}
       initialRouteName={Routes.MAIN_EXCHANGE_SCREEN}
+      screenOptions={exchangeModalPreset}
     >
       <Stack.Screen
-        name={Routes.MAIN_EXCHANGE_SCREEN}
         component={SwapModal}
         initialParams={{
           position,
         }}
+        name={Routes.MAIN_EXCHANGE_SCREEN}
       />
       <Stack.Screen
-        name={Routes.SWAP_DETAILS_SCREEN}
         component={SwapDetailsScreen}
+        name={Routes.SWAP_DETAILS_SCREEN}
         options={swapDetailsPreset}
       />
     </Stack.Navigator>
@@ -68,19 +68,19 @@ function ExchangeModalNavigator() {
   return (
     <Tabs.Navigator {...config}>
       <Tabs.Screen
-        name={Routes.MAIN_EXCHANGE_NAVIGATOR}
         component={MainExchangeNavigator}
         initialParams={{
           position,
         }}
+        name={Routes.MAIN_EXCHANGE_NAVIGATOR}
       />
       <Tabs.Screen
-        name={Routes.CURRENCY_SELECT_SCREEN}
         component={CurrencySelectModal}
         initialParams={{
           position,
           toggleGestureEnabled,
         }}
+        name={Routes.CURRENCY_SELECT_SCREEN}
       />
     </Tabs.Navigator>
   );

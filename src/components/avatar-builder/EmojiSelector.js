@@ -170,15 +170,15 @@ export default class EmojiSelector extends PureComponent {
             >
               {touchableNet.map(singleLine => (
                 <TouchableOpacity
-                  key={`categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`}
                   activeOpacity={0.5}
+                  key={`categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`}
+                  onPress={() => this.handleEmojiSelect(singleLine)}
                   style={{
                     height: (width - 21) / this.props.columns,
                     width: (width - 21) / this.props.columns,
                     opacity: 0,
                     backgroundColor: 'white',
                   }}
-                  onPress={() => this.handleEmojiSelect(singleLine)}
                 />
               ))}
             </View>
@@ -269,8 +269,8 @@ export default class EmojiSelector extends PureComponent {
         }}
       >
         <BlurView
-          blurType="light"
           blurAmount={10}
+          blurType="light"
           style={[
             styles.sectionStickyBlur,
             {
@@ -390,14 +390,14 @@ export default class EmojiSelector extends PureComponent {
     const Searchbar = (
       <View style={styles.searchbar_container}>
         <TextInput
-          style={styles.search}
-          placeholder={placeholder}
-          clearButtonMode="always"
-          returnKeyType="done"
           autoCorrect={false}
+          clearButtonMode="always"
+          onChangeText={this.handleSearch}
+          placeholder={placeholder}
+          returnKeyType="done"
+          style={styles.search}
           underlineColorAndroid={theme}
           value={searchQuery}
-          onChangeText={this.handleSearch}
         />
       </View>
     );
@@ -419,22 +419,22 @@ export default class EmojiSelector extends PureComponent {
             ) : null}
             <View style={styles.container}>
               <StickyContainer
-                stickyHeaderIndices={[1, 3, 5, 7, 9, 11, 13, 15, 17]}
                 overrideRowRenderer={this.renderStickyItem}
+                stickyHeaderIndices={[1, 3, 5, 7, 9, 11, 13, 15, 17]}
               >
                 <ProgressiveListView
+                  canChangeSize={false}
                   dataProvider={new DataProvider(
                     this.hasRowChanged
                   ).cloneWithRows(this.state.allEmojiList)}
+                  externalScrollView={this.renderScrollView}
                   layoutProvider={this._layoutProvider}
-                  canChangeSize={false}
-                  renderAheadStep={100}
+                  onScroll={this.handleScroll}
                   renderAheadOffset={300}
+                  renderAheadStep={100}
                   rowRenderer={this.renderItem}
                   scrollIndicatorInsets={[15, 0, 15, 0]}
                   style={{ width: deviceUtils.dimensions.width }}
-                  onScroll={this.handleScroll}
-                  externalScrollView={this.renderScrollView}
                 />
               </StickyContainer>
             </View>
@@ -463,9 +463,9 @@ export default class EmojiSelector extends PureComponent {
             >
               <LinearGradient
                 borderRadius={19}
-                overflow="hidden"
                 colors={['#FFFFFF', '#FFFFFF', '#F0F5FA']}
                 end={{ x: 0.5, y: 1 }}
+                overflow="hidden"
                 pointerEvents="none"
                 start={{ x: 0.5, y: 0 }}
                 style={position.coverAsObject}
@@ -473,9 +473,9 @@ export default class EmojiSelector extends PureComponent {
             </View>
             <TabBar
               activeCategory={category}
+              categoryKeys={categoryKeys}
               onPress={this.handleTabSelect}
               theme={theme}
-              categoryKeys={categoryKeys}
             />
           </View>
         ) : null}
