@@ -1,5 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
+import { Platform } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
@@ -13,7 +14,10 @@ import { SecretDisplaySection } from '../secret-display';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
 
-const contentHeight = deviceUtils.dimensions.height - 150;
+const contentHeight =
+  Platform.OS === 'android'
+    ? deviceUtils.dimensions.height - 50
+    : deviceUtils.dimensions.height - 150;
 
 const Title = styled(Text).attrs({
   size: 'big',
@@ -68,7 +72,10 @@ const BackupManualStep = () => {
         <TopIcon>􀉆</TopIcon>
       </Column>
       <Title>Back up manually</Title>
-      <Column paddingBottom={65} paddingHorizontal={60}>
+      <Column
+        paddingBottom={Platform.OS === 'android' ? 30 : 65}
+        paddingHorizontal={60}
+      >
         <DescriptionText>
           <ImportantText>
             {type === WalletTypes.privateKey

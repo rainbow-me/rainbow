@@ -10,6 +10,7 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   AppState,
+  Platform,
   StatusBar,
   unstable_enableLogBox,
 } from 'react-native';
@@ -145,7 +146,7 @@ class App extends Component {
     const address = await loadAddress();
     if (address) {
       this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
-      this.setupIncomingNotificationListeners();
+      Platform.OS === 'ios' && this.setupIncomingNotificationListeners();
     } else {
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
     }

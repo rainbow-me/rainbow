@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import React, { Fragment, useCallback, useEffect } from 'react';
+import { Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import BackupIcon from '../../../assets/backupIcon.png';
@@ -94,8 +95,14 @@ const NeedsBackupView = () => {
             it if you lose this device.
           </DescriptionText>
         </Column>
+
         <Column align="center">
-          <BackupButton label="􀙶 Back up to iCloud" onPress={onIcloudBackup} />
+          {Platform.OS === 'ios' && (
+            <BackupButton
+              label="􀙶 Back up to iCloud"
+              onPress={onIcloudBackup}
+            />
+          )}
           <SheetActionButton
             color={colors.white}
             label="🤓 Back up manually"

@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { Alert, View } from 'react-native';
+import { Alert, Platform, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../../helpers/walletBackupTypes';
@@ -212,7 +212,7 @@ const AlreadyBackedUpView = () => {
         </Column>
       </Column>
 
-      {walletStatus !== 'cloud_backup' && (
+      {Platform.OS === 'ios' && walletStatus !== 'cloud_backup' && (
         <Centered css={padding(0, 15, 42)}>
           <ButtonPressAnimation onPress={onFooterAction}>
             <Text

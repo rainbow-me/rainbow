@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, InteractionManager } from 'react-native';
+import { Alert, InteractionManager, Platform } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
@@ -17,7 +17,7 @@ import BackupManualStep from '../components/backup/BackupManualStep';
 import LoadingOverlay, {
   LoadingOverlayWrapper,
 } from '../components/modal/LoadingOverlay';
-import { SlackSheet } from '../components/sheet';
+import { Sheet, SlackSheet } from '../components/sheet';
 import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import BackupStateTypes from '../helpers/backupStateTypes';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
@@ -48,7 +48,7 @@ const StyledSheet = styled(SlackSheet)`
 `;
 
 const BackupSheet = ({ setAppearListener }) => {
-  const { jumpToLong } = useContext(ModalContext);
+  const { jumpToLong } = useContext(ModalContext) || {};
   const { navigate, setOptions, goBack, setParams } = useNavigation();
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
@@ -185,7 +185,7 @@ const BackupSheet = ({ setAppearListener }) => {
         isShortFormEnabled: false,
         longFormHeight: 770,
       });
-      setImmediate(jumpToLong);
+      jumpToLong && setImmediate(jumpToLong);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -245,15 +245,20 @@ const BackupSheet = ({ setAppearListener }) => {
     step,
   ]);
 
+  const SheetComponent =
+    Platform.OS === 'android' && step !== WalletBackupTypes.manual
+      ? Sheet
+      : StyledSheet;
+
   return (
-    <StyledSheet>
+    <SheetComponent>
       <Transitioning.View
         ref={switchSheetContentTransitionRef}
         transition={switchSheetContentTransition}
       >
         {renderStep()}
       </Transitioning.View>
-    </StyledSheet>
+    </SheetComponent>
   );
 };
 
