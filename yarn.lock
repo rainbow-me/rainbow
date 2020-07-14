@@ -1158,10 +1158,9 @@
   dependencies:
     invariant "^2.2.4"
 
-"@react-native-community/viewpager@^3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-3.3.0.tgz#e613747a43a31a6f3278f817ba96fdaaa7941f23"
-  integrity sha512-tyzh79l4t/hxiyS9QD3LRmWMs8KVkZzjrkQ8U8+8To1wmvVCBtp8BenvNsDLTBO7CpO/YmiThpmIdEZMr1WuVw==
+"@react-native-community/viewpager@react-native-community/react-native-viewpager#54346b230bf639a7c120fe23e509800288325d84":
+  version "4.0.1"
+  resolved "https://codeload.github.com/react-native-community/react-native-viewpager/tar.gz/54346b230bf639a7c120fe23e509800288325d84"
 
 "@react-native-firebase/app-types@6.7.2":
   version "6.7.2"
