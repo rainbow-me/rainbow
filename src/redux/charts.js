@@ -1,4 +1,4 @@
-import { concat, forEach, get } from 'lodash';
+import { get, mapValues, reverse } from 'lodash';
 import { getCharts, saveCharts } from '../handlers/localstorage/accountLocal';
 import ChartTypes from '../helpers/chartTypes';
 
@@ -7,6 +7,7 @@ const CHARTS_UPDATE_CHART_TYPE = 'charts/CHARTS_UPDATE_CHART_TYPE';
 const CHARTS_LOAD_REQUEST = 'charts/CHARTS_LOAD_REQUEST';
 const CHARTS_LOAD_SUCCESS = 'charts/CHARTS_LOAD_SUCCESS';
 const CHARTS_LOAD_FAILURE = 'charts/CHARTS_LOAD_FAILURE';
+const CHARTS_FALLBACK_UPDATE = 'charts/CHARTS_FALLBACK_UPDATE';
 const CHARTS_UPDATE = 'charts/CHARTS_UPDATE';
 const CHARTS_CLEAR_STATE = 'charts/CHARTS_CLEAR_STATE';
 
@@ -36,25 +37,23 @@ export const chartsUpdateChartType = chartType => dispatch =>
     type: CHARTS_UPDATE_CHART_TYPE,
   });
 
-export const addressChartsReceived = (
-  message,
-  append = false
-  // change = false // TODO JIN handle change
-) => (dispatch, getState) => {
+export const getAssetChart = (address, chartType) => (dispatch, getState) => {
+  const { charts, chartsFallback } = getState().charts;
+  return (
+    charts?.[address]?.[chartType] || chartsFallback?.[address]?.[chartType]
+  );
+};
+
+export const assetChartsReceived = message => (dispatch, getState) => {
+  const chartType = get(message, 'meta.charts_type');
   const { accountAddress, network } = getState().settings;
-  const { chartType } = getState().charts;
-  const charts = get(message, 'payload.charts', {}); // or payload.points if append?
-  let updatedCharts = charts;
-  if (append) {
-    const { charts: existingCharts } = getState().charts;
-    const appendedChartPoints = get(message, 'payload.points', {});
-    updatedCharts = { ...existingCharts };
-    forEach(appendedChartPoints, (value, key) => {
-      const existingPoints = get(existingCharts, `${key}`, []);
-      const updatedPoints = concat(value, existingPoints);
-      updatedCharts[key] = updatedPoints;
-    });
-  }
+  const { charts: existingCharts } = getState().charts;
+  const assetCharts = get(message, 'payload.charts', {});
+  const updatedCharts = mapValues(assetCharts, (chartData, address) => ({
+    ...existingCharts[address],
+    [chartType]: reverse(chartData),
+  }));
+
   if (chartType === DEFAULT_CHART_TYPE) {
     saveCharts(updatedCharts, accountAddress, network);
   }
@@ -64,9 +63,33 @@ export const addressChartsReceived = (
   });
 };
 
+export const assetChartsFallbackReceived = (address, chartType, chartData) => (
+  dispatch,
+  getState
+) => {
+  const { accountAddress, network } = getState().settings;
+  const { chartsFallback } = getState().charts;
+  const updatedCharts = {
+    ...chartsFallback,
+    [address]: {
+      ...chartsFallback[address],
+      [chartType]: chartData,
+    },
+  };
+
+  if (chartType === DEFAULT_CHART_TYPE) {
+    saveCharts(updatedCharts, accountAddress, network);
+  }
+  dispatch({
+    payload: updatedCharts,
+    type: CHARTS_FALLBACK_UPDATE,
+  });
+};
+
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   charts: {},
+  chartsFallback: {},
   chartType: DEFAULT_CHART_TYPE,
   fetchingCharts: false,
 };
@@ -89,6 +112,12 @@ export default (state = INITIAL_STATE, action) => {
     case CHARTS_LOAD_FAILURE:
       return {
         ...state,
+        fetchingCharts: false,
+      };
+    case CHARTS_FALLBACK_UPDATE:
+      return {
+        ...state,
+        chartsFallback: action.payload,
         fetchingCharts: false,
       };
     case CHARTS_UPDATE:
