@@ -168,7 +168,6 @@ export const explorerInit = () => async (dispatch, getState) => {
 
   newAssetsSocket.on(messages.CONNECT, () => {
     newAssetsSocket.emit(...assetsSubscription(keys(pairs), nativeCurrency));
-    dispatch(emitChartsRequest());
   });
 };
 
@@ -176,7 +175,6 @@ export const emitChartsRequest = (
   assetAddress,
   chartType = DEFAULT_CHART_TYPE
 ) => (dispatch, getState) => {
-  console.log('request charts');
   if (!chartExpandedAvailable) return;
   const { nativeCurrency } = getState().settings;
   const { assetsSocket } = getState().explorer;
@@ -228,6 +226,7 @@ const listenOnAddressMessages = socket => dispatch => {
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
     dispatch(addressAssetsReceived(message));
+    dispatch(emitChartsRequest());
   });
 
   socket.on(messages.ADDRESS_ASSETS.APPENDED, message => {
