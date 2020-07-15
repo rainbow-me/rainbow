@@ -267,7 +267,12 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ModalScreen}
         name={Routes.MODAL_SCREEN}
-        {...sharedCoolModalConfig}
+        options={{
+          customStack: true,
+          ignoreBottomOffset: true,
+          onAppear: null,
+          topOffset: 0,
+        }}
       />
       {isNativeStackAvailable && (
         <>
