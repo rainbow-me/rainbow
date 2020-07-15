@@ -1168,26 +1168,26 @@
   resolved "https://registry.yarnpkg.com/@react-native-firebase/app-types/-/app-types-6.7.2.tgz#d2e1530af5702e00578914b41468898c10d3289c"
   integrity sha512-pIwc6e0ZINw6PJqNVsAxzOVJUDg6au2TdulY+ZOYQ11SPDs5I2n9likoGrElPmJjajT4s9h87uz/6PWP2k9PxQ==
 
-"@react-native-firebase/app@^7.2.1":
-  version "7.3.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-7.3.1.tgz#432a93cae79295df7e881437029a5eeb522a1b79"
-  integrity sha512-pQM4YnPRl1PaXqdFEfJSSCB5ETM303Rwucy015K1YKANtcB4r5VlXYgVHOx7BesXMxOjkzYfXH8WLtnC8PD/Xw==
+"@react-native-firebase/app@^8.2.0":
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-8.2.0.tgz#28db1958c8bd8028503b4d0a68a31a7c4caf61cc"
+  integrity sha512-V3s87BlDIyuhtK/1w+vwKdY5AlOCCBXovlorZU1wiyDH8Q942Cjxcx9tBc59+TLWqMYrYyFGAnAJxnIw3QzmmQ==
   dependencies:
     "@react-native-firebase/app-types" "6.7.2"
     opencollective-postinstall "^2.0.1"
     superstruct "^0.6.2"
 
-"@react-native-firebase/crashlytics@^7.1.5":
-  version "7.1.7"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/crashlytics/-/crashlytics-7.1.7.tgz#00c702b34946665caecc059300e10dd84cb1c5bf"
-  integrity sha512-Mao8PfyedZwtaWDu0uy0e83x+wx1WOocgMGL3s4vtHD/gr3EipE8UlwEgK09zfbgNFeE89a4FQNgDWlJmUu1iQ==
+"@react-native-firebase/crashlytics@^8.1.2":
+  version "8.1.2"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/crashlytics/-/crashlytics-8.1.2.tgz#2a9c0ec8809457ba1f48acffc8d86f043aac0ff6"
+  integrity sha512-xRGMeuNmJcaPmgr3PqIXS1r5Wx2x21S9ES007BTBpyCzd92vmlKVawpx5vYjFoVQeKRjEPT37MJ7QTU4x81JoA==
   dependencies:
     stacktrace-js "^2.0.0"
 
-"@react-native-firebase/messaging@^7.1.6":
-  version "7.2.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-7.2.1.tgz#b08cb1ae4171ee76cb25f765b2f1f1f01ac9a083"
-  integrity sha512-5w94m+XFj2P/VdGZW3AuXvhsAnjHC03vQcTdJm7B5vZo2ZbfnVEH4Dyb7V9rlI2stPc2/cIBiMK/oTerMAaDtw==
+"@react-native-firebase/messaging@^7.4.2":
+  version "7.4.2"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-7.4.2.tgz#736476df3b88b129172dd090df5190f71bcba83a"
+  integrity sha512-PuMRvWFFgElFXDp71TmEs+eype8GrrUEibLFpqlzVLheUTtzRG4+ofZiWr8yAO0nXmuPSPgkroQzAMbeEf2J3A==
 
 "@react-navigation/core@^5.10.0", "@react-navigation/core@^5.11.1":
   version "5.11.1"
