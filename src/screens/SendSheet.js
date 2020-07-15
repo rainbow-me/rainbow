@@ -51,6 +51,7 @@ const Container = styled.View`
   background-color: ${colors.transparent};
   flex: 1;
   padding-top: ${isNativeStackAvailable ? 0 : statusBarHeight};
+  width: 100%;
 `;
 
 const SheetContainer = styled(Column).attrs({
@@ -60,6 +61,7 @@ const SheetContainer = styled(Column).attrs({
   ${borders.buildRadius('top', 16)};
   background-color: ${colors.white};
   height: ${isNativeStackAvailable ? sheetHeight : '100%'};
+  width: 100%;
 `;
 
 export default function SendSheet(props) {

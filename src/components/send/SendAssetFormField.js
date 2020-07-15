@@ -29,7 +29,8 @@ export default function SendAssetFormField({
 
   return (
     <RowWithMargins
-      align="start"
+      align="center"
+      flex={1}
       justify="space-between"
       margin={23}
       {...props}

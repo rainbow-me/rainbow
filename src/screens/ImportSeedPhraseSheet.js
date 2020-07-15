@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, Platform, StatusBar } from 'react-native';
+import { Alert, InteractionManager, Platform, StatusBar } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import styled from 'styled-components/primitives';
 import { MiniButton } from '../components/buttons';
@@ -25,6 +25,7 @@ import { sheetVerticalOffset } from '../navigation/effects';
 import {
   useAccountSettings,
   useClipboard,
+  useDimensions,
   useInitializeWallet,
   useIsWalletEthZero,
   useMagicAutofocus,
@@ -36,6 +37,7 @@ import { borders, colors, padding } from '@rainbow-me/styles';
 import logger from 'logger';
 import { usePortal } from 'react-native-cool-modals/Portal';
 
+const sheetBottomPadding = 19;
 const keyboardVerticalOffset =
   Platform.OS === 'android'
     ? sheetVerticalOffset - 240
@@ -53,6 +55,7 @@ const Footer = styled(Row).attrs({
   bottom: ${Platform.OS === 'android' ? 55 : 0};
   position: ${Platform.OS === 'android' ? 'absolute' : 'relative'};
   right: 0;
+  top: ${({ isSmallPhone }) => (isSmallPhone ? sheetBottomPadding * 2 : 0)};
   width: 100%;
 `;
 
@@ -96,13 +99,15 @@ const Sheet = styled(Column).attrs({
   flex: 1,
 })`
   ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
-  ${padding(0, 15, 19)};
+  ${padding(0, 15, sheetBottomPadding)};
   background-color: ${colors.white};
+  z-index: 1;
 `;
 
 export default function ImportSeedPhraseSheet() {
   const { accountAddress } = useAccountSettings();
   const { clipboard } = useClipboard();
+  const { isSmallPhone } = useDimensions();
   const { navigate, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
   const hadPreviousAddressWithValue = useIsWalletEthZero();
@@ -225,7 +230,9 @@ export default function ImportSeedPhraseSheet() {
               analytics.track('Imported seed phrase', {
                 hadPreviousAddressWithValue,
               });
-              navigate(Routes.WALLET_SCREEN);
+              InteractionManager.runAfterInteractions(() => {
+                navigate(Routes.WALLET_SCREEN);
+              });
               if (Platform.OS === 'android') {
                 hide();
               }
@@ -272,7 +279,7 @@ export default function ImportSeedPhraseSheet() {
             value={seedPhrase}
           />
         </SecretTextAreaContainer>
-        <Footer>
+        <Footer isSmallPhone={isSmallPhone}>
           {seedPhrase ? (
             <FooterButton
               disabled={!isSecretValid}
