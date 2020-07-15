@@ -1,5 +1,5 @@
 import { StackActions, useTheme } from '@react-navigation/native';
-import React, { createContext, useCallback, useMemo, useRef } from 'react';
+import React, { createContext, useMemo, useRef } from 'react';
 import { findNodeHandle, NativeModules, StyleSheet, View } from 'react-native';
 import Components from './screens';
 
@@ -48,8 +48,6 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
     ignoreBottomOffset,
     isShortFormEnabled,
     longFormHeight,
-    onAppear,
-    onDismissed,
     onTouchTop,
     onWillDismiss,
     shortFormHeight,
@@ -61,52 +59,6 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
     topOffset,
     transitionDuration,
   } = options;
-
-  const contentStyles = useMemo(
-    () => [
-      sx.container,
-      {
-        backgroundColor:
-          stackPresentation !== 'transparentModal'
-            ? colors.background
-            : undefined,
-      },
-      contentStyle,
-    ],
-    [colors.background, contentStyle, stackPresentation]
-  );
-
-  const handleAppear = useCallback(() => {
-    if (onAppear) {
-      onAppear();
-    }
-    navigation.emit({
-      target: route.key,
-      type: 'appear',
-    });
-  }, [onAppear, navigation, route.key]);
-
-  const handleDismissed = useCallback(() => {
-    if (onDismissed) {
-      onDismissed();
-    }
-    navigation.emit({
-      target: route.key,
-      type: 'dismiss',
-    });
-    navigation.dispatch({
-      ...StackActions.pop(),
-      source: route.key,
-      target: state.key,
-    });
-  }, [onDismissed, navigation, route.key, state.key]);
-
-  const handleFinishTransitioning = useCallback(() => {
-    navigation.emit({
-      target: route.key,
-      type: 'finishTransitioning',
-    });
-  }, [navigation, route.key]);
 
   return (
     <ModalContext.Provider value={context}>
@@ -125,9 +77,31 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
         key={route.key}
         longFormHeight={longFormHeight}
         modalBackgroundColor={backgroundColor}
-        onAppear={handleAppear}
-        onDismissed={handleDismissed}
-        onFinishTransitioning={handleFinishTransitioning}
+        onAppear={() => {
+          options?.onAppear?.();
+          navigation.emit({
+            target: route.key,
+            type: 'appear',
+          });
+        }}
+        onDismissed={() => {
+          options?.onDismissed?.();
+          navigation.emit({
+            target: route.key,
+            type: 'dismiss',
+          });
+          navigation.dispatch({
+            ...StackActions.pop(),
+            source: route.key,
+            target: state.key,
+          });
+        }}
+        onFinishTransitioning={() => {
+          navigation.emit({
+            target: route.key,
+            type: 'finishTransitioning',
+          });
+        }}
         onTouchTop={onTouchTop}
         onWillDismiss={onWillDismiss}
         ref={ref}
@@ -141,7 +115,20 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
         topOffset={topOffset}
         transitionDuration={transitionDuration}
       >
-        <View style={contentStyles}>{renderScene()}</View>
+        <View
+          style={[
+            sx.container,
+            {
+              backgroundColor:
+                stackPresentation !== 'transparentModal'
+                  ? colors.background
+                  : undefined,
+            },
+            contentStyle,
+          ]}
+        >
+          {renderScene()}
+        </View>
       </Components.Screen>
     </ModalContext.Provider>
   );
