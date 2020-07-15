@@ -135,6 +135,7 @@
     "react-native-indicators": "0.17.0",
     "react-native-ios11-devicecheck": "^0.0.3",
     "react-native-iphone-x-helper": "^1.2.1",
+    "react-native-keyboard-area": "^1.0.5",
     "react-native-keychain": "4.0.3",
     "react-native-languages": "^3.0.0",
     "react-native-level-fs": "^3.0.1",

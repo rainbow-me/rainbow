@@ -1,22 +1,34 @@
-import Clipboard from '@react-native-community/clipboard';
-import { omit } from 'lodash';
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import styled from 'styled-components/primitives';
 import { isHexString } from '../../handlers/web3';
 import { checkIsValidAddressOrENS } from '../../helpers/validators';
-import { withNavigation } from '../../navigation/Navigation';
-import { abbreviations, addressUtils, isNewValueForPath } from '../../utils';
 import { Input } from '../inputs';
 import { Row } from '../layout';
 import { Label } from '../text';
+import { useClipboard } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
+import { abbreviations, addressUtils } from '@rainbow-me/utils';
+
+const AddressInput = styled(Input).attrs({
+  autoCapitalize: 'none',
+  autoCorrect: false,
+  keyboardType: Platform.OS === 'android' ? 'visible-password' : 'default',
+  maxLength: addressUtils.maxLength,
+  selectTextOnFocus: true,
+  size: 'bmedium',
+  spellCheck: false,
+  weight: 'semibold',
+})`
+  flex-grow: 1;
+  margin-top: 1;
+  z-index: 1;
+`;
 
 const Placeholder = styled(Row)`
-  margin-top: ${Platform.OS === 'android' ? 14 : 0};
   margin-left: ${Platform.OS === 'android' ? 3 : 0};
+  margin-top: ${Platform.OS === 'android' ? 14 : 0};
   position: absolute;
   top: 0;
   z-index: 1;
@@ -31,146 +43,63 @@ const formatValue = value =>
     ? abbreviations.address(value, 4, 10)
     : value;
 
-export default withNavigation(
-  class AddressField extends React.Component {
-    static propTypes = {
-      address: PropTypes.string,
-      autoFocus: PropTypes.bool,
-      currentContact: PropTypes.object,
-      onChange: PropTypes.func.isRequired,
-    };
+const AddressField = (
+  { address, autoFocus, name, onChange, onFocus, ...props },
+  ref
+) => {
+  const { clipboard, setClipboard } = useClipboard();
+  const [inputValue, setInputValue] = useState('');
+  const [isValid, setIsValid] = useState(false);
 
-    state = {
-      address: '',
-      currentContact: false,
-      inputValue: '',
-      isValid: false,
-    };
-
-    shouldComponentUpdate(nextProps, nextState) {
-      const isNewAddress = isNewValueForPath(nextProps, this.state, 'address');
-      const isNewInputValue = isNewValueForPath(
-        this.state,
-        nextState,
-        'inputValue'
-      );
-      const isNewNickname = isNewValueForPath(
-        this.props,
-        nextProps,
-        'currentContact.nickname'
-      );
-      const isNewValid = isNewValueForPath(this.state, nextState, 'isValid');
-      return isNewAddress || isNewInputValue || isNewNickname || isNewValid;
+  const expandAbbreviatedClipboard = useCallback(() => {
+    if (clipboard === abbreviations.formatAddressForDisplay(address)) {
+      setClipboard(address);
     }
+  }, [address, clipboard, setClipboard]);
 
-    componentDidUpdate(prevProps) {
-      const { address, currentContact } = this.props;
+  const validateAddress = useCallback(async address => {
+    const newIsValid = await checkIsValidAddressOrENS(address);
+    return setIsValid(newIsValid);
+  }, []);
 
-      const isNewNickname = isNewValueForPath(
-        this.props,
-        prevProps,
-        'currentContact.nickname'
-      );
-      const isNewAddress = address !== this.state.address;
+  const handleChange = useCallback(
+    ({ nativeEvent: { text } }) => {
+      onChange(text);
+      validateAddress(text);
+      expandAbbreviatedClipboard();
+    },
+    [expandAbbreviatedClipboard, onChange, validateAddress]
+  );
 
-      if (isNewAddress || isNewNickname) {
-        const newState = {
-          address,
-          inputValue: currentContact.nickname
-            ? currentContact.nickname
-            : address,
-          isValid: true,
-        };
-
-        if (isNewNickname) {
-          newState.currentContact = currentContact;
-        }
-
-        // eslint-disable-next-line react/no-did-update-set-state
-        this.setState(newState);
-      }
+  useEffect(() => {
+    if (address !== inputValue || name !== inputValue) {
+      setInputValue(name || address);
+      setIsValid(true);
     }
+  }, [address, inputValue, name]);
 
-    inputRef = undefined;
+  return (
+    <Row flex={1}>
+      <AddressInput
+        {...props}
+        autoFocus={autoFocus}
+        color={isValid ? colors.appleBlue : colors.blueGreyDark}
+        onBlur={expandAbbreviatedClipboard}
+        onChange={handleChange}
+        onChangeText={setInputValue}
+        onFocus={onFocus}
+        ref={ref}
+        value={formatValue(inputValue)}
+      />
+      {!inputValue && (
+        <Placeholder>
+          <TouchableWithoutFeedback onPress={ref?.current?.focus}>
+            <PlaceholderText>ENS or Address (0x...)</PlaceholderText>
+          </TouchableWithoutFeedback>
+        </Placeholder>
+      )}
+    </Row>
+  );
+};
 
-    handleInputRef = ref => {
-      this.inputRef = ref;
-      this.props.inputRef(ref);
-    };
-
-    onChange = ({ nativeEvent: { text } }) => {
-      this.props.onChange(text);
-      this.validateAddress(text);
-      this.checkClipboard(this.state.address);
-      return this.setState({ address: text });
-    };
-
-    onChangeText = inputValue => this.setState({ inputValue });
-
-    validateAddress = async address => {
-      const isValid = await checkIsValidAddressOrENS(address);
-      return this.setState({ isValid });
-    };
-
-    onBlur = () => {
-      this.checkClipboard(this.state.address);
-      if (this.props.onBlur) {
-        this.props.onBlur();
-      }
-    };
-
-    checkClipboard = async address => {
-      const clipboard = await Clipboard.getString();
-      if (abbreviations.address(address, 4, 10) === clipboard) {
-        Clipboard.setString(address);
-      }
-    };
-
-    onPressNickname = () => {
-      this.inputRef.focus();
-    };
-
-    render() {
-      const { autoFocus, ...props } = this.props;
-      const { inputValue, isValid } = this.state;
-
-      return (
-        <Row flex={1}>
-          <Input
-            {...props}
-            {...omit(Label.textProps, 'opacity')}
-            autoCapitalize="none"
-            autoCorrect={false}
-            autoFocus={autoFocus}
-            color={isValid ? colors.appleBlue : colors.blueGreyDark}
-            keyboardType={
-              Platform.OS === 'android' ? 'visible-password' : 'default'
-            }
-            maxLength={addressUtils.maxLength}
-            onBlur={this.onBlur}
-            onChange={this.onChange}
-            onChangeText={this.onChangeText}
-            ref={this.handleInputRef}
-            selectTextOnFocus
-            size="bmedium"
-            spellCheck={false}
-            style={{
-              flexGrow: 1,
-              marginTop: 1,
-              zIndex: 1,
-            }}
-            value={formatValue(inputValue)}
-            weight="semibold"
-          />
-          {!inputValue && (
-            <Placeholder>
-              <TouchableWithoutFeedback onPress={this.onPressNickname}>
-                <PlaceholderText>ENS or Address (0x...)</PlaceholderText>
-              </TouchableWithoutFeedback>
-            </Placeholder>
-          )}
-        </Row>
-      );
-    }
-  }
-);
+export default React.forwardRef(AddressField);

@@ -1,7 +1,7 @@
 import { Keyboard, Platform, StatusBar } from 'react-native';
-import { deviceUtils, safeAreaInsetValues } from '../utils';
 import { onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
+import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 export const expandedAssetSheetConfig = {
   options: ({ route: { params = {} } }) => ({

@@ -15,7 +15,6 @@ import openStateSettings from './openStateSettings';
 import raps from './raps';
 import requests from './requests';
 import savings from './savings';
-import selectedInput from './selectedInput';
 import settings from './settings';
 import showcaseTokens from './showcaseTokens';
 import uniqueTokens from './uniqueTokens';
@@ -39,7 +38,6 @@ export default combineReducers({
   raps,
   requests,
   savings,
-  selectedInput,
   settings,
   showcaseTokens,
   uniqueTokens,

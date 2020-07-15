@@ -22,6 +22,7 @@ export default function SendAssetFormToken({
   nativeCurrency,
   onChangeAssetAmount,
   onChangeNativeAmount,
+  onFocus,
   selected,
   sendMaxBalance,
   txSpeedRenderer,
@@ -41,6 +42,7 @@ export default function SendAssetFormToken({
           format={removeLeadingZeros}
           label={selected.symbol}
           onChange={onChangeAssetAmount}
+          onFocus={onFocus}
           onPressButton={sendMaxBalance}
           placeholder="0"
           value={assetAmount}
@@ -50,6 +52,7 @@ export default function SendAssetFormToken({
           label={nativeCurrency}
           mask={nativeMask}
           onChange={onChangeNativeAmount}
+          onFocus={onFocus}
           onPressButton={sendMaxBalance}
           placeholder={nativePlaceholder}
           value={nativeAmount}

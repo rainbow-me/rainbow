@@ -11,6 +11,7 @@ export default function SendAssetFormField({
   labelMaxLength = 6,
   mask,
   onChange,
+  onFocus,
   onPressButton,
   placeholder,
   value,
@@ -40,6 +41,7 @@ export default function SendAssetFormField({
         keyboardType="decimal-pad"
         mask={mask}
         onChange={onChange}
+        onFocus={onFocus}
         onPressButton={handlePressButton}
         placeholder={placeholder}
         value={value}

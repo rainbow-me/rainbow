@@ -39,16 +39,17 @@ const headerlessSection = data => [{ data, title: '' }];
 
 export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
-  const { params } = useRoute();
-  const onSelectCurrency = params?.onSelectCurrency;
-  const restoreFocusOnSwapModal = params?.restoreFocusOnSwapModal;
-  const transitionPosition = params.position;
+  const { navigate } = useNavigation();
+  const {
+    params: {
+      onSelectCurrency,
+      restoreFocusOnSwapModal,
+      tabTransitionPosition,
+      toggleGestureEnabled,
+      type,
+    },
+  } = useRoute();
 
-  useEffect(() => {
-    if (isFocused) {
-      transitionPosition.setValue(1);
-    }
-  }, [isFocused, transitionPosition]);
   const searchInputRef = useRef();
   const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
@@ -56,9 +57,6 @@ export default function CurrencySelectModal() {
   const searchQueryExists = useMemo(() => searchQuery.length > 0, [
     searchQuery,
   ]);
-
-  const { navigate } = useNavigation();
-  const type = params?.type;
 
   const {
     curatedAssets,
@@ -69,74 +67,6 @@ export default function CurrencySelectModal() {
     updateFavorites,
   } = useUniswapAssets();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
-
-  const [startQueryDebounce, stopQueryDebounce] = useTimeout();
-  useEffect(() => {
-    stopQueryDebounce();
-    startQueryDebounce(
-      () => setSearchQueryForSearch(searchQuery),
-      searchQuery === '' ? 1 : 250
-    );
-  }, [searchQuery, startQueryDebounce, stopQueryDebounce]);
-
-  const handleApplyFavoritesQueue = useCallback(
-    () =>
-      Object.keys(assetsToFavoriteQueue).map(assetToFavorite =>
-        updateFavorites(assetToFavorite, assetsToFavoriteQueue[assetToFavorite])
-      ),
-    [assetsToFavoriteQueue, updateFavorites]
-  );
-
-  const shouldUpdateFavoritesRef = useRef(false);
-  useEffect(() => {
-    if (!searchQueryExists && shouldUpdateFavoritesRef.current) {
-      shouldUpdateFavoritesRef.current = false;
-      handleApplyFavoritesQueue();
-    } else if (searchQueryExists) {
-      shouldUpdateFavoritesRef.current = true;
-    }
-  }, [assetsToFavoriteQueue, handleApplyFavoritesQueue, searchQueryExists]);
-
-  const handleFavoriteAsset = useCallback(
-    (assetAddress, isFavorited) =>
-      setAssetsToFavoriteQueue(prevFavoriteQueue => ({
-        ...prevFavoriteQueue,
-        [assetAddress]: isFavorited,
-      })),
-    []
-  );
-
-  const handleSelectAsset = useCallback(
-    item => {
-      onSelectCurrency(item);
-      navigate(Routes.MAIN_EXCHANGE_SCREEN);
-    },
-    [onSelectCurrency, navigate]
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      params?.toggleGestureEnabled(false);
-      return () => {
-        params?.toggleGestureEnabled(true);
-        InteractionManager.runAfterInteractions(() => {
-          handleApplyFavoritesQueue();
-          setSearchQuery('');
-          restoreFocusOnSwapModal();
-        });
-      };
-    }, [handleApplyFavoritesQueue, params, restoreFocusOnSwapModal])
-  );
-
-  const itemProps = useMemo(
-    () => ({
-      onFavoriteAsset: handleFavoriteAsset,
-      onPress: handleSelectAsset,
-      showBalance: type === CurrencySelectionTypes.input,
-      showFavoriteButton: type === CurrencySelectionTypes.output,
-    }),
-    [handleFavoriteAsset, handleSelectAsset, type]
-  );
 
   const currencyList = useMemo(() => {
     let filteredList = [];
@@ -200,13 +130,88 @@ export default function CurrencySelectModal() {
     uniswapAssetsInWallet,
   ]);
 
+  const [startQueryDebounce, stopQueryDebounce] = useTimeout();
+  useEffect(() => {
+    stopQueryDebounce();
+    startQueryDebounce(
+      () => setSearchQueryForSearch(searchQuery),
+      searchQuery === '' ? 1 : 250
+    );
+  }, [searchQuery, startQueryDebounce, stopQueryDebounce]);
+
+  const handleApplyFavoritesQueue = useCallback(
+    () =>
+      Object.keys(assetsToFavoriteQueue).map(assetToFavorite =>
+        updateFavorites(assetToFavorite, assetsToFavoriteQueue[assetToFavorite])
+      ),
+    [assetsToFavoriteQueue, updateFavorites]
+  );
+
+  const shouldUpdateFavoritesRef = useRef(false);
+  useEffect(() => {
+    if (!searchQueryExists && shouldUpdateFavoritesRef.current) {
+      shouldUpdateFavoritesRef.current = false;
+      handleApplyFavoritesQueue();
+    } else if (searchQueryExists) {
+      shouldUpdateFavoritesRef.current = true;
+    }
+  }, [assetsToFavoriteQueue, handleApplyFavoritesQueue, searchQueryExists]);
+
+  const handleFavoriteAsset = useCallback(
+    (assetAddress, isFavorited) =>
+      setAssetsToFavoriteQueue(prevFavoriteQueue => ({
+        ...prevFavoriteQueue,
+        [assetAddress]: isFavorited,
+      })),
+    []
+  );
+
+  const handleSelectAsset = useCallback(
+    item => {
+      onSelectCurrency(item);
+      navigate(Routes.MAIN_EXCHANGE_SCREEN);
+    },
+    [onSelectCurrency, navigate]
+  );
+
+  const itemProps = useMemo(
+    () => ({
+      onFavoriteAsset: handleFavoriteAsset,
+      onPress: handleSelectAsset,
+      showBalance: type === CurrencySelectionTypes.input,
+      showFavoriteButton: type === CurrencySelectionTypes.output,
+    }),
+    [handleFavoriteAsset, handleSelectAsset, type]
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      searchInputRef.current?.focus();
+      tabTransitionPosition.setValue(1);
+      toggleGestureEnabled(false);
+      return () => {
+        toggleGestureEnabled(true);
+        InteractionManager.runAfterInteractions(() => {
+          handleApplyFavoritesQueue();
+          setSearchQuery('');
+          restoreFocusOnSwapModal();
+        });
+      };
+    }, [
+      handleApplyFavoritesQueue,
+      restoreFocusOnSwapModal,
+      tabTransitionPosition,
+      toggleGestureEnabled,
+    ])
+  );
+
   return (
     <KeyboardFixedOpenLayout>
       <Animated.View
         style={[
           position.sizeAsObject('100%'),
           {
-            opacity: interpolate(transitionPosition, {
+            opacity: interpolate(tabTransitionPosition, {
               extrapolate: Animated.Extrapolate.CLAMP,
               inputRange: [0, 0.8, 1],
               outputRange: [0, 1, 1],
@@ -224,7 +229,6 @@ export default function CurrencySelectModal() {
           <Column flex={1}>
             <CurrencySelectModalHeader />
             <ExchangeSearch
-              autoFocus={false}
               onChangeText={setSearchQuery}
               ref={searchInputRef}
               searchQuery={searchQuery}
