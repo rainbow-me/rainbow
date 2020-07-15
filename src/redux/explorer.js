@@ -88,12 +88,7 @@ const assetsSubscription = (assetCodes, currency, action = 'subscribe') => [
   },
 ];
 
-export const chartsRetrieval = (
-  assetCodes,
-  currency,
-  chartType,
-  action = 'get'
-) => [
+const chartsRetrieval = (assetCodes, currency, chartType, action = 'get') => [
   action,
   {
     payload: {
@@ -140,7 +135,6 @@ export const explorerClearState = () => (dispatch, getState) => {
 export const explorerInit = () => async (dispatch, getState) => {
   const { network, accountAddress, nativeCurrency } = getState().settings;
   const { pairs } = getState().uniswap;
-  const { assets } = getState().data;
   const { addressSocket, assetsSocket } = getState().explorer;
 
   // if there is another socket unsubscribe first
@@ -177,13 +171,27 @@ export const explorerInit = () => async (dispatch, getState) => {
 
   newAssetsSocket.on(messages.CONNECT, () => {
     newAssetsSocket.emit(...assetsSubscription(keys(pairs), nativeCurrency));
-    if (chartExpandedAvailable) {
-      const assetCodes = map(assets, 'address');
-      newAssetsSocket.emit(
-        ...chartsRetrieval(assetCodes, nativeCurrency, DEFAULT_CHART_TYPE)
-      );
-    }
+    dispatch(emitChartsRequest());
   });
+};
+
+export const emitChartsRequest = (
+  assetAddress,
+  chartType = DEFAULT_CHART_TYPE
+) => (dispatch, getState) => {
+  console.log('request charts');
+  if (!chartExpandedAvailable) return;
+  const { nativeCurrency } = getState().settings;
+  const { assetsSocket } = getState().explorer;
+
+  let assetCodes;
+  if (assetAddress) {
+    assetCodes = [assetAddress];
+  } else {
+    const { assets } = getState().data;
+    assetCodes = map(assets, 'address');
+  }
+  assetsSocket.emit(...chartsRetrieval(assetCodes, nativeCurrency, chartType));
 };
 
 const listenOnAssetMessages = socket => dispatch => {
