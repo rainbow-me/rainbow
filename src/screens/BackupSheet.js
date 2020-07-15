@@ -27,10 +27,10 @@ import { useWallets } from '../hooks';
 import { fetchBackupPassword } from '../model/keychain';
 import { addWalletToCloudBackup } from '../model/wallet';
 import { sheetVerticalOffset } from '../navigation/effects';
-import Routes from '../navigation/routesNames';
 import { usePortal } from '../react-native-cool-modals/Portal';
 import { setIsWalletLoading, setWalletBackedUp } from '../redux/wallets';
 import { logger } from '../utils';
+import Routes from '@rainbow-me/routes';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
 const switchSheetContentTransition = (

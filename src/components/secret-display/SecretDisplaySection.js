@@ -8,13 +8,13 @@ import {
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
 } from '../../model/wallet';
-import { colors, position } from '../../styles';
 import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import { Centered, Column, Row, RowWithMargins } from '../layout';
 import SecretDisplayItem from '../secret-display/SecretDisplayItem';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
+import { colors, position } from '@rainbow-me/styles';
 
 const PrivateKeyText = styled(SecretDisplayItem).attrs({
   align: 'center',

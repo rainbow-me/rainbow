@@ -22,13 +22,13 @@ import {
   backupWalletToCloud,
 } from '../../model/wallet';
 import { setIsWalletLoading, setWalletBackedUp } from '../../redux/wallets';
-import { borders, colors, padding } from '../../styles';
 import { deviceUtils, logger } from '../../utils';
 import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { GradientText, Text } from '../text';
+import { borders, colors, padding } from '@rainbow-me/styles';
 
 const sheetHeight = deviceUtils.dimensions.height - 108;
 

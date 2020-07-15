@@ -7,12 +7,12 @@ import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import WalletTypes from '../../helpers/walletTypes';
 import { useWallets } from '../../hooks';
 import { setWalletBackedUp } from '../../redux/wallets';
-import { colors, padding } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { Centered, Column } from '../layout';
 import { SecretDisplaySection } from '../secret-display';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const contentHeight =
   Platform.OS === 'android'

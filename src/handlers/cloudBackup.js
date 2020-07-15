@@ -55,31 +55,35 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
 }
 
 // Gets the document
-function getICloudDocumentUrl(url) {
-  const parts = url.split('?');
-  parts.splice(0, 1);
-  let e = '?' + parts.join('?'),
-    t,
-    n = null,
-    r = 0;
-  if (e) {
-    // eslint-disable-next-line babel/no-unused-expressions
-    (n = {}), (e = e.substr(1)), (t = e.split('&'));
-    for (let s = 0, o = t.length; s < o; s++) {
-      let u = t[s];
-      // eslint-disable-next-line babel/no-unused-expressions
-      u.indexOf('=') !== -1
-        ? ((u = u.match(/([^=]*)=(.*)/)), u.shift())
-        : (u = [u]),
-        u &&
-          (u.length === 2
-            ? ((u[1] = decodeURIComponent(u[1])), (n[u[0]] = u[1]))
-            : u.length === 1 && (n[r++] = decodeURIComponent(u[0])));
-    }
-  }
-  const { uk, f, u } = n;
-  // eslint-disable-next-line no-template-curly-in-string
-  return u.replace('${uk}', uk).replace('${f}', f);
+// function getICloudDocumentUrl(url) {
+//   const parts = url.split('?');
+//   parts.splice(0, 1);
+//   let e = '?' + parts.join('?'),
+//     t,
+//     n = null,
+//     r = 0;
+//   if (e) {
+//     // eslint-disable-next-line babel/no-unused-expressions
+//     (n = {}), (e = e.substr(1)), (t = e.split('&'));
+//     for (let s = 0, o = t.length; s < o; s++) {
+//       let u = t[s];
+//       // eslint-disable-next-line babel/no-unused-expressions
+//       u.indexOf('=') !== -1
+//         ? ((u = u.match(/([^=]*)=(.*)/)), u.shift())
+//         : (u = [u]),
+//         u &&
+//           (u.length === 2
+//             ? ((u[1] = decodeURIComponent(u[1])), (n[u[0]] = u[1]))
+//             : u.length === 1 && (n[r++] = decodeURIComponent(u[0])));
+//     }
+//   }
+//   const { uk, f, u } = n;
+//   // eslint-disable-next-line no-template-curly-in-string
+//   return u.replace('${uk}', uk).replace('${f}', f);
+// }
+
+function getICloudDocument(filename) {
+  return RNCloudFs.getIcloudDocument(filename);
 }
 
 export async function getDataFromCloud(backupPassword, filename = null) {
@@ -88,25 +92,30 @@ export async function getDataFromCloud(backupPassword, filename = null) {
       scope: 'hidden',
       targetPath: REMOTE_BACKUP_WALLET_DIR,
     });
+
+    logger.prettyLog(backups);
+
     if (!backups || !backups.files || !backups.files.length) {
       return null;
     }
 
     let document;
     if (filename) {
-      document = backups.files.find(file => file.name === filename);
+      document = backups.files.find(
+        file => file.name === filename || file.name === `.${filename}.icloud`
+      );
       if (!document) {
-        logger.error('No backup found with that name!');
+        logger.error('No backup found with that name!', filename);
         return null;
       }
     } else {
       const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
       document = sortedBackups[0];
     }
-    const documentUri = getICloudDocumentUrl(document.uri);
-    const response = await fetch(documentUri);
-    const encryptedData = await response.text();
-
+    const encryptedData = await getICloudDocument(filename);
+    if (encryptedData) {
+      logger.prettyLog('Got data from icloud', encryptedData);
+    }
     const backedUpDataStringified = await encryptor.decrypt(
       backupPassword,
       encryptedData

@@ -25,10 +25,8 @@ import {
 import { fetchBackupPassword, saveBackupPassword } from '../../model/keychain';
 import { restoreCloudBackup } from '../../model/wallet';
 import { sheetVerticalOffset } from '../../navigation/effects';
-import Routes from '../../navigation/routesNames';
 import { usePortal } from '../../react-native-cool-modals/Portal';
 import { setIsWalletLoading, walletsLoadState } from '../../redux/wallets';
-import { borders, colors, padding } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
@@ -36,6 +34,8 @@ import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import LoadingOverlay, { LoadingOverlayWrapper } from '../modal/LoadingOverlay';
 import { GradientText, Text } from '../text';
+import Routes from '@rainbow-me/routes';
+import { borders, colors, padding } from '@rainbow-me/styles';
 
 const sheetHeight = deviceUtils.dimensions.height - 108;
 

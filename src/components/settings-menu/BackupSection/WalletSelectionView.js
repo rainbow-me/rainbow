@@ -6,7 +6,6 @@ import Caret from '../../../assets/family-dropdown-arrow.png';
 import WalletBackupTypes from '../../../helpers/walletBackupTypes';
 import WalletTypes from '../../../helpers/walletTypes';
 import { useWallets } from '../../../hooks';
-import { colors, fonts } from '../../../styles';
 import { abbreviations } from '../../../utils';
 import Divider from '../../Divider';
 import { ButtonPressAnimation } from '../../animations';
@@ -15,6 +14,7 @@ import { ContactAvatar } from '../../contacts';
 import { Icon } from '../../icons';
 import { Column, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedAddress } from '../../text';
+import { colors, fonts } from '@rainbow-me/styles';
 
 const CaretIcon = styled(FastImage).attrs({
   source: Caret,

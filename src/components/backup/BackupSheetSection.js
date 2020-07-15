@@ -2,12 +2,12 @@ import React from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import BackupIcon from '../../assets/backupIcon.png';
-import { colors, padding } from '../../styles';
 import Divider from '../Divider';
 import { RainbowButton } from '../buttons';
 import { Centered, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const Title = styled(Text).attrs({
   align: 'center',

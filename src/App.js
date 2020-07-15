@@ -55,12 +55,12 @@ import * as keychain from './model/keychain';
 import { checkKeychainIntegrity, loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
-import Routes from './navigation/routesNames';
 import { addNewSubscriber } from './redux/data';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { identifyBrokenWallet } from './redux/wallets';
+import Routes from '@rainbow-me/routes';
 import { logger } from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
 

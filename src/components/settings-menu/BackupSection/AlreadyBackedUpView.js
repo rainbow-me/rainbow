@@ -11,10 +11,8 @@ import { fetchBackupPassword } from '../../../model/keychain';
 import { addWalletToCloudBackup } from '../../../model/wallet';
 import { Navigation } from '../../../navigation';
 import { sheetVerticalOffset } from '../../../navigation/effects';
-import Routes from '../../../navigation/routesNames';
 import { usePortal } from '../../../react-native-cool-modals/Portal';
 import { setIsWalletLoading, setWalletBackedUp } from '../../../redux/wallets';
-import { colors, fonts, padding } from '../../../styles';
 import { logger } from '../../../utils';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
@@ -23,6 +21,8 @@ import LoadingOverlay, {
 } from '../../modal/LoadingOverlay';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
+import Routes from '@rainbow-me/routes';
+import { colors, fonts, padding } from '@rainbow-me/styles';
 
 const DescriptionText = styled(Text).attrs({
   align: 'center',

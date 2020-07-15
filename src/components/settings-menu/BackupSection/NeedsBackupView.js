@@ -7,12 +7,12 @@ import BackupIcon from '../../../assets/backupIcon.png';
 import WalletBackupTypes from '../../../helpers/walletBackupTypes';
 import { useWallets } from '../../../hooks';
 import { useNavigation } from '../../../navigation/Navigation';
-import Routes from '../../../navigation/routesNames';
-import { colors, fonts, padding } from '../../../styles';
 import { RainbowButton } from '../../buttons';
 import { Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
+import Routes from '@rainbow-me/routes';
+import { colors, fonts, padding } from '@rainbow-me/styles';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
