@@ -3,7 +3,7 @@ import { useCallback, useRef } from 'react';
 import { findNodeHandle, InteractionManager, TextInput } from 'react-native';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { setListener } from '../navigation/nativeStackHelpers';
-import { useInteraction } from '@rainbow-me/hooks';
+import useInteraction from './useInteraction';
 
 const { currentlyFocusedField, focusTextInput } = TextInput.State;
 
