@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
-import { Linking } from 'react-native';
+import { Linking, Platform } from 'react-native';
 import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
@@ -44,7 +44,7 @@ const Container = styled(Centered)`
 const Paragraph = styled(Text).attrs({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.3),
-  lineHeight: 'paragraphSmall',
+  lineHeight: Platform.OS === 'android' ? 'loose' : 'paragraphSmall',
   size: 'lmedium',
 })`
   margin-top: ${InterstitialMargin};

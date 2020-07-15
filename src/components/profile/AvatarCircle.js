@@ -21,6 +21,7 @@ const FirstLetter = styled(Text).attrs({
   size: 38,
   weight: 'semibold',
 })`
+  top: 4px;
   width: 65.5;
 `;
 

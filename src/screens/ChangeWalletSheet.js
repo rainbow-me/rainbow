@@ -45,6 +45,14 @@ const EditButton = styled(ButtonPressAnimation).attrs({ scaleTo: 0.96 })`
   top: 6px;
 `;
 
+const Spacer = styled.View`
+  height: 400px;
+  width: 100%;
+  background-color: ${colors.white};
+  position: absolute;
+  bottom: -400px;
+`;
+
 const getWalletRowCount = wallets => {
   let count = 0;
   if (wallets) {
@@ -355,39 +363,41 @@ const ChangeWalletSheet = () => {
   }, [editMode]);
 
   return (
-    <Sheet borderRadius={30}>
-      <Column height={headerHeight} justify="space-between">
-        <SheetTitle>Wallets</SheetTitle>
-        {showDividers && (
-          <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
-        )}
-      </Column>
-      <EditButton onPress={toggleEditMode}>
-        <Text
-          align="right"
-          color={colors.appleBlue}
-          letterSpacing="roundedMedium"
-          size="large"
-          weight={editMode ? fonts.weight.semibold : fonts.weight.medium}
-        >
-          {editMode ? 'Done' : 'Edit'}
-        </Text>
-      </EditButton>
-
-      <WalletList
-        accountAddress={currentAddress}
-        allWallets={walletsWithBalancesAndNames}
-        currentWallet={currentSelectedWallet}
-        editMode={editMode}
-        height={listHeight}
-        onChangeAccount={onChangeAccount}
-        onEditWallet={onEditWallet}
-        onPressAddAccount={onPressAddAccount}
-        onPressImportSeedPhrase={onPressImportSeedPhrase}
-        scrollEnabled={scrollEnabled}
-        showDividers={showDividers}
-      />
-    </Sheet>
+    <>
+      <Sheet borderRadius={30}>
+        <Spacer />
+        <Column height={headerHeight} justify="space-between">
+          <SheetTitle>Wallets</SheetTitle>
+          {showDividers && (
+            <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
+          )}
+        </Column>
+        <EditButton onPress={toggleEditMode}>
+          <Text
+            align="right"
+            color={colors.appleBlue}
+            letterSpacing="roundedMedium"
+            size="large"
+            weight={editMode ? fonts.weight.semibold : fonts.weight.medium}
+          >
+            {editMode ? 'Done' : 'Edit'}
+          </Text>
+        </EditButton>
+        <WalletList
+          accountAddress={currentAddress}
+          allWallets={walletsWithBalancesAndNames}
+          currentWallet={currentSelectedWallet}
+          editMode={editMode}
+          height={listHeight}
+          onChangeAccount={onChangeAccount}
+          onEditWallet={onEditWallet}
+          onPressAddAccount={onPressAddAccount}
+          onPressImportSeedPhrase={onPressImportSeedPhrase}
+          scrollEnabled={scrollEnabled}
+          showDividers={showDividers}
+        />
+      </Sheet>
+    </>
   );
 };
 
