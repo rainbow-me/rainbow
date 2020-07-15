@@ -130,16 +130,15 @@ const buildWalletSections = (
 ) => {
   const sections = [uniswapSection, uniqueTokenFamiliesSection];
 
-  const filteredSections = filterWalletSections(sections);
-  const finalSections =
-    filteredSections.length > 0
-      ? [addEth(balanceSection), ...filteredSections]
+  const filteredSections =
+    filterWalletSections(sections).length > 0
+      ? [addEth(balanceSection), ...filterWalletSections(sections)]
       : filterWalletSections([balanceSection]);
-  const isEmpty = !finalSections.length;
+  const isEmpty = !filteredSections.length;
 
   return {
     isEmpty,
-    sections: finalSections,
+    sections: filteredSections,
   };
 };
 
