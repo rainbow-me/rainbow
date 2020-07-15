@@ -10,15 +10,14 @@ import NativeStackView from './NativeStackView';
 
 function NativeStackNavigator(props) {
   const { children, initialRouteName, screenOptions, ...rest } = props;
-  const { state, descriptors, navigation } = useNavigationBuilder(StackRouter, {
+  const { descriptors, navigation, state } = useNavigationBuilder(StackRouter, {
     children,
     initialRouteName,
     screenOptions,
   });
 
-  React.useEffect(
-    () =>
-      navigation.addListener &&
+  React.useEffect(() => {
+    if (navigation.addListener) {
       navigation.addListener('tabPress', e => {
         const isFocused = navigation.isFocused();
 
@@ -34,9 +33,9 @@ function NativeStackNavigator(props) {
             });
           }
         });
-      }),
-    [navigation, state.index, state.key]
-  );
+      });
+    }
+  }, [navigation, state.index, state.key]);
 
   return (
     <NativeStackView
