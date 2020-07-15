@@ -7,6 +7,7 @@ import {
   chartsUpdateChartType,
   getAssetChart,
 } from '../redux/charts';
+import { emitChartsRequest } from '../redux/explorer';
 import { isNewValueForObjectPaths } from '../utils';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 
@@ -29,6 +30,7 @@ export default function useCharts(asset) {
     (...props) =>
       !isNewValueForObjectPaths(...props, ['chartType', 'fetchingCharts'])
   );
+
   const chart = dispatch(getAssetChart(assetAddress, chartType));
 
   const fetchFallbackCharts = useCallback(
@@ -41,6 +43,10 @@ export default function useCharts(asset) {
       }),
     [assetAddress, chartType, dispatch, exchangeAddress]
   );
+
+  useEffect(() => {
+    dispatch(emitChartsRequest(assetAddress, chartType));
+  }, [assetAddress, chartType, dispatch]);
 
   useEffect(() => {
     if (!chart && !!exchangeAddress) {

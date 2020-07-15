@@ -24,7 +24,7 @@ const Chart = ({ asset, ...props }) => {
     return () => {
       updateChartType('y');
     };
-  }, []);
+  }, [updateChartType]);
 
   const hasChart = !isEmpty(chart);
   const change = get(asset, 'price.relative_change_24h', 0);

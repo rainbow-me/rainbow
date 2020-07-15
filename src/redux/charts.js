@@ -39,6 +39,7 @@ export const chartsUpdateChartType = chartType => dispatch =>
 
 export const getAssetChart = (address, chartType) => (dispatch, getState) => {
   const { charts, chartsFallback } = getState().charts;
+
   return (
     charts?.[address]?.[chartType] || chartsFallback?.[address]?.[chartType]
   );
@@ -49,14 +50,19 @@ export const assetChartsReceived = message => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { charts: existingCharts } = getState().charts;
   const assetCharts = get(message, 'payload.charts', {});
-  const updatedCharts = mapValues(assetCharts, (chartData, address) => ({
+  const newChartData = mapValues(assetCharts, (chartData, address) => ({
     ...existingCharts[address],
     [chartType]: reverse(chartData),
   }));
+  const updatedCharts = {
+    ...existingCharts,
+    ...newChartData,
+  };
 
   if (chartType === DEFAULT_CHART_TYPE) {
     saveCharts(updatedCharts, accountAddress, network);
   }
+
   dispatch({
     payload: updatedCharts,
     type: CHARTS_UPDATE,
