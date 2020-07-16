@@ -20,9 +20,7 @@ export default function SendAssetFormField({
   const handlePressButton = useCallback(
     event => {
       analytics.track('Clicked "Max" in Send flow input');
-      if (onPressButton) {
-        onPressButton(event);
-      }
+      onPressButton?.(event);
     },
     [onPressButton]
   );

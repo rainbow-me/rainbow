@@ -58,7 +58,7 @@ const SheetContainer = styled(Column).attrs({
   align: 'center',
   flex: 1,
 })`
-  ${borders.buildRadius('top', 16)};
+  ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
   background-color: ${colors.white};
   height: ${isNativeStackAvailable ? sheetHeight : '100%'};
   width: 100%;
@@ -112,7 +112,7 @@ export default function SendSheet(props) {
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
 
   const recipientFieldRef = useRef();
-  const { handleFocus } = useMagicAutofocus(recipientFieldRef);
+  const { handleFocus, triggerFocus } = useMagicAutofocus(recipientFieldRef);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => startPollingGasPrices());
@@ -401,6 +401,7 @@ export default function SendSheet(props) {
           onChangeAddressInput={onChangeInput}
           onFocus={handleFocus}
           onPressPaste={setRecipient}
+          onRefocusInput={triggerFocus}
           recipient={recipient}
           recipientFieldRef={recipientFieldRef}
           removeContact={onRemoveContact}

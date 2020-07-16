@@ -5,7 +5,7 @@ import styled from 'styled-components/primitives';
 import { Button } from '../buttons';
 import { ExchangeInput } from '../exchange';
 import { Column, Row } from '../layout';
-import { colors, fonts, position } from '@rainbow-me/styles';
+import { colors, position } from '@rainbow-me/styles';
 
 const Underline = styled.View`
   ${position.cover};
@@ -17,6 +17,17 @@ const UnderlineAnimated = styled(Animated.View)`
   ${position.cover};
   background-color: ${colors.sendScreen.brightBlue};
   left: -100%;
+`;
+
+const UnderlineInput = styled(ExchangeInput).attrs({
+  color: colors.dark,
+  disableTabularNums: true,
+  keyboardAppearance: 'light',
+  letterSpacing: 'roundedTightest',
+  size: 'h3',
+  weight: 'medium',
+})`
+  padding-right: 8;
 `;
 
 const UnderlineContainer = styled(Row)`
@@ -55,10 +66,14 @@ const UnderlineField = (
     easing: Easing.ease,
   });
 
-  const handleButtonPress = useCallback(() => {
-    setWasButtonPressed(true);
-    onPressButton?.();
-  }, [onPressButton]);
+  const handleButtonPress = useCallback(
+    event => {
+      ref?.current?.focus?.();
+      setWasButtonPressed(true);
+      onPressButton?.(event);
+    },
+    [onPressButton, ref]
+  );
 
   const handleBlur = useCallback(
     event => {
@@ -91,7 +106,7 @@ const UnderlineField = (
   useEffect(() => {
     if (
       valueProp !== value &&
-      (!ref.current?.isFocused?.() || wasButtonPressed)
+      (!ref?.current?.isFocused?.() || wasButtonPressed)
     ) {
       setValue(valueProp);
       setWasButtonPressed(false);
@@ -103,24 +118,17 @@ const UnderlineField = (
   return (
     <Column flex={1} {...props}>
       <Row align="center" justify="space-between" style={{ marginBottom: 8 }}>
-        <ExchangeInput
+        <UnderlineInput
           autoFocus={autoFocus}
-          color={colors.dark}
-          disableTabularNums
-          keyboardAppearance="light"
           keyboardType={keyboardType}
-          letterSpacing={fonts.letterSpacing.roundedTightest}
           mask={mask}
           maxLength={maxLength}
           onBlur={handleBlur}
           onChangeText={handleChangeText}
           onFocus={handleFocus}
-          paddingRight={8}
           placeholder={placeholder}
           ref={ref}
-          size={fonts.size.h3}
           value={format(String(value || ''))}
-          weight={fonts.weight.medium}
         />
         {showFieldButton && (
           <Button

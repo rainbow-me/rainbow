@@ -275,7 +275,6 @@ export default function ChangeWalletSheet() {
         setTimeout(() => {
           navigate(Routes.MODAL_SCREEN, {
             actionType: 'Create',
-            additionalPadding: true,
             asset: [],
             isNewProfile: true,
             onCloseModal: async args => {
