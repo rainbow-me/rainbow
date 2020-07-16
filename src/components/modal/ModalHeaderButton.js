@@ -14,7 +14,7 @@ const BackArrow = styled(Icon).attrs({
   name: 'caret',
 })`
   height: 16;
-  margin-top: ${Platform.OS === 'android' ? 2 : 0};
+  margin-top: ${Platform.OS === 'android' ? 6 : 0};
 `;
 
 const Container = styled(Row).attrs(({ side }) => ({

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 import { getFontSize } from '../../styles/fonts';
@@ -9,6 +9,7 @@ import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import CoinCheckButton from '../coin-row/CoinCheckButton';
 import { ContactAvatar } from '../contacts';
+import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { TruncatedAddress, TruncatedText } from '../text';
 import { colors, fonts } from '@rainbow-me/styles';
@@ -86,7 +87,11 @@ const linearGradientProps = {
 const OptionsIcon = ({ onPress }) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
     <Centered height={40} width={60}>
-      <Text style={sx.editIcon}>􀍡</Text>
+      {Platform.OS === 'android' ? (
+        <Icon circle color={colors.appleBlue} name="threeDots" tightDots />
+      ) : (
+        <Text style={sx.editIcon}>􀍡</Text>
+      )}
     </Centered>
   </ButtonPressAnimation>
 );
