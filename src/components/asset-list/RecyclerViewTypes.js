@@ -38,7 +38,7 @@ export const ViewTypes = {
     calculateHeight: ({ isFirst, isLast, areSmallCollectibles }) =>
       CoinRowHeight +
       (isFirst ? firstCoinRowMarginTop : 0) +
-      (isLast && !areSmallCollectibles ? ListFooter.height + 1 : 0),
+      (!isFirst && isLast && !areSmallCollectibles ? ListFooter.height + 1 : 0),
     index: 1,
     renderComponent: ({ type, data }) => {
       const { item = {}, renderItem } = data;

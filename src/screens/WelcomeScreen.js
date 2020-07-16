@@ -18,7 +18,8 @@ import { RowWithMargins } from '../components/layout';
 import { Emoji, Text } from '../components/text';
 import { fetchUserDataFromCloud } from '../handlers/cloudBackup';
 import useHideSplashScreen from '../helpers/hideSplashScreen';
-import Routes from '../navigation/routesNames';
+import { logger } from '../utils';
+import Routes from '@rainbow-me/routes';
 import { colors, shadow } from '@rainbow-me/styles';
 
 const {
@@ -348,50 +349,54 @@ export default function WelcomeScreen() {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    hideSplashScreen();
-    Animated.parallel([
-      ...traversedRainbows.map(({ value, delay = 0 }) =>
-        Animated.spring(value, { ...springConfig, delay })
-      ),
-      Animated.sequence([
-        Animated.timing(contentAnimation.current, {
-          duration: 120,
-          easing: Easing.bezier(0.165, 0.84, 0.44, 1),
-          toValue: 1.2,
-        }),
-        Animated.spring(contentAnimation.current, {
-          friction: 8,
-          tension: 100,
-          toValue: 1,
-        }),
-      ]),
-      // We need to disable looping animations
-      // There's no way to disable sync yet
-      // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
-      IS_TESTING !== 'true' &&
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(createWalletButtonAnimation.current, {
-              duration: 1000,
-              toValue: 1.02,
-              useNativeDriver: true,
-            }),
-            Animated.timing(createWalletButtonAnimation.current, {
-              duration: 1000,
-              toValue: 0.98,
-              useNativeDriver: true,
-            }),
-          ])
-        ),
-    ]).start();
-
     const initialize = async () => {
-      const isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
-      if (!isSimulator) {
-        const data = await fetchUserDataFromCloud();
-        setUserData(data);
-      } else {
-        setUserData(null);
+      try {
+        logger.log('downloading iCloud backup info...');
+        const isSimulator = await DeviceInfo.isEmulator();
+        if (!isSimulator) {
+          const data = await fetchUserDataFromCloud();
+          setUserData(data);
+          logger.log('Downloaded iCloud backup info');
+        }
+      } catch (e) {
+        logger.log('error getting userData', e);
+      } finally {
+        hideSplashScreen();
+        Animated.parallel([
+          ...traversedRainbows.map(({ value, delay = 0 }) =>
+            Animated.spring(value, { ...springConfig, delay })
+          ),
+          Animated.sequence([
+            Animated.timing(contentAnimation.current, {
+              duration: 120,
+              easing: Easing.bezier(0.165, 0.84, 0.44, 1),
+              toValue: 1.2,
+            }),
+            Animated.spring(contentAnimation.current, {
+              friction: 8,
+              tension: 100,
+              toValue: 1,
+            }),
+          ]),
+          // We need to disable looping animations
+          // There's no way to disable sync yet
+          // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
+          IS_TESTING !== 'true' &&
+            Animated.loop(
+              Animated.sequence([
+                Animated.timing(createWalletButtonAnimation.current, {
+                  duration: 1000,
+                  toValue: 1.02,
+                  useNativeDriver: true,
+                }),
+                Animated.timing(createWalletButtonAnimation.current, {
+                  duration: 1000,
+                  toValue: 0.98,
+                  useNativeDriver: true,
+                }),
+              ])
+            ),
+        ]).start();
       }
     };
     initialize();

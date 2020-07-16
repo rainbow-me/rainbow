@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { Alert, View } from 'react-native';
+import { Alert, Platform, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../../helpers/walletBackupTypes';
@@ -11,10 +11,8 @@ import { fetchBackupPassword } from '../../../model/keychain';
 import { addWalletToCloudBackup } from '../../../model/wallet';
 import { Navigation } from '../../../navigation';
 import { sheetVerticalOffset } from '../../../navigation/effects';
-import Routes from '../../../navigation/routesNames';
 import { usePortal } from '../../../react-native-cool-modals/Portal';
 import { setIsWalletLoading, setWalletBackedUp } from '../../../redux/wallets';
-import { colors, fonts, padding } from '../../../styles';
 import { logger } from '../../../utils';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
@@ -23,6 +21,8 @@ import LoadingOverlay, {
 } from '../../modal/LoadingOverlay';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
+import Routes from '@rainbow-me/routes';
+import { colors, fonts, padding } from '@rainbow-me/styles';
 
 const DescriptionText = styled(Text).attrs({
   align: 'center',
@@ -212,7 +212,7 @@ const AlreadyBackedUpView = () => {
         </Column>
       </Column>
 
-      {walletStatus !== 'cloud_backup' && (
+      {Platform.OS === 'ios' && walletStatus !== 'cloud_backup' && (
         <Centered css={padding(0, 15, 42)}>
           <ButtonPressAnimation onPress={onFooterAction}>
             <Text

@@ -1,57 +1,63 @@
 import { StackActions, useTheme } from '@react-navigation/native';
-import * as React from 'react';
-import { NativeModules, StyleSheet, View } from 'react-native';
+import React, { createContext, useMemo, useRef } from 'react';
+import { findNodeHandle, NativeModules, StyleSheet, View } from 'react-native';
 import Components from './screens';
 
-export const ModalContext = React.createContext();
+export const ModalContext = createContext();
 
-function ScreenView({ state, navigation, descriptors, route, colors }) {
-  const ref = React.useRef();
-  const onComponentRef = React.useCallback(e => {
-    ref.current = e && e._nativeTag;
-  }, []);
+const sx = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
 
-  const context = React.useMemo(
+function ScreenView({ colors, descriptors, navigation, route, state }) {
+  const ref = useRef();
+
+  const context = useMemo(
     () => ({
-      jumpToLong: () =>
-        ref.current &&
-        NativeModules.RNCMScreenManager.jumpTo(true, ref.current),
-      jumpToShort: () =>
-        ref.current &&
-        NativeModules.RNCMScreenManager.jumpTo(false, ref.current),
+      jumpToLong: () => {
+        const screen = findNodeHandle(ref.current);
+        if (screen) {
+          NativeModules.RNCMScreenManager.jumpTo(true, screen);
+        }
+      },
+      jumpToShort: () => {
+        const screen = findNodeHandle(ref.current);
+        if (screen) {
+          NativeModules.RNCMScreenManager.jumpTo(false, screen);
+        }
+      },
     }),
     []
   );
 
   const { options, render: renderScene } = descriptors[route.key];
   const {
-    gestureEnabled,
-    stackPresentation = 'push',
-    stackAnimation,
-    contentStyle,
-  } = options;
-
-  const {
-    backgroundColor,
-    dismissable,
-    customStack,
-    topOffset,
-    showDragIndicator,
     allowsDragToDismiss,
     allowsTapToDismiss,
     anchorModalToLongForm,
-    longFormHeight,
-    onWillDismiss,
+    backgroundColor,
     backgroundOpacity,
+    contentStyle,
     cornerRadius,
+    customStack,
+    dismissable,
+    gestureEnabled,
     headerHeight,
-    isShortFormEnabled,
-    shortFormHeight,
-    springDamping,
-    startFromShortForm,
-    transitionDuration,
-    onTouchTop,
     ignoreBottomOffset,
+    isShortFormEnabled,
+    longFormHeight,
+    onTouchTop,
+    onWillDismiss,
+    shortFormHeight,
+    showDragIndicator,
+    springDamping,
+    stackAnimation,
+    stackPresentation = 'push',
+    startFromShortForm,
+    topOffset,
+    transitionDuration,
   } = options;
 
   return (
@@ -78,14 +84,12 @@ function ScreenView({ state, navigation, descriptors, route, colors }) {
             type: 'appear',
           });
         }}
-        onComponentRef={onComponentRef}
         onDismissed={() => {
           options?.onDismissed?.();
           navigation.emit({
             target: route.key,
             type: 'dismiss',
           });
-
           navigation.dispatch({
             ...StackActions.pop(),
             source: route.key,
@@ -100,6 +104,7 @@ function ScreenView({ state, navigation, descriptors, route, colors }) {
         }}
         onTouchTop={onTouchTop}
         onWillDismiss={onWillDismiss}
+        ref={ref}
         shortFormHeight={shortFormHeight}
         showDragIndicator={showDragIndicator}
         springDamping={springDamping}
@@ -112,7 +117,7 @@ function ScreenView({ state, navigation, descriptors, route, colors }) {
       >
         <View
           style={[
-            styles.container,
+            sx.container,
             {
               backgroundColor:
                 stackPresentation !== 'transparentModal'
@@ -133,25 +138,17 @@ export default function NativeStackView({ state, navigation, descriptors }) {
   const { colors } = useTheme();
 
   return (
-    <Components.ScreenStack style={styles.container}>
-      {state.routes.map((route, i) => {
-        return (
-          <ScreenView
-            colors={colors}
-            descriptors={descriptors}
-            key={`screen${i}`}
-            navigation={navigation}
-            route={route}
-            state={state}
-          />
-        );
-      })}
+    <Components.ScreenStack style={sx.container}>
+      {state.routes.map((route, i) => (
+        <ScreenView
+          colors={colors}
+          descriptors={descriptors}
+          key={`screen${i}`}
+          navigation={navigation}
+          route={route}
+          state={state}
+        />
+      ))}
     </Components.ScreenStack>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

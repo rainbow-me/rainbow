@@ -12,6 +12,10 @@ import {
   transactionsRemoved,
 } from './data';
 import {
+  savingsDecrementNumberOfJustFinishedDepositsOrWithdrawals,
+  savingsIncrementNumberOfJustFinishedDepositsOrWithdrawals,
+} from './savings';
+import {
   testnetExplorerClearState,
   testnetExplorerInit,
 } from './testnetExplorer';
@@ -217,6 +221,23 @@ const listenOnAddressMessages = socket => dispatch => {
 
   socket.on(messages.ADDRESS_TRANSACTIONS.CHANGED, message => {
     logger.log('txns changed', get(message, 'payload.transactions', []));
+
+    const transactions = get(message, 'payload.transactions', []);
+    let isFoundConfirmed = false;
+    for (let transaction of transactions) {
+      if (
+        (transaction?.type === 'deposit' || transaction?.type === 'withdraw') &&
+        transaction?.status === 'confirmed'
+      ) {
+        isFoundConfirmed = true;
+      }
+    }
+    if (isFoundConfirmed) {
+      dispatch(savingsIncrementNumberOfJustFinishedDepositsOrWithdrawals());
+      setTimeout(() => {
+        dispatch(savingsDecrementNumberOfJustFinishedDepositsOrWithdrawals());
+      }, 60000);
+    }
     dispatch(transactionsReceived(message, true));
   });
 

@@ -1,17 +1,18 @@
 import { useRoute } from '@react-navigation/native';
 import React, { Fragment, useCallback, useEffect } from 'react';
+import { Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import BackupIcon from '../../../assets/backupIcon.png';
 import WalletBackupTypes from '../../../helpers/walletBackupTypes';
 import { useWallets } from '../../../hooks';
 import { useNavigation } from '../../../navigation/Navigation';
-import Routes from '../../../navigation/routesNames';
-import { colors, fonts, padding } from '../../../styles';
 import { RainbowButton } from '../../buttons';
 import { Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
+import Routes from '@rainbow-me/routes';
+import { colors, fonts, padding } from '@rainbow-me/styles';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
@@ -94,8 +95,14 @@ const NeedsBackupView = () => {
             it if you lose this device.
           </DescriptionText>
         </Column>
+
         <Column align="center">
-          <BackupButton label="􀙶 Back up to iCloud" onPress={onIcloudBackup} />
+          {Platform.OS === 'ios' && (
+            <BackupButton
+              label="􀙶 Back up to iCloud"
+              onPress={onIcloudBackup}
+            />
+          )}
           <SheetActionButton
             color={colors.white}
             label="🤓 Back up manually"

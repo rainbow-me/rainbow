@@ -286,7 +286,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
                 if (previousWalletCount === 0) {
                   await dispatch(setIsWalletLoading(null));
                   await saveUserBackupState(BackupStateTypes.done);
-                  navigate(Routes.SWIPE_LAYOUT);
+                  replace(Routes.SWIPE_LAYOUT);
                 } else {
                   navigate(Routes.WALLET_SCREEN);
                 }
@@ -332,6 +332,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     toggleImporting,
     wallets,
     wasImporting,
+    replace,
   ]);
 
   useEffect(() => {

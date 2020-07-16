@@ -15,6 +15,7 @@ import WalletLoadingStates from '../helpers/walletLoadingStates';
 import WalletTypes from '../helpers/walletTypes';
 import { useAccountSettings, useInitializeWallet, useWallets } from '../hooks';
 import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
+import { wipeKeychain } from '../model/keychain';
 import { createWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import {
@@ -46,6 +47,14 @@ const EditButton = styled(ButtonPressAnimation).attrs({ scaleTo: 0.96 })`
   top: 6px;
 `;
 
+const Spacer = styled.View`
+  height: 400px;
+  width: 100%;
+  background-color: ${colors.white};
+  position: absolute;
+  bottom: -400px;
+`;
+
 const getWalletRowCount = wallets => {
   let count = 0;
   if (wallets) {
@@ -61,7 +70,7 @@ const ChangeWalletSheet = () => {
   const { wallets, selectedWallet } = useWallets();
   const [editMode, setEditMode] = useState(false);
 
-  const { goBack, navigate } = useNavigation();
+  const { goBack, navigate, replace } = useNavigation();
   const dispatch = useDispatch();
   const { accountAddress } = useAccountSettings();
   const initializeWallet = useInitializeWallet();
@@ -185,7 +194,7 @@ const ChangeWalletSheet = () => {
     (walletId, address, label) => {
       // If there's more than 1 account
       // it's deletable
-      let isDeletable = false;
+      let isLastAvailableWallet = false;
       for (let i = 0; i < Object.keys(wallets).length; i++) {
         const key = Object.keys(wallets)[i];
         const someWallet = wallets[key];
@@ -193,21 +202,19 @@ const ChangeWalletSheet = () => {
           account => account.visible && account.address !== address
         );
         if (otherAccount) {
-          isDeletable = true;
+          isLastAvailableWallet = true;
           break;
         }
       }
 
       const buttons = ['Edit Wallet'];
-      if (isDeletable) {
-        buttons.push('Delete Wallet');
-      }
+      buttons.push('Delete Wallet');
       buttons.push('Cancel');
 
       showActionSheetWithOptions(
         {
-          cancelButtonIndex: isDeletable ? 2 : 1,
-          destructiveButtonIndex: isDeletable ? 1 : null,
+          cancelButtonIndex: 2,
+          destructiveButtonIndex: 1,
           options: buttons,
           title: `${label || abbreviations.address(address, 4, 6)}`,
         },
@@ -215,7 +222,7 @@ const ChangeWalletSheet = () => {
           if (buttonIndex === 0) {
             // Edit wallet
             renameWallet(walletId, address);
-          } else if (isDeletable && buttonIndex === 1) {
+          } else if (buttonIndex === 1) {
             // Delete wallet with confirmation
             showActionSheetWithOptions(
               {
@@ -228,20 +235,27 @@ const ChangeWalletSheet = () => {
                 if (buttonIndex === 0) {
                   await deleteWallet(walletId, address);
                   ReactNativeHapticFeedback.trigger('notificationSuccess');
-                  // If we're deleting the selected wallet
-                  // we need to switch to another one
-                  if (address === currentAddress) {
-                    for (let i = 0; i < Object.keys(wallets).length; i++) {
-                      const key = Object.keys(wallets)[i];
-                      const someWallet = wallets[key];
-                      const found = someWallet.addresses.find(
-                        account =>
-                          account.visible && account.address !== address
-                      );
 
-                      if (found) {
-                        await onChangeAccount(key, found.address, true);
-                        break;
+                  if (!isLastAvailableWallet) {
+                    await wipeKeychain();
+                    goBack();
+                    replace(Routes.WELCOME_SCREEN);
+                  } else {
+                    // If we're deleting the selected wallet
+                    // we need to switch to another one
+                    if (address === currentAddress) {
+                      for (let i = 0; i < Object.keys(wallets).length; i++) {
+                        const key = Object.keys(wallets)[i];
+                        const someWallet = wallets[key];
+                        const found = someWallet.addresses.find(
+                          account =>
+                            account.visible && account.address !== address
+                        );
+
+                        if (found) {
+                          await onChangeAccount(key, found.address, true);
+                          break;
+                        }
                       }
                     }
                   }
@@ -358,39 +372,41 @@ const ChangeWalletSheet = () => {
   }, [editMode]);
 
   return (
-    <Sheet borderRadius={30}>
-      <Column height={headerHeight} justify="space-between">
-        <SheetTitle>Wallets</SheetTitle>
-        {showDividers && (
-          <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
-        )}
-      </Column>
-      <EditButton onPress={toggleEditMode}>
-        <Text
-          align="right"
-          color={colors.appleBlue}
-          letterSpacing="roundedMedium"
-          size="large"
-          weight={editMode ? fonts.weight.semibold : fonts.weight.medium}
-        >
-          {editMode ? 'Done' : 'Edit'}
-        </Text>
-      </EditButton>
-
-      <WalletList
-        accountAddress={currentAddress}
-        allWallets={walletsWithBalancesAndNames}
-        currentWallet={currentSelectedWallet}
-        editMode={editMode}
-        height={listHeight}
-        onChangeAccount={onChangeAccount}
-        onEditWallet={onEditWallet}
-        onPressAddAccount={onPressAddAccount}
-        onPressImportSeedPhrase={onPressImportSeedPhrase}
-        scrollEnabled={scrollEnabled}
-        showDividers={showDividers}
-      />
-    </Sheet>
+    <>
+      <Sheet borderRadius={30}>
+        <Spacer />
+        <Column height={headerHeight} justify="space-between">
+          <SheetTitle>Wallets</SheetTitle>
+          {showDividers && (
+            <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
+          )}
+        </Column>
+        <EditButton onPress={toggleEditMode}>
+          <Text
+            align="right"
+            color={colors.appleBlue}
+            letterSpacing="roundedMedium"
+            size="large"
+            weight={editMode ? fonts.weight.semibold : fonts.weight.medium}
+          >
+            {editMode ? 'Done' : 'Edit'}
+          </Text>
+        </EditButton>
+        <WalletList
+          accountAddress={currentAddress}
+          allWallets={walletsWithBalancesAndNames}
+          currentWallet={currentSelectedWallet}
+          editMode={editMode}
+          height={listHeight}
+          onChangeAccount={onChangeAccount}
+          onEditWallet={onEditWallet}
+          onPressAddAccount={onPressAddAccount}
+          onPressImportSeedPhrase={onPressImportSeedPhrase}
+          scrollEnabled={scrollEnabled}
+          showDividers={showDividers}
+        />
+      </Sheet>
+    </>
   );
 };
 

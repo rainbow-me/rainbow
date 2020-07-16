@@ -24,14 +24,17 @@ const NativePortal =
 export function Portal({ children }) {
   const [Component, setComponentState] = useState(null);
   const [blockTouches, setBlockTouches] = useState(false);
+
   const hide = useCallback(() => {
     setComponentState(<React.Fragment />);
     setBlockTouches(false);
   }, []);
+
   const setComponent = useCallback((value, blockTouches) => {
     setComponentState(value);
     setBlockTouches(blockTouches);
   }, []);
+
   const contextValue = useMemo(
     () => ({
       hide,
@@ -40,16 +43,13 @@ export function Portal({ children }) {
     [hide, setComponent]
   );
 
-  const pointerEvents =
-    Platform.OS === 'ios' || !blockTouches ? 'none' : 'auto';
-
   return (
     <NativePortalContext.Provider value={contextValue}>
       {children}
       <NativePortal
         blockTouches={blockTouches}
-        pointerEvents={pointerEvents}
-        style={[StyleSheet.absoluteFillObject]}
+        pointerEvents={Platform.OS === 'ios' || !blockTouches ? 'none' : 'auto'}
+        style={StyleSheet.absoluteFillObject}
       >
         {Component}
       </NativePortal>

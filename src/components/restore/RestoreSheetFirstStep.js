@@ -1,13 +1,13 @@
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
-import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import Icon from '../icons/Icon';
 import { Column, Row, RowWithMargins } from '../layout';
 import { GradientText, Text } from '../text';
+import { colors } from '@rainbow-me/styles';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
@@ -147,8 +147,8 @@ const RestoreSheetFirstStep = ({
 
         <SheetRow
           as={ButtonPressAnimation}
-          scaleTo={0.9}
           onPress={onWatchAddress}
+          scaleTo={0.9}
           testID="watch-address-button"
         >
           <Column>

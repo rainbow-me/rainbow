@@ -13,7 +13,7 @@ import RestoreIcloudStep from '../components/restore/RestoreIcloudStep';
 import RestoreSheetFirstStep from '../components/restore/RestoreSheetFirstStep';
 import { SlackSheet } from '../components/sheet';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
-import Routes from '../navigation/routesNames';
+import Routes from '@rainbow-me/routes';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
 const switchSheetContentTransition = (
@@ -30,7 +30,7 @@ const StyledSheet = styled(SlackSheet)`
 `;
 
 const RestoreSheet = () => {
-  const { navigate, setOptions } = useNavigation();
+  const { goBack, navigate, setOptions } = useNavigation();
 
   const { jumpToLong } = useContext(ModalContext);
   const switchSheetContentTransitionRef = useRef();
@@ -57,16 +57,14 @@ const RestoreSheet = () => {
   }, [jumpToLong, setOptions]);
 
   const onManualRestore = useCallback(() => {
-    navigate(Routes.IMPORT_SEED_PHRASE_FLOW, {
-      isOnboarding: true,
-    });
-  }, [navigate]);
+    goBack();
+    navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
+  }, [goBack, navigate]);
 
   const onWatchAddress = useCallback(() => {
-    navigate(Routes.IMPORT_SEED_PHRASE_FLOW, {
-      isOnboarding: true,
-    });
-  }, [navigate]);
+    goBack();
+    navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
+  }, [goBack, navigate]);
 
   const renderStep = useCallback(() => {
     switch (step) {

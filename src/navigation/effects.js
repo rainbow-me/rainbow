@@ -309,7 +309,7 @@ export const exchangePreset = {
 export const expandedPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
-  cardStyle: { backgroundColor: 'transparent' },
+  cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
   cardStyleInterpolator: expandStyleInterpolator(0.7),
   cardTransparent: true,
   gestureDirection: 'vertical',

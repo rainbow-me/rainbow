@@ -8,13 +8,14 @@ import {
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
 } from '../../model/wallet';
-import { colors, position } from '../../styles';
+import { deviceUtils } from '../../utils';
 import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import { Centered, Column, Row, RowWithMargins } from '../layout';
 import SecretDisplayItem from '../secret-display/SecretDisplayItem';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
+import { colors, position } from '@rainbow-me/styles';
 
 const PrivateKeyText = styled(SecretDisplayItem).attrs({
   align: 'center',
@@ -26,11 +27,12 @@ const PrivateKeyText = styled(SecretDisplayItem).attrs({
 
 const Shadow = styled(ShadowStack)`
   elevation: 15;
-  margin-top: 24;
+  margin-top: ${deviceUtils.isTallPhone ? '24' : '12'};
 `;
 
 const SecretDisplaySection = ({ onWalletTypeIdentified, secretLoaded }) => {
   const { params } = useRoute();
+  const { isTallPhone } = useDimensions();
   const { selectedWallet } = useWallets();
   const [error, setError] = useState(false);
   const [seed, setSeed] = useState(null);
@@ -136,19 +138,23 @@ const SecretDisplaySection = ({ onWalletTypeIdentified, secretLoaded }) => {
                 [0, 10, 30, colors.dark, 0.1],
                 [0, 5, 15, colors.dark, 0.04],
               ]}
-              width={deviceWidth - 138}
+              width={deviceWidth - (isTallPhone ? 138 : 105)}
             >
-              <Row justify="space-between" marginVertical={19}>
+              <Row
+                justify="space-between"
+                marginHorizontal={30}
+                marginVertical={19}
+              >
                 {type === WalletTypes.privateKey ? (
-                  <Column marginLeft={30} marginRight={30}>
+                  <Column>
                     <PrivateKeyText>{seed}</PrivateKeyText>
                   </Column>
                 ) : (
                   columns.map((wordColumn, colIndex) => (
                     <Column
                       key={`col_${colIndex}`}
-                      marginLeft={30}
-                      marginRight={30}
+                      marginLeft={15}
+                      marginRight={15}
                     >
                       {wordColumn.map((word, index) => {
                         const number = index + 1 + colIndex * wordColumn.length;

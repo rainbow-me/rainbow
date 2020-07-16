@@ -10,6 +10,7 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   AppState,
+  Platform,
   StatusBar,
   unstable_enableLogBox,
 } from 'react-native';
@@ -54,12 +55,12 @@ import * as keychain from './model/keychain';
 import { checkKeychainIntegrity, loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
-import Routes from './navigation/routesNames';
 import { addNewSubscriber } from './redux/data';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { identifyBrokenWallet } from './redux/wallets';
+import Routes from '@rainbow-me/routes';
 import { logger } from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
 
@@ -145,11 +146,7 @@ class App extends Component {
     const address = await loadAddress();
     if (address) {
       this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
-      // We need to wait until the wallet initializes
-      // otherwise the backup flag might not be set yet
-      setTimeout(() => {
-        this.setupIncomingNotificationListeners();
-      }, 5000);
+      Platform.OS === 'ios' && this.setupIncomingNotificationListeners();
     } else {
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
     }
@@ -173,7 +170,6 @@ class App extends Component {
   setupIncomingNotificationListeners = async () => {
     // Previously existing users should see the backup sheet right after app launch
     // Uncomment the line below to get in the existing user state(before icloud)
-    // await saveUserBackupState(BackupStateTypes.immediate);
     const backupState = await getUserBackupState();
     if (backupState === BackupStateTypes.immediate) {
       setTimeout(() => {

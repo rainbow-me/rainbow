@@ -127,7 +127,10 @@ const withBalanceSavingsSection = (savings, priceOfEther) => {
         underlyingPrice,
         lifetimeSupplyInterestAccrued,
       } = asset;
-      const underlyingNativePrice = multiply(underlyingPrice, priceOfEther);
+      const underlyingNativePrice =
+        asset.underlying.symbol === 'ETH'
+          ? priceOfEther
+          : multiply(underlyingPrice, priceOfEther);
       const underlyingBalanceNativeValue = supplyBalanceUnderlying
         ? multiply(supplyBalanceUnderlying, underlyingNativePrice)
         : 0;

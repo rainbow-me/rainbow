@@ -1,6 +1,7 @@
-import { get } from 'lodash';
+import { get, throttle } from 'lodash';
 import { getReserve } from '../handlers/uniswap';
 import { web3Provider } from '../handlers/web3';
+import store from '../redux/store';
 import { uniswapUpdateTokenReserves } from './uniswap';
 import logger from 'logger';
 
@@ -21,9 +22,14 @@ const web3UpdateReserves = () => async (dispatch, getState) => {
   }
 };
 
-export const web3ListenerInit = () => dispatch => {
+const debouncedUpdateReserves = throttle(
+  store.dispatch(web3UpdateReserves),
+  8000
+);
+
+export const web3ListenerInit = () => () => {
   web3Provider.pollingInterval = 10000;
-  web3Provider.on('block', () => dispatch(web3UpdateReserves()));
+  web3Provider.on('block', debouncedUpdateReserves);
 };
 
 export const web3ListenerStop = () => () => {
