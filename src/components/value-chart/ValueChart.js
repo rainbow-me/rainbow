@@ -73,11 +73,10 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
     const maxValue = maxBy(allSegmentsPoints, 'y');
     const minValue = minBy(allSegmentsPoints, 'y');
 
-    const xMul = Math.floor(
-      (allSegmentsPoints[allSegmentsPoints.length - 1].x -
-        allSegmentsPoints[0].x) /
-        allSegmentsPoints.length
-    );
+    const dataDiff =
+      allSegmentsPoints[allSegmentsPoints.length - 1].x -
+      allSegmentsPoints[0].x;
+    const xMul = Math.floor(dataDiff / allSegmentsPoints.length);
     let newData = [];
     newData.push({
       isImportant: true,
@@ -314,7 +313,7 @@ export default class Chart extends PureComponent {
     if (this.currentInterval !== this.props.currentDataSource) {
       this.currentInterval = this.props.currentDataSource;
       this.currentChart.setValue(this.props.currentDataSource);
-      this.touchX.setValue(deviceUtils.dimensions.width - 1);
+      this.touchX.setValue(width);
       this.reloadChart(this.props.currentDataSource, true);
     }
   }
@@ -416,26 +415,25 @@ export default class Chart extends PureComponent {
           direction={positiveChange}
           headerText="PRICE"
           value={72}
-          ref={ref => (this.textRef = ref)}
           date={
             <TextInput
               color={colors.blueGreyDark50}
-              letterSpacing={fonts.letterSpacing.zero}
-              size={fonts.size.smedium}
-              fontWeight={fonts.weight.medium}
-              ref={ref => (this.dataTextRef = ref)}
-              pointerEvent="none"
               editable={false}
+              fontWeight={fonts.weight.medium}
+              letterSpacing={fonts.letterSpacing.zero}
+              pointerEvent="none"
+              ref={ref => (this.dataTextRef = ref)}
+              size={fonts.size.smedium}
             />
           }
         >
           <TextInput
-            ref={ref => (this.valueTextRef = ref)}
-            pointerEvent="none"
             editable={false}
             fontFamily={fonts.family.SFProRounded}
-            fontWeight={fonts.weight.bold}
             fontSize={32}
+            fontWeight={fonts.weight.bold}
+            pointerEvent="none"
+            ref={ref => (this.valueTextRef = ref)}
           />
         </ValueText>
         <GestureWrapper
@@ -528,9 +526,10 @@ export default class Chart extends PureComponent {
                     this.dataTextRef.setNativeProps({
                       text:
                         ' - ' +
-                        new Date(
-                          points[points.length - 1].x * 1000
-                        ).toLocaleDateString('en-US', dateOptions),
+                        new Date(Date.now()).toLocaleDateString(
+                          'en-US',
+                          dateOptions
+                        ),
                     });
                     this.valueTextRef.setNativeProps({
                       text: `${nativeCurrency}${points[points.length - 1].y
@@ -543,42 +542,42 @@ export default class Chart extends PureComponent {
               ]),
               onChange(
                 this.touchX,
-                call([this.translateX, this.translateY], ([x, y]) => {
-                  const curX = x - (x % 10);
-                  if (curX !== this.currentX) {
-                    this.currentX = curX;
-                    const max = maxValue.y;
-                    const min = minValue.y;
-                    const height = 160;
-                    const points = currentData?.points;
-                    if (points) {
-                      const maxDate = points[points.length - 1].x;
-                      const minDate = points[0].x;
-                      const multiplierX = (maxDate - minDate) / width;
-                      const multiplierY = (max - min) / height;
-                      const date = x * multiplierX + minDate;
-                      let result = -y * multiplierY + min;
-                      if (result > max) {
-                        result = max;
-                      } else if (result < min) {
-                        result = min;
+                call(
+                  [this.translateX, this.translateY, this.touchX],
+                  ([x, y, tx]) => {
+                    const curX = x - (x % 10);
+                    if (curX !== this.currentX) {
+                      this.currentX = curX;
+                      const max = maxValue.y;
+                      const min = minValue.y;
+                      const height = 160;
+                      const points = currentData?.points;
+                      if (points && tx && tx !== width) {
+                        const maxDate = Date.now();
+                        const minDate = points[0].x * 1000;
+                        const multiplierX = (maxDate - minDate) / width;
+                        const multiplierY = (max - min) / height;
+                        const date = tx * multiplierX + minDate;
+                        let result = -y * multiplierY + min;
+                        if (result > max) {
+                          result = max;
+                        } else if (result < min) {
+                          result = min;
+                        }
+                        this.dataTextRef.setNativeProps({
+                          text:
+                            ' - ' +
+                            new Date(date).toLocaleString('en-US', dateOptions),
+                        });
+                        this.valueTextRef.setNativeProps({
+                          text: `${nativeCurrency}${result
+                            .toFixed(5)
+                            .toString()}`,
+                        });
                       }
-                      this.dataTextRef.setNativeProps({
-                        text:
-                          ' - ' +
-                          new Date(date * 1000).toLocaleString(
-                            'en-US',
-                            dateOptions
-                          ),
-                      });
-                      this.valueTextRef.setNativeProps({
-                        text: `${nativeCurrency}${result
-                          .toFixed(5)
-                          .toString()}`,
-                      });
                     }
                   }
-                })
+                )
               )
             ),
             cond(
