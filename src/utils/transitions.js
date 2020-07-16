@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-
+import { useLayoutEffect, useMemo } from 'react';
 import { State } from 'react-native-gesture-handler';
 import Animated, {
   Clock,
@@ -9,9 +8,9 @@ import Animated, {
   timing,
   Value,
 } from 'react-native-reanimated';
-import { useMemoOne as useMemo } from 'use-memo-one';
+import { useMemoOne } from 'use-memo-one';
 
-const { cond, eq, block, set, startClock, stopClock, neq } = Animated;
+const { block, cond, eq, neq, set, startClock, stopClock } = Animated;
 
 const defaultSpringConfig = SpringUtils.makeDefaultConfig();
 
@@ -93,8 +92,9 @@ export const withSpringTransition = (
 export const withTimingTransition = withTransition;
 
 export const useTransition = (state, config = {}) => {
-  const value = useMemo(() => new Value(0), []);
-  useEffect(() => {
+  const value = useMemoOne(() => new Value(0), []);
+
+  useLayoutEffect(() => {
     value.setValue(typeof state === 'boolean' ? (state ? 1 : 0) : state);
   }, [state, value]);
 
@@ -104,12 +104,12 @@ export const useTransition = (state, config = {}) => {
 };
 
 export const useSpringTransition = (state, config = defaultSpringConfig) => {
-  const value = useMemo(() => new Value(0), []);
+  const value = useMemoOne(() => new Value(0), []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     value.setValue(typeof state === 'boolean' ? (state ? 1 : 0) : state);
   }, [state, value]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   const transition = useMemo(() => withSpringTransition(value, config), []);
   return transition;
 };
