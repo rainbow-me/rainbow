@@ -455,9 +455,23 @@ const ExchangeModal = ({
                   ? 1
                   : interpolate(tabPosition, {
                       extrapolate: Animated.Extrapolate.CLAMP,
-                      inputRange: [0, 0.2, 1],
+                      inputRange: [0, 0, 1],
                       outputRange: [1, 1, 0],
                     }),
+              transform: [
+                {
+                  scale: interpolate(tabPosition, {
+                    extrapolate: Animated.Extrapolate.CLAMP,
+                    inputRange: [0, 0, 1],
+                    outputRange: [1, 1, 0.9],
+                  }),
+                  translateX: interpolate(tabPosition, {
+                    extrapolate: Animated.Extrapolate.CLAMP,
+                    inputRange: [0, 0, 1],
+                    outputRange: [1, 1, -8],
+                  }),
+                },
+              ],
             }}
           >
             <FloatingPanel

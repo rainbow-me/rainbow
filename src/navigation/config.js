@@ -73,7 +73,7 @@ export const exchangeTabNavigatorConfig = position => ({
     backgroundColor: 'transparent',
   },
   springConfig: {
-    damping: 40,
+    damping: 30,
     mass: 1,
     overshootClamping: false,
     restDisplacementThreshold: 0.01,

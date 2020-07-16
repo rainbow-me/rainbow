@@ -32,7 +32,6 @@ import {
 import {
   bottomSheetPreset,
   emojiPreset,
-  exchangePreset,
   expandedPreset,
   overlayExpandedPreset,
   sheetPreset,
@@ -126,11 +125,6 @@ function MainNavigator() {
       <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} />
       <Stack.Screen
-        component={SavingsSheet}
-        name={Routes.SAVINGS_SHEET}
-        options={bottomSheetPreset}
-      />
-      <Stack.Screen
         component={AvatarBuilder}
         name={Routes.AVATAR_BUILDER}
         options={emojiPreset}
@@ -149,11 +143,6 @@ function MainNavigator() {
         component={TransactionConfirmationScreen}
         name={Routes.CONFIRM_REQUEST}
         options={sheetPreset}
-      />
-      <Stack.Screen
-        component={ExchangeModalNavigator}
-        name={Routes.EXCHANGE_MODAL}
-        options={exchangePreset}
       />
       {isNativeStackAvailable && (
         <Stack.Screen
@@ -176,16 +165,6 @@ function MainNavigatorWrapper() {
       <Stack.Screen
         component={MainNavigator}
         name={Routes.MAIN_NAVIGATOR_WRAPPER}
-      />
-      <Stack.Screen
-        component={WithdrawModal}
-        name={Routes.SAVINGS_WITHDRAW_MODAL}
-        options={exchangePreset}
-      />
-      <Stack.Screen
-        component={DepositModal}
-        name={Routes.SAVINGS_DEPOSIT_MODAL}
-        options={exchangePreset}
       />
     </Stack.Navigator>
   );
@@ -262,6 +241,21 @@ function NativeStackNavigator() {
         {...sharedCoolModalConfig}
       />
       <NativeStack.Screen
+        component={ExchangeModalNavigator}
+        name={Routes.EXCHANGE_MODAL}
+        options={{
+          allowsDragToDismiss: true,
+          backgroundColor: '#0A0A0A',
+          backgroundOpacity: 1,
+          customStack: true,
+          headerHeight: 0,
+          ignoreBottomOffset: true,
+          springDamping: 1,
+          topOffset: 0,
+          transitionDuration: 0.3,
+        }}
+      />
+      <NativeStack.Screen
         component={ExpandedAssetSheetWrapper}
         name={Routes.EXPANDED_ASSET_SHEET}
         {...expandedAssetSheetConfig}
@@ -275,6 +269,44 @@ function NativeStackNavigator() {
           customStack: true,
           springDamping: 1,
           transitionDuration: 0.25,
+        }}
+      />
+      <NativeStack.Screen
+        component={SavingsSheet}
+        name={Routes.SAVINGS_SHEET}
+        options={{
+          allowsDragToDismiss: true,
+          customStack: true,
+          headerHeight: 0,
+          topOffset: 0,
+        }}
+      />
+      <NativeStack.Screen
+        component={WithdrawModal}
+        name={Routes.SAVINGS_WITHDRAW_MODAL}
+        options={{
+          allowsDragToDismiss: true,
+          backgroundColor: '#0A0A0A',
+          backgroundOpacity: 1,
+          customStack: true,
+          headerHeight: 0,
+          springDamping: 1,
+          topOffset: 0,
+          transitionDuration: 0.3,
+        }}
+      />
+      <NativeStack.Screen
+        component={DepositModal}
+        name={Routes.SAVINGS_DEPOSIT_MODAL}
+        options={{
+          allowsDragToDismiss: true,
+          backgroundColor: '#0A0A0A',
+          backgroundOpacity: 1,
+          customStack: true,
+          headerHeight: 0,
+          springDamping: 1,
+          topOffset: 0,
+          transitionDuration: 0.3,
         }}
       />
       {isNativeStackAvailable && (
