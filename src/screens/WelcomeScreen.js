@@ -2,6 +2,7 @@ import MaskedView from '@react-native-community/masked-view';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 import Reanimated, {
   Clock,
   Easing as REasing,
@@ -349,9 +350,12 @@ export default function WelcomeScreen() {
     const initialize = async () => {
       try {
         logger.log('downloading iCloud backup info...');
-        const data = await fetchUserDataFromCloud();
-        setUserData(data);
-        logger.log('Downloaded iCloud backup info');
+        const isSimulator = await DeviceInfo.isEmulator();
+        if (!isSimulator) {
+          const data = await fetchUserDataFromCloud();
+          setUserData(data);
+          logger.log('Downloaded iCloud backup info');
+        }
       } catch (e) {
         logger.log('error getting userData', e);
       } finally {

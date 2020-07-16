@@ -143,13 +143,14 @@ const onPressHiddenFeature = () => {
 
 const SettingsModal = () => {
   const { goBack, navigate } = useNavigation();
-  const { wallets } = useWallets();
+  const { wallets, selectedWallet } = useWallets();
   const { params } = useRoute();
   const { isTinyPhone, width: deviceWidth } = useDimensions();
 
   const getRealRoute = useCallback(
     key => {
       let route = key;
+      let params = {};
       if (key === SettingsPages.backup.key) {
         const walletId = params?.walletId;
         if (
@@ -160,18 +161,23 @@ const SettingsModal = () => {
         ) {
           route = 'WalletSelectionView';
         } else {
+          if (Object.keys(wallets).length === 1 && selectedWallet.imported) {
+            params.imported = true;
+            params.type = 'AlreadyBackedUpView';
+          }
+
           route = 'SettingsBackupView';
         }
       }
-      return route;
+      return { params, route };
     },
-    [params?.walletId, wallets]
+    [selectedWallet.imported, wallets]
   );
 
   const onPressSection = useCallback(
     section => () => {
-      const route = getRealRoute(section.key);
-      navigate(route);
+      const { params, route } = getRealRoute(section.key);
+      navigate(route, params);
     },
     [getRealRoute, navigate]
   );

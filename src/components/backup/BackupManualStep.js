@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import WalletTypes from '../../helpers/walletTypes';
-import { useWallets } from '../../hooks';
+import { useDimensions, useWallets } from '../../hooks';
 import { setWalletBackedUp } from '../../redux/wallets';
 import { deviceUtils } from '../../utils';
 import { Centered, Column } from '../layout';
@@ -17,7 +17,7 @@ import { colors, padding } from '@rainbow-me/styles';
 const contentHeight =
   Platform.OS === 'android'
     ? deviceUtils.dimensions.height - 50
-    : deviceUtils.dimensions.height - 150;
+    : deviceUtils.dimensions.height - (deviceUtils.isTallPhone ? 150 : 60);
 
 const Title = styled(Text).attrs({
   size: 'big',
@@ -48,6 +48,7 @@ const ImportantText = styled(Text).attrs({
 })``;
 
 const BackupManualStep = () => {
+  const { isTallPhone } = useDimensions();
   const { selectedWallet } = useWallets();
   const dispatch = useDispatch();
   const { goBack } = useNavigation();
@@ -66,15 +67,15 @@ const BackupManualStep = () => {
       direction="column"
       flex={1}
       height={contentHeight}
-      paddingBottom={15}
+      paddingBottom={isTallPhone ? 15 : 20}
     >
       <Column marginBottom={12} marginTop={15}>
         <TopIcon>􀉆</TopIcon>
       </Column>
       <Title>Back up manually</Title>
       <Column
-        paddingBottom={Platform.OS === 'android' ? 30 : 65}
-        paddingHorizontal={60}
+        paddingBottom={Platform.OS === 'android' ? 30 : isTallPhone ? 65 : 15}
+        paddingHorizontal={isTallPhone ? 65 : 35}
       >
         <DescriptionText>
           <ImportantText>

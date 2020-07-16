@@ -109,7 +109,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, wallets } = useWallets();
   const { clipboard } = useClipboard();
-  const { goBack, navigate, setParams } = useNavigation();
+  const { goBack, navigate, replace, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
@@ -272,7 +272,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
               InteractionManager.runAfterInteractions(async () => {
                 if (previousWalletCount === 0) {
                   await saveUserBackupState(BackupStateTypes.done);
-                  navigate(Routes.SWIPE_LAYOUT);
+                  replace(Routes.SWIPE_LAYOUT);
                 } else {
                   navigate(Routes.WALLET_SCREEN);
                 }
@@ -316,6 +316,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     toggleImporting,
     wallets,
     wasImporting,
+    replace,
   ]);
 
   useEffect(() => {

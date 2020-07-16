@@ -182,10 +182,12 @@ export const transactionsReceived = (message, appended = false) => async (
   });
   dispatch(updatePurchases(parsedTransactions));
   saveLocalTransactions(parsedTransactions, accountAddress, network);
-  const type = appended ? 'appended' : 'received';
-  subscribers[type].forEach(listener => {
-    listener.emit('incoming_transaction', type);
-  });
+  if (parsedTransactions.length) {
+    const type = appended ? 'appended' : 'received';
+    subscribers[type].forEach(listener => {
+      listener.emit('incoming_transaction', type);
+    });
+  }
 };
 
 export const transactionsRemoved = message => (dispatch, getState) => {

@@ -29,7 +29,7 @@ const StyledSheet = styled(SlackSheet)`
 `;
 
 const RestoreSheet = () => {
-  const { navigate, setOptions } = useNavigation();
+  const { goBack, navigate, setOptions } = useNavigation();
 
   const { jumpToLong } = useContext(ModalContext);
   const switchSheetContentTransitionRef = useRef();
@@ -56,12 +56,14 @@ const RestoreSheet = () => {
   }, [jumpToLong, setOptions]);
 
   const onManualRestore = useCallback(() => {
+    goBack();
     navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
-  }, [navigate]);
+  }, [goBack, navigate]);
 
   const onWatchAddress = useCallback(() => {
+    goBack();
     navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
-  }, [navigate]);
+  }, [goBack, navigate]);
 
   const renderStep = useCallback(() => {
     switch (step) {

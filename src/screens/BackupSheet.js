@@ -29,7 +29,8 @@ import { addWalletToCloudBackup } from '../model/wallet';
 import { sheetVerticalOffset } from '../navigation/effects';
 import { usePortal } from '../react-native-cool-modals/Portal';
 import { setIsWalletLoading, setWalletBackedUp } from '../redux/wallets';
-import { logger } from '../utils';
+import { deviceUtils, logger } from '../utils';
+
 import Routes from '@rainbow-me/routes';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
@@ -44,7 +45,7 @@ const switchSheetContentTransition = (
 const StyledSheet = styled(SlackSheet)`
   top: 0;
   height: 100%;
-  padding-bottom: 50px;
+  ${deviceUtils.isTallPhone ? 'padding-bottom: 50px;' : ''}
 `;
 
 const BackupSheet = ({ setAppearListener }) => {
