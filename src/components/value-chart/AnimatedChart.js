@@ -31,7 +31,7 @@ export default class AnimatedChart extends Component {
 
       const lineShape = shape
         .line()
-        .curve(shape.curveMonotoneX)
+        .curve(shape.curveBasis)
         .x(
           d => (d.x - minX) / ((maxX - minX) / (width - 2 * padding)) + padding
         )
@@ -129,7 +129,7 @@ export default class AnimatedChart extends Component {
           <Path
             d={this.state.currentChart}
             stroke={this.props.color}
-            strokeWidth={3}
+            strokeWidth={3.25}
             ref={path => (this._path = path)}
           />
         </Svg>
