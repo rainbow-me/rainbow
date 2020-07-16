@@ -10,6 +10,7 @@ import {
 } from 'recyclerlistview';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import { buildCoinsList } from '../../helpers/assets';
+import networkTypes from '../../helpers/networkTypes';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
 import {
@@ -43,6 +44,7 @@ class SendAssetList extends React.Component {
       allAssets,
       hiddenCoins,
       nativeCurrency,
+      network,
       pinnedCoins,
       savings,
       uniqueTokens,
@@ -73,7 +75,7 @@ class SendAssetList extends React.Component {
       this.data.push(smallBalances);
     }
 
-    if (savings && savings.length > 0) {
+    if (savings && savings.length > 0 && network === networkTypes.mainnet) {
       this.data = this.data.concat([{ data: savings, name: 'Savings' }]);
     }
     if (uniqueTokens && uniqueTokens.length > 0) {

@@ -19,21 +19,15 @@ const ScreensNativeModules = {
   },
 };
 
-class Screen extends React.Component {
-  setRef = ref => {
-    this.props.onComponentRef && this.props.onComponentRef(ref);
-  };
-  render() {
-    AnimatedNativeScreen =
-      AnimatedNativeScreen ||
-      Animated.createAnimatedComponent(ScreensNativeModules.NativeScreen);
-
-    return <AnimatedNativeScreen {...this.props} ref={this.setRef} />;
-  }
+function Screen(props, ref) {
+  AnimatedNativeScreen =
+    AnimatedNativeScreen ||
+    Animated.createAnimatedComponent(ScreensNativeModules.NativeScreen);
+  return <AnimatedNativeScreen {...props} ref={ref} />;
 }
 
 export default {
-  Screen,
+  Screen: React.forwardRef(Screen),
   get ScreenStack() {
     return ScreensNativeModules.NativeScreenStack;
   },
