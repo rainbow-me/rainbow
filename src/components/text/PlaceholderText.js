@@ -1,8 +1,8 @@
 import React, { useImperativeHandle, useState } from 'react';
 import { Platform } from 'react-native';
 import styled from 'styled-components/primitives';
-import { colors } from '../../styles';
 import Text from './Text';
+import { colors } from '@rainbow-me/styles';
 
 const Placeholder = styled(Text).attrs({
   align: 'center',

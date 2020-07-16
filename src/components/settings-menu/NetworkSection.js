@@ -45,9 +45,9 @@ const NetworkSection = () => {
         selected: toLower(network) === toLower(value),
         value,
       }))}
+      onChange={onNetworkChange}
       renderItem={RadioListItem}
       value={network}
-      onChange={onNetworkChange}
     />
   );
 };

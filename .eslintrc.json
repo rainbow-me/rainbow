@@ -5,6 +5,9 @@
     "import/resolver": {
       "node": {
         "extensions": [".js", ".ios.js", ".android.js", ".native.js", ".tsx"]
+      },
+      "babel-module": {
+        "alias": {}
       }
     }
   },
@@ -20,6 +23,9 @@
     }],
     "sort-keys": ["error", "asc", { "caseSensitive": false, "natural": false }],
     "jest/no-truthy-falsy": 0,
+    "react/jsx-sort-props": ["error", {
+      "ignoreCase": false
+    }],
     "react-native/no-inline-styles": 0,
     "import/named": 0,
     "import/no-named-as-default": 0,
@@ -51,6 +57,7 @@
       }
     ],
     "react/display-name": 2,
+    "react/no-array-index-key": 0,
     "jest/no-test-prefixes": 0,
     "jest/no-disabled-tests": 0
   },

@@ -21,8 +21,10 @@ const renderItem = ({ item }) => <WalletConnectListItem {...item} />;
 
 const WalletConnectList = ({ items, onLayout, ...props }) => (
   <FlexItem
+    borderRadius={30}
     maxHeight={WalletConnectListItem.height * maxListItemsForDeviceSize}
     minHeight={WalletConnectListItem.height}
+    overflow="hidden"
   >
     <FlatList
       {...props}

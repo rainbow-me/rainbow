@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
@@ -26,9 +26,10 @@ import {
   signTransaction,
   signTypedDataMessage,
 } from '../model/wallet';
+import { useNavigation } from '../navigation/Navigation';
 import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
-import { colors, position } from '../styles';
-import { gasUtils, logger } from '../utils';
+import { gasUtils } from '../utils';
+
 import {
   isMessageDisplayType,
   isSignFirstParamType,
@@ -39,6 +40,8 @@ import {
   SIGN,
   SIGN_TYPED_DATA,
 } from '../utils/signingMethods';
+import { colors, position } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const CancelButtonContainer = styled.View`
   bottom: 19;
@@ -331,8 +334,8 @@ const TransactionConfirmationScreen = () => {
       return (
         <MessageSigningSection
           message={request}
-          sendButton={renderSendButton()}
           method={method}
+          sendButton={renderSendButton()}
         />
       );
     }

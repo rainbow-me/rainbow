@@ -1,6 +1,6 @@
 import styled from 'styled-components/primitives';
-import { padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
+import { padding } from '@rainbow-me/styles';
 
 const HeaderButton = styled(ButtonPressAnimation).attrs(
   ({ scaleTo = 0.8 }) => ({

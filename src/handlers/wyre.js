@@ -13,7 +13,7 @@ import {
 import NetworkTypes from '../helpers/networkTypes';
 import { add, feeCalculation } from '../helpers/utilities';
 import { WYRE_SUPPORTED_COUNTRIES_ISO } from '../references/wyre';
-import { logger } from '../utils';
+import logger from 'logger';
 
 const WYRE_PERCENT_FEE = 4;
 const WYRE_FLAT_FEE_USD = 0.3;

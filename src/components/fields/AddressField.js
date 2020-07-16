@@ -8,11 +8,11 @@ import styled from 'styled-components/primitives';
 import { isHexString } from '../../handlers/web3';
 import { checkIsValidAddressOrENS } from '../../helpers/validators';
 import { withNavigation } from '../../navigation/Navigation';
-import { colors } from '../../styles';
 import { abbreviations, addressUtils, isNewValueForPath } from '../../utils';
 import { Input } from '../inputs';
 import { Row } from '../layout';
 import { Label } from '../text';
+import { colors } from '@rainbow-me/styles';
 
 const Placeholder = styled(Row)`
   margin-top: ${Platform.OS === 'android' ? 14 : 0};
@@ -152,8 +152,8 @@ export default withNavigation(
             onChangeText={this.onChangeText}
             ref={this.handleInputRef}
             selectTextOnFocus
-            spellCheck={false}
             size="bmedium"
+            spellCheck={false}
             style={{
               flexGrow: 1,
               marginTop: 1,

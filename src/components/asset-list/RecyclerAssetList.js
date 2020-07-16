@@ -18,7 +18,6 @@ import {
   withOpenInvestmentCards,
   withOpenSavings,
 } from '../../hoc';
-import { colors } from '../../styles';
 import {
   deviceUtils,
   isNewValueForPath,
@@ -28,6 +27,7 @@ import { CoinDivider } from '../coin-divider';
 import { CoinRowHeight } from '../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import { ViewTypes } from './RecyclerViewTypes';
+import { colors } from '@rainbow-me/styles';
 
 const NOOP = () => undefined;
 let globalDeviceDimensions = 0;
@@ -674,7 +674,7 @@ class RecyclerAssetList extends Component {
       additionalPadding;
   }
 
-  handleRefresh() {
+  handleRefresh = () => {
     if (this.state.isRefreshing) return;
 
     this.setState({ isRefreshing: true }, () => {
@@ -691,7 +691,7 @@ class RecyclerAssetList extends Component {
           }
         });
     });
-  }
+  };
 
   handleScroll = (_nativeEventObject, _, offsetY) => {
     if (this.props.isCoinListEdited) {
@@ -795,8 +795,8 @@ class RecyclerAssetList extends Component {
       <View
         backgroundColor={colors.white}
         flex={1}
-        overflow="hidden"
         onLayout={this.handleOnLayout}
+        overflow="hidden"
       >
         <StickyContainer
           overrideRowRenderer={this.stickyRowRenderer}

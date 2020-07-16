@@ -2,6 +2,18 @@ module.exports = function(api) {
   api.cache(true);
 
   const plugins = [
+    [
+      'babel-plugin-module-resolver',
+      {
+        alias: {
+          '@rainbow-me/routes': './src/navigation/routesNames',
+          '@rainbow-me/styles': './src/styles',
+          'logger': './src/utils/logger',
+          'react-native-cool-modals': './src/react-native-cool-modals',
+        },
+        root: ['./src'],
+      },
+    ],
     'babel-plugin-styled-components',
     'date-fns',
     'graphql-tag',

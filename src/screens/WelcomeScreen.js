@@ -14,7 +14,7 @@ import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { Emoji, Text } from '../components/text';
 import useHideSplashScreen from '../helpers/hideSplashScreen';
-import { colors, shadow } from '../styles';
+import { colors, shadow } from '@rainbow-me/styles';
 
 const {
   and,
@@ -442,7 +442,7 @@ export default function WelcomeScreen() {
   return (
     <Container>
       {traversedRainbows.map(({ source, style, id }) => (
-        <RainbowImage source={source} style={style} key={`rainbow${id}`} />
+        <RainbowImage key={`rainbow${id}`} source={source} style={style} />
       ))}
 
       <ContentWrapper style={contentStyle}>

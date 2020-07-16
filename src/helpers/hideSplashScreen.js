@@ -24,6 +24,11 @@ export default function useHideSplashScreen() {
     } else {
       SplashScreen.hide();
     }
+    if (Platform.OS === 'android') {
+      StatusBar.setBackgroundColor('transparent', false);
+      StatusBar.setTranslucent(true);
+      StatusBar.setBarStyle('dark-content', true);
+    }
     // show the StatusBar
     (Platform.OS === 'ios' && StatusBar.setHidden(false, 'fade')) ||
       InteractionManager.runAfterInteractions(() => {

@@ -1,11 +1,12 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Centered } from '../components/layout';
 import { Sheet } from '../components/sheet';
 import { Text } from '../components/text';
 import { useAppState } from '../hooks';
-import { colors } from '../styles';
+import { useNavigation } from '../navigation/Navigation';
+import { colors } from '@rainbow-me/styles';
 
 const BodyText = styled(Text).attrs({
   align: 'center',

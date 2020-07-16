@@ -6,7 +6,7 @@ import {
   walletConnectRemovePendingRedirect,
   walletConnectSetPendingRedirect,
 } from '../redux/walletconnect';
-import { logger } from '../utils';
+import logger from 'logger';
 
 export default function handleDeeplink(url) {
   const urlObj = new URL(url);

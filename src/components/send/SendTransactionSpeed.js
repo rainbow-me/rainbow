@@ -1,11 +1,11 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { colors, position } from '../../styles';
 import { Button } from '../buttons';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text } from '../text';
+import { colors, position } from '@rainbow-me/styles';
 
 const SendTransactionSpeed = ({
   gasPrice,

@@ -6,16 +6,17 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { Platform } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import WalletTypes from '../../helpers/walletTypes';
-import { colors, position } from '../../styles';
 import Divider from '../Divider';
 import { EmptyAssetList } from '../asset-list';
 import { Column } from '../layout';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
+import { colors, position } from '@rainbow-me/styles';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -34,7 +35,7 @@ const getItemLayout = (data, index) => {
   };
 };
 
-const keyExtractor = item => item.id;
+const keyExtractor = item => `${item.wallet_id}-${item.id}`;
 
 const skeletonTransition = (
   <Transition.Sequence>
@@ -163,7 +164,9 @@ export default function WalletList({
   useEffect(() => {
     if (rows && rows.length && !ready) {
       setTimeout(() => {
-        skeletonTransitionRef.current?.animateNextTransition();
+        if (Platform.OS === 'ios') {
+          skeletonTransitionRef.current?.animateNextTransition();
+        }
         setReady(true);
       }, 50);
     }

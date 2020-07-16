@@ -41,18 +41,18 @@ export const parseNewTransaction = async (
   ]);
   const hash = txDetails.hash ? `${txDetails.hash}-0` : null;
   const nonce = tx.nonce || (tx.from ? await getTransactionCount(tx.from) : '');
-  const status = txDetails.status || TransactionStatusTypes.sending;
+  const status = txDetails?.status || TransactionStatusTypes.sending;
 
   const title = getTitle({
-    protocol: txDetails.protocol,
+    protocol: txDetails?.protocol,
     status,
-    type: txDetails.type,
+    type: txDetails?.type,
   });
 
   const description = getDescription({
-    name: get(txDetails, 'asset.name'),
+    name: txDetails?.asset?.name,
     status,
-    type: txDetails.type,
+    type: txDetails?.type,
   });
 
   tx = {
@@ -61,14 +61,15 @@ export const parseNewTransaction = async (
     description,
     hash,
     minedAt: null,
-    name: get(txDetails, 'asset.name'),
+    name: txDetails?.asset?.name,
     native,
     nonce,
     pending: true,
+    protocol: txDetails?.protocol,
     status,
-    symbol: get(txDetails, 'asset.symbol'),
+    symbol: txDetails?.asset?.symbol,
     title,
-    type: get(txDetails, 'type'),
+    type: txDetails?.type,
   };
 
   return tx;

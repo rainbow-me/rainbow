@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import React, { useCallback, useRef, useState } from 'react';
-import { InteractionManager, Platform } from 'react-native';
+import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -16,7 +16,6 @@ import { useAccountSettings, useInitializeWallet, useWallets } from '../hooks';
 import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
 import { createWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
-import Routes from '../navigation/routesNames';
 import {
   addressSetSelected,
   createAccountForWallet,
@@ -26,9 +25,12 @@ import {
   walletsUpdate,
 } from '../redux/wallets';
 
-import { colors, fonts } from '../styles';
-import { abbreviations, deviceUtils, logger } from '../utils';
+import { abbreviations, deviceUtils } from '../utils';
+
 import { showActionSheetWithOptions } from '../utils/actionsheet';
+import Routes from '@rainbow-me/routes';
+import { colors, fonts } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const footerHeight = 111;
@@ -41,6 +43,14 @@ const EditButton = styled(ButtonPressAnimation).attrs({ scaleTo: 0.96 })`
   position: absolute;
   right: 7px;
   top: 6px;
+`;
+
+const Spacer = styled.View`
+  height: 400px;
+  width: 100%;
+  background-color: ${colors.white};
+  position: absolute;
+  bottom: -400px;
 `;
 
 const getWalletRowCount = wallets => {
@@ -345,11 +355,7 @@ const ChangeWalletSheet = () => {
   ]);
 
   const onPressImportSeedPhrase = useCallback(() => {
-    navigate(
-      Platform.OS === 'ios'
-        ? Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR
-        : Routes.IMPORT_SEED_PHRASE_SHEET
-    );
+    navigate(Routes.IMPORT_SEED_PHRASE_FLOW);
   }, [navigate]);
 
   const toggleEditMode = useCallback(() => {
@@ -357,39 +363,41 @@ const ChangeWalletSheet = () => {
   }, [editMode]);
 
   return (
-    <Sheet borderRadius={30}>
-      <Column height={headerHeight} justify="space-between">
-        <SheetTitle>Wallets</SheetTitle>
-        {showDividers && (
-          <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
-        )}
-      </Column>
-      <EditButton onPress={toggleEditMode}>
-        <Text
-          align="right"
-          color={colors.appleBlue}
-          letterSpacing="roundedMedium"
-          size="large"
-          weight={editMode ? fonts.weight.semibold : fonts.weight.medium}
-        >
-          {editMode ? 'Done' : 'Edit'}
-        </Text>
-      </EditButton>
-
-      <WalletList
-        accountAddress={currentAddress}
-        allWallets={walletsWithBalancesAndNames}
-        currentWallet={currentSelectedWallet}
-        editMode={editMode}
-        height={listHeight}
-        onChangeAccount={onChangeAccount}
-        onEditWallet={onEditWallet}
-        onPressAddAccount={onPressAddAccount}
-        onPressImportSeedPhrase={onPressImportSeedPhrase}
-        scrollEnabled={scrollEnabled}
-        showDividers={showDividers}
-      />
-    </Sheet>
+    <>
+      <Sheet borderRadius={30}>
+        <Spacer />
+        <Column height={headerHeight} justify="space-between">
+          <SheetTitle>Wallets</SheetTitle>
+          {showDividers && (
+            <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
+          )}
+        </Column>
+        <EditButton onPress={toggleEditMode}>
+          <Text
+            align="right"
+            color={colors.appleBlue}
+            letterSpacing="roundedMedium"
+            size="large"
+            weight={editMode ? fonts.weight.semibold : fonts.weight.medium}
+          >
+            {editMode ? 'Done' : 'Edit'}
+          </Text>
+        </EditButton>
+        <WalletList
+          accountAddress={currentAddress}
+          allWallets={walletsWithBalancesAndNames}
+          currentWallet={currentSelectedWallet}
+          editMode={editMode}
+          height={listHeight}
+          onChangeAccount={onChangeAccount}
+          onEditWallet={onEditWallet}
+          onPressAddAccount={onPressAddAccount}
+          onPressImportSeedPhrase={onPressImportSeedPhrase}
+          scrollEnabled={scrollEnabled}
+          showDividers={showDividers}
+        />
+      </Sheet>
+    </>
   );
 };
 

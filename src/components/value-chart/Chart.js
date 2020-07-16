@@ -1,22 +1,23 @@
-import { get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
-import { Easing } from 'react-native-reanimated';
-import {
-  bin,
-  bInterpolateColor,
-  useTimingTransition,
-} from 'react-native-redash';
 import ChartTypes from '../../helpers/chartTypes';
-import { greaterThan, toFixedDecimals } from '../../helpers/utilities';
+import { toFixedDecimals } from '../../helpers/utilities';
 import { useAccountSettings, useCharts } from '../../hooks';
-import { colors } from '../../styles';
 import { Column } from '../layout';
 import TimespanSelector from './TimespanSelector';
 import ValueChart from './ValueChart';
+import { colors } from '@rainbow-me/styles';
 
 const chartStroke = { detailed: 1.5, simplified: 3 };
 
-const Chart = ({ asset, ...props }) => {
+const Chart = ({
+  asset,
+  change,
+  color,
+  latestPrice,
+  setChartPrice,
+  ...props
+}) => {
   const { chart, chartType, updateChartType } = useCharts(asset);
   const { nativeCurrencySymbol } = useAccountSettings();
 
@@ -27,7 +28,6 @@ const Chart = ({ asset, ...props }) => {
   }, []);
 
   const hasChart = !isEmpty(chart);
-  const change = get(asset, 'price.relative_change_24h', 0);
 
   const chartData = useMemo(() => {
     if (!chart || !hasChart) return [];
@@ -44,22 +44,6 @@ const Chart = ({ asset, ...props }) => {
     });
   }, [chart, hasChart]);
 
-  const positiveChange = greaterThan(change, 0);
-
-  const timespanIndicatorColorAnimation = useTimingTransition(
-    bin(positiveChange),
-    {
-      duration: 100,
-      ease: Easing.out(Easing.ease),
-    }
-  );
-
-  const timespanIndicatorColor = bInterpolateColor(
-    timespanIndicatorColorAnimation,
-    colors.red,
-    colors.chartGreen
-  );
-
   const currentChartIndex = Object.values(ChartTypes).indexOf(chartType);
   const amountOfPathPoints = 80; // 👈️ TODO make this dynamic
 
@@ -72,21 +56,21 @@ const Chart = ({ asset, ...props }) => {
       {...props}
     >
       <ValueChart
-        change={toFixedDecimals(change, 2)}
         amountOfPathPoints={amountOfPathPoints}
-        barColor={positiveChange ? colors.chartGreen : colors.red}
+        barColor={color}
+        change={toFixedDecimals(change, 2)}
         currentDataSource={currentChartIndex}
-        currentValue={asset.native.price.amount}
+        currentValue={latestPrice}
         data={chartData}
         importantPointsIndexInterval={amountOfPathPoints}
         mode="gesture-managed"
         nativeCurrency={nativeCurrencySymbol}
-        positiveChange={positiveChange}
+        onValueUpdate={setChartPrice}
         stroke={chartStroke}
       />
       <TimespanSelector
-        color={timespanIndicatorColor}
-        defaultIndex={4}
+        color={color}
+        defaultIndex={currentChartIndex}
         isLoading={false}
         reloadChart={selected => {
           updateChartType(selected);

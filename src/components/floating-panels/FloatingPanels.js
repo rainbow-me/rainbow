@@ -1,6 +1,6 @@
 import React from 'react';
-import { position } from '../../styles';
 import { ColumnWithMargins } from '../layout';
+import { position } from '@rainbow-me/styles';
 
 const FloatingPanelsMargin = 20;
 

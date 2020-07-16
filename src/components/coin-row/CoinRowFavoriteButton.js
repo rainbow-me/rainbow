@@ -1,11 +1,11 @@
 import React from 'react';
 import { BaseButton } from 'react-native-gesture-handler';
 import styled from 'styled-components/primitives';
-import { colors, padding } from '../../styles';
 import { magicMemo } from '../../utils';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { CoinRowHeight } from './CoinRow';
+import { colors, padding } from '@rainbow-me/styles';
 
 const FavoriteButtonPadding = 19;
 const FavoriteButtonWidth = FavoriteButtonPadding * 3;

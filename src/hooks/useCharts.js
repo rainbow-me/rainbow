@@ -1,10 +1,16 @@
-import { get } from 'lodash';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getChart } from '../handlers/uniswap';
-import { addressChartsReceived, chartsUpdateChartType } from '../redux/charts';
+import {
+  addressChartsReceived,
+  chartsUpdateChartType,
+  DEFAULT_CHART_TYPE,
+} from '../redux/charts';
 import { isNewValueForObjectPaths } from '../utils';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
+
+const areSelectorResultsEqual = (prev, next) =>
+  !isNewValueForObjectPaths(prev, next, ['chartType', 'fetchingCharts']);
 
 export default function useCharts(asset) {
   const dispatch = useDispatch();
@@ -13,7 +19,7 @@ export default function useCharts(asset) {
   const uniswapAsset = uniswapAssetsInWallet.find(
     ({ address }) => address === asset.address
   );
-  const exchangeAddress = get(uniswapAsset, 'exchangeAddress');
+  const exchangeAddress = uniswapAsset?.exchangeAddress;
 
   const { charts, chartType, fetchingCharts } = useSelector(
     ({ charts: { charts, chartType, fetchingCharts } }) => ({
@@ -21,8 +27,7 @@ export default function useCharts(asset) {
       chartType,
       fetchingCharts,
     }),
-    (...props) =>
-      !isNewValueForObjectPaths(...props, ['chartType', 'fetchingCharts'])
+    areSelectorResultsEqual
   );
   const chart = charts?.[exchangeAddress]?.[chartType];
 
@@ -47,16 +52,21 @@ export default function useCharts(asset) {
     [charts, chartType, dispatch, exchangeAddress]
   );
 
-  useEffect(() => {
-    if (!chart && !!exchangeAddress) {
-      fetchFallbackCharts();
-    }
-  }, [chart, exchangeAddress, fetchFallbackCharts]);
-
   const updateChartType = useCallback(
     type => dispatch(chartsUpdateChartType(type)),
     [dispatch]
   );
+
+  useEffect(() => {
+    if (!chart && !!exchangeAddress) {
+      fetchFallbackCharts();
+    }
+
+    return () => {
+      // Reset chart timeframe on unmount.
+      updateChartType(DEFAULT_CHART_TYPE);
+    };
+  }, [chart, exchangeAddress, fetchFallbackCharts, updateChartType]);
 
   return {
     chart,

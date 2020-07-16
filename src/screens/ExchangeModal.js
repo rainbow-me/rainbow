@@ -9,6 +9,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { Platform } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import HorizontalGestureBlocker from '../components/HorizontalGestureBlocker';
@@ -21,7 +22,7 @@ import {
   SlippageWarning,
 } from '../components/exchange';
 import SwapInfo from '../components/exchange/SwapInfo';
-import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
+import { FloatingPanel, FloatingPanels } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
@@ -39,12 +40,13 @@ import {
   useUniswapMarketDetails,
 } from '../hooks';
 import { loadWallet } from '../model/wallet';
-import Routes from '../navigation/routesNames';
 import { executeRap } from '../raps/common';
 import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
-import { colors, position } from '../styles';
-import { backgroundTask, isNewValueForPath, logger } from '../utils';
+import { backgroundTask, isNewValueForPath } from '../utils';
+import Routes from '@rainbow-me/routes';
+import { colors, position } from '@rainbow-me/styles';
+import logger from 'logger';
 
 export const exchangeModalBorderRadius = 30;
 
@@ -448,11 +450,14 @@ const ExchangeModal = ({
           <AnimatedFloatingPanels
             margin={0}
             style={{
-              opacity: interpolate(tabPosition, {
-                extrapolate: Animated.Extrapolate.CLAMP,
-                inputRange: [0, 0.2, 1],
-                outputRange: [1, 1, 0],
-              }),
+              opacity:
+                Platform.OS === 'android'
+                  ? 1
+                  : interpolate(tabPosition, {
+                      extrapolate: Animated.Extrapolate.CLAMP,
+                      inputRange: [0, 0.2, 1],
+                      outputRange: [1, 1, 0],
+                    }),
             }}
           >
             <FloatingPanel

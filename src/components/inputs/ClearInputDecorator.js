@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
-import { colors, position } from '../../styles';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
+import { colors, position } from '@rainbow-me/styles';
 
 const Button = styled(Centered).attrs({
   scaleTo: 0.8,

@@ -2,11 +2,11 @@ import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
-import { colors, padding, position } from '../../../styles';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
+import { colors, padding, position } from '@rainbow-me/styles';
 
 const Button = styled(Centered).attrs(({ size }) => ({
   scaleTo: size === 'big' ? 0.9 : 0.96,
@@ -51,13 +51,14 @@ const SheetActionButton = ({
   textColor = colors.white,
   ...props
 }) => {
-  const shadowsForButtonColor = useMemo(
-    () => [
-      [0, 10, 30, colors.dark, 0.2],
-      [0, 5, 15, color, 0.4],
-    ],
-    [color]
-  );
+  const shadowsForButtonColor = useMemo(() => {
+    const isWhite = color === colors.white;
+
+    return [
+      [0, 10, 30, colors.dark, isWhite ? 0.12 : 0.2],
+      [0, 5, 15, isWhite ? colors.dark : color, isWhite ? 0.08 : 0.4],
+    ];
+  }, [color]);
 
   return (
     <Button as={ButtonPressAnimation} size={size} {...props}>
@@ -72,7 +73,7 @@ const SheetActionButton = ({
       </ShadowStack>
       <Content size={size}>
         {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
-        {icon && <Icon color="white" name={icon} size={18} height={18} />}
+        {icon && <Icon color="white" height={18} name={icon} size={18} />}
         <Text
           align="center"
           color={textColor}

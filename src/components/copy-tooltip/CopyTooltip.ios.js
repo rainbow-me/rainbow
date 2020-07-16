@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react';
 import ToolTip from 'react-native-tooltip';
 import { compose, onlyUpdateForKeys } from 'recompact';
 import { withNavigation } from '../../navigation/Navigation';
-import { colors } from '../../styles';
+import { colors } from '@rainbow-me/styles';
 
 class CopyTooltip extends PureComponent {
   static propTypes = {

@@ -9,6 +9,7 @@ import { isEmulatorSync } from 'react-native-device-info';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { compose } from 'recompact';
 import { Alert, Prompt } from '../components/alerts';
+import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import WalletTypes from '../helpers/walletTypes';
 import {
   withWalletConnectConnections,
@@ -16,10 +17,10 @@ import {
 } from '../hoc';
 import { checkPushNotificationPermissions } from '../model/firebase';
 import { withNavigationFocus } from '../navigation/Navigation';
-import Routes from '../navigation/routesNames';
 import store from '../redux/store';
 import { addressUtils } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
+import Routes from '@rainbow-me/routes';
 
 class QRScannerScreenWithData extends Component {
   static propTypes = {
@@ -105,7 +106,15 @@ class QRScannerScreenWithData extends Component {
 
       analytics.track('Scanned address QR code');
       navigation.navigate(Routes.WALLET_SCREEN);
-      navigation.navigate(Routes.SEND_SHEET, { address });
+      navigation.navigate(
+        Routes.SEND_FLOW,
+        isNativeStackAvailable
+          ? {
+              params: { address },
+              screen: Routes.SEND_SHEET,
+            }
+          : { address }
+      );
       return setSafeTimeout(this.handleReenableScanning, 1000);
     }
 

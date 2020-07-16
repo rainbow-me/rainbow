@@ -18,6 +18,7 @@ import { Icon } from '../components/icons';
 import { Input } from '../components/inputs';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
+import { LoadingOverlayWrapper } from '../components/modal/LoadingOverlay';
 import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
 import { web3Provider } from '../handlers/web3';
@@ -30,11 +31,13 @@ import {
   usePrevious,
   useTimeout,
 } from '../hooks';
+import { getWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/effects';
-import Routes from '../navigation/routesNames';
-import { borders, colors, padding, shadow } from '../styles';
-import { logger } from '../utils';
+import Routes from '@rainbow-me/routes';
+import { borders, colors, padding, shadow } from '@rainbow-me/styles';
+import logger from 'logger';
+import { usePortal } from 'react-native-cool-modals/Portal';
 
 const keyboardVerticalOffset =
   Platform.OS === 'android'
@@ -118,7 +121,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
 
   const inputRefListener = useCallback(
     value => {
-      value && startFocusTimeout(value.focus, 100);
+      value && startFocusTimeout(() => value.focus(), 100);
       inputRef.current = value;
     },
     [startFocusTimeout]
@@ -174,6 +177,16 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
         if (ens && ens !== input) {
           name = ens;
         }
+      } else {
+        try {
+          const { wallet } = getWallet(input);
+          const ens = await web3Provider.lookupAddress(wallet?.address);
+          if (ens && ens !== input) {
+            name = ens;
+          }
+        } catch (error) {
+          logger.log('Error looking up ENS for imported HD type wallet', error);
+        }
       }
 
       const ConfirmImportAlert = (name, onSuccess, navigate) =>
@@ -188,7 +201,9 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             }
           },
           onRefocusInput:
-            Platform.OS === 'ios' ? setAppearListener(focusListener) : null,
+            Platform.OS === 'ios'
+              ? setAppearListener(focusListener)
+              : () => null,
           profile: {
             name,
           },
@@ -222,6 +237,8 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     toggleImporting,
   ]);
 
+  const { setComponent, hide } = usePortal();
+
   useEffect(() => {
     if (!wasImporting && isImporting) {
       startAnalyticsTimeout(async () => {
@@ -233,6 +250,9 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
                 hadPreviousAddressWithValue: isEmpty,
               });
               navigate(Routes.WALLET_SCREEN);
+              if (Platform.OS === 'android') {
+                hide();
+              }
             } else {
               toggleImporting(false);
             }
@@ -245,6 +265,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     }
   }, [
     color,
+    hide,
     initializeWallet,
     isEmpty,
     isImporting,
@@ -256,6 +277,21 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     toggleImporting,
     wasImporting,
   ]);
+
+  useEffect(() => {
+    if (isImporting) {
+      setComponent(
+        <LoadingOverlayWrapper>
+          <LoadingOverlay
+            paddingTop={keyboardVerticalOffset}
+            title="Importing..."
+          />
+        </LoadingOverlayWrapper>,
+        true
+      );
+      return hide;
+    }
+  }, [hide, isImporting, setComponent]);
 
   return (
     <Container>
@@ -280,6 +316,7 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
               Platform.OS === 'android' ? 'visible-password' : 'default'
             }
             lineHeight="looser"
+            marginBottom={Platform.OS === 'android' ? 55 : 0}
             multiline
             numberOfLines={3}
             onChangeText={handleSetSeedPhrase}
@@ -298,19 +335,19 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
             width="100%"
           />
         </Centered>
-        <Row align="start" justify="end">
+        <Row
+          align="start"
+          bottom={Platform.OS === 'android' ? 55 : 0}
+          justify="end"
+          position={Platform.OS === 'android' ? 'absolute' : 'relative'}
+          right={0}
+        >
           <ImportButton
             disabled={seedPhrase ? !isSecretValid : !isClipboardValidSecret}
             onPress={onPressImportButton}
             seedPhrase={seedPhrase}
           />
         </Row>
-        {isImporting && (
-          <LoadingOverlay
-            paddingTop={keyboardVerticalOffset}
-            title="Importing..."
-          />
-        )}
       </KeyboardAvoidingView>
     </Container>
   );

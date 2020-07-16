@@ -2,11 +2,11 @@ import { isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
-import { fonts, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
+import { fonts, padding, position } from '@rainbow-me/styles';
 
 const ListItemHeight = 54;
 
@@ -64,8 +64,8 @@ const ListItem = enhance(
       >
         <RowWithMargins
           align="center"
-          justify={justify}
           flex={1}
+          justify={justify}
           margin={iconMargin}
         >
           {icon && <Centered>{renderIcon(icon)}</Centered>}

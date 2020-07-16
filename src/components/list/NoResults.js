@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { colors, position } from '../../styles';
 import { Centered, ColumnWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
+import { colors, position } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({ margin: 3 })`
   ${position.centered};

@@ -9,12 +9,12 @@ import {
 } from 'recyclerlistview';
 import { withSelectedInput } from '../../hoc';
 import { withNavigation } from '../../navigation/Navigation';
-import Routes from '../../navigation/routesNames';
 import { deviceUtils } from '../../utils';
 import { filterList } from '../../utils/search';
 import { FlyInAnimation } from '../animations';
 import { SwipeableContactRow } from '../contacts';
 import SendEmptyState from './SendEmptyState';
+import Routes from '@rainbow-me/routes';
 
 const LastRowPadding = 12;
 const rowHeight = 62;
@@ -153,10 +153,10 @@ class SendContactList extends Component {
           layoutProvider={this._layoutProvider}
           onScroll={this.handleScroll}
           optimizeForInsertDeleteAnimations
+          rowRenderer={this.renderItem}
           scrollViewProps={{
             keyboardShouldPersistTaps: 'always',
           }}
-          rowRenderer={this.renderItem}
           style={{ minHeight: 1 }}
         />
       )}

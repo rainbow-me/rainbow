@@ -10,7 +10,8 @@ import {
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
 import store from '../../redux/store';
-import { AllowancesCache, contractUtils, gasUtils, logger } from '../../utils';
+import { AllowancesCache, contractUtils, gasUtils } from '../../utils';
+import logger from 'logger';
 
 const NOOP = () => undefined;
 

@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { get, isEmpty, isString, toLower } from 'lodash';
 import PropTypes from 'prop-types';
@@ -45,9 +45,10 @@ import {
   useTransactionConfirmation,
 } from '../hooks';
 import { sendTransaction } from '../model/wallet';
-import Routes from '../navigation/routesNames';
-import { borders, colors } from '../styles';
+import { useNavigation } from '../navigation/Navigation';
 import { deviceUtils, gasUtils } from '../utils';
+import Routes from '@rainbow-me/routes';
+import { borders, colors } from '@rainbow-me/styles';
 
 const sheetHeight = deviceUtils.dimensions.height - 10;
 
@@ -92,6 +93,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
     accountAddress,
     nativeCurrency,
     nativeCurrencySymbol,
+    network,
   } = useAccountSettings();
 
   const savings = useSendSavingsAccount();
@@ -399,8 +401,8 @@ const SendSheet = ({ setAppearListener, ...props }) => {
     <SheetContainer>
       <StatusBar barStyle="light-content" />
       <KeyboardAvoidingView
-        enabled={Platform.OS !== 'android'}
         behavior="padding"
+        enabled={Platform.OS !== 'android'}
       >
         <Container align="center">
           <SendHeader
@@ -427,6 +429,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
               fetchData={fetchData}
               hiddenCoins={hiddenCoins}
               nativeCurrency={nativeCurrency}
+              network={network}
               onSelectAsset={sendUpdateSelected}
               pinnedCoins={pinnedCoins}
               savings={savings}

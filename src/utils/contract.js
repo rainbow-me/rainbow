@@ -3,7 +3,7 @@ import { toHex, web3Provider } from '../handlers/web3';
 import { loadWallet } from '../model/wallet';
 import { ethUnits } from '../references';
 import erc20ABI from '../references/erc20-abi.json';
-import logger from './logger';
+import logger from 'logger';
 
 const estimateApproveWithExchange = async (spender, exchange) => {
   try {

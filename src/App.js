@@ -6,7 +6,12 @@ import { get } from 'lodash';
 import nanoid from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { AppRegistry, AppState, unstable_enableLogBox } from 'react-native';
+import {
+  AppRegistry,
+  AppState,
+  StatusBar,
+  unstable_enableLogBox,
+} from 'react-native';
 import branch from 'react-native-branch';
 // eslint-disable-next-line import/default
 import CodePush from 'react-native-code-push';
@@ -42,9 +47,12 @@ import RoutesComponent from './navigation/Routes';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
-import { logger } from './utils';
+import { logger } from 'logger';
+import { Portal } from 'react-native-cool-modals/Portal';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
+
+StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
 
 if (__DEV__) {
   console.disableYellowBox = reactNativeDisableYellowBox;
@@ -188,15 +196,17 @@ class App extends Component {
 
   render = () => (
     <DevContextWrapper>
-      <SafeAreaProvider>
-        <Provider store={store}>
-          <FlexItem>
-            <RoutesComponent ref={this.handleNavigatorRef} />
-            <OfflineToast />
-            <TestnetToast network={this.props.network} />
-          </FlexItem>
-        </Provider>
-      </SafeAreaProvider>
+      <Portal>
+        <SafeAreaProvider>
+          <Provider store={store}>
+            <FlexItem>
+              <RoutesComponent ref={this.handleNavigatorRef} />
+              <OfflineToast />
+              <TestnetToast network={this.props.network} />
+            </FlexItem>
+          </Provider>
+        </SafeAreaProvider>
+      </Portal>
     </DevContextWrapper>
   );
 }

@@ -3,7 +3,7 @@ import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { isValidAddress, toBuffer } from 'ethereumjs-util';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { findKey, get, isEmpty } from 'lodash';
+import { find, findKey, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {
@@ -21,9 +21,11 @@ import {
   web3Provider,
 } from '../handlers/web3';
 import WalletTypes from '../helpers/walletTypes';
-import { colors } from '../styles';
-import { ethereumUtils, logger } from '../utils';
+import { ethereumUtils } from '../utils';
+
 import * as keychain from './keychain';
+import { colors } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const seedPhraseKey = 'rainbowSeedPhrase';
 const privateKeyKey = 'rainbowPrivateKey';
@@ -277,60 +279,80 @@ export const identifyWalletType = walletSeed => {
   return type;
 };
 
+export const getWallet = walletSeed => {
+  let wallet = null;
+  let hdnode = null;
+  let isHDWallet = false;
+  const type = identifyWalletType(walletSeed);
+  if (!type) throw new Error('Unknown Wallet Type');
+  switch (type) {
+    case WalletTypes.privateKey:
+      wallet = new ethers.Wallet(walletSeed);
+      break;
+    case WalletTypes.mnemonic:
+      hdnode = ethers.utils.HDNode.fromMnemonic(walletSeed);
+      isHDWallet = true;
+      break;
+    case WalletTypes.seed:
+      hdnode = ethers.utils.HDNode.fromSeed(walletSeed);
+      isHDWallet = true;
+      break;
+    case WalletTypes.readOnly:
+      wallet = { address: toChecksumAddress(walletSeed), privateKey: null };
+      break;
+    default:
+  }
+
+  // Always generate the first account if HD node
+  if (isHDWallet) {
+    const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/0`);
+    wallet = new ethers.Wallet(node.privateKey);
+  }
+
+  return { hdnode, isHDWallet, type, wallet };
+};
+
 export const createWallet = async (seed = null, color = null, name = null) => {
   const isImported = !!seed;
   const walletSeed = seed || generateSeedPhrase();
-  let wallet = null;
-  let hdnode = null;
   let addresses = [];
   try {
-    const type = identifyWalletType(walletSeed);
-    if (!type) throw new Error('Unknown Wallet Type');
-    switch (type) {
-      case WalletTypes.privateKey:
-        wallet = new ethers.Wallet(walletSeed);
-        break;
-      case WalletTypes.mnemonic:
-        hdnode = ethers.utils.HDNode.fromMnemonic(walletSeed);
-        break;
-      case WalletTypes.seed:
-        hdnode = ethers.utils.HDNode.fromSeed(walletSeed);
-        break;
-      case WalletTypes.readOnly:
-        wallet = { address: toChecksumAddress(walletSeed), privateKey: null };
-        break;
-      default:
-    }
-
-    // Always generate the first account
-    if (!wallet && [WalletTypes.mnemonic, WalletTypes.seed].includes(type)) {
-      const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/0`);
-      wallet = new ethers.Wallet(node.privateKey);
-    }
+    const { hdnode, isHDWallet, type, wallet } = getWallet(walletSeed);
 
     // Get all wallets
     const allWalletsResult = await getAllWallets();
     const allWallets = get(allWalletsResult, 'wallets', {});
 
+    let existingWalletId = null;
     if (isImported) {
-      // Checking if the generated account already exists
-      const alreadyExisting = Object.keys(allWallets).some(key => {
-        const someWallet = allWallets[key];
-        return someWallet.addresses.some(account => {
-          return (
+      // Checking if the generated account already exists and is visible
+      const alreadyExistingWallet = find(allWallets, someWallet =>
+        find(
+          someWallet.addresses,
+          account =>
             toChecksumAddress(account.address) ===
-              toChecksumAddress(wallet.address) && someWallet.type === type
-          );
-        });
-      });
+              toChecksumAddress(wallet.address) && account.visible
+        )
+      );
 
-      if (alreadyExisting) {
+      existingWalletId = alreadyExistingWallet?.id;
+
+      // Don't allow adding a readOnly wallet that you have already visible
+      // or a private key that you already have visible as a seed or mnemonic
+      const isPrivateKeyOverwritingSeedMnemonic =
+        type === WalletTypes.privateKey &&
+        (alreadyExistingWallet?.type === WalletTypes.seed ||
+          alreadyExistingWallet?.type === WalletTypes.mnemonic);
+      if (
+        alreadyExistingWallet &&
+        (type === WalletTypes.readOnly || isPrivateKeyOverwritingSeedMnemonic)
+      ) {
         Alert.alert('Oops!', 'Looks like you already imported this wallet!');
         return null;
       }
     }
 
-    const id = `wallet_${new Date().getTime()}`;
+    const id = existingWalletId || `wallet_${Date.now()}`;
 
     // Save address
     await saveAddress(wallet.address);
@@ -354,7 +376,7 @@ export const createWallet = async (seed = null, color = null, name = null) => {
       visible: true,
     });
 
-    if (hdnode && isImported) {
+    if (isHDWallet && isImported) {
       let index = 1;
       let lookup = true;
       // Starting on index 1, we are gonna hit etherscan API and check the tx history
@@ -366,15 +388,46 @@ export const createWallet = async (seed = null, color = null, name = null) => {
         const hasTxHistory = await ethereumUtils.hasPreviousTransactions(
           nextWallet.address
         );
+
+        let discoveredAccount = null;
+        let discoveredWalletId = null;
+        find(allWallets, someWallet => {
+          const existingAccount = find(
+            someWallet.addresses,
+            account =>
+              toChecksumAddress(account.address) ===
+              toChecksumAddress(nextWallet.address)
+          );
+          if (existingAccount) {
+            discoveredAccount = existingAccount;
+            discoveredWalletId = someWallet.id;
+            return true;
+          }
+          return false;
+        });
+
+        // Remove any discovered wallets if they already exist
+        // and copy over label and color if account was visible
+        let color = colors.getRandomColor();
+        let label = '';
+
+        if (discoveredAccount) {
+          if (discoveredAccount.visible) {
+            color = discoveredAccount.color;
+            label = discoveredAccount.label;
+          }
+          delete allWallets[discoveredWalletId];
+        }
+
         if (hasTxHistory) {
           // Save private key
           await savePrivateKey(nextWallet.address, nextWallet.privateKey);
           addresses.push({
             address: nextWallet.address,
             avatar: null,
-            color: colors.getRandomColor(),
-            index: index,
-            label: '',
+            color,
+            index,
+            label,
             visible: true,
           });
           index++;

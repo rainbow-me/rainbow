@@ -3,9 +3,9 @@ import {
   getLocalRequests,
   removeLocalRequest,
   saveLocalRequests,
-} from '../handlers/localstorage/walletconnect';
+} from '../handlers/localstorage/walletconnectRequests';
 import { getRequestDisplayDetails } from '../parsers/requests';
-import { logger } from '../utils';
+import logger from 'logger';
 
 // -- Constants --------------------------------------- //
 const REQUESTS_UPDATE_REQUESTS_TO_APPROVE =

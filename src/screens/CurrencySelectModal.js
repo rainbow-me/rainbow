@@ -1,7 +1,6 @@
 import {
   useFocusEffect,
   useIsFocused,
-  useNavigation,
   useRoute,
 } from '@react-navigation/native';
 import { concat, map } from 'lodash';
@@ -30,10 +29,11 @@ import {
   useUniswapAssets,
   useUniswapAssetsInWallet,
 } from '../hooks';
-import Routes from '../navigation/routesNames';
-import { position } from '../styles';
+import { useNavigation } from '../navigation/Navigation';
 import { filterList, filterScams } from '../utils/search';
 import { exchangeModalBorderRadius } from './ExchangeModal';
+import Routes from '@rainbow-me/routes';
+import { position } from '@rainbow-me/styles';
 
 const headerlessSection = data => [{ data, title: '' }];
 
@@ -114,17 +114,19 @@ export default function CurrencySelectModal() {
     [onSelectCurrency, navigate]
   );
 
-  useFocusEffect(() => {
-    params?.toggleGestureEnabled(false);
-    return () => {
-      params?.toggleGestureEnabled(true);
-      InteractionManager.runAfterInteractions(() => {
-        handleApplyFavoritesQueue();
-        setSearchQuery('');
-        restoreFocusOnSwapModal();
-      });
-    };
-  });
+  useFocusEffect(
+    useCallback(() => {
+      params?.toggleGestureEnabled(false);
+      return () => {
+        params?.toggleGestureEnabled(true);
+        InteractionManager.runAfterInteractions(() => {
+          handleApplyFavoritesQueue();
+          setSearchQuery('');
+          restoreFocusOnSwapModal();
+        });
+      };
+    }, [handleApplyFavoritesQueue, params, restoreFocusOnSwapModal])
+  );
 
   const itemProps = useMemo(
     () => ({

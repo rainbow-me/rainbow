@@ -8,8 +8,8 @@ import { DEFAULT_WALLET_NAME, loadAddress, saveAddress } from '../model/wallet';
 import store from '../redux/store';
 
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
-import { colors } from '../styles';
-import { logger } from '../utils';
+import { colors } from '@rainbow-me/styles';
+import logger from 'logger';
 
 export default async function runMigrations() {
   // get current version
@@ -48,7 +48,7 @@ export default async function runMigrations() {
       const address = await loadAddress();
       if (address) {
         logger.sentry('v1 migration - address found');
-        const id = `wallet_${new Date().getTime()}`;
+        const id = `wallet_${Date.now()}`;
         const currentWallet = {
           addresses: [
             {

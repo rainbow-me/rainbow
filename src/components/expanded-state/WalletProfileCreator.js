@@ -5,23 +5,22 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import BiometryTypes from '../../helpers/biometryTypes';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import { useBiometryType, useMagicAutofocus } from '../../hooks';
+import { useBiometryType } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../navigation/routesNames';
-import { colors, padding } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
 import Divider from '../Divider';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { ButtonPressAnimation } from '../animations';
 import { ContactAvatar } from '../contacts';
 import CopyTooltip from '../copy-tooltip';
+import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Centered, KeyboardFixedOpenLayout, RowWithMargins } from '../layout';
 import { Text, TruncatedAddress } from '../text';
 import PlaceholderText from '../text/PlaceholderText';
-import FloatingPanels from './FloatingPanels';
-import { AssetPanel } from './asset-panel';
+import Routes from '@rainbow-me/routes';
+import { colors, padding } from '@rainbow-me/styles';
 
 const sx = StyleSheet.create({
   addressAbbreviation: {
@@ -46,7 +45,7 @@ export default function WalletProfileCreator({
   profile,
 }) {
   const biometryType = useBiometryType();
-  const { dangerouslyGetParent, goBack, navigate } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const [color, setColor] = useState(
     (profile.color !== null && profile.color) || colors.getRandomColor()
   );
@@ -54,7 +53,6 @@ export default function WalletProfileCreator({
   const inputRef = useRef(null);
   const text = useRef(null);
 
-  console.log(dangerouslyGetParent());
   const { params } = useRoute();
 
   const additionalPadding =
@@ -113,10 +111,13 @@ export default function WalletProfileCreator({
     setColor(newColor);
   }, [color]);
 
-  const [handleDidFocus] = useMagicAutofocus(inputRef.current);
   const handleTriggerFocusInput = useCallback(() => inputRef.current?.focus(), [
     inputRef,
   ]);
+
+  useEffect(() => {
+    setTimeout(() => inputRef.current.focus(), 100);
+  }, []);
 
   const acceptAction = isNewProfile ? addProfileInfo : editProfile;
   const cancelAction = actionType === 'Import' ? cancelImport : cancelEdit;
@@ -148,7 +149,6 @@ export default function WalletProfileCreator({
               autoCapitalize="words"
               letterSpacing="roundedTight"
               onChange={handleChange}
-              onFocus={handleDidFocus}
               onSubmitEditing={acceptAction}
               ref={inputRef}
               returnKeyType="done"
@@ -184,32 +184,34 @@ export default function WalletProfileCreator({
                 inset={false}
               />
             </Centered>
-            <ButtonPressAnimation
-              onPress={acceptAction}
-              paddingBottom={19}
-              paddingTop={15}
-              width="100%"
-            >
-              <RowWithMargins align="center" justify="center" margin={7}>
-                {showBiometryIcon && (
-                  <Icon
-                    color={colors.appleBlue}
-                    name={biometryIcon}
-                    size={biometryIcon === 'passcode' ? 19 : 20}
-                  />
-                )}
-                <Text
-                  align="center"
-                  color="appleBlue"
-                  letterSpacing="rounded"
-                  size="larger"
-                  weight="semibold"
-                >
-                  {showFaceIDCharacter && '􀎽 '}
-                  {isNewProfile ? `${actionType} Wallet` : 'Done'}
-                </Text>
-              </RowWithMargins>
-            </ButtonPressAnimation>
+            <Centered height={58}>
+              <ButtonPressAnimation
+                onPress={acceptAction}
+                paddingBottom={19}
+                paddingTop={15}
+                width="100%"
+              >
+                <RowWithMargins align="center" justify="center" margin={7}>
+                  {showBiometryIcon && (
+                    <Icon
+                      color={colors.appleBlue}
+                      name={biometryIcon}
+                      size={biometryIcon === 'passcode' ? 19 : 20}
+                    />
+                  )}
+                  <Text
+                    align="center"
+                    color="appleBlue"
+                    letterSpacing="rounded"
+                    size="larger"
+                    weight="semibold"
+                  >
+                    {showFaceIDCharacter && '􀎽 '}
+                    {isNewProfile ? `${actionType} Wallet` : 'Done'}
+                  </Text>
+                </RowWithMargins>
+              </ButtonPressAnimation>
+            </Centered>
             <Centered>
               <Divider
                 borderRadius={1}
@@ -217,22 +219,24 @@ export default function WalletProfileCreator({
                 inset={false}
               />
             </Centered>
-            <ButtonPressAnimation
-              onPress={cancelAction}
-              paddingBottom={19}
-              paddingTop={15}
-              width="100%"
-            >
-              <Text
-                align="center"
-                color={colors.alpha(colors.blueGreyDark, 0.6)}
-                letterSpacing="roundedMedium"
-                size="larger"
-                weight="medium"
+            <Centered height={58}>
+              <ButtonPressAnimation
+                onPress={cancelAction}
+                paddingBottom={19}
+                paddingTop={15}
+                width="100%"
               >
-                Cancel
-              </Text>
-            </ButtonPressAnimation>
+                <Text
+                  align="center"
+                  color={colors.alpha(colors.blueGreyDark, 0.6)}
+                  letterSpacing="roundedMedium"
+                  size="larger"
+                  weight="medium"
+                >
+                  Cancel
+                </Text>
+              </ButtonPressAnimation>
+            </Centered>
           </Centered>
         </AssetPanel>
       </FloatingPanels>

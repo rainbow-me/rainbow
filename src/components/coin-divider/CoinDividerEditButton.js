@@ -1,18 +1,18 @@
 import React, { useCallback } from 'react';
 import { LayoutAnimation } from 'react-native';
 import styled from 'styled-components/primitives';
-import { colors, padding, shadow } from '../../styles';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';
+import { colors, padding, shadow } from '@rainbow-me/styles';
 
 const ButtonContent = styled(Row).attrs({
   justify: 'center',
 })`
   ${padding(5, 10, 6)};
   ${({ isActive }) =>
-    isActive ? shadow.build(0, 4, 6, colors.appleBlue, 0.4) : ''};
+    isActive ? shadow.build(0, 4, 12, colors.appleBlue, 0.4) : ''};
   background-color: ${({ isActive }) =>
     isActive ? colors.appleBlue : colors.alpha(colors.blueGreyDark, 0.06)};
   border-radius: 15;

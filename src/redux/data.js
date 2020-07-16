@@ -31,19 +31,26 @@ import {
   saveLocalTransactions,
 } from '../handlers/localstorage/accountLocal';
 import { getTransactionReceipt } from '../handlers/web3';
+import DirectionTypes from '../helpers/transactionDirectionTypes';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
 import { divide, isZero } from '../helpers/utilities';
 import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
-import { parseTransactions } from '../parsers/transactions';
+import {
+  getTitle,
+  getTransactionLabel,
+  parseTransactions,
+} from '../parsers/transactions';
 import { tokenOverrides } from '../references';
-import { ethereumUtils, isLowerCaseMatch, logger } from '../utils';
+import { ethereumUtils, isLowerCaseMatch } from '../utils';
+
 /* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
 /* eslint-disable-next-line import/no-cycle */
 import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswap';
+import logger from 'logger';
 
 let pendingTransactionsHandle = null;
 const TXN_WATCHER_MAX_TRIES = 5 * 60;
@@ -452,12 +459,25 @@ export const dataWatchPendingTransactions = () => async (
         if (txObj && txObj.blockNumber) {
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
+          const isSelf = toLower(tx?.from) === toLower(tx?.to);
           if (!isZero(txObj.status)) {
-            const newStatus = getConfirmedState(tx.type);
+            const newStatus = getTransactionLabel({
+              direction: isSelf ? DirectionTypes.self : DirectionTypes.out,
+              pending: false,
+              protocol: tx?.protocol,
+              status: getConfirmedState(tx.type),
+              type: tx?.type,
+            });
             updatedPending.status = newStatus;
           } else {
             updatedPending.status = TransactionStatusTypes.failed;
           }
+          const title = getTitle({
+            protocol: tx.protocol,
+            status: updatedPending.status,
+            type: tx.type,
+          });
+          updatedPending.title = title;
           updatedPending.pending = false;
           updatedPending.minedAt = minedAt;
         }

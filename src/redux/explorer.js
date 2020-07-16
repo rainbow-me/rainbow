@@ -3,7 +3,6 @@ import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 import { chartExpandedAvailable } from '../config/experimental';
 import NetworkTypes from '../helpers/networkTypes';
-import { logger } from '../utils';
 import { addressChartsReceived } from './charts';
 import {
   addressAssetsReceived,
@@ -13,9 +12,14 @@ import {
   transactionsRemoved,
 } from './data';
 import {
+  savingsDecrementNumberOfJustFinishedDepositsOrWithdrawals,
+  savingsIncrementNumberOfJustFinishedDepositsOrWithdrawals,
+} from './savings';
+import {
   testnetExplorerClearState,
   testnetExplorerInit,
 } from './testnetExplorer';
+import logger from 'logger';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
@@ -175,6 +179,8 @@ export const explorerInit = () => async (dispatch, getState) => {
     type: EXPLORER_UPDATE_SOCKETS,
   });
 
+  dispatch(listenOnAddressMessages(newAddressSocket));
+
   newAddressSocket.on(messages.CONNECT, () => {
     newAddressSocket.emit(
       ...addressSubscription(accountAddress, nativeCurrency)
@@ -184,11 +190,12 @@ export const explorerInit = () => async (dispatch, getState) => {
         ...chartsSubscription(accountAddress, nativeCurrency, chartType)
       );
     }
-    dispatch(listenOnAddressMessages(newAddressSocket));
   });
+
+  dispatch(listenOnAssetMessages(newAssetsSocket));
+
   newAssetsSocket.on(messages.CONNECT, () => {
     newAssetsSocket.emit(...assetsSubscription(keys(pairs), nativeCurrency));
-    dispatch(listenOnAssetMessages(newAssetsSocket));
   });
 };
 
@@ -214,6 +221,23 @@ const listenOnAddressMessages = socket => dispatch => {
 
   socket.on(messages.ADDRESS_TRANSACTIONS.CHANGED, message => {
     logger.log('txns changed', get(message, 'payload.transactions', []));
+
+    const transactions = get(message, 'payload.transactions', []);
+    let isFoundConfirmed = false;
+    for (let transaction of transactions) {
+      if (
+        (transaction?.type === 'deposit' || transaction?.type === 'withdraw') &&
+        transaction?.status === 'confirmed'
+      ) {
+        isFoundConfirmed = true;
+      }
+    }
+    if (isFoundConfirmed) {
+      dispatch(savingsIncrementNumberOfJustFinishedDepositsOrWithdrawals());
+      setTimeout(() => {
+        dispatch(savingsDecrementNumberOfJustFinishedDepositsOrWithdrawals());
+      }, 60000);
+    }
     dispatch(transactionsReceived(message, true));
   });
 

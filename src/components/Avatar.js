@@ -3,9 +3,9 @@ import React from 'react';
 import ShadowStack from 'react-native-shadow-stack';
 import { Image } from 'react-primitives';
 import styled from 'styled-components/primitives';
-import { borders, colors, position } from '../styles';
 import Icon from './icons/Icon';
 import { Centered } from './layout';
+import { borders, colors, position } from '@rainbow-me/styles';
 
 const Container = styled(Centered)`
   ${position.cover}

@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
-import { colors } from '../../styles';
 import { neverRerender } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, FlexItem, Row } from '../layout';
 import { Text } from '../text';
+import { colors } from '@rainbow-me/styles';
 
 const KeyColor = colors.alpha(colors.blueGreyDark, 0.8);
 

@@ -413,36 +413,36 @@ export default class Chart extends PureComponent {
         <ValueText
           change={change}
           currentValue={currentValue}
-          direction={positiveChange}
-          headerText="PRICE"
-          value={72}
-          ref={ref => (this.textRef = ref)}
           date={
             <TextInput
               color={colors.blueGreyDark50}
-              letterSpacing={fonts.letterSpacing.zero}
-              size={fonts.size.smedium}
-              fontWeight={fonts.weight.medium}
-              ref={ref => (this.dataTextRef = ref)}
-              pointerEvent="none"
               editable={false}
+              fontWeight={fonts.weight.medium}
+              letterSpacing={fonts.letterSpacing.zero}
+              pointerEvent="none"
+              ref={ref => (this.dataTextRef = ref)}
+              size={fonts.size.smedium}
             />
           }
+          direction={positiveChange}
+          headerText="PRICE"
+          ref={ref => (this.textRef = ref)}
+          value={72}
         >
           <TextInput
-            ref={ref => (this.valueTextRef = ref)}
-            pointerEvent="none"
             editable={false}
             fontFamily={fonts.family.SFProRounded}
-            fontWeight={fonts.weight.bold}
             fontSize={32}
+            fontWeight={fonts.weight.bold}
+            pointerEvent="none"
+            ref={ref => (this.valueTextRef = ref)}
           />
         </ValueText>
         <GestureWrapper
           enabled={this.props.enableSelect}
-          onTapGestureEvent={this.onTapGestureEvent}
-          onPanGestureEvent={this.onPanGestureEvent}
           onHandlerStateChange={this.onHandlerStateChange}
+          onPanGestureEvent={this.onPanGestureEvent}
+          onTapGestureEvent={this.onTapGestureEvent}
         >
           <TimestampText
             style={{ transform: [{ translateX: maxValueDistance }] }}
@@ -462,9 +462,9 @@ export default class Chart extends PureComponent {
           </Centered>
           <Column opacity={points ? 1 : 0.5}>
             <AnimatedChart
-              currentData={currentData}
               animatedValue={this.value}
               color={barColor}
+              currentData={currentData}
               currentValue={currentValue}
               setCurrentPath={path => {
                 const length = interpolate(this.touchX, {

@@ -11,7 +11,6 @@ import { UniswapInvestmentCard } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import EditOptions from '../helpers/editOptionTypes';
 import { withNavigation } from '../navigation/Navigation';
-import Routes from '../navigation/routesNames';
 import {
   setHiddenCoins,
   setIsCoinListEdited,
@@ -27,6 +26,7 @@ import {
 } from './assets';
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
+import Routes from '@rainbow-me/routes';
 
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
@@ -49,14 +49,12 @@ const uniswapTotalSelector = state => state.uniswapTotal;
 const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
-    onPress: ({ assetType, navigation }) => item => {
+    onPress: ({ assetType, navigation }) => (item, params) => {
       navigation.navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: item,
         type: assetType,
+        ...params,
       });
-    },
-    onPressSend: ({ navigation }) => asset => {
-      navigation.navigate(Routes.SEND_SHEET, { asset });
     },
   })
 );
@@ -129,7 +127,10 @@ const withBalanceSavingsSection = (savings, priceOfEther) => {
         underlyingPrice,
         lifetimeSupplyInterestAccrued,
       } = asset;
-      const underlyingNativePrice = multiply(underlyingPrice, priceOfEther);
+      const underlyingNativePrice =
+        asset.underlying.symbol === 'ETH'
+          ? priceOfEther
+          : multiply(underlyingPrice, priceOfEther);
       const underlyingBalanceNativeValue = supplyBalanceUnderlying
         ? multiply(supplyBalanceUnderlying, underlyingNativePrice)
         : 0;

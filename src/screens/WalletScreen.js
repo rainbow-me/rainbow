@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import Animated from 'react-native-reanimated';
-import { useValues } from 'react-native-redash';
+import { useValue } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
@@ -14,6 +14,7 @@ import {
 } from '../components/header';
 import { Page } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
+import { LoadingOverlayWrapper } from '../components/modal/LoadingOverlay';
 import useExperimentalFlag, {
   DISCOVER_SHEET,
 } from '../config/experimentalHooks';
@@ -29,7 +30,8 @@ import {
   useWalletSectionsData,
 } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/effects';
-import { position } from '../styles';
+import { position } from '@rainbow-me/styles';
+import { usePortal } from 'react-native-cool-modals/Portal';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
@@ -51,7 +53,7 @@ export default function WalletScreen() {
   const refreshAccountData = useRefreshAccountData();
   const { isCoinListEdited } = useCoinListEdited();
   const { updateKeyboardHeight } = useKeyboardHeight();
-  const [scrollViewTracker] = useValues([0], []);
+  const scrollViewTracker = useValue(0);
   const { isCreatingAccount, isReadOnlyWallet } = useWallets();
 
   useEffect(() => {
@@ -87,6 +89,23 @@ export default function WalletScreen() {
     [network]
   );
 
+  const { setComponent, hide } = usePortal();
+
+  useEffect(() => {
+    if (isCreatingAccount) {
+      setComponent(
+        <LoadingOverlayWrapper>
+          <LoadingOverlay
+            paddingTop={sheetVerticalOffset}
+            title="Creating wallet..."
+          />
+        </LoadingOverlayWrapper>,
+        true
+      );
+      return hide;
+    }
+  }, [hide, isCreatingAccount, setComponent]);
+
   return (
     <WalletPage>
       {/* Line below appears to be needed for having scrollViewTracker persistent while
@@ -117,12 +136,6 @@ export default function WalletScreen() {
           sections={sections}
         />
       </FabWrapper>
-      {isCreatingAccount && (
-        <LoadingOverlay
-          paddingTop={sheetVerticalOffset}
-          title="Creating wallet..."
-        />
-      )}
     </WalletPage>
   );
 }

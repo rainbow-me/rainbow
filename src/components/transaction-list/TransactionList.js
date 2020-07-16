@@ -8,16 +8,20 @@ import styled from 'styled-components/primitives';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '../../config/experimentalHooks';
-import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import {
+  getHumanReadableDate,
+  hasAddableContact,
+} from '../../helpers/transactions';
+import { isENSAddressFormat } from '../../helpers/validators';
 import { useAccountProfile } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../navigation/routesNames';
 import { removeRequest } from '../../redux/requests';
-import { colors } from '../../styles';
 import { abbreviations, ethereumUtils } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { FloatingEmojis } from '../floating-emojis';
+import Routes from '@rainbow-me/routes';
+import { colors } from '@rainbow-me/styles';
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
 const Container = styled.View`
@@ -65,11 +69,7 @@ const TransactionList = ({
   } = useAccountProfile();
 
   const onAddCashPress = useCallback(() => {
-    navigate(
-      isNativeStackAvailable
-        ? Routes.ADD_CASH_SCREEN_NAVIGATOR
-        : Routes.ADD_CASH_SHEET
-    );
+    navigate(Routes.ADD_CASH_FLOW);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
@@ -109,10 +109,14 @@ const TransactionList = ({
     e => {
       const { index } = e.nativeEvent;
       const item = transactions[index];
-      const { hash, from, to, status } = item;
+      const { hash, from, minedAt, pending, to, status, type } = item;
 
-      const isPurchasing = status === TransactionStatusTypes.purchasing;
-      const isSent = status === TransactionStatusTypes.sent;
+      const date = getHumanReadableDate(minedAt);
+
+      const isSent =
+        status === TransactionStatusTypes.sending ||
+        status === TransactionStatusTypes.sent;
+      const showContactInfo = hasAddableContact(status, type);
 
       const headerInfo = {
         address: '',
@@ -128,26 +132,34 @@ const TransactionList = ({
         headerInfo.address = contact.nickname;
         contactColor = contact.color;
       } else {
-        headerInfo.address = abbreviations.address(contactAddress, 4, 10);
-        contactColor = Math.floor(Math.random() * colors.avatarColor.length);
+        headerInfo.address = isENSAddressFormat(contactAddress)
+          ? contactAddress
+          : abbreviations.address(contactAddress, 4, 10);
+        contactColor = colors.getRandomColor();
       }
 
       if (hash) {
         let buttons = ['View on Etherscan', 'Cancel'];
-        if (!isPurchasing) {
+        if (showContactInfo) {
           buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
         }
 
         showActionSheetWithOptions(
           {
-            cancelButtonIndex: isPurchasing ? 1 : 2,
+            cancelButtonIndex: showContactInfo ? 2 : 1,
             options: buttons,
-            title: isPurchasing
-              ? headerInfo.type
-              : `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
+            title: pending
+              ? `${headerInfo.type}${
+                  showContactInfo
+                    ? ' ' + headerInfo.divider + ' ' + headerInfo.address
+                    : ''
+                }`
+              : showContactInfo
+              ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
+              : `${headerInfo.type} ${date}`,
           },
           buttonIndex => {
-            if (!isPurchasing && buttonIndex === 0) {
+            if (showContactInfo && buttonIndex === 0) {
               navigate(Routes.MODAL_SCREEN, {
                 address: contactAddress,
                 asset: item,
@@ -156,8 +168,8 @@ const TransactionList = ({
                 type: 'contact',
               });
             } else if (
-              (isPurchasing && buttonIndex === 0) ||
-              (!isPurchasing && buttonIndex === 1)
+              (!showContactInfo && buttonIndex === 0) ||
+              (showContactInfo && buttonIndex === 1)
             ) {
               const normalizedHash = hash.replace(/-.*/g, '');
               const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
@@ -214,6 +226,7 @@ const TransactionList = ({
         as={NativeTransactionListView}
         data={data}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
+        isLoading={loading}
         onAccountNamePress={onAccountNamePress}
         onAddCashPress={onAddCashPress}
         onAvatarPress={onAvatarPress}
@@ -222,7 +235,6 @@ const TransactionList = ({
         onRequestExpire={onRequestExpire}
         onRequestPress={onRequestPress}
         onTransactionPress={onTransactionPress}
-        isLoading={loading}
       />
       <FloatingEmojisRegion
         setOnNewEmoji={setOnNewEmoji}
