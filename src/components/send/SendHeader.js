@@ -75,7 +75,7 @@ export default function SendHeader({
   }, [contact, navigate, onRefocusInput, recipient]);
 
   const handleOpenContactActionSheet = useCallback(async () => {
-    showActionSheetWithOptions(
+    return showActionSheetWithOptions(
       {
         cancelButtonIndex: 3,
         destructiveButtonIndex: 0,
@@ -105,9 +105,17 @@ export default function SendHeader({
         } else if (buttonIndex === 2) {
           setClipboard(recipient);
         }
+
+        onRefocusInput();
       }
     );
-  }, [handleNavigateToContact, recipient, removeContact, setClipboard]);
+  }, [
+    handleNavigateToContact,
+    onRefocusInput,
+    recipient,
+    removeContact,
+    setClipboard,
+  ]);
 
   const isPreExistingContact = (contact?.nickname.length || 0) > 0;
 

@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import Animated, { Easing } from 'react-native-reanimated';
 import { useTimingTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
@@ -55,25 +62,24 @@ const UnderlineField = (
     value: valueProp,
     ...props
   },
-  ref
+  forwardedRef
 ) => {
   const [isFocused, setIsFocused] = useState(autoFocus);
   const [value, setValue] = useState(valueProp);
   const [wasButtonPressed, setWasButtonPressed] = useState(false);
+
+  const ref = useRef();
+  useImperativeHandle(forwardedRef, () => ref.current);
 
   const animation = useTimingTransition(isFocused, {
     duration: 150,
     easing: Easing.ease,
   });
 
-  const handleButtonPress = useCallback(
-    event => {
-      ref?.current?.focus?.();
-      setWasButtonPressed(true);
-      onPressButton?.(event);
-    },
-    [onPressButton, ref]
-  );
+  const formattedValue = useMemo(() => format(String(value || '')), [
+    format,
+    value,
+  ]);
 
   const handleBlur = useCallback(
     event => {
@@ -81,6 +87,15 @@ const UnderlineField = (
       onBlur?.(event);
     },
     [onBlur]
+  );
+
+  const handleButtonPress = useCallback(
+    event => {
+      ref.current?.focus?.();
+      setWasButtonPressed(true);
+      onPressButton?.(event);
+    },
+    [onPressButton]
   );
 
   const handleChangeText = useCallback(
@@ -106,12 +121,12 @@ const UnderlineField = (
   useEffect(() => {
     if (
       valueProp !== value &&
-      (!ref?.current?.isFocused?.() || wasButtonPressed)
+      (!ref.current?.isFocused?.() || wasButtonPressed)
     ) {
       setValue(valueProp);
       setWasButtonPressed(false);
     }
-  }, [ref, value, valueProp, wasButtonPressed]);
+  }, [forwardedRef, value, valueProp, wasButtonPressed]);
 
   const showFieldButton = buttonText && isFocused;
 
@@ -128,7 +143,7 @@ const UnderlineField = (
           onFocus={handleFocus}
           placeholder={placeholder}
           ref={ref}
-          value={format(String(value || ''))}
+          value={formattedValue}
         />
         {showFieldButton && (
           <Button
