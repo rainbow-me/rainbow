@@ -40,6 +40,7 @@ import {
   useUniswapMarketDetails,
 } from '../hooks';
 import { loadWallet } from '../model/wallet';
+import { setAppearListener } from '../navigation/nativeStackHelpers';
 import { executeRap } from '../raps/common';
 import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
@@ -127,7 +128,12 @@ const ExchangeModal = ({
     inputFieldRef,
     nativeFieldRef,
     outputFieldRef,
+    magicallyFocus,
   } = useSwapInputRefs({ inputCurrency, outputCurrency });
+
+  useEffect(() => {
+    setAppearListener(magicallyFocus);
+  }, [magicallyFocus]);
 
   const {
     inputAmount,
