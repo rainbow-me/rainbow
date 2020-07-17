@@ -2,7 +2,8 @@ import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Linking, requireNativeComponent } from 'react-native';
+import { Image, Linking, requireNativeComponent } from 'react-native';
+import ImagePicker from 'react-native-image-picker';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import useExperimentalFlag, {
@@ -22,6 +23,16 @@ import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { FloatingEmojis } from '../floating-emojis';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
+
+const options = {
+  allowsEditing: true,
+  storageOptions: {
+    path: 'images',
+    skipBackup: true,
+  },
+  title: 'Select Avatar',
+};
+
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
 const Container = styled.View`
@@ -54,6 +65,7 @@ const TransactionList = ({
   transactions,
 }) => {
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
+  const [imageUri, setImageUri] = useState('');
   const onNewEmoji = useRef();
   const setOnNewEmoji = useCallback(
     newOnNewEmoji => (onNewEmoji.current = newOnNewEmoji),
@@ -75,12 +87,27 @@ const TransactionList = ({
     });
   }, [navigate]);
 
+  // const onAvatarPress = useCallback(() => {
+  //   navigate(Routes.AVATAR_BUILDER, {
+  //     accountColor,
+  //     accountName,
+  //   });
+  // }, [accountColor, accountName, navigate]);
+
   const onAvatarPress = useCallback(() => {
-    navigate(Routes.AVATAR_BUILDER, {
-      accountColor,
-      accountName,
+    ImagePicker.showImagePicker(options, response => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else {
+        const source = { uri: response.uri };
+        setImageUri(source);
+      }
     });
-  }, [accountColor, accountName, navigate]);
+  }, []);
 
   const onReceivePress = useCallback(() => {
     navigate(Routes.RECEIVE_MODAL);
@@ -240,6 +267,7 @@ const TransactionList = ({
         setOnNewEmoji={setOnNewEmoji}
         tapTarget={tapTarget}
       />
+      <Image source={imageUri} style={{ height: 100, width: 100 }} />
     </Container>
   );
 };

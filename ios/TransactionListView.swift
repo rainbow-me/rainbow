@@ -109,20 +109,18 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
   }
   
+  @objc func onPressInAvatar(_ sender: UIButton) {
+    header.accountView.animateTapStart(scale: 0.9)
+  }
+  @objc func onPressOutAvatar(_ sender: UIButton) {
+    header.accountView.animateTapEnd(useHaptic: "selection")
+  }
   
   @objc func onPressInAccountAddress(_ sender: UIButton) {
     header.accountNameView.animateTapStart(scale: 0.9)
   }
   @objc func onPressOutAccountAddress(_ sender: UIButton) {
     header.accountNameView.animateTapEnd(useHaptic: "selection")
-  }
-  
-  
-  @objc func onPressInAvatar(_ sender: UIButton) {
-    header.accountView.animateTapStart(scale: 0.9)
-  }
-  @objc func onPressOutAvatar(_ sender: UIButton) {
-    header.accountView.animateTapEnd(useHaptic: "selection")
   }
   
   @objc func onAccountAddressPressed(_ sender: UIButton) {
@@ -192,7 +190,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.accountView.isHidden = false
     
     header.addSubview(headerSeparator)
-    if(isAvatarPickerAvailable){
+    if(true){
       header.accountView.addTarget(self, action: #selector(onAvatarPressed(_:)), for: .touchUpInside)
       header.accountView.addTarget(self, action: #selector(onPressInAvatar(_:)), for: .touchDown)
       header.accountView.addTarget(self, action: #selector(onPressInAvatar(_:)), for: .touchDragInside)

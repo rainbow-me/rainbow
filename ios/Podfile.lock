@@ -374,6 +374,8 @@ PODS:
     - React
   - react-native-camera/RN (3.31.0):
     - React
+  - react-native-image-picker (2.3.3):
+    - React
   - react-native-mail (4.1.0):
     - React
   - react-native-netinfo (5.9.4):
@@ -593,6 +595,7 @@ DEPENDENCIES:
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-branch (from `../node_modules/react-native-branch`)
   - react-native-camera (from `../node_modules/react-native-camera`)
+  - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
@@ -741,6 +744,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-branch"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
+  react-native-image-picker:
+    :path: "../node_modules/react-native-image-picker"
   react-native-mail:
     :path: "../node_modules/react-native-mail"
   react-native-netinfo:
@@ -906,6 +911,7 @@ SPEC CHECKSUMS:
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-branch: ed90b087f2ff6a2f81643ead0b321531877f2e69
   react-native-camera: b5c8c7a71feecfdd5b39f0dbbf6b64b957ed55f2
+  react-native-image-picker: 3d3f85baabca60a00b75fb8facc1376db7bbdafa
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-netinfo: cd479ab1b67cdd1cb1403a99ecdb24190a6dd7ef
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
@@ -966,4 +972,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 4366d67a8cc8fc17d64e4e0d56ac2e9b5d9e026a
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.9.3
