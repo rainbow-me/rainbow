@@ -34,6 +34,7 @@ import {
 import { getWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/effects';
+import { setAppearListener } from '../navigation/nativeStackHelpers';
 import Routes from '@rainbow-me/routes';
 import { borders, colors, padding, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
@@ -92,7 +93,7 @@ const ImportButton = ({ disabled, onPress, seedPhrase }) => (
   </StyledImportButton>
 );
 
-const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
+const ImportSeedPhraseSheet = ({ isEmpty }) => {
   const { accountAddress } = useAccountSettings();
   const { clipboard } = useClipboard();
   const { navigate, setParams } = useNavigation();
@@ -128,11 +129,11 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
   );
 
   useEffect(() => {
-    setAppearListener && setAppearListener(focusListener);
+    setAppearListener(focusListener);
     return () => {
-      setAppearListener && setAppearListener(null);
+      setAppearListener(null);
     };
-  }, [focusListener, setAppearListener]);
+  }, [focusListener]);
 
   const handleSetSeedPhrase = useCallback(
     text => {
@@ -233,7 +234,6 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
     isSecretValid,
     navigate,
     seedPhrase,
-    setAppearListener,
     toggleImporting,
   ]);
 
@@ -355,7 +355,6 @@ const ImportSeedPhraseSheet = ({ isEmpty, setAppearListener }) => {
 
 ImportSeedPhraseSheet.propTypes = {
   isEmpty: PropTypes.bool,
-  setAppearListener: PropTypes.func,
 };
 
 export default ImportSeedPhraseSheet;

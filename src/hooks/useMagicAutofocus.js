@@ -23,5 +23,5 @@ export default function useMagicAutofocus(autofocusTarget) {
     magicallyFocus();
   }
 
-  return [handleFocus, focus];
+  return [handleFocus, focus, magicallyFocus];
 }
