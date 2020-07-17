@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { get, isEmpty, isString, toLower } from 'lodash';
+import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   InteractionManager,
@@ -70,7 +71,7 @@ const SheetContainer = isNativeStackAvailable
       top: ${statusBarHeight};
     `;
 
-const SendSheet = props => {
+const SendSheet = ({ setAppearListener, ...props }) => {
   const dispatch = useDispatch();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const { allAssets } = useAccountAssets();
@@ -411,6 +412,7 @@ const SendSheet = props => {
             onPressPaste={sendUpdateRecipient}
             recipient={recipient}
             removeContact={onRemoveContact}
+            setAppearListener={setAppearListener}
             showAssetList={showAssetList}
           />
           {showEmptyState && (
@@ -471,6 +473,10 @@ const SendSheet = props => {
       </KeyboardAvoidingView>
     </SheetContainer>
   );
+};
+
+SendSheet.propTypes = {
+  setAppearListener: PropTypes.func,
 };
 
 export default SendSheet;

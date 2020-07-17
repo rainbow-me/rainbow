@@ -16,7 +16,7 @@ export default function useSwapInputRefs({ inputCurrency, outputCurrency }) {
   const nativeFieldRef = useRef();
   const outputFieldRef = useRef();
 
-  const [handleFocus, lastFocusedInput, magicallyFocus] = useMagicAutofocus(
+  const [handleFocus, lastFocusedInput] = useMagicAutofocus(
     inputFieldRef.current
   );
 
@@ -77,7 +77,6 @@ export default function useSwapInputRefs({ inputCurrency, outputCurrency }) {
   return {
     handleFocus,
     inputFieldRef,
-    magicallyFocus,
     nativeFieldRef,
     outputFieldRef,
   };

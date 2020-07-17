@@ -62,7 +62,7 @@ function ExchangeModalNavigator() {
     position,
   ]);
   const toggleGestureEnabled = useCallback(
-    dismissable => setOptions({ dismissable }),
+    gestureEnabled => setOptions({ gestureEnabled }),
     [setOptions]
   );
   return (

@@ -208,18 +208,9 @@ export default function CurrencySelectModal() {
           {
             opacity: interpolate(transitionPosition, {
               extrapolate: Animated.Extrapolate.CLAMP,
-              inputRange: [0, 1, 1],
+              inputRange: [0, 0.8, 1],
               outputRange: [0, 1, 1],
             }),
-            transform: [
-              {
-                translateX: interpolate(transitionPosition, {
-                  extrapolate: Animated.Extrapolate.CLAMP,
-                  inputRange: [0, 1, 1],
-                  outputRange: [8, 0, 0],
-                }),
-              },
-            ],
           },
         ]}
       >

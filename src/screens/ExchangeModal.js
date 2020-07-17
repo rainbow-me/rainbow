@@ -40,7 +40,6 @@ import {
   useUniswapMarketDetails,
 } from '../hooks';
 import { loadWallet } from '../model/wallet';
-import { setAppearListener } from '../navigation/nativeStackHelpers';
 import { executeRap } from '../raps/common';
 import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
@@ -128,12 +127,7 @@ const ExchangeModal = ({
     inputFieldRef,
     nativeFieldRef,
     outputFieldRef,
-    magicallyFocus,
   } = useSwapInputRefs({ inputCurrency, outputCurrency });
-
-  useEffect(() => {
-    setAppearListener(magicallyFocus);
-  }, [magicallyFocus]);
 
   const {
     inputAmount,
@@ -461,23 +455,9 @@ const ExchangeModal = ({
                   ? 1
                   : interpolate(tabPosition, {
                       extrapolate: Animated.Extrapolate.CLAMP,
-                      inputRange: [0, 0, 1],
+                      inputRange: [0, 0.2, 1],
                       outputRange: [1, 1, 0],
                     }),
-              transform: [
-                {
-                  scale: interpolate(tabPosition, {
-                    extrapolate: Animated.Extrapolate.CLAMP,
-                    inputRange: [0, 0, 1],
-                    outputRange: [1, 1, 0.9],
-                  }),
-                  translateX: interpolate(tabPosition, {
-                    extrapolate: Animated.Extrapolate.CLAMP,
-                    inputRange: [0, 0, 1],
-                    outputRange: [0, 0, -8],
-                  }),
-                },
-              ],
             }}
           >
             <FloatingPanel

@@ -7,7 +7,6 @@ import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withNeverRerender, withSelectedInput } from '../../hoc';
 import { withNavigation } from '../../navigation/Navigation';
-import { setAppearListener } from '../../navigation/nativeStackHelpers';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import Divider from '../Divider';
 import { AddContactButton, PasteAddressButton } from '../buttons';
@@ -89,12 +88,14 @@ class SendHeader extends PureComponent {
     recipient: PropTypes.string,
     removeContact: PropTypes.func,
     selectedInputId: PropTypes.object,
+    setAppearListener: PropTypes.func,
     setSelectedInputId: PropTypes.func,
     showAssetList: PropTypes.bool,
   };
 
   componentDidMount() {
-    setAppearListener(this.focusInput);
+    this.props.setAppearListener &&
+      this.props.setAppearListener(this.focusInput);
   }
 
   componentDidUpdate(prevProps) {
@@ -104,7 +105,7 @@ class SendHeader extends PureComponent {
   }
 
   componentWillUnmount() {
-    setAppearListener(null);
+    this.props.setAppearListener && this.props.setAppearListener(null);
   }
 
   focusInput = () => {

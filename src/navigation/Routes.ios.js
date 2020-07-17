@@ -7,11 +7,9 @@ import useExperimentalFlag, {
   NEW_ONBOARDING,
 } from '../config/experimentalHooks';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import DepositModal from '../screens/DepositModal';
-import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
@@ -28,18 +26,24 @@ import {
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
   nativeStackConfig,
-  nativeStackDefaultConfig,
   sharedCoolModalConfig,
   stackNavigationConfig,
 } from './config';
 import {
   bottomSheetPreset,
   emojiPreset,
+  exchangePreset,
   expandedPreset,
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
 import { onTransitionStart } from './helpers';
+import {
+  AddCashSheetWrapper,
+  ExpandedAssetSheetWrapper,
+  ImportSeedPhraseSheetWrapper,
+  SendSheetWrapper,
+} from './nativeStackHelpers';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
@@ -60,7 +64,7 @@ function SendFlowNavigator() {
         options={overlayExpandedPreset}
       />
       <Stack.Screen
-        component={SendSheet}
+        component={SendSheetWrapper}
         name={Routes.SEND_SHEET}
         options={sheetPreset}
       />
@@ -80,7 +84,7 @@ function ImportSeedPhraseFlowNavigator() {
         options={overlayExpandedPreset}
       />
       <Stack.Screen
-        component={ImportSeedPhraseSheet}
+        component={ImportSeedPhraseSheetWrapper}
         name={Routes.IMPORT_SEED_PHRASE_SHEET}
       />
     </Stack.Navigator>
@@ -99,7 +103,7 @@ function AddCashFlowNavigator() {
         options={overlayExpandedPreset}
       />
       <Stack.Screen
-        component={AddCashSheet}
+        component={AddCashSheetWrapper}
         name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
       />
     </Stack.Navigator>
@@ -122,6 +126,11 @@ function MainNavigator() {
       <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} />
       <Stack.Screen
+        component={SavingsSheet}
+        name={Routes.SAVINGS_SHEET}
+        options={bottomSheetPreset}
+      />
+      <Stack.Screen
         component={AvatarBuilder}
         name={Routes.AVATAR_BUILDER}
         options={emojiPreset}
@@ -140,6 +149,11 @@ function MainNavigator() {
         component={TransactionConfirmationScreen}
         name={Routes.CONFIRM_REQUEST}
         options={sheetPreset}
+      />
+      <Stack.Screen
+        component={ExchangeModalNavigator}
+        name={Routes.EXCHANGE_MODAL}
+        options={exchangePreset}
       />
       {isNativeStackAvailable && (
         <Stack.Screen
@@ -162,6 +176,16 @@ function MainNavigatorWrapper() {
       <Stack.Screen
         component={MainNavigator}
         name={Routes.MAIN_NAVIGATOR_WRAPPER}
+      />
+      <Stack.Screen
+        component={WithdrawModal}
+        name={Routes.SAVINGS_WITHDRAW_MODAL}
+        options={exchangePreset}
+      />
+      <Stack.Screen
+        component={DepositModal}
+        name={Routes.SAVINGS_DEPOSIT_MODAL}
+        options={exchangePreset}
       />
     </Stack.Navigator>
   );
@@ -186,7 +210,7 @@ function NativeStackFallbackNavigator() {
         }}
       />
       <Stack.Screen
-        component={AddCashSheet}
+        component={AddCashSheetWrapper}
         name={Routes.ADD_CASH_SHEET}
         options={sheetPreset}
       />
@@ -238,16 +262,11 @@ function NativeStackNavigator() {
         {...sharedCoolModalConfig}
       />
       <NativeStack.Screen
-        component={ExchangeModalNavigator}
-        name={Routes.EXCHANGE_MODAL}
-        options={nativeStackDefaultConfig}
-      />
-      <NativeStack.Screen
-        component={ExpandedAssetSheet}
+        component={ExpandedAssetSheetWrapper}
         name={Routes.EXPANDED_ASSET_SHEET}
         {...expandedAssetSheetConfig}
       />
-      <NativeStack.Screen
+      <Stack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
         options={{
@@ -257,27 +276,6 @@ function NativeStackNavigator() {
           springDamping: 1,
           transitionDuration: 0.25,
         }}
-      />
-      <NativeStack.Screen
-        component={SavingsSheet}
-        name={Routes.SAVINGS_SHEET}
-        options={{
-          allowsDragToDismiss: true,
-          customStack: true,
-          headerHeight: 0,
-          springDamping: 1,
-          topOffset: 0,
-        }}
-      />
-      <NativeStack.Screen
-        component={WithdrawModal}
-        name={Routes.SAVINGS_WITHDRAW_MODAL}
-        options={nativeStackDefaultConfig}
-      />
-      <NativeStack.Screen
-        component={DepositModal}
-        name={Routes.SAVINGS_DEPOSIT_MODAL}
-        options={nativeStackDefaultConfig}
       />
       {isNativeStackAvailable && (
         <>

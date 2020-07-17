@@ -1,7 +1,6 @@
 import { Keyboard, Platform, StatusBar } from 'react-native';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
 import { onDidPop, onWillPop } from './Navigation';
-import { ScrollPagerWrapper } from './helpers';
 import { appearListener } from './nativeStackHelpers';
 
 export const expandedAssetSheetConfig = {
@@ -67,27 +66,14 @@ export const defaultScreenStackOptions = {
   gestureEnabled: true,
 };
 
-export const nativeStackDefaultConfig = {
-  allowsDragToDismiss: true,
-  backgroundColor: '#0A0A0A',
-  backgroundOpacity: 1,
-  customStack: true,
-  headerHeight: 0,
-  ignoreBottomOffset: true,
-  springDamping: 1,
-  topOffset: 0,
-  transitionDuration: 0.3,
-};
-
 export const exchangeTabNavigatorConfig = position => ({
   initialLayout: deviceUtils.dimensions,
-  pager: ScrollPagerWrapper,
   position,
   sceneContainerStyle: {
     backgroundColor: 'transparent',
   },
   springConfig: {
-    damping: 30,
+    damping: 40,
     mass: 1,
     overshootClamping: false,
     restDisplacementThreshold: 0.01,
