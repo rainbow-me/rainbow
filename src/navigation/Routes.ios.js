@@ -28,6 +28,7 @@ import {
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
   nativeStackConfig,
+  nativeStackDefaultConfig,
   sharedCoolModalConfig,
   stackNavigationConfig,
 } from './config';
@@ -239,24 +240,14 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
-        options={{
-          allowsDragToDismiss: true,
-          backgroundColor: '#0A0A0A',
-          backgroundOpacity: 1,
-          customStack: true,
-          headerHeight: 0,
-          ignoreBottomOffset: true,
-          springDamping: 1,
-          topOffset: 0,
-          transitionDuration: 0.3,
-        }}
+        options={nativeStackDefaultConfig}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
         {...expandedAssetSheetConfig}
       />
-      <Stack.Screen
+      <NativeStack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
         options={{
@@ -274,36 +265,19 @@ function NativeStackNavigator() {
           allowsDragToDismiss: true,
           customStack: true,
           headerHeight: 0,
+          springDamping: 1,
           topOffset: 0,
         }}
       />
       <NativeStack.Screen
         component={WithdrawModal}
         name={Routes.SAVINGS_WITHDRAW_MODAL}
-        options={{
-          allowsDragToDismiss: true,
-          backgroundColor: '#0A0A0A',
-          backgroundOpacity: 1,
-          customStack: true,
-          headerHeight: 0,
-          springDamping: 1,
-          topOffset: 0,
-          transitionDuration: 0.3,
-        }}
+        options={nativeStackDefaultConfig}
       />
       <NativeStack.Screen
         component={DepositModal}
         name={Routes.SAVINGS_DEPOSIT_MODAL}
-        options={{
-          allowsDragToDismiss: true,
-          backgroundColor: '#0A0A0A',
-          backgroundOpacity: 1,
-          customStack: true,
-          headerHeight: 0,
-          springDamping: 1,
-          topOffset: 0,
-          transitionDuration: 0.3,
-        }}
+        options={nativeStackDefaultConfig}
       />
       {isNativeStackAvailable && (
         <>

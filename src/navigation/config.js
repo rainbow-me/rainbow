@@ -67,6 +67,18 @@ export const defaultScreenStackOptions = {
   gestureEnabled: true,
 };
 
+export const nativeStackDefaultConfig = {
+  allowsDragToDismiss: true,
+  backgroundColor: '#0A0A0A',
+  backgroundOpacity: 1,
+  customStack: true,
+  headerHeight: 0,
+  ignoreBottomOffset: true,
+  springDamping: 1,
+  topOffset: 0,
+  transitionDuration: 0.3,
+};
+
 export const exchangeTabNavigatorConfig = position => ({
   initialLayout: deviceUtils.dimensions,
   pager: ScrollPagerWrapper,
