@@ -397,6 +397,11 @@ export default function WelcomeScreen() {
               ])
             ),
         ]).start();
+        if (IS_TESTING === 'true') {
+          logger.log(
+            'Disabled loop animations in WelcomeScreen due to .env var IS_TESTING === "true"'
+          );
+        }
       }
     };
     initialize();

@@ -146,7 +146,9 @@ class App extends Component {
     const address = await loadAddress();
     if (address) {
       this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
-      Platform.OS === 'ios' && this.setupIncomingNotificationListeners();
+      setTimeout(() => {
+        Platform.OS === 'ios' && this.setupIncomingNotificationListeners();
+      }, 2000);
     } else {
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
     }
