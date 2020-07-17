@@ -468,7 +468,7 @@ const ExchangeModal = ({
                   translateX: interpolate(tabPosition, {
                     extrapolate: Animated.Extrapolate.CLAMP,
                     inputRange: [0, 0, 1],
-                    outputRange: [1, 1, -8],
+                    outputRange: [0, 0, -8],
                   }),
                 },
               ],
