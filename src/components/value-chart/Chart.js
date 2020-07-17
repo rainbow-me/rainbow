@@ -63,6 +63,8 @@ const Chart = ({ asset, ...props }) => {
   const currentChartIndex = Object.values(ChartTypes).indexOf(chartType);
   const amountOfPathPoints = 175; // 👈️ TODO make this dynamic
 
+  if (isEmpty(chartData)) return null;
+
   return (
     <Column
       overflow="hidden"
@@ -76,7 +78,7 @@ const Chart = ({ asset, ...props }) => {
         amountOfPathPoints={amountOfPathPoints}
         barColor={positiveChange ? colors.chartGreen : colors.red}
         currentDataSource={currentChartIndex}
-        currentValue={asset.native.price.amount}
+        currentValue={asset?.native?.price?.amount}
         data={chartData}
         importantPointsIndexInterval={amountOfPathPoints}
         mode="gesture-managed"
