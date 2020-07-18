@@ -49,6 +49,19 @@ export const nativeStackConfig = {
   },
 };
 
+export const savingsSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    allowsDragToDismiss: true,
+    cornerRadius: 39,
+    customStack: true,
+    headerHeight: 0,
+    ignoreBottomOffset: true,
+    isShortFormEnabled: false,
+    longFormHeight: params.longFormHeight,
+    topOffset: 0,
+  }),
+};
+
 export const sharedCoolModalConfig = {
   options: {
     customStack: true,

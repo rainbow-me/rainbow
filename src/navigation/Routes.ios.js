@@ -29,6 +29,7 @@ import {
   expandedAssetSheetConfig,
   nativeStackConfig,
   nativeStackDefaultConfig,
+  savingsSheetConfig,
   sharedCoolModalConfig,
   stackNavigationConfig,
 } from './config';
@@ -261,13 +262,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={SavingsSheet}
         name={Routes.SAVINGS_SHEET}
-        options={{
-          allowsDragToDismiss: true,
-          customStack: true,
-          headerHeight: 0,
-          springDamping: 1,
-          topOffset: 0,
-        }}
+        {...savingsSheetConfig}
       />
       <NativeStack.Screen
         component={WithdrawModal}
