@@ -1,9 +1,7 @@
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components/primitives';
 import BiometryTypes from '../../helpers/biometryTypes';
-import { useBiometryType } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import { abbreviations } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import CopyTooltip from '../copy-tooltip';
@@ -11,8 +9,10 @@ import { Icon } from '../icons';
 import { Centered, ColumnWithDividers, RowWithMargins } from '../layout';
 import { Text, TruncatedAddress } from '../text';
 import { ProfileAvatarButton, ProfileModal, ProfileNameInput } from './profile';
+import { useBiometryType } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { colors, margin, padding, position } from '@rainbow-me/styles';
+import { abbreviations } from '@rainbow-me/utils';
 
 const BiometryIcon = styled(Icon).attrs(({ biometryType }) => ({
   color: colors.appleBlue,
@@ -84,10 +84,10 @@ export default function WalletProfileState({
   const handleSubmit = useCallback(() => {
     onCloseModal({ color, name: value });
     goBack();
-    if (isNewProfile) {
+    if (actionType === 'Create' && isNewProfile) {
       navigate(Routes.CHANGE_WALLET_SHEET);
     }
-  }, [color, goBack, isNewProfile, navigate, onCloseModal, value]);
+  }, [actionType, color, goBack, isNewProfile, navigate, onCloseModal, value]);
 
   const handleTriggerFocusInput = useCallback(() => inputRef.current?.focus(), [
     inputRef,
