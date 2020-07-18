@@ -4,14 +4,10 @@ import { ContactAvatar } from '../../contacts';
 import { colors } from '@rainbow-me/styles';
 
 const ProfileAvatarButton = ({ color, marginBottom = 15, setColor, value }) => {
-  const handleChangeColor = useCallback(() => {
-    if (setColor) {
-      setColor(prevColor => {
-        const nextColor = prevColor + 1;
-        return nextColor > colors.avatarColor.length - 1 ? 0 : nextColor;
-      });
-    }
-  }, [setColor]);
+  const handleChangeColor = useCallback(
+    () => setColor?.(prevColor => (prevColor + 1) % colors.avatarColor.length),
+    [setColor]
+  );
 
   return (
     <ButtonPressAnimation onPress={handleChangeColor} scaleTo={0.96}>

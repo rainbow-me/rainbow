@@ -35,9 +35,7 @@ const sizeConfigs = {
 };
 
 const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
-  const { dimensions, shadow, textSize } = useMemo(() => sizeConfigs[size], [
-    size,
-  ]);
+  const { dimensions, shadow, textSize } = sizeConfigs[size];
 
   const shadows = useMemo(
     () => (size === 'small' ? buildSmallShadows(color) : shadow),
