@@ -11,6 +11,7 @@ export default function SendAssetFormField({
   labelMaxLength = 6,
   mask,
   onChange,
+  onFocus,
   onPressButton,
   placeholder,
   value,
@@ -19,16 +20,15 @@ export default function SendAssetFormField({
   const handlePressButton = useCallback(
     event => {
       analytics.track('Clicked "Max" in Send flow input');
-      if (onPressButton) {
-        onPressButton(event);
-      }
+      onPressButton?.(event);
     },
     [onPressButton]
   );
 
   return (
     <RowWithMargins
-      align="start"
+      align="center"
+      flex={1}
       justify="space-between"
       margin={23}
       {...props}
@@ -40,6 +40,7 @@ export default function SendAssetFormField({
         keyboardType="decimal-pad"
         mask={mask}
         onChange={onChange}
+        onFocus={onFocus}
         onPressButton={handlePressButton}
         placeholder={placeholder}
         value={value}

@@ -7,9 +7,11 @@ import useExperimentalFlag, {
   NEW_ONBOARDING,
 } from '../config/experimentalHooks';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import DepositModal from '../screens/DepositModal';
+import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
@@ -37,13 +39,6 @@ import {
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
-import { onTransitionStart } from './helpers';
-import {
-  AddCashSheetWrapper,
-  ExpandedAssetSheetWrapper,
-  ImportSeedPhraseSheetWrapper,
-  SendSheetWrapper,
-} from './nativeStackHelpers';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
@@ -64,7 +59,7 @@ function SendFlowNavigator() {
         options={overlayExpandedPreset}
       />
       <Stack.Screen
-        component={SendSheetWrapper}
+        component={SendSheet}
         name={Routes.SEND_SHEET}
         options={sheetPreset}
       />
@@ -84,7 +79,7 @@ function ImportSeedPhraseFlowNavigator() {
         options={overlayExpandedPreset}
       />
       <Stack.Screen
-        component={ImportSeedPhraseSheetWrapper}
+        component={ImportSeedPhraseSheet}
         name={Routes.IMPORT_SEED_PHRASE_SHEET}
       />
     </Stack.Navigator>
@@ -103,7 +98,7 @@ function AddCashFlowNavigator() {
         options={overlayExpandedPreset}
       />
       <Stack.Screen
-        component={AddCashSheetWrapper}
+        component={AddCashSheet}
         name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
       />
     </Stack.Navigator>
@@ -155,13 +150,6 @@ function MainNavigator() {
         name={Routes.EXCHANGE_MODAL}
         options={exchangePreset}
       />
-      {isNativeStackAvailable && (
-        <Stack.Screen
-          component={ModalScreen}
-          name={Routes.MODAL_SCREEN}
-          options={overlayExpandedPreset}
-        />
-      )}
     </Stack.Navigator>
   );
 }
@@ -210,7 +198,7 @@ function NativeStackFallbackNavigator() {
         }}
       />
       <Stack.Screen
-        component={AddCashSheetWrapper}
+        component={AddCashSheet}
         name={Routes.ADD_CASH_SHEET}
         options={sheetPreset}
       />
@@ -226,7 +214,6 @@ function NativeStackFallbackNavigator() {
           ...omit(sheetPreset, 'gestureResponseDistance'),
           onTransitionStart: () => {
             StatusBar.setBarStyle('light-content');
-            onTransitionStart();
           },
         }}
       />
@@ -262,11 +249,11 @@ function NativeStackNavigator() {
         {...sharedCoolModalConfig}
       />
       <NativeStack.Screen
-        component={ExpandedAssetSheetWrapper}
+        component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
         {...expandedAssetSheetConfig}
       />
-      <Stack.Screen
+      <NativeStack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
         options={{
@@ -275,6 +262,16 @@ function NativeStackNavigator() {
           customStack: true,
           springDamping: 1,
           transitionDuration: 0.25,
+        }}
+      />
+      <NativeStack.Screen
+        component={ModalScreen}
+        name={Routes.MODAL_SCREEN}
+        options={{
+          customStack: true,
+          ignoreBottomOffset: true,
+          onAppear: null,
+          topOffset: 0,
         }}
       />
       {isNativeStackAvailable && (

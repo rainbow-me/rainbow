@@ -1,44 +1,46 @@
 import { toUpper } from 'lodash';
-import React from 'react';
+import React, { useMemo } from 'react';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { getFirstGrapheme } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { borders, colors } from '@rainbow-me/styles';
 
-const defaultShadow = [
-  [0, 4, 6, colors.dark, 0.04],
-  [0, 1, 3, colors.dark, 0.08],
+const buildSmallShadows = color => [
+  [0, 3, 5, colors.dark, 0.14],
+  [0, 6, 10, colors.avatarColor[color] || color, 0.2],
 ];
 
-const sizeTypes = {
-  large: 'large',
-  medium: 'medium',
-  small: 'small',
+const sizeConfigs = {
+  large: {
+    dimensions: 65,
+    shadow: [
+      [0, 6, 10, colors.dark, 0.12],
+      [0, 2, 5, colors.dark, 0.08],
+    ],
+    textSize: 'bigger',
+  },
+  medium: {
+    dimensions: 40,
+    shadow: [
+      [0, 4, 6, colors.dark, 0.04],
+      [0, 1, 3, colors.dark, 0.08],
+    ],
+    textSize: 'larger',
+  },
+  small: {
+    dimensions: 34,
+    textSize: 'large',
+  },
 };
 
-const ContactAvatar = ({ color, size = sizeTypes.medium, value, ...props }) => {
-  const sizeConfigs = {
-    large: {
-      dimensions: 60,
-      shadows: defaultShadow,
-      textSize: 'bigger',
-    },
-    medium: {
-      dimensions: 40,
-      shadows: defaultShadow,
-      textSize: 'larger',
-    },
-    small: {
-      dimensions: 34,
-      shadows: [
-        [0, 3, 5, colors.dark, 0.14],
-        [0, 6, 10, colors.avatarColor[color] || color, 0.2],
-      ],
-      textSize: 'large',
-    },
-  };
-  const { dimensions, shadows, textSize } = sizeConfigs[size];
+const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
+  const { dimensions, shadow, textSize } = sizeConfigs[size];
+
+  const shadows = useMemo(
+    () => (size === 'small' ? buildSmallShadows(color) : shadow),
+    [color, shadow, size]
+  );
 
   return (
     <ShadowStack

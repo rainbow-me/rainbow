@@ -64,11 +64,12 @@ const ExchangeModal = ({
   type,
   underlyingPrice,
 }) => {
+  const {
+    params: { tabTransitionPosition },
+  } = useRoute();
+
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
-
-  const { params } = useRoute();
-  const tabPosition = params?.position;
 
   const defaultGasLimit = isDeposit
     ? ethUnits.basic_deposit
@@ -453,7 +454,7 @@ const ExchangeModal = ({
               opacity:
                 Platform.OS === 'android'
                   ? 1
-                  : interpolate(tabPosition, {
+                  : interpolate(tabTransitionPosition, {
                       extrapolate: Animated.Extrapolate.CLAMP,
                       inputRange: [0, 0.2, 1],
                       outputRange: [1, 1, 0],

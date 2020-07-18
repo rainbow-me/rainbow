@@ -42,21 +42,17 @@ const SearchInput = styled(Input).attrs({
   margin-left: 7;
 `;
 
-const ExchangeSearch = ({ autoFocus, onChangeText, searchQuery }, ref) => {
+const ExchangeSearch = ({ onChangeText, searchQuery }, ref) => {
   const handleClearInput = useCallback(() => {
     ref?.current?.clear();
     if (onChangeText) onChangeText('');
   }, [ref, onChangeText]);
 
-  const handleFocus = useCallback(event => ref?.current?.focus(event), [ref]);
-
   return (
     <Container>
       <SearchIcon />
       <SearchInput
-        autoFocus={autoFocus}
         onChangeText={onChangeText}
-        onFocus={handleFocus}
         placeholder="Search"
         ref={ref}
         value={searchQuery}

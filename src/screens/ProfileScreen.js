@@ -7,7 +7,6 @@ import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
-import { LoadingOverlayWrapper } from '../components/modal/LoadingOverlay';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
 import useNativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
@@ -43,12 +42,10 @@ export default function ProfileScreen({ navigation }) {
   useEffect(() => {
     if (isCreatingAccount) {
       setComponent(
-        <LoadingOverlayWrapper>
-          <LoadingOverlay
-            paddingTop={sheetVerticalOffset}
-            title="Creating wallet..."
-          />
-        </LoadingOverlayWrapper>,
+        <LoadingOverlay
+          paddingTop={sheetVerticalOffset}
+          title="Creating wallet..."
+        />,
         false
       );
       return hide;

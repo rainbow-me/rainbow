@@ -495,6 +495,8 @@ PODS:
   - RNGestureHandler (1.6.0):
     - React
   - RNInputMask (4.1.0)
+  - RNKeyboard (1.0.5):
+    - React
   - RNKeychain (4.0.3):
     - React
   - RNLanguages (3.0.2):
@@ -629,6 +631,7 @@ DEPENDENCIES:
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNInputMask (from `../node_modules/react-native-text-input-mask/ios/InputMask`)
+  - RNKeyboard (from `../node_modules/react-native-keyboard-area`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNLanguages (from `../node_modules/react-native-languages`)
   - RNOS (from `../node_modules/react-native-os`)
@@ -811,6 +814,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNInputMask:
     :path: "../node_modules/react-native-text-input-mask/ios/InputMask"
+  RNKeyboard:
+    :path: "../node_modules/react-native-keyboard-area"
   RNKeychain:
     :path: "../node_modules/react-native-keychain"
   RNLanguages:
@@ -941,6 +946,7 @@ SPEC CHECKSUMS:
   RNFBMessaging: d884c58a92ce90687ae8b5a5772cf5d3d5223dfb
   RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
+  RNKeyboard: ceec456427493b286539f40442620881b5840dff
   RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
