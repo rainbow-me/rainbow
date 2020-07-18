@@ -5,6 +5,7 @@
 // and break imports concept just to remove eslint error here
 
 export { default as abbreviations } from './abbreviations';
+export { default as showActionSheetWithOptions } from './actionsheet';
 export { default as addressUtils } from './address';
 export { default as AllowancesCache } from './allowancesCache';
 export { default as backgroundTask } from './backgroundTask';

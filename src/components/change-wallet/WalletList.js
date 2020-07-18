@@ -91,10 +91,10 @@ export default function WalletList({
   currentWallet,
   editMode,
   height,
+  onChangeAccount,
   onEditWallet,
   onPressAddAccount,
   onPressImportSeedPhrase,
-  onChangeAccount,
   scrollEnabled,
   showDividers,
 }) {

@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, Platform } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -12,7 +12,6 @@ import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
 import WalletTypes from '../helpers/walletTypes';
-import { useAccountSettings, useInitializeWallet, useWallets } from '../hooks';
 import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
 import { createWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
@@ -24,12 +23,18 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
-
-import { abbreviations, deviceUtils } from '../utils';
-
-import { showActionSheetWithOptions } from '../utils/actionsheet';
+import {
+  useAccountSettings,
+  useInitializeWallet,
+  useWallets,
+} from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { colors, fonts } from '@rainbow-me/styles';
+import { colors } from '@rainbow-me/styles';
+import {
+  abbreviations,
+  deviceUtils,
+  showActionSheetWithOptions,
+} from '@rainbow-me/utils';
 import logger from 'logger';
 
 const deviceHeight = deviceUtils.dimensions.height;
@@ -45,7 +50,15 @@ const EditButton = styled(ButtonPressAnimation).attrs({ scaleTo: 0.96 })`
   top: 6px;
 `;
 
-const Spacer = styled.View`
+const EditButtonLabel = styled(Text).attrs(({ editMode }) => ({
+  align: 'right',
+  color: colors.appleBlue,
+  letterSpacing: 'roundedMedium',
+  size: 'large',
+  weight: editMode ? 'semibold' : 'medium',
+}))``;
+
+const Whitespace = styled.View`
   background-color: ${colors.white};
   bottom: -400px;
   height: 400px;
@@ -360,7 +373,7 @@ export default function ChangeWalletSheet() {
 
   return (
     <Sheet borderRadius={30}>
-      <Spacer />
+      {Platform.OS === 'android' && <Whitespace />}
       <Column height={headerHeight} justify="space-between">
         <SheetTitle>Wallets</SheetTitle>
         {showDividers && (
@@ -368,15 +381,9 @@ export default function ChangeWalletSheet() {
         )}
       </Column>
       <EditButton onPress={() => setEditMode(e => !e)}>
-        <Text
-          align="right"
-          color={colors.appleBlue}
-          letterSpacing="roundedMedium"
-          size="large"
-          weight={editMode ? fonts.weight.semibold : fonts.weight.medium}
-        >
+        <EditButtonLabel editMode={editMode}>
           {editMode ? 'Done' : 'Edit'}
-        </Text>
+        </EditButtonLabel>
       </EditButton>
       <WalletList
         accountAddress={currentAddress}

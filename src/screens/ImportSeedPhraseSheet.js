@@ -130,20 +130,20 @@ export default function ImportSeedPhraseSheet() {
     return seedPhrase !== accountAddress && isValidWallet(seedPhrase);
   }, [accountAddress, seedPhrase]);
 
-  const handleSetSeedPhrase = useCallback(
-    text => {
-      if (isImporting) return null;
-      return setSeedPhrase(text);
-    },
-    [isImporting]
-  );
-
   const handleSetImporting = useCallback(
     newImportingState => {
       setImporting(newImportingState);
       setParams({ gesturesEnabled: !newImportingState });
     },
     [setParams]
+  );
+
+  const handleSetSeedPhrase = useCallback(
+    text => {
+      if (isImporting) return null;
+      return setSeedPhrase(text);
+    },
+    [isImporting]
   );
 
   const handlePressImportButton = useCallback(async () => {

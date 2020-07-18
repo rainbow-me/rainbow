@@ -2,7 +2,6 @@ import { get, isEmpty, isNumber, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import { useNavigation } from '../../navigation/Navigation';
-import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import Divider from '../Divider';
 import { AddContactButton, PasteAddressButton } from '../buttons';
 import { AddressField } from '../fields';
@@ -12,6 +11,7 @@ import { Label } from '../text';
 import { useClipboard } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { colors, padding } from '@rainbow-me/styles';
+import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   ${padding(19, 15)}
