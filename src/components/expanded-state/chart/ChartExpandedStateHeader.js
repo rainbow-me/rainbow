@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components/primitives';
+import { chartExpandedAvailable } from '../../../config/experimental';
 import useExperimentalFlag, {
   RED_GREEN_PRICE_CHANGE,
 } from '../../../config/experimentalHooks';
@@ -145,10 +146,10 @@ const ChartExpandedStateHeader = ({
         />
       </Row>
       <Row align="center" justify="space-between">
-        {isNoPriceData ? (
+        {!chartExpandedAvailable || isNoPriceData ? (
           <ColumnWithMargins align="start" flex={1} margin={4}>
-            <Title>{name}</Title>
-            <Subtitle>{formattedPrice}</Subtitle>
+            <Title>{isNoPriceData ? name : formattedPrice}</Title>
+            <Subtitle>{isNoPriceData ? formattedPrice : name}</Subtitle>
           </ColumnWithMargins>
         ) : (
           <ColumnWithMargins align="start" flex={1} margin={4}>
@@ -178,13 +179,22 @@ const ChartExpandedStateHeader = ({
                 {formattedChange}
               </Title>
             </RowWithMargins>
-            <Subtitle
-              as={Input}
-              color={color}
-              editable={false}
-              pointerEvent="none"
-              ref={chartDateRef}
-            />
+            {chartExpandedAvailable ? (
+              <Subtitle
+                as={Input}
+                color={color}
+                editable={false}
+                pointerEvent="none"
+                ref={chartDateRef}
+              />
+            ) : (
+              <Subtitle
+                align="right"
+                color={redGreenPriceChange ? redGreenColor : color}
+              >
+                Today
+              </Subtitle>
+            )}
           </ColumnWithMargins>
         )}
       </Row>
