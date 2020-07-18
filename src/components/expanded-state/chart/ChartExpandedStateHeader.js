@@ -16,6 +16,7 @@ import { magicMemo } from '../../../utils';
 import { CoinIcon } from '../../coin-icon';
 import { ContextCircleButton } from '../../context-menu';
 import { Icon } from '../../icons';
+import { Input } from '../../inputs';
 import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import { TruncatedText } from '../../text';
 import { colors, padding } from '@rainbow-me/styles';
@@ -47,7 +48,9 @@ const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
 const ChartExpandedStateHeader = ({
   address,
   change,
+  chartDateRef,
   chartPrice,
+  chartPriceRef,
   color = colors.dark,
   latestPrice = noPriceData,
   name,
@@ -142,10 +145,23 @@ const ChartExpandedStateHeader = ({
         />
       </Row>
       <Row align="center" justify="space-between">
-        <ColumnWithMargins align="start" flex={1} margin={1}>
-          <Title>{isNoPriceData ? name : formattedPrice}</Title>
-          <Subtitle>{isNoPriceData ? formattedPrice : name}</Subtitle>
-        </ColumnWithMargins>
+        {isNoPriceData ? (
+          <ColumnWithMargins align="start" flex={1} margin={4}>
+            <Title>{name}</Title>
+            <Subtitle>{formattedPrice}</Subtitle>
+          </ColumnWithMargins>
+        ) : (
+          <ColumnWithMargins align="start" flex={1} margin={4}>
+            <Title
+              as={Input}
+              editable={false}
+              flex={1}
+              pointerEvent="none"
+              ref={chartPriceRef}
+            />
+            <Subtitle>{name}</Subtitle>
+          </ColumnWithMargins>
+        )}
         {!isNoPriceData && (
           <ColumnWithMargins align="end" margin={1}>
             <RowWithMargins align="center" margin={4}>
@@ -163,11 +179,12 @@ const ChartExpandedStateHeader = ({
               </Title>
             </RowWithMargins>
             <Subtitle
-              align="right"
-              color={redGreenPriceChange ? redGreenColor : color}
-            >
-              Today
-            </Subtitle>
+              as={Input}
+              color={color}
+              editable={false}
+              pointerEvent="none"
+              ref={chartDateRef}
+            />
           </ColumnWithMargins>
         )}
       </Row>

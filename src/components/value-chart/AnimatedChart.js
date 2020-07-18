@@ -125,12 +125,12 @@ export default class AnimatedChart extends Component {
           transform: [{ rotateX: '180deg' }],
         }}
       >
-        <Svg width={width} height={200} viewBox={`0 -20 ${width} 200`}>
+        <Svg height={200} viewBox={`0 -20 ${width} 200`} width={width}>
           <Path
             d={this.state.currentChart}
+            ref={path => (this._path = path)}
             stroke={this.props.color}
             strokeWidth={3}
-            ref={path => (this._path = path)}
           />
         </Svg>
       </View>

@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import ChartTypes from '../../helpers/chartTypes';
 import { toFixedDecimals } from '../../helpers/utilities';
 import { useAccountSettings, useCharts } from '../../hooks';
@@ -10,17 +10,19 @@ import { colors } from '@rainbow-me/styles';
 
 const chartStroke = { detailed: 1.5, simplified: 3 };
 
-const Chart = ({ asset, color, latestPrice, setChartPrice, ...props }) => {
+const Chart = ({
+  asset,
+  chartDateRef,
+  chartPriceRef,
+  color,
+  latestPrice,
+  ...props
+}) => {
   const { chart, chartType, updateChartType } = useCharts(asset);
-  const { nativeCurrencySymbol } = useAccountSettings();
-
-  useEffect(() => {
-    return () => {
-      updateChartType('w');
-    };
-  }, []);
+  const { nativeCurrency } = useAccountSettings();
 
   const hasChart = !isEmpty(chart);
+  const change = asset?.price?.relative_change_24h || 0;
 
   const chartData = useMemo(() => {
     if (!chart || !hasChart) return [];
@@ -52,14 +54,15 @@ const Chart = ({ asset, color, latestPrice, setChartPrice, ...props }) => {
         amountOfPathPoints={amountOfPathPoints}
         barColor={color}
         change={toFixedDecimals(change, 2)}
+        chartDateRef={chartDateRef}
+        chartPriceRef={chartPriceRef}
         currentDataSource={currentChartIndex}
         currentValue={latestPrice}
         data={chartData}
         enableSelect
         importantPointsIndexInterval={amountOfPathPoints}
         mode="gesture-managed"
-        nativeCurrency={nativeCurrencySymbol}
-        onValueUpdate={setChartPrice}
+        nativeCurrency={nativeCurrency}
         stroke={chartStroke}
       />
       <TimespanSelector
