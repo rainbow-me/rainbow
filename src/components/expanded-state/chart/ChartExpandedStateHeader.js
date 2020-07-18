@@ -31,9 +31,12 @@ const Container = styled(ColumnWithMargins).attrs({
 `;
 
 const Subtitle = styled(TruncatedText).attrs(
-  ({ color = colors.alpha(colors.blueGreyDark, 0.8) }) => ({
+  ({
+    color = colors.alpha(colors.blueGreyDark, 0.8),
+    letterSpacing = 'roundedMedium',
+  }) => ({
     color,
-    letterSpacing: 'roundedMedium',
+    letterSpacing,
     size: 'larger',
     weight: 'medium',
   })
@@ -147,12 +150,12 @@ const ChartExpandedStateHeader = ({
       </Row>
       <Row align="center" justify="space-between">
         {!chartExpandedAvailable || isNoPriceData ? (
-          <ColumnWithMargins align="start" flex={1} margin={4}>
+          <ColumnWithMargins align="start" flex={1} margin={1}>
             <Title>{isNoPriceData ? name : formattedPrice}</Title>
             <Subtitle>{isNoPriceData ? formattedPrice : name}</Subtitle>
           </ColumnWithMargins>
         ) : (
-          <ColumnWithMargins align="start" flex={1} margin={4}>
+          <ColumnWithMargins align="start" flex={1} margin={1}>
             <Title
               as={Input}
               editable={false}
@@ -181,11 +184,14 @@ const ChartExpandedStateHeader = ({
             </RowWithMargins>
             {chartExpandedAvailable ? (
               <Subtitle
+                align="right"
                 as={Input}
-                color={color}
+                color={redGreenPriceChange ? redGreenColor : color}
                 editable={false}
+                letterSpacing="roundedTight"
                 pointerEvent="none"
                 ref={chartDateRef}
+                tabularNums
               />
             ) : (
               <Subtitle

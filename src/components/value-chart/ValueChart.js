@@ -14,7 +14,7 @@ import AnimatedChart from './AnimatedChart';
 import GestureWrapper from './GestureWrapper';
 import TimestampText from './TimestampText';
 
-const formatDate = date => format(new Date(date), 'hh:mm aa MMM d');
+const formatDate = date => format(new Date(date), 'MMM dd hh:mm aa');
 
 const {
   and,
@@ -538,7 +538,7 @@ export default class Chart extends PureComponent {
                   this.opacity,
                   timing({
                     clock: this.opacityClock,
-                    duration: 500,
+                    duration: 150,
                     easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
                     from: this.opacity,
                     to: 1,
@@ -554,7 +554,7 @@ export default class Chart extends PureComponent {
                   this.opacity,
                   timing({
                     clock: this.opacityClockReversed,
-                    duration: 500,
+                    duration: 150,
                     easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
                     from: this.opacity,
                     to: 0,
