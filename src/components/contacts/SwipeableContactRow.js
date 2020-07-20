@@ -1,5 +1,4 @@
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { useCallback, useImperativeHandle, useRef } from 'react';
 import { Animated } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
@@ -48,88 +47,79 @@ const RightAction = ({ onPress, progress, text, x }) => {
   );
 };
 
-RightAction.propTypes = {
-  onPress: PropTypes.func,
-  progress: PropTypes.any,
-  text: PropTypes.string,
-  x: PropTypes.number,
-};
+const SwipeableContactRow = (
+  { address, color, nickname, onPress, onSelectEdit, onTouch, removeContact },
+  forwardedRef
+) => {
+  const swipeableRef = useRef();
 
-export default class SwipeableContactRow extends PureComponent {
-  static propTypes = {
-    address: PropTypes.string,
-    color: PropTypes.number,
-    navigation: PropTypes.object,
-    nickname: PropTypes.string,
-    onPress: PropTypes.func,
-    onSelectEdit: PropTypes.func,
-    onTouch: PropTypes.func,
-    onTransitionEnd: PropTypes.func,
-    removeContact: PropTypes.func,
-    selectedInputId: PropTypes.object,
-  };
+  useImperativeHandle(forwardedRef, () => ({
+    close: swipeableRef.current?.close,
+  }));
 
-  swipeableRef = undefined;
-
-  close = () => this.swipeableRef.close();
-
-  handleDeleteContact = async () => {
-    const { address, nickname, removeContact } = this.props;
-    this.close();
+  const handleDeleteContact = useCallback(() => {
+    swipeableRef.current?.close?.();
     showDeleteContactActionSheet({
       address,
       nickname,
       removeContact,
     });
-  };
+  }, [address, nickname, removeContact]);
 
-  handleEditContact = () => {
-    this.close();
-    this.props.onSelectEdit(this.props);
-  };
+  const handleEditContact = useCallback(() => {
+    swipeableRef.current?.close?.();
+    onSelectEdit({ address, color, nickname });
+  }, [address, color, nickname, onSelectEdit]);
 
-  handleLongPress = () => this.swipeableRef && this.swipeableRef.openRight();
-
-  handlePress = () => this.props.onPress(this.props.address);
-
-  handlePressStart = () => {
-    this.props.onTouch(this.props.address);
-  };
-
-  handleRef = ref => {
-    this.swipeableRef = ref;
-  };
-
-  renderRightActions = progress => (
-    <Row width={120}>
-      <RightAction
-        onPress={this.handleEditContact}
-        progress={progress}
-        text="Edit"
-        x={120}
-      />
-      <RightAction
-        onPress={this.handleDeleteContact}
-        progress={progress}
-        text="Delete"
-        x={90}
-      />
-    </Row>
+  const handleLongPress = useCallback(
+    () => swipeableRef.current?.openRight?.(),
+    []
   );
 
-  render = () => (
+  const handlePress = useCallback(() => onPress(address), [address, onPress]);
+
+  const handlePressStart = useCallback(() => onTouch(address), [
+    address,
+    onTouch,
+  ]);
+
+  const renderRightActions = useCallback(
+    progress => (
+      <Row width={120}>
+        <RightAction
+          onPress={handleEditContact}
+          progress={progress}
+          text="Edit"
+          x={120}
+        />
+        <RightAction
+          onPress={handleDeleteContact}
+          progress={progress}
+          text="Delete"
+          x={90}
+        />
+      </Row>
+    ),
+    [handleDeleteContact, handleEditContact]
+  );
+
+  return (
     <Swipeable
       friction={2}
-      ref={this.handleRef}
-      renderRightActions={this.renderRightActions}
+      ref={swipeableRef}
+      renderRightActions={renderRightActions}
       rightThreshold={0}
     >
       <ContactRow
-        {...this.props}
-        onLongPress={this.handleLongPress}
-        onPress={this.handlePress}
-        onPressStart={this.handlePressStart}
+        address={address}
+        color={color}
+        nickname={nickname}
+        onLongPress={handleLongPress}
+        onPress={handlePress}
+        onPressStart={handlePressStart}
       />
     </Swipeable>
   );
-}
+};
+
+export default React.forwardRef(SwipeableContactRow);

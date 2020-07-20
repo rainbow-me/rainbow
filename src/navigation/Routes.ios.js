@@ -28,18 +28,17 @@ import {
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
   nativeStackConfig,
-  nativeStackDefaultConfig,
   sharedCoolModalConfig,
   stackNavigationConfig,
 } from './config';
 import {
   bottomSheetPreset,
   emojiPreset,
+  exchangePreset,
   expandedPreset,
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
-import { onTransitionStart } from './helpers';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
@@ -122,6 +121,11 @@ function MainNavigator() {
       <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} />
       <Stack.Screen
+        component={SavingsSheet}
+        name={Routes.SAVINGS_SHEET}
+        options={bottomSheetPreset}
+      />
+      <Stack.Screen
         component={AvatarBuilder}
         name={Routes.AVATAR_BUILDER}
         options={emojiPreset}
@@ -141,13 +145,11 @@ function MainNavigator() {
         name={Routes.CONFIRM_REQUEST}
         options={sheetPreset}
       />
-      {isNativeStackAvailable && (
-        <Stack.Screen
-          component={ModalScreen}
-          name={Routes.MODAL_SCREEN}
-          options={overlayExpandedPreset}
-        />
-      )}
+      <Stack.Screen
+        component={ExchangeModalNavigator}
+        name={Routes.EXCHANGE_MODAL}
+        options={exchangePreset}
+      />
     </Stack.Navigator>
   );
 }
@@ -162,6 +164,16 @@ function MainNavigatorWrapper() {
       <Stack.Screen
         component={MainNavigator}
         name={Routes.MAIN_NAVIGATOR_WRAPPER}
+      />
+      <Stack.Screen
+        component={WithdrawModal}
+        name={Routes.SAVINGS_WITHDRAW_MODAL}
+        options={exchangePreset}
+      />
+      <Stack.Screen
+        component={DepositModal}
+        name={Routes.SAVINGS_DEPOSIT_MODAL}
+        options={exchangePreset}
       />
     </Stack.Navigator>
   );
@@ -202,7 +214,6 @@ function NativeStackFallbackNavigator() {
           ...omit(sheetPreset, 'gestureResponseDistance'),
           onTransitionStart: () => {
             StatusBar.setBarStyle('light-content');
-            onTransitionStart();
           },
         }}
       />
@@ -238,11 +249,6 @@ function NativeStackNavigator() {
         {...sharedCoolModalConfig}
       />
       <NativeStack.Screen
-        component={ExchangeModalNavigator}
-        name={Routes.EXCHANGE_MODAL}
-        options={nativeStackDefaultConfig}
-      />
-      <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
         {...expandedAssetSheetConfig}
@@ -259,25 +265,14 @@ function NativeStackNavigator() {
         }}
       />
       <NativeStack.Screen
-        component={SavingsSheet}
-        name={Routes.SAVINGS_SHEET}
+        component={ModalScreen}
+        name={Routes.MODAL_SCREEN}
         options={{
-          allowsDragToDismiss: true,
           customStack: true,
-          headerHeight: 0,
-          springDamping: 1,
+          ignoreBottomOffset: true,
+          onAppear: null,
           topOffset: 0,
         }}
-      />
-      <NativeStack.Screen
-        component={WithdrawModal}
-        name={Routes.SAVINGS_WITHDRAW_MODAL}
-        options={nativeStackDefaultConfig}
-      />
-      <NativeStack.Screen
-        component={DepositModal}
-        name={Routes.SAVINGS_DEPOSIT_MODAL}
-        options={nativeStackDefaultConfig}
       />
       {isNativeStackAvailable && (
         <>

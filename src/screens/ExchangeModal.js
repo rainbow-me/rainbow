@@ -40,7 +40,6 @@ import {
   useUniswapMarketDetails,
 } from '../hooks';
 import { loadWallet } from '../model/wallet';
-import { setAppearListener } from '../navigation/nativeStackHelpers';
 import { executeRap } from '../raps/common';
 import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
@@ -65,11 +64,12 @@ const ExchangeModal = ({
   type,
   underlyingPrice,
 }) => {
+  const {
+    params: { tabTransitionPosition },
+  } = useRoute();
+
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
-
-  const { params } = useRoute();
-  const tabPosition = params?.position;
 
   const defaultGasLimit = isDeposit
     ? ethUnits.basic_deposit
@@ -128,12 +128,7 @@ const ExchangeModal = ({
     inputFieldRef,
     nativeFieldRef,
     outputFieldRef,
-    magicallyFocus,
   } = useSwapInputRefs({ inputCurrency, outputCurrency });
-
-  useEffect(() => {
-    setAppearListener(magicallyFocus);
-  }, [magicallyFocus]);
 
   const {
     inputAmount,
@@ -459,25 +454,11 @@ const ExchangeModal = ({
               opacity:
                 Platform.OS === 'android'
                   ? 1
-                  : interpolate(tabPosition, {
+                  : interpolate(tabTransitionPosition, {
                       extrapolate: Animated.Extrapolate.CLAMP,
-                      inputRange: [0, 0, 1],
+                      inputRange: [0, 0.2, 1],
                       outputRange: [1, 1, 0],
                     }),
-              transform: [
-                {
-                  scale: interpolate(tabPosition, {
-                    extrapolate: Animated.Extrapolate.CLAMP,
-                    inputRange: [0, 0, 1],
-                    outputRange: [1, 1, 0.9],
-                  }),
-                  translateX: interpolate(tabPosition, {
-                    extrapolate: Animated.Extrapolate.CLAMP,
-                    inputRange: [0, 0, 1],
-                    outputRange: [0, 0, -8],
-                  }),
-                },
-              ],
             }}
           >
             <FloatingPanel

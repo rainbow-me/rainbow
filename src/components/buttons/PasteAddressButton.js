@@ -1,64 +1,33 @@
-import Clipboard from '@react-native-community/clipboard';
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { checkIsValidAddressOrENS } from '../../helpers/validators';
-import { withAppState } from '../../hoc';
-import Button from './Button';
-import { colors } from '@rainbow-me/styles';
+import { Text } from '../text';
+import MiniButton from './MiniButton';
+import { useClipboard } from '@rainbow-me/hooks';
 
-class PasteAddressButton extends PureComponent {
-  static propTypes = {
-    appState: PropTypes.string,
-    onPress: PropTypes.func.isRequired,
-  };
+export default function PasteAddressButton({ onPress }) {
+  const { clipboard } = useClipboard();
+  const [isValid, setIsValid] = useState(false);
 
-  state = { clipboardContents: null };
-
-  componentDidMount() {
-    this.getClipboardContents();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (
-      prevProps.appState === 'background' &&
-      this.props.appState === 'active'
-    ) {
-      this.getClipboardContents();
+  useEffect(() => {
+    async function validate() {
+      const isValidAddress = await checkIsValidAddressOrENS(clipboard);
+      setIsValid(isValidAddress);
     }
-  }
 
-  getClipboardContents = async () =>
-    Clipboard.getString().then(this.setClipboardContents);
+    validate();
+  }, [clipboard]);
 
-  handlePress = () => {
-    if (this.state.clipboardContents) {
-      this.props.onPress(this.state.clipboardContents);
+  const handlePress = useCallback(() => {
+    if (isValid) {
+      onPress?.(clipboard);
     }
-  };
+  }, [clipboard, isValid, onPress]);
 
-  setClipboardContents = async clipboardContents => {
-    if (await checkIsValidAddressOrENS(clipboardContents)) {
-      this.setState({ clipboardContents });
-    }
-  };
-
-  render() {
-    const { clipboardContents } = this.state;
-
-    return (
-      <Button
-        backgroundColor={
-          clipboardContents ? colors.sendScreen.brightBlue : '#D2D3D7'
-        }
-        disabled={!clipboardContents}
-        onPress={this.handlePress}
-        size="small"
-        type="pill"
-      >
+  return (
+    <MiniButton disabled={!isValid} onPress={handlePress}>
+      <Text color="white" weight="semibold">
         Paste
-      </Button>
-    );
-  }
+      </Text>
+    </MiniButton>
+  );
 }
-
-export default withAppState(PasteAddressButton);

@@ -38,7 +38,7 @@ const SheetContainer = styled(Column)`
 
 const SubtitleInterval = 3000;
 
-const AddCashSheet = () => {
+export default function AddCashSheet() {
   const { isNarrowPhone } = useDimensions();
   const insets = useSafeArea();
 
@@ -127,6 +127,4 @@ const AddCashSheet = () => {
       </Column>
     </SheetContainer>
   );
-};
-
-export default React.memo(AddCashSheet);
+}

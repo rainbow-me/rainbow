@@ -1,5 +1,4 @@
 import { createStackNavigator } from '@react-navigation/stack';
-
 import { captureException } from '@sentry/react-native';
 import React, { useCallback, useState } from 'react';
 import { Animated } from 'react-native';
@@ -90,8 +89,8 @@ const SettingsPages = {
 };
 
 const Container = styled.View`
-  overflow: hidden;
   flex: 1;
+  overflow: hidden;
 `;
 
 const Stack = createStackNavigator();
@@ -107,8 +106,8 @@ const requestFaceIDPermission = () =>
       captureException(error);
     });
 
-const SettingsModal = () => {
-  const navigation = useNavigation();
+export default function SettingsModal() {
+  const { goBack, navigate } = useNavigation();
   const [currentSettingsPage, setCurrentSettingsPage] = useState(
     SettingsPages.default
   );
@@ -116,31 +115,25 @@ const SettingsModal = () => {
   const { title } = currentSettingsPage;
   const isDefaultPage = title === SettingsPages.default.title;
 
-  const onCloseModal = useCallback(() => navigation.goBack(), [navigation]);
-
   const onPressBack = useCallback(() => {
     setCurrentSettingsPage(SettingsPages.default);
-    navigation.navigate('SettingsSection');
-  }, [navigation, setCurrentSettingsPage]);
+    navigate('SettingsSection');
+  }, [navigate, setCurrentSettingsPage]);
 
   const onPressSection = useCallback(
     section => () => {
       setCurrentSettingsPage(section);
-      navigation.navigate(section.key);
+      navigate(section.key);
     },
-    [navigation, setCurrentSettingsPage]
+    [navigate, setCurrentSettingsPage]
   );
 
   return (
-    <Modal
-      marginBottom={statusBarHeight}
-      minHeight={580}
-      onCloseModal={onCloseModal}
-    >
+    <Modal marginBottom={statusBarHeight} minHeight={580} onCloseModal={goBack}>
       <Container>
         <ModalHeader
           onPressBack={onPressBack}
-          onPressClose={onCloseModal}
+          onPressClose={goBack}
           showBackButton={!isDefaultPage}
           title={title}
         />
@@ -154,7 +147,7 @@ const SettingsModal = () => {
           <Stack.Screen name="SettingsSection">
             {() => (
               <SettingsSection
-                onCloseModal={onCloseModal}
+                onCloseModal={goBack}
                 onPressBackup={onPressSection(SettingsPages.backup)}
                 onPressCurrency={onPressSection(SettingsPages.currency)}
                 onPressDev={onPressSection(SettingsPages.dev)}
@@ -181,6 +174,4 @@ const SettingsModal = () => {
       </Container>
     </Modal>
   );
-};
-
-export default SettingsModal;
+}

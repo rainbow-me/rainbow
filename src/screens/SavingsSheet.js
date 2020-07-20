@@ -102,8 +102,14 @@ const SavingsSheet = () => {
   const onDeposit = useCallback(() => {
     if (!isReadOnlyWallet) {
       navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
-        defaultInputAsset: underlying,
-        underlyingPrice,
+        params: {
+          params: {
+            defaultInputAsset: underlying,
+            underlyingPrice,
+          },
+          screen: Routes.MAIN_EXCHANGE_SCREEN,
+        },
+        screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
       });
 
       analytics.track('Navigated to SavingsDepositModal', {
