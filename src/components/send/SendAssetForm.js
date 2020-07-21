@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
-import { useSafeArea } from 'react-native-safe-area-context';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import AssetTypes from '../../helpers/assetTypes';
@@ -35,8 +34,7 @@ const FormContainer = styled(Column).attrs({
   align: 'end',
   justify: 'space-between',
 })`
-  ${({ bottomInset, isNft }) =>
-    padding(22, isNft ? 0 : 15, isNft ? bottomInset : 15)};
+  ${({ isNft }) => padding(22, isNft ? 0 : 15, isNft ? 0 : 15)};
   background-color: ${colors.lighterGrey};
   flex: 1;
   width: 100%;
@@ -57,7 +55,6 @@ export default function SendAssetForm({
   ...props
 }) {
   const { width: deviceWidth } = useDimensions();
-  const { bottom: bottomInset } = useSafeArea();
 
   const selectedAsset = useAsset(selected);
 
@@ -86,7 +83,7 @@ export default function SendAssetForm({
           <Icon name="doubleCaret" />
         </AssetRowElement>
       </ShadowStack>
-      <FormContainer bottomInset={bottomInset} isNft={isNft}>
+      <FormContainer isNft={isNft}>
         {isNft ? (
           <SendAssetFormCollectible
             asset={selectedAsset}
@@ -94,21 +91,23 @@ export default function SendAssetForm({
             txSpeedRenderer={txSpeedRenderer}
           />
         ) : (
-          <SendAssetFormToken
-            {...props}
-            assetAmount={assetAmount}
-            buttonRenderer={buttonRenderer}
-            nativeAmount={nativeAmount}
-            nativeCurrency={nativeCurrency}
-            onChangeAssetAmount={onChangeAssetAmount}
-            onChangeNativeAmount={onChangeNativeAmount}
-            onFocus={onFocus}
-            selected={selectedAsset}
-            sendMaxBalance={sendMaxBalance}
-            txSpeedRenderer={txSpeedRenderer}
-          />
+          <Fragment>
+            <SendAssetFormToken
+              {...props}
+              assetAmount={assetAmount}
+              buttonRenderer={buttonRenderer}
+              nativeAmount={nativeAmount}
+              nativeCurrency={nativeCurrency}
+              onChangeAssetAmount={onChangeAssetAmount}
+              onChangeNativeAmount={onChangeNativeAmount}
+              onFocus={onFocus}
+              selected={selectedAsset}
+              sendMaxBalance={sendMaxBalance}
+              txSpeedRenderer={txSpeedRenderer}
+            />
+            <KeyboardSizeView isOpen />
+          </Fragment>
         )}
-        <KeyboardSizeView isOpen />
       </FormContainer>
     </Container>
   );
