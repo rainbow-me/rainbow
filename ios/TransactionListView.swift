@@ -57,7 +57,19 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       header.accountNameViewWidthConstraint.constant = accountAddressWidth
     }
   }
-  
+  @objc var accountImage: String? = nil {
+   didSet {
+    if (accountImage != nil) {
+      let url = URL.init(fileURLWithPath: accountImage ?? "")
+
+      let imageData:NSData = NSData(contentsOf: url)!
+
+      let image = UIImage(data: imageData as Data)
+
+      header.accountImage.image = image
+    }
+   }
+ }
   @objc var accountColor: UIColor? = nil {
     didSet {
       header.accountBackground.backgroundColor = accountColor
@@ -264,6 +276,9 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     header.accountView.layer.addSublayer(shadowLayer)
     header.accountView.layer.addSublayer(secondShadowLayer)
+    
+    header.accountImage.layer.cornerRadius = header.accountBackground.frame.width / 2.0
+    header.accountImage.clipsToBounds = true
     
     headerSeparator.backgroundColor = UIColor.RainbowTheme.Transactions.rowDividerLight
     tableView.tableHeaderView = header

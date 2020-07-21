@@ -2,7 +2,7 @@ import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Image, Linking, requireNativeComponent } from 'react-native';
+import { Linking, requireNativeComponent } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
@@ -29,6 +29,7 @@ import {
 
 const options = {
   allowsEditing: true,
+  customButtons: [{ name: 'ab', title: 'Avatar builder...' }],
   storageOptions: {
     path: 'images',
     skipBackup: true,
@@ -90,27 +91,24 @@ const TransactionList = ({
     });
   }, [navigate]);
 
-  // const onAvatarPress = useCallback(() => {
-  //   navigate(Routes.AVATAR_BUILDER, {
-  //     accountColor,
-  //     accountName,
-  //   });
-  // }, [accountColor, accountName, navigate]);
-
   const onAvatarPress = useCallback(() => {
     ImagePicker.showImagePicker(options, response => {
-      console.log('Response = ', response);
-
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
         console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        if (response.customButton === 'ab') {
+          navigate(Routes.AVATAR_BUILDER, {
+            accountColor,
+            accountName,
+          });
+        }
       } else {
-        const source = { uri: response.uri };
-        setImageUri(source);
+        setImageUri(response);
       }
     });
-  }, []);
+  }, [accountColor, accountName, navigate]);
 
   const onReceivePress = useCallback(() => {
     navigate(Routes.RECEIVE_MODAL);
@@ -251,6 +249,7 @@ const TransactionList = ({
       <Container
         accountAddress={accountName}
         accountColor={colors.avatarColor[accountColor]}
+        accountImage={imageUri?.uri?.split('://')[1]}
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}
@@ -270,7 +269,6 @@ const TransactionList = ({
         setOnNewEmoji={setOnNewEmoji}
         tapTarget={tapTarget}
       />
-      <Image source={imageUri} style={{ height: 100, width: 100 }} />
     </Container>
   );
 };
