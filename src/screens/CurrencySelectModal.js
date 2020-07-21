@@ -146,10 +146,10 @@ export default function CurrencySelectModal() {
   }, [searchQuery, startQueryDebounce, stopQueryDebounce]);
 
   const handleFavoriteAsset = useCallback(
-    (assetAddress, isFavorited) =>
+    (asset, isFavorited) =>
       setAssetsToFavoriteQueue(prevFavoriteQueue => ({
         ...prevFavoriteQueue,
-        [assetAddress]: isFavorited,
+        [asset.address]: isFavorited,
       })),
     []
   );
