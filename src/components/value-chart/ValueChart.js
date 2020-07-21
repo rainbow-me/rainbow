@@ -27,7 +27,6 @@ const {
   greaterOrEq,
   greaterThan,
   interpolate,
-  lessOrEq,
   lessThan,
   multiply,
   neq,
@@ -425,17 +424,24 @@ export default class Chart extends PureComponent {
               currentData={currentData}
               currentValue={currentValue}
               setCurrentPath={path => {
-                const calculatedTouchX = cond(
-                  greaterOrEq(this.touchX, width * 0.05),
-                  cond(
-                    lessOrEq(this.touchX, width - width * 0.05),
-                    sub(sub(multiply(this.touchX, 1.1), width * 0.05), 0),
-                    width
-                  ),
-                  0
-                );
+                const magneticPadding = 50;
+                const calculatedTouchX = interpolate(this.touchX, {
+                  extrapolate: Extrapolate.CLAMP,
+                  inputRange: [
+                    magneticPadding / 2,
+                    magneticPadding,
+                    width - magneticPadding,
+                    width - magneticPadding / 2,
+                  ],
+                  outputRange: [
+                    0,
+                    magneticPadding,
+                    width - magneticPadding,
+                    width,
+                  ],
+                });
                 const length = interpolate(calculatedTouchX, {
-                  extrapolate: Extrapolate.EXTEND,
+                  extrapolate: Extrapolate.CLAMP,
                   inputRange: path.p0x,
                   outputRange: path.start,
                 });
