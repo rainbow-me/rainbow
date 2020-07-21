@@ -5,13 +5,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import { multiply } from '../helpers/utilities';
-import { ethereumUtils, isNewValueForPath } from '../utils';
-
+import { useNavigation } from '../navigation/Navigation';
 import useAccountAssets from './useAccountAssets';
 import usePrevious from './usePrevious';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 import useUniswapCurrencyReserves from './useUniswapCurrencyReserves';
 import Routes from '@rainbow-me/routes';
+import { ethereumUtils, isNewValueForPath } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const isSameAsset = (newInputCurrency, previousInputCurrency) =>
@@ -44,11 +44,11 @@ export default function useUniswapCurrencies({
   inputHeaderTitle,
   isDeposit,
   isWithdrawal,
-  navigation,
   type,
   underlyingPrice,
 }) {
   const { allAssets } = useAccountAssets();
+  const { navigate, setParams } = useNavigation();
 
   const defaultInputAddress = get(defaultInputAsset, 'address');
 
@@ -262,31 +262,27 @@ export default function useUniswapCurrencies({
 
   const navigateToSelectInputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
-      navigation.setParams({ focused: false });
-      navigation.navigate(Routes.CURRENCY_SELECT_SCREEN, {
+      setParams({ focused: false });
+      navigate(Routes.CURRENCY_SELECT_SCREEN, {
         headerTitle: inputHeaderTitle,
         onSelectCurrency: updateInputCurrency,
-        restoreFocusOnSwapModal: () => {
-          navigation.setParams({ focused: true });
-        },
+        restoreFocusOnSwapModal: () => setParams({ focused: true }),
         type: CurrencySelectionTypes.input,
       });
     });
-  }, [inputHeaderTitle, navigation, updateInputCurrency]);
+  }, [inputHeaderTitle, navigate, setParams, updateInputCurrency]);
 
   const navigateToSelectOutputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
-      navigation.setParams({ focused: false });
-      navigation.navigate(Routes.CURRENCY_SELECT_SCREEN, {
+      setParams({ focused: false });
+      navigate(Routes.CURRENCY_SELECT_SCREEN, {
         headerTitle: 'Receive',
         onSelectCurrency: updateOutputCurrency,
-        restoreFocusOnSwapModal: () => {
-          navigation.setParams({ focused: true });
-        },
+        restoreFocusOnSwapModal: () => setParams({ focused: true }),
         type: CurrencySelectionTypes.output,
       });
     });
-  }, [navigation, updateOutputCurrency]);
+  }, [navigate, setParams, updateOutputCurrency]);
 
   return {
     defaultInputAddress,

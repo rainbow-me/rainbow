@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, {
   Fragment,
   useCallback,
@@ -10,7 +9,7 @@ import React, {
   useState,
 } from 'react';
 import { Platform } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { Extrapolate } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import HorizontalGestureBlocker from '../components/HorizontalGestureBlocker';
 import { interpolate } from '../components/animations';
@@ -26,6 +25,11 @@ import { FloatingPanel, FloatingPanels } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
+import { loadWallet } from '../model/wallet';
+import { useNavigation } from '../navigation/Navigation';
+import { executeRap } from '../raps/common';
+import { savingsLoadState } from '../redux/savings';
+import ethUnits from '../references/ethereum-units.json';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -38,32 +42,28 @@ import {
   useUniswapCurrencies,
   useUniswapCurrencyReserves,
   useUniswapMarketDetails,
-} from '../hooks';
-import { loadWallet } from '../model/wallet';
-import { executeRap } from '../raps/common';
-import { savingsLoadState } from '../redux/savings';
-import ethUnits from '../references/ethereum-units.json';
-import { backgroundTask, isNewValueForPath } from '../utils';
+} from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
+import { backgroundTask, isNewValueForPath } from '@rainbow-me/utils';
 import logger from 'logger';
 
 export const exchangeModalBorderRadius = 30;
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(FloatingPanels);
 
-const ExchangeModal = ({
+export default function ExchangeModal({
   createRap,
   cTokenBalance,
   defaultInputAsset,
   estimateRap,
   inputHeaderTitle,
-  navigation,
   showOutputField,
   supplyBalanceUnderlying,
   type,
   underlyingPrice,
-}) => {
+}) {
+  const { navigate, setParams } = useNavigation();
   const {
     params: { tabTransitionPosition },
   } = useRoute();
@@ -118,7 +118,6 @@ const ExchangeModal = ({
     inputHeaderTitle,
     isDeposit,
     isWithdrawal,
-    navigation,
     type,
     underlyingPrice,
   });
@@ -341,8 +340,8 @@ const ExchangeModal = ({
 
         setIsAuthorizing(false);
         const callback = () => {
-          navigation.setParams({ focused: false });
-          navigation.navigate(Routes.PROFILE_SCREEN);
+          setParams({ focused: false });
+          navigate(Routes.PROFILE_SCREEN);
         };
         const rap = await createRap({
           callback,
@@ -370,8 +369,8 @@ const ExchangeModal = ({
       } catch (error) {
         setIsAuthorizing(false);
         logger.log('[exchange - handle submit] error submitting swap', error);
-        navigation.setParams({ focused: false });
-        navigation.navigate(Routes.WALLET_SCREEN);
+        setParams({ focused: false });
+        navigate(Routes.WALLET_SCREEN);
       }
     });
   }, [
@@ -386,10 +385,11 @@ const ExchangeModal = ({
     isDeposit,
     isMax,
     isWithdrawal,
-    navigation,
+    navigate,
     outputAmount,
     outputCurrency,
     outputReserve,
+    setParams,
     type,
   ]);
 
@@ -397,14 +397,12 @@ const ExchangeModal = ({
     inputFieldRef?.current?.blur();
     outputFieldRef?.current?.blur();
     nativeFieldRef?.current?.blur();
-    navigation.setParams({ focused: false });
-    navigation.navigate(Routes.SWAP_DETAILS_SCREEN, {
+    setParams({ focused: false });
+    navigate(Routes.SWAP_DETAILS_SCREEN, {
       ...extraTradeDetails,
       inputCurrencySymbol: get(inputCurrency, 'symbol'),
       outputCurrencySymbol: get(outputCurrency, 'symbol'),
-      restoreFocusOnSwapModal: () => {
-        navigation.setParams({ focused: true });
-      },
+      restoreFocusOnSwapModal: () => setParams({ focused: true }),
       type: 'swap_details',
     });
   }, [
@@ -412,9 +410,10 @@ const ExchangeModal = ({
     inputCurrency,
     inputFieldRef,
     nativeFieldRef,
-    navigation,
+    navigate,
     outputCurrency,
     outputFieldRef,
+    setParams,
   ]);
 
   const isSlippageWarningVisible =
@@ -455,7 +454,7 @@ const ExchangeModal = ({
                 Platform.OS === 'android'
                   ? 1
                   : interpolate(tabTransitionPosition, {
-                      extrapolate: Animated.Extrapolate.CLAMP,
+                      extrapolate: Extrapolate.CLAMP,
                       inputRange: [0, 0.2, 1],
                       outputRange: [1, 1, 0],
                     }),
@@ -534,19 +533,4 @@ const ExchangeModal = ({
       </KeyboardFixedOpenLayout>
     </HorizontalGestureBlocker>
   );
-};
-
-ExchangeModal.propTypes = {
-  createRap: PropTypes.func,
-  cTokenBalance: PropTypes.string,
-  defaultInputAddress: PropTypes.string,
-  estimateRap: PropTypes.func,
-  inputHeaderTitle: PropTypes.string,
-  navigation: PropTypes.object,
-  showOutputField: PropTypes.bool,
-  supplyBalanceUnderlying: PropTypes.string,
-  type: PropTypes.oneOf(Object.values(ExchangeModalTypes)),
-  underlyingPrice: PropTypes.string,
-};
-
-export default ExchangeModal;
+}
