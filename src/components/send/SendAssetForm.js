@@ -34,7 +34,7 @@ const FormContainer = styled(Column).attrs({
   align: 'end',
   justify: 'space-between',
 })`
-  ${({ isNft }) => padding(22, isNft ? 0 : 15, isNft ? 0 : 15)};
+  ${({ isNft }) => (isNft ? padding(22, 0, 0) : padding(19, 15))};
   background-color: ${colors.lighterGrey};
   flex: 1;
   width: 100%;
