@@ -7,11 +7,12 @@ import {
   LayoutProvider,
   RecyclerListView,
 } from 'recyclerlistview';
-import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
+import styled from 'styled-components/primitives';
 import { buildCoinsList } from '../../helpers/assets';
 import networkTypes from '../../helpers/networkTypes';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
+import { CoinDividerOpenButton } from '../coin-divider';
 import {
   CollectiblesSendRow,
   SendCoinRow,
@@ -19,7 +20,6 @@ import {
 } from '../coin-row';
 import SavingsListHeader from '../savings/SavingsListHeader';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
-import SendAssetListSmallBalancesHeader from './SendAssetListSmallBalancesHeader';
 import { colors } from '@rainbow-me/styles';
 
 const dividerHeight = 18;
@@ -33,6 +33,12 @@ const Divider = styled.View`
   height: 2px;
   margin: 10px 19px;
   width: 100%;
+`;
+
+const SendAssetListCoinDividerOpenButton = styled(CoinDividerOpenButton).attrs({
+  coinDividerHeight: 30,
+})`
+  margin-left: 16;
 `;
 
 class SendAssetList extends React.Component {
@@ -250,19 +256,17 @@ class SendAssetList extends React.Component {
   };
 
   changeOpenSavings = () => {
-    const { openSavings } = this.state;
     LayoutAnimation.configureNext(
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
     );
-    const newOpenSavings = !openSavings;
-    this.setState({ openSavings: newOpenSavings });
+    this.setState(prevState => ({ openSavings: !prevState.openSavings }));
   };
 
   changeOpenShitcoins = () => {
     LayoutAnimation.configureNext(
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
     );
-    this.setState(prev => ({ openShitcoins: !prev.openShitcoins }));
+    this.setState(prevState => ({ openShitcoins: !prevState.openShitcoins }));
   };
 
   mapTokens = collectibles =>
@@ -331,29 +335,34 @@ class SendAssetList extends React.Component {
     );
   };
 
-  savingsRenderItem = item => (
-    <View marginTop={10}>
-      <SavingsListHeader
-        isOpen={this.state.openSavings}
-        onPress={() => {
-          this.changeOpenSavings();
-        }}
-      />
-      {this.state.openSavings && this.mapSavings(item.data)}
-      <Divider />
-    </View>
-  );
+  savingsRenderItem = item => {
+    const { openSavings } = this.state;
+    return (
+      <View marginTop={10}>
+        <SavingsListHeader
+          isOpen={openSavings}
+          onPress={this.changeOpenSavings}
+        />
+        {openSavings && this.mapSavings(item.data)}
+        <Divider />
+      </View>
+    );
+  };
 
-  shitcoinsRenderItem = item => (
-    <View marginTop={10}>
-      <SendAssetListSmallBalancesHeader
-        onPress={this.changeOpenShitcoins}
-        openShitcoins={this.state.openShitcoins}
-      />
-      {this.state.openShitcoins && this.mapShitcoins(item.assets)}
-      {this.props.savings && this.props.savings.length > 0 ? null : <Divider />}
-    </View>
-  );
+  shitcoinsRenderItem = item => {
+    const { savings } = this.props;
+    const { openShitcoins } = this.state;
+    return (
+      <View marginTop={10}>
+        <SendAssetListCoinDividerOpenButton
+          isSmallBalancesOpen={openShitcoins}
+          onPress={this.changeOpenShitcoins}
+        />
+        {openShitcoins && this.mapShitcoins(item.assets)}
+        {savings && savings.length > 0 ? null : <Divider />}
+      </View>
+    );
+  };
 
   renderRow = (type, data) => {
     if (type === 'COIN_ROW') {
@@ -373,12 +382,14 @@ class SendAssetList extends React.Component {
   };
 
   render() {
+    const { dataProvider, openShitcoins } = this.state;
+
     return (
       <FlyInAnimation>
         <RecyclerListView
-          dataProvider={this.state.dataProvider}
+          dataProvider={dataProvider}
           disableRecycling
-          extendedState={this.state.openShitcoins}
+          extendedState={{ openShitcoins }}
           layoutProvider={this._layoutProvider}
           onScroll={event => {
             this.componentHeight = event.nativeEvent.layoutMeasurement.height;
