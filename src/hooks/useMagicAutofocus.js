@@ -9,7 +9,7 @@ const { currentlyFocusedField, focusTextInput } = TextInput.State;
 
 export default function useMagicAutofocus(
   defaultAutofocusInputRef,
-  findNextInput
+  customTriggerFocusCallback
 ) {
   const isScreenFocused = useIsFocused();
   const lastFocusedInputHandle = useRef(null);
@@ -19,21 +19,19 @@ export default function useMagicAutofocus(
   }, []);
 
   const triggerFocus = useCallback(() => {
-    const defaultHandle = findNodeHandle(defaultAutofocusInputRef.current);
-
     if (!lastFocusedInputHandle.current) {
-      return focusTextInput(defaultHandle);
+      return focusTextInput(findNodeHandle(defaultAutofocusInputRef.current));
     }
 
-    if (findNextInput) {
-      const nextInput = findNextInput(lastFocusedInputHandle);
-      return focusTextInput(nextInput || defaultHandle);
+    if (customTriggerFocusCallback) {
+      const nextInput = customTriggerFocusCallback(lastFocusedInputHandle);
+      return nextInput && focusTextInput(nextInput);
     }
 
     if (lastFocusedInputHandle.current !== currentlyFocusedField()) {
       return focusTextInput(lastFocusedInputHandle.current);
     }
-  }, [findNextInput, defaultAutofocusInputRef]);
+  }, [customTriggerFocusCallback, defaultAutofocusInputRef]);
 
   const [createRefocusInteraction] = useInteraction();
   const fallbackRefocusLastInput = useCallback(() => {
