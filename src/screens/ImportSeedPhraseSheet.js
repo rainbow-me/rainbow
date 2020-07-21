@@ -10,6 +10,7 @@ import React, {
 import { Alert, InteractionManager, Platform, StatusBar } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import styled from 'styled-components/primitives';
+import ActivityIndicator from '../components/ActivityIndicator';
 import { MiniButton } from '../components/buttons';
 import { Input } from '../components/inputs';
 import { Centered, Column, Row } from '../components/layout';
@@ -57,6 +58,14 @@ const Footer = styled(Row).attrs({
   right: 0;
   top: ${({ isSmallPhone }) => (isSmallPhone ? sheetBottomPadding * 2 : 0)};
   width: 100%;
+`;
+
+const Spinner = styled(ActivityIndicator).attrs({
+  color: 'white',
+  size: 15,
+})`
+  margin-right: 5px;
+  margin-top: 2px;
 `;
 
 const FooterButton = styled(MiniButton).attrs({
@@ -115,6 +124,7 @@ export default function ImportSeedPhraseSheet() {
   const [seedPhrase, setSeedPhrase] = useState('');
   const [color, setColor] = useState(null);
   const [name, setName] = useState(null);
+  const [busy, setBusy] = useState(false);
   const [resolvedAddress, setResolvedAddress] = useState(null);
   const [startAnalyticsTimeout] = useTimeout();
   const wasImporting = usePrevious(isImporting);
@@ -146,6 +156,26 @@ export default function ImportSeedPhraseSheet() {
     [isImporting]
   );
 
+  const showWalletProfileModal = useCallback(
+    name => {
+      navigate(Routes.MODAL_SCREEN, {
+        actionType: 'Import',
+        additionalPadding: true,
+        asset: [],
+        isNewProfile: true,
+        onCloseModal: ({ color, name }) => {
+          if (color !== null) setColor(color);
+          if (name) setName(name);
+          handleSetImporting(true);
+        },
+        profile: { name },
+        type: 'wallet_profile',
+        withoutStatusBar: true,
+      });
+    },
+    [handleSetImporting, navigate]
+  );
+
   const handlePressImportButton = useCallback(async () => {
     if (!isSecretValid || !seedPhrase) return null;
     const input = seedPhrase.trim();
@@ -160,6 +190,7 @@ export default function ImportSeedPhraseSheet() {
         }
         setResolvedAddress(address);
         name = input;
+        showWalletProfileModal(name);
       } catch (e) {
         Alert.alert(
           'Sorry, we cannot add this ENS name at this time. Please try again later!'
@@ -172,33 +203,25 @@ export default function ImportSeedPhraseSheet() {
       if (ens && ens !== input) {
         name = ens;
       }
+      showWalletProfileModal(name);
     } else {
       try {
-        const { wallet } = getWallet(input);
-        const ens = await web3Provider.lookupAddress(wallet?.address);
-        if (ens && ens !== input) {
-          name = ens;
-        }
+        setBusy(true);
+        setTimeout(async () => {
+          const { wallet } = getWallet(input);
+          const ens = await web3Provider.lookupAddress(wallet?.address);
+          if (ens && ens !== input) {
+            name = ens;
+          }
+          setBusy(false);
+          showWalletProfileModal(name);
+        }, 100);
       } catch (error) {
         logger.log('Error looking up ENS for imported HD type wallet', error);
+        setBusy(false);
       }
     }
-
-    navigate(Routes.MODAL_SCREEN, {
-      actionType: 'Import',
-      additionalPadding: true,
-      asset: [],
-      isNewProfile: true,
-      onCloseModal: ({ color, name }) => {
-        if (color !== null) setColor(color);
-        if (name) setName(name);
-        handleSetImporting(true);
-      },
-      profile: { name },
-      type: 'wallet_profile',
-      withoutStatusBar: true,
-    });
-  }, [handleSetImporting, isSecretValid, navigate, seedPhrase]);
+  }, [isSecretValid, seedPhrase, showWalletProfileModal]);
 
   const handlePressPasteButton = useCallback(() => {
     if (clipboard && isClipboardValidSecret) {
@@ -285,7 +308,18 @@ export default function ImportSeedPhraseSheet() {
               disabled={!isSecretValid}
               onPress={handlePressImportButton}
             >
-              􀂍 Import
+              <Row>
+                {busy ? (
+                  <Spinner />
+                ) : (
+                  <Text color="white" weight="semibold">
+                    􀂍{' '}
+                  </Text>
+                )}
+                <Text color="white" weight="semibold">
+                  Import
+                </Text>
+              </Row>
             </FooterButton>
           ) : (
             <FooterButton
