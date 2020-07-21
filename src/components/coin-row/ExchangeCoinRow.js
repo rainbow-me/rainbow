@@ -1,9 +1,5 @@
-import { get } from 'lodash';
 import React, { useCallback, useState } from 'react';
-import { InteractionManager } from 'react-native';
 import styled, { css } from 'styled-components/primitives';
-import { useDimensions } from '../../hooks';
-import { haptics, neverRerender } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FloatingEmojis } from '../floating-emojis';
@@ -13,7 +9,9 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import CoinRowFavoriteButton from './CoinRowFavoriteButton';
+import { useDimensions } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
+import { haptics, neverRerender } from '@rainbow-me/utils';
 
 const CoinRowPaddingTop = 11;
 const CoinRowPaddingBottom = 11;
@@ -54,7 +52,6 @@ const ExchangeCoinRow = ({
   onPress,
   showBalance,
   showFavoriteButton,
-  ...props
 }) => {
   const { width: deviceWidth } = useDimensions();
   const [localFavorite, setLocalFavorite] = useState(!!item.favorite);
@@ -63,7 +60,6 @@ const ExchangeCoinRow = ({
 
   return (
     <ButtonPressAnimation
-      {...props}
       height={CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom}
       onPress={handlePress}
       scaleTo={0.96}
@@ -84,10 +80,8 @@ const ExchangeCoinRow = ({
       >
         {showBalance && (
           <ColumnWithMargins align="end" margin={4}>
-            <BalanceText>
-              {get(item, 'native.balance.display', '–')}
-            </BalanceText>
-            <BottomRowText>{get(item, 'balance.display', '')}</BottomRowText>
+            <BalanceText>{item?.native?.balance?.display || '–'}</BalanceText>
+            <BottomRowText>{item?.balance?.display || ''}</BottomRowText>
           </ColumnWithMargins>
         )}
         {showFavoriteButton && (
@@ -96,15 +90,17 @@ const ExchangeCoinRow = ({
               <CoinRowFavoriteButton
                 isFavorited={localFavorite}
                 onPress={() => {
-                  const newLocalFavorite = !localFavorite;
-                  if (newLocalFavorite) {
-                    haptics.impactMedium();
-                    InteractionManager.runAfterInteractions(() => {
+                  setLocalFavorite(prevLocalFavorite => {
+                    const newLocalFavorite = !prevLocalFavorite;
+                    if (newLocalFavorite) {
+                      haptics.notificationSuccess();
                       onNewEmoji();
-                    });
-                  }
-                  setLocalFavorite(newLocalFavorite);
-                  onFavoriteAsset(item.address, newLocalFavorite);
+                    } else {
+                      haptics.selection();
+                    }
+                    onFavoriteAsset(item, newLocalFavorite);
+                    return newLocalFavorite;
+                  });
                 }}
               />
             )}
