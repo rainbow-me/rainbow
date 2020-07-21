@@ -11,6 +11,7 @@ import styled from 'styled-components/primitives';
 import { buildCoinsList } from '../../helpers/assets';
 import networkTypes from '../../helpers/networkTypes';
 import { deviceUtils } from '../../utils';
+import Divider, { DividerSize } from '../Divider';
 import { FlyInAnimation } from '../animations';
 import { CoinDividerOpenButton } from '../coin-divider';
 import {
@@ -18,22 +19,17 @@ import {
   SendCoinRow,
   SendSavingsCoinRow,
 } from '../coin-row';
+import { Centered } from '../layout';
 import SavingsListHeader from '../savings/SavingsListHeader';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { colors } from '@rainbow-me/styles';
 
-const dividerHeight = 18;
+const dividerMargin = 10;
+const dividerHeight = DividerSize + dividerMargin * 2;
 const familyRowHeight = 58;
 const familyHeaderHeight = 62;
 const rowHeight = 64;
 const smallBalancesHeader = 36;
-
-const Divider = styled.View`
-  background-color: ${colors.lighterGrey};
-  height: 2px;
-  margin: 10px 19px;
-  width: 100%;
-`;
 
 const SendAssetListCoinDividerOpenButton = styled(CoinDividerOpenButton).attrs({
   coinDividerHeight: 30,
@@ -41,7 +37,17 @@ const SendAssetListCoinDividerOpenButton = styled(CoinDividerOpenButton).attrs({
   margin-left: 16;
 `;
 
-class SendAssetList extends React.Component {
+const SendAssetRecyclerListView = styled(RecyclerListView)`
+  min-height: 1;
+`;
+
+const SendAssetListDivider = () => (
+  <Centered marginVertical={dividerMargin}>
+    <Divider color={colors.lighterGrey} />
+  </Centered>
+);
+
+export default class SendAssetList extends React.Component {
   constructor(props) {
     super(props);
 
@@ -191,8 +197,24 @@ class SendAssetList extends React.Component {
 
   rlv = React.createRef();
 
+  handleRef = ref => {
+    this.rlv = ref;
+  };
+
+  handleScroll = ({ nativeEvent }) => {
+    this.componentHeight = nativeEvent?.layoutMeasurement?.height;
+    this.position = nativeEvent?.contentOffset?.y;
+  };
+
   changeOpenTab = index => {
-    const { openCards } = this.state;
+    const { allAssets, savings, uniqueTokens } = this.props;
+    const {
+      openCards,
+      openSavings,
+      openShitcoins,
+      visibleAssetsLength,
+    } = this.state;
+
     LayoutAnimation.configureNext(
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
     );
@@ -203,34 +225,30 @@ class SendAssetList extends React.Component {
       for (let i = 0; i < index; i++) {
         if (openCards[i]) {
           familiesHeight +=
-            familyHeaderHeight +
-            this.props.uniqueTokens[i].data.length * familyRowHeight;
+            familyHeaderHeight + uniqueTokens[i].data.length * familyRowHeight;
         } else {
           familiesHeight += familyHeaderHeight;
         }
       }
       const smallBalanesheight =
-        this.props.allAssets.length === this.state.visibleAssetsLength
+        allAssets.length === visibleAssetsLength
           ? 0
           : smallBalancesHeader +
-            (this.state.openShitcoins
-              ? (this.props.allAssets.length - this.state.visibleAssetsLength) *
-                rowHeight
+            (openShitcoins
+              ? (allAssets.length - visibleAssetsLength) * rowHeight
               : 0);
       const savingsHeight =
-        this.props.savings?.length > 0
-          ? familyHeaderHeight +
-            (this.state.openSavings ? this.props.savings.length * rowHeight : 0)
+        savings?.length > 0
+          ? familyHeaderHeight + (openSavings ? savings.length * rowHeight : 0)
           : 0;
       const heightBelow =
-        this.state.visibleAssetsLength * rowHeight +
+        visibleAssetsLength * rowHeight +
         smallBalanesheight +
         savingsHeight +
         familiesHeight +
         dividerHeight;
       const renderSize =
-        familyHeaderHeight +
-        this.props.uniqueTokens[index].data.length * familyRowHeight;
+        familyHeaderHeight + uniqueTokens[index].data.length * familyRowHeight;
       const screenHeight = this.position + this.componentHeight;
       if (heightBelow + renderSize + 64 > screenHeight) {
         if (renderSize < this.componentHeight) {
@@ -313,7 +331,7 @@ class SendAssetList extends React.Component {
         onPress={() => this.props.onSelectAsset(item)}
         rowHeight={rowHeight}
       />
-      <Divider />
+      <SendAssetListDivider />
     </Fragment>
   );
 
@@ -338,13 +356,13 @@ class SendAssetList extends React.Component {
   savingsRenderItem = item => {
     const { openSavings } = this.state;
     return (
-      <View marginTop={10}>
+      <View marginTop={dividerMargin}>
         <SavingsListHeader
           isOpen={openSavings}
           onPress={this.changeOpenSavings}
         />
         {openSavings && this.mapSavings(item.data)}
-        <Divider />
+        <SendAssetListDivider />
       </View>
     );
   };
@@ -353,13 +371,13 @@ class SendAssetList extends React.Component {
     const { savings } = this.props;
     const { openShitcoins } = this.state;
     return (
-      <View marginTop={10}>
+      <View marginTop={dividerMargin}>
         <SendAssetListCoinDividerOpenButton
           isSmallBalancesOpen={openShitcoins}
           onPress={this.changeOpenShitcoins}
         />
         {openShitcoins && this.mapShitcoins(item.assets)}
-        {savings && savings.length > 0 ? null : <Divider />}
+        {savings && savings.length > 0 ? null : <SendAssetListDivider />}
       </View>
     );
   };
@@ -386,24 +404,16 @@ class SendAssetList extends React.Component {
 
     return (
       <FlyInAnimation>
-        <RecyclerListView
+        <SendAssetRecyclerListView
           dataProvider={dataProvider}
           disableRecycling
           extendedState={{ openShitcoins }}
           layoutProvider={this._layoutProvider}
-          onScroll={event => {
-            this.componentHeight = event.nativeEvent.layoutMeasurement.height;
-            this.position = event.nativeEvent.contentOffset.y;
-          }}
-          ref={ref => {
-            this.rlv = ref;
-          }}
+          onScroll={this.handleScroll}
+          ref={this.handleRef}
           rowRenderer={this.renderRow}
-          style={{ minHeight: 1 }}
         />
       </FlyInAnimation>
     );
   }
 }
-
-export default SendAssetList;

@@ -26,10 +26,6 @@ const Container = styled(Column)`
   overflow: hidden;
 `;
 
-const KeyboardSizeView = styled(KeyboardArea)`
-  background-color: ${colors.lighterGrey};
-`;
-
 const FormContainer = styled(Column).attrs({
   align: 'end',
   justify: 'space-between',
@@ -38,6 +34,10 @@ const FormContainer = styled(Column).attrs({
   background-color: ${colors.lighterGrey};
   flex: 1;
   width: 100%;
+`;
+
+const KeyboardSizeView = styled(KeyboardArea)`
+  background-color: ${colors.lighterGrey};
 `;
 
 export default function SendAssetForm({
