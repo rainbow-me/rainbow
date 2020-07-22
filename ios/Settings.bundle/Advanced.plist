@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Title</key>
+	<string>Advanced</string>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>🚨🚨🚨 WARNING: YOU SHOULD ONLY USE THIS OPTION IF INSTRUCTED BY CUSTOMER SUPPORT 🚨🚨🚨</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Reset App Data</string>
+			<key>Key</key>
+			<string>RESET_APP_DATA</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>		
+	</array>
+</dict>
+</plist>

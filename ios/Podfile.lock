@@ -394,7 +394,7 @@ PODS:
     - React
   - react-native-version-number (0.3.6):
     - React
-  - react-native-viewpager (3.3.0):
+  - react-native-viewpager (4.1.0):
     - React
   - React-RCTActionSheet (0.62.2):
     - React-Core/RCTActionSheetHeaders (= 0.62.2)
@@ -920,7 +920,7 @@ SPEC CHECKSUMS:
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
-  react-native-viewpager: a7b438ca32c57b2614ece2a123e7fe116f743131
+  react-native-viewpager: 6f8c102e8081d70259252b254143b4193a9fb4cb
   React-RCTActionSheet: f41ea8a811aac770e0cc6e0ad6b270c644ea8b7c
   React-RCTAnimation: 49ab98b1c1ff4445148b72a3d61554138565bad0
   React-RCTBlob: a332773f0ebc413a0ce85942a55b064471587a71
