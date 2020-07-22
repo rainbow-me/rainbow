@@ -2,7 +2,7 @@ import { interpolatePath } from 'd3-interpolate-path';
 import * as shape from 'd3-shape';
 import { maxBy, minBy } from 'lodash';
 import React, { Component } from 'react';
-import { Animated, View } from 'react-native';
+import { Animated, Easing, View } from 'react-native';
 import { parsePath } from 'react-native-redash';
 import Svg, { Path } from 'react-native-svg';
 import { deviceUtils } from '../../utils';
@@ -10,7 +10,7 @@ import { deviceUtils } from '../../utils';
 const padding = 0;
 const additionalChartPadding = 999999;
 const width = deviceUtils.dimensions.width;
-const chartAnimationDuration = 200;
+const chartAnimationDuration = 300;
 
 export default class AnimatedChart extends Component {
   state = {
@@ -111,6 +111,7 @@ export default class AnimatedChart extends Component {
   handleAnimation = () => {
     Animated.timing(this.state.animation, {
       duration: chartAnimationDuration,
+      easing: Easing.bezier(0.22, 1, 0.36, 1),
       toValue: this.animatedIsDone ? 0 : 1,
     }).start();
     this.animatedIsDone = !this.animatedIsDone;
@@ -130,7 +131,7 @@ export default class AnimatedChart extends Component {
             d={this.state.currentChart}
             ref={path => (this._path = path)}
             stroke={this.props.color}
-            strokeWidth={3}
+            strokeWidth={3.25}
           />
         </Svg>
       </View>
