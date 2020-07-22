@@ -11,6 +11,8 @@
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		1539422824C7C7E200E4A9D1 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1539422724C7C7E100E4A9D1 /* Settings.bundle */; };
+		1539422D24C7CF9300E4A9D1 /* SettingsBundleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1539422C24C7CF9300E4A9D1 /* SettingsBundleHelper.swift */; };
 		153D1AAC24777130007E4723 /* TransactionListLoadingViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153D1AAB24777130007E4723 /* TransactionListLoadingViewCell.swift */; };
 		153D1AAE24777214007E4723 /* TransactionListLoadingViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 153D1AAD24777214007E4723 /* TransactionListLoadingViewCell.xib */; };
 		15DC38D9247E494400919009 /* RainbowDebug.entitlements in Sources */ = {isa = PBXBuildFile; fileRef = 157155042418734C009B698B /* RainbowDebug.entitlements */; };
@@ -75,6 +77,8 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Rainbow/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Rainbow/main.m; sourceTree = "<group>"; };
 		13E5CE549E13349A65C71B53 /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1539422724C7C7E100E4A9D1 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		1539422C24C7CF9300E4A9D1 /* SettingsBundleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBundleHelper.swift; sourceTree = "<group>"; };
 		153D1AAB24777130007E4723 /* TransactionListLoadingViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListLoadingViewCell.swift; sourceTree = "<group>"; };
 		153D1AAD24777214007E4723 /* TransactionListLoadingViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionListLoadingViewCell.xib; sourceTree = "<group>"; };
 		157155032418733F009B698B /* RainbowRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowRelease.entitlements; path = Rainbow/RainbowRelease.entitlements; sourceTree = "<group>"; };
@@ -187,6 +191,7 @@
 		13B07FAE1A68108700A75B9A /* Rainbow */ = {
 			isa = PBXGroup;
 			children = (
+				1539422B24C7CF7B00E4A9D1 /* Settings */,
 				66A1FEAE24AB63D600C3F539 /* RNCoolModals */,
 				15E531D7242DAB3500797B89 /* NSNotifications */,
 				15E531D6242B28F800797B89 /* Animations */,
@@ -207,8 +212,17 @@
 				A4277D9E23CBD1910042BAF4 /* Extensions.swift */,
 				A4277DA223CFE85F0042BAF4 /* Theme.swift */,
 				6635730524939991006ACFA6 /* SafeStoreReview.m */,
+				1539422724C7C7E100E4A9D1 /* Settings.bundle */,
 			);
 			name = Rainbow;
+			sourceTree = "<group>";
+		};
+		1539422B24C7CF7B00E4A9D1 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				1539422C24C7CF9300E4A9D1 /* SettingsBundleHelper.swift */,
+			);
+			name = Settings;
 			sourceTree = "<group>";
 		};
 		15DC38CC247E0DCC00919009 /* Config */ = {
@@ -485,6 +499,7 @@
 				A4AF3CCE23DA37F700F230F3 /* TransactionListRequestViewCell.xib in Resources */,
 				A485E61623C8F4A400E5C3D4 /* TransactionListViewHeader.xib in Resources */,
 				A4704B4D23C546DA00E50E4B /* TransactionListViewCell.xib in Resources */,
+				1539422824C7C7E200E4A9D1 /* Settings.bundle in Resources */,
 				7287CE1EC33B4913AEE1F4B6 /* SFMono-Medium.otf in Resources */,
 				B7A3E82A4C4449F4A18EB5C2 /* SFMono-Regular.otf in Resources */,
 				AA6228EF24272F510078BDAA /* SF-Pro-Rounded-Bold.otf in Resources */,
@@ -577,6 +592,7 @@
 				15E531D5242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift in Sources */,
 				A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */,
 				A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */,
+				1539422D24C7CF9300E4A9D1 /* SettingsBundleHelper.swift in Sources */,
 				66A1FEB624AB641100C3F539 /* RNCMScreen.m in Sources */,
 				A49B52B823DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift in Sources */,
 				A44A4EEE23EC928900B543F1 /* CoinIconWithProgressBar.swift in Sources */,
