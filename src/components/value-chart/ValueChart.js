@@ -286,10 +286,10 @@ export default class Chart extends PureComponent {
 
   componentDidMount = () => {
     this.reloadChart(0, true);
-    this.props.chartDateRef.current.setNativeProps({
+    this.props.chartDateRef?.current?.setNativeProps({
       text: 'Today',
     });
-    this.props.chartPriceRef.current.setNativeProps({
+    this.props.chartPriceRef?.current?.setNativeProps({
       text: convertAmountToNativeDisplay(
         this.props.currentValue,
         this.props.nativeCurrency
@@ -482,10 +482,10 @@ export default class Chart extends PureComponent {
                   // This is the value displayed in <ValueText />
                   const points = currentData?.points;
                   if (points) {
-                    this.props.chartDateRef.current.setNativeProps({
+                    this.props.chartDateRef?.current?.setNativeProps({
                       text: 'Today',
                     });
-                    this.props.chartPriceRef.current.setNativeProps({
+                    this.props.chartPriceRef?.current?.setNativeProps({
                       text: convertAmountToNativeDisplay(
                         points[points.length - 1].y,
                         nativeCurrency
@@ -519,10 +519,10 @@ export default class Chart extends PureComponent {
                         } else if (result < min) {
                           result = min;
                         }
-                        this.props.chartDateRef.current.setNativeProps({
+                        this.props.chartDateRef?.current?.setNativeProps({
                           text: formatDate(date * 1000),
                         });
-                        this.props.chartPriceRef.current.setNativeProps({
+                        this.props.chartPriceRef?.current?.setNativeProps({
                           text: convertAmountToNativeDisplay(
                             result,
                             nativeCurrency

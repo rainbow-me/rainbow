@@ -52,7 +52,7 @@ export default function useCharts(asset) {
     if (!chart && !!exchangeAddress) {
       fetchFallbackCharts();
     }
-  }, [asset, chart, exchangeAddress, fetchFallbackCharts]);
+  }, [chart, exchangeAddress, fetchFallbackCharts]);
 
   const updateChartType = useCallback(
     type => dispatch(chartsUpdateChartType(type)),
