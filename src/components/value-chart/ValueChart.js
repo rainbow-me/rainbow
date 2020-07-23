@@ -290,9 +290,10 @@ export default class Chart extends PureComponent {
       text: 'Today',
     });
     this.props.chartPriceRef.current.setNativeProps({
-      text: `${this.props.nativeCurrency}${this.props.currentValue
-        .toFixed(5)
-        .toString()}`,
+      text: convertAmountToNativeDisplay(
+        this.props.currentValue,
+        this.props.nativeCurrency
+      ),
     });
   };
 
