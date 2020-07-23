@@ -142,11 +142,6 @@ function MainNavigator() {
         name={Routes.CONFIRM_REQUEST}
         options={sheetPreset}
       />
-      <Stack.Screen
-        component={ExchangeModalNavigator}
-        name={Routes.EXCHANGE_MODAL}
-        options={exchangePreset}
-      />
     </Stack.Navigator>
   );
 }
@@ -209,6 +204,11 @@ function NativeStackFallbackNavigator() {
         name={Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN}
         options={overlayExpandedPreset}
       />
+      <Stack.Screen
+        component={ExchangeModalNavigator}
+        name={Routes.EXCHANGE_MODAL}
+        options={exchangePreset}
+      />
     </Stack.Navigator>
   );
 }
@@ -234,6 +234,11 @@ function NativeStackNavigator() {
         component={SettingsModal}
         name={Routes.SETTINGS_MODAL}
         {...sharedCoolModalConfig}
+      />
+      <NativeStack.Screen
+        component={ExchangeModalNavigator}
+        name={Routes.EXCHANGE_MODAL}
+        options={nativeStackDefaultConfig}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}
