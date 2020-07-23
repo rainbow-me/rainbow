@@ -75,11 +75,7 @@ export const assetChartsReceived = message => (dispatch, getState) => {
     ...existingCharts,
     ...newChartData,
   };
-
-  if (chartType === DEFAULT_CHART_TYPE) {
-    saveAccountCharts(updatedCharts, accountAddress, network);
-  }
-
+  saveAccountCharts(updatedCharts, accountAddress, network);
   dispatch({
     payload: updatedCharts,
     type: CHARTS_UPDATE,
@@ -99,10 +95,7 @@ export const assetChartsFallbackReceived = (address, chartType, chartData) => (
       [chartType]: chartData,
     },
   };
-
-  if (chartType === DEFAULT_CHART_TYPE) {
-    saveAccountFallbackCharts(updatedCharts, accountAddress, network);
-  }
+  saveAccountFallbackCharts(updatedCharts, accountAddress, network);
   dispatch({
     payload: updatedCharts,
     type: CHARTS_FALLBACK_UPDATE,
