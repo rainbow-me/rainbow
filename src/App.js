@@ -10,7 +10,6 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   AppState,
-  Platform,
   StatusBar,
   unstable_enableLogBox,
 } from 'react-native';
@@ -146,7 +145,7 @@ class App extends Component {
     const address = await loadAddress();
     if (address) {
       this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
-      Platform.OS === 'ios' && this.setupIncomingNotificationListeners();
+      this.setupIncomingNotificationListeners();
     } else {
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
     }
@@ -169,7 +168,7 @@ class App extends Component {
 
   setupIncomingNotificationListeners = async () => {
     // Previously existing users should see the backup sheet right after app launch
-    // Uncomment the line below to get in the existing user state(before icloud)
+    // Uncomment the line below to get in the existing user state (before cloud)
     const backupState = await getUserBackupState();
     if (backupState === BackupStateTypes.immediate) {
       setTimeout(() => {
