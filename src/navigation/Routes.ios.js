@@ -29,6 +29,7 @@ import {
   expandedAssetSheetConfig,
   nativeStackConfig,
   nativeStackDefaultConfig,
+  nativeStackDefaultConfigWithoutStatusBar,
   savingsSheetConfig,
   sharedCoolModalConfig,
   stackNavigationConfig,
@@ -274,12 +275,12 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={WithdrawModal}
         name={Routes.SAVINGS_WITHDRAW_MODAL}
-        options={nativeStackDefaultConfig}
+        options={nativeStackDefaultConfigWithoutStatusBar}
       />
       <NativeStack.Screen
         component={DepositModal}
         name={Routes.SAVINGS_DEPOSIT_MODAL}
-        options={nativeStackDefaultConfig}
+        options={nativeStackDefaultConfigWithoutStatusBar}
       />
       {isNativeStackAvailable && (
         <>

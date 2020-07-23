@@ -91,6 +91,13 @@ export const nativeStackDefaultConfig = {
   transitionDuration: 0.3,
 };
 
+export const nativeStackDefaultConfigWithoutStatusBar = {
+  ...nativeStackDefaultConfig,
+  onWillDismiss: () => {
+    onWillPop();
+  },
+};
+
 export const exchangeTabNavigatorConfig = {
   initialLayout: deviceUtils.dimensions,
   sceneContainerStyle: {
