@@ -70,6 +70,7 @@ export default function ExchangeModal({
 
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
+  const category = isDeposit || isWithdrawal ? 'savings' : 'swap';
 
   const defaultGasLimit = isDeposit
     ? ethUnits.basic_deposit
@@ -114,6 +115,7 @@ export default function ExchangeModal({
     outputCurrency,
     previousInputCurrency,
   } = useUniswapCurrencies({
+    category,
     defaultInputAsset,
     inputHeaderTitle,
     isDeposit,
@@ -304,21 +306,45 @@ export default function ExchangeModal({
     updateOutputAmount,
   ]);
 
+  const isSlippageWarningVisible =
+    isSufficientBalance && !!inputAmount && !!outputAmount;
+  const prevIsSlippageWarningVisible = usePrevious(isSlippageWarningVisible);
+  useEffect(() => {
+    if (isSlippageWarningVisible && !prevIsSlippageWarningVisible) {
+      analytics.track('Showing high slippage warning in Swap', {
+        category,
+        exchangeAddress: outputCurrency.exchangeAddress,
+        name: outputCurrency.name,
+        slippage,
+        symbol: outputCurrency.symbol,
+        tokenAddress: outputCurrency.address,
+        type,
+      });
+    }
+  }, [
+    category,
+    isSlippageWarningVisible,
+    outputCurrency,
+    prevIsSlippageWarningVisible,
+    slippage,
+    type,
+  ]);
+
   const handlePressMaxBalance = useCallback(async () => {
     let maxBalance = maxInputBalance;
     if (isWithdrawal) {
       maxBalance = supplyBalanceUnderlying;
     }
     analytics.track('Selected max balance', {
-      category: isDeposit || isWithdrawal ? 'savings' : 'swap',
+      category,
       defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
       type,
       value: Number(maxBalance.toString()),
     });
     return updateInputAmount(maxBalance, maxBalance, true, true);
   }, [
+    category,
     defaultInputAsset,
-    isDeposit,
     isWithdrawal,
     maxInputBalance,
     supplyBalanceUnderlying,
@@ -329,8 +355,14 @@ export default function ExchangeModal({
   const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {
       analytics.track(`Submitted ${type}`, {
-        category: isDeposit || isWithdrawal ? 'savings' : 'swap',
+        category,
         defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
+        exchangeAddress: outputCurrency.exchangeAddress,
+        isSlippageWarningVisible,
+        name: outputCurrency.name,
+        slippage,
+        symbol: outputCurrency.symbol,
+        tokenAddress: outputCurrency.address,
         type,
       });
 
@@ -362,7 +394,7 @@ export default function ExchangeModal({
         }
         logger.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
-          category: isDeposit || isWithdrawal ? 'savings' : 'swap',
+          category,
           defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
           type,
         });
@@ -374,8 +406,9 @@ export default function ExchangeModal({
       }
     });
   }, [
-    cTokenBalance,
+    category,
     createRap,
+    cTokenBalance,
     defaultInputAsset,
     dispatch,
     inputAmount,
@@ -384,12 +417,14 @@ export default function ExchangeModal({
     inputReserve,
     isDeposit,
     isMax,
+    isSlippageWarningVisible,
     isWithdrawal,
     navigate,
     outputAmount,
     outputCurrency,
     outputReserve,
     setParams,
+    slippage,
     type,
   ]);
 
@@ -405,7 +440,16 @@ export default function ExchangeModal({
       restoreFocusOnSwapModal: () => setParams({ focused: true }),
       type: 'swap_details',
     });
+    analytics.track('Opened Swap Details modal', {
+      category,
+      exchangeAddress: outputCurrency.exchangeAddress,
+      name: outputCurrency.name,
+      symbol: outputCurrency.symbol,
+      tokenAddress: outputCurrency.address,
+      type,
+    });
   }, [
+    category,
     extraTradeDetails,
     inputCurrency,
     inputFieldRef,
@@ -414,10 +458,8 @@ export default function ExchangeModal({
     outputCurrency,
     outputFieldRef,
     setParams,
+    type,
   ]);
-
-  const isSlippageWarningVisible =
-    isSufficientBalance && !!inputAmount && !!outputAmount;
 
   const showDetailsButton = useMemo(() => {
     return (

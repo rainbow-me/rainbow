@@ -1,4 +1,5 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
+import analytics from '@segment/analytics-react-native';
 import { concat, map } from 'lodash';
 import matchSorter from 'match-sorter';
 import React, {
@@ -46,6 +47,7 @@ export default function CurrencySelectModal() {
   const { navigate } = useNavigation();
   const {
     params: {
+      category,
       onSelectCurrency,
       restoreFocusOnSwapModal,
       tabTransitionPosition,
@@ -146,20 +148,39 @@ export default function CurrencySelectModal() {
   }, [searchQuery, startQueryDebounce, stopQueryDebounce]);
 
   const handleFavoriteAsset = useCallback(
-    (asset, isFavorited) =>
+    (asset, isFavorited) => {
       setAssetsToFavoriteQueue(prevFavoriteQueue => ({
         ...prevFavoriteQueue,
         [asset.address]: isFavorited,
-      })),
-    []
+      }));
+      analytics.track('Toggled an asset as Favorited', {
+        category,
+        isFavorited,
+        name: asset.name,
+        symbol: asset.symbol,
+        tokenAddress: asset.address,
+        type,
+      });
+    },
+    [category, type]
   );
 
   const handleSelectAsset = useCallback(
     item => {
       onSelectCurrency(item);
+      if (searchQueryForSearch) {
+        analytics.track('Selected a search result in Swap', {
+          category,
+          name: item.name,
+          searchQueryForSearch,
+          symbol: item.symbol,
+          tokenAddress: item.address,
+          type,
+        });
+      }
       navigate(Routes.MAIN_EXCHANGE_SCREEN);
     },
-    [onSelectCurrency, navigate]
+    [category, onSelectCurrency, navigate, searchQueryForSearch, type]
   );
 
   const itemProps = useMemo(

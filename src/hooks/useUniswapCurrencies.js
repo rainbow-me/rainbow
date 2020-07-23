@@ -40,6 +40,7 @@ const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
 };
 
 export default function useUniswapCurrencies({
+  category,
   defaultInputAsset,
   inputHeaderTitle,
   isDeposit,
@@ -182,7 +183,7 @@ export default function useUniswapCurrencies({
       }
 
       analytics.track('Switched input asset', {
-        category: isDeposit ? 'savings' : 'swap',
+        category,
         defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
         from: get(previousInputCurrency, 'symbol', ''),
         label: get(newInputCurrency, 'symbol', ''),
@@ -190,6 +191,7 @@ export default function useUniswapCurrencies({
       });
     },
     [
+      category,
       defaultChosenInputItem,
       defaultInputAddress,
       defaultInputAsset,
@@ -240,7 +242,7 @@ export default function useUniswapCurrencies({
       }
 
       analytics.track('Switched output asset', {
-        category: isWithdrawal || isDeposit ? 'savings' : 'swap',
+        category,
         defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
         from: get(previousOutputCurrency, 'symbol', ''),
         label: get(newOutputCurrency, 'symbol', ''),
@@ -248,10 +250,9 @@ export default function useUniswapCurrencies({
       });
     },
     [
+      category,
       defaultInputAsset,
       inputCurrency,
-      isDeposit,
-      isWithdrawal,
       previousOutputCurrency,
       type,
       uniswapAssetsInWallet,
@@ -264,25 +265,27 @@ export default function useUniswapCurrencies({
     InteractionManager.runAfterInteractions(() => {
       setParams({ focused: false });
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
+        category,
         headerTitle: inputHeaderTitle,
         onSelectCurrency: updateInputCurrency,
         restoreFocusOnSwapModal: () => setParams({ focused: true }),
         type: CurrencySelectionTypes.input,
       });
     });
-  }, [inputHeaderTitle, navigate, setParams, updateInputCurrency]);
+  }, [category, inputHeaderTitle, navigate, setParams, updateInputCurrency]);
 
   const navigateToSelectOutputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
       setParams({ focused: false });
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
+        category,
         headerTitle: 'Receive',
         onSelectCurrency: updateOutputCurrency,
         restoreFocusOnSwapModal: () => setParams({ focused: true }),
         type: CurrencySelectionTypes.output,
       });
     });
-  }, [navigate, setParams, updateOutputCurrency]);
+  }, [category, navigate, setParams, updateOutputCurrency]);
 
   return {
     defaultInputAddress,
