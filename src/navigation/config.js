@@ -1,7 +1,7 @@
 import { Keyboard, Platform, StatusBar } from 'react-native';
-import { deviceUtils, safeAreaInsetValues } from '../utils';
 import { onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
+import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 export const expandedAssetSheetConfig = {
   options: ({ route: { params = {} } }) => ({
@@ -91,9 +91,8 @@ export const nativeStackDefaultConfig = {
   transitionDuration: 0.3,
 };
 
-export const exchangeTabNavigatorConfig = position => ({
+export const exchangeTabNavigatorConfig = {
   initialLayout: deviceUtils.dimensions,
-  position,
   sceneContainerStyle: {
     backgroundColor: 'transparent',
   },
@@ -110,4 +109,4 @@ export const exchangeTabNavigatorConfig = position => ({
   swipeVelocityScale: 1,
   tabBar: () => null,
   transparentCard: true,
-});
+};

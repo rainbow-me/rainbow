@@ -16,9 +16,9 @@ const TimespanItemLabel = styled(Text).attrs(({ color, isSelected }) => ({
   color: isSelected ? color : colors.grey,
   letterSpacing: 'roundedTightest',
   size: 'smedium',
-  weight: 'semibold',
+  weight: 'bold',
 }))`
-  ${padding(0, 8)};
+  ${padding(0, 9)};
 `;
 
 const TimespanItem = ({ color, isSelected, item, ...props }) => (

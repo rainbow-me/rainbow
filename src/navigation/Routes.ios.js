@@ -36,11 +36,11 @@ import {
 import {
   bottomSheetPreset,
   emojiPreset,
+  exchangePreset,
   expandedPreset,
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
-import { onTransitionStart } from './helpers';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
@@ -142,13 +142,11 @@ function MainNavigator() {
         name={Routes.CONFIRM_REQUEST}
         options={sheetPreset}
       />
-      {isNativeStackAvailable && (
-        <Stack.Screen
-          component={ModalScreen}
-          name={Routes.MODAL_SCREEN}
-          options={overlayExpandedPreset}
-        />
-      )}
+      <Stack.Screen
+        component={ExchangeModalNavigator}
+        name={Routes.EXCHANGE_MODAL}
+        options={exchangePreset}
+      />
     </Stack.Navigator>
   );
 }
@@ -203,7 +201,6 @@ function NativeStackFallbackNavigator() {
           ...omit(sheetPreset, 'gestureResponseDistance'),
           onTransitionStart: () => {
             StatusBar.setBarStyle('light-content');
-            onTransitionStart();
           },
         }}
       />
@@ -239,11 +236,6 @@ function NativeStackNavigator() {
         {...sharedCoolModalConfig}
       />
       <NativeStack.Screen
-        component={ExchangeModalNavigator}
-        name={Routes.EXCHANGE_MODAL}
-        options={nativeStackDefaultConfig}
-      />
-      <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
         {...expandedAssetSheetConfig}
@@ -257,6 +249,16 @@ function NativeStackNavigator() {
           customStack: true,
           springDamping: 1,
           transitionDuration: 0.25,
+        }}
+      />
+      <NativeStack.Screen
+        component={ModalScreen}
+        name={Routes.MODAL_SCREEN}
+        options={{
+          customStack: true,
+          ignoreBottomOffset: true,
+          onAppear: null,
+          topOffset: 0,
         }}
       />
       <NativeStack.Screen

@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
+import { ExchangeNavigatorFactory } from '../navigation/ExchangeModalNavigator';
 import useStatusBarManaging from '../navigation/useStatusBarManaging';
 import createSwapAndDepositCompoundRap, {
   estimateSwapAndDepositCompound,
@@ -27,4 +28,4 @@ const DepositModal = ({ navigation, ...props }) => {
   );
 };
 
-export default DepositModal;
+export default ExchangeNavigatorFactory(DepositModal);

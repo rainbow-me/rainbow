@@ -46,9 +46,7 @@ const ExchangeInput = (
       }
       setIsFocused(false);
       setIsTouched(false);
-      if (onBlur) {
-        onBlur(event);
-      }
+      onBlur?.(event);
     },
     [onBlur, onChangeText, value]
   );
@@ -58,9 +56,8 @@ const ExchangeInput = (
       if (isFocused && !isTouched) {
         InteractionManager.runAfterInteractions(() => setIsTouched(true));
       }
-      if (onChange) {
-        onChange(event);
-      }
+
+      onChange?.(event);
     },
     [isFocused, isTouched, onChange]
   );
@@ -71,9 +68,8 @@ const ExchangeInput = (
       if (isTouched && !text.length && !value) {
         text = '0.';
       }
-      if (onChangeText) {
-        onChangeText(text);
-      }
+
+      onChangeText?.(text);
     },
     [isTouched, onChangeText, value]
   );
@@ -81,9 +77,7 @@ const ExchangeInput = (
   const handleFocus = useCallback(
     event => {
       setIsFocused(true);
-      if (onFocus) {
-        onFocus(event);
-      }
+      onFocus?.(event);
     },
     [onFocus]
   );
@@ -115,5 +109,6 @@ export default magicMemo(React.forwardRef(ExchangeInput), [
   'placeholder',
   'placeholderTextColor',
   'onChangeText',
+  'onFocus',
   'value',
 ]);

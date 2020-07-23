@@ -2,7 +2,6 @@ import React, { Fragment } from 'react';
 import { LayoutAnimation } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { View } from 'react-primitives';
-import { onlyUpdateForKeys } from 'recompact';
 import {
   DataProvider,
   LayoutProvider,
@@ -182,7 +181,6 @@ class SendAssetList extends React.Component {
         }
       }
     );
-    this._renderRow = this._renderRow.bind(this);
   }
 
   rlv = React.createRef();
@@ -357,7 +355,7 @@ class SendAssetList extends React.Component {
     </View>
   );
 
-  _renderRow(type, data) {
+  renderRow = (type, data) => {
     if (type === 'COIN_ROW') {
       return this.balancesRenderItem(data);
     } else if (type === 'COIN_ROW_LAST') {
@@ -372,7 +370,7 @@ class SendAssetList extends React.Component {
       return this.collectiblesRenderItem(data);
     }
     return null;
-  }
+  };
 
   render() {
     return (
@@ -380,6 +378,7 @@ class SendAssetList extends React.Component {
         <RecyclerListView
           dataProvider={this.state.dataProvider}
           disableRecycling
+          extendedState={this.state.openShitcoins}
           layoutProvider={this._layoutProvider}
           onScroll={event => {
             this.componentHeight = event.nativeEvent.layoutMeasurement.height;
@@ -388,7 +387,7 @@ class SendAssetList extends React.Component {
           ref={ref => {
             this.rlv = ref;
           }}
-          rowRenderer={this._renderRow}
+          rowRenderer={this.renderRow}
           style={{ minHeight: 1 }}
         />
       </FlyInAnimation>
@@ -396,4 +395,4 @@ class SendAssetList extends React.Component {
   }
 }
 
-export default onlyUpdateForKeys(['allAssets', 'uniqueTokens'])(SendAssetList);
+export default SendAssetList;

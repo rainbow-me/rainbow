@@ -3,14 +3,14 @@ import React from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
 import AddCashIconSource from '../../../assets/addCashIcon.png';
-import { useDimensions } from '../../../hooks';
-import { magicMemo } from '../../../utils';
 import { ButtonPressAnimation } from '../../animations';
 import { RowWithMargins } from '../../layout';
 import { Text } from '../../text';
 import RainbowButtonBackground from './RainbowButtonBackground';
 import RainbowButtonTypes from './RainbowButtonTypes';
+import { useDimensions } from '@rainbow-me/hooks';
 import { colors, position, shadow } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
 const AddCashIcon = styled(FastImage).attrs({
   resizeMode: FastImage.resizeMode.contain,

@@ -5,6 +5,7 @@
 // and break imports concept just to remove eslint error here
 
 export { default as abbreviations } from './abbreviations';
+export { default as showActionSheetWithOptions } from './actionsheet';
 export { default as addressUtils } from './address';
 export { default as AllowancesCache } from './allowancesCache';
 export { default as backgroundTask } from './backgroundTask';
@@ -29,6 +30,7 @@ export { default as promiseUtils } from './promise';
 export { default as pseudoRandomArrayItemFromString } from './pseudoRandomArrayItemFromString';
 export { default as reduceArrayToObject } from './reduceArrayToObject';
 export { default as safeAreaInsetValues } from './safeAreaInsetValues';
+export { filterList, filterScams } from './search';
 export { default as sentryUtils } from './sentry';
 export { default as statusBar } from './statusBar';
 export { getFirstGrapheme, initials, removeLeadingZeros } from './formatters';

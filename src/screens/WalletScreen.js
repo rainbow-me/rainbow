@@ -14,7 +14,6 @@ import {
 } from '../components/header';
 import { Page } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
-import { LoadingOverlayWrapper } from '../components/modal/LoadingOverlay';
 import useExperimentalFlag, {
   DISCOVER_SHEET,
 } from '../config/experimentalHooks';
@@ -94,12 +93,10 @@ export default function WalletScreen() {
   useEffect(() => {
     if (isCreatingAccount) {
       setComponent(
-        <LoadingOverlayWrapper>
-          <LoadingOverlay
-            paddingTop={sheetVerticalOffset}
-            title="Creating wallet..."
-          />
-        </LoadingOverlayWrapper>,
+        <LoadingOverlay
+          paddingTop={sheetVerticalOffset}
+          title="Creating wallet..."
+        />,
         true
       );
       return hide;
