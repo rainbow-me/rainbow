@@ -789,6 +789,11 @@
     "@ethersproject/bytes" "^5.0.0"
     "@ethersproject/logger" "^5.0.0"
 
+"@gustash/react-native-smart-lock@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@gustash/react-native-smart-lock/-/react-native-smart-lock-1.1.0.tgz#ceb50f75112a93b9699a1ed125e0588b2a10761a"
+  integrity sha512-h4wTGxktuvbd8thfpV9TaAwPEXw4NiU1Lz1IomRMOFexWinw2iio3QsAXRy2Ppcv8ZlFx4PU5iIPBlKqZpp7mA==
+
 "@hapi/address@2.x.x":
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/@hapi/address/-/address-2.1.4.tgz#5d67ed43f3fd41a69d4b9ff7b56e7c0d1d0a81e5"

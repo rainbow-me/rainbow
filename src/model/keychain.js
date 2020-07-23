@@ -1,4 +1,6 @@
+import SmartLock from '@gustash/react-native-smart-lock';
 import { captureException } from '@sentry/react-native';
+import { Platform } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {
   ACCESS_CONTROL,
@@ -146,20 +148,37 @@ export async function restoreBackupIntoKeychain(backedUpData) {
   return true;
 }
 
-// Attempts to save the password to decrypt the backup from the iCloud keychain
+// Attempts to save the password to decrypt the backup from the cloud
 export async function saveBackupPassword(password) {
   try {
-    await setSharedWebCredentials('rainbow.me', 'Backup Password', password);
+    if (Platform.OS === 'ios') {
+      await setSharedWebCredentials('rainbow.me', 'Backup Password', password);
+    } else {
+      const credentials = {
+        id: 'rainbow.me',
+        name: 'Backup Password',
+        password,
+      };
+      await SmartLock.save(credentials);
+    }
   } catch (e) {
     logger.log('Error while backing up password', e);
   }
 }
 
-// Attempts to fetch the password to decrypt the backup from the iCloud keychain
+// Attempts to fetch the password to decrypt the backup from the cloud
 export async function fetchBackupPassword() {
   try {
-    const results = await requestSharedWebCredentials();
-    return results.password;
+    if (Platform.OS === 'ios') {
+      const results = await requestSharedWebCredentials();
+      return results.password;
+    } else {
+      const { success, ...credentials } = await SmartLock.request();
+      if (success) {
+        return credentials.password;
+      }
+      return null;
+    }
   } catch (e) {
     logger.log('Error while fetching backup password', e);
   }
