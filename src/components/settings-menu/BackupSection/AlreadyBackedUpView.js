@@ -24,6 +24,8 @@ import { Text } from '../../text';
 import Routes from '@rainbow-me/routes';
 import { colors, fonts, padding } from '@rainbow-me/styles';
 
+const CLOUD_PLATFORM = Platform.OS === 'ios' ? 'iCloud' : 'Google Drive';
+
 const DescriptionText = styled(Text).attrs({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.5),
@@ -195,7 +197,7 @@ const AlreadyBackedUpView = () => {
           </Title>
           <DescriptionText>
             {(walletStatus === 'cloud_backup' &&
-              `If you lose this device, you can recover your encrypted wallet backup from iCloud.`) ||
+              `If you lose this device, you can recover your encrypted wallet backup from ${CLOUD_PLATFORM}.`) ||
               (walletStatus === 'manual_backup' &&
                 `If you lose this device, you can restore your wallet with the recovery phrase you saved.`) ||
               (walletStatus === 'imported' &&
@@ -212,7 +214,7 @@ const AlreadyBackedUpView = () => {
         </Column>
       </Column>
 
-      {Platform.OS === 'ios' && walletStatus !== 'cloud_backup' && (
+      {walletStatus !== 'cloud_backup' && (
         <Centered css={padding(0, 15, 42)}>
           <ButtonPressAnimation onPress={onFooterAction}>
             <Text
@@ -225,8 +227,8 @@ const AlreadyBackedUpView = () => {
               weight="semibold"
             >
               {walletStatus !== 'cloud_backup'
-                ? `􀙶 Back up to iCloud`
-                : `􀈒 Delete iCloud backup`}
+                ? `􀙶 Back up to ${CLOUD_PLATFORM}`
+                : `􀈒 Delete ${CLOUD_PLATFORM} backup`}
             </Text>
           </ButtonPressAnimation>
         </Centered>

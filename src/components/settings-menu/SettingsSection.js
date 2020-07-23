@@ -103,7 +103,7 @@ const SettingsSection = ({
   onPressBackup,
   onPressCurrency,
   onPressHiddenFeature,
-  onPressIcloudBackup,
+  onPressCloudBackup,
   onPressLanguage,
   onPressNetwork,
   onPressDev,
@@ -180,7 +180,7 @@ const SettingsSection = ({
             icon={<SettingIcon source={BackupIcon} />}
             label="Backup"
             onPress={onPressBackup}
-            onPressIcloudBackup={onPressIcloudBackup}
+            onPressCloudBackup={onPressCloudBackup}
             onPressShowSecret={onPressShowSecret}
           >
             <ListItemArrowGroup>

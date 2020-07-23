@@ -127,6 +127,8 @@ const TopIcon = () => (
   </GradientText>
 );
 
+const CLOUD_PLATFORM = Platform.OS === 'ios' ? 'iCloud' : 'Google Drive';
+
 const BackupConfirmPasswordStep = ({ setAppearListener }) => {
   const { goBack } = useNavigation();
   const { params } = useRoute();
@@ -175,7 +177,7 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
         passwordIsValid = true;
       }
 
-      newLabel = `􀑙 Add to iCloud Backup`;
+      newLabel = `􀑙 Add to ${CLOUD_PLATFORM} Backup`;
     }
 
     setValidPassword(passwordIsValid);
@@ -200,14 +202,14 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
       let backupFile;
       if (!latestBackup) {
         logger.log(
-          'BackupConfirmPasswordStep:: backing up to icloud',
+          'BackupConfirmPasswordStep:: backing up to cloud',
           wallets[walletId]
         );
 
         backupFile = await backupWalletToCloud(password, wallets[walletId]);
       } else {
         logger.log(
-          'BackupConfirmPasswordStep:: adding to icloud backup',
+          'BackupConfirmPasswordStep:: adding to cloud backup',
           wallets[walletId],
           latestBackup
         );
@@ -254,7 +256,7 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
           </Row>
           <Title>Enter backup password</Title>
           <DescriptionText>
-            To add your wallet to the iCloud backup, enter the backup password
+            {`To add your wallet to the ${CLOUD_PLATFORM} backup, enter the backup password`}
           </DescriptionText>
           <InputsWrapper>
             <Shadow>

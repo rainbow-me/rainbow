@@ -349,12 +349,12 @@ export default function WelcomeScreen() {
   useEffect(() => {
     const initialize = async () => {
       try {
-        logger.log('downloading iCloud backup info...');
+        logger.log('downloading cloud backup info...');
         const isSimulator = await DeviceInfo.isEmulator();
         if (!isSimulator) {
           const data = await fetchUserDataFromCloud();
           setUserData(data);
-          logger.log('Downloaded iCloud backup info');
+          logger.log('Downloaded cloud backup info');
         }
       } catch (e) {
         logger.log('error getting userData', e);

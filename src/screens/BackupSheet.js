@@ -11,8 +11,8 @@ import { Transition, Transitioning } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { BackupSheetSection } from '../components/backup';
+import BackupCloudStep from '../components/backup/BackupCloudStep';
 import BackupConfirmPasswordStep from '../components/backup/BackupConfirmPasswordStep';
-import BackupIcloudStep from '../components/backup/BackupIcloudStep';
 import BackupManualStep from '../components/backup/BackupManualStep';
 import LoadingOverlay, {
   LoadingOverlayWrapper,
@@ -33,6 +33,8 @@ import { deviceUtils, logger } from '../utils';
 
 import Routes from '@rainbow-me/routes';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
+
+const CLOUD_PLATFORM = Platform.OS === 'ios' ? 'iCloud' : 'Google Drive';
 
 const switchSheetContentTransition = (
   <Transition.Together>
@@ -80,7 +82,7 @@ const BackupSheet = ({ setAppearListener }) => {
     return hide;
   }, [hide, isWalletLoading, setComponent]);
 
-  const onIcloudBackup = useCallback(async () => {
+  const onCloudBackup = useCallback(async () => {
     if (latestBackup) {
       let password = await fetchBackupPassword();
       // If we can't get the password, we need to prompt it again
@@ -207,10 +209,10 @@ const BackupSheet = ({ setAppearListener }) => {
       case 'imported':
         return (
           <BackupSheetSection
-            descriptionText={`Don't lose your wallet! Save an encrypted copy to iCloud.`}
-            onPrimaryAction={onIcloudBackup}
+            descriptionText={`Don't lose your wallet! Save an encrypted copy to ${CLOUD_PLATFORM}.`}
+            onPrimaryAction={onCloudBackup}
             onSecondaryAction={onIgnoreBackup}
-            primaryLabel="􀙶 Back up to iCloud"
+            primaryLabel={`􀙶 Back up to ${CLOUD_PLATFORM}`}
             secondaryLabel="No thanks"
             titleText="Would you like to back up?"
           />
@@ -219,17 +221,17 @@ const BackupSheet = ({ setAppearListener }) => {
         return missingPassword ? (
           <BackupConfirmPasswordStep setAppearListener={setAppearListener} />
         ) : (
-          <BackupIcloudStep setAppearListener={setAppearListener} />
+          <BackupCloudStep setAppearListener={setAppearListener} />
         );
       case WalletBackupTypes.manual:
         return <BackupManualStep />;
       default:
         return (
           <BackupSheetSection
-            descriptionText={`Don't lose your wallet! Save an encrypted copy to iCloud.`}
-            onPrimaryAction={onIcloudBackup}
+            descriptionText={`Don't lose your wallet! Save an encrypted copy to ${CLOUD_PLATFORM}.`}
+            onPrimaryAction={onCloudBackup}
             onSecondaryAction={onManualBackup}
-            primaryLabel="􀙶 Back up to iCloud"
+            primaryLabel={`􀙶 Back up to ${CLOUD_PLATFORM}`}
             secondaryLabel="🤓 Back up manually"
             titleText="Back up your wallet"
           />
@@ -239,7 +241,7 @@ const BackupSheet = ({ setAppearListener }) => {
     missingPassword,
     onAlreadyBackedUp,
     onBackupNow,
-    onIcloudBackup,
+    onCloudBackup,
     onIgnoreBackup,
     onManualBackup,
     setAppearListener,

@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components';
-import RestoreIcloudStep from '../components/restore/RestoreIcloudStep';
+import RestoreCloudStep from '../components/restore/RestoreCloudStep';
 import RestoreSheetFirstStep from '../components/restore/RestoreSheetFirstStep';
 import { SlackSheet } from '../components/sheet';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
@@ -45,7 +45,7 @@ const RestoreSheet = () => {
     }
   }, [params?.userData, setOptions]);
 
-  const onIcloudRestore = useCallback(() => {
+  const onCloudRestore = useCallback(() => {
     switchSheetContentTransitionRef.current?.animateNextTransition();
     setStep(WalletBackupTypes.cloud);
     setOptions({
@@ -68,24 +68,18 @@ const RestoreSheet = () => {
   const renderStep = useCallback(() => {
     switch (step) {
       case WalletBackupTypes.cloud:
-        return <RestoreIcloudStep userData={params?.userData} />;
+        return <RestoreCloudStep userData={params?.userData} />;
       default:
         return (
           <RestoreSheetFirstStep
-            onIcloudRestore={onIcloudRestore}
+            onCloudRestore={onCloudRestore}
             onManualRestore={onManualRestore}
             onWatchAddress={onWatchAddress}
             userData={params?.userData}
           />
         );
     }
-  }, [
-    onIcloudRestore,
-    onManualRestore,
-    onWatchAddress,
-    params?.userData,
-    step,
-  ]);
+  }, [onCloudRestore, onManualRestore, onWatchAddress, params?.userData, step]);
 
   return (
     <StyledSheet>

@@ -1,4 +1,5 @@
 import { sortBy } from 'lodash';
+import { Platform } from 'react-native';
 import RNCloudFs from 'react-native-cloud-fs';
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
@@ -69,34 +70,38 @@ export async function getDataFromCloud(backupPassword, filename = null) {
       return null;
     }
 
-    let document;
-    if (filename) {
-      // .icloud are files that were not yet synced
-      document = backups.files.find(
-        file => file.name === filename || file.name === `.${filename}.icloud`
-      );
-      if (!document) {
-        logger.error('No backup found with that name!', filename);
-        return null;
+    if (Platform.OS === 'ios') {
+      let document;
+      if (filename) {
+        // .icloud are files that were not yet synced
+        document = backups.files.find(
+          file => file.name === filename || file.name === `.${filename}.icloud`
+        );
+        if (!document) {
+          logger.error('No backup found with that name!', filename);
+          return null;
+        }
+      } else {
+        const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
+        document = sortedBackups[0];
       }
+      const encryptedData = await getICloudDocument(filename);
+      if (encryptedData) {
+        logger.prettyLog('Got getICloudDocument ', filename);
+      }
+      const backedUpDataStringified = await encryptor.decrypt(
+        backupPassword,
+        encryptedData
+      );
+      if (backedUpDataStringified) {
+        const backedUpData = JSON.parse(backedUpDataStringified);
+        return backedUpData;
+      }
+      logger.log('We couldnt decrypt the data');
+      return null;
     } else {
-      const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
-      document = sortedBackups[0];
+      // ANDROID TBD
     }
-    const encryptedData = await getICloudDocument(filename);
-    if (encryptedData) {
-      logger.prettyLog('Got getICloudDocument ', filename);
-    }
-    const backedUpDataStringified = await encryptor.decrypt(
-      backupPassword,
-      encryptedData
-    );
-    if (backedUpDataStringified) {
-      const backedUpData = JSON.parse(backedUpDataStringified);
-      return backedUpData;
-    }
-    logger.log('We couldnt decrypt the data');
-    return null;
   } catch (e) {
     logger.error(e);
     return null;

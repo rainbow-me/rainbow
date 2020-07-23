@@ -146,7 +146,9 @@ const TopIcon = () => (
   </GradientText>
 );
 
-const BackupIcloudStep = ({ setAppearListener }) => {
+const CLOUD_PLATFORM = Platform.OS === 'ios' ? 'iCloud' : 'Google Drive';
+
+const BackupCloudStep = ({ setAppearListener }) => {
   const currentlyFocusedInput = useRef();
   const refocus = useCallback(() => {
     currentlyFocusedInput.current?.focus();
@@ -165,7 +167,7 @@ const BackupIcloudStep = ({ setAppearListener }) => {
   const [confirmPassword, setConfirmPassword] = useState(loadedPassword);
 
   const [label, setLabel] = useState(
-    !validPassword ? '􀙶 Add to iCloud Backup' : '􀎽 Confirm Backup'
+    !validPassword ? `􀙶 Add to ${CLOUD_PLATFORM} Backup` : '􀎽 Confirm Backup'
   );
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
@@ -205,7 +207,9 @@ const BackupIcloudStep = ({ setAppearListener }) => {
 
     let newLabel = '';
     if (passwordIsValid) {
-      newLabel = loadedPassword ? '􀙶 Add to iCloud Backup' : '􀎽 Confirm Backup';
+      newLabel = loadedPassword
+        ? `􀙶 Add to ${CLOUD_PLATFORM} Backup`
+        : '􀎽 Confirm Backup';
     } else if (password.length < 8) {
       newLabel = 'Minimum 8 characters';
     } else if (
@@ -270,15 +274,12 @@ const BackupIcloudStep = ({ setAppearListener }) => {
 
       let backupFile;
       if (!latestBackup) {
-        logger.log(
-          'BackupIcloudStep:: backing up to icloud',
-          wallets[walletId]
-        );
+        logger.log('BackupCloudStep:: backing up to cloud', wallets[walletId]);
 
         backupFile = await backupWalletToCloud(password, wallets[walletId]);
       } else {
         logger.log(
-          'BackupIcloudStep:: adding to icloud backup',
+          'BackupCloudStep:: adding to cloud backup',
           wallets[walletId],
           latestBackup
         );
@@ -289,15 +290,15 @@ const BackupIcloudStep = ({ setAppearListener }) => {
         );
       }
       if (backupFile) {
-        logger.log('BackupIcloudStep:: saving backup password');
+        logger.log('BackupCloudStep:: saving backup password');
         await keychain.saveBackupPassword(password);
-        logger.log('BackupIcloudStep:: saved');
+        logger.log('BackupCloudStep:: saved');
 
-        logger.log('BackupIcloudStep:: backup completed!', backupFile);
+        logger.log('BackupCloudStep:: backup completed!', backupFile);
         await dispatch(
           setWalletBackedUp(walletId, WalletBackupTypes.cloud, backupFile)
         );
-        logger.log('BackupIcloudStep:: backup saved everywhere!');
+        logger.log('BackupCloudStep:: backup saved everywhere!');
         goBack();
       } else {
         Alert.alert('Error while trying to backup');
@@ -390,4 +391,4 @@ const BackupIcloudStep = ({ setAppearListener }) => {
   );
 };
 
-export default BackupIcloudStep;
+export default BackupCloudStep;

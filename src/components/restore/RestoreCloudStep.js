@@ -135,7 +135,9 @@ const TopIcon = () => (
   </GradientText>
 );
 
-const RestoreIcloudStep = ({ userData }) => {
+const CLOUD_PLATFORM = Platform.OS === 'ios' ? 'iCloud' : 'Google Drive';
+
+const RestoreCloudStep = ({ userData }) => {
   const { goBack, replace } = useNavigation();
   const dispatch = useDispatch();
   const { isWalletLoading } = useWallets();
@@ -193,7 +195,7 @@ const RestoreIcloudStep = ({ userData }) => {
         passwordIsValid = true;
       }
 
-      newLabel = `􀑙 Restore from iCloud`;
+      newLabel = `􀑙 Restore from ${CLOUD_PLATFORM}`;
     }
 
     setValidPassword(passwordIsValid);
@@ -297,4 +299,4 @@ const RestoreIcloudStep = ({ userData }) => {
   );
 };
 
-export default RestoreIcloudStep;
+export default RestoreCloudStep;

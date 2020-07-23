@@ -5,7 +5,7 @@ import Svg from '../Svg';
 import { colors } from '@rainbow-me/styles';
 
 const CheckmarkCircledIcon = ({ color, ...props }) => (
-  <Svg height="22" width="22" viewBox="0 0 22 22" {...props}>
+  <Svg height="22" viewBox="0 0 22 22" width="22" {...props}>
     <Path
       d="M11 22C17.0316 22 22 17.034 22 11.0053C22 4.97657 17.0211 0 11 0C4.96842 0 0 4.97657 0 11.0053C0 17.034 4.96842 22 11 22Z"
       fill={color}

@@ -746,11 +746,6 @@ async function extractSecretsForWallet(wallet) {
       return;
     }
 
-    // Ignore icloud backup password
-    if (item.username === 'rainbowBackup') {
-      return;
-    }
-
     // Ignore another wallets seeds
     if (
       item.username.indexOf(`_${seedPhraseKey}`) !== -1 &&

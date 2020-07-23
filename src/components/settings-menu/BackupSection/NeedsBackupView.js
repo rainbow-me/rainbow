@@ -57,6 +57,8 @@ const TopIcon = styled(FastImage).attrs({
   width: 75;
 `;
 
+const CLOUD_PLATFORM = Platform.OS === 'ios' ? 'iCloud' : 'Google Drive';
+
 const NeedsBackupView = () => {
   const { navigate, setParams } = useNavigation();
   const { params } = useRoute();
@@ -69,7 +71,7 @@ const NeedsBackupView = () => {
     }
   }, [setParams, walletId, wallets]);
 
-  const onIcloudBackup = useCallback(() => {
+  const onCloudBackup = useCallback(() => {
     navigate(Routes.BACKUP_SHEET, {
       option: WalletBackupTypes.cloud,
       walletId,
@@ -97,12 +99,10 @@ const NeedsBackupView = () => {
         </Column>
 
         <Column align="center">
-          {Platform.OS === 'ios' && (
-            <BackupButton
-              label="􀙶 Back up to iCloud"
-              onPress={onIcloudBackup}
-            />
-          )}
+          <BackupButton
+            label={`􀙶 Back up to ${CLOUD_PLATFORM}`}
+            onPress={onCloudBackup}
+          />
           <SheetActionButton
             color={colors.white}
             label="🤓 Back up manually"

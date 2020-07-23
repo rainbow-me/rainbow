@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
+import { Platform } from 'react-native';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import { deviceUtils } from '../../utils';
@@ -73,8 +74,10 @@ const DescriptionText = styled(Text).attrs({
   padding-bottom: 24;
 `;
 
+const CLOUD_PLATFORM = Platform.OS === 'ios' ? 'iCloud' : 'Google Drive';
+
 const RestoreSheetFirstStep = ({
-  onIcloudRestore,
+  onCloudRestore,
   onManualRestore,
   onWatchAddress,
   userData,
@@ -91,16 +94,16 @@ const RestoreSheetFirstStep = ({
     return count;
   }, [userData]);
 
-  const onIcloudRestorePress = useCallback(() => {
-    onIcloudRestore();
-  }, [onIcloudRestore]);
+  const onCloudRestorePress = useCallback(() => {
+    onCloudRestore();
+  }, [onCloudRestore]);
 
   return (
     <React.Fragment>
       <Container>
         {walletsBackedUp > 0 && (
           <React.Fragment>
-            <SheetRow as={ButtonPressAnimation} onPress={onIcloudRestorePress}>
+            <SheetRow as={ButtonPressAnimation} onPress={onCloudRestorePress}>
               <Column>
                 <Row>
                   <RainbowText>
@@ -109,13 +112,13 @@ const RestoreSheetFirstStep = ({
                 </Row>
                 <TitleRow>
                   <RainbowText>
-                    <Title>Restore from iCloud</Title>
+                    <Title>{`Restore from ${CLOUD_PLATFORM}`}</Title>
                   </RainbowText>
                   <CaretIcon />
                 </TitleRow>
                 <DescriptionText>
                   {typeof userData === undefined
-                    ? ' Checking iCloud for backups...'
+                    ? ` Checking ${CLOUD_PLATFORM} for backups...`
                     : walletsBackedUp > 0
                     ? `You have ${walletsBackedUp} ${
                         walletsBackedUp > 1 ? 'wallets' : 'wallet'
