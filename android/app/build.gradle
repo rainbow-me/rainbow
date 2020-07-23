@@ -268,6 +268,9 @@ dependencies {
         exclude group:'com.facebook.flipper'
     }
 	
+    implementation ('com.google.android.gms:play-services-drive:17.0.0') {
+        force = true;
+    }
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";

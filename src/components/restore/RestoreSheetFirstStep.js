@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
-import { Platform } from 'react-native';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import { deviceUtils } from '../../utils';
+import { CLOUD_PLATFORM } from '../../utils/platform';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import Icon from '../icons/Icon';
@@ -73,8 +73,6 @@ const DescriptionText = styled(Text).attrs({
   max-width: 276;
   padding-bottom: 24;
 `;
-
-const CLOUD_PLATFORM = Platform.OS === 'ios' ? 'iCloud' : 'Google Drive';
 
 const RestoreSheetFirstStep = ({
   onCloudRestore,

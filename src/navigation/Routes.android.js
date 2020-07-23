@@ -4,7 +4,6 @@ import { omit } from 'lodash';
 import React from 'react';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
-import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import DepositModal from '../screens/DepositModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
@@ -29,6 +28,7 @@ import {
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
+import { BackupSheetWrapper } from './nativeStackHelpers';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
@@ -126,7 +126,7 @@ function MainNavigator() {
         }}
       />
       <Stack.Screen
-        component={BackupSheet}
+        component={BackupSheetWrapper}
         name={Routes.BACKUP_SHEET}
         options={bottomSheetPreset}
       />

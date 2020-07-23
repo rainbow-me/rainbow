@@ -22,6 +22,7 @@ import {
 } from '../../model/wallet';
 import { setIsWalletLoading, setWalletBackedUp } from '../../redux/wallets';
 import { deviceUtils, logger } from '../../utils';
+import { CLOUD_PLATFORM } from '../../utils/platform';
 import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
@@ -76,6 +77,7 @@ const PasswordInput = styled(Input).attrs({
   padding-left: 19;
   padding-right: 40;
   padding-top: 15;
+  padding-bottom: 0;
 `;
 
 const IconWrapper = styled(View)`
@@ -126,8 +128,6 @@ const TopIcon = () => (
     <Text size={52}>􀙶</Text>
   </GradientText>
 );
-
-const CLOUD_PLATFORM = Platform.OS === 'ios' ? 'iCloud' : 'Google Drive';
 
 const BackupConfirmPasswordStep = ({ setAppearListener }) => {
   const { goBack } = useNavigation();

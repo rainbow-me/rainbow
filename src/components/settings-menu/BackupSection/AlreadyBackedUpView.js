@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { Alert, Platform, View } from 'react-native';
+import { Alert, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../../helpers/walletBackupTypes';
@@ -14,6 +14,7 @@ import { sheetVerticalOffset } from '../../../navigation/effects';
 import { usePortal } from '../../../react-native-cool-modals/Portal';
 import { setIsWalletLoading, setWalletBackedUp } from '../../../redux/wallets';
 import { logger } from '../../../utils';
+import { CLOUD_PLATFORM } from '../../../utils/platform';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
 import LoadingOverlay, {
@@ -23,8 +24,6 @@ import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
 import Routes from '@rainbow-me/routes';
 import { colors, fonts, padding } from '@rainbow-me/styles';
-
-const CLOUD_PLATFORM = Platform.OS === 'ios' ? 'iCloud' : 'Google Drive';
 
 const DescriptionText = styled(Text).attrs({
   align: 'center',

@@ -31,10 +31,9 @@ import { usePortal } from '../react-native-cool-modals/Portal';
 import { setIsWalletLoading, setWalletBackedUp } from '../redux/wallets';
 import { deviceUtils, logger } from '../utils';
 
+import { CLOUD_PLATFORM } from '../utils/platform';
 import Routes from '@rainbow-me/routes';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
-
-const CLOUD_PLATFORM = Platform.OS === 'ios' ? 'iCloud' : 'Google Drive';
 
 const switchSheetContentTransition = (
   <Transition.Together>
@@ -51,7 +50,7 @@ const StyledSheet = styled(SlackSheet)`
 `;
 
 const BackupSheet = ({ setAppearListener }) => {
-  const { jumpToLong } = useContext(ModalContext) || {};
+  const { jumpToLong } = useContext(ModalContext) || { jumpToLong: () => null };
   const { navigate, setOptions, goBack, setParams } = useNavigation();
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();

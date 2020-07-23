@@ -1,12 +1,12 @@
 import { useRoute } from '@react-navigation/native';
 import React, { Fragment, useCallback, useEffect } from 'react';
-import { Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import BackupIcon from '../../../assets/backupIcon.png';
 import WalletBackupTypes from '../../../helpers/walletBackupTypes';
 import { useWallets } from '../../../hooks';
 import { useNavigation } from '../../../navigation/Navigation';
+import { CLOUD_PLATFORM } from '../../../utils/platform';
 import { RainbowButton } from '../../buttons';
 import { Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
@@ -56,8 +56,6 @@ const TopIcon = styled(FastImage).attrs({
   height: 74;
   width: 75;
 `;
-
-const CLOUD_PLATFORM = Platform.OS === 'ios' ? 'iCloud' : 'Google Drive';
 
 const NeedsBackupView = () => {
   const { navigate, setParams } = useNavigation();

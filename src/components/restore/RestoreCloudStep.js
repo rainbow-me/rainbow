@@ -28,6 +28,7 @@ import { sheetVerticalOffset } from '../../navigation/effects';
 import { usePortal } from '../../react-native-cool-modals/Portal';
 import { setIsWalletLoading, walletsLoadState } from '../../redux/wallets';
 import { deviceUtils } from '../../utils';
+import { CLOUD_PLATFORM } from '../../utils/platform';
 import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
@@ -134,8 +135,6 @@ const TopIcon = () => (
     <Text size={52}>􀙶</Text>
   </GradientText>
 );
-
-const CLOUD_PLATFORM = Platform.OS === 'ios' ? 'iCloud' : 'Google Drive';
 
 const RestoreCloudStep = ({ userData }) => {
   const { goBack, replace } = useNavigation();

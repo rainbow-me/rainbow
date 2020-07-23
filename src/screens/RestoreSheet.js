@@ -31,7 +31,7 @@ const StyledSheet = styled(SlackSheet)`
 const RestoreSheet = () => {
   const { goBack, navigate, setOptions } = useNavigation();
 
-  const { jumpToLong } = useContext(ModalContext);
+  const { jumpToLong } = useContext(ModalContext) || { jumpToLong: () => null };
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
   const [step, setStep] = useState(params?.option || 'first');
