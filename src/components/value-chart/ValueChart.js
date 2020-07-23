@@ -18,23 +18,23 @@ const formatDate = date => format(new Date(date), 'MMM dd hh:mm aa');
 
 const {
   and,
-  or,
-  eq,
-  sub,
-  onChange,
   block,
-  event,
-  interpolate,
-  cond,
   call,
-  set,
-  neq,
-  greaterOrEq,
-  lessThan,
-  greaterThan,
-  stopClock,
-  multiply,
+  cond,
+  eq,
+  event,
   Extrapolate,
+  greaterOrEq,
+  greaterThan,
+  interpolate,
+  lessThan,
+  multiply,
+  neq,
+  onChange,
+  or,
+  set,
+  stopClock,
+  sub,
 } = Animated;
 
 let allSegmentDividers = [];
@@ -424,8 +424,24 @@ export default class Chart extends PureComponent {
               currentData={currentData}
               currentValue={currentValue}
               setCurrentPath={path => {
-                const length = interpolate(this.touchX, {
-                  extrapolate: Extrapolate.EXTEND,
+                const magneticPadding = 50;
+                const calculatedTouchX = interpolate(this.touchX, {
+                  extrapolate: Extrapolate.CLAMP,
+                  inputRange: [
+                    magneticPadding / 2,
+                    magneticPadding,
+                    width - magneticPadding,
+                    width - magneticPadding / 2,
+                  ],
+                  outputRange: [
+                    0,
+                    magneticPadding,
+                    width - magneticPadding,
+                    width,
+                  ],
+                });
+                const length = interpolate(calculatedTouchX, {
+                  extrapolate: Extrapolate.CLAMP,
                   inputRange: path.p0x,
                   outputRange: path.start,
                 });
