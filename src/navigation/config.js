@@ -1,7 +1,6 @@
 import { Keyboard, Platform, StatusBar } from 'react-native';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
 import { onDidPop, onWillPop } from './Navigation';
-import { ScrollPagerWrapper } from './helpers';
 import { appearListener } from './nativeStackHelpers';
 
 export const expandedAssetSheetConfig = {
@@ -94,7 +93,6 @@ export const nativeStackDefaultConfig = {
 
 export const exchangeTabNavigatorConfig = position => ({
   initialLayout: deviceUtils.dimensions,
-  pager: ScrollPagerWrapper,
   position,
   sceneContainerStyle: {
     backgroundColor: 'transparent',
