@@ -1,32 +1,31 @@
-import React from 'react';
-import { View } from 'react-native';
+import React, { Fragment } from 'react';
 import { useOpenSavings } from '../../hooks';
 import { OpacityToggler } from '../animations';
 import SavingsListHeader from './SavingsListHeader';
 import SavingsListRow from './SavingsListRow';
 
+const renderSavingsListRow = item =>
+  item?.underlying ? (
+    <SavingsListRow key={item?.underlying.symbol} {...item} />
+  ) : null;
+
 export default function SavingsListWrapper({ assets, totalValue = '0' }) {
   const { isSavingsOpen, toggleOpenSavings } = useOpenSavings();
 
   return (
-    <React.Fragment>
+    <Fragment>
       <SavingsListHeader
         isOpen={isSavingsOpen}
         onPress={toggleOpenSavings}
         savingsSumValue={totalValue}
         showSumValue
       />
-      <View pointerEvents={isSavingsOpen ? 'auto' : 'none'}>
-        <OpacityToggler isVisible={!isSavingsOpen}>
-          {assets.map(
-            item =>
-              item &&
-              item.underlying && (
-                <SavingsListRow key={item.underlying.symbol} {...item} />
-              )
-          )}
-        </OpacityToggler>
-      </View>
-    </React.Fragment>
+      <OpacityToggler
+        isVisible={!isSavingsOpen}
+        pointerEvents={isSavingsOpen ? 'auto' : 'none'}
+      >
+        {assets.map(renderSavingsListRow)}
+      </OpacityToggler>
+    </Fragment>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import styled from 'styled-components/primitives';
 import EditOptions from '../../helpers/editOptionTypes';
@@ -65,17 +65,6 @@ export default function CoinDivider({
     toggleOpenSmallBalances,
   } = useOpenSmallBalances();
 
-  const initialOpenState = useRef();
-
-  useEffect(() => {
-    initialOpenState.current = isSmallBalancesOpen;
-
-    // Clear CoinListEditOptions selection queue on unmount.
-    return () => clearSelectedCoins();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clearSelectedCoins]);
-
   const handlePressEdit = useCallback(() => {
     if (isCoinListEdited && onEndEdit) {
       onEndEdit();
@@ -85,6 +74,9 @@ export default function CoinDivider({
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
     );
   }, [isCoinListEdited, onEndEdit, setIsCoinListEdited]);
+
+  // Clear CoinListEditOptions selection queue on unmount.
+  useEffect(() => () => clearSelectedCoins(), [clearSelectedCoins]);
 
   return (
     <Container deviceWidth={deviceWidth} isSticky={isSticky}>
@@ -96,7 +88,6 @@ export default function CoinDivider({
         >
           <CoinDividerOpenButton
             coinDividerHeight={CoinDividerHeight}
-            initialState={initialOpenState.current}
             isSmallBalancesOpen={isSmallBalancesOpen}
             isVisible={isCoinListEdited || assetsAmount === 0}
             onPress={toggleOpenSmallBalances}
