@@ -1,9 +1,8 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCallback, useMemo } from 'use-memo-one';
-import { withBlockedHorizontalSwipe } from '../hoc';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ModalScreen from '../screens/ModalScreen';
 import SwapModal from '../screens/SwapModal';
@@ -15,11 +14,6 @@ import Routes from './routesNames';
 
 const Tabs = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
-
-function SwapDetailsScreen(props) {
-  const Component = withBlockedHorizontalSwipe(ModalScreen);
-  return <Component {...props} />;
-}
 
 function MainExchangeNavigator() {
   const isFocused = useIsFocused();
@@ -47,7 +41,7 @@ function MainExchangeNavigator() {
         name={Routes.MAIN_EXCHANGE_SCREEN}
       />
       <Stack.Screen
-        component={SwapDetailsScreen}
+        component={ModalScreen}
         name={Routes.SWAP_DETAILS_SCREEN}
         options={swapDetailsPreset}
       />
@@ -58,15 +52,19 @@ function MainExchangeNavigator() {
 function ExchangeModalNavigator() {
   const { setOptions } = useNavigation();
   const position = useReanimatedValue(0);
+  const [swipeEnabled, setSwipeEnabled] = useState(false);
   const config = useMemo(() => exchangeTabNavigatorConfig(position), [
     position,
   ]);
   const toggleGestureEnabled = useCallback(
-    dismissable => setOptions({ dismissable }),
+    dismissable => {
+      setSwipeEnabled(!dismissable);
+      setOptions({ dismissable });
+    },
     [setOptions]
   );
   return (
-    <Tabs.Navigator {...config}>
+    <Tabs.Navigator {...config} swipeEnabled={swipeEnabled}>
       <Tabs.Screen
         component={MainExchangeNavigator}
         initialParams={{
