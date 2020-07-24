@@ -104,7 +104,7 @@ const UnderlineField = (
 
       if (value !== formattedValue) {
         setValue(formattedValue);
-        onChange?.(String(value));
+        onChange?.(formattedValue);
       }
     },
     [format, onChange, value]

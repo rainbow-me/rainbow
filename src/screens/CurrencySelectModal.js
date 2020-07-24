@@ -1,8 +1,5 @@
-import {
-  useFocusEffect,
-  useIsFocused,
-  useRoute,
-} from '@react-navigation/native';
+import { useIsFocused, useRoute } from '@react-navigation/native';
+import analytics from '@segment/analytics-react-native';
 import { concat, map } from 'lodash';
 import matchSorter from 'match-sorter';
 import React, {
@@ -12,8 +9,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { Extrapolate } from 'react-native-reanimated';
+import styled from 'styled-components/primitives';
 import GestureBlocker from '../components/GestureBlocker';
 import { interpolate } from '../components/animations';
 import {
@@ -24,24 +21,33 @@ import {
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
+import { useNavigation } from '../navigation/Navigation';
+import { exchangeModalBorderRadius } from './ExchangeModal';
 import {
+  useInteraction,
+  useMagicAutofocus,
+  usePrevious,
   useTimeout,
   useUniswapAssets,
   useUniswapAssetsInWallet,
-} from '../hooks';
-import { useNavigation } from '../navigation/Navigation';
-import { filterList, filterScams } from '../utils/search';
-import { exchangeModalBorderRadius } from './ExchangeModal';
+} from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
+import { filterList, filterScams } from '@rainbow-me/utils';
+
+const TabTransitionAnimation = styled(Animated.View)`
+  ${position.size('100%')};
+`;
 
 const headerlessSection = data => [{ data, title: '' }];
 
 export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
+  const prevIsFocused = usePrevious(isFocused);
   const { navigate } = useNavigation();
   const {
     params: {
+      category,
       onSelectCurrency,
       restoreFocusOnSwapModal,
       tabTransitionPosition,
@@ -51,6 +57,8 @@ export default function CurrencySelectModal() {
   } = useRoute();
 
   const searchInputRef = useRef();
+  const { handleFocus } = useMagicAutofocus(searchInputRef);
+
   const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
@@ -139,39 +147,40 @@ export default function CurrencySelectModal() {
     );
   }, [searchQuery, startQueryDebounce, stopQueryDebounce]);
 
-  const handleApplyFavoritesQueue = useCallback(
-    () =>
-      Object.keys(assetsToFavoriteQueue).map(assetToFavorite =>
-        updateFavorites(assetToFavorite, assetsToFavoriteQueue[assetToFavorite])
-      ),
-    [assetsToFavoriteQueue, updateFavorites]
-  );
-
-  const shouldUpdateFavoritesRef = useRef(false);
-  useEffect(() => {
-    if (!searchQueryExists && shouldUpdateFavoritesRef.current) {
-      shouldUpdateFavoritesRef.current = false;
-      handleApplyFavoritesQueue();
-    } else if (searchQueryExists) {
-      shouldUpdateFavoritesRef.current = true;
-    }
-  }, [assetsToFavoriteQueue, handleApplyFavoritesQueue, searchQueryExists]);
-
   const handleFavoriteAsset = useCallback(
-    (assetAddress, isFavorited) =>
+    (asset, isFavorited) => {
       setAssetsToFavoriteQueue(prevFavoriteQueue => ({
         ...prevFavoriteQueue,
-        [assetAddress]: isFavorited,
-      })),
-    []
+        [asset.address]: isFavorited,
+      }));
+      analytics.track('Toggled an asset as Favorited', {
+        category,
+        isFavorited,
+        name: asset.name,
+        symbol: asset.symbol,
+        tokenAddress: asset.address,
+        type,
+      });
+    },
+    [category, type]
   );
 
   const handleSelectAsset = useCallback(
     item => {
       onSelectCurrency(item);
+      if (searchQueryForSearch) {
+        analytics.track('Selected a search result in Swap', {
+          category,
+          name: item.name,
+          searchQueryForSearch,
+          symbol: item.symbol,
+          tokenAddress: item.address,
+          type,
+        });
+      }
       navigate(Routes.MAIN_EXCHANGE_SCREEN);
     },
-    [onSelectCurrency, navigate]
+    [category, onSelectCurrency, navigate, searchQueryForSearch, type]
   );
 
   const itemProps = useMemo(
@@ -184,40 +193,58 @@ export default function CurrencySelectModal() {
     [handleFavoriteAsset, handleSelectAsset, type]
   );
 
-  useFocusEffect(
-    useCallback(() => {
-      searchInputRef.current?.focus();
-      tabTransitionPosition.setValue(1);
-      toggleGestureEnabled(false);
-      return () => {
-        toggleGestureEnabled(true);
-        InteractionManager.runAfterInteractions(() => {
-          handleApplyFavoritesQueue();
-          setSearchQuery('');
-          restoreFocusOnSwapModal();
-        });
-      };
-    }, [
-      handleApplyFavoritesQueue,
-      restoreFocusOnSwapModal,
-      tabTransitionPosition,
-      toggleGestureEnabled,
-    ])
+  const handleApplyFavoritesQueue = useCallback(
+    () =>
+      Object.keys(assetsToFavoriteQueue).map(assetToFavorite =>
+        updateFavorites(assetToFavorite, assetsToFavoriteQueue[assetToFavorite])
+      ),
+    [assetsToFavoriteQueue, updateFavorites]
   );
+
+  const [startInteraction] = useInteraction();
+  useEffect(() => {
+    // on new focus state
+    if (isFocused !== prevIsFocused) {
+      startInteraction(() => {
+        toggleGestureEnabled(!isFocused);
+      });
+    }
+
+    // on page blur
+    if (!isFocused && prevIsFocused) {
+      handleApplyFavoritesQueue();
+      setSearchQuery('');
+      restoreFocusOnSwapModal?.();
+    }
+  }, [
+    handleApplyFavoritesQueue,
+    isFocused,
+    startInteraction,
+    prevIsFocused,
+    restoreFocusOnSwapModal,
+    toggleGestureEnabled,
+  ]);
+
+  const shouldUpdateFavoritesRef = useRef(false);
+  useEffect(() => {
+    if (!searchQueryExists && shouldUpdateFavoritesRef.current) {
+      shouldUpdateFavoritesRef.current = false;
+      handleApplyFavoritesQueue();
+    } else if (searchQueryExists) {
+      shouldUpdateFavoritesRef.current = true;
+    }
+  }, [assetsToFavoriteQueue, handleApplyFavoritesQueue, searchQueryExists]);
 
   return (
     <KeyboardFixedOpenLayout>
-      <Animated.View
-        style={[
-          position.sizeAsObject('100%'),
-          {
-            opacity: interpolate(tabTransitionPosition, {
-              extrapolate: Animated.Extrapolate.CLAMP,
-              inputRange: [0, 0.8, 1],
-              outputRange: [0, 1, 1],
-            }),
-          },
-        ]}
+      <TabTransitionAnimation
+        style={{
+          opacity: interpolate(tabTransitionPosition, {
+            extrapolate: Extrapolate.CLAMP,
+            inputRange: [0, 0.8, 1],
+            outputRange: [0, 1, 1],
+          }),
+        }}
       >
         <Modal
           containerPadding={0}
@@ -230,6 +257,7 @@ export default function CurrencySelectModal() {
             <CurrencySelectModalHeader />
             <ExchangeSearch
               onChangeText={setSearchQuery}
+              onFocus={handleFocus}
               ref={searchInputRef}
               searchQuery={searchQuery}
             />
@@ -246,7 +274,7 @@ export default function CurrencySelectModal() {
           </Column>
           <GestureBlocker type="bottom" />
         </Modal>
-      </Animated.View>
+      </TabTransitionAnimation>
     </KeyboardFixedOpenLayout>
   );
 }

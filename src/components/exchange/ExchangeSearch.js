@@ -24,7 +24,6 @@ const SearchIcon = styled(Icon).attrs({
 `;
 
 const SearchInput = styled(Input).attrs({
-  allowFontScaling: false,
   autoCapitalize: 'words',
   blurOnSubmit: false,
   clearTextOnFocus: true,
@@ -42,10 +41,10 @@ const SearchInput = styled(Input).attrs({
   margin-left: 7;
 `;
 
-const ExchangeSearch = ({ onChangeText, searchQuery }, ref) => {
+const ExchangeSearch = ({ onChangeText, onFocus, searchQuery }, ref) => {
   const handleClearInput = useCallback(() => {
     ref?.current?.clear();
-    if (onChangeText) onChangeText('');
+    onChangeText?.('');
   }, [ref, onChangeText]);
 
   return (
@@ -53,6 +52,7 @@ const ExchangeSearch = ({ onChangeText, searchQuery }, ref) => {
       <SearchIcon />
       <SearchInput
         onChangeText={onChangeText}
+        onFocus={onFocus}
         placeholder="Search"
         ref={ref}
         value={searchQuery}

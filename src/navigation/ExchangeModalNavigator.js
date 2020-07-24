@@ -1,10 +1,10 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback } from 'react';
 import { useValue } from 'react-native-redash';
 import { useMemoOne } from 'use-memo-one';
-import { withBlockedHorizontalSwipe } from '../hoc';
+import HorizontalGestureBlocker from '../components/HorizontalGestureBlocker';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ModalScreen from '../screens/ModalScreen';
 import SwapModalScreen from '../screens/SwapModal';
@@ -17,21 +17,17 @@ const Stack = createStackNavigator();
 const Tabs = createMaterialTopTabNavigator();
 
 function SwapDetailsScreen(props) {
-  const Component = withBlockedHorizontalSwipe(ModalScreen);
-  return <Component {...props} />;
+  return (
+    <HorizontalGestureBlocker>
+      <ModalScreen {...props} />
+    </HorizontalGestureBlocker>
+  );
 }
 
 export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
   function MainExchangeNavigator() {
-    const {
-      params: { tabTransitionPosition },
-    } = useRoute();
-
-    useFocusEffect(
-      useCallback(() => {
-        tabTransitionPosition.setValue(0);
-      }, [tabTransitionPosition])
-    );
+    const route = useRoute();
+    const tabTransitionPosition = route?.params?.tabTransitionPosition || 0;
 
     return (
       <Stack.Navigator
@@ -41,9 +37,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
       >
         <Stack.Screen
           component={SwapModal}
-          initialParams={{
-            tabTransitionPosition,
-          }}
+          initialParams={{ tabTransitionPosition }}
           name={Routes.MAIN_EXCHANGE_SCREEN}
         />
         <Stack.Screen
@@ -57,33 +51,35 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
   return function ExchangeModalNavigator() {
     const { setOptions } = useNavigation();
-    const tabTransitionPosition = useValue(0);
 
-    const config = useMemoOne(
-      () => exchangeTabNavigatorConfig(tabTransitionPosition),
-      [tabTransitionPosition]
-    );
+    const tabTransitionPosition = useValue(0);
 
     const toggleGestureEnabled = useCallback(
       gestureEnabled => setOptions({ gestureEnabled }),
       [setOptions]
     );
 
+    const initialParams = useMemoOne(
+      () => ({
+        tabTransitionPosition,
+        toggleGestureEnabled,
+      }),
+      [tabTransitionPosition, toggleGestureEnabled]
+    );
+
     return (
-      <Tabs.Navigator {...config}>
+      <Tabs.Navigator
+        {...exchangeTabNavigatorConfig}
+        position={tabTransitionPosition}
+      >
         <Tabs.Screen
           component={MainExchangeNavigator}
-          initialParams={{
-            tabTransitionPosition,
-          }}
+          initialParams={initialParams}
           name={Routes.MAIN_EXCHANGE_NAVIGATOR}
         />
         <Tabs.Screen
           component={CurrencySelectModal}
-          initialParams={{
-            tabTransitionPosition,
-            toggleGestureEnabled,
-          }}
+          initialParams={initialParams}
           name={Routes.CURRENCY_SELECT_SCREEN}
         />
       </Tabs.Navigator>

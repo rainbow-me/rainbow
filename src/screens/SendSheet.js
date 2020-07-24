@@ -112,7 +112,13 @@ export default function SendSheet(props) {
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
 
   const recipientFieldRef = useRef();
-  const { handleFocus, triggerFocus } = useMagicAutofocus(recipientFieldRef);
+  const { handleFocus, triggerFocus } = useMagicAutofocus(
+    recipientFieldRef,
+    useCallback(
+      lastFocusedRef => (showAssetList ? null : lastFocusedRef.current),
+      [showAssetList]
+    )
+  );
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => startPollingGasPrices());

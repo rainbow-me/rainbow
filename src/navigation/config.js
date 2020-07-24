@@ -66,9 +66,8 @@ export const defaultScreenStackOptions = {
   gestureEnabled: true,
 };
 
-export const exchangeTabNavigatorConfig = position => ({
+export const exchangeTabNavigatorConfig = {
   initialLayout: deviceUtils.dimensions,
-  position,
   sceneContainerStyle: {
     backgroundColor: 'transparent',
   },
@@ -85,4 +84,4 @@ export const exchangeTabNavigatorConfig = position => ({
   swipeVelocityScale: 1,
   tabBar: () => null,
   transparentCard: true,
-});
+};

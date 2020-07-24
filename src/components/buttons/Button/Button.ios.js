@@ -74,9 +74,7 @@ const Button = ({
       style={style}
       type={type}
     >
-      {!shouldRenderChildrenAsText(children) ? (
-        children
-      ) : (
+      {shouldRenderChildrenAsText(children) ? (
         <Text
           color={color}
           size={ButtonSizeTypes[size].fontSize}
@@ -85,6 +83,8 @@ const Button = ({
         >
           {children}
         </Text>
+      ) : (
+        children
       )}
       {(!onPress || !disabled) && (
         <InnerBorder
