@@ -41,6 +41,9 @@ const Logger = {
     } else {
       sentryUtils.addDataBreadcrumb.apply(null, args);
     }
+    if (__DEV__) {
+      console.log(...args);
+    }
   },
   warn(...args) {
     if (__DEV__) {
