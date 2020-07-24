@@ -54,14 +54,6 @@ export const chartsUpdateChartType = chartType => dispatch =>
     type: CHARTS_UPDATE_CHART_TYPE,
   });
 
-export const getAssetChart = (address, chartType) => (dispatch, getState) => {
-  const { charts, chartsFallback } = getState().charts;
-
-  return (
-    charts?.[address]?.[chartType] || chartsFallback?.[address]?.[chartType]
-  );
-};
-
 export const assetChartsReceived = message => (dispatch, getState) => {
   const chartType = get(message, 'meta.charts_type');
   const { accountAddress, network } = getState().settings;
@@ -113,7 +105,11 @@ const INITIAL_STATE = {
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case CHARTS_UPDATE_CHART_TYPE:
-      return { ...state, chartType: action.payload, fetchingCharts: true };
+      return {
+        ...state,
+        chartType: action.payload,
+        fetchingCharts: true,
+      };
     case CHARTS_LOAD_REQUEST:
       return {
         ...state,

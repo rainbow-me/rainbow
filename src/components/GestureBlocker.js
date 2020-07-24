@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import {
@@ -8,9 +7,11 @@ import {
 } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
-import { useDimensions } from '../hooks';
+import { useMemoOne } from 'use-memo-one';
+import { useDimensions } from '@rainbow-me/hooks';
 
 const { call, cond, event, eq } = Animated;
+const NOOP = () => null;
 
 const Container = styled.View`
   ${({ height, type }) => `${type}: ${-height};`};
@@ -20,18 +21,23 @@ const Container = styled.View`
   z-index: 10;
 `;
 
-const GestureBlocker = ({ type, onTouchEnd }) => {
+export default function GestureBlocker({ onTouchEnd = NOOP, type }) {
   const { height: screenHeight } = useDimensions();
   const tab = useRef(null);
   const pan = useRef(null);
 
-  const onHandlerStateChange = event([
-    {
-      nativeEvent: {
-        state: s => cond(cond(cond(eq(State.END, s), call([], onTouchEnd)))),
-      },
-    },
-  ]);
+  const onHandlerStateChange = useMemoOne(
+    () =>
+      event([
+        {
+          nativeEvent: {
+            state: s =>
+              cond(cond(cond(eq(State.END, s), call([], onTouchEnd)))),
+          },
+        },
+      ]),
+    [onTouchEnd]
+  );
 
   return (
     <Container height={screenHeight} type={type}>
@@ -53,15 +59,4 @@ const GestureBlocker = ({ type, onTouchEnd }) => {
       </PanGestureHandler>
     </Container>
   );
-};
-
-GestureBlocker.propTypes = {
-  onTouchEnd: PropTypes.func,
-  type: PropTypes.string,
-};
-
-GestureBlocker.defaultProps = {
-  onTouchEnd: () => null,
-};
-
-export default React.memo(GestureBlocker);
+}

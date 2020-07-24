@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   PanGestureHandler,
   TapGestureHandler,
@@ -8,19 +8,25 @@ import Animated from 'react-native-reanimated';
 export default function GestureWrapper({
   children,
   enabled,
-  onHandlerStateChange,
-  onPanGestureEvent,
-  onTapGestureEvent,
+  panGestureHandler,
+  tapGestureHandler,
 }) {
+  const panHandlerRef = useRef();
+  const tapHandlerRef = useRef();
+
   return enabled ? (
-    <TapGestureHandler maxDeltaY={30} onHandlerStateChange={onTapGestureEvent}>
+    <TapGestureHandler
+      {...tapGestureHandler}
+      maxDeltaY={30}
+      simultaneousHandlers={panHandlerRef}
+    >
       <Animated.View accessible justifyContent="flex-start">
         <PanGestureHandler
+          {...panGestureHandler}
           failOffsetY={2}
           minDist={1}
-          onGestureEvent={onPanGestureEvent}
-          onHandlerStateChange={onHandlerStateChange}
           shouldActivateOnStart
+          simultaneousHandlers={tapHandlerRef}
         >
           <Animated.View>{children}</Animated.View>
         </PanGestureHandler>

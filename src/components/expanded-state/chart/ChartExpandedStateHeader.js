@@ -157,11 +157,13 @@ const ChartExpandedStateHeader = ({
         ) : (
           <ColumnWithMargins align="start" flex={1} margin={1}>
             <Title
+              align="left"
               as={Input}
               editable={false}
               flex={1}
               pointerEvent="none"
               ref={chartPriceRef}
+              width="100%"
             />
             <Subtitle>{name}</Subtitle>
           </ColumnWithMargins>

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { chartExpandedAvailable } from '../../config/experimental';
 import AssetInputTypes from '../../helpers/assetInputTypes';
 import { useColorForAsset } from '../../hooks';
@@ -25,7 +25,6 @@ const ChartExpandedState = ({ asset }) => {
   const chartDateRef = useRef();
   const chartPriceRef = useRef();
 
-  const [chartPrice, setChartPrice] = useState(0);
   const color = useColorForAsset(asset);
 
   return (
@@ -37,7 +36,6 @@ const ChartExpandedState = ({ asset }) => {
         {...asset}
         change={asset?.price?.relative_change_24h || 0}
         chartDateRef={chartDateRef}
-        chartPrice={chartPrice}
         chartPriceRef={chartPriceRef}
         color={color}
         latestPrice={asset?.native?.price.display}
@@ -46,11 +44,9 @@ const ChartExpandedState = ({ asset }) => {
         <Chart
           asset={asset}
           chartDateRef={chartDateRef}
-          chartPrice={chartPrice}
           chartPriceRef={chartPriceRef}
           color={color}
-          latestPrice={asset?.native?.price.amount}
-          setChartPrice={setChartPrice}
+          latestPrice={asset?.native?.price?.amount}
         />
       )}
       <SheetDivider />

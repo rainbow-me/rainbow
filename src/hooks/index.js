@@ -3,6 +3,7 @@ export { default as useAccountProfile } from './useAccountProfile';
 export { default as useAccountSettings } from './useAccountSettings';
 export { default as useAccountTransactions } from './useAccountTransactions';
 export { default as useAddCashLimits } from './useAddCashLimits';
+export { default as useAnimatedListener } from './useAnimatedListener';
 export { default as useAppState } from './useAppState';
 export { default as useAsset } from './useAsset';
 export { default as useBiometryType } from './useBiometryType';

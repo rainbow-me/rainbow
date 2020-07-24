@@ -1,8 +1,9 @@
+import React from 'react';
 import styled from 'styled-components/primitives';
 import { Text } from '../text';
 import { colors } from '@rainbow-me/styles';
 
-const TimestampText = styled(Text).attrs({
+const TimestampTextElement = styled(Text).attrs({
   align: 'center',
   color: colors.blueGreyDark50,
   letterSpacing: 'roundedTight',
@@ -10,6 +11,11 @@ const TimestampText = styled(Text).attrs({
   weight: 'semibold',
 })`
   margin-left: -15;
+  transform: translateX(${({ translateX }) => translateX}px);
 `;
 
-export default TimestampText;
+const TimestampText = ({ translateX, value }) => (
+  <TimestampTextElement translateX={translateX}>{value}</TimestampTextElement>
+);
+
+export default React.memo(TimestampText);

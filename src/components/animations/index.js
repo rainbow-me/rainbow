@@ -1,4 +1,12 @@
-export { contains, interpolate, runSpring, timing, updateState } from './procs';
+export {
+  contains,
+  interpolate,
+  isEitherGestureActiveProc,
+  onEitherGestureActiveChange,
+  runSpring,
+  timing,
+  updateState,
+} from './procs';
 export { default as ButtonPressAnimation } from './ButtonPressAnimation';
 export { default as FlyInAnimation } from './FlyInAnimation';
 export { default as OpacityToggler } from './OpacityToggler';

@@ -21,6 +21,12 @@ const TimespanItemLabel = styled(Text).attrs(({ color, isSelected }) => ({
   ${padding(0, 9)};
 `;
 
+const TimespanItemRow = styled(Row).attrs({
+  justify: 'space-between',
+})`
+  ${padding(0, 15)};
+`;
+
 const TimespanItem = ({ color, isSelected, item, ...props }) => (
   <Centered flexShrink={0} height={32} {...props}>
     <TimespanItemLabel color={color} isSelected={isSelected}>
@@ -30,12 +36,6 @@ const TimespanItem = ({ color, isSelected, item, ...props }) => (
     </TimespanItemLabel>
   </Centered>
 );
-
-const TimespanItemRow = styled(Row).attrs({
-  justify: 'space-between',
-})`
-  ${padding(0, 15)};
-`;
 
 const TimespanSelector = ({
   color = colors.dark,
