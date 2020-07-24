@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
+import { delayNext } from '../../hooks/useMagicAutofocus';
 import { useNavigation } from '../../navigation/Navigation';
 import { BackButton } from '../header';
 import { Centered } from '../layout';
@@ -38,10 +39,13 @@ export default function CurrencySelectModalHeader() {
   const { params } = useRoute();
   const title = params?.headerTitle;
 
-  const handlePressBack = useCallback(
-    () => navigate(Routes.MAIN_EXCHANGE_SCREEN),
-    [navigate]
-  );
+  const { toggleGestureEnabled } = params;
+
+  const handlePressBack = useCallback(() => {
+    delayNext();
+    toggleGestureEnabled(true);
+    navigate(Routes.MAIN_EXCHANGE_SCREEN);
+  }, [navigate]);
 
   return (
     <HeaderContainer>

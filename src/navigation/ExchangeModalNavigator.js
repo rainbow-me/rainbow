@@ -45,7 +45,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
     const tabTransitionPosition = useValue(0);
 
-    const [swipeEnabled, setSwipeEnabled] = useState(false);
+    const [swipeEnabled, setSwipeEnabled] = useState(true);
 
     const toggleGestureEnabled = useCallback(
       dismissable => {

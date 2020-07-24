@@ -7,6 +7,7 @@ import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import { multiply } from '../helpers/utilities';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountAssets from './useAccountAssets';
+import { delayNext } from './useMagicAutofocus';
 import usePrevious from './usePrevious';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 import useUniswapCurrencyReserves from './useUniswapCurrencyReserves';
@@ -264,6 +265,7 @@ export default function useUniswapCurrencies({
   const navigateToSelectInputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
       setParams({ focused: false });
+      delayNext();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
         category,
         headerTitle: inputHeaderTitle,
@@ -277,6 +279,7 @@ export default function useUniswapCurrencies({
   const navigateToSelectOutputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
       setParams({ focused: false });
+      delayNext();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
         category,
         headerTitle: 'Receive',

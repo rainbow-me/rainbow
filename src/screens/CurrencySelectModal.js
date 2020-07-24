@@ -21,6 +21,7 @@ import {
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
+import { delayNext } from '../hooks/useMagicAutofocus';
 import { useNavigation } from '../navigation/Navigation';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 import {
@@ -178,9 +179,18 @@ export default function CurrencySelectModal() {
           type,
         });
       }
+      delayNext();
+      toggleGestureEnabled(true);
       navigate(Routes.MAIN_EXCHANGE_SCREEN);
     },
-    [category, onSelectCurrency, navigate, searchQueryForSearch, type]
+    [
+      toggleGestureEnabled,
+      category,
+      onSelectCurrency,
+      navigate,
+      searchQueryForSearch,
+      type,
+    ]
   );
 
   const itemProps = useMemo(
@@ -206,7 +216,11 @@ export default function CurrencySelectModal() {
     // on new focus state
     if (isFocused !== prevIsFocused) {
       startInteraction(() => {
-        toggleGestureEnabled(!isFocused);
+        if (isFocused) {
+          setTimeout(() => toggleGestureEnabled(false), 500);
+        } else {
+          toggleGestureEnabled(true);
+        }
       });
     }
 
