@@ -1,7 +1,7 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useValue } from 'react-native-redash';
 import { useMemoOne } from 'use-memo-one';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
@@ -42,6 +42,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
   return function ExchangeModalNavigator() {
     const { setOptions } = useNavigation();
+    const timeout = useRef(null);
 
     const tabTransitionPosition = useValue(0);
 
@@ -49,7 +50,15 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
     const toggleGestureEnabled = useCallback(
       dismissable => {
-        setSwipeEnabled(!dismissable);
+        if (timeout.current !== null) {
+          clearTimeout(timeout.current);
+          timeout.current = null;
+        }
+        if (dismissable) {
+          setSwipeEnabled(false);
+        } else {
+          timeout.current = setTimeout(() => setSwipeEnabled(true), 500);
+        }
         setOptions({ dismissable });
       },
       [setOptions, setSwipeEnabled]

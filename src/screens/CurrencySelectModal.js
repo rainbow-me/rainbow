@@ -216,11 +216,7 @@ export default function CurrencySelectModal() {
     // on new focus state
     if (isFocused !== prevIsFocused) {
       startInteraction(() => {
-        if (isFocused) {
-          setTimeout(() => toggleGestureEnabled(false), 500);
-        } else {
-          toggleGestureEnabled(true);
-        }
+        toggleGestureEnabled(!isFocused);
       });
     }
 
