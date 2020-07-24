@@ -99,9 +99,10 @@ const BackupSection = ({ navigation }) => {
           e
         );
         // if we don't have all wallets, let's see if we have a selected wallet
-        const { wallet } = await getSelectedWallet();
+        const selected = await getSelectedWallet();
         logger.sentry('[logAndAttemptRestore] Got selected wallet');
-        if (wallet && wallet.id) {
+        if (selected?.wallet?.id) {
+          const { wallet } = selected;
           // We can recover it based in the selected wallet
           await store.dispatch(walletsUpdate({ [wallet.id]: wallet }));
           logger.sentry('[logAndAttemptRestore] Updated wallets');
