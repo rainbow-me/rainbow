@@ -23,7 +23,7 @@ export default function useAccountProfile() {
 
   if (!selectedAccount) return {};
 
-  const { label, color, index } = selectedAccount;
+  const { label, color, index, image } = selectedAccount;
 
   const accountName = removeFirstEmojiFromString(
     label || accountENS || address(accountAddress, 6, 4)
@@ -35,11 +35,13 @@ export default function useAccountProfile() {
     labelOrAccountName || toUpper(accountENS) || `${index + 1}`
   )[0];
   const accountColor = color;
+  const accountImage = image;
 
   return {
     accountAddress,
     accountColor,
     accountENS,
+    accountImage,
     accountName,
     accountSymbol,
   };

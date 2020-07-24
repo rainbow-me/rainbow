@@ -15,10 +15,12 @@ import {
   hasAddableContact,
 } from '../../helpers/transactions';
 import { isENSAddressFormat } from '../../helpers/validators';
+import { useAccountProfile, useWallets } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
+import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
 import { FloatingEmojis } from '../floating-emojis';
-import { useAccountProfile } from '@rainbow-me/hooks';
+
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import {
@@ -68,8 +70,8 @@ const TransactionList = ({
   requests,
   transactions,
 }) => {
+  const { wallets, selectedWallet } = useWallets();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
-  const [imageUri, setImageUri] = useState('');
   const onNewEmoji = useRef();
   const setOnNewEmoji = useCallback(
     newOnNewEmoji => (onNewEmoji.current = newOnNewEmoji),
@@ -82,6 +84,7 @@ const TransactionList = ({
     accountColor,
     accountSymbol,
     accountName,
+    accountImage,
   } = useAccountProfile();
 
   const onAddCashPress = useCallback(() => {
@@ -100,15 +103,32 @@ const TransactionList = ({
       } else if (response.customButton) {
         if (response.customButton === 'ab') {
           navigate(Routes.AVATAR_BUILDER, {
-            accountColor,
-            accountName,
+            initialAccountColor: accountColor,
+            initialAccountName: accountName,
           });
         }
       } else {
-        setImageUri(response);
+        const stringIndex = response?.uri.indexOf('/Documents');
+        const newWallets = { ...wallets };
+        const walletId = selectedWallet.id;
+        newWallets[walletId].addresses.some((account, index) => {
+          newWallets[walletId].addresses[index].image = `~${response.uri.slice(
+            stringIndex
+          )}`;
+          dispatch(walletsSetSelected(newWallets[walletId]));
+          return true;
+        });
+        dispatch(walletsUpdate(newWallets));
       }
     });
-  }, [accountColor, accountName, navigate]);
+  }, [
+    accountColor,
+    accountName,
+    dispatch,
+    navigate,
+    selectedWallet.id,
+    wallets,
+  ]);
 
   const onReceivePress = useCallback(() => {
     navigate(Routes.RECEIVE_MODAL);
@@ -249,7 +269,7 @@ const TransactionList = ({
       <Container
         accountAddress={accountName}
         accountColor={colors.avatarColor[accountColor]}
-        accountImage={imageUri?.uri?.split('://')[1]}
+        accountImage={accountImage}
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}

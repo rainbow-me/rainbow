@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
+import { useAccountProfile } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
@@ -17,21 +18,19 @@ const FirstLetter = styled(Text).attrs({
   align: 'center',
   color: colors.white,
   letterSpacing: 2,
-  lineHeight: 64.5,
+  lineHeight: 66,
   size: 38,
   weight: 'semibold',
 })`
-  top: 4px;
-  width: 65.5;
+  width: 67;
 `;
 
 export default function AvatarCircle({
-  accountColor = 0,
-  accountSymbol = '🤔',
   isAvatarPickerAvailable,
   onPress,
   overlayStyles,
 }) {
+  const { accountColor, accountSymbol } = useAccountProfile();
   const shadows = useMemo(
     () => ({
       default: [

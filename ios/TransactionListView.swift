@@ -57,16 +57,20 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       header.accountNameViewWidthConstraint.constant = accountAddressWidth
     }
   }
-  @objc var accountImage: String? = nil {
+  @objc var accountImage: NSString? = nil {
    didSet {
     if (accountImage != nil) {
-      let url = URL.init(fileURLWithPath: accountImage ?? "")
+      let url = URL.init(fileURLWithPath: accountImage?.expandingTildeInPath ?? "")
 
       let imageData:NSData = NSData(contentsOf: url)!
 
       let image = UIImage(data: imageData as Data)
-
+      
+      header.accountImage.alpha = 1.0
       header.accountImage.image = image
+      shadowLayer.shadowColor = UIColor.gray.cgColor
+    } else {
+      header.accountImage.alpha = 0.0
     }
    }
  }
