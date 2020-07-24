@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { filter, flatMap, get, map, values } from 'lodash';
 import {
@@ -15,6 +16,7 @@ import {
   setSelectedWallet,
 } from '../model/wallet';
 import { settingsUpdateAccountAddress } from '../redux/settings';
+import { logger } from '../utils';
 
 // -- Constants --------------------------------------- //
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
@@ -76,9 +78,10 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     });
 
     dispatch(fetchWalletNames());
-
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
+  } catch (error) {
+    logger.sentry('Exception during walletsLoadState');
+    captureException(error);
+  }
 };
 
 export const walletsUpdate = wallets => dispatch => {
