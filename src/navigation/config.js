@@ -1,6 +1,5 @@
 import { Keyboard, Platform, StatusBar } from 'react-native';
 import { onDidPop, onWillPop } from './Navigation';
-import { ScrollPagerWrapper } from './helpers';
 import { appearListener } from './nativeStackHelpers';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
@@ -101,7 +100,6 @@ export const nativeStackDefaultConfigWithoutStatusBar = {
 
 export const exchangeTabNavigatorConfig = {
   initialLayout: deviceUtils.dimensions,
-  pager: ScrollPagerWrapper,
   sceneContainerStyle: {
     backgroundColor: 'transparent',
   },

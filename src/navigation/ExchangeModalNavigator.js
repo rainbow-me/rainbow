@@ -10,6 +10,7 @@ import SwapModalScreen from '../screens/SwapModal';
 import { useNavigation } from './Navigation';
 import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
 import { exchangeModalPreset, swapDetailsPreset } from './effects';
+import { ScrollPagerWrapper } from './helpers';
 import Routes from './routesNames';
 
 const Stack = createStackNavigator();
@@ -48,6 +49,13 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
     const [swipeEnabled, setSwipeEnabled] = useState(true);
 
+    const renderPager = useCallback(
+      props => (
+        <ScrollPagerWrapper {...props} setSwipeEnabled={setSwipeEnabled} />
+      ),
+      [setSwipeEnabled]
+    );
+
     const toggleGestureEnabled = useCallback(
       dismissable => {
         if (timeout.current !== null) {
@@ -57,7 +65,8 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         if (dismissable) {
           setSwipeEnabled(false);
         } else {
-          timeout.current = setTimeout(() => setSwipeEnabled(true), 700);
+          // we're enabling swiping a bit later after keyboard focusing
+          timeout.current = setTimeout(() => setSwipeEnabled(true), 300);
         }
         setOptions({ dismissable });
       },
@@ -76,6 +85,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
       <Tabs.Navigator
         swipeEnabled={swipeEnabled}
         {...exchangeTabNavigatorConfig}
+        pager={renderPager}
         position={tabTransitionPosition}
       >
         <Tabs.Screen
