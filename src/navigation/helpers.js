@@ -16,9 +16,9 @@ export function ScrollPagerWrapper(props) {
         onSwipeEnd={velocity => {
           if (velocity < 0) {
             // we're disabling swiping immediately after detecting returning animation
-            props?.setSwipeEnabled(false);
+            props.setSwipeEnabled?.(false);
           }
-          props?.onSwipeEnd();
+          props.onSwipeEnd();
         }}
         onSwipeStart={() => {
           delayNext();
