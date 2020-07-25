@@ -57,7 +57,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         if (dismissable) {
           setSwipeEnabled(false);
         } else {
-          timeout.current = setTimeout(() => setSwipeEnabled(true), 500);
+          timeout.current = setTimeout(() => setSwipeEnabled(true), 700);
         }
         setOptions({ dismissable });
       },

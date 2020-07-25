@@ -88,7 +88,7 @@ index a27a538..5f2e9b3 100644
    }
  }
 diff --git a/node_modules/react-native-tab-view/src/ScrollPager.tsx b/node_modules/react-native-tab-view/src/ScrollPager.tsx
-index 16eae4e..6595326 100644
+index 16eae4e..8998994 100644
 --- a/node_modules/react-native-tab-view/src/ScrollPager.tsx
 +++ b/node_modules/react-native-tab-view/src/ScrollPager.tsx
 @@ -18,6 +18,8 @@ export default class ScrollPager<T extends Route> extends React.Component<
@@ -140,7 +140,7 @@ index 16eae4e..6595326 100644
        }
      };
  
-@@ -168,8 +182,6 @@ export default class ScrollPager<T extends Route> extends React.Component<
+@@ -168,20 +182,19 @@ export default class ScrollPager<T extends Route> extends React.Component<
          <Animated.ScrollView
            pagingEnabled
            directionalLockEnabled
@@ -149,7 +149,12 @@ index 16eae4e..6595326 100644
            overScrollMode="never"
            scrollToOverflowEnabled
            scrollEnabled={this.props.swipeEnabled}
-@@ -181,7 +193,7 @@ export default class ScrollPager<T extends Route> extends React.Component<
+           automaticallyAdjustContentInsets={false}
+           bounces={overscroll}
++          keyboardShouldPersistTaps="always"
+           scrollsToTop={false}
+           showsHorizontalScrollIndicator={false}
+           scrollEventThrottle={1}
            onScroll={this.onScroll}
            onScrollBeginDrag={handleSwipeStart}
            onScrollEndDrag={handleSwipeEnd}
