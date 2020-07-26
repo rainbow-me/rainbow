@@ -60,7 +60,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var accountImage: NSString? = nil {
    didSet {
     if (accountImage != nil) {
-      let url = URL.init(fileURLWithPath: accountImage?.expandingTildeInPath ?? "")
+      let url = URL.init(fileURLWithPath: accountImage!.expandingTildeInPath)
 
       let imageData:NSData = NSData(contentsOf: url)!
 
