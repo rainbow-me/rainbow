@@ -206,7 +206,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.accountView.isHidden = false
     
     header.addSubview(headerSeparator)
-    if(true){
+    if(isAvatarPickerAvailable){
       header.accountView.addTarget(self, action: #selector(onAvatarPressed(_:)), for: .touchUpInside)
       header.accountView.addTarget(self, action: #selector(onPressInAvatar(_:)), for: .touchDown)
       header.accountView.addTarget(self, action: #selector(onPressInAvatar(_:)), for: .touchDragInside)
