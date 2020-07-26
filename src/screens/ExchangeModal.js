@@ -503,7 +503,7 @@ export default function ExchangeModal({
             }}
           >
             <FloatingPanel
-              overflow="visible"
+              overflow="hidden"
               paddingBottom={showOutputField ? 0 : 26}
               radius={exchangeModalBorderRadius}
             >

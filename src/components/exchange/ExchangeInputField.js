@@ -5,10 +5,12 @@ import { ColumnWithMargins, Row } from '../layout';
 import ExchangeField from './ExchangeField';
 import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
+import { colors } from '@rainbow-me/styles';
 
 const BottomRowHeight = Platform.OS === 'android' ? 52 : 32;
 
 const Container = styled(ColumnWithMargins).attrs({ margin: 12 })`
+  background-color: ${colors.white};
   padding-top: 6;
   width: 100%;
   z-index: 1;
