@@ -9,6 +9,10 @@ export const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 const USERDATA_FILE = 'UserData.json';
 const encryptor = new AesEncryptor();
 
+export function logoutFromGoogleDrive() {
+  Platform.OS === 'android' && RNCloudFs.logout();
+}
+
 export async function deleteAllBackups() {
   try {
     await RNCloudFs.loginIfNeeded();
@@ -27,21 +31,16 @@ export async function deleteAllBackups() {
 
 export async function encryptAndSaveDataToCloud(data, password, filename) {
   // Encrypt the data
-  console.log('[DEBUG]: encrypting data', data, password, filename);
   const encryptedData = await encryptor.encrypt(password, JSON.stringify(data));
   try {
     // Store it on the FS first
     const path = `${RNFS.DocumentDirectoryPath}/${filename}`;
-    console.log('[DEBUG]: writing on FS', path);
     await RNFS.writeFile(path, encryptedData, 'utf8');
-    console.log('[DEBUG]: done writing on FS', path);
     const sourceUri = { path };
     const destinationPath = `${REMOTE_BACKUP_WALLET_DIR}/${filename}`;
     const mimeType = 'application/json';
     // Only available to our app
     const scope = 'hidden';
-    console.log('[DEBUG]: copying to cloud');
-    console.log('[DEBUG]: Logging in if necessary');
     await RNCloudFs.loginIfNeeded();
     const result = await RNCloudFs.copyToCloud({
       mimeType,
@@ -49,7 +48,6 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
       sourcePath: sourceUri,
       targetPath: destinationPath,
     });
-    console.log('[DEBUG]: done copying to cloud');
     // Now we need to verify the file has been stored in the cloud
     const exists = await RNCloudFs.fileExists(
       Platform.OS === 'ios'
@@ -62,13 +60,10 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
             scope,
           }
     );
-    console.log('[DEBUG]: exists', exists);
     if (!exists) {
       return false;
     }
-    console.log('[DEBUG]: deleting local');
     await RNFS.unlink(path);
-    console.log('[DEBUG]: done deleting local');
     return filename;
   } catch (e) {
     logger.log('Error during encryptAndSaveDataToCloud', e);

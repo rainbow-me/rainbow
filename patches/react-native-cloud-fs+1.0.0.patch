@@ -51,7 +51,7 @@ index 0000000..849b2a6
 +o/full
 diff --git a/node_modules/react-native-cloud-fs/android/build/.transforms/76df646b401abb97f7d417c1df5870e9/full/classes.dex b/node_modules/react-native-cloud-fs/android/build/.transforms/76df646b401abb97f7d417c1df5870e9/full/classes.dex
 new file mode 100644
-index 0000000..a02fd18
+index 0000000..c2f0136
 Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/.transforms/76df646b401abb97f7d417c1df5870e9/full/classes.dex differ
 diff --git a/node_modules/react-native-cloud-fs/android/build/.transforms/f392815bb0c41fdc2d6eb62ee80bdcf7.bin b/node_modules/react-native-cloud-fs/android/build/.transforms/f392815bb0c41fdc2d6eb62ee80bdcf7.bin
 new file mode 100644
@@ -120,7 +120,7 @@ index 0000000..9e26dfe
 \ No newline at end of file
 diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/compile_library_classes/debug/classes.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/compile_library_classes/debug/classes.jar
 new file mode 100644
-index 0000000..56dc176
+index 0000000..771ff6c
 Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/compile_library_classes/debug/classes.jar differ
 diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar
 new file mode 100644
@@ -128,7 +128,7 @@ index 0000000..56cced1
 Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar differ
 diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/full_jar/debug/createFullJarDebug/full.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/full_jar/debug/createFullJarDebug/full.jar
 new file mode 100644
-index 0000000..56dc176
+index 0000000..771ff6c
 Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/full_jar/debug/createFullJarDebug/full.jar differ
 diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state
 new file mode 100644
@@ -187,7 +187,7 @@ index 0000000..fb2fa31
 Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/DriveServiceHelper.class differ
 diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule.class
 new file mode 100644
-index 0000000..4cf744c
+index 0000000..6752eb2
 Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule.class differ
 diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsPackage.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsPackage.class
 new file mode 100644
@@ -540,7 +540,7 @@ index 0000000..b6c738e
 +styleable SwipeRefreshLayout swipeRefreshLayoutProgressSpinnerBackgroundColor
 diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/runtime_library_classes/debug/classes.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/runtime_library_classes/debug/classes.jar
 new file mode 100644
-index 0000000..56dc176
+index 0000000..771ff6c
 Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/runtime_library_classes/debug/classes.jar differ
 diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/symbols/debug/R.txt b/node_modules/react-native-cloud-fs/android/build/intermediates/symbols/debug/R.txt
 new file mode 100644
@@ -1549,7 +1549,7 @@ index f78f8bd..0000000
 -    }
 -}
 diff --git a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsModule.java b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsModule.java
-index c7872d6..0c64022 100644
+index c7872d6..7854780 100644
 --- a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsModule.java
 +++ b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsModule.java
 @@ -1,19 +1,11 @@
@@ -1573,7 +1573,7 @@ index c7872d6..0c64022 100644
  import com.facebook.react.bridge.ActivityEventListener;
  import com.facebook.react.bridge.LifecycleEventListener;
  import com.facebook.react.bridge.Promise;
-@@ -21,34 +13,43 @@ import com.facebook.react.bridge.ReactApplicationContext;
+@@ -21,34 +13,45 @@ import com.facebook.react.bridge.ReactApplicationContext;
  import com.facebook.react.bridge.ReactContextBaseJavaModule;
  import com.facebook.react.bridge.ReactMethod;
  import com.facebook.react.bridge.ReadableMap;
@@ -1592,6 +1592,8 @@ index c7872d6..0c64022 100644
 +
 +import com.google.android.gms.auth.api.signin.GoogleSignIn;
 +import com.google.android.gms.auth.api.signin.GoogleSignInClient;
++import com.google.android.gms.tasks.Task;
++import com.google.android.gms.tasks.Tasks;
 +import com.google.api.client.extensions.android.http.AndroidHttp;
 +import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 +import com.google.api.client.json.gson.GsonFactory;
@@ -1631,7 +1633,7 @@ index c7872d6..0c64022 100644
      private final ReactApplicationContext reactContext;
      private GoogleApiClient googleApiClient;
  
-@@ -56,79 +57,97 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
+@@ -56,79 +59,97 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
          super(reactContext);
          this.reactContext = reactContext;
  
@@ -1771,7 +1773,7 @@ index c7872d6..0c64022 100644
              if (!options.hasKey("sourcePath")) {
                  promise.reject("error", "sourcePath not specified");
              }
-@@ -156,8 +175,6 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
+@@ -156,8 +177,6 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
  
              boolean useDocumentsFolder = options.hasKey("scope") ? options.getString("scope").toLowerCase().equals("visible") : true;
  
@@ -1780,7 +1782,7 @@ index c7872d6..0c64022 100644
              String actualMimeType;
              if (mimeType == null) {
                  actualMimeType = guessMimeType(uriOrPath);
-@@ -165,18 +182,14 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
+@@ -165,18 +184,14 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
                  actualMimeType = null;
              }
  
@@ -1807,7 +1809,7 @@ index c7872d6..0c64022 100644
          }
      }
  
-@@ -192,20 +205,17 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
+@@ -192,20 +207,17 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
  
      @Override
      public void onHostResume() {
@@ -1831,7 +1833,7 @@ index c7872d6..0c64022 100644
      }
  
      @Override
-@@ -215,294 +225,101 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
+@@ -215,294 +227,123 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
  
      @Override
      public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
@@ -1873,7 +1875,7 @@ index c7872d6..0c64022 100644
 -            isResolvingError = true;
 -        }
 -    }
- 
+-
 -    private void showErrorDialog(int errorCode) {
 -        ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
 -        Bundle args = new Bundle();
@@ -1882,7 +1884,7 @@ index c7872d6..0c64022 100644
 -        dialogFragment.setArguments(args);
 -        dialogFragment.show(getCurrentActivity().getFragmentManager(), "errordialog");
 -    }
--
+ 
 -    /* Called from ErrorDialogFragment when the dialog is dismissed. */
 -    public void onDialogDismissed() {
 -        isResolvingError = false;
@@ -1898,19 +1900,37 @@ index c7872d6..0c64022 100644
 -            int errorCode = this.getArguments().getInt(DIALOG_ERROR);
 -            return GoogleApiAvailability.getInstance().getErrorDialog(this.getActivity(), errorCode, REQUEST_RESOLVE_ERROR);
 -        }
--
++    /**
++     * Copy the source into the google drive database
++     */
+ 
 -        @Override
 -        public void onDismiss(DialogInterface dialog) {
 -            Activity activity = getActivity();
--
++    /**
++     * Starts a sign-in activity using {@link #REQUEST_CODE_SIGN_IN}.
++     */
++    @ReactMethod
++    public void requestSignIn() {
++        Log.d(TAG, "Requesting sign-in");
+ 
 -            //todo - call back to onDialogDismissed
 -        }
 -    }
--
++        GoogleSignInOptions signInOptions =
++                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
++                        .requestEmail()
++                        .requestScopes(new Scope(DriveScopes.DRIVE_FILE))
++                        .build();
++        GoogleSignInClient client = GoogleSignIn.getClient(this.reactContext, signInOptions);
++        client.signOut();
+ 
 -    public interface InputDataSource {
 -        void copyToOutputStream(OutputStream output) throws IOException;
--    }
--
++        // The result of the sign-in Intent is handled in onActivityResult.
++        this.reactContext.startActivityForResult(client.getSignInIntent(), REQUEST_CODE_SIGN_IN, null);
+     }
+ 
 -    public class SourceUri implements InputDataSource {
 -        public final String uri;
 -        @Nullable
@@ -1949,14 +1969,14 @@ index c7872d6..0c64022 100644
 -                return conn.getInputStream();
 -            }
 -        }
--
++    @ReactMethod
++    public void logout(Promise promise) {
+ 
 -        public void copyToOutputStream(OutputStream output) throws IOException {
 -            InputStream input = read();
 -            if (input == null)
 -                throw new IllegalStateException("Cannot read " + uri);
-+    /**
-+     * Copy the source into the google drive database
-+     */
++        Log.d(TAG, "Requesting sign-in");
  
 -            try {
 -                byte[] buffer = new byte[256];
@@ -1969,13 +1989,7 @@ index c7872d6..0c64022 100644
 -            }
 -        }
 -    }
-+    /**
-+     * Starts a sign-in activity using {@link #REQUEST_CODE_SIGN_IN}.
-+     */
-+    @ReactMethod
-+    public void requestSignIn() {
-+        Log.d(TAG, "Requesting sign-in");
- 
+-
 -    @NonNull
 -    private void connect(GoogleApiClient.ConnectionCallbacks listener) {
 -        if (googleApiClient == null) {
@@ -2004,12 +2018,18 @@ index c7872d6..0c64022 100644
                          .build();
 -            }
 -        }
-+        GoogleSignInClient client = GoogleSignIn.getClient(this.reactContext, signInOptions);
- 
+-
 -        this.googleApiClient.registerConnectionCallbacks(listener);
 -        this.googleApiClient.connect();
-+        // The result of the sign-in Intent is handled in onActivityResult.
-+        this.reactContext.startActivityForResult(client.getSignInIntent(), REQUEST_CODE_SIGN_IN, null);
++        GoogleSignInClient client = GoogleSignIn.getClient(this.reactContext, signInOptions);
++        client.signOut()
++                .addOnSuccessListener( result -> {
++                    promise.resolve(true);
++                })
++                .addOnFailureListener(exception ->{
++                    Log.e(TAG, "Couldn't log out.", exception);
++                    promise.reject(exception);
++                });
      }
  
 -    @Override

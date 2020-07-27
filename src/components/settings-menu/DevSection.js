@@ -1,10 +1,13 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import Clipboard from '@react-native-community/clipboard';
 import React, { useCallback, useContext } from 'react';
-import { Alert, ScrollView } from 'react-native';
+import { Alert, Platform, ScrollView } from 'react-native';
 import { DEV_SEEDS } from 'react-native-dotenv';
 import { Restart } from 'react-native-restart';
-import { deleteAllBackups } from '../../handlers/cloudBackup';
+import {
+  deleteAllBackups,
+  logoutFromGoogleDrive,
+} from '../../handlers/cloudBackup';
 import { DevContext } from '../../helpers/DevContext';
 import { useWallets } from '../../hooks';
 import { wipeKeychain } from '../../model/keychain';
@@ -48,6 +51,12 @@ const DevSection = () => {
       <ListItem label="💣 Reset Keychain" onPress={wipeKeychain} />
       <ListItem label="🔄 Restart app" onPress={Restart} />
       <ListItem label="🗑️ Remove all backups" onPress={removeBackups} />
+      {Platform.OS === 'android' && (
+        <ListItem
+          label="🚪 Logout from Google"
+          onPress={logoutFromGoogleDrive}
+        />
+      )}
       <ListItem
         label="🤷 Restore default experimental config"
         onPress={() => AsyncStorage.removeItem('experimentalConfig')}
