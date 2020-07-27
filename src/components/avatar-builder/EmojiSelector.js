@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { getBrand } from 'react-native-device-info';
 import {
   ScrollView,
   State,
@@ -158,7 +159,8 @@ export default class EmojiSelector extends PureComponent {
                   (Platform.OS === 'ios' ? 15 : 22),
                 height: (width - 21) / this.props.columns,
                 width: deviceUtils.dimensions.width,
-                letterSpacing: 8,
+                letterSpacing:
+                  Platform.OS === 'ios' ? 8 : getBrand() === 'google' ? 11 : 8,
                 backgroundColor: colors.white,
               }}
             >
@@ -350,7 +352,8 @@ export default class EmojiSelector extends PureComponent {
                 (Platform.OS === 'ios' ? 15 : 22),
               height: (width - 21) / this.props.columns,
               width: deviceUtils.dimensions.width,
-              letterSpacing: 8,
+              letterSpacing:
+                Platform.OS === 'ios' ? 8 : getBrand() === 'google' ? 11 : 8,
               top: 0.8,
             }}
           >
