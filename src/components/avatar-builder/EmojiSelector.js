@@ -151,6 +151,7 @@ export default class EmojiSelector extends PureComponent {
           <View key={`categoryEmoji${rowContent[0]}`}>
             <Text
               style={{
+                color: colors.black,
                 marginHorizontal: 10,
                 fontSize:
                   Math.floor(this.state.colSize) -
@@ -270,21 +271,27 @@ export default class EmojiSelector extends PureComponent {
           opacity: scrollPosition,
         }}
       >
-        <BlurView
-          blurAmount={10}
-          blurType="light"
-          style={[
-            styles.sectionStickyBlur,
-            {
-              width:
-                (index - 1) / 2 <= categoryKeys.length - 1
-                  ? Categories[categoryKeys[(index - 1) / 2]].width
-                  : Categories[categoryKeys[categoryKeys.length - 1]].width,
-            },
-          ]}
-        >
-          <Text style={styles.sectionStickyHeader}>{item.title}</Text>
-        </BlurView>
+        {Platform.OS === 'ios' ? (
+          <BlurView
+            blurAmount={10}
+            blurType="light"
+            style={[
+              styles.sectionStickyBlur,
+              {
+                width:
+                  (index - 1) / 2 <= categoryKeys.length - 1
+                    ? Categories[categoryKeys[(index - 1) / 2]].width
+                    : Categories[categoryKeys[categoryKeys.length - 1]].width,
+              },
+            ]}
+          >
+            <Text style={styles.sectionStickyHeader}>{item.title}</Text>
+          </BlurView>
+        ) : (
+          <View style={styles.sectionStickyBlur}>
+            <Text style={styles.sectionStickyHeader}>{item.title}</Text>
+          </View>
+        )}
       </Animated.View>
     </View>
   );
@@ -336,6 +343,7 @@ export default class EmojiSelector extends PureComponent {
           <Text
             key={`emojiRow${emojis[0]}`}
             style={{
+              color: colors.black,
               marginHorizontal: 10,
               fontSize:
                 Math.floor(this.state.colSize) -
