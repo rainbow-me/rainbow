@@ -2,6 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
 import React from 'react';
+import { createNativeStackNavigator } from 'react-native-screens/src/native-stack/index';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
@@ -32,6 +33,7 @@ import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 
 const Stack = createStackNavigator();
+const NativeStack = createNativeStackNavigator();
 
 function MainNavigator() {
   return (
@@ -57,16 +59,6 @@ function MainNavigator() {
         options={sheetPreset}
       />
       <Stack.Screen
-        component={ExchangeModalNavigator}
-        name={Routes.EXCHANGE_MODAL}
-        options={exchangePreset}
-      />
-      <Stack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET}
-        options={expandedPreset}
-      />
-      <Stack.Screen
         component={ModalScreen}
         name={Routes.MODAL_SCREEN}
         options={overlayExpandedPreset}
@@ -74,11 +66,6 @@ function MainNavigator() {
       <Stack.Screen
         component={ReceiveModal}
         name={Routes.RECEIVE_MODAL}
-        options={expandedPreset}
-      />
-      <Stack.Screen
-        component={SettingsModal}
-        name={Routes.SETTINGS_MODAL}
         options={expandedPreset}
       />
       <Stack.Screen
@@ -102,11 +89,6 @@ function MainNavigator() {
         options={sheetPreset}
       />
       <Stack.Screen
-        component={SavingsSheet}
-        name={Routes.SAVINGS_SHEET}
-        options={bottomSheetPreset}
-      />
-      <Stack.Screen
         component={WithdrawModal}
         name={Routes.SAVINGS_WITHDRAW_MODAL}
         options={exchangePreset}
@@ -116,20 +98,54 @@ function MainNavigator() {
         name={Routes.SAVINGS_DEPOSIT_MODAL}
         options={exchangePreset}
       />
-      <Stack.Screen
+    </Stack.Navigator>
+  );
+}
+
+function MainNativeNavigator() {
+  return (
+    <NativeStack.Navigator
+      initialRouteName={Routes.MAIN_NAVIGATOR}
+      screenOptions={{ headerShown: false }}
+    >
+      <NativeStack.Screen
+        component={ExchangeModalNavigator}
+        name={Routes.EXCHANGE_MODAL}
+        options={exchangePreset}
+      />
+      <NativeStack.Screen
+        component={MainNavigator}
+        name={Routes.MAIN_NAVIGATOR}
+      />
+      <NativeStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET}
+        options={expandedPreset}
+      />
+      <NativeStack.Screen
+        component={SettingsModal}
+        name={Routes.SETTINGS_MODAL}
+        options={expandedPreset}
+      />
+      <NativeStack.Screen
+        component={SavingsSheet}
+        name={Routes.SAVINGS_SHEET}
+        options={bottomSheetPreset}
+      />
+      <NativeStack.Screen
         component={SendSheet}
         name={Routes.SEND_SHEET}
         options={{
           ...omit(sheetPreset, 'gestureResponseDistance'),
         }}
       />
-    </Stack.Navigator>
+    </NativeStack.Navigator>
   );
 }
 
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
   <NavigationContainer onStateChange={onNavigationStateChange} ref={ref}>
-    <MainNavigator />
+    <MainNativeNavigator />
   </NavigationContainer>
 ));
 
