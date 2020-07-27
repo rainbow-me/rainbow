@@ -1,0 +1,2203 @@
+diff --git a/node_modules/react-native-cloud-fs/android/build.gradle b/node_modules/react-native-cloud-fs/android/build.gradle
+index 1128d9d..8f8cb2f 100644
+--- a/node_modules/react-native-cloud-fs/android/build.gradle
++++ b/node_modules/react-native-cloud-fs/android/build.gradle
+@@ -25,6 +25,10 @@ android {
+     lintOptions {
+         warning 'InvalidPackage'
+     }
++    compileOptions {
++        sourceCompatibility JavaVersion.VERSION_1_8
++        targetCompatibility JavaVersion.VERSION_1_8
++    }
+ }
+ 
+ allprojects {
+@@ -34,6 +38,15 @@ allprojects {
+ }
+ 
+ dependencies {
+-    provided 'com.google.android.gms:play-services-drive:+'
++    implementation ('com.google.android.gms:play-services-auth:18.1.0') {
++        force = true;
++    }
++    implementation 'com.google.http-client:google-http-client-gson:1.26.0'
++    implementation('com.google.api-client:google-api-client-android:1.26.0') {
++        exclude group: 'org.apache.httpcomponents'
++    }
++    implementation('com.google.apis:google-api-services-drive:v3-rev136-1.25.0') {
++        exclude group: 'org.apache.httpcomponents'
++    }
+     provided 'com.facebook.react:react-native:+'
+ }
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/.transforms/719e681ffa50086260c994be554fac23.bin b/node_modules/react-native-cloud-fs/android/build/.transforms/719e681ffa50086260c994be554fac23.bin
+new file mode 100644
+index 0000000..849b2a6
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/.transforms/719e681ffa50086260c994be554fac23.bin
+@@ -0,0 +1 @@
++o/full
+diff --git a/node_modules/react-native-cloud-fs/android/build/.transforms/719e681ffa50086260c994be554fac23/full/classes.dex b/node_modules/react-native-cloud-fs/android/build/.transforms/719e681ffa50086260c994be554fac23/full/classes.dex
+new file mode 100644
+index 0000000..43d7027
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/.transforms/719e681ffa50086260c994be554fac23/full/classes.dex differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/.transforms/76df646b401abb97f7d417c1df5870e9.bin b/node_modules/react-native-cloud-fs/android/build/.transforms/76df646b401abb97f7d417c1df5870e9.bin
+new file mode 100644
+index 0000000..849b2a6
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/.transforms/76df646b401abb97f7d417c1df5870e9.bin
+@@ -0,0 +1 @@
++o/full
+diff --git a/node_modules/react-native-cloud-fs/android/build/.transforms/76df646b401abb97f7d417c1df5870e9/full/classes.dex b/node_modules/react-native-cloud-fs/android/build/.transforms/76df646b401abb97f7d417c1df5870e9/full/classes.dex
+new file mode 100644
+index 0000000..a02fd18
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/.transforms/76df646b401abb97f7d417c1df5870e9/full/classes.dex differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/.transforms/f392815bb0c41fdc2d6eb62ee80bdcf7.bin b/node_modules/react-native-cloud-fs/android/build/.transforms/f392815bb0c41fdc2d6eb62ee80bdcf7.bin
+new file mode 100644
+index 0000000..1ed65e0
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/.transforms/f392815bb0c41fdc2d6eb62ee80bdcf7.bin
+@@ -0,0 +1 @@
++i/
+diff --git a/node_modules/react-native-cloud-fs/android/build/generated/source/buildConfig/debug/org/rncloudfs/BuildConfig.java b/node_modules/react-native-cloud-fs/android/build/generated/source/buildConfig/debug/org/rncloudfs/BuildConfig.java
+new file mode 100644
+index 0000000..ceeeb3a
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/generated/source/buildConfig/debug/org/rncloudfs/BuildConfig.java
+@@ -0,0 +1,18 @@
++/**
++ * Automatically generated file. DO NOT MODIFY
++ */
++package org.rncloudfs;
++
++public final class BuildConfig {
++  public static final boolean DEBUG = Boolean.parseBoolean("true");
++  public static final String LIBRARY_PACKAGE_NAME = "org.rncloudfs";
++  /**
++   * @deprecated APPLICATION_ID is misleading in libraries. For the library package name use LIBRARY_PACKAGE_NAME
++   */
++  @Deprecated
++  public static final String APPLICATION_ID = "org.rncloudfs";
++  public static final String BUILD_TYPE = "debug";
++  public static final String FLAVOR = "";
++  public static final int VERSION_CODE = 1;
++  public static final String VERSION_NAME = "1.0";
++}
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml b/node_modules/react-native-cloud-fs/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
+new file mode 100644
+index 0000000..952c37b
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
+@@ -0,0 +1,11 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="org.rncloudfs"
++    android:versionCode="1"
++    android:versionName="1.0" >
++
++    <uses-sdk
++        android:minSdkVersion="16"
++        android:targetSdkVersion="22" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json b/node_modules/react-native-cloud-fs/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json
+new file mode 100644
+index 0000000..69a027b
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json
+@@ -0,0 +1 @@
++[{"outputType":{"type":"AAPT_FRIENDLY_MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"react-native-cloud-fs-debug.aar","fullName":"debug","baseName":"debug"},"path":"AndroidManifest.xml","properties":{"packageId":"org.rncloudfs","split":""}}]
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json b/node_modules/react-native-cloud-fs/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
+new file mode 100644
+index 0000000..9e26dfe
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
+@@ -0,0 +1 @@
++{}
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/compile_library_classes/debug/classes.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/compile_library_classes/debug/classes.jar
+new file mode 100644
+index 0000000..56dc176
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/compile_library_classes/debug/classes.jar differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar
+new file mode 100644
+index 0000000..56cced1
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/full_jar/debug/createFullJarDebug/full.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/full_jar/debug/createFullJarDebug/full.jar
+new file mode 100644
+index 0000000..56dc176
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/full_jar/debug/createFullJarDebug/full.jar differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state
+new file mode 100644
+index 0000000..ed4f4a8
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+new file mode 100644
+index 0000000..7598363
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/debug/jniLibs"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+new file mode 100644
+index 0000000..a0c31ab
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/debug/shaders"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugAssets/merger.xml b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+new file mode 100644
+index 0000000..81356dc
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/assets"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/build/intermediates/shader_assets/debug/compileDebugShaders/out"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/debug/assets"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
+new file mode 100644
+index 0000000..fcb5cba
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
+@@ -0,0 +1 @@
++#Fri Jul 24 17:07:32 EDT 2020
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugResources/merger.xml b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugResources/merger.xml
+new file mode 100644
+index 0000000..ff5c3c4
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/packageDebugResources/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/build/generated/res/rs/debug"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/build/generated/res/rs/debug"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/debug/res"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/BuildConfig.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/BuildConfig.class
+new file mode 100644
+index 0000000..f1532fd
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/BuildConfig.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/DriveServiceHelper.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/DriveServiceHelper.class
+new file mode 100644
+index 0000000..fb2fa31
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/DriveServiceHelper.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule.class
+new file mode 100644
+index 0000000..4cf744c
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsPackage.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsPackage.class
+new file mode 100644
+index 0000000..a0d52de
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsPackage.class differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/library_java_res/debug/res.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/library_java_res/debug/res.jar
+new file mode 100644
+index 0000000..15cb0ec
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/library_java_res/debug/res.jar differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/library_manifest/debug/AndroidManifest.xml b/node_modules/react-native-cloud-fs/android/build/intermediates/library_manifest/debug/AndroidManifest.xml
+new file mode 100644
+index 0000000..952c37b
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/library_manifest/debug/AndroidManifest.xml
+@@ -0,0 +1,11 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="org.rncloudfs"
++    android:versionCode="1"
++    android:versionName="1.0" >
++
++    <uses-sdk
++        android:minSdkVersion="16"
++        android:targetSdkVersion="22" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/local_only_symbol_list/debug/parseDebugLibraryResources/R-def.txt b/node_modules/react-native-cloud-fs/android/build/intermediates/local_only_symbol_list/debug/parseDebugLibraryResources/R-def.txt
+new file mode 100644
+index 0000000..78ac5b8
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/local_only_symbol_list/debug/parseDebugLibraryResources/R-def.txt
+@@ -0,0 +1,2 @@
++R_DEF: Internal format may change without notice
++local
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt b/node_modules/react-native-cloud-fs/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
+new file mode 100644
+index 0000000..676999c
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
+@@ -0,0 +1,13 @@
++1<?xml version="1.0" encoding="utf-8"?>
++2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++3    package="org.rncloudfs"
++4    android:versionCode="1"
++5    android:versionName="1.0" >
++6
++7    <uses-sdk
++8        android:minSdkVersion="16"
++8-->/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++9        android:targetSdkVersion="22" />
++9-->/Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++10
++11</manifest>
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/merged_manifests/debug/output.json b/node_modules/react-native-cloud-fs/android/build/intermediates/merged_manifests/debug/output.json
+new file mode 100644
+index 0000000..c885c96
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/merged_manifests/debug/output.json
+@@ -0,0 +1 @@
++[{"outputType":{"type":"MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"react-native-cloud-fs-debug.aar","fullName":"debug","baseName":"debug"},"path":"../../library_manifest/debug/AndroidManifest.xml","properties":{"packageId":"org.rncloudfs","split":""}}]
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/res/symbol-table-with-package/debug/package-aware-r.txt b/node_modules/react-native-cloud-fs/android/build/intermediates/res/symbol-table-with-package/debug/package-aware-r.txt
+new file mode 100644
+index 0000000..b6c738e
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/res/symbol-table-with-package/debug/package-aware-r.txt
+@@ -0,0 +1,282 @@
++org.rncloudfs
++anim fragment_close_enter
++anim fragment_close_exit
++anim fragment_fade_enter
++anim fragment_fade_exit
++anim fragment_fast_out_extra_slow_in
++anim fragment_open_enter
++anim fragment_open_exit
++attr alpha
++attr buttonSize
++attr circleCrop
++attr colorScheme
++attr coordinatorLayoutStyle
++attr drawerLayoutStyle
++attr elevation
++attr font
++attr fontProviderAuthority
++attr fontProviderCerts
++attr fontProviderFetchStrategy
++attr fontProviderFetchTimeout
++attr fontProviderPackage
++attr fontProviderQuery
++attr fontStyle
++attr fontVariationSettings
++attr fontWeight
++attr imageAspectRatio
++attr imageAspectRatioAdjust
++attr keylines
++attr layout_anchor
++attr layout_anchorGravity
++attr layout_behavior
++attr layout_dodgeInsetEdges
++attr layout_insetEdge
++attr layout_keyline
++attr scopeUris
++attr statusBarBackground
++attr swipeRefreshLayoutProgressSpinnerBackgroundColor
++attr ttcIndex
++color androidx_core_ripple_material_light
++color androidx_core_secondary_text_default_material_light
++color common_google_signin_btn_text_dark
++color common_google_signin_btn_text_dark_default
++color common_google_signin_btn_text_dark_disabled
++color common_google_signin_btn_text_dark_focused
++color common_google_signin_btn_text_dark_pressed
++color common_google_signin_btn_text_light
++color common_google_signin_btn_text_light_default
++color common_google_signin_btn_text_light_disabled
++color common_google_signin_btn_text_light_focused
++color common_google_signin_btn_text_light_pressed
++color common_google_signin_btn_tint
++color notification_action_color_filter
++color notification_icon_bg_color
++color notification_material_background_media_default_color
++color primary_text_default_material_dark
++color ripple_material_light
++color secondary_text_default_material_dark
++color secondary_text_default_material_light
++dimen compat_button_inset_horizontal_material
++dimen compat_button_inset_vertical_material
++dimen compat_button_padding_horizontal_material
++dimen compat_button_padding_vertical_material
++dimen compat_control_corner_material
++dimen compat_notification_large_icon_max_height
++dimen compat_notification_large_icon_max_width
++dimen def_drawer_elevation
++dimen notification_action_icon_size
++dimen notification_action_text_size
++dimen notification_big_circle_margin
++dimen notification_content_margin_start
++dimen notification_large_icon_height
++dimen notification_large_icon_width
++dimen notification_main_column_padding_top
++dimen notification_media_narrow_margin
++dimen notification_right_icon_size
++dimen notification_right_side_padding_top
++dimen notification_small_icon_background_padding
++dimen notification_small_icon_size_as_large
++dimen notification_subtext_size
++dimen notification_top_pad
++dimen notification_top_pad_large_text
++drawable common_full_open_on_phone
++drawable common_google_signin_btn_icon_dark
++drawable common_google_signin_btn_icon_dark_focused
++drawable common_google_signin_btn_icon_dark_normal
++drawable common_google_signin_btn_icon_dark_normal_background
++drawable common_google_signin_btn_icon_disabled
++drawable common_google_signin_btn_icon_light
++drawable common_google_signin_btn_icon_light_focused
++drawable common_google_signin_btn_icon_light_normal
++drawable common_google_signin_btn_icon_light_normal_background
++drawable common_google_signin_btn_text_dark
++drawable common_google_signin_btn_text_dark_focused
++drawable common_google_signin_btn_text_dark_normal
++drawable common_google_signin_btn_text_dark_normal_background
++drawable common_google_signin_btn_text_disabled
++drawable common_google_signin_btn_text_light
++drawable common_google_signin_btn_text_light_focused
++drawable common_google_signin_btn_text_light_normal
++drawable common_google_signin_btn_text_light_normal_background
++drawable googleg_disabled_color_18
++drawable googleg_standard_color_18
++drawable notification_action_background
++drawable notification_bg
++drawable notification_bg_low
++drawable notification_bg_low_normal
++drawable notification_bg_low_pressed
++drawable notification_bg_normal
++drawable notification_bg_normal_pressed
++drawable notification_icon_background
++drawable notification_template_icon_bg
++drawable notification_template_icon_low_bg
++drawable notification_tile_bg
++drawable notify_panel_notification_icon_bg
++id accessibility_action_clickable_span
++id accessibility_custom_action_0
++id accessibility_custom_action_1
++id accessibility_custom_action_10
++id accessibility_custom_action_11
++id accessibility_custom_action_12
++id accessibility_custom_action_13
++id accessibility_custom_action_14
++id accessibility_custom_action_15
++id accessibility_custom_action_16
++id accessibility_custom_action_17
++id accessibility_custom_action_18
++id accessibility_custom_action_19
++id accessibility_custom_action_2
++id accessibility_custom_action_20
++id accessibility_custom_action_21
++id accessibility_custom_action_22
++id accessibility_custom_action_23
++id accessibility_custom_action_24
++id accessibility_custom_action_25
++id accessibility_custom_action_26
++id accessibility_custom_action_27
++id accessibility_custom_action_28
++id accessibility_custom_action_29
++id accessibility_custom_action_3
++id accessibility_custom_action_30
++id accessibility_custom_action_31
++id accessibility_custom_action_4
++id accessibility_custom_action_5
++id accessibility_custom_action_6
++id accessibility_custom_action_7
++id accessibility_custom_action_8
++id accessibility_custom_action_9
++id action0
++id action_container
++id action_divider
++id action_image
++id action_text
++id actions
++id adjust_height
++id adjust_width
++id all
++id async
++id auto
++id blocking
++id bottom
++id cancel_action
++id center
++id center_horizontal
++id center_vertical
++id chronometer
++id clip_horizontal
++id clip_vertical
++id dark
++id dialog_button
++id end
++id end_padder
++id fill
++id fill_horizontal
++id fill_vertical
++id forever
++id fragment_container_view_tag
++id icon
++id icon_group
++id icon_only
++id info
++id italic
++id left
++id light
++id line1
++id line3
++id media_actions
++id media_controller_compat_view_tag
++id none
++id normal
++id notification_background
++id notification_main_column
++id notification_main_column_container
++id right
++id right_icon
++id right_side
++id special_effects_controller_view_tag
++id standard
++id start
++id status_bar_latest_event_content
++id tag_accessibility_actions
++id tag_accessibility_clickable_spans
++id tag_accessibility_heading
++id tag_accessibility_pane_title
++id tag_screen_reader_focusable
++id tag_state_description
++id tag_transition_group
++id tag_unhandled_key_event_manager
++id tag_unhandled_key_listeners
++id text
++id text2
++id time
++id title
++id top
++id view_tree_lifecycle_owner
++id view_tree_saved_state_registry_owner
++id view_tree_view_model_store_owner
++id visible_removing_fragment_view_tag
++id wide
++integer cancel_button_image_alpha
++integer google_play_services_version
++integer status_bar_notification_info_maxnum
++layout custom_dialog
++layout notification_action
++layout notification_action_tombstone
++layout notification_media_action
++layout notification_media_cancel_action
++layout notification_template_big_media
++layout notification_template_big_media_custom
++layout notification_template_big_media_narrow
++layout notification_template_big_media_narrow_custom
++layout notification_template_custom_big
++layout notification_template_icon_group
++layout notification_template_lines_media
++layout notification_template_media
++layout notification_template_media_custom
++layout notification_template_part_chronometer
++layout notification_template_part_time
++string common_google_play_services_enable_button
++string common_google_play_services_enable_text
++string common_google_play_services_enable_title
++string common_google_play_services_install_button
++string common_google_play_services_install_text
++string common_google_play_services_install_title
++string common_google_play_services_notification_channel_name
++string common_google_play_services_notification_ticker
++string common_google_play_services_unknown_issue
++string common_google_play_services_unsupported_text
++string common_google_play_services_update_button
++string common_google_play_services_update_text
++string common_google_play_services_update_title
++string common_google_play_services_updating_text
++string common_google_play_services_wear_update_text
++string common_open_on_phone
++string common_signin_button_text
++string common_signin_button_text_long
++string status_bar_notification_info_overflow
++style TextAppearance_Compat_Notification
++style TextAppearance_Compat_Notification_Info
++style TextAppearance_Compat_Notification_Info_Media
++style TextAppearance_Compat_Notification_Line2
++style TextAppearance_Compat_Notification_Line2_Media
++style TextAppearance_Compat_Notification_Media
++style TextAppearance_Compat_Notification_Time
++style TextAppearance_Compat_Notification_Time_Media
++style TextAppearance_Compat_Notification_Title
++style TextAppearance_Compat_Notification_Title_Media
++style Widget_Compat_NotificationActionContainer
++style Widget_Compat_NotificationActionText
++style Widget_Support_CoordinatorLayout
++styleable ColorStateListItem alpha android_alpha android_color
++styleable CoordinatorLayout keylines statusBarBackground
++styleable CoordinatorLayout_Layout android_layout_gravity layout_anchor layout_anchorGravity layout_behavior layout_dodgeInsetEdges layout_insetEdge layout_keyline
++styleable DrawerLayout elevation
++styleable FontFamily fontProviderAuthority fontProviderCerts fontProviderFetchStrategy fontProviderFetchTimeout fontProviderPackage fontProviderQuery
++styleable FontFamilyFont android_font android_fontStyle android_fontVariationSettings android_fontWeight android_ttcIndex font fontStyle fontVariationSettings fontWeight ttcIndex
++styleable Fragment android_id android_name android_tag
++styleable FragmentContainerView android_name android_tag
++styleable GradientColor android_centerColor android_centerX android_centerY android_endColor android_endX android_endY android_gradientRadius android_startColor android_startX android_startY android_tileMode android_type
++styleable GradientColorItem android_color android_offset
++styleable LoadingImageView circleCrop imageAspectRatio imageAspectRatioAdjust
++styleable SignInButton buttonSize colorScheme scopeUris
++styleable SwipeRefreshLayout swipeRefreshLayoutProgressSpinnerBackgroundColor
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/runtime_library_classes/debug/classes.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/runtime_library_classes/debug/classes.jar
+new file mode 100644
+index 0000000..56dc176
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/runtime_library_classes/debug/classes.jar differ
+diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/symbols/debug/R.txt b/node_modules/react-native-cloud-fs/android/build/intermediates/symbols/debug/R.txt
+new file mode 100644
+index 0000000..7f80933
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/intermediates/symbols/debug/R.txt
+@@ -0,0 +1,336 @@
++int anim fragment_close_enter 0x7f010001
++int anim fragment_close_exit 0x7f010002
++int anim fragment_fade_enter 0x7f010003
++int anim fragment_fade_exit 0x7f010004
++int anim fragment_fast_out_extra_slow_in 0x7f010005
++int anim fragment_open_enter 0x7f010006
++int anim fragment_open_exit 0x7f010007
++int attr alpha 0x7f040001
++int attr buttonSize 0x7f040002
++int attr circleCrop 0x7f040003
++int attr colorScheme 0x7f040004
++int attr coordinatorLayoutStyle 0x7f040005
++int attr drawerLayoutStyle 0x7f040006
++int attr elevation 0x7f040007
++int attr font 0x7f040008
++int attr fontProviderAuthority 0x7f040009
++int attr fontProviderCerts 0x7f04000a
++int attr fontProviderFetchStrategy 0x7f04000b
++int attr fontProviderFetchTimeout 0x7f04000c
++int attr fontProviderPackage 0x7f04000d
++int attr fontProviderQuery 0x7f04000e
++int attr fontStyle 0x7f04000f
++int attr fontVariationSettings 0x7f040010
++int attr fontWeight 0x7f040011
++int attr imageAspectRatio 0x7f040012
++int attr imageAspectRatioAdjust 0x7f040013
++int attr keylines 0x7f040014
++int attr layout_anchor 0x7f040015
++int attr layout_anchorGravity 0x7f040016
++int attr layout_behavior 0x7f040017
++int attr layout_dodgeInsetEdges 0x7f040018
++int attr layout_insetEdge 0x7f040019
++int attr layout_keyline 0x7f04001a
++int attr scopeUris 0x7f04001b
++int attr statusBarBackground 0x7f04001c
++int attr swipeRefreshLayoutProgressSpinnerBackgroundColor 0x7f04001d
++int attr ttcIndex 0x7f04001e
++int color androidx_core_ripple_material_light 0x7f060001
++int color androidx_core_secondary_text_default_material_light 0x7f060002
++int color common_google_signin_btn_text_dark 0x7f060003
++int color common_google_signin_btn_text_dark_default 0x7f060004
++int color common_google_signin_btn_text_dark_disabled 0x7f060005
++int color common_google_signin_btn_text_dark_focused 0x7f060006
++int color common_google_signin_btn_text_dark_pressed 0x7f060007
++int color common_google_signin_btn_text_light 0x7f060008
++int color common_google_signin_btn_text_light_default 0x7f060009
++int color common_google_signin_btn_text_light_disabled 0x7f06000a
++int color common_google_signin_btn_text_light_focused 0x7f06000b
++int color common_google_signin_btn_text_light_pressed 0x7f06000c
++int color common_google_signin_btn_tint 0x7f06000d
++int color notification_action_color_filter 0x7f06000e
++int color notification_icon_bg_color 0x7f06000f
++int color notification_material_background_media_default_color 0x7f060010
++int color primary_text_default_material_dark 0x7f060011
++int color ripple_material_light 0x7f060012
++int color secondary_text_default_material_dark 0x7f060013
++int color secondary_text_default_material_light 0x7f060014
++int dimen compat_button_inset_horizontal_material 0x7f070001
++int dimen compat_button_inset_vertical_material 0x7f070002
++int dimen compat_button_padding_horizontal_material 0x7f070003
++int dimen compat_button_padding_vertical_material 0x7f070004
++int dimen compat_control_corner_material 0x7f070005
++int dimen compat_notification_large_icon_max_height 0x7f070006
++int dimen compat_notification_large_icon_max_width 0x7f070007
++int dimen def_drawer_elevation 0x7f070008
++int dimen notification_action_icon_size 0x7f070009
++int dimen notification_action_text_size 0x7f07000a
++int dimen notification_big_circle_margin 0x7f07000b
++int dimen notification_content_margin_start 0x7f07000c
++int dimen notification_large_icon_height 0x7f07000d
++int dimen notification_large_icon_width 0x7f07000e
++int dimen notification_main_column_padding_top 0x7f07000f
++int dimen notification_media_narrow_margin 0x7f070010
++int dimen notification_right_icon_size 0x7f070011
++int dimen notification_right_side_padding_top 0x7f070012
++int dimen notification_small_icon_background_padding 0x7f070013
++int dimen notification_small_icon_size_as_large 0x7f070014
++int dimen notification_subtext_size 0x7f070015
++int dimen notification_top_pad 0x7f070016
++int dimen notification_top_pad_large_text 0x7f070017
++int drawable common_full_open_on_phone 0x7f080001
++int drawable common_google_signin_btn_icon_dark 0x7f080002
++int drawable common_google_signin_btn_icon_dark_focused 0x7f080003
++int drawable common_google_signin_btn_icon_dark_normal 0x7f080004
++int drawable common_google_signin_btn_icon_dark_normal_background 0x7f080005
++int drawable common_google_signin_btn_icon_disabled 0x7f080006
++int drawable common_google_signin_btn_icon_light 0x7f080007
++int drawable common_google_signin_btn_icon_light_focused 0x7f080008
++int drawable common_google_signin_btn_icon_light_normal 0x7f080009
++int drawable common_google_signin_btn_icon_light_normal_background 0x7f08000a
++int drawable common_google_signin_btn_text_dark 0x7f08000b
++int drawable common_google_signin_btn_text_dark_focused 0x7f08000c
++int drawable common_google_signin_btn_text_dark_normal 0x7f08000d
++int drawable common_google_signin_btn_text_dark_normal_background 0x7f08000e
++int drawable common_google_signin_btn_text_disabled 0x7f08000f
++int drawable common_google_signin_btn_text_light 0x7f080010
++int drawable common_google_signin_btn_text_light_focused 0x7f080011
++int drawable common_google_signin_btn_text_light_normal 0x7f080012
++int drawable common_google_signin_btn_text_light_normal_background 0x7f080013
++int drawable googleg_disabled_color_18 0x7f080014
++int drawable googleg_standard_color_18 0x7f080015
++int drawable notification_action_background 0x7f080016
++int drawable notification_bg 0x7f080017
++int drawable notification_bg_low 0x7f080018
++int drawable notification_bg_low_normal 0x7f080019
++int drawable notification_bg_low_pressed 0x7f08001a
++int drawable notification_bg_normal 0x7f08001b
++int drawable notification_bg_normal_pressed 0x7f08001c
++int drawable notification_icon_background 0x7f08001d
++int drawable notification_template_icon_bg 0x7f08001e
++int drawable notification_template_icon_low_bg 0x7f08001f
++int drawable notification_tile_bg 0x7f080020
++int drawable notify_panel_notification_icon_bg 0x7f080021
++int id accessibility_action_clickable_span 0x7f0b0001
++int id accessibility_custom_action_0 0x7f0b0002
++int id accessibility_custom_action_1 0x7f0b0003
++int id accessibility_custom_action_10 0x7f0b0004
++int id accessibility_custom_action_11 0x7f0b0005
++int id accessibility_custom_action_12 0x7f0b0006
++int id accessibility_custom_action_13 0x7f0b0007
++int id accessibility_custom_action_14 0x7f0b0008
++int id accessibility_custom_action_15 0x7f0b0009
++int id accessibility_custom_action_16 0x7f0b000a
++int id accessibility_custom_action_17 0x7f0b000b
++int id accessibility_custom_action_18 0x7f0b000c
++int id accessibility_custom_action_19 0x7f0b000d
++int id accessibility_custom_action_2 0x7f0b000e
++int id accessibility_custom_action_20 0x7f0b000f
++int id accessibility_custom_action_21 0x7f0b0010
++int id accessibility_custom_action_22 0x7f0b0011
++int id accessibility_custom_action_23 0x7f0b0012
++int id accessibility_custom_action_24 0x7f0b0013
++int id accessibility_custom_action_25 0x7f0b0014
++int id accessibility_custom_action_26 0x7f0b0015
++int id accessibility_custom_action_27 0x7f0b0016
++int id accessibility_custom_action_28 0x7f0b0017
++int id accessibility_custom_action_29 0x7f0b0018
++int id accessibility_custom_action_3 0x7f0b0019
++int id accessibility_custom_action_30 0x7f0b001a
++int id accessibility_custom_action_31 0x7f0b001b
++int id accessibility_custom_action_4 0x7f0b001c
++int id accessibility_custom_action_5 0x7f0b001d
++int id accessibility_custom_action_6 0x7f0b001e
++int id accessibility_custom_action_7 0x7f0b001f
++int id accessibility_custom_action_8 0x7f0b0020
++int id accessibility_custom_action_9 0x7f0b0021
++int id action0 0x7f0b0022
++int id action_container 0x7f0b0023
++int id action_divider 0x7f0b0024
++int id action_image 0x7f0b0025
++int id action_text 0x7f0b0026
++int id actions 0x7f0b0027
++int id adjust_height 0x7f0b0028
++int id adjust_width 0x7f0b0029
++int id all 0x7f0b002a
++int id async 0x7f0b002b
++int id auto 0x7f0b002c
++int id blocking 0x7f0b002d
++int id bottom 0x7f0b002e
++int id cancel_action 0x7f0b002f
++int id center 0x7f0b0030
++int id center_horizontal 0x7f0b0031
++int id center_vertical 0x7f0b0032
++int id chronometer 0x7f0b0033
++int id clip_horizontal 0x7f0b0034
++int id clip_vertical 0x7f0b0035
++int id dark 0x7f0b0036
++int id dialog_button 0x7f0b0037
++int id end 0x7f0b0038
++int id end_padder 0x7f0b0039
++int id fill 0x7f0b003a
++int id fill_horizontal 0x7f0b003b
++int id fill_vertical 0x7f0b003c
++int id forever 0x7f0b003d
++int id fragment_container_view_tag 0x7f0b003e
++int id icon 0x7f0b003f
++int id icon_group 0x7f0b0040
++int id icon_only 0x7f0b0041
++int id info 0x7f0b0042
++int id italic 0x7f0b0043
++int id left 0x7f0b0044
++int id light 0x7f0b0045
++int id line1 0x7f0b0046
++int id line3 0x7f0b0047
++int id media_actions 0x7f0b0048
++int id media_controller_compat_view_tag 0x7f0b0049
++int id none 0x7f0b004a
++int id normal 0x7f0b004b
++int id notification_background 0x7f0b004c
++int id notification_main_column 0x7f0b004d
++int id notification_main_column_container 0x7f0b004e
++int id right 0x7f0b004f
++int id right_icon 0x7f0b0050
++int id right_side 0x7f0b0051
++int id special_effects_controller_view_tag 0x7f0b0052
++int id standard 0x7f0b0053
++int id start 0x7f0b0054
++int id status_bar_latest_event_content 0x7f0b0055
++int id tag_accessibility_actions 0x7f0b0056
++int id tag_accessibility_clickable_spans 0x7f0b0057
++int id tag_accessibility_heading 0x7f0b0058
++int id tag_accessibility_pane_title 0x7f0b0059
++int id tag_screen_reader_focusable 0x7f0b005a
++int id tag_state_description 0x7f0b005b
++int id tag_transition_group 0x7f0b005c
++int id tag_unhandled_key_event_manager 0x7f0b005d
++int id tag_unhandled_key_listeners 0x7f0b005e
++int id text 0x7f0b005f
++int id text2 0x7f0b0060
++int id time 0x7f0b0061
++int id title 0x7f0b0062
++int id top 0x7f0b0063
++int id view_tree_lifecycle_owner 0x7f0b0064
++int id view_tree_saved_state_registry_owner 0x7f0b0065
++int id view_tree_view_model_store_owner 0x7f0b0066
++int id visible_removing_fragment_view_tag 0x7f0b0067
++int id wide 0x7f0b0068
++int integer cancel_button_image_alpha 0x7f0c0001
++int integer google_play_services_version 0x7f0c0002
++int integer status_bar_notification_info_maxnum 0x7f0c0003
++int layout custom_dialog 0x7f0e0001
++int layout notification_action 0x7f0e0002
++int layout notification_action_tombstone 0x7f0e0003
++int layout notification_media_action 0x7f0e0004
++int layout notification_media_cancel_action 0x7f0e0005
++int layout notification_template_big_media 0x7f0e0006
++int layout notification_template_big_media_custom 0x7f0e0007
++int layout notification_template_big_media_narrow 0x7f0e0008
++int layout notification_template_big_media_narrow_custom 0x7f0e0009
++int layout notification_template_custom_big 0x7f0e000a
++int layout notification_template_icon_group 0x7f0e000b
++int layout notification_template_lines_media 0x7f0e000c
++int layout notification_template_media 0x7f0e000d
++int layout notification_template_media_custom 0x7f0e000e
++int layout notification_template_part_chronometer 0x7f0e000f
++int layout notification_template_part_time 0x7f0e0010
++int string common_google_play_services_enable_button 0x7f140001
++int string common_google_play_services_enable_text 0x7f140002
++int string common_google_play_services_enable_title 0x7f140003
++int string common_google_play_services_install_button 0x7f140004
++int string common_google_play_services_install_text 0x7f140005
++int string common_google_play_services_install_title 0x7f140006
++int string common_google_play_services_notification_channel_name 0x7f140007
++int string common_google_play_services_notification_ticker 0x7f140008
++int string common_google_play_services_unknown_issue 0x7f140009
++int string common_google_play_services_unsupported_text 0x7f14000a
++int string common_google_play_services_update_button 0x7f14000b
++int string common_google_play_services_update_text 0x7f14000c
++int string common_google_play_services_update_title 0x7f14000d
++int string common_google_play_services_updating_text 0x7f14000e
++int string common_google_play_services_wear_update_text 0x7f14000f
++int string common_open_on_phone 0x7f140010
++int string common_signin_button_text 0x7f140011
++int string common_signin_button_text_long 0x7f140012
++int string status_bar_notification_info_overflow 0x7f140013
++int style TextAppearance_Compat_Notification 0x7f150001
++int style TextAppearance_Compat_Notification_Info 0x7f150002
++int style TextAppearance_Compat_Notification_Info_Media 0x7f150003
++int style TextAppearance_Compat_Notification_Line2 0x7f150004
++int style TextAppearance_Compat_Notification_Line2_Media 0x7f150005
++int style TextAppearance_Compat_Notification_Media 0x7f150006
++int style TextAppearance_Compat_Notification_Time 0x7f150007
++int style TextAppearance_Compat_Notification_Time_Media 0x7f150008
++int style TextAppearance_Compat_Notification_Title 0x7f150009
++int style TextAppearance_Compat_Notification_Title_Media 0x7f15000a
++int style Widget_Compat_NotificationActionContainer 0x7f15000b
++int style Widget_Compat_NotificationActionText 0x7f15000c
++int style Widget_Support_CoordinatorLayout 0x7f15000d
++int[] styleable ColorStateListItem { 0x7f040001, 0x101031f, 0x10101a5 }
++int styleable ColorStateListItem_alpha 0
++int styleable ColorStateListItem_android_alpha 1
++int styleable ColorStateListItem_android_color 2
++int[] styleable CoordinatorLayout { 0x7f040014, 0x7f04001c }
++int styleable CoordinatorLayout_keylines 0
++int styleable CoordinatorLayout_statusBarBackground 1
++int[] styleable CoordinatorLayout_Layout { 0x10100b3, 0x7f040015, 0x7f040016, 0x7f040017, 0x7f040018, 0x7f040019, 0x7f04001a }
++int styleable CoordinatorLayout_Layout_android_layout_gravity 0
++int styleable CoordinatorLayout_Layout_layout_anchor 1
++int styleable CoordinatorLayout_Layout_layout_anchorGravity 2
++int styleable CoordinatorLayout_Layout_layout_behavior 3
++int styleable CoordinatorLayout_Layout_layout_dodgeInsetEdges 4
++int styleable CoordinatorLayout_Layout_layout_insetEdge 5
++int styleable CoordinatorLayout_Layout_layout_keyline 6
++int[] styleable DrawerLayout { 0x7f040007 }
++int styleable DrawerLayout_elevation 0
++int[] styleable FontFamily { 0x7f040009, 0x7f04000a, 0x7f04000b, 0x7f04000c, 0x7f04000d, 0x7f04000e }
++int styleable FontFamily_fontProviderAuthority 0
++int styleable FontFamily_fontProviderCerts 1
++int styleable FontFamily_fontProviderFetchStrategy 2
++int styleable FontFamily_fontProviderFetchTimeout 3
++int styleable FontFamily_fontProviderPackage 4
++int styleable FontFamily_fontProviderQuery 5
++int[] styleable FontFamilyFont { 0x0, 0x0, 0x0, 0x0, 0x0, 0x7f040008, 0x7f04000f, 0x7f040010, 0x7f040011, 0x7f04001e }
++int styleable FontFamilyFont_android_font 0
++int styleable FontFamilyFont_android_fontStyle 1
++int styleable FontFamilyFont_android_fontVariationSettings 2
++int styleable FontFamilyFont_android_fontWeight 3
++int styleable FontFamilyFont_android_ttcIndex 4
++int styleable FontFamilyFont_font 5
++int styleable FontFamilyFont_fontStyle 6
++int styleable FontFamilyFont_fontVariationSettings 7
++int styleable FontFamilyFont_fontWeight 8
++int styleable FontFamilyFont_ttcIndex 9
++int[] styleable Fragment { 0x10100d0, 0x1010003, 0x10100d1 }
++int styleable Fragment_android_id 0
++int styleable Fragment_android_name 1
++int styleable Fragment_android_tag 2
++int[] styleable FragmentContainerView { 0x1010003, 0x10100d1 }
++int styleable FragmentContainerView_android_name 0
++int styleable FragmentContainerView_android_tag 1
++int[] styleable GradientColor { 0x101020b, 0x10101a2, 0x10101a3, 0x101019e, 0x0, 0x0, 0x10101a4, 0x101019d, 0x0, 0x0, 0x1010201, 0x10101a1 }
++int styleable GradientColor_android_centerColor 0
++int styleable GradientColor_android_centerX 1
++int styleable GradientColor_android_centerY 2
++int styleable GradientColor_android_endColor 3
++int styleable GradientColor_android_endX 4
++int styleable GradientColor_android_endY 5
++int styleable GradientColor_android_gradientRadius 6
++int styleable GradientColor_android_startColor 7
++int styleable GradientColor_android_startX 8
++int styleable GradientColor_android_startY 9
++int styleable GradientColor_android_tileMode 10
++int styleable GradientColor_android_type 11
++int[] styleable GradientColorItem { 0x10101a5, 0x0 }
++int styleable GradientColorItem_android_color 0
++int styleable GradientColorItem_android_offset 1
++int[] styleable LoadingImageView { 0x7f040003, 0x7f040012, 0x7f040013 }
++int styleable LoadingImageView_circleCrop 0
++int styleable LoadingImageView_imageAspectRatio 1
++int styleable LoadingImageView_imageAspectRatioAdjust 2
++int[] styleable SignInButton { 0x7f040002, 0x7f040004, 0x7f04001b }
++int styleable SignInButton_buttonSize 0
++int styleable SignInButton_colorScheme 1
++int styleable SignInButton_scopeUris 2
++int[] styleable SwipeRefreshLayout { 0x7f04001d }
++int styleable SwipeRefreshLayout_swipeRefreshLayoutProgressSpinnerBackgroundColor 0
+diff --git a/node_modules/react-native-cloud-fs/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/react-native-cloud-fs/android/build/outputs/logs/manifest-merger-debug-report.txt
+new file mode 100644
+index 0000000..099985b
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/build/outputs/logs/manifest-merger-debug-report.txt
+@@ -0,0 +1,37 @@
++-- Merging decision tree log ---
++manifest
++ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++	package
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:3:11-34
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++	android:versionName
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++	android:versionCode
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:1-5:12
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++	xmlns:android
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml:2:11-69
++uses-sdk
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++	android:targetSdkVersion
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++	android:minSdkVersion
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-cloud-fs/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/CopyToGoogleDriveTask.java b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/CopyToGoogleDriveTask.java
+deleted file mode 100644
+index 0f77968..0000000
+--- a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/CopyToGoogleDriveTask.java
++++ /dev/null
+@@ -1,73 +0,0 @@
+-package org.rncloudfs;
+-
+-import android.os.AsyncTask;
+-import android.os.Bundle;
+-import androidx.annotation.Nullable;
+-import android.util.Log;
+-
+-import com.facebook.react.bridge.Promise;
+-import com.google.android.gms.common.api.GoogleApiClient;
+-import com.google.android.gms.drive.DriveFolder;
+-
+-import java.io.IOException;
+-import java.util.List;
+-
+-import static org.rncloudfs.GoogleDriveApiClient.resolve;
+-import static org.rncloudfs.RNCloudFsModule.TAG;
+-
+-public class CopyToGoogleDriveTask implements GoogleApiClient.ConnectionCallbacks {
+-    private RNCloudFsModule.SourceUri sourceUri;
+-    private final String outputPath;
+-    @Nullable
+-    private final String mimeType;
+-    private final Promise promise;
+-    private final GoogleDriveApiClient googleApiClient;
+-    private final boolean useDocumentsFolder;
+-
+-    public CopyToGoogleDriveTask(RNCloudFsModule.SourceUri sourceUri, String outputPath, @Nullable String mimeType, Promise promise, GoogleDriveApiClient googleDriveApiClient, boolean useDocumentsFolder) {
+-        this.sourceUri = sourceUri;
+-        this.outputPath = outputPath;
+-        this.mimeType = mimeType;
+-        this.promise = promise;
+-        this.googleApiClient = googleDriveApiClient;
+-        this.useDocumentsFolder = useDocumentsFolder;
+-    }
+-
+-    @Override
+-    public void onConnected(@Nullable Bundle bundle) {
+-        AsyncTask.execute(new Runnable() {
+-            @Override
+-            public void run() {
+-                List<String> pathParts = resolve(outputPath);
+-
+-                try {
+-                    DriveFolder rootFolder = useDocumentsFolder ? googleApiClient.documentsFolder() : googleApiClient.appFolder();
+-                    createFileInFolders(rootFolder, pathParts, sourceUri);
+-                } catch (Exception e) {
+-                    Log.e(TAG, "Failed to write " + outputPath, e);
+-                    promise.reject("Failed copy '" + sourceUri.uri + "' to " + outputPath, e);
+-                }
+-            }
+-        });
+-
+-        googleApiClient.unregisterListener(this);
+-    }
+-
+-    @Override
+-    public void onConnectionSuspended(int i) {
+-
+-    }
+-
+-    private void createFileInFolders(DriveFolder parentFolder, List<String> pathParts, RNCloudFsModule.SourceUri sourceUri) {
+-        if (pathParts.size() > 1)
+-            parentFolder = googleApiClient.createFolders(parentFolder, pathParts.subList(0, pathParts.size() - 1));
+-
+-        try {
+-            String fileName = googleApiClient.createFile(parentFolder, sourceUri, pathParts.get(0), mimeType);
+-            promise.resolve(fileName);
+-        } catch (IOException e) {
+-            Log.e(TAG, "Failed to create file from " + sourceUri, e);
+-            promise.reject("Failed to read input", e);
+-        }
+-    }
+-}
+diff --git a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/DriveServiceHelper.java b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/DriveServiceHelper.java
+new file mode 100644
+index 0000000..d01eaf0
+--- /dev/null
++++ b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/DriveServiceHelper.java
+@@ -0,0 +1,214 @@
++package org.rncloudfs;
++
++/**
++ * Copyright 2018 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ * http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++import android.content.ContentResolver;
++import android.content.Intent;
++import android.database.Cursor;
++import android.net.Uri;
++import android.provider.OpenableColumns;
++import android.util.Log;
++
++import androidx.core.util.Pair;
++
++import com.google.android.gms.tasks.Task;
++import com.google.android.gms.tasks.Tasks;
++
++import com.google.api.client.http.FileContent;
++import com.google.api.services.drive.Drive;
++import com.google.api.services.drive.model.File;
++import com.google.api.services.drive.model.FileList;
++import java.io.BufferedReader;
++import java.io.IOException;
++import java.io.InputStream;
++import java.io.InputStreamReader;
++import java.util.Collections;
++import java.util.List;
++import java.util.concurrent.ExecutionException;
++import java.util.concurrent.Executor;
++import java.util.concurrent.Executors;
++import java.util.concurrent.atomic.AtomicReference;
++
++/**
++ * A utility for performing read/write operations on Drive files via the REST API and opening a
++ * file picker UI via Storage Access Framework.
++ */
++public class DriveServiceHelper {
++    private final Executor mExecutor = Executors.newSingleThreadExecutor();
++    private final Drive mDriveService;
++
++    public DriveServiceHelper(Drive driveService) {
++        mDriveService = driveService;
++    }
++
++    public Task<String> saveFile(String sourcePath, String destinationPath, String mimeType, Boolean useDocumentsFolder) throws ExecutionException, InterruptedException {
++        String existingFileId = null;
++        FileList fileList = Tasks.await(queryFiles(useDocumentsFolder));
++        for (File file : fileList.getFiles()) {
++            if(file.getName().equalsIgnoreCase(destinationPath)){
++                existingFileId = file.getId();
++            }
++        }
++        return createFile(sourcePath, destinationPath, mimeType, useDocumentsFolder, existingFileId);
++    }
++
++    /**
++     * Creates a text file in the user's My Drive folder and returns its file ID.
++     */
++    public Task<String> createFile(String sourcePath, String destinationPath, String mimeType, Boolean useDocumentsFolder, String fileId) {
++
++        return Tasks.call(mExecutor, () -> {
++            try{
++                java.io.File sourceFile = new java.io.File(sourcePath);
++                FileContent mediaContent = new FileContent(mimeType, sourceFile);
++                List<String> parentFolder = Collections.singletonList(useDocumentsFolder ? "root" : "appDataFolder");
++                File metadata = new File()
++                        .setMimeType(mimeType)
++                        .setName(destinationPath);
++                if(fileId == null){
++                    metadata.setParents(parentFolder);
++                }
++
++                File googleFile = null;
++                if(fileId != null){
++                    googleFile = mDriveService.files().update(fileId, metadata, mediaContent).execute();
++                } else{
++                    googleFile = mDriveService.files().create(metadata, mediaContent).execute();
++                }
++
++                if (googleFile == null) {
++                    throw new IOException("Null result when requesting file creation.");
++                }
++
++                return googleFile.getId();
++            } catch(Exception e){
++                Log.e("WTF", e.toString());
++                throw e;
++            }
++
++        });
++    }
++
++
++    public Task<Boolean> checkIfFileExists(String fileId) {
++        return Tasks.call(mExecutor, () -> {
++            // Retrieve the metadata as a File object.
++            File metadata = mDriveService.files().get(fileId).execute();
++            if(metadata != null){
++                return true;
++            }
++            return false;
++        });
++    }
++
++    public Task<Boolean> deleteFile(String fileId) {
++        return Tasks.call(mExecutor, () -> {
++            // Retrieve the metadata as a File object.
++            mDriveService.files().delete(fileId).execute();
++            return true;
++        });
++    }
++
++    /**
++     * Opens the file identified by {@code fileId} and returns a {@link Pair} of its name and
++     * contents.
++     */
++    public Task<String> readFile(String fileId) {
++        return Tasks.call(mExecutor, () -> {
++            // Retrieve the metadata as a File object.
++            File metadata = mDriveService.files().get(fileId).execute();
++            String name = metadata.getName();
++
++            // Stream the file contents to a String.
++            try (InputStream is = mDriveService.files().get(fileId).executeMediaAsInputStream();
++                 BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
++                StringBuilder stringBuilder = new StringBuilder();
++                String line;
++
++                while ((line = reader.readLine()) != null) {
++                    stringBuilder.append(line);
++                }
++                String contents = stringBuilder.toString();
++
++                return contents;
++            }
++        });
++    }
++
++    /**
++     * Returns a {@link FileList} containing all the visible files in the user's My Drive.
++     *
++     * <p>The returned list will only contain files visible to this app, i.e. those which were
++     * created by this app. To perform operations on files not created by the app, the project must
++     * request Drive Full Scope in the <a href="https://play.google.com/apps/publish">Google
++     * Developer's Console</a> and be submitted to Google for verification.</p>
++     */
++    public Task<FileList> queryFiles(Boolean useDocumentsFolder) {
++        return Tasks.call(mExecutor, () ->
++                mDriveService.files().list().
++                        setSpaces(useDocumentsFolder ? "drive" : "appDataFolder")
++                        .setFields("nextPageToken, files(id, name, modifiedTime)")
++                        .setPageSize(100)
++                        .execute()
++        );
++    }
++
++    /**
++     * Returns an {@link Intent} for opening the Storage Access Framework file picker.
++     */
++    public Intent createFilePickerIntent() {
++        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
++        intent.addCategory(Intent.CATEGORY_OPENABLE);
++        intent.setType("text/plain");
++
++        return intent;
++    }
++
++    /**
++     * Opens the file at the {@code uri} returned by a Storage Access Framework {@link Intent}
++     * created by {@link #createFilePickerIntent()} using the given {@code contentResolver}.
++     */
++    public Task<Pair<String, String>> openFileUsingStorageAccessFramework(
++            ContentResolver contentResolver, Uri uri) {
++        return Tasks.call(mExecutor, () -> {
++            // Retrieve the document's display name from its metadata.
++            String name;
++            try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
++                if (cursor != null && cursor.moveToFirst()) {
++                    int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
++                    name = cursor.getString(nameIndex);
++                } else {
++                    throw new IOException("Empty cursor returned for file.");
++                }
++            }
++
++            // Read the document's contents as a String.
++            String content;
++            try (InputStream is = contentResolver.openInputStream(uri);
++                 BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
++                StringBuilder stringBuilder = new StringBuilder();
++                String line;
++                while ((line = reader.readLine()) != null) {
++                    stringBuilder.append(line);
++                }
++                content = stringBuilder.toString();
++            }
++
++            return Pair.create(name, content);
++        });
++    }
++}
+\ No newline at end of file
+diff --git a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/GoogleDriveApiClient.java b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/GoogleDriveApiClient.java
+deleted file mode 100644
+index f78f8bd..0000000
+--- a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/GoogleDriveApiClient.java
++++ /dev/null
+@@ -1,315 +0,0 @@
+-package org.rncloudfs;
+-
+-import android.content.Context;
+-import android.content.pm.ApplicationInfo;
+-import androidx.annotation.NonNull;
+-import androidx.annotation.Nullable;
+-import android.text.TextUtils;
+-import android.util.Log;
+-
+-import com.facebook.react.bridge.ReactApplicationContext;
+-import com.facebook.react.bridge.WritableMap;
+-import com.facebook.react.bridge.WritableNativeArray;
+-import com.facebook.react.bridge.WritableNativeMap;
+-import com.google.android.gms.common.api.GoogleApiClient;
+-import com.google.android.gms.common.api.Result;
+-import com.google.android.gms.drive.Drive;
+-import com.google.android.gms.drive.DriveApi;
+-import com.google.android.gms.drive.DriveContents;
+-import com.google.android.gms.drive.DriveFolder;
+-import com.google.android.gms.drive.Metadata;
+-import com.google.android.gms.drive.MetadataBuffer;
+-import com.google.android.gms.drive.MetadataChangeSet;
+-
+-import java.io.IOException;
+-import java.io.OutputStream;
+-import java.text.SimpleDateFormat;
+-import java.util.ArrayList;
+-import java.util.List;
+-import java.util.Locale;
+-import java.util.concurrent.atomic.AtomicBoolean;
+-
+-import static org.rncloudfs.RNCloudFsModule.TAG;
+-
+-public class GoogleDriveApiClient {
+-    private final GoogleApiClient googleApiClient;
+-    private ReactApplicationContext reactContext;
+-
+-    public GoogleDriveApiClient(GoogleApiClient googleApiClient, ReactApplicationContext reactContext) {
+-        this.googleApiClient = googleApiClient;
+-        this.reactContext = reactContext;
+-    }
+-
+-    //see https://developers.google.com/drive/android/appfolder
+-    public DriveFolder appFolder() {
+-        return Drive.DriveApi.getAppFolder(googleApiClient);
+-    }
+-
+-    public synchronized DriveFolder documentsFolder() {
+-        DriveFolder rootFolder = Drive.DriveApi.getRootFolder(googleApiClient);
+-        String applicationName = getApplicationName(reactContext);
+-
+-        if(fileExists(rootFolder, applicationName)) {
+-            return folder(rootFolder, applicationName);
+-        } else {
+-            DriveFolder.DriveFolderResult folder = createFolder(rootFolder, applicationName);
+-            return folder.getDriveFolder();
+-        }
+-    }
+-
+-    private static String getApplicationName(Context context) {
+-        ApplicationInfo applicationInfo = context.getApplicationInfo();
+-        int stringId = applicationInfo.labelRes;
+-        return stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : context.getString(stringId);
+-    }
+-
+-    private DriveFolder.DriveFolderResult createFolder(DriveFolder parentFolder, String name) {
+-        MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+-                .setTitle(name)
+-                .build();
+-
+-        Log.i(TAG, "creating folder: " + name);
+-        return parentFolder.createFolder(googleApiClient, changeSet).await();
+-    }
+-
+-    @Nullable
+-    public DriveFolder folder(DriveFolder parentFolder, String name) {
+-        DriveApi.MetadataBufferResult childrenBuffer = parentFolder.listChildren(googleApiClient).await();//maybe queryChildren would be much better
+-        try {
+-            for (Metadata metadata : childrenBuffer.getMetadataBuffer()) {
+-                if (metadata.getTitle().equals(name)) {
+-                    return metadata.isFolder() ? metadata.getDriveId().asDriveFolder() : null;
+-                }
+-            }
+-        } finally {
+-            childrenBuffer.release();
+-        }
+-        return null;
+-    }
+-
+-    private String listFiles(DriveFolder folder, List<String> pathParts, FileVisitor fileVisitor) throws NotFoundException {
+-        List<String> currentPath = new ArrayList<>();
+-        currentPath.add(".");
+-        listFiles(currentPath, folder, pathParts, fileVisitor);
+-        return TextUtils.join("/", currentPath);
+-    }
+-
+-    private void listFiles(List<String> currentPath, DriveFolder folder, List<String> pathParts, FileVisitor fileVisitor) throws NotFoundException {
+-        if (pathParts.isEmpty()) {
+-            listFiles(folder, fileVisitor);
+-        } else {
+-            String pathName = pathParts.remove(0);
+-
+-            if(pathName.equals("..")) {
+-                DriveApi.MetadataBufferResult result = folder.listParents(googleApiClient).await();
+-                try {
+-                    for (Metadata metadata : result.getMetadataBuffer()) {
+-                        if(metadata.isFolder()) {
+-                            currentPath.remove(currentPath.size() - 1);
+-                            listFiles(currentPath, metadata.getDriveId().asDriveFolder(), pathParts, fileVisitor);
+-                            return;
+-                        }
+-                    }
+-                    throw new IllegalStateException("No parent folder");
+-                } finally {
+-                    result.release();
+-                }
+-            }
+-
+-            DriveApi.MetadataBufferResult childrenBuffer = folder.listChildren(googleApiClient).await();
+-            try {
+-                for (Metadata metadata : childrenBuffer.getMetadataBuffer()) {
+-                    String fileName = metadata.getTitle();
+-                    if (pathName.equals(fileName)) {
+-                        if(metadata.isFolder()) {
+-                            currentPath.add(pathName);
+-                            listFiles(currentPath, metadata.getDriveId().asDriveFolder(), pathParts, fileVisitor);
+-                            return;
+-                        } else {
+-                            fileVisitor.fileMetadata(metadata);
+-                            return;
+-                        }
+-                    }
+-                }
+-
+-                throw new NotFoundException(pathName);
+-            } finally {
+-                childrenBuffer.release();
+-            }
+-        }
+-    }
+-
+-    private void listFiles(DriveFolder folder, FileVisitor fileVisitor) {
+-        DriveApi.MetadataBufferResult childrenBuffer = folder.listChildren(googleApiClient).await();
+-        try {
+-            for (Metadata metadata : childrenBuffer.getMetadataBuffer()) {
+-                fileVisitor.fileMetadata(metadata);
+-            }
+-        } finally {
+-            childrenBuffer.release();
+-        }
+-    }
+-
+-    public DriveFolder createFolders(DriveFolder parentFolder, List<String> pathParts) {
+-        if(pathParts.isEmpty())
+-            return parentFolder;
+-
+-        String name = pathParts.remove(0);
+-
+-        DriveFolder folder = folder(parentFolder, name);
+-
+-        if (folder == null) {
+-            DriveFolder.DriveFolderResult result = createFolder(parentFolder, name);
+-
+-            Log.i(TAG, "Created folder '" + name + "'");
+-
+-            return createFolders(result.getDriveFolder(), pathParts);
+-        } else {
+-            Log.d(TAG, "Folder already exists '" + name + "'");
+-
+-            return createFolders(folder, pathParts);
+-        }
+-    }
+-
+-    public boolean fileExists(boolean useDocumentsFolder, List<String> pathParts) {
+-        List<String> parentDirs = pathParts.size() > 1 ? pathParts.subList(0, pathParts.size() - 2) : new ArrayList<String>();
+-        final String filename = pathParts.get(pathParts.size() - 1);
+-
+-        DriveFolder rootFolder = useDocumentsFolder ? documentsFolder() : appFolder();
+-
+-        final AtomicBoolean found = new AtomicBoolean(false);
+-
+-        try {
+-            listFiles(rootFolder, parentDirs, new FileVisitor() {
+-                @Override
+-                public void fileMetadata(Metadata metadata) {
+-                    if(!found.get()) {
+-                        String title = metadata.getTitle();
+-                        if(title.equals(filename))
+-                            found.set(true);
+-                    }
+-                }
+-            });
+-
+-            return found.get();
+-        } catch (NotFoundException e) {
+-            return false;
+-        }
+-    }
+-
+-    public void unregisterListener(GoogleApiClient.ConnectionCallbacks callbacks) {
+-        googleApiClient.unregisterConnectionCallbacks(callbacks);
+-    }
+-
+-    private interface FileVisitor {
+-        void fileMetadata(Metadata metadata);
+-    }
+-
+-    public String createFile(DriveFolder driveFolder, RNCloudFsModule.InputDataSource input, String filename) throws IOException {
+-        return createFile(driveFolder, input, filename, null);
+-    }
+-
+-    public String createFile(DriveFolder driveFolder, RNCloudFsModule.InputDataSource input, String filename, String mimeType) throws IOException {
+-        int count = 1;
+-
+-        String uniqueFilename = filename;
+-        while (fileExists(driveFolder, uniqueFilename)) {
+-            Log.w(TAG, "item already at location: " + filename);
+-            uniqueFilename = count + "." + filename;
+-            count++;
+-        }
+-
+-        DriveApi.DriveContentsResult driveContentsResult = Drive.DriveApi.newDriveContents(googleApiClient).await();
+-
+-        if (!driveContentsResult.getStatus().isSuccess()) {
+-            throw new IllegalStateException("cannot create file");
+-        }
+-
+-        DriveContents driveContents = driveContentsResult.getDriveContents();
+-        OutputStream outputStream = driveContents.getOutputStream();
+-        input.copyToOutputStream(outputStream);
+-        outputStream.close();
+-
+-        MetadataChangeSet.Builder builder = new MetadataChangeSet.Builder()
+-                .setTitle(uniqueFilename);
+-
+-        if (mimeType != null) {
+-            builder.setMimeType(mimeType);
+-        }
+-
+-        DriveFolder.DriveFileResult driveFileResult = driveFolder.createFile(googleApiClient, builder.build(), driveContents).await();
+-
+-        if (!driveFileResult.getStatus().isSuccess()) {
+-            throw new IllegalStateException("cannot create file");
+-        }
+-
+-        Log.i(TAG, "Created a file '" + uniqueFilename);
+-        return uniqueFilename;
+-    }
+-
+-    public boolean fileExists(DriveFolder driveFolder, String filename) {
+-        DriveApi.MetadataBufferResult childrenBuffer = driveFolder.listChildren(googleApiClient).await();
+-        try {
+-            for (Metadata metadata : childrenBuffer.getMetadataBuffer()) {
+-                if (metadata.getTitle().equals(filename))
+-                    return true;
+-            }
+-            return false;
+-        } finally {
+-            childrenBuffer.release();
+-        }
+-    }
+-
+-    public WritableMap listFiles(boolean useDocumentsFolder, List<String> paths) throws NotFoundException {
+-        WritableMap data = new WritableNativeMap();
+-
+-        final WritableNativeArray files = new WritableNativeArray();
+-
+-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault());
+-
+-        DriveFolder parentFolder = useDocumentsFolder ? documentsFolder() : appFolder();
+-
+-        String path = listFiles(parentFolder, paths, new FileVisitor() {
+-            @Override
+-            public void fileMetadata(Metadata metadata) {
+-                if (!metadata.isDataValid())
+-                    return;
+-
+-                WritableNativeMap file = new WritableNativeMap();
+-
+-                file.putBoolean("isDirectory", metadata.isFolder());
+-                file.putBoolean("isFile", !metadata.isFolder());
+-                file.putString("name", metadata.getTitle());
+-                file.putString("uri", metadata.getAlternateLink());
+-                file.putString("lastModified", simpleDateFormat.format(metadata.getModifiedDate()));
+-                file.putInt("size", (int) metadata.getFileSize());
+-
+-                files.pushMap(file);
+-            }
+-        });
+-
+-        data.putString("path", path);
+-        data.putArray("files", files);
+-
+-        return data;
+-    }
+-
+-    @NonNull
+-    public static List<String> resolve(String path) {
+-        List<String> names = new ArrayList<>();
+-        for (String pathPart : path.split("/")) {
+-            if (pathPart.equals(".") || pathPart.isEmpty()) {
+-                //ignore
+-            } else {
+-                names.add(pathPart);
+-            }
+-        }
+-        return names;
+-    }
+-
+-    private static class NotFoundException extends Exception {
+-        public NotFoundException(String pathName) {
+-            super("not found: " + pathName);
+-        }
+-    }
+-}
+diff --git a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsModule.java b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsModule.java
+index c7872d6..0c64022 100644
+--- a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsModule.java
++++ b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsModule.java
+@@ -1,19 +1,11 @@
+ package org.rncloudfs;
+ 
+ import android.app.Activity;
+-import android.app.Dialog;
+-import android.app.DialogFragment;
+-import android.content.DialogInterface;
+ import android.content.Intent;
+-import android.content.IntentSender;
+-import android.net.Uri;
+-import android.os.AsyncTask;
+-import android.os.Bundle;
+-import androidx.annotation.NonNull;
+ import androidx.annotation.Nullable;
++
+ import android.util.Log;
+ import android.webkit.MimeTypeMap;
+-
+ import com.facebook.react.bridge.ActivityEventListener;
+ import com.facebook.react.bridge.LifecycleEventListener;
+ import com.facebook.react.bridge.Promise;
+@@ -21,34 +13,43 @@ import com.facebook.react.bridge.ReactApplicationContext;
+ import com.facebook.react.bridge.ReactContextBaseJavaModule;
+ import com.facebook.react.bridge.ReactMethod;
+ import com.facebook.react.bridge.ReadableMap;
+-import com.facebook.react.bridge.ReadableMapKeySetIterator;
++import com.facebook.react.bridge.WritableArray;
+ import com.facebook.react.bridge.WritableMap;
++import com.facebook.react.bridge.WritableNativeArray;
++import com.facebook.react.bridge.WritableNativeMap;
++import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+ import com.google.android.gms.common.ConnectionResult;
+-import com.google.android.gms.common.GoogleApiAvailability;
+ import com.google.android.gms.common.api.GoogleApiClient;
+-import com.google.android.gms.drive.Drive;
+-import com.google.android.gms.drive.DriveFolder;
++import com.google.android.gms.common.api.Scope;
++
++import com.google.android.gms.auth.api.signin.GoogleSignIn;
++import com.google.android.gms.auth.api.signin.GoogleSignInClient;
++import com.google.api.client.extensions.android.http.AndroidHttp;
++import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
++import com.google.api.client.json.gson.GsonFactory;
++import com.google.api.services.drive.Drive;
++import com.google.api.services.drive.DriveScopes;
++import com.google.api.services.drive.model.File;
++
+ 
+-import java.io.File;
+ import java.io.FileInputStream;
++import java.io.FileNotFoundException;
+ import java.io.IOException;
+ import java.io.InputStream;
++import java.io.InputStreamReader;
+ import java.io.OutputStream;
+ import java.net.HttpURLConnection;
+ import java.net.URL;
+-import java.util.List;
+-
+-import static android.app.Activity.RESULT_OK;
+-import static org.rncloudfs.GoogleDriveApiClient.resolve;
++import java.util.Collections;
++import java.util.concurrent.ExecutionException;
+ 
+ public class RNCloudFsModule extends ReactContextBaseJavaModule implements GoogleApiClient.OnConnectionFailedListener, LifecycleEventListener, ActivityEventListener {
+     public static final String TAG = "RNCloudFs";
++    private static final int REQUEST_CODE_SIGN_IN = 1;
++    private static final int REQUEST_CODE_OPEN_DOCUMENT = 2;
++    private DriveServiceHelper mDriveServiceHelper;
+ 
+-    private static final int REQUEST_CODE_RESOLUTION = 3;
+-    private static final int REQUEST_RESOLVE_ERROR = 1001;
+-    private static final String DIALOG_ERROR = "dialog_error";
+-    private boolean isResolvingError = false;
+-
++    private Promise signInPromise;
+     private final ReactApplicationContext reactContext;
+     private GoogleApiClient googleApiClient;
+ 
+@@ -56,79 +57,97 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
+         super(reactContext);
+         this.reactContext = reactContext;
+ 
++
+         reactContext.addLifecycleEventListener(this);
+         reactContext.addActivityEventListener(this);
+     }
+ 
++    @Override
++    public String getName() {
++        return "RNCloudFs";
++    }
++
+     /**
+      * android only method.  Just here to test the connection logic
+      */
+     @ReactMethod
+     public void reset(final Promise promise) {
+-        final GoogleApiClient googleApiClient = this.googleApiClient;
+-
+-        connect(new GoogleApiClient.ConnectionCallbacks() {
+-            @Override
+-            public void onConnected(@Nullable Bundle bundle) {
+-                googleApiClient.clearDefaultAccountAndReconnect();
+-                googleApiClient.unregisterConnectionCallbacks(this);
+-                promise.resolve(null);
+-            }
+-
+-            @Override
+-            public void onConnectionSuspended(int i) {
+ 
+-            }
+-        });
+     }
+ 
+     @ReactMethod
+-    public void createFile(ReadableMap options, final Promise promise) {
+-        if (!options.hasKey("targetPath")) {
+-            promise.reject("error", "targetPath not specified");
+-        }
+-        final String path = options.getString("targetPath");
+-
+-        if (!options.hasKey("content")) {
+-            promise.reject("error", "content not specified");
++    public void fileExists(ReadableMap options, final Promise promise) {
++        if (mDriveServiceHelper != null) {
++            String fileId = options.getString("fileId");
++            Log.d(TAG, "Reading file " + fileId);
++
++            mDriveServiceHelper.checkIfFileExists(fileId)
++                    .addOnSuccessListener(exists -> {
++                        promise.resolve(exists);
++
++                    })
++                    .addOnFailureListener(exception ->{
++                        Log.e(TAG, "Couldn't read file.", exception);
++                        promise.reject(exception);
++                    });
+         }
+-        final String content = options.getString("content");
+-
+-        final boolean useDocumentsFolder = options.hasKey("scope") ? options.getString("scope").toLowerCase().equals("visible") : true;
+-
+-        connect(new CreateFileTask(path, promise, useDocumentsFolder, content));
+     }
+ 
+     @ReactMethod
+-    public void fileExists(ReadableMap options, final Promise promise) {
+-        if (!options.hasKey("targetPath")) {
+-            promise.reject("error", "targetPath not specified");
++    public void deleteFromCloud(ReadableMap options, final Promise promise) {
++        if (mDriveServiceHelper != null) {
++            String fileId = options.getString("id");
++            Log.d(TAG, "Deleting file " + fileId);
++
++            mDriveServiceHelper.deleteFile(fileId)
++                    .addOnSuccessListener(deleted -> {
++                        promise.resolve(deleted);
++
++                    })
++                    .addOnFailureListener(exception ->{
++                        Log.e(TAG, "Couldn't delete file.", exception);
++                        promise.reject(exception);
++                    });
+         }
+-        String path = options.getString("targetPath");
+-
+-        boolean useDocumentsFolder = !options.hasKey("scope") || options.getString("scope").toLowerCase().equals("visible");
++    }
+ 
+-        connect(new FileExistsTask(useDocumentsFolder, path, promise));
++    @ReactMethod
++    public void loginIfNeeded(final Promise promise){
++        this.signInPromise = promise;
++        requestSignIn();
+     }
+ 
+     @ReactMethod
+     public void listFiles(ReadableMap options, final Promise promise) {
+-        if (!options.hasKey("targetPath")) {
+-            promise.reject("error", "targetPath not specified");
+-        }
+-        String path = options.getString("targetPath");
++        if (mDriveServiceHelper != null) {
++            Log.d(TAG, "Querying for files.");
++            WritableArray files = new WritableNativeArray();
++            WritableMap result = new WritableNativeMap();
+ 
+-        boolean useDocumentsFolder = !options.hasKey("scope") || options.getString("scope").toLowerCase().equals("visible");
++            boolean useDocumentsFolder = options.hasKey("scope") ? options.getString("scope").toLowerCase().equals("visible") : true;
+ 
+-        connect(new ListFilesTask(useDocumentsFolder, path, promise));
++            mDriveServiceHelper.queryFiles(useDocumentsFolder)
++                    .addOnSuccessListener(fileList -> {
++                        for (File file : fileList.getFiles()) {
++                            WritableMap fileInfo = new WritableNativeMap();
++                            fileInfo.putString("name", file.getName());
++                            fileInfo.putString("id", file.getId());
++                            fileInfo.putString("lastModified", file.getModifiedTime().toString());
++                            files.pushMap(fileInfo);
++                        }
++                        result.putArray("files", files);
++                        promise.resolve(result);
++                    })
++                    .addOnFailureListener(exception -> Log.e(TAG, "Unable to query files.", exception));
++        }
+     }
+ 
+     /**
+      * Copy the source into the google drive database
+      */
+     @ReactMethod
+-    public void copyToCloud(ReadableMap options, final Promise promise) {
+-        try {
++    public void copyToCloud(ReadableMap options, final Promise promise) throws ExecutionException, InterruptedException {
++        if(mDriveServiceHelper != null){
+             if (!options.hasKey("sourcePath")) {
+                 promise.reject("error", "sourcePath not specified");
+             }
+@@ -156,8 +175,6 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
+ 
+             boolean useDocumentsFolder = options.hasKey("scope") ? options.getString("scope").toLowerCase().equals("visible") : true;
+ 
+-            SourceUri sourceUri = new SourceUri(uriOrPath, source.hasKey("headers") ? source.getMap("headers") : null);
+-
+             String actualMimeType;
+             if (mimeType == null) {
+                 actualMimeType = guessMimeType(uriOrPath);
+@@ -165,18 +182,14 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
+                 actualMimeType = null;
+             }
+ 
+-            connect(new CopyToGoogleDriveTask(
+-                    sourceUri,
+-                    destinationPath,
+-                    actualMimeType,
+-                    promise,
+-                    new GoogleDriveApiClient(this.googleApiClient, reactContext),
+-                    useDocumentsFolder)
+-            );
+-
+-        } catch (Exception e) {
+-            Log.e(TAG, "Failed to copy", e);
+-            promise.reject("Failed to copy", e);
++            mDriveServiceHelper.saveFile(uriOrPath, destinationPath, actualMimeType, useDocumentsFolder)
++                    .addOnSuccessListener(fileId -> {
++                        Log.d(TAG, "Saving " + fileId);
++                        promise.resolve(fileId);
++                    }).addOnFailureListener(exception -> {
++                        Log.e(TAG, "Couldn't create file.", exception);
++                        promise.reject(exception);
++                    });
+         }
+     }
+ 
+@@ -192,20 +205,17 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
+ 
+     @Override
+     public void onHostResume() {
+-        if (this.googleApiClient != null)
+-            googleApiClient.connect();
++
+     }
+ 
+     @Override
+     public void onHostPause() {
+-        if (this.googleApiClient != null)
+-            this.googleApiClient.disconnect();
++
+     }
+ 
+     @Override
+     public void onHostDestroy() {
+-        if (this.googleApiClient != null)
+-            this.googleApiClient.disconnect();
++
+     }
+ 
+     @Override
+@@ -215,294 +225,101 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
+ 
+     @Override
+     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+-        if (requestCode == REQUEST_CODE_RESOLUTION && resultCode == RESULT_OK)
+-            this.googleApiClient.connect();
+-        else if (requestCode == REQUEST_RESOLVE_ERROR) {
+-            isResolvingError = false;
+-
+-            if (resultCode == RESULT_OK) {
+-                // Make sure the app is not already connected or attempting to connect
+-                if (!googleApiClient.isConnecting() && !googleApiClient.isConnected()) {
+-                    googleApiClient.connect();
++        switch (requestCode) {
++            case REQUEST_CODE_SIGN_IN:
++                if (resultCode == Activity.RESULT_OK && data != null) {
++                    handleSignInResult(data);
+                 }
+-            }
++                break;
+         }
++
++        //super.onActivityResult(requestCode, resultCode, resultData);
+     }
+ 
+     @Override
+     public void onConnectionFailed(ConnectionResult result) {
+-        if (isResolvingError) {
+-            // Already attempting to resolve an error.
+-        } else if (result.hasResolution()) {
+-            try {
+-                isResolvingError = true;
+-                result.startResolutionForResult(getCurrentActivity(), REQUEST_RESOLVE_ERROR);
+-            } catch (IntentSender.SendIntentException e) {
+-                // There was an error with the resolution intent. Try again.
+-                googleApiClient.connect();
+-            }
+-        } else {
+-            showErrorDialog(result.getErrorCode());
+-            isResolvingError = true;
+-        }
+-    }
+ 
+-    private void showErrorDialog(int errorCode) {
+-        ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
+-        Bundle args = new Bundle();
+-        args.putInt(DIALOG_ERROR, errorCode);
+-
+-        dialogFragment.setArguments(args);
+-        dialogFragment.show(getCurrentActivity().getFragmentManager(), "errordialog");
+-    }
+-
+-    /* Called from ErrorDialogFragment when the dialog is dismissed. */
+-    public void onDialogDismissed() {
+-        isResolvingError = false;
+     }
+ 
+-    /* A fragment to display an error dialog */
+-    public static class ErrorDialogFragment extends DialogFragment {
+-        public ErrorDialogFragment() {
+-        }
+-
+-        @Override
+-        public Dialog onCreateDialog(Bundle savedInstanceState) {
+-            int errorCode = this.getArguments().getInt(DIALOG_ERROR);
+-            return GoogleApiAvailability.getInstance().getErrorDialog(this.getActivity(), errorCode, REQUEST_RESOLVE_ERROR);
+-        }
+-
+-        @Override
+-        public void onDismiss(DialogInterface dialog) {
+-            Activity activity = getActivity();
+-
+-            //todo - call back to onDialogDismissed
+-        }
+-    }
+-
+-    public interface InputDataSource {
+-        void copyToOutputStream(OutputStream output) throws IOException;
+-    }
+-
+-    public class SourceUri implements InputDataSource {
+-        public final String uri;
+-        @Nullable
+-        private final ReadableMap httpHeaders;
+-
+-        private SourceUri(String uri, @Nullable ReadableMap httpHeaders) {
+-            this.uri = uri;
+-            this.httpHeaders = httpHeaders;
+-        }
+-
+-        private InputStream read() throws IOException {
+-            if (uri.startsWith("/") || uri.startsWith("file:/")) {
+-                String path = uri.replaceFirst("^file\\:/+", "/");
+-                File file = new File(path);
+-                return new FileInputStream(file);
+-            } else if (uri.startsWith("content://")) {
+-                return RNCloudFsModule.this.reactContext.getContentResolver().openInputStream(Uri.parse(uri));
+-            } else {
+-                HttpURLConnection conn = (HttpURLConnection) new URL(uri).openConnection();
+-
+-                if (httpHeaders != null) {
+-                    ReadableMapKeySetIterator readableMapKeySetIterator = httpHeaders.keySetIterator();
+-                    while (readableMapKeySetIterator.hasNextKey()) {
+-                        String key = readableMapKeySetIterator.nextKey();
+-                        if (key == null)
+-                            continue;
+-                        String value = httpHeaders.getString(key);
+-                        if (value == null)
+-                            continue;
+-                        conn.setRequestProperty(key, value);
+-                    }
+-                }
+-
+-                conn.setRequestMethod("GET");
+-
+-                return conn.getInputStream();
+-            }
+-        }
+-
+-        public void copyToOutputStream(OutputStream output) throws IOException {
+-            InputStream input = read();
+-            if (input == null)
+-                throw new IllegalStateException("Cannot read " + uri);
++    /**
++     * Copy the source into the google drive database
++     */
+ 
+-            try {
+-                byte[] buffer = new byte[256];
+-                int bytesRead;
+-                while ((bytesRead = input.read(buffer)) != -1) {
+-                    output.write(buffer, 0, bytesRead);
+-                }
+-            } finally {
+-                input.close();
+-            }
+-        }
+-    }
++    /**
++     * Starts a sign-in activity using {@link #REQUEST_CODE_SIGN_IN}.
++     */
++    @ReactMethod
++    public void requestSignIn() {
++        Log.d(TAG, "Requesting sign-in");
+ 
+-    @NonNull
+-    private void connect(GoogleApiClient.ConnectionCallbacks listener) {
+-        if (googleApiClient == null) {
+-            synchronized (this) {
+-                googleApiClient = new GoogleApiClient.Builder(reactContext)
+-                        .addApi(Drive.API)
+-                        .addScope(Drive.SCOPE_FILE)
+-                        .addScope(Drive.SCOPE_APPFOLDER)
+-                        .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+-                            @Override
+-                            public void onConnected(@Nullable Bundle bundle) {
+-                                Log.i(TAG, "Google client API connected");
+-                            }
+-
+-                            @Override
+-                            public void onConnectionSuspended(int i) {
+-                                //what to do here??
+-                                Log.w(TAG, "Google client API suspended: " + i);
+-                            }
+-                        })
+-                        .addOnConnectionFailedListener(this)
++        GoogleSignInOptions signInOptions =
++                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
++                        .requestEmail()
++                        .requestScopes(new Scope(DriveScopes.DRIVE_FILE))
+                         .build();
+-            }
+-        }
++        GoogleSignInClient client = GoogleSignIn.getClient(this.reactContext, signInOptions);
+ 
+-        this.googleApiClient.registerConnectionCallbacks(listener);
+-        this.googleApiClient.connect();
++        // The result of the sign-in Intent is handled in onActivityResult.
++        this.reactContext.startActivityForResult(client.getSignInIntent(), REQUEST_CODE_SIGN_IN, null);
+     }
+ 
+-    @Override
+-    public String getName() {
+-        return "RNCloudFs";
+-    }
+-
+-    private class ListFilesTask implements GoogleApiClient.ConnectionCallbacks {
+-        private final boolean useDocumentsFolder;
+-        private final String path;
+-        private final Promise promise;
+-
+-        public ListFilesTask(boolean useDocumentsFolder, String path, Promise promise) {
+-            this.useDocumentsFolder = useDocumentsFolder;
+-            this.path = path;
+-            this.promise = promise;
+-        }
+-
+-        @Override
+-        public void onConnected(@Nullable Bundle bundle) {
+-            final GoogleDriveApiClient googleDriveApiClient = new GoogleDriveApiClient(RNCloudFsModule.this.googleApiClient, reactContext);
+-
+-            AsyncTask.execute(new Runnable() {
+-                @Override
+-                public void run() {
+-                    try {
+-                        WritableMap data = googleDriveApiClient.listFiles(useDocumentsFolder, resolve(path));
+-                        promise.resolve(data);
+-                    } catch (Exception e) {
+-                        promise.reject("error", e);
++    /**
++     * Handles the {@code result} of a completed sign-in activity initiated from {@link
++     * #requestSignIn()}.
++     */
++    private void handleSignInResult(Intent result) {
++        GoogleSignIn.getSignedInAccountFromIntent(result)
++                .addOnSuccessListener(googleAccount -> {
++                    Log.d(TAG, "Signed in as " + googleAccount.getEmail());
++
++                    // Use the authenticated account to sign in to the Drive service.
++                    GoogleAccountCredential credential =
++                            GoogleAccountCredential.usingOAuth2(
++                                    this.reactContext, Collections.singleton(DriveScopes.DRIVE_APPDATA));
++                    credential.setSelectedAccount(googleAccount.getAccount());
++                    Drive googleDriveService =
++                            new Drive.Builder(
++                                    AndroidHttp.newCompatibleTransport(),
++                                    new GsonFactory(),
++                                    credential)
++                                    .build();
++
++                    // The DriveServiceHelper encapsulates all REST API and SAF functionality.
++                    // Its instantiation is required before handling any onClick actions.
++                    mDriveServiceHelper = new DriveServiceHelper(googleDriveService);
++                    if(this.signInPromise != null){
++                        this.signInPromise.resolve(true);
++                        this.signInPromise = null;
+                     }
+-                }
+-            });
+-
+-            googleDriveApiClient.unregisterListener(this);
+-        }
+-
+-        @Override
+-        public void onConnectionSuspended(int i) {
+-            Log.w(TAG, "Google client API suspended: " + i);
+-        }
+-    }
+-
+-    private class CreateFileTask implements GoogleApiClient.ConnectionCallbacks {
+-        private final String path;
+-        private final Promise promise;
+-        private final boolean useDocumentsFolder;
+-        private final String content;
+-
+-        public CreateFileTask(String path, Promise promise, boolean useDocumentsFolder, String content) {
+-            this.path = path;
+-            this.promise = promise;
+-            this.useDocumentsFolder = useDocumentsFolder;
+-            this.content = content;
+-        }
+-
+-        @Override
+-        public void onConnected(@Nullable Bundle bundle) {
+-            final GoogleDriveApiClient googleDriveApiClient = new GoogleDriveApiClient(RNCloudFsModule.this.googleApiClient, reactContext);
+-
+-            AsyncTask.execute(new Runnable() {
+-                @Override
+-                public void run() {
+-                    try {
+-
+-                        List<String> pathParts = resolve(path);
+-                        if (pathParts.size() == 0) {
+-                            promise.reject("error", "no filename specified");
+-                            return;
+-                        }
+-
+-                        DriveFolder parentFolder = useDocumentsFolder ? googleDriveApiClient.documentsFolder() : googleDriveApiClient.appFolder();
+-                        if (pathParts.size() > 1) {
+-                            List<String> parentDirs = pathParts.subList(0, pathParts.size() - 1);
+-                            parentFolder = googleDriveApiClient.createFolders(parentFolder, parentDirs);
+-                        }
+-
+-                        String filename = pathParts.get(pathParts.size() - 1);
+-
+-                        String outputFilename = googleDriveApiClient.createFile(parentFolder, new InputDataSource() {
+-                            @Override
+-                            public void copyToOutputStream(OutputStream output) throws IOException {
+-                                output.write(content.getBytes("UTF-8"));
+-                            }
+-                        }, filename);
+-
+-                        promise.resolve(outputFilename);
+-                    } catch (Exception e) {
+-                        promise.reject("error", e);
++                })
++                .addOnFailureListener(exception -> {
++                    Log.e(TAG, "Unable to sign in.", exception);
++                    if(this.signInPromise != null){
++                        this.signInPromise.reject(exception);
++                        this.signInPromise = null;
+                     }
+-
+-                }
+-            });
+-
+-            googleDriveApiClient.unregisterListener(this);
+-        }
+-
+-        @Override
+-        public void onConnectionSuspended(int i) {
+-            Log.w(TAG, "Google client API suspended: " + i);
+-        }
++                });
+     }
+ 
+-    private class FileExistsTask implements GoogleApiClient.ConnectionCallbacks {
+-        private final boolean useDocumentsFolder;
+-        private final String path;
+-        private final Promise promise;
+-
+-        public FileExistsTask(boolean useDocumentsFolder, String path, Promise promise) {
+-            this.useDocumentsFolder = useDocumentsFolder;
+-            this.path = path;
+-            this.promise = promise;
++    /**
++     * Retrieves the title and content of a file identified by {@code fileId} and populates the UI.
++     */
++    @ReactMethod
++    public void getGoogleDriveDocument(String fileId, Promise promise) {
++        if (mDriveServiceHelper != null) {
++            Log.d(TAG, "Reading file " + fileId);
++
++            mDriveServiceHelper.readFile(fileId)
++                    .addOnSuccessListener(content -> {
++                        promise.resolve(content);
++
++                    })
++                    .addOnFailureListener(exception ->{
++                        Log.e(TAG, "Couldn't read file.", exception);
++                        promise.reject(exception);
++                    });
+         }
++    }
+ 
+-        @Override
+-        public void onConnected(@Nullable Bundle bundle) {
+-            final GoogleDriveApiClient googleDriveApiClient = new GoogleDriveApiClient(RNCloudFsModule.this.googleApiClient, reactContext);
+-
+-            AsyncTask.execute(new Runnable() {
+-                @Override
+-                public void run() {
+-                    try {
+-                        boolean fileExists = googleDriveApiClient.fileExists(useDocumentsFolder, resolve(path));
+-                        promise.resolve(fileExists);
+-                    } catch (Exception e) {
+-                        promise.reject("error", e);
+-                    }
+-                }
+-            });
+ 
+-            googleDriveApiClient.unregisterListener(this);
+-        }
+-
+-        @Override
+-        public void onConnectionSuspended(int i) {
+-            Log.w(TAG, "Google client API suspended: " + i);
+-        }
+-    }
+ }
