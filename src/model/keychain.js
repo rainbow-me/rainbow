@@ -46,7 +46,6 @@ export async function loadString(key, authenticationPrompt) {
 export async function loadAllKeys(authenticationPrompt) {
   try {
     const { results } = await getAllInternetCredentials(authenticationPrompt);
-    console.log('GOT ALL CREDS?', results);
     return results;
   } catch (err) {
     logger.log(`Keychain: failed to loadAllKeys error: ${err}`);

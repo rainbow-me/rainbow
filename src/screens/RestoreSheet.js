@@ -6,11 +6,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { Platform } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components';
 import RestoreCloudStep from '../components/restore/RestoreCloudStep';
 import RestoreSheetFirstStep from '../components/restore/RestoreSheetFirstStep';
 import { SlackSheet } from '../components/sheet';
+import { fetchUserDataFromCloud } from '../handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import Routes from '@rainbow-me/routes';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
@@ -29,7 +31,7 @@ const StyledSheet = styled(SlackSheet)`
 `;
 
 const RestoreSheet = () => {
-  const { goBack, navigate, setOptions } = useNavigation();
+  const { goBack, navigate, setOptions, setParams } = useNavigation();
 
   const { jumpToLong } = useContext(ModalContext) || { jumpToLong: () => null };
   const switchSheetContentTransitionRef = useRef();
@@ -45,7 +47,16 @@ const RestoreSheet = () => {
     }
   }, [params?.userData, setOptions]);
 
-  const onCloudRestore = useCallback(() => {
+  const onCloudRestore = useCallback(async () => {
+    if (Platform.OS === 'android') {
+      const data = await fetchUserDataFromCloud();
+      if (data) {
+        setParams({ userData: data });
+      } else {
+        return;
+      }
+    }
+
     switchSheetContentTransitionRef.current?.animateNextTransition();
     setStep(WalletBackupTypes.cloud);
     setOptions({
@@ -53,7 +64,7 @@ const RestoreSheet = () => {
       longFormHeight: 770,
     });
     setImmediate(jumpToLong);
-  }, [jumpToLong, setOptions]);
+  }, [jumpToLong, setOptions, setParams]);
 
   const onManualRestore = useCallback(() => {
     goBack();

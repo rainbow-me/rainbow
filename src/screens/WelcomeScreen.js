@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-community/masked-view';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Easing, StyleSheet } from 'react-native';
+import { Animated, Easing, Platform, StyleSheet } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import Reanimated, {
   Clock,
@@ -351,7 +351,7 @@ export default function WelcomeScreen() {
       try {
         logger.log('downloading cloud backup info...');
         const isSimulator = await DeviceInfo.isEmulator();
-        if (!isSimulator) {
+        if (!isSimulator && Platform.OS === 'ios') {
           const data = await fetchUserDataFromCloud();
           setUserData(data);
           logger.log('Downloaded cloud backup info');

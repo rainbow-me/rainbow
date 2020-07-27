@@ -51,7 +51,7 @@ index 0000000..849b2a6
 +o/full
 diff --git a/node_modules/react-native-cloud-fs/android/build/.transforms/76df646b401abb97f7d417c1df5870e9/full/classes.dex b/node_modules/react-native-cloud-fs/android/build/.transforms/76df646b401abb97f7d417c1df5870e9/full/classes.dex
 new file mode 100644
-index 0000000..c2f0136
+index 0000000..74aa88a
 Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/.transforms/76df646b401abb97f7d417c1df5870e9/full/classes.dex differ
 diff --git a/node_modules/react-native-cloud-fs/android/build/.transforms/f392815bb0c41fdc2d6eb62ee80bdcf7.bin b/node_modules/react-native-cloud-fs/android/build/.transforms/f392815bb0c41fdc2d6eb62ee80bdcf7.bin
 new file mode 100644
@@ -120,7 +120,7 @@ index 0000000..9e26dfe
 \ No newline at end of file
 diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/compile_library_classes/debug/classes.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/compile_library_classes/debug/classes.jar
 new file mode 100644
-index 0000000..771ff6c
+index 0000000..28148e7
 Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/compile_library_classes/debug/classes.jar differ
 diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar
 new file mode 100644
@@ -128,7 +128,7 @@ index 0000000..56cced1
 Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar differ
 diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/full_jar/debug/createFullJarDebug/full.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/full_jar/debug/createFullJarDebug/full.jar
 new file mode 100644
-index 0000000..771ff6c
+index 0000000..28148e7
 Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/full_jar/debug/createFullJarDebug/full.jar differ
 diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state b/node_modules/react-native-cloud-fs/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state
 new file mode 100644
@@ -187,7 +187,7 @@ index 0000000..fb2fa31
 Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/DriveServiceHelper.class differ
 diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule.class
 new file mode 100644
-index 0000000..6752eb2
+index 0000000..fcbadf5
 Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsModule.class differ
 diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsPackage.class b/node_modules/react-native-cloud-fs/android/build/intermediates/javac/debug/classes/org/rncloudfs/RNCloudFsPackage.class
 new file mode 100644
@@ -540,7 +540,7 @@ index 0000000..b6c738e
 +styleable SwipeRefreshLayout swipeRefreshLayoutProgressSpinnerBackgroundColor
 diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/runtime_library_classes/debug/classes.jar b/node_modules/react-native-cloud-fs/android/build/intermediates/runtime_library_classes/debug/classes.jar
 new file mode 100644
-index 0000000..771ff6c
+index 0000000..28148e7
 Binary files /dev/null and b/node_modules/react-native-cloud-fs/android/build/intermediates/runtime_library_classes/debug/classes.jar differ
 diff --git a/node_modules/react-native-cloud-fs/android/build/intermediates/symbols/debug/R.txt b/node_modules/react-native-cloud-fs/android/build/intermediates/symbols/debug/R.txt
 new file mode 100644
@@ -1549,7 +1549,7 @@ index f78f8bd..0000000
 -    }
 -}
 diff --git a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsModule.java b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsModule.java
-index c7872d6..7854780 100644
+index c7872d6..7bdef20 100644
 --- a/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsModule.java
 +++ b/node_modules/react-native-cloud-fs/android/src/main/java/org/rncloudfs/RNCloudFsModule.java
 @@ -1,19 +1,11 @@
@@ -1633,7 +1633,7 @@ index c7872d6..7854780 100644
      private final ReactApplicationContext reactContext;
      private GoogleApiClient googleApiClient;
  
-@@ -56,79 +59,97 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
+@@ -56,79 +59,101 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
          super(reactContext);
          this.reactContext = reactContext;
  
@@ -1673,11 +1673,6 @@ index c7872d6..7854780 100644
 -    public void createFile(ReadableMap options, final Promise promise) {
 -        if (!options.hasKey("targetPath")) {
 -            promise.reject("error", "targetPath not specified");
--        }
--        final String path = options.getString("targetPath");
--
--        if (!options.hasKey("content")) {
--            promise.reject("error", "content not specified");
 +    public void fileExists(ReadableMap options, final Promise promise) {
 +        if (mDriveServiceHelper != null) {
 +            String fileId = options.getString("fileId");
@@ -1693,17 +1688,12 @@ index c7872d6..7854780 100644
 +                        promise.reject(exception);
 +                    });
          }
--        final String content = options.getString("content");
--
--        final boolean useDocumentsFolder = options.hasKey("scope") ? options.getString("scope").toLowerCase().equals("visible") : true;
--
--        connect(new CreateFileTask(path, promise, useDocumentsFolder, content));
-     }
+-        final String path = options.getString("targetPath");
++    }
  
-     @ReactMethod
--    public void fileExists(ReadableMap options, final Promise promise) {
--        if (!options.hasKey("targetPath")) {
--            promise.reject("error", "targetPath not specified");
+-        if (!options.hasKey("content")) {
+-            promise.reject("error", "content not specified");
++    @ReactMethod
 +    public void deleteFromCloud(ReadableMap options, final Promise promise) {
 +        if (mDriveServiceHelper != null) {
 +            String fileId = options.getString("id");
@@ -1719,16 +1709,29 @@ index c7872d6..7854780 100644
 +                        promise.reject(exception);
 +                    });
          }
+-        final String content = options.getString("content");
+-
+-        final boolean useDocumentsFolder = options.hasKey("scope") ? options.getString("scope").toLowerCase().equals("visible") : true;
+-
+-        connect(new CreateFileTask(path, promise, useDocumentsFolder, content));
+     }
+ 
+     @ReactMethod
+-    public void fileExists(ReadableMap options, final Promise promise) {
+-        if (!options.hasKey("targetPath")) {
+-            promise.reject("error", "targetPath not specified");
++    public void loginIfNeeded(final Promise promise){
++        if (mDriveServiceHelper == null) {
++            this.signInPromise = promise;
++            requestSignIn();
++        }  else {
++            promise.resolve(true);
+         }
 -        String path = options.getString("targetPath");
 -
 -        boolean useDocumentsFolder = !options.hasKey("scope") || options.getString("scope").toLowerCase().equals("visible");
-+    }
- 
+-
 -        connect(new FileExistsTask(useDocumentsFolder, path, promise));
-+    @ReactMethod
-+    public void loginIfNeeded(final Promise promise){
-+        this.signInPromise = promise;
-+        requestSignIn();
      }
  
      @ReactMethod
@@ -1773,7 +1776,7 @@ index c7872d6..7854780 100644
              if (!options.hasKey("sourcePath")) {
                  promise.reject("error", "sourcePath not specified");
              }
-@@ -156,8 +177,6 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
+@@ -156,8 +181,6 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
  
              boolean useDocumentsFolder = options.hasKey("scope") ? options.getString("scope").toLowerCase().equals("visible") : true;
  
@@ -1782,7 +1785,7 @@ index c7872d6..7854780 100644
              String actualMimeType;
              if (mimeType == null) {
                  actualMimeType = guessMimeType(uriOrPath);
-@@ -165,18 +184,14 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
+@@ -165,18 +188,14 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
                  actualMimeType = null;
              }
  
@@ -1809,7 +1812,7 @@ index c7872d6..7854780 100644
          }
      }
  
-@@ -192,20 +207,17 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
+@@ -192,20 +211,17 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
  
      @Override
      public void onHostResume() {
@@ -1833,7 +1836,7 @@ index c7872d6..7854780 100644
      }
  
      @Override
-@@ -215,294 +227,123 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
+@@ -215,294 +231,122 @@ public class RNCloudFsModule extends ReactContextBaseJavaModule implements Googl
  
      @Override
      public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
@@ -1875,7 +1878,7 @@ index c7872d6..7854780 100644
 -            isResolvingError = true;
 -        }
 -    }
--
+ 
 -    private void showErrorDialog(int errorCode) {
 -        ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
 -        Bundle args = new Bundle();
@@ -1884,7 +1887,7 @@ index c7872d6..7854780 100644
 -        dialogFragment.setArguments(args);
 -        dialogFragment.show(getCurrentActivity().getFragmentManager(), "errordialog");
 -    }
- 
+-
 -    /* Called from ErrorDialogFragment when the dialog is dismissed. */
 -    public void onDialogDismissed() {
 -        isResolvingError = false;
@@ -1923,7 +1926,6 @@ index c7872d6..7854780 100644
 +                        .requestScopes(new Scope(DriveScopes.DRIVE_FILE))
 +                        .build();
 +        GoogleSignInClient client = GoogleSignIn.getClient(this.reactContext, signInOptions);
-+        client.signOut();
  
 -    public interface InputDataSource {
 -        void copyToOutputStream(OutputStream output) throws IOException;

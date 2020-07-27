@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
+import { Platform } from 'react-native';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import { deviceUtils } from '../../utils';
@@ -99,35 +100,38 @@ const RestoreSheetFirstStep = ({
   return (
     <React.Fragment>
       <Container>
-        {walletsBackedUp > 0 && (
-          <React.Fragment>
-            <SheetRow as={ButtonPressAnimation} onPress={onCloudRestorePress}>
-              <Column>
-                <Row>
-                  <RainbowText>
-                    <TextIcon>􀌍</TextIcon>
-                  </RainbowText>
-                </Row>
-                <TitleRow>
-                  <RainbowText>
-                    <Title>{`Restore from ${CLOUD_PLATFORM}`}</Title>
-                  </RainbowText>
-                  <CaretIcon />
-                </TitleRow>
-                <DescriptionText>
-                  {typeof userData === undefined
-                    ? ` Checking ${CLOUD_PLATFORM} for backups...`
-                    : walletsBackedUp > 0
-                    ? `You have ${walletsBackedUp} ${
-                        walletsBackedUp > 1 ? 'wallets' : 'wallet'
-                      } backed up`
-                    : `You don't have any wallets backed up`}
-                </DescriptionText>
-              </Column>
-            </SheetRow>
-            <Divider color={colors.rowDividerExtraLight} inset={[0, 30]} />
-          </React.Fragment>
-        )}
+        {walletsBackedUp > 0 ||
+          (Platform.OS === 'android' && (
+            <React.Fragment>
+              <SheetRow as={ButtonPressAnimation} onPress={onCloudRestorePress}>
+                <Column>
+                  <Row>
+                    <RainbowText>
+                      <TextIcon>􀌍</TextIcon>
+                    </RainbowText>
+                  </Row>
+                  <TitleRow>
+                    <RainbowText>
+                      <Title>{`Restore from ${CLOUD_PLATFORM}`}</Title>
+                    </RainbowText>
+                    <CaretIcon />
+                  </TitleRow>
+                  <DescriptionText>
+                    {typeof userData === undefined
+                      ? ` Checking ${CLOUD_PLATFORM} for backups...`
+                      : walletsBackedUp > 0
+                      ? `You have ${walletsBackedUp} ${
+                          walletsBackedUp > 1 ? 'wallets' : 'wallet'
+                        } backed up`
+                      : Platform.OS === 'ios'
+                      ? `You don't have any wallets backed up`
+                      : 'Sign in with your Google account to restore your previous backups'}
+                  </DescriptionText>
+                </Column>
+              </SheetRow>
+              <Divider color={colors.rowDividerExtraLight} inset={[0, 30]} />
+            </React.Fragment>
+          ))}
         <SheetRow as={ButtonPressAnimation} onPress={onManualRestore}>
           <Column>
             <TextIcon color={colors.purple}>􀑚</TextIcon>
