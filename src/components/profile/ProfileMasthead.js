@@ -81,8 +81,8 @@ export default function ProfileMasthead({
     setTimeout(
       () => {
         navigate(Routes.AVATAR_BUILDER, {
-          accountColor: accountColor,
-          accountName: accountName,
+          initialAccountColor: accountColor,
+          initialAccountName: accountName,
         });
       },
       recyclerListRef.getCurrentScrollOffset() > 0 ? 200 : 1

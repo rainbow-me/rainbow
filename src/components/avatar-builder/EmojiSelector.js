@@ -152,7 +152,9 @@ export default class EmojiSelector extends PureComponent {
             <Text
               style={{
                 marginHorizontal: 10,
-                fontSize: Math.floor(this.state.colSize) - 15,
+                fontSize:
+                  Math.floor(this.state.colSize) -
+                  (Platform.OS === 'ios' ? 15 : 22),
                 height: (width - 21) / this.props.columns,
                 width: deviceUtils.dimensions.width,
                 letterSpacing: 8,
@@ -245,7 +247,7 @@ export default class EmojiSelector extends PureComponent {
     if (type === HEADER_ROW) {
       return this.renderListHeader(item.title);
     } else if (type === OVERLAY) {
-      return (
+      return Platform.OS === 'ios' ? (
         <View
           style={{
             top: index === 0 && -3000,
@@ -256,7 +258,7 @@ export default class EmojiSelector extends PureComponent {
             position: 'absolute',
           }}
         />
-      );
+      ) : null;
     }
     return this.renderEmojis(item);
   };
@@ -335,7 +337,9 @@ export default class EmojiSelector extends PureComponent {
             key={`emojiRow${emojis[0]}`}
             style={{
               marginHorizontal: 10,
-              fontSize: Math.floor(this.state.colSize) - 15,
+              fontSize:
+                Math.floor(this.state.colSize) -
+                (Platform.OS === 'ios' ? 15 : 22),
               height: (width - 21) / this.props.columns,
               width: deviceUtils.dimensions.width,
               letterSpacing: 8,
