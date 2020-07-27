@@ -1,11 +1,20 @@
 import analytics from '@segment/analytics-react-native';
+import { captureMessage } from '@sentry/react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import SeedPhraseImageSource from '../../assets/seed-phrase-icon.png';
 import { useWallets } from '../../hooks';
-import { loadSeedPhraseAndMigrateIfNeeded } from '../../model/wallet';
+import {
+  getAllWallets,
+  getSelectedWallet,
+  loadAddress,
+  loadSeedPhraseAndMigrateIfNeeded,
+} from '../../model/wallet';
+import store from '../../redux/store';
+import { walletsLoadState, walletsUpdate } from '../../redux/wallets';
+import { logger } from '../../utils';
 import { Button } from '../buttons';
 import CopyTooltip from '../copy-tooltip';
 import { Centered, Column } from '../layout';
@@ -28,21 +37,107 @@ const ToggleSeedPhraseButton = styled(Button)`
 const BackupSection = ({ navigation }) => {
   const [seedPhrase, setSeedPhrase] = useState(null);
   const { selectedWallet } = useWallets();
+  const [shouldRetry, setShouldRetry] = useState(true);
 
   const hideSeedPhrase = () => setSeedPhrase(null);
+
+  const logAndAttemptRestore = useCallback(
+    async error => {
+      if (!shouldRetry) {
+        hideSeedPhrase();
+        return;
+      }
+
+      setShouldRetry(false);
+
+      // 1 - Log the error if exists
+      if (error) {
+        logger.sentry(
+          '[logAndAttemptRestore]: Error while revealing seed',
+          error
+        );
+      }
+
+      // 2 - Log redux and public keychain entries
+      logger.sentry('[logAndAttemptRestore]: REDUX DATA:', store.getState());
+      try {
+        logger.sentry(
+          '[logAndAttemptRestore]: Keychain allWallets:',
+          await getAllWallets()
+        );
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
+
+      try {
+        logger.sentry(
+          '[logAndAttemptRestore]: Keychain selectedWallet:',
+          await getSelectedWallet()
+        );
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
+
+      try {
+        logger.sentry(
+          '[logAndAttemptRestore]: Keychain address:',
+          await loadAddress()
+        );
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
+
+      // 3 - Send message to sentry
+      captureMessage(`Error while revealing seed`);
+      logger.sentry('[logAndAttemptRestore] message sent to sentry');
+
+      // 4 - Attempt to restore
+      try {
+        // eslint-disable-next-line no-unused-vars
+        const { wallets } = await getAllWallets();
+        logger.sentry('[logAndAttemptRestore] Got all wallets');
+      } catch (e) {
+        logger.sentry(
+          '[logAndAttemptRestore] Got error getting all wallets',
+          e
+        );
+        // if we don't have all wallets, let's see if we have a selected wallet
+        const selected = await getSelectedWallet();
+        logger.sentry('[logAndAttemptRestore] Got selected wallet');
+        if (selected?.wallet?.id) {
+          const { wallet } = selected;
+          // We can recover it based in the selected wallet
+          await store.dispatch(walletsUpdate({ [wallet.id]: wallet }));
+          logger.sentry('[logAndAttemptRestore] Updated wallets');
+          await store.dispatch(walletsLoadState());
+          logger.sentry('[logAndAttemptRestore] Reloaded wallets state');
+          // Retrying one more time
+          const keychainValue = await loadSeedPhraseAndMigrateIfNeeded(
+            wallet.id
+          );
+          if (keychainValue) {
+            setSeedPhrase(keychainValue);
+            captureMessage(`Restore from selected wallet successful`);
+          }
+        }
+      }
+    },
+    [shouldRetry]
+  );
 
   const handlePressToggleSeedPhrase = useCallback(() => {
     if (!seedPhrase) {
       loadSeedPhraseAndMigrateIfNeeded(selectedWallet.id)
         .then(keychainValue => {
-          setSeedPhrase(keychainValue);
-          analytics.track('Viewed backup seed phrase text');
+          if (!keychainValue) {
+            logAndAttemptRestore();
+          } else {
+            setSeedPhrase(keychainValue);
+            analytics.track('Viewed backup seed phrase text');
+          }
         })
-        .catch(hideSeedPhrase);
+        .catch(e => logAndAttemptRestore(e));
     } else {
       hideSeedPhrase();
     }
-  }, [seedPhrase, selectedWallet.id]);
+  }, [logAndAttemptRestore, seedPhrase, selectedWallet.id]);
 
   return (
     <Column align="center" css={padding(80, 40, 0)} flex={1}>
