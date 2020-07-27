@@ -66,7 +66,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
           setSwipeEnabled(false);
         } else {
           // we're enabling swiping a bit later after keyboard focusing
-          timeout.current = setTimeout(() => setSwipeEnabled(true), 300);
+          timeout.current = setTimeout(() => setSwipeEnabled(true), 500);
         }
         setOptions({ dismissable });
       },
