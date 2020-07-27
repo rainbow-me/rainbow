@@ -233,6 +233,7 @@ android {
         pickFirst "lib/arm64-v8a/libc++_shared.so"
         pickFirst "lib/x86/libc++_shared.so"
         pickFirst "lib/x86_64/libc++_shared.so"
+        exclude 'META-INF/DEPENDENCIES'
     }
 
 
@@ -266,10 +267,6 @@ dependencies {
     }
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
-    }
-	
-    implementation ('com.google.android.gms:play-services-drive:17.0.0') {
-        force = true;
     }
 
     if (enableHermes) {
