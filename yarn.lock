@@ -9151,9 +9151,9 @@ react-native-actionsheet@^2.4.2:
   resolved "https://registry.yarnpkg.com/react-native-actionsheet/-/react-native-actionsheet-2.4.2.tgz#6a00dd51a75ef2c8974312130e405af73191500f"
   integrity sha512-DBoWIvVwuWXuptF4t46pBqkFxaUxS+rsIdHiA05t0n4BdTIDV2R4s9bLEUVOGzb94D7VxIamsXZPA/3mmw+SXg==
 
-react-native-aes-crypto@brunobar79/react-native-aes#767dccdee516993b66eca1a02ebfaca79f31b738:
+react-native-aes-crypto@brunobar79/react-native-aes#27d52ea6c2ff8470388b20993e0357ab07ad17e3:
   version "2.0.0"
-  resolved "https://codeload.github.com/brunobar79/react-native-aes/tar.gz/767dccdee516993b66eca1a02ebfaca79f31b738"
+  resolved "https://codeload.github.com/brunobar79/react-native-aes/tar.gz/27d52ea6c2ff8470388b20993e0357ab07ad17e3"
 
 react-native-background-timer@^2.2.0:
   version "2.2.0"

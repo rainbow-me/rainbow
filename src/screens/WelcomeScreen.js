@@ -349,9 +349,9 @@ export default function WelcomeScreen() {
   useEffect(() => {
     const initialize = async () => {
       try {
-        logger.log('downloading cloud backup info...');
         const isSimulator = await DeviceInfo.isEmulator();
         if (!isSimulator && Platform.OS === 'ios') {
+          logger.log('downloading cloud backup info...');
           const data = await fetchUserDataFromCloud();
           setUserData(data);
           logger.log('Downloaded cloud backup info');

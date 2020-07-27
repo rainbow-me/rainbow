@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components';
 import RestoreCloudStep from '../components/restore/RestoreCloudStep';
@@ -53,6 +53,7 @@ const RestoreSheet = () => {
       if (data) {
         setParams({ userData: data });
       } else {
+        Alert.alert('No backups found');
         return;
       }
     }
