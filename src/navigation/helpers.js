@@ -14,17 +14,19 @@ export function ScrollPagerWrapper(props) {
     ios: (
       <ScrollPager
         {...props}
-        onMomentumScrollEnd={() => {
-          if (props.setSwipeEnabled) {
-            ref.current.scrollViewRef.current.setNativeProps({
-              pointerEvents: 'auto',
-            });
-          }
-        }}
         onSwipeEnd={velocity => {
           if (velocity < 0) {
             // we're disabling swiping immediately after detecting returning animation
             props.setSwipeEnabled?.(false);
+          }
+          if (props.setSwipeEnabled) {
+            setTimeout(
+              () =>
+                ref.current.scrollViewRef.current.setNativeProps({
+                  pointerEvents: 'auto',
+                }),
+              40
+            );
           }
           props.onSwipeEnd();
         }}
