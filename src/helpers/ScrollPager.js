@@ -130,6 +130,7 @@ export default class ScrollPager extends React.Component {
   relativePosition = divide(this.position, this.layoutWidthNode);
 
   handleMomentumScrollEnd = () => {
+    this.props.onMomentumScrollEnd?.();
     if (this.interactionHandle !== null) {
       InteractionManager.clearInteractionHandle(this.interactionHandle);
       this.interactionHandle = null;
