@@ -6,6 +6,7 @@ import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import DepositModal from '../screens/DepositModal';
+import ExampleScreen from '../screens/ExampleScreen';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
@@ -57,6 +58,11 @@ function MainNavigator() {
         component={TransactionConfirmationScreen}
         name={Routes.CONFIRM_REQUEST}
         options={sheetPreset}
+      />
+      <Stack.Screen
+        component={ExampleScreen}
+        name={Routes.EXAMPLE_SCREEN}
+        options={exchangePreset}
       />
       <Stack.Screen
         component={ExchangeModalNavigator}
