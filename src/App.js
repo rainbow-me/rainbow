@@ -236,8 +236,10 @@ class App extends Component {
       const identifier = await RNIOS11DeviceCheck.getToken()
         .then(deviceId => deviceId)
         .catch(() => nanoid());
-      await keychain.saveString('analyticsUserIdentifier', identifier);
-      analytics.identify(identifier);
+      if (identifier) {
+        await keychain.saveString('analyticsUserIdentifier', identifier);
+        analytics.identify(identifier);
+      }
     }
 
     await analytics.setup(REACT_APP_SEGMENT_API_WRITE_KEY, {

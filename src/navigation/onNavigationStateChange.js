@@ -153,6 +153,8 @@ export function onNavigationStateChange(currentState) {
       };
     }
     sentryUtils.addNavBreadcrumb(prevRouteName, routeName, paramsToTrack);
-    return analytics.screen(routeName, paramsToTrack);
+    if (Platform.OS === 'ios' || (routeName && paramsToTrack)) {
+      return analytics.screen(routeName, paramsToTrack);
+    }
   }
 }

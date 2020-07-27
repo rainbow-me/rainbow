@@ -120,7 +120,7 @@
     "react-native": "0.62.2",
     "react-native-action-sheet": "^2.2.0",
     "react-native-actionsheet": "^2.4.2",
-    "react-native-aes-crypto": "brunobar79/react-native-aes#767dccdee516993b66eca1a02ebfaca79f31b738",
+    "react-native-aes-crypto": "brunobar79/react-native-aes#27d52ea6c2ff8470388b20993e0357ab07ad17e3",
     "react-native-background-timer": "^2.2.0",
     "react-native-branch": "^5.0.0-beta.1",
     "react-native-camera": "^3.9.0",
