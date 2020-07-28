@@ -81,7 +81,7 @@ export default function SendSheet(props) {
     updateGasPriceOption,
     updateTxFee,
   } = useGas();
-  const { contacts, onRemoveContact, sortedContacts } = useContacts();
+  const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     accountAddress,
@@ -415,7 +415,7 @@ export default function SendSheet(props) {
         />
         {showEmptyState && (
           <SendContactList
-            contacts={sortedContacts}
+            contacts={filteredContacts}
             currentInput={currentInput}
             onPressContact={setRecipient}
             removeContact={onRemoveContact}
