@@ -11,8 +11,6 @@ import {
 import { isENSAddressFormat } from '../../helpers/validators';
 import { useAccountSettings } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import { abbreviations, ethereumUtils } from '../../utils';
-import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { ButtonPressAnimation } from '../animations';
 import { FlexItem, Row, RowWithMargins } from '../layout';
 import BalanceText from './BalanceText';
@@ -22,6 +20,11 @@ import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
+import {
+  abbreviations,
+  ethereumUtils,
+  showActionSheetWithOptions,
+} from '@rainbow-me/utils';
 
 const containerStyles = css`
   padding-left: 19;

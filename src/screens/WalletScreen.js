@@ -13,9 +13,7 @@ import {
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
-import LoadingOverlay, {
-  LoadingOverlayWrapper,
-} from '../components/modal/LoadingOverlay';
+import { LoadingOverlay } from '../components/modal';
 import useExperimentalFlag, {
   DISCOVER_SHEET,
 } from '../config/experimentalHooks';
@@ -95,12 +93,10 @@ export default function WalletScreen() {
   useEffect(() => {
     if (isWalletLoading) {
       setComponent(
-        <LoadingOverlayWrapper>
-          <LoadingOverlay
-            paddingTop={sheetVerticalOffset}
-            title={isWalletLoading}
-          />
-        </LoadingOverlayWrapper>,
+        <LoadingOverlay
+          paddingTop={sheetVerticalOffset}
+          title={isWalletLoading}
+        />,
         true
       );
       return hide;

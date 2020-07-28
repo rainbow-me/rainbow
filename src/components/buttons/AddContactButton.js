@@ -84,8 +84,8 @@ const AddContactButton = ({ edit, onPress }) => {
   const editButtonRef = useRef();
 
   useEffect(() => {
-    if (addButtonRef.current) addButtonRef.current.animateNextTransition();
-    if (editButtonRef.current) editButtonRef.current.animateNextTransition();
+    addButtonRef.current?.animateNextTransition();
+    editButtonRef.current?.animateNextTransition();
   }, [edit]);
 
   return (
@@ -101,11 +101,6 @@ const AddContactButton = ({ edit, onPress }) => {
       )}
     </View>
   );
-};
-
-AddContactButton.propTypes = {
-  edit: PropTypes.bool,
-  onPress: PropTypes.func.isRequired,
 };
 
 export default React.memo(AddContactButton);

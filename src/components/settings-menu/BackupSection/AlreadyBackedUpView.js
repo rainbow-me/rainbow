@@ -17,9 +17,7 @@ import { logger } from '../../../utils';
 import { CLOUD_PLATFORM } from '../../../utils/platform';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
-import LoadingOverlay, {
-  LoadingOverlayWrapper,
-} from '../../modal/LoadingOverlay';
+import LoadingOverlay from '../../modal/LoadingOverlay';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
 import Routes from '@rainbow-me/routes';
@@ -88,12 +86,10 @@ const AlreadyBackedUpView = () => {
   useEffect(() => {
     if (isWalletLoading) {
       setComponent(
-        <LoadingOverlayWrapper>
-          <LoadingOverlay
-            paddingTop={sheetVerticalOffset}
-            title={isWalletLoading}
-          />
-        </LoadingOverlayWrapper>,
+        <LoadingOverlay
+          paddingTop={sheetVerticalOffset}
+          title={isWalletLoading}
+        />,
         false
       );
     }

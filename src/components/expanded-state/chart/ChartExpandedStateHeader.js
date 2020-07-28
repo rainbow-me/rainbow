@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components/primitives';
+import { chartExpandedAvailable } from '../../../config/experimental';
 import useExperimentalFlag, {
   RED_GREEN_PRICE_CHANGE,
 } from '../../../config/experimentalHooks';
@@ -16,6 +17,7 @@ import { magicMemo } from '../../../utils';
 import { CoinIcon } from '../../coin-icon';
 import { ContextCircleButton } from '../../context-menu';
 import { Icon } from '../../icons';
+import { Input } from '../../inputs';
 import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import { TruncatedText } from '../../text';
 import { colors, padding } from '@rainbow-me/styles';
@@ -29,9 +31,12 @@ const Container = styled(ColumnWithMargins).attrs({
 `;
 
 const Subtitle = styled(TruncatedText).attrs(
-  ({ color = colors.alpha(colors.blueGreyDark, 0.8) }) => ({
+  ({
+    color = colors.alpha(colors.blueGreyDark, 0.8),
+    letterSpacing = 'roundedMedium',
+  }) => ({
     color,
-    letterSpacing: 'roundedMedium',
+    letterSpacing,
     size: 'larger',
     weight: 'medium',
   })
@@ -47,7 +52,9 @@ const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
 const ChartExpandedStateHeader = ({
   address,
   change,
+  chartDateRef,
   chartPrice,
+  chartPriceRef,
   color = colors.dark,
   latestPrice = noPriceData,
   name,
@@ -142,10 +149,23 @@ const ChartExpandedStateHeader = ({
         />
       </Row>
       <Row align="center" justify="space-between">
-        <ColumnWithMargins align="start" flex={1} margin={1}>
-          <Title>{isNoPriceData ? name : formattedPrice}</Title>
-          <Subtitle>{isNoPriceData ? formattedPrice : name}</Subtitle>
-        </ColumnWithMargins>
+        {!chartExpandedAvailable || isNoPriceData ? (
+          <ColumnWithMargins align="start" flex={1} margin={1}>
+            <Title>{isNoPriceData ? name : formattedPrice}</Title>
+            <Subtitle>{isNoPriceData ? formattedPrice : name}</Subtitle>
+          </ColumnWithMargins>
+        ) : (
+          <ColumnWithMargins align="start" flex={1} margin={1}>
+            <Title
+              as={Input}
+              editable={false}
+              flex={1}
+              pointerEvent="none"
+              ref={chartPriceRef}
+            />
+            <Subtitle>{name}</Subtitle>
+          </ColumnWithMargins>
+        )}
         {!isNoPriceData && (
           <ColumnWithMargins align="end" margin={1}>
             <RowWithMargins align="center" margin={4}>
@@ -162,12 +182,25 @@ const ChartExpandedStateHeader = ({
                 {formattedChange}
               </Title>
             </RowWithMargins>
-            <Subtitle
-              align="right"
-              color={redGreenPriceChange ? redGreenColor : color}
-            >
-              Today
-            </Subtitle>
+            {chartExpandedAvailable ? (
+              <Subtitle
+                align="right"
+                as={Input}
+                color={redGreenPriceChange ? redGreenColor : color}
+                editable={false}
+                letterSpacing="roundedTight"
+                pointerEvent="none"
+                ref={chartDateRef}
+                tabularNums
+              />
+            ) : (
+              <Subtitle
+                align="right"
+                color={redGreenPriceChange ? redGreenColor : color}
+              >
+                Today
+              </Subtitle>
+            )}
           </ColumnWithMargins>
         )}
       </Row>

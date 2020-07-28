@@ -398,7 +398,7 @@ PODS:
     - React
   - react-native-version-number (0.3.6):
     - React
-  - react-native-viewpager (3.3.0):
+  - react-native-viewpager (4.1.0):
     - React
   - React-RCTActionSheet (0.62.2):
     - React-Core/RCTActionSheetHeaders (= 0.62.2)
@@ -501,6 +501,8 @@ PODS:
   - RNGestureHandler (1.6.0):
     - React
   - RNInputMask (4.1.0)
+  - RNKeyboard (1.0.5):
+    - React
   - RNKeychain (4.0.3):
     - React
   - RNLanguages (3.0.2):
@@ -638,6 +640,7 @@ DEPENDENCIES:
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNInputMask (from `../node_modules/react-native-text-input-mask/ios/InputMask`)
+  - RNKeyboard (from `../node_modules/react-native-keyboard-area`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNLanguages (from `../node_modules/react-native-languages`)
   - RNOS (from `../node_modules/react-native-os`)
@@ -826,6 +829,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNInputMask:
     :path: "../node_modules/react-native-text-input-mask/ios/InputMask"
+  RNKeyboard:
+    :path: "../node_modules/react-native-keyboard-area"
   RNKeychain:
     :path: "../node_modules/react-native-keychain"
   RNLanguages:
@@ -932,7 +937,7 @@ SPEC CHECKSUMS:
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
-  react-native-viewpager: a7b438ca32c57b2614ece2a123e7fe116f743131
+  react-native-viewpager: 6f8c102e8081d70259252b254143b4193a9fb4cb
   React-RCTActionSheet: f41ea8a811aac770e0cc6e0ad6b270c644ea8b7c
   React-RCTAnimation: 49ab98b1c1ff4445148b72a3d61554138565bad0
   React-RCTBlob: a332773f0ebc413a0ce85942a55b064471587a71
@@ -959,6 +964,7 @@ SPEC CHECKSUMS:
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
   RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
+  RNKeyboard: ceec456427493b286539f40442620881b5840dff
   RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b

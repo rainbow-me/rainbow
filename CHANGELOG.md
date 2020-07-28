@@ -7,14 +7,160 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 ### Added
+* Add welcome screen
+* Add icon on splash screen animated hiding
+* Add tx default data value
+* Add experimental menu and refactor settings
+* Instagram QR
+* Add COMP
+* New QR Codes
+* Add ENJ, PAXG, PLR
+* Add aliases for styles, routes and logger
+* New ChartExpandedState+LiquidityPoolExpandedState theme
+* Enable animated splash screen
+* Add portal API and migrate existing LoadingOverlay
+* Add logic for handling reimports of hidden wallets
+* Add RARI metadata
+* Add spinner on import button
+* Add app settings with ability to wipe keychain
+* Add more tracking to swap flow
+* Add modifiers to touchX variable in charts
+* Add TestFlight check
 
 ### Changed
+* Migrate to React Navigation 5
+* Optimize savings animation
+* Make import screen work on Android
+* Simplify usage of opacity toggler and make it not animated
+* Fix Holo token symbol (HOLO -> HOT)
+* Update lockfile
+* Update PNK color
+* Restore keyboard handling in cool-modals
+* Fixes for push notification FCM token retrieval
+* Fix share button label alignment
+* Force setting correct opacity after togglign focus
+* Move cool modals inside rainbow repo
+* Fix navigation that breaks for routes that have different names
+* Fixes for savings label
+* Fix animation for change wlalet and add empty state on android
+* Resolve promise for when a user has push notif permissions
+* Uncomment copy seeds
+* Enable native debugging in Xcode
+* Fix displaying alerts in Portal.m
+* Remove console.log
+* Fix memory leak in Cool Modals
+* Move hiding of portal to effect's cleanup
+* Fix crash on pull down to refresh
+* UI fixes
+* Fix RAI-730 with moving removeController to later callback
+* Fix crash while opening non-native import sheet
+* dont crash when imageUrl is nil
+* Move WC sessions to global localstorage
+* Fix updating txn title after pending txn watcher completes
+* Fetch Uniswap exchange address from global list
+* Subscribe listeners on creation and not on every connection
+* Fix initial keyboard focusing
+* Insufficient Gas → Insufficient ETH
+* Mark saving's updated with animated colors
+* Probably fix NSInternalInconsistencyException crash
+* FlatList to extract unique key based on wallet id and account id
+* Some small steps to fix 🤖
+* Change AssetSheetHeight to lower to get rid of non-clickable space in…
+* Show price per Uniswap LP share, clean up new expanded state styles
+* Fix swap search input autodeleting as user types
+* Check for ENS name on import of a seed phrase
+* Update exchange input when onChangeText function changes
+* Improve transaction context menu
+* Fix copy address in profile masthead on test networks
+* Disable no-array-index-key eslint rule
+* Make clocks not running while not needed
+* Replace new Date().getTime() by Date.now()
+* UI bug fixes, improvements
+* Show codepush version under settings
+* Fix CoinIconFallback text styles
+* Use transparent status bar on 🤖
+* Fix status bar on splash screen on Android
+* Update redash
+* Enforce alphabetization in components
+* Patch RN to use continuous corners when possible
+* Fix status bar managing in Swap
+* Throttle the block listener for reserve updates
+* Decrement usage of compound and uniswap graph
+* Revert "Reduce number of calls to the graph
+* cleanup/improve cool-modals?
+* Revert "Remove overdrag from Android
+* Upgrade Firebase
+* Fix single row height in wallet screen when on testnet
+* Minor fixes for Android
+* Don't use underlyingPrice to calculate eth savings price
+* Port swap and savings to cool-modals
+* Revert "Port swap and savings to cool-modals
+* Rewrite charts to use d3
+* Fix input focusing issues
+* Fix displaying deposit modal
+* Disable horizontal orientation on Android
+* Fix All/Less position on Android
+* Set overScrollMode to never
+* Fix one-off delay on send sheet inputs
+* Fix broken 🌟️ favoriting in Swap flow
+* Chart improvements
+* Bump lodash from 4.17.15 to 4.17.19
+* fix Send flow bugs
+* Fix initial flash happening on Swap output's coin icon placeholder
+* Fix logger import
 
 ### Removed
+* Disable safari debugging
+* Get rid of using PanGestureHandler for blocking Swiping
+* Remove unncessesary firebase registration
+* Remove no longer valid Settings modal tracking in Analytics
+* Remove unncessary ImportSeedPhraseSheetWithData
+* Remove rebase artifacts
+* Remove usage of react-native-animated-number in SavingsListRowAnimate…
+* Reduce number of calls to the graph
+* Remove overdrag from Android
+* Remove not existing savings from Kovan testnet
 
-## [1.2.23](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.23)
+## [1.2.22](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.22)
+### Added
+* Add collapse shitcoins in send asset list
+
 ### Changed
-* Fixes and improvements to WalletConnect
+* Refactor WC connection handling
+* Fix check button alignment and blinking
+* Always use same random color for FallbackCoinIcon based on token symbol
+* Bump react-native-firebase
+* Fix TransactionConfirmationScreen title alignment
+
+
+## [1.2.19](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.19)
+### Changed
+*  Fix uniswap subgraph
+*  UI Cleanup
+
+
+## [1.2.18](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.18)
+### Added
+* Wallets check for brand new wallets and add logging to Sentry
+
+
+### Changed
+* Adjust WalletConnectRedirectSheet styles
+
+## [1.2.17](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.17)
+### Added
+* Add UMA token info
+* Add mobile deeplinking support for domain to rnbwapp.com
+
+### Changed
+* Fix bg color in profile header btn
+* Fix minor SlackSheet details for notchless phones
+* Fix broken list headers in CurrencySelectionList
+* WC fixes for mobile deeplinking
+* Fix migrations run out of order
+* Apply refund and reorder logic to all trade types regardless of protocol
+* Handle WC rejections properly
+* Fix tx indexes on native activity list
 
 ## [1.2.15](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.15)
 ### Added

@@ -10,6 +10,7 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   AppState,
+  NativeModules,
   StatusBar,
   unstable_enableLogBox,
 } from 'react-native';
@@ -95,6 +96,10 @@ class App extends Component {
   state = { appState: AppState.currentState, initialRoute: null };
 
   async componentDidMount() {
+    if (!__DEV__ && NativeModules.RNTestFlight) {
+      const { isTestFlight } = NativeModules.RNTestFlight.getConstants();
+      logger.sentry(`Test flight usage - ${isTestFlight}`);
+    }
     this.identifyFlow();
     AppState.addEventListener('change', this.handleAppStateChange);
     await this.handleInitializeAnalytics();

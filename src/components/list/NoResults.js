@@ -1,15 +1,11 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
 import { Centered, ColumnWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
-import { colors, position } from '@rainbow-me/styles';
-
-const Container = styled(ColumnWithMargins).attrs({ margin: 3 })`
-  ${position.centered};
-`;
+import { colors } from '@rainbow-me/styles';
+import { neverRerender } from '@rainbow-me/utils';
 
 const NoResults = () => (
-  <Container>
+  <ColumnWithMargins centered margin={3}>
     <Centered>
       <Emoji lineHeight="none" name="ghost" size={42} />
     </Centered>
@@ -20,8 +16,7 @@ const NoResults = () => (
     >
       Nothing here!
     </Text>
-  </Container>
+  </ColumnWithMargins>
 );
 
-const neverRerender = () => true;
-export default React.memo(NoResults, neverRerender);
+export default neverRerender(NoResults);

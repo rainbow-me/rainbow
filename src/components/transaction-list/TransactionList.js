@@ -14,14 +14,18 @@ import {
   hasAddableContact,
 } from '../../helpers/transactions';
 import { isENSAddressFormat } from '../../helpers/validators';
-import { useAccountProfile } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
-import { abbreviations, ethereumUtils } from '../../utils';
-import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { FloatingEmojis } from '../floating-emojis';
+import { useAccountProfile } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
+import {
+  abbreviations,
+  ethereumUtils,
+  showActionSheetWithOptions,
+} from '@rainbow-me/utils';
+
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
 const Container = styled.View`
@@ -165,7 +169,7 @@ const TransactionList = ({
                 asset: item,
                 color: contactColor,
                 contact,
-                type: 'contact',
+                type: 'contact_profile',
               });
             } else if (
               (!showContactInfo && buttonIndex === 0) ||

@@ -228,7 +228,7 @@ const SettingsSection = ({
         />
         <ListItem
           icon={<Emoji name="speech_balloon" />}
-          label="Leave Feedback"
+          label="Feedback and Support"
           onPress={onSendFeedback}
         />
         <ListItem
@@ -239,7 +239,7 @@ const SettingsSection = ({
         {__DEV__ && (
           <ListItem
             icon={<Emoji name="octopus" />}
-            label="Developer settings"
+            label="Developer Settings"
             onPress={onPressDev}
           />
         )}
