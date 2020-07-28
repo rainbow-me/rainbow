@@ -6,10 +6,18 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import { borders, colors } from '@rainbow-me/styles';
 
-const buildSmallShadows = color => [
-  [0, 3, 5, colors.dark, 0.14],
-  [0, 6, 10, colors.avatarColor[color] || color, 0.2],
-];
+const buildShadows = (color, size) => {
+  if (size === 'small') {
+    return [
+      [0, 3, 5, colors.dark, 0.14],
+      [0, 6, 10, colors.avatarColor[color] || color, 0.2],
+    ];
+  } else if (size === 'smedium') {
+    return [[0, 4, 12, colors.avatarColor[color] || color, 0.4]];
+  } else {
+    return sizeConfigs[size]['shadow'];
+  }
+};
 
 const sizeConfigs = {
   large: {
@@ -32,15 +40,16 @@ const sizeConfigs = {
     dimensions: 34,
     textSize: 'large',
   },
+  smedium: {
+    dimensions: 36,
+    textSize: 'large',
+  },
 };
 
 const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
-  const { dimensions, shadow, textSize } = sizeConfigs[size];
+  const { dimensions, textSize } = sizeConfigs[size];
 
-  const shadows = useMemo(
-    () => (size === 'small' ? buildSmallShadows(color) : shadow),
-    [color, shadow, size]
-  );
+  const shadows = useMemo(() => buildShadows(color, size), [color, size]);
 
   return (
     <ShadowStack
