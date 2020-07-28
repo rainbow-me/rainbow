@@ -2,6 +2,7 @@ import React, { createElement, useCallback } from 'react';
 import { ButtonPressAnimation } from '../animations';
 
 export default function JellySelectorItem({
+  enableHapticFeedback = false,
   index,
   isSelected,
   item,
@@ -17,7 +18,7 @@ export default function JellySelectorItem({
 
   return (
     <ButtonPressAnimation
-      enableHapticFeedback={false}
+      enableHapticFeedback={enableHapticFeedback}
       key={index}
       onLayout={handleLayout}
       onPress={handlePress}

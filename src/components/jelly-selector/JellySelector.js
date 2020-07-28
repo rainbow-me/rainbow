@@ -37,6 +37,7 @@ function resetPositionCalculations() {
 const JellySelector = ({
   backgroundColor,
   color = colors.dark,
+  enableHapticFeedback,
   defaultIndex = 0,
   disableSelection,
   height,
@@ -111,6 +112,7 @@ const JellySelector = ({
         {items.map((item, index) => (
           <JellySelectorItem
             color={color}
+            enableHapticFeedback={enableHapticFeedback}
             index={index}
             isSelected={selected === index}
             item={item}

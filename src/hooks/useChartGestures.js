@@ -10,6 +10,7 @@ import {
   onEitherGestureActiveChange,
 } from '../components/animations';
 import useDimensions from './useDimensions';
+import { haptics } from '@rainbow-me/utils';
 
 const { and, call, cond, not, onChange, set, useCode } = Animated;
 
@@ -38,11 +39,12 @@ export default function useChartGestures(onGestureInactive) {
           panGestureState,
           tapGestureState,
           // 🧽️ Show scrubber if either gesture handler is active
-          set(isScrubbing, 1),
+          [set(isScrubbing, 1), call([], haptics.selection)],
           [
             // 🧽️ Hide the scrubber + reset the Chart Data Labels
             // if either of our gesture handlers become inactive 👌️🤠️
             set(isScrubbing, 0),
+            call([], haptics.selection),
             call([], onGestureInactive),
           ]
         ),

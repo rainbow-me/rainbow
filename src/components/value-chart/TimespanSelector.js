@@ -53,6 +53,7 @@ const TimespanSelector = ({
         backgroundColor={colors.alpha(color, 0.06)}
         color={color}
         defaultIndex={defaultIndex}
+        enableHapticFeedback
         height={32}
         items={Object.keys(ChartTypes)}
         onSelect={handleSelect}
