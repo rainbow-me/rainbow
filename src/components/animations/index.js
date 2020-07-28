@@ -1,6 +1,7 @@
 export {
   contains,
   interpolate,
+  isGestureActiveProc,
   isEitherGestureActiveProc,
   onEitherGestureActiveChange,
   runSpring,

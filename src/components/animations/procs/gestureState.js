@@ -5,9 +5,17 @@ import contains from './contains';
 const { cond, onChange, or, proc } = Animated;
 
 const SUCCESS = [State.ACTIVE, State.BEGAN];
+
+export const isGestureActiveProc = proc(gestureHandler =>
+  contains(SUCCESS, gestureHandler)
+);
+
 export const isEitherGestureActiveProc = proc(
   (gestureStateOne, gestureStateTwo) =>
-    or(contains(SUCCESS, gestureStateOne), contains(SUCCESS, gestureStateTwo))
+    or(
+      isGestureActiveProc(gestureStateOne),
+      isGestureActiveProc(gestureStateTwo)
+    )
 );
 
 export const onEitherGestureActiveChange = proc(

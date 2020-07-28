@@ -12,15 +12,15 @@ import {
   isEqual,
   toFixedDecimals,
 } from '../../../helpers/utilities';
-import { useAccountSettings, useCoinListEditOptions } from '../../../hooks';
-import { magicMemo } from '../../../utils';
 import { CoinIcon } from '../../coin-icon';
 import { ContextCircleButton } from '../../context-menu';
 import { Icon } from '../../icons';
 import { Input } from '../../inputs';
 import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import { TruncatedText } from '../../text';
+import { useAccountSettings, useCoinListEditOptions } from '@rainbow-me/hooks';
 import { colors, padding } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
 const noPriceData = 'No price data';
 
@@ -163,6 +163,7 @@ const ChartExpandedStateHeader = ({
               flex={1}
               pointerEvent="none"
               ref={chartPriceRef}
+              tabularNums
               width="100%"
             />
             <Subtitle>{name}</Subtitle>

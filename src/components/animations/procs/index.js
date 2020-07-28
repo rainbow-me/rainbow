@@ -1,6 +1,7 @@
 export { default as contains } from './contains';
 export {
   isEitherGestureActiveProc,
+  isGestureActiveProc,
   onEitherGestureActiveChange,
 } from './gestureState';
 export { default as interpolate } from './interpolate';

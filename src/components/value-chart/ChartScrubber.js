@@ -3,12 +3,12 @@ import Animated, { Easing, Value } from 'react-native-reanimated';
 import { getPointAtLength, withTimingTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import { useCallbackOne, useMemoOne } from 'use-memo-one';
-import { interpolate as interpolateProc } from '../animations';
 import { useDimensions } from '@rainbow-me/hooks';
 import { borders, colors, position, shadow } from '@rainbow-me/styles';
 
 const {
   call,
+  cond,
   Extrapolate,
   interpolate,
   multiply,
@@ -18,6 +18,7 @@ const {
 } = Animated;
 
 export const ChartScrubberSize = 16;
+const magneticPadding = 50;
 
 const CenterDot = styled.View`
   ${borders.buildCircle(6)};
@@ -39,8 +40,8 @@ export default function ChartScrubber({
   isScrubbing,
   offsetY,
   onScrub,
-  panGesturePosition,
   parsedPath,
+  scrubberX,
 }) {
   const { width } = useDimensions();
 
@@ -49,15 +50,9 @@ export default function ChartScrubber({
     easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
   });
 
-  const { translateX, translateY } = useMemoOne(() => {
-    let scrubberPosition = {
-      x: new Value(width),
-      y: new Value(0),
-    };
-
-    if (parsedPath) {
-      const magneticPadding = 50;
-      const magneticPanGesturePosition = interpolateProc(panGesturePosition.x, {
+  const magneticPanGesturePosition = useMemoOne(
+    () =>
+      interpolate(scrubberX, {
         extrapolate: Extrapolate.CLAMP,
         inputRange: [
           magneticPadding / 2,
@@ -66,8 +61,18 @@ export default function ChartScrubber({
           width - magneticPadding / 2,
         ],
         outputRange: [0, magneticPadding, width - magneticPadding, width],
-      });
+      }),
+    [scrubberX, width]
+  );
 
+  const { translateX, translateY } = useMemoOne(() => {
+    let scrubberPosition = {
+      x: new Value(width),
+      y: new Value(0),
+    };
+
+    if (parsedPath) {
+      // this is what ties the Scrubbers position to the chart's path
       scrubberPosition = getPointAtLength(
         parsedPath,
         interpolate(magneticPanGesturePosition, {
@@ -82,23 +87,32 @@ export default function ChartScrubber({
       translateX: sub(scrubberPosition.x, ChartScrubberSize / 2),
       translateY: multiply(scrubberPosition.y, -1),
     };
-  }, [parsedPath, panGesturePosition.x, width]);
+  }, [magneticPanGesturePosition, parsedPath, width]);
 
   useCode(
     useCallbackOne(
       () =>
         onChange(
-          panGesturePosition.x,
-          call([panGesturePosition.x, translateY], onScrub)
+          translateX,
+          cond(isScrubbing, call([translateX, translateY], onScrub))
         ),
-      [onScrub, translateY, panGesturePosition.x]
+      [isScrubbing, onScrub, translateX, translateY]
     )
   );
 
   const scrubberStyle = useMemoOne(
     () => ({
       opacity,
-      transform: [{ translateX }, { translateY }],
+      transform: [
+        { translateX, translateY },
+        {
+          scale: interpolate(opacity, {
+            extrapolate: Extrapolate.EXTEND,
+            inputRange: [0, 1],
+            outputRange: [2, 1],
+          }),
+        },
+      ],
     }),
     [opacity, translateX, translateY]
   );

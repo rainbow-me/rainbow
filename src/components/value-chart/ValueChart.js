@@ -2,15 +2,8 @@ import * as shape from 'd3-shape';
 import { format } from 'date-fns';
 import { maxBy, minBy } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Animated from 'react-native-reanimated';
-import {
-  usePanGestureHandler,
-  useTapGestureHandler,
-  useValue,
-} from 'react-native-redash';
 import { useCallbackOne } from 'use-memo-one';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
-import { onEitherGestureActiveChange } from '../animations';
 import { Column, Row } from '../layout';
 import AnimatedChartSvg, { AnimatedChartStrokeWidth } from './AnimatedChartSvg';
 import ChartLoadingState from './ChartLoadingState';
@@ -18,9 +11,7 @@ import ChartScrubber from './ChartScrubber';
 import GestureWrapper from './GestureWrapper';
 import TimestampText from './TimestampText';
 import simplifyChartData from './simplifyChartData';
-import { useDimensions } from '@rainbow-me/hooks';
-
-const { call, set, useCode } = Animated;
+import { useChartGestures, useDimensions } from '@rainbow-me/hooks';
 
 const additionalChartPadding = 999999;
 const canvasHeight = 160;
@@ -134,18 +125,7 @@ export default function ValueChart({
     minValueDistance,
   } = useExtremeValuesFromPoints(points);
 
-  const {
-    gestureHandler: panGestureHandler,
-    position: panGesturePosition,
-    state: panGestureState,
-  } = usePanGestureHandler();
-
-  const {
-    gestureHandler: tapGestureHandler,
-    state: tapGestureState,
-  } = useTapGestureHandler();
-
-  const handleScrubberText = useCallbackOne(
+  const updateChartDataLabels = useCallbackOne(
     scrubberTextValues => {
       const date = scrubberTextValues?.date || 'Today';
       const price = scrubberTextValues?.price || currentValue;
@@ -160,10 +140,17 @@ export default function ValueChart({
     [chartDateRef, chartPriceRef, currentValue, nativeCurrency]
   );
 
+  const {
+    isScrubbing,
+    panGestureHandler,
+    scrubberX,
+    tapGestureHandler,
+  } = useChartGestures(updateChartDataLabels);
+
   useEffect(() => {
-    // 🏃️ immediately take control of scrubber text elements, and
+    // 🏃️ immediately take control of Chart Data Label elements, and
     // set them to their default values. 👌️🤠️
-    handleScrubberText();
+    updateChartDataLabels();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -181,28 +168,13 @@ export default function ValueChart({
         } else if (price < minValue.y) {
           price = minValue.y;
         }
-        handleScrubberText({
+        updateChartDataLabels({
           date: format(date, 'MMM dd hh:mm aa'),
           price,
         });
       }
     },
-    [handleScrubberText, maxValue, minValue, points, width]
-  );
-
-  const isScrubbing = useValue(0);
-  useCode(
-    useCallbackOne(
-      // 🧽️ Show the Scrubber if either of our gesture handlers are active 👌️🤠️
-      () =>
-        onEitherGestureActiveChange(
-          panGestureState,
-          tapGestureState,
-          set(isScrubbing, 1),
-          [set(isScrubbing, 0), call([], handleScrubberText)]
-        ),
-      [handleScrubberText, isScrubbing, panGestureState, tapGestureState]
-    )
+    [updateChartDataLabels, maxValue, minValue, points, width]
   );
 
   const { highestPrice, lowestPrice } = useMemo(
@@ -233,8 +205,8 @@ export default function ValueChart({
           isScrubbing={isScrubbing}
           offsetY={canvasHeight + AnimatedChartStrokeWidth / 2}
           onScrub={handleScrub}
-          panGesturePosition={panGesturePosition}
           parsedPath={parsedPath}
+          scrubberX={scrubberX}
         />
       </Row>
       <TimestampText translateX={minValueDistance} value={lowestPrice} />
