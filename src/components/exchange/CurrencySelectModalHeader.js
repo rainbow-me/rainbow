@@ -39,17 +39,22 @@ export default function CurrencySelectModalHeader() {
   const { params } = useRoute();
   const title = params?.headerTitle;
 
-  const { toggleGestureEnabled, isTransitionHappening } = params;
+  const {
+    toggleGestureEnabled,
+    isTransitionHappening,
+    setPointerEvents,
+  } = params;
 
   const handlePressBack = useCallback(() => {
     if (isTransitionHappening.current) {
       return;
     }
+    setPointerEvents(false);
     isTransitionHappening.current = true;
     delayNext();
     toggleGestureEnabled(true);
     navigate(Routes.MAIN_EXCHANGE_SCREEN);
-  }, [isTransitionHappening, navigate, toggleGestureEnabled]);
+  }, [isTransitionHappening, navigate, setPointerEvents, toggleGestureEnabled]);
 
   return (
     <HeaderContainer>

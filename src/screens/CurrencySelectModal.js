@@ -52,6 +52,7 @@ export default function CurrencySelectModal() {
       isTransitionHappening,
       onSelectCurrency,
       restoreFocusOnSwapModal,
+      setPointerEvents,
       tabTransitionPosition,
       toggleGestureEnabled,
       type,
@@ -172,6 +173,7 @@ export default function CurrencySelectModal() {
       if (isTransitionHappening.current) {
         return;
       }
+      setPointerEvents(false);
       isTransitionHappening.current = true;
       onSelectCurrency(item);
       if (searchQueryForSearch) {
@@ -189,11 +191,13 @@ export default function CurrencySelectModal() {
       navigate(Routes.MAIN_EXCHANGE_SCREEN);
     },
     [
-      toggleGestureEnabled,
-      category,
+      isTransitionHappening,
+      setPointerEvents,
       onSelectCurrency,
-      navigate,
       searchQueryForSearch,
+      toggleGestureEnabled,
+      navigate,
+      category,
       type,
     ]
   );
