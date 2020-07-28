@@ -28,42 +28,29 @@ export default function useAccountProfile() {
   const { label, color, index } = selectedAccount;
   const accountColor = color;
 
-  if (network === networkTypes.mainnet) {
-    const accountName = removeFirstEmojiFromString(
-      label || accountENS || address(accountAddress, 6, 4)
-    ).join('');
-    const labelOrAccountName =
-      accountName === label ? toUpper(accountName) : label;
-    const accountSymbol = new GraphemeSplitter().splitGraphemes(
-      labelOrAccountName || toUpper(accountENS) || `${index + 1}`
-    )[0];
+  const accountName = removeFirstEmojiFromString(
+    network === networkTypes.mainnet
+      ? label || accountENS || address(accountAddress, 6, 4)
+      : label === accountENS
+      ? address(accountAddress, 6, 4)
+      : label || address(accountAddress, 6, 4)
+  ).join('');
 
-    return {
-      accountAddress,
-      accountColor,
-      accountENS,
-      accountName,
-      accountSymbol,
-    };
-  } else {
-    const accountName = removeFirstEmojiFromString(
-      label === accountENS
-        ? address(accountAddress, 6, 4)
-        : label || address(accountAddress, 6, 4)
-    ).join('');
+  const labelOrAccountName =
+    accountName === label ? toUpper(accountName) : label;
+  const accountSymbol = new GraphemeSplitter().splitGraphemes(
+    network === networkTypes.mainnet
+      ? labelOrAccountName || toUpper(accountENS) || `${index + 1}`
+      : label === accountENS
+      ? toUpper(accountName)
+      : toUpper(label) || toUpper(accountName)
+  )[0];
 
-    const accountSymbol = new GraphemeSplitter().splitGraphemes(
-      label === accountENS
-        ? toUpper(accountName)
-        : toUpper(label) || toUpper(accountName)
-    )[0];
-
-    return {
-      accountAddress,
-      accountColor,
-      accountENS,
-      accountName,
-      accountSymbol,
-    };
-  }
+  return {
+    accountAddress,
+    accountColor,
+    accountENS,
+    accountName,
+    accountSymbol,
+  };
 }

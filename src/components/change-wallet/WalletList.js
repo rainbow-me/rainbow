@@ -122,7 +122,6 @@ export default function WalletList({
         account => account.visible
       );
       filteredAccounts.forEach(account => {
-        console.log(account);
         const row = {
           ...account,
           editMode,
