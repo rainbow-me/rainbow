@@ -25,7 +25,9 @@ function useStateCallback(initialState) {
   const cbRef = useRef(null); // mutable ref to store current callback
 
   const setStateCallback = (state, cb) => {
-    cbRef.current = cb; // store passed callback to ref
+    if (cb !== undefined) {
+      cbRef.current = cb; // store passed callback to ref
+    }
     setState(state);
   };
 
@@ -68,6 +70,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     const { setOptions } = useNavigation();
     const pointerEvents = useRef('auto');
     const spw = useRef();
+    const isTransitionHappening = useRef(false);
 
     const tabTransitionPosition = useValue(0);
 
@@ -91,33 +94,29 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         // this timeout helps to omit a visual glitch
         setTimeout(() => {
           setSwipeEnabledCallback(true);
+          handle.current = null;
         }, 200);
         Keyboard.removeListener('keyboardDidShow', handle.current);
       };
+      // fallback if was already opened
+      setTimeout(() => handle.current?.(), 300);
       Keyboard.addListener('keyboardDidShow', handle.current);
     }, [setSwipeEnabledCallback]);
 
     const blockInteractions = useCallback(() => {
-      setPointerEvents('none');
-      setSwipeEnabledCallback(false, () => {
-        setPointerEvents('auto');
-      });
-    }, [setPointerEvents, setSwipeEnabledCallback]);
+      setSwipeEnabledCallback(false);
+    }, [setSwipeEnabledCallback]);
 
     const onMomentumScrollEnd = useCallback(
       position => {
-        if (position === width) {
+        if (position === width || position === 0) {
           setPointerEvents('auto');
+          isTransitionHappening.current = false;
+        }
+        if (position === width) {
           enableInteractionsAfterOpeningKeyboard();
         } else if (position === 0) {
           Keyboard.removeListener('keyboardDidShow', handle.current);
-          setSwipeEnabledCallback(false);
-          if (pointerEvents.current === 'none') {
-            setTimeout(() => {
-              // wait for a keyboard to be opened
-              setPointerEvents('auto');
-            }, 400);
-          }
         }
       },
       [
@@ -128,13 +127,21 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     );
 
     const onSwipeEnd = useCallback(
-      (position, velocity) => {
+      (position, targetContentOffset) => {
+        if (position !== width && position !== 0) {
+          setPointerEvents('none');
+        }
+
+        if (position === 0 || position === width) {
+          isTransitionHappening.current = false;
+        }
+
         if (position === width) {
           setPointerEvents('auto');
           enableInteractionsAfterOpeningKeyboard();
         }
-        if (velocity < 0 || position === 0) {
-          Keyboard.removeAllListeners('keyboardDidShow');
+        if (targetContentOffset === 0) {
+          Keyboard.removeListener('keyboardDidShow', handle.current);
           setSwipeEnabledCallback(false, () => setPointerEvents('auto'));
         }
       },
@@ -155,26 +162,18 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
             props.onSwipeEnd(...args);
           }}
           onSwipeStart={() => {
-            setPointerEvents('none');
+            isTransitionHappening.current = true;
             props.onSwipeStart();
           }}
           ref={spw}
           setSwipeEnabled={setSwipeEnabledCallback}
         />
       ),
-      [
-        onMomentumScrollEnd,
-        onSwipeEnd,
-        setPointerEvents,
-        setSwipeEnabledCallback,
-      ]
+      [onMomentumScrollEnd, onSwipeEnd, setSwipeEnabledCallback]
     );
 
     const toggleGestureEnabled = useCallback(
       dismissable => {
-        if (dismissable) {
-          setSwipeEnabledCallback(false);
-        }
         setOptions({ dismissable });
       },
       [setOptions, setSwipeEnabledCallback]
@@ -183,10 +182,16 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     const initialParams = useMemoOne(
       () => ({
         blockInteractions,
+        isTransitionHappening,
         tabTransitionPosition,
         toggleGestureEnabled,
       }),
-      [tabTransitionPosition, toggleGestureEnabled, blockInteractions]
+      [
+        isTransitionHappening,
+        tabTransitionPosition,
+        toggleGestureEnabled,
+        blockInteractions,
+      ]
     );
 
     return (

@@ -53,7 +53,7 @@ export default function useUniswapCurrencies({
   const { allAssets } = useAccountAssets();
   const { navigate, setParams } = useNavigation();
   const {
-    params: { blockInteractions },
+    params: { blockInteractions, isTransitionHappening },
   } = useRoute();
 
   const defaultInputAddress = get(defaultInputAsset, 'address');
@@ -268,6 +268,10 @@ export default function useUniswapCurrencies({
 
   const navigateToSelectInputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
+      if (isTransitionHappening.current) {
+        return;
+      }
+      isTransitionHappening.current = true;
       setParams({ focused: false });
       delayNext();
       blockInteractions();
@@ -283,6 +287,10 @@ export default function useUniswapCurrencies({
 
   const navigateToSelectOutputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
+      if (isTransitionHappening.current) {
+        return;
+      }
+      isTransitionHappening.current = true;
       setParams({ focused: false });
       delayNext();
       blockInteractions();

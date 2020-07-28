@@ -49,6 +49,7 @@ export default function CurrencySelectModal() {
   const {
     params: {
       category,
+      isTransitionHappening,
       onSelectCurrency,
       restoreFocusOnSwapModal,
       tabTransitionPosition,
@@ -168,6 +169,10 @@ export default function CurrencySelectModal() {
 
   const handleSelectAsset = useCallback(
     item => {
+      if (isTransitionHappening.current) {
+        return;
+      }
+      isTransitionHappening.current = true;
       onSelectCurrency(item);
       if (searchQueryForSearch) {
         analytics.track('Selected a search result in Swap', {
