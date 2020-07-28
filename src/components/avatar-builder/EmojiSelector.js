@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { getBrand } from 'react-native-device-info';
 import {
+  TouchableOpacity as GHTouchableOpacity,
   ScrollView,
   State,
   TapGestureHandler,
@@ -173,19 +174,33 @@ export default class EmojiSelector extends PureComponent {
                 position: 'absolute',
               }}
             >
-              {touchableNet.map(singleLine => (
-                <TouchableOpacity
-                  activeOpacity={0.5}
-                  key={`categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`}
-                  onPress={() => this.handleEmojiSelect(singleLine)}
-                  style={{
-                    height: (width - 21) / this.props.columns,
-                    width: (width - 21) / this.props.columns,
-                    opacity: 0,
-                    backgroundColor: 'white',
-                  }}
-                />
-              ))}
+              {touchableNet.map(singleLine =>
+                Platform.OS === 'ios' ? (
+                  <TouchableOpacity
+                    activeOpacity={0.5}
+                    key={`categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`}
+                    onPress={() => this.handleEmojiSelect(singleLine)}
+                    style={{
+                      height: (width - 21) / this.props.columns,
+                      width: (width - 21) / this.props.columns,
+                      opacity: 0,
+                      backgroundColor: 'white',
+                    }}
+                  />
+                ) : (
+                  <GHTouchableOpacity
+                    activeOpacity={0.7}
+                    key={`categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`}
+                    onPress={() => this.handleEmojiSelect(singleLine)}
+                    style={{
+                      height: (width - 21) / this.props.columns,
+                      width: (width - 21) / this.props.columns,
+                      opacity: 0,
+                      backgroundColor: 'white',
+                    }}
+                  />
+                )
+              )}
             </View>
           </View>
         ))}
