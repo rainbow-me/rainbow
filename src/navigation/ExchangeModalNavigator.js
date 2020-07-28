@@ -110,7 +110,8 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     const onMomentumScrollEnd = useCallback(
       position => {
         if (position === width || position === 0) {
-          setPointerEvents('auto');
+          // this event can be called a moment before
+          setTimeout(() => setPointerEvents('auto'), 100);
           isTransitionHappening.current = false;
         }
         if (position === width) {
@@ -155,9 +156,12 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
           onMomentumScrollEnd={onMomentumScrollEnd}
           onSwipeEnd={(...args) => {
             onSwipeEnd(...args);
-            props.onSwipeEnd(...args);
+            props.onSwipeEnd();
           }}
-          onSwipeStart={() => {
+          onSwipeStart={position => {
+            if (position === width) {
+              setPointerEvents('none');
+            }
             isTransitionHappening.current = true;
             props.onSwipeStart();
           }}
