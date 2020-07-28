@@ -110,6 +110,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
           isTransitionHappening.current = false;
         }
         if (position === width) {
+          setPointerEvents(true);
           enableInteractionsAfterOpeningKeyboard();
         } else if (position === 0) {
           setSwipeEnabled(false, () => setPointerEvents(true));
