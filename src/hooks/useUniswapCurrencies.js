@@ -1,4 +1,5 @@
 /* eslint-disable no-use-before-define */
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { find, get } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -51,6 +52,9 @@ export default function useUniswapCurrencies({
 }) {
   const { allAssets } = useAccountAssets();
   const { navigate, setParams } = useNavigation();
+  const {
+    params: { blockInteractions },
+  } = useRoute();
 
   const defaultInputAddress = get(defaultInputAsset, 'address');
 
@@ -266,6 +270,7 @@ export default function useUniswapCurrencies({
     InteractionManager.runAfterInteractions(() => {
       setParams({ focused: false });
       delayNext();
+      blockInteractions();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
         category,
         headerTitle: inputHeaderTitle,
@@ -280,6 +285,7 @@ export default function useUniswapCurrencies({
     InteractionManager.runAfterInteractions(() => {
       setParams({ focused: false });
       delayNext();
+      blockInteractions();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
         category,
         headerTitle: 'Receive',
