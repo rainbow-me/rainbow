@@ -79,25 +79,25 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
         modalBackgroundColor={backgroundColor}
         onAppear={() => {
           options?.onAppear?.();
-          navigation.emit({
+          navigation?.emit?.({
             target: route.key,
             type: 'appear',
           });
         }}
         onDismissed={() => {
           options?.onDismissed?.();
-          navigation.emit({
+          navigation?.emit?.({
             target: route.key,
             type: 'dismiss',
           });
-          navigation.dispatch({
+          navigation?.dispatch?.({
             ...StackActions.pop(),
             source: route.key,
             target: state.key,
           });
         }}
         onFinishTransitioning={() => {
-          navigation.emit({
+          navigation?.emit?.({
             target: route.key,
             type: 'finishTransitioning',
           });

@@ -189,7 +189,9 @@ export const emitChartsRequest = (
     const { assets } = getState().data;
     assetCodes = map(assets, 'address');
   }
-  assetsSocket.emit(...chartsRetrieval(assetCodes, nativeCurrency, chartType));
+  assetsSocket?.emit?.(
+    ...chartsRetrieval(assetCodes, nativeCurrency, chartType)
+  );
 };
 
 const listenOnAssetMessages = socket => dispatch => {
