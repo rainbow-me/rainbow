@@ -274,7 +274,6 @@ export default function useUniswapCurrencies({
       isTransitionHappening.current = true;
       setParams({ focused: false });
       delayNext();
-      blockInteractions();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
         category,
         headerTitle: inputHeaderTitle,
@@ -282,8 +281,17 @@ export default function useUniswapCurrencies({
         restoreFocusOnSwapModal: () => setParams({ focused: true }),
         type: CurrencySelectionTypes.input,
       });
+      blockInteractions();
     });
-  }, [category, inputHeaderTitle, navigate, setParams, updateInputCurrency]);
+  }, [
+    blockInteractions,
+    category,
+    inputHeaderTitle,
+    isTransitionHappening,
+    navigate,
+    setParams,
+    updateInputCurrency,
+  ]);
 
   const navigateToSelectOutputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -293,7 +301,6 @@ export default function useUniswapCurrencies({
       isTransitionHappening.current = true;
       setParams({ focused: false });
       delayNext();
-      blockInteractions();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
         category,
         headerTitle: 'Receive',
@@ -301,8 +308,16 @@ export default function useUniswapCurrencies({
         restoreFocusOnSwapModal: () => setParams({ focused: true }),
         type: CurrencySelectionTypes.output,
       });
+      blockInteractions();
     });
-  }, [category, navigate, setParams, updateOutputCurrency]);
+  }, [
+    blockInteractions,
+    category,
+    isTransitionHappening,
+    navigate,
+    setParams,
+    updateOutputCurrency,
+  ]);
 
   return {
     defaultInputAddress,

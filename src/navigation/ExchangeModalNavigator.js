@@ -119,11 +119,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
           Keyboard.removeListener('keyboardDidShow', handle.current);
         }
       },
-      [
-        enableInteractionsAfterOpeningKeyboard,
-        setPointerEvents,
-        setSwipeEnabledCallback,
-      ]
+      [enableInteractionsAfterOpeningKeyboard, setPointerEvents]
     );
 
     const onSwipeEnd = useCallback(
@@ -176,7 +172,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
       dismissable => {
         setOptions({ dismissable });
       },
-      [setOptions, setSwipeEnabledCallback]
+      [setOptions]
     );
 
     const initialParams = useMemoOne(
