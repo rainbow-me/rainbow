@@ -1,5 +1,5 @@
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { showActionSheetWithOptions } from '../../utils/actionsheet';
+import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const showDeleteContactActionSheet = ({
   address,

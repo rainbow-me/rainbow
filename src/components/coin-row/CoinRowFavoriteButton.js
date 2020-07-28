@@ -1,11 +1,11 @@
 import React from 'react';
 import { BaseButton } from 'react-native-gesture-handler';
 import styled from 'styled-components/primitives';
-import { magicMemo } from '../../utils';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { CoinRowHeight } from './CoinRow';
 import { colors, padding } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
 const FavoriteButtonPadding = 19;
 const FavoriteButtonWidth = FavoriteButtonPadding * 3;
@@ -21,14 +21,14 @@ const FavoriteButton = styled(Centered)`
   width: ${FavoriteButtonWidth};
 `;
 
+const StarIcon = styled(Icon).attrs(({ isFavorited }) => ({
+  color: isFavorited ? colors.yellow : colors.alpha(colors.blueGreyDark, 0.12),
+  name: 'star',
+}))``;
+
 const CoinRowFavoriteButton = ({ isFavorited, onPress }) => (
   <FavoriteButton as={BaseButton} onPress={onPress}>
-    <Icon
-      color={
-        isFavorited ? colors.yellow : colors.alpha(colors.blueGreyDark, 0.12)
-      }
-      name="star"
-    />
+    <StarIcon isFavorited={isFavorited} />
   </FavoriteButton>
 );
 

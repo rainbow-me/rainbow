@@ -1,5 +1,4 @@
 import { BlurView } from '@react-native-community/blur';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Platform } from 'react-native';
 import styled from 'styled-components/native';
@@ -8,18 +7,15 @@ import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
 import { colors, padding, position } from '@rainbow-me/styles';
+import { neverRerender } from '@rainbow-me/utils';
 
-const Container = styled.View`
-  ${Platform.OS === 'android'
-    ? `
-      align-self: center;
-      flex: 1;
-    `
-    : ''}
+const Container = styled(Centered).attrs({
+  flex: Platform.OS === 'android' ? 1 : undefined,
+  self: Platform.OS === 'android' ? 'center' : undefined,
+})`
   ${position.size('100%')};
+  position: absolute;
   z-index: 999;
-  justify-content: center;
-  align-items: center;
 `;
 
 const Overlay = styled(Centered)`
@@ -62,17 +58,4 @@ const LoadingOverlay = ({ title, ...props }) => (
   </Container>
 );
 
-LoadingOverlay.propTypes = {
-  title: PropTypes.string,
-};
-
-const neverRerender = () => true;
-export default React.memo(LoadingOverlay, neverRerender);
-
-export const LoadingOverlayWrapper = styled.View`
-  height: 100%;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-`;
+export default neverRerender(LoadingOverlay);

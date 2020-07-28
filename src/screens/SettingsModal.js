@@ -1,8 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect } from 'react';
-import { Alert, Animated, Platform, View } from 'react-native';
-import { Restart } from 'react-native-restart';
+import { Animated, Platform, View } from 'react-native';
 import styled from 'styled-components/native';
 import { Icon } from '../components/icons';
 import { Modal } from '../components/modal';
@@ -19,7 +18,6 @@ import WalletSelectionView from '../components/settings-menu/BackupSection/Walle
 import DevSection from '../components/settings-menu/DevSection';
 import WalletTypes from '../helpers/walletTypes';
 import { useDimensions, useWallets } from '../hooks';
-import { wipeKeychain } from '../model/keychain';
 import { useNavigation } from '../navigation/Navigation';
 import { colors, fonts } from '@rainbow-me/styles';
 
@@ -117,35 +115,15 @@ const transitionConfig = {
   stiffness: 450,
 };
 
-const onPressHiddenFeature = () => {
-  Alert.alert(
-    '🚨🚨🚨 WARNING  🚨🚨🚨',
-    `This feature is intended to be used only for developers! \n\n
-    You are about to reset all the wallet information from the keychain. \n
-    Do you really want to proceed?  If you're not sure, press NO`,
-    [
-      {
-        onPress: () => () => null,
-        style: 'cancel',
-        text: 'NO',
-      },
-      {
-        onPress: async () => {
-          await wipeKeychain();
-          Restart();
-        },
-        text: 'Yes',
-      },
-    ],
-    { cancelable: false }
-  );
-};
-
-const SettingsModal = () => {
+export default function SettingsModal() {
   const { goBack, navigate } = useNavigation();
   const { wallets, selectedWallet } = useWallets();
   const { params } = useRoute();
   const { isTinyPhone, width: deviceWidth } = useDimensions();
+
+  const onPressHiddenFeature = useCallback(() => {
+    // TODO
+  }, []);
 
   const getRealRoute = useCallback(
     key => {
@@ -165,7 +143,6 @@ const SettingsModal = () => {
             params.imported = true;
             params.type = 'AlreadyBackedUpView';
           }
-
           route = 'SettingsBackupView';
         }
       }
@@ -305,6 +282,4 @@ const SettingsModal = () => {
       </Container>
     </Modal>
   );
-};
-
-export default SettingsModal;
+}
