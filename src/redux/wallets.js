@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { filter, flatMap, get, map, values } from 'lodash';
 import {
@@ -15,6 +16,7 @@ import {
   setSelectedWallet,
 } from '../model/wallet';
 import { settingsUpdateAccountAddress } from '../redux/settings';
+import { logger } from '../utils';
 
 // -- Constants --------------------------------------- //
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
@@ -44,6 +46,7 @@ export const walletsLoadState = () => async (dispatch, getState) => {
         });
         if (found) {
           selectedWallet = someWallet;
+          logger.sentry('Found selected wallet based on loadAddress result');
         }
         return found;
       });
@@ -52,6 +55,9 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     // Recover from broken state (account address not in selected wallet)
     if (!addressFromKeychain) {
       addressFromKeychain = await loadAddress();
+      logger.sentry(
+        'addressFromKeychain wasnt set on settings so it is being loaded from loadAddress'
+      );
     }
 
     const selectedAddress = selectedWallet.addresses.find(a => {
@@ -62,6 +68,9 @@ export const walletsLoadState = () => async (dispatch, getState) => {
       const account = selectedWallet.addresses.find(a => a.visible);
       await dispatch(settingsUpdateAccountAddress(account.address));
       await saveAddress(account.address);
+      logger.sentry(
+        'Selected the first visible address because there was not selected one'
+      );
     }
 
     const walletNames = await getWalletNames();
@@ -76,9 +85,10 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     });
 
     dispatch(fetchWalletNames());
-
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
+  } catch (error) {
+    logger.sentry('Exception during walletsLoadState');
+    captureException(error);
+  }
 };
 
 export const walletsUpdate = wallets => dispatch => {
