@@ -357,12 +357,12 @@ export default function ExchangeModal({
       analytics.track(`Submitted ${type}`, {
         category,
         defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
-        exchangeAddress: outputCurrency.exchangeAddress,
+        exchangeAddress: get(outputCurrency, 'exchangeAddress', ''),
         isSlippageWarningVisible,
-        name: outputCurrency.name,
+        name: get(outputCurrency, 'name', ''),
         slippage,
-        symbol: outputCurrency.symbol,
-        tokenAddress: outputCurrency.address,
+        symbol: get(outputCurrency, 'symbol', ''),
+        tokenAddress: get(outputCurrency, 'address', ''),
         type,
       });
 
@@ -442,10 +442,10 @@ export default function ExchangeModal({
     });
     analytics.track('Opened Swap Details modal', {
       category,
-      exchangeAddress: outputCurrency.exchangeAddress,
-      name: outputCurrency.name,
-      symbol: outputCurrency.symbol,
-      tokenAddress: outputCurrency.address,
+      exchangeAddress: get(outputCurrency, 'exchangeAddress', ''),
+      name: get(outputCurrency, 'name', ''),
+      symbol: get(outputCurrency, 'symbol', ''),
+      tokenAddress: get(outputCurrency, 'address', ''),
       type,
     });
   }, [
