@@ -58,8 +58,13 @@ const BackupSection = ({ navigation }) => {
         );
       }
 
+      const { wallets, settings } = store.getState();
+
       // 2 - Log redux and public keychain entries
-      logger.sentry('[logAndAttemptRestore]: REDUX DATA:', store.getState());
+      logger.sentry('[logAndAttemptRestore]: REDUX DATA:', {
+        settings,
+        wallets,
+      });
       try {
         logger.sentry(
           '[logAndAttemptRestore]: Keychain allWallets:',
