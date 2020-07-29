@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 ### Added
+* Zerion charts integration
+
+### Changed
+* Fix deposit/withdraw modal corners
+* Restore missing icon in send gas button
+* Fix savings deposits
+* Fix qrcode scanner behavior
+
+## [1.2.23](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.23)
+### Added
 * Add welcome screen
 * Add icon on splash screen animated hiding
 * Add tx default data value
@@ -108,6 +118,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 * fix Send flow bugs
 * Fix initial flash happening on Swap output's coin icon placeholder
 * Fix logger import
+* Fix crash when pressing gas speed button
+* Log and restore if possible while showing secret
 
 ### Removed
 * Disable safari debugging
