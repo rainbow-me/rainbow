@@ -51,7 +51,7 @@ export default function useUniswapCurrencies({
   underlyingPrice,
 }) {
   const { allAssets } = useAccountAssets();
-  const { navigate, setParams } = useNavigation();
+  const { navigate, setParams, dangerouslyGetParent } = useNavigation();
   const {
     params: { blockInteractions },
   } = useRoute();
@@ -268,6 +268,7 @@ export default function useUniswapCurrencies({
 
   const navigateToSelectInputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
+      dangerouslyGetParent().dangerouslyGetState().index = 0;
       setParams({ focused: false });
       delayNext();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
@@ -291,6 +292,7 @@ export default function useUniswapCurrencies({
   const navigateToSelectOutputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
       setParams({ focused: false });
+      dangerouslyGetParent().dangerouslyGetState().index = 0;
       delayNext();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
         category,
@@ -301,7 +303,14 @@ export default function useUniswapCurrencies({
       });
       blockInteractions();
     });
-  }, [blockInteractions, category, navigate, setParams, updateOutputCurrency]);
+  }, [
+    blockInteractions,
+    category,
+    dangerouslyGetParent,
+    navigate,
+    setParams,
+    updateOutputCurrency,
+  ]);
 
   return {
     defaultInputAddress,

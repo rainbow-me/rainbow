@@ -45,7 +45,7 @@ const headerlessSection = data => [{ data, title: '' }];
 export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
-  const { navigate } = useNavigation();
+  const { navigate, dangerouslyGetState } = useNavigation();
   const {
     params: {
       category,
@@ -182,14 +182,14 @@ export default function CurrencySelectModal() {
         });
       }
       delayNext();
-      toggleGestureEnabled(true);
+      dangerouslyGetState().index = 1;
       navigate(Routes.MAIN_EXCHANGE_SCREEN);
     },
     [
       setPointerEvents,
       onSelectCurrency,
       searchQueryForSearch,
-      toggleGestureEnabled,
+      dangerouslyGetState,
       navigate,
       category,
       type,

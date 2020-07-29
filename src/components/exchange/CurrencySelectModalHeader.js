@@ -35,18 +35,18 @@ const Title = styled(TruncatedText).attrs({
 `;
 
 export default function CurrencySelectModalHeader() {
-  const { navigate } = useNavigation();
+  const { navigate, dangerouslyGetState } = useNavigation();
   const { params } = useRoute();
   const title = params?.headerTitle;
 
-  const { toggleGestureEnabled, setPointerEvents } = params;
+  const { setPointerEvents } = params;
 
   const handlePressBack = useCallback(() => {
+    dangerouslyGetState().index = 1;
     setPointerEvents(false);
     delayNext();
-    toggleGestureEnabled(true);
     navigate(Routes.MAIN_EXCHANGE_SCREEN);
-  }, [navigate, setPointerEvents, toggleGestureEnabled]);
+  }, [dangerouslyGetState, navigate, setPointerEvents]);
 
   return (
     <HeaderContainer>
