@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, InteractionManager, Platform, StatusBar } from 'react-native';
+import { Alert, InteractionManager, StatusBar } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import styled from 'styled-components/primitives';
 import ActivityIndicator from '../components/ActivityIndicator';
@@ -39,10 +39,9 @@ import logger from 'logger';
 import { usePortal } from 'react-native-cool-modals/Portal';
 
 const sheetBottomPadding = 19;
-const keyboardVerticalOffset =
-  Platform.OS === 'android'
-    ? sheetVerticalOffset - 240
-    : sheetVerticalOffset + 10;
+const keyboardVerticalOffset = android
+  ? sheetVerticalOffset - 240
+  : sheetVerticalOffset + 10;
 
 const Container = styled.View`
   flex: 1;
@@ -53,8 +52,8 @@ const Footer = styled(Row).attrs({
   align: 'start',
   justify: 'end',
 })`
-  bottom: ${Platform.OS === 'android' ? 55 : 0};
-  position: ${Platform.OS === 'android' ? 'absolute' : 'relative'};
+  bottom: ${android ? 55 : 0};
+  position: ${android ? 'absolute' : 'relative'};
   right: 0;
   top: ${({ isSmallPhone }) => (isSmallPhone ? sheetBottomPadding * 2 : 0)};
   width: 100%;
@@ -83,7 +82,7 @@ const SecretTextArea = styled(Input).attrs({
   autoCorrect: false,
   autoFocus: true,
   enablesReturnKeyAutomatically: true,
-  keyboardType: Platform.OS === 'android' ? 'visible-password' : 'default',
+  keyboardType: android ? 'visible-password' : 'default',
   lineHeight: 'looser',
   multiline: true,
   numberOfLines: 3,
@@ -93,7 +92,7 @@ const SecretTextArea = styled(Input).attrs({
   spellCheck: false,
   weight: 'semibold',
 })`
-  margin-bottom: ${Platform.OS === 'android' ? 55 : 0};
+  margin-bottom: ${android ? 55 : 0};
   min-height: 50;
   width: 100%;
 `;
@@ -256,7 +255,7 @@ export default function ImportSeedPhraseSheet() {
               InteractionManager.runAfterInteractions(() => {
                 navigate(Routes.WALLET_SCREEN);
               });
-              if (Platform.OS === 'android') {
+              if (android) {
                 hide();
               }
             } else {

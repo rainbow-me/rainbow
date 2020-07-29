@@ -10,7 +10,7 @@ const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   direction: 'column',
   justify: fixedToTop ? 'start' : 'center',
 }))`
-  ${({ containerPadding }) => padding(containerPadding)};
+  ${({ containerPadding }) => padding(...containerPadding)};
   ${position.size('100%')};
 `;
 
@@ -18,6 +18,7 @@ const Content = styled(Column).attrs({ shrink: 0 })`
   background-color: ${colors.white};
   border-radius: ${({ radius }) => radius};
   height: ${({ height }) => height};
+  padding-top: ${android ? 30 : 0};
   margin-top: ${({ fixedToTop }) => (fixedToTop ? 91 : 0)};
   width: 100%;
   overflow: hidden;
@@ -29,19 +30,29 @@ export default function Modal({
   height,
   onCloseModal,
   radius = 12,
-  statusBarStyle = 'light-content',
+  statusBarStyle = ios ? 'light-content' : 'dark-content',
+  fullScreenOnAndroid = false,
   ...props
 }) {
   const { height: deviceHeight } = useDimensions();
 
   return (
-    <Container containerPadding={containerPadding} fixedToTop={fixedToTop}>
-      <StatusBar barStyle={statusBarStyle} />
-      <TouchableBackdrop onPress={onCloseModal} />
+    <Container
+      containerPadding={
+        fullScreenOnAndroid && android ? [10, 0] : [containerPadding]
+      }
+      fixedToTop={fixedToTop}
+    >
+      <StatusBar barStyle={statusBarStyle} translucent />
+      {!fullScreenOnAndroid ||
+        (ios && <TouchableBackdrop onPress={onCloseModal} />)}
       <Content
         {...props}
         fixedToTop={fixedToTop}
-        height={height || deviceHeight - 230}
+        height={
+          (fullScreenOnAndroid && android ? '100%' : height) ||
+          deviceHeight - 230
+        }
         radius={radius}
       />
     </Container>

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Platform, TouchableWithoutFeedback } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
 import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { Row } from '../layout';
@@ -11,7 +11,7 @@ const CurrencySymbol = styled(Text).attrs({
   size: 'large',
   weight: 'regular',
 })`
-  margin-bottom: ${Platform.OS === 'android' ? 1.5 : 0.5};
+  margin-bottom: ${android ? 1.5 : 0.5};
 `;
 
 const NativeInput = styled(ExchangeInput).attrs({

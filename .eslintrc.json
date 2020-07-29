@@ -12,7 +12,9 @@
     }
   },
   "globals": {
-    "__DEV__": true
+    "__DEV__": true,
+    "android": true,
+    "ios": true
   },
   "rules": {
     "sort-imports": ["error", {

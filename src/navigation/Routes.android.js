@@ -20,6 +20,7 @@ import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import WithdrawModal from '../screens/WithdrawModal';
 import { SwipeNavigator } from './SwipeNavigator';
 import { defaultScreenStackOptions, stackNavigationConfig } from './config';
+
 import {
   bottomSheetPreset,
   emojiPreset,
@@ -31,6 +32,7 @@ import {
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import { colors } from '@rainbow-me/styles';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -106,7 +108,11 @@ function MainNativeNavigator() {
   return (
     <NativeStack.Navigator
       initialRouteName={Routes.MAIN_NAVIGATOR}
-      screenOptions={{ headerShown: false }}
+      screenOptions={{
+        contentStyle: { backgroundColor: colors.white },
+        headerShown: false,
+        headerTopInsetEnabled: false,
+      }}
     >
       <NativeStack.Screen
         component={ExchangeModalNavigator}

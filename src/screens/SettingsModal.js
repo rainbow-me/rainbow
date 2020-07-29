@@ -129,12 +129,18 @@ export default function SettingsModal() {
   );
 
   return (
-    <Modal marginBottom={statusBarHeight} minHeight={580} onCloseModal={goBack}>
+    <Modal
+      fullScreenOnAndroid
+      marginBottom={statusBarHeight}
+      minHeight={580}
+      onCloseModal={goBack}
+    >
       <Container>
         <ModalHeader
           onPressBack={onPressBack}
           onPressClose={goBack}
           showBackButton={!isDefaultPage}
+          showDoneButton={ios}
           title={title}
         />
         <Stack.Navigator

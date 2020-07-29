@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { Alert, Platform } from 'react-native';
+import { Alert } from 'react-native';
 import Divider from '../components/Divider';
 import { SavingsCoinRow } from '../components/coin-row';
 import {
@@ -131,7 +131,7 @@ const SavingsSheet = () => {
   ]);
 
   return (
-    <Sheet hideHandle={Platform.OS === 'android'}>
+    <Sheet hideHandle={android}>
       {isEmpty ? (
         <SavingsSheetEmptyState
           isReadOnlyWallet={isReadOnlyWallet}

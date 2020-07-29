@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Platform } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useDimensions } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
+
 import SheetHandle from './SheetHandle';
 import { borders, colors } from '@rainbow-me/styles';
 
@@ -17,7 +16,7 @@ const Sheet = ({ borderRadius, children, hideHandle }) => {
 
   return (
     <Column height="100%" justify="end" width={width}>
-      {Platform.OS === 'ios' && <TouchableBackdrop onPress={goBack} />}
+      {ios && <TouchableBackdrop onPress={goBack} />}
       <Column
         backgroundColor={colors.white}
         css={borders.buildRadius('top', borderRadius)}

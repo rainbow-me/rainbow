@@ -1,4 +1,4 @@
-import { Keyboard, Platform, StatusBar } from 'react-native';
+import { Keyboard, StatusBar } from 'react-native';
 import { onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
@@ -26,6 +26,7 @@ export const nativeStackConfig = {
     contentStyle: {
       backgroundColor: 'transparent',
     },
+    headerTopInsetEnabled: true,
     onAppear: () => {
       appearListener.current && appearListener.current();
     },
@@ -58,7 +59,7 @@ export const sharedCoolModalConfig = {
 
 export const stackNavigationConfig = {
   headerMode: 'none',
-  keyboardHandlingEnabled: Platform.OS === 'ios',
+  keyboardHandlingEnabled: ios,
   mode: 'modal',
 };
 

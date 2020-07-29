@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 // eslint-disable-next-line import/default
-import ReactNative from 'react-native';
+import ReactNative, { Platform } from 'react-native';
 import Storage from 'react-native-storage';
 
 const storage = new Storage({
@@ -11,6 +11,8 @@ const storage = new Storage({
 });
 
 global.storage = storage;
+global.android = Platform.OS === 'android';
+global.ios = Platform.OS === 'ios';
 
 if (typeof __dirname === 'undefined') global.__dirname = '/';
 if (typeof __filename === 'undefined') global.__filename = '';
