@@ -53,7 +53,7 @@ export default function useUniswapCurrencies({
   const { allAssets } = useAccountAssets();
   const { navigate, setParams } = useNavigation();
   const {
-    params: { blockInteractions, isTransitionHappening },
+    params: { blockInteractions },
   } = useRoute();
 
   const defaultInputAddress = get(defaultInputAsset, 'address');
@@ -268,10 +268,6 @@ export default function useUniswapCurrencies({
 
   const navigateToSelectInputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
-      if (isTransitionHappening.current) {
-        return;
-      }
-      isTransitionHappening.current = true;
       setParams({ focused: false });
       delayNext();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
@@ -287,7 +283,6 @@ export default function useUniswapCurrencies({
     blockInteractions,
     category,
     inputHeaderTitle,
-    isTransitionHappening,
     navigate,
     setParams,
     updateInputCurrency,
@@ -295,10 +290,6 @@ export default function useUniswapCurrencies({
 
   const navigateToSelectOutputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
-      if (isTransitionHappening.current) {
-        return;
-      }
-      isTransitionHappening.current = true;
       setParams({ focused: false });
       delayNext();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
@@ -310,14 +301,7 @@ export default function useUniswapCurrencies({
       });
       blockInteractions();
     });
-  }, [
-    blockInteractions,
-    category,
-    isTransitionHappening,
-    navigate,
-    setParams,
-    updateOutputCurrency,
-  ]);
+  }, [blockInteractions, category, navigate, setParams, updateOutputCurrency]);
 
   return {
     defaultInputAddress,

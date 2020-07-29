@@ -39,22 +39,14 @@ export default function CurrencySelectModalHeader() {
   const { params } = useRoute();
   const title = params?.headerTitle;
 
-  const {
-    toggleGestureEnabled,
-    isTransitionHappening,
-    setPointerEvents,
-  } = params;
+  const { toggleGestureEnabled, setPointerEvents } = params;
 
   const handlePressBack = useCallback(() => {
-    if (isTransitionHappening.current) {
-      return;
-    }
     setPointerEvents(false);
-    isTransitionHappening.current = true;
     delayNext();
     toggleGestureEnabled(true);
     navigate(Routes.MAIN_EXCHANGE_SCREEN);
-  }, [isTransitionHappening, navigate, setPointerEvents, toggleGestureEnabled]);
+  }, [navigate, setPointerEvents, toggleGestureEnabled]);
 
   return (
     <HeaderContainer>
@@ -63,6 +55,7 @@ export default function CurrencySelectModalHeader() {
           direction="left"
           height={CurrencySelectModalHeaderHeight}
           onPress={handlePressBack}
+          throttle
         />
       </BackButtonWrapper>
       <Title>{title}</Title>

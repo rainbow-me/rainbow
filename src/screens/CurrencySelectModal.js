@@ -49,7 +49,6 @@ export default function CurrencySelectModal() {
   const {
     params: {
       category,
-      isTransitionHappening,
       onSelectCurrency,
       restoreFocusOnSwapModal,
       setPointerEvents,
@@ -170,11 +169,7 @@ export default function CurrencySelectModal() {
 
   const handleSelectAsset = useCallback(
     item => {
-      if (isTransitionHappening.current) {
-        return;
-      }
       setPointerEvents(false);
-      isTransitionHappening.current = true;
       onSelectCurrency(item);
       if (searchQueryForSearch) {
         analytics.track('Selected a search result in Swap', {
@@ -191,7 +186,6 @@ export default function CurrencySelectModal() {
       navigate(Routes.MAIN_EXCHANGE_SCREEN);
     },
     [
-      isTransitionHappening,
       setPointerEvents,
       onSelectCurrency,
       searchQueryForSearch,

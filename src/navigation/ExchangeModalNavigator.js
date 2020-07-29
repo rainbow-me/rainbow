@@ -70,7 +70,6 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     const { setOptions } = useNavigation();
     const pointerEvents = useRef('auto');
     const ref = useRef();
-    const isTransitionHappening = useRef(false);
 
     const tabTransitionPosition = useValue(0);
 
@@ -106,9 +105,6 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
     const onMomentumScrollEnd = useCallback(
       position => {
-        if (position === width || position === 0) {
-          isTransitionHappening.current = false;
-        }
         if (position === width) {
           setPointerEvents(true);
           enableInteractionsAfterOpeningKeyboard();
@@ -128,10 +124,6 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
       (position, targetContentOffset) => {
         if (position !== width && position !== 0) {
           setPointerEvents(false);
-        }
-
-        if (position === 0 || position === width) {
-          isTransitionHappening.current = false;
         }
 
         if (position === width) {
@@ -168,7 +160,6 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
             if (position === width) {
               setPointerEvents(false);
             }
-            isTransitionHappening.current = true;
             props.onSwipeStart();
           }}
           setSwipeEnabled={setSwipeEnabled}
@@ -187,13 +178,11 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     const initialParams = useMemoOne(
       () => ({
         blockInteractions,
-        isTransitionHappening,
         setPointerEvents,
         tabTransitionPosition,
         toggleGestureEnabled,
       }),
       [
-        isTransitionHappening,
         tabTransitionPosition,
         toggleGestureEnabled,
         setPointerEvents,
