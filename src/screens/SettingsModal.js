@@ -12,6 +12,7 @@ import {
   LanguageSection,
   NetworkSection,
   SettingsSection,
+  SupportSection,
 } from '../components/settings-menu';
 import DevSection from '../components/settings-menu/DevSection';
 import { useNavigation } from '../navigation/Navigation';
@@ -86,6 +87,11 @@ const SettingsPages = {
     key: 'NetworkSection',
     title: 'Network',
   },
+  support: {
+    component: SupportSection,
+    key: 'SupportSection',
+    title: 'Support',
+  },
 };
 
 const Container = styled.View`
@@ -154,6 +160,7 @@ export default function SettingsModal() {
                 onPressHiddenFeature={requestFaceIDPermission}
                 onPressLanguage={onPressSection(SettingsPages.language)}
                 onPressNetwork={onPressSection(SettingsPages.network)}
+                onPressSupport={onPressSection(SettingsPages.support)}
               />
             )}
           </Stack.Screen>

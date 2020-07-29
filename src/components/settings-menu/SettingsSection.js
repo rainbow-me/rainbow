@@ -61,6 +61,7 @@ const SettingsSection = ({
   onPressHiddenFeature,
   onPressLanguage,
   onPressNetwork,
+  onPressSupport,
   onPressDev,
 }) => {
   const { isReadOnlyWallet } = useWallets();
@@ -197,6 +198,11 @@ const SettingsSection = ({
           icon={<Emoji name="heart" />}
           label="Review Rainbow"
           onPress={onPressReview}
+        />
+        <ListItem
+          icon={<Emoji name="raised_hands" />}
+          label="Support"
+          onPress={onPressSupport}
         />
       </ColumnWithDividers>
       {__DEV__ && (

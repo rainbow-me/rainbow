@@ -44,6 +44,7 @@
 		<string>itms</string>
 		<string>itms-apps</string>
 		<string>twitter</string>
+		<string>mailto</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
