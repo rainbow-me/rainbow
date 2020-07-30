@@ -39,16 +39,22 @@ export default function useInitializeWallet() {
         logger.sentry('Start wallet setup');
 
         await resetAccountState();
+        logger.sentry('resetAccountState ran ok');
 
         const isImported = !!seedPhrase;
+        logger.sentry('isImported?', isImported);
 
         if (shouldRunMigrations && !seedPhrase) {
+          logger.sentry('shouldRunMigrations && !seedPhrase? => true');
           await dispatch(walletsLoadState());
+          logger.sentry('walletsLoadState call #1');
           await runMigrations();
+          logger.sentry('done with migrations');
         }
 
         // Load the network first
         await dispatch(settingsLoadNetwork());
+        logger.sentry('done loading network');
 
         const { isNew, walletAddress } = await walletInit(
           seedPhrase,
@@ -56,11 +62,15 @@ export default function useInitializeWallet() {
           name
         );
 
+        logger.sentry('walletInit returned ', isNew, walletAddress);
+
         if (seedPhrase || isNew) {
+          logger.sentry('walletsLoadState call #2');
           await dispatch(walletsLoadState());
         }
 
         if (isNil(walletAddress)) {
+          logger.sentry('walletAddress is nil');
           Alert.alert(
             'Import failed due to an invalid private key. Please try again.'
           );
@@ -69,12 +79,15 @@ export default function useInitializeWallet() {
 
         if (!(isNew || isImported)) {
           await loadGlobalData();
+          logger.sentry('loaded global data...');
         }
 
         await dispatch(settingsUpdateAccountAddress(walletAddress));
+        logger.sentry('updated settings address', walletAddress);
 
         if (!(isNew || isImported)) {
           await loadAccountData(network);
+          logger.sentry('loaded account data', network);
         }
 
         hideSplashScreen();
