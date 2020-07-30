@@ -5,15 +5,15 @@ import React, { useCallback, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import SeedPhraseImageSource from '../../assets/seed-phrase-icon.png';
-import { useWallets } from '../../hooks';
+import { useInitializeWallet, useWallets } from '../../hooks';
 import {
   getAllWallets,
+  getPrivateKey,
   getSelectedWallet,
   loadAddress,
   loadSeedPhraseAndMigrateIfNeeded,
 } from '../../model/wallet';
 import store from '../../redux/store';
-import { walletsLoadState, walletsUpdate } from '../../redux/wallets';
 import { logger } from '../../utils';
 import { Button } from '../buttons';
 import CopyTooltip from '../copy-tooltip';
@@ -35,6 +35,7 @@ const ToggleSeedPhraseButton = styled(Button)`
 `;
 
 const BackupSection = ({ navigation }) => {
+  const initializeWallet = useInitializeWallet();
   const [seedPhrase, setSeedPhrase] = useState(null);
   const { selectedWallet } = useWallets();
   const [shouldRetry, setShouldRetry] = useState(true);
@@ -62,32 +63,41 @@ const BackupSection = ({ navigation }) => {
 
       // 2 - Log redux and public keychain entries
       logger.sentry('[logAndAttemptRestore]: REDUX DATA:', {
-        settings,
-        wallets,
+        redux: JSON.stringify(
+          {
+            settings,
+            wallets,
+          },
+          null,
+          2
+        ),
       });
       try {
-        logger.sentry(
-          '[logAndAttemptRestore]: Keychain allWallets:',
-          await getAllWallets()
-        );
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
+        const allWallets = await getAllWallets();
+        logger.sentry('[logAndAttemptRestore]: Keychain allWallets:', {
+          allWallets: JSON.stringify(allWallets, null, 2),
+        });
+      } catch (e) {
+        logger.sentry('Got error on getAllWallets', e);
+      }
 
       try {
-        logger.sentry(
-          '[logAndAttemptRestore]: Keychain selectedWallet:',
-          await getSelectedWallet()
-        );
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
+        const selectedWallet = await getSelectedWallet();
+        logger.sentry('[logAndAttemptRestore]: Keychain selectedWallet:', {
+          selectedWallet: JSON.stringify(selectedWallet, null, 2),
+        });
+      } catch (e) {
+        logger.sentry('Got error on getSelectedWallet', e);
+      }
 
       try {
-        logger.sentry(
-          '[logAndAttemptRestore]: Keychain address:',
-          await loadAddress()
-        );
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
+        const address = await loadAddress();
+        logger.sentry('[logAndAttemptRestore]: Keychain address:', {
+          address: JSON.stringify(address, null, 2),
+        });
+      } catch (e) {
+        logger.sentry('Got error on loadAddress', e);
+      }
 
       // 3 - Send message to sentry
       captureMessage(`Error while revealing seed`);
@@ -98,33 +108,26 @@ const BackupSection = ({ navigation }) => {
         // eslint-disable-next-line no-unused-vars
         const { wallets } = await getAllWallets();
         logger.sentry('[logAndAttemptRestore] Got all wallets');
+
+        // If we have everything, let's try to export the pkey
+        // as a fallback measure
+        const res = await getPrivateKey(settings.accountAddress);
+        if (res?.privateKey) {
+          setSeedPhrase(res.privateKey);
+          captureMessage('Rescued private key!');
+
+          //Attempt to fix the broken state
+          await initializeWallet(res.privateKey);
+          captureMessage('Reimported private key sucessful');
+        }
       } catch (e) {
         logger.sentry(
           '[logAndAttemptRestore] Got error getting all wallets',
           e
         );
-        // if we don't have all wallets, let's see if we have a selected wallet
-        const selected = await getSelectedWallet();
-        logger.sentry('[logAndAttemptRestore] Got selected wallet');
-        if (selected?.wallet?.id) {
-          const { wallet } = selected;
-          // We can recover it based in the selected wallet
-          await store.dispatch(walletsUpdate({ [wallet.id]: wallet }));
-          logger.sentry('[logAndAttemptRestore] Updated wallets');
-          await store.dispatch(walletsLoadState());
-          logger.sentry('[logAndAttemptRestore] Reloaded wallets state');
-          // Retrying one more time
-          const keychainValue = await loadSeedPhraseAndMigrateIfNeeded(
-            wallet.id
-          );
-          if (keychainValue) {
-            setSeedPhrase(keychainValue);
-            captureMessage(`Restore from selected wallet successful`);
-          }
-        }
       }
     },
-    [shouldRetry]
+    [initializeWallet, shouldRetry]
   );
 
   const handlePressToggleSeedPhrase = useCallback(() => {
