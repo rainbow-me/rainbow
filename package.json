@@ -226,6 +226,7 @@
     "stylelint-react-native": "^2.2.0"
   },
   "resolutions": {
+    "**/elliptic": "6.5.3",
     "**/eslint-plugin-import": "2.20.2",
     "**/resolve": "1.8.1",
     "**/logkitty": "0.7.1"
