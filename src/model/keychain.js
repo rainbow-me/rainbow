@@ -12,7 +12,9 @@ export async function saveString(key, value, accessControlOptions) {
     await setInternetCredentials(key, key, value, accessControlOptions);
     logger.log(`Keychain: saved string for key: ${key}`);
   } catch (err) {
-    logger.log(`Keychain: failed to save string for key: ${key} error: ${err}`);
+    logger.sentry(
+      `Keychain: failed to save string for key: ${key} error: ${err}`
+    );
     captureException(err);
   }
 }
@@ -24,9 +26,11 @@ export async function loadString(key, authenticationPrompt) {
       logger.log(`Keychain: loaded string for key: ${key}`);
       return credentials.password;
     }
-    logger.log(`Keychain: string does not exist for key: ${key}`);
+    logger.sentry(`Keychain: string does not exist for key: ${key}`);
   } catch (err) {
-    logger.log(`Keychain: failed to load string for key: ${key} error: ${err}`);
+    logger.sentry(
+      `Keychain: failed to load string for key: ${key} error: ${err}`
+    );
     captureException(err);
   }
   return null;
@@ -44,7 +48,7 @@ export async function loadObject(key, authenticationPrompt) {
     logger.log(`Keychain: parsed object for key: ${key}`);
     return objectValue;
   } catch (err) {
-    logger.log(
+    logger.sentry(
       `Keychain: failed to parse object for key: ${key} error: ${err}`
     );
     captureException(err);
