@@ -112,7 +112,9 @@ function MainNativeNavigator() {
       <NativeStack.Screen
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
-        options={exchangePreset}
+        options={{
+          contentStyle: { backgroundColor: colors.black },
+        }}
       />
       <NativeStack.Screen
         component={ChangeWalletSheet}

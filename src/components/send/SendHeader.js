@@ -121,7 +121,7 @@ export default function SendHeader({
 
   return (
     <Fragment>
-      <SheetHandle />
+      {ios && <SheetHandle />}
       <AddressInputContainer>
         <AddressFieldLabel>To:</AddressFieldLabel>
         <AddressField

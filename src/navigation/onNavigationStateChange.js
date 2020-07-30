@@ -96,16 +96,18 @@ export function onNavigationStateChange(currentState) {
   ) {
     StatusBar.setBarStyle('dark-content', true);
   }
+  if (ios) {
+    if (prevRouteName === Routes.WALLET_SCREEN && routeName === 'SendSheet') {
+      StatusBar.setBarStyle('light-content', true);
+    }
 
-  if (prevRouteName === Routes.WALLET_SCREEN && routeName === 'SendSheet') {
-    StatusBar.setBarStyle('light-content', true);
-  }
-
-  if (
-    prevRouteName === Routes.SEND_SHEET &&
-    (routeName === Routes.PROFILE_SCREEN || routeName === Routes.WALLET_SCREEN)
-  ) {
-    StatusBar.setBarStyle('dark-content', true);
+    if (
+      prevRouteName === Routes.SEND_SHEET &&
+      (routeName === Routes.PROFILE_SCREEN ||
+        routeName === Routes.WALLET_SCREEN)
+    ) {
+      StatusBar.setBarStyle('dark-content', true);
+    }
   }
 
   if (

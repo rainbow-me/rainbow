@@ -2,6 +2,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback } from 'react';
+import { StatusBar } from 'react-native';
 import { useValue } from 'react-native-redash';
 import { useMemoOne } from 'use-memo-one';
 import HorizontalGestureBlocker from '../components/HorizontalGestureBlocker';
@@ -67,22 +68,27 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
       [tabTransitionPosition, toggleGestureEnabled]
     );
 
+    StatusBar.setBarStyle('light-content', true);
+
     return (
-      <Tabs.Navigator
-        {...exchangeTabNavigatorConfig}
-        position={tabTransitionPosition}
-      >
-        <Tabs.Screen
-          component={MainExchangeNavigator}
-          initialParams={initialParams}
-          name={Routes.MAIN_EXCHANGE_NAVIGATOR}
-        />
-        <Tabs.Screen
-          component={CurrencySelectModal}
-          initialParams={initialParams}
-          name={Routes.CURRENCY_SELECT_SCREEN}
-        />
-      </Tabs.Navigator>
+      <>
+        <Tabs.Navigator
+          {...exchangeTabNavigatorConfig}
+          position={tabTransitionPosition}
+        >
+          <Tabs.Screen
+            component={MainExchangeNavigator}
+            initialParams={initialParams}
+            name={Routes.MAIN_EXCHANGE_NAVIGATOR}
+          />
+          <Tabs.Screen
+            component={CurrencySelectModal}
+            initialParams={initialParams}
+            name={Routes.CURRENCY_SELECT_SCREEN}
+          />
+        </Tabs.Navigator>
+        <StatusBar barStyle="light-content" translucent />
+      </>
     );
   };
 }

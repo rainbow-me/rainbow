@@ -7,6 +7,7 @@ import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
+import { Modal } from '../components/modal';
 import {
   SendAssetForm,
   SendAssetList,
@@ -63,6 +64,8 @@ const SheetContainer = styled(Column).attrs({
   height: ${isNativeStackAvailable ? sheetHeight : '100%'};
   width: 100%;
 `;
+
+const Wrapper = ios ? Container : Modal;
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
@@ -398,8 +401,8 @@ export default function SendSheet(props) {
   ]);
 
   return (
-    <Container>
-      <StatusBar barStyle="light-content" />
+    <Wrapper fullScreenOnAndroid>
+      {ios && <StatusBar barStyle="light-content" />}
       <SheetContainer>
         <SendHeader
           contacts={contacts}
@@ -469,6 +472,6 @@ export default function SendSheet(props) {
           />
         )}
       </SheetContainer>
-    </Container>
+    </Wrapper>
   );
 }

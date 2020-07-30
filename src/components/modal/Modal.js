@@ -10,7 +10,7 @@ const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   direction: 'column',
   justify: fixedToTop ? 'start' : 'center',
 }))`
-  margin-top: 20;
+  margin-top: ${ios ? 20 : 0};
   ${({ containerPadding }) => padding(...containerPadding)};
   ${position.size('100%')};
 `;
@@ -32,6 +32,7 @@ export default function Modal({
   onCloseModal,
   radius = 12,
   statusBarStyle = ios ? 'light-content' : 'dark-content',
+  skipStatusBarManaging,
   fullScreenOnAndroid = false,
   ...props
 }) {
@@ -44,7 +45,9 @@ export default function Modal({
       }
       fixedToTop={fixedToTop}
     >
-      <StatusBar barStyle={statusBarStyle} translucent />
+      {!skipStatusBarManaging && (
+        <StatusBar barStyle={statusBarStyle} translucent />
+      )}
       {!fullScreenOnAndroid ||
         (ios && <TouchableBackdrop onPress={onCloseModal} />)}
       <Content

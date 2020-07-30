@@ -251,6 +251,7 @@ export default function CurrencySelectModal() {
           height="100%"
           overflow="hidden"
           radius={exchangeModalBorderRadius}
+          skipStatusBarManaging
         >
           <GestureBlocker type="top" />
           <Column flex={1}>
