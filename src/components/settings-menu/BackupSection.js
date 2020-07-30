@@ -66,28 +66,34 @@ const BackupSection = ({ navigation }) => {
         wallets,
       });
       try {
+        const allWallets = await getAllWallets();
         logger.sentry(
           '[logAndAttemptRestore]: Keychain allWallets:',
-          await getAllWallets()
+          JSON.stringify(allWallets, null, 2)
         );
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
+      } catch (e) {
+        logger.sentry('Got error on getAllWallets', e);
+      }
 
       try {
+        const selectedWallet = await getSelectedWallet();
         logger.sentry(
           '[logAndAttemptRestore]: Keychain selectedWallet:',
-          await getSelectedWallet()
+          JSON.stringify(selectedWallet, null, 2)
         );
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
+      } catch (e) {
+        logger.sentry('Got error on getSelectedWallet', e);
+      }
 
       try {
+        const address = await loadAddress();
         logger.sentry(
           '[logAndAttemptRestore]: Keychain address:',
-          await loadAddress()
+          JSON.stringify(address, null, 2)
         );
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
+      } catch (e) {
+        logger.sentry('Got error on loadAddress', e);
+      }
 
       // 3 - Send message to sentry
       captureMessage(`Error while revealing seed`);
