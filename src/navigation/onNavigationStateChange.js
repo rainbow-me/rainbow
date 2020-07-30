@@ -34,20 +34,6 @@ export function onNavigationStateChange(currentState) {
     }
   } else {
     if (
-      prevRouteName !== Routes.CHANGE_WALLET_SHEET &&
-      routeName === Routes.CHANGE_WALLET_SHEET
-    ) {
-      StatusBar.setBarStyle('light-content', true);
-    }
-
-    if (
-      prevRouteName === Routes.CHANGE_WALLET_SHEET &&
-      routeName !== Routes.CHANGE_WALLET_SHEET
-    ) {
-      StatusBar.setBarStyle('dark-content', true);
-    }
-
-    if (
       prevRouteName !== Routes.RECEIVE_MODAL &&
       routeName === Routes.RECEIVE_MODAL
     ) {

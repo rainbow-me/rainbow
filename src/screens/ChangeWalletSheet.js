@@ -8,6 +8,7 @@ import Divider from '../components/Divider';
 import { ButtonPressAnimation } from '../components/animations';
 import WalletList from '../components/change-wallet/WalletList';
 import { Column } from '../components/layout';
+import { Modal } from '../components/modal';
 import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
@@ -65,6 +66,8 @@ const Whitespace = styled.View`
   position: absolute;
   width: 100%;
 `;
+
+const Wrapper = android ? Modal : Sheet;
 
 const getWalletRowCount = wallets => {
   let count = 0;
@@ -372,7 +375,7 @@ export default function ChangeWalletSheet() {
   }, [navigate]);
 
   return (
-    <Sheet borderRadius={30}>
+    <Wrapper borderRadius={30} fullScreenOnAndroid>
       {android && <Whitespace />}
       <Column height={headerHeight} justify="space-between">
         <SheetTitle>Wallets</SheetTitle>
@@ -398,6 +401,6 @@ export default function ChangeWalletSheet() {
         scrollEnabled={scrollEnabled}
         showDividers={showDividers}
       />
-    </Sheet>
+    </Wrapper>
   );
 }

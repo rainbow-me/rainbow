@@ -51,11 +51,6 @@ function MainNavigator() {
         options={emojiPreset}
       />
       <Stack.Screen
-        component={ChangeWalletSheet}
-        name={Routes.CHANGE_WALLET_SHEET}
-        options={expandedPreset}
-      />
-      <Stack.Screen
         component={TransactionConfirmationScreen}
         name={Routes.CONFIRM_REQUEST}
         options={sheetPreset}
@@ -118,6 +113,11 @@ function MainNativeNavigator() {
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
         options={exchangePreset}
+      />
+      <NativeStack.Screen
+        component={ChangeWalletSheet}
+        name={Routes.CHANGE_WALLET_SHEET}
+        options={expandedPreset}
       />
       <NativeStack.Screen
         component={MainNavigator}

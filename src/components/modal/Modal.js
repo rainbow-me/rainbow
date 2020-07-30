@@ -10,6 +10,7 @@ const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   direction: 'column',
   justify: fixedToTop ? 'start' : 'center',
 }))`
+  margin-top: 20;
   ${({ containerPadding }) => padding(...containerPadding)};
   ${position.size('100%')};
 `;
