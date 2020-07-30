@@ -9,6 +9,7 @@ export default function JellySelectorItem({
   onLayout,
   onPress,
   renderItem,
+  scaleTo = 0.94,
   style,
   width,
   ...props
@@ -22,7 +23,7 @@ export default function JellySelectorItem({
       key={index}
       onLayout={handleLayout}
       onPress={handlePress}
-      scaleTo={0.94}
+      scaleTo={scaleTo}
       style={[{ width }, style]}
     >
       {createElement(renderItem, {

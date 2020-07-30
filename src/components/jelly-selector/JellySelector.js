@@ -37,15 +37,16 @@ function resetPositionCalculations() {
 const JellySelector = ({
   backgroundColor,
   color = colors.dark,
-  enableHapticFeedback,
   defaultIndex = 0,
   disableSelection,
+  enableHapticFeedback,
   height,
   items,
   onSelect,
   renderIndicator = JellySelectorColorIndicator,
   renderItem,
   renderRow,
+  scaleTo,
   ...props
 }) => {
   const [selected, setSelected] = useState(defaultIndex);
@@ -120,6 +121,7 @@ const JellySelector = ({
             onLayout={handleItemLayout}
             onPress={handleItemPress}
             renderItem={renderItem}
+            scaleTo={scaleTo}
             width={widths[index]}
           />
         ))}

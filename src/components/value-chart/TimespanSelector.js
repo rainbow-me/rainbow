@@ -59,6 +59,7 @@ const TimespanSelector = ({
         onSelect={handleSelect}
         renderItem={TimespanItem}
         renderRow={TimespanItemRow}
+        scaleTo={1.2}
         width="100%"
       />
     </Container>
