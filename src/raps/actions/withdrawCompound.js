@@ -67,7 +67,7 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
   let withdraw = null;
   try {
     logger.sentry('[withdraw] txn params', transactionParams);
-    const withdraw = isMax
+    withdraw = isMax
       ? await compound.redeem(rawInputAmount, transactionParams)
       : await compound.redeemUnderlying(rawInputAmount, transactionParams);
     logger.sentry('[withdraw] redeemed - result', withdraw);
