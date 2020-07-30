@@ -42,7 +42,9 @@ export default function useInitializeWallet() {
         logger.sentry('resetAccountState ran ok');
 
         const isImported = !!seedPhrase;
-        logger.sentry('isImported?', isImported);
+        logger.sentry('isImported?', {
+          isImported: JSON.stringify(isImported),
+        });
 
         if (shouldRunMigrations && !seedPhrase) {
           logger.sentry('shouldRunMigrations && !seedPhrase? => true');
@@ -62,7 +64,10 @@ export default function useInitializeWallet() {
           name
         );
 
-        logger.sentry('walletInit returned ', isNew, walletAddress);
+        logger.sentry('walletInit returned ', {
+          isNew: JSON.stringify(isNew),
+          walletAddress,
+        });
 
         if (seedPhrase || isNew) {
           logger.sentry('walletsLoadState call #2');
@@ -83,11 +88,11 @@ export default function useInitializeWallet() {
         }
 
         await dispatch(settingsUpdateAccountAddress(walletAddress));
-        logger.sentry('updated settings address', walletAddress);
+        logger.sentry('updated settings address', { walletAddress });
 
         if (!(isNew || isImported)) {
           await loadAccountData(network);
-          logger.sentry('loaded account data', network);
+          logger.sentry('loaded account data', { network });
         }
 
         hideSplashScreen();
