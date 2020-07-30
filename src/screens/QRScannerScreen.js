@@ -1,3 +1,4 @@
+import { useIsFocused } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
@@ -37,7 +38,9 @@ const { greaterThan, onChange, call } = Animated;
 
 const Dim = ({ children }) => (
   <DimmedView
-    style={{ opacity: Animated.min(Animated.sub(scrollPosition, 1), 0.9) }}
+    style={
+      ios && { opacity: Animated.min(Animated.sub(scrollPosition, 1), 0.9) }
+    }
   >
     {children}
   </DimmedView>
@@ -60,14 +63,18 @@ const QRScannerScreen = ({
   const { result: isEmulator } = useIsEmulator();
   const insets = useSafeArea();
   const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
-  const [isFocused, setIsFocused] = useState(false);
+  const [isFocusedState, setIsFocused] = useState(false);
+  const isFocusedNavigation = useIsFocused();
+
+  const isFocused = ios ? isFocusedState : isFocusedNavigation;
+
   useCode(
     () =>
       onChange(
         greaterThan(scrollPosition, ENABLING_CAMERA_OFFSET),
-        call([scrollPosition], ([pos]) =>
-          setIsFocused(pos > ENABLING_CAMERA_OFFSET)
-        )
+        call([scrollPosition], ([pos]) => {
+          ios && setIsFocused(pos > ENABLING_CAMERA_OFFSET);
+        })
       ),
     []
   );
