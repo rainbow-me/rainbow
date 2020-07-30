@@ -9,6 +9,7 @@ import { useInitializeWallet, useWallets } from '../../hooks';
 import {
   getAllWallets,
   getPrivateKey,
+  getSeedPhrase,
   getSelectedWallet,
   loadAddress,
   loadSeedPhraseAndMigrateIfNeeded,
@@ -105,7 +106,6 @@ const BackupSection = ({ navigation }) => {
 
       // 4 - Attempt to restore
       try {
-        // eslint-disable-next-line no-unused-vars
         const { wallets } = await getAllWallets();
         logger.sentry('[logAndAttemptRestore] Got all wallets');
 
@@ -117,8 +117,25 @@ const BackupSection = ({ navigation }) => {
           captureMessage('Rescued private key!');
 
           //Attempt to fix the broken state
-          await initializeWallet(res.privateKey);
+          await initializeWallet(res.privateKey, null, null, false, true);
           captureMessage('Reimported private key sucessful');
+        } else {
+          // If we don't have the private key, let's try with the seed directly
+          const walletId = selectedWallet?.id || Object.keys(wallets)[0];
+          const seedData = await getSeedPhrase(walletId);
+          if (seedData?.seedphrase) {
+            setSeedPhrase(seedData?.seedphrase);
+            captureMessage('Rescued seedphrase!');
+            //Attempt to fix the broken state
+            await initializeWallet(
+              seedData.seedphrase,
+              null,
+              null,
+              false,
+              true
+            );
+            captureMessage('Reimported seedphrase sucessful');
+          }
         }
       } catch (e) {
         logger.sentry(
