@@ -61,7 +61,7 @@ const ExchangeModalHeader = ({
 
   return (
     <Column align="center" css={padding(8, 0)}>
-      <SheetHandle marginBottom={SheetHandleMargin} />
+      {ios && <SheetHandle marginBottom={SheetHandleMargin} />}
       <Text align="center" lineHeight="loose" size="large" weight="bold">
         {title}
       </Text>

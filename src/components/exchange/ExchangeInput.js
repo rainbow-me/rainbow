@@ -87,6 +87,8 @@ const ExchangeInput = (
       {...props}
       color={color}
       editable={editable}
+      // get rid of custom font od android to remove scrolling
+      isEmoji={android}
       keyboardAppearance={keyboardAppearance}
       mask={mask}
       onBlur={handleBlur}

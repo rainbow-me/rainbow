@@ -51,6 +51,8 @@ const ExchangeSearch = ({ onChangeText, onFocus, searchQuery }, ref) => {
     <Container>
       <SearchIcon />
       <SearchInput
+        // get rid of custom font od android to remove scrolling
+        isEmoji={android}
         onChangeText={onChangeText}
         onFocus={onFocus}
         placeholder="Search"
