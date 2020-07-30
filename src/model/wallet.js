@@ -84,7 +84,9 @@ export const loadWallet = async () => {
 
 export const sendTransaction = async ({ transaction }) => {
   try {
-    logger.sentry('about to send transaction', transaction);
+    logger.sentry('about to send transaction', {
+      transaction: JSON.stringify(transaction, null, 2),
+    });
     const wallet = await loadWallet();
     if (!wallet) return null;
     try {
@@ -104,7 +106,9 @@ export const sendTransaction = async ({ transaction }) => {
 
 export const signTransaction = async ({ transaction }) => {
   try {
-    logger.sentry('about to sign transaction', transaction);
+    logger.sentry('about to sign transaction', {
+      transaction: JSON.stringify(transaction, null, 2),
+    });
     const wallet = await loadWallet();
     if (!wallet) return null;
     try {
@@ -126,7 +130,9 @@ export const signMessage = async (
   authenticationPrompt = lang.t('wallet.authenticate.please')
 ) => {
   try {
-    logger.sentry('about to sign message', message);
+    logger.sentry('about to sign message', {
+      message: JSON.stringify(message, null, 2),
+    });
     const wallet = await loadWallet(authenticationPrompt);
     try {
       const signingKey = new ethers.utils.SigningKey(wallet.privateKey);
@@ -150,7 +156,9 @@ export const signPersonalMessage = async (
   authenticationPrompt = lang.t('wallet.authenticate.please')
 ) => {
   try {
-    logger.sentry('about to sign personal message', message);
+    logger.sentry('about to sign personal message', {
+      message: JSON.stringify(message, null, 2),
+    });
     const wallet = await loadWallet(authenticationPrompt);
     try {
       return wallet.signMessage(
@@ -173,7 +181,9 @@ export const signTypedDataMessage = async (
   authenticationPrompt = lang.t('wallet.authenticate.please')
 ) => {
   try {
-    logger.sentry('about to sign typed data message', message);
+    logger.sentry('about to sign typed data  message', {
+      message: JSON.stringify(message, null, 2),
+    });
     const wallet = await loadWallet(authenticationPrompt);
 
     try {
