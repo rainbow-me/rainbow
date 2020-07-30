@@ -283,6 +283,7 @@ export default function useUniswapCurrencies({
   }, [
     blockInteractions,
     category,
+    dangerouslyGetParent,
     inputHeaderTitle,
     navigate,
     setParams,
