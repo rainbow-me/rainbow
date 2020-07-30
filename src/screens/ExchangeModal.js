@@ -11,7 +11,6 @@ import React, {
 import { Platform } from 'react-native';
 import Animated, { Extrapolate } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
-import HorizontalGestureBlocker from '../components/HorizontalGestureBlocker';
 import { interpolate } from '../components/animations';
 import {
   ConfirmExchangeButton,
@@ -482,97 +481,107 @@ export default function ExchangeModal({
       : !!inputCurrency && !!outputCurrency;
 
   return (
-    <HorizontalGestureBlocker>
-      <KeyboardFixedOpenLayout>
-        <Centered
-          {...position.sizeAsObject('100%')}
-          backgroundColor={colors.transparent}
-          direction="column"
+    <KeyboardFixedOpenLayout>
+      <Centered
+        {...position.sizeAsObject('100%')}
+        backgroundColor={colors.transparent}
+        direction="column"
+      >
+        <AnimatedFloatingPanels
+          margin={0}
+          style={{
+            opacity:
+              Platform.OS === 'android'
+                ? 1
+                : interpolate(tabTransitionPosition, {
+                    extrapolate: Extrapolate.CLAMP,
+                    inputRange: [0, 0, 1],
+                    outputRange: [1, 1, 0],
+                  }),
+            transform: [
+              {
+                scale: interpolate(tabTransitionPosition, {
+                  extrapolate: Animated.Extrapolate.CLAMP,
+                  inputRange: [0, 0, 1],
+                  outputRange: [1, 1, 0.9],
+                }),
+                translateX: interpolate(tabTransitionPosition, {
+                  extrapolate: Animated.Extrapolate.CLAMP,
+                  inputRange: [0, 0, 1],
+                  outputRange: [0, 0, -8],
+                }),
+              },
+            ],
+          }}
         >
-          <AnimatedFloatingPanels
-            margin={0}
-            style={{
-              opacity:
-                Platform.OS === 'android'
-                  ? 1
-                  : interpolate(tabTransitionPosition, {
-                      extrapolate: Extrapolate.CLAMP,
-                      inputRange: [0, 0.2, 1],
-                      outputRange: [1, 1, 0],
-                    }),
-            }}
+          <FloatingPanel
+            overflow="hidden"
+            paddingBottom={showOutputField ? 0 : 26}
+            radius={exchangeModalBorderRadius}
           >
-            <FloatingPanel
-              overflow="hidden"
-              paddingBottom={showOutputField ? 0 : 26}
-              radius={exchangeModalBorderRadius}
-            >
-              <ExchangeModalHeader
-                onPressDetails={navigateToSwapDetailsModal}
-                showDetailsButton={showDetailsButton}
-                title={inputHeaderTitle}
-              />
-              <ExchangeInputField
-                disableInputCurrencySelection={isWithdrawal}
-                inputAmount={inputAmountDisplay}
-                inputCurrencyAddress={get(inputCurrency, 'address', null)}
-                inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
-                inputFieldRef={inputFieldRef}
-                nativeAmount={nativeAmount}
-                nativeCurrency={nativeCurrency}
-                nativeFieldRef={nativeFieldRef}
+            <ExchangeModalHeader
+              onPressDetails={navigateToSwapDetailsModal}
+              showDetailsButton={showDetailsButton}
+              title={inputHeaderTitle}
+            />
+            <ExchangeInputField
+              disableInputCurrencySelection={isWithdrawal}
+              inputAmount={inputAmountDisplay}
+              inputCurrencyAddress={get(inputCurrency, 'address', null)}
+              inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
+              inputFieldRef={inputFieldRef}
+              nativeAmount={nativeAmount}
+              nativeCurrency={nativeCurrency}
+              nativeFieldRef={nativeFieldRef}
+              onFocus={handleFocus}
+              onPressMaxBalance={handlePressMaxBalance}
+              onPressSelectInputCurrency={navigateToSelectInputCurrency}
+              setInputAmount={updateInputAmount}
+              setNativeAmount={updateNativeAmount}
+            />
+            {showOutputField && (
+              <ExchangeOutputField
                 onFocus={handleFocus}
-                onPressMaxBalance={handlePressMaxBalance}
-                onPressSelectInputCurrency={navigateToSelectInputCurrency}
-                setInputAmount={updateInputAmount}
-                setNativeAmount={updateNativeAmount}
+                onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
+                outputAmount={outputAmountDisplay}
+                outputCurrencyAddress={get(outputCurrency, 'address', null)}
+                outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
+                outputFieldRef={outputFieldRef}
+                setOutputAmount={updateOutputAmount}
               />
-              {showOutputField && (
-                <ExchangeOutputField
-                  onFocus={handleFocus}
-                  onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
-                  outputAmount={outputAmountDisplay}
-                  outputCurrencyAddress={get(outputCurrency, 'address', null)}
-                  outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
-                  outputFieldRef={outputFieldRef}
-                  setOutputAmount={updateOutputAmount}
+            )}
+          </FloatingPanel>
+          {isDeposit && (
+            <SwapInfo
+              amount={(inputAmount > 0 && outputAmountDisplay) || null}
+              asset={outputCurrency}
+            />
+          )}
+          {isSlippageWarningVisible && <SlippageWarning slippage={slippage} />}
+          {showConfirmButton && (
+            <Fragment>
+              <Centered
+                flexShrink={0}
+                paddingHorizontal={15}
+                paddingTop={24}
+                width="100%"
+              >
+                <ConfirmExchangeButton
+                  disabled={!Number(inputAmountDisplay)}
+                  isAuthorizing={isAuthorizing}
+                  isDeposit={isDeposit}
+                  isSufficientBalance={isSufficientBalance}
+                  isSufficientGas={isSufficientGas}
+                  onSubmit={handleSubmit}
+                  slippage={slippage}
+                  type={type}
                 />
-              )}
-            </FloatingPanel>
-            {isDeposit && (
-              <SwapInfo
-                amount={(inputAmount > 0 && outputAmountDisplay) || null}
-                asset={outputCurrency}
-              />
-            )}
-            {isSlippageWarningVisible && (
-              <SlippageWarning slippage={slippage} />
-            )}
-            {showConfirmButton && (
-              <Fragment>
-                <Centered
-                  flexShrink={0}
-                  paddingHorizontal={15}
-                  paddingTop={24}
-                  width="100%"
-                >
-                  <ConfirmExchangeButton
-                    disabled={!Number(inputAmountDisplay)}
-                    isAuthorizing={isAuthorizing}
-                    isDeposit={isDeposit}
-                    isSufficientBalance={isSufficientBalance}
-                    isSufficientGas={isSufficientGas}
-                    onSubmit={handleSubmit}
-                    slippage={slippage}
-                    type={type}
-                  />
-                </Centered>
-                <GasSpeedButton type={type} />
-              </Fragment>
-            )}
-          </AnimatedFloatingPanels>
-        </Centered>
-      </KeyboardFixedOpenLayout>
-    </HorizontalGestureBlocker>
+              </Centered>
+              <GasSpeedButton type={type} />
+            </Fragment>
+          )}
+        </AnimatedFloatingPanels>
+      </Centered>
+    </KeyboardFixedOpenLayout>
   );
 }

@@ -30,6 +30,7 @@ const Whitespace = styled.View`
   background-color: ${colors.white};
   flex: 1;
   height: ${({ deviceHeight }) => deviceHeight};
+  z-index: -1;
 `;
 
 export default function SlackSheet({

@@ -14,6 +14,7 @@ export default function BackButton({
   color,
   direction = 'left',
   onPress,
+  throttle,
   ...props
 }) {
   const navigation = useNavigation();
@@ -30,7 +31,11 @@ export default function BackButton({
   );
 
   return (
-    <HeaderButton onPress={handlePress} transformOrigin={direction}>
+    <HeaderButton
+      onPress={handlePress}
+      throttle={throttle}
+      transformOrigin={direction}
+    >
       <Container {...props}>
         <Icon color={color} direction={direction} name="caret" {...props} />
       </Container>

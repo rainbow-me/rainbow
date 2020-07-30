@@ -25,6 +25,10 @@ class Button : RCTView {
   @objc var enableHapticFeedback: Bool = true
   @objc var hapticType: String = "selection"
   @objc var useLateHaptic: Bool = true
+  @objc var throttle: Bool = true
+  var blocked: Bool = false
+  var invalidated: Bool = false;
+  
   @objc var minLongPressDuration: TimeInterval = 0.5 {
     didSet {
       if longPress != nil {
@@ -66,6 +70,10 @@ class Button : RCTView {
     if let touch = touches.first {
       self.tapLocation = touch.location(in: self)
     }
+    if blocked {
+      invalidated = true;
+      return;
+    }
     animator = animateTapStart(
       duration: duration,
       scale: scaleTo,
@@ -92,12 +100,22 @@ class Button : RCTView {
   }
   
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    if invalidated {
+      invalidated = false
+      return
+    }
     if let touch = touches.first {
       let location = touch.location(in: self)
       if touchInRange(location: location, tolerance: self.touchMoveTolerance * 0.8) {
           let useHaptic = useLateHaptic && enableHapticFeedback ? hapticType : nil
           animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration, useHaptic: useHaptic)
           onPress([:])
+          if throttle {
+            blocked = true;
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+              self.blocked = false;
+            }
+          }
       } else {
         self.touchesCancelled(touches, with: event)
       }
