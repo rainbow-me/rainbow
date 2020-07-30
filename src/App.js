@@ -9,6 +9,7 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   AppState,
+  NativeModules,
   StatusBar,
   unstable_enableLogBox,
 } from 'react-native';
@@ -47,7 +48,7 @@ import RoutesComponent from './navigation/Routes';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
-import { logger } from 'logger';
+import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
@@ -81,6 +82,10 @@ class App extends Component {
   state = { appState: AppState.currentState };
 
   async componentDidMount() {
+    if (NativeModules.RNTestFlight) {
+      const { isTestFlight } = NativeModules.RNTestFlight.getConstants();
+      logger.sentry(`Test flight usage - ${isTestFlight}`);
+    }
     AppState.addEventListener('change', this.handleAppStateChange);
     await this.handleInitializeAnalytics();
     saveFCMToken();

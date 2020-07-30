@@ -18,23 +18,23 @@ const formatDate = date => format(new Date(date), 'MMM dd hh:mm aa');
 
 const {
   and,
-  or,
-  eq,
-  sub,
-  onChange,
   block,
-  event,
-  interpolate,
-  cond,
   call,
-  set,
-  neq,
-  greaterOrEq,
-  lessThan,
-  greaterThan,
-  stopClock,
-  multiply,
+  cond,
+  eq,
+  event,
   Extrapolate,
+  greaterOrEq,
+  greaterThan,
+  interpolate,
+  lessThan,
+  multiply,
+  neq,
+  onChange,
+  or,
+  set,
+  stopClock,
+  sub,
 } = Animated;
 
 let allSegmentDividers = [];
@@ -65,11 +65,10 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
     const maxValue = maxBy(allSegmentsPoints, 'y');
     const minValue = minBy(allSegmentsPoints, 'y');
 
-    const xMul = Math.floor(
-      (allSegmentsPoints[allSegmentsPoints.length - 1].x -
-        allSegmentsPoints[0].x) /
-        allSegmentsPoints.length
-    );
+    const dataDiff =
+      allSegmentsPoints[allSegmentsPoints.length - 1].x -
+      allSegmentsPoints[0].x;
+    const xMul = Math.floor(dataDiff / allSegmentsPoints.length);
     let newData = [];
     newData.push({
       isImportant: true,
@@ -287,13 +286,14 @@ export default class Chart extends PureComponent {
 
   componentDidMount = () => {
     this.reloadChart(0, true);
-    this.props.chartDateRef.current.setNativeProps({
+    this.props.chartDateRef?.current?.setNativeProps({
       text: 'Today',
     });
-    this.props.chartPriceRef.current.setNativeProps({
-      text: `${this.props.nativeCurrency}${this.props.currentValue
-        .toFixed(5)
-        .toString()}`,
+    this.props.chartPriceRef?.current?.setNativeProps({
+      text: convertAmountToNativeDisplay(
+        this.props.currentValue,
+        this.props.nativeCurrency
+      ),
     });
   };
 
@@ -305,7 +305,7 @@ export default class Chart extends PureComponent {
     if (this.currentInterval !== this.props.currentDataSource) {
       this.currentInterval = this.props.currentDataSource;
       this.currentChart.setValue(this.props.currentDataSource);
-      this.touchX.setValue(deviceUtils.dimensions.width - 1);
+      this.touchX.setValue(width);
       this.reloadChart(this.props.currentDataSource, true);
     }
   }
@@ -424,8 +424,24 @@ export default class Chart extends PureComponent {
               currentData={currentData}
               currentValue={currentValue}
               setCurrentPath={path => {
-                const length = interpolate(this.touchX, {
-                  extrapolate: Extrapolate.EXTEND,
+                const magneticPadding = 50;
+                const calculatedTouchX = interpolate(this.touchX, {
+                  extrapolate: Extrapolate.CLAMP,
+                  inputRange: [
+                    magneticPadding / 2,
+                    magneticPadding,
+                    width - magneticPadding,
+                    width - magneticPadding / 2,
+                  ],
+                  outputRange: [
+                    0,
+                    magneticPadding,
+                    width - magneticPadding,
+                    width,
+                  ],
+                });
+                const length = interpolate(calculatedTouchX, {
+                  extrapolate: Extrapolate.CLAMP,
                   inputRange: path.p0x,
                   outputRange: path.start,
                 });
@@ -482,10 +498,10 @@ export default class Chart extends PureComponent {
                   // This is the value displayed in <ValueText />
                   const points = currentData?.points;
                   if (points) {
-                    this.props.chartDateRef.current.setNativeProps({
+                    this.props.chartDateRef?.current?.setNativeProps({
                       text: 'Today',
                     });
-                    this.props.chartPriceRef.current.setNativeProps({
+                    this.props.chartPriceRef?.current?.setNativeProps({
                       text: convertAmountToNativeDisplay(
                         points[points.length - 1].y,
                         nativeCurrency
@@ -497,38 +513,41 @@ export default class Chart extends PureComponent {
               ]),
               onChange(
                 this.touchX,
-                call([this.translateX, this.translateY], ([x, y]) => {
-                  const curX = x - (x % 10);
-                  if (curX !== this.currentX) {
-                    this.currentX = curX;
-                    const max = maxValue.y;
-                    const min = minValue.y;
-                    const height = 160;
-                    const points = currentData?.points;
-                    if (points) {
-                      const maxDate = points[points.length - 1].x;
-                      const minDate = points[0].x;
-                      const multiplierX = (maxDate - minDate) / width;
-                      const multiplierY = (max - min) / height;
-                      const date = x * multiplierX + minDate;
-                      let result = -y * multiplierY + min;
-                      if (result > max) {
-                        result = max;
-                      } else if (result < min) {
-                        result = min;
+                call(
+                  [this.translateX, this.translateY, this.touchX],
+                  ([x, y, tx]) => {
+                    const curX = x - (x % 10);
+                    if (curX !== this.currentX) {
+                      this.currentX = curX;
+                      const max = maxValue.y;
+                      const min = minValue.y;
+                      const height = 160;
+                      const points = currentData?.points;
+                      if (points && tx && tx !== width) {
+                        const maxDate = Date.now();
+                        const minDate = points[0].x * 1000;
+                        const multiplierX = (maxDate - minDate) / width;
+                        const multiplierY = (max - min) / height;
+                        const date = tx * multiplierX + minDate;
+                        let result = -y * multiplierY + min;
+                        if (result > max) {
+                          result = max;
+                        } else if (result < min) {
+                          result = min;
+                        }
+                        this.props.chartDateRef?.current?.setNativeProps({
+                          text: formatDate(date * 1000),
+                        });
+                        this.props.chartPriceRef?.current?.setNativeProps({
+                          text: convertAmountToNativeDisplay(
+                            result,
+                            nativeCurrency
+                          ),
+                        });
                       }
-                      this.props.chartDateRef.current.setNativeProps({
-                        text: formatDate(date * 1000),
-                      });
-                      this.props.chartPriceRef.current.setNativeProps({
-                        text: convertAmountToNativeDisplay(
-                          result,
-                          nativeCurrency
-                        ),
-                      });
                     }
                   }
-                })
+                )
               )
             ),
             cond(

@@ -1,165 +1,94 @@
-import { isNil } from 'lodash';
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import Animated, {
-  Clock,
-  spring,
-  SpringUtils,
-  Value,
-} from 'react-native-reanimated';
-import { View } from 'react-primitives';
+import React from 'react';
+import Animated, { SpringUtils } from 'react-native-reanimated';
+import { bin, useSpringTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
-import { interpolate } from './procs';
+import { useMemoOne } from 'use-memo-one';
+import { Row } from '../layout';
 import { borders, colors, position } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
-const {
-  add,
-  block,
-  clockRunning,
-  cond,
-  divide,
-  multiply,
-  set,
-  startClock,
-  sub,
-} = Animated;
+const { add, divide, multiply, sub } = Animated;
 
-const RoundButtonCapSize = 30;
-const RoundButtonCap = styled(Animated.View)`
+export const RoundButtonCapSize = 30;
+
+const AnimatedCenter = styled(Animated.View)`
+  background-color: ${({ color }) => color};
+  height: ${RoundButtonCapSize};
+  width: 100;
+`;
+
+const Cap = styled(Animated.View)`
   ${({ capDirection }) =>
     borders.buildRadius(capDirection, RoundButtonCapSize / 2)};
   ${position.size(RoundButtonCapSize)};
   background-color: ${({ color }) => color};
 `;
 
-function runTiming(clock, value, dest, friction, tension) {
-  const state = {
-    finished: new Value(1),
-    position: new Value(value),
-    time: new Value(0),
-    velocity: new Value(0),
-  };
+const Center = styled.View`
+  transform: translateX(${RoundButtonCapSize * -2}px);
+`;
 
-  const config = SpringUtils.makeConfigFromOrigamiTensionAndFriction({
-    ...SpringUtils.makeDefaultConfig(),
-    friction,
-    tension,
-  });
+const Container = styled(Row)`
+  position: absolute;
+`;
 
-  const reset = [
-    set(state.finished, 0),
-    set(state.time, 0),
-    set(state.velocity, 0),
-  ];
+const RoundButtonSizeToggler = ({
+  color = colors.blueGreyDarkLight,
+  endingWidth,
+  isOpen,
+  isAbsolute,
+  startingWidth,
+}) => {
+  const animation = useSpringTransition(
+    bin(isOpen),
+    SpringUtils.makeConfigFromOrigamiTensionAndFriction({
+      ...SpringUtils.makeDefaultConfig(),
+      friction: 20,
+      tension: 200,
+    })
+  );
 
-  return block([
-    cond(state.finished, [...reset, set(config.toValue, dest)]),
-    cond(clockRunning(clock), 0, startClock(clock)),
-    spring(clock, state, config),
-    state.position,
-  ]);
-}
-
-export default class RoundButtonSizeToggler extends PureComponent {
-  static propTypes = {
-    animationNode: PropTypes.any,
-    color: PropTypes.string,
-    endingWidth: PropTypes.number,
-    friction: PropTypes.number,
-    isAbsolute: PropTypes.bool,
-    reversed: PropTypes.bool,
-    startingWidth: PropTypes.number,
-    tension: PropTypes.number,
-    toggle: PropTypes.bool,
-  };
-
-  static defaultProps = {
-    color: colors.blueGreyDarkLight,
-    friction: 20,
-    tension: 200,
-  };
-
-  componentWillMount() {
-    this._width = new Value(this.props.startingWidth);
-  }
-
-  componentWillUpdate(prevProps) {
-    const { animationNode, friction, tension, toggle } = this.props;
-
-    if (
-      !isNil(prevProps.toggle) &&
-      prevProps.toggle !== toggle &&
-      !animationNode
-    ) {
-      const clock = new Clock();
-      const base = runTiming(
-        clock,
-        toggle ? -1 : 1,
-        toggle ? 1 : -1,
-        friction,
-        tension
-      );
-      this._width = interpolate(base, {
-        inputRange: [-1, 1],
-        outputRange: [1, 0],
-      });
-    }
-  }
-
-  static capSize = RoundButtonCapSize;
-
-  render() {
-    const {
-      animationNode,
-      color,
-      endingWidth,
-      isAbsolute,
-      reversed,
-      startingWidth,
-    } = this.props;
-
-    let contentScaleX =
-      (startingWidth + (reversed ? 0 : endingWidth + 5)) / 100;
-    if (animationNode) {
-      contentScaleX = add(
-        multiply(animationNode, endingWidth / 100 - startingWidth / 100),
+  const contentScaleX = useMemoOne(
+    () =>
+      add(
+        multiply(animation, endingWidth / 100 - startingWidth / 100),
         startingWidth / 100
-      );
-    }
+      ),
+    [animation, endingWidth, startingWidth]
+  );
 
-    let contentTranslateX = reversed ? startingWidth : endingWidth;
-    if (animationNode) {
-      contentTranslateX = multiply(divide(sub(1, contentScaleX, 100), 2), -1);
-    }
+  const centerStyle = useMemoOne(
+    () => ({
+      transform: [
+        { scaleX: contentScaleX },
+        { translateX: multiply(divide(sub(1, contentScaleX, 100), 2), -1) },
+      ],
+    }),
+    [contentScaleX]
+  );
 
-    let rightCapTranslateX =
-      -1 * (100 - (reversed ? startingWidth : endingWidth)) - 11;
-    if (animationNode) {
-      rightCapTranslateX = sub(multiply(-100, sub(1, contentScaleX)), 11);
-    }
+  const rightCapStyle = useMemoOne(
+    () => ({
+      transform: [
+        { translateX: sub(multiply(-100, sub(1, contentScaleX)), 11) },
+      ],
+    }),
+    [contentScaleX]
+  );
 
-    return (
-      <View flexDirection="row" position={isAbsolute ? 'absolute' : 'relative'}>
-        <RoundButtonCap capDirection="left" color={color} />
-        <View style={{ transform: [{ translateX: RoundButtonCapSize * -2 }] }}>
-          <Animated.View
-            style={{
-              backgroundColor: color,
-              height: RoundButtonCapSize,
-              transform: [
-                { scaleX: contentScaleX },
-                { translateX: contentTranslateX },
-              ],
-              width: 100,
-            }}
-          />
-        </View>
-        <RoundButtonCap
-          capDirection="right"
-          color={color}
-          style={{ transform: [{ translateX: rightCapTranslateX }] }}
-        />
-      </View>
-    );
-  }
-}
+  return (
+    <Container isAbsolute={isAbsolute}>
+      <Cap capDirection="left" color={color} />
+      <Center>
+        <AnimatedCenter color={color} style={centerStyle} />
+      </Center>
+      <Cap capDirection="right" color={color} style={rightCapStyle} />
+    </Container>
+  );
+};
+
+export default magicMemo(RoundButtonSizeToggler, [
+  'endingWidth',
+  'isOpen',
+  'startingWidth',
+]);
