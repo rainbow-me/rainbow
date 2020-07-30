@@ -35,7 +35,10 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   const fastGasPrice = get(gasPrices, `[${gasUtils.FAST}]`);
   let gasLimit;
   try {
-    logger.sentry('about to estimate approve', assetAddress, contractAddress);
+    logger.sentry('about to estimate approve', {
+      assetAddress,
+      contractAddress,
+    });
     gasLimit = await contractUtils.estimateApprove(
       assetAddress,
       contractAddress
@@ -48,7 +51,11 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   let approval;
   try {
     const gasPrice = get(fastGasPrice, 'value.amount');
-    logger.sentry('about to approve', assetAddress, contractAddress, gasLimit);
+    logger.sentry('about to approve', {
+      assetAddress,
+      contractAddress,
+      gasLimit,
+    });
     const result = await contractUtils.approve(
       assetAddress,
       contractAddress,
