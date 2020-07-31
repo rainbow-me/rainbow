@@ -1,6 +1,7 @@
 import { captureException } from '@sentry/react-native';
 import {
   getInternetCredentials,
+  hasInternetCredentials,
   resetInternetCredentials,
   setInternetCredentials,
 } from 'react-native-keychain';
@@ -66,4 +67,15 @@ export async function remove(key) {
     );
     captureException(err);
   }
+}
+
+export async function hasKey(key) {
+  try {
+    const result = await hasInternetCredentials(key);
+    return result;
+  } catch (err) {
+    logger.log(`Keychain: failed to check if key exists -  error: ${err}`);
+    captureException(err);
+  }
+  return null;
 }

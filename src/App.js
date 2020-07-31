@@ -36,9 +36,13 @@ import {
   showNetworkRequests,
   showNetworkResponses,
 } from './config/debug';
-
 import monitorNetwork from './debugging/network';
 import handleDeeplink from './handlers/deeplinks';
+import {
+  getKeychainIntegrityState,
+  saveKeychainIntegrityState,
+} from './handlers/localstorage/globalSettings';
+
 import DevContextWrapper from './helpers/DevContext';
 import { withAccountSettings } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
@@ -48,6 +52,7 @@ import RoutesComponent from './navigation/Routes';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
+import { checkKeychainIntegrity } from './redux/wallets';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
 
@@ -121,6 +126,15 @@ class App extends Component {
         handleDeeplink(uri);
       }
     });
+
+    // Let the app initialize
+    setTimeout(async () => {
+      const keychainIntegrityState = await getKeychainIntegrityState();
+      if (!keychainIntegrityState) {
+        await store.dispatch(checkKeychainIntegrity());
+        await saveKeychainIntegrityState('done');
+      }
+    }, 10000);
   }
 
   componentWillUnmount() {
