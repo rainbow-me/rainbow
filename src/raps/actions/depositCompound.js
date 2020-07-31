@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { ethers } from 'ethers';
 import { get } from 'lodash';
 import { toHex } from '../../handlers/web3';
@@ -67,10 +68,17 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
     gasPrice: gasPrice ? toHex(gasPrice) : undefined,
     value: toHex(0),
   };
-  logger.log('[deposit] txn params', transactionParams);
-  const deposit = await compound.mint(rawInputAmount, transactionParams);
-  logger.log('[deposit] minted - result', deposit);
 
+  let deposit = null;
+  try {
+    logger.sentry('[deposit] txn params', transactionParams);
+    const deposit = await compound.mint(rawInputAmount, transactionParams);
+    logger.sentry('[deposit] minted - result', deposit);
+  } catch (e) {
+    logger.sentry('error executing compound.mint');
+    captureException(e);
+    throw e;
+  }
   currentRap.actions[index].transaction.hash = deposit.hash;
 
   const newTransaction = {
