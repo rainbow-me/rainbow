@@ -11,12 +11,7 @@ import logger from 'logger';
 // NOTE: implement access control for iOS keychain
 export async function saveString(key, value, accessControlOptions) {
   try {
-    await setInternetCredentials(
-      key,
-      key,
-      value,
-      accessControlOptions && { accessControl: accessControlOptions }
-    );
+    await setInternetCredentials(key, key, value, accessControlOptions);
     logger.log(`Keychain: saved string for key: ${key}`);
   } catch (err) {
     logger.sentry(
@@ -89,11 +84,11 @@ export async function loadAllKeys(authenticationPrompt) {
 export async function getAllKeysAnonymized() {
   const data = {};
   const results = await loadAllKeys();
-  forEach(results, async result => {
-    data[result.username] = {
-      length: result.password.length,
-      nil: isNil(result.password),
-      type: typeof result.password,
+  forEach(results, result => {
+    data[result?.username] = {
+      length: result?.password?.length,
+      nil: isNil(result?.password),
+      type: typeof result?.password,
     };
   });
   return data;
