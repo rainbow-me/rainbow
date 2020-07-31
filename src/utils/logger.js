@@ -57,9 +57,8 @@ const Logger = {
 const safelyStringifyWithFormat = data => {
   try {
     const seen = [];
-    const dataToLog = typeof data === 'object' ? data : { data };
     const newData = JSON.stringify(
-      dataToLog,
+      data,
       // Required to ignore cyclic structures
       (key, val) => {
         if (val != null && typeof val == 'object') {
@@ -72,7 +71,7 @@ const safelyStringifyWithFormat = data => {
       },
       2
     );
-    return newData;
+    return { data: newData };
   } catch (e) {
     captureException(e);
     return {};
