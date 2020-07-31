@@ -96,5 +96,5 @@ export async function getAllKeysAnonymized() {
       type: typeof result.password,
     };
   });
-  return results;
+  return data;
 }
