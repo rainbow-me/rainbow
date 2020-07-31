@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/react-native';
+import { captureException, captureMessage } from '@sentry/react-native';
 import { forEach, isNil } from 'lodash';
 import {
   getAllInternetCredentials,
@@ -28,7 +28,7 @@ export async function loadString(key, authenticationPrompt) {
       logger.log(`Keychain: loaded string for key: ${key}`);
       return credentials.password;
     }
-    logger.sentry(`Keychain: string does not exist for key: ${key}`);
+    captureMessage(`Keychain: string does not exist for key: ${key}`);
   } catch (err) {
     logger.sentry(
       `Keychain: failed to load string for key: ${key} error: ${err}`
@@ -45,6 +45,7 @@ export async function saveObject(key, value, accessControlOptions) {
 
 export async function loadObject(key, authenticationPrompt) {
   const jsonValue = await loadString(key, authenticationPrompt);
+  if (!jsonValue) return null;
   try {
     const objectValue = JSON.parse(jsonValue);
     logger.log(`Keychain: parsed object for key: ${key}`);

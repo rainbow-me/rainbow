@@ -341,6 +341,7 @@ export const createWallet = async (
   overwrite = false
 ) => {
   const isImported = !!seed;
+  logger.sentry('Creating wallet, isImported?', isImported);
   const walletSeed = seed || generateSeedPhrase();
   let addresses = [];
   try {
