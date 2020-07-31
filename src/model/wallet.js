@@ -84,6 +84,7 @@ export const loadWallet = async () => {
 
 export const sendTransaction = async ({ transaction }) => {
   try {
+    logger.sentry('about to send transaction', transaction);
     const wallet = await loadWallet();
     if (!wallet) return null;
     try {
@@ -103,6 +104,7 @@ export const sendTransaction = async ({ transaction }) => {
 
 export const signTransaction = async ({ transaction }) => {
   try {
+    logger.sentry('about to sign transaction', transaction);
     const wallet = await loadWallet();
     if (!wallet) return null;
     try {
@@ -124,6 +126,7 @@ export const signMessage = async (
   authenticationPrompt = lang.t('wallet.authenticate.please')
 ) => {
   try {
+    logger.sentry('about to sign message', message);
     const wallet = await loadWallet(authenticationPrompt);
     try {
       const signingKey = new ethers.utils.SigningKey(wallet.privateKey);
@@ -147,6 +150,7 @@ export const signPersonalMessage = async (
   authenticationPrompt = lang.t('wallet.authenticate.please')
 ) => {
   try {
+    logger.sentry('about to sign personal message', message);
     const wallet = await loadWallet(authenticationPrompt);
     try {
       return wallet.signMessage(
@@ -169,6 +173,7 @@ export const signTypedDataMessage = async (
   authenticationPrompt = lang.t('wallet.authenticate.please')
 ) => {
   try {
+    logger.sentry('about to sign typed data  message', message);
     const wallet = await loadWallet(authenticationPrompt);
 
     try {

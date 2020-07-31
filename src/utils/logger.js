@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import sentryUtils from './sentry';
 
 const Logger = {
@@ -39,7 +40,8 @@ const Logger = {
     if (args.length === 1 && typeof args[0] === 'string') {
       sentryUtils.addInfoBreadcrumb.apply(null, args);
     } else {
-      sentryUtils.addDataBreadcrumb.apply(null, args);
+      const safeData = safelyStringifyWithFormat(args[1]);
+      sentryUtils.addDataBreadcrumb(args[0], safeData);
     }
     if (__DEV__) {
       console.log(...args);
@@ -50,6 +52,31 @@ const Logger = {
       console.warn(...args);
     }
   },
+};
+
+const safelyStringifyWithFormat = data => {
+  try {
+    const seen = [];
+    const dataToLog = typeof data === 'object' ? data : { data };
+    const newData = JSON.stringify(
+      dataToLog,
+      // Required to ignore cyclic structures
+      (key, val) => {
+        if (val != null && typeof val == 'object') {
+          if (seen.indexOf(val) >= 0) {
+            return;
+          }
+          seen.push(val);
+        }
+        return val;
+      },
+      2
+    );
+    return newData;
+  } catch (e) {
+    captureException(e);
+    return {};
+  }
 };
 
 export default Logger;
