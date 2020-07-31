@@ -25,7 +25,7 @@ class Button : RCTView {
   @objc var enableHapticFeedback: Bool = true
   @objc var hapticType: String = "selection"
   @objc var useLateHaptic: Bool = true
-  @objc var throttle: Bool = true
+  @objc var throttle: Bool = false
   var blocked: Bool = false
   var invalidated: Bool = false;
   
