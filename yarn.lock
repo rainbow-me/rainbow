@@ -9310,10 +9310,10 @@ react-native-keyboard-area@^1.0.5:
   dependencies:
     "@types/react-native" "0.62.16"
 
-react-native-keychain@4.0.3:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-4.0.3.tgz#38c6c0021ed697b6149d460dd5910c3c92d36ae7"
-  integrity sha512-mXlBcHueQ3i73GU9hc7giXJqkh+oL0f8As2H+1XWW2GovkM7xQEZNoro3DsYDIWzFW3eRoF8DmUZIGbLLEVp3Q==
+react-native-keychain@6.1.1:
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-6.1.1.tgz#3c14e4df9e5599f8d5a708da75d27f9d2424d7c1"
+  integrity sha512-WYvAg7FbYPyX8jJ1rY/IQGS+6zK5LtNMRa3E8x1n0M5Lmsm/9CHtakzbmqT+rLvFE7DpPBg7qFawMuUoDjjtYA==
 
 react-native-known-styling-properties@^1.0.5:
   version "1.0.5"
