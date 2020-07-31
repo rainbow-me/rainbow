@@ -9,6 +9,7 @@ import { useInitializeWallet, useWallets } from '../../hooks';
 import {
   getAllWallets,
   getPrivateKey,
+  getSeedPhrase,
   getSelectedWallet,
   loadAddress,
   loadSeedPhraseAndMigrateIfNeeded,
@@ -99,20 +100,35 @@ const BackupSection = ({ navigation }) => {
 
       // 4 - Attempt to restore
       try {
-        // eslint-disable-next-line no-unused-vars
         const { wallets } = await getAllWallets();
-        logger.sentry('[logAndAttemptRestore] Got all wallets');
+        logger.sentry('[logAndAttemptRestore]: Got all wallets');
 
-        // If we have everything, let's try to export the pkey
-        // as a fallback measure
-        const res = await getPrivateKey(settings.accountAddress);
-        if (res?.privateKey) {
-          setSeedPhrase(res.privateKey);
-          captureMessage('Rescued private key!');
-
+        // If we don't have the private key, let's try with the seed directly
+        const walletId = selectedWallet?.id || Object.keys(wallets)[0];
+        logger.sentry('[logAndAttemptRestore] got wallet id', walletId);
+        const seedData = await getSeedPhrase(walletId);
+        if (seedData?.seedphrase) {
+          logger.sentry('[logAndAttemptRestore]: got seedphrase');
+          setSeedPhrase(seedData?.seedphrase);
+          captureMessage('Rescued seedphrase!');
           //Attempt to fix the broken state
-          await initializeWallet(res.privateKey);
-          captureMessage('Reimported private key sucessful');
+          logger.sentry('[logAndAttemptRestore]: initializing wallet...');
+          await initializeWallet(seedData.seedphrase, null, null, false, true);
+          captureMessage('Reimported seedphrase sucessful');
+        } else {
+          // If we have everything, let's try to export the pkey
+          // as a fallback measure
+          const res = await getPrivateKey(settings.accountAddress);
+          if (res?.privateKey) {
+            logger.sentry('[logAndAttemptRestore]: got private key');
+            setSeedPhrase(res.privateKey);
+            captureMessage('Rescued private key!');
+
+            //Attempt to fix the broken state
+            logger.sentry('[logAndAttemptRestore]: initializing wallet...');
+            await initializeWallet(res.privateKey, null, null, false, true);
+            captureMessage('Reimported private key sucessful');
+          }
         }
       } catch (e) {
         logger.sentry(
@@ -121,7 +137,7 @@ const BackupSection = ({ navigation }) => {
         );
       }
     },
-    [initializeWallet, shouldRetry]
+    [initializeWallet, selectedWallet?.id, shouldRetry]
   );
 
   const handlePressToggleSeedPhrase = useCallback(() => {
