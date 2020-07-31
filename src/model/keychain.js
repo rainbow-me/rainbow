@@ -11,7 +11,12 @@ import logger from 'logger';
 // NOTE: implement access control for iOS keychain
 export async function saveString(key, value, accessControlOptions) {
   try {
-    await setInternetCredentials(key, key, value, accessControlOptions);
+    await setInternetCredentials(
+      key,
+      key,
+      value,
+      accessControlOptions && { accessControl: accessControlOptions }
+    );
     logger.log(`Keychain: saved string for key: ${key}`);
   } catch (err) {
     logger.sentry(
