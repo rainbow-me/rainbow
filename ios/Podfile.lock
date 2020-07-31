@@ -497,7 +497,7 @@ PODS:
   - RNInputMask (4.1.0)
   - RNKeyboard (1.0.5):
     - React
-  - RNKeychain (4.0.3):
+  - RNKeychain (6.1.1):
     - React
   - RNLanguages (3.0.2):
     - React
@@ -947,7 +947,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: ceec456427493b286539f40442620881b5840dff
-  RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
+  RNKeychain: db956c02a018f7dd3a0ea8a6cf3087bc1894bf2b
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: ad71dd4f767ec254f2cd57592fbee02afee75467

@@ -6,6 +6,7 @@ import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import SeedPhraseImageSource from '../../assets/seed-phrase-icon.png';
 import { useInitializeWallet, useWallets } from '../../hooks';
+import { getAllKeysAnonymized } from '../../model/keychain';
 import {
   getAllWallets,
   getPrivateKey,
@@ -52,7 +53,7 @@ const BackupSection = ({ navigation }) => {
 
       setShouldRetry(false);
 
-      // 1 - Log the error if exists
+      // 0 - Log the error if exists
       if (error) {
         logger.sentry(
           '[logAndAttemptRestore]: Error while revealing seed',
@@ -60,6 +61,13 @@ const BackupSection = ({ navigation }) => {
         );
       }
 
+      // 1 - Dump all keys anonymized
+      try {
+        const keysDump = await getAllKeysAnonymized();
+        logger.sentry('[logAndAttemptRestore]: all keys', keysDump);
+      } catch (e) {
+        logger.sentry('Got error on getAllKeysAnonymized', e);
+      }
       const { wallets, settings } = store.getState();
 
       // 2 - Log redux and public keychain entries
@@ -106,7 +114,13 @@ const BackupSection = ({ navigation }) => {
         // If we don't have the private key, let's try with the seed directly
         const walletId = selectedWallet?.id || Object.keys(wallets)[0];
         logger.sentry('[logAndAttemptRestore] got wallet id', walletId);
-        const seedData = await getSeedPhrase(walletId);
+        let seedData;
+        try {
+          seedData = await getSeedPhrase(walletId);
+        } catch (e) {
+          logger.sentry('Error on getSeedPhrase', e);
+        }
+
         if (seedData?.seedphrase) {
           logger.sentry('[logAndAttemptRestore]: got seedphrase');
           setSeedPhrase(seedData?.seedphrase);
@@ -118,7 +132,12 @@ const BackupSection = ({ navigation }) => {
         } else {
           // If we have everything, let's try to export the pkey
           // as a fallback measure
-          const res = await getPrivateKey(settings.accountAddress);
+          let res;
+          try {
+            res = await getPrivateKey(settings.accountAddress);
+          } catch (e) {
+            logger.sentry('Error on getPrivateKey', e);
+          }
           if (res?.privateKey) {
             logger.sentry('[logAndAttemptRestore]: got private key');
             setSeedPhrase(res.privateKey);
@@ -128,6 +147,8 @@ const BackupSection = ({ navigation }) => {
             logger.sentry('[logAndAttemptRestore]: initializing wallet...');
             await initializeWallet(res.privateKey, null, null, false, true);
             captureMessage('Reimported private key sucessful');
+          } else {
+            captureMessage('Pkey & Seed lookup failed');
           }
         }
       } catch (e) {

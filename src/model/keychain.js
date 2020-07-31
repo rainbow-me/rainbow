@@ -1,5 +1,7 @@
 import { captureException } from '@sentry/react-native';
+import { forEach, isNil } from 'lodash';
 import {
+  getAllInternetCredentials,
   getInternetCredentials,
   resetInternetCredentials,
   setInternetCredentials,
@@ -66,4 +68,28 @@ export async function remove(key) {
     );
     captureException(err);
   }
+}
+
+export async function loadAllKeys(authenticationPrompt) {
+  try {
+    const { results } = await getAllInternetCredentials(authenticationPrompt);
+    return results;
+  } catch (err) {
+    logger.log(`Keychain: failed to loadAllKeys error: ${err}`);
+    captureException(err);
+  }
+  return null;
+}
+
+export async function getAllKeysAnonymized() {
+  const data = {};
+  const results = await loadAllKeys();
+  forEach(results, result => {
+    data[result?.username] = {
+      length: result?.password?.length,
+      nil: isNil(result?.password),
+      type: typeof result?.password,
+    };
+  });
+  return data;
 }
