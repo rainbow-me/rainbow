@@ -53,13 +53,14 @@ export function generateSeedPhrase() {
 export const walletInit = async (
   seedPhrase = null,
   color = null,
-  name = null
+  name = null,
+  overwrite = false
 ) => {
   let walletAddress = null;
   let isNew = false;
   // Importing a seedphrase
   if (!isEmpty(seedPhrase)) {
-    const wallet = await createWallet(seedPhrase, color, name);
+    const wallet = await createWallet(seedPhrase, color, name, overwrite);
     walletAddress = wallet.address;
     return { isNew, walletAddress };
   }
@@ -317,7 +318,12 @@ export const getWallet = walletSeed => {
   return { hdnode, isHDWallet, type, wallet };
 };
 
-export const createWallet = async (seed = null, color = null, name = null) => {
+export const createWallet = async (
+  seed = null,
+  color = null,
+  name = null,
+  overwrite = false
+) => {
   const isImported = !!seed;
   const walletSeed = seed || generateSeedPhrase();
   let addresses = [];
@@ -349,6 +355,7 @@ export const createWallet = async (seed = null, color = null, name = null) => {
         (alreadyExistingWallet?.type === WalletTypes.seed ||
           alreadyExistingWallet?.type === WalletTypes.mnemonic);
       if (
+        !overwrite &&
         alreadyExistingWallet &&
         (type === WalletTypes.readOnly || isPrivateKeyOverwritingSeedMnemonic)
       ) {

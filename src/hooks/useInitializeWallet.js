@@ -33,7 +33,8 @@ export default function useInitializeWallet() {
       seedPhrase,
       color = null,
       name = null,
-      shouldRunMigrations = false
+      shouldRunMigrations = false,
+      overwrite = false
     ) => {
       try {
         logger.sentry('Start wallet setup');
@@ -59,7 +60,8 @@ export default function useInitializeWallet() {
         const { isNew, walletAddress } = await walletInit(
           seedPhrase,
           color,
-          name
+          name,
+          overwrite
         );
 
         logger.sentry('walletInit returned ', {
