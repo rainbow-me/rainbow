@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/react-native';
-import { isNil } from 'lodash';
+import { forEach, isNil } from 'lodash';
 import {
   getAllInternetCredentials,
   getInternetCredentials,
@@ -89,7 +89,7 @@ export async function loadAllKeys(authenticationPrompt) {
 export async function getAllKeysAnonymized() {
   const data = {};
   const results = await loadAllKeys();
-  results.forEach(async result => {
+  forEach(results, async result => {
     data[result.username] = {
       length: result.password.length,
       nil: isNil(result.password),
