@@ -47,6 +47,7 @@ const publicAccessControlOptions = {
 };
 
 export function generateSeedPhrase() {
+  logger.sentry('Generating a new seed phrase');
   return ethers.utils.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
 }
 
@@ -93,11 +94,15 @@ export const sendTransaction = async ({ transaction }) => {
       return result.hash;
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      logger.sentry('Failed to SEND transaction, alerted user');
       captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    logger.sentry(
+      'Failed to SEND transaction due to authentication, alerted user'
+    );
     captureException(error);
     return null;
   }
@@ -112,11 +117,15 @@ export const signTransaction = async ({ transaction }) => {
       return wallet.sign(transaction);
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      logger.sentry('Failed to SIGN transaction, alerted user');
       captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    logger.sentry(
+      'Failed to SIGN transaction due to authentication, alerted user'
+    );
     captureException(error);
     return null;
   }
@@ -136,11 +145,14 @@ export const signMessage = async (
       );
       return ethers.utils.joinSignature(sigParams);
     } catch (error) {
+      Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      logger.sentry('Failed to SIGN message, alerted user');
       captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    logger.sentry('Failed to SIGN message due to authentication, alerted user');
     captureException(error);
     return null;
   }
@@ -158,11 +170,16 @@ export const signPersonalMessage = async (
         isHexString(message) ? ethers.utils.arrayify(message) : message
       );
     } catch (error) {
+      Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      logger.sentry('Failed to SIGN personal message, alerted user');
       captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    logger.sentry(
+      'Failed to SIGN personal message due to authentication, alerted user'
+    );
     captureException(error);
     return null;
   }
@@ -205,11 +222,16 @@ export const signTypedDataMessage = async (
           return signTypedDataLegacy(pkeyBuffer, { data: parsedData });
       }
     } catch (error) {
+      Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      logger.sentry('Failed to SIGN typed data message, alerted user');
       captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    logger.sentry(
+      'Failed to SIGN typed data message due to authentication, alerted user'
+    );
     captureException(error);
     return null;
   }
@@ -596,6 +618,7 @@ export const getSelectedWallet = async () => {
   try {
     return keychain.loadObject(selectedWalletKey);
   } catch (error) {
+    logger.sentry('Error in getSelectedWallet');
     captureException(error);
     return null;
   }
@@ -614,6 +637,7 @@ export const getAllWallets = async () => {
   try {
     return keychain.loadObject(allWalletsKey);
   } catch (error) {
+    logger.sentry('Error in getAllWallets');
     captureException(error);
     return null;
   }
@@ -701,7 +725,7 @@ export const migrateSecrets = async () => {
       type,
     };
   } catch (e) {
-    logger.log(e);
+    logger.sentry('Error while migrating secrets');
     captureException(e);
   }
 };

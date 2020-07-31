@@ -99,8 +99,8 @@ export const walletsUpdate = wallets => dispatch => {
   });
 };
 
-export const walletsSetSelected = wallet => dispatch => {
-  setSelectedWallet(wallet);
+export const walletsSetSelected = wallet => async dispatch => {
+  await setSelectedWallet(wallet);
   dispatch({
     payload: wallet,
     type: WALLETS_SET_SELECTED,
