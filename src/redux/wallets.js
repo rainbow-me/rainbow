@@ -7,7 +7,7 @@ import {
 } from '../handlers/localstorage/walletNames';
 import { web3Provider } from '../handlers/web3';
 import WalletTypes from '../helpers/walletTypes';
-import { getAllKeysAnonymized, hasKey } from '../model/keychain';
+import { hasKey, loadAllKeysOnly } from '../model/keychain';
 import {
   addressKey,
   generateAccount,
@@ -211,6 +211,19 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
     }
 
     const { wallets, selected } = getState().wallets;
+    if (!wallets) {
+      logger.sentry(
+        '[KeychainIntegrityCheck]: wallets are missing from redux',
+        wallets
+      );
+    }
+
+    if (!selected) {
+      logger.sentry(
+        '[KeychainIntegrityCheck]: selectedwallet is missing from redux',
+        selected
+      );
+    }
 
     const filteredWallets = Object.keys(wallets).filter(
       key => wallets[key].type !== WalletTypes.readOnly
@@ -262,7 +275,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
     if (!healthyKeychain) {
       // 1 - Dump all keys anonymized
       try {
-        const keysDump = await getAllKeysAnonymized();
+        const keysDump = await loadAllKeysOnly();
         logger.sentry('[logAndAttemptRestore]: all keys', keysDump);
       } catch (e) {
         logger.sentry('Got error on getAllKeysAnonymized', e);
