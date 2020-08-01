@@ -5,23 +5,32 @@ import { removeFirstEmojiFromString } from '../helpers/emojiHandler';
 import { address } from '../utils/abbreviations';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
+import logger from 'logger';
 
 export default function useAccountProfile() {
-  const { selectedWallet, walletNames } = useWallets();
+  const wallets = useWallets();
+  const { selectedWallet, walletNames } = wallets;
 
-  const { accountAddress } = useAccountSettings();
+  const settings = useAccountSettings();
+  const { accountAddress } = settings;
 
   if (!selectedWallet) {
+    logger.sentry('redux settings', settings);
+    logger.sentry('redux wallets', wallets);
     captureMessage('DEADBEEF - no selectedWallet');
     return {};
   }
 
   if (!accountAddress) {
+    logger.sentry('redux settings', settings);
+    logger.sentry('redux wallets', wallets);
     captureMessage('DEADBEEF - no accountAddress');
     return {};
   }
 
   if (!selectedWallet?.addresses?.length) {
+    logger.sentry('redux settings', settings);
+    logger.sentry('redux wallets', wallets);
     captureMessage('DEADBEEF - no addresses');
     return {};
   }
@@ -33,6 +42,8 @@ export default function useAccountProfile() {
   );
 
   if (!selectedAccount) {
+    logger.sentry('redux settings', settings);
+    logger.sentry('redux wallets', wallets);
     captureMessage('DEADBEEF - no selectedAccount');
     return {};
   }
