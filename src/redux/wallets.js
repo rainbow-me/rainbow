@@ -202,54 +202,53 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
 
     const { wallets, selected } = getState().wallets;
 
-    Object.keys(wallets)
-      .filter(key => wallets[key].type !== WalletTypes.readOnly)
-      .forEach(async key => {
-        let healthyWallet = true;
-        logger.sentry(`[KeychainIntegrityCheck]: checking wallet ${key}`);
-        const wallet = wallets[key];
-        logger.sentry(`[KeychainIntegrityCheck]: Wallet data`, wallet);
-        const seedKeyFound = await hasKey(`${key}_rainbowSeedPhrase`);
-        if (!seedKeyFound) {
+    const filteredWallets = Object.keys(wallets).filter(
+      key => wallets[key].type !== WalletTypes.readOnly
+    );
+    for (const key of filteredWallets) {
+      let healthyWallet = true;
+      logger.sentry(`[KeychainIntegrityCheck]: checking wallet ${key}`);
+      const wallet = wallets[key];
+      logger.sentry(`[KeychainIntegrityCheck]: Wallet data`, wallet);
+      const seedKeyFound = await hasKey(`${key}_rainbowSeedPhrase`);
+      if (!seedKeyFound) {
+        healthyWallet = false;
+        logger.sentry('[KeychainIntegrityCheck]: seed key is missing');
+      } else {
+        logger.sentry('[KeychainIntegrityCheck]: seed key is present');
+      }
+
+      for (const account of wallet.addresses) {
+        const pkeyFound = await hasKey(`${account.address}_rainbowPrivateKey`);
+        if (!pkeyFound) {
           healthyWallet = false;
-          logger.sentry('[KeychainIntegrityCheck]: seed key is missing');
-        } else {
-          logger.sentry('[KeychainIntegrityCheck]: seed key is present');
-        }
-
-        wallet.accounts.forEach(async account => {
-          const pkeyFound = await hasKey(
-            `${account.address}_rainbowPrivateKey`
-          );
-          if (!pkeyFound) {
-            healthyWallet = false;
-            logger.sentry(
-              `[KeychainIntegrityCheck]: pkey is missing for address: ${account.address}`
-            );
-          } else {
-            logger.sentry(
-              `[KeychainIntegrityCheck]: pkey is present for address: ${account.address}`
-            );
-          }
-        });
-
-        if (!healthyWallet) {
           logger.sentry(
-            '[KeychainIntegrityCheck]: declaring wallet unhealthy...'
+            `[KeychainIntegrityCheck]: pkey is missing for address: ${account.address}`
           );
-          healthyKeychain = false;
-          wallet.damaged = true;
-          await dispatch(walletsUpdate(wallets));
-          // Update selected wallet if needed
-          if (wallet.id === selected.id) {
-            logger.sentry(
-              '[KeychainIntegrityCheck]: declaring selected wallet unhealthy...'
-            );
-            await dispatch(walletsSetSelected(wallets[wallet.id]));
-          }
-          logger.sentry('[KeychainIntegrityCheck]: done updating wallets');
+        } else {
+          logger.sentry(
+            `[KeychainIntegrityCheck]: pkey is present for address: ${account.address}`
+          );
         }
-      });
+      }
+
+      if (!healthyWallet) {
+        logger.sentry(
+          '[KeychainIntegrityCheck]: declaring wallet unhealthy...'
+        );
+        healthyKeychain = false;
+        wallet.damaged = true;
+        await dispatch(walletsUpdate(wallets));
+        // Update selected wallet if needed
+        if (wallet.id === selected.id) {
+          logger.sentry(
+            '[KeychainIntegrityCheck]: declaring selected wallet unhealthy...'
+          );
+          await dispatch(walletsSetSelected(wallets[wallet.id]));
+        }
+        logger.sentry('[KeychainIntegrityCheck]: done updating wallets');
+      }
+    }
     if (!healthyKeychain) {
       captureMessage('Keychain Integrity is not OK');
     }
