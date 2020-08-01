@@ -7,7 +7,7 @@ import {
 } from '../handlers/localstorage/walletNames';
 import { web3Provider } from '../handlers/web3';
 import WalletTypes from '../helpers/walletTypes';
-import { hasKey, loadAllKeysOnly } from '../model/keychain';
+import { hasKey } from '../model/keychain';
 import {
   addressKey,
   generateAccount,
@@ -280,14 +280,6 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       }
     }
     if (!healthyKeychain) {
-      // Dump all keys anonymized
-      try {
-        const keysDump = await loadAllKeysOnly();
-        logger.sentry('[logAndAttemptRestore]: all keys', keysDump);
-      } catch (e) {
-        logger.sentry('Got error on loadAllKeysOnly', e);
-      }
-
       captureMessage('Keychain Integrity is not OK');
     }
     logger.sentry('[KeychainIntegrityCheck]: check completed');
