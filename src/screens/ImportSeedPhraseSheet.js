@@ -260,6 +260,11 @@ export default function ImportSeedPhraseSheet() {
               analytics.track('Imported seed phrase', {
                 hadPreviousAddressWithValue,
               });
+            } else {
+              // Wait for error messages then refocus
+              setTimeout(() => {
+                inputRef.current?.focus();
+              }, 100);
             }
           })
           .catch(error => {
