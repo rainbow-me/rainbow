@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, InteractionManager, Platform, StatusBar } from 'react-native';
+import { Alert, Platform, StatusBar } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import styled from 'styled-components/primitives';
 import ActivityIndicator from '../components/ActivityIndicator';
@@ -249,18 +249,17 @@ export default function ImportSeedPhraseSheet() {
         const input = resolvedAddress ? resolvedAddress : seedPhrase.trim();
         initializeWallet(input, color, name ? name : '')
           .then(success => {
+            handleSetImporting(false);
             if (success) {
-              analytics.track('Imported seed phrase', {
-                hadPreviousAddressWithValue,
-              });
-              InteractionManager.runAfterInteractions(() => {
+              setTimeout(() => {
                 navigate(Routes.WALLET_SCREEN);
-              });
+              }, 300);
               if (Platform.OS === 'android') {
                 hide();
               }
-            } else {
-              handleSetImporting(false);
+              analytics.track('Imported seed phrase', {
+                hadPreviousAddressWithValue,
+              });
             }
           })
           .catch(error => {
