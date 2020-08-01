@@ -77,7 +77,7 @@ export async function loadAllKeys(authenticationPrompt) {
     const { results } = await getAllInternetCredentials(authenticationPrompt);
     return results;
   } catch (err) {
-    logger.log(`Keychain: failed to loadAllKeys error: ${err}`);
+    logger.sentry(`Keychain: failed to loadAllKeys error: ${err}`);
     captureException(err);
   }
   return null;
@@ -114,7 +114,9 @@ export async function hasKey(key) {
     const result = await hasInternetCredentials(key);
     return result;
   } catch (err) {
-    logger.log(`Keychain: failed to check if key exists -  error: ${err}`);
+    logger.sentry(
+      `Keychain: failed to check if key ${key} exists -  error: ${err}`
+    );
     captureException(err);
   }
   return null;

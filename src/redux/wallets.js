@@ -1,6 +1,6 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { filter, flatMap, get, map, values } from 'lodash';
+import { filter, flatMap, get, keys, map, values } from 'lodash';
 import {
   getWalletNames,
   saveWalletNames,
@@ -42,7 +42,7 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     let selectedWallet = get(selected, 'wallet', undefined);
     if (!selectedWallet) {
       const address = await loadAddress();
-      Object.keys(wallets).some(key => {
+      keys(wallets).some(key => {
         const someWallet = wallets[key];
         const found = someWallet.addresses.some(account => {
           return (
@@ -193,21 +193,27 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       logger.sentry('[KeychainIntegrityCheck]: address is ok');
     } else {
       healthyKeychain = false;
-      logger.sentry('[KeychainIntegrityCheck]: address is missing');
+      logger.sentry(
+        `[KeychainIntegrityCheck]: address is missing: ${hasAddress}`
+      );
     }
 
     const hasMigratedFlag = await hasKey(seedPhraseMigratedKey);
     if (hasMigratedFlag) {
       logger.sentry('[KeychainIntegrityCheck]: migrated flag is OK');
     } else {
-      logger.sentry('[KeychainIntegrityCheck]: migrated flag is missing');
+      logger.sentry(
+        `[KeychainIntegrityCheck]: migrated flag is missing: ${hasMigratedFlag}`
+      );
     }
 
     const hasOldSeedphraseKey = await hasKey(seedPhraseKey);
     if (hasOldSeedphraseKey) {
       logger.sentry('[KeychainIntegrityCheck]: old seed is still present!');
     } else {
-      logger.sentry('[KeychainIntegrityCheck]: old seed is not present');
+      logger.sentry(
+        `[KeychainIntegrityCheck]: old seed is not present: ${hasOldSeedphraseKey}`
+      );
     }
 
     const { wallets, selected } = getState().wallets;
@@ -225,10 +231,11 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       );
     }
 
-    const filteredWallets = Object.keys(wallets).filter(
+    const nonReadOnlyWalletKeys = keys(wallets).filter(
       key => wallets[key].type !== WalletTypes.readOnly
     );
-    for (const key of filteredWallets) {
+
+    for (const key of nonReadOnlyWalletKeys) {
       let healthyWallet = true;
       logger.sentry(`[KeychainIntegrityCheck]: checking wallet ${key}`);
       const wallet = wallets[key];
@@ -273,7 +280,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       }
     }
     if (!healthyKeychain) {
-      // 1 - Dump all keys anonymized
+      // Dump all keys anonymized
       try {
         const keysDump = await loadAllKeysOnly();
         logger.sentry('[logAndAttemptRestore]: all keys', keysDump);
