@@ -278,7 +278,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
         const keysDump = await loadAllKeysOnly();
         logger.sentry('[logAndAttemptRestore]: all keys', keysDump);
       } catch (e) {
-        logger.sentry('Got error on getAllKeysAnonymized', e);
+        logger.sentry('Got error on loadAllKeysOnly', e);
       }
 
       captureMessage('Keychain Integrity is not OK');
