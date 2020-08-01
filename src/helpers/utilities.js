@@ -433,7 +433,7 @@ export const convertRawAmountToDecimalFormat = (value, decimals = 18) =>
 export const fromWei = number => convertRawAmountToDecimalFormat(number, 18);
 
 /**
- * @desc convert from raw amount to decimal format
+ * @desc Promise that will resolve after the ms interval
  * @param  {Number}  ms
  * @return {Promise}
  */
