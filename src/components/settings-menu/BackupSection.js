@@ -5,6 +5,7 @@ import React, { useCallback, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import SeedPhraseImageSource from '../../assets/seed-phrase-icon.png';
+import showWalletErrorAlert from '../../helpers/support';
 import { useInitializeWallet, useWallets } from '../../hooks';
 import { getAllKeysAnonymized } from '../../model/keychain';
 import {
@@ -161,22 +162,27 @@ const BackupSection = ({ navigation }) => {
     [initializeWallet, selectedWallet?.id, shouldRetry]
   );
 
-  const handlePressToggleSeedPhrase = useCallback(() => {
+  const handlePressToggleSeedPhrase = useCallback(async () => {
     if (!seedPhrase) {
-      loadSeedPhraseAndMigrateIfNeeded(selectedWallet.id)
-        .then(keychainValue => {
-          if (!keychainValue) {
-            logAndAttemptRestore();
-          } else {
-            setSeedPhrase(keychainValue);
-            analytics.track('Viewed backup seed phrase text');
-          }
-        })
-        .catch(e => logAndAttemptRestore(e));
+      try {
+        const keychainValue = await loadSeedPhraseAndMigrateIfNeeded(
+          selectedWallet.id
+        );
+        if (!keychainValue) {
+          selectedWallet && selectedWallet.damaged && showWalletErrorAlert();
+          logAndAttemptRestore();
+        } else {
+          setSeedPhrase(keychainValue);
+          analytics.track('Viewed backup seed phrase text');
+        }
+      } catch (e) {
+        selectedWallet && selectedWallet.damaged && showWalletErrorAlert();
+        logAndAttemptRestore(e);
+      }
     } else {
       hideSeedPhrase();
     }
-  }, [logAndAttemptRestore, seedPhrase, selectedWallet.id]);
+  }, [logAndAttemptRestore, seedPhrase, selectedWallet]);
 
   return (
     <Column align="center" css={padding(80, 40, 0)} flex={1}>
