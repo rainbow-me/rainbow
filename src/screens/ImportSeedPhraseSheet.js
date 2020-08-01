@@ -260,11 +260,21 @@ export default function ImportSeedPhraseSheet() {
               analytics.track('Imported seed phrase', {
                 hadPreviousAddressWithValue,
               });
+            } else {
+              // Wait for error messages then refocus
+              setTimeout(() => {
+                inputRef.current?.focus();
+                initializeWallet();
+              }, 100);
             }
           })
           .catch(error => {
             handleSetImporting(false);
             logger.error('error importing seed phrase: ', error);
+            setTimeout(() => {
+              inputRef.current?.focus();
+              initializeWallet();
+            }, 100);
           });
       }, 50);
     }

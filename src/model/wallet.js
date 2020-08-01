@@ -386,7 +386,14 @@ export const createWallet = async (
         alreadyExistingWallet &&
         (type === WalletTypes.readOnly || isPrivateKeyOverwritingSeedMnemonic)
       ) {
-        Alert.alert('Oops!', 'Looks like you already imported this wallet!');
+        setTimeout(
+          () =>
+            Alert.alert(
+              'Oops!',
+              'Looks like you already imported this wallet!'
+            ),
+          1
+        );
         logger.sentry('[createWallet] - already imported this wallet');
         return null;
       }
