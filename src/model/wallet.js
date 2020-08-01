@@ -470,6 +470,9 @@ export const createWallet = async (
         if (hasTxHistory) {
           // Save private key
           await savePrivateKey(nextWallet.address, nextWallet.privateKey);
+          logger.sentry(
+            `[createWallet] - saved private key for next wallet ${index}`
+          );
           addresses.push({
             address: nextWallet.address,
             avatar: null,

@@ -8,19 +8,33 @@ import {
   resetInternetCredentials,
   setInternetCredentials,
 } from 'react-native-keychain';
+import { delay } from '../helpers/utilities';
 import logger from 'logger';
 
 // NOTE: implement access control for iOS keychain
 export async function saveString(key, value, accessControlOptions) {
-  try {
-    await setInternetCredentials(key, key, value, accessControlOptions);
-    logger.log(`Keychain: saved string for key: ${key}`);
-  } catch (err) {
-    logger.sentry(
-      `Keychain: failed to save string for key: ${key} error: ${err}`
-    );
-    captureException(err);
-  }
+  return new Promise(async (resolve, reject) => {
+    try {
+      await setInternetCredentials(key, key, value, accessControlOptions);
+      logger.sentry(`Keychain: saved string for key: ${key}`);
+      resolve();
+    } catch (e) {
+      logger.sentry(`Keychain: failed to save string for key: ${key}`, e);
+      captureMessage('Keychain write first attempt failed');
+      await delay(1000);
+      try {
+        await setInternetCredentials(key, key, value, accessControlOptions);
+        logger.sentry(
+          `Keychain: saved string for key: ${key} on second attempt`
+        );
+        resolve();
+      } catch (e) {
+        logger.sentry(`Keychain: failed to save string for key: ${key}`, e);
+        captureMessage('Keychain write second attempt failed');
+        reject(e);
+      }
+    }
+  });
 }
 
 export async function loadString(key, authenticationPrompt) {
@@ -30,7 +44,7 @@ export async function loadString(key, authenticationPrompt) {
       logger.log(`Keychain: loaded string for key: ${key}`);
       return credentials.password;
     }
-    captureMessage(`Keychain: string does not exist for key: ${key}`);
+    logger.sentry(`Keychain: string does not exist for key: ${key}`);
   } catch (err) {
     logger.sentry(
       `Keychain: failed to load string for key: ${key} error: ${err}`
