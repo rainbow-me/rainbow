@@ -192,6 +192,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
     if (hasAddress) {
       logger.sentry('[KeychainIntegrityCheck]: address is ok');
     } else {
+      healthyKeychain = false;
       logger.sentry('[KeychainIntegrityCheck]: address is missing');
     }
 
