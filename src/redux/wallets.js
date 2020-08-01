@@ -7,8 +7,9 @@ import {
 } from '../handlers/localstorage/walletNames';
 import { web3Provider } from '../handlers/web3';
 import WalletTypes from '../helpers/walletTypes';
-import { hasKey } from '../model/keychain';
+import { getAllKeysAnonymized, hasKey } from '../model/keychain';
 import {
+  addressKey,
   generateAccount,
   getAllWallets,
   getSelectedWallet,
@@ -186,6 +187,14 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
   try {
     let healthyKeychain = true;
     logger.sentry('[KeychainIntegrityCheck]: starting checks');
+
+    const hasAddress = await hasKey(addressKey);
+    if (hasAddress) {
+      logger.sentry('[KeychainIntegrityCheck]: address is ok');
+    } else {
+      logger.sentry('[KeychainIntegrityCheck]: address is missing');
+    }
+
     const hasMigratedFlag = await hasKey(seedPhraseMigratedKey);
     if (hasMigratedFlag) {
       logger.sentry('[KeychainIntegrityCheck]: migrated flag is OK');
@@ -250,6 +259,14 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       }
     }
     if (!healthyKeychain) {
+      // 1 - Dump all keys anonymized
+      try {
+        const keysDump = await getAllKeysAnonymized();
+        logger.sentry('[logAndAttemptRestore]: all keys', keysDump);
+      } catch (e) {
+        logger.sentry('Got error on getAllKeysAnonymized', e);
+      }
+
       captureMessage('Keychain Integrity is not OK');
     }
     logger.sentry('[KeychainIntegrityCheck]: check completed');

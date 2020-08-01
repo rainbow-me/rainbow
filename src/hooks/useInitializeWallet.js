@@ -3,6 +3,10 @@ import { isNil } from 'lodash';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
+import {
+  getKeychainIntegrityState,
+  saveKeychainIntegrityState,
+} from '../handlers/localstorage/globalSettings';
 import useHideSplashScreen from '../helpers/hideSplashScreen';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
@@ -10,7 +14,8 @@ import {
   settingsLoadNetwork,
   settingsUpdateAccountAddress,
 } from '../redux/settings';
-import { walletsLoadState } from '../redux/wallets';
+import store from '../redux/store';
+import { checkKeychainIntegrity, walletsLoadState } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useInitializeAccountData from './useInitializeAccountData';
 import useLoadAccountData from './useLoadAccountData';
@@ -106,6 +111,14 @@ export default function useInitializeWallet() {
         captureException(error);
         Alert.alert('Something went wrong while importing. Please try again!');
         return null;
+      } finally {
+        setTimeout(async () => {
+          const keychainIntegrityState = await getKeychainIntegrityState();
+          if (!keychainIntegrityState) {
+            await store.dispatch(checkKeychainIntegrity());
+            await saveKeychainIntegrityState('done');
+          }
+        }, 5000);
       }
     },
     [
