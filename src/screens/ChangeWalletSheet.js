@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Platform } from 'react-native';
@@ -345,7 +346,8 @@ export default function ChangeWalletSheet() {
                   }
                 } catch (e) {
                   dispatch(isCreatingAccount(false));
-                  logger.log('Error while trying to add account', e);
+                  logger.sentry('Error while trying to add account');
+                  captureException(e);
                   if (selectedWallet.damaged) {
                     setTimeout(() => {
                       showWalletErrorAlert();
