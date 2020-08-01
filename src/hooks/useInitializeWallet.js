@@ -23,6 +23,16 @@ import useLoadGlobalData from './useLoadGlobalData';
 import useResetAccountState from './useResetAccountState';
 import logger from 'logger';
 
+const runKeychainIntegrityChecks = () => {
+  setTimeout(async () => {
+    const keychainIntegrityState = await getKeychainIntegrityState();
+    if (!keychainIntegrityState) {
+      await store.dispatch(checkKeychainIntegrity());
+      await saveKeychainIntegrityState('done');
+    }
+  }, 5000);
+};
+
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
   const resetAccountState = useResetAccountState();
@@ -84,6 +94,7 @@ export default function useInitializeWallet() {
           Alert.alert(
             'Import failed due to an invalid private key. Please try again.'
           );
+          runKeychainIntegrityChecks();
           return null;
         }
 
@@ -103,6 +114,7 @@ export default function useInitializeWallet() {
         hideSplashScreen();
         logger.sentry('Hide splash screen');
         initializeAccountData();
+        runKeychainIntegrityChecks();
         return walletAddress;
       } catch (error) {
         logger.sentry('Error while initializing wallet');
@@ -110,15 +122,8 @@ export default function useInitializeWallet() {
         hideSplashScreen();
         captureException(error);
         Alert.alert('Something went wrong while importing. Please try again!');
+        runKeychainIntegrityChecks();
         return null;
-      } finally {
-        setTimeout(async () => {
-          const keychainIntegrityState = await getKeychainIntegrityState();
-          if (!keychainIntegrityState) {
-            await store.dispatch(checkKeychainIntegrity());
-            await saveKeychainIntegrityState('done');
-          }
-        }, 5000);
       }
     },
     [
