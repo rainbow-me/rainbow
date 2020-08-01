@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
-index 98e45fe..6688234 100644
+index 98e45fe..937e179 100644
 --- a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
 +++ b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
-@@ -478,6 +478,52 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
+@@ -478,6 +478,93 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
  
  }
  
@@ -51,15 +51,56 @@ index 98e45fe..6688234 100644
 +
 +}
 +
++RCT_EXPORT_METHOD(getAllInternetCredentialsKeys:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
++{
++  NSDictionary *query = @{
++    (__bridge NSString *)kSecClass: (__bridge id)(kSecClassInternetPassword),
++    (__bridge NSString *)kSecReturnAttributes: (__bridge id)kCFBooleanTrue,
++    (__bridge NSString *)kSecMatchLimit: (__bridge NSString *)kSecMatchLimitAll
++  };
++    
++  // Look up all the keys in the keychain
++  NSArray *found = nil;
++  CFTypeRef foundTypeRef = NULL;
++  OSStatus osStatus = SecItemCopyMatching((__bridge CFDictionaryRef) query, (CFTypeRef*)&foundTypeRef);
++
++  if (osStatus != noErr && osStatus != errSecItemNotFound) {
++    NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:osStatus userInfo:nil];
++    return rejectWithError(reject, error);
++  }
++
++  found = (__bridge NSArray*)(foundTypeRef);
++  if (!found) {
++    return resolve(@(NO));
++  }
++    
++  NSMutableArray *results = [@[] mutableCopy];
++    
++
++  for(int i=0; i< found.count; i++){
++      NSDictionary *item  = found[i];
++      NSString *username = (NSString *) [item objectForKey:(__bridge id)(kSecAttrAccount)];
++      [results addObject:username];
++  }
++    
++  
++  CFRelease(foundTypeRef);
++    
++  return resolve(@{
++    @"results": results
++  });
++
++}
++
 +
  RCT_EXPORT_METHOD(resetInternetCredentialsForServer:(NSString *)server
                    resolver:(RCTPromiseResolveBlock)resolve
                    rejecter:(RCTPromiseRejectBlock)reject)
 diff --git a/node_modules/react-native-keychain/index.js b/node_modules/react-native-keychain/index.js
-index b1a11f2..0b25ea0 100644
+index b1a11f2..6a055c2 100644
 --- a/node_modules/react-native-keychain/index.js
 +++ b/node_modules/react-native-keychain/index.js
-@@ -256,6 +256,18 @@ export function getInternetCredentials(
+@@ -256,6 +256,29 @@ export function getInternetCredentials(
    );
  }
  
@@ -72,6 +113,17 @@ index b1a11f2..0b25ea0 100644
 +  options?: Options
 +): Promise<false | UserCredentials> {
 +  return RNKeychainManager.getAllInternetCredentialsForServer(options);
++}
++
++/**
+++ * Fetches all the keychain entries for the app
+++ * @param {object} options Keychain options, iOS only
+++ * @return {Promise} Resolves to `[username]` when successful
+++ */
++export function getAllInternetCredentialsKeys(
++  options?: Options
++): Promise<false | UserCredentials> {
++  return RNKeychainManager.getAllInternetCredentialsKeys(options);
 +}
 +
 +

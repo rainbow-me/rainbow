@@ -27,12 +27,12 @@ import * as keychain from './keychain';
 import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
 
-const seedPhraseKey = 'rainbowSeedPhrase';
-const privateKeyKey = 'rainbowPrivateKey';
-const addressKey = 'rainbowAddressKey';
-const selectedWalletKey = 'rainbowSelectedWalletKey';
-const allWalletsKey = 'rainbowAllWalletsKey';
-const seedPhraseMigratedKey = 'rainbowSeedPhraseMigratedKey';
+export const seedPhraseKey = 'rainbowSeedPhrase';
+export const privateKeyKey = 'rainbowPrivateKey';
+export const addressKey = 'rainbowAddressKey';
+export const selectedWalletKey = 'rainbowSelectedWalletKey';
+export const allWalletsKey = 'rainbowAllWalletsKey';
+export const seedPhraseMigratedKey = 'rainbowSeedPhraseMigratedKey';
 
 const privateKeyVersion = 1.0;
 const seedPhraseVersion = 1.0;
@@ -475,6 +475,9 @@ export const createWallet = async (
         if (hasTxHistory) {
           // Save private key
           await savePrivateKey(nextWallet.address, nextWallet.privateKey);
+          logger.sentry(
+            `[createWallet] - saved private key for next wallet ${index}`
+          );
           addresses.push({
             address: nextWallet.address,
             avatar: null,

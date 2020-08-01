@@ -1,9 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import { captureException } from '@sentry/react-native';
 import React, { useCallback, useState } from 'react';
-import { Animated } from 'react-native';
+import { Alert, Animated } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { PERMISSIONS, request } from 'react-native-permissions';
 import styled from 'styled-components/native';
 import { Modal, ModalHeader } from '../components/modal';
 import {
@@ -14,6 +12,7 @@ import {
   SettingsSection,
 } from '../components/settings-menu';
 import DevSection from '../components/settings-menu/DevSection';
+import { loadAllKeysOnly } from '../model/keychain';
 import { useNavigation } from '../navigation/Navigation';
 import { colors } from '@rainbow-me/styles';
 
@@ -95,16 +94,10 @@ const Container = styled.View`
 
 const Stack = createStackNavigator();
 
-const requestFaceIDPermission = () =>
-  request(PERMISSIONS.IOS.FACE_ID)
-    .then(permission => {
-      if (permission !== 'granted') {
-        captureException(new Error(`FaceID permission: ${permission}`));
-      }
-    })
-    .catch(error => {
-      captureException(error);
-    });
+const onPressHiddenFeature = async () => {
+  const keys = await loadAllKeysOnly();
+  Alert.alert('DEBUG INFO', JSON.stringify(keys, null, 2));
+};
 
 export default function SettingsModal() {
   const { goBack, navigate } = useNavigation();
@@ -151,7 +144,7 @@ export default function SettingsModal() {
                 onPressBackup={onPressSection(SettingsPages.backup)}
                 onPressCurrency={onPressSection(SettingsPages.currency)}
                 onPressDev={onPressSection(SettingsPages.dev)}
-                onPressHiddenFeature={requestFaceIDPermission}
+                onPressHiddenFeature={onPressHiddenFeature}
                 onPressLanguage={onPressSection(SettingsPages.language)}
                 onPressNetwork={onPressSection(SettingsPages.network)}
               />

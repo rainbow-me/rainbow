@@ -1,18 +1,23 @@
-import { captureException } from '@sentry/react-native';
+import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { filter, flatMap, get, map, values } from 'lodash';
+import { filter, flatMap, get, keys, map, values } from 'lodash';
 import {
   getWalletNames,
   saveWalletNames,
 } from '../handlers/localstorage/walletNames';
 import { web3Provider } from '../handlers/web3';
+import WalletTypes from '../helpers/walletTypes';
+import { hasKey } from '../model/keychain';
 import {
+  addressKey,
   generateAccount,
   getAllWallets,
   getSelectedWallet,
   loadAddress,
   saveAddress,
   saveAllWallets,
+  seedPhraseKey,
+  seedPhraseMigratedKey,
   setSelectedWallet,
 } from '../model/wallet';
 import { settingsUpdateAccountAddress } from '../redux/settings';
@@ -37,7 +42,7 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     let selectedWallet = get(selected, 'wallet', undefined);
     if (!selectedWallet) {
       const address = await loadAddress();
-      Object.keys(wallets).some(key => {
+      keys(wallets).some(key => {
         const someWallet = wallets[key];
         const found = someWallet.addresses.some(account => {
           return (
@@ -176,6 +181,112 @@ export const fetchWalletNames = () => async (dispatch, getState) => {
     type: WALLETS_UPDATE_NAMES,
   });
   saveWalletNames(updatedWalletNames);
+};
+
+export const checkKeychainIntegrity = () => async (dispatch, getState) => {
+  try {
+    let healthyKeychain = true;
+    logger.sentry('[KeychainIntegrityCheck]: starting checks');
+
+    const hasAddress = await hasKey(addressKey);
+    if (hasAddress) {
+      logger.sentry('[KeychainIntegrityCheck]: address is ok');
+    } else {
+      healthyKeychain = false;
+      logger.sentry(
+        `[KeychainIntegrityCheck]: address is missing: ${hasAddress}`
+      );
+    }
+
+    const hasMigratedFlag = await hasKey(seedPhraseMigratedKey);
+    if (hasMigratedFlag) {
+      logger.sentry('[KeychainIntegrityCheck]: migrated flag is OK');
+    } else {
+      logger.sentry(
+        `[KeychainIntegrityCheck]: migrated flag is missing: ${hasMigratedFlag}`
+      );
+    }
+
+    const hasOldSeedphraseKey = await hasKey(seedPhraseKey);
+    if (hasOldSeedphraseKey) {
+      logger.sentry('[KeychainIntegrityCheck]: old seed is still present!');
+    } else {
+      logger.sentry(
+        `[KeychainIntegrityCheck]: old seed is not present: ${hasOldSeedphraseKey}`
+      );
+    }
+
+    const { wallets, selected } = getState().wallets;
+    if (!wallets) {
+      logger.sentry(
+        '[KeychainIntegrityCheck]: wallets are missing from redux',
+        wallets
+      );
+    }
+
+    if (!selected) {
+      logger.sentry(
+        '[KeychainIntegrityCheck]: selectedwallet is missing from redux',
+        selected
+      );
+    }
+
+    const nonReadOnlyWalletKeys = keys(wallets).filter(
+      key => wallets[key].type !== WalletTypes.readOnly
+    );
+
+    for (const key of nonReadOnlyWalletKeys) {
+      let healthyWallet = true;
+      logger.sentry(`[KeychainIntegrityCheck]: checking wallet ${key}`);
+      const wallet = wallets[key];
+      logger.sentry(`[KeychainIntegrityCheck]: Wallet data`, wallet);
+      const seedKeyFound = await hasKey(`${key}_rainbowSeedPhrase`);
+      if (!seedKeyFound) {
+        healthyWallet = false;
+        logger.sentry('[KeychainIntegrityCheck]: seed key is missing');
+      } else {
+        logger.sentry('[KeychainIntegrityCheck]: seed key is present');
+      }
+
+      for (const account of wallet.addresses) {
+        const pkeyFound = await hasKey(`${account.address}_rainbowPrivateKey`);
+        if (!pkeyFound) {
+          healthyWallet = false;
+          logger.sentry(
+            `[KeychainIntegrityCheck]: pkey is missing for address: ${account.address}`
+          );
+        } else {
+          logger.sentry(
+            `[KeychainIntegrityCheck]: pkey is present for address: ${account.address}`
+          );
+        }
+      }
+
+      if (!healthyWallet) {
+        logger.sentry(
+          '[KeychainIntegrityCheck]: declaring wallet unhealthy...'
+        );
+        healthyKeychain = false;
+        wallet.damaged = true;
+        await dispatch(walletsUpdate(wallets));
+        // Update selected wallet if needed
+        if (wallet.id === selected.id) {
+          logger.sentry(
+            '[KeychainIntegrityCheck]: declaring selected wallet unhealthy...'
+          );
+          await dispatch(walletsSetSelected(wallets[wallet.id]));
+        }
+        logger.sentry('[KeychainIntegrityCheck]: done updating wallets');
+      }
+    }
+    if (!healthyKeychain) {
+      captureMessage('Keychain Integrity is not OK');
+    }
+    logger.sentry('[KeychainIntegrityCheck]: check completed');
+  } catch (e) {
+    logger.sentry('[KeychainIntegrityCheck]: error thrown', e);
+    captureMessage('Error running keychain integrity checks');
+  }
 };
 
 // -- Reducer ----------------------------------------- //

@@ -1,19 +1,39 @@
+import { captureMessage } from '@sentry/react-native';
 import GraphemeSplitter from 'grapheme-splitter';
 import { get, toUpper } from 'lodash';
 import { removeFirstEmojiFromString } from '../helpers/emojiHandler';
 import { address } from '../utils/abbreviations';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
+import logger from 'logger';
 
 export default function useAccountProfile() {
-  const { selectedWallet, walletNames } = useWallets();
+  const wallets = useWallets();
+  const { selectedWallet, walletNames } = wallets;
 
-  const { accountAddress } = useAccountSettings();
+  const settings = useAccountSettings();
+  const { accountAddress } = settings;
 
-  if (!selectedWallet) return {};
-  if (!accountAddress) return {};
+  if (!selectedWallet) {
+    logger.sentry('redux settings', settings);
+    logger.sentry('redux wallets', wallets);
+    captureMessage('DEADBEEF - no selectedWallet');
+    return {};
+  }
 
-  if (!selectedWallet || !selectedWallet?.addresses?.length) return {};
+  if (!accountAddress) {
+    logger.sentry('redux settings', settings);
+    logger.sentry('redux wallets', wallets);
+    captureMessage('DEADBEEF - no accountAddress');
+    return {};
+  }
+
+  if (!selectedWallet?.addresses?.length) {
+    logger.sentry('redux settings', settings);
+    logger.sentry('redux wallets', wallets);
+    captureMessage('DEADBEEF - no addresses');
+    return {};
+  }
 
   const accountENS = get(walletNames, `${accountAddress}`);
 
@@ -21,7 +41,12 @@ export default function useAccountProfile() {
     account => account.address === accountAddress
   );
 
-  if (!selectedAccount) return {};
+  if (!selectedAccount) {
+    logger.sentry('redux settings', settings);
+    logger.sentry('redux wallets', wallets);
+    captureMessage('DEADBEEF - no selectedAccount');
+    return {};
+  }
 
   const { label, color, index } = selectedAccount;
 
