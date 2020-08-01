@@ -20,6 +20,7 @@ import {
   toChecksumAddress,
   web3Provider,
 } from '../handlers/web3';
+import showWalletErrorAlert from '../helpers/support';
 import WalletTypes from '../helpers/walletTypes';
 import { ethereumUtils } from '../utils';
 
@@ -81,6 +82,7 @@ export const loadWallet = async () => {
   if (privateKey) {
     return new ethers.Wallet(privateKey, web3Provider);
   }
+  showWalletErrorAlert();
   return null;
 };
 
@@ -701,7 +703,8 @@ export const generateAccount = async (id, index) => {
     await savePrivateKey(newAccount.address, newAccount.privateKey);
     return newAccount;
   } catch (error) {
-    logger.log('Error generating account for keychain', id, error);
+    logger.sentry('Error generating account for keychain', id);
+    captureException(error);
   }
 };
 

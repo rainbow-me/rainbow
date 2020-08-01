@@ -368,6 +368,11 @@ export default function ExchangeModal({
       setIsAuthorizing(true);
       try {
         const wallet = await loadWallet();
+        if (!wallet) {
+          setIsAuthorizing(false);
+          logger.sentry(`aborting ${type} due to missing wallet`);
+          return;
+        }
 
         setIsAuthorizing(false);
         const callback = () => {

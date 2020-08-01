@@ -4,6 +4,13 @@ import styled from 'styled-components/primitives';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '../../config/experimentalHooks';
+import showWalletErrorAlert from '../../helpers/support';
+import {
+  useAccountProfile,
+  useClipboard,
+  useDimensions,
+  useWallets,
+} from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -14,11 +21,7 @@ import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
-import {
-  useAccountProfile,
-  useClipboard,
-  useDimensions,
-} from '@rainbow-me/hooks';
+
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
@@ -64,6 +67,7 @@ export default function ProfileMasthead({
   recyclerListRef,
   showBottomDivider = true,
 }) {
+  const { selectedWallet } = useWallets();
   const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
@@ -95,12 +99,24 @@ export default function ProfileMasthead({
     recyclerListRef,
   ]);
 
+  const handlePressReceive = useCallback(() => {
+    if (selectedWallet?.damaged) {
+      showWalletErrorAlert();
+      return;
+    }
+    navigate(Routes.RECEIVE_MODAL);
+  }, [navigate, selectedWallet?.damaged]);
+
   const handlePressAddCash = useCallback(() => {
+    if (selectedWallet?.damaged) {
+      showWalletErrorAlert();
+      return;
+    }
     navigate(Routes.ADD_CASH_FLOW);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-  }, [navigate]);
+  }, [navigate, selectedWallet?.damaged]);
 
   const handlePressChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
@@ -140,6 +156,10 @@ export default function ProfileMasthead({
             <ProfileAction
               icon="copy"
               onPress={() => {
+                if (selectedWallet?.damaged) {
+                  showWalletErrorAlert();
+                  return;
+                }
                 onNewEmoji();
                 setClipboard(accountAddress);
               }}
@@ -151,7 +171,7 @@ export default function ProfileMasthead({
         </FloatingEmojis>
         <ProfileAction
           icon="qrCode"
-          onPress={() => navigate(Routes.RECEIVE_MODAL)}
+          onPress={handlePressReceive}
           scaleTo={0.88}
           text="Receive"
           width={81}
