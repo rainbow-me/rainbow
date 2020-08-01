@@ -705,7 +705,6 @@ export const generateAccount = async (id, index) => {
   } catch (error) {
     logger.sentry('Error generating account for keychain', id);
     captureException(error);
-    showWalletErrorAlert();
   }
 };
 
