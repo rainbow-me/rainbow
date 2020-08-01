@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureMessage } from '@sentry/react-native';
+import { keys } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import FastImage from 'react-native-fast-image';
@@ -49,6 +50,7 @@ const BackupSection = ({ navigation }) => {
     async error => {
       if (!shouldRetry) {
         hideSeedPhrase();
+        selectedWallet?.damaged && showWalletErrorAlert();
         return;
       }
 
@@ -87,10 +89,10 @@ const BackupSection = ({ navigation }) => {
       }
 
       try {
-        const selectedWallet = await getSelectedWallet();
+        const selectedWalletFromKeychain = await getSelectedWallet();
         logger.sentry(
           '[logAndAttemptRestore]: Keychain selectedWallet:',
-          selectedWallet
+          selectedWalletFromKeychain
         );
       } catch (e) {
         logger.sentry('Got error on getSelectedWallet', e);
@@ -109,11 +111,13 @@ const BackupSection = ({ navigation }) => {
 
       // 4 - Attempt to restore
       try {
-        const { wallets } = await getAllWallets();
-        logger.sentry('[logAndAttemptRestore]: Got all wallets');
+        const allWallets = await getAllWallets();
+        if (allWallets?.wallets) {
+          logger.sentry('[logAndAttemptRestore]: Got all wallets');
+        }
 
         // If we don't have the private key, let's try with the seed directly
-        const walletId = selectedWallet?.id || Object.keys(wallets)[0];
+        const walletId = selectedWallet?.id || keys(allWallets?.wallets)[0];
         logger.sentry('[logAndAttemptRestore] got wallet id', walletId);
         let seedData;
         try {
@@ -149,17 +153,19 @@ const BackupSection = ({ navigation }) => {
             await initializeWallet(res.privateKey, null, null, false, true);
             captureMessage('Reimported private key sucessful');
           } else {
+            selectedWallet?.damaged && showWalletErrorAlert();
             captureMessage('Pkey & Seed lookup failed');
           }
         }
       } catch (e) {
+        selectedWallet?.damaged && showWalletErrorAlert();
         logger.sentry(
-          '[logAndAttemptRestore] Got error getting all wallets',
+          '[logAndAttemptRestore] Got error while attempting to restore wallets',
           e
         );
       }
     },
-    [initializeWallet, selectedWallet?.id, shouldRetry]
+    [initializeWallet, selectedWallet?.damaged, selectedWallet?.id, shouldRetry]
   );
 
   const handlePressToggleSeedPhrase = useCallback(async () => {
@@ -169,14 +175,12 @@ const BackupSection = ({ navigation }) => {
           selectedWallet.id
         );
         if (!keychainValue) {
-          selectedWallet && selectedWallet.damaged && showWalletErrorAlert();
           logAndAttemptRestore();
         } else {
           setSeedPhrase(keychainValue);
           analytics.track('Viewed backup seed phrase text');
         }
       } catch (e) {
-        selectedWallet && selectedWallet.damaged && showWalletErrorAlert();
         logAndAttemptRestore(e);
       }
     } else {
