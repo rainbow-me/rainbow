@@ -271,8 +271,6 @@ export default function ImportSeedPhraseSheet() {
           .catch(error => {
             handleSetImporting(false);
             logger.error('error importing seed phrase: ', error);
-            initializeWallet();
-            // Wait for error messages then refocus
             setTimeout(() => {
               inputRef.current?.focus();
               initializeWallet();
