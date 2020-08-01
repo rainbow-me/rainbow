@@ -258,14 +258,19 @@ const loadPrivateKey = async (
 
     // We need to migrate the seedphrase & private key first
     // In that case we regenerate the existing private key to store it with the new format
+    let privateKey = null;
     if (!isSeedPhraseMigrated) {
-      const { privateKey } = await migrateSecrets();
-      return privateKey;
-    } else {
-      const address = await loadAddress();
-      const { privateKey } = await getPrivateKey(address, authenticationPrompt);
-      return privateKey;
+      const migratedSecrets = await migrateSecrets();
+      privateKey = migratedSecrets?.privateKey;
     }
+
+    if (!privateKey) {
+      const address = await loadAddress();
+      const privateKeyData = await getPrivateKey(address, authenticationPrompt);
+      privateKey = privateKeyData?.privateKey;
+    }
+
+    return privateKey;
   } catch (error) {
     logger.sentry('Error in loadPrivateKey');
     captureException(error);
@@ -671,19 +676,12 @@ export const generateAccount = async (id, index) => {
     // We need to migrate the seedphrase & private key first
     // In that case we regenerate the existing private key to store it with the new format
     if (!isSeedPhraseMigrated) {
-      const {
-        hdnode: newHdnode,
-        seedPhrase: newSeedPhrase,
-      } = await migrateSecrets();
+      const migratedSecrets = await migrateSecrets();
+      hdnode = migratedSecrets?.hdnode;
+      seedPhrase = migratedSecrets?.seedPhrase;
+    }
 
-      if (newHdnode) {
-        hdnode = newHdnode;
-      }
-
-      if (newSeedPhrase) {
-        seedPhrase = newSeedPhrase;
-      }
-    } else {
+    if (!seedPhrase) {
       const seedData = await getSeedPhrase(id);
       seedPhrase = seedData?.seedphrase;
       if (seedPhrase) {
