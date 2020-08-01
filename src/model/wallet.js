@@ -47,6 +47,7 @@ const publicAccessControlOptions = {
 };
 
 export function generateSeedPhrase() {
+  logger.sentry('Generating a new seed phrase');
   return ethers.utils.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
 }
 
@@ -93,11 +94,15 @@ export const sendTransaction = async ({ transaction }) => {
       return result.hash;
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      logger.sentry('Failed to SEND transaction, alerted user');
       captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    logger.sentry(
+      'Failed to SEND transaction due to authentication, alerted user'
+    );
     captureException(error);
     return null;
   }
@@ -112,11 +117,15 @@ export const signTransaction = async ({ transaction }) => {
       return wallet.sign(transaction);
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      logger.sentry('Failed to SIGN transaction, alerted user');
       captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    logger.sentry(
+      'Failed to SIGN transaction due to authentication, alerted user'
+    );
     captureException(error);
     return null;
   }
@@ -136,11 +145,14 @@ export const signMessage = async (
       );
       return ethers.utils.joinSignature(sigParams);
     } catch (error) {
+      Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      logger.sentry('Failed to SIGN message, alerted user');
       captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    logger.sentry('Failed to SIGN message due to authentication, alerted user');
     captureException(error);
     return null;
   }
@@ -158,11 +170,16 @@ export const signPersonalMessage = async (
         isHexString(message) ? ethers.utils.arrayify(message) : message
       );
     } catch (error) {
+      Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      logger.sentry('Failed to SIGN personal message, alerted user');
       captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    logger.sentry(
+      'Failed to SIGN personal message due to authentication, alerted user'
+    );
     captureException(error);
     return null;
   }
@@ -205,11 +222,16 @@ export const signTypedDataMessage = async (
           return signTypedDataLegacy(pkeyBuffer, { data: parsedData });
       }
     } catch (error) {
+      Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      logger.sentry('Failed to SIGN typed data message, alerted user');
       captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    logger.sentry(
+      'Failed to SIGN typed data message due to authentication, alerted user'
+    );
     captureException(error);
     return null;
   }
@@ -224,14 +246,7 @@ export const oldLoadSeedPhrase = async (
   return seedPhrase;
 };
 
-export const loadAddress = async () => {
-  try {
-    return keychain.loadString(addressKey);
-  } catch (error) {
-    captureException(error);
-    return null;
-  }
-};
+export const loadAddress = () => keychain.loadString(addressKey);
 
 const loadPrivateKey = async (
   authenticationPrompt = lang.t('wallet.authenticate.please')
@@ -252,6 +267,7 @@ const loadPrivateKey = async (
       return privateKey;
     }
   } catch (error) {
+    logger.sentry('Error in loadPrivateKey');
     captureException(error);
     return null;
   }
@@ -264,25 +280,26 @@ export const saveAddress = async (
   await keychain.saveString(addressKey, address, accessControlOptions);
 };
 
-export const identifyWalletType = walletSeed => {
-  let type = null;
+const identifyWalletType = walletSeed => {
   if (
     isHexStringIgnorePrefix(walletSeed) &&
     addHexPrefix(walletSeed).length === 66
   ) {
-    type = WalletTypes.privateKey;
-    // 12 or 24 words seed phrase
-  } else if (isValidMnemonic(walletSeed)) {
-    type = WalletTypes.mnemonic;
-    // Public address (0x)
-  } else if (isValidAddress(walletSeed)) {
-    type = WalletTypes.readOnly;
-  } else {
-    // seed
-    type = WalletTypes.seed;
+    return WalletTypes.privateKey;
   }
 
-  return type;
+  // 12 or 24 words seed phrase
+  if (isValidMnemonic(walletSeed)) {
+    return WalletTypes.mnemonic;
+  }
+
+  // Public address (0x)
+  if (isValidAddress(walletSeed)) {
+    return WalletTypes.readOnly;
+  }
+
+  // seed
+  return WalletTypes.seed;
 };
 
 export const getWallet = walletSeed => {
@@ -290,7 +307,6 @@ export const getWallet = walletSeed => {
   let hdnode = null;
   let isHDWallet = false;
   const type = identifyWalletType(walletSeed);
-  if (!type) throw new Error('Unknown Wallet Type');
   switch (type) {
     case WalletTypes.privateKey:
       wallet = new ethers.Wallet(walletSeed);
@@ -325,18 +341,22 @@ export const createWallet = async (
   overwrite = false
 ) => {
   const isImported = !!seed;
+  logger.sentry('Creating wallet, isImported?', isImported);
   const walletSeed = seed || generateSeedPhrase();
   let addresses = [];
   try {
     const { hdnode, isHDWallet, type, wallet } = getWallet(walletSeed);
+    logger.sentry('[createWallet] - getWallet from seed');
 
     // Get all wallets
     const allWalletsResult = await getAllWallets();
+    logger.sentry('[createWallet] - getAllWallets');
     const allWallets = get(allWalletsResult, 'wallets', {});
 
     let existingWalletId = null;
     if (isImported) {
       // Checking if the generated account already exists and is visible
+      logger.sentry('[createWallet] - isImported >> true');
       const alreadyExistingWallet = find(allWallets, someWallet =>
         find(
           someWallet.addresses,
@@ -360,24 +380,33 @@ export const createWallet = async (
         (type === WalletTypes.readOnly || isPrivateKeyOverwritingSeedMnemonic)
       ) {
         Alert.alert('Oops!', 'Looks like you already imported this wallet!');
+        logger.sentry('[createWallet] - already imported this wallet');
         return null;
       }
     }
 
     const id = existingWalletId || `wallet_${Date.now()}`;
+    logger.sentry('[createWallet] - wallet ID', { id });
+
+    // Save seed - save this first
+    await saveSeedPhrase(walletSeed, id);
+    logger.sentry('[createWallet] - saved seed phrase');
 
     // Save address
     await saveAddress(wallet.address);
+    logger.sentry('[createWallet] - saved address');
+
     // Save private key
     await savePrivateKey(wallet.address, wallet.privateKey);
-    // Save seed
-    await saveSeedPhrase(walletSeed, id);
+    logger.sentry('[createWallet] - saved private key');
+
     // Save migration flag
     await keychain.saveString(
       seedPhraseMigratedKey,
       'true',
       publicAccessControlOptions
     );
+    logger.sentry('[createWallet] - saved seed phrase migrated key');
 
     addresses.push({
       address: wallet.address,
@@ -389,6 +418,7 @@ export const createWallet = async (
     });
 
     if (isHDWallet && isImported) {
+      logger.sentry('[createWallet] - isHDWallet && isImported');
       let index = 1;
       let lookup = true;
       // Starting on index 1, we are gonna hit etherscan API and check the tx history
@@ -397,9 +427,15 @@ export const createWallet = async (
       while (lookup) {
         const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/${index}`);
         const nextWallet = new ethers.Wallet(node.privateKey);
-        const hasTxHistory = await ethereumUtils.hasPreviousTransactions(
-          nextWallet.address
-        );
+        let hasTxHistory = false;
+        try {
+          hasTxHistory = await ethereumUtils.hasPreviousTransactions(
+            nextWallet.address
+          );
+        } catch (error) {
+          logger.sentry('[createWallet] - Error getting txn history');
+          captureException(error);
+        }
 
         let discoveredAccount = null;
         let discoveredWalletId = null;
@@ -484,14 +520,17 @@ export const createWallet = async (
       type,
     };
 
-    setSelectedWallet(allWallets[id]);
+    await setSelectedWallet(allWallets[id]);
+    logger.sentry('[createWallet] - setSelectedWallet');
     await saveAllWallets(allWallets);
+    logger.sentry('[createWallet] - saveAllWallets');
 
     if (wallet) {
       return wallet;
     }
     return null;
   } catch (error) {
+    logger.sentry('Error in createWallet');
     captureException(error);
     return null;
   }
@@ -535,6 +574,7 @@ export const getPrivateKey = async (
       authenticationPrompt,
     });
   } catch (error) {
+    logger.sentry('Error in getPrivateKey');
     captureException(error);
     return null;
   }
@@ -578,6 +618,7 @@ export const getSeedPhrase = async (
       authenticationPrompt,
     });
   } catch (error) {
+    logger.sentry('Error in getSeedPhrase');
     captureException(error);
     return null;
   }
@@ -596,6 +637,7 @@ export const getSelectedWallet = async () => {
   try {
     return keychain.loadObject(selectedWalletKey);
   } catch (error) {
+    logger.sentry('Error in getSelectedWallet');
     captureException(error);
     return null;
   }
@@ -614,6 +656,7 @@ export const getAllWallets = async () => {
   try {
     return keychain.loadObject(allWalletsKey);
   } catch (error) {
+    logger.sentry('Error in getAllWallets');
     captureException(error);
     return null;
   }
@@ -642,8 +685,10 @@ export const generateAccount = async (id, index) => {
       }
     } else {
       const seedData = await getSeedPhrase(id);
-      seedPhrase = seedData.seedphrase;
-      hdnode = ethers.utils.HDNode.fromMnemonic(seedPhrase);
+      seedPhrase = seedData?.seedphrase;
+      if (seedPhrase) {
+        hdnode = ethers.utils.HDNode.fromMnemonic(seedPhrase);
+      }
     }
 
     if (!seedPhrase) {
@@ -659,11 +704,21 @@ export const generateAccount = async (id, index) => {
   }
 };
 
-export const migrateSecrets = async () => {
+const migrateSecrets = async () => {
   try {
     const seedPhrase = await oldLoadSeedPhrase();
+
+    if (!seedPhrase) {
+      // Save the migration flag to prevent this flow in the future
+      await keychain.saveString(
+        seedPhraseMigratedKey,
+        'true',
+        publicAccessControlOptions
+      );
+      return null;
+    }
+
     const type = identifyWalletType(seedPhrase);
-    if (!type) throw new Error('Unknown Wallet Type');
     let hdnode, node, existingAccount;
     switch (type) {
       case WalletTypes.privateKey:
@@ -701,7 +756,7 @@ export const migrateSecrets = async () => {
       type,
     };
   } catch (e) {
-    logger.log(e);
+    logger.sentry('Error while migrating secrets');
     captureException(e);
   }
 };
@@ -714,15 +769,20 @@ export const loadSeedPhraseAndMigrateIfNeeded = async id => {
 
     // We need to migrate the seedphrase & private key first
     // In that case we regenerate the existing private key to store it with the new format
+    let seedPhrase = null;
     if (!isSeedPhraseMigrated) {
-      const { seedPhrase } = await migrateSecrets();
-      return seedPhrase;
-    } else {
-      const seedData = await getSeedPhrase(id);
-      const seedPhrase = seedData.seedphrase;
-      return seedPhrase;
+      const migratedSecrets = await migrateSecrets();
+      seedPhrase = migratedSecrets?.seedPhrase;
     }
+
+    if (!seedPhrase) {
+      const seedData = await getSeedPhrase(id);
+      seedPhrase = seedData?.seedphrase;
+    }
+
+    return seedPhrase;
   } catch (error) {
+    logger.sentry('Error in loadSeedPhraseAndMigrateIfNeeded');
     captureException(error);
     return null;
   }
