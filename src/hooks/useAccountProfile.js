@@ -1,3 +1,4 @@
+import { captureMessage } from '@sentry/react-native';
 import GraphemeSplitter from 'grapheme-splitter';
 import { get, toUpper } from 'lodash';
 import { removeFirstEmojiFromString } from '../helpers/emojiHandler';
@@ -10,10 +11,20 @@ export default function useAccountProfile() {
 
   const { accountAddress } = useAccountSettings();
 
-  if (!selectedWallet) return {};
-  if (!accountAddress) return {};
+  if (!selectedWallet) {
+    captureMessage('DEADBEEF - no selectedWallet');
+    return {};
+  }
 
-  if (!selectedWallet || !selectedWallet?.addresses?.length) return {};
+  if (!accountAddress) {
+    captureMessage('DEADBEEF - no accountAddress');
+    return {};
+  }
+
+  if (!selectedWallet?.addresses?.length) {
+    captureMessage('DEADBEEF - no addresses');
+    return {};
+  }
 
   const accountENS = get(walletNames, `${accountAddress}`);
 
@@ -21,7 +32,10 @@ export default function useAccountProfile() {
     account => account.address === accountAddress
   );
 
-  if (!selectedAccount) return {};
+  if (!selectedAccount) {
+    captureMessage('DEADBEEF - no selectedAccount');
+    return {};
+  }
 
   const { label, color, index } = selectedAccount;
 
