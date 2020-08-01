@@ -249,18 +249,17 @@ export default function ImportSeedPhraseSheet() {
         const input = resolvedAddress ? resolvedAddress : seedPhrase.trim();
         initializeWallet(input, color, name ? name : '')
           .then(success => {
+            handleSetImporting(false);
             if (success) {
-              analytics.track('Imported seed phrase', {
-                hadPreviousAddressWithValue,
-              });
               InteractionManager.runAfterInteractions(() => {
                 navigate(Routes.WALLET_SCREEN);
               });
               if (Platform.OS === 'android') {
                 hide();
               }
-            } else {
-              handleSetImporting(false);
+              analytics.track('Imported seed phrase', {
+                hadPreviousAddressWithValue,
+              });
             }
           })
           .catch(error => {
