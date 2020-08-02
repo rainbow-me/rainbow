@@ -46,11 +46,11 @@ const useWalletBalances = wallets => {
         const formattedBalance = handleSignificantDecimals(amountInETH, 4);
         walletBalances[address] = formattedBalance;
       });
+      saveWalletBalances(walletBalances);
     } catch (e) {
       logger.log('Error fetching ETH balances in batch', e);
     }
 
-    saveWalletBalances(walletBalances);
     return walletBalances;
   }, [network, wallets]);
 
@@ -63,11 +63,11 @@ const useWalletBalances = wallets => {
     WALLET_BALANCES_FROM_STORAGE
   );
 
-  if (!data && !isEmpty(resultFromStorage)) {
+  if (isEmpty(data) && !isEmpty(resultFromStorage)) {
     return resultFromStorage;
   }
 
-  if (!data) {
+  if (isEmpty(data)) {
     return {};
   }
 
