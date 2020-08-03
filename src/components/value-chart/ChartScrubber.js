@@ -45,11 +45,6 @@ export default function ChartScrubber({
 }) {
   const { width } = useDimensions();
 
-  const opacity = withTimingTransition(isScrubbing, {
-    duration: 150,
-    easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
-  });
-
   const magneticPanGesturePosition = useMemoOne(
     () =>
       interpolate(scrubberX, {
@@ -66,26 +61,23 @@ export default function ChartScrubber({
   );
 
   const { translateX, translateY } = useMemoOne(() => {
-    let scrubberPosition = {
-      x: new Value(width),
-      y: new Value(0),
+    const { x, y } = {
+      // this is what ties the Scrubbers position to the chart's path
+      ...(parsedPath
+        ? getPointAtLength(
+            parsedPath,
+            interpolate(magneticPanGesturePosition, {
+              extrapolate: Extrapolate.CLAMP,
+              inputRange: parsedPath.p0x,
+              outputRange: parsedPath.start,
+            })
+          )
+        : { x: new Value(width), y: new Value(0) }),
     };
 
-    if (parsedPath) {
-      // this is what ties the Scrubbers position to the chart's path
-      scrubberPosition = getPointAtLength(
-        parsedPath,
-        interpolate(magneticPanGesturePosition, {
-          extrapolate: Extrapolate.CLAMP,
-          inputRange: parsedPath.p0x,
-          outputRange: parsedPath.start,
-        })
-      );
-    }
-
     return {
-      translateX: sub(scrubberPosition.x, ChartScrubberSize / 2),
-      translateY: multiply(scrubberPosition.y, -1),
+      translateX: sub(x, ChartScrubberSize / 2),
+      translateY: multiply(y, -1),
     };
   }, [magneticPanGesturePosition, parsedPath, width]);
 
@@ -100,22 +92,26 @@ export default function ChartScrubber({
     )
   );
 
-  const scrubberStyle = useMemoOne(
-    () => ({
+  const scrubberStyle = useMemoOne(() => {
+    const opacity = withTimingTransition(isScrubbing, {
+      duration: 150,
+      easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
+    });
+
+    return {
       opacity,
       transform: [
         { translateX, translateY },
         {
           scale: interpolate(opacity, {
-            extrapolate: Extrapolate.EXTEND,
+            extrapolate: Extrapolate.CLAMP,
             inputRange: [0, 1],
-            outputRange: [2, 1],
+            outputRange: [1.5, 1],
           }),
         },
       ],
-    }),
-    [opacity, translateX, translateY]
-  );
+    };
+  }, [isScrubbing, translateX, translateY]);
 
   return (
     <Scrubber color={color} offsetY={offsetY} style={scrubberStyle}>

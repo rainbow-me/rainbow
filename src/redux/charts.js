@@ -17,7 +17,7 @@ const CHARTS_FALLBACK_UPDATE = 'charts/CHARTS_FALLBACK_UPDATE';
 const CHARTS_UPDATE = 'charts/CHARTS_UPDATE';
 const CHARTS_CLEAR_STATE = 'charts/CHARTS_CLEAR_STATE';
 
-export const DEFAULT_CHART_TYPE = ChartTypes.year;
+export const DEFAULT_CHART_TYPE = ChartTypes.day;
 
 // -- Actions ---------------------------------------- //
 export const chartsLoadState = () => async (dispatch, getState) => {

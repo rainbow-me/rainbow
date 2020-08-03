@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import Animated from 'react-native-reanimated';
 import {
   usePanGestureHandler,
@@ -8,8 +9,8 @@ import { useCallbackOne } from 'use-memo-one';
 import {
   isGestureActiveProc,
   onEitherGestureActiveChange,
-} from '../components/animations';
-import useDimensions from './useDimensions';
+} from '../../components/animations';
+import useDimensions from '../useDimensions';
 import { haptics } from '@rainbow-me/utils';
 
 const { and, call, cond, not, onChange, set, useCode } = Animated;
@@ -32,6 +33,8 @@ export default function useChartGestures(onGestureInactive) {
     state: tapGestureState,
   } = useTapGestureHandler();
 
+  const gestureStartTimestamp = useRef();
+
   useCode(
     useCallbackOne(
       () =>
@@ -39,23 +42,34 @@ export default function useChartGestures(onGestureInactive) {
           panGestureState,
           tapGestureState,
           // 🧽️ Show scrubber if either gesture handler is active
-          [set(isScrubbing, 1), call([], haptics.selection)],
+          [
+            set(isScrubbing, 1),
+            call([], () => {
+              haptics.selection();
+              gestureStartTimestamp.current = Date.now();
+            }),
+          ],
           [
             // 🧽️ Hide the scrubber + reset the Chart Data Labels
             // if either of our gesture handlers become inactive 👌️🤠️
             set(isScrubbing, 0),
-            call([], haptics.selection),
-            call([], onGestureInactive),
+            call([], () => {
+              if (Date.now() - gestureStartTimestamp.current > 300) {
+                haptics.selection();
+              }
+              onGestureInactive();
+              gestureStartTimestamp.current = null;
+            }),
           ]
         ),
       [isScrubbing, onGestureInactive]
     )
   );
 
+  // Set scrubberX to tap position if pan gesture isnt active yet
   useCode(
     useCallbackOne(
       () =>
-        // Set scrubberX to tap position if pan gesture isnt active yet
         onChange(
           isGestureActiveProc(tapGestureState),
           cond(
@@ -70,10 +84,10 @@ export default function useChartGestures(onGestureInactive) {
     )
   );
 
+  // Set scrubberX to pan position if pan gesture is active
   useCode(
     useCallbackOne(
       () =>
-        // Set scrubberX to pan position if pan gesture is active
         onChange(
           panGesturePosition.x,
           cond(

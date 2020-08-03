@@ -1,6 +1,8 @@
 import { maxBy, minBy } from 'lodash';
 
 export default function simplifyChartData(data, destinatedNumberOfPoints) {
+  if (!data) return null;
+
   let allSegmentDividers = [];
   let allSegmentsPoints = [];
   let colors = [];

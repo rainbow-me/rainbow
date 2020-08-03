@@ -41,15 +41,20 @@ export default function AnimatedChartSvg({ color, onParsePath, path }) {
     stopSetPathTimeout();
   }, [stopAnimatePathTimeout, stopAnimationListener, stopSetPathTimeout]);
 
-  const handleAnimation = useCallback(() => {
-    Animated.timing(animation, {
-      duration: AnimatedChartDuration,
-      easing: Easing.bezier(0.22, 1, 0.36, 1),
-      toValue: shouldAnimate.current ? 0 : 1,
-    }).start(() => {
-      shouldAnimate.current = !shouldAnimate.current;
-    });
-  }, [animation]);
+  const handleAnimation = useCallback(
+    parsedPath => {
+      Animated.timing(animation, {
+        duration: AnimatedChartDuration,
+        easing: Easing.bezier(0.22, 1, 0.36, 1),
+        toValue: shouldAnimate.current ? 0 : 1,
+      }).start(() => {
+        shouldAnimate.current = !shouldAnimate.current;
+        // eslint-disable-next-line babel/no-unused-expressions
+        onParsePath?.(parsedPath);
+      });
+    },
+    [animation, onParsePath]
+  );
 
   useEffect(() => {
     if (path) {
@@ -75,15 +80,16 @@ export default function AnimatedChartSvg({ color, onParsePath, path }) {
 
       stopPreviousAnimations();
       startAnimationListener(({ value }) => {
+        // eslint-disable-next-line babel/no-unused-expressions
         pathRef.current?.setNativeProps({
           d: pathInterpolate(value),
         });
       });
 
       startAnimatePathTimeout(() => {
-        onParsePath?.(parsedPath);
-        handleAnimation();
+        handleAnimation(parsedPath);
         startSetPathTimeout(() => {
+          // eslint-disable-next-line babel/no-unused-expressions
           pathRef.current?.setNativeProps({
             d: pathInterpolate(shouldAnimate.current ? 1 : 0),
           });
@@ -92,7 +98,6 @@ export default function AnimatedChartSvg({ color, onParsePath, path }) {
     }
   }, [
     handleAnimation,
-    onParsePath,
     path,
     startAnimatePathTimeout,
     startAnimationListener,

@@ -1,3 +1,11 @@
+export {
+  useChartData,
+  useChartDataLabels,
+  useChartGestures,
+  useExtremeValuesFromPoints,
+  usePathForPoints,
+  usePointsFromChartData,
+} from './charts';
 export { default as useAccountAssets } from './useAccountAssets';
 export { default as useAccountProfile } from './useAccountProfile';
 export { default as useAccountSettings } from './useAccountSettings';
@@ -8,8 +16,7 @@ export { default as useAppState } from './useAppState';
 export { default as useAsset } from './useAsset';
 export { default as useBiometryType } from './useBiometryType';
 export { default as useBlockPolling } from './useBlockPolling';
-export { default as useChartGestures } from './useChartGestures';
-export { default as useCharts } from './useCharts';
+export { default as useBooleanState } from './useBooleanState';
 export { default as useClipboard } from './useClipboard';
 export { default as useCoinListEdited } from './useCoinListEdited';
 export { default as useCoinListEditOptions } from './useCoinListEditOptions';

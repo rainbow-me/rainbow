@@ -1,18 +1,32 @@
+import { isEmpty } from 'lodash';
 import { useCallback, useEffect } from 'react';
 import isEqual from 'react-fast-compare';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { useCallbackOne } from 'use-memo-one';
-import { getChart } from '../handlers/uniswap';
+import { getChart } from '../../handlers/uniswap';
 import {
   assetChartsFallbackReceived,
   chartsUpdateChartType,
   DEFAULT_CHART_TYPE,
-} from '../redux/charts';
-import { emitChartsRequest } from '../redux/explorer';
-import useAsset from './useAsset';
-import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
+} from '../../redux/charts';
+import { emitChartsRequest } from '../../redux/explorer';
+import useAsset from '../useAsset';
+import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
+
+const formatChartData = chart => {
+  if (!chart || isEmpty(chart)) return null;
+  return [[chart]].map((sectionsData = [], index) => ({
+    name: index,
+    segments: sectionsData.map((data, i) => ({
+      color: colors.green,
+      line: i * 5,
+      points: data.map(([x, y]) => ({ x, y })),
+      renderStartSeparator: undefined,
+    })),
+  }));
+};
 
 const chartSelector = createSelector(
   ({ charts: { charts, chartsFallback, chartType, fetchingCharts } }) => ({
@@ -28,8 +42,9 @@ const chartSelector = createSelector(
       ...chartsFallback?.[address],
       ...charts?.[address],
     };
+
     return {
-      chart: chartsForAsset?.[chartType] || [],
+      chart: formatChartData(chartsForAsset?.[chartType]),
       chartsForAsset,
       chartType,
       fetchingCharts,
@@ -37,12 +52,9 @@ const chartSelector = createSelector(
   }
 );
 
-export default function useCharts(asset) {
+export default function useChartData(asset) {
   const dispatch = useDispatch();
-  const { address } = useAsset(asset);
-
-  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
-  const exchangeAddress = uniswapAssetsInWallet?.[address]?.exchangeAddress;
+  const { address, exchangeAddress } = useAsset(asset);
 
   const { chart, chartsForAsset, chartType, fetchingCharts } = useSelector(
     useCallbackOne(state => chartSelector(state, address), [address]),

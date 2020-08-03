@@ -1,9 +1,9 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import styled from 'styled-components/primitives';
-import ChartTypes from '../../helpers/chartTypes';
 import { JellySelector } from '../jelly-selector';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
+import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { colors, padding } from '@rainbow-me/styles';
 
 const Container = styled(Centered)`
@@ -41,29 +41,23 @@ const TimespanSelector = ({
   color = colors.dark,
   defaultIndex = 0,
   reloadChart,
-}) => {
-  const handleSelect = useCallback(
-    newTimespan => reloadChart(ChartTypes[newTimespan]),
-    [reloadChart]
-  );
-
-  return (
-    <Container>
-      <JellySelector
-        backgroundColor={colors.alpha(color, 0.06)}
-        color={color}
-        defaultIndex={defaultIndex}
-        enableHapticFeedback
-        height={32}
-        items={Object.keys(ChartTypes)}
-        onSelect={handleSelect}
-        renderItem={TimespanItem}
-        renderRow={TimespanItemRow}
-        scaleTo={1.2}
-        width="100%"
-      />
-    </Container>
-  );
-};
+  timespans,
+}) => (
+  <Container>
+    <JellySelector
+      backgroundColor={colors.alpha(color, 0.06)}
+      color={color}
+      defaultIndex={defaultIndex}
+      enableHapticFeedback
+      height={32}
+      items={timespans}
+      onSelect={reloadChart}
+      renderItem={TimespanItem}
+      renderRow={TimespanItemRow}
+      scaleTo={1.2}
+      width="100%"
+    />
+  </Container>
+);
 
 export default React.memo(TimespanSelector);

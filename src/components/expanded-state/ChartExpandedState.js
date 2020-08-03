@@ -1,8 +1,5 @@
-import React, { useRef } from 'react';
-import { chartExpandedAvailable } from '../../config/experimental';
-import AssetInputTypes from '../../helpers/assetInputTypes';
-import { useColorForAsset } from '../../hooks';
-import { magicMemo } from '../../utils';
+import { useRoute } from '@react-navigation/native';
+import React, { useEffect } from 'react';
 import {
   SendActionButton,
   SheetActionButtonRow,
@@ -18,35 +15,74 @@ import {
 } from '../token-info';
 import Chart from '../value-chart/Chart';
 import { ChartExpandedStateHeader } from './chart';
+import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
+import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
+import {
+  useChartData,
+  useChartDataLabels,
+  useChartGestures,
+  useColorForAsset,
+  usePointsFromChartData,
+} from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 
-export const ChartExpandedStateSheetHeight = chartExpandedAvailable ? 622 : 309;
+const amountOfPathPoints = 175; // 👈️ TODO make this dynamic
 
-const ChartExpandedState = ({ asset }) => {
-  const chartDateRef = useRef();
-  const chartPriceRef = useRef();
+const heightWithChart = 622;
+const heightWithNoChart = 309;
 
+export const ChartExpandedStateSheetHeight = chartExpandedAvailable
+  ? heightWithChart
+  : heightWithNoChart;
+
+export default function ChartExpandedState({ asset }) {
+  const { params } = useRoute();
+  const { setParams } = useNavigation();
   const color = useColorForAsset(asset);
 
+  const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
+    asset
+  );
+  const points = usePointsFromChartData({ amountOfPathPoints, chart });
+  const { updateChartDataLabels, ...chartDataLabels } = useChartDataLabels({
+    asset,
+    chartType,
+    color,
+    points,
+  });
+  const { isScrubbing, ...chartGestures } = useChartGestures(
+    updateChartDataLabels
+  );
+
+  // Only show the chart if we have chart data, or if chart data is still loading
+  const showChart = chartExpandedAvailable && (!!chart || fetchingCharts);
+  useEffect(() => {
+    if (!showChart) {
+      setParams({ longFormHeight: heightWithNoChart });
+    }
+  }, [showChart, setParams]);
+
   return (
-    <SlackSheet
-      contentHeight={ChartExpandedStateSheetHeight}
-      scrollEnabled={false}
-    >
+    <SlackSheet contentHeight={params.longFormHeight} scrollEnabled={false}>
       <ChartExpandedStateHeader
-        {...asset}
-        change={asset?.price?.relative_change_24h || 0}
-        chartDateRef={chartDateRef}
-        chartPriceRef={chartPriceRef}
+        {...chartDataLabels}
+        asset={asset}
         color={color}
-        latestPrice={asset?.native?.price.display}
+        isScrubbing={isScrubbing}
       />
-      {chartExpandedAvailable && (
+      {showChart && (
         <Chart
+          {...chartData}
+          {...chartDataLabels}
+          {...chartGestures}
           asset={asset}
-          chartDateRef={chartDateRef}
-          chartPriceRef={chartPriceRef}
+          chart={chart}
+          chartType={chartType}
           color={color}
-          latestPrice={asset?.native?.price?.amount}
+          fetchingCharts={fetchingCharts}
+          isScrubbing={isScrubbing}
+          points={points}
+          updateChartDataLabels={updateChartDataLabels}
         />
       )}
       <SheetDivider />
@@ -68,6 +104,4 @@ const ChartExpandedState = ({ asset }) => {
       </SheetActionButtonRow>
     </SlackSheet>
   );
-};
-
-export default magicMemo(ChartExpandedState, 'asset');
+}
