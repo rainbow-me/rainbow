@@ -8,6 +8,7 @@ import styled from 'styled-components/primitives';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '../../config/experimentalHooks';
+import showWalletErrorAlert from '../../helpers/support';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import {
   getHumanReadableDate,
@@ -17,7 +18,7 @@ import { isENSAddressFormat } from '../../helpers/validators';
 import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
 import { FloatingEmojis } from '../floating-emojis';
-import { useAccountProfile } from '@rainbow-me/hooks';
+import { useAccountProfile, useWallets } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import {
@@ -57,6 +58,7 @@ const TransactionList = ({
   requests,
   transactions,
 }) => {
+  const { selectedWallet } = useWallets();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
   const setOnNewEmoji = useCallback(
@@ -73,11 +75,15 @@ const TransactionList = ({
   } = useAccountProfile();
 
   const onAddCashPress = useCallback(() => {
+    if (selectedWallet?.damaged) {
+      showWalletErrorAlert();
+      return;
+    }
     navigate(Routes.ADD_CASH_FLOW);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-  }, [navigate]);
+  }, [navigate, selectedWallet?.damaged]);
 
   const onAvatarPress = useCallback(() => {
     navigate(Routes.AVATAR_BUILDER, {
@@ -87,8 +93,12 @@ const TransactionList = ({
   }, [accountColor, accountName, navigate]);
 
   const onReceivePress = useCallback(() => {
+    if (selectedWallet?.damaged) {
+      showWalletErrorAlert();
+      return;
+    }
     navigate(Routes.RECEIVE_MODAL);
-  }, [navigate]);
+  }, [navigate, selectedWallet?.damaged]);
 
   const onRequestExpire = useCallback(
     e => {
@@ -190,6 +200,10 @@ const TransactionList = ({
 
   const onCopyAddressPress = useCallback(
     e => {
+      if (selectedWallet?.damaged) {
+        showWalletErrorAlert();
+        return;
+      }
       const { x, y, width, height } = e.nativeEvent;
       setTapTarget([x, y, width, height]);
       if (onNewEmoji && onNewEmoji.current) {
@@ -197,7 +211,7 @@ const TransactionList = ({
       }
       Clipboard.setString(accountAddress);
     },
-    [accountAddress]
+    [accountAddress, selectedWallet?.damaged]
   );
 
   const onAccountNamePress = useCallback(() => {
