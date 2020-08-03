@@ -9,6 +9,8 @@ import {
   WYRE_ACCOUNT_ID_TEST,
   WYRE_ENDPOINT,
   WYRE_ENDPOINT_TEST,
+  WYRE_TOKEN,
+  WYRE_TOKEN_TEST,
 } from 'react-native-dotenv';
 import NetworkTypes from '../helpers/networkTypes';
 import { add, feeCalculation } from '../helpers/utilities';
@@ -122,6 +124,43 @@ export const showApplePayRequest = async (
   }
 };
 
+export const reserveWyreOrder = async (
+  amount,
+  destCurrency,
+  accountAddress,
+  network
+) => {
+  const partnerId =
+    network === NetworkTypes.mainnet ? WYRE_ACCOUNT_ID : WYRE_ACCOUNT_ID_TEST;
+  const dest = `ethereum:${accountAddress}`;
+  const data = {
+    amount,
+    dest,
+    destCurrency,
+    referrerAccountId: partnerId,
+    sourceCurrency: SOURCE_CURRENCY_USD,
+  };
+  const baseUrl = getBaseUrl(network);
+  try {
+    const wyreAuthToken =
+      network === NetworkTypes.mainnet ? WYRE_TOKEN : WYRE_TOKEN_TEST;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${wyreAuthToken}`,
+      },
+    };
+    const response = await wyreApi.post(
+      `${baseUrl}/v3/orders/reserve`,
+      data,
+      config
+    );
+    return response?.data?.reservation;
+  } catch (error) {
+    logger.sentry('Apple Pay - error reserving order', error);
+    return null;
+  }
+};
+
 export const trackWyreOrder = async (referenceInfo, orderId, network) => {
   try {
     const baseUrl = getBaseUrl(network);
@@ -155,7 +194,8 @@ export const getOrderId = async (
   amount,
   accountAddress,
   destCurrency,
-  network
+  network,
+  reservationId
 ) => {
   const data = createPayload(
     referenceInfo,
@@ -163,7 +203,8 @@ export const getOrderId = async (
     amount,
     accountAddress,
     destCurrency,
-    network
+    network,
+    reservationId
   );
   try {
     const baseUrl = getBaseUrl(network);
@@ -239,7 +280,8 @@ const createPayload = (
   amount,
   accountAddress,
   destCurrency,
-  network
+  network,
+  reservationId
 ) => {
   const dest = `ethereum:${accountAddress}`;
 
@@ -270,6 +312,7 @@ const createPayload = (
         destCurrency,
         referenceId: referenceInfo.referenceId,
         referrerAccountId: partnerId,
+        reservationId,
         sourceCurrency: SOURCE_CURRENCY_USD,
       },
       paymentObject: {
