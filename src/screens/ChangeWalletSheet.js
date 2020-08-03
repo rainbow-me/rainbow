@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Platform } from 'react-native';
@@ -11,6 +12,7 @@ import { Column } from '../components/layout';
 import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
+import showWalletErrorAlert from '../helpers/support';
 import WalletLoadingStates from '../helpers/walletLoadingStates';
 import WalletTypes from '../helpers/walletTypes';
 import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
@@ -346,17 +348,27 @@ export default function ChangeWalletSheet() {
                     return false;
                   });
 
-                // If we found it and it's not damaged use it to create the new account
-                if (primaryWalletKey && !wallets[primaryWalletKey].damaged) {
-                  await dispatch(
-                    createAccountForWallet(primaryWalletKey, color, name)
-                  );
-                  await initializeWallet();
-                  // If doesn't exist, we need to create a new wallet
-                } else {
-                  await createWallet(null, color, name);
-                  await dispatch(walletsLoadState());
-                  await initializeWallet();
+                try {
+                  // If we found it and it's not damaged use it to create the new account
+                  if (primaryWalletKey && !wallets[primaryWalletKey].damaged) {
+                    await dispatch(
+                      createAccountForWallet(primaryWalletKey, color, name)
+                    );
+                    await initializeWallet();
+                    // If doesn't exist, we need to create a new wallet
+                  } else {
+                    await createWallet(null, color, name);
+                    await dispatch(walletsLoadState());
+                    await initializeWallet();
+                  }
+                } catch (e) {
+                  logger.sentry('Error while trying to add account');
+                  captureException(e);
+                  if (selectedWallet.damaged) {
+                    setTimeout(() => {
+                      showWalletErrorAlert();
+                    }, 1000);
+                  }
                 }
               }
               creatingWallet.current = false;
@@ -379,6 +391,7 @@ export default function ChangeWalletSheet() {
     goBack,
     initializeWallet,
     navigate,
+    selectedWallet.damaged,
     selectedWallet.id,
     selectedWallet.primary,
     wallets,

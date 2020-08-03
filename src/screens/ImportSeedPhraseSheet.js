@@ -261,10 +261,8 @@ export default function ImportSeedPhraseSheet() {
           : 0;
         initializeWallet(input, color, name ? name : '')
           .then(success => {
+            handleSetImporting(false);
             if (success) {
-              analytics.track('Imported seed phrase', {
-                hadPreviousAddressWithValue,
-              });
               goBack();
               InteractionManager.runAfterInteractions(async () => {
                 if (previousWalletCount === 0) {
@@ -285,14 +283,25 @@ export default function ImportSeedPhraseSheet() {
                     });
                   }
                 }, 1000);
+                analytics.track('Imported seed phrase', {
+                  hadPreviousAddressWithValue,
+                });
               });
             } else {
-              handleSetImporting(false);
+              // Wait for error messages then refocus
+              setTimeout(() => {
+                inputRef.current?.focus();
+                initializeWallet();
+              }, 100);
             }
           })
           .catch(error => {
             handleSetImporting(false);
             logger.error('error importing seed phrase: ', error);
+            setTimeout(() => {
+              inputRef.current?.focus();
+              initializeWallet();
+            }, 100);
           });
       }, 50);
     }

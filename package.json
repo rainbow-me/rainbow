@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.2.23-1",
+  "version": "1.2.25-1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -139,7 +139,7 @@
     "react-native-ios11-devicecheck": "^0.0.3",
     "react-native-iphone-x-helper": "^1.2.1",
     "react-native-keyboard-area": "^1.0.5",
-    "react-native-keychain": "4.0.3",
+    "react-native-keychain": "6.1.1",
     "react-native-languages": "^3.0.0",
     "react-native-level-fs": "^3.0.1",
     "react-native-linear-gradient": "^2.5.6",
@@ -230,6 +230,7 @@
     "stylelint-react-native": "^2.2.0"
   },
   "resolutions": {
+    "**/elliptic": "6.5.3",
     "**/eslint-plugin-import": "2.20.2",
     "**/resolve": "1.8.1",
     "**/logkitty": "0.7.1"

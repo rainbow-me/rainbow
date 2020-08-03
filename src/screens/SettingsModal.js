@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect } from 'react';
-import { Animated, Platform, View } from 'react-native';
+import { Alert, Animated, Platform, View } from 'react-native';
 import styled from 'styled-components/native';
 import { Icon } from '../components/icons';
 import { Modal } from '../components/modal';
@@ -18,6 +18,7 @@ import WalletSelectionView from '../components/settings-menu/BackupSection/Walle
 import DevSection from '../components/settings-menu/DevSection';
 import WalletTypes from '../helpers/walletTypes';
 import { useDimensions, useWallets } from '../hooks';
+import { loadAllKeysOnly } from '../model/keychain';
 import { useNavigation } from '../navigation/Navigation';
 import { colors, fonts } from '@rainbow-me/styles';
 
@@ -106,6 +107,11 @@ const Container = styled.View`
 
 const Stack = createStackNavigator();
 
+const onPressHiddenFeature = async () => {
+  const keys = await loadAllKeysOnly();
+  Alert.alert('DEBUG INFO', JSON.stringify(keys, null, 2));
+};
+
 const transitionConfig = {
   damping: 35,
   mass: 1,
@@ -120,10 +126,6 @@ export default function SettingsModal() {
   const { wallets, selectedWallet } = useWallets();
   const { params } = useRoute();
   const { isTinyPhone, width: deviceWidth } = useDimensions();
-
-  const onPressHiddenFeature = useCallback(() => {
-    // TODO
-  }, []);
 
   const getRealRoute = useCallback(
     key => {

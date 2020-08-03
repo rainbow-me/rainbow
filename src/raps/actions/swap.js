@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { find, get, toLower } from 'lodash';
 import {
   calculateTradeDetails,
@@ -102,17 +103,26 @@ const swap = async (wallet, currentRap, index, parameters) => {
   if (currentRap.actions.length - 1 > index || !gasPrice) {
     gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
   }
+  let gasLimit;
+  try {
+    logger.sentry('estimateSwapGasLimit', { accountAddress, tradeDetails });
+    gasLimit = await estimateSwapGasLimit(accountAddress, tradeDetails);
+  } catch (e) {
+    logger.sentry('error executing estimateSwapGasLimit');
+    captureException(e);
+    throw e;
+  }
 
-  const gasLimit = await estimateSwapGasLimit(accountAddress, tradeDetails);
+  let swap;
+  try {
+    logger.sentry('executing swap', { gasLimit, gasPrice, tradeDetails });
+    swap = await executeSwap(tradeDetails, gasLimit, gasPrice, wallet);
+  } catch (e) {
+    logger.sentry('error executing swap');
+    captureException(e);
+    throw e;
+  }
 
-  logger.log('[swap] About to execute swap with', {
-    gasLimit,
-    gasPrice,
-    tradeDetails,
-    wallet,
-  });
-
-  const swap = await executeSwap(tradeDetails, gasLimit, gasPrice, wallet);
   logger.log('[swap] response', swap);
   currentRap.actions[index].transaction.hash = swap.hash;
   dispatch(rapsAddOrUpdate(currentRap.id, currentRap));

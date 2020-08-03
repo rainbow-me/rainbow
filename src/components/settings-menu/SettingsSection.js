@@ -119,7 +119,7 @@ const SettingsSection = ({
     versionPressHandle && clearTimeout(versionPressHandle);
     versionNumberOfTaps++;
 
-    if (versionNumberOfTaps === 10) {
+    if (versionNumberOfTaps === 15) {
       onPressHiddenFeature();
     }
 

@@ -21,6 +21,7 @@ import {
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
+import { delayNext } from '../hooks/useMagicAutofocus';
 import { useNavigation } from '../navigation/Navigation';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 import {
@@ -44,12 +45,13 @@ const headerlessSection = data => [{ data, title: '' }];
 export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
-  const { navigate } = useNavigation();
+  const { navigate, dangerouslyGetState } = useNavigation();
   const {
     params: {
       category,
       onSelectCurrency,
       restoreFocusOnSwapModal,
+      setPointerEvents,
       tabTransitionPosition,
       toggleGestureEnabled,
       type,
@@ -167,6 +169,7 @@ export default function CurrencySelectModal() {
 
   const handleSelectAsset = useCallback(
     item => {
+      setPointerEvents(false);
       onSelectCurrency(item);
       if (searchQueryForSearch) {
         analytics.track('Selected a search result in Swap', {
@@ -178,9 +181,19 @@ export default function CurrencySelectModal() {
           type,
         });
       }
+      delayNext();
+      dangerouslyGetState().index = 1;
       navigate(Routes.MAIN_EXCHANGE_SCREEN);
     },
-    [category, onSelectCurrency, navigate, searchQueryForSearch, type]
+    [
+      setPointerEvents,
+      onSelectCurrency,
+      searchQueryForSearch,
+      dangerouslyGetState,
+      navigate,
+      category,
+      type,
+    ]
   );
 
   const itemProps = useMemo(
@@ -241,9 +254,18 @@ export default function CurrencySelectModal() {
         style={{
           opacity: interpolate(tabTransitionPosition, {
             extrapolate: Extrapolate.CLAMP,
-            inputRange: [0, 0.8, 1],
+            inputRange: [0, 1, 1],
             outputRange: [0, 1, 1],
           }),
+          transform: [
+            {
+              translateX: interpolate(tabTransitionPosition, {
+                extrapolate: Animated.Extrapolate.CLAMP,
+                inputRange: [0, 1, 1],
+                outputRange: [8, 0, 0],
+              }),
+            },
+          ],
         }}
       >
         <Modal

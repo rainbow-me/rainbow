@@ -1,4 +1,5 @@
 /* eslint-disable no-use-before-define */
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { find, get } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -7,6 +8,7 @@ import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import { multiply } from '../helpers/utilities';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountAssets from './useAccountAssets';
+import { delayNext } from './useMagicAutofocus';
 import usePrevious from './usePrevious';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 import useUniswapCurrencyReserves from './useUniswapCurrencyReserves';
@@ -49,7 +51,10 @@ export default function useUniswapCurrencies({
   underlyingPrice,
 }) {
   const { allAssets } = useAccountAssets();
-  const { navigate, setParams } = useNavigation();
+  const { navigate, setParams, dangerouslyGetParent } = useNavigation();
+  const {
+    params: { blockInteractions },
+  } = useRoute();
 
   const defaultInputAddress = get(defaultInputAsset, 'address');
 
@@ -263,7 +268,9 @@ export default function useUniswapCurrencies({
 
   const navigateToSelectInputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
+      dangerouslyGetParent().dangerouslyGetState().index = 0;
       setParams({ focused: false });
+      delayNext();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
         category,
         headerTitle: inputHeaderTitle,
@@ -271,12 +278,23 @@ export default function useUniswapCurrencies({
         restoreFocusOnSwapModal: () => setParams({ focused: true }),
         type: CurrencySelectionTypes.input,
       });
+      blockInteractions();
     });
-  }, [category, inputHeaderTitle, navigate, setParams, updateInputCurrency]);
+  }, [
+    blockInteractions,
+    category,
+    dangerouslyGetParent,
+    inputHeaderTitle,
+    navigate,
+    setParams,
+    updateInputCurrency,
+  ]);
 
   const navigateToSelectOutputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
       setParams({ focused: false });
+      dangerouslyGetParent().dangerouslyGetState().index = 0;
+      delayNext();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
         category,
         headerTitle: 'Receive',
@@ -284,8 +302,16 @@ export default function useUniswapCurrencies({
         restoreFocusOnSwapModal: () => setParams({ focused: true }),
         type: CurrencySelectionTypes.output,
       });
+      blockInteractions();
     });
-  }, [category, navigate, setParams, updateOutputCurrency]);
+  }, [
+    blockInteractions,
+    category,
+    dangerouslyGetParent,
+    navigate,
+    setParams,
+    updateOutputCurrency,
+  ]);
 
   return {
     defaultInputAddress,
