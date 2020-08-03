@@ -1,22 +1,41 @@
-import { captureException } from '@sentry/react-native';
+import { captureException, captureMessage } from '@sentry/react-native';
 import {
   getInternetCredentials,
+  hasInternetCredentials,
   resetInternetCredentials,
   setInternetCredentials,
 } from 'react-native-keychain';
+import { delay } from '../helpers/utilities';
 import logger from 'logger';
 
 // NOTE: implement access control for iOS keychain
 export async function saveString(key, value, accessControlOptions) {
-  try {
-    await setInternetCredentials(key, key, value, accessControlOptions);
-    logger.log(`Keychain: saved string for key: ${key}`);
-  } catch (err) {
-    logger.sentry(
-      `Keychain: failed to save string for key: ${key} error: ${err}`
-    );
-    captureException(err);
-  }
+  return new Promise(async (resolve, reject) => {
+    try {
+      await setInternetCredentials(key, key, value, accessControlOptions);
+      logger.sentry(`Keychain: saved string for key: ${key}`);
+      resolve();
+    } catch (e) {
+      logger.sentry(`Keychain: failed to save string for key: ${key}`, e);
+      captureMessage(
+        'Keychain write first attempt failed (react-native-keychain v4)'
+      );
+      await delay(1000);
+      try {
+        await setInternetCredentials(key, key, value, accessControlOptions);
+        logger.sentry(
+          `Keychain: saved string for key: ${key} on second attempt`
+        );
+        resolve();
+      } catch (e) {
+        logger.sentry(`Keychain: failed to save string for key: ${key}`, e);
+        captureMessage(
+          'Keychain write second attempt failed (react-native-keychain v4)'
+        );
+        reject(e);
+      }
+    }
+  });
 }
 
 export async function loadString(key, authenticationPrompt) {
@@ -66,4 +85,17 @@ export async function remove(key) {
     );
     captureException(err);
   }
+}
+
+export async function hasKey(key) {
+  try {
+    const result = await hasInternetCredentials(key);
+    return result;
+  } catch (err) {
+    logger.sentry(
+      `Keychain: failed to check if key ${key} exists -  error: ${err}`
+    );
+    captureException(err);
+  }
+  return null;
 }
