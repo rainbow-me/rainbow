@@ -6,9 +6,7 @@ import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
-import LoadingOverlay, {
-  LoadingOverlayWrapper,
-} from '../components/modal/LoadingOverlay';
+import { LoadingOverlay } from '../components/modal';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
 import useNativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
@@ -44,12 +42,10 @@ export default function ProfileScreen({ navigation }) {
   useEffect(() => {
     if (isWalletLoading) {
       setComponent(
-        <LoadingOverlayWrapper>
-          <LoadingOverlay
-            paddingTop={sheetVerticalOffset}
-            title={isWalletLoading}
-          />
-        </LoadingOverlayWrapper>,
+        <LoadingOverlay
+          paddingTop={sheetVerticalOffset}
+          title={isWalletLoading}
+        />,
         false
       );
     }

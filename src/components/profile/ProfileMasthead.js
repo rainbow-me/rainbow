@@ -4,9 +4,14 @@ import styled from 'styled-components/primitives';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '../../config/experimentalHooks';
-import { useAccountProfile, useClipboard } from '../../hooks';
+import showWalletErrorAlert from '../../helpers/support';
+import {
+  useAccountProfile,
+  useClipboard,
+  useDimensions,
+  useWallets,
+} from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import { abbreviations, deviceUtils } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RainbowButton } from '../buttons';
@@ -16,11 +21,12 @@ import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
+
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
+import { abbreviations } from '@rainbow-me/utils';
 
 const dropdownArrowWidth = 21;
-const maxAddressWidth = deviceUtils.dimensions.width - dropdownArrowWidth - 60;
 
 const AccountName = styled(TruncatedText).attrs({
   align: 'left',
@@ -33,7 +39,7 @@ const AccountName = styled(TruncatedText).attrs({
   height: 33;
   margin-top: -1;
   margin-bottom: 1;
-  max-width: ${maxAddressWidth};
+  max-width: ${({ deviceWidth }) => deviceWidth - dropdownArrowWidth - 60};
   padding-right: 6;
 `;
 
@@ -46,7 +52,7 @@ const AddCashButton = styled(RainbowButton).attrs({
 const DropdownArrow = styled(Centered)`
   height: 9;
   margin-top: 11;
-  width: 21;
+  width: ${dropdownArrowWidth};
 `;
 
 const ProfileMastheadDivider = styled(Divider).attrs({
@@ -61,9 +67,9 @@ export default function ProfileMasthead({
   recyclerListRef,
   showBottomDivider = true,
 }) {
-  const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
-
+  const { selectedWallet } = useWallets();
   const { setClipboard } = useClipboard();
+  const { width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const {
     accountAddress,
@@ -71,6 +77,7 @@ export default function ProfileMasthead({
     accountSymbol,
     accountName,
   } = useAccountProfile();
+  const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
   const handlePressAvatar = useCallback(() => {
     if (!isAvatarPickerAvailable) return;
@@ -92,12 +99,24 @@ export default function ProfileMasthead({
     recyclerListRef,
   ]);
 
+  const handlePressReceive = useCallback(() => {
+    if (selectedWallet?.damaged) {
+      showWalletErrorAlert();
+      return;
+    }
+    navigate(Routes.RECEIVE_MODAL);
+  }, [navigate, selectedWallet?.damaged]);
+
   const handlePressAddCash = useCallback(() => {
+    if (selectedWallet?.damaged) {
+      showWalletErrorAlert();
+      return;
+    }
     navigate(Routes.ADD_CASH_FLOW);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-  }, [navigate]);
+  }, [navigate, selectedWallet?.damaged]);
 
   const handlePressChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
@@ -118,7 +137,7 @@ export default function ProfileMasthead({
       />
       <ButtonPressAnimation onPress={handlePressChangeWallet} scaleTo={0.9}>
         <Row>
-          <AccountName>{accountName}</AccountName>
+          <AccountName deviceWidth={deviceWidth}>{accountName}</AccountName>
           <DropdownArrow>
             <Icon color={colors.dark} direction="down" name="caret" />
           </DropdownArrow>
@@ -137,6 +156,10 @@ export default function ProfileMasthead({
             <ProfileAction
               icon="copy"
               onPress={() => {
+                if (selectedWallet?.damaged) {
+                  showWalletErrorAlert();
+                  return;
+                }
                 onNewEmoji();
                 setClipboard(accountAddress);
               }}
@@ -148,7 +171,7 @@ export default function ProfileMasthead({
         </FloatingEmojis>
         <ProfileAction
           icon="qrCode"
-          onPress={() => navigate(Routes.RECEIVE_MODAL)}
+          onPress={handlePressReceive}
           scaleTo={0.88}
           text="Receive"
           width={81}

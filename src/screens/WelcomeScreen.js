@@ -10,6 +10,7 @@ import Reanimated, {
   Value as RValue,
   timing,
 } from 'react-native-reanimated';
+import { useValue } from 'react-native-redash';
 import styled from 'styled-components/native';
 import { useMemoOne } from 'use-memo-one';
 import { ButtonPressAnimation } from '../components/animations';
@@ -138,16 +139,6 @@ export const useAnimatedValue = initialValue => {
 
   if (!value.current) {
     value.current = new Animated.Value(initialValue);
-  }
-
-  return value;
-};
-
-export const useReanimatedValue = initialValue => {
-  const value = useRef();
-
-  if (!value.current) {
-    value.current = new RValue(initialValue);
   }
 
   return value;
@@ -433,7 +424,7 @@ export default function WelcomeScreen() {
     [createWalletButtonAnimation]
   );
 
-  const rValue = useReanimatedValue(0);
+  const rValue = useValue(0);
 
   const backgroundColor = useMemoOne(() => colorAnimation(rValue, false), []);
 

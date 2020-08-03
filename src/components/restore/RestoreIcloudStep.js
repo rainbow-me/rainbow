@@ -32,7 +32,7 @@ import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
-import LoadingOverlay, { LoadingOverlayWrapper } from '../modal/LoadingOverlay';
+import LoadingOverlay from '../modal/LoadingOverlay';
 import { GradientText, Text } from '../text';
 import Routes from '@rainbow-me/routes';
 import { borders, colors, padding } from '@rainbow-me/styles';
@@ -152,12 +152,10 @@ const RestoreIcloudStep = ({ userData }) => {
   useEffect(() => {
     if (isWalletLoading) {
       setComponent(
-        <LoadingOverlayWrapper>
-          <LoadingOverlay
-            paddingTop={sheetVerticalOffset}
-            title={isWalletLoading}
-          />
-        </LoadingOverlayWrapper>,
+        <LoadingOverlay
+          paddingTop={sheetVerticalOffset}
+          title={isWalletLoading}
+        />,
         false
       );
     }

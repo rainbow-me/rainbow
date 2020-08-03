@@ -14,9 +14,7 @@ import { BackupSheetSection } from '../components/backup';
 import BackupConfirmPasswordStep from '../components/backup/BackupConfirmPasswordStep';
 import BackupIcloudStep from '../components/backup/BackupIcloudStep';
 import BackupManualStep from '../components/backup/BackupManualStep';
-import LoadingOverlay, {
-  LoadingOverlayWrapper,
-} from '../components/modal/LoadingOverlay';
+import LoadingOverlay from '../components/modal/LoadingOverlay';
 import { Sheet, SlackSheet } from '../components/sheet';
 import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import BackupStateTypes from '../helpers/backupStateTypes';
@@ -68,12 +66,10 @@ const BackupSheet = ({ setAppearListener }) => {
   useEffect(() => {
     if (isWalletLoading) {
       setComponent(
-        <LoadingOverlayWrapper>
-          <LoadingOverlay
-            paddingTop={sheetVerticalOffset}
-            title={isWalletLoading}
-          />
-        </LoadingOverlayWrapper>,
+        <LoadingOverlay
+          paddingTop={sheetVerticalOffset}
+          title={isWalletLoading}
+        />,
         false
       );
     }

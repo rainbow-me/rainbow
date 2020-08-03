@@ -1,89 +1,227 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { useIsFocused, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useEffect } from 'react';
-import { useCallback, useMemo } from 'use-memo-one';
-import { withBlockedHorizontalSwipe } from '../hoc';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Keyboard, View } from 'react-native';
+import { useValue } from 'react-native-redash';
+import { useMemoOne } from 'use-memo-one';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ModalScreen from '../screens/ModalScreen';
-import SwapModal from '../screens/SwapModal';
+import SwapModalScreen from '../screens/SwapModal';
+import { deviceUtils } from '../utils';
 import { useNavigation } from './Navigation';
 import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
 import { exchangeModalPreset, swapDetailsPreset } from './effects';
-import { useReanimatedValue } from './helpers';
+import { ScrollPagerWrapper } from './helpers';
 import Routes from './routesNames';
 
-const Tabs = createMaterialTopTabNavigator();
+const { width } = deviceUtils.dimensions;
+
 const Stack = createStackNavigator();
+const Tabs = createMaterialTopTabNavigator();
 
-function SwapDetailsScreen(props) {
-  const Component = withBlockedHorizontalSwipe(ModalScreen);
-  return <Component {...props} />;
-}
+function useStateCallback(initialState) {
+  const [state, setState] = useState(initialState);
+  const cbRef = useRef(null); // mutable ref to store current callback
 
-function MainExchangeNavigator() {
-  const isFocused = useIsFocused();
-  const {
-    params: { position },
-  } = useRoute();
+  const setStateCallback = (state, cb) => {
+    if (cb !== undefined) {
+      cbRef.current = cb; // store passed callback to ref
+    }
+    setState(state);
+  };
 
   useEffect(() => {
-    if (isFocused) {
-      position.setValue(0);
+    // cb.current is `null` on initial render, so we only execute cb on state *updates*
+    if (cbRef.current) {
+      cbRef.current(state);
+      cbRef.current = null; // reset callback after execution
     }
-  }, [isFocused, position]);
+  }, [state]);
 
-  return (
-    <Stack.Navigator
-      {...stackNavigationConfig}
-      initialRouteName={Routes.MAIN_EXCHANGE_SCREEN}
-      screenOptions={exchangeModalPreset}
-    >
-      <Stack.Screen
-        component={SwapModal}
-        initialParams={{
-          position,
-        }}
-        name={Routes.MAIN_EXCHANGE_SCREEN}
-      />
-      <Stack.Screen
-        component={SwapDetailsScreen}
-        name={Routes.SWAP_DETAILS_SCREEN}
-        options={swapDetailsPreset}
-      />
-    </Stack.Navigator>
-  );
+  return [state, setStateCallback];
 }
 
-function ExchangeModalNavigator() {
-  const { setOptions } = useNavigation();
-  const position = useReanimatedValue(0);
-  const config = useMemo(() => exchangeTabNavigatorConfig(position), [
-    position,
-  ]);
-  const toggleGestureEnabled = useCallback(
-    gestureEnabled => setOptions({ gestureEnabled }),
-    [setOptions]
-  );
-  return (
-    <Tabs.Navigator {...config}>
-      <Tabs.Screen
-        component={MainExchangeNavigator}
-        initialParams={{
-          position,
-        }}
-        name={Routes.MAIN_EXCHANGE_NAVIGATOR}
-      />
-      <Tabs.Screen
-        component={CurrencySelectModal}
-        initialParams={{
-          position,
-          toggleGestureEnabled,
-        }}
-        name={Routes.CURRENCY_SELECT_SCREEN}
-      />
-    </Tabs.Navigator>
-  );
+export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
+  function MainExchangeNavigator() {
+    const { params } = useRoute();
+
+    return (
+      <Stack.Navigator
+        {...stackNavigationConfig}
+        initialRouteName={Routes.MAIN_EXCHANGE_SCREEN}
+        screenOptions={exchangeModalPreset}
+      >
+        <Stack.Screen
+          component={SwapModal}
+          initialParams={params}
+          name={Routes.MAIN_EXCHANGE_SCREEN}
+        />
+        <Stack.Screen
+          component={ModalScreen}
+          name={Routes.SWAP_DETAILS_SCREEN}
+          options={swapDetailsPreset}
+        />
+      </Stack.Navigator>
+    );
+  }
+
+  return function ExchangeModalNavigator() {
+    const { setOptions } = useNavigation();
+    const pointerEvents = useRef('auto');
+    const ref = useRef();
+
+    const tabTransitionPosition = useValue(0);
+
+    const [swipeEnabled, setSwipeEnabled] = useStateCallback(false);
+
+    const setPointerEvents = useCallback(pointerEventsVal => {
+      pointerEvents.current = pointerEventsVal;
+      ref.current.setNativeProps({
+        pointerEvents: pointerEventsVal ? 'none' : 'auto',
+      });
+    }, []);
+
+    const handle = useRef();
+
+    const enableInteractionsAfterOpeningKeyboard = useCallback(() => {
+      Keyboard.removeListener('keyboardDidShow', handle.current);
+      handle.current = () => {
+        // this timeout helps to omit a visual glitch
+        setTimeout(() => {
+          setSwipeEnabled(true);
+          handle.current = null;
+        }, 200);
+        Keyboard.removeListener('keyboardDidShow', handle.current);
+      };
+      // fallback if was already opened
+      setTimeout(() => handle.current?.(), 300);
+      Keyboard.addListener('keyboardDidShow', handle.current);
+    }, [setSwipeEnabled]);
+
+    const blockInteractions = useCallback(() => {
+      setSwipeEnabled(false);
+    }, [setSwipeEnabled]);
+
+    const onMomentumScrollEnd = useCallback(
+      position => {
+        if (position === width) {
+          setPointerEvents(true);
+          enableInteractionsAfterOpeningKeyboard();
+        } else if (position === 0) {
+          setSwipeEnabled(false, () => setPointerEvents(true));
+          Keyboard.removeListener('keyboardDidShow', handle.current);
+        }
+      },
+      [
+        enableInteractionsAfterOpeningKeyboard,
+        setPointerEvents,
+        setSwipeEnabled,
+      ]
+    );
+
+    const onSwipeEnd = useCallback(
+      (position, targetContentOffset) => {
+        if (position !== width && position !== 0) {
+          setPointerEvents(false);
+        }
+
+        if (position === width) {
+          setPointerEvents(true);
+          enableInteractionsAfterOpeningKeyboard();
+        }
+
+        if (position === 0) {
+          setSwipeEnabled(false, () => setPointerEvents(true));
+        }
+
+        if (targetContentOffset === 0) {
+          Keyboard.removeListener('keyboardDidShow', handle.current);
+          setSwipeEnabled(false, () => setPointerEvents(true));
+        }
+      },
+      [
+        enableInteractionsAfterOpeningKeyboard,
+        setPointerEvents,
+        setSwipeEnabled,
+      ]
+    );
+
+    const renderPager = useCallback(
+      props => (
+        <ScrollPagerWrapper
+          {...props}
+          onMomentumScrollEnd={onMomentumScrollEnd}
+          onSwipeEnd={(...args) => {
+            onSwipeEnd(...args);
+            props.onSwipeEnd();
+          }}
+          onSwipeStart={position => {
+            if (position === width) {
+              setPointerEvents(false);
+            }
+            props.onSwipeStart();
+          }}
+          setSwipeEnabled={setSwipeEnabled}
+        />
+      ),
+      [onMomentumScrollEnd, onSwipeEnd, setPointerEvents, setSwipeEnabled]
+    );
+
+    const toggleGestureEnabled = useCallback(
+      dismissable => {
+        setOptions({ dismissable });
+      },
+      [setOptions]
+    );
+
+    const initialParams = useMemoOne(
+      () => ({
+        blockInteractions,
+        setPointerEvents,
+        tabTransitionPosition,
+        toggleGestureEnabled,
+      }),
+      [
+        tabTransitionPosition,
+        toggleGestureEnabled,
+        setPointerEvents,
+        blockInteractions,
+      ]
+    );
+
+    return (
+      <View style={{ flex: 1 }}>
+        <Tabs.Navigator
+          swipeEnabled={swipeEnabled}
+          {...exchangeTabNavigatorConfig}
+          pager={renderPager}
+          position={tabTransitionPosition}
+        >
+          <Tabs.Screen
+            component={MainExchangeNavigator}
+            initialParams={initialParams}
+            name={Routes.MAIN_EXCHANGE_NAVIGATOR}
+          />
+          <Tabs.Screen
+            component={CurrencySelectModal}
+            initialParams={initialParams}
+            name={Routes.CURRENCY_SELECT_SCREEN}
+          />
+        </Tabs.Navigator>
+        <View
+          pointerEvents="none"
+          ref={ref}
+          style={{
+            backgroundColor: 'transparent',
+            height: '100%',
+            position: 'absolute',
+            width: '100%',
+          }}
+        />
+      </View>
+    );
+  };
 }
 
-export default ExchangeModalNavigator;
+export default ExchangeNavigatorFactory();

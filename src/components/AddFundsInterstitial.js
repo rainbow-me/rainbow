@@ -4,6 +4,8 @@ import { Linking, Platform } from 'react-native';
 import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
+import showWalletErrorAlert from '../helpers/support';
+import { useWallets } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { magicMemo } from '../utils';
 import Divider from './Divider';
@@ -64,11 +66,15 @@ const onAddFromFaucet = network => {
 
 const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
   const { navigate } = useNavigation();
+  const { selectedWallet } = useWallets();
 
-  const handlePressAddFunds = useCallback(
-    () => navigate(Routes.RECEIVE_MODAL),
-    [navigate]
-  );
+  const handlePressAddFunds = useCallback(() => {
+    if (selectedWallet?.damaged) {
+      showWalletErrorAlert();
+      return;
+    }
+    navigate(Routes.RECEIVE_MODAL);
+  }, [navigate, selectedWallet?.damaged]);
 
   const handlePressImportWallet = useCallback(
     () => navigate(Routes.IMPORT_SEED_PHRASE_FLOW),

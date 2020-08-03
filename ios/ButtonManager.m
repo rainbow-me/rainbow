@@ -22,6 +22,7 @@ RCT_EXPORT_VIEW_PROPERTY(transformOrigin, CGPoint)
 RCT_EXPORT_VIEW_PROPERTY(minLongPressDuration, NSTimeInterval)
 RCT_EXPORT_VIEW_PROPERTY(scaleTo, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(useLateHaptic, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(throttle, BOOL)
 
 @end
 

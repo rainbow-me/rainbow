@@ -1,19 +1,25 @@
-import { pick } from 'lodash';
-import React, { Fragment, useMemo } from 'react';
+import React, { Fragment } from 'react';
 import styled from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
 import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { removeLeadingZeros } from '../../utils/formatters';
-import { ColumnWithMargins } from '../layout';
+import { Column, ColumnWithMargins } from '../layout';
 import SendAssetFormField from './SendAssetFormField';
 
-const FooterContainer = styled(ColumnWithMargins)`
+const footerMargin = 31;
+const FooterContainer = styled(ColumnWithMargins).attrs(({ deviceHeight }) => ({
+  justify: 'end',
+  margin: deviceHeight > 812 ? footerMargin : footerMargin / 2,
+}))`
+  flex: 1;
   width: 100%;
   z-index: 3;
 `;
 
-const getConfigForCurrency = nativeCurrency =>
-  pick(supportedNativeCurrencies[nativeCurrency], ['mask', 'placeholder']);
+const FormContainer = styled(Column)`
+  flex: 1;
+  width: 100%;
+`;
 
 export default function SendAssetFormToken({
   assetAmount,
@@ -22,6 +28,7 @@ export default function SendAssetFormToken({
   nativeCurrency,
   onChangeAssetAmount,
   onChangeNativeAmount,
+  onFocus,
   selected,
   sendMaxBalance,
   txSpeedRenderer,
@@ -29,18 +36,19 @@ export default function SendAssetFormToken({
 }) {
   const { height: deviceHeight } = useDimensions();
 
-  const { mask: nativeMask, placeholder: nativePlaceholder } = useMemo(
-    () => getConfigForCurrency(nativeCurrency),
-    [nativeCurrency]
-  );
+  const {
+    mask: nativeMask,
+    placeholder: nativePlaceholder,
+  } = supportedNativeCurrencies[nativeCurrency];
 
   return (
     <Fragment>
-      <ColumnWithMargins {...props} margin={18} width="100%">
+      <FormContainer {...props}>
         <SendAssetFormField
           format={removeLeadingZeros}
           label={selected.symbol}
           onChange={onChangeAssetAmount}
+          onFocus={onFocus}
           onPressButton={sendMaxBalance}
           placeholder="0"
           value={assetAmount}
@@ -50,12 +58,13 @@ export default function SendAssetFormToken({
           label={nativeCurrency}
           mask={nativeMask}
           onChange={onChangeNativeAmount}
+          onFocus={onFocus}
           onPressButton={sendMaxBalance}
           placeholder={nativePlaceholder}
           value={nativeAmount}
         />
-      </ColumnWithMargins>
-      <FooterContainer margin={deviceHeight < 812 ? 15.5 : 31}>
+      </FormContainer>
+      <FooterContainer deviceHeight={deviceHeight}>
         {buttonRenderer}
         {txSpeedRenderer}
       </FooterContainer>

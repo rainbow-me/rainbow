@@ -1,25 +1,25 @@
+import { get } from 'lodash';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getChart } from '../handlers/uniswap';
 import {
-  addressChartsReceived,
+  assetChartsFallbackReceived,
   chartsUpdateChartType,
-  DEFAULT_CHART_TYPE,
+  getAssetChart,
 } from '../redux/charts';
+import { emitChartsRequest } from '../redux/explorer';
 import { isNewValueForObjectPaths } from '../utils';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 
-const areSelectorResultsEqual = (prev, next) =>
-  !isNewValueForObjectPaths(prev, next, ['chartType', 'fetchingCharts']);
-
 export default function useCharts(asset) {
   const dispatch = useDispatch();
+  const assetAddress = asset?.address;
 
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const uniswapAsset = uniswapAssetsInWallet.find(
-    ({ address }) => address === asset.address
+    ({ address }) => address === assetAddress
   );
-  const exchangeAddress = uniswapAsset?.exchangeAddress;
+  const exchangeAddress = get(uniswapAsset, 'exchangeAddress');
 
   const { charts, chartType, fetchingCharts } = useSelector(
     ({ charts: { charts, chartType, fetchingCharts } }) => ({
@@ -27,46 +27,37 @@ export default function useCharts(asset) {
       chartType,
       fetchingCharts,
     }),
-    areSelectorResultsEqual
+    (...props) =>
+      !isNewValueForObjectPaths(...props, ['chartType', 'fetchingCharts'])
   );
-  const chart = charts?.[exchangeAddress]?.[chartType];
+
+  const chart = dispatch(getAssetChart(assetAddress, chartType));
 
   const fetchFallbackCharts = useCallback(
     async () =>
       getChart(exchangeAddress, chartType).then(chartData => {
         if (!chartData.length) return;
         dispatch(
-          addressChartsReceived({
-            payload: {
-              charts: {
-                ...charts,
-                [exchangeAddress]: {
-                  ...charts[exchangeAddress],
-                  [chartType]: chartData,
-                },
-              },
-            },
-          })
+          assetChartsFallbackReceived(assetAddress, chartType, chartData)
         );
       }),
-    [charts, chartType, dispatch, exchangeAddress]
+    [assetAddress, chartType, dispatch, exchangeAddress]
   );
 
-  const updateChartType = useCallback(
-    type => dispatch(chartsUpdateChartType(type)),
-    [dispatch]
-  );
+  useEffect(() => {
+    dispatch(emitChartsRequest(assetAddress, chartType));
+  }, [assetAddress, chartType, dispatch]);
 
   useEffect(() => {
     if (!chart && !!exchangeAddress) {
       fetchFallbackCharts();
     }
+  }, [chart, exchangeAddress, fetchFallbackCharts]);
 
-    return () => {
-      // Reset chart timeframe on unmount.
-      updateChartType(DEFAULT_CHART_TYPE);
-    };
-  }, [chart, exchangeAddress, fetchFallbackCharts, updateChartType]);
+  const updateChartType = useCallback(
+    type => dispatch(chartsUpdateChartType(type)),
+    [dispatch]
+  );
 
   return {
     chart,

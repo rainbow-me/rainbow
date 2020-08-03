@@ -1,10 +1,9 @@
-import React, { createElement, Fragment } from 'react';
-import { useSafeArea } from 'react-native-safe-area-context';
+import React, { Fragment } from 'react';
+import { KeyboardArea } from 'react-native-keyboard-area';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import AssetTypes from '../../helpers/assetTypes';
 import { useAsset, useDimensions } from '../../hooks';
-import { sheetVerticalOffset } from '../../navigation/effects';
 import { SendCoinRow } from '../coin-row';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
 import SendSavingsCoinRow from '../coin-row/SendSavingsCoinRow';
@@ -13,8 +12,6 @@ import { Column } from '../layout';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
 import { colors, padding, position } from '@rainbow-me/styles';
-
-const tokenPaddingBottom = sheetVerticalOffset + 19;
 
 const AssetRowShadow = [
   [0, 1, 0, colors.dark, 0.01],
@@ -33,11 +30,14 @@ const FormContainer = styled(Column).attrs({
   align: 'end',
   justify: 'space-between',
 })`
-  ${({ insets, isNft }) =>
-    padding(22, isNft ? 0 : 15, isNft ? insets.bottom : tokenPaddingBottom)};
+  ${({ isNft }) => (isNft ? padding(22, 0, 0) : padding(19, 15))};
   background-color: ${colors.lighterGrey};
   flex: 1;
   width: 100%;
+`;
+
+const KeyboardSizeView = styled(KeyboardArea)`
+  background-color: ${colors.lighterGrey};
 `;
 
 export default function SendAssetForm({
@@ -47,19 +47,25 @@ export default function SendAssetForm({
   nativeCurrency,
   onChangeAssetAmount,
   onChangeNativeAmount,
+  onFocus,
   onResetAssetSelection,
   selected,
   sendMaxBalance,
   txSpeedRenderer,
   ...props
 }) {
-  const insets = useSafeArea();
   const { width: deviceWidth } = useDimensions();
 
   const selectedAsset = useAsset(selected);
 
   const isNft = selectedAsset.type === AssetTypes.nft;
   const isSavings = selectedAsset.type === AssetTypes.cToken;
+
+  const AssetRowElement = isNft
+    ? CollectiblesSendRow
+    : isSavings
+    ? SendSavingsCoinRow
+    : SendCoinRow;
 
   return (
     <Container>
@@ -69,21 +75,15 @@ export default function SendAssetForm({
         shadows={AssetRowShadow}
         width={deviceWidth}
       >
-        {createElement(
-          isNft
-            ? CollectiblesSendRow
-            : isSavings
-            ? SendSavingsCoinRow
-            : SendCoinRow,
-          {
-            children: <Icon name="doubleCaret" />,
-            item: selectedAsset,
-            onPress: onResetAssetSelection,
-            selected: true,
-          }
-        )}
+        <AssetRowElement
+          item={selectedAsset}
+          onPress={onResetAssetSelection}
+          selected
+        >
+          <Icon name="doubleCaret" />
+        </AssetRowElement>
       </ShadowStack>
-      <FormContainer insets={insets} isNft={isNft}>
+      <FormContainer isNft={isNft}>
         {isNft ? (
           <SendAssetFormCollectible
             asset={selectedAsset}
@@ -100,10 +100,12 @@ export default function SendAssetForm({
               nativeCurrency={nativeCurrency}
               onChangeAssetAmount={onChangeAssetAmount}
               onChangeNativeAmount={onChangeNativeAmount}
+              onFocus={onFocus}
               selected={selectedAsset}
               sendMaxBalance={sendMaxBalance}
               txSpeedRenderer={txSpeedRenderer}
             />
+            <KeyboardSizeView isOpen />
           </Fragment>
         )}
       </FormContainer>

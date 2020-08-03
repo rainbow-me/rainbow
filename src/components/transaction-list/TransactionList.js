@@ -8,20 +8,26 @@ import styled from 'styled-components/primitives';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '../../config/experimentalHooks';
+import showWalletErrorAlert from '../../helpers/support';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import {
   getHumanReadableDate,
   hasAddableContact,
 } from '../../helpers/transactions';
 import { isENSAddressFormat } from '../../helpers/validators';
-import { useAccountProfile } from '../../hooks';
+import { useAccountProfile, useWallets } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
-import { abbreviations, ethereumUtils } from '../../utils';
-import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { FloatingEmojis } from '../floating-emojis';
+
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
+import {
+  abbreviations,
+  ethereumUtils,
+  showActionSheetWithOptions,
+} from '@rainbow-me/utils';
+
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
 const Container = styled.View`
@@ -53,6 +59,7 @@ const TransactionList = ({
   requests,
   transactions,
 }) => {
+  const { selectedWallet } = useWallets();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
   const setOnNewEmoji = useCallback(
@@ -69,11 +76,16 @@ const TransactionList = ({
   } = useAccountProfile();
 
   const onAddCashPress = useCallback(() => {
+    if (selectedWallet?.damaged) {
+      showWalletErrorAlert();
+      return;
+    }
+
     navigate(Routes.ADD_CASH_FLOW);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-  }, [navigate]);
+  }, [navigate, selectedWallet?.damaged]);
 
   const onAvatarPress = useCallback(() => {
     navigate(Routes.AVATAR_BUILDER, {
@@ -83,8 +95,12 @@ const TransactionList = ({
   }, [accountColor, accountName, navigate]);
 
   const onReceivePress = useCallback(() => {
+    if (selectedWallet?.damaged) {
+      showWalletErrorAlert();
+      return;
+    }
     navigate(Routes.RECEIVE_MODAL);
-  }, [navigate]);
+  }, [navigate, selectedWallet?.damaged]);
 
   const onRequestExpire = useCallback(
     e => {
@@ -165,7 +181,7 @@ const TransactionList = ({
                 asset: item,
                 color: contactColor,
                 contact,
-                type: 'contact',
+                type: 'contact_profile',
               });
             } else if (
               (!showContactInfo && buttonIndex === 0) ||
@@ -186,6 +202,10 @@ const TransactionList = ({
 
   const onCopyAddressPress = useCallback(
     e => {
+      if (selectedWallet?.damaged) {
+        showWalletErrorAlert();
+        return;
+      }
       const { x, y, width, height } = e.nativeEvent;
       setTapTarget([x, y, width, height]);
       if (onNewEmoji && onNewEmoji.current) {
@@ -193,7 +213,7 @@ const TransactionList = ({
       }
       Clipboard.setString(accountAddress);
     },
-    [accountAddress]
+    [accountAddress, selectedWallet?.damaged]
   );
 
   const onAccountNamePress = useCallback(() => {

@@ -7,11 +7,13 @@
 
 @import Firebase;
 #import "AppDelegate.h"
+#import "Rainbow-Swift.h"
 #import <RNBranch/RNBranch.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
 #import <React/RCTRootView.h>
+#import <React/RCTReloadCommand.h>
 #import <RNCPushNotificationIOS.h>
 #import <Sentry/Sentry.h>
 #import "RNSplashScreen.h"
@@ -87,8 +89,8 @@ RCT_EXPORT_METHOD(hideAnimated) {
   [RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES];
 
   // React Native - Defaults
-  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
+  self.bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:self.bridge
                                                    moduleName:@"Rainbow"
                                             initialProperties:nil];
 
@@ -178,7 +180,6 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 
 }
 
-
 - (void)applicationWillTerminate:(UIApplication *)application {
   
   if(self.isRapRunning){
@@ -200,6 +201,14 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
         // do other deep link routing for other SDKs
     }
     return YES;
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application{
+  BOOL action = [SettingsBundleHelper checkAndExecuteSettings];
+  if(action){
+    [SentrySDK captureMessage:@"Keychain Wiped!"];
+    RCTTriggerReloadCommandListeners(@"keychain wiped");
+  }
 }
 
 

@@ -1,167 +1,109 @@
 import { toLower } from 'lodash';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { compose } from 'recompact';
-import {
-  DataProvider,
-  LayoutProvider,
-  RecyclerListView,
-} from 'recyclerlistview';
-import { withSelectedInput } from '../../hoc';
-import { withNavigation } from '../../navigation/Navigation';
-import { deviceUtils } from '../../utils';
-import { filterList } from '../../utils/search';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { FlatList } from 'react-native-gesture-handler';
+import { KeyboardArea } from 'react-native-keyboard-area';
+import styled from 'styled-components/primitives';
+import { useNavigation } from '../../navigation/Navigation';
 import { FlyInAnimation } from '../animations';
 import { SwipeableContactRow } from '../contacts';
 import SendEmptyState from './SendEmptyState';
 import Routes from '@rainbow-me/routes';
+import { colors } from '@rainbow-me/styles';
+import { filterList } from '@rainbow-me/utils';
 
-const LastRowPadding = 12;
+const KeyboardSizeView = styled(KeyboardArea)`
+  background-color: ${colors.white};
+`;
+
 const rowHeight = 62;
+const getItemLayout = (data, index) => ({
+  index,
+  length: rowHeight,
+  offset: rowHeight * index,
+});
+const contentContainerStyle = { paddingBottom: 32 };
+const keyExtractor = item => `SendContactList-${item.address}`;
 
-let position = 0;
+const SendContactFlatList = styled(FlatList).attrs({
+  alwaysBounceVertical: true,
+  contentContainerStyle,
+  directionalLockEnabled: true,
+  getItemLayout,
+  keyboardDismissMode: 'none',
+  keyboardShouldPersistTaps: 'always',
+  keyExtractor,
+})`
+  flex: 1;
+`;
 
-const COIN_ROW = 1;
-const LAST_COIN_ROW = 1;
+export default function SendContactList({
+  contacts,
+  currentInput,
+  onPressContact,
+  removeContact,
+}) {
+  const { navigate } = useNavigation();
 
-class SendContactList extends Component {
-  static propTypes = {
-    allAssets: PropTypes.array,
-    currentInput: PropTypes.string,
-    navigation: PropTypes.object,
-    onPressContact: PropTypes.func,
-    removeContact: PropTypes.func,
-    selectedInputId: PropTypes.object,
-  };
+  const contactRefs = useRef({});
+  const touchedContact = useRef(undefined);
 
-  constructor(args) {
-    super(args);
+  const filteredContacts = useMemo(
+    () => filterList(contacts, currentInput, ['nickname']),
+    [contacts, currentInput]
+  );
 
-    this.state = {
-      contacts: [],
-    };
-
-    this.recentlyRendered = false;
-    this.touchedContact = undefined;
-    this.contacts = {};
-
-    this._layoutProvider = new LayoutProvider(
-      i => {
-        if (i === this.state.contacts.length - 1) {
-          return LAST_COIN_ROW;
-        }
-        return COIN_ROW;
-      },
-      (type, dim) => {
-        if (type === COIN_ROW) {
-          dim.height = rowHeight;
-          dim.width = deviceUtils.dimensions.width;
-        } else if (type === LAST_COIN_ROW) {
-          dim.height = rowHeight + LastRowPadding;
-          dim.width = deviceUtils.dimensions.width;
-        } else {
-          dim.height = 0;
-          dim.width = 0;
-        }
-      }
-    );
-  }
-
-  static getDerivedStateFromProps(props, state) {
-    const newAssets = filterList(props.allAssets, props.currentInput, [
-      'nickname',
-    ]);
-    if (newAssets !== state.contacts) {
-      return { ...state, contacts: newAssets };
+  const handleCloseAllDifferentContacts = useCallback(address => {
+    if (touchedContact.current && contactRefs.current[touchedContact.current]) {
+      contactRefs.current[touchedContact.current].close();
     }
-    return state;
-  }
+    touchedContact.current = toLower(address);
+  }, []);
 
-  shouldComponentUpdate = () => {
-    if (position < 0) {
-      return false;
-    }
-    return true;
-  };
+  const handleEditContact = useCallback(
+    ({ address, color, nickname }) => {
+      navigate(Routes.MODAL_SCREEN, {
+        additionalPadding: true,
+        address,
+        color,
+        contact: { address, color, nickname },
+        type: 'contact_profile',
+      });
+    },
+    [navigate]
+  );
 
-  closeAllDifferentContacts = address => {
-    if (this.touchedContact && this.contacts[this.touchedContact]) {
-      this.contacts[this.touchedContact].close();
-    }
-    this.touchedContact = toLower(address);
-    this.recentlyRendered = false;
-  };
-
-  handleScroll = (event, offsetX, offsetY) => {
-    position = offsetY;
-  };
-
-  hasRowChanged = (r1, r2) => {
-    if (r1 !== r2) {
-      return true;
-    }
-    return false;
-  };
-
-  handleRefocus = () => {
-    if (this.props.selectedInputId) {
-      this.props.selectedInputId.focus();
-    }
-  };
-
-  onSelectEdit = accountInfo => {
-    const { address, color, navigation, nickname, onChange } = accountInfo;
-
-    navigation.navigate(Routes.MODAL_SCREEN, {
-      additionalPadding: true,
-      address,
-      asset: {},
-      color,
-      contact: { address, color, nickname },
-      onCloseModal: onChange,
-      onRefocusInput: this.handleRefocus,
-      type: 'contact',
-    });
-  };
-
-  renderItem = (type, item) => {
-    const { navigation, onPressContact, removeContact } = this.props;
-    return (
+  const renderItemCallback = useCallback(
+    ({ item }) => (
       <SwipeableContactRow
-        navigation={navigation}
         onPress={onPressContact}
-        onSelectEdit={this.onSelectEdit}
-        onTouch={this.closeAllDifferentContacts}
+        onSelectEdit={handleEditContact}
+        onTouch={handleCloseAllDifferentContacts}
         ref={component => {
-          this.contacts[toLower(item.address)] = component;
+          contactRefs.current[toLower(item.address)] = component;
         }}
         removeContact={removeContact}
         {...item}
       />
-    );
-  };
+    ),
+    [
+      handleCloseAllDifferentContacts,
+      handleEditContact,
+      onPressContact,
+      removeContact,
+    ]
+  );
 
-  render = () => (
+  return (
     <FlyInAnimation>
-      {this.state.contacts.length === 0 ? (
+      {filteredContacts.length === 0 ? (
         <SendEmptyState />
       ) : (
-        <RecyclerListView
-          dataProvider={new DataProvider(this.hasRowChanged).cloneWithRows(
-            this.state.contacts
-          )}
-          layoutProvider={this._layoutProvider}
-          onScroll={this.handleScroll}
-          optimizeForInsertDeleteAnimations
-          rowRenderer={this.renderItem}
-          scrollViewProps={{
-            keyboardShouldPersistTaps: 'always',
-          }}
-          style={{ minHeight: 1 }}
+        <SendContactFlatList
+          data={filteredContacts}
+          renderItem={renderItemCallback}
         />
       )}
+      <KeyboardSizeView isOpen />
     </FlyInAnimation>
   );
 }
-
-export default compose(withSelectedInput, withNavigation)(SendContactList);

@@ -15,6 +15,7 @@ const EXPERIMENTAL_CONFIG = 'experimentalConfig';
 function DevContextComponent({ children }) {
   const [config, setConfig] = useState(defaultConfig);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(async () => {
     const configFromStorage = await AsyncStorage.getItem(EXPERIMENTAL_CONFIG);
     if (configFromStorage) {

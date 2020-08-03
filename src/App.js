@@ -10,6 +10,7 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   AppState,
+  NativeModules,
   Platform,
   StatusBar,
   unstable_enableLogBox,
@@ -42,9 +43,7 @@ import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
 import handleDeeplink from './handlers/deeplinks';
 import {
-  getKeychainIntegrityState,
   getUserBackupState,
-  saveKeychainIntegrityState,
   saveUserBackupState,
 } from './handlers/localstorage/globalSettings';
 import DevContextWrapper from './helpers/DevContext';
@@ -52,14 +51,13 @@ import BackupStateTypes from './helpers/backupStateTypes';
 import { withAccountSettings } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
-import { checkKeychainIntegrity, loadAddress } from './model/wallet';
+import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
 import { addNewSubscriber } from './redux/data';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
-import { identifyBrokenWallet } from './redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { logger } from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
@@ -96,6 +94,10 @@ class App extends Component {
   state = { appState: AppState.currentState, initialRoute: null };
 
   async componentDidMount() {
+    if (!__DEV__ && NativeModules.RNTestFlight) {
+      const { isTestFlight } = NativeModules.RNTestFlight.getConstants();
+      logger.sentry(`Test flight usage - ${isTestFlight}`);
+    }
     this.identifyFlow();
     AppState.addEventListener('change', this.handleAppStateChange);
     await this.handleInitializeAnalytics();
@@ -152,21 +154,6 @@ class App extends Component {
     } else {
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
     }
-
-    setTimeout(async () => {
-      const keychainIntegrityState = await getKeychainIntegrityState();
-      if (!keychainIntegrityState) {
-        const healthy = await checkKeychainIntegrity();
-        if (!healthy) {
-          analytics.track('Keychain Integrity', {
-            category: 'dev data',
-            label: 'broken',
-          });
-          store.dispatch(identifyBrokenWallet());
-          await saveKeychainIntegrityState('done');
-        }
-      }
-    }, 5000);
   };
 
   setupIncomingNotificationListeners = async () => {
