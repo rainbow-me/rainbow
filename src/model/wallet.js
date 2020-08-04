@@ -932,17 +932,3 @@ export async function restoreCloudBackup(password, userData) {
     logger.log('Error while restoring back up', e);
   }
 }
-
-export async function checkKeychainIntegrity() {
-  const hasMigratedFlag = await keychain.hasKey(seedPhraseMigratedKey);
-  if (hasMigratedFlag) {
-    return true;
-  }
-
-  const hasOldSeedphraseKey = await keychain.hasKey(seedPhraseKey);
-  if (hasOldSeedphraseKey) {
-    return true;
-  }
-
-  return false;
-}
