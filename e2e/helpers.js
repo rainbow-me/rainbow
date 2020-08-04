@@ -123,9 +123,10 @@ export async function checkIfDisabled(elementId) {
   // only way for now...
   // https://github.com/wix/Detox/issues/246
   try {
-    await tap(elementId).tap();
+    await element(by.id(elementId)).tap();
     return Promise.reject();
   } catch (e) {
+    console.log(e);
     return Promise.resolve();
   }
 }

@@ -102,7 +102,12 @@ export default function WalletProfileState({
 
   return (
     <WalletProfileModal>
-      <Centered direction="column" paddingBottom={30} width="100%">
+      <Centered
+        direction="column"
+        paddingBottom={30}
+        testID="wallet-info-modal"
+        width="100%"
+      >
         <ProfileAvatarButton color={color} setColor={setColor} value={value} />
         <ProfileNameInput
           onChange={setValue}
@@ -110,6 +115,7 @@ export default function WalletProfileState({
           placeholder="Name your wallet"
           ref={inputRef}
           selectionColor={colors.avatarColor[color]}
+          testID="wallet-info-input"
           value={value}
         />
         {address && (
@@ -129,6 +135,7 @@ export default function WalletProfileState({
             <WalletProfileButtonText
               color="appleBlue"
               letterSpacing="rounded"
+              testID="wallet-info-submit-button"
               weight="semibold"
             >
               {showFaceIDCharacter && '􀎽 '}

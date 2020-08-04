@@ -11,12 +11,12 @@ import { web3Provider } from '../handlers/web3';
 import BackupStateTypes from '../helpers/backupStateTypes';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
+import { hasKey } from '../model/keychain';
 import {
   addressKey,
   generateAccount,
   getAllWallets,
   getSelectedWallet,
-  hasKey,
   loadAddress,
   saveAddress,
   saveAllWallets,

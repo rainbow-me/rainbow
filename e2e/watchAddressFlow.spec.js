@@ -20,7 +20,7 @@ describe('Watch address flow', () => {
     await Helpers.checkIfExists('import-sheet');
   });
 
-  it('Should show the "Add wallet modal" after tapping import with a valid private key"', async () => {
+  it('Should show the "Add wallet modal" after tapping import with a valid address', async () => {
     await Helpers.clearField('import-sheet-input');
     await Helpers.checkIfHasText('import-sheet-button-label', 'Paste');
     await Helpers.typeText('import-sheet-input', 'vitalik.eth', false);
