@@ -63,9 +63,11 @@ if (__DEV__) {
   initSentry({ dsn: SENTRY_ENDPOINT, environment: SENTRY_ENVIRONMENT });
 }
 
-CodePush.getUpdateMetadata().then(update => {
+CodePush.getUpdateMetadata(CodePush.UpdateState.RUNNING).then(update => {
   if (update) {
-    setRelease(`me.rainbow-${update.appVersion}-codepush:${update.label}`);
+    setRelease(
+      `me.rainbow-${VersionNumber.appVersion}-codepush:${update.label}`
+    );
   } else {
     setRelease(`me.rainbow-${VersionNumber.appVersion}`);
   }
