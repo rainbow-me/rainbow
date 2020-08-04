@@ -33,8 +33,8 @@ export const privateKeyKey = 'rainbowPrivateKey';
 export const addressKey = 'rainbowAddressKey';
 export const selectedWalletKey = 'rainbowSelectedWalletKey';
 export const allWalletsKey = 'rainbowAllWalletsKey';
-export const seedPhraseMigratedKey = 'rainbowSeedPhraseMigratedKey';
-export const oldSeedPhraseMigratedKey = 'oldSeedPhraseMigratedKey';
+export const oldSeedPhraseMigratedKey = 'rainbowOldSeedPhraseMigratedKey';
+export const seedPhraseMigratedKey = 'rainbowSeedPhraseMigratedKey'; // NOT USED ANYMORE!
 
 const privateKeyVersion = 1.0;
 const seedPhraseVersion = 1.0;
