@@ -793,7 +793,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async id => {
   try {
     let seedPhrase = null;
     // First we need to check if that key already exists
-    const keyFound = await keychain.loadString(`${id}_${seedPhraseKey}`);
+    const keyFound = await keychain.hasKey(`${id}_${seedPhraseKey}`);
     if (!keyFound) {
       logger.sentry('key not found, we should have a migration pending...');
       // if it doesn't we might have a migration pending
