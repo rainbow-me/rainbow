@@ -1,13 +1,20 @@
-import { findKey } from 'lodash';
+import { findKey, keys } from 'lodash';
 import {
   getMigrationVersion,
   setMigrationVersion,
 } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
-import { DEFAULT_WALLET_NAME, loadAddress, saveAddress } from '../model/wallet';
+import {
+  DEFAULT_WALLET_NAME,
+  loadAddress,
+  oldSeedPhraseMigratedKey,
+  saveAddress,
+  seedPhraseKey,
+} from '../model/wallet';
 import store from '../redux/store';
 
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
+import { hasKey } from './keychain';
 import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
 
@@ -145,6 +152,56 @@ export default async function runMigrations() {
   };
 
   migrations.push(v2);
+  /*
+   *************** Migration v3 ******************
+   * This step makes sure there are no wallets marked as damaged
+   * incorrectly by the keychain integrity checks
+   */
+  const v3 = async () => {
+    logger.sentry('Start migration v3');
+    const { wallets, selected } = store.getState().wallets;
+
+    if (!wallets) {
+      logger.sentry('Complete migration v3 early');
+      return;
+    }
+
+    const hasMigratedFlag = await hasKey(oldSeedPhraseMigratedKey);
+    if (!hasMigratedFlag) {
+      logger.sentry('Migration flag not set');
+      const hasOldSeedphraseKey = await hasKey(seedPhraseKey);
+      if (hasOldSeedphraseKey) {
+        logger.sentry('Old seedphrase is still there');
+        let incorrectDamagedWalletId = null;
+        const updatedWallets = { ...wallets };
+        keys(updatedWallets).forEach(walletId => {
+          if (
+            updatedWallets[walletId].damaged &&
+            !updatedWallets[walletId].imported
+          ) {
+            logger.sentry('found incorrect damaged wallet', walletId);
+            delete updatedWallets[walletId].damaged;
+            incorrectDamagedWalletId = walletId;
+          }
+        });
+        logger.sentry('updating all wallets');
+        await store.dispatch(walletsUpdate(updatedWallets));
+        logger.sentry('done updating all wallets');
+        // Additionally, we need to check if it's the selected wallet
+        // and if that's the case, update it too
+        if (selected.id === incorrectDamagedWalletId) {
+          logger.sentry('need to update the selected wallet');
+          const updatedSelectedWallet =
+            updatedWallets[incorrectDamagedWalletId];
+          await store.dispatch(walletsSetSelected(updatedSelectedWallet));
+          logger.sentry('selected wallet updated');
+        }
+      }
+    }
+    logger.sentry('Complete migration v3');
+  };
+
+  migrations.push(v3);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
