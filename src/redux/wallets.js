@@ -18,6 +18,7 @@ import {
   getAllWallets,
   getSelectedWallet,
   loadAddress,
+  oldSeedPhraseMigratedKey,
   saveAddress,
   saveAllWallets,
   seedPhraseKey,
@@ -245,10 +246,21 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
 
     const hasMigratedFlag = await hasKey(seedPhraseMigratedKey);
     if (hasMigratedFlag) {
+      logger.sentry(
+        '[KeychainIntegrityCheck]: previous migrated flag is OK [NO LONGER RELEVANT]'
+      );
+    } else {
+      logger.sentry(
+        `[KeychainIntegrityCheck]: migrated flag is present: ${hasMigratedFlag} [NO LONGER RELEVANT]`
+      );
+    }
+
+    const hasOldSeedPhraseMigratedKey = await hasKey(oldSeedPhraseMigratedKey);
+    if (hasOldSeedPhraseMigratedKey) {
       logger.sentry('[KeychainIntegrityCheck]: migrated flag is OK');
     } else {
       logger.sentry(
-        `[KeychainIntegrityCheck]: migrated flag is missing: ${hasMigratedFlag}`
+        `[KeychainIntegrityCheck]: migrated flag is present: ${hasOldSeedPhraseMigratedKey}`
       );
     }
 
@@ -257,7 +269,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       logger.sentry('[KeychainIntegrityCheck]: old seed is still present!');
     } else {
       logger.sentry(
-        `[KeychainIntegrityCheck]: old seed is not present: ${hasOldSeedphraseKey}`
+        `[KeychainIntegrityCheck]: old seed is present: ${hasOldSeedphraseKey}`
       );
     }
 
