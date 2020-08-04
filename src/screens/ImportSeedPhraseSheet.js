@@ -380,7 +380,11 @@ export default function ImportSeedPhraseSheet() {
                     􀂍{' '}
                   </Text>
                 )}
-                <Text color="white" weight="semibold">
+                <Text
+                  color="white"
+                  testID="import-sheet-button-label"
+                  weight="semibold"
+                >
                   Import
                 </Text>
               </Row>
@@ -390,7 +394,13 @@ export default function ImportSeedPhraseSheet() {
               disabled={!isClipboardValidSecret}
               onPress={handlePressPasteButton}
             >
-              Paste
+              <Text
+                color="white"
+                testID="import-sheet-button-label"
+                weight="semibold"
+              >
+                Paste
+              </Text>
             </FooterButton>
           )}
         </Footer>
