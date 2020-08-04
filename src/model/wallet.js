@@ -34,6 +34,7 @@ export const addressKey = 'rainbowAddressKey';
 export const selectedWalletKey = 'rainbowSelectedWalletKey';
 export const allWalletsKey = 'rainbowAllWalletsKey';
 export const seedPhraseMigratedKey = 'rainbowSeedPhraseMigratedKey';
+export const oldSeedPhraseMigratedKey = 'oldSeedPhraseMigratedKey';
 
 const privateKeyVersion = 1.0;
 const seedPhraseVersion = 1.0;
@@ -255,7 +256,7 @@ const loadPrivateKey = async (
 ) => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
-      seedPhraseMigratedKey
+      oldSeedPhraseMigratedKey
     );
 
     // We need to migrate the seedphrase & private key first
@@ -413,14 +414,6 @@ export const createWallet = async (
     // Save private key
     await savePrivateKey(wallet.address, wallet.privateKey);
     logger.sentry('[createWallet] - saved private key');
-
-    // Save migration flag
-    await keychain.saveString(
-      seedPhraseMigratedKey,
-      'true',
-      publicAccessControlOptions
-    );
-    logger.sentry('[createWallet] - saved seed phrase migrated key');
 
     addresses.push({
       address: wallet.address,
@@ -682,7 +675,7 @@ export const getAllWallets = async () => {
 export const generateAccount = async (id, index) => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
-      seedPhraseMigratedKey
+      oldSeedPhraseMigratedKey
     );
     let seedPhrase, hdnode;
     // We need to migrate the seedphrase & private key first
@@ -722,7 +715,7 @@ const migrateSecrets = async () => {
     if (!seedPhrase) {
       // Save the migration flag to prevent this flow in the future
       await keychain.saveString(
-        seedPhraseMigratedKey,
+        oldSeedPhraseMigratedKey,
         'true',
         publicAccessControlOptions
       );
@@ -749,14 +742,20 @@ const migrateSecrets = async () => {
       existingAccount = new ethers.Wallet(node.privateKey);
     }
 
-    // Save the private key in the new format
-    await savePrivateKey(existingAccount.address, existingAccount.privateKey);
+    // Check that wasn't migrated already!
+    if (!keychain.hasKey(`${existingAccount.address}_${privateKeyKey}`)) {
+      // Save the private key in the new format
+      await savePrivateKey(existingAccount.address, existingAccount.privateKey);
+    }
     const { wallet } = await getSelectedWallet();
+
     // Save the seedphrase in the new format
-    await saveSeedPhrase(seedPhrase, wallet.id);
+    if (!keychain.hasKey(`${wallet.id}_${seedPhraseKey}`)) {
+      await saveSeedPhrase(seedPhrase, wallet.id);
+    }
     // Save the migration flag to prevent this flow in the future
     await keychain.saveString(
-      seedPhraseMigratedKey,
+      oldSeedPhraseMigratedKey,
       'true',
       publicAccessControlOptions
     );
@@ -775,7 +774,7 @@ const migrateSecrets = async () => {
 export const loadSeedPhraseAndMigrateIfNeeded = async id => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
-      seedPhraseMigratedKey
+      oldSeedPhraseMigratedKey
     );
 
     // We need to migrate the seedphrase & private key first
