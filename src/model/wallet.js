@@ -710,19 +710,26 @@ export const generateAccount = async (id, index) => {
 
 const migrateSecrets = async () => {
   try {
+    logger.sentry('migrating secrets!');
     const seedPhrase = await oldLoadSeedPhrase();
 
     if (!seedPhrase) {
+      logger.sentry('old seed doesnt exist!');
       // Save the migration flag to prevent this flow in the future
       await keychain.saveString(
         oldSeedPhraseMigratedKey,
         'true',
         publicAccessControlOptions
       );
+      logger.sentry(
+        'Saved the migration flag to prevent this flow in the future'
+      );
       return null;
     }
 
+    logger.sentry('Got secret, now idenfifying wallet type');
     const type = identifyWalletType(seedPhrase);
+    logger.sentry('Got type: ', type);
     let hdnode, node, existingAccount;
     switch (type) {
       case WalletTypes.privateKey:
@@ -738,20 +745,30 @@ const migrateSecrets = async () => {
     }
 
     if (!existingAccount) {
+      logger.sentry('No existing account, so we have to derive it');
       node = hdnode.derivePath(`${DEFAULT_HD_PATH}/0`);
       existingAccount = new ethers.Wallet(node.privateKey);
+      logger.sentry('Got existing account');
     }
 
     // Check that wasn't migrated already!
-    if (!keychain.hasKey(`${existingAccount.address}_${privateKeyKey}`)) {
+    const pkeyExists = await keychain.hasKey(
+      `${existingAccount.address}_${privateKeyKey}`
+    );
+    if (!pkeyExists) {
+      logger.sentry('new pkey didnt exist so we should save it');
       // Save the private key in the new format
       await savePrivateKey(existingAccount.address, existingAccount.privateKey);
+      logger.sentry('new pkey saved');
     }
     const { wallet } = await getSelectedWallet();
 
     // Save the seedphrase in the new format
-    if (!keychain.hasKey(`${wallet.id}_${seedPhraseKey}`)) {
+    const seedExists = await keychain.hasKey(`${wallet.id}_${seedPhraseKey}`);
+    if (!seedExists) {
+      logger.sentry('new seed didnt exist so we should save it');
       await saveSeedPhrase(seedPhrase, wallet.id);
+      logger.sentry('new seed saved');
     }
     // Save the migration flag to prevent this flow in the future
     await keychain.saveString(
@@ -759,6 +776,7 @@ const migrateSecrets = async () => {
       'true',
       publicAccessControlOptions
     );
+    logger.sentry('saved migrated key');
     return {
       hdnode,
       privateKey: existingAccount.privateKey,
