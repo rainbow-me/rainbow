@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/react-native';
+import { captureException, captureMessage } from '@sentry/react-native';
 import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { isValidAddress, toBuffer } from 'ethereumjs-util';
 import { ethers } from 'ethers';
@@ -791,21 +791,38 @@ const migrateSecrets = async () => {
 
 export const loadSeedPhraseAndMigrateIfNeeded = async id => {
   try {
-    const isSeedPhraseMigrated = await keychain.loadString(
-      oldSeedPhraseMigratedKey
-    );
-
-    // We need to migrate the seedphrase & private key first
-    // In that case we regenerate the existing private key to store it with the new format
     let seedPhrase = null;
-    if (!isSeedPhraseMigrated) {
-      const migratedSecrets = await migrateSecrets();
-      seedPhrase = migratedSecrets?.seedPhrase;
-    }
+    // First we need to check if that key already exists
+    const keyFound = await keychain.loadString(`${id}_${seedPhraseKey}`);
+    if (!keyFound) {
+      logger.sentry('key not found, we should have a migration pending...');
+      // if it doesn't we might have a migration pending
+      const isSeedPhraseMigrated = await keychain.loadString(
+        oldSeedPhraseMigratedKey
+      );
 
-    if (!seedPhrase) {
+      logger.sentry('Migration pending?', !isSeedPhraseMigrated);
+
+      // We need to migrate the seedphrase & private key first
+      // In that case we regenerate the existing private key to store it with the new format
+      if (!isSeedPhraseMigrated) {
+        const migratedSecrets = await migrateSecrets();
+        seedPhrase = migratedSecrets?.seedPhrase;
+      } else {
+        logger.sentry('Migrated flag was set but there is no key!', id);
+        captureMessage('Missing seed for wallet');
+      }
+    } else {
+      logger.sentry('Getting seed directly');
       const seedData = await getSeedPhrase(id);
       seedPhrase = seedData?.seedphrase;
+      if (seedPhrase) {
+        logger.sentry('got seed succesfully');
+      } else {
+        captureMessage(
+          'Missing seed for wallet - (Key exists but value isnt valid)!'
+        );
+      }
     }
 
     return seedPhrase;
