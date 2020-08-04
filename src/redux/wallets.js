@@ -224,7 +224,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       logger.sentry('[KeychainIntegrityCheck]: old seed is still present!');
     } else {
       logger.sentry(
-        `[KeychainIntegrityCheck]: old seed is not present: ${hasOldSeedphraseKey}`
+        `[KeychainIntegrityCheck]: old seed is present: ${hasOldSeedphraseKey}`
       );
     }
 
