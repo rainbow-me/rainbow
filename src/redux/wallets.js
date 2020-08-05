@@ -278,7 +278,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       // A wallet is NOT damaged if:
       // - it's not imported
       // - and hasn't been migrated yet
-      // - and the seedphrase is still there
+      // - and the old seedphrase is still there
       if (
         !wallet.imported &&
         !oldSeedPhraseMigratedKey &&
