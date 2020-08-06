@@ -274,6 +274,19 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
         }
       }
 
+      // Handle race condition:
+      // A wallet is NOT damaged if:
+      // - it's not imported
+      // - and hasn't been migrated yet
+      // - and the old seedphrase is still there
+      if (
+        !wallet.imported &&
+        !oldSeedPhraseMigratedKey &&
+        hasOldSeedphraseKey
+      ) {
+        healthyWallet = true;
+      }
+
       if (!healthyWallet) {
         logger.sentry(
           '[KeychainIntegrityCheck]: declaring wallet unhealthy...'
