@@ -46,7 +46,7 @@ import {
   setupIncomingNotificationListeners,
 } from './handlers/walletReadyEvents';
 import DevContextWrapper from './helpers/DevContext';
-import { withAccountSettings } from './hoc';
+import { withAccountSettings, withAppState } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
@@ -56,7 +56,7 @@ import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
 import Routes from '@rainbow-me/routes';
-import { logger } from 'logger';
+import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
@@ -134,11 +134,11 @@ class App extends Component {
     });
   }
 
-  componentDidUpdate(nextProps) {
-    if (!this.props.walletReady && nextProps.walletReady) {
+  componentDidUpdate(prevProps) {
+    if (!prevProps.walletReady && this.props.walletReady) {
+      // Everything we need to do after the wallet is ready goes here
       logger.sentry('✅ Wallet ready!');
       runKeychainIntegrityChecks();
-      // Everything we need to do after the wallet is ready goes here
       if (Platform.OS === 'ios') {
         this.incomingNotificationListener = setupIncomingNotificationListeners();
       }
@@ -255,6 +255,7 @@ class App extends Component {
 const AppWithRedux = compose(
   withProps({ store }),
   withAccountSettings,
+  withAppState,
   connect(null, {
     requestsForTopic,
   })

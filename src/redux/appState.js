@@ -16,9 +16,7 @@ export const appUpdate = state => (dispatch, getState) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  data: {
-    walletReady: false,
-  },
+  walletReady: false,
 };
 
 export default (state = INITIAL_STATE, action) => {
