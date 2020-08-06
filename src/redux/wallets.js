@@ -22,7 +22,6 @@ import {
   saveAddress,
   saveAllWallets,
   seedPhraseKey,
-  seedPhraseMigratedKey,
   setSelectedWallet,
 } from '../model/wallet';
 import { settingsUpdateAccountAddress } from '../redux/settings';
@@ -244,32 +243,21 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       );
     }
 
-    const hasMigratedFlag = await hasKey(seedPhraseMigratedKey);
-    if (hasMigratedFlag) {
-      logger.sentry(
-        '[KeychainIntegrityCheck]: previous migrated flag is OK [NO LONGER RELEVANT]'
-      );
-    } else {
-      logger.sentry(
-        `[KeychainIntegrityCheck]: migrated flag is present: ${hasMigratedFlag} [NO LONGER RELEVANT]`
-      );
-    }
-
-    const hasOldSeedPhraseMigratedKey = await hasKey(oldSeedPhraseMigratedKey);
-    if (hasOldSeedPhraseMigratedKey) {
+    const hasOldSeedPhraseMigratedFlag = await hasKey(oldSeedPhraseMigratedKey);
+    if (hasOldSeedPhraseMigratedFlag) {
       logger.sentry('[KeychainIntegrityCheck]: migrated flag is OK');
     } else {
       logger.sentry(
-        `[KeychainIntegrityCheck]: migrated flag is present: ${hasOldSeedPhraseMigratedKey}`
+        `[KeychainIntegrityCheck]: migrated flag is present: ${hasOldSeedPhraseMigratedFlag}`
       );
     }
 
-    const hasOldSeedphraseKey = await hasKey(seedPhraseKey);
-    if (hasOldSeedphraseKey) {
+    const hasOldSeedphrase = await hasKey(seedPhraseKey);
+    if (hasOldSeedphrase) {
       logger.sentry('[KeychainIntegrityCheck]: old seed is still present!');
     } else {
       logger.sentry(
-        `[KeychainIntegrityCheck]: old seed is present: ${hasOldSeedphraseKey}`
+        `[KeychainIntegrityCheck]: old seed is present: ${hasOldSeedphrase}`
       );
     }
 
@@ -317,6 +305,19 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
             `[KeychainIntegrityCheck]: pkey is present for address: ${account.address}`
           );
         }
+      }
+
+      // Handle race condition:
+      // A wallet is NOT damaged if:
+      // - it's not imported
+      // - and hasn't been migrated yet
+      // - and the old seedphrase is still there
+      if (
+        !wallet.imported &&
+        !hasOldSeedPhraseMigratedFlag &&
+        hasOldSeedphrase
+      ) {
+        healthyWallet = true;
       }
 
       if (!healthyWallet) {
