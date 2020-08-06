@@ -167,15 +167,27 @@ export default async function runMigrations() {
 
   /*
    *************** Migration v4 ******************
+   * Not in use
+   */
+
+  const v4 = async () => {
+    logger.sentry('Ignoring migration v4');
+    return true;
+  };
+
+  migrations.push(v4);
+
+  /*
+   *************** Migration v5 ******************
    * This step makes sure there are no wallets marked as damaged
    * incorrectly by the keychain integrity checks
    */
-  const v4 = async () => {
-    logger.sentry('Start migration v4');
+  const v5 = async () => {
+    logger.sentry('Start migration v5');
     const { wallets, selected } = store.getState().wallets;
 
     if (!wallets) {
-      logger.sentry('Complete migration v4 early');
+      logger.sentry('Complete migration v5 early');
       return;
     }
 
@@ -211,10 +223,10 @@ export default async function runMigrations() {
         }
       }
     }
-    logger.sentry('Complete migration v4');
+    logger.sentry('Complete migration v5');
   };
 
-  migrations.push(v4);
+  migrations.push(v5);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
