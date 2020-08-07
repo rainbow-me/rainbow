@@ -294,11 +294,12 @@ export const saveAddress = async (
   await keychain.saveString(addressKey, address, accessControlOptions);
 };
 
-const identifyWalletType = walletSeed => {
+export const identifyWalletType = walletSeed => {
   if (
     isHexStringIgnorePrefix(walletSeed) &&
     addHexPrefix(walletSeed).length === 66
   ) {
+    console.log('ISSA PKEY');
     return WalletTypes.privateKey;
   }
 

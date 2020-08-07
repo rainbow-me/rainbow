@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import { captureException } from '@sentry/react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import styled from 'styled-components';
@@ -16,6 +17,7 @@ import SecretDisplayItem from '../secret-display/SecretDisplayItem';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
 import { colors, position } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const PrivateKeyText = styled(SecretDisplayItem).attrs({
   align: 'center',
@@ -41,16 +43,23 @@ const SecretDisplaySection = ({ onWalletTypeIdentified, secretLoaded }) => {
   let wordSectionHeight = 100;
 
   const loadSeed = useCallback(async () => {
-    const walletId = params?.walletId || selectedWallet.id;
-    const s = await loadSeedPhraseAndMigrateIfNeeded(walletId);
-    if (s) {
-      const walletType = identifyWalletType(s);
-      setType(walletType);
-      onWalletTypeIdentified && onWalletTypeIdentified(walletType);
-      setSeed(s);
-      setError(false);
-      secretLoaded && secretLoaded(true);
-    } else {
+    try {
+      const walletId = params?.walletId || selectedWallet.id;
+      const s = await loadSeedPhraseAndMigrateIfNeeded(walletId);
+      if (s) {
+        const walletType = identifyWalletType(s);
+        setType(walletType);
+        onWalletTypeIdentified && onWalletTypeIdentified(walletType);
+        setSeed(s);
+        setError(false);
+        secretLoaded && secretLoaded(true);
+      } else {
+        setError(true);
+        secretLoaded && secretLoaded(false);
+      }
+    } catch (e) {
+      logger.sentry('Error while trying to reveal secret', e);
+      captureException(e);
       setError(true);
       secretLoaded && secretLoaded(false);
     }

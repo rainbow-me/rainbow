@@ -146,14 +146,8 @@ const TopIcon = () => (
   </GradientText>
 );
 
-const BackupIcloudStep = ({ setAppearListener }) => {
+const BackupIcloudStep = () => {
   const currentlyFocusedInput = useRef();
-  const refocus = useCallback(() => {
-    currentlyFocusedInput.current?.focus();
-  }, []);
-  useEffect(() => {
-    setAppearListener(refocus);
-  }, [setAppearListener, refocus]);
   const { goBack } = useNavigation();
   const { params } = useRoute();
   const loadedPassword = params?.password || '';

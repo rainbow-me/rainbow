@@ -29,7 +29,7 @@ export const setupIncomingNotificationListeners = async () => {
   // Previously existing users should see the backup sheet right after app launch
   // Uncomment the line below to get in the existing user state(before icloud)
   const backupState = await getUserBackupState();
-  if (null === BackupStateTypes.immediate) {
+  if (backupState === BackupStateTypes.immediate) {
     setTimeout(() => {
       Navigation.handleAction(Routes.BACKUP_SHEET, {
         option: 'existing_user',

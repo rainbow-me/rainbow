@@ -46,7 +46,7 @@ const StyledSheet = styled(SlackSheet)`
   ${deviceUtils.isTallPhone ? 'padding-bottom: 50px;' : ''}
 `;
 
-const BackupSheet = ({ setAppearListener }) => {
+const BackupSheet = () => {
   const { jumpToLong } = useContext(ModalContext) || {};
   const { navigate, setOptions, goBack, setParams } = useNavigation();
   const switchSheetContentTransitionRef = useRef();
@@ -213,9 +213,9 @@ const BackupSheet = ({ setAppearListener }) => {
         );
       case WalletBackupTypes.cloud:
         return missingPassword ? (
-          <BackupConfirmPasswordStep setAppearListener={setAppearListener} />
+          <BackupConfirmPasswordStep />
         ) : (
-          <BackupIcloudStep setAppearListener={setAppearListener} />
+          <BackupIcloudStep />
         );
       case WalletBackupTypes.manual:
         return <BackupManualStep />;
@@ -238,7 +238,6 @@ const BackupSheet = ({ setAppearListener }) => {
     onIcloudBackup,
     onIgnoreBackup,
     onManualBackup,
-    setAppearListener,
     step,
   ]);
 

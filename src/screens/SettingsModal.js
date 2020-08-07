@@ -1,7 +1,13 @@
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect } from 'react';
-import { Alert, Animated, Platform, View } from 'react-native';
+import {
+  Alert,
+  Animated,
+  InteractionManager,
+  Platform,
+  View,
+} from 'react-native';
 import styled from 'styled-components/native';
 import { Icon } from '../components/icons';
 import { Modal } from '../components/modal';
@@ -168,8 +174,10 @@ export default function SettingsModal() {
 
   useEffect(() => {
     if (params?.initialRoute) {
-      const route = getRealRoute(params?.initialRoute);
-      navigate(route);
+      const { route, params: routeParams } = getRealRoute(params?.initialRoute);
+      InteractionManager.runAfterInteractions(() => {
+        navigate(route, routeParams);
+      });
     }
   }, [getRealRoute, navigate, params?.initialRoute]);
 
