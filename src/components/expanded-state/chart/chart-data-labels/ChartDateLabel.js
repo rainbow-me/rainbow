@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Animated from 'react-native-reanimated';
 import { ChartXLabel } from '../../../../react-native-animated-charts';
 import { Input } from '../../../inputs';

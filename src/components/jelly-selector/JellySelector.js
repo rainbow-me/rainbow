@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { spring } from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
 import JellySelectorItem from './JellySelectorItem';
 import JellySelectorRow from './JellySelectorRow';
@@ -13,7 +13,7 @@ import { colors } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const springTo = (node, toValue) =>
-  Animated.spring(node, {
+  spring(node, {
     damping: 38,
     mass: 1,
     overshootClamping: false,

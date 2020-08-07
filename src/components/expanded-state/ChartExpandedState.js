@@ -14,7 +14,6 @@ import {
   TokenInfoSection,
 } from '../token-info';
 import Chart from '../value-chart/Chart';
-import { ChartExpandedStateHeader } from './chart';
 import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {

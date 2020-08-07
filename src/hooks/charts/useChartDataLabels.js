@@ -98,7 +98,6 @@ export default function useChartDataLabels({
 
       changeDirection.setValue(getPercentChangeDirection(change));
 
-      /* eslint-disable babel/no-unused-expressions */
       changeRef?.current?.setNativeProps?.({
         text: `${Math.abs(change)}%`,
       });
@@ -108,7 +107,6 @@ export default function useChartDataLabels({
       priceRef?.current?.setNativeProps?.({
         text: convertAmountToNativeDisplay(price, nativeCurrency),
       });
-      /* eslint-enable babel/no-unused-expressions */
     },
     [
       changeDirection,

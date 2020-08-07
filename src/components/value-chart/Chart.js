@@ -51,10 +51,8 @@ export default function ChartWrapper({
   color,
   fetchingCharts,
   points,
-  updateChartDataLabels,
   updateChartType,
   TEMP,
-  ...props
 }) {
   const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [
     chartType,

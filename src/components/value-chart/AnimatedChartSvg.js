@@ -49,7 +49,6 @@ export default function AnimatedChartSvg({ color, onParsePath, path }) {
         toValue: shouldAnimate.current ? 0 : 1,
       }).start(() => {
         shouldAnimate.current = !shouldAnimate.current;
-        // eslint-disable-next-line babel/no-unused-expressions
         onParsePath?.(parsedPath);
       });
     },
@@ -80,7 +79,6 @@ export default function AnimatedChartSvg({ color, onParsePath, path }) {
 
       stopPreviousAnimations();
       startAnimationListener(({ value }) => {
-        // eslint-disable-next-line babel/no-unused-expressions
         pathRef.current?.setNativeProps({
           d: pathInterpolate(value),
         });
@@ -89,7 +87,6 @@ export default function AnimatedChartSvg({ color, onParsePath, path }) {
       startAnimatePathTimeout(() => {
         handleAnimation(parsedPath);
         startSetPathTimeout(() => {
-          // eslint-disable-next-line babel/no-unused-expressions
           pathRef.current?.setNativeProps({
             d: pathInterpolate(shouldAnimate.current ? 1 : 0),
           });
