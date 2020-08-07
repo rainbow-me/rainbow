@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { Text, TurboModuleRegistry, View } from 'react-native';
 import {
   useAnimatedGestureHandler,
   useAnimatedStyle,
@@ -64,6 +64,9 @@ function Chart({ data, children }) {
   const [extremes, setExtremes] = useState({});
 
   useEffect(() => {
+    if (!data || data.length === 0) {
+      return;
+    }
     const [parsedData, newExtremes] = parse(data);
     setExtremes(newExtremes);
     if (prevData.value.length !== 0) {
@@ -109,10 +112,34 @@ function Chart({ data, children }) {
       );
       positionX.value = event.x;
     },
+    onStart: event => {
+      progress.value = 1;
+      let idx = 0;
+      for (let i = 0; i < currData.value.length; i++) {
+        if (currData.value[i].x > event.x / size.value.width) {
+          idx = i;
+          break;
+        }
+      }
+      setNativeXYAccordingToPosition(
+        nativeX,
+        nativeY,
+        event.x / size.value.width,
+        currData
+      );
+      positionX.value = event.x;
+      positionY.value = currData.value[idx].y * size.value.height;
+      dotScale.value = withSpring(1);
+    },
   });
 
   const onTapGestureEvent = useAnimatedGestureHandler({
     onEnd: () => {
+      nativeX.value = '';
+      nativeY.value = '';
+      dotScale.value = withSpring(0);
+    },
+    onFail: () => {
       nativeX.value = '';
       nativeY.value = '';
       dotScale.value = withSpring(0);
@@ -234,4 +261,11 @@ function Chart({ data, children }) {
   );
 }
 
-export default Chart;
+function ChartFallback() {
+  return <Text> Charts are not available without Reanimated 2</Text>;
+}
+
+export default !TurboModuleRegistry.get('NativeReanimated') &&
+(!global.__reanimatedModuleProxy || global.__reanimatedModuleProxy.__shimmed)
+  ? ChartFallback
+  : Chart;

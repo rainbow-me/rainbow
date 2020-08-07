@@ -1,7 +1,7 @@
 import React, { useContext, useRef } from 'react';
 import {
-  LongPressGestureHandler,
   PanGestureHandler,
+  TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
@@ -9,7 +9,13 @@ import ChartContext from './ChartContext';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-function ChartPath({ height, width, ...props }) {
+function ChartPath({
+  height,
+  width,
+  panGestureHandlerProps,
+  tapGestureHandlerProps,
+  ...props
+}) {
   const {
     onTapGestureEvent,
     onPanGestureEvent,
@@ -18,10 +24,12 @@ function ChartPath({ height, width, ...props }) {
   } = useContext(ChartContext);
   const panRef = useRef();
   return (
-    <LongPressGestureHandler
-      minDurationMs={0}
+    <PanGestureHandler
+      activeOffsetX={[0, 0]}
+      activeOffsetY={[0, 0]}
       simultaneousHandlers={[panRef]}
-      {...{ onGestureEvent: onTapGestureEvent }}
+      {...panGestureHandlerProps}
+      {...{ onGestureEvent: onPanGestureEvent }}
     >
       <Animated.View
         onLayout={({
@@ -30,11 +38,11 @@ function ChartPath({ height, width, ...props }) {
           },
         }) => (layoutSize.value = { height, width })}
       >
-        <PanGestureHandler
-          activeOffsetX={[0, 0]}
-          activeOffsetY={[0, 0]}
-          {...{ onGestureEvent: onPanGestureEvent }}
+        <TapGestureHandler
+          minDurationMs={0}
           ref={panRef}
+          {...tapGestureHandlerProps}
+          {...{ onGestureEvent: onTapGestureEvent }}
         >
           <Animated.View>
             <Svg
@@ -46,9 +54,9 @@ function ChartPath({ height, width, ...props }) {
               <AnimatedPath animatedProps={animatedStyle} {...props} />
             </Svg>
           </Animated.View>
-        </PanGestureHandler>
+        </TapGestureHandler>
       </Animated.View>
-    </LongPressGestureHandler>
+    </PanGestureHandler>
   );
 }
 

@@ -38,6 +38,47 @@ index 48a3c76..0723069 100644
    linear,
    ease,
    quad,
+diff --git a/node_modules/react-native-reanimated/src/reanimated2/Hooks.js b/node_modules/react-native-reanimated/src/reanimated2/Hooks.js
+index c14ec0b..ef6bab6 100644
+--- a/node_modules/react-native-reanimated/src/reanimated2/Hooks.js
++++ b/node_modules/react-native-reanimated/src/reanimated2/Hooks.js
+@@ -331,13 +331,18 @@ export function useAnimatedGestureHandler(handlers) {
+       'worklet';
+       const UNDETERMINED = 0;
+       const FAILED = 1;
++      const BEGAN = 2;
+       const CANCELLED = 3;
+       const ACTIVE = 4;
+       const END = 5;
+ 
+-      if (event.oldState === UNDETERMINED && handlers.onStart) {
++      if (
++        (event.oldState === UNDETERMINED || event.oldState === END) &&
++        handlers.onStart
++      ) {
+         handlers.onStart(event, context);
+       }
++
+       if (event.state === ACTIVE && handlers.onActive) {
+         handlers.onActive(event, context);
+       }
+@@ -345,14 +350,14 @@ export function useAnimatedGestureHandler(handlers) {
+         handlers.onEnd(event, context);
+       }
+       if (
+-        event.oldState === ACTIVE &&
++        (event.oldState === ACTIVE || event.oldState === BEGAN) &&
+         event.state === FAILED &&
+         handlers.onFail
+       ) {
+         handlers.onFail(event, context);
+       }
+       if (
+-        event.oldState === ACTIVE &&
++        event.oldState === ACTIVE  &&
+         event.state === CANCELLED &&
+         handlers.onCancel
+       ) {
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/animations.js b/node_modules/react-native-reanimated/src/reanimated2/animations.js
 index c433775..d01f3a4 100644
 --- a/node_modules/react-native-reanimated/src/reanimated2/animations.js

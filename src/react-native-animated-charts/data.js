@@ -116,8 +116,7 @@ function monothonicSpline(x, y) {
     return y;
   };
 }
-
-function simplifyData(data) {
+export function simplifyData(data, throttle = 1, pickRange = 10) {
   let min = 0;
   let max = 0;
   for (let i = 0; i < data.length; i++) {
@@ -131,7 +130,7 @@ function simplifyData(data) {
   }
 
   const denseDataParsed = data.filter(
-    (_, i) => i % 10 === 0 || i === min || i === max
+    (_, i) => i % pickRange === 0 || i === min || i === max
   );
 
   const { denseX, denseY } = denseDataParsed.reduce(
@@ -148,7 +147,11 @@ function simplifyData(data) {
 
   const softData = [];
   const interpolate = monothonicSpline(denseX, denseY);
-  for (let d of data) {
+  for (let i = 0; i < data.length; i++) {
+    if (i % throttle !== 0) {
+      continue;
+    }
+    const d = data[i];
     softData.push({ x: d.x, y: interpolate(d.x) });
   }
   return softData;
