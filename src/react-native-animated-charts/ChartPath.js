@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import {
   PanGestureHandler,
   TapGestureHandler,
@@ -22,6 +22,11 @@ function ChartPath({
     animatedStyle,
     size: layoutSize,
   } = useContext(ChartContext);
+
+  useEffect(() => {
+    layoutSize.value = { height, width };
+  }, [height, layoutSize, width]);
+
   const panRef = useRef();
   return (
     <PanGestureHandler
@@ -31,13 +36,7 @@ function ChartPath({
       {...panGestureHandlerProps}
       {...{ onGestureEvent: onPanGestureEvent }}
     >
-      <Animated.View
-        onLayout={({
-          nativeEvent: {
-            layout: { width, height },
-          },
-        }) => (layoutSize.value = { height, width })}
-      >
+      <Animated.View>
         <TapGestureHandler
           minDurationMs={0}
           ref={panRef}
@@ -47,8 +46,7 @@ function ChartPath({
           <Animated.View>
             <Svg
               height={height}
-              preserveAspectRatio="none"
-              viewBox="0 0 1 1"
+              viewBox={`0 0 ${width} ${height}`}
               width={width}
             >
               <AnimatedPath animatedProps={animatedStyle} {...props} />

@@ -204,7 +204,7 @@ const listenOnAssetMessages = socket => dispatch => {
   });
 
   socket.on(messages.ASSET_CHARTS.RECEIVED, message => {
-    logger.log('charts received', get(message, 'payload.charts', {}));
+    //logger.log('charts received', get(message, 'payload.charts', {}));
     dispatch(assetChartsReceived(message));
   });
 };

@@ -15,6 +15,7 @@ if (
   !ReactNative.TurboModuleRegistry.get('NativeReanimated')
 ) {
   global.__reanimatedModuleProxy = {
+    __shimmed: true,
     installCoreFunctions() {},
     makeRemote() {},
     makeShareable() {},

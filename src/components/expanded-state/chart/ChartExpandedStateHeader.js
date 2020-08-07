@@ -53,6 +53,7 @@ export default function ChartExpandedStateHeader({
   latestChange,
   latestPrice = noPriceData,
   priceRef,
+  chartTimeSharedValue,
 }) {
   const { nativeCurrency } = useAccountSettings();
   const tabularNums = useTabularNumsWhileScrubbing(isScrubbing);
@@ -102,7 +103,11 @@ export default function ChartExpandedStateHeader({
               latestChange={latestChange}
               tabularNums={tabularNums}
             />
-            <ChartDateLabel color={colorForPriceChange} dateRef={dateRef} />
+            <ChartDateLabel
+              chartTimeSharedValue={chartTimeSharedValue}
+              color={colorForPriceChange}
+              dateRef={dateRef}
+            />
           </ColumnWithMargins>
         )}
       </Row>

@@ -196,8 +196,8 @@ function Chart({ data, children }) {
       return fromValue
         .map(({ x, y }, i) => {
           const { x: nX, y: nY } = toValue[i];
-          const mX = x + (nX - x) * progress.value;
-          const mY = y + (nY - y) * progress.value;
+          const mX = (x + (nX - x) * progress.value) * size.value.width;
+          const mY = (y + (nY - y) * progress.value) * size.value.height;
           return `L ${mX} ${mY}`;
         })
         .join(' ')
@@ -206,7 +206,7 @@ function Chart({ data, children }) {
 
     const result = toValue
       .map(({ x, y }) => {
-        return `L ${x} ${y}`;
+        return `L ${x * size.value.width} ${y * size.value.height}`;
       })
       .join(' ')
       .replace('L', 'M');

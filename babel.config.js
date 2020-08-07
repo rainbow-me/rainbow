@@ -14,6 +14,7 @@ module.exports = function(api) {
           '@rainbow-me/styles': './src/styles',
           '@rainbow-me/utils': './src/utils',
           'logger': './src/utils/logger',
+          'react-native-animated-charts': './src/react-native-animated-charts',
           'react-native-cool-modals': './src/react-native-cool-modals',
           'react-native-reanimated': 'react-native-reanimated/src/Animated',
         },

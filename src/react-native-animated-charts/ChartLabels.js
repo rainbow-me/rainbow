@@ -19,7 +19,13 @@ function ChartLabelFactory(style) {
         text: formattedValue.value,
       };
     });
-    return <AnimatedTextInput {...props} animatedProps={textStyle} />;
+    return (
+      <AnimatedTextInput
+        {...props}
+        animatedProps={textStyle}
+        editable={false}
+      />
+    );
   };
 }
 

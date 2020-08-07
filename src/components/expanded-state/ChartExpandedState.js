@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   SendActionButton,
   SheetActionButtonRow,
@@ -62,16 +62,20 @@ export default function ChartExpandedState({ asset }) {
     }
   }, [showChart, setParams]);
 
+  const TEMP = useMemo(
+    () => ({
+      ...chartDataLabels,
+      asset,
+      color,
+      isScrubbing,
+    }),
+    [asset, chartDataLabels, color, isScrubbing]
+  );
   return (
     <SlackSheet contentHeight={params.longFormHeight} scrollEnabled={false}>
-      <ChartExpandedStateHeader
-        {...chartDataLabels}
-        asset={asset}
-        color={color}
-        isScrubbing={isScrubbing}
-      />
       {showChart && (
         <Chart
+          TEMP={TEMP}
           {...chartData}
           {...chartDataLabels}
           {...chartGestures}

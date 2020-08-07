@@ -19,7 +19,7 @@ function DevContextComponent({ children }) {
   useEffect(async () => {
     const configFromStorage = await AsyncStorage.getItem(EXPERIMENTAL_CONFIG);
     if (configFromStorage) {
-      setConfig(JSON.parse(configFromStorage));
+      setConfig(config => ({ ...config, ...JSON.parse(configFromStorage) }));
     }
   }, []);
   const setConfigWithStorage = useCallback(newConfig => {

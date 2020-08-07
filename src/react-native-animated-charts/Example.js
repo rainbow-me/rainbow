@@ -48,7 +48,7 @@ function Example() {
           fill="none"
           height={SIZE / 2}
           stroke="red"
-          strokeWidth="0.005"
+          strokeWidth="2"
           width={SIZE}
         />
         <ChartDot
