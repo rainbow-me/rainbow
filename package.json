@@ -22,7 +22,7 @@
     "ios": "react-native run-ios --simulator='iPhone 11'",
     "lint": "yarn lint:js && yarn lint:css",
     "lint:css": "stylelint './src/**/*.js'",
-    "lint:js": "eslint --ext '.js,.jsx' .",
+    "lint:js": "eslint --ext '.ts .js,.jsx' .",
     "nodeify": "./node_modules/.bin/rn-nodeify --install \"crypto\" --hack",
     "postinstall": "./scripts/postinstall.sh",
     "update-env": "curl -H 'Authorization: token '$GITHUB_TOKEN -H 'Accept: application/vnd.github.v3.raw' -O  -L https://api.github.com/repos/rainbow-me/rainbow-env/contents/dotenv && rm -f .env && mv dotenv .env"
@@ -33,8 +33,8 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx}": [
-      "eslint --ext '.js,.jsx' -c .eslintrc.json",
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --ext '.js,.jsx,.ts,.tsx' -c .eslintrc.json",
       "stylelint"
     ]
   },
@@ -61,6 +61,8 @@
     "@segment/analytics-react-native": "1.1.0",
     "@sentry/react-native": "^1.4.5",
     "@tradle/react-native-http": "^2.0.1",
+    "@types/i18n-js": "^3.0.3",
+    "@types/lodash": "^4.14.159",
     "@uniswap/sdk": "^1.0.0-beta.4",
     "@walletconnect/client": "1.0.0-rc.0",
     "@walletconnect/utils": "1.0.0-rc.0",
@@ -238,7 +240,14 @@
   },
   "jest": {
     "preset": "react-native",
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
     "setupFiles": [
       "./config/test/jest-setup.js"
     ]

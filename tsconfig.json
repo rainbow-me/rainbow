@@ -9,12 +9,21 @@
     "moduleResolution": "node",
     "noEmit": true,
     "strict": true,
-    "target": "esnext"
+    "target": "esnext",
+    "baseUrl": "./src",
+    "paths": {
+      "@rainbow-me/hooks": ["hooks"],
+      "@rainbow-me/routes": ["navigation/routesNames"],
+      "@rainbow-me/styles": ["styles"],
+      "@rainbow-me/utils": ["utils"],
+      "logger": ["utils/logger"],
+      "react-native-cool-modals": ["react-native-cool-modals"],
+    },
   },
   "exclude": [
     "node_modules",
     "babel.config.js",
     "metro.config.js",
     "jest.config.js"
-  ]
+  ],
 }
