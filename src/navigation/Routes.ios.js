@@ -28,6 +28,9 @@ import {
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
   nativeStackConfig,
+  nativeStackDefaultConfig,
+  nativeStackDefaultConfigWithoutStatusBar,
+  savingsSheetConfig,
   sharedCoolModalConfig,
   stackNavigationConfig,
 } from './config';
@@ -121,11 +124,6 @@ function MainNavigator() {
       <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} />
       <Stack.Screen
-        component={SavingsSheet}
-        name={Routes.SAVINGS_SHEET}
-        options={bottomSheetPreset}
-      />
-      <Stack.Screen
         component={AvatarBuilder}
         name={Routes.AVATAR_BUILDER}
         options={emojiPreset}
@@ -145,11 +143,6 @@ function MainNavigator() {
         name={Routes.CONFIRM_REQUEST}
         options={sheetPreset}
       />
-      <Stack.Screen
-        component={ExchangeModalNavigator}
-        name={Routes.EXCHANGE_MODAL}
-        options={exchangePreset}
-      />
     </Stack.Navigator>
   );
 }
@@ -164,16 +157,6 @@ function MainNavigatorWrapper() {
       <Stack.Screen
         component={MainNavigator}
         name={Routes.MAIN_NAVIGATOR_WRAPPER}
-      />
-      <Stack.Screen
-        component={WithdrawModal}
-        name={Routes.SAVINGS_WITHDRAW_MODAL}
-        options={exchangePreset}
-      />
-      <Stack.Screen
-        component={DepositModal}
-        name={Routes.SAVINGS_DEPOSIT_MODAL}
-        options={exchangePreset}
       />
     </Stack.Navigator>
   );
@@ -222,6 +205,11 @@ function NativeStackFallbackNavigator() {
         name={Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN}
         options={overlayExpandedPreset}
       />
+      <Stack.Screen
+        component={ExchangeModalNavigator}
+        name={Routes.EXCHANGE_MODAL}
+        options={exchangePreset}
+      />
     </Stack.Navigator>
   );
 }
@@ -249,6 +237,11 @@ function NativeStackNavigator() {
         {...sharedCoolModalConfig}
       />
       <NativeStack.Screen
+        component={ExchangeModalNavigator}
+        name={Routes.EXCHANGE_MODAL}
+        options={nativeStackDefaultConfig}
+      />
+      <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
         {...expandedAssetSheetConfig}
@@ -273,6 +266,21 @@ function NativeStackNavigator() {
           onAppear: null,
           topOffset: 0,
         }}
+      />
+      <NativeStack.Screen
+        component={SavingsSheet}
+        name={Routes.SAVINGS_SHEET}
+        {...savingsSheetConfig}
+      />
+      <NativeStack.Screen
+        component={WithdrawModal}
+        name={Routes.SAVINGS_WITHDRAW_MODAL}
+        options={nativeStackDefaultConfigWithoutStatusBar}
+      />
+      <NativeStack.Screen
+        component={DepositModal}
+        name={Routes.SAVINGS_DEPOSIT_MODAL}
+        options={nativeStackDefaultConfigWithoutStatusBar}
       />
       {isNativeStackAvailable && (
         <>

@@ -431,3 +431,12 @@ export const convertRawAmountToDecimalFormat = (value, decimals = 18) =>
     .toFixed();
 
 export const fromWei = number => convertRawAmountToDecimalFormat(number, 18);
+
+/**
+ * @desc Promise that will resolve after the ms interval
+ * @param  {Number}  ms
+ * @return {Promise}
+ */
+export const delay = ms => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};

@@ -18,9 +18,9 @@ import {
 import { checkPushNotificationPermissions } from '../model/firebase';
 import { withNavigationFocus } from '../navigation/Navigation';
 import store from '../redux/store';
-import { addressUtils } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
 import Routes from '@rainbow-me/routes';
+import { addressUtils, logger } from '@rainbow-me/utils';
 
 class QRScannerScreenWithData extends Component {
   static propTypes = {
@@ -90,7 +90,7 @@ class QRScannerScreenWithData extends Component {
 
     const isReadOnlyWallet = selectedWallet.type === WalletTypes.readOnly;
 
-    if (!data) return null;
+    if (!data || !this.state.enableScanning) return null;
     this.setState({ enableScanning: false });
     if (!isEmulatorSync()) {
       Vibration.vibrate();
@@ -122,8 +122,17 @@ class QRScannerScreenWithData extends Component {
       analytics.track('Scanned WalletConnect QR code');
 
       await checkPushNotificationPermissions();
-      setTimeout(async () => await walletConnectOnSessionRequest(data), 1000);
-      return setSafeTimeout(this.handleReenableScanning, 2000);
+      setTimeout(async () => {
+        try {
+          await walletConnectOnSessionRequest(data, () => {
+            setSafeTimeout(this.handleReenableScanning, 2000);
+          });
+        } catch (e) {
+          logger.log('walletConnectOnSessionRequest exception', e);
+          setSafeTimeout(this.handleReenableScanning, 2000);
+        }
+      }, 1000);
+      return;
     }
 
     analytics.track('Scanned broken or unsupported QR code', {

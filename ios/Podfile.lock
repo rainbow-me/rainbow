@@ -495,7 +495,7 @@ PODS:
   - RNInputMask (4.1.0)
   - RNKeyboard (1.0.5):
     - React
-  - RNKeychain (4.0.3):
+  - RNKeychain (6.1.1):
     - React
   - RNLanguages (3.0.2):
     - React
@@ -505,8 +505,35 @@ PODS:
     - React
   - RNReactNativeHapticFeedback (1.10.0):
     - React
-  - RNReanimated (1.10.1):
+  - RNReanimated (2.0.0-alpha.5):
+    - DoubleConversion
+    - FBLazyVector
+    - FBReactNativeSpec
+    - Folly
+    - glog
+    - RCTRequired
+    - RCTTypeSafety
     - React
+    - React-Core
+    - React-Core/DevSupport
+    - React-Core/RCTWebSocket
+    - React-CoreModules
+    - React-cxxreact
+    - React-jsi
+    - React-jsiexecutor
+    - React-jsinspector
+    - React-RCTActionSheet
+    - React-RCTAnimation
+    - React-RCTBlob
+    - React-RCTImage
+    - React-RCTLinking
+    - React-RCTNetwork
+    - React-RCTSettings
+    - React-RCTText
+    - React-RCTVibration
+    - ReactCommon/callinvoker
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNScreens (2.2.0):
     - React
   - RNSentry (1.7.1):
@@ -945,12 +972,12 @@ SPEC CHECKSUMS:
   RNGestureHandler: b6b359bb800ae399a9c8b27032bdbf7c18f08a08
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: ceec456427493b286539f40442620881b5840dff
-  RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
+  RNKeychain: db956c02a018f7dd3a0ea8a6cf3087bc1894bf2b
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: ad71dd4f767ec254f2cd57592fbee02afee75467
   RNReactNativeHapticFeedback: 22c5ecf474428766c6b148f96f2ff6155cd7225e
-  RNReanimated: c2bb7438b57a3d987bb2e4e6e4bca94787e30b02
+  RNReanimated: 51ba6deb21c1d8758e34d60888ed57d182169a26
   RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
   RNSentry: 2bae4ffee2e66376ef42cb845a494c3bde17bc56
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
@@ -970,4 +997,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 4366d67a8cc8fc17d64e4e0d56ac2e9b5d9e026a
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.9.1

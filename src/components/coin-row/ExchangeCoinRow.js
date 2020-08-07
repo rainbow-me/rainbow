@@ -63,6 +63,7 @@ const ExchangeCoinRow = ({
       height={CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom}
       onPress={handlePress}
       scaleTo={0.96}
+      throttle
     >
       <CoinRow
         {...item}

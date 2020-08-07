@@ -322,6 +322,7 @@
           "authentication": "Authentication Failed",
           "cancelled_transaction": "Failed to send cancelled transaction to WalletConnect",
           "failed_transaction": "Failed to send transaction",
+          "failed_sign_message": "Failed to sign message",
           "failed_transaction_status": "Failed to send failed transaction status",
           "transaction_status": "Failed to send transaction status"
         },

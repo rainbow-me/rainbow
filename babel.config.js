@@ -15,6 +15,7 @@ module.exports = function(api) {
           '@rainbow-me/utils': './src/utils',
           'logger': './src/utils/logger',
           'react-native-cool-modals': './src/react-native-cool-modals',
+          'react-native-reanimated': 'react-native-reanimated/src/Animated',
         },
         root: ['./src'],
       },
@@ -23,6 +24,7 @@ module.exports = function(api) {
     'date-fns',
     'graphql-tag',
     ['lodash', { id: ['lodash', 'recompact'] }],
+    'react-native-reanimated/plugin',
   ];
 
   const presets = [

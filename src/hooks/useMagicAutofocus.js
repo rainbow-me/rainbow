@@ -7,6 +7,17 @@ import useInteraction from './useInteraction';
 
 const { currentlyFocusedField, focusTextInput } = TextInput.State;
 
+let timeout = null;
+let delay = false;
+
+export function delayNext() {
+  if (timeout !== null) {
+    clearTimeout(timeout);
+    timeout = null;
+  }
+  delay = true;
+}
+
 export default function useMagicAutofocus(
   defaultAutofocusInputRef,
   customTriggerFocusCallback
@@ -46,7 +57,20 @@ export default function useMagicAutofocus(
   useFocusEffect(
     useCallback(() => {
       setListener(triggerFocus);
-      triggerFocus();
+      if (delay) {
+        InteractionManager.runAfterInteractions(() => {
+          if (timeout !== null) {
+            clearTimeout(timeout);
+            timeout = null;
+          }
+          timeout = setTimeout(() => {
+            triggerFocus();
+            delay = false;
+          }, 200);
+        });
+      } else {
+        triggerFocus();
+      }
 
       // We need to do this in order to assure that the input gets focused
       // when using fallback stacks.

@@ -7,6 +7,13 @@ const KEYBOARD_HEIGHT = 'keyboardHeight';
 const LANGUAGE = 'language';
 const NATIVE_CURRENCY = 'nativeCurrency';
 const NETWORK = 'network';
+const KEYCHAIN_INTEGRITY_STATE = 'keychainIntegrityState';
+
+export const getKeychainIntegrityState = () =>
+  getGlobal(KEYCHAIN_INTEGRITY_STATE, null);
+
+export const saveKeychainIntegrityState = state =>
+  saveGlobal(KEYCHAIN_INTEGRITY_STATE, state);
 
 export const getAppStoreReviewCount = () => getGlobal(APPSTORE_REVIEW_COUNT, 0);
 

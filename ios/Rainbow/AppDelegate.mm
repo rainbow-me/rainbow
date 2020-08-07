@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-@import Firebase;
+#import "Firebase.h"
 #import "AppDelegate.h"
 #import "Rainbow-Swift.h"
 #import <RNBranch/RNBranch.h>
@@ -17,6 +17,21 @@
 #import <RNCPushNotificationIOS.h>
 #import <Sentry/Sentry.h>
 #import "RNSplashScreen.h"
+#ifndef DISABLE_REANIMATED
+#import <React/RCTCxxBridgeDelegate.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
+#import <React/RCTDataRequestHandler.h>
+#import <React/RCTFileRequestHandler.h>
+#import <React/RCTHTTPRequestHandler.h>
+#import <React/RCTNetworking.h>
+#import <React/RCTLocalAssetImageLoader.h>
+#import <React/RCTGIFImageDecoder.h>
+#import <React/RCTPlatform.h>
+#import <React/RCTImageLoader.h>
+#import <React/JSCExecutorFactory.h>
+#import <RNReanimated/RETurboModuleProvider.h>
+#import <RNReanimated/REAModule.h>
+#endif
 
 #if DEBUG
 #import <FlipperKit/FlipperClient.h>
@@ -35,6 +50,13 @@ static void InitializeFlipper(UIApplication *application) {
   [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
   [client start];
 }
+#endif
+
+#ifndef DISABLE_REANIMATED
+@interface AppDelegate() <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate> {
+    RCTTurboModuleManager *_turboModuleManager;
+}
+@end
 #endif
 
 @interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
@@ -77,15 +99,18 @@ RCT_EXPORT_METHOD(hideAnimated) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  #ifndef DISABLE_REANIMATED
+  RCTEnableTurboModule(YES);
+  #endif
   #if DEBUG
     InitializeFlipper(application);
   #endif
-  
+
   [FIRApp configure];
   // Define UNUserNotificationCenter
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
-  
+
   [RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES];
 
   // React Native - Defaults
@@ -95,23 +120,23 @@ RCT_EXPORT_METHOD(hideAnimated) {
                                             initialProperties:nil];
 
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
-  
+
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
-  
+
   [[NSNotificationCenter defaultCenter] addObserver:self
   selector:@selector(handleRapInProgress:)
       name:@"rapInProgress"
     object:nil];
-  
+
   [[NSNotificationCenter defaultCenter] addObserver:self
   selector:@selector(handleRapComplete:)
       name:@"rapCompleted"
     object:nil];
-  
+
   // Splashscreen - react-native-splash-screen
   [RNSplashScreen showSplash:@"LaunchScreen" inRootView:rootView];
   return YES;
@@ -175,17 +200,17 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
  restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
 {
-  
+
   return [RNBranch continueUserActivity:userActivity];
 
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-  
+
   if(self.isRapRunning){
-  
+
     NSDictionary *event = @{@"message": @"applicationWillTerminate was called"};
-    
+
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:event
                                                        options:0
                                                          error:nil];
@@ -193,7 +218,7 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
     SentryEvent *sentryEvent = [[SentryEvent alloc] initWithJSON:jsonData];
     [SentrySDK captureEvent:sentryEvent];
   }
-  
+
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
@@ -211,6 +236,63 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
   }
 }
 
+#ifndef DISABLE_REANIMATED
+- (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
+{
+  _bridge_reanimated = bridge;
+  _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:self];
+ #if RCT_DEV
+  [_turboModuleManager moduleForName:"RCTDevMenu"]; // <- add
+ #endif
+ __weak __typeof(self) weakSelf = self;
+ return std::make_unique<facebook::react::JSCExecutorFactory>([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
+   if (!bridge) {
+     return;
+   }
+   __typeof(self) strongSelf = weakSelf;
+   if (strongSelf) {
+     [strongSelf->_turboModuleManager installJSBindingWithRuntime:&runtime];
+   }
+ });
+}
 
+- (Class)getModuleClassFromName:(const char *)name
+{
+ return facebook::react::RETurboModuleClassProvider(name);
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
+                                                     jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+ return facebook::react::RETurboModuleProvider(name, jsInvoker);
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
+                                                      instance:(id<RCTTurboModule>)instance
+                                                     jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+ return facebook::react::RETurboModuleProvider(name, instance, jsInvoker);
+}
+
+- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
+{
+ if (moduleClass == RCTImageLoader.class) {
+   return [[moduleClass alloc] initWithRedirectDelegate:nil loadersProvider:^NSArray<id<RCTImageURLLoader>> *{
+     return @[[RCTLocalAssetImageLoader new]];
+   } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *{
+     return @[[RCTGIFImageDecoder new]];
+   }];
+ } else if (moduleClass == RCTNetworking.class) {
+   return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *{
+     return @[
+       [RCTHTTPRequestHandler new],
+       [RCTDataRequestHandler new],
+       [RCTFileRequestHandler new],
+     ];
+   }];
+ }
+ return [moduleClass new];
+}
+#endif
 
 @end

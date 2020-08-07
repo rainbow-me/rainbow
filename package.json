@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.2.23-1",
+  "version": "1.2.27-1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -136,7 +136,7 @@
     "react-native-ios11-devicecheck": "^0.0.3",
     "react-native-iphone-x-helper": "^1.2.1",
     "react-native-keyboard-area": "^1.0.5",
-    "react-native-keychain": "4.0.3",
+    "react-native-keychain": "6.1.1",
     "react-native-languages": "^3.0.0",
     "react-native-level-fs": "^3.0.1",
     "react-native-linear-gradient": "^2.5.6",
@@ -147,7 +147,7 @@
     "react-native-qrcode-svg": "mikedemarais/react-native-qrcode-svg#c0302a698ea4fa0bb9b506a11ef39905674f2221",
     "react-native-radial-gradient": "rainbow-me/react-native-radial-gradient#de98a182a4e5fb8db850cd94960d23c68035f9c6",
     "react-native-randombytes": "^3.5.3",
-    "react-native-reanimated": "1.10.1",
+    "react-native-reanimated": "2.0.0-alpha.5",
     "react-native-redash": "14.2.2",
     "react-native-safe-area-context": "^0.5.0",
     "react-native-safe-area-view": "mikedemarais/react-native-safe-area-view",
@@ -179,7 +179,6 @@
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
     "rn-dominant-color": "^1.7.0",
-    "rn-nodeify": "10.2.0",
     "socket.io-client": "^2.3.0",
     "stream-browserify": "^1.0.0",
     "string.fromcodepoint": "^0.2.1",
@@ -220,12 +219,14 @@
     "react-native-clean-project": "^3.1.0",
     "react-native-restart": "^0.0.17",
     "react-test-renderer": "16.11.0",
+    "rn-nodeify": "10.2.0",
     "schedule": "0.5.0",
     "stylelint-config-react-native-styled-components": "^0.3.0",
     "stylelint-processor-styled-components": "^1.10.0",
     "stylelint-react-native": "^2.2.0"
   },
   "resolutions": {
+    "**/elliptic": "6.5.3",
     "**/eslint-plugin-import": "2.20.2",
     "**/resolve": "1.8.1",
     "**/logkitty": "0.7.1"
