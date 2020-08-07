@@ -4,10 +4,11 @@ import { keys } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import FastImage from 'react-native-fast-image';
+import { withProps } from 'recompact';
 import styled from 'styled-components';
 import SeedPhraseImageSource from '../../assets/seed-phrase-icon.png';
 import showWalletErrorAlert from '../../helpers/support';
-import { useInitializeWallet, useWallets } from '../../hooks';
+import { useBiometryType, useInitializeWallet, useWallets } from '../../hooks';
 import { getAllKeysAnonymized } from '../../model/keychain';
 import {
   getAllWallets,
@@ -19,11 +20,20 @@ import {
 } from '../../model/wallet';
 import store from '../../redux/store';
 import { logger } from '../../utils';
+import { OpacityToggler } from '../animations';
 import { Button } from '../buttons';
 import CopyTooltip from '../copy-tooltip';
+import { BiometryIcon } from '../icons';
 import { Centered, Column } from '../layout';
 import { Br, Monospace, Text } from '../text';
 import { colors, padding, position, shadow } from '@rainbow-me/styles';
+
+const BiometryIconWrapper = styled(Centered)`
+  bottom: 10.6;
+  left: 12;
+  position: absolute;
+  transform: scale(0.86);
+`;
 
 const Content = styled(Centered)`
   margin-bottom: 34;
@@ -32,10 +42,17 @@ const Content = styled(Centered)`
   padding-top: ${({ seedPhrase }) => (seedPhrase ? 34 : 0)};
 `;
 
+const Title = withProps({
+  color: 'white',
+  size: 'large',
+  style: { marginTop: 1 },
+  weight: 'semibold',
+})(Text);
+
 const ToggleSeedPhraseButton = styled(Button)`
   ${shadow.build(0, 5, 15, colors.purple, 0.3)}
   background-color: ${colors.appleBlue};
-  width: 235;
+  width: 265;
 `;
 
 const BackupSection = ({ navigation }) => {
@@ -43,6 +60,7 @@ const BackupSection = ({ navigation }) => {
   const [seedPhrase, setSeedPhrase] = useState(null);
   const { selectedWallet } = useWallets();
   const [shouldRetry, setShouldRetry] = useState(true);
+  const biometryType = useBiometryType();
 
   const hideSeedPhrase = () => setSeedPhrase(null);
 
@@ -229,7 +247,12 @@ const BackupSection = ({ navigation }) => {
         )}
       </Content>
       <ToggleSeedPhraseButton onPress={handlePressToggleSeedPhrase}>
-        {seedPhrase ? 'Hide' : 'Show'} Private Key
+        <BiometryIconWrapper>
+          <OpacityToggler isVisible={seedPhrase}>
+            <BiometryIcon biometryType={biometryType} />
+          </OpacityToggler>
+        </BiometryIconWrapper>
+        <Title>{seedPhrase ? 'Hide' : 'Show'} Private Key</Title>
       </ToggleSeedPhraseButton>
     </Column>
   );
