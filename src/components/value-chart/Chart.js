@@ -8,13 +8,7 @@ import { Column } from '../layout';
 import TimespanSelector from './TimespanSelector';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { padding } from '@rainbow-me/styles';
-import {
-  Chart,
-  ChartDot,
-  ChartPath,
-  ChartXLabel,
-  ChartYLabel,
-} from 'react-native-animated-charts';
+import { Chart, ChartDot, ChartPath } from 'react-native-animated-charts';
 
 export const { width: SIZE } = Dimensions.get('window');
 
@@ -102,8 +96,6 @@ export default function ChartWrapper({
           <Dot color={color} size={16}>
             <InnerDot />
           </Dot>
-          <ChartYLabel style={{ backgroundColor: 'white', margin: 4 }} />
-          <ChartXLabel style={{ backgroundColor: 'white', margin: 4 }} />
         </View>
       </Chart>
       <TimespanSelector

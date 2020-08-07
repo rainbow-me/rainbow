@@ -1,25 +1,59 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import { ChartXLabel } from '../../../../react-native-animated-charts';
 import { Input } from '../../../inputs';
 import ChartHeaderSubtitle from './ChartHeaderSubtitle';
 import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
+import { ChartXLabel } from 'react-native-animated-charts';
 
 const AnimatedSubtitle = Animated.createAnimatedComponent(ChartHeaderSubtitle);
 
+const MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
 function formatDatetime(value, chartTimeSharedValue) {
   'worklet';
+  // we have to do it manually due to limitations of reanimated
   if (value === '') {
     return chartTimeSharedValue.value;
   }
-  const date = new Date(Number(value));
-  const s = date.getSeconds();
-  const m = date.getMinutes();
-  const h = date.getHours();
+
+  const date = new Date(Number(value) * 1000);
+  let res = MONTHS[date.getMonth()] + ' ';
   const d = date.getDate();
-  const n = date.getMonth();
-  const y = date.getFullYear();
-  return `${y}-${n}-${d} ${h}:${m}:${s}`;
+  if (d < 10) {
+    res += '0';
+  }
+  res += d + ' ';
+  const h = date.getHours() % 12;
+  if (h < 10) {
+    res += '0';
+  }
+  res += h + ':';
+
+  const m = date.getMinutes();
+  if (m < 10) {
+    res += '0';
+  }
+  res += m + ' ';
+
+  if (date.getHours() < 12) {
+    res += 'AM';
+  } else {
+    res += 'PM';
+  }
+  return res;
 }
 
 export default function ChartDateLabel({

@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import Animated from 'react-native-reanimated';
+import React, { useEffect, useMemo } from 'react';
+import Animated, { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { useCallbackOne } from 'use-memo-one';
 import { CoinIcon } from '../../coin-icon';
@@ -65,6 +65,16 @@ export default function ChartExpandedStateHeader({
     [latestPrice, nativeCurrency]
   );
 
+  const priceSharedValue = useSharedValue('');
+
+  useEffect(() => {
+    if (!isNoPriceData) {
+      priceSharedValue.value = price;
+    } else {
+      priceSharedValue.value = '';
+    }
+  }, [price, isNoPriceData, priceSharedValue]);
+
   const coinIconShadow = useMemo(
     () => [[0, 4, 12, asset?.shadowColor || color, 0.3]],
     [asset, color]
@@ -87,6 +97,7 @@ export default function ChartExpandedStateHeader({
             isNoPriceData={isNoPriceData}
             isScrubbing={isScrubbing}
             priceRef={priceRef}
+            priceSharedValue={priceSharedValue}
             tabularNums={tabularNums}
           />
           <ChartHeaderSubtitle>
