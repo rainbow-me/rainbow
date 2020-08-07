@@ -199,6 +199,10 @@
     "@babel/plugin-transform-react-inline-elements": "^7.9.0",
     "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/runtime": "^7.7.2",
+    "@types/jest": "^26.0.9",
+    "@types/react": "^16.9.44",
+    "@types/react-native": "^0.63.4",
+    "@types/react-test-renderer": "^16.9.3",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^24.9.0",
@@ -223,7 +227,8 @@
     "schedule": "0.5.0",
     "stylelint-config-react-native-styled-components": "^0.3.0",
     "stylelint-processor-styled-components": "^1.10.0",
-    "stylelint-react-native": "^2.2.0"
+    "stylelint-react-native": "^2.2.0",
+    "typescript": "^3.9.7"
   },
   "resolutions": {
     "**/elliptic": "6.5.3",
@@ -233,6 +238,7 @@
   },
   "jest": {
     "preset": "react-native",
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
     "setupFiles": [
       "./config/test/jest-setup.js"
     ]
