@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { View } from 'react-native';
 import {
   useAnimatedGestureHandler,
   useAnimatedStyle,
@@ -228,7 +229,7 @@ function Chart({ data, children }) {
 
   return (
     <ChartContext.Provider value={contextValue}>
-      {children}
+      <View>{children}</View>
     </ChartContext.Provider>
   );
 }

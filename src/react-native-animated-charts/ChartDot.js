@@ -12,9 +12,9 @@ function ChartDot({ style, size = 10, ...props }) {
         {
           borderRadius: size / 2,
           height: size,
-          left: -5,
+          left: -size / 2,
           position: 'absolute',
-          top: -5,
+          top: -size / 2,
           width: size,
         },
         style,
