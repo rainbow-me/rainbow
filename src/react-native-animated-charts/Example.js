@@ -44,7 +44,13 @@ function Example() {
   return (
     <View style={{ backgroundColor: 'black' }}>
       <Chart data={data}>
-        <ChartPath fill="none" size={SIZE} stroke="red" strokeWidth="0.005" />
+        <ChartPath
+          fill="none"
+          height={SIZE / 2}
+          stroke="red"
+          strokeWidth="0.005"
+          width={SIZE}
+        />
         <ChartDot
           style={{
             backgroundColor: 'blue',

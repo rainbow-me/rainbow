@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   useAnimatedGestureHandler,
   useAnimatedStyle,
@@ -10,20 +10,33 @@ import {
 import ChartContext from './ChartContext';
 
 const parse = data => {
-  let smallestY = data[0].y;
-  let biggestY = data[0].y;
+  let smallestY = data[0];
+  let greatestY = data[0];
   for (const d of data) {
-    smallestY = Math.min(smallestY, d.y);
-    biggestY = Math.max(biggestY, d.y);
+    if (d.y < smallestY.y) {
+      smallestY = d;
+    }
+
+    if (d.y > greatestY.y) {
+      greatestY = d;
+    }
   }
-  const smallestX = data[0].x;
-  const biggestX = data[data.length - 1].x;
-  return data.map(({ x, y }) => ({
-    nativeX: x,
-    nativeY: y,
-    x: (x - smallestX) / (biggestX - smallestX),
-    y: 1 - (y - smallestY) / (biggestY - smallestY),
-  }));
+  const smallestX = data[0];
+  const greatestX = data[data.length - 1];
+  return [
+    data.map(({ x, y }) => ({
+      nativeX: x,
+      nativeY: y,
+      x: (x - smallestX.x) / (greatestX.x - smallestX.x),
+      y: 1 - (y - smallestY.y) / (greatestY.y - smallestY.y),
+    })),
+    {
+      greatestX,
+      greatestY,
+      smallestX,
+      smallestY,
+    },
+  ];
 };
 
 function setNativeXYAccordingToPosition(nativeX, nativeY, position, data) {
@@ -47,9 +60,11 @@ function Chart({ data, children }) {
   const nativeX = useSharedValue('');
   const nativeY = useSharedValue('');
   const size = useSharedValue(0);
+  const [extremes, setExtremes] = useState({});
 
   useEffect(() => {
-    const parsedData = parse(data);
+    const [parsedData, newExtremes] = parse(data);
+    setExtremes(newExtremes);
     if (prevData.value.length !== 0) {
       prevData.value = currData.value;
       progress.value = 0;
@@ -67,28 +82,28 @@ function Chart({ data, children }) {
     onActive: event => {
       let idx = 0;
       for (let i = 0; i < currData.value.length; i++) {
-        if (currData.value[i].x > event.x / size.value) {
+        if (currData.value[i].x > event.x / size.value.width) {
           idx = i;
           break;
         }
       }
 
       if (idx === 0) {
-        positionY.value = currData.value[idx].y * size.value;
+        positionY.value = currData.value[idx].y * size.value.height;
       } else {
         // prev + diff over X
         positionY.value =
           (currData.value[idx - 1].y +
             (currData.value[idx].y - currData.value[idx - 1].y) *
-              ((event.x / size.value - currData.value[idx - 1].x) /
+              ((event.x / size.value.width - currData.value[idx - 1].x) /
                 (currData.value[idx].x - currData.value[idx - 1].x))) *
-          size.value;
+          size.value.height;
       }
 
       setNativeXYAccordingToPosition(
         nativeX,
         nativeY,
-        event.x / size.value,
+        event.x / size.value.width,
         currData
       );
       positionX.value = event.x;
@@ -105,7 +120,7 @@ function Chart({ data, children }) {
       progress.value = 1;
       let idx = 0;
       for (let i = 0; i < currData.value.length; i++) {
-        if (currData.value[i].x > event.x / size.value) {
+        if (currData.value[i].x > event.x / size.value.width) {
           idx = i;
           break;
         }
@@ -113,11 +128,11 @@ function Chart({ data, children }) {
       setNativeXYAccordingToPosition(
         nativeX,
         nativeY,
-        event.x / size.value,
+        event.x / size.value.width,
         currData
       );
       positionX.value = event.x;
-      positionY.value = currData.value[idx].y * size.value;
+      positionY.value = currData.value[idx].y * size.value.height;
       dotScale.value = withSpring(1);
     },
   });
@@ -189,7 +204,9 @@ function Chart({ data, children }) {
   const contextValue = useMemo(
     () => ({
       animatedStyle,
+      data,
       dotStyle,
+      extremes,
       nativeX,
       nativeY,
       onPanGestureEvent,
@@ -204,6 +221,8 @@ function Chart({ data, children }) {
       nativeX,
       nativeY,
       size,
+      data,
+      extremes,
     ]
   );
 

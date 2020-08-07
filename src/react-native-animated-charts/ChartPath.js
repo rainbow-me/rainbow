@@ -9,7 +9,7 @@ import ChartContext from './ChartContext';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-function ChartPath({ size, ...props }) {
+function ChartPath({ height, width, ...props }) {
   const {
     onTapGestureEvent,
     onPanGestureEvent,
@@ -26,9 +26,9 @@ function ChartPath({ size, ...props }) {
       <Animated.View
         onLayout={({
           nativeEvent: {
-            layout: { width },
+            layout: { width, height },
           },
-        }) => (layoutSize.value = width)}
+        }) => (layoutSize.value = { height, width })}
       >
         <PanGestureHandler
           activeOffsetX={[0, 0]}
@@ -37,7 +37,12 @@ function ChartPath({ size, ...props }) {
           ref={panRef}
         >
           <Animated.View>
-            <Svg height={size} viewBox="0 0 1 1" width={size}>
+            <Svg
+              height={height}
+              preserveAspectRatio="none"
+              viewBox="0 0 1 1"
+              width={width}
+            >
               <AnimatedPath animatedProps={animatedStyle} {...props} />
             </Svg>
           </Animated.View>
