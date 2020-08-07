@@ -10,6 +10,17 @@ const storage = new Storage({
   storageBackend: AsyncStorage,
 });
 
+if (
+  !global.__reanimatedModuleProxy &&
+  !ReactNative.TurboModuleRegistry.get('NativeReanimated')
+) {
+  global.__reanimatedModuleProxy = {
+    installCoreFunctions() {},
+    makeRemote() {},
+    makeShareable() {},
+  };
+}
+
 global.storage = storage;
 
 if (typeof __dirname === 'undefined') global.__dirname = '/';

@@ -1,6 +1,10 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useCallback } from 'react';
+import useExperimentalFlag, {
+  CHARTS_EXAMPLE,
+} from '../config/experimentalHooks';
 import { useCoinListEdited } from '../hooks';
+import Example from '../react-native-animated-charts/Example';
 import ProfileScreen from '../screens/ProfileScreen';
 import QRScannerScreenWithData from '../screens/QRScannerScreenWithData';
 import WalletScreen from '../screens/WalletScreen';
@@ -13,6 +17,7 @@ const renderTabBar = () => null;
 
 export function SwipeNavigator() {
   const { isCoinListEdited } = useCoinListEdited();
+  const showChartsExample = useExperimentalFlag(CHARTS_EXAMPLE);
 
   const renderPager = useCallback(
     props => <ScrollPagerWrapper {...props} />,
@@ -22,7 +27,9 @@ export function SwipeNavigator() {
   return (
     <Swipe.Navigator
       initialLayout={deviceUtils.dimensions}
-      initialRouteName={Routes.WALLET_SCREEN}
+      initialRouteName={
+        showChartsExample ? Routes.CHARTS_EXAMPLE : Routes.WALLET_SCREEN
+      }
       pager={renderPager}
       position={scrollPosition}
       swipeEnabled={!isCoinListEdited}
@@ -34,6 +41,9 @@ export function SwipeNavigator() {
         component={QRScannerScreenWithData}
         name={Routes.QR_SCANNER_SCREEN}
       />
+      {showChartsExample && (
+        <Swipe.Screen component={Example} name={Routes.CHARTS_EXAMPLE} />
+      )}
     </Swipe.Navigator>
   );
 }
