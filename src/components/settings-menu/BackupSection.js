@@ -1,13 +1,10 @@
 import analytics from '@segment/analytics-react-native';
 import { captureMessage } from '@sentry/react-native';
 import { keys } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import SeedPhraseImageSource from '../../assets/seed-phrase-icon.png';
-import showWalletErrorAlert from '../../helpers/support';
-import { useInitializeWallet, useWallets } from '../../hooks';
 import { getAllKeysAnonymized } from '../../model/keychain';
 import {
   getAllWallets,
@@ -18,12 +15,48 @@ import {
   loadSeedPhraseAndMigrateIfNeeded,
 } from '../../model/wallet';
 import store from '../../redux/store';
-import { logger } from '../../utils';
 import { Button } from '../buttons';
 import CopyTooltip from '../copy-tooltip';
-import { Centered, Column } from '../layout';
+import { Icon } from '../icons';
+import { Centered, Column, RowWithMargins } from '../layout';
 import { Br, Monospace, Text } from '../text';
+import BiometryTypes from '@rainbow-me/helpers/biometryTypes';
+import showWalletErrorAlert from '@rainbow-me/helpers/support';
+import {
+  useBiometryType,
+  useInitializeWallet,
+  useWallets,
+} from '@rainbow-me/hooks';
 import { colors, padding, position, shadow } from '@rainbow-me/styles';
+import logger from 'logger';
+
+const BackupGraphic = styled(FastImage).attrs({
+  source: SeedPhraseImageSource,
+})`
+  ${position.size(70)};
+`;
+
+const BiometryIcon = styled(Icon).attrs(({ biometryType }) => ({
+  name: biometryType.toLowerCase(),
+  size: biometryType === BiometryTypes.passcode ? 19 : 20,
+}))`
+  margin-bottom: ${({ biometryType }) =>
+    biometryType === BiometryTypes.passcode ? 1.5 : 0};
+`;
+
+const ButtonLabel = styled(Text).attrs({
+  align: 'center',
+  color: colors.white,
+  size: 'large',
+  weight: 'semibold',
+})``;
+
+const Container = styled(Column).attrs({
+  align: 'center',
+})`
+  ${padding(80, 40, 0)};
+  flex: 1;
+`;
 
 const Content = styled(Centered)`
   margin-bottom: 34;
@@ -35,14 +68,15 @@ const Content = styled(Centered)`
 const ToggleSeedPhraseButton = styled(Button)`
   ${shadow.build(0, 5, 15, colors.purple, 0.3)}
   background-color: ${colors.appleBlue};
-  width: 235;
+  width: 265;
 `;
 
-const BackupSection = ({ navigation }) => {
+export default function BackupSection({ navigation }) {
   const initializeWallet = useInitializeWallet();
   const [seedPhrase, setSeedPhrase] = useState(null);
   const { selectedWallet } = useWallets();
   const [shouldRetry, setShouldRetry] = useState(true);
+  const biometryType = useBiometryType();
 
   const hideSeedPhrase = () => setSeedPhrase(null);
 
@@ -188,12 +222,16 @@ const BackupSection = ({ navigation }) => {
     }
   }, [logAndAttemptRestore, seedPhrase, selectedWallet]);
 
+  const showBiometryIcon =
+    !seedPhrase &&
+    (biometryType === BiometryTypes.passcode ||
+      biometryType === BiometryTypes.TouchID);
+  const showFaceIDCharacter =
+    !seedPhrase && biometryType === BiometryTypes.FaceID;
+
   return (
-    <Column align="center" css={padding(80, 40, 0)} flex={1}>
-      <FastImage
-        source={SeedPhraseImageSource}
-        style={position.sizeAsObject(70)}
-      />
+    <Container>
+      <BackupGraphic />
       <Text lineHeight="loosest" size="larger" weight="semibold">
         Your Private Key
       </Text>
@@ -229,14 +267,18 @@ const BackupSection = ({ navigation }) => {
         )}
       </Content>
       <ToggleSeedPhraseButton onPress={handlePressToggleSeedPhrase}>
-        {seedPhrase ? 'Hide' : 'Show'} Private Key
+        <RowWithMargins align="center" justify="center" margin={9}>
+          {showBiometryIcon && <BiometryIcon biometryType={biometryType} />}
+          <ButtonLabel
+            color="appleBlue"
+            letterSpacing="rounded"
+            weight="semibold"
+          >
+            {showFaceIDCharacter && '􀎽  '}
+            {`${seedPhrase ? 'Hide' : 'Show'} Private Key`}
+          </ButtonLabel>
+        </RowWithMargins>
       </ToggleSeedPhraseButton>
-    </Column>
+    </Container>
   );
-};
-
-BackupSection.propTypes = {
-  navigation: PropTypes.object,
-};
-
-export default BackupSection;
+}
