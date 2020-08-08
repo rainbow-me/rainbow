@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
-import BiometryTypes from '../../helpers/biometryTypes';
-import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import Icon from './Icon';
+import BiometryTypes from '@rainbow-me/helpers/biometryTypes';
 import { colors, position } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
 const BiometryTypeIcon = styled(Icon).attrs(({ type }) => ({
   color: colors.white,
@@ -13,7 +13,9 @@ const BiometryTypeIcon = styled(Icon).attrs(({ type }) => ({
   ${position.size('100%')}
 `;
 
-const Container = styled(Centered).attrs({ align: 'start' })`
+const Container = styled(Centered).attrs({
+  align: 'start',
+})`
   ${({ type }) =>
     type === BiometryTypes.FaceID
       ? `
