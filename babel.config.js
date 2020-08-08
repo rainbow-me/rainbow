@@ -3,7 +3,7 @@ module.exports = function(api) {
 
   const plugins = [
     [
-      'babel-plugin-module-resolver',
+      'module-resolver',
       {
         alias: {
           '@rainbow-me/hooks': './src/hooks',
@@ -13,6 +13,7 @@ module.exports = function(api) {
           'logger': './src/utils/logger',
           'react-native-cool-modals': './src/react-native-cool-modals',
         },
+        extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
         root: ['./src'],
       },
     ],

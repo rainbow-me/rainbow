@@ -22,8 +22,8 @@
     "ios": "react-native run-ios --simulator='iPhone 11'",
     "lint": "yarn lint:ts && yarn lint:js && yarn lint:css",
     "lint:css": "stylelint './src/**/*.js'",
-    "lint:js": "eslint --ext '.ts .js,.jsx' .",
-    "lint:ts": "yarn tsc --skipLibCheck",
+    "lint:js": "eslint --ext '.ts,.js,.jsx' .",
+    "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "nodeify": "./node_modules/.bin/rn-nodeify --install \"crypto\" --hack",
     "postinstall": "./scripts/postinstall.sh",
     "update-env": "curl -H 'Authorization: token '$GITHUB_TOKEN -H 'Accept: application/vnd.github.v3.raw' -O  -L https://api.github.com/repos/rainbow-me/rainbow-env/contents/dotenv && rm -f .env && mv dotenv .env"
@@ -34,8 +34,8 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --ext '.js,.jsx,.ts,.tsx' -c .eslintrc.json",
+    "*.{js,jsx,ts}": [
+      "eslint --ext '.js,.jsx,.ts' -c .eslintrc.json",
       "stylelint"
     ]
   },
@@ -220,7 +220,6 @@
     "eslint": "^6.8.0",
     "eslint-config-satya164": "^3.1.6",
     "eslint-import-resolver-babel-module": "^5.1.2",
-    "eslint-plugin-import": "^2.20.2",
     "jest": "^24.9.0",
     "metro-react-native-babel-preset": "^0.59.0",
     "react-native-bundle-visualizer": "^2.0.1",
@@ -235,7 +234,6 @@
   },
   "resolutions": {
     "**/elliptic": "6.5.3",
-    "**/eslint-plugin-import": "2.20.2",
     "**/resolve": "1.8.1",
     "**/logkitty": "0.7.1"
   },
@@ -243,7 +241,6 @@
     "preset": "react-native",
     "moduleFileExtensions": [
       "ts",
-      "tsx",
       "js",
       "jsx",
       "json",
