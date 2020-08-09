@@ -74,7 +74,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
       return;
     }
     navigate(Routes.RECEIVE_MODAL);
-  }, [navigate, selectedWallet?.damaged]);
+  }, [navigate, selectedWallet]);
 
   const handlePressImportWallet = useCallback(
     () => navigate(Routes.IMPORT_SEED_PHRASE_FLOW),

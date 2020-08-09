@@ -6,8 +6,11 @@ module.exports = function(api) {
       'babel-plugin-module-resolver',
       {
         alias: {
+          '@rainbow-me/assets': './src/assets',
+          '@rainbow-me/config': './src/config',
           '@rainbow-me/helpers': './src/helpers',
           '@rainbow-me/hooks': './src/hooks',
+          '@rainbow-me/navigation': './src/navigation',
           '@rainbow-me/routes': './src/navigation/routesNames',
           '@rainbow-me/styles': './src/styles',
           '@rainbow-me/utils': './src/utils',
