@@ -58,7 +58,7 @@ export default function ChartWrapper({
 
   useEffect(() => {
     if (points && !fetchingCharts) {
-      setTimeout(() => setThrottledData(points), 50);
+      setTimeout(() => setThrottledData({ points }), 50);
     }
   }, [fetchingCharts, points, setThrottledData]);
 

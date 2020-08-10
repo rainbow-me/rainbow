@@ -9,6 +9,7 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 import ChartContext from './ChartContext';
+import { svgBezierPath } from './smoothSVG';
 
 const parse = data => {
   let smallestY = data[0];
@@ -56,6 +57,9 @@ function setNativeXYAccordingToPosition(nativeX, nativeY, position, data) {
 function Chart({ data, children }) {
   const prevData = useSharedValue([]);
   const currData = useSharedValue([]);
+  const prevSmoothing = useSharedValue(0);
+  const currSmoothing = useSharedValue(0);
+
   const progress = useSharedValue(1);
   const dotScale = useSharedValue(0);
   const nativeX = useSharedValue('');
@@ -64,21 +68,25 @@ function Chart({ data, children }) {
   const [extremes, setExtremes] = useState({});
 
   useEffect(() => {
-    if (!data || data.length === 0) {
+    if (!data || data.points.length === 0) {
       return;
     }
-    const [parsedData, newExtremes] = parse(data);
+    const [parsedData, newExtremes] = parse(data.points);
     setExtremes(newExtremes);
     if (prevData.value.length !== 0) {
       prevData.value = currData.value;
+      prevSmoothing.value = currSmoothing.value;
       progress.value = 0;
       currData.value = parsedData;
+      currSmoothing.value = data.smoothing || 0;
       progress.value = withTiming(1);
     } else {
+      prevSmoothing.value = data.smoothing || 0;
+      currSmoothing.value = data.smoothing || 0;
       prevData.value = parsedData;
       currData.value = parsedData;
     }
-  }, [currData, data, prevData, progress]);
+  }, [currData, currSmoothing, data, prevData, prevSmoothing, progress]);
   const positionX = useSharedValue(0);
   const positionY = useSharedValue(0);
 
@@ -168,6 +176,8 @@ function Chart({ data, children }) {
   const path = useDerivedValue(() => {
     let fromValue = prevData.value;
     let toValue = currData.value;
+    let res;
+    let smoothing;
     if (progress.value !== 1) {
       const numOfPoints = Math.round(
         fromValue.length +
@@ -193,25 +203,42 @@ function Chart({ data, children }) {
         }
         toValue = mappedTo;
       }
-      return fromValue
-        .map(({ x, y }, i) => {
-          const { x: nX, y: nY } = toValue[i];
-          const mX = (x + (nX - x) * progress.value) * size.value.width;
-          const mY = (y + (nY - y) * progress.value) * size.value.height;
-          return `L ${mX} ${mY}`;
-        })
-        .join(' ')
-        .replace('L', 'M');
+
+      if (prevSmoothing.value > currSmoothing.value) {
+        smoothing =
+          prevSmoothing.value +
+          Math.min(progress.value * 5, 1) *
+            (currSmoothing.value - prevSmoothing.value);
+      } else {
+        smoothing =
+          prevSmoothing.value +
+          Math.max(Math.min((progress.value - 0.7) * 4, 1), 0) *
+            (currSmoothing.value - prevSmoothing.value);
+      }
+
+      res = fromValue.map(({ x, y }, i) => {
+        const { x: nX, y: nY } = toValue[i];
+        const mX = (x + (nX - x) * progress.value) * size.value.width;
+        const mY = (y + (nY - y) * progress.value) * size.value.height;
+        return { x: mX, y: mY };
+      });
+    } else {
+      smoothing = currSmoothing.value;
+      res = toValue.map(({ x, y }) => {
+        return { x: x * size.value.width, y: y * size.value.height };
+      });
     }
 
-    const result = toValue
+    if (smoothing !== 0) {
+      return svgBezierPath(res, smoothing);
+    }
+
+    return res
       .map(({ x, y }) => {
-        return `L ${x * size.value.width} ${y * size.value.height}`;
+        return `L ${x} ${y}`;
       })
       .join(' ')
       .replace('L', 'M');
-
-    return result;
   });
 
   // @ts-ignore

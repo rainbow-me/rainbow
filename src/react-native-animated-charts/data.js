@@ -1,3 +1,4 @@
+import { default as bSpline } from './bSpline';
 import { data1 as rawData1, data2 as rawData2 } from './rawData';
 
 function monothonicSpline(x, y) {
@@ -160,3 +161,5 @@ export function simplifyData(data, throttle = 1, pickRange = 10) {
 export const data1 = rawData1.map(([x, y]) => ({ x, y }));
 export const data2 = rawData2.map(([x, y]) => ({ x, y }));
 export const softData = simplifyData(data1);
+export const softData2 = data2.filter((_, i) => i % 7 === 0);
+export const splineSoftData = bSpline(data2.filter((_, i) => i % 7 === 0))(80);
