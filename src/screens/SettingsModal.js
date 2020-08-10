@@ -104,7 +104,7 @@ const BackArrow = styled(Icon).attrs({
   margin-right: 5;
   margin-top: ${Platform.OS === 'android' ? 2 : 0.5};
 `;
-const BackImage = () => <BackArrow />;
+const BackImage = <BackArrow />;
 
 const Container = styled.View`
   flex: 1;
