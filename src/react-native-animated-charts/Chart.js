@@ -55,7 +55,18 @@ function setNativeXYAccordingToPosition(nativeX, nativeY, position, data) {
   nativeY.value = data.value[idx].nativeY.toString();
 }
 
-function Chart({ data, children }) {
+function positionXWithMargin(x, margin, width) {
+  'worklet';
+  if (x < margin) {
+    return margin - (margin - x) / 2;
+  } else if (width - x < margin) {
+    return width - margin + (x - width + margin) / 2;
+  } else {
+    return x;
+  }
+}
+
+function Chart({ data, children, softMargin = 30 }) {
   const prevData = useSharedValue([]);
   const currData = useSharedValue([]);
   const prevSmoothing = useSharedValue(0);
@@ -67,11 +78,12 @@ function Chart({ data, children }) {
   const nativeX = useSharedValue('');
   const nativeY = useSharedValue('');
   const pathOpacity = useSharedValue(1);
+  const softMarginValue = useSharedValue(softMargin);
   const size = useSharedValue(0);
   const [extremes, setExtremes] = useState({});
 
   useEffect(() => {
-    if (!data || data.points.length === 0) {
+    if (!data || !data.points || data.points.length === 0) {
       return;
     }
     const [parsedData, newExtremes] = parse(data.points);
@@ -103,11 +115,21 @@ function Chart({ data, children }) {
     duration: 80,
   };
 
+  useEffect(() => {
+    softMarginValue.value = softMargin;
+  }, [softMargin, softMarginValue]);
+
   const onLongPressGestureEvent = useAnimatedGestureHandler({
     onActive: event => {
+      const eventX = positionXWithMargin(
+        event.x,
+        softMarginValue.value,
+        size.value.width
+      );
+
       let idx = 0;
       for (let i = 0; i < currData.value.length; i++) {
-        if (currData.value[i].x > event.x / size.value.width) {
+        if (currData.value[i].x > eventX / size.value.width) {
           idx = i;
           break;
         }
@@ -120,7 +142,7 @@ function Chart({ data, children }) {
         positionY.value =
           (currData.value[idx - 1].y +
             (currData.value[idx].y - currData.value[idx - 1].y) *
-              ((event.x / size.value.width - currData.value[idx - 1].x) /
+              ((eventX / size.value.width - currData.value[idx - 1].x) /
                 (currData.value[idx].x - currData.value[idx - 1].x))) *
           size.value.height;
       }
@@ -128,10 +150,10 @@ function Chart({ data, children }) {
       setNativeXYAccordingToPosition(
         nativeX,
         nativeY,
-        event.x / size.value.width,
+        eventX / size.value.width,
         currData
       );
-      positionX.value = event.x;
+      positionX.value = eventX;
     },
     onEnd: () => {
       nativeX.value = '';
@@ -149,10 +171,16 @@ function Chart({ data, children }) {
       pathOpacity.value = withTiming(1, timingConfig);
     },
     onStart: event => {
+      const eventX = positionXWithMargin(
+        event.x,
+        softMarginValue.value,
+        size.value.width
+      );
+
       progress.value = 1;
       let idx = 0;
       for (let i = 0; i < currData.value.length; i++) {
-        if (currData.value[i].x > event.x / size.value.width) {
+        if (currData.value[i].x > eventX / size.value.width) {
           idx = i;
           break;
         }
@@ -160,10 +188,10 @@ function Chart({ data, children }) {
       setNativeXYAccordingToPosition(
         nativeX,
         nativeY,
-        event.x / size.value.width,
+        eventX / size.value.width,
         currData
       );
-      positionX.value = event.x;
+      positionX.value = positionXWithMargin(eventX, 30, size.value.width);
       positionY.value = currData.value[idx].y * size.value.height;
       dotOpacity.value = withSpring(1, springConfig);
       dotScale.value = withSpring(1, springConfig);
