@@ -91,7 +91,7 @@ export default function ChartWrapper({
             height={186}
             longPressGestureHandlerProps={{
               maxDist: 200,
-              minDurationMs: 100,
+              minDurationMs: 60,
             }}
             stroke={color}
             strokeLinecap="round"
