@@ -27,7 +27,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 
 const amountOfPathPoints = 175; // 👈️ TODO make this dynamic
 
-const heightWithChart = 622;
+const heightWithChart = 606;
 const heightWithNoChart = 309;
 
 export const ChartExpandedStateSheetHeight = chartExpandedAvailable

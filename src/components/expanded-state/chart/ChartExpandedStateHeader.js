@@ -22,7 +22,7 @@ const noPriceData = 'No price data';
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
 })`
-  ${padding(0, 19, 24)};
+  ${padding(0, 19, 30)};
 `;
 
 function useTabularNumsWhileScrubbing(isScrubbing) {

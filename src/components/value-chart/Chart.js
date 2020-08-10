@@ -1,13 +1,13 @@
 import { invert } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Dimensions, View } from 'react-native';
+import { Dimensions } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
 import TimespanSelector from './TimespanSelector';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors } from '@rainbow-me/styles';
 import { Chart, ChartDot, ChartPath } from 'react-native-animated-charts';
 
 export const { width: SIZE } = Dimensions.get('window');
@@ -21,8 +21,12 @@ const ChartTimespans = [
   ChartTypes.max,
 ];
 
+const ChartContainer = styled.View`
+  margin-vertical: 17px;
+`;
+
 const Container = styled(Column)`
-  ${padding(19, 0, 21)};
+  padding-bottom: 30px;
   overflow: hidden;
   width: 100%;
 `;
@@ -85,10 +89,10 @@ export default function ChartWrapper({
           {...TEMP}
           chartTimeSharedValue={chartTimeSharedValue}
         />
-        <View>
+        <ChartContainer>
           <ChartPath
             fill="none"
-            height={186}
+            height={146.5}
             longPressGestureHandlerProps={{
               maxDist: 200,
               minDurationMs: 60,
@@ -102,7 +106,7 @@ export default function ChartWrapper({
           <Dot color={colors.alpha(color, 0.02)} size={65}>
             <InnerDot color={color} />
           </Dot>
-        </View>
+        </ChartContainer>
       </Chart>
       <TimespanSelector
         color={color}
