@@ -7,7 +7,7 @@ import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
 import TimespanSelector from './TimespanSelector';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
-import { padding } from '@rainbow-me/styles';
+import { colors, padding } from '@rainbow-me/styles';
 import { Chart, ChartDot, ChartPath } from 'react-native-animated-charts';
 
 export const { width: SIZE } = Dimensions.get('window');
@@ -28,10 +28,14 @@ const Container = styled(Column)`
 `;
 
 const InnerDot = styled.View`
-  width: 6px;
-  height: 6px;
-  border-radius: 5px;
-  background-color: white;
+  width: 10px;
+  height: 10px;
+  border-radius: 6px;
+  background-color: ${({ color }) => color};
+  shadow-color: ${({ color }) => color};
+  shadow-offset: 0 3px;
+  shadow-opacity: 0.6;
+  shadow-radius: 4.5px;
 `;
 
 const Dot = styled(ChartDot)`
@@ -84,17 +88,15 @@ export default function ChartWrapper({
         <View>
           <ChartPath
             fill="none"
-            height={SIZE / 2}
-            panGestureHandlerProps={{
-              activeOffsetY: [-1, 3],
-              failOffsetY: [-1000, 1],
-            }}
+            height={186}
             stroke={color}
-            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="3.5"
             width={SIZE}
           />
-          <Dot color={color} size={16}>
-            <InnerDot />
+          <Dot color={colors.alpha(color, 0.025)} size={65}>
+            <InnerDot color={color} />
           </Dot>
         </View>
       </Chart>

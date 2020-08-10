@@ -8,6 +8,7 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { haptics } from '../utils';
 import ChartContext from './ChartContext';
 
 const parse = data => {
@@ -57,9 +58,11 @@ function Chart({ data, children }) {
   const prevData = useSharedValue([]);
   const currData = useSharedValue([]);
   const progress = useSharedValue(1);
+  const dotOpacity = useSharedValue(0);
   const dotScale = useSharedValue(0);
   const nativeX = useSharedValue('');
   const nativeY = useSharedValue('');
+  const pathOpacity = useSharedValue(1);
   const size = useSharedValue(0);
   const [extremes, setExtremes] = useState({});
 
@@ -82,7 +85,17 @@ function Chart({ data, children }) {
   const positionX = useSharedValue(0);
   const positionY = useSharedValue(0);
 
-  const onPanGestureEvent = useAnimatedGestureHandler({
+  const springConfig = {
+    damping: 15,
+    mass: 1,
+    stiffness: 600,
+  };
+
+  const timingConfig = {
+    duration: 80,
+  };
+
+  const onLongPressGestureEvent = useAnimatedGestureHandler({
     onActive: event => {
       let idx = 0;
       for (let i = 0; i < currData.value.length; i++) {
@@ -112,37 +125,20 @@ function Chart({ data, children }) {
       );
       positionX.value = event.x;
     },
-    onStart: event => {
-      progress.value = 1;
-      let idx = 0;
-      for (let i = 0; i < currData.value.length; i++) {
-        if (currData.value[i].x > event.x / size.value.width) {
-          idx = i;
-          break;
-        }
-      }
-      setNativeXYAccordingToPosition(
-        nativeX,
-        nativeY,
-        event.x / size.value.width,
-        currData
-      );
-      positionX.value = event.x;
-      positionY.value = currData.value[idx].y * size.value.height;
-      dotScale.value = withSpring(1);
-    },
-  });
-
-  const onTapGestureEvent = useAnimatedGestureHandler({
     onEnd: () => {
       nativeX.value = '';
       nativeY.value = '';
-      dotScale.value = withSpring(0);
+      dotOpacity.value = withSpring(0, springConfig);
+      dotScale.value = withSpring(0, springConfig);
+      pathOpacity.value = withTiming(1, timingConfig);
+      haptics.impactHeavy();
     },
     onFail: () => {
       nativeX.value = '';
       nativeY.value = '';
-      dotScale.value = withSpring(0);
+      dotOpacity.value = withSpring(0, springConfig);
+      dotScale.value = withSpring(0, springConfig);
+      pathOpacity.value = withTiming(1, timingConfig);
     },
     onStart: event => {
       progress.value = 1;
@@ -161,7 +157,10 @@ function Chart({ data, children }) {
       );
       positionX.value = event.x;
       positionY.value = currData.value[idx].y * size.value.height;
-      dotScale.value = withSpring(1);
+      dotOpacity.value = withSpring(1, springConfig);
+      dotScale.value = withSpring(1, springConfig);
+      pathOpacity.value = withTiming(0.7, timingConfig);
+      haptics.impactHeavy();
     },
   });
 
@@ -218,13 +217,17 @@ function Chart({ data, children }) {
   const animatedStyle = useAnimatedStyle(() => {
     return {
       d: path.value,
+      style: {
+        opacity: pathOpacity.value,
+      },
     };
   });
 
   const dotStyle = useAnimatedStyle(() => ({
+    opacity: dotOpacity.value,
     transform: [
       { translateX: positionX.value },
-      { translateY: positionY.value },
+      { translateY: positionY.value + 10 }, // temporary fix for clipped chart
       { scale: dotScale.value },
     ],
   }));
@@ -237,15 +240,13 @@ function Chart({ data, children }) {
       extremes,
       nativeX,
       nativeY,
-      onPanGestureEvent,
-      onTapGestureEvent,
+      onLongPressGestureEvent,
       size,
     }),
     [
       animatedStyle,
       dotStyle,
-      onPanGestureEvent,
-      onTapGestureEvent,
+      onLongPressGestureEvent,
       nativeX,
       nativeY,
       size,
