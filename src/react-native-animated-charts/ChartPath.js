@@ -6,7 +6,7 @@ import ChartContext from './ChartContext';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-function ChartPath({ height, width, tapGestureHandlerProps, ...props }) {
+function ChartPath({ height, width, longPressGestureHandlerProps, ...props }) {
   const {
     onLongPressGestureEvent,
     animatedStyle,
@@ -19,9 +19,7 @@ function ChartPath({ height, width, tapGestureHandlerProps, ...props }) {
 
   return (
     <LongPressGestureHandler
-      maxDist={200}
-      minDurationMs={50}
-      {...tapGestureHandlerProps}
+      {...longPressGestureHandlerProps}
       {...{ onGestureEvent: onLongPressGestureEvent }}
     >
       <Animated.View>

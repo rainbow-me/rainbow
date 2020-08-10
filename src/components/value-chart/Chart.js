@@ -89,6 +89,10 @@ export default function ChartWrapper({
           <ChartPath
             fill="none"
             height={186}
+            longPressGestureHandlerProps={{
+              maxDist: 200,
+              minDurationMs: 100,
+            }}
             stroke={color}
             strokeLinecap="round"
             strokeLinejoin="round"
