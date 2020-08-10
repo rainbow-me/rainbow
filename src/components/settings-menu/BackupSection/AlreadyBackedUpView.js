@@ -22,6 +22,12 @@ import { Text } from '../../text';
 import Routes from '@rainbow-me/routes';
 import { colors, fonts, padding } from '@rainbow-me/styles';
 
+const WalletBackupStatus = {
+  CLOUD_BACKUP: 0,
+  IMPORTED: 1,
+  MANUAL_BACKUP: 2,
+};
+
 const DescriptionText = styled(Text).attrs({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.5),
@@ -108,18 +114,22 @@ const AlreadyBackedUpView = () => {
     let status = null;
     if (wallets[walletId].backedUp) {
       if (wallets[walletId].backupType === WalletBackupTypes.manual) {
-        status = 'manual_backup';
+        status = WalletBackupStatus.MANUAL_BACKUP;
       } else {
-        status = 'cloud_backup';
+        status = WalletBackupStatus.CLOUD_BACKUP;
       }
     } else {
-      status = 'imported';
+      status = WalletBackupStatus.IMPORTED;
     }
     return status;
   }, [walletId, wallets]);
 
   const onFooterAction = useCallback(async () => {
-    if (['manual_backup', 'imported'].includes(walletStatus)) {
+    if (
+      [WalletBackupStatus.MANUAL_BACKUP, WalletBackupStatus.IMPORTED].includes(
+        walletStatus
+      )
+    ) {
       let password = null;
       if (latestBackup) {
         password = await fetchBackupPassword();
@@ -165,14 +175,15 @@ const AlreadyBackedUpView = () => {
     <Fragment>
       <Centered>
         <Subtitle>
-          {(walletStatus === 'cloud_backup' && `Backed up`) ||
-            (walletStatus === 'manual_backup' && `Backed up manually`) ||
-            (walletStatus === 'imported' && `Imported`)}
+          {(walletStatus === WalletBackupStatus.CLOUD_BACKUP && `Backed up`) ||
+            (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
+              `Backed up manually`) ||
+            (walletStatus === WalletBackupStatus.IMPORTED && `Imported`)}
         </Subtitle>
       </Centered>
       <Column align="center" css={padding(0, 19, 30)} flex={1} justify="center">
         <Centered direction="column">
-          {walletStatus !== 'cloud_backup' ? (
+          {walletStatus !== WalletBackupStatus.CLOUD_BACKUP ? (
             <TopIconGrey>
               <Text align="center" color="white" size="larger" weight="bold">
                 􀆅
@@ -186,15 +197,16 @@ const AlreadyBackedUpView = () => {
             </TopIconGreen>
           )}
           <Title>
-            {(walletStatus === 'imported' && `Your wallet was imported`) ||
+            {(walletStatus === WalletBackupStatus.IMPORTED &&
+              `Your wallet was imported`) ||
               `Your wallet is backed up`}
           </Title>
           <DescriptionText>
-            {(walletStatus === 'cloud_backup' &&
+            {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
               `If you lose this device, you can recover your encrypted wallet backup from iCloud.`) ||
-              (walletStatus === 'manual_backup' &&
+              (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
                 `If you lose this device, you can restore your wallet with the recovery phrase you saved.`) ||
-              (walletStatus === 'imported' &&
+              (walletStatus === WalletBackupStatus.IMPORTED &&
                 `If you lose this device, you can restore your wallet with the key you originally imported.`)}
           </DescriptionText>
         </Centered>
@@ -208,25 +220,32 @@ const AlreadyBackedUpView = () => {
         </Column>
       </Column>
 
-      {Platform.OS === 'ios' && walletStatus !== 'cloud_backup' && (
-        <Centered css={padding(0, 15, 42)}>
-          <ButtonPressAnimation onPress={onFooterAction}>
-            <Text
-              align="center"
-              color={
-                walletStatus !== 'cloud_backup' ? colors.appleBlue : colors.red
-              }
-              letterSpacing="roundedMedium"
-              size={walletStatus !== 'cloud_backup' ? 'large' : 'lmedium'}
-              weight="semibold"
-            >
-              {walletStatus !== 'cloud_backup'
-                ? `􀙶 Back up to iCloud`
-                : `􀈒 Delete iCloud backup`}
-            </Text>
-          </ButtonPressAnimation>
-        </Centered>
-      )}
+      {Platform.OS === 'ios' &&
+        walletStatus !== WalletBackupStatus.CLOUD_BACKUP && (
+          <Centered css={padding(0, 15, 42)}>
+            <ButtonPressAnimation onPress={onFooterAction}>
+              <Text
+                align="center"
+                color={
+                  walletStatus !== WalletBackupStatus.CLOUD_BACKUP
+                    ? colors.appleBlue
+                    : colors.red
+                }
+                letterSpacing="roundedMedium"
+                size={
+                  walletStatus !== WalletBackupStatus.CLOUD_BACKUP
+                    ? 'large'
+                    : 'lmedium'
+                }
+                weight="semibold"
+              >
+                {walletStatus !== WalletBackupStatus.CLOUD_BACKUP
+                  ? `􀙶 Back up to iCloud`
+                  : `􀈒 Delete iCloud backup`}
+              </Text>
+            </ButtonPressAnimation>
+          </Centered>
+        )}
     </Fragment>
   );
 };
