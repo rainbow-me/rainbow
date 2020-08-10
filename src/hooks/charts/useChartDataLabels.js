@@ -74,7 +74,7 @@ export default function useChartDataLabels({
   const getPercentChangeForPrice = useCallback(
     startPrice => {
       const endPrice = points?.[points.length - 1].y || latestPrice;
-      const percent = ((endPrice - startPrice) / startPrice) * -100;
+      const percent = ((endPrice - startPrice) / startPrice) * 100;
       return formatPercentChange(percent);
     },
     [latestPrice, points]
