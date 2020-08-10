@@ -1,12 +1,21 @@
 import React from 'react';
-import { Input } from '../../../inputs';
+import styled from 'styled-components/primitives';
 import ChartHeaderTitle from './ChartHeaderTitle';
 import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
+import { fonts } from '@rainbow-me/styles';
 import { ChartYLabel } from 'react-native-animated-charts';
+
+const Label = styled(ChartYLabel)`
+  background-color: white;
+  font-family: ${fonts.family.SFProRounded};
+  font-size: ${fonts.size.big};
+  font-weight: ${fonts.weight.bold};
+  letter-spacing: ${fonts.letterSpacing.roundedTight};
+`;
 
 function formatUSD(value, priceSharedValue) {
   'worklet';
-  if (value === '') {
+  if (!value) {
     return priceSharedValue.value;
   }
   return `$${Number(value)
@@ -19,30 +28,16 @@ function formatUSD(value, priceSharedValue) {
 export default function ChartPriceLabel({
   defaultValue,
   isNoPriceData,
-  priceRef,
-  tabularNums,
   priceSharedValue,
 }) {
   return !chartExpandedAvailable || isNoPriceData ? (
     <ChartHeaderTitle>{defaultValue}</ChartHeaderTitle>
   ) : (
-    <>
-      <ChartHeaderTitle
-        as={Input}
-        editable={false}
-        flex={1}
-        ref={priceRef}
-        tabularNums={tabularNums}
-        width="100%"
-      />
-      <ChartYLabel
-        ChartYLabel
-        format={value => {
-          'worklet';
-          return formatUSD(value, priceSharedValue);
-        }}
-        style={{ backgroundColor: 'white', margin: 4 }}
-      />
-    </>
+    <Label
+      format={value => {
+        'worklet';
+        return formatUSD(value, priceSharedValue);
+      }}
+    />
   );
 }

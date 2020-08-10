@@ -1,41 +1,117 @@
-import React from 'react';
-import Animated from 'react-native-reanimated';
-import { Input } from '../../../inputs';
+import React, { useEffect } from 'react';
+import { TextInput } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+} from 'react-native-reanimated';
+import styled from 'styled-components/primitives';
+import { useChartData } from '../../../../react-native-animated-charts/useChartData';
 import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
-import ChartHeaderTitle from './ChartHeaderTitle';
-import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
+import { colors, fonts } from '@rainbow-me/styles';
 
-const AnimatedTitle = Animated.createAnimatedComponent(ChartHeaderTitle);
+export function useRatio() {
+  const { nativeY, data } = useChartData();
 
-export default function ChartPercentChangeLabel({
-  changeDirection,
-  changeRef,
-  color,
-  latestChange,
-  tabularNums,
-}) {
+  const firstValue = useSharedValue(data?.points?.[0]?.y);
+  const lastValue = useSharedValue(data?.points?.[data.points.length - 1]?.y);
+
+  useEffect(() => {
+    firstValue.value = data?.points?.[0]?.y;
+    lastValue.value = data?.points?.[data.points.length - 1]?.y;
+  }, [data, firstValue, lastValue]);
+
+  return useDerivedValue(
+    () => (nativeY.value || lastValue.value) / firstValue.value
+  );
+}
+
+const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
+
+const PercentLabel = styled(AnimatedTextInput)`
+  background-color: white;
+  font-family: ${fonts.family.SFProRounded};
+  font-size: ${fonts.size.big};
+  font-weight: ${fonts.weight.bold};
+  letter-spacing: ${fonts.letterSpacing.roundedTight};
+  text-align: right;
+`;
+
+export default function ChartPercentChangeLabel({ changeDirection }) {
+  const { nativeY, data } = useChartData();
+
+  const firstValue = useSharedValue(data?.points?.[0]?.y);
+  const lastValue = useSharedValue(data?.points?.[data.points.length - 1]?.y);
+
+  const defaultValue =
+    Math.abs(
+      (data?.points?.[data.points.length - 1]?.y / data?.points?.[0]?.y) * 100 -
+        100
+    ).toFixed(2) + '%';
+
+  useEffect(() => {
+    firstValue.value = data?.points?.[0]?.y;
+    lastValue.value = data?.points?.[data.points.length - 1]?.y;
+  }, [data, firstValue, lastValue]);
+
+  const textProps = useAnimatedStyle(() => {
+    return {
+      text:
+        Math.abs(
+          (firstValue.value &&
+            (nativeY.value || lastValue.value) / firstValue.value) *
+            100 -
+            100
+        ).toFixed(2) + '%',
+    };
+  });
+
+  const ratio = useRatio();
+
+  const textStyle = useAnimatedStyle(() => {
+    return {
+      color:
+        ratio.value === 1
+          ? colors.blueGreyDark
+          : ratio.value < 1
+          ? colors.red
+          : colors.green,
+    };
+  });
+
+  const arrowWrapperStyle = useAnimatedStyle(() => {
+    return {
+      opacity: ratio.value === 1 ? 0 : 1,
+      transform: [{ rotate: ratio.value < 1 ? '180deg' : '0deg' }],
+    };
+  });
+
+  const arrowStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor:
+        ratio.value === 1
+          ? colors.blueGreyDark
+          : ratio.value < 1
+          ? colors.red
+          : colors.green,
+    };
+  });
+
   return (
     <RowWithMargins align="center" margin={4}>
       <ChartChangeDirectionArrow
+        arrowStyle={arrowStyle}
         changeDirection={changeDirection}
-        color={color}
+        style={arrowWrapperStyle}
       />
-      {chartExpandedAvailable ? (
-        <AnimatedTitle
-          align="right"
-          as={Input}
-          color={color}
-          editable={false}
-          pointerEvent="none"
-          ref={changeRef}
-          tabularNums={tabularNums}
-        />
-      ) : (
-        <AnimatedTitle align="right" color={color}>
-          {latestChange}
-        </AnimatedTitle>
-      )}
+      <PercentLabel
+        alignSelf="flex-end"
+        animatedProps={textProps}
+        defaultValue={defaultValue}
+        editable={false}
+        style={textStyle}
+      />
     </RowWithMargins>
   );
 }

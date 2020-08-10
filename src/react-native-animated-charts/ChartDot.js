@@ -7,6 +7,7 @@ function ChartDot({ style, size = 10, ...props }) {
   return (
     <Animated.View
       {...props}
+      pointerEvents="none"
       style={[
         dotStyle,
         {

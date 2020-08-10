@@ -3,7 +3,7 @@ import Animated, { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { useCallbackOne } from 'use-memo-one';
 import { CoinIcon } from '../../coin-icon';
-import { ColumnWithMargins, Row } from '../../layout';
+import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import ChartContextButton from './ChartContextButton';
 import {
   ChartDateLabel,
@@ -22,7 +22,7 @@ const noPriceData = 'No price data';
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
 })`
-  ${padding(0, 19, 24)};
+  ${padding(0, 19, 30)};
 `;
 
 function useTabularNumsWhileScrubbing(isScrubbing) {
@@ -47,7 +47,6 @@ export default function ChartExpandedStateHeader({
   changeDirection,
   changeRef,
   color = colors.dark,
-  colorForPriceChange,
   dateRef,
   isScrubbing,
   latestChange,
@@ -90,7 +89,7 @@ export default function ChartExpandedStateHeader({
         />
         <ChartContextButton asset={asset} color={color} />
       </Row>
-      <Row align="center" justify="space-between">
+      <RowWithMargins align="center" justify="space-between" margin={12}>
         <ColumnWithMargins align="start" flex={1} margin={1}>
           <ChartPriceLabel
             defaultValue={isNoPriceData ? asset?.name : price}
@@ -109,19 +108,17 @@ export default function ChartExpandedStateHeader({
             <ChartPercentChangeLabel
               changeDirection={changeDirection}
               changeRef={changeRef}
-              color={colorForPriceChange}
               isScrubbing={isScrubbing}
               latestChange={latestChange}
               tabularNums={tabularNums}
             />
             <ChartDateLabel
               chartTimeSharedValue={chartTimeSharedValue}
-              color={colorForPriceChange}
               dateRef={dateRef}
             />
           </ColumnWithMargins>
         )}
-      </Row>
+      </RowWithMargins>
     </Container>
   );
 }

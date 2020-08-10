@@ -8,6 +8,7 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { haptics } from '../utils';
 import ChartContext from './ChartContext';
 import { svgBezierPath } from './smoothSVG';
 
@@ -54,21 +55,35 @@ function setNativeXYAccordingToPosition(nativeX, nativeY, position, data) {
   nativeY.value = data.value[idx].nativeY.toString();
 }
 
-function Chart({ data, children }) {
+function positionXWithMargin(x, margin, width) {
+  'worklet';
+  if (x < margin) {
+    return margin - (margin - x) / 2;
+  } else if (width - x < margin) {
+    return width - margin + (x - width + margin) / 2;
+  } else {
+    return x;
+  }
+}
+
+function Chart({ data, children, softMargin = 30 }) {
   const prevData = useSharedValue([]);
   const currData = useSharedValue([]);
   const prevSmoothing = useSharedValue(0);
   const currSmoothing = useSharedValue(0);
 
   const progress = useSharedValue(1);
+  const dotOpacity = useSharedValue(0);
   const dotScale = useSharedValue(0);
   const nativeX = useSharedValue('');
   const nativeY = useSharedValue('');
+  const pathOpacity = useSharedValue(1);
+  const softMarginValue = useSharedValue(softMargin);
   const size = useSharedValue(0);
   const [extremes, setExtremes] = useState({});
 
   useEffect(() => {
-    if (!data || data.points.length === 0) {
+    if (!data || !data.points || data.points.length === 0) {
       return;
     }
     const [parsedData, newExtremes] = parse(data.points);
@@ -90,11 +105,31 @@ function Chart({ data, children }) {
   const positionX = useSharedValue(0);
   const positionY = useSharedValue(0);
 
-  const onPanGestureEvent = useAnimatedGestureHandler({
+  const springConfig = {
+    damping: 15,
+    mass: 1,
+    stiffness: 600,
+  };
+
+  const timingConfig = {
+    duration: 80,
+  };
+
+  useEffect(() => {
+    softMarginValue.value = softMargin;
+  }, [softMargin, softMarginValue]);
+
+  const onLongPressGestureEvent = useAnimatedGestureHandler({
     onActive: event => {
+      const eventX = positionXWithMargin(
+        event.x,
+        softMarginValue.value,
+        size.value.width
+      );
+
       let idx = 0;
       for (let i = 0; i < currData.value.length; i++) {
-        if (currData.value[i].x > event.x / size.value.width) {
+        if (currData.value[i].x > eventX / size.value.width) {
           idx = i;
           break;
         }
@@ -107,7 +142,7 @@ function Chart({ data, children }) {
         positionY.value =
           (currData.value[idx - 1].y +
             (currData.value[idx].y - currData.value[idx - 1].y) *
-              ((event.x / size.value.width - currData.value[idx - 1].x) /
+              ((eventX / size.value.width - currData.value[idx - 1].x) /
                 (currData.value[idx].x - currData.value[idx - 1].x))) *
           size.value.height;
       }
@@ -115,48 +150,37 @@ function Chart({ data, children }) {
       setNativeXYAccordingToPosition(
         nativeX,
         nativeY,
-        event.x / size.value.width,
+        eventX / size.value.width,
         currData
       );
-      positionX.value = event.x;
+      positionX.value = eventX;
     },
-    onStart: event => {
-      progress.value = 1;
-      let idx = 0;
-      for (let i = 0; i < currData.value.length; i++) {
-        if (currData.value[i].x > event.x / size.value.width) {
-          idx = i;
-          break;
-        }
-      }
-      setNativeXYAccordingToPosition(
-        nativeX,
-        nativeY,
-        event.x / size.value.width,
-        currData
-      );
-      positionX.value = event.x;
-      positionY.value = currData.value[idx].y * size.value.height;
-      dotScale.value = withSpring(1);
-    },
-  });
-
-  const onTapGestureEvent = useAnimatedGestureHandler({
     onEnd: () => {
       nativeX.value = '';
       nativeY.value = '';
-      dotScale.value = withSpring(0);
+      dotOpacity.value = withSpring(0, springConfig);
+      dotScale.value = withSpring(0, springConfig);
+      pathOpacity.value = withTiming(1, timingConfig);
+      haptics.impactHeavy();
     },
     onFail: () => {
       nativeX.value = '';
       nativeY.value = '';
-      dotScale.value = withSpring(0);
+      dotOpacity.value = withSpring(0, springConfig);
+      dotScale.value = withSpring(0, springConfig);
+      pathOpacity.value = withTiming(1, timingConfig);
     },
     onStart: event => {
+      const eventX = positionXWithMargin(
+        event.x,
+        softMarginValue.value,
+        size.value.width
+      );
+
       progress.value = 1;
       let idx = 0;
       for (let i = 0; i < currData.value.length; i++) {
-        if (currData.value[i].x > event.x / size.value.width) {
+        if (currData.value[i].x > eventX / size.value.width) {
           idx = i;
           break;
         }
@@ -164,12 +188,15 @@ function Chart({ data, children }) {
       setNativeXYAccordingToPosition(
         nativeX,
         nativeY,
-        event.x / size.value.width,
+        eventX / size.value.width,
         currData
       );
-      positionX.value = event.x;
+      positionX.value = positionXWithMargin(eventX, 30, size.value.width);
       positionY.value = currData.value[idx].y * size.value.height;
-      dotScale.value = withSpring(1);
+      dotOpacity.value = withSpring(1, springConfig);
+      dotScale.value = withSpring(1, springConfig);
+      pathOpacity.value = withTiming(0.7, timingConfig);
+      haptics.impactHeavy();
     },
   });
 
@@ -245,13 +272,17 @@ function Chart({ data, children }) {
   const animatedStyle = useAnimatedStyle(() => {
     return {
       d: path.value,
+      style: {
+        opacity: pathOpacity.value,
+      },
     };
   });
 
   const dotStyle = useAnimatedStyle(() => ({
+    opacity: dotOpacity.value,
     transform: [
       { translateX: positionX.value },
-      { translateY: positionY.value },
+      { translateY: positionY.value + 10 }, // temporary fix for clipped chart
       { scale: dotScale.value },
     ],
   }));
@@ -264,15 +295,13 @@ function Chart({ data, children }) {
       extremes,
       nativeX,
       nativeY,
-      onPanGestureEvent,
-      onTapGestureEvent,
+      onLongPressGestureEvent,
       size,
     }),
     [
       animatedStyle,
       dotStyle,
-      onPanGestureEvent,
-      onTapGestureEvent,
+      onLongPressGestureEvent,
       nativeX,
       nativeY,
       size,

@@ -1,11 +1,19 @@
 import React from 'react';
-import Animated from 'react-native-reanimated';
-import { Input } from '../../../inputs';
-import ChartHeaderSubtitle from './ChartHeaderSubtitle';
-import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
+import { useAnimatedStyle } from 'react-native-reanimated';
+import styled from 'styled-components/primitives';
+import { useRatio } from './ChartPercentChangeLabel';
+import { colors, fonts } from '@rainbow-me/styles';
 import { ChartXLabel } from 'react-native-animated-charts';
 
-const AnimatedSubtitle = Animated.createAnimatedComponent(ChartHeaderSubtitle);
+const Label = styled(ChartXLabel)`
+  background-color: white;
+  font-family: ${fonts.family.SFProRounded};
+  font-size: ${fonts.size.larger};
+  font-variant: tabular-nums;
+  font-weight: ${fonts.weight.medium};
+  letter-spacing: ${fonts.letterSpacing.roundedMedium};
+  text-align: right;
+`;
 
 const MONTHS = [
   'Jan',
@@ -30,17 +38,29 @@ function formatDatetime(value, chartTimeSharedValue) {
   }
 
   const date = new Date(Number(value) * 1000);
+  const now = new Date();
+
   let res = MONTHS[date.getMonth()] + ' ';
+
   const d = date.getDate();
   if (d < 10) {
     res += '0';
   }
-  res += d + ' ';
-  const h = date.getHours() % 12;
-  if (h < 10) {
-    res += '0';
+  res += d;
+
+  const y = date.getFullYear();
+  const yCurrent = now.getFullYear();
+  if (y !== yCurrent) {
+    res += ', ' + y;
+    return res;
   }
-  res += h + ':';
+
+  const h = date.getHours() % 12;
+  if (h === 0) {
+    res += ' 12:';
+  } else {
+    res += ' ' + h + ':';
+  }
 
   const m = date.getMinutes();
   if (m < 10) {
@@ -53,38 +73,32 @@ function formatDatetime(value, chartTimeSharedValue) {
   } else {
     res += 'PM';
   }
+
   return res;
 }
 
-export default function ChartDateLabel({
-  color,
-  dateRef,
-  chartTimeSharedValue,
-}) {
+export default function ChartDateLabel({ chartTimeSharedValue }) {
+  const ratio = useRatio();
+
+  const textStyle = useAnimatedStyle(() => {
+    return {
+      color:
+        ratio.value === 1
+          ? colors.blueGreyDark
+          : ratio.value < 1
+          ? colors.red
+          : colors.green,
+    };
+  });
+
   return (
     <>
-      {chartExpandedAvailable ? (
-        <AnimatedSubtitle
-          align="right"
-          as={Input}
-          color={color}
-          editable={false}
-          letterSpacing="roundedTight"
-          pointerEvent="none"
-          ref={dateRef}
-          tabularNums
-        />
-      ) : (
-        <AnimatedSubtitle align="right" color={color}>
-          Today
-        </AnimatedSubtitle>
-      )}
-      <ChartXLabel
+      <Label
         format={value => {
           'worklet';
           return formatDatetime(value, chartTimeSharedValue);
         }}
-        style={{ backgroundColor: 'white', margin: 4 }}
+        style={textStyle}
       />
     </>
   );

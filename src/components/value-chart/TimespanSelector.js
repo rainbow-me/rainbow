@@ -14,7 +14,7 @@ const Container = styled(Centered)`
 const TimespanItemLabel = styled(Text).attrs(({ color, isSelected }) => ({
   align: 'center',
   color: isSelected ? color : colors.grey,
-  letterSpacing: 'roundedTightest',
+  letterSpacing: 'roundedTighter',
   size: 'smedium',
   weight: 'bold',
 }))`
@@ -24,7 +24,7 @@ const TimespanItemLabel = styled(Text).attrs(({ color, isSelected }) => ({
 const TimespanItemRow = styled(Row).attrs({
   justify: 'space-between',
 })`
-  ${padding(0, 15)};
+  ${padding(0, 30)};
 `;
 
 const TimespanItem = ({ color, isSelected, item, ...props }) => (

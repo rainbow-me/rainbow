@@ -14,7 +14,7 @@ function ChartLabelFactory(style) {
     const formattedValue = useDerivedValue(() => {
       return format ? format(val.value) : val.value;
     });
-    const textStyle = useAnimatedStyle(() => {
+    const textProps = useAnimatedStyle(() => {
       return {
         text: formattedValue.value,
       };
@@ -22,7 +22,8 @@ function ChartLabelFactory(style) {
     return (
       <AnimatedTextInput
         {...props}
-        animatedProps={textStyle}
+        animatedProps={textProps}
+        defaultValue={format ? format(val.value) : val.value}
         editable={false}
       />
     );

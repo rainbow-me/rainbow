@@ -1,13 +1,13 @@
 import { invert } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Dimensions, View } from 'react-native';
+import { Dimensions } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
 import TimespanSelector from './TimespanSelector';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
-import { padding } from '@rainbow-me/styles';
+import { colors } from '@rainbow-me/styles';
 import { Chart, ChartDot, ChartPath } from 'react-native-animated-charts';
 
 export const { width: SIZE } = Dimensions.get('window');
@@ -21,17 +21,25 @@ const ChartTimespans = [
   ChartTypes.max,
 ];
 
+const ChartContainer = styled.View`
+  margin-vertical: 17px;
+`;
+
 const Container = styled(Column)`
-  ${padding(19, 0, 21)};
+  padding-bottom: 30px;
   overflow: hidden;
   width: 100%;
 `;
 
 const InnerDot = styled.View`
-  width: 6px;
-  height: 6px;
-  border-radius: 5px;
-  background-color: white;
+  width: 10px;
+  height: 10px;
+  border-radius: 6px;
+  background-color: ${({ color }) => color};
+  shadow-color: ${({ color }) => color};
+  shadow-offset: 0 3px;
+  shadow-opacity: 0.6;
+  shadow-radius: 4.5px;
 `;
 
 const Dot = styled(ChartDot)`
@@ -64,15 +72,19 @@ export default function ChartWrapper({
 
   const chartTimeSharedValue = useSharedValue('');
 
+  const timespan = invert(ChartTypes)[chartType];
+  const formattedTimespan =
+    timespan.charAt(0).toUpperCase() + timespan.slice(1);
+
   useEffect(() => {
     if (chartType === ChartTypes.day) {
       chartTimeSharedValue.value = 'Today';
     } else if (chartType === ChartTypes.max) {
-      chartTimeSharedValue.value = 'All time';
+      chartTimeSharedValue.value = 'All Time';
     } else {
-      chartTimeSharedValue.value = `Past ${invert(ChartTypes)[chartType]}`;
+      chartTimeSharedValue.value = `Past ${formattedTimespan}`;
     }
-  }, [chartTimeSharedValue, chartType]);
+  }, [chartTimeSharedValue, chartType, formattedTimespan]);
 
   return (
     <Container>
@@ -81,22 +93,24 @@ export default function ChartWrapper({
           {...TEMP}
           chartTimeSharedValue={chartTimeSharedValue}
         />
-        <View>
+        <ChartContainer>
           <ChartPath
             fill="none"
-            height={SIZE / 2}
-            panGestureHandlerProps={{
-              activeOffsetY: [-1, 3],
-              failOffsetY: [-1000, 1],
+            height={146.5}
+            longPressGestureHandlerProps={{
+              maxDist: 200,
+              minDurationMs: 60,
             }}
             stroke={color}
-            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="3.5"
             width={SIZE}
           />
-          <Dot color={color} size={16}>
-            <InnerDot />
+          <Dot color={colors.alpha(color, 0.02)} size={65}>
+            <InnerDot color={color} />
           </Dot>
-        </View>
+        </ChartContainer>
       </Chart>
       <TimespanSelector
         color={color}
