@@ -56,7 +56,7 @@ export default function ChartWrapper({
     chartType,
   ]);
 
-  const [throttledData, setThrottledData] = useState(points);
+  const [throttledData, setThrottledData] = useState({ points });
 
   // TODO from some reason it happens twice on click /shrug. Probably fetching something.
 
