@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import useHideSplashScreen from '../helpers/hideSplashScreen';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
-import { appUpdate } from '../redux/appState';
+import { appStateUpdate } from '../redux/appState';
 import {
   settingsLoadNetwork,
   settingsUpdateAccountAddress,
@@ -81,7 +81,7 @@ export default function useInitializeWallet() {
             'Import failed due to an invalid private key. Please try again.'
           );
           if (!isImporting) {
-            dispatch(appUpdate({ walletReady: true }));
+            dispatch(appStateUpdate({ walletReady: true }));
           }
           return null;
         }
@@ -103,7 +103,7 @@ export default function useInitializeWallet() {
         logger.sentry('Hide splash screen');
         initializeAccountData();
         if (!isImporting) {
-          dispatch(appUpdate({ walletReady: true }));
+          dispatch(appStateUpdate({ walletReady: true }));
         }
 
         return walletAddress;
@@ -113,7 +113,7 @@ export default function useInitializeWallet() {
         hideSplashScreen();
         captureException(error);
         Alert.alert('Something went wrong while importing. Please try again!');
-        dispatch(appUpdate({ walletReady: true }));
+        dispatch(appStateUpdate({ walletReady: true }));
         return null;
       }
     },

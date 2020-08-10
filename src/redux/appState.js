@@ -2,14 +2,9 @@
 const APP_STATE_UPDATE = 'contacts/APP_STATE_UPDATE';
 // -- Actions ---------------------------------------- //
 
-export const appUpdate = state => (dispatch, getState) => {
-  const { app } = getState();
-  const updatedState = {
-    ...app,
-    ...state,
-  };
+export const appStateUpdate = stateToUpdate => dispatch => {
   dispatch({
-    payload: updatedState,
+    payload: stateToUpdate,
     type: APP_STATE_UPDATE,
   });
 };
