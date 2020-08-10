@@ -144,9 +144,9 @@ export const setWalletBackedUp = (
     newWallets[walletId].backupFile = backupFile;
   }
   newWallets[walletId].backupDate = Date.now();
-  dispatch(walletsUpdate(newWallets));
+  await dispatch(walletsUpdate(newWallets));
   if (selected.id === walletId) {
-    dispatch(walletsSetSelected(newWallets[walletId]));
+    await dispatch(walletsSetSelected(newWallets[walletId]));
   }
 
   // Reset the loading state 1 second later
@@ -158,7 +158,9 @@ export const setWalletBackedUp = (
     try {
       await backupUserDataIntoCloud({ wallets: newWallets });
     } catch (e) {
-      logger.error('SAVING WALLET USERDATA FAILED', e);
+      logger.sentry('SAVING WALLET USERDATA FAILED');
+      captureException(e);
+      throw e;
     }
   }
   await saveUserBackupState(BackupStateTypes.done);
