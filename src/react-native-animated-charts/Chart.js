@@ -58,9 +58,9 @@ function setNativeXYAccordingToPosition(nativeX, nativeY, position, data) {
 function positionXWithMargin(x, margin, width) {
   'worklet';
   if (x < margin) {
-    return margin - (margin - x) / 2;
+    return Math.max(3 * x - 2 * margin, 0);
   } else if (width - x < margin) {
-    return width - margin + (x - width + margin) / 2;
+    return Math.min(margin + x * 2 - width, width);
   } else {
     return x;
   }
