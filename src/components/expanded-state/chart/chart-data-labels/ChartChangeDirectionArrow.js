@@ -7,18 +7,16 @@ import { Icon } from '../../../icons';
 const AnimatedMaskedView = Animated.createAnimatedComponent(MaskedView);
 
 const ArrowIcon = styled(Icon).attrs({
-  direction: 'left',
+  direction: 'right',
   name: 'fatArrow',
-})`
-  width: 15;
-`;
+})``;
 
 export default function ChartChangeDirectionArrow({ style, arrowStyle }) {
   return (
     <Animated.View style={style}>
       <AnimatedMaskedView
         maskElement={<ArrowIcon />}
-        style={{ height: 20, width: 15 }}
+        style={{ height: 18, width: 15 }}
       >
         <Animated.View
           style={[

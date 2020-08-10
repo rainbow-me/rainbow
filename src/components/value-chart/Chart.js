@@ -72,15 +72,19 @@ export default function ChartWrapper({
 
   const chartTimeSharedValue = useSharedValue('');
 
+  const timespan = invert(ChartTypes)[chartType];
+  const formattedTimespan =
+    timespan.charAt(0).toUpperCase() + timespan.slice(1);
+
   useEffect(() => {
     if (chartType === ChartTypes.day) {
       chartTimeSharedValue.value = 'Today';
     } else if (chartType === ChartTypes.max) {
-      chartTimeSharedValue.value = 'All time';
+      chartTimeSharedValue.value = 'All Time';
     } else {
-      chartTimeSharedValue.value = `Past ${invert(ChartTypes)[chartType]}`;
+      chartTimeSharedValue.value = `Past ${formattedTimespan}`;
     }
-  }, [chartTimeSharedValue, chartType]);
+  }, [chartTimeSharedValue, chartType, formattedTimespan]);
 
   return (
     <Container>

@@ -34,7 +34,8 @@ const PercentLabel = styled(AnimatedTextInput)`
   font-family: ${fonts.family.SFProRounded};
   font-size: ${fonts.size.big};
   font-weight: ${fonts.weight.bold};
-  font-variant: tabular-nums;
+  letter-spacing: ${fonts.letterSpacing.roundedTight};
+  text-align: right;
 `;
 
 export default function ChartPercentChangeLabel({ changeDirection }) {
@@ -105,6 +106,7 @@ export default function ChartPercentChangeLabel({ changeDirection }) {
         style={arrowWrapperStyle}
       />
       <PercentLabel
+        alignSelf="flex-end"
         animatedProps={textProps}
         defaultValue={defaultValue}
         editable={false}

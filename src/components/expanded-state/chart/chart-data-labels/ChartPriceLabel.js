@@ -10,6 +10,7 @@ const Label = styled(ChartYLabel)`
   font-family: ${fonts.family.SFProRounded};
   font-size: ${fonts.size.big};
   font-weight: ${fonts.weight.bold};
+  letter-spacing: ${fonts.letterSpacing.roundedTight};
 `;
 
 function formatUSD(value, priceSharedValue) {
