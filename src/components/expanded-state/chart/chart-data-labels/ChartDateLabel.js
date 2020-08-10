@@ -1,11 +1,18 @@
 import React from 'react';
-import Animated from 'react-native-reanimated';
-import { Input } from '../../../inputs';
-import ChartHeaderSubtitle from './ChartHeaderSubtitle';
-import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
+import { useAnimatedStyle } from 'react-native-reanimated';
+import styled from 'styled-components/primitives';
+import font from '../../../../styles/fonts';
+import { useRatio } from './ChartPercentChangeLabel';
+import { colors, fonts } from '@rainbow-me/styles';
 import { ChartXLabel } from 'react-native-animated-charts';
 
-const AnimatedSubtitle = Animated.createAnimatedComponent(ChartHeaderSubtitle);
+const Label = styled(ChartXLabel)`
+  background-color: white;
+  font-family: ${fonts.family.SFProRounded};
+  font-size: ${font.size.larger};
+  font-weight: ${font.weight.medium};
+  font-variant: tabular-nums;
+`;
 
 const MONTHS = [
   'Jan',
@@ -56,35 +63,28 @@ function formatDatetime(value, chartTimeSharedValue) {
   return res;
 }
 
-export default function ChartDateLabel({
-  color,
-  dateRef,
-  chartTimeSharedValue,
-}) {
+export default function ChartDateLabel({ chartTimeSharedValue }) {
+  const ratio = useRatio();
+
+  const textStyle = useAnimatedStyle(() => {
+    return {
+      color:
+        ratio.value === 1
+          ? colors.blueGreyDark
+          : ratio.value < 1
+          ? colors.red
+          : colors.green,
+    };
+  });
+
   return (
     <>
-      {chartExpandedAvailable ? (
-        <AnimatedSubtitle
-          align="right"
-          as={Input}
-          color={color}
-          editable={false}
-          letterSpacing="roundedTight"
-          pointerEvent="none"
-          ref={dateRef}
-          tabularNums
-        />
-      ) : (
-        <AnimatedSubtitle align="right" color={color}>
-          Today
-        </AnimatedSubtitle>
-      )}
-      <ChartXLabel
+      <Label
         format={value => {
           'worklet';
           return formatDatetime(value, chartTimeSharedValue);
         }}
-        style={{ backgroundColor: 'white', margin: 4 }}
+        style={textStyle}
       />
     </>
   );

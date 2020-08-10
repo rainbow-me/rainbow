@@ -76,7 +76,6 @@ export default function ChartExpandedState({ asset }) {
         <Chart
           TEMP={TEMP}
           {...chartData}
-          {...chartDataLabels}
           {...chartGestures}
           asset={asset}
           chart={chart}

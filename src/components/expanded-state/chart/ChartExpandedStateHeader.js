@@ -47,7 +47,6 @@ export default function ChartExpandedStateHeader({
   changeDirection,
   changeRef,
   color = colors.dark,
-  colorForPriceChange,
   dateRef,
   isScrubbing,
   latestChange,
@@ -109,14 +108,12 @@ export default function ChartExpandedStateHeader({
             <ChartPercentChangeLabel
               changeDirection={changeDirection}
               changeRef={changeRef}
-              color={colorForPriceChange}
               isScrubbing={isScrubbing}
               latestChange={latestChange}
               tabularNums={tabularNums}
             />
             <ChartDateLabel
               chartTimeSharedValue={chartTimeSharedValue}
-              color={colorForPriceChange}
               dateRef={dateRef}
             />
           </ColumnWithMargins>

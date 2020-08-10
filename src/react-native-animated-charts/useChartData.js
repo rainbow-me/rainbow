@@ -2,6 +2,6 @@ import { useContext } from 'react';
 import ChartContext from './ChartContext';
 
 export function useChartData() {
-  const { extremes } = useContext(ChartContext);
-  return extremes;
+  const { data, extremes, nativeX, nativeY } = useContext(ChartContext);
+  return { ...extremes, data, nativeX, nativeY };
 }
