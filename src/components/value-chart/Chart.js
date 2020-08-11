@@ -107,7 +107,7 @@ export default function ChartWrapper({
             strokeWidth="3.5"
             width={SIZE}
           />
-          <Dot color={colors.alpha(color, 0.02)} size={65}>
+          <Dot color={colors.alpha(color, 0.03)} size={65}>
             <InnerDot color={color} />
           </Dot>
         </ChartContainer>
