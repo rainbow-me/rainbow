@@ -1,4 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
+import { forEach } from 'lodash';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import { deviceUtils } from '../../utils';
@@ -81,25 +82,19 @@ const RestoreSheetFirstStep = ({
 }) => {
   const walletsBackedUp = useMemo(() => {
     let count = 0;
-    userData &&
-      Object.keys(userData.wallets).forEach(key => {
-        const wallet = userData.wallets[key];
-        if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
-          count++;
-        }
-      });
+    forEach(userData?.wallets, wallet => {
+      if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
+        count++;
+      }
+    });
     return count;
   }, [userData]);
-
-  const onIcloudRestorePress = useCallback(() => {
-    onIcloudRestore();
-  }, [onIcloudRestore]);
 
   return (
     <Container>
       {walletsBackedUp > 0 && (
         <React.Fragment>
-          <SheetRow as={ButtonPressAnimation} onPress={onIcloudRestorePress}>
+          <SheetRow as={ButtonPressAnimation} onPress={onIcloudRestore}>
             <Column>
               <Row>
                 <RainbowText>
@@ -113,13 +108,9 @@ const RestoreSheetFirstStep = ({
                 <CaretIcon />
               </TitleRow>
               <DescriptionText>
-                {typeof userData === undefined
-                  ? ' Checking iCloud for backups...'
-                  : walletsBackedUp > 0
-                  ? `You have ${walletsBackedUp} ${
-                      walletsBackedUp > 1 ? 'wallets' : 'wallet'
-                    } backed up`
-                  : `You don't have any wallets backed up`}
+                {`You have ${walletsBackedUp} ${
+                  walletsBackedUp > 1 ? 'wallets' : 'wallet'
+                } backed up`}
               </DescriptionText>
             </Column>
           </SheetRow>
