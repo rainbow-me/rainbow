@@ -1,5 +1,5 @@
-import { default as bSpline } from './bSplineInterpolation';
-import { monotoneCubicInterpolation2 } from './monotoneCubicInterpolation';
+import { default as bSpline } from '../interpolations/bSplineInterpolation';
+import { monotoneCubicInterpolation2 } from '../interpolations/monotoneCubicInterpolation';
 import { data1 as rawData1, data2 as rawData2 } from './rawData';
 
 export function simplifyData(data, pickRange = 10) {

@@ -7,6 +7,13 @@ import {
   View,
 } from 'react-native';
 import {
+  ChartDot,
+  ChartPath,
+  ChartProvider,
+  ChartXLabel,
+  ChartYLabel,
+} from '../index';
+import {
   data1,
   data2,
   softData,
@@ -14,7 +21,6 @@ import {
   softData2,
   splineSoftData,
 } from './data';
-import { Chart, ChartDot, ChartPath, ChartXLabel, ChartYLabel } from './index';
 export const { width: SIZE } = Dimensions.get('window');
 
 export const formatUSD = value => {
@@ -51,7 +57,7 @@ function Example() {
 
   return (
     <View style={{ backgroundColor: 'black' }}>
-      <Chart data={data}>
+      <ChartProvider data={data}>
         <ChartPath
           fill="none"
           height={SIZE / 2}
@@ -72,7 +78,7 @@ function Example() {
           format={formatDatetime}
           style={{ backgroundColor: 'white', margin: 4 }}
         />
-      </Chart>
+      </ChartProvider>
       <TouchableOpacity
         onPress={() => setData({ points: data1, smoothing: 0 })}
       >

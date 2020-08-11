@@ -70,7 +70,7 @@ function positionXWithMargin(x, margin, width) {
   }
 }
 
-function Chart({ data, children, softMargin = 30 }) {
+function ChartProvider({ data, children, softMargin = 30 }) {
   const prevData = useSharedValue([]);
   const currData = useSharedValue([]);
   const prevSmoothing = useSharedValue(0);
@@ -346,4 +346,4 @@ function ChartFallback() {
 export default !TurboModuleRegistry.get('NativeReanimated') &&
 (!global.__reanimatedModuleProxy || global.__reanimatedModuleProxy.__shimmed)
   ? ChartFallback
-  : Chart;
+  : ChartProvider;

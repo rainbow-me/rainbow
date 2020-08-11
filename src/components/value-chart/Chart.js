@@ -8,7 +8,11 @@ import { Column } from '../layout';
 import TimespanSelector from './TimespanSelector';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { colors } from '@rainbow-me/styles';
-import { Chart, ChartDot, ChartPath } from 'react-native-animated-charts';
+import {
+  ChartDot,
+  ChartPath,
+  ChartProvider,
+} from 'react-native-animated-charts';
 
 export const { width: SIZE } = Dimensions.get('window');
 
@@ -89,7 +93,7 @@ export default function ChartWrapper({
 
   return (
     <Container>
-      <Chart data={throttledData}>
+      <ChartProvider data={throttledData}>
         <ChartExpandedStateHeader
           {...TEMP}
           chartTimeSharedValue={chartTimeSharedValue}
@@ -113,7 +117,7 @@ export default function ChartWrapper({
             <InnerDot color={color} />
           </Dot>
         </ChartContainer>
-      </Chart>
+      </ChartProvider>
       <TimespanSelector
         color={color}
         defaultIndex={timespanIndex}

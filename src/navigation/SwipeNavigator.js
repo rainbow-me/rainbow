@@ -1,28 +1,25 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, { useCallback } from 'react';
+import React from 'react';
 import useExperimentalFlag, {
   CHARTS_EXAMPLE,
 } from '../config/experimentalHooks';
 import { useCoinListEdited } from '../hooks';
+import Example from '../react-native-animated-charts/InternalExample/Example';
 import ProfileScreen from '../screens/ProfileScreen';
 import QRScannerScreenWithData from '../screens/QRScannerScreenWithData';
 import WalletScreen from '../screens/WalletScreen';
 import { deviceUtils } from '../utils';
 import { ScrollPagerWrapper, scrollPosition } from './helpers';
 import Routes from './routesNames';
-import Example from 'react-native-animated-charts/Example';
 const Swipe = createMaterialTopTabNavigator();
 
 const renderTabBar = () => null;
 
+const renderPager = props => <ScrollPagerWrapper {...props} />;
+
 export function SwipeNavigator() {
   const { isCoinListEdited } = useCoinListEdited();
   const showChartsExample = useExperimentalFlag(CHARTS_EXAMPLE);
-
-  const renderPager = useCallback(
-    props => <ScrollPagerWrapper {...props} />,
-    []
-  );
 
   return (
     <Swipe.Navigator
