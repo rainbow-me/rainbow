@@ -102,7 +102,7 @@ export default function ChartWrapper({
           chartTimeSharedValue={chartTimeSharedValue}
         />
         <ChartContainer>
-          <Labels width={WIDTH} />
+          <Labels color={color} width={WIDTH} />
           <ChartPath
             fill="none"
             height={HEIGHT}
