@@ -60,13 +60,16 @@ export default function ChartWrapper({
     chartType,
   ]);
 
-  const [throttledData, setThrottledData] = useState({ points });
+  const [throttledData, setThrottledData] = useState({
+    points,
+    smoothing: 0.3,
+  });
 
   // TODO from some reason it happens twice on click /shrug. Probably fetching something.
 
   useEffect(() => {
     if (points && !fetchingCharts) {
-      setTimeout(() => setThrottledData({ points }), 50);
+      setThrottledData({ points, smoothing: 0.3 });
     }
   }, [fetchingCharts, points, setThrottledData]);
 

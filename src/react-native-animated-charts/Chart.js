@@ -124,6 +124,9 @@ function Chart({ data, children, softMargin = 30 }) {
 
   const onLongPressGestureEvent = useAnimatedGestureHandler({
     onActive: event => {
+      if (!currData.value || currData.value.length === 0) {
+        return;
+      }
       const eventX = positionXWithMargin(
         event.x,
         softMarginValue.value,
@@ -184,6 +187,10 @@ function Chart({ data, children, softMargin = 30 }) {
       pathOpacity.value = withTiming(1, timingConfig);
     },
     onStart: event => {
+      if (!currData.value || currData.value.length === 0) {
+        return;
+      }
+
       const eventX = positionXWithMargin(
         event.x,
         softMarginValue.value,

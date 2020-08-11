@@ -173,7 +173,7 @@ class BSpline {
   }
 }
 
-export default function simplifyData(data) {
+export default function bSplineInterpolation(data) {
   const parsed = data.map(({ x, y }) => [x, y]);
   console.log(parsed);
   const spline = new BSpline(parsed, 3, true);

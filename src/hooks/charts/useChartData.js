@@ -6,7 +6,7 @@ import { createSelector } from 'reselect';
 import { useCallbackOne } from 'use-memo-one';
 import { getChart } from '../../handlers/uniswap';
 import {
-  assetChartsFallbackReceived,
+  //assetChartsFallbackReceived,
   chartsUpdateChartType,
   DEFAULT_CHART_TYPE,
 } from '../../redux/charts';
@@ -68,7 +68,7 @@ export default function useChartData(asset) {
         return;
       }
       logger.log('✅️📈️ - fallback chart data was success');
-      dispatch(assetChartsFallbackReceived(address, chartType, chartData));
+      //dispatch(assetChartsFallbackReceived(address, chartType, chartData));
     },
     [address, chartType, dispatch]
   );
