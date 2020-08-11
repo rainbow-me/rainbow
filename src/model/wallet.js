@@ -889,29 +889,22 @@ async function extractSecretsForWallet(wallet) {
 }
 
 export async function backupWalletToCloud(password, wallet) {
-  logger.log('backupWalletToCloud', password, wallet);
   const now = Date.now();
 
   const secrets = await extractSecretsForWallet(wallet);
-  logger.log('backupWalletToCloud:: got secrets', secrets);
   const data = {
     createdAt: now,
     secrets,
   };
-  logger.log('backupWalletToCloud:: about to encrypt and save data', data);
   return encryptAndSaveDataToCloud(data, password, `backup_${now}.json`);
 }
 
 export async function addWalletToCloudBackup(password, wallet, filename) {
-  logger.log('addWalletToCloudBackup', password, wallet, filename);
-
   const backup = await getDataFromCloud(password, filename);
-  logger.log('addWalletToCloudBackup:: got data from cloud', backup);
 
   const now = Date.now();
 
   const secrets = await extractSecretsForWallet(wallet);
-  logger.log('addWalletToCloudBackup:: got secrets', secrets);
 
   backup.updatedAt = now;
   // Merge existing secrets with the ones from this wallet
@@ -919,15 +912,11 @@ export async function addWalletToCloudBackup(password, wallet, filename) {
     ...backup.secrets,
     ...secrets,
   };
-  logger.log('addWalletToCloudBackup:: about to encrypt and save data', backup);
   return encryptAndSaveDataToCloud(backup, password, filename);
 }
 
 export async function restoreCloudBackup(password, userData) {
   try {
-    logger.log('restoreCloudBackup', password, userData);
-    logger.log('restoreCloudBackup :: finding latest backup...');
-
     let latestBackup = null;
     let filename = null;
     Object.keys(userData.wallets).forEach(key => {
@@ -941,27 +930,23 @@ export async function restoreCloudBackup(password, userData) {
         }
       }
     });
-    logger.log('restoreCloudBackup :: latest backup: ', filename);
 
     // 2- download that backup
     const data = await getDataFromCloud(password, filename);
-    logger.log('restoreCloudBackup :: got data from the cloud', data);
     if (!data) {
       throw new Error('Invalid password');
     }
     const dataToRestore = {
       // All wallets
-      rainbowAllWalletsKey: {
+      [allWalletsKey]: {
         version: allWalletsVersion,
         wallets: userData.wallets,
       },
       ...data.secrets,
     };
 
-    logger.log('restoreCloudBackup ::about to restore', dataToRestore);
-
     return keychain.restoreBackupIntoKeychain(dataToRestore);
   } catch (e) {
-    logger.log('Error while restoring back up', e);
+    logger.error('Error while restoring back up', e);
   }
 }
