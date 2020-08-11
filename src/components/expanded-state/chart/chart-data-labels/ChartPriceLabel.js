@@ -18,11 +18,16 @@ function formatUSD(value, priceSharedValue) {
   if (!value) {
     return priceSharedValue.value;
   }
-  return `$${Number(value)
+  const res = `$${Number(value)
     .toFixed(2)
     .toLocaleString('en-US', {
       currency: 'USD',
     })}`;
+  const vals = res.split('.');
+  if (vals.length === 2) {
+    return vals[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + vals[1];
+  }
+  return res;
 }
 
 export default function ChartPriceLabel({
