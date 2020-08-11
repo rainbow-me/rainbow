@@ -21,11 +21,11 @@ import {
   oldSeedPhraseMigratedKey,
   saveAddress,
   saveAllWallets,
-  seedPhraseKey,
   setSelectedWallet,
 } from '../model/wallet';
 import { settingsUpdateAccountAddress } from '../redux/settings';
 import { logger } from '../utils';
+import { privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
 
 // -- Constants --------------------------------------- //
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
@@ -287,7 +287,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       logger.sentry(`[KeychainIntegrityCheck]: checking wallet ${key}`);
       const wallet = wallets[key];
       logger.sentry(`[KeychainIntegrityCheck]: Wallet data`, wallet);
-      const seedKeyFound = await hasKey(`${key}_rainbowSeedPhrase`);
+      const seedKeyFound = await hasKey(`${key}_${seedPhraseKey}`);
       if (!seedKeyFound) {
         healthyWallet = false;
         logger.sentry('[KeychainIntegrityCheck]: seed key is missing');
@@ -296,7 +296,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       }
 
       for (const account of wallet.addresses) {
-        const pkeyFound = await hasKey(`${account.address}_rainbowPrivateKey`);
+        const pkeyFound = await hasKey(`${account.address}_${privateKeyKey}`);
         if (!pkeyFound) {
           healthyWallet = false;
           logger.sentry(
