@@ -150,13 +150,12 @@ const BackupIcloudStep = () => {
   const currentlyFocusedInput = useRef();
   const { goBack } = useNavigation();
   const { params } = useRoute();
-  const loadedPassword = params?.password || '';
   const { latestBackup, wallets } = useWallets();
   const dispatch = useDispatch();
   const [validPassword, setValidPassword] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
-  const [password, setPassword] = useState(loadedPassword);
-  const [confirmPassword, setConfirmPassword] = useState(loadedPassword);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const [label, setLabel] = useState(
     !validPassword ? '􀙶 Add to iCloud Backup' : '􀎽 Confirm Backup'
@@ -199,7 +198,7 @@ const BackupIcloudStep = () => {
 
     let newLabel = '';
     if (passwordIsValid) {
-      newLabel = loadedPassword ? '􀙶 Add to iCloud Backup' : '􀎽 Confirm Backup';
+      newLabel = '􀎽 Confirm Backup';
     } else if (password.length < 8) {
       newLabel = 'Minimum 8 characters';
     } else if (
@@ -239,7 +238,7 @@ const BackupIcloudStep = () => {
 
     setValidPassword(passwordIsValid);
     setLabel(newLabel);
-  }, [confirmPassword, loadedPassword, password, passwordFocused]);
+  }, [confirmPassword, password, passwordFocused]);
 
   const onPasswordChange = useCallback(
     ({ nativeEvent: { text: inputText } }) => {
