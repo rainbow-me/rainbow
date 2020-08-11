@@ -44,6 +44,7 @@ function ChartPath({
 
   return (
     <LongPressGestureHandler
+      minDurationMs={0}
       {...longPressGestureHandlerProps}
       {...{ onGestureEvent: onLongPressGestureEvent }}
     >
