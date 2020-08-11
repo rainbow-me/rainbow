@@ -50,6 +50,9 @@ function setNativeXYAccordingToPosition(nativeX, nativeY, position, data) {
       idx = i;
       break;
     }
+    if (i === data.value.length - 1) {
+      idx = data.value.length - 1;
+    }
   }
   nativeX.value = data.value[idx].nativeX.toString();
   nativeY.value = data.value[idx].nativeY.toString();
@@ -133,6 +136,9 @@ function Chart({ data, children, softMargin = 30 }) {
           idx = i;
           break;
         }
+        if (i === currData.value.length - 1) {
+          idx = currData.value.length - 1;
+        }
       }
 
       if (idx === 0) {
@@ -190,6 +196,9 @@ function Chart({ data, children, softMargin = 30 }) {
         if (currData.value[i].x > eventX / size.value.width) {
           idx = i;
           break;
+        }
+        if (i === currData.value.length - 1) {
+          idx = currData.value.length - 1;
         }
       }
       setNativeXYAccordingToPosition(
