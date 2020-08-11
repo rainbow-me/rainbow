@@ -155,6 +155,14 @@ function Chart({ data, children, softMargin = 30 }) {
       );
       positionX.value = eventX;
     },
+    onCancel: () => {
+      nativeX.value = '';
+      nativeY.value = '';
+      dotOpacity.value = withSpring(0, springConfig);
+      dotScale.value = withSpring(0, springConfig);
+      pathOpacity.value = withTiming(1, timingConfig);
+      haptics.impactHeavy();
+    },
     onEnd: () => {
       nativeX.value = '';
       nativeY.value = '';
