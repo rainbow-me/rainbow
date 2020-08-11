@@ -23,3 +23,4 @@ export const data2 = rawData2.map(([x, y]) => ({ x, y }));
 export const softData2 = data2.filter((_, i) => i % 7 === 0);
 export const splineSoftData = bSpline(simplifyData(data2))(80);
 export const softData = monotoneCubicInterpolation2(simplifyData(data1))(80);
+export const softData1b = bSpline(simplifyData(data1))(80);

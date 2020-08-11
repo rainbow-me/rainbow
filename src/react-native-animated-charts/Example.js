@@ -6,7 +6,14 @@ import {
   TurboModuleRegistry,
   View,
 } from 'react-native';
-import { data1, data2, softData, softData2, splineSoftData } from './data';
+import {
+  data1,
+  data2,
+  softData,
+  softData1b,
+  softData2,
+  splineSoftData,
+} from './data';
 import { Chart, ChartDot, ChartPath, ChartXLabel, ChartYLabel } from './index';
 export const { width: SIZE } = Dimensions.get('window');
 
@@ -75,6 +82,11 @@ function Example() {
         onPress={() => setData({ points: softData, smoothing: 0 })}
       >
         <Text style={{ color: 'white' }}>Data 1 simplified</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => setData({ points: softData1b, smoothing: 0 })}
+      >
+        <Text style={{ color: 'white' }}>Data 1 simplified with bspline</Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => setData({ points: data2, smoothing: 0 })}
