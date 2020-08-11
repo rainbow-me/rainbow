@@ -104,7 +104,6 @@ const SecretDisplaySection = ({ onWalletTypeIdentified, secretLoaded }) => {
   } else if (type === WalletTypes.privateKey) {
     wordSectionHeight = 151;
   }
-  console.log(type);
 
   if (!visible) {
     return (
