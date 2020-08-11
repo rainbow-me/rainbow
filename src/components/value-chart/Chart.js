@@ -65,8 +65,6 @@ export default function ChartWrapper({
     smoothing: 0.3,
   });
 
-  // TODO from some reason it happens twice on click /shrug. Probably fetching something.
-
   useEffect(() => {
     if (points && !fetchingCharts) {
       setThrottledData({ points, smoothing: 0.3 });
@@ -107,7 +105,8 @@ export default function ChartWrapper({
             stroke={color}
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth="3.5"
+            strokeWidth={3.5}
+            strokeWidthSelected={3}
             width={SIZE}
           />
           <Dot color={colors.alpha(color, 0.03)} size={65}>

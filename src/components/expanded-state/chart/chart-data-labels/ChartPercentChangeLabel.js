@@ -7,6 +7,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { useChartData } from '../../../../react-native-animated-charts/useChartData';
+import useReactiveSharedValue from '../../../../react-native-animated-charts/useReactiveSharedValue';
 import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { colors, fonts } from '@rainbow-me/styles';
@@ -14,13 +15,10 @@ import { colors, fonts } from '@rainbow-me/styles';
 export function useRatio() {
   const { nativeY, data } = useChartData();
 
-  const firstValue = useSharedValue(data?.points?.[0]?.y);
-  const lastValue = useSharedValue(data?.points?.[data.points.length - 1]?.y);
-
-  useEffect(() => {
-    firstValue.value = data?.points?.[0]?.y;
-    lastValue.value = data?.points?.[data.points.length - 1]?.y;
-  }, [data, firstValue, lastValue]);
+  const firstValue = useReactiveSharedValue(data?.points?.[0]?.y);
+  const lastValue = useReactiveSharedValue(
+    data?.points?.[data.points.length - 1]?.y
+  );
 
   return useDerivedValue(
     () => (nativeY.value || lastValue.value) / firstValue.value

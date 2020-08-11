@@ -11,6 +11,7 @@ import {
 import { haptics } from '../utils';
 import ChartContext from './ChartContext';
 import { svgBezierPath } from './smoothSVG';
+import useReactiveSharedValue from './useReactiveSharedValue';
 
 const parse = data => {
   let smallestY = data[0];
@@ -81,8 +82,9 @@ function Chart({ data, children, softMargin = 30 }) {
   const nativeX = useSharedValue('');
   const nativeY = useSharedValue('');
   const pathOpacity = useSharedValue(1);
-  const softMarginValue = useSharedValue(softMargin);
+  const softMarginValue = useReactiveSharedValue(softMargin);
   const size = useSharedValue(0);
+  const state = useSharedValue(0);
   const [extremes, setExtremes] = useState({});
 
   useEffect(() => {
@@ -118,12 +120,9 @@ function Chart({ data, children, softMargin = 30 }) {
     duration: 80,
   };
 
-  useEffect(() => {
-    softMarginValue.value = softMargin;
-  }, [softMargin, softMarginValue]);
-
   const onLongPressGestureEvent = useAnimatedGestureHandler({
     onActive: event => {
+      state.value = event.state;
       if (!currData.value || currData.value.length === 0) {
         return;
       }
@@ -164,14 +163,16 @@ function Chart({ data, children, softMargin = 30 }) {
       );
       positionX.value = eventX;
     },
-    onCancel: () => {
+    onCancel: event => {
+      state.value = event.state;
       nativeX.value = '';
       nativeY.value = '';
       dotOpacity.value = withSpring(0, springConfig);
       dotScale.value = withSpring(0, springConfig);
       pathOpacity.value = withTiming(1, timingConfig);
     },
-    onEnd: () => {
+    onEnd: event => {
+      state.value = event.state;
       nativeX.value = '';
       nativeY.value = '';
       dotOpacity.value = withSpring(0, springConfig);
@@ -179,7 +180,8 @@ function Chart({ data, children, softMargin = 30 }) {
       pathOpacity.value = withTiming(1, timingConfig);
       haptics.impactHeavy();
     },
-    onFail: () => {
+    onFail: event => {
+      state.value = event.state;
       nativeX.value = '';
       nativeY.value = '';
       dotOpacity.value = withSpring(0, springConfig);
@@ -187,6 +189,7 @@ function Chart({ data, children, softMargin = 30 }) {
       pathOpacity.value = withTiming(1, timingConfig);
     },
     onStart: event => {
+      state.value = event.state;
       if (!currData.value || currData.value.length === 0) {
         return;
       }
@@ -218,7 +221,7 @@ function Chart({ data, children, softMargin = 30 }) {
       positionY.value = currData.value[idx].y * size.value.height;
       dotOpacity.value = withSpring(1, springConfig);
       dotScale.value = withSpring(1, springConfig);
-      pathOpacity.value = withTiming(0.7, timingConfig);
+      pathOpacity.value = withTiming(0, timingConfig);
       haptics.impactHeavy();
     },
   });
@@ -292,14 +295,6 @@ function Chart({ data, children, softMargin = 30 }) {
   });
 
   // @ts-ignore
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      d: path.value,
-      style: {
-        opacity: pathOpacity.value,
-      },
-    };
-  });
 
   const dotStyle = useAnimatedStyle(() => ({
     opacity: dotOpacity.value,
@@ -312,17 +307,18 @@ function Chart({ data, children, softMargin = 30 }) {
 
   const contextValue = useMemo(
     () => ({
-      animatedStyle,
       data,
       dotStyle,
       extremes,
       nativeX,
       nativeY,
       onLongPressGestureEvent,
+      path,
+      pathOpacity,
       size,
+      state,
     }),
     [
-      animatedStyle,
       dotStyle,
       onLongPressGestureEvent,
       nativeX,
@@ -330,6 +326,9 @@ function Chart({ data, children, softMargin = 30 }) {
       size,
       data,
       extremes,
+      state,
+      path,
+      pathOpacity,
     ]
   );
 
