@@ -299,7 +299,6 @@ export const identifyWalletType = walletSeed => {
     isHexStringIgnorePrefix(walletSeed) &&
     addHexPrefix(walletSeed).length === 66
   ) {
-    console.log('ISSA PKEY');
     return WalletTypes.privateKey;
   }
 
