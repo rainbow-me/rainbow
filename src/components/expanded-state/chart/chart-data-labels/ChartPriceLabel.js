@@ -11,6 +11,7 @@ const Label = styled(ChartYLabel)`
   font-size: ${fonts.size.big};
   font-weight: ${fonts.weight.bold};
   letter-spacing: ${fonts.letterSpacing.roundedTight};
+  font-variant: tabular-nums;
 `;
 
 function formatUSD(value, priceSharedValue) {

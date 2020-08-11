@@ -59,7 +59,11 @@ function formatDatetime(value, chartTimeSharedValue) {
   if (h === 0) {
     res += ' 12:';
   } else {
-    res += ' ' + h + ':';
+    if (h < 10) {
+      res += ' 0' + h + ':';
+    } else {
+      res += ' ' + h + ':';
+    }
   }
 
   const m = date.getMinutes();

@@ -36,6 +36,7 @@ const PercentLabel = styled(AnimatedTextInput)`
   font-weight: ${fonts.weight.bold};
   letter-spacing: ${fonts.letterSpacing.roundedTight};
   text-align: right;
+  font-variant: tabular-nums;
 `;
 
 export default function ChartPercentChangeLabel({ changeDirection }) {
