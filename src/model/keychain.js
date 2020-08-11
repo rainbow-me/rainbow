@@ -221,21 +221,24 @@ export async function wipeKeychain() {
 export async function getPrivateAccessControlOptions() {
   let res = {};
   // This method is iOS Only!!!
-  const canAuthenticate = await canImplyAuthentication({
-    authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
-  });
+  try {
+    const canAuthenticate = await canImplyAuthentication({
+      authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
+    });
 
-  let isSimulator = false;
+    let isSimulator = false;
 
-  if (canAuthenticate) {
-    isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
-  }
-  if (canAuthenticate && !isSimulator) {
-    res = {
-      accessControl: ACCESS_CONTROL.USER_PRESENCE,
-      accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-    };
-  }
+    if (canAuthenticate) {
+      isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
+    }
+    if (canAuthenticate && !isSimulator) {
+      res = {
+        accessControl: ACCESS_CONTROL.USER_PRESENCE,
+        accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+      };
+    }
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
 
   return res;
 }

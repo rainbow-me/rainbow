@@ -5,13 +5,7 @@ import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { find, findKey, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
-import {
-  ACCESS_CONTROL,
-  ACCESSIBLE,
-  AUTHENTICATION_TYPE,
-  canImplyAuthentication,
-} from 'react-native-keychain';
+import { ACCESSIBLE } from 'react-native-keychain';
 import {
   encryptAndSaveDataToCloud,
   getDataFromCloud,
@@ -587,23 +581,7 @@ export const getPrivateKey = async (
 };
 
 export const saveSeedPhrase = async (seedphrase, keychain_id = null) => {
-  let privateAccessControlOptions = {};
-  const canAuthenticate = await canImplyAuthentication({
-    authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
-  });
-
-  let isSimulator = false;
-
-  if (canAuthenticate) {
-    isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
-  }
-  if (canAuthenticate && !isSimulator) {
-    privateAccessControlOptions = {
-      accessControl: ACCESS_CONTROL.USER_PRESENCE,
-      accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-    };
-  }
-
+  let privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
   const key = `${keychain_id}_${seedPhraseKey}`;
   const val = {
     id: keychain_id,

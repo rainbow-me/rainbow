@@ -1,5 +1,6 @@
 import { getUnixTime, subDays } from 'date-fns';
 import {
+  cloneDeep,
   concat,
   filter,
   get,
@@ -553,9 +554,7 @@ const watchPendingTransactions = (
 
 export const addNewSubscriber = (subscriber, type) => (dispatch, getState) => {
   const { subscribers } = getState().data;
-  const newSubscribers = {
-    ...subscribers,
-  };
+  const newSubscribers = cloneDeep(subscribers);
 
   newSubscribers[type].push(subscriber);
   dispatch({
