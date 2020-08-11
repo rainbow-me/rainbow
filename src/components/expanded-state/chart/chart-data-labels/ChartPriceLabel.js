@@ -14,7 +14,7 @@ const Label = styled(ChartYLabel)`
   font-variant: tabular-nums;
 `;
 
-function formatUSD(value, priceSharedValue) {
+export function formatUSD(value, priceSharedValue) {
   'worklet';
   if (!value) {
     return priceSharedValue.value;

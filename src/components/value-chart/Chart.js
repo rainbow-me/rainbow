@@ -3,18 +3,19 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Dimensions } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/native';
+import { colors } from '../../styles';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
+import Labels from './ExtremeLabels';
 import TimespanSelector from './TimespanSelector';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
-import { colors } from '@rainbow-me/styles';
 import {
   ChartDot,
   ChartPath,
   ChartProvider,
 } from 'react-native-animated-charts';
 
-export const { width: SIZE } = Dimensions.get('window');
+export const { width: WIDTH } = Dimensions.get('window');
 
 const ChartTimespans = [
   ChartTypes.hour,
@@ -51,6 +52,8 @@ const Dot = styled(ChartDot)`
   align-items: center;
   background-color: ${({ color }) => color};
 `;
+
+const HEIGHT = 146.5;
 
 export default function ChartWrapper({
   chartType,
@@ -99,9 +102,10 @@ export default function ChartWrapper({
           chartTimeSharedValue={chartTimeSharedValue}
         />
         <ChartContainer>
+          <Labels width={WIDTH} />
           <ChartPath
             fill="none"
-            height={146.5}
+            height={HEIGHT}
             longPressGestureHandlerProps={{
               maxDist: 200,
               minDurationMs: 60,
@@ -111,7 +115,7 @@ export default function ChartWrapper({
             strokeLinejoin="round"
             strokeWidth={3.5}
             strokeWidthSelected={3}
-            width={SIZE}
+            width={WIDTH}
           />
           <Dot color={colors.alpha(color, 0.03)} size={65}>
             <InnerDot color={color} />

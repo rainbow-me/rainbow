@@ -6,11 +6,11 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
-import { useChartData } from '../../../../react-native-animated-charts/useChartData';
 import useReactiveSharedValue from '../../../../react-native-animated-charts/useReactiveSharedValue';
 import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { colors, fonts } from '@rainbow-me/styles';
+import { useChartData } from 'react-native-animated-charts';
 
 export function useRatio() {
   const { nativeY, data } = useChartData();
