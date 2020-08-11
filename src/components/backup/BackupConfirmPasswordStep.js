@@ -130,7 +130,6 @@ const BackupConfirmPasswordStep = () => {
   const dispatch = useDispatch();
   const walletCloudBackup = useWalletCloudBackup();
   const [validPassword, setValidPassword] = useState(false);
-  const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
   const [label, setLabel] = useState('􀎽 Confirm Backup');
@@ -157,27 +156,18 @@ const BackupConfirmPasswordStep = () => {
   }, []);
 
   useEffect(() => {
-    let newLabel = '';
     let passwordIsValid = false;
 
-    if (incorrectPassword) {
-      newLabel = 'Incorrect Password';
-    } else {
-      if (isCloudBackupPasswordValid(password)) {
-        passwordIsValid = true;
-      }
-
-      newLabel = `􀑙 Add to iCloud Backup`;
+    if (isCloudBackupPasswordValid(password)) {
+      passwordIsValid = true;
+      setLabel(`􀑙 Add to iCloud Backup`);
     }
-
     setValidPassword(passwordIsValid);
-    setLabel(newLabel);
-  }, [incorrectPassword, password, passwordFocused]);
+  }, [password, passwordFocused]);
 
   const onPasswordChange = useCallback(
     ({ nativeEvent: { text: inputText } }) => {
       setPassword(inputText);
-      setIncorrectPassword(false);
     },
     []
   );
@@ -229,10 +219,9 @@ const BackupConfirmPasswordStep = () => {
                 returnKeyType="next"
                 value={password}
               />
-              {((password !== '' &&
+              {password !== '' &&
                 password.length < 8 &&
-                !passwordRef.current.isFocused()) ||
-                incorrectPassword) && <WarningIcon />}
+                !passwordRef.current.isFocused() && <WarningIcon />}
             </Shadow>
           </InputsWrapper>
           <Column css={padding(0, 15, 0)} width="100%">
