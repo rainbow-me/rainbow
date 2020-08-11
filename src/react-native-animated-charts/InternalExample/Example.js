@@ -21,6 +21,7 @@ import {
   softData2,
   splineSoftData,
 } from './data';
+
 export const { width: SIZE } = Dimensions.get('window');
 
 export const formatUSD = value => {
