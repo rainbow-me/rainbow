@@ -1,5 +1,5 @@
 import { captureException, captureMessage } from '@sentry/react-native';
-import { forEach, isNil } from 'lodash';
+import { endsWith, forEach, isNil } from 'lodash';
 import DeviceInfo from 'react-native-device-info';
 import {
   ACCESS_CONTROL,
@@ -16,6 +16,11 @@ import {
   setSharedWebCredentials,
 } from 'react-native-keychain';
 import { delay } from '../helpers/utilities';
+import {
+  oldSeedPhraseMigratedKey,
+  privateKeyKey,
+  seedPhraseKey,
+} from '../utils/keychainConstants';
 import logger from 'logger';
 
 // NOTE: implement access control for iOS keychain
@@ -150,44 +155,27 @@ export async function restoreBackupIntoKeychain(backedUpData) {
     accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
   };
 
-  let privateAccessControlOptions = {};
-  const canAuthenticate = await canImplyAuthentication({
-    authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
-  });
+  const privateAccessControlOptions = await getPrivateAccessControlOptions();
 
-  let isSimulator = false;
-
-  if (canAuthenticate) {
-    isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
-  }
-  if (canAuthenticate && !isSimulator) {
-    privateAccessControlOptions = {
-      accessControl: ACCESS_CONTROL.USER_PRESENCE,
-      accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-    };
-  }
-
-  Object.keys(backedUpData).forEach(async key => {
-    const value = backedUpData[key];
-    let accessControl = publicAccessControlOptions;
-    if (
-      (key.indexOf('rainbowSeedPhrase') !== -1 ||
-        key.indexOf('rainbowPrivateKey') !== -1) &&
-      key !== 'rainbowSeedPhraseMigratedKey'
-    ) {
-      accessControl = privateAccessControlOptions;
-    }
-    if (typeof value === 'string') {
-      await saveString(key, value, accessControl);
-    } else {
-      await saveObject(key, value, accessControl);
-    }
-  });
+  await Promise.all(
+    Object.keys(backedUpData).map(async key => {
+      const value = backedUpData[key];
+      let accessControl = publicAccessControlOptions;
+      if (endsWith(key, seedPhraseKey) || endsWith(key, privateKeyKey)) {
+        accessControl = privateAccessControlOptions;
+      }
+      if (typeof value === 'string') {
+        return saveString(key, value, accessControl);
+      } else {
+        return saveObject(key, value, accessControl);
+      }
+    })
+  );
 
   // Save the migration flag
   // to prevent this flow in the future
   await saveString(
-    'rainbowSeedPhraseMigratedKey',
+    oldSeedPhraseMigratedKey,
     'true',
     publicAccessControlOptions
   );
@@ -200,7 +188,8 @@ export async function saveBackupPassword(password) {
   try {
     await setSharedWebCredentials('rainbow.me', 'Backup Password', password);
   } catch (e) {
-    logger.log('Error while backing up password', e);
+    logger.sentry('Error while backing up password');
+    captureException(e);
   }
 }
 
@@ -208,21 +197,45 @@ export async function saveBackupPassword(password) {
 export async function fetchBackupPassword() {
   try {
     const results = await requestSharedWebCredentials();
-    return results.password;
+    return results?.password || null;
   } catch (e) {
-    logger.log('Error while fetching backup password', e);
+    logger.sentry('Error while fetching backup password', e);
+    captureException(e);
+    return null;
   }
 }
 
-// For dev purposes only
 export async function wipeKeychain() {
   try {
     const results = await loadAllKeys();
-    results.forEach(async result => {
-      await resetInternetCredentials(result.username);
-    });
+    await Promise.all(
+      results.map(result => resetInternetCredentials(result.username))
+    );
     logger.log('keychain wiped!');
   } catch (e) {
-    logger.log('error while wiping keychain', e);
+    logger.sentry('error while wiping keychain');
+    captureException(e);
   }
+}
+
+export async function getPrivateAccessControlOptions() {
+  let res = {};
+  // This method is iOS Only!!!
+  const canAuthenticate = await canImplyAuthentication({
+    authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
+  });
+
+  let isSimulator = false;
+
+  if (canAuthenticate) {
+    isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
+  }
+  if (canAuthenticate && !isSimulator) {
+    res = {
+      accessControl: ACCESS_CONTROL.USER_PRESENCE,
+      accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+    };
+  }
+
+  return res;
 }

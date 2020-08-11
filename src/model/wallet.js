@@ -31,16 +31,17 @@ import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import { ethereumUtils } from '../utils';
 
+import {
+  addressKey,
+  allWalletsKey,
+  oldSeedPhraseMigratedKey,
+  privateKeyKey,
+  seedPhraseKey,
+  selectedWalletKey,
+} from '../utils/keychainConstants';
 import * as keychain from './keychain';
 import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
-
-export const seedPhraseKey = 'rainbowSeedPhrase';
-export const privateKeyKey = 'rainbowPrivateKey';
-export const addressKey = 'rainbowAddressKey';
-export const selectedWalletKey = 'rainbowSelectedWalletKey';
-export const allWalletsKey = 'rainbowAllWalletsKey';
-export const oldSeedPhraseMigratedKey = 'rainbowOldSeedPhraseMigratedKey';
 
 const privateKeyVersion = 1.0;
 const seedPhraseVersion = 1.0;
@@ -557,22 +558,7 @@ export const createWallet = async (
 };
 
 export const savePrivateKey = async (address, privateKey) => {
-  let privateAccessControlOptions = {};
-  const canAuthenticate = await canImplyAuthentication({
-    authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
-  });
-
-  let isSimulator = false;
-
-  if (canAuthenticate) {
-    isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
-  }
-  if (canAuthenticate && !isSimulator) {
-    privateAccessControlOptions = {
-      accessControl: ACCESS_CONTROL.USER_PRESENCE,
-      accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-    };
-  }
+  const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
 
   const key = `${address}_${privateKeyKey}`;
   const val = {
