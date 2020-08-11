@@ -12,6 +12,7 @@ import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
+import { isCloudBackupPasswordValid } from '../../handlers/cloudBackup';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import WalletLoadingStates from '../../helpers/walletLoadingStates';
@@ -188,11 +189,7 @@ const BackupIcloudStep = () => {
 
   useEffect(() => {
     let passwordIsValid = false;
-    if (
-      password === confirmPassword &&
-      password !== '' &&
-      password.length >= 8
-    ) {
+    if (password === confirmPassword && isCloudBackupPasswordValid(password)) {
       passwordIsValid = true;
     }
 
@@ -208,8 +205,8 @@ const BackupIcloudStep = () => {
     ) {
       newLabel = 'Use a longer password';
     } else if (
-      password.length >= 8 &&
-      confirmPassword.length >= 8 &&
+      isCloudBackupPasswordValid(password) &&
+      isCloudBackupPasswordValid(confirmPassword) &&
       confirmPassword.length >= password.length &&
       password !== confirmPassword
     ) {

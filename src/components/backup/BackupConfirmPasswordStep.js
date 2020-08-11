@@ -11,6 +11,7 @@ import {
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { isCloudBackupPasswordValid } from '../../handlers/cloudBackup';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import WalletLoadingStates from '../../helpers/walletLoadingStates';
@@ -165,7 +166,7 @@ const BackupConfirmPasswordStep = () => {
     if (incorrectPassword) {
       newLabel = 'Incorrect Password';
     } else {
-      if (password !== '' && password.length >= 8) {
+      if (isCloudBackupPasswordValid(password)) {
         passwordIsValid = true;
       }
 

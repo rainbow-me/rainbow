@@ -114,3 +114,7 @@ export async function fetchUserDataFromCloud() {
   const password = RAINBOW_MASTER_KEY;
   return getDataFromCloud(password, filename);
 }
+
+export async function isCloudBackupPasswordValid(password) {
+  return password && password !== '' && password.length >= 8;
+}
