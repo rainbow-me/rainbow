@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Text, TurboModuleRegistry, View } from 'react-native';
+import { Text, TurboModuleRegistry } from 'react-native';
 import {
   useAnimatedGestureHandler,
   useAnimatedStyle,
@@ -295,12 +295,11 @@ function ChartProvider({ data, children, softMargin = 30 }) {
   });
 
   // @ts-ignore
-
   const dotStyle = useAnimatedStyle(() => ({
     opacity: dotOpacity.value,
     transform: [
       { translateX: positionX.value },
-      { translateY: positionY.value + 10 }, // temporary fix for clipped chart
+      { translateY: positionY.value + 10 }, // TODO temporary fix for clipped chart
       { scale: dotScale.value },
     ],
   }));
@@ -334,7 +333,7 @@ function ChartProvider({ data, children, softMargin = 30 }) {
 
   return (
     <ChartContext.Provider value={contextValue}>
-      <View>{children}</View>
+      {children}
     </ChartContext.Provider>
   );
 }
