@@ -59,6 +59,7 @@ export { default as useUniswapMarketDetails } from './useUniswapMarketDetails';
 export { default as useUniswapMarketPrice } from './useUniswapMarketPrice';
 export { default as useWalletBalances } from './useWalletBalances';
 export { default as useWallets } from './useWallets';
+export { default as useWalletCloudBackup } from './useWalletCloudBackup';
 export { default as useWalletSectionsData } from './useWalletSectionsData';
 export { default as useWalletsWithBalancesAndNames } from './useWalletsWithBalancesAndNames';
 export { default as useWyreApplePay } from './useWyreApplePay';

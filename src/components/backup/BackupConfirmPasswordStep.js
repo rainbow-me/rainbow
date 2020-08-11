@@ -1,4 +1,5 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
+import { captureException } from '@sentry/react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -13,22 +14,18 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { isCloudBackupPasswordValid } from '../../handlers/cloudBackup';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import WalletBackupTypes from '../../helpers/walletBackupTypes';
-import WalletLoadingStates from '../../helpers/walletLoadingStates';
-import { useWallets } from '../../hooks';
-import { fetchBackupPassword, saveBackupPassword } from '../../model/keychain';
-import {
-  addWalletToCloudBackup,
-  backupWalletToCloud,
-} from '../../model/wallet';
-import { setIsWalletLoading, setWalletBackedUp } from '../../redux/wallets';
-import { deviceUtils, logger } from '../../utils';
+import { fetchBackupPassword } from '../../model/keychain';
+
+import { setIsWalletLoading } from '../../redux/wallets';
+import { deviceUtils } from '../../utils';
 import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { GradientText, Text } from '../text';
+import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
 import { borders, colors, padding } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - 108;
 
@@ -129,16 +126,16 @@ const TopIcon = () => (
 );
 
 const BackupConfirmPasswordStep = () => {
-  const { goBack } = useNavigation();
   const { params } = useRoute();
   const dispatch = useDispatch();
+  const walletCloudBackup = useWalletCloudBackup();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
   const [label, setLabel] = useState('􀎽 Confirm Backup');
   const passwordRef = useRef();
-  const { latestBackup, wallets } = useWallets();
+  const { latestBackup } = useWallets();
 
   useEffect(() => {
     const fetchPasswordIfPossible = async () => {
@@ -186,51 +183,19 @@ const BackupConfirmPasswordStep = () => {
   );
 
   const onSubmit = useCallback(async () => {
-    let walletId =
-      params?.walletId ||
-      Object.keys(wallets).find(key => wallets[key].imported === false);
-
-    try {
-      await dispatch(setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET));
-      let backupFile;
-      if (!latestBackup) {
-        logger.log(
-          'BackupConfirmPasswordStep:: backing up to icloud',
-          wallets[walletId]
-        );
-
-        backupFile = await backupWalletToCloud(password, wallets[walletId]);
-      } else {
-        logger.log(
-          'BackupConfirmPasswordStep:: adding to icloud backup',
-          wallets[walletId],
-          latestBackup
-        );
-        backupFile = await addWalletToCloudBackup(
-          password,
-          wallets[walletId],
-          latestBackup
-        );
-      }
-      if (backupFile) {
-        logger.log('BackupConfirmPasswordStep:: saving backup password');
-        await saveBackupPassword(password);
-        logger.log('BackupConfirmPasswordStep:: backup completed!', backupFile);
-        await dispatch(
-          setWalletBackedUp(walletId, WalletBackupTypes.cloud, backupFile)
-        );
-        logger.log('BackupConfirmPasswordStep:: backup saved everywhere!');
-        goBack();
-      } else {
+    walletCloudBackup({
+      latestBackup,
+      onError: error => {
+        logger.sentry('Error while calling walletCloudBackup');
+        error && captureException(error);
+        passwordRef.current?.focus();
+        dispatch(setIsWalletLoading(null));
         Alert.alert('Error while trying to backup');
-      }
-    } catch (e) {
-      logger.log('Error while backing up', e);
-      passwordRef.current?.focus();
-      await dispatch(setIsWalletLoading(null));
-      Alert.alert('Error while trying to backup');
-    }
-  }, [dispatch, goBack, latestBackup, params?.walletId, password, wallets]);
+      },
+      password,
+      wallet_id: params?.walletId,
+    });
+  }, [dispatch, latestBackup, params?.walletId, password, walletCloudBackup]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
