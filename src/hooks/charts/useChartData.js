@@ -70,7 +70,9 @@ export default function useChartData(asset) {
       logger.log('✅️📈️ - fallback chart data was success');
       //dispatch(assetChartsFallbackReceived(address, chartType, chartData));
     },
-    [address, chartType, dispatch]
+    [
+      //address, chartType, dispatch
+    ]
   );
 
   useEffect(() => {

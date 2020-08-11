@@ -1,5 +1,14 @@
 import { useRoute } from '@react-navigation/native';
+import { find } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
+import {
+  useChartData,
+  useChartDataLabels,
+  useChartGestures,
+  useColorForAsset,
+  usePointsFromChartData,
+  useUniswapAssetsInWallet,
+} from '../../hooks';
 import {
   SendActionButton,
   SheetActionButtonRow,
@@ -16,13 +25,7 @@ import {
 import Chart from '../value-chart/Chart';
 import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
-import {
-  useChartData,
-  useChartDataLabels,
-  useChartGestures,
-  useColorForAsset,
-  usePointsFromChartData,
-} from '@rainbow-me/hooks';
+
 import { useNavigation } from '@rainbow-me/navigation';
 
 const amountOfPathPoints = 175; // 👈️ TODO make this dynamic
@@ -70,6 +73,12 @@ export default function ChartExpandedState({ asset }) {
     }),
     [asset, chartDataLabels, color, isScrubbing]
   );
+  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
+  const showSwapButton = find(uniswapAssetsInWallet, [
+    'uniqueId',
+    asset.uniqueId,
+  ]);
+
   return (
     <SlackSheet contentHeight={params.longFormHeight} scrollEnabled={false}>
       {showChart && (
@@ -101,7 +110,9 @@ export default function ChartExpandedState({ asset }) {
         </TokenInfoRow>
       </TokenInfoSection>
       <SheetActionButtonRow>
-        <SwapActionButton color={color} inputType={AssetInputTypes.in} />
+        {showSwapButton && (
+          <SwapActionButton color={color} inputType={AssetInputTypes.in} />
+        )}
         <SendActionButton color={color} />
       </SheetActionButtonRow>
     </SlackSheet>
