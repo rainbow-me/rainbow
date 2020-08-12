@@ -1059,10 +1059,10 @@
     "@babel/preset-env" "^7.4.4"
     "@babel/preset-typescript" "^7.3.3"
 
-"@expo/config@3.2.17":
-  version "3.2.17"
-  resolved "https://registry.yarnpkg.com/@expo/config/-/config-3.2.17.tgz#e0876c1a4d1b434d83784c7afebb5879ee99c844"
-  integrity sha512-YpAq7KK092ry3dGmD/ULz3CiDWs/Qy2IV6q2RwL8m9WqGZRU+/fwBcKx1/GYDNOROFVoHVNYyUlzm9Lcqv9ytw==
+"@expo/config@3.2.18":
+  version "3.2.18"
+  resolved "https://registry.yarnpkg.com/@expo/config/-/config-3.2.18.tgz#48d81d0047e3329c8d27ff2f3f7233d99b40d5a7"
+  integrity sha512-n8O981DlpvrnaWv1xMIdUdRZ2VIm2cnTkO+JCInt+hcYWx1xXeyyazb+aT6AmdAqPV3t2aDDuRp7801r9nkqKw==
   dependencies:
     "@babel/register" "^7.8.3"
     "@expo/babel-preset-cli" "0.2.17"
@@ -1089,11 +1089,11 @@
     write-file-atomic "^2.3.0"
 
 "@expo/metro-config@^0.1.15":
-  version "0.1.19"
-  resolved "https://registry.yarnpkg.com/@expo/metro-config/-/metro-config-0.1.19.tgz#1ddd1fd16e3b57be6cf5f41531aad51a5af0273d"
-  integrity sha512-G/Xiy+j/HK+p4CO2O2cYRb70Rm4aHCdpKJEqtA0LlOQzA5S6YqrKBjcNUgCyrNA99yohU4blCBHKwaok/8NkVA==
+  version "0.1.20"
+  resolved "https://registry.yarnpkg.com/@expo/metro-config/-/metro-config-0.1.20.tgz#f98a0d4a1804ad85abea045dbaeaf4ee50d481cc"
+  integrity sha512-t1XLcsmgd6XmmYxlZMXF/Xj0R9ukrpP5L1XX5qIYBlOfVYqPp+4WLPR/zT2GvUJjO4K4xhYR9L0P0sWx9oj/rQ==
   dependencies:
-    "@expo/config" "3.2.17"
+    "@expo/config" "3.2.18"
     metro-react-native-babel-transformer "^0.58.0"
 
 "@expo/plist@0.0.9":
@@ -1413,9 +1413,9 @@
   integrity sha512-ael2f1onoPF3vF7YqHGWy7NnafzGu+yp88BbFbP0ydoCP2xGSUzmZVw0zakPTC040Id+JQ9WeFczujMkDy6jYQ==
 
 "@react-native-community/cli@^4.5.1":
-  version "4.11.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-4.11.0.tgz#58faf2e27ab5601bd2d3ec1cd84a213d33a31480"
-  integrity sha512-pP2jB7294708pX81l6fjCxnBNGefRj8/X1nqGIgiMpHdI1WXfwR6XuegZPMGgxkiCISs7FZybV7TBl1jVxlVpA==
+  version "4.12.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-4.12.0.tgz#42ca3eacd4b4ba2bd5126aba6a032952e66835b5"
+  integrity sha512-zIrKxgHsQ5EUGjZ+oIW54+qY2XqVwDJbGV3hzsVsCFXleos2QUAQWskR0BG9zf06P1HT8kfwuDuHs/p1Ywe0rg==
   dependencies:
     "@hapi/joi" "^15.0.3"
     "@react-native-community/cli-debugger-ui" "^4.9.0"
@@ -1427,7 +1427,7 @@
     commander "^2.19.0"
     cosmiconfig "^5.1.0"
     deepmerge "^3.2.0"
-    envinfo "^7.1.0"
+    envinfo "^7.7.2"
     execa "^1.0.0"
     find-up "^4.1.0"
     fs-extra "^8.1.0"
@@ -2044,42 +2044,52 @@
     "@walletconnect/utils" "^1.1.0"
 
 "@walletconnect/core@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.1.0.tgz#053f08b0ccfdfb14ccd27b7fd425d9849cedba14"
-  integrity sha512-Bhe4gnR6Az11u7OAOw0UDZKM6emUjIQtQ2PVdPDWke6ryC0DWMg9vTYbVPf3lDHBv5hy5eAyDst30N5E91SuYw==
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.2.0.tgz#fce4e58d4677a61edee93051aa0ca926200c071a"
+  integrity sha512-2/vKz+m3DNDGfc4MNX/735pBs4JXc+y/hVyPY+HRd/K3nX/u9YjjojR1cKTtBKC/Ue1CKXdvrfe3xo3PK/6JvQ==
   dependencies:
-    "@walletconnect/socket-transport" "^1.1.0"
-    "@walletconnect/types" "^1.1.0"
-    "@walletconnect/utils" "^1.1.0"
+    "@walletconnect/socket-transport" "^1.2.0"
+    "@walletconnect/types" "^1.2.0"
+    "@walletconnect/utils" "^1.2.0"
 
 "@walletconnect/iso-crypto@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@walletconnect/iso-crypto/-/iso-crypto-1.1.0.tgz#a8235049c1b239adcf9fc6a6c38b7e9ad13004a6"
-  integrity sha512-ttWLj4rTy2NGQnSAKnAar1LSrsJuCQ2JnQUl8hsgc9oTwXKgnRvtxGy2Kajoih/tNKnK959Ilj4WI2HaSJ9G1g==
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@walletconnect/iso-crypto/-/iso-crypto-1.2.0.tgz#7c8fa280885c454d8c4a40c5e121572c99eb2b14"
+  integrity sha512-XaBNaFzRTZVnhMGyy2ns7t3ud1R3eputOqYoKofT8JemnW3kPR9eoD6vs3N5hM10k//jQdgF2qSNlttKGUU8hA==
   dependencies:
-    "@walletconnect/types" "^1.1.0"
-    "@walletconnect/utils" "^1.1.0"
+    "@walletconnect/types" "^1.2.0"
+    "@walletconnect/utils" "^1.2.0"
     eccrypto-js "5.2.0"
 
-"@walletconnect/socket-transport@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@walletconnect/socket-transport/-/socket-transport-1.1.0.tgz#d80b5e6b3b904f131961259ca16de816ae2b003b"
-  integrity sha512-plo5WHjL3RTDENH7MTgs7D/ePGHfSuc/HLzkVGvgZSOtoPlRR916nSZNeL4bStYF1ZRJCrds10x36C0DlZjpQg==
+"@walletconnect/socket-transport@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@walletconnect/socket-transport/-/socket-transport-1.2.0.tgz#967d22313b2365be874890f13ffa315294f4822d"
+  integrity sha512-24kf0SzCRI96f3T8Gbxf4A6SQh/Q8w1JoGFfi2QFix9MW9JW2iJioCevbS1w+atO6rozJE1zZPJZsdMQEGg/9A==
   dependencies:
-    "@walletconnect/types" "^1.1.0"
+    "@walletconnect/types" "^1.2.0"
     ws "7.3.0"
 
-"@walletconnect/types@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.1.0.tgz#1e4efbf033ad89910cbb86f1f381cd5fe7e764fd"
-  integrity sha512-cgDEuYHZZTiaXFRwQs3Zhhar+l2T58/YjhWrfZTMKWuc77geIbF7682i9lE9bNEQqQvQ76jjKxJfSLGjCu++sA==
+"@walletconnect/types@^1.1.0", "@walletconnect/types@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.2.0.tgz#01b9591b21703cf0cd0439fe566b668936de5fe6"
+  integrity sha512-ILcHUdpNnq+5akh2vSWcyh/USYDw2k4YApbOr6iNgEApyNzpIUF1rGA/dgGazq16UWxoFdiJexTMINv7c6LcRA==
 
-"@walletconnect/utils@1.1.0", "@walletconnect/utils@^1.1.0":
+"@walletconnect/utils@1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.1.0.tgz#7b0bcf5c77e8079ac055013537a9620244db2da9"
   integrity sha512-y5v8PCmd/2kASOncYaz5QJiAzwBRT5MK398PmIkImX9tNEeBh00ifeQGZKkCGi6JYXbde0UC5jsGTGkH8hdxeg==
   dependencies:
     "@walletconnect/types" "^1.1.0"
+    detect-browser "5.1.0"
+    enc-utils "2.1.0"
+    js-sha3 "0.8.0"
+
+"@walletconnect/utils@^1.1.0", "@walletconnect/utils@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.2.0.tgz#8aec927b411984ba1d6d0fdcaca377282d4d7c69"
+  integrity sha512-enxUyv0j6rqEqkT17Q4mTYmAvz2U7X6ubs0Ao9W9EJiWrAvs1NAXHGoqFjZFXtBDxD1tqE3AAZVWBuvaadMr3A==
+  dependencies:
+    "@walletconnect/types" "^1.2.0"
     detect-browser "5.1.0"
     enc-utils "2.1.0"
     js-sha3 "0.8.0"
@@ -2492,14 +2502,15 @@ asap@~2.0.3:
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
   integrity sha1-5QNHYR1+aQlDIIu9r+vLwvuGbUY=
 
-asn1.js@^4.0.0:
-  version "4.10.1"
-  resolved "https://registry.yarnpkg.com/asn1.js/-/asn1.js-4.10.1.tgz#b9c2bf5805f1e64aadeed6df3a2bfafb5a73f5a0"
-  integrity sha512-p32cOF5q0Zqs9uBiONKYLm6BClCoBCM5O9JfeUSlnQLBTxYdTK+pW+nXflm8UkKd2UYlEbYz5qEi0JuZR9ckSw==
+asn1.js@^5.2.0:
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/asn1.js/-/asn1.js-5.4.1.tgz#11a980b84ebb91781ce35b0fdc2ee294e3783f07"
+  integrity sha512-+I//4cYPccV8LdmBLiX8CYvf9Sp3vQsrqu2QNXRcrbiWvcx/UdlFiqUJJzxRQxgsZmvhXhn4cSKeSmoFjVdupA==
   dependencies:
     bn.js "^4.0.0"
     inherits "^2.0.1"
     minimalistic-assert "^1.0.0"
+    safer-buffer "^2.1.0"
 
 asn1@~0.2.3:
   version "0.2.4"
@@ -3261,9 +3272,9 @@ camelize@^1.0.0:
   integrity sha1-FkpUg+Yw+kMh5a8HAg5TGDGyYJs=
 
 caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001111:
-  version "1.0.30001112"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001112.tgz#0fffc3b934ff56ff0548c37bc9dad7d882bcf672"
-  integrity sha512-J05RTQlqsatidif/38aN3PGULCLrg8OYQOlJUKbeYVzC2mGZkZLIztwRlB3MtrfLmawUmjFlNJvy/uhwniIe1Q==
+  version "1.0.30001113"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001113.tgz#22016ab55b5a8b04fa00ca342d9ee1b98df48065"
+  integrity sha512-qMvjHiKH21zzM/VDZr6oosO6Ri3U0V2tC015jRXjOecwQCJtsU5zklTNTk31jQbIOP8gha0h1ccM/g0ECP+4BA==
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -4375,9 +4386,9 @@ ejs@^3.0.2:
     jake "^10.6.1"
 
 electron-to-chromium@^1.3.523:
-  version "1.3.527"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.527.tgz#5f59202c066c77a13e6cb0869852ef784e8f2089"
-  integrity sha512-ZlB9ySKOnS4g2Ja/TWDz4Q79NZhKV+Vsgntg85zLN08t+QsN1hK/zeDrcqwysSfbfGRVtvai6QYMczeNNUUgUA==
+  version "1.3.529"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.529.tgz#a7eed559bc848a7c8d95026be7d8929e3f9af169"
+  integrity sha512-n3sriLldqNyjBlosbnPftjCY+m1dVOY307I1Y0HaHAqDGe3hRvK7ksJwWd+qs599ybR4jobCo1+7zXM9GyNMSA==
 
 elliptic@6.5.2, elliptic@6.5.3, elliptic@^6.4.0, elliptic@^6.5.2, elliptic@^6.5.3:
   version "6.5.3"
@@ -4480,7 +4491,7 @@ entities@^2.0.0:
   resolved "https://registry.yarnpkg.com/entities/-/entities-2.0.3.tgz#5c487e5742ab93c15abb5da22759b8590ec03b7f"
   integrity sha512-MyoZ0jgnLvB2X3Lg5HqpFmn1kybDiIfEQmKzTb5apr51Rb+T3KdmMiqa70T+bhGnyv7bQ6WMj2QMHpGMmlrUYQ==
 
-envinfo@^7.1.0:
+envinfo@^7.7.2:
   version "7.7.2"
   resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-7.7.2.tgz#098f97a0e902f8141f9150553c92dbb282c4cabe"
   integrity sha512-k3Eh5bKuQnZjm49/L7H4cHzs2FlL5QjbTB3JrPxoTI8aJG7hVMe4uKyJxSYH4ahseby2waUwk5OaKX/nAsaYgg==
@@ -7550,10 +7561,10 @@ lottie-ios@^3.1.3:
   resolved "https://registry.yarnpkg.com/lottie-ios/-/lottie-ios-3.1.8.tgz#2e9b1f4eae0dfc10bf4c0b3ab6b402c1d590d0fa"
   integrity sha512-9bgiVn1n+zqWjDPTk4MVWXA+DgVa91payxV2jz8B2dsDFqWtjEqTZaaVo5IqNUExsaC5XkRbziExtTOtzd39tQ==
 
-lottie-react-native@3.3.2:
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/lottie-react-native/-/lottie-react-native-3.3.2.tgz#de832d4d3207e4e5c92a55ec4cf0ce0fd03e02f3"
-  integrity sha512-FS8sXDL7s7TUj3Aq0raAZKNOJUO7tuqqOAv5r5yzsZgc0t7Oo4QDxCREsaO2oqSGtTyJKlLlF6/e2g+J5XFSAQ==
+lottie-react-native@3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/lottie-react-native/-/lottie-react-native-3.4.0.tgz#df0887cfd2788d30c383c1e4bb0bd7bbd6fb969f"
+  integrity sha512-ErQJiuptd9koH3NppcNbWAOQXTYUS0ZPpcTM1y+A5jqrTSsZviOLt45nl8aQGpKLpmF21/HmJZuInfoKqvYkRg==
   dependencies:
     invariant "^2.2.2"
     lottie-ios "^3.1.3"
@@ -8784,13 +8795,12 @@ parent-module@^1.0.0:
     callsites "^3.0.0"
 
 parse-asn1@^5.0.0, parse-asn1@^5.1.5:
-  version "5.1.5"
-  resolved "https://registry.yarnpkg.com/parse-asn1/-/parse-asn1-5.1.5.tgz#003271343da58dc94cace494faef3d2147ecea0e"
-  integrity sha512-jkMYn1dcJqF6d5CpU689bq7w/b5ALS9ROVSpQDPrZsqqesUJii9qutvoT5ltGedNXMO2e16YUWIghG9KxaViTQ==
+  version "5.1.6"
+  resolved "https://registry.yarnpkg.com/parse-asn1/-/parse-asn1-5.1.6.tgz#385080a3ec13cb62a62d39409cb3e88844cdaed4"
+  integrity sha512-RnZRo1EPU6JBnra2vGHj0yhp6ebyjBZpmUCLHWiFhxlzvBCCpAuZ7elsBp1PVAbQN0/04VD/19rfzlBSwLstMw==
   dependencies:
-    asn1.js "^4.0.0"
+    asn1.js "^5.2.0"
     browserify-aes "^1.0.0"
-    create-hash "^1.1.0"
     evp_bytestokey "^1.0.0"
     pbkdf2 "^3.0.3"
     safe-buffer "^5.1.1"
@@ -9543,9 +9553,9 @@ react-native-bundle-visualizer@^2.0.1:
     source-map-explorer "^2.4.2"
 
 react-native-camera@^3.35.0:
-  version "3.35.0"
-  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-3.35.0.tgz#3c8b8392f9cdcac51d30fed45c1db70332fc6a1c"
-  integrity sha512-hs9ja6qc2JMB2oYDzYuzOF1GUMRZY0O7KX1e7K7WJBQzAwsXnlwm4d2r6P61kGMk1FUDUn186Yc3kb5vfEAyoA==
+  version "3.36.0"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-3.36.0.tgz#573980154decba57929957733c300d028697f52c"
+  integrity sha512-TdpT4q9gG4waDsnpKliFpmRnUMuBd3sHBlLBTlIFPPnxayVA9Z2E1yHuR10TCnuGI5a0i0wyCeLFOPJbMg70IQ==
   dependencies:
     prop-types "^15.6.2"
 
@@ -11786,9 +11796,9 @@ ts-object-utils@0.0.5:
   integrity sha1-lTYc3s1+UhZ8/F5jTHY0XpCiYHc=
 
 ts-toolbelt@^6.9.4:
-  version "6.15.1"
-  resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-6.15.1.tgz#e1f257cf06be8d7ab3b00269461f278b54e748e6"
-  integrity sha512-CdAqEjPqShG2j+YCnCeILh5y2jj6ainzvJH4NkBR6bE/WhFF1x7GGpssDeLmOshr77KsQ6twOrtK386nj5T/gQ==
+  version "6.15.4"
+  resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-6.15.4.tgz#f7fad584e197d0f495f77b5e3ee75a8f4c4dd3da"
+  integrity sha512-Ifp2yNo4I8q5UwNARUBMnBiFpv5DEtTbCtS8RCjjLOz+PNcThbjUsPJCK3hRnz0dTygM1Fi3Mgvnt/DoKUTU2g==
 
 tsconfig-paths@^3.9.0:
   version "3.9.0"
