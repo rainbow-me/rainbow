@@ -17,9 +17,13 @@ if (
   global.__reanimatedModuleProxy = {
     __shimmed: true,
     installCoreFunctions() {},
-    makeMutable() {},
+    makeMutable(init) {
+      return { value: init };
+    },
     makeRemote() {},
     makeShareable() {},
+    startMapper() {},
+    stopMapper() {},
   };
 }
 

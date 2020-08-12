@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { find } from 'lodash';
-import React, { useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import {
   useChartData,
   useChartDataLabels,
@@ -27,6 +27,7 @@ import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
 import { useNavigation } from '@rainbow-me/navigation';
+import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
 const amountOfPathPoints = 175; // 👈️ TODO make this dynamic
 
@@ -39,7 +40,7 @@ export const ChartExpandedStateSheetHeight = chartExpandedAvailable
 
 export default function ChartExpandedState({ asset }) {
   const { params } = useRoute();
-  const { setParams } = useNavigation();
+  const { setOptions } = useNavigation();
   const color = useColorForAsset(asset);
 
   const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
@@ -56,13 +57,23 @@ export default function ChartExpandedState({ asset }) {
     updateChartDataLabels
   );
 
+  const { jumpToShort } = useContext(ModalContext);
   // Only show the chart if we have chart data, or if chart data is still loading
   const showChart = chartExpandedAvailable && (!!chart || fetchingCharts);
   useEffect(() => {
     if (!showChart) {
-      setParams({ longFormHeight: heightWithNoChart });
+      setOptions({
+        isShortFormEnabled: true,
+      });
+      setImmediate(() => {
+        jumpToShort();
+        setOptions({
+          isShortFormEnabled: false,
+          longFormHeight: heightWithNoChart,
+        });
+      });
     }
-  }, [showChart, setParams]);
+  }, [showChart, setOptions, jumpToShort]);
 
   const TEMP = useMemo(
     () => ({

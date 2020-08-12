@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Platform, Text, TurboModuleRegistry } from 'react-native';
+import { Platform } from 'react-native';
 import {
   useAnimatedGestureHandler,
   useAnimatedStyle,
@@ -72,7 +72,7 @@ function positionXWithMargin(x, margin, width) {
   }
 }
 
-function ChartProvider({ data, children, softMargin = 30 }) {
+export default function ChartProvider({ data, children, softMargin = 30 }) {
   const prevData = useSharedValue([]);
   const currData = useSharedValue([]);
   const prevSmoothing = useSharedValue(0);
@@ -355,12 +355,3 @@ function ChartProvider({ data, children, softMargin = 30 }) {
     </ChartContext.Provider>
   );
 }
-
-function ChartFallback() {
-  return <Text> Charts are not available without Reanimated 2</Text>;
-}
-
-export default !TurboModuleRegistry.get('NativeReanimated') &&
-(!global.__reanimatedModuleProxy || global.__reanimatedModuleProxy.__shimmed)
-  ? ChartFallback
-  : ChartProvider;

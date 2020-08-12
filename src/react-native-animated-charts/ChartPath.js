@@ -4,6 +4,7 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
 import ChartContext from './ChartContext';
 import useReactiveSharedValue from './useReactiveSharedValue';
+import withReanimatedFallback from './withReanimatedFallback';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
@@ -63,4 +64,4 @@ function ChartPath({
   );
 }
 
-export default ChartPath;
+export default withReanimatedFallback(ChartPath, true);

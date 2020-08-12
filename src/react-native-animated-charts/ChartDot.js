@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import Animated from 'react-native-reanimated';
 import ChartContext from './ChartContext';
+import withReanimatedFallback from './withReanimatedFallback';
 
 function ChartDot({ style, size = 10, ...props }) {
   const { dotStyle } = useContext(ChartContext);
@@ -24,4 +25,4 @@ function ChartDot({ style, size = 10, ...props }) {
   );
 }
 
-export default ChartDot;
+export default withReanimatedFallback(ChartDot);
