@@ -81,21 +81,20 @@ export default function ChartExpandedState({ asset }) {
 
   return (
     <SlackSheet contentHeight={params.longFormHeight} scrollEnabled={false}>
-      {showChart && (
-        <Chart
-          TEMP={TEMP}
-          {...chartData}
-          {...chartGestures}
-          asset={asset}
-          chart={chart}
-          chartType={chartType}
-          color={color}
-          fetchingCharts={fetchingCharts}
-          isScrubbing={isScrubbing}
-          points={points}
-          updateChartDataLabels={updateChartDataLabels}
-        />
-      )}
+      <Chart
+        TEMP={TEMP}
+        {...chartData}
+        {...chartGestures}
+        asset={asset}
+        chart={chart}
+        chartType={chartType}
+        color={color}
+        fetchingCharts={fetchingCharts}
+        isScrubbing={isScrubbing}
+        points={points}
+        showChart={showChart}
+        updateChartDataLabels={updateChartDataLabels}
+      />
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>

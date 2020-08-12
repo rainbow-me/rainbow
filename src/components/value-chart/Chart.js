@@ -27,7 +27,7 @@ const ChartTimespans = [
 ];
 
 const ChartContainer = styled.View`
-  margin-vertical: 17px;
+  margin-vertical: ${({ showChart }) => (showChart ? '17px' : '0px')};
 `;
 
 const Container = styled(Column)`
@@ -61,6 +61,7 @@ export default function ChartWrapper({
   fetchingCharts,
   points,
   updateChartType,
+  showChart,
   TEMP,
 }) {
   const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [
@@ -101,33 +102,40 @@ export default function ChartWrapper({
         <ChartExpandedStateHeader
           {...TEMP}
           chartTimeSharedValue={chartTimeSharedValue}
+          showChart={showChart}
         />
         <ChartContainer>
-          <Labels color={color} width={WIDTH} />
-          <ChartPath
-            fill="none"
-            height={HEIGHT}
-            longPressGestureHandlerProps={{
-              minDurationMs: 60,
-            }}
-            stroke={color}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={3.5}
-            strokeWidthSelected={3}
-            width={WIDTH}
-          />
-          <Dot color={colors.alpha(color, 0.03)} size={65}>
-            <InnerDot color={color} />
-          </Dot>
+          {showChart && (
+            <>
+              <Labels color={color} width={WIDTH} />
+              <ChartPath
+                fill="none"
+                height={HEIGHT}
+                longPressGestureHandlerProps={{
+                  minDurationMs: 60,
+                }}
+                stroke={color}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={3.5}
+                strokeWidthSelected={3}
+                width={WIDTH}
+              />
+              <Dot color={colors.alpha(color, 0.03)} size={65}>
+                <InnerDot color={color} />
+              </Dot>
+            </>
+          )}
         </ChartContainer>
       </ChartProvider>
-      <TimespanSelector
-        color={color}
-        defaultIndex={timespanIndex}
-        reloadChart={updateChartType}
-        timespans={ChartTimespans}
-      />
+      {showChart && (
+        <TimespanSelector
+          color={color}
+          defaultIndex={timespanIndex}
+          reloadChart={updateChartType}
+          timespans={ChartTimespans}
+        />
+      )}
     </Container>
   );
 }

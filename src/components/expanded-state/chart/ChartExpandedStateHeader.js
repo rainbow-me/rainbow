@@ -22,7 +22,7 @@ const noPriceData = 'No price data';
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
 })`
-  ${padding(0, 19, 30)};
+  ${({ showChart }) => padding(0, 19, showChart ? 30 : 0)};
 `;
 
 function useTabularNumsWhileScrubbing(isScrubbing) {
@@ -53,6 +53,7 @@ export default function ChartExpandedStateHeader({
   latestPrice = noPriceData,
   priceRef,
   chartTimeSharedValue,
+  showChart,
 }) {
   const { nativeCurrency } = useAccountSettings();
   const tabularNums = useTabularNumsWhileScrubbing(isScrubbing);
@@ -80,7 +81,7 @@ export default function ChartExpandedStateHeader({
   );
 
   return (
-    <Container>
+    <Container showChart={showChart}>
       <Row align="center" justify="space-between">
         <CoinIcon
           address={asset?.address}
