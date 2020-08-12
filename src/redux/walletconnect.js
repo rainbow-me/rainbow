@@ -109,33 +109,31 @@ export const walletConnectOnSessionRequest = (
         const { peerId, peerMeta } = payload.params[0];
         const imageUrl = get(peerMeta, 'icons[0]');
         const name = convertDappNameToDisplay(peerMeta.name);
-        InteractionManager.runAfterInteractions(() => {
-          Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
-            callback: async approved => {
-              if (approved) {
-                dispatch(setPendingRequest(peerId, walletConnector));
-                dispatch(walletConnectApproveSession(peerId, callback));
-                analytics.track('Approved new WalletConnect session', {
-                  dappName: name,
-                  dappUrl: peerMeta.url,
-                });
-              } else {
-                await dispatch(
-                  walletConnectRejectSession(peerId, walletConnector)
-                );
-                callback && callback('reject');
-                analytics.track('Rejected new WalletConnect session', {
-                  dappName: name,
-                  dappUrl: peerMeta.url,
-                });
-              }
-            },
-            meta: {
-              dappName: name,
-              dappUrl: peerMeta.url,
-              imageUrl,
-            },
-          });
+        Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
+          callback: async approved => {
+            if (approved) {
+              dispatch(setPendingRequest(peerId, walletConnector));
+              dispatch(walletConnectApproveSession(peerId, callback));
+              analytics.track('Approved new WalletConnect session', {
+                dappName: name,
+                dappUrl: peerMeta.url,
+              });
+            } else {
+              await dispatch(
+                walletConnectRejectSession(peerId, walletConnector)
+              );
+              callback && callback('reject');
+              analytics.track('Rejected new WalletConnect session', {
+                dappName: name,
+                dappUrl: peerMeta.url,
+              });
+            }
+          },
+          meta: {
+            dappName: name,
+            dappUrl: peerMeta.url,
+            imageUrl,
+          },
         });
       });
     } catch (error) {

@@ -1,30 +1,32 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
-import { useIsEmulator } from 'react-native-device-info';
 import Animated, { useCode } from 'react-native-reanimated';
-import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components/native';
+import styled from 'styled-components/primitives';
 import { BubbleSheet } from '../components/bubble-sheet';
-import { Button } from '../components/buttons';
 import { DiscoverSheet } from '../components/discover-sheet';
 import { BackButton, Header, HeaderHeight } from '../components/header';
 import { Centered } from '../components/layout';
-import { QRCodeScanner } from '../components/qrcode-scanner';
+import {
+  CameraDimmer,
+  EmulatorPasteUriButton,
+  QRCodeScanner,
+} from '../components/qrcode-scanner';
 import {
   WalletConnectExplainer,
   WalletConnectList,
 } from '../components/walletconnect-list';
 import useExperimentalFlag, {
   DISCOVER_SHEET,
-} from '../config/experimentalHooks';
-import { scrollPosition } from '../navigation/helpers';
-import { magicMemo } from '../utils';
+} from '@rainbow-me/config/experimentalHooks';
+import { useHeight, useWalletConnectConnections } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { scrollPosition } from '@rainbow-me/navigation/helpers';
+import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
 
-const DimmedView = styled(Animated.View)`
-  flex: 1;
-  width: 100%;
-`;
+const { call, greaterThan, onChange } = Animated;
+
+const ENABLING_CAMERA_OFFSET = 1.01;
 
 const Background = styled.View`
   background-color: black;
@@ -33,33 +35,21 @@ const Background = styled.View`
   width: 100%;
 `;
 
-const { greaterThan, onChange, call } = Animated;
+const ScannerContainer = styled(Centered).attrs({
+  direction: 'column',
+})`
+  ${position.size('100%')};
+  overflow: hidden;
+`;
 
-const Dim = ({ children }) => (
-  <DimmedView
-    style={{ opacity: Animated.min(Animated.sub(scrollPosition, 1), 0.9) }}
-  >
-    {children}
-  </DimmedView>
-);
+const ScannerHeader = styled(Header).attrs({
+  justify: 'space-between',
+})`
+  position: absolute;
+  top: 0;
+`;
 
-const ENABLING_CAMERA_OFFSET = 1.01;
-
-const QRScannerScreen = ({
-  enableScanning,
-  isCameraAuthorized,
-  onPressBackButton,
-  onPressPasteSessionUri,
-  onScanSuccess,
-  onSheetLayout,
-  sheetHeight,
-  walletConnectorsByDappName,
-  walletConnectorsCount,
-  ...props
-}) => {
-  const { result: isEmulator } = useIsEmulator();
-  const insets = useSafeArea();
-  const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
+function useFocusFromSwipe() {
   const [isFocused, setIsFocused] = useState(false);
   useCode(
     () =>
@@ -71,32 +61,38 @@ const QRScannerScreen = ({
       ),
     []
   );
+  return isFocused;
+}
+
+export default function QRScannerScreen() {
+  const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
+  const isFocused = useFocusFromSwipe();
+  const [sheetHeight, onSheetLayout] = useHeight(240);
+  const { navigate } = useNavigation();
+  const {
+    walletConnectorsByDappName,
+    walletConnectorsCount,
+  } = useWalletConnectConnections();
+
+  const handlePressBackButton = useCallback(
+    () => navigate(Routes.WALLET_SCREEN),
+    [navigate]
+  );
 
   return (
     <View>
       {discoverSheetAvailable ? <DiscoverSheet /> : null}
-      <Centered
-        {...position.sizeAsObject('100%')}
-        backgroundColor={colors.appleBlue}
-        direction="column"
-        overflow="hidden"
-      >
+      <ScannerContainer>
         <Background />
-        <Dim>
+        <CameraDimmer>
           <QRCodeScanner
-            {...props}
             contentPositionBottom={sheetHeight}
             contentPositionTop={HeaderHeight}
             enableCamera={isFocused}
-            enableScanning={enableScanning}
-            isCameraAuthorized={isCameraAuthorized}
-            isEmulator={isEmulator}
-            onSuccess={onScanSuccess}
-            showCrosshairText={!!walletConnectorsCount}
           />
-        </Dim>
+        </CameraDimmer>
         {discoverSheetAvailable ? null : (
-          <BubbleSheet bottom={insets.bottom ? 21 : 0} onLayout={onSheetLayout}>
+          <BubbleSheet onLayout={onSheetLayout}>
             {walletConnectorsCount ? (
               <WalletConnectList items={walletConnectorsByDappName} />
             ) : (
@@ -104,34 +100,16 @@ const QRScannerScreen = ({
             )}
           </BubbleSheet>
         )}
-        <Header justify="space-between" position="absolute" top={0}>
+        <ScannerHeader>
           <BackButton
             color={colors.white}
             direction="left"
-            onPress={onPressBackButton}
+            onPress={handlePressBackButton}
             testID="goToBalancesFromScanner"
           />
-          {isEmulator && (
-            <Button
-              backgroundColor={colors.white}
-              color={colors.sendScreen.brightBlue}
-              onPress={onPressPasteSessionUri}
-              size="small"
-              type="pill"
-            >
-              Paste session URI
-            </Button>
-          )}
-        </Header>
-      </Centered>
+          <EmulatorPasteUriButton />
+        </ScannerHeader>
+      </ScannerContainer>
     </View>
   );
-};
-
-export default magicMemo(QRScannerScreen, [
-  'enableScanning',
-  'isCameraAuthorized',
-  'modalVisible',
-  'sheetHeight',
-  'walletConnectorsCount',
-]);
+}

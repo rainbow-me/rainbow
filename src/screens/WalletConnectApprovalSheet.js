@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import styled from 'styled-components/primitives';
 import URL from 'url-parse';
 import Divider from '../components/Divider';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
@@ -9,7 +10,16 @@ import { Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { colors, padding } from '@rainbow-me/styles';
 
-const WalletConnectApprovalSheet = () => {
+const DappLogo = styled(RequestVendorLogoIcon).attrs({
+  backgroundColor: colors.transparent,
+  borderRadius: 18,
+  showLargeShadow: true,
+  size: 60,
+})`
+  margin-bottom: 24;
+`;
+
+export default function WalletConnectApprovalSheet() {
   // TODO set this to true via everest.link graph
   // if we can validate the host
   const authenticated = false;
@@ -25,14 +35,20 @@ const WalletConnectApprovalSheet = () => {
     return urlObject.hostname;
   }, [dappUrl]);
 
+  const handleSuccess = useCallback(
+    (success = false) => {
+      if (callback) {
+        setTimeout(() => callback(success), 300);
+      }
+    },
+    [callback]
+  );
+
   // Reject if the modal is dismissed
   useEffect(() => {
     return () => {
       if (!handled.current) {
-        callback &&
-          setTimeout(() => {
-            callback(false);
-          }, 300);
+        handleSuccess(false);
       }
     };
   });
@@ -40,33 +56,19 @@ const WalletConnectApprovalSheet = () => {
   const handleConnect = useCallback(() => {
     handled.current = true;
     goBack();
-    callback &&
-      setTimeout(() => {
-        callback(true);
-      }, 300);
-  }, [callback, goBack]);
+    handleSuccess(true);
+  }, [handleSuccess, goBack]);
 
   const handleCancel = useCallback(() => {
     handled.current = true;
     goBack();
-    callback &&
-      setTimeout(() => {
-        callback(false);
-      }, 300);
-  }, [callback, goBack]);
+    handleSuccess(false);
+  }, [handleSuccess, goBack]);
 
   return (
     <Sheet hideHandle>
       <Centered direction="column" paddingHorizontal={19} paddingTop={17}>
-        <RequestVendorLogoIcon
-          backgroundColor="transparent"
-          borderRadius={18}
-          dappName={dappName || ''}
-          imageUrl={imageUrl || ''}
-          showLargeShadow
-          size={60}
-          style={{ marginBottom: 24 }}
-        />
+        <DappLogo dappName={dappName || ''} imageUrl={imageUrl || ''} />
         <Centered paddingHorizontal={23}>
           <Row>
             <Text
@@ -106,6 +108,4 @@ const WalletConnectApprovalSheet = () => {
       </Centered>
     </Sheet>
   );
-};
-
-export default React.memo(WalletConnectApprovalSheet);
+}
