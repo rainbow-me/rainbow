@@ -101,7 +101,7 @@ function ChartProvider({ data, children, softMargin = 30 }) {
       progress.value = 0;
       currData.value = parsedData;
       currSmoothing.value = data.smoothing || 0;
-      // progress.value = withTiming(1);
+      progress.value = withTiming(1);
     } else {
       prevSmoothing.value = data.smoothing || 0;
       currSmoothing.value = data.smoothing || 0;
