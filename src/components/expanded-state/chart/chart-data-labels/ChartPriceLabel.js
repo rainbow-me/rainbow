@@ -17,7 +17,7 @@ const Label = styled(ChartYLabel)`
 export function formatUSD(value, priceSharedValue) {
   'worklet';
   if (!value) {
-    return priceSharedValue.value;
+    return priceSharedValue?.value || '';
   }
   const decimals =
     Number(value) < 1
