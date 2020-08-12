@@ -96,14 +96,12 @@ export default function ChartDateLabel({ chartTimeSharedValue }) {
   });
 
   return (
-    <>
-      <Label
-        format={value => {
-          'worklet';
-          return formatDatetime(value, chartTimeSharedValue);
-        }}
-        style={textStyle}
-      />
-    </>
+    <Label
+      format={value => {
+        'worklet';
+        return formatDatetime(value, chartTimeSharedValue);
+      }}
+      style={textStyle}
+    />
   );
 }
