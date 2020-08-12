@@ -86,11 +86,12 @@ export default function ChartWrapper({
 
   useEffect(() => {
     if (chartType === ChartTypes.day) {
-      chartTimeSharedValue.value = 'Today';
+      chartTimeSharedValue && (chartTimeSharedValue.value = 'Today');
     } else if (chartType === ChartTypes.max) {
-      chartTimeSharedValue.value = 'All Time';
+      chartTimeSharedValue && (chartTimeSharedValue.value = 'All Time');
     } else {
-      chartTimeSharedValue.value = `Past ${formattedTimespan}`;
+      chartTimeSharedValue &&
+        (chartTimeSharedValue.value = `Past ${formattedTimespan}`);
     }
   }, [chartTimeSharedValue, chartType, formattedTimespan]);
 

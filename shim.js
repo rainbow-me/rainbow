@@ -17,6 +17,7 @@ if (
   global.__reanimatedModuleProxy = {
     __shimmed: true,
     installCoreFunctions() {},
+    makeMutable() {},
     makeRemote() {},
     makeShareable() {},
   };
