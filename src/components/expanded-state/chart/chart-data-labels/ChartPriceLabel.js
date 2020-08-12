@@ -19,8 +19,20 @@ export function formatUSD(value, priceSharedValue) {
   if (!value) {
     return priceSharedValue.value;
   }
+  const decimals =
+    Number(value) < 1
+      ? Math.min(
+          8,
+          value
+            .toString()
+            .slice(2)
+            .slice('')
+            .search(/[^0]/g) + 3
+        )
+      : 2;
+
   const res = `$${Number(value)
-    .toFixed(2)
+    .toFixed(decimals)
     .toLocaleString('en-US', {
       currency: 'USD',
     })}`;
