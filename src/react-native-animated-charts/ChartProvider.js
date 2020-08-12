@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Text, TurboModuleRegistry } from 'react-native';
+import { Platform, Text, TurboModuleRegistry } from 'react-native';
 import {
   useAnimatedGestureHandler,
   useAnimatedStyle,
@@ -12,6 +12,8 @@ import { haptics } from '../utils';
 import ChartContext from './ChartContext';
 import { svgBezierPath } from './smoothSVG';
 import useReactiveSharedValue from './useReactiveSharedValue';
+
+const android = Platform.OS === 'android';
 
 const parse = data => {
   let smallestY = data[0];
@@ -99,7 +101,7 @@ function ChartProvider({ data, children, softMargin = 30 }) {
       progress.value = 0;
       currData.value = parsedData;
       currSmoothing.value = data.smoothing || 0;
-      progress.value = withTiming(1);
+      // progress.value = withTiming(1);
     } else {
       prevSmoothing.value = data.smoothing || 0;
       currSmoothing.value = data.smoothing || 0;
@@ -169,7 +171,11 @@ function ChartProvider({ data, children, softMargin = 30 }) {
       nativeY.value = '';
       dotOpacity.value = withSpring(0, springConfig);
       dotScale.value = withSpring(0, springConfig);
-      pathOpacity.value = withTiming(1, timingConfig);
+      if (android) {
+        pathOpacity.value = 1;
+      } else {
+        pathOpacity.value = withTiming(1, timingConfig);
+      }
     },
     onEnd: event => {
       state.value = event.state;
@@ -177,7 +183,11 @@ function ChartProvider({ data, children, softMargin = 30 }) {
       nativeY.value = '';
       dotOpacity.value = withSpring(0, springConfig);
       dotScale.value = withSpring(0, springConfig);
-      pathOpacity.value = withTiming(1, timingConfig);
+      if (android) {
+        pathOpacity.value = 1;
+      } else {
+        pathOpacity.value = withTiming(1, timingConfig);
+      }
       haptics.impactHeavy();
     },
     onFail: event => {
@@ -186,7 +196,11 @@ function ChartProvider({ data, children, softMargin = 30 }) {
       nativeY.value = '';
       dotOpacity.value = withSpring(0, springConfig);
       dotScale.value = withSpring(0, springConfig);
-      pathOpacity.value = withTiming(1, timingConfig);
+      if (android) {
+        pathOpacity.value = 1;
+      } else {
+        pathOpacity.value = withTiming(1, timingConfig);
+      }
     },
     onStart: event => {
       state.value = event.state;
@@ -217,11 +231,15 @@ function ChartProvider({ data, children, softMargin = 30 }) {
         eventX / size.value.width,
         currData
       );
-      positionX.value = positionXWithMargin(eventX, 30, size.value.width);
-      positionY.value = currData.value[idx].y * size.value.height;
       dotOpacity.value = withSpring(1, springConfig);
       dotScale.value = withSpring(1, springConfig);
-      pathOpacity.value = withTiming(0, timingConfig);
+
+      if (!android) {
+        positionX.value = positionXWithMargin(eventX, 30, size.value.width);
+        positionY.value = currData.value[idx].y * size.value.height;
+        pathOpacity.value = withTiming(0, timingConfig);
+      }
+
       haptics.impactHeavy();
     },
   });
