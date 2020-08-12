@@ -107,7 +107,6 @@ export default function ChartWrapper({
             fill="none"
             height={HEIGHT}
             longPressGestureHandlerProps={{
-              maxDist: 200,
               minDurationMs: 60,
             }}
             stroke={color}
