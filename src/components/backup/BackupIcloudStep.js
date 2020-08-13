@@ -303,7 +303,7 @@ const BackupIcloudStep = () => {
                 returnKeyType="next"
                 value={password}
               />
-              {password.length >= 8 && <GreenCheckmarkIcon />}
+              {isCloudBackupPasswordValid(password) && <GreenCheckmarkIcon />}
               {password !== '' &&
                 password.length < 8 &&
                 !passwordRef.current.isFocused() && <WarningIcon />}
@@ -319,8 +319,7 @@ const BackupIcloudStep = () => {
                 value={confirmPassword}
               />
               {validPassword && <GreenCheckmarkIcon />}
-              {confirmPassword !== '' &&
-                confirmPassword.length >= 8 &&
+              {isCloudBackupPasswordValid(confirmPassword) &&
                 confirmPassword.length >= password.length &&
                 confirmPassword !== password && <WarningIcon />}
             </Shadow>
