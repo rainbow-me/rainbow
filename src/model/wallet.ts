@@ -28,7 +28,7 @@ import {
   web3Provider,
 } from '../handlers/web3';
 import showWalletErrorAlert from '../helpers/support';
-import WalletTypes from '../helpers/walletTypes';
+import { EthereumWalletType } from '../helpers/walletTypes';
 import { ethereumUtils } from '../utils';
 import * as keychain from './keychain';
 import { colors } from '@rainbow-me/styles';
@@ -43,12 +43,6 @@ type EthereumWalletSeed =
   | EthereumPrivateKey
   | EthereumMnemonic
   | EthereumSeed;
-
-export type EthereumWalletType =
-  | 'mnemonic'
-  | 'privateKey'
-  | 'readOnly'
-  | 'seed';
 
 interface WalletInitialized {
   isNew: boolean;
@@ -432,21 +426,21 @@ const identifyWalletType = (
     isHexStringIgnorePrefix(walletSeed) &&
     addHexPrefix(walletSeed).length === 66
   ) {
-    return WalletTypes.privateKey;
+    return EthereumWalletType.privateKey;
   }
 
   // 12 or 24 words seed phrase
   if (isValidMnemonic(walletSeed)) {
-    return WalletTypes.mnemonic;
+    return EthereumWalletType.mnemonic;
   }
 
   // Public address (0x)
   if (isValidAddress(walletSeed)) {
-    return WalletTypes.readOnly;
+    return EthereumWalletType.readOnly;
   }
 
   // seed
-  return WalletTypes.seed;
+  return EthereumWalletType.seed;
 };
 
 export const getWallet = (
@@ -457,18 +451,18 @@ export const getWallet = (
   let isHDWallet = false;
   const type = identifyWalletType(walletSeed);
   switch (type) {
-    case WalletTypes.privateKey:
+    case EthereumWalletType.privateKey:
       wallet = new ethers.Wallet(walletSeed);
       break;
-    case WalletTypes.mnemonic:
+    case EthereumWalletType.mnemonic:
       hdnode = ethers.utils.HDNode.fromMnemonic(walletSeed);
       isHDWallet = true;
       break;
-    case WalletTypes.seed:
+    case EthereumWalletType.seed:
       hdnode = ethers.utils.HDNode.fromSeed(walletSeed);
       isHDWallet = true;
       break;
-    case WalletTypes.readOnly:
+    case EthereumWalletType.readOnly:
       wallet = { address: toChecksumAddress(walletSeed), privateKey: null };
       break;
     default:
@@ -533,13 +527,14 @@ export const createWallet = async (
       // Don't allow adding a readOnly wallet that you have already visible
       // or a private key that you already have visible as a seed or mnemonic
       const isPrivateKeyOverwritingSeedMnemonic =
-        type === WalletTypes.privateKey &&
-        (alreadyExistingWallet?.type === WalletTypes.seed ||
-          alreadyExistingWallet?.type === WalletTypes.mnemonic);
+        type === EthereumWalletType.privateKey &&
+        (alreadyExistingWallet?.type === EthereumWalletType.seed ||
+          alreadyExistingWallet?.type === EthereumWalletType.mnemonic);
       if (
         !overwrite &&
         alreadyExistingWallet &&
-        (type === WalletTypes.readOnly || isPrivateKeyOverwritingSeedMnemonic)
+        (type === EthereumWalletType.readOnly ||
+          isPrivateKeyOverwritingSeedMnemonic)
       ) {
         setTimeout(
           () =>
@@ -663,14 +658,14 @@ export const createWallet = async (
     // it's the primary wallet
     if (
       !isImported ||
-      (!findKey(allWallets, ['type', WalletTypes.mnemonic]) &&
-        type === WalletTypes.mnemonic)
+      (!findKey(allWallets, ['type', EthereumWalletType.mnemonic]) &&
+        type === EthereumWalletType.mnemonic)
     ) {
       primary = true;
       // Or there's no other primary wallet and this one has a seed phrase
     } else {
       const primaryWallet = findKey(allWallets, ['primary', true]);
-      if (!primaryWallet && type === WalletTypes.mnemonic) {
+      if (!primaryWallet && type === EthereumWalletType.mnemonic) {
         primary = true;
       }
     }
@@ -919,13 +914,13 @@ const migrateSecrets = async () => {
       node: undefined | ethers.utils.HDNode.HDNode,
       existingAccount: undefined | Wallet;
     switch (type) {
-      case WalletTypes.privateKey:
+      case EthereumWalletType.privateKey:
         existingAccount = new ethers.Wallet(seedphrase);
         break;
-      case WalletTypes.mnemonic:
+      case EthereumWalletType.mnemonic:
         hdnode = ethers.utils.HDNode.fromMnemonic(seedphrase);
         break;
-      case WalletTypes.seed:
+      case EthereumWalletType.seed:
         hdnode = ethers.utils.HDNode.fromSeed(seedphrase);
         break;
       default:

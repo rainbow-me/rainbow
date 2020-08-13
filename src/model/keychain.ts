@@ -60,7 +60,7 @@ export async function loadString(
     const credentials = await getInternetCredentials(key, options);
     if (credentials) {
       logger.log(`Keychain: loaded string for key: ${key}`);
-      return credentials.password;
+      return credentials?.password || null;
     }
     logger.sentry(`Keychain: string does not exist for key: ${key}`);
   } catch (err) {
@@ -112,7 +112,7 @@ export async function remove(key: string): Promise<void> {
   }
 }
 
-export async function loadAllKeys(): Promise<null | UserCredentials[]> {
+async function loadAllKeys(): Promise<null | UserCredentials[]> {
   try {
     const response = await getAllInternetCredentials();
     if (response) {
@@ -130,7 +130,7 @@ export async function getAllKeysAnonymized(): Promise<null | AnonymousKeyData> {
   const results = await loadAllKeys();
   forEach(results, result => {
     data[result?.username] = {
-      length: result?.password?.length,
+      length: result?.password?.length || 0,
       nil: isNil(result?.password),
       type: typeof result?.password,
     };
