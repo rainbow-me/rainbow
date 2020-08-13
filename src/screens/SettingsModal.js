@@ -136,7 +136,7 @@ export default function SettingsModal() {
   const getRealRoute = useCallback(
     key => {
       let route = key;
-      let params = {};
+      let paramsToPass = {};
       if (key === SettingsPages.backup.key) {
         const walletId = params?.walletId;
         if (
@@ -148,15 +148,15 @@ export default function SettingsModal() {
           route = 'WalletSelectionView';
         } else {
           if (Object.keys(wallets).length === 1 && selectedWallet.imported) {
-            params.imported = true;
-            params.type = 'AlreadyBackedUpView';
+            paramsToPass.imported = true;
+            paramsToPass.type = 'AlreadyBackedUpView';
           }
           route = 'SettingsBackupView';
         }
       }
-      return { params, route };
+      return { params: { ...params, ...paramsToPass }, route };
     },
-    [selectedWallet.imported, wallets]
+    [params, selectedWallet.imported, wallets]
   );
 
   const onPressSection = useCallback(
