@@ -24,6 +24,7 @@ let base = {
   lightestGrey: '#E9EBEF', // '238, 233, 232'
   lightGrey: '#CDCFD4', // '205, 207, 212'
   mediumGrey: '#A1A5B3', // '161, 165, 179'
+  mintDark: '#00E0A9', // '0, 224, 169'
   orange: '#FF9900', // '255, 153, 0'
   orangeLight: '#FEBE44', // '254, 190, 68'
   paleBlue: '#579DFF', // 87, 157, 255
@@ -121,25 +122,29 @@ const transparent = {
   whiteTransparent: buildRgba(base.white, 0.8), // '255, 255, 255'
 };
 
+const darkModeColors = {
+  appleBlue: '#FFFFFF',
+  black: '#FFFFFF',
+  blueGreyDark: '#E0E8FF',
+  blueGreyDark50: '#FFFFFF',
+  blueGreyDarker: '#FFFFFF',
+  blueGreyDarkLight: '#0F0F0F',
+  dark: '#FFFFFF',
+  darkGrey: '#FFFFFF',
+  green: '#69D44D',
+  grey: '#FFFFFF',
+  grey20: '#FFFFFF',
+  lighterGrey: '#FFFFFF',
+  lightestGrey: '#FFFFFF',
+  lightGrey: '#FFFFFF',
+  skeleton: '#0F0F0F',
+  white: '#000000',
+};
+
 if (darkMode) {
   base = {
     ...base,
-    appleBlue: '#FFFFFF',
-    black: '#FFFFFF',
-    blueGreyDark: '#FFFFFF',
-    blueGreyDark50: '#FFFFFF',
-    blueGreyDarker: '#FFFFFF',
-    blueGreyDarkLight: '#0F0F0F',
-    dark: '#FFFFFF',
-    darkGrey: '#FFFFFF',
-    green: '#69D44D',
-    grey: '#FFFFFF',
-    grey20: '#FFFFFF',
-    lighterGrey: '#FFFFFF',
-    lightestGrey: '#FFFFFF',
-    lightGrey: '#FFFFFF',
-    skeleton: '#0F0F0F',
-    white: '#000000',
+    ...darkModeColors,
   };
 
   uniswapInvestmentCards = {
@@ -182,6 +187,7 @@ const getRandomColor = () =>
 
 export default {
   ...colors,
+  darkModeColors,
   get: getColorForString,
   getRandomColor,
   propType: PropTypes.oneOf([...Object.keys(colors), ...Object.values(colors)]),
