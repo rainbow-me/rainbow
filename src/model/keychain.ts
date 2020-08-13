@@ -5,14 +5,29 @@ import {
   getAllInternetCredentialsKeys,
   getInternetCredentials,
   hasInternetCredentials,
+  Options,
   resetInternetCredentials,
   setInternetCredentials,
+  UserCredentials,
 } from 'react-native-keychain';
 import { delay } from '../helpers/utilities';
 import logger from 'logger';
 
-// NOTE: implement access control for iOS keychain
-export async function saveString(key, value, accessControlOptions) {
+interface AnonymousKey {
+  length: number;
+  nil: boolean;
+  type: string;
+}
+
+interface AnonymousKeyData {
+  [key: string]: AnonymousKey;
+}
+
+export async function saveString(
+  key: string,
+  value: string,
+  accessControlOptions: Options
+): Promise<void> {
   return new Promise(async (resolve, reject) => {
     try {
       await setInternetCredentials(key, key, value, accessControlOptions);
@@ -37,9 +52,12 @@ export async function saveString(key, value, accessControlOptions) {
   });
 }
 
-export async function loadString(key, authenticationPrompt) {
+export async function loadString(
+  key: string,
+  options?: Options
+): Promise<null | string> {
   try {
-    const credentials = await getInternetCredentials(key, authenticationPrompt);
+    const credentials = await getInternetCredentials(key, options);
     if (credentials) {
       logger.log(`Keychain: loaded string for key: ${key}`);
       return credentials.password;
@@ -54,13 +72,20 @@ export async function loadString(key, authenticationPrompt) {
   return null;
 }
 
-export async function saveObject(key, value, accessControlOptions) {
+export async function saveObject(
+  key: string,
+  value: Object,
+  accessControlOptions: Options
+): Promise<void> {
   const jsonValue = JSON.stringify(value);
-  await saveString(key, jsonValue, accessControlOptions);
+  return saveString(key, jsonValue, accessControlOptions);
 }
 
-export async function loadObject(key, authenticationPrompt) {
-  const jsonValue = await loadString(key, authenticationPrompt);
+export async function loadObject(
+  key: string,
+  options?: Options
+): Promise<null | Object> {
+  const jsonValue = await loadString(key, options);
   if (!jsonValue) return null;
   try {
     const objectValue = JSON.parse(jsonValue);
@@ -75,7 +100,7 @@ export async function loadObject(key, authenticationPrompt) {
   return null;
 }
 
-export async function remove(key) {
+export async function remove(key: string): Promise<void> {
   try {
     await resetInternetCredentials(key);
     logger.log(`Keychain: removed value for key: ${key}`);
@@ -87,10 +112,12 @@ export async function remove(key) {
   }
 }
 
-export async function loadAllKeys(authenticationPrompt) {
+async function loadAllKeys(): Promise<null | UserCredentials[]> {
   try {
-    const { results } = await getAllInternetCredentials(authenticationPrompt);
-    return results;
+    const response = await getAllInternetCredentials();
+    if (response) {
+      return response.results;
+    }
   } catch (err) {
     logger.sentry(`Keychain: failed to loadAllKeys error: ${err}`);
     captureException(err);
@@ -98,8 +125,8 @@ export async function loadAllKeys(authenticationPrompt) {
   return null;
 }
 
-export async function getAllKeysAnonymized() {
-  const data = {};
+export async function getAllKeysAnonymized(): Promise<null | AnonymousKeyData> {
+  const data: AnonymousKeyData = {};
   const results = await loadAllKeys();
   forEach(results, result => {
     data[result?.username] = {
@@ -111,12 +138,12 @@ export async function getAllKeysAnonymized() {
   return data;
 }
 
-export async function loadAllKeysOnly(authenticationPrompt) {
+export async function loadAllKeysOnly(): Promise<null | string[]> {
   try {
-    const { results } = await getAllInternetCredentialsKeys(
-      authenticationPrompt
-    );
-    return results;
+    const response = await getAllInternetCredentialsKeys();
+    if (response) {
+      return response.results;
+    }
   } catch (err) {
     logger.log(`Keychain: failed to loadAllKeys error: ${err}`);
     captureException(err);
@@ -124,7 +151,7 @@ export async function loadAllKeysOnly(authenticationPrompt) {
   return null;
 }
 
-export async function hasKey(key) {
+export async function hasKey(key: string) {
   try {
     const result = await hasInternetCredentials(key);
     return result;

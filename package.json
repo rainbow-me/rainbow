@@ -20,9 +20,10 @@
     "install-pods-no-flipper": "cd ios && bundle exec env SKIP_FLIPPER=true pod install --repo-update && cd ..",
     "install-bundle": "cd ios && bundle install && cd ..",
     "ios": "react-native run-ios --simulator='iPhone 11'",
-    "lint": "yarn lint:js && yarn lint:css",
+    "lint": "yarn lint:ts && yarn lint:js && yarn lint:css",
     "lint:css": "stylelint './src/**/*.js'",
-    "lint:js": "eslint --ext '.js,.jsx' .",
+    "lint:js": "eslint --ext '.ts,.js,.jsx' .",
+    "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "postinstall": "./scripts/postinstall.sh",
     "update-env": "curl -H 'Authorization: token '$GITHUB_TOKEN -H 'Accept: application/vnd.github.v3.raw' -O  -L https://api.github.com/repos/rainbow-me/rainbow-env/contents/dotenv && rm -f .env && mv dotenv .env"
   },
@@ -32,8 +33,8 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx}": [
-      "eslint --ext '.js,.jsx' -c .eslintrc.json",
+    "*.{js,jsx,ts}": [
+      "eslint --ext '.js,.jsx,.ts' -c .eslintrc.json",
       "stylelint"
     ]
   },
@@ -60,6 +61,8 @@
     "@segment/analytics-react-native": "1.1.0",
     "@sentry/react-native": "1.4.5",
     "@tradle/react-native-http": "^2.0.1",
+    "@types/i18n-js": "^3.0.3",
+    "@types/lodash": "^4.14.159",
     "@uniswap/sdk": "^1.0.0-beta.4",
     "@walletconnect/client": "1.1.0",
     "@walletconnect/utils": "1.1.0",
@@ -192,6 +195,10 @@
     "@babel/plugin-transform-react-inline-elements": "^7.9.0",
     "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/runtime": "^7.7.2",
+    "@types/jest": "^26.0.9",
+    "@types/react": "^16.9.44",
+    "@types/react-native": "^0.63.4",
+    "@types/react-test-renderer": "^16.9.3",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^24.9.0",
@@ -206,7 +213,6 @@
     "eslint": "^6.8.0",
     "eslint-config-satya164": "^3.1.6",
     "eslint-import-resolver-babel-module": "^5.1.2",
-    "eslint-plugin-import": "^2.20.2",
     "jest": "^24.9.0",
     "metro-react-native-babel-preset": "^0.59.0",
     "react-native-bundle-visualizer": "^2.0.1",
@@ -217,12 +223,12 @@
     "schedule": "0.5.0",
     "stylelint-config-react-native-styled-components": "^0.3.0",
     "stylelint-processor-styled-components": "^1.10.0",
-    "stylelint-react-native": "^2.2.0"
+    "stylelint-react-native": "^2.2.0",
+    "typescript": "^3.9.7"
   },
   "resolutions": {
     "**/bl": "0.9.5",
     "**/elliptic": "6.5.3",
-    "**/eslint-plugin-import": "2.20.2",
     "**/logkitty": "0.7.1",
     "**/minimist": "1.2.3",
     "**/resolve": "1.8.1",
@@ -231,6 +237,13 @@
   },
   "jest": {
     "preset": "react-native",
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
     "setupFiles": [
       "./config/test/jest-setup.js"
     ]
