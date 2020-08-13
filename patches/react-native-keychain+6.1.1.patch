@@ -97,7 +97,7 @@ index 98e45fe..937e179 100644
                    resolver:(RCTPromiseResolveBlock)resolve
                    rejecter:(RCTPromiseRejectBlock)reject)
 diff --git a/node_modules/react-native-keychain/index.js b/node_modules/react-native-keychain/index.js
-index b1a11f2..f005fe2 100644
+index b1a11f2..ebcff58 100644
 --- a/node_modules/react-native-keychain/index.js
 +++ b/node_modules/react-native-keychain/index.js
 @@ -102,6 +102,10 @@ export type Result = {|
@@ -133,7 +133,7 @@ index b1a11f2..f005fe2 100644
 ++ */
 +export function getAllInternetCredentialsKeys(
 +  options?: Options
-+): Promise<false | AllCredentials> {
++): Promise<false | String[]> {
 +  return RNKeychainManager.getAllInternetCredentialsKeys(options);
 +}
 +
