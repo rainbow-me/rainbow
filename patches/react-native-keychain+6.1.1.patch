@@ -97,10 +97,10 @@ index 98e45fe..937e179 100644
                    resolver:(RCTPromiseResolveBlock)resolve
                    rejecter:(RCTPromiseRejectBlock)reject)
 diff --git a/node_modules/react-native-keychain/index.js b/node_modules/react-native-keychain/index.js
-index b1a11f2..ebcff58 100644
+index b1a11f2..77cd403 100644
 --- a/node_modules/react-native-keychain/index.js
 +++ b/node_modules/react-native-keychain/index.js
-@@ -102,6 +102,10 @@ export type Result = {|
+@@ -102,6 +102,14 @@ export type Result = {|
    +storage: string,
  |};
  
@@ -108,10 +108,14 @@ index b1a11f2..ebcff58 100644
 +  +results: UserCredentials[];
 +|};
 +
++export type AllCredentialsKeys = {|
++  +results: string[];
++|};
++
  export type UserCredentials = {|
    +username: string,
    +password: string,
-@@ -256,6 +260,29 @@ export function getInternetCredentials(
+@@ -256,6 +264,29 @@ export function getInternetCredentials(
    );
  }
  
@@ -133,7 +137,7 @@ index b1a11f2..ebcff58 100644
 ++ */
 +export function getAllInternetCredentialsKeys(
 +  options?: Options
-+): Promise<false | String[]> {
++): Promise<false | AllCredentialsKeys> {
 +  return RNKeychainManager.getAllInternetCredentialsKeys(options);
 +}
 +
@@ -142,29 +146,31 @@ index b1a11f2..ebcff58 100644
   * Deletes all internet password keychain entries for `server`.
   * @param {string} server URL to server.
 diff --git a/node_modules/react-native-keychain/typings/react-native-keychain.d.ts b/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
-index e813ef0..107cb84 100644
+index e813ef0..f8d0ff3 100644
 --- a/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
 +++ b/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
-@@ -6,7 +6,11 @@ declare module 'react-native-keychain' {
- 
-   export interface UserCredentials extends Result {
-     username: string;
--    password: string;
-+    password?: string;
-+  }
-+
-+  export interface AllCredentials {
-+    results: UserCredentials[];
+@@ -9,6 +9,14 @@ declare module 'react-native-keychain' {
+     password: string;
    }
  
++  export interface AllCredentials {
++    results: UserCredentials[];
++  }
++
++  export interface AllCredentialsKeys {
++    results: string[];
++  }
++
    export interface SharedWebCredentials extends UserCredentials {
-@@ -109,6 +113,10 @@ declare module 'react-native-keychain' {
+     server: string;
+   }
+@@ -109,6 +117,10 @@ declare module 'react-native-keychain' {
      options?: Options
    ): Promise<false | UserCredentials>;
  
 +  function getAllInternetCredentials(): Promise<false | AllCredentials>;
 +
-+  function getAllInternetCredentialsKeys(): Promise<false | AllCredentials>;
++  function getAllInternetCredentialsKeys(): Promise<false | AllCredentialsKeys>;
 +
    function resetInternetCredentials(
      server: string,

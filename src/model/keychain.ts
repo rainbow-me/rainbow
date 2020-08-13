@@ -1,6 +1,7 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { forEach, isNil } from 'lodash';
 import {
+  AllCredentialsKeys,
   getAllInternetCredentials,
   getAllInternetCredentialsKeys,
   getInternetCredentials,
@@ -60,7 +61,7 @@ export async function loadString(
     const credentials = await getInternetCredentials(key, options);
     if (credentials) {
       logger.log(`Keychain: loaded string for key: ${key}`);
-      return credentials?.password || null;
+      return credentials.password;
     }
     logger.sentry(`Keychain: string does not exist for key: ${key}`);
   } catch (err) {
@@ -130,7 +131,7 @@ export async function getAllKeysAnonymized(): Promise<null | AnonymousKeyData> {
   const results = await loadAllKeys();
   forEach(results, result => {
     data[result?.username] = {
-      length: result?.password?.length || 0,
+      length: result?.password?.length,
       nil: isNil(result?.password),
       type: typeof result?.password,
     };
@@ -138,7 +139,7 @@ export async function getAllKeysAnonymized(): Promise<null | AnonymousKeyData> {
   return data;
 }
 
-export async function loadAllKeysOnly(): Promise<null | String[]> {
+export async function loadAllKeysOnly(): Promise<null | AllCredentialsKeys> {
   try {
     const response = await getAllInternetCredentialsKeys();
     if (response) {
