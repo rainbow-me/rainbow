@@ -131,20 +131,22 @@ index b1a11f2..6a055c2 100644
   * Deletes all internet password keychain entries for `server`.
   * @param {string} server URL to server.
 diff --git a/node_modules/react-native-keychain/typings/react-native-keychain.d.ts b/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
-index e813ef0..5253282 100644
+index e813ef0..107cb84 100644
 --- a/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
 +++ b/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
-@@ -9,6 +9,10 @@ declare module 'react-native-keychain' {
-     password: string;
-   }
+@@ -6,7 +6,11 @@ declare module 'react-native-keychain' {
  
-+  export interface AllCredentials {
-+    results: UserCredentials[];
+   export interface UserCredentials extends Result {
+     username: string;
+-    password: string;
++    password?: string;
 +  }
 +
-   export interface SharedWebCredentials extends UserCredentials {
-     server: string;
++  export interface AllCredentials {
++    results: UserCredentials[];
    }
+ 
+   export interface SharedWebCredentials extends UserCredentials {
 @@ -109,6 +113,10 @@ declare module 'react-native-keychain' {
      options?: Options
    ): Promise<false | UserCredentials>;
