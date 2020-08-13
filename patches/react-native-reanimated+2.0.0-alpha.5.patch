@@ -1,10 +1,28 @@
+diff --git a/node_modules/react-native-reanimated/ios/native/RENativeMethods.mm b/node_modules/react-native-reanimated/ios/native/RENativeMethods.mm
+index cc57813..00c291e 100644
+--- a/node_modules/react-native-reanimated/ios/native/RENativeMethods.mm
++++ b/node_modules/react-native-reanimated/ios/native/RENativeMethods.mm
+@@ -33,9 +33,12 @@
+   return result;
+ }
+
+-
++NSString *eventDispatcherKey = @"eventDispatcher";
+ void scrollTo(int scrollViewTag, RCTUIManager *uiManager, double x, double y, bool animated) {
+   UIView *view = [uiManager viewForReactTag:@(scrollViewTag)];
+   RCTScrollView *scrollView = (RCTScrollView *) view;
++  RCTEventDispatcher* oldEventDispatcher = [scrollView valueForKey:eventDispatcherKey];
++  [scrollView setValue:nil forKey:eventDispatcherKey];
+   [scrollView scrollToOffset:(CGPoint){(CGFloat)x, (CGFloat)y} animated:animated];
++  [scrollView setValue:oldEventDispatcher forKey:eventDispatcherKey];
+ }
 diff --git a/node_modules/react-native-reanimated/src/Animated.js b/node_modules/react-native-reanimated/src/Animated.js
 index 27de367..a5e758a 100644
 --- a/node_modules/react-native-reanimated/src/Animated.js
 +++ b/node_modules/react-native-reanimated/src/Animated.js
 @@ -74,7 +74,7 @@ export * from './derived';
  export * from './reanimated2';
- 
+
  export {
 -  EasingNode,
 +  EasingNode as Easing,
@@ -32,7 +50,7 @@ index 48a3c76..0723069 100644
 @@ -235,7 +235,7 @@ function inOut(easing) {
    };
  }
- 
+
 -export const Easing = {
 +export const NewEasing = {
    linear,
@@ -50,7 +68,7 @@ index c14ec0b..ef6bab6 100644
        const CANCELLED = 3;
        const ACTIVE = 4;
        const END = 5;
- 
+
 -      if (event.oldState === UNDETERMINED && handlers.onStart) {
 +      if (
 +        (event.oldState === UNDETERMINED || event.oldState === END) &&
@@ -87,9 +105,9 @@ index c433775..d01f3a4 100644
  /* global _WORKLET */
 -import { Easing } from './Easing';
 +import { NewEasing as Easing } from './Easing';
- 
+
  let IN_STYLE_UPDATER = false;
- 
+
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/interpolation.js b/node_modules/react-native-reanimated/src/reanimated2/interpolation.js
 index fc43c60..920eaa9 100644
 --- a/node_modules/react-native-reanimated/src/reanimated2/interpolation.js
@@ -97,7 +115,7 @@ index fc43c60..920eaa9 100644
 @@ -28,7 +28,7 @@ function internalInterpolate(x, l, r, ll, rr, type) {
    return val;
  }
- 
+
 -export function interpolate(x, input, output, type) {
 +export function newInterpolate(x, input, output, type) {
    'worklet';
