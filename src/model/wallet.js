@@ -865,6 +865,7 @@ export async function backupWalletToCloud(password, wallet) {
 
 export async function addWalletToCloudBackup(password, wallet, filename) {
   const backup = await getDataFromCloud(password, filename);
+  if (!backup) return null;
 
   const now = Date.now();
 
