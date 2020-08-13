@@ -138,7 +138,7 @@ export async function getAllKeysAnonymized(): Promise<null | AnonymousKeyData> {
   return data;
 }
 
-export async function loadAllKeysOnly(): Promise<null | UserCredentials[]> {
+export async function loadAllKeysOnly(): Promise<null | String[]> {
   try {
     const response = await getAllInternetCredentialsKeys();
     if (response) {
