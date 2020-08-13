@@ -249,6 +249,7 @@ export default function ChartProvider({ data, children, softMargin = 30 }) {
     let toValue = currData.value;
     let res;
     let smoothing;
+    let strategy = currData.stategy;
     if (progress.value !== 1) {
       const numOfPoints = Math.round(
         fromValue.length +
@@ -301,7 +302,7 @@ export default function ChartProvider({ data, children, softMargin = 30 }) {
     }
 
     if (smoothing !== 0) {
-      return svgBezierPath(res, smoothing);
+      return svgBezierPath(res, smoothing, strategy);
     }
 
     return res
