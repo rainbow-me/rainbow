@@ -108,7 +108,8 @@ export async function getDataFromCloud(backupPassword, filename = null) {
     captureException(new Error('Error getting encrypted data!'));
     return null;
   } catch (e) {
-    logger.error(e);
+    logger.sentry('Error at getDataFromCloud');
+    captureException(e);
     return null;
   }
 }
