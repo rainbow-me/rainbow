@@ -1,4 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { captureException } from '@sentry/react-native';
 import React, {
   useCallback,
   useContext,
@@ -93,25 +94,29 @@ const BackupSheet = () => {
         });
         setImmediate(jumpToLong);
       } else {
-        await dispatch(
-          setIsWalletLoading(walletLoadingStates.BACKING_UP_WALLET)
-        );
+        dispatch(setIsWalletLoading(walletLoadingStates.BACKING_UP_WALLET));
         // We have the password and we need to add it to an existing backup
-        const backupFile = await addWalletToCloudBackup(
-          password,
-          wallets[walletId],
-          latestBackup
-        );
-        if (backupFile) {
-          await dispatch(
-            setWalletBackedUp(walletId, WalletBackupTypes.cloud, backupFile)
+        try {
+          const backupFile = await addWalletToCloudBackup(
+            password,
+            wallets[walletId],
+            latestBackup
           );
-          logger.log('BackupSheet:: backup saved everywhere!');
-          goBack();
-          setTimeout(() => {
-            Alert.alert('Your wallet has been backed up succesfully!');
-          }, 1000);
-        } else {
+          if (backupFile) {
+            await dispatch(
+              setWalletBackedUp(walletId, WalletBackupTypes.cloud, backupFile)
+            );
+            logger.log('BackupSheet:: backup saved everywhere!');
+            goBack();
+            setTimeout(() => {
+              Alert.alert('Your wallet has been backed up succesfully!');
+            }, 1000);
+          } else {
+            Alert.alert('Error while trying to backup');
+          }
+        } catch (e) {
+          logger.sentry('error while trying to add wallet to icloud backup');
+          captureException(e);
           Alert.alert('Error while trying to backup');
         }
       }
@@ -152,11 +157,13 @@ const BackupSheet = () => {
 
   const onAlreadyBackedUp = useCallback(async () => {
     /// Flag all the wallets as backed up manually
-    Object.keys(wallets).forEach(async walletId => {
-      if (wallets[walletId].type !== WalletTypes.readOnly) {
-        await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.manual));
-      }
-    });
+    await Promise.all(
+      Object.keys(wallets).map(async walletId => {
+        if (wallets[walletId].type !== WalletTypes.readOnly) {
+          await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.manual));
+        }
+      })
+    );
     await saveUserBackupState(BackupStateTypes.done);
     goBack();
   }, [dispatch, goBack, wallets]);

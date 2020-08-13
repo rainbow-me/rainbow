@@ -15,9 +15,11 @@ export async function deleteAllBackups() {
     scope: 'hidden',
     targetPath: REMOTE_BACKUP_WALLET_DIR,
   });
-  backups.files.forEach(async file => {
-    await RNCloudFs.deleteFromCloud(file);
-  });
+  await Promise.all(
+    backups.files.map(async file => {
+      await RNCloudFs.deleteFromCloud(file);
+    })
+  );
 }
 
 export async function encryptAndSaveDataToCloud(data, password, filename) {
