@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import WalletTypes from '../helpers/walletTypes';
 import { findLatestBackUp } from '../model/wallet';
@@ -12,7 +13,9 @@ export default function useWallets() {
     })
   );
 
-  const latestBackup = findLatestBackUp(wallets) || false;
+  const latestBackup = useMemo(() => {
+    return findLatestBackUp(wallets) || false;
+  }, [wallets]);
 
   return {
     isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
