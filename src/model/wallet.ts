@@ -140,6 +140,13 @@ interface SeedPhraseData {
   version: string;
 }
 
+interface MigratedSecretsResult {
+  hdnode: undefined | HDNode.HDNode;
+  privateKey: EthereumPrivateKey;
+  seedphrase: EthereumWalletSeed;
+  type: EthereumWalletType;
+}
+
 export const seedPhraseKey = 'rainbowSeedPhrase';
 export const privateKeyKey = 'rainbowPrivateKey';
 export const addressKey = 'rainbowAddressKey';
@@ -252,7 +259,7 @@ export const signTransaction = async ({
 };
 
 export const signMessage = async (
-  message: Arrayish | Hexable,
+  message: Arrayish | Hexable | string,
   authenticationPrompt = lang.t('wallet.authenticate.please')
 ): Promise<null | string> => {
   try {
@@ -505,22 +512,17 @@ export const createWallet = async (
     if (isImported) {
       // Checking if the generated account already exists and is visible
       logger.sentry('[createWallet] - isImported >> true');
-      let alreadyExistingWallet = null;
-      if (wallet) {
-        alreadyExistingWallet = find(
-          allWallets,
-          (someWallet: RainbowWallet) => {
-            return find(
-              someWallet.addresses,
-              account =>
-                toChecksumAddress(account.address) ===
-                  toChecksumAddress(wallet.address) && account.visible
-            )
-              ? true
-              : false;
-          }
-        );
-      }
+      const alreadyExistingWallet = find(
+        allWallets,
+        (someWallet: RainbowWallet) => {
+          return !!find(
+            someWallet.addresses,
+            account =>
+              toChecksumAddress(account.address) ===
+                toChecksumAddress(wallet.address) && account.visible
+          );
+        }
+      );
 
       existingWalletId = alreadyExistingWallet?.id;
 
@@ -618,7 +620,7 @@ export const createWallet = async (
         if (discoveredAccount && discoveredWalletId) {
           if (discoveredAccount.visible) {
             color = discoveredAccount.color;
-            label = discoveredAccount.label ?? discoveredAccount.label;
+            label = discoveredAccount.label ?? '';
           }
           // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete allWallets[discoveredWalletId];
@@ -888,7 +890,7 @@ export const generateAccount = async (
   }
 };
 
-const migrateSecrets = async () => {
+const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
   try {
     logger.sentry('migrating secrets!');
     const seedphrase = await oldLoadSeedPhrase();
@@ -934,7 +936,7 @@ const migrateSecrets = async () => {
     }
 
     if (!existingAccount) {
-      return;
+      return null;
     }
 
     // Check that wasn't migrated already!
@@ -977,6 +979,7 @@ const migrateSecrets = async () => {
   } catch (e) {
     logger.sentry('Error while migrating secrets');
     captureException(e);
+    return null;
   }
 };
 
