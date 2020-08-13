@@ -226,22 +226,12 @@ const AlreadyBackedUpView = () => {
             <ButtonPressAnimation onPress={onFooterAction}>
               <Text
                 align="center"
-                color={
-                  walletStatus !== WalletBackupStatus.CLOUD_BACKUP
-                    ? colors.appleBlue
-                    : colors.red
-                }
+                color={colors.appleBlue}
                 letterSpacing="roundedMedium"
-                size={
-                  walletStatus !== WalletBackupStatus.CLOUD_BACKUP
-                    ? 'large'
-                    : 'lmedium'
-                }
+                size="large"
                 weight="semibold"
               >
-                {walletStatus !== WalletBackupStatus.CLOUD_BACKUP
-                  ? `􀙶 Back up to iCloud`
-                  : `􀈒 Delete iCloud backup`}
+                􀙶 Back up to iCloud
               </Text>
             </ButtonPressAnimation>
           </Centered>
