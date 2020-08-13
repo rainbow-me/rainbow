@@ -105,7 +105,7 @@ export default function ChartWrapper({
           chartTimeSharedValue={chartTimeSharedValue}
           showChart={showChart}
         />
-        <ChartContainer>
+        <ChartContainer showChart={showChart}>
           {showChart && (
             <>
               <Labels color={color} width={WIDTH} />
