@@ -111,8 +111,8 @@ export const walletsLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const walletsUpdate = wallets => dispatch => {
-  saveAllWallets(wallets);
+export const walletsUpdate = wallets => async dispatch => {
+  await saveAllWallets(wallets);
   dispatch({
     payload: wallets,
     type: WALLETS_UPDATE,
