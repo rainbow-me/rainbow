@@ -17,8 +17,6 @@ import BackupIcloudStep from '../components/backup/BackupIcloudStep';
 import BackupManualStep from '../components/backup/BackupManualStep';
 import LoadingOverlay from '../components/modal/LoadingOverlay';
 import { Sheet, SlackSheet } from '../components/sheet';
-import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
-import BackupStateTypes from '../helpers/backupStateTypes';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import walletLoadingStates from '../helpers/walletLoadingStates';
 import { useWallets } from '../hooks';
@@ -161,7 +159,6 @@ const BackupSheet = () => {
   const onAlreadyBackedUp = useCallback(async () => {
     /// Flag all the wallets as backed up manually
     await dispatch(setAllWalletsBackedUpManually());
-    await saveUserBackupState(BackupStateTypes.done);
     goBack();
   }, [dispatch, goBack]);
 
