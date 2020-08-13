@@ -3,7 +3,7 @@ import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { isValidAddress, toBuffer } from 'ethereumjs-util';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { find, findKey, get, isEmpty } from 'lodash';
+import { find, findKey, get, isEmpty, keys } from 'lodash';
 import { Alert } from 'react-native';
 import { ACCESSIBLE } from 'react-native-keychain';
 import {
@@ -879,21 +879,32 @@ export async function addWalletToCloudBackup(password, wallet, filename) {
   return encryptAndSaveDataToCloud(backup, password, filename);
 }
 
+export async function findLatestBackUp(wallets) {
+  let latestBackup = null;
+  let filename = null;
+
+  keys(wallets).forEach(key => {
+    const wallet = wallets[key];
+    // Check if there's a wallet backed up
+    if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
+      // If there is one, let's grab the latest backup
+      if (!latestBackup || wallet.backupDate > latestBackup) {
+        filename = wallet.backupFile;
+        latestBackup = wallet.backupDate;
+      }
+    }
+  });
+
+  return filename;
+}
+
 export async function restoreCloudBackup(password, userData) {
   try {
-    let latestBackup = null;
-    let filename = null;
-    Object.keys(userData.wallets).forEach(key => {
-      const wallet = userData.wallets[key];
-      // Check if there's a wallet backed up
-      if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
-        // If there is one, let's grab the latest backup
-        if (!latestBackup || wallet.backupDate > latestBackup) {
-          filename = wallet.backupFile;
-          latestBackup = wallet.backupDate;
-        }
-      }
-    });
+    const filename = findLatestBackUp(userData?.wallets);
+
+    if (!filename) {
+      return false;
+    }
 
     // 2- download that backup
     const data = await getDataFromCloud(password, filename);
