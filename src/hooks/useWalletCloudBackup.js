@@ -20,10 +20,6 @@ export default function useWalletCloudBackup({
   const { goBack } = useNavigation();
 
   const walletCloudBackup = useCallback(async () => {
-    let selectedWalletId =
-      walletId ||
-      Object.keys(wallets).find(key => wallets[key].imported === false);
-
     try {
       dispatch(setIsWalletLoading(walletLoadingStates.BACKING_UP_WALLET));
 
@@ -31,22 +27,19 @@ export default function useWalletCloudBackup({
       if (!latestBackup) {
         logger.log(
           'walletCloudBackup:: backing up to icloud',
-          wallets[selectedWalletId]
+          wallets[walletId]
         );
 
-        backupFile = await backupWalletToCloud(
-          password,
-          wallets[selectedWalletId]
-        );
+        backupFile = await backupWalletToCloud(password, wallets[walletId]);
       } else {
         logger.log(
           'walletCloudBackup:: adding to icloud backup',
-          wallets[selectedWalletId],
+          wallets[walletId],
           latestBackup
         );
         backupFile = await addWalletToCloudBackup(
           password,
-          wallets[selectedWalletId],
+          wallets[walletId],
           latestBackup
         );
       }
@@ -57,11 +50,7 @@ export default function useWalletCloudBackup({
 
         logger.log('walletCloudBackup:: backup completed!', backupFile);
         await dispatch(
-          setWalletBackedUp(
-            selectedWalletId,
-            walletBackupTypes.cloud,
-            backupFile
-          )
+          setWalletBackedUp(walletId, walletBackupTypes.cloud, backupFile)
         );
         logger.log('walletCloudBackup:: backup saved everywhere!');
         goBack();
