@@ -922,6 +922,7 @@ export async function restoreCloudBackup(password, userData) {
 
     return keychain.restoreBackupIntoKeychain(dataToRestore);
   } catch (e) {
-    logger.error('Error while restoring back up', e);
+    logger.sentry('Error while restoring back up');
+    captureException(e);
   }
 }
