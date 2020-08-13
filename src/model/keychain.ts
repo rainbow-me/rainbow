@@ -1,7 +1,6 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { forEach, isNil } from 'lodash';
 import {
-  AllCredentialsKeys,
   getAllInternetCredentials,
   getAllInternetCredentialsKeys,
   getInternetCredentials,
@@ -139,7 +138,7 @@ export async function getAllKeysAnonymized(): Promise<null | AnonymousKeyData> {
   return data;
 }
 
-export async function loadAllKeysOnly(): Promise<null | AllCredentialsKeys> {
+export async function loadAllKeysOnly(): Promise<null | String[]> {
   try {
     const response = await getAllInternetCredentialsKeys();
     if (response) {
