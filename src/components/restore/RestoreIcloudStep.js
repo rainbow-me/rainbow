@@ -144,7 +144,6 @@ const RestoreIcloudStep = ({ userData }) => {
   const { accountAddress } = useAccountSettings();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
-  const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
   const [label, setLabel] = useState('􀎽 Confirm Backup');
   const passwordRef = useRef();
@@ -173,14 +172,6 @@ const RestoreIcloudStep = ({ userData }) => {
     fetchPasswordIfPossible();
   }, []);
 
-  const onPasswordFocus = useCallback(() => {
-    setPasswordFocused(true);
-  }, []);
-
-  const onPasswordBlur = useCallback(() => {
-    setPasswordFocused(false);
-  }, []);
-
   useEffect(() => {
     let newLabel = '';
     let passwordIsValid = false;
@@ -197,7 +188,7 @@ const RestoreIcloudStep = ({ userData }) => {
 
     setValidPassword(passwordIsValid);
     setLabel(newLabel);
-  }, [incorrectPassword, password, passwordFocused]);
+  }, [incorrectPassword, password]);
 
   const onPasswordChange = useCallback(
     ({ nativeEvent: { text: inputText } }) => {
@@ -209,7 +200,7 @@ const RestoreIcloudStep = ({ userData }) => {
 
   const onSubmit = useCallback(async () => {
     try {
-      await dispatch(setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET));
+      dispatch(setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET));
       const success = await restoreCloudBackup(password, userData);
       if (success) {
         // Store it in the keychain in case it was missing
@@ -225,14 +216,14 @@ const RestoreIcloudStep = ({ userData }) => {
         goBack();
         InteractionManager.runAfterInteractions(async () => {
           replace(Routes.SWIPE_LAYOUT);
-          await dispatch(setIsWalletLoading(null));
+          dispatch(setIsWalletLoading(null));
         });
       } else {
         setIncorrectPassword(true);
-        await dispatch(setIsWalletLoading(null));
+        dispatch(setIsWalletLoading(null));
       }
     } catch (e) {
-      await dispatch(setIsWalletLoading(null));
+      dispatch(setIsWalletLoading(null));
       Alert.alert('Error while restoring backup');
     }
   }, [
@@ -268,9 +259,7 @@ const RestoreIcloudStep = ({ userData }) => {
             <Shadow>
               <PasswordInput
                 autoFocus
-                onBlur={onPasswordBlur}
                 onChange={onPasswordChange}
-                onFocus={onPasswordFocus}
                 onSubmitEditing={onPasswordSubmit}
                 placeholder="Backup Password"
                 ref={passwordRef}
