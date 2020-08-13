@@ -1,14 +1,45 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { PanGestureHandler, ScrollView } from 'react-native-gesture-handler';
 import Animated, {
   scrollTo,
+  useAnimatedGestureHandler,
   useAnimatedRef,
   useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
 } from 'react-native-reanimated';
 import useHideSplashScreen from './helpers/hideSplashScreen';
 
-function YetAnotherBottomSheetPortal(props) {
-  return <Animated.View {...props} />;
+const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
+
+function YetAnotherBottomSheetPortal({ style: propStyle, ...props }) {
+  const translateY = useSharedValue(0);
+
+  const onGestureEvent = useAnimatedGestureHandler({
+    onActive: (event, ctx) => {
+      (translateY.value = ctx.offsetY + event.translationY), 0;
+    },
+    onStart: (event, ctx) => {
+      ctx.offsetY = translateY.value;
+    },
+  });
+
+  const style = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: translateY.value }],
+    };
+  });
+
+  return (
+    <PanGestureHandler
+      {...{ onGestureEvent }}
+      minDist={0}
+      simultaneousHandlers="AnimatedScrollViewYABS"
+    >
+      <Animated.View {...props} style={[propStyle, style]} />
+    </PanGestureHandler>
+  );
 }
 
 function Example() {
@@ -37,10 +68,8 @@ export default function YetAnotherBottomSheetExample() {
   const aref = useAnimatedRef();
   const hideSplashScreen = useHideSplashScreen();
   const scrollHandler = useAnimatedScrollHandler({
-    onScroll: event => {
-      if (event.contentOffset.y > 150) {
-        scrollTo(aref, 0, 150, false);
-      }
+    onScroll: () => {
+      scrollTo(aref, 0, 0, false);
     },
   });
 
@@ -50,11 +79,19 @@ export default function YetAnotherBottomSheetExample() {
       <YetAnotherBottomSheetPortal
         style={[
           StyleSheet.absoluteFillObject,
-          { backgroundColor: 'blue', bottom: 30, top: 40 },
+          {
+            backgroundColor: 'blue',
+            bottom: 30,
+            height: 400,
+            paddingTop: 40,
+            top: 40,
+          },
         ]}
+        sv={aref}
       >
-        <Animated.ScrollView
+        <AnimatedScrollView
           bounces={false}
+          id="AnimatedScrollViewYABS"
           onScroll={scrollHandler}
           ref={aref}
           scrollEventThrottle={16}
@@ -64,7 +101,7 @@ export default function YetAnotherBottomSheetExample() {
           }}
         >
           <Example />
-        </Animated.ScrollView>
+        </AnimatedScrollView>
       </YetAnotherBottomSheetPortal>
     </View>
   );
