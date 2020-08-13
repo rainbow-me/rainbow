@@ -21,13 +21,16 @@ import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import BackupStateTypes from '../helpers/backupStateTypes';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import walletLoadingStates from '../helpers/walletLoadingStates';
-import WalletTypes from '../helpers/walletTypes';
 import { useWallets } from '../hooks';
 import { fetchBackupPassword } from '../model/keychain';
 import { addWalletToCloudBackup } from '../model/wallet';
 import { sheetVerticalOffset } from '../navigation/effects';
 import { usePortal } from '../react-native-cool-modals/Portal';
-import { setIsWalletLoading, setWalletBackedUp } from '../redux/wallets';
+import {
+  setAllWalletsBackedUpManually,
+  setIsWalletLoading,
+  setWalletBackedUp,
+} from '../redux/wallets';
 import { deviceUtils, logger } from '../utils';
 
 import Routes from '@rainbow-me/routes';
@@ -157,16 +160,10 @@ const BackupSheet = () => {
 
   const onAlreadyBackedUp = useCallback(async () => {
     /// Flag all the wallets as backed up manually
-    await Promise.all(
-      Object.keys(wallets).map(async walletId => {
-        if (wallets[walletId].type !== WalletTypes.readOnly) {
-          await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.manual));
-        }
-      })
-    );
+    await dispatch(setAllWalletsBackedUpManually());
     await saveUserBackupState(BackupStateTypes.done);
     goBack();
-  }, [dispatch, goBack, wallets]);
+  }, [dispatch, goBack]);
 
   const onBackupNow = useCallback(async () => {
     goBack();

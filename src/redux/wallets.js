@@ -1,6 +1,6 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { filter, flatMap, get, keys, map, values } from 'lodash';
+import { filter, flatMap, get, keys, map, mapValues, values } from 'lodash';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import {
   saveKeychainIntegrityState,
@@ -166,6 +166,40 @@ export const setWalletBackedUp = (
       throw e;
     }
   }
+  await saveUserBackupState(BackupStateTypes.done);
+};
+
+export const setAllWalletsBackedUpManually = () => async (
+  dispatch,
+  getState
+) => {
+  const { wallets, selected } = getState().wallets;
+  const backupDate = Date.now();
+  let updateSelected = false;
+  const newWallets = mapValues(wallets, (wallet, walletId) => {
+    if (wallets.type !== WalletTypes.readOnly) {
+      if (selected.id === walletId) {
+        updateSelected = true;
+      }
+      const updatedWallet = { ...wallet };
+      updatedWallet.backedUp = true;
+      updatedWallet.backupType = WalletBackupTypes.manual;
+      updatedWallet.backupDate = backupDate;
+      return updatedWallet;
+    }
+    return wallet;
+  });
+
+  await dispatch(walletsUpdate(newWallets));
+  if (updateSelected) {
+    await dispatch(walletsSetSelected(newWallets[selected.id]));
+  }
+
+  // Reset the loading state 1 second later
+  setTimeout(() => {
+    dispatch(setIsWalletLoading(null));
+  }, 1000);
+
   await saveUserBackupState(BackupStateTypes.done);
 };
 
