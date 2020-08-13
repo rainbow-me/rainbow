@@ -105,7 +105,7 @@ export default function ProfileMasthead({
       return;
     }
     navigate(Routes.RECEIVE_MODAL);
-  }, [navigate, selectedWallet?.damaged]);
+  }, [navigate, selectedWallet]);
 
   const handlePressAddCash = useCallback(() => {
     if (selectedWallet?.damaged) {
@@ -116,7 +116,7 @@ export default function ProfileMasthead({
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-  }, [navigate, selectedWallet?.damaged]);
+  }, [navigate, selectedWallet]);
 
   const handlePressChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);

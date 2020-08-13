@@ -1,1 +1,1 @@
-export { default as BubbleSheet } from './BubbleSheet';
+export { default as BubbleSheet, BubbleSheetBorderRadius } from './BubbleSheet';
