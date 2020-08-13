@@ -7,7 +7,6 @@ import { checkKeychainIntegrity } from '../redux/wallets';
 import {
   getKeychainIntegrityState,
   getUserBackupState,
-  saveKeychainIntegrityState,
   saveUserBackupState,
 } from './localstorage/globalSettings';
 import Routes from '@rainbow-me/routes';
@@ -19,7 +18,6 @@ export const runKeychainIntegrityChecks = () => {
     const keychainIntegrityState = await getKeychainIntegrityState();
     if (!keychainIntegrityState) {
       await store.dispatch(checkKeychainIntegrity());
-      await saveKeychainIntegrityState('done');
     }
   }, 5000);
 };

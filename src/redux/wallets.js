@@ -2,7 +2,10 @@ import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { filter, flatMap, get, keys, map, values } from 'lodash';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
-import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
+import {
+  saveKeychainIntegrityState,
+  saveUserBackupState,
+} from '../handlers/localstorage/globalSettings';
 import {
   getWalletNames,
   saveWalletNames,
@@ -343,6 +346,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       captureMessage('Keychain Integrity is not OK');
     }
     logger.sentry('[KeychainIntegrityCheck]: check completed');
+    await saveKeychainIntegrityState('done');
   } catch (e) {
     logger.sentry('[KeychainIntegrityCheck]: error thrown', e);
     captureMessage('Error running keychain integrity checks');

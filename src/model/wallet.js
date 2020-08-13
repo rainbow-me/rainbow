@@ -581,7 +581,7 @@ export const getPrivateKey = async (
 };
 
 export const saveSeedPhrase = async (seedphrase, keychain_id = null) => {
-  let privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
+  const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
   const key = `${keychain_id}_${seedPhraseKey}`;
   const val = {
     id: keychain_id,
