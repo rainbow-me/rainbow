@@ -10,7 +10,7 @@ import useWallets from './useWallets';
 import logger from 'logger';
 
 export default function useWalletCloudBackup({
-  wallet_id,
+  walletId,
   password,
   latestBackup,
   onError,
@@ -21,7 +21,7 @@ export default function useWalletCloudBackup({
 
   const walletCloudBackup = useCallback(async () => {
     let selectedWalletId =
-      wallet_id ||
+      walletId ||
       Object.keys(wallets).find(key => wallets[key].imported === false);
 
     try {
@@ -71,7 +71,7 @@ export default function useWalletCloudBackup({
     } catch (e) {
       onError(e);
     }
-  }, [wallet_id, wallets, dispatch, latestBackup, password, goBack, onError]);
+  }, [walletId, wallets, dispatch, latestBackup, password, goBack, onError]);
 
   return walletCloudBackup;
 }

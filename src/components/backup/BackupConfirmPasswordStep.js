@@ -183,7 +183,7 @@ const BackupConfirmPasswordStep = () => {
         Alert.alert('Error while trying to backup');
       },
       password,
-      wallet_id: params?.walletId,
+      walletId: params?.walletId,
     });
   }, [dispatch, latestBackup, params?.walletId, password, walletCloudBackup]);
 

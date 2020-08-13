@@ -256,7 +256,7 @@ const BackupIcloudStep = () => {
         dispatch(setIsWalletLoading(null));
       },
       password,
-      wallet_id: params?.walletId,
+      walletId: params?.walletId,
     });
   }, [
     dispatch,
