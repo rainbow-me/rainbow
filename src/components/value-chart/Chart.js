@@ -32,7 +32,6 @@ const ChartContainer = styled.View`
 
 const Container = styled(Column)`
   padding-bottom: 30px;
-  overflow: hidden;
   width: 100%;
 `;
 
