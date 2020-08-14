@@ -504,7 +504,7 @@ export const createWallet = async (
     logger.sentry('[createWallet] - getAllWallets');
     const allWallets: AllRainbowWallets = get(
       allWalletsResult,
-      'allWallets',
+      'wallets',
       {}
     );
 
