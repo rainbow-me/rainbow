@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
-import { filter } from 'lodash';
+import { keys } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -24,7 +24,6 @@ import BackupStateTypes from '../helpers/backupStateTypes';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { isENSAddressFormat, isValidWallet } from '../helpers/validators';
 import walletLoadingStates from '../helpers/walletLoadingStates';
-import WalletTypes from '../helpers/walletTypes';
 import { getWallet } from '../model/wallet';
 import Navigation, { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/effects';
@@ -241,10 +240,7 @@ export default function ImportSeedPhraseSheet() {
     if (!wasImporting && isImporting) {
       startAnalyticsTimeout(async () => {
         const input = resolvedAddress ? resolvedAddress : seedPhrase.trim();
-        const previousWalletCount = filter(
-          wallets,
-          wallet => wallet.type !== WalletTypes.readOnly
-        ).length;
+        const previousWalletCount = keys(wallets).length;
 
         initializeWallet(input, color, name ? name : '')
           .then(success => {
