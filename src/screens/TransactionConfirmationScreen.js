@@ -1,7 +1,7 @@
+import { hexlify } from '@ethersproject/bytes';
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import BigNumber from 'bignumber.js';
-import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get, isEmpty, isNil, omit } from 'lodash';
 import React, {
@@ -17,7 +17,6 @@ import {
   TurboModuleRegistry,
   Vibration,
 } from 'react-native';
-
 import { isEmulatorSync } from 'react-native-device-info';
 import Animated, {
   useAnimatedStyle,
@@ -417,7 +416,9 @@ const TransactionConfirmationScreen = () => {
 
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(transactionCountNonce, web3TxnCount);
-    const nonce = ethers.utils.hexlify(maxTxnCount);
+    console.log('HI - about to hexlify maxTxnCount', maxTxnCount);
+    const nonce = hexlify(maxTxnCount);
+    console.log('HI - nonce', nonce);
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
     let txPayloadLatestNonce = {
       ...txPayload,
