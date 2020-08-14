@@ -1,4 +1,13 @@
-import { ethers } from 'ethers';
+import { getAddress } from '@ethersproject/address';
+import {
+  isValidMnemonic as ethersIsValidMnemonic,
+  hexlify,
+  isHexString as isEthersHexString,
+} from '@ethersproject/bytes';
+
+import { mnemonicToSeed as ethersMnemonicToSeed } from '@ethersproject/hdnode';
+import { JsonRpcProvider } from '@ethersproject/providers';
+import { parseEther } from '@ethersproject/units';
 import { get, replace, startsWith } from 'lodash';
 import { INFURA_PROJECT_ID, INFURA_PROJECT_ID_DEV } from 'react-native-dotenv';
 import AssetTypes from '../helpers/assetTypes';
@@ -17,7 +26,7 @@ const infuraUrl = `https://network.infura.io/v3/${infuraProjectId}`;
 /**
  * @desc web3 http instance
  */
-export let web3Provider = new ethers.providers.JsonRpcProvider(
+export let web3Provider = new JsonRpcProvider(
   replace(infuraUrl, 'network', NetworkTypes.mainnet)
 );
 
@@ -27,11 +36,9 @@ export let web3Provider = new ethers.providers.JsonRpcProvider(
  */
 export const web3SetHttpProvider = async network => {
   if (network.startsWith('http://')) {
-    web3Provider = new ethers.providers.JsonRpcProvider(network);
+    web3Provider = new JsonRpcProvider(network);
   } else {
-    web3Provider = new ethers.providers.JsonRpcProvider(
-      replace(infuraUrl, 'network', network)
-    );
+    web3Provider = new JsonRpcProvider(replace(infuraUrl, 'network', network));
   }
   return web3Provider.ready;
 };
@@ -50,7 +57,7 @@ export const getTransactionReceipt = txHash =>
  * @param {String} value
  * @return {Boolean}
  */
-export const isHexString = value => ethers.utils.isHexString(value);
+export const isHexString = value => isEthersHexString(value);
 
 export const isHexStringIgnorePrefix = value => {
   if (!value) return false;
@@ -62,16 +69,16 @@ export const isHexStringIgnorePrefix = value => {
 export const addHexPrefix = value =>
   startsWith(value, '0x') ? value : `0x${value}`;
 
-export const mnemonicToSeed = value =>
-  ethers.utils.HDNode.mnemonicToSeed(value);
+// TODO JIN - who is using this?
+export const mnemonicToSeed = value => ethersMnemonicToSeed(value);
 
 /**
  * @desc is valid mnemonic
  * @param {String} value
  * @return {Boolean}
  */
-export const isValidMnemonic = value =>
-  ethers.utils.HDNode.isValidMnemonic(value);
+// TODO JIN - who is using this?
+export const isValidMnemonic = value => ethersIsValidMnemonic(value);
 
 /**
  * @desc convert to checksum address
@@ -80,7 +87,7 @@ export const isValidMnemonic = value =>
  */
 export const toChecksumAddress = address => {
   try {
-    return ethers.utils.getAddress(address);
+    return getAddress(address);
   } catch (error) {
     return null;
   }
@@ -91,8 +98,8 @@ export const toChecksumAddress = address => {
  * @param  {String|Number} value
  * @return {String} hex value
  */
-export const toHex = value =>
-  ethers.utils.hexlify(ethers.utils.bigNumberify(value));
+// TODO JIN - gotta check where this is used
+export const toHex = value => hexlify(value);
 
 /**
  * @desc estimate gas limit
@@ -114,7 +121,7 @@ export const estimateGas = async estimateGasData => {
  * @return {String} value in wei
  */
 export const toWei = ether => {
-  const result = ethers.utils.parseEther(ether);
+  const result = parseEther(ether);
   return result.toString();
 };
 

@@ -1,5 +1,6 @@
+import { MaxUint256 } from '@ethersproject/constants';
+import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { ethers } from 'ethers';
 import { toHex, web3Provider } from '../handlers/web3';
 import { loadWallet } from '../model/wallet';
 import { ethUnits } from '../references';
@@ -9,10 +10,9 @@ import logger from 'logger';
 const estimateApproveWithExchange = async (spender, exchange) => {
   try {
     logger.sentry('exchange estimate approve', { exchange, spender });
-    const gasLimit = await exchange.estimate.approve(
-      spender,
-      ethers.constants.MaxUint256
-    );
+    console.log('HI - use the constant', MaxUint256);
+    const gasLimit = await exchange.estimate.approve(spender, MaxUint256);
+    console.log('HI - gas limit', gasLimit);
     return gasLimit ? gasLimit.toString() : ethUnits.basic_approval;
   } catch (error) {
     logger.sentry('error estimateApproveWithExchange');
@@ -22,7 +22,9 @@ const estimateApproveWithExchange = async (spender, exchange) => {
 };
 
 const estimateApprove = (tokenAddress, spender) => {
-  const exchange = new ethers.Contract(tokenAddress, erc20ABI, web3Provider);
+  console.log('HI - gonna make a contract', tokenAddress);
+  const exchange = new Contract(tokenAddress, erc20ABI, web3Provider);
+  console.log('HI - exchnage contract', exchange);
   return estimateApproveWithExchange(spender, exchange);
 };
 
@@ -35,15 +37,14 @@ const approve = async (
 ) => {
   const walletToUse = wallet || (await loadWallet());
   if (!walletToUse) return null;
-  const exchange = new ethers.Contract(tokenAddress, erc20ABI, walletToUse);
-  const approval = await exchange.approve(
-    spender,
-    ethers.constants.MaxUint256,
-    {
-      gasLimit: gasLimit ? toHex(gasLimit) : undefined,
-      gasPrice: gasPrice ? toHex(gasPrice) : undefined,
-    }
-  );
+  console.log('HI - gonna make a contract', tokenAddress);
+  const exchange = new Contract(tokenAddress, erc20ABI, walletToUse);
+  console.log('HI - exchange contrac tagain', exchange);
+  const approval = await exchange.approve(spender, MaxUint256, {
+    gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+    gasPrice: gasPrice ? toHex(gasPrice) : undefined,
+  });
+  console.log('HI - approval', approval);
   return {
     approval,
     creationTimestamp: Date.now(),
@@ -52,11 +53,9 @@ const approve = async (
 
 const getRawAllowance = async (owner, token, spender) => {
   const { address: tokenAddress } = token;
-  const tokenContract = new ethers.Contract(
-    tokenAddress,
-    erc20ABI,
-    web3Provider
-  );
+  console.log('HI - creating token contract', tokenAddress);
+  const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
+  console.log('HI - token contract', tokenContract);
   const allowance = await tokenContract.allowance(owner, spender);
   return allowance.toString();
 };

@@ -1,14 +1,18 @@
+import { arrayify, Hexable, joinSignature } from '@ethersproject/bytes';
+import {
+  entropyToMnemonic,
+  fromMnemonic,
+  fromSeed,
+} from '@ethersproject/hdnode';
+import { randomBytes } from '@ethersproject/random';
+import { SigningKey } from '@ethersproject/signing-key';
+import { Wallet } from '@ethersproject/wallet';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { isValidAddress, toBuffer } from 'ethereumjs-util';
-import { ethers, Wallet } from 'ethers';
-import {
-  Arrayish,
-  BigNumberish,
-  HDNode,
-  Hexable,
-  Transaction,
-} from 'ethers/utils';
+import { ethers } from 'ethers'; // TODO JIN - remove usage
+// TODO JIN - typings from ethers upgrade
+import { Arrayish, BigNumberish, HDNode, Transaction } from 'ethers/utils';
 import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
@@ -169,7 +173,10 @@ export const publicAccessControlOptions = {
 
 export function generateSeedPhrase(): EthereumMnemonic {
   logger.sentry('Generating a new seed phrase');
-  return ethers.utils.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
+  console.log('HI - generate seed phrase');
+  const seedPhrase = entropyToMnemonic(randomBytes(16));
+  console.log('HI - generate seed phrase', seedPhrase);
+  return seedPhrase;
 }
 
 export const walletInit = async (
@@ -212,7 +219,7 @@ export const loadWallet = async (): Promise<null | Wallet> => {
     return null;
   }
   if (privateKey) {
-    return new ethers.Wallet(privateKey, web3Provider);
+    return new Wallet(privateKey, web3Provider);
   }
   showWalletErrorAlert();
   return null;
@@ -276,14 +283,10 @@ export const signMessage = async (
     logger.sentry('about to sign message', message);
     const wallet = await loadWallet();
     try {
-      if (wallet) {
-        const signingKey = new ethers.utils.SigningKey(wallet.privateKey);
-        const sigParams = await signingKey.signDigest(
-          ethers.utils.arrayify(message)
-        );
-        return ethers.utils.joinSignature(sigParams);
-      }
-      return null;
+      if (!wallet) return null;
+      const signingKey = new SigningKey(wallet.privateKey);
+      const sigParams = await signingKey.signDigest(arrayify(message));
+      return joinSignature(sigParams);
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
       logger.sentry('Failed to SIGN message, alerted user');
@@ -305,14 +308,12 @@ export const signPersonalMessage = async (
     logger.sentry('about to sign personal message', message);
     const wallet = await loadWallet();
     try {
-      if (wallet) {
-        return wallet.signMessage(
-          typeof message === 'string' && isHexString(message)
-            ? ethers.utils.arrayify(message)
-            : message
-        );
-      }
-      return null;
+      if (!wallet) return null;
+      return wallet.signMessage(
+        typeof message === 'string' && isHexString(message)
+          ? arrayify(message)
+          : message
+      );
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
       logger.sentry('Failed to SIGN personal message, alerted user');
@@ -457,6 +458,7 @@ export const identifyWalletType = (
   return EthereumWalletType.seed;
 };
 
+// TODO JIN - repeated?
 export const getWallet = (
   walletSeed: EthereumWalletSeed
 ): EthereumWalletFromSeed => {
@@ -466,14 +468,14 @@ export const getWallet = (
   const type = identifyWalletType(walletSeed);
   switch (type) {
     case EthereumWalletType.privateKey:
-      wallet = new ethers.Wallet(walletSeed);
+      wallet = new Wallet(walletSeed);
       break;
     case EthereumWalletType.mnemonic:
-      hdnode = ethers.utils.HDNode.fromMnemonic(walletSeed);
+      hdnode = fromMnemonic(walletSeed);
       isHDWallet = true;
       break;
     case EthereumWalletType.seed:
-      hdnode = ethers.utils.HDNode.fromSeed(walletSeed);
+      hdnode = fromSeed(walletSeed);
       isHDWallet = true;
       break;
     case EthereumWalletType.readOnly:
@@ -485,7 +487,7 @@ export const getWallet = (
   // Always generate the first account if HD node
   if (isHDWallet && hdnode) {
     const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/0`);
-    wallet = new ethers.Wallet(node.privateKey);
+    wallet = new Wallet(node.privateKey);
   }
 
   return { hdnode, isHDWallet, type, wallet };
@@ -589,7 +591,7 @@ export const createWallet = async (
       //(We stop once we find the first one with no history)
       while (lookup) {
         const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/${index}`);
-        const nextWallet = new ethers.Wallet(node.privateKey);
+        const nextWallet = new Wallet(node.privateKey);
         let hasTxHistory = false;
         try {
           hasTxHistory = await ethereumUtils.hasPreviousTransactions(
@@ -841,7 +843,7 @@ export const generateAccount = async (
       const seedData = await getSeedPhrase(id);
       seedphrase = seedData?.seedphrase;
       if (seedphrase) {
-        hdnode = ethers.utils.HDNode.fromMnemonic(seedphrase);
+        hdnode = fromMnemonic(seedphrase);
       }
     }
 
@@ -854,7 +856,7 @@ export const generateAccount = async (
     }
 
     const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/${index}`);
-    const newAccount = new ethers.Wallet(node.privateKey);
+    const newAccount = new Wallet(node.privateKey);
     await savePrivateKey(newAccount.address, newAccount.privateKey);
     return newAccount;
   } catch (error) {
@@ -889,15 +891,16 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     let hdnode: undefined | ethers.utils.HDNode.HDNode,
       node: undefined | ethers.utils.HDNode.HDNode,
       existingAccount: undefined | Wallet;
+    // TODO JIN - repeated?
     switch (type) {
       case EthereumWalletType.privateKey:
-        existingAccount = new ethers.Wallet(seedphrase);
+        existingAccount = new Wallet(seedphrase);
         break;
       case EthereumWalletType.mnemonic:
-        hdnode = ethers.utils.HDNode.fromMnemonic(seedphrase);
+        hdnode = fromMnemonic(seedphrase);
         break;
       case EthereumWalletType.seed:
-        hdnode = ethers.utils.HDNode.fromSeed(seedphrase);
+        hdnode = fromSeed(seedphrase);
         break;
       default:
     }
@@ -905,7 +908,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     if (!existingAccount && hdnode) {
       logger.sentry('No existing account, so we have to derive it');
       node = hdnode.derivePath(`${DEFAULT_HD_PATH}/0`);
-      existingAccount = new ethers.Wallet(node.privateKey);
+      existingAccount = new Wallet(node.privateKey);
       logger.sentry('Got existing account');
     }
 
