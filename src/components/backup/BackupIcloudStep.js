@@ -146,7 +146,7 @@ const BackupIcloudStep = () => {
   const currentlyFocusedInput = useRef();
   const { params } = useRoute();
   const walletCloudBackup = useWalletCloudBackup();
-  const { latestBackup } = useWallets();
+  const { latestBackup, selectedWallet } = useWallets();
   const dispatch = useDispatch();
   const [validPassword, setValidPassword] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
@@ -246,7 +246,8 @@ const BackupIcloudStep = () => {
     []
   );
   const onConfirmBackup = useCallback(async () => {
-    walletCloudBackup({
+    const walletId = params?.walletId || selectedWallet.id;
+    await walletCloudBackup({
       latestBackup,
       onError: error => {
         logger.sentry('Error while calling walletCloudBackup');
@@ -256,14 +257,18 @@ const BackupIcloudStep = () => {
         dispatch(setIsWalletLoading(null));
       },
       password,
-      walletId: params?.walletId,
+      walletId,
     });
+    setTimeout(() => {
+      Alert.alert('Your wallet has been backed up succesfully!');
+    }, 1000);
   }, [
     dispatch,
     latestBackup,
     onPasswordSubmit,
-    params?.walletId,
+    params.walletId,
     password,
+    selectedWallet.id,
     walletCloudBackup,
   ]);
 

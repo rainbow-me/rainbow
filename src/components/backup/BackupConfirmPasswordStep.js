@@ -134,7 +134,7 @@ const BackupConfirmPasswordStep = () => {
   const [password, setPassword] = useState('');
   const [label, setLabel] = useState('􀎽 Confirm Backup');
   const passwordRef = useRef();
-  const { latestBackup } = useWallets();
+  const { latestBackup, selectedWallet } = useWallets();
 
   useEffect(() => {
     const fetchPasswordIfPossible = async () => {
@@ -173,7 +173,8 @@ const BackupConfirmPasswordStep = () => {
   );
 
   const onSubmit = useCallback(async () => {
-    walletCloudBackup({
+    const walletId = params?.walletId || selectedWallet.id;
+    await walletCloudBackup({
       latestBackup,
       onError: error => {
         logger.sentry('Error while calling walletCloudBackup');
@@ -183,9 +184,12 @@ const BackupConfirmPasswordStep = () => {
         Alert.alert('Error while trying to backup');
       },
       password,
-      walletId: params?.walletId,
+      walletId,
     });
-  }, [dispatch, latestBackup, params?.walletId, password, walletCloudBackup]);
+    setTimeout(() => {
+      Alert.alert('Your wallet has been backed up succesfully!');
+    }, 1000);
+  }, [dispatch, latestBackup, params.walletId, password, walletCloudBackup]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();

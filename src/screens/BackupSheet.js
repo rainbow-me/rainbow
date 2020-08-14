@@ -79,7 +79,7 @@ const BackupSheet = () => {
 
   const onIcloudBackup = useCallback(async () => {
     if (latestBackup) {
-      let password = await fetchBackupPassword();
+      const password = await fetchBackupPassword();
       // If we can't get the password, we need to prompt it again
       if (!password) {
         switchSheetContentTransitionRef.current?.animateNextTransition();

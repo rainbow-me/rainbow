@@ -179,7 +179,7 @@ export default function SettingsModal() {
         navigate(route, routeParams);
       });
     }
-  }, [getRealRoute, navigate, params?.initialRoute]);
+  }, [getRealRoute, navigate, params.initialRoute]);
 
   return (
     <Modal
