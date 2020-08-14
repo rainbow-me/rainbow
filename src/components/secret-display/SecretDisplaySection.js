@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import styled from 'styled-components';
 import BiometryTypes from '../../helpers/biometryTypes';
@@ -61,7 +61,7 @@ const SecretDisplaySection = ({ onWalletTypeIdentified, secretLoaded }) => {
   const walletId = params?.walletId || selectedWallet.id;
   const currentWallet = wallets[walletId];
   const { isTallPhone } = useDimensions();
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [seed, setSeed] = useState(null);
   const [type, setType] = useState(currentWallet?.type);
   const { width: deviceWidth } = useDimensions();
@@ -73,6 +73,11 @@ const SecretDisplaySection = ({ onWalletTypeIdentified, secretLoaded }) => {
     (biometryType === BiometryTypes.passcode ||
       biometryType === BiometryTypes.TouchID);
   const showFaceIDCharacter = !seed && biometryType === BiometryTypes.FaceID;
+
+  useEffect(() => {
+    loadSeed();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadSeed = useCallback(async () => {
     try {
@@ -139,7 +144,7 @@ const SecretDisplaySection = ({ onWalletTypeIdentified, secretLoaded }) => {
 
   return (
     <Centered direction="column">
-      {visible && (
+      {visible && seed && (
         <React.Fragment>
           <Row>
             <CopyFloatingEmojis scaleTo={0.88} textToCopy={seed}>
