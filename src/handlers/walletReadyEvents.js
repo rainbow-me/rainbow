@@ -10,6 +10,7 @@ import {
   saveUserBackupState,
 } from './localstorage/globalSettings';
 import Routes from '@rainbow-me/routes';
+import { logger } from '@rainbow-me/utils';
 
 const BACKUP_SHEET_DELAY_MS = 3000;
 
@@ -38,6 +39,7 @@ export const setupIncomingNotificationListeners = async () => {
   } else if (backupState === BackupStateTypes.ready) {
     incomingTxListener = new EventEmitter();
     incomingTxListener.on('incoming_transaction', async type => {
+      logger.log('got incoming tx!');
       await saveUserBackupState(BackupStateTypes.pending);
       setTimeout(
         () => {
@@ -47,6 +49,13 @@ export const setupIncomingNotificationListeners = async () => {
       );
       incomingTxListener.removeAllListeners();
     });
+
+    // Uncomment the following block to simulate an incoming tx
+    // during runtime
+    // setTimeout(() => {
+    //   incomingTxListener.emit('incoming_transaction', 'appended');
+    // });
+
     // Incoming handles new transactions during runtime
     store.dispatch(addNewSubscriber(incomingTxListener, 'appended'));
     // Received will trigger when there's incoming transactions
