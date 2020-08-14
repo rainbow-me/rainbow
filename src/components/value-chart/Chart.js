@@ -70,13 +70,13 @@ export default function ChartWrapper({
 
   const [throttledData, setThrottledData] = useState({
     points,
-    smoothing: 0.3,
+    smoothing: 0.1,
     strategy: 'simple',
   });
 
   useEffect(() => {
     if (points && !fetchingCharts) {
-      setThrottledData({ points, smoothing: 0.3, strategy: 'simple' });
+      setThrottledData({ points, smoothing: 0.1, strategy: 'simple' });
     }
   }, [fetchingCharts, points, setThrottledData]);
 
