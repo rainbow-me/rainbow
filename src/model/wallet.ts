@@ -503,11 +503,7 @@ export const createWallet = async (
     // Get all wallets
     const allWalletsResult = await getAllWallets();
     logger.sentry('[createWallet] - getAllWallets');
-    const allWallets: AllRainbowWallets = get(
-      allWalletsResult,
-      'allWallets',
-      {}
-    );
+    const allWallets: AllRainbowWallets = get(allWalletsResult, 'wallets', {});
 
     let existingWalletId = null;
     if (isImported) {
