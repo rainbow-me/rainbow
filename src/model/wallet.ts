@@ -1,15 +1,18 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { isValidAddress, toBuffer } from 'ethereumjs-util';
-import { ethers } from 'ethers';
+import { ethers, Wallet } from 'ethers';
+import {
+  Arrayish,
+  BigNumberish,
+  HDNode,
+  Hexable,
+  Transaction,
+} from 'ethers/utils';
 import lang from 'i18n-js';
-import { find, findKey, get, isEmpty, keys } from 'lodash';
+import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { ACCESSIBLE } from 'react-native-keychain';
-import {
-  encryptAndSaveDataToCloud,
-  getDataFromCloud,
-} from '../handlers/cloudBackup';
 import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import {
   addHexPrefix,
@@ -21,10 +24,8 @@ import {
 } from '../handlers/web3';
 import BackupStateTypes from '../helpers/backupStateTypes';
 import showWalletErrorAlert from '../helpers/support';
-import WalletBackupTypes from '../helpers/walletBackupTypes';
-import WalletTypes from '../helpers/walletTypes';
+import { EthereumWalletType } from '../helpers/walletTypes';
 import { ethereumUtils } from '../utils';
-
 import {
   addressKey,
   allWalletsKey,
@@ -37,10 +38,127 @@ import * as keychain from './keychain';
 import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
 
+type EthereumAddress = string;
+type EthereumPrivateKey = string;
+type EthereumMnemonic = string;
+type EthereumSeed = string;
+type EthereumWalletSeed =
+  | EthereumAddress
+  | EthereumPrivateKey
+  | EthereumMnemonic
+  | EthereumSeed;
+
+interface WalletInitialized {
+  isNew: boolean;
+  walletAddress?: EthereumAddress;
+}
+
+interface TransactionRequestParam {
+  transaction: TransactionRequest;
+}
+
+interface TransactionRequest {
+  to?: string | Promise<string>;
+  from?: string | Promise<string>;
+  nonce?: BigNumberish | Promise<BigNumberish>;
+  gasLimit?: BigNumberish | Promise<BigNumberish>;
+  gasPrice?: BigNumberish | Promise<BigNumberish>;
+  data?: Arrayish | Promise<Arrayish>;
+  value?: BigNumberish | Promise<BigNumberish>;
+  chainId?: number | Promise<number>;
+}
+
+interface MessageTypeProperty {
+  name: string;
+  type: string;
+}
+interface TypedDataTypes {
+  EIP712Domain: MessageTypeProperty[];
+  [additionalProperties: string]: MessageTypeProperty[];
+}
+
+interface TypedData {
+  types: TypedDataTypes;
+  primaryType: keyof TypedDataTypes;
+  domain: {
+    name?: string;
+    version?: string;
+    chainId?: number;
+    verifyingContract?: string;
+  };
+  message: object;
+}
+
+interface ReadOnlyWallet {
+  address: EthereumAddress;
+  privateKey: null;
+}
+
+interface EthereumWalletFromSeed {
+  hdnode: null | HDNode.HDNode;
+  isHDWallet: boolean;
+  wallet: null | EthereumWallet;
+  type: EthereumWalletType;
+}
+
+type EthereumWallet = Wallet | ReadOnlyWallet;
+
+interface RainbowAccount {
+  index: number;
+  label: string;
+  address: EthereumAddress;
+  avatar: null | string;
+  color: number;
+  visible: boolean;
+}
+
+export interface RainbowWallet {
+  addresses: RainbowAccount[];
+  color: number;
+  id: string;
+  imported: boolean;
+  name: string;
+  primary: boolean;
+  type: EthereumWalletType;
+  backedUp: boolean;
+  backupFile?: string;
+  backupDate?: string;
+  backupType?: string;
+}
+
+export interface AllRainbowWallets {
+  [key: string]: RainbowWallet;
+}
+
+interface AllRainbowWalletsData {
+  allWallets: AllRainbowWallets;
+  version: string;
+}
+
+interface RainbowSelectedWalletData {
+  wallet: RainbowWallet;
+}
+
+interface PrivateKeyData {
+  privateKey: EthereumPrivateKey;
+  version: string;
+}
+interface SeedPhraseData {
+  seedphrase: EthereumPrivateKey;
+  version: string;
+}
+
+interface MigratedSecretsResult {
+  hdnode: undefined | HDNode.HDNode;
+  privateKey: EthereumPrivateKey;
+  seedphrase: EthereumWalletSeed;
+  type: EthereumWalletType;
+}
+
 const privateKeyVersion = 1.0;
 const seedPhraseVersion = 1.0;
 const selectedWalletVersion = 1.0;
-const allWalletsVersion = 1.0;
+export const allWalletsVersion = 1.0;
 
 const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
@@ -49,7 +167,7 @@ const publicAccessControlOptions = {
   accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
 };
 
-export function generateSeedPhrase() {
+export function generateSeedPhrase(): EthereumMnemonic {
   logger.sentry('Generating a new seed phrase');
   return ethers.utils.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
 }
@@ -59,13 +177,13 @@ export const walletInit = async (
   color = null,
   name = null,
   overwrite = false
-) => {
+): Promise<WalletInitialized> => {
   let walletAddress = null;
   let isNew = false;
   // Importing a seedphrase
   if (!isEmpty(seedPhrase)) {
     const wallet = await createWallet(seedPhrase, color, name, overwrite);
-    walletAddress = wallet.address;
+    walletAddress = wallet?.address;
     return { isNew, walletAddress };
   }
 
@@ -73,14 +191,16 @@ export const walletInit = async (
 
   if (!walletAddress) {
     const wallet = await createWallet();
-    walletAddress = wallet.address;
+    walletAddress = wallet?.address;
     isNew = true;
   }
   return { isNew, walletAddress };
 };
 
-export const loadWallet = async () => {
-  const privateKey = await loadPrivateKey();
+export const loadWallet = async (
+  authenticationPrompt?: string
+): Promise<null | Wallet> => {
+  const privateKey = await loadPrivateKey(authenticationPrompt);
   if (privateKey) {
     return new ethers.Wallet(privateKey, web3Provider);
   }
@@ -88,7 +208,9 @@ export const loadWallet = async () => {
   return null;
 };
 
-export const sendTransaction = async ({ transaction }) => {
+export const sendTransaction = async ({
+  transaction,
+}: TransactionRequestParam): Promise<null | Transaction['hash']> => {
   try {
     logger.sentry('about to send transaction', transaction);
     const wallet = await loadWallet();
@@ -112,7 +234,9 @@ export const sendTransaction = async ({ transaction }) => {
   }
 };
 
-export const signTransaction = async ({ transaction }) => {
+export const signTransaction = async ({
+  transaction,
+}: TransactionRequestParam): Promise<null | string> => {
   try {
     logger.sentry('about to sign transaction', transaction);
     const wallet = await loadWallet();
@@ -136,18 +260,21 @@ export const signTransaction = async ({ transaction }) => {
 };
 
 export const signMessage = async (
-  message,
+  message: Arrayish | Hexable | string,
   authenticationPrompt = lang.t('wallet.authenticate.please')
-) => {
+): Promise<null | string> => {
   try {
     logger.sentry('about to sign message', message);
     const wallet = await loadWallet(authenticationPrompt);
     try {
-      const signingKey = new ethers.utils.SigningKey(wallet.privateKey);
-      const sigParams = await signingKey.signDigest(
-        ethers.utils.arrayify(message)
-      );
-      return ethers.utils.joinSignature(sigParams);
+      if (wallet) {
+        const signingKey = new ethers.utils.SigningKey(wallet.privateKey);
+        const sigParams = await signingKey.signDigest(
+          ethers.utils.arrayify(message)
+        );
+        return ethers.utils.joinSignature(sigParams);
+      }
+      return null;
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
       logger.sentry('Failed to SIGN message, alerted user');
@@ -163,16 +290,21 @@ export const signMessage = async (
 };
 
 export const signPersonalMessage = async (
-  message,
+  message: string | Uint8Array,
   authenticationPrompt = lang.t('wallet.authenticate.please')
-) => {
+): Promise<null | string> => {
   try {
     logger.sentry('about to sign personal message', message);
     const wallet = await loadWallet(authenticationPrompt);
     try {
-      return wallet.signMessage(
-        isHexString(message) ? ethers.utils.arrayify(message) : message
-      );
+      if (wallet) {
+        return wallet.signMessage(
+          typeof message === 'string' && isHexString(message)
+            ? ethers.utils.arrayify(message)
+            : message
+        );
+      }
+      return null;
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
       logger.sentry('Failed to SIGN personal message, alerted user');
@@ -190,19 +322,18 @@ export const signPersonalMessage = async (
 };
 
 export const signTypedDataMessage = async (
-  message,
-  method,
+  message: string | TypedData,
   authenticationPrompt = lang.t('wallet.authenticate.please')
-) => {
+): Promise<null | string> => {
   try {
     logger.sentry('about to sign typed data  message', message);
     const wallet = await loadWallet(authenticationPrompt);
-
+    if (!wallet) return null;
     try {
       const pkeyBuffer = toBuffer(addHexPrefix(wallet.privateKey));
       let parsedData = message;
       try {
-        parsedData = JSON.parse(message);
+        parsedData = typeof message === 'string' && JSON.parse(message);
         // eslint-disable-next-line no-empty
       } catch (e) {}
 
@@ -213,7 +344,10 @@ export const signTypedDataMessage = async (
       // Because v4 is backwards compatible with v3, we're supporting only v4
 
       let version = 'v1';
-      if (parsedData.types || parsedData.primaryType || parsedData.domain) {
+      if (
+        typeof parsedData === 'object' &&
+        (parsedData.types || parsedData.primaryType || parsedData.domain)
+      ) {
         version = 'v4';
       }
 
@@ -243,18 +377,19 @@ export const signTypedDataMessage = async (
 
 export const oldLoadSeedPhrase = async (
   authenticationPrompt = lang.t('wallet.authenticate.please_seed_phrase')
-) => {
+): Promise<null | EthereumWalletSeed> => {
   const seedPhrase = await keychain.loadString(seedPhraseKey, {
     authenticationPrompt,
   });
   return seedPhrase;
 };
 
-export const loadAddress = () => keychain.loadString(addressKey);
+export const loadAddress = (): Promise<null | EthereumAddress> =>
+  keychain.loadString(addressKey);
 
 const loadPrivateKey = async (
   authenticationPrompt = lang.t('wallet.authenticate.please')
-) => {
+): Promise<null | EthereumPrivateKey> => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
       oldSeedPhraseMigratedKey
@@ -270,8 +405,11 @@ const loadPrivateKey = async (
 
     if (!privateKey) {
       const address = await loadAddress();
+      if (!address) {
+        return null;
+      }
       const privateKeyData = await getPrivateKey(address, authenticationPrompt);
-      privateKey = privateKeyData?.privateKey;
+      privateKey = get(privateKeyData, 'privateKey', null);
     }
 
     return privateKey;
@@ -283,59 +421,63 @@ const loadPrivateKey = async (
 };
 
 export const saveAddress = async (
-  address,
+  address: EthereumAddress,
   accessControlOptions = publicAccessControlOptions
-) => {
-  await keychain.saveString(addressKey, address, accessControlOptions);
+): Promise<void> => {
+  return keychain.saveString(addressKey, address, accessControlOptions);
 };
 
-export const identifyWalletType = walletSeed => {
+export const identifyWalletType = (
+  walletSeed: EthereumWalletSeed
+): EthereumWalletType => {
   if (
     isHexStringIgnorePrefix(walletSeed) &&
     addHexPrefix(walletSeed).length === 66
   ) {
-    return WalletTypes.privateKey;
+    return EthereumWalletType.privateKey;
   }
 
   // 12 or 24 words seed phrase
   if (isValidMnemonic(walletSeed)) {
-    return WalletTypes.mnemonic;
+    return EthereumWalletType.mnemonic;
   }
 
   // Public address (0x)
   if (isValidAddress(walletSeed)) {
-    return WalletTypes.readOnly;
+    return EthereumWalletType.readOnly;
   }
 
   // seed
-  return WalletTypes.seed;
+  return EthereumWalletType.seed;
 };
 
-export const getWallet = walletSeed => {
+export const getWallet = (
+  walletSeed: EthereumWalletSeed
+): EthereumWalletFromSeed => {
   let wallet = null;
   let hdnode = null;
   let isHDWallet = false;
   const type = identifyWalletType(walletSeed);
   switch (type) {
-    case WalletTypes.privateKey:
+    case EthereumWalletType.privateKey:
       wallet = new ethers.Wallet(walletSeed);
       break;
-    case WalletTypes.mnemonic:
+    case EthereumWalletType.mnemonic:
       hdnode = ethers.utils.HDNode.fromMnemonic(walletSeed);
       isHDWallet = true;
       break;
-    case WalletTypes.seed:
+    case EthereumWalletType.seed:
       hdnode = ethers.utils.HDNode.fromSeed(walletSeed);
       isHDWallet = true;
       break;
-    case WalletTypes.readOnly:
+    case EthereumWalletType.readOnly:
       wallet = { address: toChecksumAddress(walletSeed), privateKey: null };
       break;
     default:
   }
 
   // Always generate the first account if HD node
-  if (isHDWallet) {
+  if (isHDWallet && hdnode) {
     const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/0`);
     wallet = new ethers.Wallet(node.privateKey);
   }
@@ -344,35 +486,43 @@ export const getWallet = walletSeed => {
 };
 
 export const createWallet = async (
-  seed = null,
-  color = null,
-  name = null,
-  overwrite = false
-) => {
+  seed: null | EthereumSeed = null,
+  color: null | number = null,
+  name: null | string = null,
+  overwrite: boolean = false
+): Promise<null | EthereumWallet> => {
   const isImported = !!seed;
   logger.sentry('Creating wallet, isImported?', isImported);
   const walletSeed = seed || generateSeedPhrase();
-  let addresses = [];
+  let addresses: RainbowAccount[] = [];
   try {
     const { hdnode, isHDWallet, type, wallet } = getWallet(walletSeed);
+    if (!wallet) return null;
     logger.sentry('[createWallet] - getWallet from seed');
 
     // Get all wallets
     const allWalletsResult = await getAllWallets();
     logger.sentry('[createWallet] - getAllWallets');
-    const allWallets = get(allWalletsResult, 'wallets', {});
+    const allWallets: AllRainbowWallets = get(
+      allWalletsResult,
+      'allWallets',
+      {}
+    );
 
     let existingWalletId = null;
     if (isImported) {
       // Checking if the generated account already exists and is visible
       logger.sentry('[createWallet] - isImported >> true');
-      const alreadyExistingWallet = find(allWallets, someWallet =>
-        find(
-          someWallet.addresses,
-          account =>
-            toChecksumAddress(account.address) ===
-              toChecksumAddress(wallet.address) && account.visible
-        )
+      const alreadyExistingWallet = find(
+        allWallets,
+        (someWallet: RainbowWallet) => {
+          return !!find(
+            someWallet.addresses,
+            account =>
+              toChecksumAddress(account.address) ===
+                toChecksumAddress(wallet.address) && account.visible
+          );
+        }
       );
 
       existingWalletId = alreadyExistingWallet?.id;
@@ -380,13 +530,14 @@ export const createWallet = async (
       // Don't allow adding a readOnly wallet that you have already visible
       // or a private key that you already have visible as a seed or mnemonic
       const isPrivateKeyOverwritingSeedMnemonic =
-        type === WalletTypes.privateKey &&
-        (alreadyExistingWallet?.type === WalletTypes.seed ||
-          alreadyExistingWallet?.type === WalletTypes.mnemonic);
+        type === EthereumWalletType.privateKey &&
+        (alreadyExistingWallet?.type === EthereumWalletType.seed ||
+          alreadyExistingWallet?.type === EthereumWalletType.mnemonic);
       if (
         !overwrite &&
         alreadyExistingWallet &&
-        (type === WalletTypes.readOnly || isPrivateKeyOverwritingSeedMnemonic)
+        (type === EthereumWalletType.readOnly ||
+          isPrivateKeyOverwritingSeedMnemonic)
       ) {
         setTimeout(
           () =>
@@ -425,7 +576,7 @@ export const createWallet = async (
       visible: true,
     });
 
-    if (isHDWallet && isImported) {
+    if (isHDWallet && hdnode && isImported) {
       logger.sentry('[createWallet] - isHDWallet && isImported');
       let index = 1;
       let lookup = true;
@@ -445,9 +596,9 @@ export const createWallet = async (
           captureException(error);
         }
 
-        let discoveredAccount = null;
-        let discoveredWalletId = null;
-        find(allWallets, someWallet => {
+        let discoveredAccount: RainbowAccount | undefined;
+        let discoveredWalletId: RainbowWallet['id'] | undefined;
+        forEach(allWallets, someWallet => {
           const existingAccount = find(
             someWallet.addresses,
             account =>
@@ -455,7 +606,7 @@ export const createWallet = async (
               toChecksumAddress(nextWallet.address)
           );
           if (existingAccount) {
-            discoveredAccount = existingAccount;
+            discoveredAccount = existingAccount as RainbowAccount;
             discoveredWalletId = someWallet.id;
             return true;
           }
@@ -467,11 +618,12 @@ export const createWallet = async (
         let color = colors.getRandomColor();
         let label = '';
 
-        if (discoveredAccount) {
+        if (discoveredAccount && discoveredWalletId) {
           if (discoveredAccount.visible) {
             color = discoveredAccount.color;
-            label = discoveredAccount.label;
+            label = discoveredAccount.label ?? '';
           }
+          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete allWallets[discoveredWalletId];
         }
 
@@ -509,20 +661,21 @@ export const createWallet = async (
     // it's the primary wallet
     if (
       !isImported ||
-      (!findKey(allWallets, ['type', WalletTypes.mnemonic]) &&
-        type === WalletTypes.mnemonic)
+      (!findKey(allWallets, ['type', EthereumWalletType.mnemonic]) &&
+        type === EthereumWalletType.mnemonic)
     ) {
       primary = true;
       // Or there's no other primary wallet and this one has a seed phrase
     } else {
       const primaryWallet = findKey(allWallets, ['primary', true]);
-      if (!primaryWallet && type === WalletTypes.mnemonic) {
+      if (!primaryWallet && type === EthereumWalletType.mnemonic) {
         primary = true;
       }
     }
 
     allWallets[id] = {
       addresses,
+      backedUp: false,
       color: color || 0,
       id,
       imported: isImported,
@@ -551,7 +704,10 @@ export const createWallet = async (
   }
 };
 
-export const savePrivateKey = async (address, privateKey) => {
+export const savePrivateKey = async (
+  address: EthereumAddress,
+  privateKey: null | EthereumPrivateKey
+) => {
   const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
 
   const key = `${address}_${privateKeyKey}`;
@@ -565,14 +721,15 @@ export const savePrivateKey = async (address, privateKey) => {
 };
 
 export const getPrivateKey = async (
-  address,
+  address: EthereumAddress,
   authenticationPrompt = lang.t('wallet.authenticate.please')
-) => {
+): Promise<null | PrivateKeyData> => {
   try {
     const key = `${address}_${privateKeyKey}`;
-    return keychain.loadObject(key, {
+    const pkey = (await keychain.loadObject(key, {
       authenticationPrompt,
-    });
+    })) as PrivateKeyData;
+    return pkey || null;
   } catch (error) {
     logger.sentry('Error in getPrivateKey');
     captureException(error);
@@ -580,7 +737,10 @@ export const getPrivateKey = async (
   }
 };
 
-export const saveSeedPhrase = async (seedphrase, keychain_id = null) => {
+export const saveSeedPhrase = async (
+  seedphrase: EthereumWalletSeed,
+  keychain_id: RainbowWallet['id']
+): Promise<void> => {
   const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
   const key = `${keychain_id}_${seedPhraseKey}`;
   const val = {
@@ -589,18 +749,19 @@ export const saveSeedPhrase = async (seedphrase, keychain_id = null) => {
     version: seedPhraseVersion,
   };
 
-  await keychain.saveObject(key, val, privateAccessControlOptions);
+  return keychain.saveObject(key, val, privateAccessControlOptions);
 };
 
 export const getSeedPhrase = async (
-  id,
+  id: RainbowWallet['id'],
   authenticationPrompt = lang.t('wallet.authenticate.please')
-) => {
+): Promise<null | SeedPhraseData> => {
   try {
     const key = `${id}_${seedPhraseKey}`;
-    return keychain.loadObject(key, {
+    const seedPhraseData = (await keychain.loadObject(key, {
       authenticationPrompt,
-    });
+    })) as SeedPhraseData;
+    return seedPhraseData || null;
   } catch (error) {
     logger.sentry('Error in getSeedPhrase');
     captureException(error);
@@ -608,18 +769,28 @@ export const getSeedPhrase = async (
   }
 };
 
-export const setSelectedWallet = async wallet => {
+export const setSelectedWallet = async (
+  wallet: RainbowWallet
+): Promise<void> => {
   const val = {
     version: selectedWalletVersion,
     wallet,
   };
 
-  await keychain.saveObject(selectedWalletKey, val, publicAccessControlOptions);
+  return keychain.saveObject(
+    selectedWalletKey,
+    val,
+    publicAccessControlOptions
+  );
 };
 
-export const getSelectedWallet = async () => {
+export const getSelectedWallet = async (): Promise<null | RainbowSelectedWalletData> => {
   try {
-    return keychain.loadObject(selectedWalletKey);
+    const selectedWalletData = await keychain.loadObject(selectedWalletKey);
+    if (selectedWalletData) {
+      return selectedWalletData as RainbowSelectedWalletData;
+    }
+    return null;
   } catch (error) {
     logger.sentry('Error in getSelectedWallet');
     captureException(error);
@@ -627,7 +798,7 @@ export const getSelectedWallet = async () => {
   }
 };
 
-export const saveAllWallets = async wallets => {
+export const saveAllWallets = async (wallets: AllRainbowWallets) => {
   const val = {
     version: allWalletsVersion,
     wallets,
@@ -636,9 +807,13 @@ export const saveAllWallets = async wallets => {
   await keychain.saveObject(allWalletsKey, val, publicAccessControlOptions);
 };
 
-export const getAllWallets = async () => {
+export const getAllWallets = async (): Promise<null | AllRainbowWalletsData> => {
   try {
-    return keychain.loadObject(allWalletsKey);
+    const allWallets = await keychain.loadObject(allWalletsKey);
+    if (allWallets) {
+      return allWallets as AllRainbowWalletsData;
+    }
+    return null;
   } catch (error) {
     logger.sentry('Error in getAllWallets');
     captureException(error);
@@ -646,30 +821,37 @@ export const getAllWallets = async () => {
   }
 };
 
-export const generateAccount = async (id, index) => {
+export const generateAccount = async (
+  id: RainbowWallet['id'],
+  index: number
+): Promise<null | EthereumWallet> => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
       oldSeedPhraseMigratedKey
     );
-    let seedPhrase, hdnode;
+    let seedphrase, hdnode;
     // We need to migrate the seedphrase & private key first
     // In that case we regenerate the existing private key to store it with the new format
     if (!isSeedPhraseMigrated) {
       const migratedSecrets = await migrateSecrets();
       hdnode = migratedSecrets?.hdnode;
-      seedPhrase = migratedSecrets?.seedPhrase;
+      seedphrase = migratedSecrets?.seedphrase;
     }
 
-    if (!seedPhrase) {
+    if (!seedphrase) {
       const seedData = await getSeedPhrase(id);
-      seedPhrase = seedData?.seedphrase;
-      if (seedPhrase) {
-        hdnode = ethers.utils.HDNode.fromMnemonic(seedPhrase);
+      seedphrase = seedData?.seedphrase;
+      if (seedphrase) {
+        hdnode = ethers.utils.HDNode.fromMnemonic(seedphrase);
       }
     }
 
-    if (!seedPhrase) {
+    if (!seedphrase) {
       throw new Error(`Can't access seed phrase to create new accounts`);
+    }
+
+    if (!hdnode) {
+      return null;
     }
 
     const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/${index}`);
@@ -679,15 +861,16 @@ export const generateAccount = async (id, index) => {
   } catch (error) {
     logger.sentry('Error generating account for keychain', id);
     captureException(error);
+    return null;
   }
 };
 
-const migrateSecrets = async () => {
+const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
   try {
     logger.sentry('migrating secrets!');
-    const seedPhrase = await oldLoadSeedPhrase();
+    const seedphrase = await oldLoadSeedPhrase();
 
-    if (!seedPhrase) {
+    if (!seedphrase) {
       logger.sentry('old seed doesnt exist!');
       // Save the migration flag to prevent this flow in the future
       await keychain.saveString(
@@ -702,27 +885,33 @@ const migrateSecrets = async () => {
     }
 
     logger.sentry('Got secret, now idenfifying wallet type');
-    const type = identifyWalletType(seedPhrase);
+    const type = identifyWalletType(seedphrase);
     logger.sentry('Got type: ', type);
-    let hdnode, node, existingAccount;
+    let hdnode: undefined | ethers.utils.HDNode.HDNode,
+      node: undefined | ethers.utils.HDNode.HDNode,
+      existingAccount: undefined | Wallet;
     switch (type) {
-      case WalletTypes.privateKey:
-        existingAccount = new ethers.Wallet(seedPhrase);
+      case EthereumWalletType.privateKey:
+        existingAccount = new ethers.Wallet(seedphrase);
         break;
-      case WalletTypes.mnemonic:
-        hdnode = ethers.utils.HDNode.fromMnemonic(seedPhrase);
+      case EthereumWalletType.mnemonic:
+        hdnode = ethers.utils.HDNode.fromMnemonic(seedphrase);
         break;
-      case WalletTypes.seed:
-        hdnode = ethers.utils.HDNode.fromSeed(seedPhrase);
+      case EthereumWalletType.seed:
+        hdnode = ethers.utils.HDNode.fromSeed(seedphrase);
         break;
       default:
     }
 
-    if (!existingAccount) {
+    if (!existingAccount && hdnode) {
       logger.sentry('No existing account, so we have to derive it');
       node = hdnode.derivePath(`${DEFAULT_HD_PATH}/0`);
       existingAccount = new ethers.Wallet(node.privateKey);
       logger.sentry('Got existing account');
+    }
+
+    if (!existingAccount) {
+      return null;
     }
 
     // Check that wasn't migrated already!
@@ -735,13 +924,18 @@ const migrateSecrets = async () => {
       await savePrivateKey(existingAccount.address, existingAccount.privateKey);
       logger.sentry('new pkey saved');
     }
-    const { wallet } = await getSelectedWallet();
+
+    const selectedWalletData = await getSelectedWallet();
+    let wallet: undefined | RainbowWallet = selectedWalletData?.wallet;
+    if (!wallet) {
+      return null;
+    }
 
     // Save the seedphrase in the new format
     const seedExists = await keychain.hasKey(`${wallet.id}_${seedPhraseKey}`);
     if (!seedExists) {
       logger.sentry('new seed didnt exist so we should save it');
-      await saveSeedPhrase(seedPhrase, wallet.id);
+      await saveSeedPhrase(seedphrase, wallet.id);
       logger.sentry('new seed saved');
     }
     // Save the migration flag to prevent this flow in the future
@@ -754,16 +948,19 @@ const migrateSecrets = async () => {
     return {
       hdnode,
       privateKey: existingAccount.privateKey,
-      seedPhrase,
+      seedphrase,
       type,
     };
   } catch (e) {
     logger.sentry('Error while migrating secrets');
     captureException(e);
+    return null;
   }
 };
 
-export const loadSeedPhraseAndMigrateIfNeeded = async id => {
+export const loadSeedPhraseAndMigrateIfNeeded = async (
+  id: RainbowWallet['id']
+): Promise<null | EthereumWalletSeed> => {
   try {
     let seedPhrase = null;
     // First we need to check if that key already exists
@@ -780,7 +977,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async id => {
       // In that case we regenerate the existing private key to store it with the new format
       if (!isSeedPhraseMigrated) {
         const migratedSecrets = await migrateSecrets();
-        seedPhrase = migratedSecrets?.seedPhrase;
+        seedPhrase = get(migratedSecrets, 'seedphrase', null);
       } else {
         logger.sentry('Migrated flag was set but there is no key!', id);
         captureMessage('Missing seed for wallet');
@@ -788,7 +985,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async id => {
     } else {
       logger.sentry('Getting seed directly');
       const seedData = await getSeedPhrase(id);
-      seedPhrase = seedData?.seedphrase;
+      seedPhrase = get(seedData, 'seedphrase', null);
       if (seedPhrase) {
         logger.sentry('got seed succesfully');
       } else {
@@ -805,125 +1002,3 @@ export const loadSeedPhraseAndMigrateIfNeeded = async id => {
     return null;
   }
 };
-
-async function extractSecretsForWallet(wallet) {
-  const allKeys = await keychain.loadAllKeys();
-  if (!allKeys) throw new Error("Couldn't read secrets from keychain");
-  const secrets = {};
-
-  const allowedPkeysKeys = wallet.addresses.map(
-    account => `${account.address}_${privateKeyKey}`
-  );
-
-  allKeys.forEach(item => {
-    // Ignore allWalletsKey
-    if (item.username === allWalletsKey) {
-      return;
-    }
-
-    // Ignore selected wallet
-    if (item.username === selectedWalletKey) {
-      return;
-    }
-
-    // Ignore icloud backup password
-    if (item.username === 'rainbowBackup') {
-      return;
-    }
-
-    // Ignore another wallets seeds
-    if (
-      item.username.indexOf(`_${seedPhraseKey}`) !== -1 &&
-      item.username !== `${wallet.id}_${seedPhraseKey}`
-    ) {
-      return;
-    }
-
-    // Ignore other wallets PKeys
-    if (
-      item.username.indexOf(privateKeyKey) !== -1 &&
-      allowedPkeysKeys.indexOf(item.username) === -1
-    ) {
-      return;
-    }
-
-    secrets[item.username] = item.password;
-  });
-  return secrets;
-}
-
-export async function backupWalletToCloud(password, wallet) {
-  const now = Date.now();
-
-  const secrets = await extractSecretsForWallet(wallet);
-  const data = {
-    createdAt: now,
-    secrets,
-  };
-  return encryptAndSaveDataToCloud(data, password, `backup_${now}.json`);
-}
-
-export async function addWalletToCloudBackup(password, wallet, filename) {
-  const backup = await getDataFromCloud(password, filename);
-  if (!backup) return null;
-
-  const now = Date.now();
-
-  const secrets = await extractSecretsForWallet(wallet);
-
-  backup.updatedAt = now;
-  // Merge existing secrets with the ones from this wallet
-  backup.secrets = {
-    ...backup.secrets,
-    ...secrets,
-  };
-  return encryptAndSaveDataToCloud(backup, password, filename);
-}
-
-export async function findLatestBackUp(wallets) {
-  let latestBackup = null;
-  let filename = null;
-
-  keys(wallets).forEach(key => {
-    const wallet = wallets[key];
-    // Check if there's a wallet backed up
-    if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
-      // If there is one, let's grab the latest backup
-      if (!latestBackup || wallet.backupDate > latestBackup) {
-        filename = wallet.backupFile;
-        latestBackup = wallet.backupDate;
-      }
-    }
-  });
-
-  return filename;
-}
-
-export async function restoreCloudBackup(password, userData) {
-  try {
-    const filename = findLatestBackUp(userData?.wallets);
-
-    if (!filename) {
-      return false;
-    }
-
-    // 2- download that backup
-    const data = await getDataFromCloud(password, filename);
-    if (!data) {
-      throw new Error('Invalid password');
-    }
-    const dataToRestore = {
-      // All wallets
-      [allWalletsKey]: {
-        version: allWalletsVersion,
-        wallets: userData.wallets,
-      },
-      ...data.secrets,
-    };
-
-    return keychain.restoreBackupIntoKeychain(dataToRestore);
-  } catch (e) {
-    logger.sentry('Error while restoring back up');
-    captureException(e);
-  }
-}

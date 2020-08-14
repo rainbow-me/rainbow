@@ -20,8 +20,7 @@ import { Sheet, SlackSheet } from '../components/sheet';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import walletLoadingStates from '../helpers/walletLoadingStates';
 import { useWallets } from '../hooks';
-import { fetchBackupPassword } from '../model/keychain';
-import { addWalletToCloudBackup } from '../model/wallet';
+import { addWalletToCloudBackup, fetchBackupPassword } from '../model/backup';
 import { sheetVerticalOffset } from '../navigation/effects';
 import { usePortal } from '../react-native-cool-modals/Portal';
 import {

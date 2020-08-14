@@ -3,8 +3,11 @@ import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import walletBackupTypes from '../helpers/walletBackupTypes';
 import walletLoadingStates from '../helpers/walletLoadingStates';
-import { saveBackupPassword } from '../model/keychain';
-import { addWalletToCloudBackup, backupWalletToCloud } from '../model/wallet';
+import {
+  addWalletToCloudBackup,
+  backupWalletToCloud,
+  saveBackupPassword,
+} from '../model/backup';
 import { setIsWalletLoading, setWalletBackedUp } from '../redux/wallets';
 import useWallets from './useWallets';
 import logger from 'logger';

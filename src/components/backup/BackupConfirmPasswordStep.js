@@ -14,7 +14,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { isCloudBackupPasswordValid } from '../../handlers/cloudBackup';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import { fetchBackupPassword } from '../../model/keychain';
+import { fetchBackupPassword } from '../../model/backup';
 
 import { setIsWalletLoading } from '../../redux/wallets';
 import { deviceUtils } from '../../utils';

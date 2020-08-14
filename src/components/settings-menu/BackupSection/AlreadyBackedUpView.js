@@ -7,8 +7,10 @@ import WalletBackupTypes from '../../../helpers/walletBackupTypes';
 import WalletLoadingStates from '../../../helpers/walletLoadingStates';
 import WalletTypes from '../../../helpers/walletTypes';
 import { useWallets } from '../../../hooks';
-import { fetchBackupPassword } from '../../../model/keychain';
-import { addWalletToCloudBackup } from '../../../model/wallet';
+import {
+  addWalletToCloudBackup,
+  fetchBackupPassword,
+} from '../../../model/backup';
 import { Navigation } from '../../../navigation';
 import { sheetVerticalOffset } from '../../../navigation/effects';
 import { usePortal } from '../../../react-native-cool-modals/Portal';

@@ -1,5 +1,5 @@
 import { captureException, captureMessage } from '@sentry/react-native';
-import { endsWith, forEach, isNil } from 'lodash';
+import { forEach, isNil } from 'lodash';
 import DeviceInfo from 'react-native-device-info';
 import {
   ACCESS_CONTROL,
@@ -10,21 +10,30 @@ import {
   getAllInternetCredentialsKeys,
   getInternetCredentials,
   hasInternetCredentials,
-  requestSharedWebCredentials,
+  Options,
   resetInternetCredentials,
+  Result,
   setInternetCredentials,
-  setSharedWebCredentials,
+  UserCredentials,
 } from 'react-native-keychain';
 import { delay } from '../helpers/utilities';
-import {
-  oldSeedPhraseMigratedKey,
-  privateKeyKey,
-  seedPhraseKey,
-} from '../utils/keychainConstants';
 import logger from 'logger';
 
-// NOTE: implement access control for iOS keychain
-export async function saveString(key, value, accessControlOptions) {
+interface AnonymousKey {
+  length: number;
+  nil: boolean;
+  type: string;
+}
+
+interface AnonymousKeyData {
+  [key: string]: AnonymousKey;
+}
+
+export async function saveString(
+  key: string,
+  value: string,
+  accessControlOptions: Options
+): Promise<void> {
   return new Promise(async (resolve, reject) => {
     try {
       await setInternetCredentials(key, key, value, accessControlOptions);
@@ -49,9 +58,12 @@ export async function saveString(key, value, accessControlOptions) {
   });
 }
 
-export async function loadString(key, authenticationPrompt) {
+export async function loadString(
+  key: string,
+  options?: Options
+): Promise<null | string> {
   try {
-    const credentials = await getInternetCredentials(key, authenticationPrompt);
+    const credentials = await getInternetCredentials(key, options);
     if (credentials) {
       logger.log(`Keychain: loaded string for key: ${key}`);
       return credentials.password;
@@ -66,13 +78,20 @@ export async function loadString(key, authenticationPrompt) {
   return null;
 }
 
-export async function saveObject(key, value, accessControlOptions) {
+export async function saveObject(
+  key: string,
+  value: Object,
+  accessControlOptions: Options
+): Promise<void> {
   const jsonValue = JSON.stringify(value);
-  await saveString(key, jsonValue, accessControlOptions);
+  return saveString(key, jsonValue, accessControlOptions);
 }
 
-export async function loadObject(key, authenticationPrompt) {
-  const jsonValue = await loadString(key, authenticationPrompt);
+export async function loadObject(
+  key: string,
+  options?: Options
+): Promise<null | Object> {
+  const jsonValue = await loadString(key, options);
   if (!jsonValue) return null;
   try {
     const objectValue = JSON.parse(jsonValue);
@@ -87,7 +106,7 @@ export async function loadObject(key, authenticationPrompt) {
   return null;
 }
 
-export async function remove(key) {
+export async function remove(key: string): Promise<void> {
   try {
     await resetInternetCredentials(key);
     logger.log(`Keychain: removed value for key: ${key}`);
@@ -99,10 +118,12 @@ export async function remove(key) {
   }
 }
 
-export async function loadAllKeys(authenticationPrompt) {
+export async function loadAllKeys(): Promise<null | UserCredentials[]> {
   try {
-    const { results } = await getAllInternetCredentials(authenticationPrompt);
-    return results;
+    const response = await getAllInternetCredentials();
+    if (response) {
+      return response.results;
+    }
   } catch (err) {
     logger.sentry(`Keychain: failed to loadAllKeys error: ${err}`);
     captureException(err);
@@ -110,8 +131,8 @@ export async function loadAllKeys(authenticationPrompt) {
   return null;
 }
 
-export async function getAllKeysAnonymized() {
-  const data = {};
+export async function getAllKeysAnonymized(): Promise<null | AnonymousKeyData> {
+  const data: AnonymousKeyData = {};
   const results = await loadAllKeys();
   forEach(results, result => {
     data[result?.username] = {
@@ -123,12 +144,12 @@ export async function getAllKeysAnonymized() {
   return data;
 }
 
-export async function loadAllKeysOnly(authenticationPrompt) {
+export async function loadAllKeysOnly(): Promise<null | string[]> {
   try {
-    const { results } = await getAllInternetCredentialsKeys(
-      authenticationPrompt
-    );
-    return results;
+    const response = await getAllInternetCredentialsKeys();
+    if (response) {
+      return response.results;
+    }
   } catch (err) {
     logger.log(`Keychain: failed to loadAllKeys error: ${err}`);
     captureException(err);
@@ -136,7 +157,7 @@ export async function loadAllKeysOnly(authenticationPrompt) {
   return null;
 }
 
-export async function hasKey(key) {
+export async function hasKey(key: string): Promise<boolean | Result> {
   try {
     const result = await hasInternetCredentials(key);
     return result;
@@ -146,79 +167,25 @@ export async function hasKey(key) {
     );
     captureException(err);
   }
-  return null;
+  return false;
 }
 
-export async function restoreBackupIntoKeychain(backedUpData) {
-  // Access control config per each type of key
-  const publicAccessControlOptions = {
-    accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
-  };
-
-  const privateAccessControlOptions = await getPrivateAccessControlOptions();
-
-  await Promise.all(
-    Object.keys(backedUpData).map(async key => {
-      const value = backedUpData[key];
-      let accessControl = publicAccessControlOptions;
-      if (endsWith(key, seedPhraseKey) || endsWith(key, privateKeyKey)) {
-        accessControl = privateAccessControlOptions;
-      }
-      if (typeof value === 'string') {
-        return saveString(key, value, accessControl);
-      } else {
-        return saveObject(key, value, accessControl);
-      }
-    })
-  );
-
-  // Save the migration flag
-  // to prevent this flow in the future
-  await saveString(
-    oldSeedPhraseMigratedKey,
-    'true',
-    publicAccessControlOptions
-  );
-
-  return true;
-}
-
-// Attempts to save the password to decrypt the backup from the iCloud keychain
-export async function saveBackupPassword(password) {
-  try {
-    await setSharedWebCredentials('rainbow.me', 'Backup Password', password);
-  } catch (e) {
-    logger.sentry('Error while backing up password');
-    captureException(e);
-  }
-}
-
-// Attempts to fetch the password to decrypt the backup from the iCloud keychain
-export async function fetchBackupPassword() {
-  try {
-    const results = await requestSharedWebCredentials();
-    return results?.password || null;
-  } catch (e) {
-    logger.sentry('Error while fetching backup password', e);
-    captureException(e);
-    return null;
-  }
-}
-
-export async function wipeKeychain() {
+export async function wipeKeychain(): Promise<void> {
   try {
     const results = await loadAllKeys();
-    await Promise.all(
-      results.map(result => resetInternetCredentials(result.username))
-    );
-    logger.log('keychain wiped!');
+    if (results) {
+      await Promise.all(
+        results?.map(result => resetInternetCredentials(result.username))
+      );
+      logger.log('keychain wiped!');
+    }
   } catch (e) {
     logger.sentry('error while wiping keychain');
     captureException(e);
   }
 }
 
-export async function getPrivateAccessControlOptions() {
+export async function getPrivateAccessControlOptions(): Promise<Options> {
   let res = {};
   // This method is iOS Only!!!
   try {

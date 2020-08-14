@@ -23,8 +23,11 @@ import {
   useInitializeWallet,
   useWallets,
 } from '../../hooks';
-import { fetchBackupPassword, saveBackupPassword } from '../../model/keychain';
-import { restoreCloudBackup } from '../../model/wallet';
+import {
+  fetchBackupPassword,
+  restoreCloudBackup,
+  saveBackupPassword,
+} from '../../model/backup';
 import { sheetVerticalOffset } from '../../navigation/effects';
 import { usePortal } from '../../react-native-cool-modals/Portal';
 import { setIsWalletLoading, walletsLoadState } from '../../redux/wallets';

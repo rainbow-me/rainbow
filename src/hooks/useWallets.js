@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import WalletTypes from '../helpers/walletTypes';
-import { findLatestBackUp } from '../model/wallet';
+import { findLatestBackUp } from '../model/backup';
 
 export default function useWallets() {
   const { isWalletLoading, selectedWallet, walletNames, wallets } = useSelector(
