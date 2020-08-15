@@ -216,10 +216,10 @@ const BackupIcloudStep = () => {
           newLabel = '💩 Weak password';
           break;
         case 2:
-          newLabel = '💪 Good password';
+          newLabel = '👌 Good password';
           break;
         case 3:
-          newLabel = '🦾 Great password';
+          newLabel = '💪 Great password';
           break;
         case 4:
           newLabel = '🏰️ Strong password';
