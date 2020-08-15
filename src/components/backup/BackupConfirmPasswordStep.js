@@ -189,7 +189,14 @@ const BackupConfirmPasswordStep = () => {
     setTimeout(() => {
       Alert.alert('Your wallet has been backed up succesfully!');
     }, 1000);
-  }, [dispatch, latestBackup, params.walletId, password, walletCloudBackup]);
+  }, [
+    dispatch,
+    latestBackup,
+    params.walletId,
+    password,
+    selectedWallet.id,
+    walletCloudBackup,
+  ]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
