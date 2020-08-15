@@ -13,7 +13,6 @@ import {
 import walletBackupTypes from '../helpers/walletBackupTypes';
 import {
   allWalletsKey,
-  oldSeedPhraseMigratedKey,
   privateKeyKey,
   seedPhraseKey,
   selectedWalletKey,
@@ -49,11 +48,6 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
 
     // Ignore selected wallet
     if (item.username === selectedWalletKey) {
-      return;
-    }
-
-    // Ignore icloud backup password
-    if (item.username === 'rainbowBackup') {
       return;
     }
 
@@ -194,14 +188,6 @@ async function restoreBackupIntoKeychain(
           return keychain.saveObject(key, value, accessControl);
         }
       })
-    );
-
-    // Save the migration flag
-    // to prevent this flow in the future
-    await keychain.saveString(
-      oldSeedPhraseMigratedKey,
-      'true',
-      publicAccessControlOptions
     );
 
     return true;
