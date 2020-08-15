@@ -153,6 +153,8 @@ const BackupIcloudStep = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const walletId = params?.walletId || selectedWallet.id;
+
   const [label, setLabel] = useState(
     !validPassword ? '􀙶 Add to iCloud Backup' : '􀎽 Confirm Backup'
   );
@@ -245,8 +247,8 @@ const BackupIcloudStep = () => {
     },
     []
   );
+
   const onConfirmBackup = useCallback(async () => {
-    const walletId = params?.walletId || selectedWallet.id;
     await walletCloudBackup({
       latestBackup,
       onError: error => {
@@ -266,10 +268,9 @@ const BackupIcloudStep = () => {
     dispatch,
     latestBackup,
     onPasswordSubmit,
-    params.walletId,
     password,
-    selectedWallet.id,
     walletCloudBackup,
+    walletId,
   ]);
 
   const onConfirmPasswordSubmit = useCallback(() => {

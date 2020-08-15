@@ -136,6 +136,8 @@ const BackupConfirmPasswordStep = () => {
   const passwordRef = useRef();
   const { latestBackup, selectedWallet } = useWallets();
 
+  const walletId = params?.walletId || selectedWallet.id;
+
   useEffect(() => {
     const fetchPasswordIfPossible = async () => {
       const pwd = await fetchBackupPassword();
@@ -173,7 +175,6 @@ const BackupConfirmPasswordStep = () => {
   );
 
   const onSubmit = useCallback(async () => {
-    const walletId = params?.walletId || selectedWallet.id;
     await walletCloudBackup({
       latestBackup,
       onError: error => {
@@ -189,14 +190,7 @@ const BackupConfirmPasswordStep = () => {
     setTimeout(() => {
       Alert.alert('Your wallet has been backed up succesfully!');
     }, 1000);
-  }, [
-    dispatch,
-    latestBackup,
-    params.walletId,
-    password,
-    selectedWallet.id,
-    walletCloudBackup,
-  ]);
+  }, [dispatch, latestBackup, password, walletCloudBackup, walletId]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
