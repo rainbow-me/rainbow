@@ -71,7 +71,7 @@
 	<key>NSContactsUsageDescription</key>
 	<string>Rainbow</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Used to sign transactions</string>
+	<string>Used to sign transactions and access wallet keys</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Rainbow</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
