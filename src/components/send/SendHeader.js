@@ -8,13 +8,13 @@ import { AddressField } from '../fields';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Label } from '../text';
-import { useClipboard } from '@rainbow-me/hooks';
+import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { colors, padding } from '@rainbow-me/styles';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
-  ${padding(19, 15)}
+  ${({ isTinyPhone }) => (isTinyPhone ? padding(12, 15) : padding(19, 15))};
   background-color: ${colors.white};
   overflow: hidden;
   width: 100%;
@@ -52,6 +52,7 @@ export default function SendHeader({
   showAssetList,
 }) {
   const { setClipboard } = useClipboard();
+  const { isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
 
   const contact = useMemo(() => {
@@ -122,7 +123,7 @@ export default function SendHeader({
   return (
     <Fragment>
       <SheetHandle />
-      <AddressInputContainer>
+      <AddressInputContainer isTinyPhone={isTinyPhone}>
         <AddressFieldLabel>To:</AddressFieldLabel>
         <AddressField
           address={recipient}
