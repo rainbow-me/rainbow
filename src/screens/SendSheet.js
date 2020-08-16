@@ -40,6 +40,7 @@ import {
   useSendableUniqueTokens,
   useSendSavingsAccount,
   useTransactionConfirmation,
+  useUpdateAssetOnchainBalance,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { borders, colors } from '@rainbow-me/styles';
@@ -70,6 +71,7 @@ export default function SendSheet(props) {
   const dispatch = useDispatch();
   const { navigate } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
+  const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { allAssets } = useAccountAssets();
   const {
     gasLimit,
@@ -132,7 +134,7 @@ export default function SendSheet(props) {
   // Recalculate balance when gas price changes
   useEffect(() => {
     if (
-      selected.address === 'eth' &&
+      selected?.address === 'eth' &&
       get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
         get(selectedGasPrice, 'txFee.value.amount', 0)
     ) {
@@ -185,9 +187,26 @@ export default function SendSheet(props) {
       } else {
         setSelected(newSelected);
         sendUpdateAssetAmount('');
+        // Since we don't trust the balance from zerion,
+        // let's hit the blockchain and update it
+        updateAssetOnchainBalanceIfNeeded(
+          newSelected,
+          accountAddress,
+          updatedAsset => {
+            // set selected asset with new balance
+            setSelected(updatedAsset);
+            // Update selected to recalculate the maxInputAmount
+            sendUpdateSelected(updatedAsset);
+          }
+        );
       }
     },
-    [sendUpdateAssetAmount, updateMaxInputBalance]
+    [
+      accountAddress,
+      sendUpdateAssetAmount,
+      updateAssetOnchainBalanceIfNeeded,
+      updateMaxInputBalance,
+    ]
   );
 
   const onChangeNativeAmount = useCallback(
@@ -310,14 +329,7 @@ export default function SendSheet(props) {
     } catch (error) {
       setIsAuthorizing(false);
     }
-  }, [
-    amountDetails.assetAmount,
-    navigate,
-    onSubmit,
-    recipient,
-    selected?.name,
-    selected?.type,
-  ]);
+  }, [amountDetails.assetAmount, navigate, onSubmit, recipient, selected]);
 
   const onPressTransactionSpeed = useCallback(
     onSuccess => {
@@ -358,11 +370,11 @@ export default function SendSheet(props) {
   useEffect(() => {
     if (
       (isValidAddress && showAssetList) ||
-      (isValidAddress && showAssetForm && selected.type === AssetTypes.nft)
+      (isValidAddress && showAssetForm && selected?.type === AssetTypes.nft)
     ) {
       Keyboard.dismiss();
     }
-  }, [isValidAddress, selected.type, showAssetForm, showAssetList]);
+  }, [isValidAddress, selected, showAssetForm, showAssetList]);
 
   const { params } = useRoute();
   const assetOverride = params?.asset;

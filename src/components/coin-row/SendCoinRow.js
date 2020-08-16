@@ -51,7 +51,7 @@ const SendCoinRow = magicMemo(
       />
     </ButtonPressAnimation>
   ),
-  'item',
+  ['item', 'selected'],
   buildAssetUniqueIdentifier
 );
 
