@@ -1,43 +1,73 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
-import { compose, withHandlers } from 'recompact';
-import { withNeverRerender } from '../../hoc';
-import { Button } from '../buttons';
-import { Column } from '../layout';
-import { ErrorText, Monospace } from '../text';
+import styled from 'styled-components/primitives';
+import { ButtonPressAnimation } from '../animations';
+import { Icon } from '../icons';
+import { Centered } from '../layout';
+import { Text } from '../text';
 import { colors, margin, padding, position } from '@rainbow-me/styles';
 
-const QRCodeScannerNeedsAuthorization = ({ onPressSettings }) => (
-  <Column
-    align="start"
-    css={`
-      ${padding(30, 50, 60, 30)};
-      ${position.cover};
-    `}
-    justify="center"
-  >
-    <ErrorText color={colors.white} error="Camera not authorized" />
-    <Monospace color="mediumGrey" css={margin(7, 0, 30)} lineHeight="loose">
-      In order to use WalletConnect, you must first give Rainbow permission to
-      access your camera.
-    </Monospace>
-    <Button onPress={onPressSettings} self="start">
-      Open settings
-    </Button>
-  </Column>
-);
+const Button = styled(ButtonPressAnimation).attrs({
+  scaleTo: 1.1,
+})`
+  ${padding(20)};
+  margin-top: 22;
+`;
 
-QRCodeScannerNeedsAuthorization.propTypes = {
-  onPressSettings: PropTypes.func,
-};
+const ButtonLabel = styled(Text).attrs({
+  align: 'center',
+  color: colors.mintDark,
+  size: 'large',
+  weight: 'semibold',
+})``;
 
-export default compose(
-  withHandlers({
-    onPressSettings: () => () =>
-      Linking.canOpenURL('app-settings:').then(() =>
-        Linking.openURL('app-settings:')
-      ),
-  }),
-  withNeverRerender
-)(QRCodeScannerNeedsAuthorization);
+const Container = styled(Centered).attrs({
+  direction: 'column',
+})`
+  ${padding(30, 50, 60, 30)};
+  ${position.cover};
+  background-color: ${colors.black};
+`;
+
+const QRIcon = styled(Icon).attrs({
+  color: colors.mintDark,
+  name: 'camera',
+  outerOpacity: 0.5,
+})`
+  ${position.size(43)};
+`;
+
+const Subtitle = styled(Text).attrs({
+  align: 'center',
+  color: colors.alpha(colors.darkModeColors.blueGreyDark, 0.6),
+  size: 'smedium',
+  weight: 'semibold',
+})``;
+
+const Title = styled(Text).attrs({
+  align: 'center',
+  color: colors.white,
+  size: 'larger',
+  weight: 'bold',
+})`
+  ${margin(20.5, 0, 8)};
+`;
+
+export default function QRCodeScannerNeedsAuthorization() {
+  const handlePressSettings = useCallback(() => {
+    Linking.canOpenURL('app-settings:').then(() =>
+      Linking.openURL('app-settings:')
+    );
+  }, []);
+
+  return (
+    <Container>
+      <QRIcon />
+      <Title>Scan to pay or connect</Title>
+      <Subtitle>Camera access needed to scan!</Subtitle>
+      <Button onPress={handlePressSettings}>
+        <ButtonLabel>Enable camera access 􀄫</ButtonLabel>
+      </Button>
+    </Container>
+  );
+}

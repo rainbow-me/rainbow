@@ -3,7 +3,7 @@ import { Centered } from '../../layout';
 import SecretDisplaySection from '../../secret-display/SecretDisplaySection';
 
 const ShowSecretView = () => (
-  <Centered direction="column" paddingBottom={15} paddingTop={90}>
+  <Centered paddingBottom={15} paddingTop={90}>
     <SecretDisplaySection />
   </Centered>
 );

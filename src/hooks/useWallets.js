@@ -1,7 +1,7 @@
-import { isEmpty } from 'lodash';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
+import { findLatestBackUp } from '../model/backup';
 
 export default function useWallets() {
   const { isWalletLoading, selectedWallet, walletNames, wallets } = useSelector(
@@ -13,21 +13,9 @@ export default function useWallets() {
     })
   );
 
-  let latestBackup = false;
-  let latestBackupDate = null;
-  if (!isEmpty(wallets)) {
-    Object.keys(wallets).forEach(key => {
-      const wallet = wallets[key];
-      // Check if there's a wallet backed up
-      if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
-        // If there is one, let's grab the latest backup
-        if (!latestBackupDate || wallet.backupDate > latestBackupDate) {
-          latestBackup = wallet.backupFile;
-          latestBackupDate = wallet.backupDate;
-        }
-      }
-    });
-  }
+  const latestBackup = useMemo(() => {
+    return findLatestBackUp(wallets) || false;
+  }, [wallets]);
 
   return {
     isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,

@@ -44,7 +44,7 @@ const RestoreSheet = () => {
         longFormHeight: 363,
       });
     }
-  }, [params?.userData, setOptions]);
+  }, [params.userData, setOptions]);
 
   const onIcloudRestore = useCallback(() => {
     switchSheetContentTransitionRef.current?.animateNextTransition();
@@ -66,35 +66,24 @@ const RestoreSheet = () => {
     navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
   }, [goBack, navigate]);
 
-  const renderStep = useCallback(() => {
-    switch (step) {
-      case WalletBackupTypes.cloud:
-        return <RestoreIcloudStep userData={params?.userData} />;
-      default:
-        return (
-          <RestoreSheetFirstStep
-            onIcloudRestore={onIcloudRestore}
-            onManualRestore={onManualRestore}
-            onWatchAddress={onWatchAddress}
-            userData={params?.userData}
-          />
-        );
-    }
-  }, [
-    onIcloudRestore,
-    onManualRestore,
-    onWatchAddress,
-    params?.userData,
-    step,
-  ]);
-
   return (
     <StyledSheet>
       <Transitioning.View
         ref={switchSheetContentTransitionRef}
         transition={switchSheetContentTransition}
       >
-        <Row testID="restore-sheet">{renderStep()}</Row>
+        <Row testID="restore-sheet">
+          {step === WalletBackupTypes.cloud ? (
+            <RestoreIcloudStep userData={params?.userData} />
+          ) : (
+            <RestoreSheetFirstStep
+              onIcloudRestore={onIcloudRestore}
+              onManualRestore={onManualRestore}
+              onWatchAddress={onWatchAddress}
+              userData={params?.userData}
+            />
+          )}
+        </Row>
       </Transitioning.View>
     </StyledSheet>
   );

@@ -2,8 +2,6 @@ import { NativeModules } from 'react-native';
 const AesEncryption = NativeModules.Aes;
 
 export default class AesEncryptor {
-  key = null;
-
   generateSalt(byteCount = 32) {
     const view = new Uint8Array(byteCount);
     global.crypto.getRandomValues(view);

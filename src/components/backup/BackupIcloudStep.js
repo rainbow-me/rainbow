@@ -1,4 +1,5 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
+import { captureException } from '@sentry/react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -12,23 +13,18 @@ import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
+import { isCloudBackupPasswordValid } from '../../handlers/cloudBackup';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import WalletBackupTypes from '../../helpers/walletBackupTypes';
-import WalletLoadingStates from '../../helpers/walletLoadingStates';
-import { useWallets } from '../../hooks';
-import * as keychain from '../../model/keychain';
-import {
-  addWalletToCloudBackup,
-  backupWalletToCloud,
-} from '../../model/wallet';
-import { setIsWalletLoading, setWalletBackedUp } from '../../redux/wallets';
-import { deviceUtils, logger } from '../../utils';
+import { setIsWalletLoading } from '../../redux/wallets';
+import { deviceUtils } from '../../utils';
 import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { GradientText, Text } from '../text';
+import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
 import { borders, colors, padding } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - 108;
 
@@ -146,23 +142,16 @@ const TopIcon = () => (
   </GradientText>
 );
 
-const BackupIcloudStep = ({ setAppearListener }) => {
+const BackupIcloudStep = () => {
   const currentlyFocusedInput = useRef();
-  const refocus = useCallback(() => {
-    currentlyFocusedInput.current?.focus();
-  }, []);
-  useEffect(() => {
-    setAppearListener(refocus);
-  }, [setAppearListener, refocus]);
-  const { goBack } = useNavigation();
   const { params } = useRoute();
-  const loadedPassword = params?.password || '';
-  const { latestBackup, wallets } = useWallets();
+  const walletCloudBackup = useWalletCloudBackup();
+  const { latestBackup, selectedWallet } = useWallets();
   const dispatch = useDispatch();
   const [validPassword, setValidPassword] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
-  const [password, setPassword] = useState(loadedPassword);
-  const [confirmPassword, setConfirmPassword] = useState(loadedPassword);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const [label, setLabel] = useState(
     !validPassword ? '􀙶 Add to iCloud Backup' : '􀎽 Confirm Backup'
@@ -195,17 +184,13 @@ const BackupIcloudStep = ({ setAppearListener }) => {
 
   useEffect(() => {
     let passwordIsValid = false;
-    if (
-      password === confirmPassword &&
-      password !== '' &&
-      password.length >= 8
-    ) {
+    if (password === confirmPassword && isCloudBackupPasswordValid(password)) {
       passwordIsValid = true;
     }
 
     let newLabel = '';
     if (passwordIsValid) {
-      newLabel = loadedPassword ? '􀙶 Add to iCloud Backup' : '􀎽 Confirm Backup';
+      newLabel = '􀎽 Confirm Backup';
     } else if (password.length < 8) {
       newLabel = 'Minimum 8 characters';
     } else if (
@@ -215,8 +200,8 @@ const BackupIcloudStep = ({ setAppearListener }) => {
     ) {
       newLabel = 'Use a longer password';
     } else if (
-      password.length >= 8 &&
-      confirmPassword.length >= 8 &&
+      isCloudBackupPasswordValid(password) &&
+      isCloudBackupPasswordValid(confirmPassword) &&
       confirmPassword.length >= password.length &&
       password !== confirmPassword
     ) {
@@ -245,7 +230,7 @@ const BackupIcloudStep = ({ setAppearListener }) => {
 
     setValidPassword(passwordIsValid);
     setLabel(newLabel);
-  }, [confirmPassword, loadedPassword, password, passwordFocused]);
+  }, [confirmPassword, password, passwordFocused]);
 
   const onPasswordChange = useCallback(
     ({ nativeEvent: { text: inputText } }) => {
@@ -261,62 +246,30 @@ const BackupIcloudStep = ({ setAppearListener }) => {
     []
   );
   const onConfirmBackup = useCallback(async () => {
-    let walletId =
-      params?.walletId ||
-      Object.keys(wallets).find(key => wallets[key].imported === false);
-
-    try {
-      await dispatch(setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET));
-
-      let backupFile;
-      if (!latestBackup) {
-        logger.log(
-          'BackupIcloudStep:: backing up to icloud',
-          wallets[walletId]
-        );
-
-        backupFile = await backupWalletToCloud(password, wallets[walletId]);
-      } else {
-        logger.log(
-          'BackupIcloudStep:: adding to icloud backup',
-          wallets[walletId],
-          latestBackup
-        );
-        backupFile = await addWalletToCloudBackup(
-          password,
-          wallets[walletId],
-          latestBackup
-        );
-      }
-      if (backupFile) {
-        logger.log('BackupIcloudStep:: saving backup password');
-        await keychain.saveBackupPassword(password);
-        logger.log('BackupIcloudStep:: saved');
-
-        logger.log('BackupIcloudStep:: backup completed!', backupFile);
-        await dispatch(
-          setWalletBackedUp(walletId, WalletBackupTypes.cloud, backupFile)
-        );
-        logger.log('BackupIcloudStep:: backup saved everywhere!');
-        goBack();
-      } else {
+    const walletId = params?.walletId || selectedWallet.id;
+    await walletCloudBackup({
+      latestBackup,
+      onError: error => {
+        logger.sentry('Error while calling walletCloudBackup');
+        error && captureException(error);
         Alert.alert('Error while trying to backup');
         setTimeout(onPasswordSubmit, 1000);
         dispatch(setIsWalletLoading(null));
-      }
-    } catch (e) {
-      logger.log('Error while backing up', e);
-      dispatch(setIsWalletLoading(null));
-      Alert.alert('Error while trying to backup');
-    }
+      },
+      password,
+      walletId,
+    });
+    setTimeout(() => {
+      Alert.alert('Your wallet has been backed up succesfully!');
+    }, 1000);
   }, [
-    params?.walletId,
-    wallets,
-    password,
-    latestBackup,
     dispatch,
-    goBack,
+    latestBackup,
     onPasswordSubmit,
+    params.walletId,
+    password,
+    selectedWallet.id,
+    walletCloudBackup,
   ]);
 
   const onConfirmPasswordSubmit = useCallback(() => {
@@ -355,7 +308,7 @@ const BackupIcloudStep = ({ setAppearListener }) => {
                 returnKeyType="next"
                 value={password}
               />
-              {password.length >= 8 && <GreenCheckmarkIcon />}
+              {isCloudBackupPasswordValid(password) && <GreenCheckmarkIcon />}
               {password !== '' &&
                 password.length < 8 &&
                 !passwordRef.current.isFocused() && <WarningIcon />}
@@ -371,8 +324,7 @@ const BackupIcloudStep = ({ setAppearListener }) => {
                 value={confirmPassword}
               />
               {validPassword && <GreenCheckmarkIcon />}
-              {confirmPassword !== '' &&
-                confirmPassword.length >= 8 &&
+              {isCloudBackupPasswordValid(confirmPassword) &&
                 confirmPassword.length >= password.length &&
                 confirmPassword !== password && <WarningIcon />}
             </Shadow>

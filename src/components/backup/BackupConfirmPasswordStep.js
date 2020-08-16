@@ -1,4 +1,5 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
+import { captureException } from '@sentry/react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -11,23 +12,20 @@ import {
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { isCloudBackupPasswordValid } from '../../handlers/cloudBackup';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import WalletBackupTypes from '../../helpers/walletBackupTypes';
-import WalletLoadingStates from '../../helpers/walletLoadingStates';
-import { useWallets } from '../../hooks';
-import { fetchBackupPassword, saveBackupPassword } from '../../model/keychain';
-import {
-  addWalletToCloudBackup,
-  backupWalletToCloud,
-} from '../../model/wallet';
-import { setIsWalletLoading, setWalletBackedUp } from '../../redux/wallets';
-import { deviceUtils, logger } from '../../utils';
+import { fetchBackupPassword } from '../../model/backup';
+
+import { setIsWalletLoading } from '../../redux/wallets';
+import { deviceUtils } from '../../utils';
 import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { GradientText, Text } from '../text';
+import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
 import { borders, colors, padding } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - 108;
 
@@ -127,23 +125,16 @@ const TopIcon = () => (
   </GradientText>
 );
 
-const BackupConfirmPasswordStep = ({ setAppearListener }) => {
-  const { goBack } = useNavigation();
+const BackupConfirmPasswordStep = () => {
   const { params } = useRoute();
   const dispatch = useDispatch();
+  const walletCloudBackup = useWalletCloudBackup();
   const [validPassword, setValidPassword] = useState(false);
-  const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
   const [label, setLabel] = useState('􀎽 Confirm Backup');
   const passwordRef = useRef();
-  const { latestBackup, wallets } = useWallets();
-  const refocus = useCallback(() => {
-    passwordRef.current?.focus();
-  }, []);
-  useEffect(() => {
-    setAppearListener(refocus);
-  }, [setAppearListener, refocus]);
+  const { latestBackup, selectedWallet } = useWallets();
 
   useEffect(() => {
     const fetchPasswordIfPossible = async () => {
@@ -165,77 +156,47 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
   }, []);
 
   useEffect(() => {
-    let newLabel = '';
     let passwordIsValid = false;
 
-    if (incorrectPassword) {
-      newLabel = 'Incorrect Password';
-    } else {
-      if (password !== '' && password.length >= 8) {
-        passwordIsValid = true;
-      }
-
-      newLabel = `􀑙 Add to iCloud Backup`;
+    if (isCloudBackupPasswordValid(password)) {
+      passwordIsValid = true;
+      setLabel(`􀑙 Add to iCloud Backup`);
     }
-
     setValidPassword(passwordIsValid);
-    setLabel(newLabel);
-  }, [incorrectPassword, password, passwordFocused]);
+  }, [password, passwordFocused]);
 
   const onPasswordChange = useCallback(
     ({ nativeEvent: { text: inputText } }) => {
       setPassword(inputText);
-      setIncorrectPassword(false);
     },
     []
   );
 
   const onSubmit = useCallback(async () => {
-    let walletId =
-      params?.walletId ||
-      Object.keys(wallets).find(key => wallets[key].imported === false);
-
-    try {
-      await dispatch(setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET));
-      let backupFile;
-      if (!latestBackup) {
-        logger.log(
-          'BackupConfirmPasswordStep:: backing up to icloud',
-          wallets[walletId]
-        );
-
-        backupFile = await backupWalletToCloud(password, wallets[walletId]);
-      } else {
-        logger.log(
-          'BackupConfirmPasswordStep:: adding to icloud backup',
-          wallets[walletId],
-          latestBackup
-        );
-        backupFile = await addWalletToCloudBackup(
-          password,
-          wallets[walletId],
-          latestBackup
-        );
-      }
-      if (backupFile) {
-        logger.log('BackupConfirmPasswordStep:: saving backup password');
-        await saveBackupPassword(password);
-        logger.log('BackupConfirmPasswordStep:: backup completed!', backupFile);
-        await dispatch(
-          setWalletBackedUp(walletId, WalletBackupTypes.cloud, backupFile)
-        );
-        logger.log('BackupConfirmPasswordStep:: backup saved everywhere!');
-        goBack();
-      } else {
+    const walletId = params?.walletId || selectedWallet.id;
+    await walletCloudBackup({
+      latestBackup,
+      onError: error => {
+        logger.sentry('Error while calling walletCloudBackup');
+        error && captureException(error);
+        passwordRef.current?.focus();
+        dispatch(setIsWalletLoading(null));
         Alert.alert('Error while trying to backup');
-      }
-    } catch (e) {
-      logger.log('Error while backing up', e);
-      passwordRef.current?.focus();
-      await dispatch(setIsWalletLoading(null));
-      Alert.alert('Error while trying to backup');
-    }
-  }, [dispatch, goBack, latestBackup, params?.walletId, password, wallets]);
+      },
+      password,
+      walletId,
+    });
+    setTimeout(() => {
+      Alert.alert('Your wallet has been backed up succesfully!');
+    }, 1000);
+  }, [
+    dispatch,
+    latestBackup,
+    params.walletId,
+    password,
+    selectedWallet.id,
+    walletCloudBackup,
+  ]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
@@ -269,10 +230,9 @@ const BackupConfirmPasswordStep = ({ setAppearListener }) => {
                 returnKeyType="next"
                 value={password}
               />
-              {((password !== '' &&
+              {password !== '' &&
                 password.length < 8 &&
-                !passwordRef.current.isFocused()) ||
-                incorrectPassword) && <WarningIcon />}
+                !passwordRef.current.isFocused() && <WarningIcon />}
             </Shadow>
           </InputsWrapper>
           <Column css={padding(0, 15, 0)} width="100%">

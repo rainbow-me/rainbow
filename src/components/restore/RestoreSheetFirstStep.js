@@ -1,4 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
+import { forEach } from 'lodash';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import { deviceUtils } from '../../utils';
@@ -81,89 +82,75 @@ const RestoreSheetFirstStep = ({
 }) => {
   const walletsBackedUp = useMemo(() => {
     let count = 0;
-    userData &&
-      Object.keys(userData.wallets).forEach(key => {
-        const wallet = userData.wallets[key];
-        if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
-          count++;
-        }
-      });
+    forEach(userData?.wallets, wallet => {
+      if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
+        count++;
+      }
+    });
     return count;
   }, [userData]);
 
-  const onIcloudRestorePress = useCallback(() => {
-    onIcloudRestore();
-  }, [onIcloudRestore]);
-
   return (
-    <React.Fragment>
-      <Container>
-        {walletsBackedUp > 0 && (
-          <React.Fragment>
-            <SheetRow as={ButtonPressAnimation} onPress={onIcloudRestorePress}>
-              <Column>
-                <Row>
-                  <RainbowText>
-                    <TextIcon>􀌍</TextIcon>
-                  </RainbowText>
-                </Row>
-                <TitleRow>
-                  <RainbowText>
-                    <Title>Restore from iCloud</Title>
-                  </RainbowText>
-                  <CaretIcon />
-                </TitleRow>
-                <DescriptionText>
-                  {typeof userData === undefined
-                    ? ' Checking iCloud for backups...'
-                    : walletsBackedUp > 0
-                    ? `You have ${walletsBackedUp} ${
-                        walletsBackedUp > 1 ? 'wallets' : 'wallet'
-                      } backed up`
-                    : `You don't have any wallets backed up`}
-                </DescriptionText>
-              </Column>
-            </SheetRow>
-            <Divider color={colors.rowDividerExtraLight} inset={[0, 30]} />
-          </React.Fragment>
-        )}
-        <SheetRow
-          as={ButtonPressAnimation}
-          onPress={onManualRestore}
-          testID="restore-with-key-button"
-        >
-          <Column>
-            <TextIcon color={colors.purple}>􀑚</TextIcon>
-            <TitleRow justify="space-between" width="100%">
-              <Title>Restore with a recovery phrase or private key</Title>
-              <CaretIcon />
-            </TitleRow>
-            <DescriptionText>
-              Use your recovery phrase from Rainbow or another crypto wallet
-            </DescriptionText>
-          </Column>
-        </SheetRow>
-        <Divider color={colors.rowDividerExtraLight} inset={[0, 30]} />
+    <Container>
+      {walletsBackedUp > 0 && (
+        <React.Fragment>
+          <SheetRow as={ButtonPressAnimation} onPress={onIcloudRestore}>
+            <Column>
+              <Row>
+                <RainbowText>
+                  <TextIcon>􀌍</TextIcon>
+                </RainbowText>
+              </Row>
+              <TitleRow>
+                <RainbowText>
+                  <Title>Restore from iCloud</Title>
+                </RainbowText>
+                <CaretIcon />
+              </TitleRow>
+              <DescriptionText>
+                {`You have ${walletsBackedUp} ${
+                  walletsBackedUp > 1 ? 'wallets' : 'wallet'
+                } backed up`}
+              </DescriptionText>
+            </Column>
+          </SheetRow>
+          <Divider color={colors.rowDividerExtraLight} inset={[0, 30]} />
+        </React.Fragment>
+      )}
+      <SheetRow
+        as={ButtonPressAnimation}
+        onPress={onManualRestore}
+        testID="restore-with-key-button"
+      >
+        <Column>
+          <TextIcon color={colors.purple}>􀑚</TextIcon>
+          <TitleRow justify="space-between" width="100%">
+            <Title>Restore with a recovery phrase or private key</Title>
+            <CaretIcon />
+          </TitleRow>
+          <DescriptionText>
+            Use your recovery phrase from Rainbow or another crypto wallet
+          </DescriptionText>
+        </Column>
+      </SheetRow>
+      <Divider color={colors.rowDividerExtraLight} inset={[0, 30]} />
 
-        <SheetRow
-          as={ButtonPressAnimation}
-          onPress={onWatchAddress}
-          scaleTo={0.9}
-          testID="watch-address-button"
-        >
-          <Column>
-            <TextIcon color={colors.mintDark}>􀒒</TextIcon>
-            <TitleRow justify="space-between" width="100%">
-              <Title>Watch an Ethereum address </Title>
-              <CaretIcon />
-            </TitleRow>
-            <DescriptionText>
-              Watch a public address or ENS name
-            </DescriptionText>
-          </Column>
-        </SheetRow>
-      </Container>
-    </React.Fragment>
+      <SheetRow
+        as={ButtonPressAnimation}
+        onPress={onWatchAddress}
+        scaleTo={0.9}
+        testID="watch-address-button"
+      >
+        <Column>
+          <TextIcon color={colors.mintDark}>􀒒</TextIcon>
+          <TitleRow justify="space-between" width="100%">
+            <Title>Watch an Ethereum address </Title>
+            <CaretIcon />
+          </TitleRow>
+          <DescriptionText>Watch a public address or ENS name</DescriptionText>
+        </Column>
+      </SheetRow>
+    </Container>
   );
 };
 

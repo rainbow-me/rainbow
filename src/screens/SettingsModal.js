@@ -1,7 +1,13 @@
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect } from 'react';
-import { Alert, Animated, Platform, View } from 'react-native';
+import {
+  Alert,
+  Animated,
+  InteractionManager,
+  Platform,
+  View,
+} from 'react-native';
 import styled from 'styled-components/native';
 import { Icon } from '../components/icons';
 import { Modal } from '../components/modal';
@@ -130,7 +136,7 @@ export default function SettingsModal() {
   const getRealRoute = useCallback(
     key => {
       let route = key;
-      let params = {};
+      let paramsToPass = {};
       if (key === SettingsPages.backup.key) {
         const walletId = params?.walletId;
         if (
@@ -142,15 +148,15 @@ export default function SettingsModal() {
           route = 'WalletSelectionView';
         } else {
           if (Object.keys(wallets).length === 1 && selectedWallet.imported) {
-            params.imported = true;
-            params.type = 'AlreadyBackedUpView';
+            paramsToPass.imported = true;
+            paramsToPass.type = 'AlreadyBackedUpView';
           }
           route = 'SettingsBackupView';
         }
       }
-      return { params, route };
+      return { params: { ...params, ...paramsToPass }, route };
     },
-    [selectedWallet.imported, wallets]
+    [params, selectedWallet.imported, wallets]
   );
 
   const onPressSection = useCallback(
@@ -168,10 +174,12 @@ export default function SettingsModal() {
 
   useEffect(() => {
     if (params?.initialRoute) {
-      const route = getRealRoute(params?.initialRoute);
-      navigate(route);
+      const { route, params: routeParams } = getRealRoute(params?.initialRoute);
+      InteractionManager.runAfterInteractions(() => {
+        navigate(route, routeParams);
+      });
     }
-  }, [getRealRoute, navigate, params?.initialRoute]);
+  }, [getRealRoute, navigate, params]);
 
   return (
     <Modal

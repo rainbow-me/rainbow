@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
-import { isEmpty as isObjectEmpty } from 'lodash';
+import { keys } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -24,7 +24,6 @@ import { web3Provider } from '../handlers/web3';
 import BackupStateTypes from '../helpers/backupStateTypes';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { isENSAddressFormat, isValidWallet } from '../helpers/validators';
-import WalletTypes from '../helpers/walletTypes';
 import { getWallet } from '../model/wallet';
 import Navigation, { useNavigation } from '../navigation/Navigation';
 import { sheetVerticalOffset } from '../navigation/effects';
@@ -129,7 +128,7 @@ export default function ImportSeedPhraseSheet() {
   const { isSmallPhone } = useDimensions();
   const { goBack, navigate, replace, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
-  const hadPreviousAddressWithValue = useIsWalletEthZero();
+  const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
   const [color, setColor] = useState(null);
@@ -138,6 +137,7 @@ export default function ImportSeedPhraseSheet() {
   const [resolvedAddress, setResolvedAddress] = useState(null);
   const [startAnalyticsTimeout] = useTimeout();
   const wasImporting = usePrevious(isImporting);
+  const { setComponent, hide } = usePortal();
 
   const inputRef = useRef(null);
   const { handleFocus } = useMagicAutofocus(inputRef);
@@ -239,29 +239,12 @@ export default function ImportSeedPhraseSheet() {
     }
   }, [clipboard, handleSetSeedPhrase, isClipboardValidSecret]);
 
-  const { setComponent, hide } = usePortal();
-  useEffect(() => {
-    if (isImporting) {
-      setComponent(
-        <LoadingOverlay
-          paddingTop={keyboardVerticalOffset}
-          title="Importing..."
-        />,
-        true
-      );
-      return hide;
-    }
-  }, [hide, isImporting, setComponent]);
-
   useEffect(() => {
     if (!wasImporting && isImporting) {
       startAnalyticsTimeout(async () => {
         const input = resolvedAddress ? resolvedAddress : seedPhrase.trim();
-        const previousWalletCount = !isObjectEmpty(wallets)
-          ? Object.keys(wallets).filter(
-              wallet => wallet.type !== WalletTypes.readOnly
-            ).length
-          : 0;
+        const previousWalletCount = keys(wallets).length;
+
         initializeWallet(input, color, name ? name : '')
           .then(success => {
             handleSetImporting(false);
@@ -288,7 +271,7 @@ export default function ImportSeedPhraseSheet() {
                   }
                 }, 1000);
                 analytics.track('Imported seed phrase', {
-                  hadPreviousAddressWithValue,
+                  isWalletEthZero,
                 });
               });
             } else {
@@ -311,7 +294,7 @@ export default function ImportSeedPhraseSheet() {
     }
   }, [
     color,
-    hadPreviousAddressWithValue,
+    isWalletEthZero,
     handleSetImporting,
     hide,
     dispatch,

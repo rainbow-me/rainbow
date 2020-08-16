@@ -1,7 +1,8 @@
+import { find } from 'lodash';
 import React, { useRef, useState } from 'react';
 import { chartExpandedAvailable } from '../../config/experimental';
 import AssetInputTypes from '../../helpers/assetInputTypes';
-import { useColorForAsset } from '../../hooks';
+import { useColorForAsset, useUniswapAssetsInWallet } from '../../hooks';
 import { magicMemo } from '../../utils';
 import {
   SendActionButton,
@@ -27,6 +28,12 @@ const ChartExpandedState = ({ asset }) => {
 
   const [chartPrice, setChartPrice] = useState(0);
   const color = useColorForAsset(asset);
+
+  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
+  const showSwapButton = find(uniswapAssetsInWallet, [
+    'uniqueId',
+    asset.uniqueId,
+  ]);
 
   return (
     <SlackSheet
@@ -67,7 +74,9 @@ const ChartExpandedState = ({ asset }) => {
         </TokenInfoRow>
       </TokenInfoSection>
       <SheetActionButtonRow>
-        <SwapActionButton color={color} inputType={AssetInputTypes.in} />
+        {showSwapButton && (
+          <SwapActionButton color={color} inputType={AssetInputTypes.in} />
+        )}
         <SendActionButton color={color} />
       </SheetActionButtonRow>
     </SlackSheet>

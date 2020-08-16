@@ -12,6 +12,7 @@ import {
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { isCloudBackupPasswordValid } from '../../handlers/cloudBackup';
 import { saveUserBackupState } from '../../handlers/localstorage/globalSettings';
 import { removeWalletData } from '../../handlers/localstorage/removeWallet';
 import BackupStateTypes from '../../helpers/backupStateTypes';
@@ -22,8 +23,11 @@ import {
   useInitializeWallet,
   useWallets,
 } from '../../hooks';
-import { fetchBackupPassword, saveBackupPassword } from '../../model/keychain';
-import { restoreCloudBackup } from '../../model/wallet';
+import {
+  fetchBackupPassword,
+  restoreCloudBackup,
+  saveBackupPassword,
+} from '../../model/backup';
 import { sheetVerticalOffset } from '../../navigation/effects';
 import { usePortal } from '../../react-native-cool-modals/Portal';
 import { setIsWalletLoading, walletsLoadState } from '../../redux/wallets';
@@ -143,7 +147,6 @@ const RestoreIcloudStep = ({ userData }) => {
   const { accountAddress } = useAccountSettings();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
-  const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
   const [label, setLabel] = useState('􀎽 Confirm Backup');
   const passwordRef = useRef();
@@ -172,14 +175,6 @@ const RestoreIcloudStep = ({ userData }) => {
     fetchPasswordIfPossible();
   }, []);
 
-  const onPasswordFocus = useCallback(() => {
-    setPasswordFocused(true);
-  }, []);
-
-  const onPasswordBlur = useCallback(() => {
-    setPasswordFocused(false);
-  }, []);
-
   useEffect(() => {
     let newLabel = '';
     let passwordIsValid = false;
@@ -187,7 +182,7 @@ const RestoreIcloudStep = ({ userData }) => {
     if (incorrectPassword) {
       newLabel = 'Incorrect Password';
     } else {
-      if (password !== '' && password.length >= 8) {
+      if (isCloudBackupPasswordValid(password)) {
         passwordIsValid = true;
       }
 
@@ -196,7 +191,7 @@ const RestoreIcloudStep = ({ userData }) => {
 
     setValidPassword(passwordIsValid);
     setLabel(newLabel);
-  }, [incorrectPassword, password, passwordFocused]);
+  }, [incorrectPassword, password]);
 
   const onPasswordChange = useCallback(
     ({ nativeEvent: { text: inputText } }) => {
@@ -208,7 +203,7 @@ const RestoreIcloudStep = ({ userData }) => {
 
   const onSubmit = useCallback(async () => {
     try {
-      await dispatch(setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET));
+      dispatch(setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET));
       const success = await restoreCloudBackup(password, userData);
       if (success) {
         // Store it in the keychain in case it was missing
@@ -224,14 +219,14 @@ const RestoreIcloudStep = ({ userData }) => {
         goBack();
         InteractionManager.runAfterInteractions(async () => {
           replace(Routes.SWIPE_LAYOUT);
-          await dispatch(setIsWalletLoading(null));
+          dispatch(setIsWalletLoading(null));
         });
       } else {
         setIncorrectPassword(true);
-        await dispatch(setIsWalletLoading(null));
+        dispatch(setIsWalletLoading(null));
       }
     } catch (e) {
-      await dispatch(setIsWalletLoading(null));
+      dispatch(setIsWalletLoading(null));
       Alert.alert('Error while restoring backup');
     }
   }, [
@@ -267,9 +262,7 @@ const RestoreIcloudStep = ({ userData }) => {
             <Shadow>
               <PasswordInput
                 autoFocus
-                onBlur={onPasswordBlur}
                 onChange={onPasswordChange}
-                onFocus={onPasswordFocus}
                 onSubmitEditing={onPasswordSubmit}
                 placeholder="Backup Password"
                 ref={passwordRef}

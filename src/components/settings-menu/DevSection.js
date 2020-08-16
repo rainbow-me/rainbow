@@ -62,14 +62,16 @@ const DevSection = () => {
       />
       <ListFooter />
 
-      {Object.keys(config).map(key => (
-        <RadioListItem
-          key={key}
-          label={key}
-          onPress={() => onNetworkChange(key)}
-          selected={!!config[key]}
-        />
-      ))}
+      {Object.keys(config)
+        .sort()
+        .map(key => (
+          <RadioListItem
+            key={key}
+            label={key}
+            onPress={() => onNetworkChange(key)}
+            selected={!!config[key]}
+          />
+        ))}
     </ScrollView>
   );
 };

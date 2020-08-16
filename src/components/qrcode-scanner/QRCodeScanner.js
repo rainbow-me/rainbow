@@ -1,112 +1,84 @@
-import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
+import { RNCamera } from 'react-native-camera';
+import { useIsEmulator } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
-import { Transition, Transitioning } from 'react-native-reanimated';
-import SimulatorFakeCameraImageSource from '../../assets/simulator-fake-camera-image.jpg';
-import { usePrevious } from '../../hooks';
-import { magicMemo } from '../../utils';
+import styled from 'styled-components/primitives';
 import { Centered } from '../layout';
 import { ErrorText } from '../text';
-import QRCodeScannerCamera from './QRCodeScannerCamera';
 import QRCodeScannerCrosshair from './QRCodeScannerCrosshair';
+import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
+import SimulatorFakeCameraImageSource from '@rainbow-me/assets/simulator-fake-camera-image.jpg';
+import { useBooleanState, useScanner } from '@rainbow-me/hooks';
 import { colors, position } from '@rainbow-me/styles';
 
-const transition = (
-  <Transition.Change durationMs={200} interpolation="easeInOut" />
-);
+const Camera = styled(RNCamera)`
+  ${position.cover};
+  ${position.size('100%')};
+`;
 
-const QRCodeScanner = ({
+const CameraWrapper = styled(Centered)`
+  ${position.size('100%')};
+`;
+
+const Container = styled(Centered).attrs({
+  direction: 'column',
+})`
+  ${position.cover};
+  background-color: ${colors.black};
+`;
+
+const ContentOverlay = styled(Centered)`
+  ${position.cover};
+  bottom: ${({ contentPositionBottom }) => contentPositionBottom || 0};
+  top: ${({ contentPositionTop }) => contentPositionTop || 0};
+`;
+
+const EmulatorCameraFallback = styled(FastImage).attrs({
+  source: SimulatorFakeCameraImageSource,
+})`
+  ${position.cover};
+  ${position.size('100%')};
+`;
+
+export default function QRCodeScanner({
   contentPositionBottom,
   contentPositionTop,
   enableCamera,
-  enableScanning,
-  isCameraAuthorized,
-  isEmulator,
-  onSuccess,
-  showCrosshairText,
-}) => {
-  const ref = useRef();
-  const [error, setError] = useState(null);
-  const [isInitialized, setInitialized] = useState(false);
-
-  const prevContentPositionBottom = usePrevious(contentPositionBottom);
-  useEffect(() => {
-    if (ref.current && contentPositionBottom !== prevContentPositionBottom) {
-      ref.current.animateNextTransition();
-    }
-  }, [contentPositionBottom, prevContentPositionBottom]);
-
-  let cameraRenderer = null;
-  if (isEmulator && enableCamera) {
-    cameraRenderer = (
-      <FastImage
-        source={SimulatorFakeCameraImageSource}
-        style={position.sizeAsObject('100%')}
-      />
-    );
-  } else if (enableCamera) {
-    cameraRenderer = (
-      <QRCodeScannerCamera
-        enableScanning={enableScanning}
-        onCameraReady={() => setInitialized(true)}
-        onMountError={() => setError('mounting')}
-        onSuccess={onSuccess}
-      />
-    );
-  }
+}) {
+  const [error, showError] = useBooleanState();
+  const [isInitialized, setInitialized] = useBooleanState();
+  const { result: isEmulator } = useIsEmulator();
+  const { isCameraAuthorized, onScan } = useScanner(enableCamera);
 
   const showErrorMessage = error && !isInitialized;
   const showCrosshair = !error && !showErrorMessage;
 
   return (
-    <Centered
-      {...position.coverAsObject}
-      backgroundColor={colors.black}
-      direction="column"
-    >
-      {cameraRenderer}
-      {isCameraAuthorized && (
-        <Transitioning.View
-          ref={ref}
-          style={position.coverAsObject}
-          transition={transition}
+    <Container>
+      <CameraWrapper>
+        {enableCamera && isEmulator && <EmulatorCameraFallback />}
+        {enableCamera && !isEmulator && (
+          <Camera
+            captureAudio={false}
+            notAuthorizedView={QRCodeScannerNeedsAuthorization}
+            onBarCodeRead={onScan}
+            onCameraReady={setInitialized}
+            onMountError={showError}
+            pendingAuthorizationView={null}
+          />
+        )}
+      </CameraWrapper>
+      {isCameraAuthorized ? (
+        <ContentOverlay
+          contentPositionBottom={contentPositionBottom}
+          contentPositionTop={contentPositionTop}
         >
-          <Centered
-            {...position.coverAsObject}
-            bottom={contentPositionBottom}
-            top={contentPositionTop}
-          >
-            {showErrorMessage && (
-              <ErrorText color={colors.red} error={`Error ${error} camera`} />
-            )}
-            {showCrosshair && (
-              <QRCodeScannerCrosshair
-                showText={showCrosshairText || isEmulator}
-                text={isEmulator ? 'Simulator Mode' : undefined}
-              />
-            )}
-          </Centered>
-        </Transitioning.View>
+          {showErrorMessage && <ErrorText error="Error mounting camera" />}
+          {showCrosshair && <QRCodeScannerCrosshair />}
+        </ContentOverlay>
+      ) : (
+        <QRCodeScannerNeedsAuthorization />
       )}
-    </Centered>
+    </Container>
   );
-};
-
-QRCodeScanner.propTypes = {
-  contentPositionBottom: PropTypes.node,
-  contentPositionTop: PropTypes.node,
-  enableCamera: PropTypes.bool,
-  enableScanning: PropTypes.bool,
-  isCameraAuthorized: PropTypes.bool,
-  isEmulator: PropTypes.bool,
-  onSuccess: PropTypes.func,
-  showCrosshairText: PropTypes.bool,
-};
-
-export default magicMemo(QRCodeScanner, [
-  'contentPositionBottom',
-  'enableCamera',
-  'enableScanning',
-  'isCameraAuthorized',
-  'showCrosshairText',
-]);
+}

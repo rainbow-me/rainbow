@@ -1,3 +1,4 @@
+import BackupStateTypes from '../../helpers/backupStateTypes';
 import networkTypes from '../../helpers/networkTypes';
 import { getGlobal, saveGlobal } from './common';
 
@@ -16,7 +17,8 @@ export const getKeychainIntegrityState = () =>
 export const saveKeychainIntegrityState = state =>
   saveGlobal(KEYCHAIN_INTEGRITY_STATE, state);
 
-export const getUserBackupState = () => getGlobal(USER_BACKUP_STATE, null);
+export const getUserBackupState = () =>
+  getGlobal(USER_BACKUP_STATE, BackupStateTypes.immediate);
 
 export const saveUserBackupState = userBackupState =>
   saveGlobal(USER_BACKUP_STATE, userBackupState);

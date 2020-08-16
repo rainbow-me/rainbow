@@ -134,7 +134,8 @@ const WalletSelectionView = () => {
                   </Row>
                   {totalAccounts > 1 ? (
                     <BottomRowText weight={fonts.weight.medium}>
-                      And {totalAccounts - 1} more wallets
+                      And {totalAccounts - 1} more{' '}
+                      {totalAccounts > 2 ? `wallets` : `wallet`}
                     </BottomRowText>
                   ) : wallet.backedUp ? (
                     wallet.backupType === WalletBackupTypes.cloud ? (

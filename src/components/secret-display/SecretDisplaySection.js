@@ -1,21 +1,46 @@
 import { useRoute } from '@react-navigation/native';
+import { captureException } from '@sentry/react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import styled from 'styled-components';
+import BiometryTypes from '../../helpers/biometryTypes';
 import WalletTypes from '../../helpers/walletTypes';
-import { useDimensions, useWallets } from '../../hooks';
+import { useBiometryType, useDimensions, useWallets } from '../../hooks';
 import {
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
 } from '../../model/wallet';
 import { deviceUtils } from '../../utils';
+import { Button } from '../buttons';
 import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import { Centered, Column, Row, RowWithMargins } from '../layout';
 import SecretDisplayItem from '../secret-display/SecretDisplayItem';
-import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
-import { colors, position } from '@rainbow-me/styles';
+import { colors, position, shadow } from '@rainbow-me/styles';
+import logger from 'logger';
+
+const BiometryIcon = styled(Icon).attrs(({ biometryType }) => ({
+  name: biometryType.toLowerCase(),
+  size: biometryType === BiometryTypes.passcode ? 19 : 20,
+}))`
+  margin-bottom: ${({ biometryType }) =>
+    biometryType === BiometryTypes.passcode ? 1.5 : 0};
+`;
+
+const ButtonLabel = styled(Text).attrs({
+  align: 'center',
+  color: colors.white,
+  size: 'large',
+  weight: 'semibold',
+})``;
+
+const ToggleSecretButton = styled(Button)`
+  ${shadow.build(0, 5, 15, colors.purple, 0.3)}
+  background-color: ${colors.appleBlue};
+  width: 235;
+  width: 265;
+`;
 
 const PrivateKeyText = styled(SecretDisplayItem).attrs({
   align: 'center',
@@ -32,39 +57,49 @@ const Shadow = styled(ShadowStack)`
 
 const SecretDisplaySection = ({ onWalletTypeIdentified, secretLoaded }) => {
   const { params } = useRoute();
+  const { selectedWallet, wallets } = useWallets();
+  const walletId = params?.walletId || selectedWallet.id;
+  const currentWallet = wallets[walletId];
   const { isTallPhone } = useDimensions();
-  const { selectedWallet } = useWallets();
-  const [error, setError] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [seed, setSeed] = useState(null);
-  const [type, setType] = useState(null);
+  const [type, setType] = useState(currentWallet?.type);
   const { width: deviceWidth } = useDimensions();
+  const biometryType = useBiometryType();
   let wordSectionHeight = 100;
 
-  const loadSeed = useCallback(async () => {
-    const walletId = params?.walletId || selectedWallet.id;
-    const s = await loadSeedPhraseAndMigrateIfNeeded(walletId);
-    if (s) {
-      const walletType = identifyWalletType(s);
-      setType(walletType);
-      onWalletTypeIdentified && onWalletTypeIdentified(walletType);
-      setSeed(s);
-      setError(false);
-      secretLoaded && secretLoaded(true);
-    } else {
-      setError(true);
-      secretLoaded && secretLoaded(false);
-    }
-  }, [
-    onWalletTypeIdentified,
-    params?.walletId,
-    secretLoaded,
-    selectedWallet.id,
-  ]);
+  const showBiometryIcon =
+    !seed &&
+    (biometryType === BiometryTypes.passcode ||
+      biometryType === BiometryTypes.TouchID);
+  const showFaceIDCharacter = !seed && biometryType === BiometryTypes.FaceID;
 
   useEffect(() => {
     loadSeed();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const loadSeed = useCallback(async () => {
+    try {
+      const s = await loadSeedPhraseAndMigrateIfNeeded(walletId);
+      if (s) {
+        const walletType = identifyWalletType(s);
+        setType(walletType);
+        onWalletTypeIdentified && onWalletTypeIdentified(walletType);
+        setSeed(s);
+        setVisible(true);
+        secretLoaded && secretLoaded(true);
+      } else {
+        setVisible(false);
+        secretLoaded && secretLoaded(false);
+      }
+    } catch (e) {
+      logger.sentry('Error while trying to reveal secret', e);
+      captureException(e);
+      setVisible(false);
+      secretLoaded && secretLoaded(false);
+    }
+  }, [onWalletTypeIdentified, secretLoaded, walletId]);
 
   let columns = [];
   if (seed && type === WalletTypes.mnemonic) {
@@ -75,7 +110,7 @@ const SecretDisplaySection = ({ onWalletTypeIdentified, secretLoaded }) => {
     wordSectionHeight = 151;
   }
 
-  if (error) {
+  if (!visible) {
     return (
       <Centered>
         <Column marginTop={40} paddingHorizontal={60}>
@@ -89,11 +124,18 @@ const SecretDisplaySection = ({ onWalletTypeIdentified, secretLoaded }) => {
             {type === WalletTypes.privateKey ? 'key' : 'phrase'}
           </Text>
           <Column margin={24} marginTop={20}>
-            <SheetActionButton
-              color={colors.appleBlue}
-              label="Try again"
-              onPress={loadSeed}
-            />
+            <ToggleSecretButton onPress={loadSeed}>
+              {showBiometryIcon && <BiometryIcon biometryType={biometryType} />}
+              <ButtonLabel
+                color="appleBlue"
+                letterSpacing="rounded"
+                weight="semibold"
+              >
+                {showFaceIDCharacter && '􀎽  '}
+                Show Recovery{' '}
+                {`${type === WalletTypes.privateKey ? 'Key' : 'Phrase'}`}
+              </ButtonLabel>
+            </ToggleSecretButton>
           </Column>
         </Column>
       </Centered>
@@ -102,7 +144,7 @@ const SecretDisplaySection = ({ onWalletTypeIdentified, secretLoaded }) => {
 
   return (
     <Centered direction="column">
-      {seed && (
+      {visible && seed && (
         <React.Fragment>
           <Row>
             <CopyFloatingEmojis scaleTo={0.88} textToCopy={seed}>
@@ -143,7 +185,7 @@ const SecretDisplaySection = ({ onWalletTypeIdentified, secretLoaded }) => {
               <Row
                 justify="space-between"
                 marginHorizontal={30}
-                marginVertical={19}
+                marginVertical={30}
               >
                 {type === WalletTypes.privateKey ? (
                   <Column>

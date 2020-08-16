@@ -1,8 +1,11 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { filter, flatMap, get, keys, map, values } from 'lodash';
+import { filter, flatMap, get, keys, map, mapValues, values } from 'lodash';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
-import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
+import {
+  saveKeychainIntegrityState,
+  saveUserBackupState,
+} from '../handlers/localstorage/globalSettings';
 import {
   getWalletNames,
   saveWalletNames,
@@ -21,12 +24,11 @@ import {
   oldSeedPhraseMigratedKey,
   saveAddress,
   saveAllWallets,
-  seedPhraseKey,
-  seedPhraseMigratedKey,
   setSelectedWallet,
 } from '../model/wallet';
 import { settingsUpdateAccountAddress } from '../redux/settings';
 import { logger } from '../utils';
+import { privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
 
 // -- Constants --------------------------------------- //
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
@@ -109,8 +111,8 @@ export const walletsLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const walletsUpdate = wallets => dispatch => {
-  saveAllWallets(wallets);
+export const walletsUpdate = wallets => async dispatch => {
+  await saveAllWallets(wallets);
   dispatch({
     payload: wallets,
     type: WALLETS_UPDATE,
@@ -145,9 +147,9 @@ export const setWalletBackedUp = (
     newWallets[walletId].backupFile = backupFile;
   }
   newWallets[walletId].backupDate = Date.now();
-  dispatch(walletsUpdate(newWallets));
+  await dispatch(walletsUpdate(newWallets));
   if (selected.id === walletId) {
-    dispatch(walletsSetSelected(newWallets[walletId]));
+    await dispatch(walletsSetSelected(newWallets[walletId]));
   }
 
   // Reset the loading state 1 second later
@@ -159,9 +161,45 @@ export const setWalletBackedUp = (
     try {
       await backupUserDataIntoCloud({ wallets: newWallets });
     } catch (e) {
-      logger.error('SAVING WALLET USERDATA FAILED', e);
+      logger.sentry('SAVING WALLET USERDATA FAILED');
+      captureException(e);
+      throw e;
     }
   }
+  await saveUserBackupState(BackupStateTypes.done);
+};
+
+export const setAllWalletsBackedUpManually = () => async (
+  dispatch,
+  getState
+) => {
+  const { wallets, selected } = getState().wallets;
+  const backupDate = Date.now();
+  let updateSelected = false;
+  const newWallets = mapValues(wallets, (wallet, walletId) => {
+    if (wallets.type !== WalletTypes.readOnly) {
+      if (selected.id === walletId) {
+        updateSelected = true;
+      }
+      const updatedWallet = { ...wallet };
+      updatedWallet.backedUp = true;
+      updatedWallet.backupType = WalletBackupTypes.manual;
+      updatedWallet.backupDate = backupDate;
+      return updatedWallet;
+    }
+    return wallet;
+  });
+
+  await dispatch(walletsUpdate(newWallets));
+  if (updateSelected) {
+    await dispatch(walletsSetSelected(newWallets[selected.id]));
+  }
+
+  // Reset the loading state 1 second later
+  setTimeout(() => {
+    dispatch(setIsWalletLoading(null));
+  }, 1000);
+
   await saveUserBackupState(BackupStateTypes.done);
 };
 
@@ -244,32 +282,21 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       );
     }
 
-    const hasMigratedFlag = await hasKey(seedPhraseMigratedKey);
-    if (hasMigratedFlag) {
-      logger.sentry(
-        '[KeychainIntegrityCheck]: previous migrated flag is OK [NO LONGER RELEVANT]'
-      );
-    } else {
-      logger.sentry(
-        `[KeychainIntegrityCheck]: migrated flag is present: ${hasMigratedFlag} [NO LONGER RELEVANT]`
-      );
-    }
-
-    const hasOldSeedPhraseMigratedKey = await hasKey(oldSeedPhraseMigratedKey);
-    if (hasOldSeedPhraseMigratedKey) {
+    const hasOldSeedPhraseMigratedFlag = await hasKey(oldSeedPhraseMigratedKey);
+    if (hasOldSeedPhraseMigratedFlag) {
       logger.sentry('[KeychainIntegrityCheck]: migrated flag is OK');
     } else {
       logger.sentry(
-        `[KeychainIntegrityCheck]: migrated flag is present: ${hasOldSeedPhraseMigratedKey}`
+        `[KeychainIntegrityCheck]: migrated flag is present: ${hasOldSeedPhraseMigratedFlag}`
       );
     }
 
-    const hasOldSeedphraseKey = await hasKey(seedPhraseKey);
-    if (hasOldSeedphraseKey) {
+    const hasOldSeedphrase = await hasKey(seedPhraseKey);
+    if (hasOldSeedphrase) {
       logger.sentry('[KeychainIntegrityCheck]: old seed is still present!');
     } else {
       logger.sentry(
-        `[KeychainIntegrityCheck]: old seed is present: ${hasOldSeedphraseKey}`
+        `[KeychainIntegrityCheck]: old seed is present: ${hasOldSeedphrase}`
       );
     }
 
@@ -297,7 +324,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       logger.sentry(`[KeychainIntegrityCheck]: checking wallet ${key}`);
       const wallet = wallets[key];
       logger.sentry(`[KeychainIntegrityCheck]: Wallet data`, wallet);
-      const seedKeyFound = await hasKey(`${key}_rainbowSeedPhrase`);
+      const seedKeyFound = await hasKey(`${key}_${seedPhraseKey}`);
       if (!seedKeyFound) {
         healthyWallet = false;
         logger.sentry('[KeychainIntegrityCheck]: seed key is missing');
@@ -306,7 +333,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       }
 
       for (const account of wallet.addresses) {
-        const pkeyFound = await hasKey(`${account.address}_rainbowPrivateKey`);
+        const pkeyFound = await hasKey(`${account.address}_${privateKeyKey}`);
         if (!pkeyFound) {
           healthyWallet = false;
           logger.sentry(
@@ -317,6 +344,19 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
             `[KeychainIntegrityCheck]: pkey is present for address: ${account.address}`
           );
         }
+      }
+
+      // Handle race condition:
+      // A wallet is NOT damaged if:
+      // - it's not imported
+      // - and hasn't been migrated yet
+      // - and the old seedphrase is still there
+      if (
+        !wallet.imported &&
+        !hasOldSeedPhraseMigratedFlag &&
+        hasOldSeedphrase
+      ) {
+        healthyWallet = true;
       }
 
       if (!healthyWallet) {
@@ -340,6 +380,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       captureMessage('Keychain Integrity is not OK');
     }
     logger.sentry('[KeychainIntegrityCheck]: check completed');
+    await saveKeychainIntegrityState('done');
   } catch (e) {
     logger.sentry('[KeychainIntegrityCheck]: error thrown', e);
     captureMessage('Error running keychain integrity checks');
