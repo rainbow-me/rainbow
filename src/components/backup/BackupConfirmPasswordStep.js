@@ -182,14 +182,18 @@ const BackupConfirmPasswordStep = () => {
         error && captureException(error);
         passwordRef.current?.focus();
         dispatch(setIsWalletLoading(null));
-        Alert.alert('Error while trying to backup');
+        setTimeout(() => {
+          Alert.alert('Error while trying to backup');
+        }, 500);
+      },
+      onSuccess: () => {
+        setTimeout(() => {
+          Alert.alert('Your wallet has been backed up succesfully!');
+        }, 1000);
       },
       password,
       walletId,
     });
-    setTimeout(() => {
-      Alert.alert('Your wallet has been backed up succesfully!');
-    }, 1000);
   }, [dispatch, latestBackup, password, walletCloudBackup, walletId]);
 
   const onPasswordSubmit = useCallback(() => {

@@ -254,16 +254,20 @@ const BackupIcloudStep = () => {
       onError: error => {
         logger.sentry('Error while calling walletCloudBackup');
         error && captureException(error);
-        Alert.alert('Error while trying to backup');
         setTimeout(onPasswordSubmit, 1000);
         dispatch(setIsWalletLoading(null));
+        setTimeout(() => {
+          Alert.alert('Error while trying to backup');
+        }, 500);
+      },
+      onSuccess: () => {
+        setTimeout(() => {
+          Alert.alert('Your wallet has been backed up succesfully!');
+        }, 1000);
       },
       password,
       walletId,
     });
-    setTimeout(() => {
-      Alert.alert('Your wallet has been backed up succesfully!');
-    }, 1000);
   }, [
     dispatch,
     latestBackup,
