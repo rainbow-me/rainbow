@@ -79,12 +79,13 @@ function block() {
  * Also, we take care to hide discover sheet if needed
  */
 export function navigate(oldNavigate, ...args) {
-  if (blocked) {
-    return;
-  }
   if (typeof args[0] === 'string') {
+    let wasBlocked = blocked;
     if (NATIVE_ROUTES.indexOf(args[0]) !== -1) {
       block();
+    }
+    if (wasBlocked) {
+      return;
     }
     addActionAfterClosingSheet(() => oldNavigate(...args));
   } else {
