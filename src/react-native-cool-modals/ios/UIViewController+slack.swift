@@ -36,6 +36,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   var heightAnchor: NSLayoutDimension = NSLayoutDimension.init()
   var disappared = false
   var hiding = false
+  var ppview: UIView?
 
   weak var viewController: UIViewController?
   var panScrollableCache: UIScrollView?
@@ -69,10 +70,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
 
 
   @objc func unhackParent() {
-    let ppview = config!.superview!.superview!
-    if ppview is PossiblyTouchesPassableUIView {
+    if self.ppview is PossiblyTouchesPassableUIView {
       (ppview as! PossiblyTouchesPassableUIView).makeOldClass()
     }
+    self.ppview = nil
   }
 
 
@@ -89,12 +90,16 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
       return self
     }
   }
+  
 
+
+  var hacked = false
   func hackParent() {
-    let ppview = config!.superview!.superview!
-    let poldClass: AnyClass = type(of: ppview)
-    object_setClass(ppview, PossiblyTouchesPassableUIView.self);
-    (ppview as! PossiblyTouchesPassableUIView).oldClass = poldClass
+    hacked = true
+    self.ppview = config!.superview!.superview!
+    let poldClass: AnyClass = type(of: self.ppview!)
+    object_setClass(self.ppview!, PossiblyTouchesPassableUIView.self);
+    (self.ppview as! PossiblyTouchesPassableUIView).oldClass = poldClass
   }
 
   var cornerRadius: CGFloat {
@@ -285,6 +290,11 @@ extension UIViewController {
 
   {
     let controller = PanModalViewController(viewControllerToPresent)
+    if self is PanModalViewController {
+      print((self as! PanModalViewController).hacked)
+      (self as! PanModalViewController).unhackParent()
+    }
+    
     controller.transitioningDelegate = slackStack ? viewControllerToPresent.transitioningDelegate : nil
     controller.modalPresentationStyle = slackStack ? viewControllerToPresent.modalPresentationStyle : .pageSheet
     self.present(controller, animated: flag, completion: completion)
