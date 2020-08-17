@@ -80,12 +80,12 @@ function block() {
  */
 export function navigate(oldNavigate, ...args) {
   if (typeof args[0] === 'string') {
-    let wasBlocked = blocked;
     if (NATIVE_ROUTES.indexOf(args[0]) !== -1) {
+      let wasBlocked = blocked;
       block();
-    }
-    if (wasBlocked) {
-      return;
+      if (wasBlocked) {
+        return;
+      }
     }
     addActionAfterClosingSheet(() => oldNavigate(...args));
   } else {
