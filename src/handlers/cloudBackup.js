@@ -126,6 +126,6 @@ export async function fetchUserDataFromCloud() {
   return getDataFromCloud(password, filename);
 }
 
-export async function isCloudBackupPasswordValid(password) {
-  return password && password !== '' && password.length >= 8;
+export function isCloudBackupPasswordValid(password) {
+  return !!(password && password !== '' && password.length >= 8);
 }

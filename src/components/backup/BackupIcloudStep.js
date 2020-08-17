@@ -153,6 +153,8 @@ const BackupIcloudStep = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const walletId = params?.walletId || selectedWallet.id;
+
   const [label, setLabel] = useState(
     !validPassword ? '􀙶 Add to iCloud Backup' : '􀎽 Confirm Backup'
   );
@@ -216,10 +218,10 @@ const BackupIcloudStep = () => {
           newLabel = '💩 Weak password';
           break;
         case 2:
-          newLabel = '💪 Good password';
+          newLabel = '👌 Good password';
           break;
         case 3:
-          newLabel = '🦾 Great password';
+          newLabel = '💪 Great password';
           break;
         case 4:
           newLabel = '🏰️ Strong password';
@@ -245,31 +247,34 @@ const BackupIcloudStep = () => {
     },
     []
   );
+
   const onConfirmBackup = useCallback(async () => {
-    const walletId = params?.walletId || selectedWallet.id;
     await walletCloudBackup({
       latestBackup,
       onError: error => {
         logger.sentry('Error while calling walletCloudBackup');
         error && captureException(error);
-        Alert.alert('Error while trying to backup');
         setTimeout(onPasswordSubmit, 1000);
         dispatch(setIsWalletLoading(null));
+        setTimeout(() => {
+          Alert.alert('Error while trying to backup');
+        }, 500);
+      },
+      onSuccess: () => {
+        setTimeout(() => {
+          Alert.alert('Your wallet has been backed up succesfully!');
+        }, 1000);
       },
       password,
       walletId,
     });
-    setTimeout(() => {
-      Alert.alert('Your wallet has been backed up succesfully!');
-    }, 1000);
   }, [
     dispatch,
     latestBackup,
     onPasswordSubmit,
-    params.walletId,
     password,
-    selectedWallet.id,
     walletCloudBackup,
+    walletId,
   ]);
 
   const onConfirmPasswordSubmit = useCallback(() => {

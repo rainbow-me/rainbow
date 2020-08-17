@@ -18,7 +18,7 @@ export default function useWalletCloudBackup() {
   const { goBack } = useNavigation();
 
   const walletCloudBackup = useCallback(
-    async ({ walletId, password, latestBackup, onError }) => {
+    async ({ walletId, password, latestBackup, onError, onSuccess }) => {
       try {
         dispatch(setIsWalletLoading(walletLoadingStates.BACKING_UP_WALLET));
 
@@ -52,6 +52,7 @@ export default function useWalletCloudBackup() {
             setWalletBackedUp(walletId, walletBackupTypes.cloud, backupFile)
           );
           logger.log('walletCloudBackup:: backup saved everywhere!');
+          onSuccess && onSuccess();
           goBack();
         } else {
           onError();
