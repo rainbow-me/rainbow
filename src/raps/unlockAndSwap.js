@@ -21,10 +21,8 @@ export const estimateUnlockAndSwap = async ({
   outputReserve,
 }) => {
   const isValid = isValidSwapInput({
-    inputAmount,
     inputCurrency,
     inputReserve,
-    outputAmount,
     outputCurrency,
     outputReserve,
   });

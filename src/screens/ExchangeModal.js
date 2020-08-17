@@ -165,7 +165,9 @@ export default function ExchangeModal({
         outputCurrency,
         outputReserve,
       });
-      updateTxFee(gasLimit);
+      if (inputCurrency && outputCurrency) {
+        updateTxFee(gasLimit);
+      }
     } catch (error) {
       updateTxFee(defaultGasLimit);
     }
