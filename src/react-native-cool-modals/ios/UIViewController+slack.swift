@@ -29,11 +29,7 @@ class PossiblyTouchesPassableUIView: UIView {
 
 class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSupport {
   
-  var config : RNCMScreenView? {
-    get {
-      return viewController?.view as! RNCMScreenView?
-    }
-  }
+  var config : RNCMScreenView?
   var length: CGFloat = 0
   var topAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
   var bottomAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
@@ -49,6 +45,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     
     viewControllerToPresent.setValue(self, forKey: "_parentVC")
     viewController = viewControllerToPresent
+    config = (viewControllerToPresent.view as! RNCMScreenView)
   }
 
   @objc func hide() {
@@ -72,11 +69,13 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   
   
   @objc func unhackParent() {
-    let ppview = view.superview!.superview!
+    print("UNHACK")
+    let ppview = config!.superview!.superview!
     if ppview is PossiblyTouchesPassableUIView {
       (ppview as! PossiblyTouchesPassableUIView).makeOldClass()
     }
   }
+  
   
   func onTouchTop(_ dismissing: Bool) {
     let selector = NSSelectorFromString("onTouchTopWrapper:")
@@ -93,7 +92,8 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
   
   func hackParent() {
-    let ppview = view.superview!.superview!
+    print("UNHACK")
+    let ppview = config!.superview!.superview!
     let poldClass: AnyClass = type(of: ppview)
     object_setClass(ppview, PossiblyTouchesPassableUIView.self);
     (ppview as! PossiblyTouchesPassableUIView).oldClass = poldClass
@@ -238,9 +238,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   func panModalDidDismiss() {
-    if self.config!.customStack {
+    if config?.customStack ?? false {
       config?.removeController()
     }
+    config = nil
   }
 
   override func viewDidAppear(_ animated: Bool) {
