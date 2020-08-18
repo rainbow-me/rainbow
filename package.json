@@ -103,7 +103,7 @@
     "lottie-react-native": "3.4.0",
     "match-sorter": "^4.0.2",
     "nanoid": "^2.1.6",
-    "node-emoji": "omnidan/node-emoji#v2",
+    "node-emoji": "omnidan/node-emoji#97f910e37011397f4fda58f7f51d9ad22fb0c38d",
     "parse-ms": "^2.1.0",
     "patch-package": "^6.2.0",
     "path-browserify": "0.0.0",
