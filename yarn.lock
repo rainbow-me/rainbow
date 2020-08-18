@@ -1652,6 +1652,11 @@
     xcode "2.0.0"
     yargs "^12.0.2"
 
+"@sindresorhus/is@^3.1.0":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-3.1.1.tgz#6e39e4222add8b362da35720c9dd5d53345d5851"
+  integrity sha512-tLnujxFtfH7F+i5ghUfgGlJsvyCKvUnSMFMlWybFdX9/DdX8svb4Zwx1gV0gkkVCHXtmPSetoAR3QlKfOld6Tw==
+
 "@svgr/babel-plugin-add-jsx-attribute@^4.2.0":
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/@svgr/babel-plugin-add-jsx-attribute/-/babel-plugin-add-jsx-attribute-4.2.0.tgz#dadcb6218503532d6884b210e7f3c502caaa44b1"
@@ -4449,11 +4454,6 @@ emoji-regex@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-8.0.0.tgz#e818fd69ce5ccfcb404594f842963bf53164cc37"
   integrity sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==
-
-emojilib@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/emojilib/-/emojilib-2.4.0.tgz#ac518a8bb0d5f76dda57289ccb2fdf9d39ae721e"
-  integrity sha512-5U0rVMU5Y2n2+ykNLQqMoqklN9ICBT/KsvC1Gz6vqHbz2AXXGkG+Pm5rMWk/8Vjrr/mY9985Hi8DYzn1F09Nyw==
 
 enc-utils@2.1.0:
   version "2.1.0"
@@ -8286,15 +8286,16 @@ node-addon-api@^2.0.0:
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-2.0.2.tgz#432cfa82962ce494b132e9d72a15b29f71ff5d32"
   integrity sha512-Ntyt4AIXyaLIuMHF6IOoTakB3K+RWxwtsHNRxllEoA6vPwP9o4866g6YWDLUdnucilZhmkxiHwHr11gAENw+QA==
 
-node-emoji@omnidan/node-emoji#v2:
+node-emoji@omnidan/node-emoji#97f910e37011397f4fda58f7f51d9ad22fb0c38d:
   version "2.0.0"
   resolved "https://codeload.github.com/omnidan/node-emoji/tar.gz/97f910e37011397f4fda58f7f51d9ad22fb0c38d"
   dependencies:
+    "@sindresorhus/is" "^3.1.0"
     char-regex "^1.0.2"
     emoji-regex "^8.0.0"
-    emojilib "^2.4.0"
-    ow "^0.15.0"
+    random-item "^3.0.0"
     skin-tone "^2.0.0"
+    unicode-emoji-json "^0.0.4"
 
 node-fetch@1.6.3:
   version "1.6.3"
@@ -8710,13 +8711,6 @@ output-file-sync@^2.0.1:
     graceful-fs "^4.1.11"
     is-plain-obj "^1.1.0"
     mkdirp "^0.5.1"
-
-ow@^0.15.0:
-  version "0.15.1"
-  resolved "https://registry.yarnpkg.com/ow/-/ow-0.15.1.tgz#ad21bb4d4c46d4478b948522e36b214f6f13039d"
-  integrity sha512-rwiuvCnk3Ug9T4s5oKzw3QXQSiTXlTUiQgHmZ9Ozw/37YzeX8LycosVKOtO3v5+fuARGmCgz9rVhaBJeGV+2bQ==
-  dependencies:
-    type-fest "^0.8.1"
 
 p-defer@^1.0.0:
   version "1.0.0"
@@ -9482,6 +9476,11 @@ r2@^2.0.1:
     caseless "^0.12.0"
     node-fetch "^2.0.0-alpha.8"
     typedarray-to-buffer "^3.1.2"
+
+random-item@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/random-item/-/random-item-3.0.0.tgz#a94edca6845de662072e325c29eca8e85ef88ced"
+  integrity sha512-IpO3Jk9/Dt79R7iS/Fn2d2asGXahMNnXLNRsgSmjTTtiS0tZ972BWEEm9uUgm3YAon5YFUt8126FA9wJAjmeZw==
 
 randombytes@2.1.0, randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.5, randombytes@^2.1.0:
   version "2.1.0"
@@ -11963,6 +11962,11 @@ unicode-canonical-property-names-ecmascript@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/unicode-canonical-property-names-ecmascript/-/unicode-canonical-property-names-ecmascript-1.0.4.tgz#2619800c4c825800efdd8343af7dd9933cbe2818"
   integrity sha512-jDrNnXWHd4oHiTZnx/ZG7gtUTVp+gCcTTKr8L0HjlwphROEW3+Him+IpvC+xcJEFegapiMZyZe02CyuOnRmbnQ==
+
+unicode-emoji-json@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/unicode-emoji-json/-/unicode-emoji-json-0.0.4.tgz#06aa6d79da5e82aca838e22950ba079a0585e9cf"
+  integrity sha512-TTR3iQ5c5hNqG1A9dfrAq0wycnhmz1RIRS6sMc+OhZrZ+rKVmdC2oUEPtD1NLtPATpKyWBEUme+P+0X/lRPh2g==
 
 unicode-emoji-modifier-base@^1.0.0:
   version "1.0.0"
