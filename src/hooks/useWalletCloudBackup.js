@@ -51,17 +51,15 @@ export default function useWalletCloudBackup() {
       logger.log('password fetched correctly');
 
       let updatedBackupFile = null;
-
-      if (fetchedPassword && !latestBackup) {
-        logger.log('backing up to icloud', wallets[walletId]);
-        updatedBackupFile = await backupWalletToCloud(
-          fetchedPassword,
-          wallets[walletId]
-        );
-      }
-
       try {
-        if (latestBackup && !updatedBackupFile) {
+        if (!latestBackup) {
+          logger.log('backing up to icloud', wallets[walletId]);
+          updatedBackupFile = await backupWalletToCloud(
+            fetchedPassword,
+            wallets[walletId]
+          );
+        } else {
+          logger.log('adding wallet to icloud backup', wallets[walletId]);
           updatedBackupFile = await addWalletToCloudBackup(
             fetchedPassword,
             wallets[walletId],
@@ -70,7 +68,7 @@ export default function useWalletCloudBackup() {
         }
       } catch (e) {
         onError && onError();
-        logger.sentry('error while trying to add wallet to icloud backup');
+        logger.sentry('error while trying to backup wallet to icloud');
         captureException(e);
         setTimeout(() => {
           Alert.alert('Error while trying to backup');
