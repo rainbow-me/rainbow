@@ -40,6 +40,23 @@ const Routes = {
   WELCOME_SCREEN: 'WelcomeScreen',
 };
 
+export const NATIVE_ROUTES = [
+  Routes.RECEIVE_MODAL,
+  Routes.SETTINGS_MODAL,
+  Routes.EXCHANGE_MODAL,
+  Routes.EXPANDED_ASSET_SHEET,
+  Routes.CHANGE_WALLET_SHEET,
+  Routes.MODAL_SCREEN,
+  Routes.SAVINGS_SHEET,
+  Routes.SAVINGS_WITHDRAW_MODAL,
+  Routes.SAVINGS_DEPOSIT_MODAL,
+  ...(isNativeStackAvailable && [
+    Routes.SEND_SHEET_NAVIGATOR,
+    Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR,
+    Routes.ADD_CASH_SCREEN_NAVIGATOR,
+  ]),
+];
+
 const RoutesWithNativeStackAvailability = {
   ...Routes,
   ADD_CASH_FLOW: isNativeStackAvailable
