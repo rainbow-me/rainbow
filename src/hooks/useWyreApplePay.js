@@ -5,6 +5,7 @@ import {
   getOrderId,
   getReferenceId,
   PaymentRequestStatusTypes,
+  reserveWyreOrder,
   showApplePayRequest,
 } from '../handlers/wyre';
 import {
@@ -49,6 +50,18 @@ export default function useWyreApplePay() {
       const referenceInfo = {
         referenceId: getReferenceId(accountAddress),
       };
+      const reservationId = await reserveWyreOrder(
+        value,
+        currency,
+        accountAddress,
+        network
+      );
+
+      if (!reservationId) {
+        analytics.track('Wyre order reservation incomplete', {
+          category: 'add cash',
+        });
+      }
 
       const applePayResponse = await showApplePayRequest(
         referenceInfo,
@@ -74,7 +87,8 @@ export default function useWyreApplePay() {
           totalAmount,
           accountAddress,
           currency,
-          network
+          network,
+          reservationId
         );
         if (orderId) {
           referenceInfo.orderId = orderId;

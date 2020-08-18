@@ -13,6 +13,10 @@ import {
 } from '../../helpers/savings';
 import { useDimensions } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
+import {
+  SavingsSheetEmptyHeight,
+  SavingsSheetHeight,
+} from '../../screens/SavingsSheet';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, Row } from '../layout';
@@ -84,6 +88,9 @@ const SavingsListRow = ({
       isEmpty: !supplyBalanceUnderlying,
       lifetimeSupplyInterestAccrued,
       lifetimeSupplyInterestAccruedNative,
+      longFormHeight: supplyBalanceUnderlying
+        ? SavingsSheetHeight
+        : SavingsSheetEmptyHeight,
       supplyBalanceUnderlying,
       supplyRate,
       underlying,

@@ -3,6 +3,10 @@ import { isNil } from 'lodash';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
+import {
+  getKeychainIntegrityState,
+  saveKeychainIntegrityState,
+} from '../handlers/localstorage/globalSettings';
 import useHideSplashScreen from '../helpers/hideSplashScreen';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
@@ -10,13 +14,24 @@ import {
   settingsLoadNetwork,
   settingsUpdateAccountAddress,
 } from '../redux/settings';
-import { walletsLoadState } from '../redux/wallets';
+import store from '../redux/store';
+import { checkKeychainIntegrity, walletsLoadState } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useInitializeAccountData from './useInitializeAccountData';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalData from './useLoadGlobalData';
 import useResetAccountState from './useResetAccountState';
 import logger from 'logger';
+
+const runKeychainIntegrityChecks = () => {
+  setTimeout(async () => {
+    const keychainIntegrityState = await getKeychainIntegrityState();
+    if (!keychainIntegrityState) {
+      await store.dispatch(checkKeychainIntegrity());
+      await saveKeychainIntegrityState('done');
+    }
+  }, 5000);
+};
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
@@ -33,53 +48,97 @@ export default function useInitializeWallet() {
       seedPhrase,
       color = null,
       name = null,
-      shouldRunMigrations = false
+      shouldRunMigrations = false,
+      overwrite = false
     ) => {
-      try {
-        logger.sentry('Start wallet setup');
-
-        await resetAccountState();
-
-        const isImported = !!seedPhrase;
-
-        if (shouldRunMigrations && !seedPhrase) {
-          await dispatch(walletsLoadState());
-          await runMigrations();
-        }
-
-        // Load the network first
-        await dispatch(settingsLoadNetwork());
-
+      const initWalletAndLoadData = async (
+        seedPhrase,
+        color,
+        name,
+        overwrite,
+        isImported
+      ) => {
         const { isNew, walletAddress } = await walletInit(
           seedPhrase,
           color,
-          name
+          name,
+          overwrite
         );
 
+        logger.sentry('walletInit returned ', {
+          isNew,
+          walletAddress,
+        });
+
         if (seedPhrase || isNew) {
+          logger.sentry('walletsLoadState call #2');
           await dispatch(walletsLoadState());
         }
 
         if (isNil(walletAddress)) {
+          logger.sentry('walletAddress is nil');
           Alert.alert(
             'Import failed due to an invalid private key. Please try again.'
           );
+          runKeychainIntegrityChecks();
           return null;
         }
 
         if (!(isNew || isImported)) {
           await loadGlobalData();
+          logger.sentry('loaded global data...');
         }
 
         await dispatch(settingsUpdateAccountAddress(walletAddress));
+        logger.sentry('updated settings address', walletAddress);
 
         if (!(isNew || isImported)) {
           await loadAccountData(network);
+          logger.sentry('loaded account data', network);
         }
 
         hideSplashScreen();
         logger.sentry('Hide splash screen');
         initializeAccountData();
+        runKeychainIntegrityChecks();
+
+        return walletAddress;
+      };
+
+      try {
+        logger.sentry('Start wallet setup');
+
+        await resetAccountState();
+        logger.sentry('resetAccountState ran ok');
+
+        const isImported = !!seedPhrase;
+        logger.sentry('isImported?', isImported);
+
+        if (shouldRunMigrations && !seedPhrase) {
+          logger.sentry('shouldRunMigrations && !seedPhrase? => true');
+          await dispatch(walletsLoadState());
+          logger.sentry('walletsLoadState call #1');
+          await runMigrations();
+          logger.sentry('done with migrations');
+        }
+
+        const poorInternetEmergencyTimeout = setTimeout(async () => {
+          initWalletAndLoadData(seedPhrase, color, name, overwrite, isImported);
+        }, 10000);
+
+        // Load the network first
+        await dispatch(settingsLoadNetwork());
+        logger.sentry('done loading network');
+
+        clearTimeout(poorInternetEmergencyTimeout);
+        const walletAddress = await initWalletAndLoadData(
+          seedPhrase,
+          color,
+          name,
+          overwrite,
+          isImported
+        );
+
         return walletAddress;
       } catch (error) {
         logger.sentry('Error while initializing wallet');
@@ -87,6 +146,7 @@ export default function useInitializeWallet() {
         hideSplashScreen();
         captureException(error);
         Alert.alert('Something went wrong while importing. Please try again!');
+        runKeychainIntegrityChecks();
         return null;
       }
     },

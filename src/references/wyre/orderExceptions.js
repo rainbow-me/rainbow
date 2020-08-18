@@ -5,9 +5,11 @@ const errorCategories = {
   PAYMENT: 'PAYMENT',
   RATE_LIMIT: 'RATE_LIMIT',
   VALIDATION_EXCEPTION: 'ValidationException',
+  WALLET_ORDER_RESERVATION: 'WOReservationException',
 };
 
 const orderCreationErrorCodes = {
+  ILLEGAL_RESERVATION: 'illegalReservation',
   UNSUPPORTED_CARD_TYPE_CREDIT: 'validation.unsupportedCardType.credit',
   UNSUPPORTED_CARD_TYPE_PREPAID: 'validation.unsupportedCardType.prepaid',
   AVS: 'validation.avs',
@@ -28,6 +30,12 @@ const orderCreationErrorCodes = {
 };
 
 export const orderExceptions = {
+  [errorCategories.WALLET_ORDER_RESERVATION]: {
+    [orderCreationErrorCodes.ILLEGAL_RESERVATION]: {
+      message: 'Missing order reservation',
+      tryAgain: true,
+    },
+  },
   [errorCategories.VALIDATION_EXCEPTION]: {
     [orderCreationErrorCodes.UNSUPPORTED_CARD_TYPE_CREDIT]: {
       tryAgain: true,

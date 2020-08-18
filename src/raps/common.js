@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import { captureException } from '@sentry/react-native';
 import { get, join, map } from 'lodash';
 import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
@@ -82,7 +83,8 @@ export const executeRap = async (wallet, rap) => {
         nextAction.parameters.override = output;
       }
     } catch (error) {
-      logger.log('[5 INNER] error running action', error);
+      logger.sentry('[5 INNER] error running action');
+      captureException(error);
       analytics.track('Rap failed', {
         category: 'raps',
         failed_action: type,

@@ -16,7 +16,6 @@ export default function useStatusBarManaging() {
             animated: true,
             barStyle: 'light-content',
           });
-          StatusBar.setBarStyle('light-content');
         }
       }
     );

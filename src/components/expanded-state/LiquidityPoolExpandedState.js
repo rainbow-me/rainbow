@@ -68,8 +68,8 @@ const LiquidityPoolExpandedState = ({
         </TokenInfoRow>
       </TokenInfoSection>
       <SheetActionButtonRow>
-        <DepositActionButton symbol={tokenAsset.symbol} />
         <WithdrawActionButton symbol={tokenAsset.symbol} />
+        <DepositActionButton symbol={tokenAsset.symbol} />
       </SheetActionButtonRow>
     </SlackSheet>
   );
