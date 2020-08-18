@@ -1,5 +1,4 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { captureException } from '@sentry/react-native';
 import React, {
   useCallback,
   useContext,
@@ -18,17 +17,11 @@ import BackupManualStep from '../components/backup/BackupManualStep';
 import LoadingOverlay from '../components/modal/LoadingOverlay';
 import { Sheet, SlackSheet } from '../components/sheet';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
-import walletLoadingStates from '../helpers/walletLoadingStates';
-import { useWallets } from '../hooks';
-import { addWalletToCloudBackup, fetchBackupPassword } from '../model/backup';
+import { useWalletCloudBackup, useWallets } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/effects';
 import { usePortal } from '../react-native-cool-modals/Portal';
-import {
-  setAllWalletsBackedUpManually,
-  setIsWalletLoading,
-  setWalletBackedUp,
-} from '../redux/wallets';
-import { deviceUtils, logger } from '../utils';
+import { setAllWalletsBackedUpManually } from '../redux/wallets';
+import { deviceUtils } from '../utils';
 
 import Routes from '@rainbow-me/routes';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
@@ -53,12 +46,8 @@ const BackupSheet = () => {
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
   const dispatch = useDispatch();
-  const {
-    selectedWallet,
-    wallets,
-    latestBackup,
-    isWalletLoading,
-  } = useWallets();
+  const { selectedWallet, latestBackup, isWalletLoading } = useWallets();
+  const walletCloudBackup = useWalletCloudBackup();
   const [step, setStep] = useState(params?.option || 'first');
   const walletId = params?.walletId || selectedWallet.id;
   const missingPassword = params?.missingPassword || null;
@@ -77,67 +66,52 @@ const BackupSheet = () => {
     return hide;
   }, [hide, isWalletLoading, setComponent]);
 
-  const onIcloudBackup = useCallback(async () => {
-    if (latestBackup) {
-      const password = await fetchBackupPassword();
-      // If we can't get the password, we need to prompt it again
-      if (!password) {
-        switchSheetContentTransitionRef.current?.animateNextTransition();
-        setStep(WalletBackupTypes.cloud);
-        setParams({
-          missingPassword: true,
-          option: WalletBackupTypes.cloud,
-        });
-        setOptions({
-          isShortFormEnabled: false,
-          longFormHeight: 10000,
-        });
-        setImmediate(jumpToLong);
-      } else {
-        dispatch(setIsWalletLoading(walletLoadingStates.BACKING_UP_WALLET));
-        // We have the password and we need to add it to an existing backup
-        try {
-          const backupFile = await addWalletToCloudBackup(
-            password,
-            wallets[walletId],
-            latestBackup
-          );
-          if (backupFile) {
-            await dispatch(
-              setWalletBackedUp(walletId, WalletBackupTypes.cloud, backupFile)
-            );
-            logger.log('BackupSheet:: backup saved everywhere!');
-            goBack();
-            setTimeout(() => {
-              Alert.alert('Your wallet has been backed up succesfully!');
-            }, 1000);
-          } else {
-            Alert.alert('Error while trying to backup');
-          }
-        } catch (e) {
-          logger.sentry('error while trying to add wallet to icloud backup');
-          captureException(e);
-          Alert.alert('Error while trying to backup');
-        }
-      }
-    } else {
-      switchSheetContentTransitionRef.current?.animateNextTransition();
-      setStep(WalletBackupTypes.cloud);
-      setOptions({
-        isShortFormEnabled: false,
-        longFormHeight: 10000,
-      });
-      setImmediate(jumpToLong);
-    }
+  const handleNoLatestBackup = useCallback(() => {
+    switchSheetContentTransitionRef.current?.animateNextTransition();
+    setStep(WalletBackupTypes.cloud);
+    setOptions({
+      isShortFormEnabled: false,
+      longFormHeight: 10000,
+    });
+    setImmediate(jumpToLong);
+  }, [jumpToLong, setOptions]);
+
+  const handlePasswordNotFound = useCallback(() => {
+    switchSheetContentTransitionRef.current?.animateNextTransition();
+    setStep(WalletBackupTypes.cloud);
+    setParams({
+      missingPassword: true,
+      option: WalletBackupTypes.cloud,
+    });
+    setOptions({
+      isShortFormEnabled: false,
+      longFormHeight: 10000,
+    });
+    setImmediate(jumpToLong);
+  }, [jumpToLong, setParams, setOptions]);
+
+  const onSuccess = useCallback(() => {
+    goBack();
+    setTimeout(() => {
+      Alert.alert('Your wallet has been backed up succesfully!');
+    }, 1000);
+  }, [goBack]);
+
+  const onIcloudBackup = useCallback(() => {
+    walletCloudBackup({
+      handleNoLatestBackup,
+      handlePasswordNotFound,
+      latestBackup,
+      onSuccess,
+      walletId,
+    });
   }, [
-    dispatch,
-    goBack,
-    latestBackup,
-    setParams,
+    walletCloudBackup,
     walletId,
-    wallets,
-    jumpToLong,
-    setOptions,
+    handleNoLatestBackup,
+    handlePasswordNotFound,
+    latestBackup,
+    onSuccess,
   ]);
 
   const onManualBackup = useCallback(() => {

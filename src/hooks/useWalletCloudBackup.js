@@ -1,12 +1,13 @@
-import { useNavigation } from '@react-navigation/core';
+import { captureException } from '@sentry/react-native';
 import { useCallback } from 'react';
+import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
-import walletBackupTypes from '../helpers/walletBackupTypes';
+import WalletBackupTypes from '../helpers/walletBackupTypes';
 import walletLoadingStates from '../helpers/walletLoadingStates';
 import {
   addWalletToCloudBackup,
   backupWalletToCloud,
-  saveBackupPassword,
+  fetchBackupPassword,
 } from '../model/backup';
 import { setIsWalletLoading, setWalletBackedUp } from '../redux/wallets';
 import useWallets from './useWallets';
@@ -15,53 +16,93 @@ import logger from 'logger';
 export default function useWalletCloudBackup() {
   const dispatch = useDispatch();
   const { wallets } = useWallets();
-  const { goBack } = useNavigation();
 
   const walletCloudBackup = useCallback(
-    async ({ walletId, password, latestBackup, onError, onSuccess }) => {
+    async ({
+      createBackupFileIfNeeded,
+      handleNoLatestBackup,
+      handlePasswordNotFound,
+      latestBackup,
+      onError,
+      onSuccess,
+      password,
+      walletId,
+    }) => {
+      if (!password && !latestBackup) {
+        // No password, No latest backup meaning
+        // it's a first time backup so we need to show the password sheet
+        handleNoLatestBackup && handleNoLatestBackup();
+        return;
+      }
+
+      let fetchedPassword = password;
+      if (latestBackup && !password) {
+        // We have a backup but don't have the password, try fetching password
+        fetchedPassword = await fetchBackupPassword();
+      }
+
+      // If we still can't get the password, handle password not found
+      if (!fetchedPassword) {
+        handlePasswordNotFound && handlePasswordNotFound();
+        return;
+      }
+
+      dispatch(setIsWalletLoading(walletLoadingStates.BACKING_UP_WALLET));
+
+      // We have the password and we need to add it to an existing backup
+      logger.log('password fetched correctly');
+
+      let updatedBackupFile = null;
+
+      if (createBackupFileIfNeeded && fetchedPassword && !latestBackup) {
+        logger.log('backing up to icloud', wallets[walletId]);
+        updatedBackupFile = await backupWalletToCloud(
+          fetchedPassword,
+          wallets[walletId]
+        );
+      }
+
       try {
-        dispatch(setIsWalletLoading(walletLoadingStates.BACKING_UP_WALLET));
-
-        let backupFile;
-        if (!latestBackup) {
-          logger.log(
-            'walletCloudBackup:: backing up to icloud',
-            wallets[walletId]
-          );
-
-          backupFile = await backupWalletToCloud(password, wallets[walletId]);
-        } else {
-          logger.log(
-            'walletCloudBackup:: adding to icloud backup',
+        if (latestBackup && !updatedBackupFile) {
+          updatedBackupFile = await addWalletToCloudBackup(
+            fetchedPassword,
             wallets[walletId],
             latestBackup
           );
-          backupFile = await addWalletToCloudBackup(
-            password,
-            wallets[walletId],
-            latestBackup
-          );
-        }
-        if (backupFile) {
-          logger.log('walletCloudBackup:: saving backup password');
-          await saveBackupPassword(password);
-          logger.log('walletCloudBackup:: saved');
-
-          logger.log('walletCloudBackup:: backup completed!', backupFile);
-          await dispatch(
-            setWalletBackedUp(walletId, walletBackupTypes.cloud, backupFile)
-          );
-          logger.log('walletCloudBackup:: backup saved everywhere!');
-          onSuccess && onSuccess();
-          goBack();
-        } else {
-          onError();
         }
       } catch (e) {
-        onError(e);
+        onError && onError();
+        logger.sentry('error while trying to add wallet to icloud backup');
+        captureException(e);
+        setTimeout(() => {
+          Alert.alert('Error while trying to backup');
+        }, 500);
+      }
+
+      try {
+        if (updatedBackupFile) {
+          logger.log('backup completed!');
+          await dispatch(
+            setWalletBackedUp(
+              walletId,
+              WalletBackupTypes.cloud,
+              updatedBackupFile
+            )
+          );
+          logger.log('backup saved everywhere!');
+          onSuccess && onSuccess();
+        } else {
+          onError && onError();
+          setTimeout(() => {
+            Alert.alert('Error while trying to backup');
+          }, 500);
+        }
+      } catch (e) {
+        logger.sentry('error while trying to save wallet backup state');
+        captureException(e);
       }
     },
-    [wallets, dispatch, goBack]
+    [dispatch, wallets]
   );
 
   return walletCloudBackup;

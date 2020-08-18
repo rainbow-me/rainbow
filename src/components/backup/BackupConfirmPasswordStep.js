@@ -1,5 +1,5 @@
+import { useNavigation } from '@react-navigation/core';
 import { useRoute } from '@react-navigation/native';
-import { captureException } from '@sentry/react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -14,8 +14,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { isCloudBackupPasswordValid } from '../../handlers/cloudBackup';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import { fetchBackupPassword } from '../../model/backup';
-
+import { fetchBackupPassword, saveBackupPassword } from '../../model/backup';
 import { setIsWalletLoading } from '../../redux/wallets';
 import { deviceUtils } from '../../utils';
 import { RainbowButton } from '../buttons';
@@ -137,6 +136,7 @@ const BackupConfirmPasswordStep = () => {
   const { latestBackup, selectedWallet } = useWallets();
 
   const walletId = params?.walletId || selectedWallet.id;
+  const { goBack } = useNavigation();
 
   useEffect(() => {
     const fetchPasswordIfPossible = async () => {
@@ -176,25 +176,24 @@ const BackupConfirmPasswordStep = () => {
 
   const onSubmit = useCallback(async () => {
     await walletCloudBackup({
+      createBackupFileIfNeeded: true,
       latestBackup,
-      onError: error => {
-        logger.sentry('Error while calling walletCloudBackup');
-        error && captureException(error);
+      onError: () => {
         passwordRef.current?.focus();
         dispatch(setIsWalletLoading(null));
-        setTimeout(() => {
-          Alert.alert('Error while trying to backup');
-        }, 500);
       },
-      onSuccess: () => {
+      onSuccess: async () => {
+        logger.log('BackupConfirmPasswordStep:: saving backup password');
+        await saveBackupPassword(password);
         setTimeout(() => {
           Alert.alert('Your wallet has been backed up succesfully!');
         }, 1000);
+        goBack();
       },
       password,
       walletId,
     });
-  }, [dispatch, latestBackup, password, walletCloudBackup, walletId]);
+  }, [dispatch, goBack, latestBackup, password, walletCloudBackup, walletId]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();

@@ -1,21 +1,13 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { Alert, Platform, View } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { Platform, View } from 'react-native';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../../helpers/walletBackupTypes';
-import WalletLoadingStates from '../../../helpers/walletLoadingStates';
 import WalletTypes from '../../../helpers/walletTypes';
-import { useWallets } from '../../../hooks';
-import {
-  addWalletToCloudBackup,
-  fetchBackupPassword,
-} from '../../../model/backup';
+import { useWalletCloudBackup, useWallets } from '../../../hooks';
 import { Navigation } from '../../../navigation';
 import { sheetVerticalOffset } from '../../../navigation/effects';
 import { usePortal } from '../../../react-native-cool-modals/Portal';
-import { setIsWalletLoading, setWalletBackedUp } from '../../../redux/wallets';
-import { logger } from '../../../utils';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
 import LoadingOverlay from '../../modal/LoadingOverlay';
@@ -79,13 +71,13 @@ const TopIconGrey = styled(TopIcon)`
 const AlreadyBackedUpView = () => {
   const { navigate } = useNavigation();
   const { params } = useRoute();
-  const dispatch = useDispatch();
   const {
     isWalletLoading,
     latestBackup,
     wallets,
     selectedWallet,
   } = useWallets();
+  const walletCloudBackup = useWalletCloudBackup();
   const walletId = params?.walletId || selectedWallet.id;
 
   const { setComponent, hide } = usePortal();
@@ -126,53 +118,44 @@ const AlreadyBackedUpView = () => {
     return status;
   }, [walletId, wallets]);
 
-  const onFooterAction = useCallback(async () => {
+  const handleNoLatestBackup = useCallback(() => {
+    Navigation.handleAction(Routes.BACKUP_SHEET, {
+      option: WalletBackupTypes.cloud,
+      walletId,
+    });
+  }, [walletId]);
+
+  const handlePasswordNotFound = useCallback(() => {
+    Navigation.handleAction(Routes.BACKUP_SHEET, {
+      missingPassword: true,
+      option: WalletBackupTypes.cloud,
+      walletId,
+    });
+  }, [walletId]);
+
+  const onIcloudBackup = useCallback(() => {
     if (
-      [WalletBackupStatus.MANUAL_BACKUP, WalletBackupStatus.IMPORTED].includes(
+      ![WalletBackupStatus.MANUAL_BACKUP, WalletBackupStatus.IMPORTED].includes(
         walletStatus
       )
-    ) {
-      let password = null;
-      if (latestBackup) {
-        password = await fetchBackupPassword();
-        // If we can't get the password, we need to prompt it again
-        if (!password) {
-          Navigation.handleAction(Routes.BACKUP_SHEET, {
-            missingPassword: true,
-            option: WalletBackupTypes.cloud,
-            walletId,
-          });
-        } else {
-          await dispatch(
-            setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET)
-          );
-          // We have the password and we need to add it to an existing backup
-          logger.log('AlreadyBackedUpView::password fetched correctly');
-          const backupFile = await addWalletToCloudBackup(
-            password,
-            wallets[walletId],
-            latestBackup
-          );
-          if (backupFile) {
-            logger.log('AlreadyBackedUpView:: backup completed!', backupFile);
-            await dispatch(
-              setWalletBackedUp(walletId, WalletBackupTypes.cloud, backupFile)
-            );
-            logger.log('AlreadyBackedUpView:: backup saved everywhere!');
-          } else {
-            Alert.alert('Error while trying to backup');
-          }
-        }
-      } else {
-        // No password, No latest backup meaning
-        // it's a first time backup so we need to show the password sheet
-        Navigation.handleAction(Routes.BACKUP_SHEET, {
-          option: WalletBackupTypes.cloud,
-          walletId,
-        });
-      }
-    }
-  }, [walletStatus, latestBackup, walletId, wallets, dispatch]);
+    )
+      return;
+
+    walletCloudBackup({
+      handleNoLatestBackup,
+      handlePasswordNotFound,
+      latestBackup,
+      walletId,
+    });
+  }, [
+    walletCloudBackup,
+    walletId,
+    handleNoLatestBackup,
+    handlePasswordNotFound,
+    latestBackup,
+    walletStatus,
+  ]);
+
   return (
     <Fragment>
       <Centered>
@@ -225,7 +208,7 @@ const AlreadyBackedUpView = () => {
       {Platform.OS === 'ios' &&
         walletStatus !== WalletBackupStatus.CLOUD_BACKUP && (
           <Centered css={padding(0, 15, 42)}>
-            <ButtonPressAnimation onPress={onFooterAction}>
+            <ButtonPressAnimation onPress={onIcloudBackup}>
               <Text
                 align="center"
                 color={colors.appleBlue}
