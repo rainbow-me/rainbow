@@ -252,7 +252,6 @@ const BackupIcloudStep = () => {
 
   const onConfirmBackup = useCallback(async () => {
     await walletCloudBackup({
-      createBackupFileIfNeeded: true,
       latestBackup,
       onError: () => {
         setTimeout(onPasswordSubmit, 1000);

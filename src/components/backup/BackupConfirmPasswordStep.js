@@ -176,7 +176,6 @@ const BackupConfirmPasswordStep = () => {
 
   const onSubmit = useCallback(async () => {
     await walletCloudBackup({
-      createBackupFileIfNeeded: true,
       latestBackup,
       onError: () => {
         passwordRef.current?.focus();

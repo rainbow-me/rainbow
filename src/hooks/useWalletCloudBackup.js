@@ -19,7 +19,6 @@ export default function useWalletCloudBackup() {
 
   const walletCloudBackup = useCallback(
     async ({
-      createBackupFileIfNeeded,
       handleNoLatestBackup,
       handlePasswordNotFound,
       latestBackup,
@@ -54,7 +53,7 @@ export default function useWalletCloudBackup() {
 
       let updatedBackupFile = null;
 
-      if (createBackupFileIfNeeded && fetchedPassword && !latestBackup) {
+      if (fetchedPassword && !latestBackup) {
         logger.log('backing up to icloud', wallets[walletId]);
         updatedBackupFile = await backupWalletToCloud(
           fetchedPassword,
