@@ -1,5 +1,5 @@
+import { useNavigation } from '@react-navigation/core';
 import { useRoute } from '@react-navigation/native';
-import { captureException } from '@sentry/react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -15,6 +15,7 @@ import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
 import { isCloudBackupPasswordValid } from '../../handlers/cloudBackup';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
+import { saveBackupPassword } from '../../model/backup';
 import { setIsWalletLoading } from '../../redux/wallets';
 import { deviceUtils } from '../../utils';
 import { RainbowButton } from '../buttons';
@@ -146,7 +147,7 @@ const BackupIcloudStep = () => {
   const currentlyFocusedInput = useRef();
   const { params } = useRoute();
   const walletCloudBackup = useWalletCloudBackup();
-  const { latestBackup, selectedWallet } = useWallets();
+  const { selectedWallet } = useWallets();
   const dispatch = useDispatch();
   const [validPassword, setValidPassword] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
@@ -154,6 +155,7 @@ const BackupIcloudStep = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const walletId = params?.walletId || selectedWallet.id;
+  const { goBack } = useNavigation();
 
   const [label, setLabel] = useState(
     !validPassword ? '􀙶 Add to iCloud Backup' : '􀎽 Confirm Backup'
@@ -250,27 +252,24 @@ const BackupIcloudStep = () => {
 
   const onConfirmBackup = useCallback(async () => {
     await walletCloudBackup({
-      latestBackup,
-      onError: error => {
-        logger.sentry('Error while calling walletCloudBackup');
-        error && captureException(error);
+      onError: () => {
         setTimeout(onPasswordSubmit, 1000);
         dispatch(setIsWalletLoading(null));
-        setTimeout(() => {
-          Alert.alert('Error while trying to backup');
-        }, 500);
       },
-      onSuccess: () => {
+      onSuccess: async () => {
+        logger.log('BackupIcloudStep:: saving backup password');
+        await saveBackupPassword(password);
         setTimeout(() => {
           Alert.alert('Your wallet has been backed up succesfully!');
         }, 1000);
+        goBack();
       },
       password,
       walletId,
     });
   }, [
     dispatch,
-    latestBackup,
+    goBack,
     onPasswordSubmit,
     password,
     walletCloudBackup,
