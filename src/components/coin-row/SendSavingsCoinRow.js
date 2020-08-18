@@ -1,12 +1,14 @@
 import React from 'react';
 import { css } from 'styled-components/primitives';
+import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { colors, padding } from '@rainbow-me/styles';
 
-const selectedHeight = 78;
+const isTinyPhone = deviceUtils.dimensions.height <= 568;
+const selectedHeight = isTinyPhone ? 62 : 78;
 
 const containerStyles = css`
   padding-bottom: 18;

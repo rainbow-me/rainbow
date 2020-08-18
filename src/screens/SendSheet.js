@@ -32,6 +32,7 @@ import {
   useAccountSettings,
   useCoinListEditOptions,
   useContacts,
+  useDimensions,
   useGas,
   useMagicAutofocus,
   useMaxInputBalance,
@@ -68,6 +69,7 @@ const SheetContainer = styled(Column).attrs({
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
+  const { isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const { allAssets } = useAccountAssets();
@@ -462,6 +464,7 @@ export default function SendSheet(props) {
                 isSufficientBalance={amountDetails.isSufficientBalance}
                 isSufficientGas={isSufficientGas}
                 onLongPress={onLongPressSend}
+                smallButton={isTinyPhone}
               />
             }
             nativeAmount={amountDetails.nativeAmount}
