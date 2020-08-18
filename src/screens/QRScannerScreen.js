@@ -74,7 +74,6 @@ const QRScannerScreen = ({
 
   return (
     <View>
-      {discoverSheetAvailable ? <DiscoverSheet /> : null}
       <Centered
         {...position.sizeAsObject('100%')}
         backgroundColor={colors.appleBlue}
@@ -95,7 +94,9 @@ const QRScannerScreen = ({
             showCrosshairText={!!walletConnectorsCount}
           />
         </Dim>
-        {discoverSheetAvailable ? null : (
+        {discoverSheetAvailable ? (
+          <DiscoverSheet />
+        ) : (
           <BubbleSheet bottom={insets.bottom ? 21 : 0} onLayout={onSheetLayout}>
             {walletConnectorsCount ? (
               <WalletConnectList items={walletConnectorsByDappName} />

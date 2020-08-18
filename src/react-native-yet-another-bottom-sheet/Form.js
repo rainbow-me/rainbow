@@ -19,8 +19,15 @@ function useReactiveSharedValue(prop) {
   return sharedValue;
 }
 
-export default function Form({ style: propStyle, points, ...props }) {
+export default function Form({
+  style: propStyle,
+  points,
+  toss = 0.0001,
+  panGHProps: { simultaneousHandlers, ...panGHProps },
+  ...props
+}) {
   const sharedPoints = useReactiveSharedValue(points);
+  const sharedToss = useReactiveSharedValue(toss);
   const animatedRef = useAnimatedRef();
   const layout = useSharedValue({ height: 0, width: 0, x: 0, y: 0 });
   const isScrollableHeader = useSharedValue(true);
@@ -68,7 +75,7 @@ export default function Form({ style: propStyle, points, ...props }) {
     onEnd: event => {
       const destinationPoint =
         (translateY.value > 0
-          ? 0.001 * event.velocityY * Math.abs(event.velocityY)
+          ? sharedToss.value * event.velocityY * Math.abs(event.velocityY)
           : 0) + translateY.value;
       let closest = 0;
       for (let i = 0; i < sharedPoints.value.length; i++) {
@@ -127,7 +134,13 @@ export default function Form({ style: propStyle, points, ...props }) {
       <PanGestureHandler
         {...{ onGestureEvent }}
         minDist={0}
-        simultaneousHandlers="AnimatedScrollViewYABS"
+        simultaneousHandlers={[
+          'AnimatedScrollViewYABS',
+          ...(Array.isArray(simultaneousHandlers)
+            ? simultaneousHandlers
+            : [simultaneousHandlers]),
+        ]}
+        {...panGHProps}
       >
         <Animated.View {...props} style={[propStyle, style]} />
       </PanGestureHandler>

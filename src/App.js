@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
@@ -30,7 +29,6 @@ import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
-import YetAnotherBottomSheetExample from './bottom-sheet';
 import { FlexItem } from './components/layout';
 import { OfflineToast, TestnetToast } from './components/toasts';
 import {
@@ -207,7 +205,17 @@ class App extends Component {
 
   render = () => (
     <DevContextWrapper>
-      <YetAnotherBottomSheetExample />
+      <Portal>
+        <SafeAreaProvider>
+          <Provider store={store}>
+            <FlexItem>
+              <RoutesComponent ref={this.handleNavigatorRef} />
+              <OfflineToast />
+              <TestnetToast network={this.props.network} />
+            </FlexItem>
+          </Provider>
+        </SafeAreaProvider>
+      </Portal>
     </DevContextWrapper>
   );
 }

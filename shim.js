@@ -22,6 +22,7 @@ if (
     },
     makeRemote() {},
     makeShareable() {},
+    registerEventHandler() {},
     startMapper() {},
     stopMapper() {},
   };
