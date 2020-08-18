@@ -26,20 +26,17 @@ import logger from 'logger';
 const NOOP = () => undefined;
 
 export const isValidSwapInput = ({
-  inputAmount,
   inputCurrency,
   inputReserve,
-  outputAmount,
   outputCurrency,
   outputReserve,
 }) => {
-  const isMissingAmounts = !inputAmount || !outputAmount;
   const isMissingCurrency = !inputCurrency || !outputCurrency;
   const isMissingReserves =
     (get(inputCurrency, 'address') !== 'eth' && !inputReserve) ||
     (get(outputCurrency, 'address') !== 'eth' && !outputReserve);
 
-  return !(isMissingAmounts || isMissingCurrency || isMissingReserves);
+  return !(isMissingCurrency || isMissingReserves);
 };
 
 export const findSwapOutputAmount = (receipt, accountAddress) => {
