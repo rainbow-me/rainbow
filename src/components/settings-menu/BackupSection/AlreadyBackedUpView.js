@@ -71,12 +71,7 @@ const TopIconGrey = styled(TopIcon)`
 const AlreadyBackedUpView = () => {
   const { navigate } = useNavigation();
   const { params } = useRoute();
-  const {
-    isWalletLoading,
-    latestBackup,
-    wallets,
-    selectedWallet,
-  } = useWallets();
+  const { isWalletLoading, wallets, selectedWallet } = useWallets();
   const walletCloudBackup = useWalletCloudBackup();
   const walletId = params?.walletId || selectedWallet.id;
 
@@ -144,7 +139,6 @@ const AlreadyBackedUpView = () => {
     walletCloudBackup({
       handleNoLatestBackup,
       handlePasswordNotFound,
-      latestBackup,
       walletId,
     });
   }, [
@@ -152,7 +146,6 @@ const AlreadyBackedUpView = () => {
     walletId,
     handleNoLatestBackup,
     handlePasswordNotFound,
-    latestBackup,
     walletStatus,
   ]);
 

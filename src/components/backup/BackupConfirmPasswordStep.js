@@ -133,7 +133,7 @@ const BackupConfirmPasswordStep = () => {
   const [password, setPassword] = useState('');
   const [label, setLabel] = useState('􀎽 Confirm Backup');
   const passwordRef = useRef();
-  const { latestBackup, selectedWallet } = useWallets();
+  const { selectedWallet } = useWallets();
 
   const walletId = params?.walletId || selectedWallet.id;
   const { goBack } = useNavigation();
@@ -176,7 +176,6 @@ const BackupConfirmPasswordStep = () => {
 
   const onSubmit = useCallback(async () => {
     await walletCloudBackup({
-      latestBackup,
       onError: () => {
         passwordRef.current?.focus();
         dispatch(setIsWalletLoading(null));
@@ -192,7 +191,7 @@ const BackupConfirmPasswordStep = () => {
       password,
       walletId,
     });
-  }, [dispatch, goBack, latestBackup, password, walletCloudBackup, walletId]);
+  }, [dispatch, goBack, password, walletCloudBackup, walletId]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();

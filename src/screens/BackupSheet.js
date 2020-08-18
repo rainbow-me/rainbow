@@ -46,7 +46,7 @@ const BackupSheet = () => {
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
   const dispatch = useDispatch();
-  const { selectedWallet, latestBackup, isWalletLoading } = useWallets();
+  const { selectedWallet, isWalletLoading } = useWallets();
   const walletCloudBackup = useWalletCloudBackup();
   const [step, setStep] = useState(params?.option || 'first');
   const walletId = params?.walletId || selectedWallet.id;
@@ -101,7 +101,6 @@ const BackupSheet = () => {
     walletCloudBackup({
       handleNoLatestBackup,
       handlePasswordNotFound,
-      latestBackup,
       onSuccess,
       walletId,
     });
@@ -110,7 +109,6 @@ const BackupSheet = () => {
     walletId,
     handleNoLatestBackup,
     handlePasswordNotFound,
-    latestBackup,
     onSuccess,
   ]);
 

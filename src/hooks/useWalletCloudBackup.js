@@ -15,13 +15,12 @@ import logger from 'logger';
 
 export default function useWalletCloudBackup() {
   const dispatch = useDispatch();
-  const { wallets } = useWallets();
+  const { latestBackup, wallets } = useWallets();
 
   const walletCloudBackup = useCallback(
     async ({
       handleNoLatestBackup,
       handlePasswordNotFound,
-      latestBackup,
       onError,
       onSuccess,
       password,
@@ -101,7 +100,7 @@ export default function useWalletCloudBackup() {
         captureException(e);
       }
     },
-    [dispatch, wallets]
+    [dispatch, latestBackup, wallets]
   );
 
   return walletCloudBackup;
