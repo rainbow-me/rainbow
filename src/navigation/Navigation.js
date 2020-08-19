@@ -6,6 +6,7 @@ import {
 import { get } from 'lodash';
 import React, { useCallback } from 'react';
 import { Value } from 'react-native-reanimated';
+import { NATIVE_ROUTES } from '@rainbow-me/routes';
 
 let TopLevelNavigationRef = null;
 const transitionPosition = new Value(0);
@@ -61,6 +62,17 @@ export function withNavigationFocus(Component) {
   };
 }
 
+let blocked = false;
+let timeout = null;
+function block() {
+  blocked = true;
+  if (timeout !== null) {
+    clearTimeout(timeout);
+    timeout = null;
+  }
+  setTimeout(() => (blocked = false), 200);
+}
+
 /**
  * With this wrapper we allow to delay pushing of native
  * screen with delay when there's a closing transaction in progress
@@ -68,6 +80,13 @@ export function withNavigationFocus(Component) {
  */
 export function navigate(oldNavigate, ...args) {
   if (typeof args[0] === 'string') {
+    if (NATIVE_ROUTES.indexOf(args[0]) !== -1) {
+      let wasBlocked = blocked;
+      block();
+      if (wasBlocked) {
+        return;
+      }
+    }
     addActionAfterClosingSheet(() => oldNavigate(...args));
   } else {
     oldNavigate(...args);

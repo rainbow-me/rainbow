@@ -37,10 +37,8 @@ export const estimateSwapAndDepositCompound = async ({
   let gasLimits = [];
   if (requiresSwap) {
     const isValid = isValidSwapInput({
-      inputAmount,
       inputCurrency,
       inputReserve,
-      outputAmount,
       outputCurrency,
       outputReserve,
     });
