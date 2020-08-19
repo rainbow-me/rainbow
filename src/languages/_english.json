@@ -50,8 +50,11 @@
         "assessment": "Results of our security assessment",
         "text_mobile": "You need to use an Ethereum Wallet to access Balance Manager to view, send and exchange your Ether and Ethereum-based tokens."
       },
-      "back": "Back to balance.io",
+      "back": "Back to rainbow.me",
       "coming_soon": "Coming soon."
+    },
+    "icloud": {
+      "backup_success": "Your wallet has been backed up successfully!"
     },
     "account": {
       "tab_balances": "Balances",

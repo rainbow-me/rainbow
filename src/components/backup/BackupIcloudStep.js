@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/core';
 import { useRoute } from '@react-navigation/native';
+import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -260,7 +261,7 @@ const BackupIcloudStep = () => {
         logger.log('BackupIcloudStep:: saving backup password');
         await saveBackupPassword(password);
         setTimeout(() => {
-          Alert.alert('Your wallet has been backed up succesfully!');
+          Alert.alert(lang.t('icloud.backup_success'));
         }, 1000);
         goBack();
       },
