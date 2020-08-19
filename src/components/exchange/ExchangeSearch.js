@@ -30,7 +30,7 @@ const SearchInput = styled(Input).attrs({
   enablesReturnKeyAutomatically: true,
   keyboardAppearance: 'dark',
   keyboardType: 'ascii-capable',
-  lineHeight: 'loose',
+  ...(android ? {} : { lineHeight: 'loose' }),
   placeholderTextColor: colors.grey,
   returnKeyType: 'search',
   selectionColor: colors.appleBlue,

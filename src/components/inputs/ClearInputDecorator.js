@@ -59,7 +59,7 @@ const ClearInputDecorator = ({ inputHeight, isVisible, onPress }) => {
 
   return (
     <Container>
-      {isVisible && (
+      {isVisible ? (
         <Transitioning.View ref={transitionRef} transition={transition}>
           <Button
             as={ButtonPressAnimation}
@@ -69,7 +69,7 @@ const ClearInputDecorator = ({ inputHeight, isVisible, onPress }) => {
             <Icon color={colors.blueGreyDark} name="clearInput" opacity={0.3} />
           </Button>
         </Transitioning.View>
-      )}
+      ) : null}
     </Container>
   );
 };
