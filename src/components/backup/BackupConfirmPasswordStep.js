@@ -15,7 +15,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { isCloudBackupPasswordValid } from '../../handlers/cloudBackup';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import { fetchBackupPassword, saveBackupPassword } from '../../model/backup';
+import { saveBackupPassword } from '../../model/backup';
 import { setIsWalletLoading } from '../../redux/wallets';
 import { deviceUtils } from '../../utils';
 import { RainbowButton } from '../buttons';
@@ -140,17 +140,6 @@ const BackupConfirmPasswordStep = () => {
 
   const walletId = params?.walletId || selectedWallet.id;
   const { goBack } = useNavigation();
-
-  useEffect(() => {
-    const fetchPasswordIfPossible = async () => {
-      const pwd = await fetchBackupPassword();
-      if (pwd) {
-        setPassword(pwd);
-      }
-    };
-
-    fetchPasswordIfPossible();
-  }, []);
 
   const onPasswordFocus = useCallback(() => {
     setPasswordFocused(true);
