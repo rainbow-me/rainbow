@@ -8,7 +8,8 @@ const AnimatedScrollView = Animated.createAnimatedComponent(GHScrollView);
 export default function ScrollView(props) {
   const { scrollHandler, animatedRef, layout } = useContext(Context);
   const onLayout = useCallback(
-    ({ nativeEvent: { layout: newLayout } }) => (layout.value = newLayout)
+    ({ nativeEvent: { layout: newLayout } }) => (layout.value = newLayout),
+    [layout]
   );
 
   return (

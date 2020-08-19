@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
 import Animated, { useCode } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 import { BubbleSheet } from '../components/bubble-sheet';
 import { Button } from '../components/buttons';
-import { DiscoverSheet } from '../components/discover-sheet';
+import {
+  DiscoverSheetAndroid,
+  DiscoverSheetIOS,
+} from '../components/discover-sheet';
 import { BackButton, Header, HeaderHeight } from '../components/header';
 import { Centered } from '../components/layout';
 import { QRCodeScanner } from '../components/qrcode-scanner';
@@ -74,6 +77,9 @@ const QRScannerScreen = ({
 
   return (
     <View>
+      {discoverSheetAvailable && Platform.OS === 'ios' ? (
+        <DiscoverSheetIOS />
+      ) : null}
       <Centered
         {...position.sizeAsObject('100%')}
         backgroundColor={colors.appleBlue}
@@ -95,7 +101,9 @@ const QRScannerScreen = ({
           />
         </Dim>
         {discoverSheetAvailable ? (
-          <DiscoverSheet />
+          Platform.OS === 'android' ? (
+            <DiscoverSheetAndroid />
+          ) : null
         ) : (
           <BubbleSheet bottom={insets.bottom ? 21 : 0} onLayout={onSheetLayout}>
             {walletConnectorsCount ? (

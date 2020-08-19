@@ -1,6 +1,9 @@
+import { useIsFocused } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BaseButton } from 'react-native-gesture-handler';
+// eslint-disable-next-line import/no-unresolved
+import SlackBottomSheet from 'react-native-slack-bottom-sheet';
 import { useNavigation } from '../../navigation';
 import {
   YABSForm,
@@ -31,7 +34,7 @@ const Lorem = () => {
   );
 };
 
-function DiscoverSheet() {
+export function DiscoverSheetAndroid() {
   return (
     <YABSForm
       panGHProps={{
@@ -55,7 +58,38 @@ function DiscoverSheet() {
   );
 }
 
-export default DiscoverSheet;
+export function DiscoverSheetIOS() {
+  const isFocused = useIsFocused();
+  return (
+    <SlackBottomSheet
+      allowsDragToDismiss={false}
+      allowsTapToDismiss={false}
+      backgroundOpacity={0}
+      blocksBackgroundTouches={false}
+      initialAnimation={false}
+      interactsWithOuterScrollView
+      isHapticFeedbackEnabled={false}
+      presentGlobally={false}
+      scrollsToTopOnTapStatusBar={isFocused}
+      topOffset={100}
+      unmountAnimation={false}
+    >
+      <View style={StyleSheet.absoluteFillObject}>
+        <ScrollView
+          contentContainerStyle={{ marginBottom: 20 }}
+          style={{
+            backgroundColor: 'white',
+            marginBottom: -20,
+            opacity: 1,
+            paddingTop: 12,
+          }}
+        >
+          <Lorem />
+        </ScrollView>
+      </View>
+    </SlackBottomSheet>
+  );
+}
 
 const styles = StyleSheet.create({
   panelTitle: {

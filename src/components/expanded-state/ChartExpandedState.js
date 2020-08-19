@@ -57,7 +57,7 @@ export default function ChartExpandedState({ asset }) {
     updateChartDataLabels
   );
 
-  const { jumpToShort } = useContext(ModalContext);
+  const { jumpToShort } = useContext(ModalContext) || {};
   // Only show the chart if we have chart data, or if chart data is still loading
   const showChart = chartExpandedAvailable && (!!chart || fetchingCharts);
   useEffect(() => {
@@ -66,7 +66,7 @@ export default function ChartExpandedState({ asset }) {
         isShortFormEnabled: true,
       });
       setImmediate(() => {
-        jumpToShort();
+        jumpToShort?.();
         setOptions({
           isShortFormEnabled: false,
           longFormHeight: heightWithNoChart,

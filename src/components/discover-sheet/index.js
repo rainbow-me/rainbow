@@ -1,1 +1,1 @@
-export { default as DiscoverSheet } from './DiscoverSheet';
+export { DiscoverSheetIOS, DiscoverSheetAndroid } from './DiscoverSheet';
