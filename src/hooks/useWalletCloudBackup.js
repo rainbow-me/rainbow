@@ -30,8 +30,9 @@ export default function useWalletCloudBackup() {
       const isAvailable = await isCloudBackupAvailable();
       if (!isAvailable) {
         Alert.alert(
-          'iCloud Error',
-          'Looks like iCloud drive is not enabled in your device. Do you want to see how to enable it?',
+          'iCloud Not Enabled',
+          `Looks like iCloud drive is not enabled on your device.
+          Do you want to see how to enable it?`,
           [
             {
               onPress: () => {
