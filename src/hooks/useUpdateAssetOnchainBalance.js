@@ -15,28 +15,22 @@ export default function useUpdateAssetOnchainBalance() {
         assetToUpdate,
         accountAddress
       );
-      if (balance) {
-        if (balance.amount !== assetToUpdate.balance.amount) {
-          // Now we need to update the asset
-          // First in the state
-          successCallback({ ...assetToUpdate, balance });
-          // Then in redux
-          const allAssetsUpdated = allAssets.map(asset => {
-            if (asset.address === assetToUpdate.address) {
-              asset.balance = balance;
-            }
-            return asset;
-          });
-          await dispatch(dataUpdateAssets(allAssetsUpdated));
-          logger.log(
-            `balance updated with onchain data for asset ${assetToUpdate.symbol}`,
-            balance
-          );
-        } else {
-          logger.log(
-            'asset balance matches with onchain data. No need to update'
-          );
-        }
+      if (balance?.amount !== assetToUpdate?.balance?.amount) {
+        // Now we need to update the asset
+        // First in the state
+        successCallback({ ...assetToUpdate, balance });
+        // Then in redux
+        const allAssetsUpdated = allAssets.map(asset => {
+          if (asset.address === assetToUpdate.address) {
+            asset.balance = balance;
+          }
+          return asset;
+        });
+        await dispatch(dataUpdateAssets(allAssetsUpdated));
+        logger.log(
+          `balance updated with onchain data for asset ${assetToUpdate.symbol}`,
+          balance
+        );
       }
     },
     [allAssets, dispatch]
