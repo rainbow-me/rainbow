@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { ethers } from 'ethers';
 import { get } from 'lodash';
 import { toHex } from '../../handlers/web3';
@@ -62,11 +63,23 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     gasPrice: gasPrice ? toHex(gasPrice) : undefined,
     value: toHex(0),
   };
-  logger.log('[withdraw] txn params', transactionParams);
-  const withdraw = isMax
-    ? await compound.redeem(rawInputAmount, transactionParams)
-    : await compound.redeemUnderlying(rawInputAmount, transactionParams);
-  logger.log('[withdraw] redeemed - result', withdraw);
+
+  let withdraw = null;
+  try {
+    logger.sentry('[withdraw] txn params', transactionParams);
+    withdraw = isMax
+      ? await compound.redeem(rawInputAmount, transactionParams)
+      : await compound.redeemUnderlying(rawInputAmount, transactionParams);
+    logger.sentry('[withdraw] redeemed - result', withdraw);
+  } catch (e) {
+    logger.sentry(
+      `error executing ${
+        isMax ? 'compound.redeem' : 'compound.redeemUnderlying'
+      }`
+    );
+    captureException(e);
+    throw e;
+  }
 
   currentRap.actions[index].transaction.hash = withdraw.hash;
 

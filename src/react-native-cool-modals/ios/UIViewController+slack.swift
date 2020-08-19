@@ -236,13 +236,21 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   var longFormHeight: PanModalHeight {
     return .contentHeight(CGFloat(truncating: self.config!.longFormHeight))
   }
-  
+
+  func panModalDidDismiss() {
+    if self.config!.customStack {
+      config?.removeController()
+    }
+  }
+
   override func viewDidAppear(_ animated: Bool) {
     config?.notifyAppear()
   }
   
   override func viewWillDisappear(_ animated: Bool) {
-    config?.removeController()
+    if !self.config!.customStack {
+      config?.removeController()
+    }
     disappared = true
     super.viewWillDisappear(animated)
   }

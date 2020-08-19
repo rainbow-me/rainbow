@@ -2,16 +2,22 @@ import { get } from 'lodash';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getChart } from '../handlers/uniswap';
-import { addressChartsReceived, chartsUpdateChartType } from '../redux/charts';
+import {
+  assetChartsFallbackReceived,
+  chartsUpdateChartType,
+  getAssetChart,
+} from '../redux/charts';
+import { emitChartsRequest } from '../redux/explorer';
 import { isNewValueForObjectPaths } from '../utils';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 
 export default function useCharts(asset) {
   const dispatch = useDispatch();
+  const assetAddress = asset?.address;
 
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const uniswapAsset = uniswapAssetsInWallet.find(
-    ({ address }) => address === asset.address
+    ({ address }) => address === assetAddress
   );
   const exchangeAddress = get(uniswapAsset, 'exchangeAddress');
 
@@ -24,28 +30,23 @@ export default function useCharts(asset) {
     (...props) =>
       !isNewValueForObjectPaths(...props, ['chartType', 'fetchingCharts'])
   );
-  const chart = charts?.[exchangeAddress]?.[chartType];
+
+  const chart = dispatch(getAssetChart(assetAddress, chartType));
 
   const fetchFallbackCharts = useCallback(
     async () =>
       getChart(exchangeAddress, chartType).then(chartData => {
         if (!chartData.length) return;
         dispatch(
-          addressChartsReceived({
-            payload: {
-              charts: {
-                ...charts,
-                [exchangeAddress]: {
-                  ...charts[exchangeAddress],
-                  [chartType]: chartData,
-                },
-              },
-            },
-          })
+          assetChartsFallbackReceived(assetAddress, chartType, chartData)
         );
       }),
-    [charts, chartType, dispatch, exchangeAddress]
+    [assetAddress, chartType, dispatch, exchangeAddress]
   );
+
+  useEffect(() => {
+    dispatch(emitChartsRequest(assetAddress, chartType));
+  }, [assetAddress, chartType, dispatch]);
 
   useEffect(() => {
     if (!chart && !!exchangeAddress) {

@@ -1,8 +1,8 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useCoinListEdited } from '../hooks';
 import ProfileScreen from '../screens/ProfileScreen';
-import QRScannerScreenWithData from '../screens/QRScannerScreenWithData';
+import QRScannerScreen from '../screens/QRScannerScreen';
 import WalletScreen from '../screens/WalletScreen';
 import { deviceUtils } from '../utils';
 import { ScrollPagerWrapper, scrollPosition } from './helpers';
@@ -14,11 +14,16 @@ const renderTabBar = () => null;
 export function SwipeNavigator() {
   const { isCoinListEdited } = useCoinListEdited();
 
+  const renderPager = useCallback(
+    props => <ScrollPagerWrapper {...props} />,
+    []
+  );
+
   return (
     <Swipe.Navigator
       initialLayout={deviceUtils.dimensions}
       initialRouteName={Routes.WALLET_SCREEN}
-      pager={ScrollPagerWrapper}
+      pager={renderPager}
       position={scrollPosition}
       swipeEnabled={!isCoinListEdited}
       tabBar={renderTabBar}
@@ -26,7 +31,7 @@ export function SwipeNavigator() {
       <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} />
       <Swipe.Screen component={WalletScreen} name={Routes.WALLET_SCREEN} />
       <Swipe.Screen
-        component={QRScannerScreenWithData}
+        component={QRScannerScreen}
         name={Routes.QR_SCANNER_SCREEN}
       />
     </Swipe.Navigator>

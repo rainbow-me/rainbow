@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import {
   getExecutionDetails,
   getTokenReserves,
@@ -122,6 +123,13 @@ export const estimateSwapGasLimit = async (accountAddress, tradeDetails) => {
       updatedMethodArgs,
       value,
     } = getContractExecutionDetails(tradeDetails, web3Provider);
+    logger.sentry('about to call getGasLimit with', {
+      accountAddress,
+      exchange,
+      methodName,
+      updatedMethodArgs,
+      value,
+    });
     const gasLimit = await getGasLimit(
       accountAddress,
       exchange,
@@ -131,6 +139,8 @@ export const estimateSwapGasLimit = async (accountAddress, tradeDetails) => {
     );
     return gasLimit ? gasLimit.toString() : ethUnits.basic_swap;
   } catch (error) {
+    logger.sentry('error executing estimateSwapGasLimit');
+    captureException(error);
     return ethUnits.basic_swap;
   }
 };

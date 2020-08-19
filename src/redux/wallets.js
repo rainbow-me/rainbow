@@ -1,20 +1,27 @@
+import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { filter, flatMap, get, map, values } from 'lodash';
+import { filter, flatMap, get, keys, map, values } from 'lodash';
 import {
   getWalletNames,
   saveWalletNames,
 } from '../handlers/localstorage/walletNames';
 import { web3Provider } from '../handlers/web3';
+import WalletTypes from '../helpers/walletTypes';
+import { hasKey } from '../model/keychain';
 import {
+  addressKey,
   generateAccount,
   getAllWallets,
   getSelectedWallet,
   loadAddress,
+  oldSeedPhraseMigratedKey,
   saveAddress,
   saveAllWallets,
+  seedPhraseKey,
   setSelectedWallet,
 } from '../model/wallet';
 import { settingsUpdateAccountAddress } from '../redux/settings';
+import { logger } from '../utils';
 
 // -- Constants --------------------------------------- //
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
@@ -35,7 +42,7 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     let selectedWallet = get(selected, 'wallet', undefined);
     if (!selectedWallet) {
       const address = await loadAddress();
-      Object.keys(wallets).some(key => {
+      keys(wallets).some(key => {
         const someWallet = wallets[key];
         const found = someWallet.addresses.some(account => {
           return (
@@ -44,6 +51,7 @@ export const walletsLoadState = () => async (dispatch, getState) => {
         });
         if (found) {
           selectedWallet = someWallet;
+          logger.sentry('Found selected wallet based on loadAddress result');
         }
         return found;
       });
@@ -52,6 +60,9 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     // Recover from broken state (account address not in selected wallet)
     if (!addressFromKeychain) {
       addressFromKeychain = await loadAddress();
+      logger.sentry(
+        'addressFromKeychain wasnt set on settings so it is being loaded from loadAddress'
+      );
     }
 
     const selectedAddress = selectedWallet.addresses.find(a => {
@@ -62,6 +73,9 @@ export const walletsLoadState = () => async (dispatch, getState) => {
       const account = selectedWallet.addresses.find(a => a.visible);
       await dispatch(settingsUpdateAccountAddress(account.address));
       await saveAddress(account.address);
+      logger.sentry(
+        'Selected the first visible address because there was not selected one'
+      );
     }
 
     const walletNames = await getWalletNames();
@@ -76,9 +90,10 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     });
 
     dispatch(fetchWalletNames());
-
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
+  } catch (error) {
+    logger.sentry('Exception during walletsLoadState');
+    captureException(error);
+  }
 };
 
 export const walletsUpdate = wallets => dispatch => {
@@ -89,8 +104,8 @@ export const walletsUpdate = wallets => dispatch => {
   });
 };
 
-export const walletsSetSelected = wallet => dispatch => {
-  setSelectedWallet(wallet);
+export const walletsSetSelected = wallet => async dispatch => {
+  await setSelectedWallet(wallet);
   dispatch({
     payload: wallet,
     type: WALLETS_SET_SELECTED,
@@ -166,6 +181,125 @@ export const fetchWalletNames = () => async (dispatch, getState) => {
     type: WALLETS_UPDATE_NAMES,
   });
   saveWalletNames(updatedWalletNames);
+};
+
+export const checkKeychainIntegrity = () => async (dispatch, getState) => {
+  try {
+    let healthyKeychain = true;
+    logger.sentry('[KeychainIntegrityCheck]: starting checks');
+
+    const hasAddress = await hasKey(addressKey);
+    if (hasAddress) {
+      logger.sentry('[KeychainIntegrityCheck]: address is ok');
+    } else {
+      healthyKeychain = false;
+      logger.sentry(
+        `[KeychainIntegrityCheck]: address is missing: ${hasAddress}`
+      );
+    }
+
+    const hasOldSeedPhraseMigratedFlag = await hasKey(oldSeedPhraseMigratedKey);
+    if (hasOldSeedPhraseMigratedFlag) {
+      logger.sentry('[KeychainIntegrityCheck]: migrated flag is OK');
+    } else {
+      logger.sentry(
+        `[KeychainIntegrityCheck]: migrated flag is present: ${hasOldSeedPhraseMigratedFlag}`
+      );
+    }
+
+    const hasOldSeedphrase = await hasKey(seedPhraseKey);
+    if (hasOldSeedphrase) {
+      logger.sentry('[KeychainIntegrityCheck]: old seed is still present!');
+    } else {
+      logger.sentry(
+        `[KeychainIntegrityCheck]: old seed is present: ${hasOldSeedphrase}`
+      );
+    }
+
+    const { wallets, selected } = getState().wallets;
+    if (!wallets) {
+      logger.sentry(
+        '[KeychainIntegrityCheck]: wallets are missing from redux',
+        wallets
+      );
+    }
+
+    if (!selected) {
+      logger.sentry(
+        '[KeychainIntegrityCheck]: selectedwallet is missing from redux',
+        selected
+      );
+    }
+
+    const nonReadOnlyWalletKeys = keys(wallets).filter(
+      key => wallets[key].type !== WalletTypes.readOnly
+    );
+
+    for (const key of nonReadOnlyWalletKeys) {
+      let healthyWallet = true;
+      logger.sentry(`[KeychainIntegrityCheck]: checking wallet ${key}`);
+      const wallet = wallets[key];
+      logger.sentry(`[KeychainIntegrityCheck]: Wallet data`, wallet);
+      const seedKeyFound = await hasKey(`${key}_rainbowSeedPhrase`);
+      if (!seedKeyFound) {
+        healthyWallet = false;
+        logger.sentry('[KeychainIntegrityCheck]: seed key is missing');
+      } else {
+        logger.sentry('[KeychainIntegrityCheck]: seed key is present');
+      }
+
+      for (const account of wallet.addresses) {
+        const pkeyFound = await hasKey(`${account.address}_rainbowPrivateKey`);
+        if (!pkeyFound) {
+          healthyWallet = false;
+          logger.sentry(
+            `[KeychainIntegrityCheck]: pkey is missing for address: ${account.address}`
+          );
+        } else {
+          logger.sentry(
+            `[KeychainIntegrityCheck]: pkey is present for address: ${account.address}`
+          );
+        }
+      }
+
+      // Handle race condition:
+      // A wallet is NOT damaged if:
+      // - it's not imported
+      // - and hasn't been migrated yet
+      // - and the old seedphrase is still there
+      if (
+        !wallet.imported &&
+        !hasOldSeedPhraseMigratedFlag &&
+        hasOldSeedphrase
+      ) {
+        healthyWallet = true;
+      }
+
+      if (!healthyWallet) {
+        logger.sentry(
+          '[KeychainIntegrityCheck]: declaring wallet unhealthy...'
+        );
+        healthyKeychain = false;
+        wallet.damaged = true;
+        await dispatch(walletsUpdate(wallets));
+        // Update selected wallet if needed
+        if (wallet.id === selected.id) {
+          logger.sentry(
+            '[KeychainIntegrityCheck]: declaring selected wallet unhealthy...'
+          );
+          await dispatch(walletsSetSelected(wallets[wallet.id]));
+        }
+        logger.sentry('[KeychainIntegrityCheck]: done updating wallets');
+      }
+    }
+    if (!healthyKeychain) {
+      captureMessage('Keychain Integrity is not OK');
+    }
+    logger.sentry('[KeychainIntegrityCheck]: check completed');
+  } catch (e) {
+    logger.sentry('[KeychainIntegrityCheck]: error thrown', e);
+    captureMessage('Error running keychain integrity checks');
+  }
 };
 
 // -- Reducer ----------------------------------------- //

@@ -2,19 +2,9 @@ import { get } from 'lodash';
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { Button } from '../buttons';
-import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text } from '../text';
-import { colors, position } from '@rainbow-me/styles';
-
-const ClockIcon = styled(Icon).attrs({
-  color: colors.white,
-  name: 'clock',
-})`
-  ${position.size(14)};
-  flex: 0;
-  margin-right: 5;
-`;
+import { colors } from '@rainbow-me/styles';
 
 const FeeButton = styled(Button).attrs({
   backgroundColor: colors.white,
@@ -51,9 +41,8 @@ export default function SendTransactionSpeed({
     <Row justify="space-between">
       <FeeButton onPress={onPressTransactionSpeed}>Fee: {fee}</FeeButton>
       <TimeButton onPress={onPressTransactionSpeed}>
-        <ClockIcon />
-        <Text color={colors.white} size="medium" weight="medium">
-          Arrives in ~ {time}
+        <Text color={colors.white} size="medium" weight="semibold">
+          􀐫 Arrives in ~ {time}
         </Text>
       </TimeButton>
     </Row>
