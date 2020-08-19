@@ -141,12 +141,14 @@ export const setWalletBackedUp = (
 ) => async (dispatch, getState) => {
   const { wallets, selected } = getState().wallets;
   const newWallets = { ...wallets };
-  newWallets[walletId].backedUp = true;
-  newWallets[walletId].backupType = method;
-  if (backupFile) {
-    newWallets[walletId].backupFile = backupFile;
-  }
-  newWallets[walletId].backupDate = Date.now();
+  newWallets[walletId] = {
+    ...newWallets[walletId],
+    backedUp: true,
+    backupDate: Date.now(),
+    backupFile,
+    backupType: method,
+  };
+
   await dispatch(walletsUpdate(newWallets));
   if (selected.id === walletId) {
     await dispatch(walletsSetSelected(newWallets[walletId]));
