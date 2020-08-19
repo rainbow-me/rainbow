@@ -1,8 +1,6 @@
 import { captureException } from '@sentry/react-native';
-import { endsWith, keys } from 'lodash';
+import { endsWith, forEach, map } from 'lodash';
 import {
-  ACCESSIBLE,
-  Options,
   requestSharedWebCredentials,
   setSharedWebCredentials,
 } from 'react-native-keychain';
@@ -18,7 +16,12 @@ import {
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import * as keychain from './keychain';
-import { AllRainbowWallets, allWalletsVersion, RainbowWallet } from './wallet';
+import {
+  AllRainbowWallets,
+  allWalletsVersion,
+  publicAccessControlOptions,
+  RainbowWallet,
+} from './wallet';
 import logger from 'logger';
 
 type BackupPassword = string;
@@ -36,7 +39,8 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
   if (!allKeys) throw new Error("Couldn't read secrets from keychain");
   const secrets = {} as { [key: string]: string };
 
-  const allowedPkeysKeys = wallet.addresses.map(
+  const allowedPkeysKeys = map(
+    wallet?.addresses,
     account => `${account.address}_${privateKeyKey}`
   );
 
@@ -111,8 +115,7 @@ export function findLatestBackUp(wallets: AllRainbowWallets): string | null {
   let latestBackup: string | null = null;
   let filename: string | null = null;
 
-  keys(wallets).forEach(key => {
-    const wallet = wallets[key];
+  forEach(wallets, wallet => {
     // Check if there's a wallet backed up
     if (
       wallet.backedUp &&
@@ -169,10 +172,6 @@ async function restoreBackupIntoKeychain(
 ): Promise<boolean> {
   try {
     // Access control config per each type of key
-    const publicAccessControlOptions = {
-      accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
-    } as Options;
-
     const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
 
     await Promise.all(
