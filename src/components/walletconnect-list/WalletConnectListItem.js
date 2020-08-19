@@ -1,27 +1,25 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { compose, withHandlers } from 'recompact';
-import { withWalletConnectConnections } from '../../hoc';
+import React, { useCallback } from 'react';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContextMenu } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
 import { TruncatedText } from '../text';
+import { useWalletConnectConnections } from '@rainbow-me/hooks';
 import { colors, padding } from '@rainbow-me/styles';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
-const WalletConnectListItemHeight = VendorLogoIconSize + ContainerPadding * 2;
+export const WalletConnectListItemHeight =
+  VendorLogoIconSize + ContainerPadding * 2;
 
-const enhance = compose(
-  withWalletConnectConnections,
-  withHandlers({
-    onPressActionSheet: ({
-      dappName,
-      dappUrl,
-      walletConnectDisconnectAllByDappName,
-    }) => buttonIndex => {
+export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
+  const {
+    walletConnectDisconnectAllByDappName,
+  } = useWalletConnectConnections();
+
+  const handlePressActionSheet = useCallback(
+    buttonIndex => {
       if (buttonIndex === 0) {
         walletConnectDisconnectAllByDappName(dappName);
         analytics.track('Manually disconnected from WalletConnect connection', {
@@ -30,11 +28,10 @@ const enhance = compose(
         });
       }
     },
-  })
-);
+    [dappName, dappUrl, walletConnectDisconnectAllByDappName]
+  );
 
-const WalletConnectListItem = enhance(
-  ({ dappName, dappIcon, onPressActionSheet }) => (
+  return (
     <Row align="center" height={WalletConnectListItemHeight}>
       <Row
         align="center"
@@ -68,22 +65,11 @@ const WalletConnectListItem = enhance(
         <ContextMenu
           css={padding(16, 19)}
           destructiveButtonIndex={0}
-          onPressActionSheet={onPressActionSheet}
+          onPressActionSheet={handlePressActionSheet}
           options={['Disconnect', lang.t('wallet.action.cancel')]}
           title={`Would you like to disconnect from ${dappName}?`}
         />
       </Centered>
     </Row>
-  )
-);
-
-WalletConnectListItem.propTypes = {
-  dappIcon: PropTypes.string.isRequired,
-  dappName: PropTypes.string.isRequired,
-  dappUrl: PropTypes.string.isRequired,
-  onPressActionSheet: PropTypes.func.isRequired,
-};
-
-WalletConnectListItem.height = WalletConnectListItemHeight;
-
-export default WalletConnectListItem;
+  );
+}

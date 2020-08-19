@@ -6,14 +6,23 @@ import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
 
 export default function useAccountProfile() {
-  const { selectedWallet, walletNames } = useWallets();
+  const wallets = useWallets();
+  const { selectedWallet, walletNames } = wallets;
 
-  const { accountAddress } = useAccountSettings();
+  const settings = useAccountSettings();
+  const { accountAddress } = settings;
 
-  if (!selectedWallet) return {};
-  if (!accountAddress) return {};
+  if (!selectedWallet) {
+    return {};
+  }
 
-  if (!selectedWallet || !selectedWallet?.addresses?.length) return {};
+  if (!accountAddress) {
+    return {};
+  }
+
+  if (!selectedWallet?.addresses?.length) {
+    return {};
+  }
 
   const accountENS = get(walletNames, `${accountAddress}`);
 
@@ -21,7 +30,9 @@ export default function useAccountProfile() {
     account => account.address === accountAddress
   );
 
-  if (!selectedAccount) return {};
+  if (!selectedAccount) {
+    return {};
+  }
 
   const { label, color, index, image } = selectedAccount;
 

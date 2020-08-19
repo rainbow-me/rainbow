@@ -40,7 +40,7 @@ export default function ProfileHeaderButton() {
           />
         )}
         <NumberBadge
-          isVisible={pendingRequestCount > 0}
+          isVisible={Number(pendingRequestCount) > 0}
           value={pendingRequestCount}
         />
       </Centered>

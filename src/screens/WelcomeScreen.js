@@ -358,7 +358,9 @@ export default function WelcomeScreen() {
       ),
     ]).start();
     return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       importButtonAnimation.current.setValue(1);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       contentAnimation.current.setValue(1);
     };
   }, [contentAnimation, hideSplashScreen, importButtonAnimation]);

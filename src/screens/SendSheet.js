@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import { captureEvent, captureException } from '@sentry/react-native';
 import { get, isEmpty, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
@@ -31,6 +32,7 @@ import {
   useAccountSettings,
   useCoinListEditOptions,
   useContacts,
+  useDimensions,
   useGas,
   useMagicAutofocus,
   useMaxInputBalance,
@@ -39,10 +41,12 @@ import {
   useSendableUniqueTokens,
   useSendSavingsAccount,
   useTransactionConfirmation,
+  useUpdateAssetOnchainBalance,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { borders, colors } from '@rainbow-me/styles';
 import { deviceUtils, gasUtils } from '@rainbow-me/utils';
+import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - 10;
 const statusBarHeight = getStatusBarHeight(true);
@@ -66,8 +70,10 @@ const SheetContainer = styled(Column).attrs({
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
+  const { isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
+  const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { allAssets } = useAccountAssets();
   const {
     gasLimit,
@@ -130,7 +136,7 @@ export default function SendSheet(props) {
   // Recalculate balance when gas price changes
   useEffect(() => {
     if (
-      selected.address === 'eth' &&
+      selected?.address === 'eth' &&
       get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
         get(selectedGasPrice, 'txFee.value.amount', 0)
     ) {
@@ -183,9 +189,26 @@ export default function SendSheet(props) {
       } else {
         setSelected(newSelected);
         sendUpdateAssetAmount('');
+        // Since we don't trust the balance from zerion,
+        // let's hit the blockchain and update it
+        updateAssetOnchainBalanceIfNeeded(
+          newSelected,
+          accountAddress,
+          updatedAsset => {
+            // set selected asset with new balance
+            setSelected(updatedAsset);
+            // Update selected to recalculate the maxInputAmount
+            sendUpdateSelected(updatedAsset);
+          }
+        );
       }
     },
-    [sendUpdateAssetAmount, updateMaxInputBalance]
+    [
+      accountAddress,
+      sendUpdateAssetAmount,
+      updateAssetOnchainBalanceIfNeeded,
+      updateMaxInputBalance,
+    ]
   );
 
   const onChangeNativeAmount = useCallback(
@@ -234,8 +257,14 @@ export default function SendSheet(props) {
   const onSubmit = useCallback(async () => {
     const validTransaction =
       isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
-    if (!selectedGasPrice.txFee || !validTransaction || isAuthorizing)
+    if (!selectedGasPrice.txFee || !validTransaction || isAuthorizing) {
+      logger.sentry('preventing tx submit for one of the following reasons:');
+      logger.sentry('selectedGasPrice.txFee ? ', selectedGasPrice?.txFee);
+      logger.sentry('validTransaction ? ', validTransaction);
+      logger.sentry('isAuthorizing ? ', isAuthorizing);
+      captureEvent('Preventing tx submit');
       return false;
+    }
 
     let submitSuccess = false;
 
@@ -259,6 +288,9 @@ export default function SendSheet(props) {
         await dispatch(dataAddNewTransaction(txDetails));
       }
     } catch (error) {
+      logger.sentry('TX Details', txDetails);
+      logger.sentry('SendSheet onSubmit error');
+      captureException(error);
       submitSuccess = false;
     } finally {
       setIsAuthorizing(false);
@@ -280,13 +312,17 @@ export default function SendSheet(props) {
   ]);
 
   const submitTransaction = useCallback(async () => {
-    if (Number(amountDetails.assetAmount) <= 0) return false;
+    if (Number(amountDetails.assetAmount) <= 0) {
+      logger.sentry('amountDetails.assetAmount ? ', amountDetails?.assetAmount);
+      captureEvent('Preventing tx submit due to amount <= 0');
+      return false;
+    }
 
     try {
       const submitSuccessful = await onSubmit();
       analytics.track('Sent transaction', {
-        assetName: selected.name,
-        assetType: selected.type,
+        assetName: selected?.name || '',
+        assetType: selected?.type || '',
         isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
       });
       if (submitSuccessful) {
@@ -295,14 +331,7 @@ export default function SendSheet(props) {
     } catch (error) {
       setIsAuthorizing(false);
     }
-  }, [
-    amountDetails.assetAmount,
-    navigate,
-    onSubmit,
-    recipient,
-    selected.name,
-    selected.type,
-  ]);
+  }, [amountDetails.assetAmount, navigate, onSubmit, recipient, selected]);
 
   const onPressTransactionSpeed = useCallback(
     onSuccess => {
@@ -343,11 +372,11 @@ export default function SendSheet(props) {
   useEffect(() => {
     if (
       (isValidAddress && showAssetList) ||
-      (isValidAddress && showAssetForm && selected.type === AssetTypes.nft)
+      (isValidAddress && showAssetForm && selected?.type === AssetTypes.nft)
     ) {
       Keyboard.dismiss();
     }
-  }, [isValidAddress, selected.type, showAssetForm, showAssetList]);
+  }, [isValidAddress, selected, showAssetForm, showAssetList]);
 
   const { params } = useRoute();
   const assetOverride = params?.asset;
@@ -447,6 +476,7 @@ export default function SendSheet(props) {
                 isSufficientBalance={amountDetails.isSufficientBalance}
                 isSufficientGas={isSufficientGas}
                 onLongPress={onLongPressSend}
+                smallButton={isTinyPhone}
               />
             }
             nativeAmount={amountDetails.nativeAmount}

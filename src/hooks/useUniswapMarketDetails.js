@@ -71,7 +71,7 @@ export default function useUniswapMarketDetails() {
       updateInputAmount,
     }) => {
       if (isOutputEmpty || isOutputZero) {
-        updateInputAmount();
+        updateInputAmount(undefined, undefined, false);
         setIsSufficientBalance(true);
       } else {
         const updatedInputAmount = get(tradeDetails, 'inputAmount.amount');

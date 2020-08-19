@@ -7,6 +7,10 @@
     "color": "#29292E",
     "name": "0x"
   },
+  "0x80fB784B7eD66730e8b1DBd9820aFD29931aab03": {
+    "color": "#4BA7C5",
+    "name": "Aave"
+  },
   "0x960b236A07cf122663c4303350609A66A7B288C0": {
     "color": "#06BCE5",
     "name": "Aragon"
@@ -38,7 +42,7 @@
   "0xc00e94cb662c3520282e6f5717214004a7f26888": {
     "color": "#00D395",
     "name": "Compound",
-    "shadowColor": "#25292E",
+    "shadowColor": "#25292E"
   },
   "0x6c8c6b02e7b2be14d4fa6022dfd6d75921d90e4e": {
     "color": "#9669ED",
@@ -264,6 +268,10 @@
     "color": "#002868",
     "name": "TrueUSD"
   },
+  "0x4c19596f5aaff459fa38b0f7ed92f11ae6543784": {
+    "name": "TrustToken",
+    "symbol": "TRU",
+  },
   "0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828": {
     "color": "#FF4A4A",
     "name": "UMA"
@@ -292,5 +300,10 @@
   "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": {
     "color": "#25292E",
     "name": "Wrapped Ether"
+  },
+  "0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16": {
+    "color": "#B2364F",
+    "name": "YAM",
+    "shadowColor": "#D09AAC"
   }
 }

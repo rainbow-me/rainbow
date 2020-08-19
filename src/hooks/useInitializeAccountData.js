@@ -28,8 +28,7 @@ export default function useInitializeAccountData() {
         await dispatch(uniqueTokensRefreshState());
       });
     } catch (error) {
-      // TODO error state
-      logger.log('Error initializing account data: ', error);
+      logger.sentry('Error initializing account data');
       captureException(error);
     }
   }, [dispatch]);
