@@ -1,4 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
+import lang from 'i18n-js';
 import React, {
   useCallback,
   useContext,
@@ -93,7 +94,7 @@ const BackupSheet = () => {
   const onSuccess = useCallback(() => {
     goBack();
     setTimeout(() => {
-      Alert.alert('Your wallet has been backed up succesfully!');
+      Alert.alert(lang.t('icloud.backup_success'));
     }, 1000);
   }, [goBack]);
 
