@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/core';
+import { useNavigation, useNavigationState } from '@react-navigation/core';
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -25,6 +25,7 @@ import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { GradientText, Text } from '../text';
 import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
+import Routes from '@rainbow-me/routes';
 import { borders, colors, padding } from '@rainbow-me/styles';
 import logger from 'logger';
 
@@ -154,6 +155,7 @@ const BackupIcloudStep = () => {
   const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const routes = useNavigationState(state => state.routes);
 
   const walletId = params?.walletId || selectedWallet.id;
   const { goBack } = useNavigation();
@@ -265,11 +267,13 @@ const BackupIcloudStep = () => {
   const onSuccess = useCallback(async () => {
     logger.log('BackupIcloudStep:: saving backup password');
     await saveBackupPassword(password);
-    setTimeout(() => {
-      Alert.alert(lang.t('icloud.backup_success'));
-    }, 1000);
+    if (!routes.find(route => route.name === Routes.SETTINGS_MODAL)) {
+      setTimeout(() => {
+        Alert.alert(lang.t('icloud.backup_success'));
+      }, 1000);
+    }
     goBack();
-  }, [goBack, password]);
+  }, [goBack, password, routes]);
 
   const onConfirmBackup = useCallback(async () => {
     await walletCloudBackup({

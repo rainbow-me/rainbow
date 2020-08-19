@@ -1,4 +1,8 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useNavigation,
+  useNavigationState,
+  useRoute,
+} from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, {
   useCallback,
@@ -53,6 +57,7 @@ const BackupSheet = () => {
   const walletId = params?.walletId || selectedWallet.id;
   const missingPassword = params?.missingPassword || null;
   const { setComponent, hide } = usePortal();
+  const routes = useNavigationState(state => state.routes);
 
   useEffect(() => {
     if (isWalletLoading) {
@@ -93,10 +98,12 @@ const BackupSheet = () => {
 
   const onSuccess = useCallback(() => {
     goBack();
-    setTimeout(() => {
-      Alert.alert(lang.t('icloud.backup_success'));
-    }, 1000);
-  }, [goBack]);
+    if (!routes.find(route => route.name === Routes.SETTINGS_MODAL)) {
+      setTimeout(() => {
+        Alert.alert(lang.t('icloud.backup_success'));
+      }, 1000);
+    }
+  }, [goBack, routes]);
 
   const onError = useCallback(msg => {
     setTimeout(() => {

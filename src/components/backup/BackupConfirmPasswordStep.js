@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/core';
+import { useNavigation, useNavigationState } from '@react-navigation/core';
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -15,7 +15,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { isCloudBackupPasswordValid } from '../../handlers/cloudBackup';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import { fetchBackupPassword, saveBackupPassword } from '../../model/backup';
+import { saveBackupPassword } from '../../model/backup';
 import { setIsWalletLoading } from '../../redux/wallets';
 import { deviceUtils } from '../../utils';
 import { RainbowButton } from '../buttons';
@@ -24,6 +24,7 @@ import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { GradientText, Text } from '../text';
 import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
+import Routes from '@rainbow-me/routes';
 import { borders, colors, padding } from '@rainbow-me/styles';
 import logger from 'logger';
 
@@ -135,20 +136,10 @@ const BackupConfirmPasswordStep = () => {
   const [label, setLabel] = useState('􀎽 Confirm Backup');
   const passwordRef = useRef();
   const { selectedWallet } = useWallets();
+  const routes = useNavigationState(state => state.routes);
 
   const walletId = params?.walletId || selectedWallet.id;
   const { goBack } = useNavigation();
-
-  useEffect(() => {
-    const fetchPasswordIfPossible = async () => {
-      const pwd = await fetchBackupPassword();
-      if (pwd) {
-        setPassword(pwd);
-      }
-    };
-
-    fetchPasswordIfPossible();
-  }, []);
 
   const onPasswordFocus = useCallback(() => {
     setPasswordFocused(true);
@@ -189,11 +180,13 @@ const BackupConfirmPasswordStep = () => {
   const onSuccess = useCallback(async () => {
     logger.log('BackupConfirmPasswordStep:: saving backup password');
     await saveBackupPassword(password);
-    setTimeout(() => {
-      Alert.alert(lang.t('icloud.backup_success'));
-    }, 1000);
+    if (!routes.find(route => route.name === Routes.SETTINGS_MODAL)) {
+      setTimeout(() => {
+        Alert.alert(lang.t('icloud.backup_success'));
+      }, 1000);
+    }
     goBack();
-  }, [goBack, password]);
+  }, [goBack, password, routes]);
 
   const onSubmit = useCallback(async () => {
     await walletCloudBackup({
