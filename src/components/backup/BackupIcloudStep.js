@@ -251,31 +251,34 @@ const BackupIcloudStep = () => {
     []
   );
 
+  const onError = useCallback(
+    msg => {
+      setTimeout(onPasswordSubmit, 1000);
+      dispatch(setIsWalletLoading(null));
+      setTimeout(() => {
+        Alert.alert(msg);
+      }, 500);
+    },
+    [dispatch, onPasswordSubmit]
+  );
+
+  const onSuccess = useCallback(async () => {
+    logger.log('BackupIcloudStep:: saving backup password');
+    await saveBackupPassword(password);
+    setTimeout(() => {
+      Alert.alert(lang.t('icloud.backup_success'));
+    }, 1000);
+    goBack();
+  }, [goBack, password]);
+
   const onConfirmBackup = useCallback(async () => {
     await walletCloudBackup({
-      onError: () => {
-        setTimeout(onPasswordSubmit, 1000);
-        dispatch(setIsWalletLoading(null));
-      },
-      onSuccess: async () => {
-        logger.log('BackupIcloudStep:: saving backup password');
-        await saveBackupPassword(password);
-        setTimeout(() => {
-          Alert.alert(lang.t('icloud.backup_success'));
-        }, 1000);
-        goBack();
-      },
+      onError,
+      onSuccess,
       password,
       walletId,
     });
-  }, [
-    dispatch,
-    goBack,
-    onPasswordSubmit,
-    password,
-    walletCloudBackup,
-    walletId,
-  ]);
+  }, [onError, onSuccess, password, walletCloudBackup, walletId]);
 
   const onConfirmPasswordSubmit = useCallback(() => {
     validPassword && onConfirmBackup();

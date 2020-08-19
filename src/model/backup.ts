@@ -7,6 +7,7 @@ import {
   setSharedWebCredentials,
 } from 'react-native-keychain';
 import {
+  CLOUD_BACKUP_ERRORS,
   encryptAndSaveDataToCloud,
   getDataFromCloud,
 } from '../handlers/cloudBackup';
@@ -33,7 +34,7 @@ interface BackupUserData {
 
 async function extractSecretsForWallet(wallet: RainbowWallet) {
   const allKeys = await keychain.loadAllKeys();
-  if (!allKeys) throw new Error("Couldn't read secrets from keychain");
+  if (!allKeys) throw new Error(CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS);
   const secrets = {} as { [key: string]: string };
 
   const allowedPkeysKeys = wallet.addresses.map(
@@ -92,7 +93,6 @@ export async function addWalletToCloudBackup(
   filename: string
 ): Promise<null | boolean> {
   const backup = await getDataFromCloud(password, filename);
-  if (!backup) return null;
 
   const now = Date.now();
 
