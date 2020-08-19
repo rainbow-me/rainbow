@@ -10,10 +10,9 @@ export default function useAccountProfile() {
   const wallets = useWallets();
   const { selectedWallet, walletNames } = wallets;
 
-  const { accountAddress } = useAccountSettings();
   const { network } = useAccountSettings();
   const settings = useAccountSettings();
-  const { accountAddress, accountAddress } = settings;
+  const { accountAddress } = settings;
 
   if (!selectedWallet) {
     return {};
