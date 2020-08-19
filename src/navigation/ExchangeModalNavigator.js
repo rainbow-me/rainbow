@@ -197,7 +197,8 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         <Tabs.Navigator
           swipeEnabled={swipeEnabled}
           {...exchangeTabNavigatorConfig}
-          pager={renderPager}
+          /* https://github.com/react-native-community/react-native-viewpager/issues/173 */
+          {...(ios ? { pager: renderPager } : {})}
           position={tabTransitionPosition}
         >
           <Tabs.Screen
