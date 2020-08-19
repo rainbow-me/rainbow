@@ -1,7 +1,8 @@
 import { captureException } from '@sentry/react-native';
 import { useCallback } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
+import { isCloudBackupAvailable } from '../handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import walletLoadingStates from '../helpers/walletLoadingStates';
 import {
@@ -26,6 +27,28 @@ export default function useWalletCloudBackup() {
       password,
       walletId,
     }) => {
+      const isAvailable = await isCloudBackupAvailable();
+      if (!isAvailable) {
+        Alert.alert(
+          'iCloud Not Enabled',
+          `Looks like iCloud drive is not enabled on your device.
+          Do you want to see how to enable it?`,
+          [
+            {
+              onPress: () => {
+                Linking.openURL('https://support.apple.com/en-us/HT204025');
+              },
+              text: 'Yes, Show me',
+            },
+            {
+              style: 'cancel',
+              text: 'No thanks',
+            },
+          ]
+        );
+        return;
+      }
+
       if (!password && !latestBackup) {
         // No password, No latest backup meaning
         // it's a first time backup so we need to show the password sheet
