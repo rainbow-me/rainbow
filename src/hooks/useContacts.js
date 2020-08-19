@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import networkTypes from '../helpers/networkTypes';
 import { contactsAddOrUpdate, removeContact } from '../redux/contacts';
-import { useAccountSettings } from '.';
 
 const contactsSelector = createSelector(
   ({ contacts: { contacts } }) => contacts,
@@ -16,7 +15,9 @@ const contactsSelector = createSelector(
 
 export default function useContacts() {
   const dispatch = useDispatch();
-  const { network } = useAccountSettings();
+  const { network } = useSelector(({ settings: { network } }) => ({
+    network,
+  }));
   const { contacts, sortedContacts } = useSelector(contactsSelector);
 
   const onAddOrUpdateContacts = useCallback(
