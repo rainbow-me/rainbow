@@ -51,13 +51,27 @@ export default function useInitializeWallet() {
       shouldRunMigrations = false,
       overwrite = false
     ) => {
-      const initWalletAndLoadData = async (
-        seedPhrase,
-        color,
-        name,
-        overwrite,
-        isImported
-      ) => {
+      try {
+        logger.sentry('Start wallet setup');
+
+        await resetAccountState();
+        logger.sentry('resetAccountState ran ok');
+
+        const isImported = !!seedPhrase;
+        logger.sentry('isImported?', isImported);
+
+        if (shouldRunMigrations && !seedPhrase) {
+          logger.sentry('shouldRunMigrations && !seedPhrase? => true');
+          await dispatch(walletsLoadState());
+          logger.sentry('walletsLoadState call #1');
+          await runMigrations();
+          logger.sentry('done with migrations');
+        }
+
+        // Load the network first
+        await dispatch(settingsLoadNetwork());
+        logger.sentry('done loading network');
+
         const { isNew, walletAddress } = await walletInit(
           seedPhrase,
           color,
@@ -101,44 +115,6 @@ export default function useInitializeWallet() {
         logger.sentry('Hide splash screen');
         initializeAccountData();
         runKeychainIntegrityChecks();
-
-        return walletAddress;
-      };
-
-      try {
-        logger.sentry('Start wallet setup');
-
-        await resetAccountState();
-        logger.sentry('resetAccountState ran ok');
-
-        const isImported = !!seedPhrase;
-        logger.sentry('isImported?', isImported);
-
-        if (shouldRunMigrations && !seedPhrase) {
-          logger.sentry('shouldRunMigrations && !seedPhrase? => true');
-          await dispatch(walletsLoadState());
-          logger.sentry('walletsLoadState call #1');
-          await runMigrations();
-          logger.sentry('done with migrations');
-        }
-
-        const poorInternetEmergencyTimeout = setTimeout(async () => {
-          initWalletAndLoadData(seedPhrase, color, name, overwrite, isImported);
-        }, 10000);
-
-        // Load the network first
-        await dispatch(settingsLoadNetwork());
-        logger.sentry('done loading network');
-
-        clearTimeout(poorInternetEmergencyTimeout);
-        const walletAddress = await initWalletAndLoadData(
-          seedPhrase,
-          color,
-          name,
-          overwrite,
-          isImported
-        );
-
         return walletAddress;
       } catch (error) {
         logger.sentry('Error while initializing wallet');
