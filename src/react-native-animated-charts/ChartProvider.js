@@ -16,14 +16,14 @@ import useReactiveSharedValue from './useReactiveSharedValue';
 const android = Platform.OS === 'android';
 
 const parse = data => {
-  let smallestY = data[0];
-  let greatestY = data[0];
+  let smallestY = null;
+  let greatestY = null;
   for (const d of data) {
-    if (d.y < smallestY.y) {
+    if (d.y !== undefined && (smallestY === null || d.y < smallestY.y)) {
       smallestY = d;
     }
 
-    if (d.y > greatestY.y) {
+    if (d.y !== undefined && (greatestY === null || d.y > greatestY.y)) {
       greatestY = d;
     }
   }
@@ -332,6 +332,9 @@ export default function ChartProvider({
         return { x: x * size.value.width, y: y * size.value.height };
       });
     }
+
+    // For som reason isNaN(y) does not work
+    res = res.filter(({ y }) => y === Number(y));
 
     if (smoothing !== 0) {
       return svgBezierPath(res, smoothing, strategy);

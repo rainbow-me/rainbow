@@ -20,8 +20,10 @@ export function useRatio() {
     data?.points?.[data.points.length - 1]?.y
   );
 
-  return useDerivedValue(
-    () => (nativeY.value || lastValue.value) / firstValue.value
+  return useDerivedValue(() =>
+    firstValue.value === Number(firstValue.value)
+      ? (nativeY.value || lastValue.value) / firstValue.value
+      : 1
   );
 }
 
@@ -57,12 +59,14 @@ export default function ChartPercentChangeLabel({ changeDirection }) {
   const textProps = useAnimatedStyle(() => {
     return {
       text:
-        Math.abs(
-          (firstValue.value &&
-            (nativeY.value || lastValue.value) / firstValue.value) *
-            100 -
-            100
-        ).toFixed(2) + '%',
+        firstValue.value === Number(firstValue.value)
+          ? Math.abs(
+              (firstValue.value &&
+                (nativeY.value || lastValue.value) / firstValue.value) *
+                100 -
+                100
+            ).toFixed(2) + '%'
+          : '',
     };
   });
 

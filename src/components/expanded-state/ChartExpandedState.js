@@ -52,7 +52,11 @@ export default function ChartExpandedState({ asset }) {
   );
 
   const throttledPoints = useMemo(
-    () => (!points || points.length === 0 ? throttledPoints : points),
+    () =>
+      (!points || points.length === 0
+        ? throttledPoints
+        : points
+      )?.map(({ y, ...rest }) => ({ y: y ? y : undefined, ...rest })),
     [points]
   );
 
