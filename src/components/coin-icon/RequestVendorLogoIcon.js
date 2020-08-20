@@ -60,7 +60,7 @@ export default function RequestVendorLogoIcon({
       <Content color={bgColor} size={size}>
         {imageUrl && !error ? (
           <FastImage
-            onError={err => setError(err)}
+            onError={setError}
             source={imageSource}
             style={position.sizeAsObject('100%')}
           />

@@ -14,6 +14,3 @@ export { default as withOpenFamilyTabs } from './withOpenFamilyTabs';
 export { default as withOpenInvestmentCards } from './withOpenInvestmentCards';
 export { default as withOpenSavings } from './withOpenSavings';
 export { default as withSafeAreaViewInsetValues } from './withSafeAreaViewInsetValues';
-export { default as withWalletConnectConfirmationModal } from './withWalletConnectConfirmationModal';
-export { default as withWalletConnectConnections } from './withWalletConnectConnections';
-export { default as withWalletConnectOnSessionRequest } from './withWalletConnectOnSessionRequest';

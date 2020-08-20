@@ -30,9 +30,15 @@ const FormContainer = styled(Column).attrs({
   align: 'end',
   justify: 'space-between',
 })`
-  ${({ isNft }) => (isNft ? padding(22, 0, 0) : padding(19, 15))};
+  ${({ isNft, isTinyPhone }) =>
+    isNft
+      ? padding(22, 0, 0)
+      : isTinyPhone
+      ? padding(6, 15, 0)
+      : padding(19, 15)};
   background-color: ${colors.lighterGrey};
   flex: 1;
+  margin-bottom: ${({ isTinyPhone }) => (isTinyPhone ? -19 : 0)};
   width: 100%;
 `;
 
@@ -54,7 +60,7 @@ export default function SendAssetForm({
   txSpeedRenderer,
   ...props
 }) {
-  const { width: deviceWidth } = useDimensions();
+  const { isTinyPhone, width: deviceWidth } = useDimensions();
 
   const selectedAsset = useAsset(selected);
 
@@ -83,7 +89,7 @@ export default function SendAssetForm({
           <Icon name="doubleCaret" />
         </AssetRowElement>
       </ShadowStack>
-      <FormContainer isNft={isNft}>
+      <FormContainer isNft={isNft} isTinyPhone={isTinyPhone}>
         {isNft ? (
           <SendAssetFormCollectible
             asset={selectedAsset}

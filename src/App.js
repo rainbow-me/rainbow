@@ -1,7 +1,6 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
-// eslint-disable-next-line import/no-deprecated
 import { init as initSentry, setRelease } from '@sentry/react-native';
 import { get } from 'lodash';
 import nanoid from 'nanoid/non-secure';
@@ -66,12 +65,10 @@ if (__DEV__) {
 
 CodePush.getUpdateMetadata(CodePush.UpdateState.RUNNING).then(update => {
   if (update) {
-    // eslint-disable-next-line import/no-deprecated
     setRelease(
       `me.rainbow-${VersionNumber.appVersion}-codepush:${update.label}`
     );
   } else {
-    // eslint-disable-next-line import/no-deprecated
     setRelease(`me.rainbow-${VersionNumber.appVersion}`);
   }
 });

@@ -262,7 +262,7 @@ const TransactionConfirmationScreen = () => {
         flatFormatSignature = await signPersonalMessage(message);
         break;
       case SIGN_TYPED_DATA:
-        flatFormatSignature = await signTypedDataMessage(message, method);
+        flatFormatSignature = await signTypedDataMessage(message);
         break;
       default:
         break;
