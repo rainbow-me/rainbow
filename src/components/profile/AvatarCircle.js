@@ -39,7 +39,12 @@ export default function AvatarCircle({
           () => ({
             default: [
               [0, 2, 5, colors.dark, 0.2],
-              [0, 6, 10, colors.alpha(colors.avatarColor[accountColor], 0.6)],
+              [
+                0,
+                6,
+                10,
+                colors.alpha(colors.avatarColor[accountColor || 0], 0.6),
+              ],
             ],
             overlay: [
               [0, 6, 10, colors.black, 0.08],
