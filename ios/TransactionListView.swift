@@ -30,7 +30,11 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       headerSeparator.frame.origin.y = header.frame.size.height - 2
     }
   }
-  @objc var isAvatarPickerAvailable: Bool = true
+  @objc var isAvatarPickerAvailable: Bool = true {
+    didSet {
+      header.accountView.isEnabled = isAvatarPickerAvailable;
+    }
+  }
   @objc var isLoading: Bool = false {
     didSet {
       if(isLoading != oldValue){
