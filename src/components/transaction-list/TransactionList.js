@@ -3,7 +3,8 @@ import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Linking, requireNativeComponent } from 'react-native';
-import ImagePicker from 'react-native-image-picker';
+// import ImagePicker from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import useExperimentalFlag, {
@@ -29,25 +30,6 @@ import {
   ethereumUtils,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
-
-const options = {
-  allowsEditing: true,
-  customButtons: [{ name: 'ab', title: 'Avatar builder...' }],
-  storageOptions: {
-    path: 'images',
-    skipBackup: true,
-  },
-  title: 'Select Avatar',
-};
-
-const optionsWithoutEmojiBuilder = {
-  allowsEditing: true,
-  storageOptions: {
-    path: 'images',
-    skipBackup: true,
-  },
-  title: 'Select Avatar',
-};
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
@@ -114,32 +96,46 @@ const TransactionList = ({
 
   const onAvatarPress = useCallback(() => {
     if (isAvatarImagePickerEnabled) {
-      ImagePicker.showImagePicker(
-        isAvatarEmojiPickerEnabled ? options : optionsWithoutEmojiBuilder,
-        response => {
-          if (response.didCancel) {
-            console.log('User cancelled image picker');
-          } else if (response.error) {
-            console.log('ImagePicker Error: ', response.error);
-          } else if (response.customButton) {
-            if (response.customButton === 'ab') {
-              navigate(Routes.AVATAR_BUILDER, {
-                initialAccountColor: accountColor,
-                initialAccountName: accountName,
-              });
-            }
-          } else {
-            const stringIndex = response?.uri.indexOf('/Documents');
-            const newWallets = { ...wallets };
-            const walletId = selectedWallet.id;
-            newWallets[walletId].addresses.some((account, index) => {
-              newWallets[walletId].addresses[
-                index
-              ].image = `~${response.uri.slice(stringIndex)}`;
-              dispatch(walletsSetSelected(newWallets[walletId]));
-              return true;
+      const processPhoto = image => {
+        const stringIndex = image?.path.indexOf('/tmp');
+        const newWallets = { ...wallets };
+        const walletId = selectedWallet.id;
+        newWallets[walletId].addresses.some((account, index) => {
+          newWallets[walletId].addresses[index].image = `~${image?.path.slice(
+            stringIndex
+          )}`;
+          dispatch(walletsSetSelected(newWallets[walletId]));
+          return true;
+        });
+        dispatch(walletsUpdate(newWallets));
+      };
+
+      showActionSheetWithOptions(
+        {
+          cancelButtonIndex: 3,
+          options: [
+            'Take Photo...',
+            'Choose from Library...',
+            'Avatar builder...',
+            'Cancel', // <-- cancelButtonIndex
+          ],
+        },
+        async buttonIndex => {
+          if (buttonIndex === 0) {
+            ImagePicker.openCamera({
+              cropperCircleOverlay: true,
+              cropping: true,
+            }).then(processPhoto);
+          } else if (buttonIndex === 1) {
+            ImagePicker.openPicker({
+              cropperCircleOverlay: true,
+              cropping: true,
+            }).then(processPhoto);
+          } else if (buttonIndex === 2) {
+            navigate(Routes.AVATAR_BUILDER, {
+              initialAccountColor: accountColor,
+              initialAccountName: accountName,
             });
-            dispatch(walletsUpdate(newWallets));
           }
         }
       );
