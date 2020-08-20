@@ -2,16 +2,18 @@ PODS:
   - Analytics (4.0.4)
   - Base64 (1.1.2)
   - boost-for-react-native (1.63.0)
-  - Branch (0.34.0)
+  - Branch (0.32.0):
+    - Branch/Core (= 0.32.0)
+  - Branch/Core (0.32.0)
   - BVLinearGradient (2.5.6):
     - React
   - CocoaAsyncSocket (7.6.4)
   - CocoaLibEvent (1.0.0)
-  - CodePush (6.3.0):
+  - CodePush (6.2.1):
     - Base64 (~> 1.1)
-    - JWT (~> 3.0.0-beta.12)
+    - JWT (~> 3.0.0-beta.7)
     - React
-    - SSZipArchive (~> 2.2.2)
+    - SSZipArchive (~> 2.1)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.62.2)
   - FBReactNativeSpec (0.62.2):
@@ -354,12 +356,12 @@ PODS:
     - React-cxxreact (= 0.62.2)
     - React-jsi (= 0.62.2)
   - React-jsinspector (0.62.2)
-  - react-native-background-timer (2.3.1):
+  - react-native-background-timer (2.2.0):
     - React
   - react-native-blur (0.8.0):
     - React
-  - react-native-branch (5.0.0-rc.1):
-    - Branch (= 0.34.0)
+  - react-native-branch (5.0.0-beta.1):
+    - Branch (= 0.32.0)
     - React
   - react-native-camera (3.36.0):
     - React
@@ -371,7 +373,7 @@ PODS:
     - React
   - react-native-mail (4.1.0):
     - React
-  - react-native-netinfo (5.9.6):
+  - react-native-netinfo (5.9.4):
     - React
   - react-native-randombytes (3.5.3):
     - React
@@ -460,29 +462,29 @@ PODS:
     - React
   - RNCAsyncStorage (1.11.0):
     - React
-  - RNCClipboard (1.2.3):
+  - RNCClipboard (1.2.2):
     - React
   - RNCMaskedView (0.1.10):
     - React
-  - RNCPushNotificationIOS (1.4.0):
+  - RNCPushNotificationIOS (1.2.2):
     - React
   - RNDeviceInfo (5.3.1):
     - React
   - RNDominantColor (1.7.0):
     - React
-  - RNFastImage (8.3.2):
+  - RNFastImage (8.1.5):
     - React
-    - SDWebImage (~> 5.8)
-    - SDWebImageWebPCoder (~> 0.6.1)
-  - RNFBApp (8.3.0):
+    - SDWebImage (~> 5.0)
+    - SDWebImageWebPCoder (~> 0.4.1)
+  - RNFBApp (8.3.1):
     - Firebase/CoreOnly (~> 6.28.1)
     - React
-  - RNFBCrashlytics (8.3.0):
+  - RNFBCrashlytics (8.3.1):
     - Firebase/Core (~> 6.28.1)
     - Firebase/Crashlytics (~> 6.28.1)
     - React
     - RNFBApp
-  - RNFBMessaging (7.6.1):
+  - RNFBMessaging (7.7.1):
     - Firebase/Analytics (~> 6.28.1)
     - Firebase/Messaging (~> 6.28.1)
     - React
@@ -504,7 +506,7 @@ PODS:
     - React
   - RNReanimated (1.7.0):
     - React
-  - RNScreens (2.2.0):
+  - RNScreens (2.9.0):
     - React
   - RNSentry (1.4.5):
     - React
@@ -520,9 +522,9 @@ PODS:
   - SDWebImage (5.8.4):
     - SDWebImage/Core (= 5.8.4)
   - SDWebImage/Core (5.8.4)
-  - SDWebImageWebPCoder (0.6.1):
+  - SDWebImageWebPCoder (0.4.1):
     - libwebp (~> 1.0)
-    - SDWebImage/Core (~> 5.7)
+    - SDWebImage/Core (~> 5.5)
   - Sentry (5.1.10):
     - Sentry/Core (= 5.1.10)
   - Sentry/Core (5.1.10)
@@ -850,11 +852,11 @@ SPEC CHECKSUMS:
   Analytics: 231b01fdaa9704105881dc82def7b7b1d6571edb
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  Branch: 446aeb832102f56f04edf5fa7cb0a752dc392ca7
+  Branch: 770a23c04d3f5410cf9231db099a444dd3060784
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
-  CodePush: 69186fd1143f7e5e5c6f65383cf14f4927e28213
+  CodePush: 3968d9e97ed70a1c8b029266dd5b6aa69cee4b0a
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   FBLazyVector: 4aab18c93cd9546e4bfed752b4084585eca8b245
   FBReactNativeSpec: 5465d51ccfeecb7faa12f9ae0024f2044ce4044e
@@ -900,12 +902,12 @@ SPEC CHECKSUMS:
   React-jsi: b6dc94a6a12ff98e8877287a0b7620d365201161
   React-jsiexecutor: 1540d1c01bb493ae3124ed83351b1b6a155db7da
   React-jsinspector: 512e560d0e985d0e8c479a54a4e5c147a9c83493
-  react-native-background-timer: 1275225bd2c74eeba9f3898480cb6a635c7d2cb0
+  react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-branch: 102e3783f839366246b6f7ace5cbfdae954f1257
+  react-native-branch: ed90b087f2ff6a2f81643ead0b321531877f2e69
   react-native-camera: 8016138a8348b889e22c95b23f668a234f124335
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
-  react-native-netinfo: 38a1e0b3e89b48e4b5833ed475d8df5f049f6f90
+  react-native-netinfo: cd479ab1b67cdd1cb1403a99ecdb24190a6dd7ef
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-restart: d19a0f8d053d065fe64cd2baebb6487111c77149
   react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
@@ -928,15 +930,15 @@ SPEC CHECKSUMS:
   reactnativeslackbottomsheet: d44b4c59c1e69c045983044d2f361d256d3ddb98
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: d059c3ee71738c39834a627476322a5a8cd5bf36
-  RNCClipboard: 48eaf27bea3de7c9a265529725434268d47a2ee9
+  RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
-  RNCPushNotificationIOS: dc1c0c6aa18a128df123598149f42e848d26a4ac
+  RNCPushNotificationIOS: 4c97a36dbec42dba411cc35e6dac25e34a805fde
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNDominantColor: 72126cb96ffedf4bcd564ed00e2e578f5b93e0d6
-  RNFastImage: e19ba191922e7dab9d932a4d59d62d76660aa222
-  RNFBApp: d55b3a69d199cff25ecf4f3bf41a86c47aa37d57
-  RNFBCrashlytics: cb41386ed09729fa68cb9cde9efd8737277a1423
-  RNFBMessaging: 3bb7dcf398789ce359a9f6b97b83472a3090f65a
+  RNFastImage: 35ae972d6727c84ee3f5c6897e07f84d0a3445e9
+  RNFBApp: abbab9c96e6d2f1cada6401c9138d3f8cb2ae930
+  RNFBCrashlytics: 2f8af8eb731d651b72358645679bef55fb723138
+  RNFBMessaging: 6b8db5ff807c38395c297698bcfa1502cbc5856c
   RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: ceec456427493b286539f40442620881b5840dff
@@ -946,13 +948,13 @@ SPEC CHECKSUMS:
   RNPermissions: ad71dd4f767ec254f2cd57592fbee02afee75467
   RNReactNativeHapticFeedback: 22c5ecf474428766c6b148f96f2ff6155cd7225e
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
-  RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
+  RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
   RNSentry: 0a70359ddacbfb9b1cbbb0971e54065b9f70ac57
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNTooltips: e13180e4339e2a85daabd09507f62a5a32d3dc8a
   SDWebImage: cf6922231e95550934da2ada0f20f2becf2ceba9
-  SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
+  SDWebImageWebPCoder: 36f8f47bd9879a8aea6044765c1351120fd8e3a8
   Sentry: 8715e88b813bde9ad37aead365d5b04ac7302153
   SexyTooltip: e243da5a858c7160141cf35786a4033669d1efca
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
@@ -965,4 +967,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 4366d67a8cc8fc17d64e4e0d56ac2e9b5d9e026a
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.9.3
