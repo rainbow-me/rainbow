@@ -4,7 +4,6 @@ import React, { useContext, useEffect, useMemo } from 'react';
 import {
   useChartData,
   useChartDataLabels,
-  useChartGestures,
   useColorForAsset,
   useUniswapAssetsInWallet,
 } from '../../hooks';
@@ -66,9 +65,6 @@ export default function ChartExpandedState({ asset }) {
     color,
     points: throttledPoints,
   });
-  const { isScrubbing, ...chartGestures } = useChartGestures(
-    updateChartDataLabels
-  );
 
   const { jumpToShort, jumpToLong } = useContext(ModalContext);
   // Only show the chart if we have chart data, or if chart data is still loading
@@ -103,14 +99,12 @@ export default function ChartExpandedState({ asset }) {
     <SlackSheet contentHeight={params.longFormHeight} scrollEnabled={false}>
       <Chart
         {...chartData}
-        {...chartGestures}
         {...chartDataLabels}
         asset={asset}
         chart={chart}
         chartType={chartType}
         color={color}
         fetchingCharts={fetchingCharts}
-        isScrubbing={isScrubbing}
         points={throttledPoints}
         showChart={showChart}
         updateChartDataLabels={updateChartDataLabels}
