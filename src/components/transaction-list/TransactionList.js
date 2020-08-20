@@ -40,7 +40,19 @@ const options = {
   title: 'Select Avatar',
 };
 
+const optionsWithoutEmojiBuilder = {
+  allowsEditing: true,
+  storageOptions: {
+    path: 'images',
+    skipBackup: true,
+  },
+  title: 'Select Avatar',
+};
+
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
+
+const isAvatarEmojiPickerEnabled = true;
+const isAvatarImagePickerEnabled = true;
 
 const Container = styled.View`
   flex: 1;
@@ -101,32 +113,42 @@ const TransactionList = ({
   }, [navigate, selectedWallet?.damaged]);
 
   const onAvatarPress = useCallback(() => {
-    ImagePicker.showImagePicker(options, response => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        if (response.customButton === 'ab') {
-          navigate(Routes.AVATAR_BUILDER, {
-            initialAccountColor: accountColor,
-            initialAccountName: accountName,
-          });
+    if (isAvatarImagePickerEnabled) {
+      ImagePicker.showImagePicker(
+        isAvatarEmojiPickerEnabled ? options : optionsWithoutEmojiBuilder,
+        response => {
+          if (response.didCancel) {
+            console.log('User cancelled image picker');
+          } else if (response.error) {
+            console.log('ImagePicker Error: ', response.error);
+          } else if (response.customButton) {
+            if (response.customButton === 'ab') {
+              navigate(Routes.AVATAR_BUILDER, {
+                initialAccountColor: accountColor,
+                initialAccountName: accountName,
+              });
+            }
+          } else {
+            const stringIndex = response?.uri.indexOf('/Documents');
+            const newWallets = { ...wallets };
+            const walletId = selectedWallet.id;
+            newWallets[walletId].addresses.some((account, index) => {
+              newWallets[walletId].addresses[
+                index
+              ].image = `~${response.uri.slice(stringIndex)}`;
+              dispatch(walletsSetSelected(newWallets[walletId]));
+              return true;
+            });
+            dispatch(walletsUpdate(newWallets));
+          }
         }
-      } else {
-        const stringIndex = response?.uri.indexOf('/Documents');
-        const newWallets = { ...wallets };
-        const walletId = selectedWallet.id;
-        newWallets[walletId].addresses.some((account, index) => {
-          newWallets[walletId].addresses[index].image = `~${response.uri.slice(
-            stringIndex
-          )}`;
-          dispatch(walletsSetSelected(newWallets[walletId]));
-          return true;
-        });
-        dispatch(walletsUpdate(newWallets));
-      }
-    });
+      );
+    } else if (isAvatarEmojiPickerEnabled) {
+      navigate(Routes.AVATAR_BUILDER, {
+        initialAccountColor: accountColor,
+        initialAccountName: accountName,
+      });
+    }
   }, [
     accountColor,
     accountName,
