@@ -1,6 +1,10 @@
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components/primitives';
 import BiometryTypes from '../../helpers/biometryTypes';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '../../helpers/emojiHandler';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -65,13 +69,17 @@ export default function WalletProfileState({
   onCloseModal,
   profile,
 }) {
+  const nameEmoji = returnStringFirstEmoji(profile?.name);
   const biometryType = useBiometryType();
   const { goBack, navigate } = useNavigation();
 
   const [color, setColor] = useState(
     (profile.color !== null && profile.color) || colors.getRandomColor()
   );
-  const [value, setValue] = useState(profile?.name || '');
+
+  const [value, setValue] = useState(
+    removeFirstEmojiFromString(profile?.name).join('') || ''
+  );
   const inputRef = useRef(null);
 
   const handleCancel = useCallback(() => {
@@ -82,12 +90,21 @@ export default function WalletProfileState({
   }, [actionType, goBack, navigate]);
 
   const handleSubmit = useCallback(() => {
-    onCloseModal({ color, name: value });
+    onCloseModal({ color, name: nameEmoji ? `${nameEmoji} ${value}` : value });
     goBack();
     if (actionType === 'Create' && isNewProfile) {
       navigate(Routes.CHANGE_WALLET_SHEET);
     }
-  }, [actionType, color, goBack, isNewProfile, navigate, onCloseModal, value]);
+  }, [
+    actionType,
+    color,
+    goBack,
+    isNewProfile,
+    nameEmoji,
+    navigate,
+    onCloseModal,
+    value,
+  ]);
 
   const handleTriggerFocusInput = useCallback(() => inputRef.current?.focus(), [
     inputRef,
@@ -103,7 +120,11 @@ export default function WalletProfileState({
   return (
     <WalletProfileModal>
       <Centered direction="column" paddingBottom={30} width="100%">
-        <ProfileAvatarButton color={color} setColor={setColor} value={value} />
+        <ProfileAvatarButton
+          color={color}
+          setColor={setColor}
+          value={nameEmoji || value}
+        />
         <ProfileNameInput
           onChange={setValue}
           onSubmitEditing={handleSubmit}
