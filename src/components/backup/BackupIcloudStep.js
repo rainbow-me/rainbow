@@ -186,7 +186,7 @@ const BackupIcloudStep = () => {
   }, []);
 
   const onPasswordSubmit = useCallback(() => {
-    confirmPasswordRef.current.focus();
+    confirmPasswordRef.current?.focus();
   }, []);
 
   useEffect(() => {
@@ -203,7 +203,7 @@ const BackupIcloudStep = () => {
     } else if (
       password !== '' &&
       password.length < 8 &&
-      !passwordRef.current.isFocused()
+      !passwordRef.current?.isFocused()
     ) {
       newLabel = 'Use a longer password';
     } else if (
@@ -323,7 +323,7 @@ const BackupIcloudStep = () => {
               {isCloudBackupPasswordValid(password) && <GreenCheckmarkIcon />}
               {password !== '' &&
                 password.length < 8 &&
-                !passwordRef.current.isFocused() && <WarningIcon />}
+                !passwordRef.current?.isFocused() && <WarningIcon />}
             </Shadow>
             <Shadow>
               <PasswordInput

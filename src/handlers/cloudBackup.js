@@ -18,7 +18,7 @@ export const CLOUD_BACKUP_ERRORS = {
   KEYCHAIN_ACCESS_ERROR: `Couldn't read items from keychain`,
   NO_BACKUPS_FOUND: 'No backups found',
   SPECIFIC_BACKUP_NOT_FOUND: 'No backup found with that name',
-  UKNOWN_ERROR: 'Uknown Error',
+  UKNOWN_ERROR: 'Unknown Error',
 };
 
 // This is used for dev purposes only!
@@ -78,61 +78,55 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
 }
 
 export async function getDataFromCloud(backupPassword, filename = null) {
-  try {
-    const backups = await RNCloudFs.listFiles({
-      scope: 'hidden',
-      targetPath: REMOTE_BACKUP_WALLET_DIR,
-    });
+  const backups = await RNCloudFs.listFiles({
+    scope: 'hidden',
+    targetPath: REMOTE_BACKUP_WALLET_DIR,
+  });
 
-    if (!backups || !backups.files || !backups.files.length) {
-      logger.sentry('No backups found');
-      const error = new Error(CLOUD_BACKUP_ERRORS.NO_BACKUPS_FOUND);
+  if (!backups || !backups.files || !backups.files.length) {
+    logger.sentry('No backups found');
+    const error = new Error(CLOUD_BACKUP_ERRORS.NO_BACKUPS_FOUND);
+    captureException(error);
+    throw error;
+  }
+
+  let document;
+  if (filename) {
+    // .icloud are files that were not yet synced
+    document = backups.files.find(
+      file => file.name === filename || file.name === `.${filename}.icloud`
+    );
+    if (!document) {
+      logger.sentry('No backup found with that name!', filename);
+      const error = new Error(CLOUD_BACKUP_ERRORS.SPECIFIC_BACKUP_NOT_FOUND);
       captureException(error);
       throw error;
     }
-
-    let document;
-    if (filename) {
-      // .icloud are files that were not yet synced
-      document = backups.files.find(
-        file => file.name === filename || file.name === `.${filename}.icloud`
-      );
-      if (!document) {
-        logger.sentry('No backup found with that name!', filename);
-        const error = new Error(CLOUD_BACKUP_ERRORS.SPECIFIC_BACKUP_NOT_FOUND);
-        captureException(error);
-        throw error;
-      }
-    } else {
-      const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
-      document = sortedBackups[0];
-    }
-    const encryptedData = await RNCloudFs.getIcloudDocument(filename);
-    if (encryptedData) {
-      logger.sentry('Got getICloudDocument ', filename);
-      const backedUpDataStringified = await encryptor.decrypt(
-        backupPassword,
-        encryptedData
-      );
-      if (backedUpDataStringified) {
-        const backedUpData = JSON.parse(backedUpDataStringified);
-        return backedUpData;
-      } else {
-        logger.sentry('We couldnt decrypt the data');
-        const error = new Error(CLOUD_BACKUP_ERRORS.ERROR_DECRYPTING_DATA);
-        captureException(error);
-        throw error;
-      }
-    }
-    logger.sentry('We couldnt get the encrypted data');
-    const error = new Error(CLOUD_BACKUP_ERRORS.ERROR_GETTING_ENCRYPTED_DATA);
-    captureException(error);
-    throw error;
-  } catch (e) {
-    logger.sentry('Error at getDataFromCloud');
-    captureException(e);
-    throw new Error(CLOUD_BACKUP_ERRORS.UKNOWN_ERROR);
+  } else {
+    const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
+    document = sortedBackups[0];
   }
+  const encryptedData = await RNCloudFs.getIcloudDocument(filename);
+  if (encryptedData) {
+    logger.sentry('Got getICloudDocument ', filename);
+    const backedUpDataStringified = await encryptor.decrypt(
+      backupPassword,
+      encryptedData
+    );
+    if (backedUpDataStringified) {
+      const backedUpData = JSON.parse(backedUpDataStringified);
+      return backedUpData;
+    } else {
+      logger.sentry('We couldnt decrypt the data');
+      const error = new Error(CLOUD_BACKUP_ERRORS.ERROR_DECRYPTING_DATA);
+      captureException(error);
+      throw error;
+    }
+  }
+  logger.sentry('We couldnt get the encrypted data');
+  const error = new Error(CLOUD_BACKUP_ERRORS.ERROR_GETTING_ENCRYPTED_DATA);
+  captureException(error);
+  throw error;
 }
 
 export async function backupUserDataIntoCloud(data) {

@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/react-native';
-import { keys } from 'lodash';
+import { values } from 'lodash';
 import { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -30,7 +30,7 @@ function getUserError(e) {
     case CLOUD_BACKUP_ERRORS.ERROR_GETTING_ENCRYPTED_DATA:
       return `We couldn't access your backup at this time. Please try again later.`;
     default:
-      return `Error while trying to backup. Error code: ${keys(
+      return `Error while trying to backup. Error code: ${values(
         CLOUD_BACKUP_ERRORS
       ).indexOf(e.message)}`;
   }
@@ -116,6 +116,7 @@ export default function useWalletCloudBackup() {
         onError && onError(userError);
         logger.sentry('error while trying to backup wallet to icloud');
         captureException(e);
+        return null;
       }
 
       try {
