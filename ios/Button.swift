@@ -71,9 +71,10 @@ class Button : RCTView {
       self.tapLocation = touch.location(in: self)
     }
     if blocked {
-      invalidated = true;
+      invalidated = true
       return;
     }
+    invalidated = false
     animator = animateTapStart(
       duration: duration,
       scale: scaleTo,
@@ -101,7 +102,6 @@ class Button : RCTView {
   
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
     if invalidated {
-      invalidated = false
       return
     }
     if let touch = touches.first {
@@ -123,7 +123,16 @@ class Button : RCTView {
   }
   
   override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+    if invalidated {
+      return
+    }
     animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
+    if throttle {
+      blocked = true;
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        self.blocked = false;
+      }
+    }
   }
   
   private func touchInRange(location: CGPoint, tolerance: CGFloat) -> Bool {

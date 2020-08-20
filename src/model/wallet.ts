@@ -163,6 +163,7 @@ export const allWalletsVersion = 1.0;
 const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
+const authenticationPrompt = lang.t('wallet.authenticate.please');
 const publicAccessControlOptions = {
   accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
 };
@@ -197,10 +198,8 @@ export const walletInit = async (
   return { isNew, walletAddress };
 };
 
-export const loadWallet = async (
-  authenticationPrompt?: string
-): Promise<null | Wallet> => {
-  const privateKey = await loadPrivateKey(authenticationPrompt);
+export const loadWallet = async (): Promise<null | Wallet> => {
+  const privateKey = await loadPrivateKey();
   if (privateKey) {
     return new ethers.Wallet(privateKey, web3Provider);
   }
@@ -260,12 +259,11 @@ export const signTransaction = async ({
 };
 
 export const signMessage = async (
-  message: Arrayish | Hexable | string,
-  authenticationPrompt = lang.t('wallet.authenticate.please')
+  message: Arrayish | Hexable | string
 ): Promise<null | string> => {
   try {
     logger.sentry('about to sign message', message);
-    const wallet = await loadWallet(authenticationPrompt);
+    const wallet = await loadWallet();
     try {
       if (wallet) {
         const signingKey = new ethers.utils.SigningKey(wallet.privateKey);
@@ -290,12 +288,11 @@ export const signMessage = async (
 };
 
 export const signPersonalMessage = async (
-  message: string | Uint8Array,
-  authenticationPrompt = lang.t('wallet.authenticate.please')
+  message: string | Uint8Array
 ): Promise<null | string> => {
   try {
     logger.sentry('about to sign personal message', message);
-    const wallet = await loadWallet(authenticationPrompt);
+    const wallet = await loadWallet();
     try {
       if (wallet) {
         return wallet.signMessage(
@@ -322,12 +319,11 @@ export const signPersonalMessage = async (
 };
 
 export const signTypedDataMessage = async (
-  message: string | TypedData,
-  authenticationPrompt = lang.t('wallet.authenticate.please')
+  message: string | TypedData
 ): Promise<null | string> => {
   try {
     logger.sentry('about to sign typed data  message', message);
-    const wallet = await loadWallet(authenticationPrompt);
+    const wallet = await loadWallet();
     if (!wallet) return null;
     try {
       const pkeyBuffer = toBuffer(addHexPrefix(wallet.privateKey));
@@ -375,9 +371,7 @@ export const signTypedDataMessage = async (
   }
 };
 
-export const oldLoadSeedPhrase = async (
-  authenticationPrompt = lang.t('wallet.authenticate.please_seed_phrase')
-): Promise<null | EthereumWalletSeed> => {
+export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> => {
   const seedPhrase = await keychain.loadString(seedPhraseKey, {
     authenticationPrompt,
   });
@@ -387,9 +381,7 @@ export const oldLoadSeedPhrase = async (
 export const loadAddress = (): Promise<null | EthereumAddress> =>
   keychain.loadString(addressKey);
 
-const loadPrivateKey = async (
-  authenticationPrompt = lang.t('wallet.authenticate.please')
-): Promise<null | EthereumPrivateKey> => {
+const loadPrivateKey = async (): Promise<null | EthereumPrivateKey> => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
       oldSeedPhraseMigratedKey
@@ -408,7 +400,7 @@ const loadPrivateKey = async (
       if (!address) {
         return null;
       }
-      const privateKeyData = await getPrivateKey(address, authenticationPrompt);
+      const privateKeyData = await getPrivateKey(address);
       privateKey = get(privateKeyData, 'privateKey', null);
     }
 
@@ -717,8 +709,7 @@ export const savePrivateKey = async (
 };
 
 export const getPrivateKey = async (
-  address: EthereumAddress,
-  authenticationPrompt = lang.t('wallet.authenticate.please')
+  address: EthereumAddress
 ): Promise<null | PrivateKeyData> => {
   try {
     const key = `${address}_${privateKeyKey}`;
@@ -749,8 +740,7 @@ export const saveSeedPhrase = async (
 };
 
 export const getSeedPhrase = async (
-  id: RainbowWallet['id'],
-  authenticationPrompt = lang.t('wallet.authenticate.please')
+  id: RainbowWallet['id']
 ): Promise<null | SeedPhraseData> => {
   try {
     const key = `${id}_${seedPhraseKey}`;
