@@ -1,37 +1,18 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import WalletBackupTypes from '../../helpers/walletBackupTypes';
-import WalletTypes from '../../helpers/walletTypes';
-import { useDimensions, useWallets } from '../../hooks';
 import { setWalletBackedUp } from '../../redux/wallets';
-import { deviceUtils } from '../../utils';
 import { Centered, Column } from '../layout';
 import { SecretDisplaySection } from '../secret-display';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
+import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { useDimensions, useWallets } from '@rainbow-me/hooks';
 import { colors, padding } from '@rainbow-me/styles';
 
-const contentHeight =
-  Platform.OS === 'android'
-    ? deviceUtils.dimensions.height - 50
-    : deviceUtils.dimensions.height - (deviceUtils.isTallPhone ? 150 : 60);
-
-const Title = styled(Text).attrs({
-  size: 'big',
-  weight: 'bold',
-})`
-  margin-bottom: 12;
-`;
-
-const TopIcon = styled(Text).attrs({
-  align: 'center',
-  color: 'appleBlue',
-  size: 48,
-  weight: 'bold',
-})``;
 const DescriptionText = styled(Text).attrs({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.5),
@@ -47,8 +28,22 @@ const ImportantText = styled(Text).attrs({
   weight: '600',
 })``;
 
-const BackupManualStep = () => {
-  const { isTallPhone } = useDimensions();
+const Title = styled(Text).attrs({
+  size: 'big',
+  weight: 'bold',
+})`
+  margin-bottom: 12;
+`;
+
+const TopIcon = styled(Text).attrs({
+  align: 'center',
+  color: 'appleBlue',
+  size: 48,
+  weight: 'bold',
+})``;
+
+export default function BackupManualStep() {
+  const { height: deviceHeight, isTallPhone } = useDimensions();
   const { selectedWallet } = useWallets();
   const dispatch = useDispatch();
   const { goBack } = useNavigation();
@@ -56,6 +51,14 @@ const BackupManualStep = () => {
   const [type, setType] = useState(null);
   const [secretLoaded, setSecretLoaded] = useState(false);
   const walletId = params?.walletId || selectedWallet.id;
+
+  const contentHeight = useMemo(
+    () =>
+      Platform.OS === 'android'
+        ? deviceHeight - 50
+        : deviceHeight - (isTallPhone ? 150 : 60),
+    [deviceHeight, isTallPhone]
+  );
 
   const onComplete = useCallback(async () => {
     await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.manual));
@@ -110,6 +113,4 @@ const BackupManualStep = () => {
       </Column>
     </Centered>
   );
-};
-
-export default BackupManualStep;
+}
