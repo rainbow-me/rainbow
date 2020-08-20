@@ -19,6 +19,7 @@ export const CLOUD_BACKUP_ERRORS = {
   NO_BACKUPS_FOUND: 'No backups found',
   SPECIFIC_BACKUP_NOT_FOUND: 'No backup found with that name',
   UKNOWN_ERROR: 'Unknown Error',
+  WALLET_BACKUP_STATUS_UPDATE_FAILED: 'Update wallet backup status failed',
 };
 
 // This is used for dev purposes only!

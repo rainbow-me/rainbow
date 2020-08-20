@@ -134,7 +134,7 @@ export default function useWalletCloudBackup() {
         logger.sentry('error while trying to save wallet backup state');
         captureException(e);
         const userError = getUserError(
-          new Error('update wallet backup status failed')
+          new Error(CLOUD_BACKUP_ERRORS.WALLET_BACKUP_STATUS_UPDATE_FAILED)
         );
         onError && onError(userError);
       }
