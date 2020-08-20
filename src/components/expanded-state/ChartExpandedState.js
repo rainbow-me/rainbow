@@ -93,15 +93,6 @@ export default function ChartExpandedState({ asset }) {
     }
   }, [showChart, setOptions, jumpToShort, jumpToLong]);
 
-  const TEMP = useMemo(
-    () => ({
-      ...chartDataLabels,
-      asset,
-      color,
-      isScrubbing,
-    }),
-    [asset, chartDataLabels, color, isScrubbing]
-  );
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const showSwapButton = find(uniswapAssetsInWallet, [
     'uniqueId',
@@ -111,9 +102,9 @@ export default function ChartExpandedState({ asset }) {
   return (
     <SlackSheet contentHeight={params.longFormHeight} scrollEnabled={false}>
       <Chart
-        TEMP={TEMP}
         {...chartData}
         {...chartGestures}
+        {...chartDataLabels}
         asset={asset}
         chart={chart}
         chartType={chartType}

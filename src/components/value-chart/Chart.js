@@ -70,7 +70,7 @@ export default function ChartWrapper({
   points,
   updateChartType,
   showChart,
-  TEMP,
+  ...props
 }) {
   const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [
     chartType,
@@ -109,7 +109,7 @@ export default function ChartWrapper({
     <Container>
       <ChartProvider data={throttledData}>
         <ChartExpandedStateHeader
-          {...TEMP}
+          {...props}
           chartTimeSharedValue={chartTimeSharedValue}
           showChart={showChart}
         />
