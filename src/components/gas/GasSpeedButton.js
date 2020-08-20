@@ -70,10 +70,14 @@ const GasSpeedButton = ({ type }) => {
         size="lmedium"
         weight="semibold"
       >
-        {animatedNumber}
+        {isEmpty(gasPrices) ||
+        isEmpty(txFees) ||
+        typeof isSufficientGas === 'undefined'
+          ? 'Loading...'
+          : animatedNumber}
       </Text>
     ),
-    [type]
+    [gasPrices, isSufficientGas, txFees, type]
   );
 
   const renderEstimatedTimeText = useCallback(
@@ -118,14 +122,6 @@ const GasSpeedButton = ({ type }) => {
     [estimatedTimeUnit, type]
   );
 
-  if (
-    isEmpty(gasPrices) ||
-    isEmpty(txFees) ||
-    typeof isSufficientGas === 'undefined'
-  ) {
-    return <Container />;
-  }
-
   return (
     <Container as={ButtonPressAnimation} onPress={handlePress}>
       <Row align="center" justify="space-between">
@@ -144,7 +140,7 @@ const GasSpeedButton = ({ type }) => {
       </Row>
       <Row align="center" justify="space-between">
         <Label color={type === 'transaction' ? colors.darkGrey : colors.white}>
-          Fee
+          Network Fee
         </Label>
         <AnimateNumber
           formatter={formatAnimatedEstimatedTime}
