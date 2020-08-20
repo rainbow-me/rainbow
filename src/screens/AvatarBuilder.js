@@ -62,7 +62,7 @@ const AvatarBuilder = ({ route: { params } }) => {
       isSelected={index - 4 === 0}
       key={color}
       onPressColor={() => {
-        let destination = (index - 4) * 39;
+        const destination = (index - 4) * 39;
         springTo(translateX, destination);
         setCurrentAccountColor(color);
         saveInfo(null, index);
@@ -75,12 +75,11 @@ const AvatarBuilder = ({ route: { params } }) => {
     const walletId = selectedWallet.id;
 
     newWallets[walletId].addresses.some((account, index) => {
-      console.log(newWallets[walletId]);
       newWallets[walletId].addresses[index].image = undefined;
       if (name) {
         newWallets[walletId].addresses[index].label = name;
       }
-      if (color) {
+      if (color !== undefined) {
         newWallets[walletId].addresses[index].color = color;
       }
       dispatch(walletsSetSelected(newWallets[walletId]));
