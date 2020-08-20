@@ -49,9 +49,11 @@ const GasSpeedButton = ({ type }) => {
   const { nativeCurrencySymbol } = useAccountSettings();
   const {
     gasPrices,
+    isSufficientGas,
     updateGasPriceOption,
     selectedGasPrice,
     selectedGasPriceOption,
+    txFees,
   } = useGas();
 
   const estimatedTime = get(
@@ -116,8 +118,12 @@ const GasSpeedButton = ({ type }) => {
     [estimatedTimeUnit, type]
   );
 
-  if (isEmpty(gasPrices)) {
-    return null;
+  if (
+    isEmpty(gasPrices) ||
+    isEmpty(txFees) ||
+    typeof isSufficientGas === 'undefined'
+  ) {
+    return <Container />;
   }
 
   return (

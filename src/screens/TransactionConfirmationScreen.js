@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get, isEmpty, isNil, omit } from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, InteractionManager, Vibration } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,7 +19,7 @@ import {
 } from '../components/transaction';
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
 import { convertHexToString } from '../helpers/utilities';
-import { useGas, useTransactionConfirmation } from '../hooks';
+import { useAccountAssets, useGas, useTransactionConfirmation } from '../hooks';
 import {
   sendTransaction,
   signMessage,
@@ -29,7 +29,7 @@ import {
 } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
-import { gasUtils } from '../utils';
+import { ethereumUtils, gasUtils } from '../utils';
 import {
   isMessageDisplayType,
   isSignFirstParamType,
@@ -68,8 +68,11 @@ const TransactionType = styled(Text).attrs({ size: 'h5' })`
 const TransactionConfirmationScreen = () => {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [isGasLimitSet, setIsGasLimitSet] = useState(false);
+  const calculatingGasLimit = useRef(false);
+  const { allAssets } = useAccountAssets();
 
   const {
+    gasLimit,
     gasPrices,
     isSufficientGas,
     startPollingGasPrices,
@@ -168,6 +171,8 @@ const TransactionConfirmationScreen = () => {
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       const calculateGasLimit = async () => {
+        setIsGasLimitSet(true);
+        calculatingGasLimit.current = true;
         const txPayload = get(params, '[0]');
         // use the default
         let gas = txPayload.gasLimit || txPayload.gas;
@@ -175,18 +180,24 @@ const TransactionConfirmationScreen = () => {
           // attempt to re-run estimation
           const rawGasLimit = await estimateGas(txPayload);
           logger.log('Estimated gas limit', rawGasLimit);
-          gas = toHex(rawGasLimit);
+          if (rawGasLimit) {
+            gas = toHex(rawGasLimit);
+          }
         } catch (error) {
           logger.log('error estimating gas', error);
         }
         logger.log('Setting gas limit to', convertHexToString(gas));
-        // Wait until the gas prices are populated
-        setTimeout(() => {
-          updateTxFee(gas);
-        }, 1000);
-        setIsGasLimitSet(true);
+        if (gas !== gasLimit) {
+          // Wait until the gas prices are populated
+          setTimeout(() => {
+            updateTxFee(gas);
+          }, 1000);
+        }
       };
-      !isEmpty(gasPrices) && !isGasLimitSet && calculateGasLimit();
+      !isEmpty(gasPrices) &&
+        !isGasLimitSet &&
+        !calculatingGasLimit.current &&
+        calculateGasLimit();
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gasPrices]);
@@ -239,7 +250,9 @@ const TransactionConfirmationScreen = () => {
         dispatch(updateTransactionCountNonce(maxTxnCount + 1));
         const txDetails = {
           amount: get(displayDetails, 'request.value'),
-          asset: get(displayDetails, 'request.asset'),
+          // Assume it's an ETH transaction
+          // Once it confirmed, zerion will show the data
+          asset: ethereumUtils.getAsset(allAssets),
           dappName,
           from: get(displayDetails, 'request.from'),
           gasLimit,
@@ -248,6 +261,7 @@ const TransactionConfirmationScreen = () => {
           nonce,
           to: get(displayDetails, 'request.to'),
         };
+
         dispatch(dataAddNewTransaction(txDetails));
       }
       analytics.track('Approved WalletConnect transaction request');
@@ -260,6 +274,7 @@ const TransactionConfirmationScreen = () => {
       await onCancel();
     }
   }, [
+    allAssets,
     callback,
     closeScreen,
     dappName,
