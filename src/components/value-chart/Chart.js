@@ -3,12 +3,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Dimensions } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/native';
-import { colors } from '../../styles';
+import ActivityIndicator from '../ActivityIndicator';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
-import { Column } from '../layout';
+import { Centered, Column } from '../layout';
 import Labels from './ExtremeLabels';
 import TimespanSelector from './TimespanSelector';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
+import { colors, position } from '@rainbow-me/styles';
+
 import {
   ChartDot,
   ChartPath,
@@ -53,6 +55,13 @@ const Dot = styled(ChartDot)`
 `;
 
 const HEIGHT = 146.5;
+
+const Overlay = styled(Centered).attrs({
+  pointerEvents: 'none',
+})`
+  ${position.cover};
+  background-color: ${colors.alpha(colors.white, 0.69)};
+`;
 
 export default function ChartWrapper({
   chartType,
@@ -110,6 +119,7 @@ export default function ChartWrapper({
               <Labels color={color} width={WIDTH} />
               <ChartPath
                 fill="none"
+                gestureEnabled={!fetchingCharts}
                 height={HEIGHT}
                 longPressGestureHandlerProps={{
                   minDurationMs: 60,
@@ -126,6 +136,11 @@ export default function ChartWrapper({
               </Dot>
             </>
           )}
+          {fetchingCharts ? (
+            <Overlay>
+              <ActivityIndicator color={color} />
+            </Overlay>
+          ) : null}
         </ChartContainer>
       </ChartProvider>
       {showChart && (

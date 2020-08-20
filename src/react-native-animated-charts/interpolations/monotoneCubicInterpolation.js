@@ -127,6 +127,9 @@ export default function monotoneCubicInterpolation(data) {
 }
 
 export function monotoneCubicInterpolation2(data) {
+  if (!data || data.length === 0) {
+    return () => [];
+  }
   const { x, y } = data.reduce(
     (acc, curr) => {
       acc.x.push(curr.x);
@@ -259,8 +262,6 @@ export function monotoneCubicInterpolation2(data) {
 
       res.push({ x: interpolatedValue, y });
     }
-
-    console.log('@', res);
 
     return res;
   };

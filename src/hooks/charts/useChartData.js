@@ -6,26 +6,17 @@ import { createSelector } from 'reselect';
 import { useCallbackOne } from 'use-memo-one';
 import { getChart } from '../../handlers/uniswap';
 import {
-  //assetChartsFallbackReceived,
+  assetChartsFallbackReceived,
   chartsUpdateChartType,
   DEFAULT_CHART_TYPE,
 } from '../../redux/charts';
 import { emitChartsRequest } from '../../redux/explorer';
 import useAsset from '../useAsset';
-import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const formatChartData = chart => {
   if (!chart || isEmpty(chart)) return null;
-  return [[chart]].map((sectionsData = [], index) => ({
-    name: index,
-    segments: sectionsData.map((data, i) => ({
-      color: colors.green,
-      line: i * 5,
-      points: data.map(([x, y]) => ({ x, y })),
-      renderStartSeparator: undefined,
-    })),
-  }));
+  return chart.map(([x, y]) => ({ x, y }));
 };
 
 const chartSelector = createSelector(
@@ -68,11 +59,9 @@ export default function useChartData(asset) {
         return;
       }
       logger.log('✅️📈️ - fallback chart data was success');
-      //dispatch(assetChartsFallbackReceived(address, chartType, chartData));
+      dispatch(assetChartsFallbackReceived(address, chartType, chartData));
     },
-    [
-      //address, chartType, dispatch
-    ]
+    [address, chartType, dispatch]
   );
 
   useEffect(() => {

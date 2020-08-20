@@ -174,6 +174,9 @@ class BSpline {
 }
 
 export default function bSplineInterpolation(data) {
+  if (!data || data.length === 0) {
+    return () => [];
+  }
   const parsed = data.map(({ x, y }) => [x, y]);
   const spline = new BSpline(parsed, 3, true);
 

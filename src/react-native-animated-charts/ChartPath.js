@@ -14,6 +14,7 @@ function ChartPath({
   longPressGestureHandlerProps,
   strokeWidthSelected = 1,
   strokeWidth = 1,
+  gestureEnabled = true,
   ...props
 }) {
   const strokeWidthSelectedValue = useReactiveSharedValue(strokeWidthSelected);
@@ -45,6 +46,7 @@ function ChartPath({
 
   return (
     <LongPressGestureHandler
+      enabled={gestureEnabled}
       maxDist={100000}
       minDurationMs={0}
       shouldCancelWhenOutside={false}

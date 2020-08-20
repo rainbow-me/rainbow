@@ -72,7 +72,11 @@ function positionXWithMargin(x, margin, width) {
   }
 }
 
-export default function ChartProvider({ data, children, softMargin = 30 }) {
+export default function ChartProvider({
+  data: rawData,
+  children,
+  softMargin = 30,
+}) {
   const prevData = useSharedValue([]);
   const currData = useSharedValue([]);
   const prevSmoothing = useSharedValue(0);
@@ -88,6 +92,18 @@ export default function ChartProvider({ data, children, softMargin = 30 }) {
   const size = useSharedValue(0);
   const state = useSharedValue(0);
   const [extremes, setExtremes] = useState({});
+  const isAnimationInProgress = useSharedValue(false);
+
+  const [data, setData] = useState(rawData);
+  const dataQueue = useSharedValue([]);
+  useEffect(() => {
+    if (isAnimationInProgress.value) {
+      dataQueue.value.push(rawData);
+    } else {
+      setData(rawData);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawData]);
 
   useEffect(() => {
     if (!data || !data.points || data.points.length === 0) {
@@ -101,14 +117,30 @@ export default function ChartProvider({ data, children, softMargin = 30 }) {
       progress.value = 0;
       currData.value = parsedData;
       currSmoothing.value = data.smoothing || 0;
-      progress.value = withTiming(1);
+      isAnimationInProgress.value = true;
+      progress.value = withTiming(1, {}, () => {
+        isAnimationInProgress.value = false;
+        if (dataQueue.value.length !== 0) {
+          setData(dataQueue.value[0]);
+          dataQueue.value.shift();
+        }
+      });
     } else {
       prevSmoothing.value = data.smoothing || 0;
       currSmoothing.value = data.smoothing || 0;
       prevData.value = parsedData;
       currData.value = parsedData;
     }
-  }, [currData, currSmoothing, data, prevData, prevSmoothing, progress]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    currData,
+    currSmoothing,
+    data,
+    isAnimationInProgress,
+    prevData,
+    prevSmoothing,
+    progress,
+  ]);
   const positionX = useSharedValue(0);
   const positionY = useSharedValue(0);
 

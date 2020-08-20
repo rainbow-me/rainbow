@@ -6,7 +6,6 @@ import {
   useChartDataLabels,
   useChartGestures,
   useColorForAsset,
-  usePointsFromChartData,
   useUniswapAssetsInWallet,
 } from '../../hooks';
 import {
@@ -25,11 +24,11 @@ import {
 import Chart from '../value-chart/Chart';
 import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
+import ChartTypes from '@rainbow-me/helpers/chartTypes';
 
 import { useNavigation } from '@rainbow-me/navigation';
+import { default as bSpline } from 'react-native-animated-charts/interpolations/bSplineInterpolation';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
-
-const amountOfPathPoints = 175; // 👈️ TODO make this dynamic
 
 const heightWithChart = 606;
 const heightWithNoChart = 309;
@@ -46,18 +45,28 @@ export default function ChartExpandedState({ asset }) {
   const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
     asset
   );
-  const points = usePointsFromChartData({ amountOfPathPoints, chart });
+
+  const points = useMemo(
+    () => (chartType === ChartTypes.hour ? bSpline(chart)(40) : chart),
+    [chart, chartType]
+  );
+
+  const throttledPoints = useMemo(
+    () => (!points || points.length === 0 ? throttledPoints : points),
+    [points]
+  );
+
   const { updateChartDataLabels, ...chartDataLabels } = useChartDataLabels({
     asset,
     chartType,
     color,
-    points,
+    points: throttledPoints,
   });
   const { isScrubbing, ...chartGestures } = useChartGestures(
     updateChartDataLabels
   );
 
-  const { jumpToShort } = useContext(ModalContext);
+  const { jumpToShort, jumpToLong } = useContext(ModalContext);
   // Only show the chart if we have chart data, or if chart data is still loading
   const showChart = chartExpandedAvailable && (!!chart || fetchingCharts);
   useEffect(() => {
@@ -72,8 +81,13 @@ export default function ChartExpandedState({ asset }) {
           longFormHeight: heightWithNoChart,
         });
       });
+    } else {
+      setOptions({
+        longFormHeight: heightWithChart,
+      });
+      setImmediate(jumpToLong);
     }
-  }, [showChart, setOptions, jumpToShort]);
+  }, [showChart, setOptions, jumpToShort, jumpToLong]);
 
   const TEMP = useMemo(
     () => ({
@@ -102,7 +116,7 @@ export default function ChartExpandedState({ asset }) {
         color={color}
         fetchingCharts={fetchingCharts}
         isScrubbing={isScrubbing}
-        points={points}
+        points={throttledPoints}
         showChart={showChart}
         updateChartDataLabels={updateChartDataLabels}
       />
