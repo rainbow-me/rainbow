@@ -7,6 +7,8 @@ import { Text } from './text';
 import { useAppVersion, useTimeout } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
 
+const DEBUG_TAP_COUNT = 15;
+
 async function showDebugAlert() {
   const keys = await loadAllKeysOnly();
   Alert.alert('DEBUG INFO', JSON.stringify(keys, null, 2));
@@ -32,8 +34,8 @@ export default function AppVersionStamp() {
     setNumberOfTaps(tapCount);
 
     // Only show the secret "debug info" alert if the
-    // user has tapped this AppVersionStamp 10 times
-    if (tapCount === 10) {
+    // user has tapped this AppVersionStamp the secret amount of times
+    if (tapCount === DEBUG_TAP_COUNT) {
       showDebugAlert();
     }
 
