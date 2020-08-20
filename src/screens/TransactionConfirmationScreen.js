@@ -363,7 +363,6 @@ const TransactionConfirmationScreen = () => {
         disabled
         hideBiometricIcon
         label="Insufficient Funds"
-        onLongPress={onLongPressSend}
       />
     ) : (
       <HoldToAuthorizeButton
