@@ -67,7 +67,6 @@ const TransactionType = styled(Text).attrs({ size: 'h5' })`
 
 const TransactionConfirmationScreen = () => {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const [isGasLimitSet, setIsGasLimitSet] = useState(false);
   const calculatingGasLimit = useRef(false);
   const { allAssets } = useAccountAssets();
 
@@ -171,7 +170,6 @@ const TransactionConfirmationScreen = () => {
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       const calculateGasLimit = async () => {
-        setIsGasLimitSet(true);
         calculatingGasLimit.current = true;
         const txPayload = get(params, '[0]');
         // use the default
@@ -195,12 +193,10 @@ const TransactionConfirmationScreen = () => {
         }
       };
       !isEmpty(gasPrices) &&
-        !isGasLimitSet &&
         !calculatingGasLimit.current &&
         calculateGasLimit();
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gasPrices]);
+  }, [gasLimit, gasPrices, params, updateTxFee]);
 
   const handleConfirmTransaction = useCallback(async () => {
     const sendInsteadOfSign = method === SEND_TRANSACTION;
