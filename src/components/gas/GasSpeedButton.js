@@ -117,6 +117,10 @@ const GasSpeedButton = ({ type }) => {
     estimatedTime => {
       const actionLabel = getActionLabel(type);
       const time = parseFloat(estimatedTime || 0).toFixed(0);
+      // If it's still loading show `...`
+      if (time === '0' && estimatedTimeUnit === 'min') {
+        return `${actionLabel} ...`;
+      }
       return `${actionLabel} ~ ${time} ${estimatedTimeUnit}`;
     },
     [estimatedTimeUnit, type]
