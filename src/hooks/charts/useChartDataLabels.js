@@ -3,7 +3,6 @@ import { useValue } from 'react-native-redash';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 
-// TODO cleanup!
 const formatPercentChange = (change = 0) => toFixedDecimals(change, 2);
 
 export default function useChartDataLabels({ asset, chartType, points }) {
@@ -32,6 +31,5 @@ export default function useChartDataLabels({ asset, chartType, points }) {
     changeDirection,
     latestChange,
     latestPrice,
-    updateChartDataLabels: () => {},
   };
 }

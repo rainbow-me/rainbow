@@ -32,13 +32,38 @@ import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 const heightWithChart = 606;
 const heightWithNoChart = 309;
 
+function useJumpingForm(isLong) {
+  const { setOptions } = useNavigation();
+
+  const { jumpToShort, jumpToLong } = useContext(ModalContext);
+
+  useEffect(() => {
+    if (!isLong) {
+      setOptions({
+        isShortFormEnabled: true,
+      });
+      setImmediate(() => {
+        jumpToShort();
+        setOptions({
+          isShortFormEnabled: false,
+          longFormHeight: heightWithNoChart,
+        });
+      });
+    } else {
+      setOptions({
+        longFormHeight: heightWithChart,
+      });
+      setImmediate(jumpToLong);
+    }
+  }, [isLong, setOptions, jumpToShort, jumpToLong]);
+}
+
 export const ChartExpandedStateSheetHeight = chartExpandedAvailable
   ? heightWithChart
   : heightWithNoChart;
 
 export default function ChartExpandedState({ asset }) {
   const { params } = useRoute();
-  const { setOptions } = useNavigation();
   const color = useColorForAsset(asset);
 
   const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
@@ -59,35 +84,16 @@ export default function ChartExpandedState({ asset }) {
     [points]
   );
 
-  const { updateChartDataLabels, ...chartDataLabels } = useChartDataLabels({
+  const initialChartDataLabels = useChartDataLabels({
     asset,
     chartType,
     color,
     points: throttledPoints,
   });
 
-  const { jumpToShort, jumpToLong } = useContext(ModalContext);
   // Only show the chart if we have chart data, or if chart data is still loading
   const showChart = chartExpandedAvailable && (!!chart || fetchingCharts);
-  useEffect(() => {
-    if (!showChart) {
-      setOptions({
-        isShortFormEnabled: true,
-      });
-      setImmediate(() => {
-        jumpToShort();
-        setOptions({
-          isShortFormEnabled: false,
-          longFormHeight: heightWithNoChart,
-        });
-      });
-    } else {
-      setOptions({
-        longFormHeight: heightWithChart,
-      });
-      setImmediate(jumpToLong);
-    }
-  }, [showChart, setOptions, jumpToShort, jumpToLong]);
+  useJumpingForm(showChart);
 
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const showSwapButton = find(uniswapAssetsInWallet, [
@@ -99,7 +105,7 @@ export default function ChartExpandedState({ asset }) {
     <SlackSheet contentHeight={params.longFormHeight} scrollEnabled={false}>
       <Chart
         {...chartData}
-        {...chartDataLabels}
+        {...initialChartDataLabels}
         asset={asset}
         chart={chart}
         chartType={chartType}
@@ -107,7 +113,6 @@ export default function ChartExpandedState({ asset }) {
         fetchingCharts={fetchingCharts}
         points={throttledPoints}
         showChart={showChart}
-        updateChartDataLabels={updateChartDataLabels}
       />
       <SheetDivider />
       <TokenInfoSection>
