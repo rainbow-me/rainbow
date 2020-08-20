@@ -119,7 +119,7 @@ export default function ChartWrapper({
               <Labels color={color} width={WIDTH} />
               <ChartPath
                 fill="none"
-                gestureEnabled={!fetchingCharts}
+                gestureEnabled={!fetchingCharts && !!throttledData}
                 height={HEIGHT}
                 longPressGestureHandlerProps={{
                   minDurationMs: 60,

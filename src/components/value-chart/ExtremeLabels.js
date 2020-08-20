@@ -29,26 +29,30 @@ export default function Labels({ color, width }) {
   );
   return (
     <>
-      <Label
-        color={colors.alpha(color, 0.8)}
-        style={{
-          bottom: -20,
-          [positionMin > 0.5 ? 'right' : 'left']:
-            (0.5 - Math.abs(0.5 - positionMin)) * width - 10,
-        }}
-      >
-        {formatUSD(smallestY.y)}
-      </Label>
-      <Label
-        color={colors.alpha(color, 0.8)}
-        style={{
-          [positionMax > 0.5 ? 'right' : 'left']:
-            (0.5 - Math.abs(0.5 - positionMax)) * width - 10,
-          top: -20,
-        }}
-      >
-        {formatUSD(greatestY.y)}
-      </Label>
+      {positionMin ? (
+        <Label
+          color={colors.alpha(color, 0.8)}
+          style={{
+            bottom: -20,
+            [positionMin > 0.5 ? 'right' : 'left']:
+              (0.5 - Math.abs(0.5 - positionMin)) * width - 10,
+          }}
+        >
+          {formatUSD(smallestY.y)}
+        </Label>
+      ) : null}
+      {positionMax ? (
+        <Label
+          color={colors.alpha(color, 0.8)}
+          style={{
+            [positionMax > 0.5 ? 'right' : 'left']:
+              (0.5 - Math.abs(0.5 - positionMax)) * width - 10,
+            top: -20,
+          }}
+        >
+          {formatUSD(greatestY.y)}
+        </Label>
+      ) : null}
     </>
   );
 }

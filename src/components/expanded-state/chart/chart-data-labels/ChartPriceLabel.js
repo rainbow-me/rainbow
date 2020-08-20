@@ -19,6 +19,9 @@ export function formatUSD(value, priceSharedValue) {
   if (!value) {
     return priceSharedValue?.value || '';
   }
+  if (value === 'undefined') {
+    return '$0.00';
+  }
   const decimals =
     Number(value) < 1
       ? Math.min(

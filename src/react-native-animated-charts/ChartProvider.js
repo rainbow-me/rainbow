@@ -58,7 +58,9 @@ function setNativeXYAccordingToPosition(nativeX, nativeY, position, data) {
     }
   }
   nativeX.value = data.value[idx].nativeX.toString();
-  nativeY.value = data.value[idx].nativeY.toString();
+  nativeY.value = data.value[idx].nativeY
+    ? data.value[idx].nativeY.toString()
+    : 'undefined';
 }
 
 function positionXWithMargin(x, margin, width) {
