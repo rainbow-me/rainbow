@@ -12,6 +12,7 @@ import styled from 'styled-components/primitives';
 import { Button } from '../buttons';
 import { ExchangeInput } from '../exchange';
 import { Column, Row } from '../layout';
+import { useDimensions } from '@rainbow-me/hooks';
 import { colors, position } from '@rainbow-me/styles';
 
 const Underline = styled.View`
@@ -26,14 +27,14 @@ const UnderlineAnimated = styled(Animated.View)`
   left: -100%;
 `;
 
-const UnderlineInput = styled(ExchangeInput).attrs({
+const UnderlineInput = styled(ExchangeInput).attrs(({ isTinyPhone }) => ({
   color: colors.dark,
   disableTabularNums: true,
   keyboardAppearance: 'light',
   letterSpacing: 'roundedTightest',
-  size: 'h3',
+  size: isTinyPhone ? 'bigger' : 'h3',
   weight: 'medium',
-})`
+}))`
   padding-right: 8;
 `;
 
@@ -64,6 +65,8 @@ const UnderlineField = (
   },
   forwardedRef
 ) => {
+  const { isTinyPhone } = useDimensions();
+
   const [isFocused, setIsFocused] = useState(autoFocus);
   const [value, setValue] = useState(valueProp);
   const [wasButtonPressed, setWasButtonPressed] = useState(false);
@@ -135,6 +138,7 @@ const UnderlineField = (
       <Row align="center" justify="space-between" style={{ marginBottom: 8 }}>
         <UnderlineInput
           autoFocus={autoFocus}
+          isTinyPhone={isTinyPhone}
           keyboardType={keyboardType}
           mask={mask}
           maxLength={maxLength}

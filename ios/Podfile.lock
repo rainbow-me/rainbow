@@ -190,7 +190,7 @@ PODS:
     - RNPermissions
   - pop (1.0.12)
   - PromisesObjC (1.2.10)
-  - Protobuf (3.12.0)
+  - Protobuf (3.13.0)
   - RCTRequired (0.62.2)
   - RCTTypeSafety (0.62.2):
     - FBLazyVector (= 0.62.2)
@@ -462,7 +462,7 @@ PODS:
   - RNAnalytics (1.1.0):
     - Analytics
     - React
-  - RNCAsyncStorage (1.11.0):
+  - RNCAsyncStorage (1.12.0):
     - React
   - RNCClipboard (1.2.3):
     - React
@@ -478,15 +478,15 @@ PODS:
     - React
     - SDWebImage (~> 5.8)
     - SDWebImageWebPCoder (~> 0.6.1)
-  - RNFBApp (8.3.0):
+  - RNFBApp (8.3.1):
     - Firebase/CoreOnly (~> 6.28.1)
     - React
-  - RNFBCrashlytics (8.3.0):
+  - RNFBCrashlytics (8.3.1):
     - Firebase/Core (~> 6.28.1)
     - Firebase/Crashlytics (~> 6.28.1)
     - React
     - RNFBApp
-  - RNFBMessaging (7.6.1):
+  - RNFBMessaging (7.7.1):
     - Firebase/Analytics (~> 6.28.1)
     - Firebase/Messaging (~> 6.28.1)
     - React
@@ -523,15 +523,15 @@ PODS:
     - pop (~> 1.0)
     - React
     - SexyTooltip
-  - SDWebImage (5.8.3):
-    - SDWebImage/Core (= 5.8.3)
-  - SDWebImage/Core (5.8.3)
+  - SDWebImage (5.8.4):
+    - SDWebImage/Core (= 5.8.4)
+  - SDWebImage/Core (5.8.4)
   - SDWebImageWebPCoder (0.6.1):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.7)
-  - Sentry (5.1.9):
-    - Sentry/Core (= 5.1.9)
-  - Sentry/Core (5.1.9)
+  - Sentry (5.1.10):
+    - Sentry/Core (= 5.1.10)
+  - Sentry/Core (5.1.10)
   - SexyTooltip (1.2.7):
     - pop (~> 1.0)
   - Shimmer (1.0.2)
@@ -905,7 +905,7 @@ SPEC CHECKSUMS:
   Permission-FaceID: fbdeb41087f35887f0cade55396007fadee3a234
   pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
   PromisesObjC: b14b1c6b68e306650688599de8a45e49fae81151
-  Protobuf: 2793fcd0622a00b546c60e7cbbcc493e043e9bb9
+  Protobuf: 3dac39b34a08151c6d949560efe3f86134a3f748
   RCTRequired: cec6a34b3ac8a9915c37e7e4ad3aa74726ce4035
   RCTTypeSafety: 93006131180074cffa227a1075802c89a49dd4ce
   React: 29a8b1a02bd764fb7644ef04019270849b9a7ac3
@@ -944,16 +944,16 @@ SPEC CHECKSUMS:
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
   reactnativeslackbottomsheet: d44b4c59c1e69c045983044d2f361d256d3ddb98
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
-  RNCAsyncStorage: d059c3ee71738c39834a627476322a5a8cd5bf36
+  RNCAsyncStorage: 2a692bcb9b69b76a2f1a95f33db057129700af64
   RNCClipboard: 48eaf27bea3de7c9a265529725434268d47a2ee9
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNCPushNotificationIOS: dc1c0c6aa18a128df123598149f42e848d26a4ac
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNDominantColor: 72126cb96ffedf4bcd564ed00e2e578f5b93e0d6
   RNFastImage: e19ba191922e7dab9d932a4d59d62d76660aa222
-  RNFBApp: d55b3a69d199cff25ecf4f3bf41a86c47aa37d57
-  RNFBCrashlytics: cb41386ed09729fa68cb9cde9efd8737277a1423
-  RNFBMessaging: 3bb7dcf398789ce359a9f6b97b83472a3090f65a
+  RNFBApp: abbab9c96e6d2f1cada6401c9138d3f8cb2ae930
+  RNFBCrashlytics: 2f8af8eb731d651b72358645679bef55fb723138
+  RNFBMessaging: 6b8db5ff807c38395c297698bcfa1502cbc5856c
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
   RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
@@ -969,9 +969,9 @@ SPEC CHECKSUMS:
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNTooltips: e13180e4339e2a85daabd09507f62a5a32d3dc8a
-  SDWebImage: 112503ec94a5a2a41869503844a15e8d8f1ead5c
+  SDWebImage: cf6922231e95550934da2ada0f20f2becf2ceba9
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
-  Sentry: 81f7f2bd3cb041137ea7efcde3aa5ad0d5a67632
+  Sentry: 8715e88b813bde9ad37aead365d5b04ac7302153
   SexyTooltip: e243da5a858c7160141cf35786a4033669d1efca
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SRSRadialGradient: 77bcb1ae812d0c77560e54ed9e52166df032db1d

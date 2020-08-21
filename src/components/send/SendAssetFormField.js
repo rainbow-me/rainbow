@@ -3,6 +3,7 @@ import React, { useCallback } from 'react';
 import { UnderlineField } from '../fields';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
+import { useDimensions } from '@rainbow-me/hooks';
 
 export default function SendAssetFormField({
   autoFocus,
@@ -17,6 +18,7 @@ export default function SendAssetFormField({
   value,
   ...props
 }) {
+  const { isTinyPhone } = useDimensions();
   const handlePressButton = useCallback(
     event => {
       analytics.track('Clicked "Max" in Send flow input');
@@ -45,7 +47,7 @@ export default function SendAssetFormField({
         placeholder={placeholder}
         value={value}
       />
-      <Text align="right" color="dark" size="h3">
+      <Text align="right" color="dark" size={isTinyPhone ? 'bigger' : 'h3'}>
         {label.length > labelMaxLength
           ? label.substring(0, labelMaxLength)
           : label}

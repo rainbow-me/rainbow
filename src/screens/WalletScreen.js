@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/core';
 import { get } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import Animated from 'react-native-reanimated';
@@ -46,8 +47,9 @@ const WalletPage = styled(Page)`
 `;
 
 export default function WalletScreen() {
+  const { params } = useRoute();
   const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
-  const [initialized, setInitialized] = useState(false);
+  const [initialized, setInitialized] = useState(!!params?.initialized);
   const initializeWallet = useInitializeWallet();
   const refreshAccountData = useRefreshAccountData();
   const { isCoinListEdited } = useCoinListEdited();
@@ -61,7 +63,7 @@ export default function WalletScreen() {
       initializeWallet(null, null, null, true);
       setInitialized(true);
     }
-  }, [initializeWallet, initialized]);
+  }, [initializeWallet, initialized, params]);
 
   useEffect(() => {
     if (initialized) {
