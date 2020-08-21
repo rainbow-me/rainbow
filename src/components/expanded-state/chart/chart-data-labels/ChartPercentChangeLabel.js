@@ -52,18 +52,16 @@ export default function ChartPercentChangeLabel({ changeDirection }) {
     ).toFixed(2) + '%';
 
   useEffect(() => {
-    firstValue.value = data?.points?.[0]?.y;
+    firstValue.value = data?.points?.[0]?.y || 0;
     lastValue.value = data?.points?.[data.points.length - 1]?.y;
   }, [data, firstValue, lastValue]);
 
   const textProps = useAnimatedStyle(() => {
     return {
       text:
-        firstValue.value === Number(firstValue.value)
+        firstValue.value === Number(firstValue.value) && firstValue.value
           ? Math.abs(
-              (firstValue.value &&
-                (nativeY.value || lastValue.value) / firstValue.value) *
-                100 -
+              ((nativeY.value || lastValue.value) / firstValue.value) * 100 -
                 100
             ).toFixed(2) + '%'
           : '',
