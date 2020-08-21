@@ -1,4 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
+import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { Platform, View } from 'react-native';
 import styled from 'styled-components';
@@ -78,6 +79,12 @@ const AlreadyBackedUpView = () => {
   const { setComponent, hide } = usePortal();
 
   useEffect(() => {
+    analytics.track('Already Backed Up View', {
+      category: 'settings backup',
+    });
+  }, []);
+
+  useEffect(() => {
     if (isWalletLoading) {
       setComponent(
         <LoadingOverlay
@@ -133,8 +140,13 @@ const AlreadyBackedUpView = () => {
       ![WalletBackupStatus.MANUAL_BACKUP, WalletBackupStatus.IMPORTED].includes(
         walletStatus
       )
-    )
+    ) {
       return;
+    }
+
+    analytics.track('Back up to iCloud pressed', {
+      category: 'settings backup',
+    });
 
     walletCloudBackup({
       handleNoLatestBackup,

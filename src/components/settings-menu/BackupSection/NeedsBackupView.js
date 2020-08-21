@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -69,7 +70,16 @@ const NeedsBackupView = () => {
     }
   }, [setParams, walletId, wallets]);
 
+  useEffect(() => {
+    analytics.track('Needs Backup View', {
+      category: 'settings backup',
+    });
+  }, []);
+
   const onIcloudBackup = useCallback(() => {
+    analytics.track('Back up to iCloud pressed', {
+      category: 'settings backup',
+    });
     navigate(Routes.BACKUP_SHEET, {
       option: WalletBackupTypes.cloud,
       walletId,
@@ -77,6 +87,9 @@ const NeedsBackupView = () => {
   }, [navigate, walletId]);
 
   const onManualBackup = useCallback(() => {
+    analytics.track('Manual Backup pressed', {
+      category: 'settings backup',
+    });
     navigate(Routes.BACKUP_SHEET, {
       option: WalletBackupTypes.manual,
       walletId,
