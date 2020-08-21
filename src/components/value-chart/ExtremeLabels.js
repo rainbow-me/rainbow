@@ -25,6 +25,7 @@ function useJustChanged(deps) {
   useEffect(() => {
     if (initial.current) {
       initial.current = false;
+      prevDeps.current = deps;
       return;
     }
     if (prevDeps) {
