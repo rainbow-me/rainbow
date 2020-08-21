@@ -250,9 +250,12 @@ export default function ImportSeedPhraseSheet() {
               InteractionManager.runAfterInteractions(async () => {
                 if (previousWalletCount === 0) {
                   await saveUserBackupState(BackupStateTypes.done);
-                  replace(Routes.SWIPE_LAYOUT);
+                  replace(Routes.SWIPE_LAYOUT, {
+                    params: { initialized: true },
+                    screen: Routes.WALLET_SCREEN,
+                  });
                 } else {
-                  navigate(Routes.WALLET_SCREEN);
+                  navigate(Routes.WALLET_SCREEN, { initialized: true });
                 }
                 if (Platform.OS === 'android') {
                   hide();

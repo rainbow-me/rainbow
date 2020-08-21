@@ -106,6 +106,7 @@ export default function useInitializeWallet() {
           dispatch(appStateUpdate({ walletReady: true }));
         }
 
+        logger.sentry('💰 Wallet initialized');
         return walletAddress;
       } catch (error) {
         logger.sentry('Error while initializing wallet');
