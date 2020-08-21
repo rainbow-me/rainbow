@@ -48,10 +48,9 @@ const WalletPage = styled(Page)`
 
 export default function WalletScreen() {
   const { params } = useRoute();
+  console.log(params);
   const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
-  const [initialized, setInitialized] = useState(
-    params?.initialized ? true : false
-  );
+  const [initialized, setInitialized] = useState(!!params?.initialized);
   const initializeWallet = useInitializeWallet();
   const refreshAccountData = useRefreshAccountData();
   const { isCoinListEdited } = useCoinListEdited();
