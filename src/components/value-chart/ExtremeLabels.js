@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/primitives';
 import { colors, fonts } from '../../styles';
 import { formatUSD } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
@@ -16,20 +16,60 @@ const Label = styled(Text)`
   position: absolute;
 `;
 
+function useJustChanged(deps) {
+  const timeout = useRef();
+  const initial = useRef(true);
+  const prevDeps = useRef(null);
+  const [hasJustChanged, setHasJustChanges] = useState(false);
+
+  useEffect(() => {
+    if (initial.current) {
+      initial.current = false;
+      return;
+    }
+    if (prevDeps) {
+      // ignore small changes e.g. while updating data
+      for (let i = 0; i < deps.length; i++) {
+        if (Math.abs(deps[i] - prevDeps.current?.[i]) < 0.01) {
+          prevDeps.current = deps;
+          return;
+        }
+      }
+    }
+    prevDeps.current = deps;
+    setHasJustChanges(true);
+    clearTimeout(timeout.current);
+    setTimeout(() => {
+      setHasJustChanges(false);
+    }, 500);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+
+  return hasJustChanged;
+}
+
 export default function Labels({ color, width }) {
   const { greatestX, greatestY, smallestX, smallestY } = useChartData();
+
+  let positionMin, positionMax;
+  if (greatestX) {
+    positionMin = trim(
+      (smallestY.x - smallestX.x) / (greatestX.x - smallestX.x)
+    );
+    positionMax = trim(
+      (greatestY.x - smallestX.x) / (greatestX.x - smallestX.x)
+    );
+  }
+
+  const justChanged = useJustChanged([positionMin, positionMax]);
+
   if (!greatestX) {
     return null;
   }
-  const positionMin = trim(
-    (smallestY.x - smallestX.x) / (greatestX.x - smallestX.x)
-  );
-  const positionMax = trim(
-    (greatestY.x - smallestX.x) / (greatestX.x - smallestX.x)
-  );
+
   return (
     <>
-      {positionMin ? (
+      {positionMin && !justChanged ? (
         <Label
           color={colors.alpha(color, 0.8)}
           style={{
@@ -41,7 +81,7 @@ export default function Labels({ color, width }) {
           {formatUSD(smallestY.y)}
         </Label>
       ) : null}
-      {positionMax ? (
+      {positionMax && !justChanged ? (
         <Label
           color={colors.alpha(color, 0.8)}
           style={{
