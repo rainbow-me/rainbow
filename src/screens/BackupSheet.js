@@ -25,7 +25,7 @@ import WalletBackupTypes from '../helpers/walletBackupTypes';
 import { useWalletCloudBackup, useWallets } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/effects';
 import { usePortal } from '../react-native-cool-modals/Portal';
-import { setAllWalletsBackedUpManually } from '../redux/wallets';
+import { setWalletBackedUp } from '../redux/wallets';
 import { deviceUtils } from '../utils';
 
 import Routes from '@rainbow-me/routes';
@@ -136,10 +136,10 @@ const BackupSheet = () => {
   }, [goBack]);
 
   const onAlreadyBackedUp = useCallback(async () => {
-    /// Flag all the wallets as backed up manually
-    await dispatch(setAllWalletsBackedUpManually());
+    /// Flag wallet as backed up manually
+    await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.manual));
     goBack();
-  }, [dispatch, goBack]);
+  }, [dispatch, goBack, walletId]);
 
   const onBackupNow = useCallback(async () => {
     goBack();
