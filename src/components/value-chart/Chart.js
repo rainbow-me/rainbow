@@ -1,5 +1,5 @@
 import { invert } from 'lodash';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/native';
@@ -63,6 +63,20 @@ const Overlay = styled(Centered).attrs({
   background-color: ${colors.alpha(colors.white, 0.69)};
 `;
 
+function useShowLoadingState(isFetching) {
+  const [isShow, setIsShow] = useState(false);
+  const timeout = useRef();
+  useEffect(() => {
+    if (isFetching) {
+      timeout.current = setTimeout(() => setIsShow(isFetching), 1000);
+    } else {
+      clearTimeout(timeout.current);
+      setIsShow(isFetching);
+    }
+  }, [isFetching]);
+  return isShow;
+}
+
 export default function ChartWrapper({
   chartType,
   color,
@@ -105,6 +119,8 @@ export default function ChartWrapper({
     }
   }, [chartTimeSharedValue, chartType, formattedTimespan]);
 
+  const showLoadingState = useShowLoadingState(fetchingCharts);
+
   return (
     <Container>
       <ChartProvider data={throttledData}>
@@ -136,7 +152,7 @@ export default function ChartWrapper({
               </Dot>
             </>
           )}
-          {fetchingCharts ? (
+          {showLoadingState ? (
             <Overlay>
               <ActivityIndicator color={color} />
             </Overlay>
