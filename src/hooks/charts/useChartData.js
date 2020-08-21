@@ -4,15 +4,9 @@ import isEqual from 'react-fast-compare';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { useCallbackOne } from 'use-memo-one';
-import { getChart } from '../../handlers/uniswap';
-import {
-  assetChartsFallbackReceived,
-  chartsUpdateChartType,
-  DEFAULT_CHART_TYPE,
-} from '../../redux/charts';
+import { chartsUpdateChartType, DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { emitChartsRequest } from '../../redux/explorer';
 import useAsset from '../useAsset';
-import logger from 'logger';
 
 const formatChartData = chart => {
   if (!chart || isEmpty(chart)) return null;
@@ -45,31 +39,12 @@ const chartSelector = createSelector(
 
 export default function useChartData(asset) {
   const dispatch = useDispatch();
-  const { address, exchangeAddress } = useAsset(asset);
+  const { address } = useAsset(asset);
 
   const { chart, chartsForAsset, chartType, fetchingCharts } = useSelector(
     useCallbackOne(state => chartSelector(state, address), [address]),
     isEqual
   );
-
-  const handleRecieveFallbackChart = useCallback(
-    chartData => {
-      if (!chartData.length) {
-        logger.log('👎️📈️ - receieved no fallback chart data');
-        return;
-      }
-      logger.log('✅️📈️ - fallback chart data was success');
-      dispatch(assetChartsFallbackReceived(address, chartType, chartData));
-    },
-    [address, chartType, dispatch]
-  );
-
-  useEffect(() => {
-    if (!chart && exchangeAddress) {
-      logger.log('🙈️ - no charts -- fetching fallback...');
-      getChart(exchangeAddress, chartType).then(handleRecieveFallbackChart);
-    }
-  }, [chart, chartType, exchangeAddress, handleRecieveFallbackChart]);
 
   useEffect(() => {
     dispatch(emitChartsRequest(address, chartType));
