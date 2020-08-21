@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { values } from 'lodash';
 import { useCallback } from 'react';
@@ -116,6 +117,11 @@ export default function useWalletCloudBackup() {
         onError && onError(userError);
         logger.sentry('error while trying to backup wallet to icloud');
         captureException(e);
+        analytics.track('Error during iCloud Backup', {
+          category: 'backup',
+          error: userError,
+          label: 'icloud',
+        });
         return null;
       }
 
@@ -137,6 +143,10 @@ export default function useWalletCloudBackup() {
           new Error(CLOUD_BACKUP_ERRORS.WALLET_BACKUP_STATUS_UPDATE_FAILED)
         );
         onError && onError(userError);
+        analytics.track('Error updating Backup status', {
+          category: 'backup',
+          label: 'icloud',
+        });
       }
     },
     [dispatch, latestBackup, wallets]
