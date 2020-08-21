@@ -164,7 +164,7 @@ const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
 const authenticationPrompt = lang.t('wallet.authenticate.please');
-const publicAccessControlOptions = {
+export const publicAccessControlOptions = {
   accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
 };
 
