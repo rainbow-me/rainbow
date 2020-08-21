@@ -71,7 +71,7 @@ export default function ChartExpandedState({ asset }) {
   );
 
   const points = useMemo(
-    () => (chartType === ChartTypes.hour ? bSpline(chart)(40) : chart),
+    () => bSpline(chart)(chartType === ChartTypes.hour ? 100 : 160),
     [chart, chartType]
   );
 
