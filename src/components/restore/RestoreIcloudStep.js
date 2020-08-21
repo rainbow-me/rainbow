@@ -18,11 +18,7 @@ import { removeWalletData } from '../../handlers/localstorage/removeWallet';
 import BackupStateTypes from '../../helpers/backupStateTypes';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import WalletLoadingStates from '../../helpers/walletLoadingStates';
-import {
-  useAccountSettings,
-  useInitializeWallet,
-  useWallets,
-} from '../../hooks';
+import { useAccountSettings, useWallets } from '../../hooks';
 import {
   fetchBackupPassword,
   restoreCloudBackup,
@@ -30,7 +26,7 @@ import {
 } from '../../model/backup';
 import { sheetVerticalOffset } from '../../navigation/effects';
 import { usePortal } from '../../react-native-cool-modals/Portal';
-import { setIsWalletLoading, walletsLoadState } from '../../redux/wallets';
+import { setIsWalletLoading } from '../../redux/wallets';
 import { deviceUtils } from '../../utils';
 import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
@@ -143,7 +139,6 @@ const RestoreIcloudStep = ({ userData }) => {
   const { goBack, replace } = useNavigation();
   const dispatch = useDispatch();
   const { isWalletLoading } = useWallets();
-  const initializeWallet = useInitializeWallet();
   const { accountAddress } = useAccountSettings();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
@@ -212,10 +207,6 @@ const RestoreIcloudStep = ({ userData }) => {
         await saveUserBackupState(BackupStateTypes.done);
         // Get rid of the current wallet
         await removeWalletData(accountAddress);
-
-        // Reload the wallets
-        await dispatch(walletsLoadState());
-        await initializeWallet();
         goBack();
         InteractionManager.runAfterInteractions(async () => {
           replace(Routes.SWIPE_LAYOUT);
@@ -229,15 +220,7 @@ const RestoreIcloudStep = ({ userData }) => {
       dispatch(setIsWalletLoading(null));
       Alert.alert('Error while restoring backup');
     }
-  }, [
-    accountAddress,
-    dispatch,
-    goBack,
-    initializeWallet,
-    password,
-    replace,
-    userData,
-  ]);
+  }, [accountAddress, dispatch, goBack, password, replace, userData]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
