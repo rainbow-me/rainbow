@@ -75,10 +75,14 @@ export default function ChartExpandedStateHeader({
     }
   }, [price, isNoPriceData, priceSharedValue]);
 
-  const coinIconShadow = useMemo(
-    () => [[0, 4, 12, asset?.shadowColor || color, 0.3]],
-    [asset, color]
-  );
+  const coinIconShadow = useMemo(() => {
+    const isWhite = asset.color === colors.white;
+
+    return [
+      [5, 5, 10, colors.dark, isWhite ? 0.12 : 0.15],
+      [2, 4, 15, asset.color, isWhite ? 0.08 : 0.4],
+    ];
+  }, [asset.color, color]);
 
   return (
     <Container showChart={showChart}>
