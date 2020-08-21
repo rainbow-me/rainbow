@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import isEqual from 'react-fast-compare';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -39,7 +39,10 @@ const chartSelector = createSelector(
 
 export default function useChartData(asset) {
   const dispatch = useDispatch();
-  const { address } = useAsset(asset);
+  const {
+    address,
+    price: { value: price },
+  } = useAsset(asset);
 
   const { chart, chartsForAsset, chartType, fetchingCharts } = useSelector(
     useCallbackOne(state => chartSelector(state, address), [address]),
@@ -58,8 +61,14 @@ export default function useChartData(asset) {
   // Reset chart timeframe on unmount.
   useEffect(() => () => updateChartType(DEFAULT_CHART_TYPE), [updateChartType]);
 
+  // add current price at the very end
+  const filteredData = useMemo(() => {
+    const now = Date.now() / 1000;
+    return chart.filter(({ x }) => x <= now).concat({ x: now, y: price });
+  }, [chart, price]);
+
   return {
-    chart,
+    chart: filteredData,
     charts: chartsForAsset,
     chartType,
     fetchingCharts,
