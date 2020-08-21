@@ -1,12 +1,18 @@
 import { isEmpty } from 'lodash';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import isEqual from 'react-fast-compare';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { useCallbackOne } from 'use-memo-one';
-import { chartsUpdateChartType, DEFAULT_CHART_TYPE } from '../../redux/charts';
+import { getChart } from '../../handlers/uniswap';
+import {
+  assetChartsFallbackReceived,
+  chartsUpdateChartType,
+  DEFAULT_CHART_TYPE,
+} from '../../redux/charts';
 import { emitChartsRequest } from '../../redux/explorer';
 import useAsset from '../useAsset';
+import logger from 'logger';
 
 const formatChartData = chart => {
   if (!chart || isEmpty(chart)) return null;
@@ -37,17 +43,70 @@ const chartSelector = createSelector(
   }
 );
 
+function useWasNotFetchingDataForTheLast5Seconds(isFetchingData) {
+  const [isFetchingDataForLonger, setIsFetchingDataForLonger] = useState(false);
+  const timeout = useRef();
+  useEffect(() => {
+    if (isFetchingData) {
+      clearTimeout(timeout.current);
+
+      setIsFetchingDataForLonger(false);
+    } else {
+      setTimeout(() => {
+        setIsFetchingDataForLonger(true);
+      }, 5000);
+    }
+  }, [isFetchingData]);
+  return isFetchingDataForLonger;
+}
+
 export default function useChartData(asset) {
   const dispatch = useDispatch();
   const {
     address,
     price: { value: price },
+    exchangeAddress,
   } = useAsset(asset);
 
   const { chart, chartsForAsset, chartType, fetchingCharts } = useSelector(
     useCallbackOne(state => chartSelector(state, address), [address]),
     isEqual
   );
+
+  const wasNotFetchingDataForTheLast5Seconds = useWasNotFetchingDataForTheLast5Seconds(
+    fetchingCharts
+  );
+
+  const handleRecieveFallbackChart = useCallback(
+    chartData => {
+      if (!chartData.length) {
+        logger.log('👎️📈️ - receieved no fallback chart data');
+        return;
+      }
+      logger.log('✅️📈️ - fallback chart data was success');
+      dispatch(assetChartsFallbackReceived(address, chartType, chartData));
+    },
+    [address, chartType, dispatch]
+  );
+
+  useEffect(() => {
+    if (
+      !chart &&
+      exchangeAddress &&
+      wasNotFetchingDataForTheLast5Seconds &&
+      !fetchingCharts
+    ) {
+      logger.log('🙈️ - no charts -- fetching fallback...');
+      getChart(exchangeAddress, chartType).then(handleRecieveFallbackChart);
+    }
+  }, [
+    chart,
+    chartType,
+    exchangeAddress,
+    fetchingCharts,
+    handleRecieveFallbackChart,
+    wasNotFetchingDataForTheLast5Seconds,
+  ]);
 
   useEffect(() => {
     dispatch(emitChartsRequest(address, chartType));
@@ -64,7 +123,7 @@ export default function useChartData(asset) {
   // add current price at the very end
   const filteredData = useMemo(() => {
     const now = Date.now() / 1000;
-    return chart.filter(({ x }) => x <= now).concat({ x: now, y: price });
+    return chart?.filter(({ x }) => x <= now).concat({ x: now, y: price });
   }, [chart, price]);
 
   return {
