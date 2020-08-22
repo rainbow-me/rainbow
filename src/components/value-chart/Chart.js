@@ -127,6 +127,7 @@ export default function ChartWrapper({
         <ChartExpandedStateHeader
           {...props}
           chartTimeSharedValue={chartTimeSharedValue}
+          color={color}
           showChart={showChart}
         />
         <ChartContainer showChart={showChart}>
