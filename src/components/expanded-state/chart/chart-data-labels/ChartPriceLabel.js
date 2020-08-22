@@ -6,12 +6,10 @@ import { fonts } from '@rainbow-me/styles';
 import { ChartYLabel } from 'react-native-animated-charts';
 
 const Label = styled(ChartYLabel)`
-  background-color: white;
   font-family: ${fonts.family.SFProRounded};
   font-size: ${fonts.size.big};
   font-weight: ${fonts.weight.bold};
   letter-spacing: ${fonts.letterSpacing.roundedTight};
-  font-variant: tabular-nums;
 `;
 
 export function formatUSD(value, priceSharedValue) {
