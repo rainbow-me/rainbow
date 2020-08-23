@@ -338,6 +338,20 @@ export default function ChartProvider({
     // For som reason isNaN(y) does not work
     res = res.filter(({ y }) => y === Number(y));
 
+    if (res.length !== 0) {
+      const firstValue = res[0];
+      const lastValue = res[res.length - 1];
+      if (firstValue.x === 0) {
+        // extrapolate the first points
+        res = [{ x: firstValue.x - 10, y: firstValue.y }].concat(res);
+      }
+      if (lastValue.x === size.value.width) {
+        // extrapolate the last points
+
+        res = res.concat({ x: lastValue.x + 10, y: lastValue.y });
+      }
+    }
+
     if (smoothing !== 0) {
       return svgBezierPath(res, smoothing, strategy);
     }
