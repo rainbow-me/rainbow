@@ -122,8 +122,11 @@ export default function useChartData(asset) {
 
   // add current price at the very end
   const filteredData = useMemo(() => {
-    const now = Date.now() / 1000;
-    return chart?.filter(({ x }) => x <= now).concat({ x: now, y: price });
+    const now = Math.floor(Date.now() / 1000);
+    return chart
+      ?.filter(({ x }) => x <= now)
+      .slice(0, chart.length - 1)
+      .concat({ x: now, y: price });
   }, [chart, price]);
 
   return {
