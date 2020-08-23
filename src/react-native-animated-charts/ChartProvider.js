@@ -343,12 +343,11 @@ export default function ChartProvider({
       const lastValue = res[res.length - 1];
       if (firstValue.x === 0) {
         // extrapolate the first points
-        res = [{ x: firstValue.x - 10, y: firstValue.y }].concat(res);
+        res[0].x = -5;
       }
       if (lastValue.x === size.value.width) {
         // extrapolate the last points
-
-        res = res.concat({ x: lastValue.x + 10, y: lastValue.y });
+        res[res.length - 1].x = lastValue.x + 20;
       }
     }
 
