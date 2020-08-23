@@ -25,6 +25,7 @@ import { uniswapClient } from '../apollo/client';
 import {
   UNISWAP_ALL_EXCHANGES_QUERY,
   UNISWAP_CHART_QUERY,
+  UNISWAP_FISRT_PRICE_QUERY,
 } from '../apollo/queries';
 import ChartTypes from '../helpers/chartTypes';
 import {
@@ -400,6 +401,26 @@ export const getChart = async (exchangeAddress, timeframe) => {
   }
 
   return data;
+};
+
+export const getFirstPrice = (exchangeAddress, callback) => {
+  const now = new Date();
+
+  let startTime = getUnixTime(sub(now, { years: 2 }));
+  uniswapClient
+    .query({
+      fetchPolicy: 'cache-first',
+      query: UNISWAP_FISRT_PRICE_QUERY,
+      variables: {
+        date: startTime,
+        exchangeAddress,
+      },
+    })
+    .then(({ data: { exchangeDayDatas } }) => {
+      console.log(
+        (exchangeDayDatas[0].date - Number(now) / 1000) / (60 * 60 * 24)
+      );
+    });
 };
 
 export const getAllExchanges = async (tokenOverrides, excluded = []) => {
