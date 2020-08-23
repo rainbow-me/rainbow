@@ -25,7 +25,7 @@ const ChartTimespans = [
   ChartTypes.week,
   ChartTypes.month,
   ChartTypes.year,
-  ChartTypes.max,
+  //ChartTypes.max,
 ];
 
 const ChartContainer = styled.View`
