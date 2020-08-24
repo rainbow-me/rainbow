@@ -146,7 +146,6 @@ export const daysFromTheFirstTx = address => {
       const parsedResponse = await response.json();
       const txTime = parsedResponse.result[0].timeStamp;
       const daysFrom = Math.floor((Date.now() / 1000 - txTime) / 60 / 60 / 24);
-      console.log(daysFrom);
       resolve(daysFrom);
     } catch (e) {
       resolve(1000);
