@@ -6,6 +6,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useSharedValue } from 'react-native-reanimated';
+
 import { defaultConfig } from '../config/experimental';
 
 export const DevContext = createContext({});
@@ -13,6 +15,9 @@ export const DevContext = createContext({});
 const EXPERIMENTAL_CONFIG = 'experimentalConfig';
 
 function DevContextComponent({ children }) {
+  // This value is hold here to prevent JS VM from shutting down
+  // on unmounting all shared values.
+  useSharedValue(0);
   const [config, setConfig] = useState(defaultConfig);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
