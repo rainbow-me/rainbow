@@ -11,6 +11,7 @@ import {
   DEFAULT_CHART_TYPE,
 } from '../../redux/charts';
 import { emitChartsRequest } from '../../redux/explorer';
+import { daysFromTheFirstTx } from '../../utils/ethereumUtils';
 import useAsset from '../useAsset';
 import logger from 'logger';
 
@@ -61,12 +62,11 @@ function useWasNotFetchingDataForTheLast5Seconds(isFetchingData) {
 }
 
 export default function useChartData(asset) {
+  const [daysFromFirstTx, setDaysFromFirstTx] = useState(1000);
   const dispatch = useDispatch();
-  const {
-    address,
-    price: { value: price },
-    exchangeAddress,
-  } = useAsset(asset);
+  const { address, price: priceObject, exchangeAddress } = useAsset(asset);
+
+  const { value: price } = priceObject;
 
   const { chart, chartsForAsset, chartType, fetchingCharts } = useSelector(
     useCallbackOne(state => chartSelector(state, address), [address]),
@@ -88,6 +88,15 @@ export default function useChartData(asset) {
     },
     [address, chartType, dispatch]
   );
+
+  useEffect(() => {
+    async function fetchDays() {
+      setDaysFromFirstTx(await daysFromTheFirstTx(exchangeAddress));
+    }
+    if (exchangeAddress) {
+      fetchDays();
+    }
+  }, [exchangeAddress]);
 
   useEffect(() => {
     if (
@@ -134,6 +143,8 @@ export default function useChartData(asset) {
     charts: chartsForAsset,
     chartType,
     fetchingCharts,
+    showMonth: daysFromFirstTx > 7,
+    showYear: daysFromFirstTx > 30,
     updateChartType,
   };
 }

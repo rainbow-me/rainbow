@@ -138,6 +138,21 @@ const isEthAddress = str => {
   return isValidAddress(withHexPrefix);
 };
 
+export const daysFromTheFirstTx = address => {
+  return new Promise(async resolve => {
+    try {
+      const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&tag=oldest&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
+      const response = await fetch(url);
+      const parsedResponse = await response.json();
+      const txTime = parsedResponse.result[0].timeStamp;
+      const daysFrom = Math.floor((Date.now() / 1000 - txTime) / 60 / 60 / 24);
+      console.log(daysFrom);
+      resolve(daysFrom);
+    } catch (e) {
+      resolve(1000);
+    }
+  });
+};
 /**
  * @desc Checks if a an address has previous transactions
  * @param  {String} address

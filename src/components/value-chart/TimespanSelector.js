@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import { JellySelector } from '../jelly-selector';
 import { Centered, Row } from '../layout';
@@ -41,23 +41,34 @@ const TimespanSelector = ({
   color = colors.dark,
   defaultIndex = 0,
   reloadChart,
+  showMonth,
+  showYear,
   timespans,
-}) => (
-  <Container>
-    <JellySelector
-      backgroundColor={colors.alpha(color, 0.06)}
-      color={color}
-      defaultIndex={defaultIndex}
-      enableHapticFeedback
-      height={32}
-      items={timespans}
-      onSelect={reloadChart}
-      renderItem={TimespanItem}
-      renderRow={TimespanItemRow}
-      scaleTo={1.2}
-      width="100%"
-    />
-  </Container>
-);
+}) => {
+  const filteredTimespans = useMemo(() => {
+    return timespans.filter(
+      t =>
+        (t !== ChartTypes.month || showMonth) &&
+        (t !== ChartTypes.year || showYear)
+    );
+  }, [showMonth, showYear, timespans]);
+  return (
+    <Container>
+      <JellySelector
+        backgroundColor={colors.alpha(color, 0.06)}
+        color={color}
+        defaultIndex={defaultIndex}
+        enableHapticFeedback
+        height={32}
+        items={filteredTimespans}
+        onSelect={reloadChart}
+        renderItem={TimespanItem}
+        renderRow={TimespanItemRow}
+        scaleTo={1.2}
+        width="100%"
+      />
+    </Container>
+  );
+};
 
 export default React.memo(TimespanSelector);
