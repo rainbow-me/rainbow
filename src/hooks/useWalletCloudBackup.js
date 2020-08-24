@@ -9,7 +9,7 @@ import {
   backupWalletToCloud,
   fetchBackupPassword,
 } from '../model/backup';
-import { setIsWalletLoading, setWalletBackedUp } from '../redux/wallets';
+import { setWalletBackedUp } from '../redux/wallets';
 import useWallets from './useWallets';
 import {
   CLOUD_BACKUP_ERRORS,
@@ -40,7 +40,7 @@ function getUserError(e) {
 
 export default function useWalletCloudBackup() {
   const dispatch = useDispatch();
-  const { latestBackup, wallets } = useWallets();
+  const { latestBackup, setIsWalletLoading, wallets } = useWallets();
 
   const walletCloudBackup = useCallback(
     async ({
@@ -111,7 +111,7 @@ export default function useWalletCloudBackup() {
         return;
       }
 
-      dispatch(setIsWalletLoading(walletLoadingStates.BACKING_UP_WALLET));
+      setIsWalletLoading(walletLoadingStates.BACKING_UP_WALLET);
       // We want to make it clear why are we requesting faceID twice
       // So we delayed it to make sure the user can read before seeing the auth prompt
       if (wasPasswordFetched) {
@@ -174,7 +174,7 @@ export default function useWalletCloudBackup() {
         });
       }
     },
-    [dispatch, latestBackup, wallets]
+    [dispatch, latestBackup, setIsWalletLoading, wallets]
   );
 
   return walletCloudBackup;

@@ -22,7 +22,6 @@ import { useNavigation } from '../navigation/Navigation';
 import {
   addressSetSelected,
   createAccountForWallet,
-  setIsWalletLoading,
   walletsLoadState,
   walletsSetSelected,
   walletsUpdate,
@@ -82,7 +81,7 @@ const getWalletRowCount = wallets => {
 };
 
 export default function ChangeWalletSheet() {
-  const { wallets, selectedWallet } = useWallets();
+  const { selectedWallet, setIsWalletLoading, wallets } = useWallets();
   const [editMode, setEditMode] = useState(false);
 
   const { goBack, navigate, replace } = useNavigation();
@@ -309,9 +308,7 @@ export default function ChangeWalletSheet() {
             isNewProfile: true,
             onCloseModal: async args => {
               if (args) {
-                dispatch(
-                  setIsWalletLoading(WalletLoadingStates.CREATING_ACCOUNT)
-                );
+                setIsWalletLoading(WalletLoadingStates.CREATING_ACCOUNT);
                 const name = get(args, 'name', '');
                 const color = get(args, 'color', colors.getRandomColor());
                 // Check if the selected wallet is the primary
@@ -372,7 +369,7 @@ export default function ChangeWalletSheet() {
                 }
               }
               creatingWallet.current = false;
-              dispatch(setIsWalletLoading(null));
+              setIsWalletLoading(null);
             },
             profile: {
               color: null,
@@ -383,7 +380,7 @@ export default function ChangeWalletSheet() {
         }, 50);
       });
     } catch (e) {
-      dispatch(setIsWalletLoading(null));
+      setIsWalletLoading(null);
       logger.log('Error while trying to add account', e);
     }
   }, [
@@ -394,6 +391,7 @@ export default function ChangeWalletSheet() {
     selectedWallet.damaged,
     selectedWallet.id,
     selectedWallet.primary,
+    setIsWalletLoading,
     wallets,
   ]);
 

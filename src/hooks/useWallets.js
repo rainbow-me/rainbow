@@ -1,6 +1,8 @@
-import { useSelector } from 'react-redux';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { findLatestBackUp } from '../model/backup';
+import { setIsWalletLoading as rawSetIsWalletLoading } from '../redux/wallets';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 
 const walletSelector = createSelector(
@@ -20,6 +22,7 @@ const walletSelector = createSelector(
 );
 
 export default function useWallets() {
+  const dispatch = useDispatch();
   const {
     isWalletLoading,
     latestBackup,
@@ -28,11 +31,17 @@ export default function useWallets() {
     wallets,
   } = useSelector(walletSelector);
 
+  const setIsWalletLoading = useCallback(
+    isLoading => dispatch(rawSetIsWalletLoading(isLoading)),
+    [dispatch]
+  );
+
   return {
     isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
     isWalletLoading,
     latestBackup,
     selectedWallet,
+    setIsWalletLoading,
     walletNames,
     wallets,
   };
