@@ -66,7 +66,7 @@ export default function useChartData(asset) {
   const dispatch = useDispatch();
   const { address, price: priceObject, exchangeAddress } = useAsset(asset);
 
-  const { value: price } = priceObject;
+  const { value: price } = priceObject || {};
 
   const { chart, chartsForAsset, chartType, fetchingCharts } = useSelector(
     useCallbackOne(state => chartSelector(state, address), [address]),
