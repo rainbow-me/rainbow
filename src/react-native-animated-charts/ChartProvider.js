@@ -343,7 +343,10 @@ export default function ChartProvider({
       const lastValue = res[res.length - 1];
       if (firstValue.x === 0) {
         // extrapolate the first points
-        res[0].x = -5;
+        res = [
+          { x: res[0].x, y: res[0].y },
+          { x: -res[4].x, y: res[0].y },
+        ].concat(res);
       }
       if (lastValue.x === size.value.width) {
         // extrapolate the last points
