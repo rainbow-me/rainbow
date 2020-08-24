@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { find } from 'lodash';
-import React, { useContext, useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import {
   useChartData,
   useChartDataLabels,
@@ -65,10 +65,17 @@ export const ChartExpandedStateSheetHeight = chartExpandedAvailable
 export default function ChartExpandedState({ asset }) {
   const { params } = useRoute();
   const color = useColorForAsset(asset);
+  const [isFetchingInitially, setIsFetchingInitially] = useState(true);
 
   const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
     asset
   );
+
+  useEffect(() => {
+    if (!fetchingCharts) {
+      setIsFetchingInitially(false);
+    }
+  }, [fetchingCharts]);
 
   const points = useMemo(
     () => bSpline(chart)(chartType === ChartTypes.hour ? 100 : 160),
@@ -91,7 +98,9 @@ export default function ChartExpandedState({ asset }) {
   });
 
   // Only show the chart if we have chart data, or if chart data is still loading
-  const showChart = chartExpandedAvailable && (!!chart || fetchingCharts);
+  const showChart =
+    chartExpandedAvailable &&
+    (!!chart || (fetchingCharts && !isFetchingInitially));
   useJumpingForm(showChart);
 
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
