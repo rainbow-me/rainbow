@@ -72,15 +72,15 @@ export default function ChartExpandedState({ asset }) {
   );
 
   const points = useMemo(
-    () => bSpline(chart)(chartType === ChartTypes.hour ? 100 : 160),
+    () =>
+      bSpline(chart?.filter(({ y }) => y))(
+        chartType === ChartTypes.hour ? 100 : 160
+      ),
     [chart, chartType]
   );
 
   const throttledPoints = useMemo(
-    () =>
-      (!points || points.length === 0 ? throttledPoints : points)?.filter(
-        ({ y }) => y
-      ),
+    () => (!points || points.length === 0 ? throttledPoints : points),
     [points]
   );
 
