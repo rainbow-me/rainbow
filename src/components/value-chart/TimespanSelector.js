@@ -43,17 +43,15 @@ const TimespanSelector = ({
   reloadChart,
   showMonth,
   showYear,
-  showSpans,
   timespans,
 }) => {
   const filteredTimespans = useMemo(() => {
     return timespans.filter(
       t =>
-        showSpans &&
         (t !== ChartTypes.month || showMonth) &&
         (t !== ChartTypes.year || showYear)
     );
-  }, [showMonth, showYear, timespans, showSpans]);
+  }, [showMonth, showYear, timespans]);
   return (
     <Container>
       <JellySelector
@@ -67,7 +65,6 @@ const TimespanSelector = ({
         renderItem={TimespanItem}
         renderRow={TimespanItemRow}
         scaleTo={1.2}
-        showSpans={showSpans}
         width="100%"
       />
     </Container>

@@ -67,13 +67,9 @@ export default function ChartExpandedState({ asset }) {
   const color = useColorForAsset(asset);
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
 
-  const {
-    chart,
-    chartType,
-    fetchingCharts,
-    showSpans,
-    ...chartData
-  } = useChartData(asset);
+  const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
+    asset
+  );
 
   const points = useMemo(
     () => bSpline(chart)(chartType === ChartTypes.hour ? 100 : 160),
@@ -125,7 +121,6 @@ export default function ChartExpandedState({ asset }) {
         fetchingCharts={fetchingCharts}
         points={throttledPoints}
         showChart={showChart}
-        showSpans={showSpans}
       />
       <SheetDivider />
       <TokenInfoSection>
