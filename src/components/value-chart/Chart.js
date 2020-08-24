@@ -40,7 +40,7 @@ const Container = styled(Column)`
 const InnerDot = styled.View`
   width: 10px;
   height: 10px;
-  border-radius: 6px;
+  border-radius: 5px;
   background-color: ${({ color }) => color};
   shadow-color: ${({ color }) => color};
   shadow-offset: 0 3px;

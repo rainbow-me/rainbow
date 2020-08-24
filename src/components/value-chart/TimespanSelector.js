@@ -13,7 +13,7 @@ const Container = styled(Centered)`
 
 const TimespanItemLabel = styled(Text).attrs(({ color, isSelected }) => ({
   align: 'center',
-  color: isSelected ? color : colors.grey,
+  color: isSelected ? color : colors.alpha(colors.blueGreyDark, 0.4),
   letterSpacing: 'roundedTighter',
   size: 'smedium',
   weight: 'bold',
@@ -22,7 +22,7 @@ const TimespanItemLabel = styled(Text).attrs(({ color, isSelected }) => ({
 `;
 
 const TimespanItemRow = styled(Row).attrs({
-  justify: 'space-between',
+  justify: 'space-around',
 })`
   ${padding(0, 30)};
 `;
