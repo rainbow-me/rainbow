@@ -348,6 +348,9 @@ export default function ChartProvider({
       if (lastValue.x === size.value.width) {
         // extrapolate the last points
         res[res.length - 1].x = lastValue.x + 20;
+        if (res.length > 2) {
+          res[res.length - 2].x = res[res.length - 2].x + 10;
+        }
       }
     }
 
