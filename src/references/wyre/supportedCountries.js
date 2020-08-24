@@ -1,119 +1,119 @@
 /* eslint-disable sort-keys */
 export const supportedCountries = {
   AU: {
-    emojiName: 'australia',
+    emojiName: 'flag_australia',
     name: 'Australia',
   },
   AT: {
-    emojiName: 'austria',
+    emojiName: 'flag_austria',
     name: 'Austria',
   },
   BE: {
-    emojiName: 'belgium',
+    emojiName: 'flag_belgium',
     name: 'Belgium',
   },
   CA: {
-    emojiName: 'canada',
+    emojiName: 'flag_canada',
     name: 'Canada',
   },
   CZ: {
-    emojiName: 'czech_republic',
+    emojiName: 'flag_czechia',
     name: 'Czech Republic',
   },
   DK: {
-    emojiName: 'denmark',
+    emojiName: 'flag_denmark',
     name: 'Denmark',
   },
   EE: {
-    emojiName: 'estonia',
+    emojiName: 'flag_estonia',
     name: 'Estonia',
   },
   FI: {
-    emojiName: 'finland',
+    emojiName: 'flag_finland',
     name: 'Finland',
   },
   FR: {
-    emojiName: 'fr',
+    emojiName: 'flag_france',
     name: 'France',
   },
   DE: {
-    emojiName: 'de',
+    emojiName: 'flag_germany',
     name: 'Germany',
   },
   GR: {
-    emojiName: 'greece',
+    emojiName: 'flag_greece',
     name: 'Greece',
   },
   HK: {
-    emojiName: 'hong_kong',
+    emojiName: 'flag_hong_kong_sar_china',
     name: 'Hong Kong',
   },
   IE: {
-    emojiName: 'ireland',
+    emojiName: 'flag_ireland',
     name: 'Ireland',
   },
   IT: {
-    emojiName: 'it',
+    emojiName: 'flag_italy',
     name: 'Italy',
   },
   LV: {
-    emojiName: 'latvia',
+    emojiName: 'flag_latvia',
     name: 'Latvia',
   },
   LT: {
-    emojiName: 'lithuania',
+    emojiName: 'flag_lithuania',
     name: 'Lithuania',
   },
   LU: {
-    emojiName: 'luxembourg',
+    emojiName: 'flag_luxembourg',
     name: 'Luxembourg',
   },
   MX: {
-    emojiName: 'mexico',
+    emojiName: 'flag_mexico',
     name: 'Mexico',
   },
   NL: {
-    emojiName: 'netherlands',
+    emojiName: 'flag_netherlands',
     name: 'The Netherlands',
   },
   NZ: {
-    emojiName: 'new_zealand',
+    emojiName: 'flag_new_zealand',
     name: 'New Zealand',
   },
   NO: {
-    emojiName: 'norway',
+    emojiName: 'flag_norway',
     name: 'Norway',
   },
   PL: {
-    emojiName: 'poland',
+    emojiName: 'flag_poland',
     name: 'Poland',
   },
   PT: {
-    emojiName: 'portugal',
+    emojiName: 'flag_portugal',
     name: 'Portugal',
   },
   SK: {
-    emojiName: 'slovakia',
+    emojiName: 'flag_slovakia',
     name: 'Slovakia',
   },
   SI: {
-    emojiName: 'slovenia',
+    emojiName: 'flag_slovenia',
     name: 'Slovenia',
   },
   ES: {
-    emojiName: 'es',
+    emojiName: 'flag_spain',
     name: 'Spain',
   },
   SE: {
-    emojiName: 'sweden',
+    emojiName: 'flag_sweden',
     name: 'Sweden',
   },
   CH: {
-    emojiName: 'switzerland',
+    emojiName: 'flag_switzerland',
     name: 'Switzerland',
   },
   US: {
-    emojiName: 'us',
+    emojiName: 'flag_united_states',
     name: 'United States',
   },
 };

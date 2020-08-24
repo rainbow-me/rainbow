@@ -2,7 +2,15 @@ import React from 'react';
 import FloatingEmojis from './FloatingEmojis';
 import FloatingEmojisTapHandler from './FloatingEmojisTapHandler';
 
-const emojis = ['soon', 'soon', 'soon', 'soon', 'unicorn', 'soon', 'rainbow'];
+const emojis = [
+  'soon_arrow',
+  'soon_arrow',
+  'soon_arrow',
+  'soon_arrow',
+  'unicorn',
+  'soon_arrow',
+  'rainbow',
+];
 
 export default function ComingSoonFloatingEmojis(props) {
   return (

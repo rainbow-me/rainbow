@@ -22,7 +22,7 @@ const FloatingFavoriteEmojis = styled(FloatingEmojis).attrs({
   disableVerticalMovement: true,
   distance: 70,
   duration: 400,
-  emojis: ['star2'],
+  emojis: ['glowing_star'],
   fadeOut: false,
   marginTop: 11,
   range: [0, 0],
