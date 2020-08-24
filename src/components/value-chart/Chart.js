@@ -86,6 +86,7 @@ export default function ChartWrapper({
   showChart,
   showMonth,
   showYear,
+  showSpans,
   ...props
 }) {
   const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [
@@ -168,6 +169,7 @@ export default function ChartWrapper({
           defaultIndex={timespanIndex}
           reloadChart={updateChartType}
           showMonth={showMonth}
+          showSpans={showSpans}
           showYear={showYear}
           timespans={ChartTimespans}
         />

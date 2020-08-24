@@ -142,6 +142,10 @@ export const daysFromTheFirstTx = address => {
   return new Promise(async resolve => {
     try {
       const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&tag=oldest&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
+      if (address === 'eth') {
+        resolve(1000);
+        return;
+      }
       const response = await fetch(url);
       const parsedResponse = await response.json();
       const txTime = parsedResponse.result[0].timeStamp;

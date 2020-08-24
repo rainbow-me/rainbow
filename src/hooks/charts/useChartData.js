@@ -62,7 +62,7 @@ function useWasNotFetchingDataForTheLast5Seconds(isFetchingData) {
 }
 
 export default function useChartData(asset) {
-  const [daysFromFirstTx, setDaysFromFirstTx] = useState(1000);
+  const [daysFromFirstTx, setDaysFromFirstTx] = useState(-1);
   const dispatch = useDispatch();
   const { address, price: priceObject, exchangeAddress } = useAsset(asset);
 
@@ -91,12 +91,13 @@ export default function useChartData(asset) {
 
   useEffect(() => {
     async function fetchDays() {
-      setDaysFromFirstTx(await daysFromTheFirstTx(exchangeAddress));
+      const days = await daysFromTheFirstTx(asset.address);
+      setDaysFromFirstTx(days);
     }
-    if (exchangeAddress) {
+    if (asset.address) {
       fetchDays();
     }
-  }, [exchangeAddress]);
+  }, [asset]);
 
   useEffect(() => {
     if (
@@ -144,6 +145,7 @@ export default function useChartData(asset) {
     chartType,
     fetchingCharts,
     showMonth: daysFromFirstTx > 7,
+    showSpans: daysFromFirstTx !== -1,
     showYear: daysFromFirstTx > 30,
     updateChartType,
   };

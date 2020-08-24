@@ -46,6 +46,7 @@ const JellySelector = ({
   renderItem,
   renderRow,
   scaleTo,
+  showSpans,
   ...props
 }) => {
   const [selected, setSelected] = useState(defaultIndex);
@@ -101,14 +102,16 @@ const JellySelector = ({
 
   return (
     <View {...props}>
-      <JellySelectorIndicator
-        backgroundColor={backgroundColor}
-        height={height}
-        renderIndicator={renderIndicator}
-        translateX={translateX}
-        width={width}
-      />
-      <JellySelectorRow renderRow={renderRow}>
+      {showSpans ? (
+        <JellySelectorIndicator
+          backgroundColor={backgroundColor}
+          height={height}
+          renderIndicator={renderIndicator}
+          translateX={translateX}
+          width={width}
+        />
+      ) : null}
+      <JellySelectorRow height={height} renderRow={renderRow}>
         {items.map((item, index) => (
           <JellySelectorItem
             color={color}
