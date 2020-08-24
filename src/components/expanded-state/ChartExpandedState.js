@@ -71,12 +71,6 @@ export default function ChartExpandedState({ asset }) {
     asset
   );
 
-  useEffect(() => {
-    if (!fetchingCharts) {
-      setIsFetchingInitially(false);
-    }
-  }, [fetchingCharts]);
-
   const points = useMemo(
     () => bSpline(chart)(chartType === ChartTypes.hour ? 100 : 160),
     [chart, chartType]
@@ -96,6 +90,12 @@ export default function ChartExpandedState({ asset }) {
     color,
     points: throttledPoints,
   });
+
+  useEffect(() => {
+    if (!fetchingCharts) {
+      setIsFetchingInitially(false);
+    }
+  }, [fetchingCharts]);
 
   // Only show the chart if we have chart data, or if chart data is still loading
   const showChart =
