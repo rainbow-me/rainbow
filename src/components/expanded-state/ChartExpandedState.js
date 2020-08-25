@@ -66,6 +66,7 @@ export default function ChartExpandedState({ asset }) {
   const { params } = useRoute();
   const color = useColorForAsset(asset);
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
+  const [throttledPoints, setThrottledPoints] = useState([]);
 
   const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
     asset
@@ -79,10 +80,11 @@ export default function ChartExpandedState({ asset }) {
     [chart, chartType]
   );
 
-  const throttledPoints = useMemo(
-    () => (!points || points.length === 0 ? throttledPoints : points),
-    [points]
-  );
+  useEffect(() => {
+    setThrottledPoints(prev =>
+      !points || points.length === 0 ? prev : points
+    );
+  }, [points]);
 
   const initialChartDataLabels = useChartDataLabels({
     asset,
@@ -100,7 +102,7 @@ export default function ChartExpandedState({ asset }) {
   // Only show the chart if we have chart data, or if chart data is still loading
   const showChart =
     chartExpandedAvailable &&
-    (!!chart || (fetchingCharts && !isFetchingInitially));
+    (throttledPoints.length !== 0 || (fetchingCharts && !isFetchingInitially));
   useJumpingForm(showChart);
 
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
@@ -119,7 +121,7 @@ export default function ChartExpandedState({ asset }) {
         chartType={chartType}
         color={color}
         fetchingCharts={fetchingCharts}
-        points={throttledPoints}
+        points={points}
         showChart={showChart}
       />
       <SheetDivider />
