@@ -30,7 +30,7 @@ const DefaultTransactionConfirmationSection = ({
           size="lmedium"
           uppercase
         >
-          {value}
+          {value} ETH
         </Text>
       </TransactionRow>
     )}
