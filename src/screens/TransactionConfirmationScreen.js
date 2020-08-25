@@ -29,7 +29,7 @@ import {
 } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
-import { ethereumUtils, gasUtils } from '../utils';
+import { gasUtils } from '../utils';
 import {
   isMessageDisplayType,
   isSignFirstParamType,
@@ -246,9 +246,7 @@ const TransactionConfirmationScreen = () => {
         dispatch(updateTransactionCountNonce(maxTxnCount + 1));
         const txDetails = {
           amount: get(displayDetails, 'request.value'),
-          // Assume it's an ETH transaction
-          // Once it confirmed, zerion will show the data
-          asset: ethereumUtils.getAsset(allAssets),
+          asset: get(displayDetails, 'request.asset'),
           dappName,
           from: get(displayDetails, 'request.from'),
           gasLimit,
