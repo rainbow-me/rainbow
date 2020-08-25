@@ -43,7 +43,7 @@ import monitorNetwork from './debugging/network';
 import handleDeeplink from './handlers/deeplinks';
 import {
   runKeychainIntegrityChecks,
-  setupIncomingNotificationListeners,
+  runWalletBackupStatusChecks,
 } from './handlers/walletReadyEvents';
 import DevContextWrapper from './helpers/DevContext';
 import { withAccountSettings, withAppState } from './hoc';
@@ -140,7 +140,7 @@ class App extends Component {
       logger.sentry('✅ Wallet ready!');
       runKeychainIntegrityChecks();
       if (Platform.OS === 'ios') {
-        this.incomingNotificationListener = setupIncomingNotificationListeners();
+        runWalletBackupStatusChecks();
       }
     }
   }
@@ -148,7 +148,6 @@ class App extends Component {
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
     this.onTokenRefreshListener();
-    this.incomingNotificationListener?.removeAllListeners();
     this.foregroundNotificationListener();
     this.backgroundNotificationListener();
     this.branchListener();
