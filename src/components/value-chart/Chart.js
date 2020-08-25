@@ -137,6 +137,7 @@ export default function ChartWrapper({
             <>
               <Labels color={color} width={WIDTH} />
               <ChartPath
+                disableSmoothingWhileTransitioning
                 fill="none"
                 gestureEnabled={!fetchingCharts && !!throttledData}
                 height={HEIGHT}
