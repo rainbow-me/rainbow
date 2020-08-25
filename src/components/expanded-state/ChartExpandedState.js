@@ -100,9 +100,15 @@ export default function ChartExpandedState({ asset }) {
   }, [fetchingCharts]);
 
   // Only show the chart if we have chart data, or if chart data is still loading
-  const showChart =
-    chartExpandedAvailable &&
-    (throttledPoints.length !== 0 || (fetchingCharts && !isFetchingInitially));
+  const showChart = useMemo(
+    () =>
+      chartExpandedAvailable &&
+      (points.length !== 0 ||
+        throttledPoints.length !== 0 ||
+        (fetchingCharts && !isFetchingInitially)),
+    [fetchingCharts, isFetchingInitially, points, throttledPoints.length]
+  );
+
   useJumpingForm(showChart);
 
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
