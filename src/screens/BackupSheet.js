@@ -54,7 +54,7 @@ const BackupSheet = () => {
   const { params } = useRoute();
   const dispatch = useDispatch();
   const { selectedWallet, isWalletLoading, wallets } = useWallets();
-  const backupeableWalletsCount = wallets.filter(
+  const backupableWalletsCount = wallets.filter(
     wallet => wallet.type !== WalletTypes.readOnly
   ).length;
   const walletCloudBackup = useWalletCloudBackup();
@@ -188,8 +188,9 @@ const BackupSheet = () => {
             onSecondaryAction={onAlreadyBackedUp}
             primaryLabel="Back up now"
             secondaryLabel="􀁣 Already backed up"
-            titleText={`Back up your wallet${backupeableWalletsCount > 1 &&
-              's'}`}
+            titleText={`Back up your wallet${
+              backupableWalletsCount > 1 ? 's' : ''
+            }`}
             type="Existing User"
           />
         );
@@ -228,7 +229,7 @@ const BackupSheet = () => {
     }
   }, [
     missingPassword,
-    backupeableWalletsCount,
+    backupableWalletsCount,
     onAlreadyBackedUp,
     onBackupNow,
     onIcloudBackup,
