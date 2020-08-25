@@ -143,7 +143,7 @@ export default function ChartExpandedState({ asset }) {
           )}
         </TokenInfoRow>
       </TokenInfoSection>
-      <SheetActionButtonRow>
+      <SheetActionButtonRow key={`row${showChart}`}>
         {showSwapButton && (
           <SwapActionButton color={color} inputType={AssetInputTypes.in} />
         )}
