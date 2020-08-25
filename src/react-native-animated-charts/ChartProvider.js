@@ -7,9 +7,15 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { haptics } from '../utils';
 import ChartContext from './ChartContext';
 import useReactiveSharedValue from './useReactiveSharedValue';
+
+// eslint-disable-next-line import/no-commonjs
+const ReactNativeHapticFeedback = require('react-native-haptic-feedback');
+
+function impactHeavy() {
+  ReactNativeHapticFeedback?.default?.trigger?.('impactHeavy');
+}
 
 const android = Platform.OS === 'android';
 
@@ -76,6 +82,7 @@ export default function ChartProvider({
   data: rawData,
   children,
   softMargin = 30,
+  enableHaptics = false,
 }) {
   const prevData = useSharedValue([]);
   const currData = useSharedValue([]);
@@ -89,6 +96,7 @@ export default function ChartProvider({
   const nativeY = useSharedValue('');
   const pathOpacity = useSharedValue(1);
   const softMarginValue = useReactiveSharedValue(softMargin);
+  const enableHapticsValue = useReactiveSharedValue(enableHaptics);
   const size = useSharedValue(0);
   const state = useSharedValue(0);
   const [extremes, setExtremes] = useState({});
@@ -220,7 +228,10 @@ export default function ChartProvider({
       } else {
         pathOpacity.value = withTiming(1, timingConfig);
       }
-      haptics.impactHeavy();
+
+      if (enableHapticsValue.value) {
+        impactHeavy();
+      }
     },
     onFail: event => {
       state.value = event.state;
@@ -271,8 +282,9 @@ export default function ChartProvider({
         positionY.value = currData.value[idx].y * size.value.height;
         pathOpacity.value = withTiming(0, timingConfig);
       }
-
-      haptics.impactHeavy();
+      if (enableHapticsValue.value) {
+        impactHeavy();
+      }
     },
   });
 

@@ -125,7 +125,7 @@ export default function ChartWrapper({
 
   return (
     <Container>
-      <ChartProvider data={throttledData}>
+      <ChartProvider data={throttledData} enableHaptics>
         <ChartExpandedStateHeader
           {...props}
           chartTimeSharedValue={chartTimeSharedValue}
