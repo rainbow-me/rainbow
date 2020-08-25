@@ -1,6 +1,7 @@
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { Linking, Platform } from 'react-native';
+import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
@@ -8,33 +9,32 @@ import showWalletErrorAlert from '../helpers/support';
 import { useWallets } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { magicMemo } from '../utils';
-import Divider from './Divider';
 import { Button } from './buttons';
-import { Centered } from './layout';
+import { Icon } from './icons';
+import { Centered, Row } from './layout';
 import { Text } from './text';
 import Routes from '@rainbow-me/routes';
-import { colors, margin, padding } from '@rainbow-me/styles';
+import { colors, padding, position } from '@rainbow-me/styles';
 
-const ButtonContainerHeight = 193;
+const ButtonContainerHeight = 400;
 const ButtonContainerWidth = 250;
-
-const InterstitialMargin = 19;
 
 const ButtonContainer = styled(Centered).attrs({ direction: 'column' })`
   width: ${ButtonContainerWidth};
 `;
 
 const InterstitialButton = styled(Button)`
-  ${padding(12, 16, 16)};
-  shadow-color: ${colors.dark};
-  shadow-offset: 0px 4px;
-  shadow-opacity: 0.25;
-  shadow-radius: 6;
+  ${padding(10.5, 15, 14.5)};
 `;
 
-const DividerContainer = styled(Centered)`
-  ${margin(InterstitialMargin, 0)}
-  width: 93;
+const CopyAddressButton = styled(Button)`
+  ${padding(10.5, 15, 14.5)};
+  border-radius: 28px;
+`;
+
+const AmountBPA = styled(Button)`
+  ${padding(0, 0, 0)};
+  border-radius: 25px;
 `;
 
 const Container = styled(Centered)`
@@ -46,16 +46,43 @@ const Container = styled(Centered)`
 const Paragraph = styled(Text).attrs({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.3),
-  lineHeight: Platform.OS === 'android' ? 'loose' : 'paragraphSmall',
+  lineHeight: Platform.OS === 'android' ? 'loose' : 'looser',
   size: 'lmedium',
 })`
-  margin-top: ${InterstitialMargin};
+  margin-top: 19;
+  margin-bottom: 24;
 `;
+
+const Title = styled(Text).attrs({
+  align: 'center',
+  letterSpacing: 'roundedMedium',
+  lineHeight: 36,
+  size: 'h3',
+  weight: 'bold',
+})``;
+
+const AmountText = styled(Text).attrs({
+  align: 'center',
+  letterSpacing: 'roundedMedium',
+  lineHeight: 36,
+  size: 'h3',
+  weight: '800',
+})`
+  ${padding(24, 14, 25)};
+  text-shadow: 0px 0px 20px ${({ color }) => color};
+  align-self: center;
+  z-index: 1;
+`;
+
+const AmountButtonWrapper = styled(Row).attrs({
+  marginLeft: 7.5,
+  marginRight: 7.5,
+})``;
 
 const buildInterstitialTransform = offsetY => ({
   transform: [
     { translateX: (ButtonContainerWidth / 2) * -1 },
-    { translateY: (ButtonContainerHeight / 2) * -1 + 25 + offsetY },
+    { translateY: (ButtonContainerHeight / 2) * -1 + offsetY * 1.1 },
   ],
 });
 
@@ -64,11 +91,54 @@ const onAddFromFaucet = network => {
   Linking.openURL(faucetUrl);
 };
 
+const shadows = {
+  [colors.swapPurple]: [
+    [0, 10, 30, colors.swapPurple, 0.4],
+    [0, 5, 15, colors.dark, 0.2],
+  ],
+  [colors.purpleDark]: [
+    [0, 10, 30, colors.purpleDark, 0.4],
+    [0, 5, 15, colors.dark, 0.2],
+  ],
+};
+
+const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
+  return (
+    <AmountButtonWrapper>
+      <AmountBPA backgroundColor={backgroundColor} onPress={onPress}>
+        <ShadowStack
+          {...position.coverAsObject}
+          backgroundColor={backgroundColor}
+          borderRadius={25}
+          shadows={shadows[backgroundColor]}
+        />
+        <AmountText color={color} textShadowColor={color}>
+          ${amount}
+        </AmountText>
+      </AmountBPA>
+    </AmountButtonWrapper>
+  );
+};
+
 const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
   const { navigate } = useNavigation();
   const { selectedWallet } = useWallets();
 
-  const handlePressAddFunds = useCallback(() => {
+  const openAddCash = useCallback(
+    amount => {
+      if (selectedWallet?.damaged) {
+        showWalletErrorAlert();
+        return;
+      }
+      navigate(Routes.ADD_CASH_FLOW, {
+        params: { amount },
+        screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
+      });
+    },
+    [navigate, selectedWallet]
+  );
+
+  const handlePressCopyAddress = useCallback(() => {
     if (selectedWallet?.damaged) {
       showWalletErrorAlert();
       return;
@@ -76,34 +146,59 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
     navigate(Routes.RECEIVE_MODAL);
   }, [navigate, selectedWallet]);
 
-  const handlePressImportWallet = useCallback(
-    () => navigate(Routes.IMPORT_SEED_PHRASE_FLOW),
-    [navigate]
-  );
+  const handlePressAmount = {
+    0: () => openAddCash(0),
+    50: () => openAddCash(50),
+    // eslint-disable-next-line sort-keys
+    100: () => openAddCash(100),
+    250: () => openAddCash(250),
+  };
 
   return (
     <Container style={buildInterstitialTransform(offsetY)}>
       <ButtonContainer>
-        <InterstitialButton
-          backgroundColor={colors.appleBlue}
-          onPress={handlePressAddFunds}
-        >
-          Add Funds
-        </InterstitialButton>
-        <DividerContainer>
-          <Divider inset={false} />
-        </DividerContainer>
         {network === networkTypes.mainnet ? (
           <Fragment>
-            <InterstitialButton
-              backgroundColor={colors.paleBlue}
-              onPress={handlePressImportWallet}
-            >
-              Import My Wallet
-            </InterstitialButton>
+            <Title>To get started, buy some ETH with Apple Pay</Title>
+            <Row justify="space-between" marginBottom={30} marginTop={30}>
+              <AmountButton
+                amount={50}
+                backgroundColor={colors.swapPurple}
+                color={colors.neonSkyblue}
+                onPress={handlePressAmount[0]}
+              />
+              <AmountButton
+                amount={100}
+                backgroundColor={colors.swapPurple}
+                color={colors.neonSkyblue}
+                onPress={handlePressAmount[100]}
+              />
+              <AmountButton
+                amount={250}
+                backgroundColor={colors.purpleDark}
+                color={colors.pink}
+                onPress={handlePressAmount[250]}
+              />
+            </Row>
+            <Row marginBottom={86}>
+              <InterstitialButton
+                backgroundColor={colors.clearGrey}
+                onPress={handlePressAmount[0]}
+              >
+                <Text
+                  color={colors.blueGreyDark60}
+                  lineHeight="loose"
+                  size="large"
+                  weight="bold"
+                >
+                  􀍡{` `} Other amount
+                </Text>
+              </InterstitialButton>
+            </Row>
+            <Title>or send ETH to your wallet</Title>
+
             <Paragraph>
-              If you already have an Ethereum wallet, you can securely import it
-              with a seed phrase or private key.
+              Send from Coinbase or another exchange- or ask a friend!
             </Paragraph>
           </Fragment>
         ) : (
@@ -120,6 +215,21 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
             </Paragraph>
           </Fragment>
         )}
+        <CopyAddressButton
+          backgroundColor={colors.clearBlue}
+          color={colors.appleBlue}
+          onPress={handlePressCopyAddress}
+        >
+          <Icon color={colors.appleBlue} name="copy" size={18} />
+          <Text
+            color={colors.appleBlue}
+            lineHeight="loose"
+            size="large"
+            weight="bold"
+          >
+            {` `}Copy address
+          </Text>
+        </CopyAddressButton>
       </ButtonContainer>
     </Container>
   );
