@@ -47,7 +47,7 @@ function setNativeXYAccordingToPosition(nativeX, nativeY, position, data) {
   'worklet';
   let idx = 0;
   for (let i = 0; i < data.value.length; i++) {
-    if (data.value[i].x > position) {
+    if (data.value[i].x >= position) {
       idx = i;
       break;
     }
