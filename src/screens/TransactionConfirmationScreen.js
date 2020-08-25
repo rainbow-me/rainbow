@@ -19,7 +19,7 @@ import {
 } from '../components/transaction';
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
 import { convertHexToString } from '../helpers/utilities';
-import { useAccountAssets, useGas, useTransactionConfirmation } from '../hooks';
+import { useGas, useTransactionConfirmation } from '../hooks';
 import {
   sendTransaction,
   signMessage,
@@ -68,7 +68,6 @@ const TransactionType = styled(Text).attrs({ size: 'h5' })`
 const TransactionConfirmationScreen = () => {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const calculatingGasLimit = useRef(false);
-  const { allAssets } = useAccountAssets();
 
   const {
     gasLimit,
@@ -109,8 +108,9 @@ const TransactionConfirmationScreen = () => {
 
   const request = displayDetails.request;
 
+  const openAutomatically = routeParams?.openAutomatically;
+
   useEffect(() => {
-    const openAutomatically = routeParams?.openAutomatically;
     if (openAutomatically && !isEmulatorSync()) {
       Vibration.vibrate();
     }
@@ -118,7 +118,7 @@ const TransactionConfirmationScreen = () => {
     InteractionManager.runAfterInteractions(() => {
       startPollingGasPrices();
     });
-  }, [routeParams.openAutomatically, startPollingGasPrices]);
+  }, [openAutomatically, startPollingGasPrices]);
 
   const closeScreen = useCallback(
     canceled => {
@@ -167,36 +167,37 @@ const TransactionConfirmationScreen = () => {
     walletConnectSendStatus,
   ]);
 
+  const calculateGasLimit = useCallback(async () => {
+    calculatingGasLimit.current = true;
+    const txPayload = get(params, '[0]');
+    // use the default
+    let gas = txPayload.gasLimit || txPayload.gas;
+    try {
+      // attempt to re-run estimation
+      const rawGasLimit = await estimateGas(txPayload);
+      logger.log('Estimated gas limit', rawGasLimit);
+      if (rawGasLimit) {
+        gas = toHex(rawGasLimit);
+      }
+    } catch (error) {
+      logger.log('error estimating gas', error);
+    }
+    logger.log('Setting gas limit to', convertHexToString(gas));
+    if (gas !== gasLimit) {
+      // Wait until the gas prices are populated
+      setTimeout(() => {
+        updateTxFee(gas);
+      }, 1000);
+    }
+  }, [gasLimit, params, updateTxFee]);
+
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      const calculateGasLimit = async () => {
-        calculatingGasLimit.current = true;
-        const txPayload = get(params, '[0]');
-        // use the default
-        let gas = txPayload.gasLimit || txPayload.gas;
-        try {
-          // attempt to re-run estimation
-          const rawGasLimit = await estimateGas(txPayload);
-          logger.log('Estimated gas limit', rawGasLimit);
-          if (rawGasLimit) {
-            gas = toHex(rawGasLimit);
-          }
-        } catch (error) {
-          logger.log('error estimating gas', error);
-        }
-        logger.log('Setting gas limit to', convertHexToString(gas));
-        if (gas !== gasLimit) {
-          // Wait until the gas prices are populated
-          setTimeout(() => {
-            updateTxFee(gas);
-          }, 1000);
-        }
-      };
-      !isEmpty(gasPrices) &&
-        !calculatingGasLimit.current &&
+    if (!isEmpty(gasPrices) && !calculatingGasLimit.current) {
+      InteractionManager.runAfterInteractions(() => {
         calculateGasLimit();
-    });
-  }, [gasLimit, gasPrices, params, updateTxFee]);
+      });
+    }
+  }, [calculateGasLimit, gasLimit, gasPrices, params, updateTxFee]);
 
   const handleConfirmTransaction = useCallback(async () => {
     const sendInsteadOfSign = method === SEND_TRANSACTION;
@@ -268,7 +269,6 @@ const TransactionConfirmationScreen = () => {
       await onCancel();
     }
   }, [
-    allAssets,
     callback,
     closeScreen,
     dappName,
