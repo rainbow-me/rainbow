@@ -13,7 +13,6 @@ import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { ACCESSIBLE } from 'react-native-keychain';
-import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import {
   addHexPrefix,
   isHexString,
@@ -22,7 +21,6 @@ import {
   toChecksumAddress,
   web3Provider,
 } from '../handlers/web3';
-import BackupStateTypes from '../helpers/backupStateTypes';
 import showWalletErrorAlert from '../helpers/support';
 import { EthereumWalletType } from '../helpers/walletTypes';
 import { ethereumUtils } from '../utils';
@@ -164,7 +162,7 @@ const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
 const authenticationPrompt = lang.t('wallet.authenticate.please');
-const publicAccessControlOptions = {
+export const publicAccessControlOptions = {
   accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
 };
 
@@ -672,9 +670,6 @@ export const createWallet = async (
       type,
     };
 
-    if (!isImported) {
-      await saveUserBackupState(BackupStateTypes.ready);
-    }
     await setSelectedWallet(allWallets[id]);
     logger.sentry('[createWallet] - setSelectedWallet');
 

@@ -13,9 +13,7 @@ import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { isCloudBackupPasswordValid } from '../../handlers/cloudBackup';
-import { saveUserBackupState } from '../../handlers/localstorage/globalSettings';
 import { removeWalletData } from '../../handlers/localstorage/removeWallet';
-import BackupStateTypes from '../../helpers/backupStateTypes';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import WalletLoadingStates from '../../helpers/walletLoadingStates';
 import { useAccountSettings, useWallets } from '../../hooks';
@@ -203,8 +201,6 @@ const RestoreIcloudStep = ({ userData }) => {
       if (success) {
         // Store it in the keychain in case it was missing
         await saveBackupPassword(password);
-        // Set backup state
-        await saveUserBackupState(BackupStateTypes.done);
         // Get rid of the current wallet
         await removeWalletData(accountAddress);
         goBack();

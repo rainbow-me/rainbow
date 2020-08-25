@@ -2,16 +2,12 @@ import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { filter, flatMap, get, keys, map, values } from 'lodash';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
-import {
-  saveKeychainIntegrityState,
-  saveUserBackupState,
-} from '../handlers/localstorage/globalSettings';
+import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import {
   getWalletNames,
   saveWalletNames,
 } from '../handlers/localstorage/walletNames';
 import { web3Provider } from '../handlers/web3';
-import BackupStateTypes from '../helpers/backupStateTypes';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import { hasKey } from '../model/keychain';
@@ -168,7 +164,6 @@ export const setWalletBackedUp = (
       throw e;
     }
   }
-  await saveUserBackupState(BackupStateTypes.done);
 };
 
 export const addressSetSelected = address => () => saveAddress(address);
