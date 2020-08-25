@@ -20,7 +20,6 @@ import {
   ListItemDivider,
 } from '../list';
 import { Emoji } from '../text';
-
 import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
 import LanguageIcon from '@rainbow-me/assets/settingsLanguage.png';
