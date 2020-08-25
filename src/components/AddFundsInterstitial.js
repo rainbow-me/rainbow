@@ -58,7 +58,7 @@ const Title = styled(Text).attrs({
   letterSpacing: 'roundedMedium',
   lineHeight: 36,
   size: 'h3',
-  weight: 'bold',
+  weight: '800',
 })``;
 
 const AmountText = styled(Text).attrs({
@@ -82,7 +82,7 @@ const AmountButtonWrapper = styled(Row).attrs({
 const buildInterstitialTransform = offsetY => ({
   transform: [
     { translateX: (ButtonContainerWidth / 2) * -1 },
-    { translateY: (ButtonContainerHeight / 2) * -1 + offsetY * 1.1 },
+    { translateY: (ButtonContainerHeight / 2) * -1 + offsetY * 1.15 },
   ],
 });
 
@@ -165,7 +165,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
                 amount={50}
                 backgroundColor={colors.swapPurple}
                 color={colors.neonSkyblue}
-                onPress={handlePressAmount[0]}
+                onPress={handlePressAmount[50]}
               />
               <AmountButton
                 amount={100}
@@ -203,15 +203,29 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
           </Fragment>
         ) : (
           <Fragment>
-            <InterstitialButton
-              backgroundColor={colors.paleBlue}
-              onPress={() => onAddFromFaucet(network)}
-            >
-              Add from Faucet
-            </InterstitialButton>
-            <Paragraph>
-              You can request test ETH through the{' '}
+            <Title>
+              To get started, request test ETH through the{' '}
               {get(networkInfo[network], 'name')} faucet.
+            </Title>
+            <Row marginBottom={86} marginTop={30}>
+              <InterstitialButton
+                backgroundColor={colors.clearGrey}
+                onPress={() => onAddFromFaucet(network)}
+              >
+                <Text
+                  color={colors.blueGreyDark60}
+                  lineHeight="loose"
+                  size="large"
+                  weight="bold"
+                >
+                  Add from faucet
+                </Text>
+              </InterstitialButton>
+            </Row>
+            <Title>or send ETH to your wallet</Title>
+
+            <Paragraph>
+              Send it from another wallet or another exchange- or ask a friend!
             </Paragraph>
           </Fragment>
         )}
