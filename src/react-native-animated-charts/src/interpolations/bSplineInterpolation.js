@@ -173,12 +173,12 @@ class BSpline {
   }
 }
 
-export default function bSplineInterpolation(data) {
+export default function bSplineInterpolation(data, degree = 3) {
   if (!data || data.length === 0) {
     return () => [];
   }
   const parsed = data.map(({ x, y }) => [x, y]);
-  const spline = new BSpline(parsed, 3, true);
+  const spline = new BSpline(parsed, degree, true);
 
   return t => {
     const res = [];

@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+// eslint-disable-next-line import/no-unresolved
 import Animated from 'react-native-reanimated';
 import ChartContext from './ChartContext';
 import withReanimatedFallback from './withReanimatedFallback';

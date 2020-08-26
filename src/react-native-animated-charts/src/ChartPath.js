@@ -3,6 +3,7 @@ import { LongPressGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
+  // eslint-disable-next-line import/no-unresolved
 } from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
 import ChartContext from './ChartContext';

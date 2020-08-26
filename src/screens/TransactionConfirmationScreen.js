@@ -108,7 +108,7 @@ const TransactionConfirmationScreen = () => {
     InteractionManager.runAfterInteractions(() => {
       startPollingGasPrices();
     });
-  }, [routeParams?.openAutomatically, startPollingGasPrices]);
+  }, [routeParams.openAutomatically, startPollingGasPrices]);
 
   const closeScreen = useCallback(
     canceled => {

@@ -6,15 +6,15 @@ import {
   useSharedValue,
   withSpring,
   withTiming,
+  // eslint-disable-next-line import/no-unresolved
 } from 'react-native-reanimated';
 import ChartContext from './ChartContext';
 import useReactiveSharedValue from './useReactiveSharedValue';
 
-// eslint-disable-next-line import/no-commonjs
-const ReactNativeHapticFeedback = require('react-native-haptic-feedback');
-
 function impactHeavy() {
-  ReactNativeHapticFeedback?.default?.trigger?.('impactHeavy');
+  // eslint-disable-next-line import/no-extraneous-dependencies
+  const ReactNativeHapticFeedback = require('react-native-haptic-feedback');
+  ReactNativeHapticFeedback.default.trigger('impactHeavy');
 }
 
 const android = Platform.OS === 'android';

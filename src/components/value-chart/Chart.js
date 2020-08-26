@@ -10,7 +10,6 @@ import Labels from './ExtremeLabels';
 import TimespanSelector from './TimespanSelector';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { colors, position } from '@rainbow-me/styles';
-
 import {
   ChartDot,
   ChartPath,
