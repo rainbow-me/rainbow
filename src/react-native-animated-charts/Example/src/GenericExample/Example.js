@@ -442,9 +442,11 @@ function GenericExample() {
               style={{
                 color: smoothingStrategy === 'simple' ? 'lightgreen' : 'white',
               }}>
-              Simple (Quadratic bezier)
+              Simple (Quadratic bezier with fixed points)
             </Text>
           </TouchableOpacity>
+        </View>
+        <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
           <TouchableOpacity onPress={() => setSmoothingStrategy('complex')}>
             <Text
               style={{
@@ -453,8 +455,16 @@ function GenericExample() {
               Complex (Cubic bezier)
             </Text>
           </TouchableOpacity>
+          <TouchableOpacity onPress={() => setSmoothingStrategy('bezier')}>
+            <Text
+              style={{
+                color: smoothingStrategy === 'bezier' ? 'lightgreen' : 'white',
+              }}>
+              Bezier
+            </Text>
+          </TouchableOpacity>
         </View>
-        {smoothingStrategy !== 'none' ? (
+        {smoothingStrategy !== 'none' && smoothingStrategy !== 'bezier' ? (
           <>
             <Text style={{color: 'white', fontStyle: 'italic'}}>
               Smoothing factor:

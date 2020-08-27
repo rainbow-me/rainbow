@@ -99,7 +99,7 @@ export default function ChartWrapper({
 
   useEffect(() => {
     if (points && !fetchingCharts) {
-      setThrottledData({ points, smoothing: 0.1, strategy: 'simple' });
+      setThrottledData({ points, strategy: 'bezier' });
     }
   }, [fetchingCharts, points, setThrottledData]);
 
