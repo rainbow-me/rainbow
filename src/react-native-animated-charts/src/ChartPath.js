@@ -33,12 +33,15 @@ function ChartPath({
     onLongPressGestureEvent,
     prevData,
     currData,
+    data,
     prevSmoothing,
     currSmoothing,
     pathOpacity,
     progress,
     size: layoutSize,
   } = useContext(ChartContext);
+
+  const smoothingStrategy = useReactiveSharedValue(data.strategy);
 
   useEffect(() => {
     layoutSize.value = { height, width };
@@ -49,7 +52,7 @@ function ChartPath({
     let toValue = currData.value;
     let res;
     let smoothing = 0;
-    let strategy = currData.stategy;
+    let strategy = smoothingStrategy.value;
     if (progress.value !== 1) {
       const numOfPoints = Math.round(
         fromValue.length +
@@ -128,7 +131,12 @@ function ChartPath({
       }
     }
 
-    if (smoothing !== 0) {
+    if (
+      smoothing !== 0 ||
+      (strategy === 'bezier' &&
+        (!disableSmoothingWhileTransitioningValue.value ||
+          progress.value === 1))
+    ) {
       return svgBezierPath(res, smoothing, strategy);
     }
 

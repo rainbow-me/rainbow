@@ -44,9 +44,14 @@ export const svgBezierPath = (points, smoothing, strategy = 'complex') => {
       } else if (strategy === 'complex') {
         return `${acc} C ${cpsX},${cpsY} ${cpeX},${cpeY} ${point[0]},${point[1]}`;
       } else if (strategy === 'bezier') {
-        const [x0, y0] = a[i - 2] || a[i - 1];
-        const [x1, y1] = a[i - 1];
-        const [x, y] = point;
+        const p0 = a[i - 2] || a[i - 1];
+        const x0 = p0[0];
+        const y0 = p0[1];
+        const p1 = a[i - 1];
+        const x1 = p1[0];
+        const y1 = p1[1];
+        const x = point[0];
+        const y = point[1];
         const cp1x = (2 * x0 + x1) / 3;
         const cp1y = (2 * y0 + y1) / 3;
         const cp2x = (x0 + 2 * x1) / 3;
