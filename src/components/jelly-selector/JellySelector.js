@@ -50,6 +50,7 @@ const JellySelector = ({
 }) => {
   const [selected, setSelected] = useState(defaultIndex);
   const [translateX, width] = useValues(0, 0);
+  const [selectorVisible, setSelectorVisible] = useState(false);
 
   useEffect(() => {
     resetPositionCalculations();
@@ -76,6 +77,7 @@ const JellySelector = ({
     (event, index) => {
       const itemWidth = get(event, 'nativeEvent.layout.width', 0);
       const itemX = get(event, 'nativeEvent.layout.x', 0);
+      setSelectorVisible(true);
 
       positions[index] = Math.floor(itemX) - Math.floor(itemWidth / 2);
       widths[index] = Math.floor(itemWidth);
@@ -101,13 +103,15 @@ const JellySelector = ({
 
   return (
     <View {...props}>
-      <JellySelectorIndicator
-        backgroundColor={backgroundColor}
-        height={height}
-        renderIndicator={renderIndicator}
-        translateX={translateX}
-        width={width}
-      />
+      {selectorVisible ? (
+        <JellySelectorIndicator
+          backgroundColor={backgroundColor}
+          height={height}
+          renderIndicator={renderIndicator}
+          translateX={translateX}
+          width={width}
+        />
+      ) : null}
       <JellySelectorRow height={height} renderRow={renderRow}>
         {items.map((item, index) => (
           <JellySelectorItem
