@@ -2,8 +2,8 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { get, isNil, omit } from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import { get, isEmpty, isNil, omit } from 'lodash';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, InteractionManager, Vibration } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,6 +18,7 @@ import {
   TransactionConfirmationSection,
 } from '../components/transaction';
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
+import { convertHexToString } from '../helpers/utilities';
 import { useGas, useTransactionConfirmation } from '../hooks';
 import {
   sendTransaction,
@@ -29,7 +30,6 @@ import {
 import { useNavigation } from '../navigation/Navigation';
 import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
 import { gasUtils } from '../utils';
-
 import {
   isMessageDisplayType,
   isSignFirstParamType,
@@ -67,8 +67,17 @@ const TransactionType = styled(Text).attrs({ size: 'h5' })`
 
 const TransactionConfirmationScreen = () => {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
+  const calculatingGasLimit = useRef(false);
 
-  const { gasPrices, startPollingGasPrices, stopPollingGasPrices } = useGas();
+  const {
+    gasLimit,
+    gasPrices,
+    isSufficientGas,
+    startPollingGasPrices,
+    stopPollingGasPrices,
+    updateTxFee,
+  } = useGas();
+
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
   const { goBack } = useNavigation();
@@ -99,8 +108,9 @@ const TransactionConfirmationScreen = () => {
 
   const request = displayDetails.request;
 
+  const openAutomatically = routeParams?.openAutomatically;
+
   useEffect(() => {
-    const openAutomatically = routeParams?.openAutomatically;
     if (openAutomatically && !isEmulatorSync()) {
       Vibration.vibrate();
     }
@@ -108,7 +118,7 @@ const TransactionConfirmationScreen = () => {
     InteractionManager.runAfterInteractions(() => {
       startPollingGasPrices();
     });
-  }, [routeParams?.openAutomatically, startPollingGasPrices]);
+  }, [openAutomatically, startPollingGasPrices]);
 
   const closeScreen = useCallback(
     canceled => {
@@ -157,16 +167,46 @@ const TransactionConfirmationScreen = () => {
     walletConnectSendStatus,
   ]);
 
+  const calculateGasLimit = useCallback(async () => {
+    calculatingGasLimit.current = true;
+    const txPayload = get(params, '[0]');
+    // use the default
+    let gas = txPayload.gasLimit || txPayload.gas;
+    try {
+      // attempt to re-run estimation
+      const rawGasLimit = await estimateGas(txPayload);
+      logger.log('Estimated gas limit', rawGasLimit);
+      if (rawGasLimit) {
+        gas = toHex(rawGasLimit);
+      }
+    } catch (error) {
+      logger.log('error estimating gas', error);
+    }
+    logger.log('Setting gas limit to', convertHexToString(gas));
+    if (gas !== gasLimit) {
+      // Wait until the gas prices are populated
+      setTimeout(() => {
+        updateTxFee(gas);
+      }, 1000);
+    }
+  }, [gasLimit, params, updateTxFee]);
+
+  useEffect(() => {
+    if (!isEmpty(gasPrices) && !calculatingGasLimit.current) {
+      InteractionManager.runAfterInteractions(() => {
+        calculateGasLimit();
+      });
+    }
+  }, [calculateGasLimit, gasLimit, gasPrices, params, updateTxFee]);
+
   const handleConfirmTransaction = useCallback(async () => {
     const sendInsteadOfSign = method === SEND_TRANSACTION;
     const txPayload = get(params, '[0]');
     let { gas, gasLimit, gasPrice } = txPayload;
 
-    if (isNil(gasPrice)) {
-      const rawGasPrice = get(gasPrices, `${gasUtils.NORMAL}.value.amount`);
-      if (rawGasPrice) {
-        gasPrice = toHex(rawGasPrice);
-      }
+    const rawGasPrice = get(gasPrices, `${gasUtils.NORMAL}.value.amount`);
+    if (rawGasPrice) {
+      gasPrice = toHex(rawGasPrice);
     }
 
     if (isNil(gas) && isNil(gasLimit)) {
@@ -216,6 +256,7 @@ const TransactionConfirmationScreen = () => {
           nonce,
           to: get(displayDetails, 'request.to'),
         };
+
         dispatch(dataAddNewTransaction(txDetails));
       }
       analytics.track('Approved WalletConnect transaction request');
@@ -315,15 +356,20 @@ const TransactionConfirmationScreen = () => {
 
   const renderSendButton = useCallback(() => {
     const label = `Hold to ${method === SEND_TRANSACTION ? 'Send' : 'Sign'}`;
-
-    return (
+    return isSufficientGas === false ? (
+      <HoldToAuthorizeButton
+        disabled
+        hideBiometricIcon
+        label="Insufficient Funds"
+      />
+    ) : (
       <HoldToAuthorizeButton
         isAuthorizing={isAuthorizing}
         label={label}
         onLongPress={onLongPressSend}
       />
     );
-  }, [isAuthorizing, method, onLongPressSend]);
+  }, [isAuthorizing, isSufficientGas, method, onLongPressSend]);
 
   const requestHeader = isMessageDisplayType(method)
     ? lang.t('wallet.message_signing.request')

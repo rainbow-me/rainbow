@@ -53,7 +53,8 @@ import { uniswapUpdateLiquidityTokens } from './uniswap';
 import logger from 'logger';
 
 let pendingTransactionsHandle = null;
-const TXN_WATCHER_MAX_TRIES = 5 * 60;
+const TXN_WATCHER_MAX_TRIES = 60;
+const TXN_WATCHER_POLL_INTERVAL = 5000; // 5 seconds
 
 // -- Constants --------------------------------------- //
 
@@ -547,7 +548,7 @@ const watchPendingTransactions = (
       dispatch(
         watchPendingTransactions(accountAddressToWatch, remainingTries - 1)
       );
-    }, 1000);
+    }, TXN_WATCHER_POLL_INTERVAL);
   }
 };
 
