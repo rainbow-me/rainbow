@@ -3,6 +3,9 @@ export default function simplifyData(
   pickRange = 10,
   includeExtremes = true
 ) {
+  if (!data) {
+    return [];
+  }
   let min = -1;
   let max = -1;
   if (includeExtremes) {
@@ -19,5 +22,12 @@ export default function simplifyData(
     }
   }
 
-  return data.filter((_, i) => i % pickRange === 0 || i === min || i === max);
+  return data.filter(
+    (_, i) =>
+      i % pickRange === 0 ||
+      i === min ||
+      i === max ||
+      i === 0 ||
+      i === data.length - 1
+  );
 }

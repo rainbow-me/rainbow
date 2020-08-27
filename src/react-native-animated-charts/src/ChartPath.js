@@ -115,7 +115,7 @@ function ChartPath({
     if (res.length !== 0) {
       const firstValue = res[0];
       const lastValue = res[res.length - 1];
-      if (firstValue.x === 0) {
+      if (firstValue.x === 0 && strategy !== 'bezier') {
         // extrapolate the first points
         res = [
           { x: res[0].x, y: res[0].y },
