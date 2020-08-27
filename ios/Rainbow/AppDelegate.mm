@@ -240,7 +240,9 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
   _bridge_reanimated = bridge;
-  _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:self];
+  _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
+                                                           delegate:self
+                                                          jsInvoker:bridge.jsCallInvoker];
  #if RCT_DEV
   [_turboModuleManager moduleForName:"RCTDevMenu"]; // <- add
  #endif
