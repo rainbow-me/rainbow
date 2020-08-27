@@ -194,7 +194,7 @@ const SettingsSection = ({
           onPress={onSendFeedback}
         />
         <ListItem
-          icon={<Emoji name="heart" />}
+          icon={<Emoji name="red_heart" />}
           label="Review Rainbow"
           onPress={onPressReview}
         />
