@@ -52,6 +52,9 @@ export default function useWalletCloudBackup() {
     }) => {
       const isAvailable = await isCloudBackupAvailable();
       if (!isAvailable) {
+        analytics.track('iCloud not enabled', {
+          category: 'backup',
+        });
         Alert.alert(
           'iCloud Not Enabled',
           `Looks like iCloud drive is not enabled on your device.
@@ -60,10 +63,18 @@ export default function useWalletCloudBackup() {
             {
               onPress: () => {
                 Linking.openURL('https://support.apple.com/en-us/HT204025');
+                analytics.track('View how to Enable iCloud', {
+                  category: 'backup',
+                });
               },
               text: 'Yes, Show me',
             },
             {
+              onPress: () => {
+                analytics.track('Ignore how to enable iCloud', {
+                  category: 'backup',
+                });
+              },
               style: 'cancel',
               text: 'No thanks',
             },

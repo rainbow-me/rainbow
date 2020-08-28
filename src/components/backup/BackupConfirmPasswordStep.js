@@ -1,5 +1,6 @@
 import { useNavigation, useNavigationState } from '@react-navigation/core';
 import { useRoute } from '@react-navigation/native';
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -141,6 +142,13 @@ const BackupConfirmPasswordStep = () => {
   const walletId = params?.walletId || selectedWallet.id;
   const { goBack } = useNavigation();
 
+  useEffect(() => {
+    analytics.track('Confirm Password Step', {
+      category: 'backup',
+      label: 'icloud',
+    });
+  }, []);
+
   const onPasswordFocus = useCallback(() => {
     setPasswordFocused(true);
   }, []);
@@ -185,6 +193,12 @@ const BackupConfirmPasswordStep = () => {
         Alert.alert(lang.t('icloud.backup_success'));
       }, 1000);
     }
+    // This means the user didn't have the password saved
+    // and at least an other wallet already backed up
+    analytics.track('Backup Complete via Confirm Step', {
+      category: 'backup',
+      label: 'icloud',
+    });
     goBack();
   }, [goBack, password, routes]);
 

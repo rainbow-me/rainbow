@@ -1,5 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useCallback, useMemo, useState } from 'react';
+import analytics from '@segment/analytics-react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -62,8 +63,19 @@ export default function BackupManualStep() {
 
   const onComplete = useCallback(async () => {
     await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.manual));
+    analytics.track('Backup Complete', {
+      category: 'backup',
+      label: 'manual',
+    });
     goBack();
   }, [dispatch, goBack, walletId]);
+
+  useEffect(() => {
+    analytics.track('Manual Backup Step', {
+      category: 'backup',
+      label: 'manual',
+    });
+  }, []);
 
   return (
     <Centered

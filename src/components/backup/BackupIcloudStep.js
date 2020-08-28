@@ -1,5 +1,6 @@
 import { useNavigation, useNavigationState } from '@react-navigation/core';
 import { useRoute } from '@react-navigation/native';
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -170,6 +171,10 @@ const BackupIcloudStep = () => {
     setTimeout(() => {
       passwordRef.current?.focus();
     }, 1);
+    analytics.track('Choose Password Step', {
+      category: 'backup',
+      label: 'icloud',
+    });
   }, []);
 
   const onPasswordFocus = useCallback(() => {
@@ -272,6 +277,12 @@ const BackupIcloudStep = () => {
         Alert.alert(lang.t('icloud.backup_success'));
       }, 1000);
     }
+    // This means the user set a new password
+    // and it was the first wallet backed up
+    analytics.track('Backup Complete', {
+      category: 'backup',
+      label: 'icloud',
+    });
     goBack();
   }, [goBack, password, routes]);
 
