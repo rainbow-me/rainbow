@@ -75,6 +75,7 @@ export default function ChartExpandedState({ asset }) {
     asset
   );
 
+  // we're hiding chart on closing to remove native crashes
   const [isHiding, setIsHiding] = useState(false);
 
   const { setOptions } = useNavigation();
