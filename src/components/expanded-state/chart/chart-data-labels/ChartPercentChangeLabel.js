@@ -46,10 +46,14 @@ export default function ChartPercentChangeLabel({ changeDirection }) {
   const lastValue = useSharedValue(data?.points?.[data.points.length - 1]?.y);
 
   const defaultValue =
-    Math.abs(
-      (data?.points?.[data.points.length - 1]?.y / data?.points?.[0]?.y) * 100 -
-        100
-    ).toFixed(2) + '%';
+    data.points.length === 0
+      ? ''
+      : Math.abs(
+          (data?.points?.[data.points.length - 1]?.y ??
+            0 / data?.points?.[0]?.y) *
+            100 -
+            100
+        ).toFixed(2) + '%';
 
   useEffect(() => {
     firstValue.value = data?.points?.[0]?.y || 0;
