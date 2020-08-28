@@ -10,6 +10,18 @@ const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 const USERDATA_FILE = 'UserData.json';
 const encryptor = new AesEncryptor();
 
+export const CLOUD_BACKUP_ERRORS = {
+  ERROR_DECRYPTING_DATA: 'Error decrypting data',
+  ERROR_GETTING_ENCRYPTED_DATA: 'Error getting encrypted data!',
+  GENERAL_ERROR: 'Backup failed',
+  INTEGRITY_CHECK_FAILED: 'Backup integrity check failed',
+  KEYCHAIN_ACCESS_ERROR: `Couldn't read items from keychain`,
+  NO_BACKUPS_FOUND: 'No backups found',
+  SPECIFIC_BACKUP_NOT_FOUND: 'No backup found with that name',
+  UKNOWN_ERROR: 'Unknown Error',
+  WALLET_BACKUP_STATUS_UPDATE_FAILED: 'Update wallet backup status failed',
+};
+
 // This is used for dev purposes only!
 export async function deleteAllBackups() {
   const backups = await RNCloudFs.listFiles({
@@ -51,7 +63,10 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
     });
 
     if (!exists) {
-      return false;
+      logger.sentry('Backup doesnt exist after completion');
+      const error = new Error(CLOUD_BACKUP_ERRORS.INTEGRITY_CHECK_FAILED);
+      captureException(error);
+      throw error;
     }
 
     await RNFS.unlink(path);
@@ -59,60 +74,60 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
   } catch (e) {
     logger.sentry('Error during encryptAndSaveDataToCloud');
     captureException(e);
-    return false;
+    throw new Error(CLOUD_BACKUP_ERRORS.GENERAL_ERROR);
   }
 }
 
 export async function getDataFromCloud(backupPassword, filename = null) {
-  try {
-    const backups = await RNCloudFs.listFiles({
-      scope: 'hidden',
-      targetPath: REMOTE_BACKUP_WALLET_DIR,
-    });
+  const backups = await RNCloudFs.listFiles({
+    scope: 'hidden',
+    targetPath: REMOTE_BACKUP_WALLET_DIR,
+  });
 
-    if (!backups || !backups.files || !backups.files.length) {
-      logger.sentry('No backups found');
-      return null;
-    }
-
-    let document;
-    if (filename) {
-      // .icloud are files that were not yet synced
-      document = backups.files.find(
-        file => file.name === filename || file.name === `.${filename}.icloud`
-      );
-      if (!document) {
-        logger.sentry('No backup found with that name!', filename);
-        captureException(new Error('No backup found with that name'));
-        return null;
-      }
-    } else {
-      const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
-      document = sortedBackups[0];
-    }
-    const encryptedData = await RNCloudFs.getIcloudDocument(filename);
-    if (encryptedData) {
-      logger.sentry('Got getICloudDocument ', filename);
-      const backedUpDataStringified = await encryptor.decrypt(
-        backupPassword,
-        encryptedData
-      );
-      if (backedUpDataStringified) {
-        const backedUpData = JSON.parse(backedUpDataStringified);
-        return backedUpData;
-      } else {
-        logger.sentry('We couldnt decrypt the data');
-        captureException(new Error('Error decrypting data!'));
-      }
-    }
-    logger.sentry('We couldnt get the encrypted data');
-    captureException(new Error('Error getting encrypted data!'));
-    return null;
-  } catch (e) {
-    logger.sentry('Error at getDataFromCloud');
-    captureException(e);
-    return null;
+  if (!backups || !backups.files || !backups.files.length) {
+    logger.sentry('No backups found');
+    const error = new Error(CLOUD_BACKUP_ERRORS.NO_BACKUPS_FOUND);
+    captureException(error);
+    throw error;
   }
+
+  let document;
+  if (filename) {
+    // .icloud are files that were not yet synced
+    document = backups.files.find(
+      file => file.name === filename || file.name === `.${filename}.icloud`
+    );
+    if (!document) {
+      logger.sentry('No backup found with that name!', filename);
+      const error = new Error(CLOUD_BACKUP_ERRORS.SPECIFIC_BACKUP_NOT_FOUND);
+      captureException(error);
+      throw error;
+    }
+  } else {
+    const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
+    document = sortedBackups[0];
+  }
+  const encryptedData = await RNCloudFs.getIcloudDocument(filename);
+  if (encryptedData) {
+    logger.sentry('Got getICloudDocument ', filename);
+    const backedUpDataStringified = await encryptor.decrypt(
+      backupPassword,
+      encryptedData
+    );
+    if (backedUpDataStringified) {
+      const backedUpData = JSON.parse(backedUpDataStringified);
+      return backedUpData;
+    } else {
+      logger.sentry('We couldnt decrypt the data');
+      const error = new Error(CLOUD_BACKUP_ERRORS.ERROR_DECRYPTING_DATA);
+      captureException(error);
+      throw error;
+    }
+  }
+  logger.sentry('We couldnt get the encrypted data');
+  const error = new Error(CLOUD_BACKUP_ERRORS.ERROR_GETTING_ENCRYPTED_DATA);
+  captureException(error);
+  throw error;
 }
 
 export async function backupUserDataIntoCloud(data) {
