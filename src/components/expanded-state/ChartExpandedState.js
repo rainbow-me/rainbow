@@ -1,12 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { find } from 'lodash';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import {
   useChartData,
   useChartDataLabels,
@@ -37,6 +31,23 @@ import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
 const heightWithChart = 606;
 const heightWithNoChart = 309;
+
+const traverseData = (prev, data) => {
+  if (!data || data.length === 0) {
+    return prev;
+  }
+  const filtered = data.filter(({ y }) => y);
+  if (
+    filtered[0].y === prev?.nativePoints[0]?.y &&
+    filtered[0].x === prev?.nativePoints[0]?.x
+  ) {
+    return prev;
+  }
+  return {
+    nativePoints: filtered,
+    points: simplifyData(filtered, 2),
+  };
+};
 
 function useJumpingForm(isLong) {
   const { setOptions } = useNavigation();
@@ -92,29 +103,12 @@ export default function ChartExpandedState({ asset }) {
     [setOptions, setIsHiding]
   );
 
-  const traverseData = useCallback((prev, data) => {
-    if (!data || data.length === 0) {
-      return prev;
-    }
-    const filtered = data.filter(({ y }) => y);
-    if (
-      filtered[0].y === prev?.nativePoints[0]?.y &&
-      filtered[0].x === prev?.nativePoints[0]?.x
-    ) {
-      return prev;
-    }
-    return {
-      nativePoints: filtered,
-      points: simplifyData(filtered, 5),
-    };
-  }, []);
-
   const [throttledPoints, setThrottledPoints] = useState(() =>
     traverseData(null, chart)
   );
   useEffect(() => {
     setThrottledPoints(prev => traverseData(prev, chart));
-  }, [chart, traverseData]);
+  }, [chart]);
 
   const initialChartDataLabels = useChartDataLabels({
     asset,
