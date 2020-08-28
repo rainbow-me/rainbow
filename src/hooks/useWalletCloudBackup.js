@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { isCloudBackupAvailable } from '../handlers/cloudBackup';
+import { delay } from '../helpers/utilities';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import walletLoadingStates from '../helpers/walletLoadingStates';
 import {
@@ -57,9 +58,17 @@ export default function useWalletCloudBackup() {
       }
 
       let fetchedPassword = password;
+      let wasPasswordFetched = false;
       if (latestBackup && !password) {
         // We have a backup but don't have the password, try fetching password
+        dispatch(setIsWalletLoading(walletLoadingStates.FETCHING_PASSWORD));
+        // We want to make it clear why are we requesting faceID twice
+        // So we delayed it to make sure the user can read before seeing the auth prompt
+        await delay(1500);
         fetchedPassword = await fetchBackupPassword();
+        dispatch(setIsWalletLoading(null));
+        await delay(300);
+        wasPasswordFetched = true;
       }
 
       // If we still can't get the password, handle password not found
@@ -69,6 +78,11 @@ export default function useWalletCloudBackup() {
       }
 
       dispatch(setIsWalletLoading(walletLoadingStates.BACKING_UP_WALLET));
+      // We want to make it clear why are we requesting faceID twice
+      // So we delayed it to make sure the user can read before seeing the auth prompt
+      if (wasPasswordFetched) {
+        await delay(1500);
+      }
 
       // We have the password and we need to add it to an existing backup
       logger.log('password fetched correctly');
