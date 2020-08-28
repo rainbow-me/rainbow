@@ -7,6 +7,7 @@ import {
   useColorForAsset,
   useUniswapAssetsInWallet,
 } from '../../hooks';
+import { nativeStackConfig } from '../../navigation/config';
 import {
   SendActionButton,
   SheetActionButtonRow,
@@ -74,6 +75,20 @@ export default function ChartExpandedState({ asset }) {
     asset
   );
 
+  const [isHiding, setIsHiding] = useState(false);
+
+  const { setOptions } = useNavigation();
+  useEffect(
+    () =>
+      setOptions({
+        onWillDismiss: () => {
+          nativeStackConfig.screenOptions.onWillDismiss();
+          setIsHiding(true);
+        },
+      }),
+    [setOptions, setIsHiding]
+  );
+
   useEffect(() => {
     setThrottledPoints(prev => {
       if (!chart || chart.length === 0) {
@@ -115,7 +130,12 @@ export default function ChartExpandedState({ asset }) {
       (throttledPoints.points.length !== 0 ||
         throttledPoints.length !== 0 ||
         (fetchingCharts && !isFetchingInitially)),
-    [fetchingCharts, isFetchingInitially, throttledPoints]
+    [
+      fetchingCharts,
+      isFetchingInitially,
+      throttledPoints.length,
+      throttledPoints.points.length,
+    ]
   );
 
   useJumpingForm(showChart);
@@ -138,7 +158,7 @@ export default function ChartExpandedState({ asset }) {
         fetchingCharts={fetchingCharts}
         nativePoints={throttledPoints.nativePoints}
         points={throttledPoints.points}
-        showChart={showChart}
+        showChart={showChart && !isHiding}
       />
       <SheetDivider />
       <TokenInfoSection>
