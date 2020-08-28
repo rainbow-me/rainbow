@@ -1,6 +1,12 @@
 import { useRoute } from '@react-navigation/native';
 import { find } from 'lodash';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   useChartData,
   useChartDataLabels,
@@ -66,10 +72,6 @@ export default function ChartExpandedState({ asset }) {
   const { params } = useRoute();
   const color = useColorForAsset(asset);
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
-  const [throttledPoints, setThrottledPoints] = useState(() => ({
-    nativePoints: [],
-    points: [],
-  }));
 
   const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
     asset
@@ -90,32 +92,35 @@ export default function ChartExpandedState({ asset }) {
     [setOptions, setIsHiding]
   );
 
+  const traverseData = useCallback((prev, data) => {
+    if (!data || data.length === 0) {
+      return prev;
+    }
+    const filtered = data.filter(({ y }) => y);
+    if (
+      filtered[0].y === prev?.nativePoints[0]?.y &&
+      filtered[0].x === prev?.nativePoints[0]?.x
+    ) {
+      return prev;
+    }
+    return {
+      nativePoints: filtered,
+      points: simplifyData(filtered, 5),
+    };
+  }, []);
+
+  const [throttledPoints, setThrottledPoints] = useState(() =>
+    traverseData(null, chart)
+  );
   useEffect(() => {
-    setThrottledPoints(prev => {
-      if (!chart || chart.length === 0) {
-        return prev;
-      }
-      const filtered = chart?.filter(({ y }) => y);
-      if (
-        filtered[0].y === prev.nativePoints[0]?.y &&
-        filtered[0].x === prev.nativePoints[0]?.x
-      ) {
-        return prev;
-      }
-      return !chart || chart.length === 0
-        ? prev
-        : {
-            nativePoints: filtered,
-            points: simplifyData(filtered, 5),
-          };
-    });
-  }, [chart]);
+    setThrottledPoints(prev => traverseData(prev, chart));
+  }, [chart, traverseData]);
 
   const initialChartDataLabels = useChartDataLabels({
     asset,
     chartType,
     color,
-    points: throttledPoints.points,
+    points: throttledPoints?.points ?? [],
   });
 
   useEffect(() => {
