@@ -1,4 +1,5 @@
-import React from 'react';
+import analytics from '@segment/analytics-react-native';
+import React, { useEffect } from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import BackupIcon from '../../assets/backupIcon.png';
@@ -44,7 +45,15 @@ const BackupSheetSection = ({
   onSecondaryAction,
   primaryLabel,
   secondaryLabel,
+  type,
 }) => {
+  useEffect(() => {
+    analytics.track('BackupSheet shown', {
+      category: 'backup',
+      label: type,
+    });
+  }, [type]);
+
   return (
     <Centered direction="column" paddingBottom={15}>
       <TopIcon />

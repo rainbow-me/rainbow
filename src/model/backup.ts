@@ -1,6 +1,7 @@
 import { captureException } from '@sentry/react-native';
 import { endsWith, forEach, map } from 'lodash';
 import {
+  Options,
   requestSharedWebCredentials,
   setSharedWebCredentials,
 } from 'react-native-keychain';
@@ -66,7 +67,7 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
 
     // Ignore other wallets PKeys
     if (
-      item.username.indexOf(privateKeyKey) !== -1 &&
+      item.username.indexOf(`_${privateKeyKey}`) !== -1 &&
       allowedPkeysKeys.indexOf(item.username) === -1
     ) {
       return;
@@ -177,7 +178,7 @@ async function restoreBackupIntoKeychain(
     await Promise.all(
       Object.keys(backedUpData).map(async key => {
         const value = backedUpData[key];
-        let accessControl = publicAccessControlOptions;
+        let accessControl: Options = publicAccessControlOptions;
         if (endsWith(key, seedPhraseKey) || endsWith(key, privateKeyKey)) {
           accessControl = privateAccessControlOptions;
         }

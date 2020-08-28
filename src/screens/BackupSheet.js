@@ -3,6 +3,7 @@ import {
   useNavigationState,
   useRoute,
 } from '@react-navigation/native';
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, {
   useCallback,
@@ -21,6 +22,7 @@ import BackupManualStep from '../components/backup/BackupManualStep';
 import LoadingOverlay from '../components/modal/LoadingOverlay';
 import { Sheet, SlackSheet } from '../components/sheet';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
+import WalletTypes from '../helpers/walletTypes';
 import { useWalletCloudBackup, useWallets } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/effects';
 import { usePortal } from '../react-native-cool-modals/Portal';
@@ -48,7 +50,10 @@ const BackupSheet = () => {
   const { navigate, setOptions, goBack, setParams } = useNavigation();
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
-  const { selectedWallet, isWalletLoading } = useWallets();
+  const { selectedWallet, isWalletLoading, wallets } = useWallets();
+  const backupableWalletsCount = wallets.filter(
+    wallet => wallet.type !== WalletTypes.readOnly
+  ).length;
   const walletCloudBackup = useWalletCloudBackup();
   const [step, setStep] = useState(params?.option || 'first');
   const walletId = params?.walletId || selectedWallet.id;
@@ -100,6 +105,12 @@ const BackupSheet = () => {
         Alert.alert(lang.t('icloud.backup_success'));
       }, 1000);
     }
+    // This means the user had the password saved
+    // and at least an other wallet already backed up
+    analytics.track('Backup Complete via BackupSheet', {
+      category: 'backup',
+      label: 'icloud',
+    });
   }, [goBack, routes]);
 
   const onError = useCallback(msg => {
@@ -176,7 +187,10 @@ const BackupSheet = () => {
             onSecondaryAction={onIgnoreBackup}
             primaryLabel="Back up now"
             secondaryLabel="Maybe later"
-            titleText="Back up your wallets"
+            titleText={`Back up your wallet${
+              backupableWalletsCount > 1 ? 's' : ''
+            }`}
+            type="Existing User"
           />
         );
       case 'imported':
@@ -188,6 +202,7 @@ const BackupSheet = () => {
             primaryLabel="􀙶 Back up to iCloud"
             secondaryLabel="No thanks"
             titleText="Would you like to back up?"
+            type="Imported Wallet"
           />
         );
       case WalletBackupTypes.cloud:
@@ -207,11 +222,13 @@ const BackupSheet = () => {
             primaryLabel="􀙶 Back up to iCloud"
             secondaryLabel="🤓 Back up manually"
             titleText="Back up your wallet"
+            type="Default"
           />
         );
     }
   }, [
     missingPassword,
+    backupableWalletsCount,
     onBackupNow,
     onIcloudBackup,
     onIgnoreBackup,
