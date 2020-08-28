@@ -19,6 +19,7 @@ export default function JellySelectorItem({
 
   return (
     <ButtonPressAnimation
+      disabled={isSelected}
       enableHapticFeedback={enableHapticFeedback}
       key={index}
       onLayout={handleLayout}
