@@ -113,10 +113,17 @@ const BackupSheet = () => {
     });
   }, [goBack, routes]);
 
+  const onError = useCallback(msg => {
+    setTimeout(() => {
+      Alert.alert(msg);
+    }, 500);
+  }, []);
+
   const onIcloudBackup = useCallback(() => {
     walletCloudBackup({
       handleNoLatestBackup,
       handlePasswordNotFound,
+      onError,
       onSuccess,
       walletId,
     });
@@ -125,6 +132,7 @@ const BackupSheet = () => {
     walletId,
     handleNoLatestBackup,
     handlePasswordNotFound,
+    onError,
     onSuccess,
   ]);
 

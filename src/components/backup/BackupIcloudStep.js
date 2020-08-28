@@ -191,7 +191,7 @@ const BackupIcloudStep = () => {
   }, []);
 
   const onPasswordSubmit = useCallback(() => {
-    confirmPasswordRef.current.focus();
+    confirmPasswordRef.current?.focus();
   }, []);
 
   useEffect(() => {
@@ -208,7 +208,7 @@ const BackupIcloudStep = () => {
     } else if (
       password !== '' &&
       password.length < 8 &&
-      !passwordRef.current.isFocused()
+      !passwordRef.current?.isFocused()
     ) {
       newLabel = 'Use a longer password';
     } else if (
@@ -258,40 +258,42 @@ const BackupIcloudStep = () => {
     []
   );
 
+  const onError = useCallback(
+    msg => {
+      setTimeout(onPasswordSubmit, 1000);
+      dispatch(setIsWalletLoading(null));
+      setTimeout(() => {
+        Alert.alert(msg);
+      }, 500);
+    },
+    [dispatch, onPasswordSubmit]
+  );
+
+  const onSuccess = useCallback(async () => {
+    logger.log('BackupIcloudStep:: saving backup password');
+    await saveBackupPassword(password);
+    if (!routes.find(route => route.name === Routes.SETTINGS_MODAL)) {
+      setTimeout(() => {
+        Alert.alert(lang.t('icloud.backup_success'));
+      }, 1000);
+    }
+    // This means the user set a new password
+    // and it was the first wallet backed up
+    analytics.track('Backup Complete', {
+      category: 'backup',
+      label: 'icloud',
+    });
+    goBack();
+  }, [goBack, password, routes]);
+
   const onConfirmBackup = useCallback(async () => {
     await walletCloudBackup({
-      onError: () => {
-        setTimeout(onPasswordSubmit, 1000);
-        dispatch(setIsWalletLoading(null));
-      },
-      onSuccess: async () => {
-        logger.log('BackupIcloudStep:: saving backup password');
-        await saveBackupPassword(password);
-        if (!routes.find(route => route.name === Routes.SETTINGS_MODAL)) {
-          setTimeout(() => {
-            Alert.alert(lang.t('icloud.backup_success'));
-          }, 1000);
-        }
-        // This means the user set a new password
-        // and it was the first wallet backed up
-        analytics.track('Backup Complete', {
-          category: 'backup',
-          label: 'icloud',
-        });
-        goBack();
-      },
+      onError,
+      onSuccess,
       password,
       walletId,
     });
-  }, [
-    dispatch,
-    goBack,
-    onPasswordSubmit,
-    password,
-    routes,
-    walletCloudBackup,
-    walletId,
-  ]);
+  }, [onError, onSuccess, password, walletCloudBackup, walletId]);
 
   const onConfirmPasswordSubmit = useCallback(() => {
     validPassword && onConfirmBackup();
@@ -332,7 +334,7 @@ const BackupIcloudStep = () => {
               {isCloudBackupPasswordValid(password) && <GreenCheckmarkIcon />}
               {password !== '' &&
                 password.length < 8 &&
-                !passwordRef.current.isFocused() && <WarningIcon />}
+                !passwordRef.current?.isFocused() && <WarningIcon />}
             </Shadow>
             <Shadow>
               <PasswordInput
