@@ -67,7 +67,7 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
 
     // Ignore other wallets PKeys
     if (
-      item.username.indexOf(privateKeyKey) !== -1 &&
+      item.username.indexOf(`_${privateKeyKey}`) !== -1 &&
       allowedPkeysKeys.indexOf(item.username) === -1
     ) {
       return;
