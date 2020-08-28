@@ -29,7 +29,7 @@ import {
   saveAppStoreReviewCount,
 } from '@rainbow-me/handlers/localstorage/globalSettings';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
-import walletTypes from '@rainbow-me/helpers/walletTypes';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
   useAccountSettings,
   useDimensions,
@@ -91,18 +91,18 @@ const checkAllWallets = wallets => {
   let canBeBackedUp = false;
   let allBackedUp = true;
   Object.keys(wallets).forEach(key => {
-    if (!wallets[key].backedUp && wallets[key].type !== walletTypes.readOnly) {
+    if (!wallets[key].backedUp && wallets[key].type !== WalletTypes.readOnly) {
       allBackedUp = false;
     }
 
     if (
       !wallets[key].backedUp &&
-      wallets[key].type !== walletTypes.readOnly &&
+      wallets[key].type !== WalletTypes.readOnly &&
       !wallets[key].imported
     ) {
       areBackedUp = false;
     }
-    if (!wallets[key].type !== walletTypes.readOnly) {
+    if (!wallets[key].type !== WalletTypes.readOnly) {
       canBeBackedUp = true;
     }
   });

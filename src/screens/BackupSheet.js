@@ -13,7 +13,6 @@ import React, {
 } from 'react';
 import { Alert, InteractionManager, Platform } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { BackupSheetSection } from '../components/backup';
 import BackupConfirmPasswordStep from '../components/backup/BackupConfirmPasswordStep';
@@ -25,7 +24,6 @@ import WalletBackupTypes from '../helpers/walletBackupTypes';
 import { useWalletCloudBackup, useWallets } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/effects';
 import { usePortal } from '../react-native-cool-modals/Portal';
-import { setAllWalletsBackedUpManually } from '../redux/wallets';
 import { deviceUtils } from '../utils';
 
 import Routes from '@rainbow-me/routes';
@@ -50,7 +48,6 @@ const BackupSheet = () => {
   const { navigate, setOptions, goBack, setParams } = useNavigation();
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
-  const dispatch = useDispatch();
   const { selectedWallet, isWalletLoading } = useWallets();
   const walletCloudBackup = useWalletCloudBackup();
   const [step, setStep] = useState(params?.option || 'first');
@@ -135,12 +132,6 @@ const BackupSheet = () => {
     goBack();
   }, [goBack]);
 
-  const onAlreadyBackedUp = useCallback(async () => {
-    /// Flag all the wallets as backed up manually
-    await dispatch(setAllWalletsBackedUpManually());
-    goBack();
-  }, [dispatch, goBack]);
-
   const onBackupNow = useCallback(async () => {
     goBack();
     InteractionManager.runAfterInteractions(() => {
@@ -169,14 +160,14 @@ const BackupSheet = () => {
 
   const renderStep = useCallback(() => {
     switch (step) {
-      case 'existing_user':
+      case 'existingUser':
         return (
           <BackupSheetSection
-            descriptionText={`Don't risk your money! Back up your wallet in case you lose this device.`}
+            descriptionText="You have wallets that have not been backed up yet. Back them up in case you lose this device."
             onPrimaryAction={onBackupNow}
-            onSecondaryAction={onAlreadyBackedUp}
+            onSecondaryAction={onIgnoreBackup}
             primaryLabel="Back up now"
-            secondaryLabel="􀁣 Already backed up"
+            secondaryLabel="Maybe later"
             titleText="Back up your wallets"
           />
         );
@@ -213,7 +204,6 @@ const BackupSheet = () => {
     }
   }, [
     missingPassword,
-    onAlreadyBackedUp,
     onBackupNow,
     onIcloudBackup,
     onIgnoreBackup,
