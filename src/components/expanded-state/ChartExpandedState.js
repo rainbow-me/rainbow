@@ -104,7 +104,7 @@ export default function ChartExpandedState({ asset }) {
   );
 
   const [throttledPoints, setThrottledPoints] = useState(() =>
-    traverseData(null, chart)
+    traverseData({ nativePoints: [], points: [] }, chart)
   );
   useEffect(() => {
     setThrottledPoints(prev => traverseData(prev, chart));
@@ -127,15 +127,10 @@ export default function ChartExpandedState({ asset }) {
   const showChart = useMemo(
     () =>
       chartExpandedAvailable &&
-      (throttledPoints.points.length !== 0 ||
-        throttledPoints.length !== 0 ||
+      (throttledPoints?.points.length !== 0 ||
+        throttledPoints?.points.length !== 0 ||
         (fetchingCharts && !isFetchingInitially)),
-    [
-      fetchingCharts,
-      isFetchingInitially,
-      throttledPoints.length,
-      throttledPoints.points.length,
-    ]
+    [fetchingCharts, isFetchingInitially, throttledPoints]
   );
 
   useJumpingForm(showChart);
