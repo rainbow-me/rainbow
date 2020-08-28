@@ -1,6 +1,7 @@
 app_identifier("me.rainbow") # The bundle identifier of your app
 
-itc_team_id("1457119021") # App Store Connect Team ID
+itc_team_id("119997837") # App Store Connect Team ID
+
 team_id("L74NQAQB8H") # Developer Portal Team ID
 
 # For more information about the Appfile, see:

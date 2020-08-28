@@ -175,8 +175,9 @@ const getSelectedGasPrice = (
   const ethAsset = ethereumUtils.getAsset(assets);
   const balanceAmount = get(ethAsset, 'balance.amount', 0);
   const txFeeAmount = fromWei(get(txFee, 'txFee.value.amount', 0));
+  const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
   return {
-    isSufficientGas: greaterThanOrEqualTo(balanceAmount, txFeeAmount),
+    isSufficientGas,
     selectedGasPrice: {
       ...txFee,
       ...gasPrices[selectedGasPriceOption],
@@ -206,7 +207,7 @@ const INITIAL_STATE = {
   defaultGasLimit: ethUnits.basic_tx,
   gasLimit: null,
   gasPrices: {},
-  isSufficientGas: false,
+  isSufficientGas: undefined,
   selectedGasPrice: {},
   selectedGasPriceOption: gasUtils.NORMAL,
   txFees: {},

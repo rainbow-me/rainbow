@@ -1,15 +1,15 @@
 import { values } from 'lodash';
 import React from 'react';
 import styled from 'styled-components/primitives';
-import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
-import { useDimensions } from '../../hooks';
-import { supportedCountries } from '../../references/wyre';
-import { neverRerender } from '../../utils';
 import { FloatingEmojisTapper } from '../floating-emojis';
 import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { Centered } from '../layout';
 import { Text } from '../text';
+import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import { useDimensions } from '@rainbow-me/hooks';
+import { supportedCountries } from '@rainbow-me/references/wyre';
 import { colors, padding } from '@rainbow-me/styles';
+import { neverRerender } from '@rainbow-me/utils';
 
 const Panel = styled(FloatingPanels)`
   margin-bottom: ${({ deviceDimensions: { isTallPhone } }) =>

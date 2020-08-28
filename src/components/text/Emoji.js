@@ -1,24 +1,37 @@
-import nodeEmoji from 'node-emoji';
-import PropTypes from 'prop-types';
+import { isString } from 'lodash';
 import React from 'react';
 import Text from './Text';
-import { fonts } from '@rainbow-me/styles';
+import { emojis } from '@rainbow-me/references';
 
-const Emoji = ({ children, name, ...props }) => (
-  <Text {...props} isEmoji>
-    {children || nodeEmoji.get(name)}
-  </Text>
-);
+const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [
+  name,
+  emoji,
+]);
 
-Emoji.propTypes = {
-  lineHeight: PropTypes.oneOf(Object.keys(fonts.lineHeight)),
-  name: PropTypes.string,
-  size: PropTypes.oneOf(Object.keys(fonts.size)),
-};
+const emoji = new Map(emojiData);
 
-Emoji.defaultProps = {
-  lineHeight: 'none',
-  size: 'h4',
-};
+function normalizeName(name) {
+  if (/:.+:/.test(name)) {
+    name = name.slice(1, -1);
+  }
 
-export default React.memo(Emoji);
+  return name;
+}
+
+function getEmoji(name) {
+  return isString(name) ? emoji.get(normalizeName(name)) : null;
+}
+
+export default function Emoji({
+  children,
+  lineHeight = 'none',
+  name,
+  size = 'h4',
+  ...props
+}) {
+  return (
+    <Text {...props} isEmoji lineHeight={lineHeight} size={size}>
+      {children || getEmoji(name)}
+    </Text>
+  );
+}

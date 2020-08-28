@@ -8,7 +8,7 @@ import {
   encryptAndSaveDataToCloud,
   getDataFromCloud,
 } from '../handlers/cloudBackup';
-import walletBackupTypes from '../helpers/walletBackupTypes';
+import WalletBackupTypes from '../helpers/walletBackupTypes';
 import {
   allWalletsKey,
   privateKeyKey,
@@ -121,7 +121,7 @@ export function findLatestBackUp(wallets: AllRainbowWallets): string | null {
       wallet.backedUp &&
       wallet.backupDate &&
       wallet.backupFile &&
-      wallet.backupType === walletBackupTypes.cloud
+      wallet.backupType === WalletBackupTypes.cloud
     ) {
       // If there is one, let's grab the latest backup
       if (!latestBackup || wallet.backupDate > latestBackup) {
