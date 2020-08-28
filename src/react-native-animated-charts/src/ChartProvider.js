@@ -78,6 +78,26 @@ function positionXWithMargin(x, margin, width) {
   }
 }
 
+function getValue(data, i, smoothingStrategy) {
+  'worklet';
+  if (smoothingStrategy.value === 'bezier') {
+    const p0 = data.value[i - 2] || data.value[i - 1] || data.value[i];
+
+    const x0 = p0.x;
+    const y0 = p0.y;
+    const p1 = data.value[i - 1] || data.value[i];
+    const x1 = p1.x;
+    const y1 = p1.y;
+    const p = data.value[i];
+    const x = p.x;
+    const y = p.y;
+    const cp3x = (x0 + 4 * x1 + x) / 6;
+    const cp3y = (y0 + 4 * y1 + y) / 6;
+    return { x: cp3x, y: cp3y };
+  }
+  return data.value[i];
+}
+
 export default function ChartProvider({
   data: rawData,
   children,
@@ -86,6 +106,7 @@ export default function ChartProvider({
 }) {
   const prevData = useSharedValue([]);
   const currData = useSharedValue([]);
+  const currNativeData = useSharedValue([]);
   const prevSmoothing = useSharedValue(0);
   const currSmoothing = useSharedValue(0);
 
@@ -113,17 +134,21 @@ export default function ChartProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawData]);
 
+  const smoothingStrategy = useReactiveSharedValue(data.strategy);
+
   useEffect(() => {
     if (!data || !data.points || data.points.length === 0) {
       return;
     }
     const [parsedData, newExtremes] = parse(data.points);
+    const [parsedNativeData] = parse(data.nativePoints || data.points);
     setExtremes(newExtremes);
     if (prevData.value.length !== 0) {
       prevData.value = currData.value;
       prevSmoothing.value = currSmoothing.value;
       progress.value = 0;
       currData.value = parsedData;
+      currNativeData.value = parsedNativeData;
       currSmoothing.value = data.smoothing || 0;
       isAnimationInProgress.value = true;
       progress.value = withTiming(1, {}, () => {
@@ -138,6 +163,7 @@ export default function ChartProvider({
       currSmoothing.value = data.smoothing || 0;
       prevData.value = parsedData;
       currData.value = parsedData;
+      currNativeData.value = parsedNativeData;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -175,8 +201,9 @@ export default function ChartProvider({
       );
 
       let idx = 0;
+      let ss = smoothingStrategy;
       for (let i = 0; i < currData.value.length; i++) {
-        if (currData.value[i].x > eventX / size.value.width) {
+        if (getValue(currData, i, ss).x > eventX / size.value.width) {
           idx = i;
           break;
         }
@@ -186,14 +213,16 @@ export default function ChartProvider({
       }
 
       if (idx === 0) {
-        positionY.value = currData.value[idx].y * size.value.height;
+        positionY.value = getValue(currData, idx, ss).y * size.value.height;
       } else {
         // prev + diff over X
         positionY.value =
-          (currData.value[idx - 1].y +
-            (currData.value[idx].y - currData.value[idx - 1].y) *
-              ((eventX / size.value.width - currData.value[idx - 1].x) /
-                (currData.value[idx].x - currData.value[idx - 1].x))) *
+          (getValue(currData, idx - 1, ss).y +
+            (getValue(currData, idx, ss).y -
+              getValue(currData, idx - 1, ss).y) *
+              ((eventX / size.value.width - getValue(currData, idx - 1, ss).x) /
+                (getValue(currData, idx, ss).x -
+                  getValue(currData, idx - 1, ss).x))) *
           size.value.height;
       }
 
@@ -201,7 +230,7 @@ export default function ChartProvider({
         nativeX,
         nativeY,
         eventX / size.value.width,
-        currData
+        currNativeData
       );
       positionX.value = eventX;
     },
@@ -272,7 +301,7 @@ export default function ChartProvider({
         nativeX,
         nativeY,
         eventX / size.value.width,
-        currData
+        currNativeData
       );
       dotOpacity.value = withSpring(1, springConfig);
       dotScale.value = withSpring(1, springConfig);
@@ -313,6 +342,7 @@ export default function ChartProvider({
       prevSmoothing,
       progress,
       size,
+      smoothingStrategy,
       state,
     }),
     [
@@ -330,6 +360,7 @@ export default function ChartProvider({
       prevSmoothing,
       currSmoothing,
       progress,
+      smoothingStrategy,
     ]
   );
 

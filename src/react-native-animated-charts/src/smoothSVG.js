@@ -58,6 +58,9 @@ export const svgBezierPath = (points, smoothing, strategy = 'complex') => {
         const cp2y = (y0 + 2 * y1) / 3;
         const cp3x = (x0 + 4 * x1 + x) / 6;
         const cp3y = (y0 + 4 * y1 + y) / 6;
+        if (i === a.length - 1) {
+          return `${acc} C ${cp1x},${cp1y} ${cp2x},${cp2y} ${cp3x},${cp3y} C${x},${y} ${x},${y} ${x},${y}`;
+        }
         return `${acc} C ${cp1x},${cp1y} ${cp2x},${cp2y} ${cp3x},${cp3y}`;
       }
       return null;

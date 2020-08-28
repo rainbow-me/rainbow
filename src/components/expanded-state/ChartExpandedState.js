@@ -23,10 +23,9 @@ import {
 import Chart from '../value-chart/Chart';
 import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
-import ChartTypes from '@rainbow-me/helpers/chartTypes';
 
 import { useNavigation } from '@rainbow-me/navigation';
-import { default as bSpline } from 'react-native-animated-charts/interpolations/bSplineInterpolation';
+import { simplifyData } from 'react-native-animated-charts';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
 const heightWithChart = 606;
@@ -66,31 +65,41 @@ export default function ChartExpandedState({ asset }) {
   const { params } = useRoute();
   const color = useColorForAsset(asset);
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
-  const [throttledPoints, setThrottledPoints] = useState([]);
+  const [throttledPoints, setThrottledPoints] = useState(() => ({
+    nativePoints: [],
+    points: [],
+  }));
 
   const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
     asset
   );
 
-  const points = useMemo(
-    () =>
-      bSpline(chart?.filter(({ y }) => y))(
-        chartType === ChartTypes.hour ? 100 : 160
-      ),
-    [chart, chartType]
-  );
-
   useEffect(() => {
-    setThrottledPoints(prev =>
-      !points || points.length === 0 ? prev : points
-    );
-  }, [points]);
+    setThrottledPoints(prev => {
+      if (!chart || chart.length === 0) {
+        return prev;
+      }
+      const filtered = chart?.filter(({ y }) => y);
+      if (
+        filtered[0].y === prev.nativePoints[0]?.y &&
+        filtered[0].x === prev.nativePoints[0]?.x
+      ) {
+        return prev;
+      }
+      return !chart || chart.length === 0
+        ? prev
+        : {
+            nativePoints: filtered,
+            points: simplifyData(filtered, 5),
+          };
+    });
+  }, [chart]);
 
   const initialChartDataLabels = useChartDataLabels({
     asset,
     chartType,
     color,
-    points: throttledPoints,
+    points: throttledPoints.points,
   });
 
   useEffect(() => {
@@ -103,10 +112,10 @@ export default function ChartExpandedState({ asset }) {
   const showChart = useMemo(
     () =>
       chartExpandedAvailable &&
-      (points.length !== 0 ||
+      (throttledPoints.points.length !== 0 ||
         throttledPoints.length !== 0 ||
         (fetchingCharts && !isFetchingInitially)),
-    [fetchingCharts, isFetchingInitially, points, throttledPoints.length]
+    [fetchingCharts, isFetchingInitially, throttledPoints]
   );
 
   useJumpingForm(showChart);
@@ -127,7 +136,8 @@ export default function ChartExpandedState({ asset }) {
         chartType={chartType}
         color={color}
         fetchingCharts={fetchingCharts}
-        points={points}
+        nativePoints={throttledPoints.nativePoints}
+        points={throttledPoints.points}
         showChart={showChart}
       />
       <SheetDivider />

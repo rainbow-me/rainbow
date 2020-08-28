@@ -81,6 +81,7 @@ export default function ChartWrapper({
   color,
   fetchingCharts,
   points,
+  nativePoints,
   updateChartType,
   showChart,
   showMonth,
@@ -92,16 +93,16 @@ export default function ChartWrapper({
   ]);
 
   const [throttledData, setThrottledData] = useState({
+    nativePoints,
     points,
-    smoothing: 0.1,
-    strategy: 'simple',
+    strategy: 'bezier',
   });
 
   useEffect(() => {
     if (points && !fetchingCharts) {
-      setThrottledData({ points, strategy: 'bezier' });
+      setThrottledData({ nativePoints, points, strategy: 'bezier' });
     }
-  }, [fetchingCharts, points, setThrottledData]);
+  }, [nativePoints, fetchingCharts, points, setThrottledData]);
 
   const chartTimeSharedValue = useSharedValue('');
 
@@ -136,7 +137,6 @@ export default function ChartWrapper({
             <>
               <Labels color={color} width={WIDTH} />
               <ChartPath
-                disableSmoothingWhileTransitioning
                 fill="none"
                 gestureEnabled={!fetchingCharts && !!throttledData}
                 height={HEIGHT}

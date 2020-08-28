@@ -33,15 +33,13 @@ function ChartPath({
     onLongPressGestureEvent,
     prevData,
     currData,
-    data,
+    smoothingStrategy,
     prevSmoothing,
     currSmoothing,
     pathOpacity,
     progress,
     size: layoutSize,
   } = useContext(ChartContext);
-
-  const smoothingStrategy = useReactiveSharedValue(data.strategy);
 
   useEffect(() => {
     layoutSize.value = { height, width };
@@ -122,7 +120,7 @@ function ChartPath({
           { x: -res[4].x, y: res[0].y },
         ].concat(res);
       }
-      if (lastValue.x === layoutSize.value.width) {
+      if (lastValue.x === layoutSize.value.width && strategy !== 'bezier') {
         // extrapolate the last points
         res[res.length - 1].x = lastValue.x + 20;
         if (res.length > 2) {
