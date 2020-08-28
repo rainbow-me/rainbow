@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { Platform, View } from 'react-native';
+import { Alert, Platform, View } from 'react-native';
 import styled from 'styled-components';
 import WalletBackupTypes from '../../../helpers/walletBackupTypes';
 import WalletTypes from '../../../helpers/walletTypes';
@@ -128,6 +128,12 @@ const AlreadyBackedUpView = () => {
     });
   }, [walletId]);
 
+  const onError = useCallback(msg => {
+    setTimeout(() => {
+      Alert.alert(msg);
+    }, 500);
+  }, []);
+
   const onIcloudBackup = useCallback(() => {
     if (
       ![WalletBackupStatus.MANUAL_BACKUP, WalletBackupStatus.IMPORTED].includes(
@@ -139,6 +145,7 @@ const AlreadyBackedUpView = () => {
     walletCloudBackup({
       handleNoLatestBackup,
       handlePasswordNotFound,
+      onError,
       walletId,
     });
   }, [
@@ -146,6 +153,7 @@ const AlreadyBackedUpView = () => {
     walletId,
     handleNoLatestBackup,
     handlePasswordNotFound,
+    onError,
     walletStatus,
   ]);
 

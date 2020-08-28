@@ -1,8 +1,13 @@
+import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
+import { values } from 'lodash';
 import { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { isCloudBackupAvailable } from '../handlers/cloudBackup';
+import {
+  CLOUD_BACKUP_ERRORS,
+  isCloudBackupAvailable,
+} from '../handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import walletLoadingStates from '../helpers/walletLoadingStates';
 import {
@@ -13,6 +18,24 @@ import {
 import { setIsWalletLoading, setWalletBackedUp } from '../redux/wallets';
 import useWallets from './useWallets';
 import logger from 'logger';
+
+function getUserError(e) {
+  switch (e.message) {
+    case CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR:
+      return 'You need to authenticate to proceed with the Backup process';
+    case CLOUD_BACKUP_ERRORS.ERROR_DECRYPTING_DATA:
+      return 'Incorrect password! Please try again.';
+    case CLOUD_BACKUP_ERRORS.NO_BACKUPS_FOUND:
+    case CLOUD_BACKUP_ERRORS.SPECIFIC_BACKUP_NOT_FOUND:
+      return `We couldn't find your previous backup!`;
+    case CLOUD_BACKUP_ERRORS.ERROR_GETTING_ENCRYPTED_DATA:
+      return `We couldn't access your backup at this time. Please try again later.`;
+    default:
+      return `Error while trying to backup. Error code: ${values(
+        CLOUD_BACKUP_ERRORS
+      ).indexOf(e.message)}`;
+  }
+}
 
 export default function useWalletCloudBackup() {
   const dispatch = useDispatch();
@@ -90,35 +113,40 @@ export default function useWalletCloudBackup() {
           );
         }
       } catch (e) {
-        onError && onError();
+        const userError = getUserError(e);
+        onError && onError(userError);
         logger.sentry('error while trying to backup wallet to icloud');
         captureException(e);
-        setTimeout(() => {
-          Alert.alert('Error while trying to backup');
-        }, 500);
+        analytics.track('Error during iCloud Backup', {
+          category: 'backup',
+          error: userError,
+          label: 'icloud',
+        });
+        return null;
       }
 
       try {
-        if (updatedBackupFile) {
-          logger.log('backup completed!');
-          await dispatch(
-            setWalletBackedUp(
-              walletId,
-              WalletBackupTypes.cloud,
-              updatedBackupFile
-            )
-          );
-          logger.log('backup saved everywhere!');
-          onSuccess && onSuccess();
-        } else {
-          onError && onError();
-          setTimeout(() => {
-            Alert.alert('Error while trying to backup');
-          }, 500);
-        }
+        logger.log('backup completed!');
+        await dispatch(
+          setWalletBackedUp(
+            walletId,
+            WalletBackupTypes.cloud,
+            updatedBackupFile
+          )
+        );
+        logger.log('backup saved everywhere!');
+        onSuccess && onSuccess();
       } catch (e) {
         logger.sentry('error while trying to save wallet backup state');
         captureException(e);
+        const userError = getUserError(
+          new Error(CLOUD_BACKUP_ERRORS.WALLET_BACKUP_STATUS_UPDATE_FAILED)
+        );
+        onError && onError(userError);
+        analytics.track('Error updating Backup status', {
+          category: 'backup',
+          label: 'icloud',
+        });
       }
     },
     [dispatch, latestBackup, wallets]
