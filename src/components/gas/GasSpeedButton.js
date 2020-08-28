@@ -1,5 +1,5 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import React, { useCallback } from 'react';
 import { LayoutAnimation } from 'react-native';
 import styled from 'styled-components/primitives';
@@ -21,7 +21,6 @@ const Container = styled(Column).attrs({
 `;
 
 const Label = styled(Text).attrs({
-  color: colors.white,
   opacity: 0.5,
   size: 'smedium',
   weight: 'medium',
@@ -39,32 +38,22 @@ const getActionLabel = type => {
       return 'Deposits in';
     case ExchangeModalTypes.withdrawal:
       return 'Withdraws in';
+    case 'transaction':
+      return 'Confirms in';
     default:
       return 'Swaps in';
   }
 };
 
-const renderEstimatedTimeText = animatedNumber => (
-  <Label>{animatedNumber}</Label>
-);
-
-const renderGasPriceText = animatedNumber => (
-  <Text
-    color="white"
-    letterSpacing="roundedTight"
-    size="lmedium"
-    weight="semibold"
-  >
-    {animatedNumber}
-  </Text>
-);
-
 const GasSpeedButton = ({ type }) => {
   const { nativeCurrencySymbol } = useAccountSettings();
   const {
+    gasPrices,
+    isSufficientGas,
     updateGasPriceOption,
     selectedGasPrice,
     selectedGasPriceOption,
+    txFees,
   } = useGas();
 
   const estimatedTime = get(
@@ -72,6 +61,33 @@ const GasSpeedButton = ({ type }) => {
     'estimatedTime.display',
     ''
   ).split(' ');
+
+  const renderGasPriceText = useCallback(
+    animatedNumber => (
+      <Text
+        color={type === 'transaction' ? colors.black : colors.white}
+        letterSpacing="roundedTight"
+        size="lmedium"
+        weight="semibold"
+      >
+        {isEmpty(gasPrices) ||
+        isEmpty(txFees) ||
+        typeof isSufficientGas === 'undefined'
+          ? 'Loading...'
+          : animatedNumber}
+      </Text>
+    ),
+    [gasPrices, isSufficientGas, txFees, type]
+  );
+
+  const renderEstimatedTimeText = useCallback(
+    animatedNumber => (
+      <Label color={type === 'transaction' ? colors.darkGrey : colors.white}>
+        {animatedNumber}
+      </Label>
+    ),
+    [type]
+  );
 
   const gasPrice = get(selectedGasPrice, 'txFee.native.value.amount');
   const estimatedTimeUnit = estimatedTime[1] || 'min';
@@ -101,6 +117,10 @@ const GasSpeedButton = ({ type }) => {
     estimatedTime => {
       const actionLabel = getActionLabel(type);
       const time = parseFloat(estimatedTime || 0).toFixed(0);
+      // If it's still loading show `...`
+      if (time === '0' && estimatedTimeUnit === 'min') {
+        return `${actionLabel} ...`;
+      }
       return `${actionLabel} ~ ${time} ${estimatedTimeUnit}`;
     },
     [estimatedTimeUnit, type]
@@ -117,10 +137,15 @@ const GasSpeedButton = ({ type }) => {
           timing="linear"
           value={price}
         />
-        <GasSpeedLabelPager label={selectedGasPriceOption} />
+        <GasSpeedLabelPager
+          label={selectedGasPriceOption}
+          theme={type === 'transaction' ? 'light' : 'dark'}
+        />
       </Row>
       <Row align="center" justify="space-between">
-        <Label>Fee</Label>
+        <Label color={type === 'transaction' ? colors.darkGrey : colors.white}>
+          Network Fee
+        </Label>
         <AnimateNumber
           formatter={formatAnimatedEstimatedTime}
           interval={1}

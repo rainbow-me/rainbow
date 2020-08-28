@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Children, Fragment } from 'react';
 import styled from 'styled-components/primitives';
+import { GasSpeedButton } from '../../components/gas';
 import { safeAreaInsetValues } from '../../utils';
 import Divider from '../Divider';
 import { Column } from '../layout';
@@ -12,6 +13,10 @@ const Container = styled(Column).attrs({ justify: 'end' })`
   flex-grow: 0;
   padding-bottom: ${safeAreaInsetValues.bottom};
   width: 100%;
+`;
+const GasSpeedButtonContainer = styled(Column)`
+  justify-content: flex-start;
+  margin-bottom: 19px;
 `;
 
 const SendButtonContainer = styled(Column)`
@@ -28,7 +33,12 @@ const TransactionSheet = ({ children, sendButton, ...props }) => (
         {index < children.length - 1 && <Divider />}
       </Fragment>
     ))}
-    <SendButtonContainer>{sendButton}</SendButtonContainer>
+    <SendButtonContainer>
+      <GasSpeedButtonContainer>
+        <GasSpeedButton type="transaction" />
+      </GasSpeedButtonContainer>
+      {sendButton}
+    </SendButtonContainer>
   </Container>
 );
 
