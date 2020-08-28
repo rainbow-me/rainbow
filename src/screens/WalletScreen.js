@@ -21,6 +21,7 @@ import useExperimentalFlag, {
 import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import networkInfo from '../helpers/networkInfo';
 import {
+  useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
   useInitializeWallet,
@@ -56,6 +57,9 @@ export default function WalletScreen() {
   const { updateKeyboardHeight } = useKeyboardHeight();
   const scrollViewTracker = useValue(0);
   const { isWalletLoading, isReadOnlyWallet } = useWallets();
+  const { isEmpty } = useAccountEmptyState();
+  const { network } = useAccountSettings();
+  const { isWalletEthZero, sections } = useWalletSectionsData();
 
   useEffect(() => {
     if (!initialized) {
@@ -76,9 +80,6 @@ export default function WalletScreen() {
         .catch(() => {});
     }
   }, [initialized, updateKeyboardHeight]);
-
-  const { network } = useAccountSettings();
-  const { isEmpty, isWalletEthZero, sections } = useWalletSectionsData();
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
@@ -128,7 +129,7 @@ export default function WalletScreen() {
         </HeaderOpacityToggler>
         <AssetList
           fetchData={refreshAccountData}
-          isEmpty={isEmpty}
+          isEmpty={isEmpty || !!params?.emptyWallet}
           isWalletEthZero={isWalletEthZero}
           network={network}
           scrollViewTracker={scrollViewTracker}

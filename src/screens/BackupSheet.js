@@ -51,9 +51,10 @@ const BackupSheet = () => {
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
   const { selectedWallet, isWalletLoading, wallets } = useWallets();
-  const backupableWalletsCount = wallets.filter(
-    wallet => wallet.type !== WalletTypes.readOnly
-  ).length;
+  const backupableWalletsCount = Object.keys(wallets).filter(id => {
+    const wallet = wallets[id];
+    return wallet.type !== WalletTypes.readOnly;
+  }).length;
   const walletCloudBackup = useWalletCloudBackup();
   const [step, setStep] = useState(params?.option || 'first');
   const walletId = params?.walletId || selectedWallet.id;

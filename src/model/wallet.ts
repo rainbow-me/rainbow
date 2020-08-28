@@ -13,6 +13,7 @@ import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { ACCESSIBLE } from 'react-native-keychain';
+import { saveAccountEmptyState } from '../handlers/localstorage/accountLocal';
 import {
   addHexPrefix,
   isHexString,
@@ -175,7 +176,8 @@ export const walletInit = async (
   seedPhrase = null,
   color = null,
   name = null,
-  overwrite = false
+  overwrite = false,
+  network: string
 ): Promise<WalletInitialized> => {
   let walletAddress = null;
   let isNew = false;
@@ -192,6 +194,7 @@ export const walletInit = async (
     const wallet = await createWallet();
     walletAddress = wallet?.address;
     isNew = true;
+    await saveAccountEmptyState(true, walletAddress?.toLowerCase(), network);
   }
   return { isNew, walletAddress };
 };

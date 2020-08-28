@@ -62,7 +62,8 @@ export default function useInitializeWallet() {
           seedPhrase,
           color,
           name,
-          overwrite
+          overwrite,
+          network
         );
 
         logger.sentry('walletInit returned ', {
