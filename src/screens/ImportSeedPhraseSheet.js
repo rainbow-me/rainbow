@@ -18,9 +18,7 @@ import { Centered, Column, Row } from '../components/layout';
 import LoadingOverlay from '../components/modal/LoadingOverlay';
 import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
-import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
 import { web3Provider } from '../handlers/web3';
-import BackupStateTypes from '../helpers/backupStateTypes';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { isENSAddressFormat, isValidWallet } from '../helpers/validators';
 import walletLoadingStates from '../helpers/walletLoadingStates';
@@ -249,7 +247,6 @@ export default function ImportSeedPhraseSheet() {
               goBack();
               InteractionManager.runAfterInteractions(async () => {
                 if (previousWalletCount === 0) {
-                  await saveUserBackupState(BackupStateTypes.done);
                   replace(Routes.SWIPE_LAYOUT, {
                     params: { initialized: true },
                     screen: Routes.WALLET_SCREEN,

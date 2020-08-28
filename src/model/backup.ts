@@ -5,10 +5,11 @@ import {
   setSharedWebCredentials,
 } from 'react-native-keychain';
 import {
+  CLOUD_BACKUP_ERRORS,
   encryptAndSaveDataToCloud,
   getDataFromCloud,
 } from '../handlers/cloudBackup';
-import walletBackupTypes from '../helpers/walletBackupTypes';
+import WalletBackupTypes from '../helpers/walletBackupTypes';
 import {
   allWalletsKey,
   privateKeyKey,
@@ -36,7 +37,7 @@ interface BackupUserData {
 
 async function extractSecretsForWallet(wallet: RainbowWallet) {
   const allKeys = await keychain.loadAllKeys();
-  if (!allKeys) throw new Error("Couldn't read secrets from keychain");
+  if (!allKeys) throw new Error(CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR);
   const secrets = {} as { [key: string]: string };
 
   const allowedPkeysKeys = map(
@@ -96,7 +97,6 @@ export async function addWalletToCloudBackup(
   filename: string
 ): Promise<null | boolean> {
   const backup = await getDataFromCloud(password, filename);
-  if (!backup) return null;
 
   const now = Date.now();
 
@@ -121,7 +121,7 @@ export function findLatestBackUp(wallets: AllRainbowWallets): string | null {
       wallet.backedUp &&
       wallet.backupDate &&
       wallet.backupFile &&
-      wallet.backupType === walletBackupTypes.cloud
+      wallet.backupType === WalletBackupTypes.cloud
     ) {
       // If there is one, let's grab the latest backup
       if (!latestBackup || wallet.backupDate > latestBackup) {
