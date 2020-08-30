@@ -135,7 +135,7 @@ function ChartPath({
         (!disableSmoothingWhileTransitioningValue.value ||
           progress.value === 1))
     ) {
-      return svgBezierPath(res, smoothing, strategy, progress);
+      return svgBezierPath(res, smoothing, strategy);
     }
 
     return res
