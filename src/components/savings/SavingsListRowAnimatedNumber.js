@@ -76,7 +76,7 @@ const SavingsListRowAnimatedNumber = ({
       time={interval}
       value={Number(value)}
     >
-      {isRainbowTextAvailable ? '' : formatter(initialValue)}
+      {isRainbowTextAvailable ? null : formatter(initialValue)}
     </TextComponent>
   );
 };
