@@ -8,7 +8,6 @@ import {
   View,
 } from 'react-native';
 import bSplineInterpolation from '../../../src/interpolations/bSplineInterpolation';
-import {monotoneCubicInterpolation} from '../../../src/interpolations/monotoneCubicInterpolation';
 import {data1, data2} from './data';
 import {
   ChartDot,
@@ -16,6 +15,7 @@ import {
   ChartProvider,
   ChartXLabel,
   ChartYLabel,
+  monotoneCubicInterpolation,
   simplifyData,
 } from 'react-native-animated-charts';
 

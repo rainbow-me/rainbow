@@ -166,15 +166,7 @@ export default function ChartProvider({
       currNativeData.value = parsedNativeData;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    currData,
-    currSmoothing,
-    data,
-    isAnimationInProgress,
-    prevData,
-    prevSmoothing,
-    progress,
-  ]);
+  }, [data]);
   const positionX = useSharedValue(0);
   const positionY = useSharedValue(0);
 

@@ -1,4 +1,4 @@
-export function monotoneCubicInterpolation(data) {
+export default function monotoneCubicInterpolation(data) {
   if (!data || data.length === 0) {
     return () => [];
   }

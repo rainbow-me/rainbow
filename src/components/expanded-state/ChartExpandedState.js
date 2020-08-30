@@ -26,7 +26,7 @@ import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
 import { useNavigation } from '@rainbow-me/navigation';
-import { simplifyData } from 'react-native-animated-charts';
+import { monotoneCubicInterpolation } from 'react-native-animated-charts';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
 const heightWithChart = 606;
@@ -43,9 +43,10 @@ const traverseData = (prev, data) => {
   ) {
     return prev;
   }
+  const points = monotoneCubicInterpolation(filtered)(100);
   return {
     nativePoints: filtered,
-    points: simplifyData(filtered, 2),
+    points,
   };
 };
 

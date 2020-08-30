@@ -1,4 +1,4 @@
-import { invert } from 'lodash';
+import { debounce, invert } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
@@ -98,11 +98,15 @@ export default function ChartWrapper({
     strategy: 'bezier',
   });
 
-  useEffect(() => {
-    if (points && !fetchingCharts) {
-      setThrottledData({ nativePoints, points, strategy: 'bezier' });
-    }
-  }, [nativePoints, fetchingCharts, points, setThrottledData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(
+    debounce(() => {
+      if (points && !fetchingCharts) {
+        setThrottledData({ nativePoints, points, strategy: 'bezier' });
+      }
+    }, 10),
+    [nativePoints, fetchingCharts, points, setThrottledData]
+  );
 
   const chartTimeSharedValue = useSharedValue('');
 
