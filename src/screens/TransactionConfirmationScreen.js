@@ -183,13 +183,11 @@ const TransactionConfirmationScreen = () => {
       logger.log('error estimating gas', error);
     }
     logger.log('Setting gas limit to', convertHexToString(gas));
-    if (gas !== gasLimit) {
-      // Wait until the gas prices are populated
-      setTimeout(() => {
-        updateTxFee(gas);
-      }, 1000);
-    }
-  }, [gasLimit, params, updateTxFee]);
+    // Wait until the gas prices are populated
+    setTimeout(() => {
+      updateTxFee(gas);
+    }, 1000);
+  }, [params, updateTxFee]);
 
   useEffect(() => {
     if (!isEmpty(gasPrices) && !calculatingGasLimit.current) {
@@ -202,14 +200,14 @@ const TransactionConfirmationScreen = () => {
   const handleConfirmTransaction = useCallback(async () => {
     const sendInsteadOfSign = method === SEND_TRANSACTION;
     const txPayload = get(params, '[0]');
-    let { gas, gasLimit, gasPrice } = txPayload;
+    let { gas, gasLimit: gasLimitFromPayload, gasPrice } = txPayload;
 
     const rawGasPrice = get(gasPrices, `${gasUtils.NORMAL}.value.amount`);
     if (rawGasPrice) {
       gasPrice = toHex(rawGasPrice);
     }
 
-    if (isNil(gas) && isNil(gasLimit)) {
+    if (isNil(gas) && isNil(gasLimitFromPayload)) {
       try {
         const rawGasLimit = await estimateGas(txPayload);
         gas = toHex(rawGasLimit);
@@ -221,12 +219,15 @@ const TransactionConfirmationScreen = () => {
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(transactionCountNonce, web3TxnCount);
     const nonce = ethers.utils.hexlify(maxTxnCount);
+    const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
     let txPayloadLatestNonce = {
       ...txPayload,
-      gasLimit: gas || gasLimit,
       gasPrice,
       nonce,
     };
+    if (calculatedGasLimit) {
+      txPayloadLatestNonce.gasLimit = calculatedGasLimit;
+    }
     txPayloadLatestNonce = omit(txPayloadLatestNonce, ['from', 'gas']);
     let result = null;
     if (sendInsteadOfSign) {
@@ -276,6 +277,7 @@ const TransactionConfirmationScreen = () => {
     dispatch,
     displayDetails,
     gasPrices,
+    gasLimit,
     method,
     onCancel,
     params,
@@ -396,6 +398,7 @@ const TransactionConfirmationScreen = () => {
             nativeAmountDisplay: get(request, 'nativeAmountDisplay'),
             symbol: get(request, 'asset.symbol', 'N/A'),
           }}
+          method={method}
           sendButton={renderSendButton()}
         />
       );
@@ -408,6 +411,7 @@ const TransactionConfirmationScreen = () => {
           data: get(request, 'data'),
           value: get(request, 'value'),
         }}
+        method={method}
         sendButton={renderSendButton()}
       />
     );
