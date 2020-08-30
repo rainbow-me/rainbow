@@ -98,15 +98,18 @@ export default function ChartWrapper({
     strategy: 'bezier',
   });
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(
-    debounce(() => {
-      if (points && !fetchingCharts) {
-        setThrottledData({ nativePoints, points, strategy: 'bezier' });
-      }
-    }, 10),
-    [nativePoints, fetchingCharts, points, setThrottledData]
-  );
+  const debouncedSetThrottledData = useRef(debounce(setThrottledData, 30))
+    .current;
+
+  useEffect(() => {
+    if (points && !fetchingCharts) {
+      debouncedSetThrottledData({
+        nativePoints,
+        points,
+        strategy: 'bezier',
+      });
+    }
+  }, [nativePoints, fetchingCharts, points]);
 
   const chartTimeSharedValue = useSharedValue('');
 

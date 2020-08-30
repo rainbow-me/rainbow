@@ -49,8 +49,8 @@ export default function ChartPercentChangeLabel({ changeDirection }) {
     data.points.length === 0
       ? ''
       : Math.abs(
-          (data?.points?.[data.points.length - 1]?.y ??
-            0 / data?.points?.[0]?.y) *
+          ((data?.points?.[data.points.length - 1]?.y ?? 0) /
+            data?.points?.[0]?.y) *
             100 -
             100
         ).toFixed(2) + '%';
