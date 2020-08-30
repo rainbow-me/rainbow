@@ -11,6 +11,9 @@ import { formatSavingsAmount, isSymbolStablecoin } from '../../helpers/savings';
 import { colors, fonts } from '@rainbow-me/styles';
 
 const sx = StyleSheet.create({
+  animatedNumber: {
+    height: 30,
+  },
   animatedNumberAndroid: {
     paddingLeft: 35,
     position: 'absolute',
@@ -22,7 +25,6 @@ const sx = StyleSheet.create({
     fontFamily: fonts.family.SFProRounded,
     fontSize: parseFloat(fonts.size.lmedium),
     fontWeight: fonts.weight.bold,
-    height: 30,
     letterSpacing: fonts.letterSpacing.roundedTightest,
     marginBottom: 0.5,
     marginLeft: 6,
@@ -68,12 +70,13 @@ const SavingsListRowAnimatedNumber = ({
       steps={steps}
       style={[
         sx.text,
+        isRainbowTextAvailable ? sx.animatedNumber : null,
         Platform.OS === 'android' ? sx.animatedNumberAndroid : null,
       ]}
       time={interval}
       value={Number(value)}
     >
-      {isRainbowTextAvailable ? null : formatter(initialValue)}
+      {isRainbowTextAvailable ? '' : formatter(initialValue)}
     </TextComponent>
   );
 };
