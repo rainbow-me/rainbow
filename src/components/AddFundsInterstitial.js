@@ -1,38 +1,51 @@
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
-import { Linking, Platform } from 'react-native';
+import { Linking } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
 import showWalletErrorAlert from '../helpers/support';
-import { useWallets } from '../hooks';
+import { useDimensions, useWallets } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { magicMemo } from '../utils';
-import { Button } from './buttons';
+import Divider from './Divider';
+import { ButtonPressAnimation } from './animations';
 import { Icon } from './icons';
-import { Centered, Row } from './layout';
+import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
 import Routes from '@rainbow-me/routes';
 import { colors, padding, position } from '@rainbow-me/styles';
 
 const ButtonContainerHeight = 400;
-const ButtonContainerWidth = 250;
+const ButtonContainerWidth = 261;
 
 const ButtonContainer = styled(Centered).attrs({ direction: 'column' })`
   width: ${ButtonContainerWidth};
 `;
 
-const InterstitialButton = styled(Button)`
+const InterstitialButton = styled(ButtonPressAnimation).attrs({
+  backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
+})`
   ${padding(10.5, 15, 14.5)};
+  border-radius: 23px;
 `;
 
-const CopyAddressButton = styled(Button)`
-  ${padding(10.5, 15, 14.5)};
-  border-radius: 28px;
+const InterstitialDivider = styled(Divider).attrs({
+  color: colors.rowDividerExtraLight,
+  inset: [0, 0, 0, 0],
+})`
+  border-radius: 1;
 `;
 
-const AmountBPA = styled(Button)`
+const CopyAddressButton = styled(ButtonPressAnimation).attrs({
+  backgroundColor: colors.alpha(colors.appleBlue, 0.06),
+})`
+  ${padding(10.5, 15, 14.5)};
+  border-radius: 23px;
+`;
+
+const AmountBPA = styled(ButtonPressAnimation)`
   ${padding(0, 0, 0)};
   border-radius: 25px;
 `;
@@ -45,32 +58,38 @@ const Container = styled(Centered)`
 
 const Paragraph = styled(Text).attrs({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.3),
-  lineHeight: Platform.OS === 'android' ? 'loose' : 'looser',
+  color: colors.alpha(colors.blueGreyDark, 0.4),
+  letterSpacing: 'roundedMedium',
+  lineHeight: 'paragraphSmall',
   size: 'lmedium',
+  weight: 'semibold',
 })`
-  margin-top: 19;
   margin-bottom: 24;
+  margin-top: 19;
 `;
 
 const Title = styled(Text).attrs({
   align: 'center',
-  letterSpacing: 'roundedMedium',
-  lineHeight: 36,
-  size: 'h3',
-  weight: '800',
-})``;
+  lineHeight: 32,
+  size: 'bigger',
+  weight: 'heavy',
+})`
+  margin-horizontal: 27;
+`;
+
+const Subtitle = styled(Title)`
+  margin-top: ${({ isSmallPhone }) => (isSmallPhone ? 19 : 42)};
+`;
 
 const AmountText = styled(Text).attrs({
   align: 'center',
-  letterSpacing: 'roundedMedium',
-  lineHeight: 36,
-  size: 'h3',
-  weight: '800',
+  letterSpacing: 'roundedTightest',
+  size: 'bigger',
+  weight: 'heavy',
 })`
-  ${padding(24, 14, 25)};
-  text-shadow: 0px 0px 20px ${({ color }) => color};
+  ${padding(24, 15, 25)};
   align-self: center;
+  text-shadow: 0px 0px 20px ${({ color }) => color};
   z-index: 1;
 `;
 
@@ -79,10 +98,13 @@ const AmountButtonWrapper = styled(Row).attrs({
   marginRight: 7.5,
 })``;
 
-const buildInterstitialTransform = offsetY => ({
+const buildInterstitialTransform = (isSmallPhone, offsetY) => ({
   transform: [
     { translateX: (ButtonContainerWidth / 2) * -1 },
-    { translateY: (ButtonContainerHeight / 2) * -1 + offsetY * 1.15 },
+    {
+      translateY:
+        (ButtonContainerHeight / 2) * -1 + offsetY - (isSmallPhone ? 44 : 22),
+    },
   ],
 });
 
@@ -93,19 +115,19 @@ const onAddFromFaucet = network => {
 
 const shadows = {
   [colors.swapPurple]: [
-    [0, 10, 30, colors.swapPurple, 0.4],
     [0, 5, 15, colors.dark, 0.2],
+    [0, 10, 30, colors.swapPurple, 0.4],
   ],
   [colors.purpleDark]: [
-    [0, 10, 30, colors.purpleDark, 0.4],
     [0, 5, 15, colors.dark, 0.2],
+    [0, 10, 30, colors.purpleDark, 0.4],
   ],
 };
 
 const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
   return (
     <AmountButtonWrapper>
-      <AmountBPA backgroundColor={backgroundColor} onPress={onPress}>
+      <AmountBPA onPress={onPress}>
         <ShadowStack
           {...position.coverAsObject}
           backgroundColor={backgroundColor}
@@ -121,6 +143,7 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
 };
 
 const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
+  const { isSmallPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { selectedWallet } = useWallets();
 
@@ -155,12 +178,12 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
   };
 
   return (
-    <Container style={buildInterstitialTransform(offsetY)}>
+    <Container style={buildInterstitialTransform(isSmallPhone, offsetY)}>
       <ButtonContainer>
         {network === networkTypes.mainnet ? (
           <Fragment>
             <Title>To get started, buy some ETH with Apple Pay</Title>
-            <Row justify="space-between" marginBottom={30} marginTop={30}>
+            <Row justify="space-between" marginVertical={30}>
               <AmountButton
                 amount={50}
                 backgroundColor={colors.swapPurple}
@@ -176,73 +199,80 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
               <AmountButton
                 amount={250}
                 backgroundColor={colors.purpleDark}
-                color={colors.pink}
+                color={colors.pinkLight}
                 onPress={handlePressAmount[250]}
               />
             </Row>
-            <Row marginBottom={86}>
-              <InterstitialButton
-                backgroundColor={colors.clearGrey}
-                onPress={handlePressAmount[0]}
-              >
+            <Row marginBottom={isSmallPhone ? 19 : 42}>
+              <InterstitialButton onPress={handlePressAmount[0]}>
                 <Text
-                  color={colors.blueGreyDark60}
+                  align="center"
+                  color={colors.alpha(colors.blueGreyDark, 0.6)}
                   lineHeight="loose"
                   size="large"
                   weight="bold"
                 >
-                  􀍡{` `} Other amount
+                  􀍡 Other amount
                 </Text>
               </InterstitialButton>
             </Row>
-            <Title>or send ETH to your wallet</Title>
+            {!isSmallPhone && <InterstitialDivider />}
+            <Subtitle isSmallPhone={isSmallPhone}>
+              or send ETH to your wallet
+            </Subtitle>
 
             <Paragraph>
-              Send from Coinbase or another exchange- or ask a friend!
+              Send from Coinbase or another exchange—or ask a friend!
             </Paragraph>
           </Fragment>
         ) : (
           <Fragment>
             <Title>
-              To get started, request test ETH through the{' '}
-              {get(networkInfo[network], 'name')} faucet.
+              Request test ETH through the {get(networkInfo[network], 'name')}{' '}
+              faucet
             </Title>
-            <Row marginBottom={86} marginTop={30}>
-              <InterstitialButton
-                backgroundColor={colors.clearGrey}
-                onPress={() => onAddFromFaucet(network)}
-              >
+            <Row marginBottom={isSmallPhone ? 19 : 42} marginTop={30}>
+              <InterstitialButton onPress={() => onAddFromFaucet(network)}>
                 <Text
-                  color={colors.blueGreyDark60}
+                  align="center"
+                  color={colors.alpha(colors.blueGreyDark, 0.6)}
                   lineHeight="loose"
                   size="large"
                   weight="bold"
                 >
-                  Add from faucet
+                  􀎬 Add from faucet
                 </Text>
               </InterstitialButton>
             </Row>
-            <Title>or send ETH to your wallet</Title>
+            {!isSmallPhone && <InterstitialDivider />}
+            <Subtitle isSmallPhone={isSmallPhone}>
+              or send test ETH to your wallet
+            </Subtitle>
 
             <Paragraph>
-              Send it from another wallet or another exchange- or ask a friend!
+              Send test ETH from another {get(networkInfo[network], 'name')}{' '}
+              wallet—or ask a friend!
             </Paragraph>
           </Fragment>
         )}
-        <CopyAddressButton
-          backgroundColor={colors.clearBlue}
-          color={colors.appleBlue}
-          onPress={handlePressCopyAddress}
-        >
-          <Icon color={colors.appleBlue} name="copy" size={18} />
-          <Text
-            color={colors.appleBlue}
-            lineHeight="loose"
-            size="large"
-            weight="bold"
-          >
-            {` `}Copy address
-          </Text>
+        <CopyAddressButton onPress={handlePressCopyAddress}>
+          <RowWithMargins margin={6}>
+            <Icon
+              color={colors.appleBlue}
+              marginTop={0.5}
+              name="copy"
+              size={19}
+            />
+            <Text
+              align="center"
+              color={colors.appleBlue}
+              lineHeight="loose"
+              size="large"
+              weight="bold"
+            >
+              Copy address
+            </Text>
+          </RowWithMargins>
         </CopyAddressButton>
       </ButtonContainer>
     </Container>
