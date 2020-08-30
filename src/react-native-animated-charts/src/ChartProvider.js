@@ -81,11 +81,15 @@ function positionXWithMargin(x, margin, width) {
 function getValue(data, i, smoothingStrategy) {
   'worklet';
   if (smoothingStrategy.value === 'bezier') {
-    const p0 = data.value[i - 2] || data.value[i - 1] || data.value[i];
+    const isLast = data.value.length - 1 === i;
+
+    const p0 = isLast
+      ? data.value[i - 1] || data.value[i]
+      : data.value[i - 2] || data.value[i - 1] || data.value[i];
 
     const x0 = p0.x;
     const y0 = p0.y;
-    const p1 = data.value[i - 1] || data.value[i];
+    const p1 = isLast ? data.value[i] : data.value[i - 1] || data.value[i];
     const x1 = p1.x;
     const y1 = p1.y;
     const p = data.value[i];
