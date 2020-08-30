@@ -32,7 +32,7 @@ const AddCashForm = ({
   const initialCurrencyIndex = isWalletEthZero ? 1 : 0;
   const [currency, setCurrency] = useState(currencies[initialCurrencyIndex]);
   const [value, setValue] = useState(
-    params?.amount ? params?.amount?.toString() : undefined
+    params?.amount ? params?.amount?.toString() : ''
   );
 
   const handlePurchase = useCallback(() => {
