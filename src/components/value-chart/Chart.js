@@ -109,7 +109,7 @@ export default function ChartWrapper({
         strategy: 'bezier',
       });
     }
-  }, [nativePoints, fetchingCharts, points]);
+  }, [nativePoints, fetchingCharts, points, debouncedSetThrottledData]);
 
   const chartTimeSharedValue = useSharedValue('');
 
