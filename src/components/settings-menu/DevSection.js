@@ -3,9 +3,11 @@ import Clipboard from '@react-native-community/clipboard';
 import React, { useCallback, useContext } from 'react';
 import { ScrollView } from 'react-native';
 import { DEV_SEEDS } from 'react-native-dotenv';
+import { web3SetHttpProvider } from '../../handlers/web3';
 import { DevContext } from '../../helpers/DevContext';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
+import logger from 'logger';
 
 const DevSection = () => {
   const { config, setConfig } = useContext(DevContext);
@@ -16,6 +18,15 @@ const DevSection = () => {
     },
     [config, setConfig]
   );
+
+  const connectToGanache = useCallback(async () => {
+    try {
+      const ready = await web3SetHttpProvider('http://127.0.0.1:7545');
+      logger.log('connected to ganache', ready);
+    } catch (e) {
+      logger.log('error connecting to ganache');
+    }
+  }, []);
 
   return (
     <ScrollView>
@@ -36,6 +47,7 @@ const DevSection = () => {
         label="‍💻 Copy dev seeds"
         onPress={() => Clipboard.setString(DEV_SEEDS)}
       />
+      <ListItem label="‍👾 Connect to ganache" onPress={connectToGanache} />
       <ListFooter />
 
       {Object.keys(config)
