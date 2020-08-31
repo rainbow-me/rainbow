@@ -5,7 +5,7 @@ import GasSpeedLabelPagerItem, {
   GasSpeedLabelPagerItemHeight,
 } from './GasSpeedLabelPagerItem';
 
-const GasSpeedLabelPager = ({ label }) => {
+const GasSpeedLabelPager = ({ label, theme }) => {
   const [touched, setTouched] = useState(false);
   useEffect(() => setTouched(true), [label]);
 
@@ -17,6 +17,7 @@ const GasSpeedLabelPager = ({ label }) => {
           label={speed}
           selected={speed === label}
           shouldAnimate={touched}
+          theme={theme}
         />
       ))}
     </Row>
