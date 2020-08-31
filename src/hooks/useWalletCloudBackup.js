@@ -17,6 +17,7 @@ import {
 } from '../model/backup';
 import { setIsWalletLoading, setWalletBackedUp } from '../redux/wallets';
 import useWallets from './useWallets';
+import { delay } from '@rainbow-me/helpers/utilities';
 import logger from 'logger';
 
 function getUserError(e) {
@@ -91,9 +92,17 @@ export default function useWalletCloudBackup() {
       }
 
       let fetchedPassword = password;
+      let wasPasswordFetched = false;
       if (latestBackup && !password) {
         // We have a backup but don't have the password, try fetching password
+        dispatch(setIsWalletLoading(walletLoadingStates.FETCHING_PASSWORD));
+        // We want to make it clear why are we requesting faceID twice
+        // So we delayed it to make sure the user can read before seeing the auth prompt
+        await delay(1500);
         fetchedPassword = await fetchBackupPassword();
+        dispatch(setIsWalletLoading(null));
+        await delay(300);
+        wasPasswordFetched = true;
       }
 
       // If we still can't get the password, handle password not found
@@ -103,6 +112,11 @@ export default function useWalletCloudBackup() {
       }
 
       dispatch(setIsWalletLoading(walletLoadingStates.BACKING_UP_WALLET));
+      // We want to make it clear why are we requesting faceID twice
+      // So we delayed it to make sure the user can read before seeing the auth prompt
+      if (wasPasswordFetched) {
+        await delay(1500);
+      }
 
       // We have the password and we need to add it to an existing backup
       logger.log('password fetched correctly');
