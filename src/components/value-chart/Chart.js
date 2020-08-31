@@ -80,6 +80,15 @@ const Overlay = styled(Animated.View).attrs({
   justify-content: center;
 `;
 
+const rotationConfig = {
+  duration: 500,
+  easing: NewEasing.linear,
+};
+
+const timingConfig = {
+  duration: 300,
+};
+
 export default function ChartWrapper({
   chartType,
   color,
@@ -110,14 +119,6 @@ export default function ChartWrapper({
   const chartTimeSharedValue = useSharedValue('');
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
-
-  const rotationConfig = {
-    duration: 500,
-    easing: NewEasing.linear,
-  };
-  const timingConfig = {
-    duration: 300,
-  };
 
   function useShowLoadingState(isFetching) {
     const [isShow, setIsShow] = useState(false);
