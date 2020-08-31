@@ -24,10 +24,17 @@ function ChartPath({
   ...props
 }) {
   const disableSmoothingWhileTransitioningValue = useReactiveSharedValue(
-    disableSmoothingWhileTransitioning
+    disableSmoothingWhileTransitioning,
+    'disableSmoothingWhileTransitioningValue'
   );
-  const strokeWidthSelectedValue = useReactiveSharedValue(strokeWidthSelected);
-  const strokeWidthValue = useReactiveSharedValue(strokeWidth);
+  const strokeWidthSelectedValue = useReactiveSharedValue(
+    strokeWidthSelected,
+    'strokeWidthSelectedValue'
+  );
+  const strokeWidthValue = useReactiveSharedValue(
+    strokeWidth,
+    'strokeWidthValue'
+  );
 
   const {
     onLongPressGestureEvent,
@@ -144,7 +151,7 @@ function ChartPath({
       })
       .join(' ')
       .replace('L', 'M');
-  });
+  }, 'ChartPathPath');
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -157,7 +164,7 @@ function ChartPath({
         opacity: pathOpacity.value * 0.3 + 0.7,
       },
     };
-  });
+  }, 'ChartPathAnimatedStyle');
 
   return (
     <LongPressGestureHandler

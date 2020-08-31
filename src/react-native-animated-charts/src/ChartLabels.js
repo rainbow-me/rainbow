@@ -14,12 +14,12 @@ function ChartLabelFactory(style) {
     const { [style]: val } = useContext(ChartContext);
     const formattedValue = useDerivedValue(() => {
       return format ? format(val.value) : val.value;
-    });
+    }, style + 'formattedValue');
     const textProps = useAnimatedStyle(() => {
       return {
         text: formattedValue.value,
       };
-    });
+    }, style + 'textProps');
     return (
       <AnimatedTextInput
         {...props}

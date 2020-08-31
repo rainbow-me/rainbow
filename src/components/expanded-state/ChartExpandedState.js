@@ -1,13 +1,12 @@
 import { useRoute } from '@react-navigation/native';
-import { find } from 'lodash';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { debounce, find } from 'lodash';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   useChartData,
   useChartDataLabels,
   useColorForAsset,
   useUniswapAssetsInWallet,
 } from '../../hooks';
-import { nativeStackConfig } from '../../navigation/config';
 import {
   SendActionButton,
   SheetActionButtonRow,
@@ -26,7 +25,11 @@ import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
 import { useNavigation } from '@rainbow-me/navigation';
-import { monotoneCubicInterpolation } from 'react-native-animated-charts';
+import {
+  ChartProvider,
+  monotoneCubicInterpolation,
+} from 'react-native-animated-charts';
+
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
 const heightWithChart = 606;
@@ -89,21 +92,6 @@ export default function ChartExpandedState({ asset }) {
     asset
   );
 
-  // we're hiding chart on closing to remove native crashes
-  const [isHiding, setIsHiding] = useState(false);
-
-  const { setOptions } = useNavigation();
-  useEffect(
-    () =>
-      setOptions({
-        onWillDismiss: () => {
-          nativeStackConfig.screenOptions.onWillDismiss();
-          setIsHiding(true);
-        },
-      }),
-    [setOptions, setIsHiding]
-  );
-
   const [throttledPoints, setThrottledPoints] = useState(() =>
     traverseData({ nativePoints: [], points: [] }, chart)
   );
@@ -142,20 +130,41 @@ export default function ChartExpandedState({ asset }) {
     asset.uniqueId,
   ]);
 
+  const [throttledData, setThrottledData] = useState({
+    nativePoints: throttledPoints.nativePoints,
+    points: throttledPoints.points,
+    strategy: 'bezier',
+  });
+
+  const debouncedSetThrottledData = useRef(debounce(setThrottledData, 30))
+    .current;
+
+  useEffect(() => {
+    if (throttledPoints.points && !fetchingCharts) {
+      debouncedSetThrottledData({
+        nativePoints: throttledPoints.nativePoints,
+        points: throttledPoints.points,
+        strategy: 'bezier',
+      });
+    }
+  }, [throttledPoints, fetchingCharts, debouncedSetThrottledData]);
+
   return (
     <SlackSheet contentHeight={params.longFormHeight} scrollEnabled={false}>
-      <Chart
-        {...chartData}
-        {...initialChartDataLabels}
-        asset={asset}
-        chart={chart}
-        chartType={chartType}
-        color={color}
-        fetchingCharts={fetchingCharts}
-        nativePoints={throttledPoints.nativePoints}
-        points={throttledPoints.points}
-        showChart={showChart && !isHiding}
-      />
+      <ChartProvider data={throttledData} enableHaptics>
+        <Chart
+          {...chartData}
+          {...initialChartDataLabels}
+          asset={asset}
+          chart={chart}
+          chartType={chartType}
+          color={color}
+          fetchingCharts={fetchingCharts}
+          nativePoints={chart}
+          showChart={showChart}
+          throttledData={throttledData}
+        />
+      </ChartProvider>
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>

@@ -82,7 +82,7 @@ function formatDatetime(value, chartTimeSharedValue) {
 }
 
 export default function ChartDateLabel({ chartTimeSharedValue }) {
-  const ratio = useRatio();
+  const ratio = useRatio('ChartDataLabel');
 
   const textStyle = useAnimatedStyle(() => {
     return {
@@ -93,7 +93,7 @@ export default function ChartDateLabel({ chartTimeSharedValue }) {
           ? colors.red
           : colors.green,
     };
-  });
+  }, 'ChartDateLabelTextStyle');
 
   return (
     <Label

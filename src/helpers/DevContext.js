@@ -17,7 +17,7 @@ const EXPERIMENTAL_CONFIG = 'experimentalConfig';
 function DevContextComponent({ children }) {
   // This value is hold here to prevent JS VM from shutting down
   // on unmounting all shared values.
-  useSharedValue(0);
+  useSharedValue(0, 'DevContextComponent');
   const [config, setConfig] = useState(defaultConfig);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps

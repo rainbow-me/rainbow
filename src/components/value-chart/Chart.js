@@ -1,8 +1,9 @@
-import { debounce, invert } from 'lodash';
+import { invert } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Animated, {
+  cancelAnimation,
   NewEasing,
   repeat,
   useAnimatedStyle,
@@ -11,16 +12,18 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import Spinner from '../../assets/chartSpinner.png';
+import { nativeStackConfig } from '../../navigation/config';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
 import Labels from './ExtremeLabels';
 import TimespanSelector from './TimespanSelector';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
+import { useNavigation } from '@rainbow-me/navigation';
 import { colors, position } from '@rainbow-me/styles';
 import {
   ChartDot,
   ChartPath,
-  ChartProvider,
+  useChartData,
 } from 'react-native-animated-charts';
 
 export const { width: WIDTH } = Dimensions.get('window');
@@ -89,12 +92,25 @@ const timingConfig = {
   duration: 300,
 };
 
+function useShowLoadingState(isFetching) {
+  const [isShow, setIsShow] = useState(false);
+  const timeout = useRef();
+  useEffect(() => {
+    if (isFetching) {
+      timeout.current = setTimeout(() => setIsShow(isFetching), 500);
+    } else {
+      clearTimeout(timeout.current);
+      setIsShow(isFetching);
+    }
+  }, [isFetching]);
+  return isShow;
+}
+
 export default function ChartWrapper({
   chartType,
   color,
   fetchingCharts,
-  points,
-  nativePoints,
+  throttledData,
   updateChartType,
   showChart,
   showMonth,
@@ -105,42 +121,24 @@ export default function ChartWrapper({
     chartType,
   ]);
 
-  const [throttledData, setThrottledData] = useState({
-    nativePoints,
-    points,
-    strategy: 'bezier',
-  });
+  const { progress } = useChartData();
+  const spinnerRotation = useSharedValue(0, 'spinnerRotation');
+  const spinnerScale = useSharedValue(0, 'spinnerScale');
+  const chartTimeSharedValue = useSharedValue('', 'chartTimeSharedValue');
 
-  const debouncedSetThrottledData = useRef(debounce(setThrottledData, 30))
-    .current;
-
-  useEffect(() => {
-    if (points && !fetchingCharts) {
-      debouncedSetThrottledData({
-        nativePoints,
-        points,
-        strategy: 'bezier',
-      });
-    }
-  }, [nativePoints, fetchingCharts, points, debouncedSetThrottledData]);
-
-  const chartTimeSharedValue = useSharedValue('');
-  const spinnerRotation = useSharedValue(0);
-  const spinnerScale = useSharedValue(0);
-
-  function useShowLoadingState(isFetching) {
-    const [isShow, setIsShow] = useState(false);
-    const timeout = useRef();
-    useEffect(() => {
-      if (isFetching) {
-        timeout.current = setTimeout(() => setIsShow(isFetching), 500);
-      } else {
-        clearTimeout(timeout.current);
-        setIsShow(isFetching);
-      }
-    }, [isFetching]);
-    return isShow;
-  }
+  const { setOptions } = useNavigation();
+  useEffect(
+    () =>
+      setOptions({
+        onWillDismiss: () => {
+          cancelAnimation(progress);
+          cancelAnimation(spinnerRotation);
+          cancelAnimation(spinnerScale);
+          nativeStackConfig.screenOptions.onWillDismiss();
+        },
+      }),
+    [setOptions, progress, spinnerRotation, spinnerScale]
+  );
 
   const showLoadingState = useShowLoadingState(fetchingCharts);
 
@@ -169,7 +167,7 @@ export default function ChartWrapper({
     return {
       opacity: spinnerScale.value,
     };
-  });
+  }, 'overlayStyle');
 
   const spinnerStyle = useAnimatedStyle(() => {
     return {
@@ -179,7 +177,7 @@ export default function ChartWrapper({
         { scale: spinnerScale.value },
       ],
     };
-  });
+  }, 'spinnerStyle');
 
   const timespan = invert(ChartTypes)[chartType];
   const formattedTimespan =
@@ -198,41 +196,41 @@ export default function ChartWrapper({
 
   return (
     <Container>
-      <ChartProvider data={throttledData} enableHaptics>
-        <ChartExpandedStateHeader
-          {...props}
-          chartTimeSharedValue={chartTimeSharedValue}
-          color={color}
-          showChart={showChart}
-        />
-        <ChartContainer showChart={showChart}>
-          {showChart && (
-            <>
-              <Labels color={color} width={WIDTH} />
-              <ChartPath
-                fill="none"
-                gestureEnabled={!fetchingCharts && !!throttledData}
-                height={HEIGHT}
-                longPressGestureHandlerProps={{
-                  minDurationMs: 60,
-                }}
-                stroke={color}
-                strokeWidth={3.5}
-                strokeWidthSelected={3}
-                width={WIDTH}
-              />
-              <Dot color={colors.alpha(color, 0.03)} size={65}>
-                <InnerDot color={color} />
-              </Dot>
-              <Overlay style={overlayStyle}>
-                <Animated.View style={spinnerStyle}>
-                  <ChartSpinner color={color} />
-                </Animated.View>
-              </Overlay>
-            </>
-          )}
-        </ChartContainer>
-      </ChartProvider>
+      <ChartExpandedStateHeader
+        {...props}
+        chartTimeSharedValue={chartTimeSharedValue}
+        color={color}
+        showChart={showChart}
+      />
+      <ChartContainer showChart={showChart}>
+        {showChart && (
+          <>
+            <Labels color={color} width={WIDTH} />
+            <ChartPath
+              fill="none"
+              gestureEnabled={!fetchingCharts && !!throttledData}
+              height={HEIGHT}
+              longPressGestureHandlerProps={{
+                minDurationMs: 60,
+              }}
+              stroke={color}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={3.5}
+              strokeWidthSelected={3}
+              width={WIDTH}
+            />
+            <Dot color={colors.alpha(color, 0.03)} size={65}>
+              <InnerDot color={color} />
+            </Dot>
+            <Overlay style={overlayStyle}>
+              <Animated.View style={spinnerStyle}>
+                <ChartSpinner color={color} />
+              </Animated.View>
+            </Overlay>
+          </>
+        )}
+      </ChartContainer>
       {showChart ? (
         <TimespanSelector
           color={color}

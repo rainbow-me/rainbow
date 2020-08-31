@@ -12,18 +12,24 @@ import { colors, fonts } from '@rainbow-me/styles';
 import { useChartData } from 'react-native-animated-charts';
 import useReactiveSharedValue from 'react-native-animated-charts/useReactiveSharedValue';
 
-export function useRatio() {
+export function useRatio(name) {
   const { nativeY, data } = useChartData();
 
-  const firstValue = useReactiveSharedValue(data?.points?.[0]?.y);
+  const firstValue = useReactiveSharedValue(
+    data?.points?.[0]?.y,
+    'firstValueRatio' + name
+  );
   const lastValue = useReactiveSharedValue(
-    data?.points?.[data.points.length - 1]?.y
+    data?.points?.[data.points.length - 1]?.y,
+    'lastValueRatio' + name
   );
 
-  return useDerivedValue(() =>
-    firstValue.value === Number(firstValue.value)
-      ? (nativeY.value || lastValue.value) / firstValue.value
-      : 1
+  return useDerivedValue(
+    () =>
+      firstValue.value === Number(firstValue.value)
+        ? (nativeY.value || lastValue.value) / firstValue.value
+        : 1,
+    name + 'ratio'
   );
 }
 
@@ -42,8 +48,14 @@ const PercentLabel = styled(AnimatedTextInput)`
 export default function ChartPercentChangeLabel({ changeDirection }) {
   const { nativeY, data } = useChartData();
 
-  const firstValue = useSharedValue(data?.points?.[0]?.y);
-  const lastValue = useSharedValue(data?.points?.[data.points.length - 1]?.y);
+  const firstValue = useSharedValue(
+    data?.points?.[0]?.y,
+    'firstValueChartPercentChangeLabel'
+  );
+  const lastValue = useSharedValue(
+    data?.points?.[data.points.length - 1]?.y,
+    'lastValueChartPercentChangeLabel'
+  );
 
   const defaultValue =
     data.points.length === 0
@@ -70,9 +82,9 @@ export default function ChartPercentChangeLabel({ changeDirection }) {
             ).toFixed(2) + '%'
           : '',
     };
-  });
+  }, 'ChartPercentChangeLabelTextProps');
 
-  const ratio = useRatio();
+  const ratio = useRatio('ChartPercentChangeLabel');
 
   const textStyle = useAnimatedStyle(() => {
     return {
@@ -83,14 +95,14 @@ export default function ChartPercentChangeLabel({ changeDirection }) {
           ? colors.red
           : colors.green,
     };
-  });
+  }, 'ChartPercentChangeLabelTextStyle');
 
   const arrowWrapperStyle = useAnimatedStyle(() => {
     return {
       opacity: ratio.value === 1 ? 0 : 1,
       transform: [{ rotate: ratio.value < 1 ? '180deg' : '0deg' }],
     };
-  });
+  }, 'ChartPercentChangeLabelArrowWrapperStyle');
 
   const arrowStyle = useAnimatedStyle(() => {
     return {
@@ -101,7 +113,7 @@ export default function ChartPercentChangeLabel({ changeDirection }) {
           ? colors.red
           : colors.green,
     };
-  });
+  }, 'ChartPercentChangeLabelArrowStyle');
 
   return (
     <RowWithMargins align="center" margin={4}>

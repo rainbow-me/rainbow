@@ -65,7 +65,7 @@ export default function ChartExpandedStateHeader({
     [latestPrice, nativeCurrency]
   );
 
-  const priceSharedValue = useSharedValue('');
+  const priceSharedValue = useSharedValue('', 'priceSharedValue');
 
   useEffect(() => {
     if (!isNoPriceData) {

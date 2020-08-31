@@ -108,27 +108,30 @@ export default function ChartProvider({
   softMargin = 30,
   enableHaptics = false,
 }) {
-  const prevData = useSharedValue([]);
-  const currData = useSharedValue([]);
-  const currNativeData = useSharedValue([]);
-  const prevSmoothing = useSharedValue(0);
-  const currSmoothing = useSharedValue(0);
+  const prevData = useSharedValue([], 'prevData');
+  const currData = useSharedValue([], 'currData');
+  const currNativeData = useSharedValue([], 'currNativeData');
+  const prevSmoothing = useSharedValue(0, 'prevSmoothing');
+  const currSmoothing = useSharedValue(0, 'currSmoothing');
 
-  const progress = useSharedValue(1);
-  const dotOpacity = useSharedValue(0);
-  const dotScale = useSharedValue(0);
-  const nativeX = useSharedValue('');
-  const nativeY = useSharedValue('');
-  const pathOpacity = useSharedValue(1);
-  const softMarginValue = useReactiveSharedValue(softMargin);
-  const enableHapticsValue = useReactiveSharedValue(enableHaptics);
-  const size = useSharedValue(0);
-  const state = useSharedValue(0);
+  const progress = useSharedValue(1, 'progress');
+  const dotOpacity = useSharedValue(0, 'dotOpacity');
+  const dotScale = useSharedValue(0, 'dotScale');
+  const nativeX = useSharedValue('', 'nativeX');
+  const nativeY = useSharedValue('', 'nativeY');
+  const pathOpacity = useSharedValue(1, 'pathOpacity');
+  const softMarginValue = useReactiveSharedValue(softMargin, 'softMarginValue');
+  const enableHapticsValue = useReactiveSharedValue(
+    enableHaptics,
+    'enableHapticsValue'
+  );
+  const size = useSharedValue(0, 'size');
+  const state = useSharedValue(0, 'state');
   const [extremes, setExtremes] = useState({});
-  const isAnimationInProgress = useSharedValue(false);
+  const isAnimationInProgress = useSharedValue(false, 'isAnimationInProgress');
 
   const [data, setData] = useState(rawData);
-  const dataQueue = useSharedValue([]);
+  const dataQueue = useSharedValue([], 'dataQueue');
   useEffect(() => {
     if (isAnimationInProgress.value) {
       dataQueue.value.push(rawData);
@@ -138,7 +141,10 @@ export default function ChartProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawData]);
 
-  const smoothingStrategy = useReactiveSharedValue(data.strategy);
+  const smoothingStrategy = useReactiveSharedValue(
+    data.strategy,
+    'smoothingStrategy'
+  );
 
   useEffect(() => {
     if (!data || !data.points || data.points.length === 0) {
@@ -171,8 +177,8 @@ export default function ChartProvider({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
-  const positionX = useSharedValue(0);
-  const positionY = useSharedValue(0);
+  const positionX = useSharedValue(0, 'positionX');
+  const positionY = useSharedValue(0, 'positionY');
 
   const springConfig = {
     damping: 15,
@@ -314,14 +320,17 @@ export default function ChartProvider({
   });
 
   // @ts-ignore
-  const dotStyle = useAnimatedStyle(() => ({
-    opacity: dotOpacity.value,
-    transform: [
-      { translateX: positionX.value },
-      { translateY: positionY.value + 10 }, // TODO temporary fix for clipped chart
-      { scale: dotScale.value },
-    ],
-  }));
+  const dotStyle = useAnimatedStyle(
+    () => ({
+      opacity: dotOpacity.value,
+      transform: [
+        { translateX: positionX.value },
+        { translateY: positionY.value + 10 }, // TODO temporary fix for clipped chart
+        { scale: dotScale.value },
+      ],
+    }),
+    'dotStyle'
+  );
 
   const contextValue = useMemo(
     () => ({
