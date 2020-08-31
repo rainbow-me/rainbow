@@ -8,7 +8,6 @@ import {
   CLOUD_BACKUP_ERRORS,
   isCloudBackupAvailable,
 } from '../handlers/cloudBackup';
-import { delay } from '../helpers/utilities';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import walletLoadingStates from '../helpers/walletLoadingStates';
 import {
@@ -18,6 +17,7 @@ import {
 } from '../model/backup';
 import { setIsWalletLoading, setWalletBackedUp } from '../redux/wallets';
 import useWallets from './useWallets';
+import { delay } from '@rainbow-me/helpers/utilities';
 import logger from 'logger';
 
 function getUserError(e) {
