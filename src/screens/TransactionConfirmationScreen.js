@@ -197,7 +197,7 @@ const TransactionConfirmationScreen = () => {
     }
     logger.log('Setting gas limit to', convertHexToString(gas));
     // Wait until the gas prices are populated
-    setTimeout(async () => {
+    setTimeout(() => {
       updateTxFee(gas);
     }, 1000);
   }, [params, updateTxFee]);
@@ -239,7 +239,7 @@ const TransactionConfirmationScreen = () => {
 
     // Get the TX value
     const txPayload = get(params, '[0]');
-    const { value } = txPayload;
+    const value = get(txPayload, 'value', 0);
 
     // Check that there's enough ETH to pay for everything!.
     const totalAmount = BigNumber(fromWei(value)).plus(txFeeAmount);
@@ -417,8 +417,10 @@ const TransactionConfirmationScreen = () => {
 
   const renderSendButton = useCallback(() => {
     let label = `Hold to ${method === SEND_TRANSACTION ? 'Send' : 'Sign'}`;
-    // Set Loading...
+
     let ready = true;
+    // If we don't know about gas prices yet
+    // set the button state to "loading"
     if (!isBalanceEnough && isSufficientGas === undefined) {
       label = 'Loading...';
       ready = false;
