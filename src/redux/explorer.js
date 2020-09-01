@@ -12,13 +12,13 @@ import {
   transactionsRemoved,
 } from './data';
 import {
+  fallbackExplorerClearState,
+  fallbackExplorerInit,
+} from './fallbackExplorer';
+import {
   savingsDecrementNumberOfJustFinishedDepositsOrWithdrawals,
   savingsIncrementNumberOfJustFinishedDepositsOrWithdrawals,
 } from './savings';
-import {
-  testnetExplorerClearState,
-  testnetExplorerInit,
-} from './testnetExplorer';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -126,7 +126,7 @@ export const explorerClearState = () => (dispatch, getState) => {
   const { network } = getState().settings;
   // if we're not on mainnnet clear the testnet state
   if (network !== NetworkTypes.mainnet) {
-    return testnetExplorerClearState();
+    return fallbackExplorerClearState();
   }
   dispatch(explorerUnsubscribe());
   dispatch({ type: EXPLORER_CLEAR_STATE });
@@ -144,8 +144,8 @@ export const explorerInit = () => async (dispatch, getState) => {
 
   // Fallback to the testnet data provider
   // if we're not on mainnnet
-  if (network !== NetworkTypes.mainnet) {
-    return dispatch(testnetExplorerInit());
+  if (network === NetworkTypes.mainnet) {
+    return dispatch(fallbackExplorerInit());
   }
 
   const newAddressSocket = createSocket('address');
