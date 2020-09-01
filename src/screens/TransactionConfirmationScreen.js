@@ -70,6 +70,8 @@ const TransactionType = styled(Text).attrs({ size: 'h5' })`
   margin-top: 6;
 `;
 
+const NOOP = () => undefined;
+
 const TransactionConfirmationScreen = () => {
   const { allAssets } = useAccountAssets();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -414,8 +416,15 @@ const TransactionConfirmationScreen = () => {
   }, [onConfirm]);
 
   const renderSendButton = useCallback(() => {
-    const label = `Hold to ${method === SEND_TRANSACTION ? 'Send' : 'Sign'}`;
-    return isBalanceEnough === false ? (
+    let label = `Hold to ${method === SEND_TRANSACTION ? 'Send' : 'Sign'}`;
+    // Set Loading...
+    let ready = true;
+    if (!isBalanceEnough && isSufficientGas === undefined) {
+      label = 'Loading...';
+      ready = false;
+    }
+
+    return isBalanceEnough === false && isSufficientGas !== undefined ? (
       <HoldToAuthorizeButton
         disabled
         hideBiometricIcon
@@ -425,10 +434,16 @@ const TransactionConfirmationScreen = () => {
       <HoldToAuthorizeButton
         isAuthorizing={isAuthorizing}
         label={label}
-        onLongPress={onLongPressSend}
+        onLongPress={ready ? onLongPressSend : NOOP}
       />
     );
-  }, [isAuthorizing, isBalanceEnough, method, onLongPressSend]);
+  }, [
+    isAuthorizing,
+    isBalanceEnough,
+    isSufficientGas,
+    method,
+    onLongPressSend,
+  ]);
 
   const requestHeader = isMessageDisplayType(method)
     ? lang.t('wallet.message_signing.request')
