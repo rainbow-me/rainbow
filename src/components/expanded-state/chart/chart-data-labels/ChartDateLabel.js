@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
-import { useRatio } from './ChartPercentChangeLabel';
+import { useRatio } from './useRatio';
 import { colors, fonts } from '@rainbow-me/styles';
 import { ChartXLabel } from 'react-native-animated-charts';
 
