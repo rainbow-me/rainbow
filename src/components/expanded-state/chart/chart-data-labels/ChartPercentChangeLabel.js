@@ -45,7 +45,7 @@ export default function ChartPercentChangeLabel() {
             100;
           return (
             (value > 0 ? '↑' : value < 0 ? '↓' : '') +
-            ' ' +
+            ' ' +
             Math.abs(value).toFixed(2) +
             '%'
           );
@@ -66,7 +66,7 @@ export default function ChartPercentChangeLabel() {
                 100;
               return (
                 (value > 0 ? '↑' : value < 0 ? '↓' : '') +
-                ' ' +
+                ' ' +
                 Math.abs(value).toFixed(2) +
                 '%'
               );
