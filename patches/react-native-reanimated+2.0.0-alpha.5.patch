@@ -39,23 +39,32 @@ index 48a3c76..0723069 100644
    ease,
    quad,
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/Hooks.js b/node_modules/react-native-reanimated/src/reanimated2/Hooks.js
-index c14ec0b..58a4c9e 100644
+index c14ec0b..ffa8555 100644
 --- a/node_modules/react-native-reanimated/src/reanimated2/Hooks.js
 +++ b/node_modules/react-native-reanimated/src/reanimated2/Hooks.js
-@@ -6,19 +6,32 @@ import updateProps from './UpdateProps';
+@@ -6,19 +6,41 @@ import updateProps from './UpdateProps';
  import { initialUpdaterRun } from './animations';
  import { getTag } from './NativeMethods'
  
 -export function useSharedValue(init) {
-+const globalVarsStore = {}
++let globalVarsStore = {}
++
++export function releaseStore() {
++  globalVarsStore = {}
++  return
++}
 +
 +export function useSharedValue(init, name) {
    const ref = useRef(null);
    if (ref.current === null) {
 -    ref.current = makeMutable(init);
-+    globalVarsStore[name] = name && globalVarsStore[name] || makeMutable(init)
-+    globalVarsStore[name].value = init;
-+    ref.current = globalVarsStore[name];
++    if (name) {
++      globalVarsStore[name] = globalVarsStore[name] || makeMutable(init)
++      globalVarsStore[name].value = init;
++      ref.current = globalVarsStore[name];
++    } else {
++      ref.current = makeMutable(init)
++    }
    }
    return ref.current;
  }
@@ -64,8 +73,8 @@ index c14ec0b..58a4c9e 100644
 +export function useMapper(fun, inputs = [], outputs = [], name) {
    useEffect(() => {
 -    const mapperId = startMapper(fun, inputs, outputs);
-+    let mapperId
-+    if (name) {
++    let mappe3rId
++    if (name && false) {
 +      globalVarsStore[name] = globalVarsStore[name] || startMapper(fun, inputs, outputs)
 +      let mapperId = globalVarsStore[name];
 +    } else {
@@ -80,36 +89,36 @@ index c14ec0b..58a4c9e 100644
      };
    }, []);
  }
-@@ -250,8 +263,8 @@ function styleUpdater(viewTag, updater, state) {
+@@ -250,8 +272,8 @@ function styleUpdater(viewTag, updater, state) {
    }
  }
  
 -export function useAnimatedStyle(updater) {
 -  const viewTag = useSharedValue(-1);
-+export function useAnimatedStyle(updater, name = 'styyle') {
++export function useAnimatedStyle(updater, name) {
 +  const viewTag = useSharedValue(-1, name);
  
    const initRef = useRef(null);
    if (initRef.current === null) {
-@@ -267,7 +280,7 @@ export function useAnimatedStyle(updater) {
+@@ -267,7 +289,7 @@ export function useAnimatedStyle(updater) {
    useMapper(() => {
      'worklet';
      styleUpdater(viewTag, updater, remoteState);
 -  }, inputs);
-+  }, inputs, [], name + '_mapper');
++  }, inputs, [], name ? name + '_mapper' : '');
  
    let wrongKey;
    const isError = Object.keys(initial).some((key) => {
-@@ -294,7 +307,7 @@ export function useAnimatedStyle(updater) {
+@@ -294,7 +316,7 @@ export function useAnimatedStyle(updater) {
  // when you need styles to animated you should always use useAS
  export const useAnimatedProps = useAnimatedStyle;
  
 -export function useDerivedValue(processor) {
-+export function useDerivedValue(processor, name = 'deerived') {
++export function useDerivedValue(processor, name) {
    const initRef = useRef(null);
    if (initRef.current === null) {
      initRef.current = {
-@@ -311,7 +324,8 @@ export function useDerivedValue(processor) {
+@@ -311,7 +333,8 @@ export function useDerivedValue(processor) {
        sharedValue.value = processor();
      },
      inputs,
@@ -119,7 +128,7 @@ index c14ec0b..58a4c9e 100644
    );
  
    return sharedValue;
-@@ -331,13 +345,18 @@ export function useAnimatedGestureHandler(handlers) {
+@@ -331,13 +354,18 @@ export function useAnimatedGestureHandler(handlers) {
        'worklet';
        const UNDETERMINED = 0;
        const FAILED = 1;
@@ -139,7 +148,7 @@ index c14ec0b..58a4c9e 100644
        if (event.state === ACTIVE && handlers.onActive) {
          handlers.onActive(event, context);
        }
-@@ -345,14 +364,14 @@ export function useAnimatedGestureHandler(handlers) {
+@@ -345,14 +373,14 @@ export function useAnimatedGestureHandler(handlers) {
          handlers.onEnd(event, context);
        }
        if (
