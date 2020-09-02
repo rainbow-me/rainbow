@@ -4,7 +4,13 @@ import FloatingEmojis from './FloatingEmojis';
 import { useClipboard } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
 
-const CopyFloatingEmojis = ({ children, onPress, textToCopy, ...props }) => {
+const CopyFloatingEmojis = ({
+  children,
+  disabled,
+  onPress,
+  textToCopy,
+  ...props
+}) => {
   const { setClipboard } = useClipboard();
 
   return (
@@ -21,9 +27,11 @@ const CopyFloatingEmojis = ({ children, onPress, textToCopy, ...props }) => {
         <ButtonPressAnimation
           hapticType="impactLight"
           onPress={() => {
-            onNewEmoji();
-            onPress && onPress(textToCopy);
-            setClipboard(textToCopy);
+            onPress?.(textToCopy);
+            if (!disabled) {
+              onNewEmoji();
+              setClipboard(textToCopy);
+            }
           }}
         >
           {children}
@@ -33,4 +41,8 @@ const CopyFloatingEmojis = ({ children, onPress, textToCopy, ...props }) => {
   );
 };
 
-export default magicMemo(CopyFloatingEmojis, 'textToCopy');
+export default magicMemo(CopyFloatingEmojis, [
+  'disabled',
+  'onPress',
+  'textToCopy',
+]);
