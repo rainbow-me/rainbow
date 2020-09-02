@@ -4,7 +4,7 @@ import styled from 'styled-components/primitives';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RainbowButton } from '../buttons';
-import { FloatingEmojis } from '../floating-emojis';
+import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
@@ -16,7 +16,6 @@ import useExperimentalFlag, {
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import {
   useAccountProfile,
-  useClipboard,
   useDimensions,
   useWallets,
 } from '@rainbow-me/hooks';
@@ -67,7 +66,6 @@ export default function ProfileMasthead({
   showBottomDivider = true,
 }) {
   const { selectedWallet } = useWallets();
-  const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const {
@@ -121,6 +119,12 @@ export default function ProfileMasthead({
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
+  const handlePressCopyAddress = useCallback(() => {
+    if (selectedWallet?.damaged) {
+      showWalletErrorAlert();
+    }
+  }, [selectedWallet]);
+
   return (
     <Column
       align="center"
@@ -143,31 +147,18 @@ export default function ProfileMasthead({
         </Row>
       </ButtonPressAnimation>
       <RowWithMargins align="center" margin={19}>
-        <FloatingEmojis
-          distance={250}
-          duration={500}
-          fadeOut={false}
-          scaleTo={0}
-          size={50}
-          wiggleFactor={0}
+        <CopyFloatingEmojis
+          disabled={selectedWallet?.damaged}
+          onPress={handlePressCopyAddress}
+          textToCopy={accountAddress}
         >
-          {({ onNewEmoji }) => (
-            <ProfileAction
-              icon="copy"
-              onPress={() => {
-                if (selectedWallet?.damaged) {
-                  showWalletErrorAlert();
-                  return;
-                }
-                onNewEmoji();
-                setClipboard(accountAddress);
-              }}
-              scaleTo={0.88}
-              text="Copy Address"
-              width={127}
-            />
-          )}
-        </FloatingEmojis>
+          <ProfileAction
+            icon="copy"
+            scaleTo={0.88}
+            text="Copy Address"
+            width={127}
+          />
+        </CopyFloatingEmojis>
         <ProfileAction
           icon="qrCode"
           onPress={handlePressReceive}
