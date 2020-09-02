@@ -24,10 +24,10 @@ export const estimateSwapAndDepositCompound = async ({
   outputReserve,
 }) => {
   const { accountAddress, chainId, network } = store.getState().settings;
-  const { pairs, allPairs } = store.getState().uniswap;
+  const { pairs, allTokens } = store.getState().uniswap;
   const globalPairs = {
     ...pairs,
-    ...allPairs,
+    ...allTokens,
   };
   const exchangeAddress = get(
     globalPairs,
@@ -114,10 +114,10 @@ const createSwapAndDepositCompoundRap = async ({
   selectedGasPrice,
 }) => {
   const { accountAddress, chainId, network } = store.getState().settings;
-  const { pairs, allPairs } = store.getState().uniswap;
+  const { pairs, allTokens } = store.getState().uniswap;
   const globalPairs = {
     ...pairs,
-    ...allPairs,
+    ...allTokens,
   };
   const exchangeAddress = get(
     globalPairs,

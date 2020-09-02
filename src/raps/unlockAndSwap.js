@@ -33,10 +33,10 @@ export const estimateUnlockAndSwap = async ({
   if (!isValid) return ethUnits.basic_swap;
 
   const { accountAddress, chainId } = store.getState().settings;
-  const { pairs, allPairs } = store.getState().uniswap;
+  const { pairs, allTokens } = store.getState().uniswap;
   const globalPairs = {
     ...pairs,
-    ...allPairs,
+    ...allTokens,
   };
   const exchangeAddress = get(
     globalPairs,
@@ -87,10 +87,10 @@ const createUnlockAndSwapRap = async ({
 }) => {
   // create unlock rap
   const { accountAddress, chainId } = store.getState().settings;
-  const { pairs, allPairs } = store.getState().uniswap;
+  const { pairs, allTokens } = store.getState().uniswap;
   const globalPairs = {
     ...pairs,
-    ...allPairs,
+    ...allTokens,
   };
   const exchangeAddress = get(
     globalPairs,

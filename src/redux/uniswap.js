@@ -20,7 +20,7 @@ import {
   saveUniswapFavorites,
 } from '../handlers/localstorage/uniswap';
 import {
-  getAllExchanges,
+  getAllTokens,
   getLiquidityInfo,
   getReserve,
   getTestnetUniswapPairs,
@@ -38,7 +38,7 @@ const UNISWAP_LOAD_LIQUIDITY_TOKEN_INFO_SUCCESS =
   'uniswap/UNISWAP_LOAD_LIQUIDITY_TOKEN_INFO_SUCCESS';
 
 const UNISWAP_UPDATE_PAIRS = 'uniswap/UNISWAP_UPDATE_PAIRS';
-const UNISWAP_UPDATE_ALL_PAIRS = 'uniswap/UNISWAP_UPDATE_ALL_PAIRS';
+const UNISWAP_UPDATE_ALL_TOKENS = 'uniswap/UNISWAP_UPDATE_ALL_TOKENS';
 
 const UNISWAP_UPDATE_REQUEST = 'uniswap/UNISWAP_UPDATE_REQUEST';
 const UNISWAP_UPDATE_SUCCESS = 'uniswap/UNISWAP_UPDATE_SUCCESS';
@@ -92,18 +92,18 @@ export const uniswapGetAllExchanges = () => async (dispatch, getState) => {
   const { pairs } = getState().uniswap;
   try {
     const ignoredTokens = filter(keys(pairs), x => x !== 'eth');
-    const allPairs =
+    const allTokens =
       network === networkTypes.mainnet
-        ? await getAllExchanges(tokenOverrides, ignoredTokens)
+        ? await getAllTokens(tokenOverrides, ignoredTokens)
         : {};
     dispatch({
-      payload: allPairs,
-      type: UNISWAP_UPDATE_ALL_PAIRS,
+      payload: allTokens,
+      type: UNISWAP_UPDATE_ALL_TOKENS,
     });
   } catch (error) {
     dispatch({
-      payload: { allPairs: {} },
-      type: UNISWAP_UPDATE_ALL_PAIRS,
+      payload: { allTokens: {} },
+      type: UNISWAP_UPDATE_ALL_TOKENS,
     });
   }
 };
@@ -254,7 +254,7 @@ export const uniswapUpdateState = () => (dispatch, getState) =>
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNISWAP_STATE = {
-  allPairs: {},
+  allTokens: {},
   favorites: DefaultUniswapFavorites,
   fetchingUniswap: false,
   inputCurrency: null,
@@ -277,8 +277,8 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
       case UNISWAP_LOAD_LIQUIDITY_TOKEN_INFO_SUCCESS:
         draft.uniswapLiquidityTokenInfo = action.payload;
         break;
-      case UNISWAP_UPDATE_ALL_PAIRS:
-        draft.allPairs = action.payload;
+      case UNISWAP_UPDATE_ALL_TOKENS:
+        draft.allTokens = action.payload;
         draft.isInitialized = true;
         break;
       case UNISWAP_UPDATE_PAIRS:

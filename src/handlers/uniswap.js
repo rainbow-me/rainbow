@@ -24,10 +24,7 @@ import {
   zipObject,
 } from 'lodash';
 import { uniswapClient } from '../apollo/client';
-import {
-  UNISWAP_ALL_EXCHANGES_QUERY,
-  UNISWAP_CHART_QUERY,
-} from '../apollo/queries';
+import { UNISWAP_ALL_TOKENS, UNISWAP_CHART_QUERY } from '../apollo/queries';
 import ChartTypes from '../helpers/chartTypes';
 import {
   convertAmountToRawAmount,
@@ -389,7 +386,7 @@ export const getChart = async (exchangeAddress, timeframe) => {
   return data;
 };
 
-export const getAllExchanges = async (tokenOverrides, excluded = []) => {
+export const getAllTokens = async (tokenOverrides, excluded = []) => {
   const pageSize = 600;
   let allTokens = {};
   let data = [];
@@ -398,33 +395,33 @@ export const getAllExchanges = async (tokenOverrides, excluded = []) => {
     let skip = 0;
     while (!dataEnd) {
       let result = await uniswapClient.query({
-        query: UNISWAP_ALL_EXCHANGES_QUERY,
+        query: UNISWAP_ALL_TOKENS,
         variables: {
           excluded,
           first: pageSize,
           skip: skip,
         },
       });
-      data = data.concat(result.data.exchanges);
+      data = data.concat(result.data.tokens);
       skip = skip + pageSize;
-      if (result.data.exchanges.length < pageSize) {
+      if (result.data.tokens.length < pageSize) {
         dataEnd = true;
       }
     }
   } catch (err) {
     logger.log('error: ', err);
   }
-  data.forEach(exchange => {
-    const tokenAddress = toLower(exchange.tokenAddress);
-    const tokenExchangeInfo = {
-      decimals: exchange.tokenDecimals,
-      ethBalance: exchange.ethBalance,
-      exchangeAddress: exchange.id,
-      name: exchange.tokenName,
-      symbol: exchange.tokenSymbol,
+  data.forEach(token => {
+    const tokenAddress = toLower(token.id);
+    const tokenInfo = {
+      address: token.id,
+      decimals: token.decimals,
+      name: token.name,
+      symbol: token.symbol,
+      totalLiquidity: token.totalLiquidity,
       ...tokenOverrides[tokenAddress],
     };
-    allTokens[tokenAddress] = tokenExchangeInfo;
+    allTokens[tokenAddress] = tokenInfo;
   });
   return allTokens;
 };
