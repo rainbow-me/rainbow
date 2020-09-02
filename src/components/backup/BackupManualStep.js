@@ -107,8 +107,8 @@ export default function BackupManualStep() {
       </Column>
       <Column>
         <SecretDisplaySection
+          onSecretLoaded={setSecretLoaded}
           onWalletTypeIdentified={setType}
-          secretLoaded={setSecretLoaded}
         />
       </Column>
       <Column css={padding(0, 15)} flex={1} justify="end" width="100%">
