@@ -240,6 +240,7 @@ export default function SettingsModal() {
               component && (
                 <Stack.Screen
                   component={component}
+                  key={key}
                   name={key}
                   options={{
                     cardStyleInterpolator,
