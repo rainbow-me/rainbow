@@ -5,7 +5,7 @@ import NetworkTypes from '../helpers/networkTypes';
 import { sortAssetsByNativeAmountSelector } from '../hoc/assetSelectors';
 
 const uniswapPairsSelector = state => state.uniswap.pairs;
-const uniswapAllPairsSelector = state => state.uniswap.allPairs;
+const uniswapAllTokensSelector = state => state.uniswap.allTokens;
 const networkSelector = state => state.settings.network;
 
 const filterUniswapAssetsByAvailability = uniswapAssetAddresses => ({
@@ -52,7 +52,7 @@ const withUniswapAssetsInWalletSelector = createSelector(
     networkSelector,
     sortAssetsByNativeAmountSelector,
     uniswapPairsSelector,
-    uniswapAllPairsSelector,
+    uniswapAllTokensSelector,
   ],
   withUniswapAssetsInWallet
 );

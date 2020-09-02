@@ -16,7 +16,7 @@ import { uniswapUpdateFavorites } from '../redux/uniswap';
 const uniswapIsInitializedSelector = state => state.uniswap.isInitialized;
 const uniswapFavoritesSelector = state => state.uniswap.favorites;
 const uniswapPairsSelector = state => state.uniswap.pairs;
-const uniswapAllPairsSelector = state => state.uniswap.allPairs;
+const uniswapAllTokensSelector = state => state.uniswap.allTokens;
 
 const appendFavoriteKey = asset => ({
   ...asset,
@@ -62,17 +62,14 @@ const withUniswapAssets = (
 };
 
 const getGlobalUniswapAssets = (assets, favorites) => {
-  const assetsWithAddress = mapValues(assets, (value, key) => ({
-    ...value,
-    address: key,
-  }));
-  const sorted = sortBy(values(assetsWithAddress), ({ name }) => toLower(name));
+  const sorted = sortBy(values(assets), ({ name }) => toLower(name));
   const [favorited, notFavorited] = partition(sorted, ({ address }) =>
     includes(map(favorites, toLower), toLower(address))
   );
+  // TODO JIN - check totalLiquidity is a good threshold
   const [highLiquidity, lowLiquidity] = partition(
     notFavorited,
-    ({ ethBalance }) => ethBalance > 0.5
+    ({ totalLiquidity }) => totalLiquidity > 0.5
   );
 
   return {
@@ -102,7 +99,7 @@ const withUniswapAssetsSelector = createSelector(
   [
     uniswapIsInitializedSelector,
     uniswapPairsSelector,
-    uniswapAllPairsSelector,
+    uniswapAllTokensSelector,
     uniswapFavoritesSelector,
   ],
   withUniswapAssets
