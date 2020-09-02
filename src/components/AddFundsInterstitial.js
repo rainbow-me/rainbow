@@ -126,9 +126,11 @@ const shadows = {
 };
 
 const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
+  const handlePress = useCallback(() => onPress?.(amount), [amount, onPress]);
+
   return (
     <AmountButtonWrapper>
-      <AmountBPA onPress={onPress}>
+      <AmountBPA onPress={handlePress}>
         <ShadowStack
           {...position.coverAsObject}
           backgroundColor={backgroundColor}
@@ -154,8 +156,9 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
         showWalletErrorAlert();
         return;
       }
+      console.log(amount);
       navigate(Routes.ADD_CASH_FLOW, {
-        params: { amount },
+        params: !isNaN(amount) ? { amount } : null,
         screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
       });
     },
@@ -181,22 +184,22 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
                 amount={50}
                 backgroundColor={colors.swapPurple}
                 color={colors.neonSkyblue}
-                onPress={() => handlePressAmount(50)}
+                onPress={handlePressAmount}
               />
               <AmountButton
                 amount={100}
                 backgroundColor={colors.swapPurple}
                 color={colors.neonSkyblue}
-                onPress={() => handlePressAmount(100)}
+                onPress={handlePressAmount}
               />
               <AmountButton
                 amount={250}
                 backgroundColor={colors.purpleDark}
                 color={colors.pinkLight}
-                onPress={() => handlePressAmount(250)}
+                onPress={handlePressAmount}
               />
             </Row>
-            <InterstitialButton onPress={() => handlePressAmount(0)}>
+            <InterstitialButton onPress={handlePressAmount}>
               <Text
                 align="center"
                 color={colors.alpha(colors.blueGreyDark, 0.6)}
