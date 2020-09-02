@@ -310,38 +310,33 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
 
     const newSubscription = newQuery.subscribe({
       next: async ({ data }) => {
-        if (data && data.exchanges) {
+        if (data && data.tokens) {
           const nativePriceOfEth = ethereumUtils.getEthPriceUnit(assets);
-          const exchangeAddresses = map(data.exchanges, property('id'));
+          const tokenAddresses = map(data.tokens, property('id'));
 
           const yesterday = getUnixTime(subDays(new Date(), 1));
-          const historicalPriceCalls = map(exchangeAddresses, address =>
+          const historicalPriceCalls = map(tokenAddresses, address =>
             get24HourPrice(address, yesterday)
           );
           const historicalPriceResults = await Promise.all(
             historicalPriceCalls
           );
-          const mappedHistoricalData = keyBy(
-            historicalPriceResults,
-            'exchangeAddress'
-          );
+          const mappedHistoricalData = keyBy(historicalPriceResults, 'id');
+          // TODO JIN - this is now only in USD
           const missingHistoricalPrices = mapValues(
             mappedHistoricalData,
-            value => divide(nativePriceOfEth, value.price)
+            value => value.priceUSD
           );
 
-          const mappedPricingData = keyBy(data.exchanges, 'id');
-          const missingPrices = mapValues(mappedPricingData, value =>
-            divide(nativePriceOfEth, value.price)
+          const mappedPricingData = keyBy(data.tokens, 'id');
+          const missingPrices = mapValues(mappedPricingData, token =>
+            divide(nativePriceOfEth, token.derivedETH)
           );
           const missingPriceInfo = mapValues(
             missingPrices,
             (currentPrice, key) => {
               const historicalPrice = get(missingHistoricalPrices, `[${key}]`);
-              const tokenAddress = get(
-                mappedPricingData,
-                `[${key}].tokenAddress`
-              );
+              const tokenAddress = get(mappedPricingData, `[${key}].id`);
               const relativePriceChange = historicalPrice
                 ? ((currentPrice - historicalPrice) / currentPrice) * 100
                 : 0;
@@ -372,16 +367,16 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
   }
 };
 
-const get24HourPrice = async (exchangeAddress, yesterday) => {
+const get24HourPrice = async (address, yesterday) => {
   const result = await uniswapClient.query({
     query: UNISWAP_24HOUR_PRICE_QUERY,
     variables: {
-      exchangeAddress,
+      address,
       fetchPolicy: 'network-only',
       timestamp: yesterday,
     },
   });
-  return get(result, 'data.exchangeHistoricalDatas[0]');
+  return get(result, 'data.tokenDayDatas[0]');
 };
 
 export const assetPricesReceived = message => (dispatch, getState) => {

@@ -29,65 +29,59 @@ export const COMPOUND_ACCOUNT_AND_MARKET_QUERY = gql`
 `;
 
 export const UNISWAP_24HOUR_PRICE_QUERY = gql`
-  query exchangeHistoricalDatas($timestamp: Int!, $exchangeAddress: String!) {
-    exchangeHistoricalDatas(
-      where: { exchangeAddress: $exchangeAddress, timestamp_lt: $timestamp }
+  query tokenDayDatas($timestamp: Int!, $address: String!) {
+    tokenDayDatas(
+      where: { id: $address, date_lt: $timestamp }
       first: 1
-      orderBy: tradeVolumeEth
+      orderBy: dailyVolumeEth
       orderDirection: desc
     ) {
-      exchangeAddress
       id
-      price
-      timestamp
-    }
-  }
-`;
-
-export const UNISWAP_ALL_EXCHANGES_QUERY = gql`
-  query exchanges($excluded: [String]!, $first: Int!, $skip: Int!) {
-    exchanges(
-      first: $first
-      skip: $skip
-      orderBy: combinedBalanceInUSD
-      orderDirection: desc
-      where: { tokenAddress_not_in: $excluded, ethBalance_gt: 0 }
-    ) {
-      ethBalance
-      id
-      tokenAddress
-      tokenDecimals
-      tokenName
-      tokenSymbol
+      priceUSD
+      date
     }
   }
 `;
 
 export const UNISWAP_PRICES_QUERY = gql`
-  query exchanges($addresses: [String]!) {
-    exchanges(where: { tokenAddress_in: $addresses, price_gt: 0 }) {
+  query tokens($addresses: [String]!) {
+    tokens(where: { id_in: $addresses, derivedETH_gt: 0 }) {
       id
-      price
-      tokenAddress
-      tokenSymbol
+      derivedETH
+      symbol
+      name
+      decimals
     }
   }
 `;
 
 export const UNISWAP_CHART_QUERY = gql`
-  query exchangeDayDatas($date: Int!, $exchangeAddress: String!) {
-    exchangeDayDatas(
-      where: { exchangeAddress: $exchangeAddress, date_gt: $date }
+  query tokenDayDatas($date: Int!, $exchangeAddress: String!) {
+    tokenDayDatas(
+      where: { id: $exchangeAddress, date_gt: $date }
       orderBy: date
       orderDirection: asc
     ) {
       date
-      ethBalance
-      tokenBalance
-      marginalEthRate
-      ethVolume
-      tokenPriceUSD
-      totalEvents
+      priceUSD
+    }
+  }
+`;
+
+export const UNISWAP_ALL_TOKENS = gql`
+  query tokens($excluded: [String]!, $first: Int!, $skip: Int!) {
+    tokens(
+      first: $first
+      skip: $skip
+      orderBy: totalLiquidity
+      orderDirection: desc
+      where: { id_not_in: $excluded, totalLiquidity_gt: 0 }
+    ) {
+      id
+      name
+      symbol
+      decimals
+      totalLiquidity
     }
   }
 `;
