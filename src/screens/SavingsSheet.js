@@ -24,7 +24,7 @@ import {
 import { isSymbolStablecoin } from '../helpers/savings';
 import { convertAmountToNativeDisplay } from '../helpers/utilities';
 import { useAccountSettings, useDimensions, useWallets } from '../hooks';
-import { useNavigation } from '../navigation/Navigation';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
 

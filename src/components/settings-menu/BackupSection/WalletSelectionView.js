@@ -1,12 +1,6 @@
-import { useNavigation } from '@react-navigation/core';
 import React, { useCallback } from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
-import Caret from '../../../assets/family-dropdown-arrow.png';
-import WalletBackupTypes from '../../../helpers/walletBackupTypes';
-import WalletTypes from '../../../helpers/walletTypes';
-import { useWallets } from '../../../hooks';
-import { abbreviations } from '../../../utils';
 import Divider from '../../Divider';
 import { ButtonPressAnimation } from '../../animations';
 import { BottomRowText } from '../../coin-row';
@@ -14,7 +8,13 @@ import { ContactAvatar } from '../../contacts';
 import { Icon } from '../../icons';
 import { Column, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedAddress } from '../../text';
+import Caret from '@rainbow-me/assets/family-dropdown-arrow.png';
+import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { useWallets } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import { colors, fonts } from '@rainbow-me/styles';
+import { abbreviations } from '@rainbow-me/utils';
 
 const CaretIcon = styled(FastImage).attrs({
   source: Caret,

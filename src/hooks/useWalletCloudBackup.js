@@ -5,19 +5,19 @@ import { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
 import {
-  CLOUD_BACKUP_ERRORS,
-  isCloudBackupAvailable,
-} from '../handlers/cloudBackup';
-import WalletBackupTypes from '../helpers/walletBackupTypes';
-import walletLoadingStates from '../helpers/walletLoadingStates';
-import {
   addWalletToCloudBackup,
   backupWalletToCloud,
   fetchBackupPassword,
 } from '../model/backup';
 import { setIsWalletLoading, setWalletBackedUp } from '../redux/wallets';
 import useWallets from './useWallets';
+import {
+  CLOUD_BACKUP_ERRORS,
+  isCloudBackupAvailable,
+} from '@rainbow-me/handlers/cloudBackup';
 import { delay } from '@rainbow-me/helpers/utilities';
+import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import logger from 'logger';
 
 function getUserError(e) {

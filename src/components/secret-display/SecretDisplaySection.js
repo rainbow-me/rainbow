@@ -3,9 +3,6 @@ import { captureException } from '@sentry/react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import styled from 'styled-components';
-import BiometryTypes from '../../helpers/biometryTypes';
-import WalletTypes from '../../helpers/walletTypes';
-import { useBiometryType, useDimensions, useWallets } from '../../hooks';
 import {
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
@@ -17,6 +14,9 @@ import { Icon } from '../icons';
 import { Centered, Column, Row, RowWithMargins } from '../layout';
 import SecretDisplayItem from '../secret-display/SecretDisplayItem';
 import { Text } from '../text';
+import BiometryTypes from '@rainbow-me/helpers/biometryTypes';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { useBiometryType, useDimensions, useWallets } from '@rainbow-me/hooks';
 import { colors, position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
 

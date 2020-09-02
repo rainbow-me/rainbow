@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
@@ -12,6 +12,7 @@ import { Text } from '../text';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useDimensions, useWallets } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import { colors, padding } from '@rainbow-me/styles';
 
 const DescriptionText = styled(Text).attrs({

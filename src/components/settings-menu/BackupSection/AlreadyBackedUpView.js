@@ -1,21 +1,21 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { Alert, Platform, View } from 'react-native';
 import styled from 'styled-components';
-import WalletBackupTypes from '../../../helpers/walletBackupTypes';
-import WalletTypes from '../../../helpers/walletTypes';
-import { useWalletCloudBackup, useWallets } from '../../../hooks';
-import { Navigation } from '../../../navigation';
-import { sheetVerticalOffset } from '../../../navigation/effects';
-import { usePortal } from '../../../react-native-cool-modals/Portal';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
 import LoadingOverlay from '../../modal/LoadingOverlay';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
+import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
+import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
 import { colors, fonts, padding } from '@rainbow-me/styles';
+import { usePortal } from 'react-native-cool-modals/Portal';
 
 const WalletBackupStatus = {
   CLOUD_BACKUP: 0,

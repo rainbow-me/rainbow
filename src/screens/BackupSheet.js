@@ -1,8 +1,4 @@
-import {
-  useNavigation,
-  useNavigationState,
-  useRoute,
-} from '@react-navigation/native';
+import { useNavigationState, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, {
@@ -19,17 +15,17 @@ import { BackupSheetSection } from '../components/backup';
 import BackupConfirmPasswordStep from '../components/backup/BackupConfirmPasswordStep';
 import BackupIcloudStep from '../components/backup/BackupIcloudStep';
 import BackupManualStep from '../components/backup/BackupManualStep';
-import LoadingOverlay from '../components/modal/LoadingOverlay';
+import { LoadingOverlay } from '../components/modal';
 import { Sheet, SlackSheet } from '../components/sheet';
-import WalletBackupTypes from '../helpers/walletBackupTypes';
-import WalletTypes from '../helpers/walletTypes';
-import { useWalletCloudBackup, useWallets } from '../hooks';
-import { sheetVerticalOffset } from '../navigation/effects';
-import { usePortal } from '../react-native-cool-modals/Portal';
 import { deviceUtils } from '../utils';
-
+import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
+import { usePortal } from 'react-native-cool-modals/Portal';
 
 const switchSheetContentTransition = (
   <Transition.Together>

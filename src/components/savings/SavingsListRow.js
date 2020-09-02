@@ -12,7 +12,6 @@ import {
   formatSavingsAmount,
 } from '../../helpers/savings';
 import { useDimensions } from '../../hooks';
-import { useNavigation } from '../../navigation/Navigation';
 import {
   SavingsSheetEmptyHeight,
   SavingsSheetHeight,
@@ -23,6 +22,7 @@ import { Centered, Row } from '../layout';
 import APYPill from './APYPill';
 import SavingsListRowAnimatedNumber from './SavingsListRowAnimatedNumber';
 import SavingsListRowEmptyState from './SavingsListRowEmptyState';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, padding, position } from '@rainbow-me/styles';
 
