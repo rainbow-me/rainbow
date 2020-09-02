@@ -1,6 +1,6 @@
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { useCallback, useRef } from 'react';
-import { findNodeHandle, InteractionManager, TextInput } from 'react-native';
+import { InteractionManager, TextInput } from 'react-native';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { setListener } from '../navigation/nativeStackHelpers';
 import useInteraction from './useInteraction';
@@ -25,13 +25,13 @@ export default function useMagicAutofocus(
   const isScreenFocused = useIsFocused();
   const lastFocusedInputHandle = useRef(null);
 
-  const handleFocus = useCallback(({ currentTarget }) => {
-    lastFocusedInputHandle.current = currentTarget;
+  const handleFocus = useCallback(({ target }) => {
+    lastFocusedInputHandle.current = target.getNativeRef();
   }, []);
 
   const triggerFocus = useCallback(() => {
     if (!lastFocusedInputHandle.current) {
-      return focusTextInput(findNodeHandle(defaultAutofocusInputRef.current));
+      return focusTextInput(defaultAutofocusInputRef.current);
     }
 
     if (customTriggerFocusCallback) {
