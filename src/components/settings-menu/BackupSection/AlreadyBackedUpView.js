@@ -5,7 +5,7 @@ import { Alert, Platform, View } from 'react-native';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
-import LoadingOverlay from '../../modal/LoadingOverlay';
+import { LoadingOverlay } from '../../modal';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';

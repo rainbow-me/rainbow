@@ -4,15 +4,16 @@ import { useDispatch } from 'react-redux';
 import {
   getTopMovers,
   TOP_MOVERS_FROM_STORAGE,
-} from '../handlers/localstorage/topMovers';
+} from '@rainbow-me/handlers/localstorage/topMovers';
 import {
   getWalletBalances,
   WALLET_BALANCES_FROM_STORAGE,
-} from '../handlers/localstorage/walletBalances';
-import { contactsLoadState } from '../redux/contacts';
-import { imageMetadataCacheLoadState } from '../redux/imageMetadata';
-import { settingsLoadState } from '../redux/settings';
-import { promiseUtils } from '../utils';
+} from '@rainbow-me/handlers/localstorage/walletBalances';
+import { contactsLoadState } from '@rainbow-me/redux/contacts';
+import { imageMetadataCacheLoadState } from '@rainbow-me/redux/imageMetadata';
+import { keyboardHeightsLoadState } from '@rainbow-me/redux/keyboardHeight';
+import { settingsLoadState } from '@rainbow-me/redux/settings';
+import { promiseUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const loadTopMoversToCache = () =>
@@ -32,7 +33,8 @@ export default function useLoadGlobalData() {
     const p3 = loadTopMoversToCache();
     const p4 = loadWalletBalanceNamesToCache();
     const p5 = dispatch(imageMetadataCacheLoadState());
-    promises.push(p1, p2, p3, p4, p5);
+    const p6 = dispatch(keyboardHeightsLoadState());
+    promises.push(p1, p2, p3, p4, p5, p6);
 
     return promiseUtils.PromiseAllWithFails(promises);
   }, [dispatch]);

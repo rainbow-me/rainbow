@@ -1,6 +1,4 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { useShowcaseTokens } from '../../hooks';
-import { magicMemo } from '../../utils';
 import Link from '../Link';
 import { Column, ColumnWithDividers } from '../layout';
 import {
@@ -18,7 +16,9 @@ import {
   UniqueTokenExpandedStateHeader,
   UniqueTokenExpandedStateImage,
 } from './unique-token';
+import { useShowcaseTokens } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
 const UniqueTokenExpandedState = ({ asset }) => {
   const {

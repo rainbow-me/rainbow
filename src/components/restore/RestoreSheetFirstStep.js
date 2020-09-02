@@ -5,7 +5,7 @@ import WalletBackupTypes from '../../helpers/walletBackupTypes';
 import { deviceUtils } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
-import Icon from '../icons/Icon';
+import { Icon } from '../icons';
 import { Column, Row, RowWithMargins } from '../layout';
 import { GradientText, Text } from '../text';
 import { colors } from '@rainbow-me/styles';

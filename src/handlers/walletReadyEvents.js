@@ -1,10 +1,10 @@
 import { filter, find } from 'lodash';
-import store from '../redux/store';
-import { checkKeychainIntegrity } from '../redux/wallets';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
+import store from '@rainbow-me/redux/store';
+import { checkKeychainIntegrity } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 

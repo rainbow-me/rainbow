@@ -21,9 +21,13 @@ import {
   SheetActionButtonRow,
   SlackSheet,
 } from '../components/sheet';
-import { isSymbolStablecoin } from '../helpers/savings';
-import { convertAmountToNativeDisplay } from '../helpers/utilities';
-import { useAccountSettings, useDimensions, useWallets } from '../hooks';
+import { isSymbolStablecoin } from '@rainbow-me/helpers/savings';
+import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
+import {
+  useAccountSettings,
+  useDimensions,
+  useWallets,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';

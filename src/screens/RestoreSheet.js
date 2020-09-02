@@ -11,7 +11,7 @@ import styled from 'styled-components';
 import RestoreIcloudStep from '../components/restore/RestoreIcloudStep';
 import RestoreSheetFirstStep from '../components/restore/RestoreSheetFirstStep';
 import { SlackSheet } from '../components/sheet';
-import WalletBackupStepTypes from '../helpers/walletBackupStepTypes';
+import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';

@@ -4,7 +4,6 @@ import { omit } from 'lodash';
 import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import { InitialRouteContext } from '../context/initialRoute';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
@@ -45,6 +44,7 @@ import {
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
 const Stack = createStackNavigator();

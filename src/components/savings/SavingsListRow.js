@@ -7,12 +7,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import {
-  calculateAPY,
-  calculateCompoundInterestInDays,
-  formatSavingsAmount,
-} from '../../helpers/savings';
-import { useDimensions } from '../../hooks';
-import {
   SavingsSheetEmptyHeight,
   SavingsSheetHeight,
 } from '../../screens/SavingsSheet';
@@ -22,6 +16,12 @@ import { Centered, Row } from '../layout';
 import APYPill from './APYPill';
 import SavingsListRowAnimatedNumber from './SavingsListRowAnimatedNumber';
 import SavingsListRowEmptyState from './SavingsListRowEmptyState';
+import {
+  calculateAPY,
+  calculateCompoundInterestInDays,
+  formatSavingsAmount,
+} from '@rainbow-me/helpers/savings';
+import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, padding, position } from '@rainbow-me/styles';
