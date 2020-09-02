@@ -1,4 +1,5 @@
 export { default as useAccountAssets } from './useAccountAssets';
+export { default as useAccountEmptyState } from './useAccountEmptyState';
 export { default as useAccountProfile } from './useAccountProfile';
 export { default as useAccountSettings } from './useAccountSettings';
 export { default as useAccountTransactions } from './useAccountTransactions';

@@ -10,6 +10,7 @@ let base = {
   black: '#000000', // '0, 0, 0'
   blueGreyDark: '#3C4252', // '60, 66, 82'
   blueGreyDark50: '#9DA0A8', // this color is blueGreyDark at 50% over white
+  blueGreyDark60: '#898d97', // this color is blueGreyDark at 60% over white
   blueGreyDarker: '#0F0F11', // '15, 15, 17'
   blueGreyDarkLight: '#F3F4F5', // '243, 244, 245'
   brightRed: '#FF7171', // '255, 113, 113'
@@ -25,11 +26,14 @@ let base = {
   lightGrey: '#CDCFD4', // '205, 207, 212'
   mediumGrey: '#A1A5B3', // '161, 165, 179'
   mintDark: '#00E0A9', // '0, 224, 169'
+  neonSkyblue: '#34FFFF', // '52, 255, 255'
   orange: '#FF9900', // '255, 153, 0'
   orangeLight: '#FEBE44', // '254, 190, 68'
   paleBlue: '#579DFF', // 87, 157, 255
   pink: '#FF54BB', // 255, 84, 187
+  pinkLight: '#FF75E8', // '255, 117, 232'
   purple: '#735CFF', // '115, 92, 255'
+  purpleDark: '#6F00A3', // '111, 0, 163'
   purpleLight: '#FFD9FE', // '255, 217, 254'
   red: '#FF494A', // '255, 73, 74'
   rowDivider: 'rgba(60, 66, 82, 0.03)', // '60, 66, 82, 0.03'
@@ -84,6 +88,11 @@ let listHeaders = {
   firstGradient: '#ffffff00',
   secondGradient: '#ffffff80',
   thirdGradient: '#ffffff00',
+};
+
+const light = {
+  clearBlue: buildRgba(base.appleBlue, 0.06),
+  clearGrey: buildRgba(base.blueGreyDark, 0.06),
 };
 
 assetIcon.random = () => {
@@ -172,6 +181,7 @@ const colors = {
   uniswapInvestmentCards,
   ...base,
   ...transparent,
+  ...light,
   ...vendor,
 };
 

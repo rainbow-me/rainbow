@@ -418,7 +418,10 @@ export default function WelcomeScreen() {
   const backgroundColor = useMemoOne(() => colorAnimation(rValue, false), []);
 
   const onCreateWallet = useCallback(async () => {
-    replace(Routes.SWIPE_LAYOUT);
+    replace(Routes.SWIPE_LAYOUT, {
+      params: { emptyWallet: true },
+      screen: Routes.WALLET_SCREEN,
+    });
   }, [replace]);
 
   const createWalletButtonProps = useMemoOne(() => {

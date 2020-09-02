@@ -33,23 +33,26 @@ const EmptyAssetList = ({
 
   return (
     <Container {...props}>
-      {title && <AssetListHeader title={title} />}
       <Centered flex={1}>
-        <Column cover>
-          {times(skeletonCount, index => (
-            <AssetListItemSkeleton
-              animated={!isWalletEthZero}
-              descendingOpacity={descendingOpacity || isWalletEthZero}
-              index={index}
-              key={`skeleton${index}`}
-            />
-          ))}
-        </Column>
-        {isWalletEthZero && (
+        {isWalletEthZero ? (
           <AddFundsInterstitial
             network={network}
             offsetY={interstitialOffset}
           />
+        ) : (
+          <React.Fragment>
+            {title && <AssetListHeader title={title} />}
+            <Column cover>
+              {times(skeletonCount, index => (
+                <AssetListItemSkeleton
+                  animated={!isWalletEthZero}
+                  descendingOpacity={descendingOpacity || isWalletEthZero}
+                  index={index}
+                  key={`skeleton${index}`}
+                />
+              ))}
+            </Column>
+          </React.Fragment>
         )}
       </Centered>
     </Container>
