@@ -27,6 +27,7 @@ let base = {
   mediumGrey: '#A1A5B3', // '161, 165, 179'
   mintDark: '#00E0A9', // '0, 224, 169'
   neonSkyblue: '#34FFFF', // '52, 255, 255'
+  offWhite: '#F8F9FA', // '248, 249, 250'
   orange: '#FF9900', // '255, 153, 0'
   orangeLight: '#FEBE44', // '254, 190, 68'
   paleBlue: '#579DFF', // 87, 157, 255
@@ -68,10 +69,10 @@ const assetIcon = {
   red: '#C95050', // '201, 80, 80',
 };
 
-const lightGreyGradient = [
-  buildRgba('#ECF1F5', 0.5),
-  buildRgba('#DFE4EB', 0.5),
-];
+const gradients = {
+  lightGrey: [buildRgba('#ECF1F5', 0.5), buildRgba('#DFE4EB', 0.5)],
+  offWhite: [base.white, base.offWhite],
+};
 
 const sendScreen = {
   brightBlue: base.appleBlue, // '14, 118, 253'
@@ -174,8 +175,8 @@ const colors = {
   avatarColor,
   getFallbackTextColor,
   getTextColorForBackground,
+  gradients,
   isColorLight,
-  lightGreyGradient,
   listHeaders,
   sendScreen,
   uniswapInvestmentCards,
