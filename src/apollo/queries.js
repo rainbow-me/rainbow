@@ -74,19 +74,6 @@ export const UNISWAP_PRICES_QUERY = gql`
   }
 `;
 
-export const UNISWAP_FISRT_PRICE_QUERY = gql`
-  query exchangeDayDatas($date: Int!, $exchangeAddress: String!) {
-    exchangeDayDatas(
-      first: 1
-      where: { exchangeAddress: $exchangeAddress, date_gt: $date }
-      orderBy: date
-      orderDirection: asc
-    ) {
-      date
-    }
-  }
-`;
-
 export const UNISWAP_CHART_QUERY = gql`
   query exchangeDayDatas($date: Int!, $exchangeAddress: String!) {
     exchangeDayDatas(
