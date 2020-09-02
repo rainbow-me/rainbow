@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get, isEmpty, isNil, omit } from 'lodash';
@@ -18,8 +19,12 @@ import {
   TransactionConfirmationSection,
 } from '../components/transaction';
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
-import { convertHexToString } from '../helpers/utilities';
-import { useGas, useTransactionConfirmation } from '../hooks';
+import {
+  convertHexToString,
+  fromWei,
+  greaterThanOrEqualTo,
+} from '../helpers/utilities';
+import { useAccountAssets, useGas, useTransactionConfirmation } from '../hooks';
 import {
   sendTransaction,
   signMessage,
@@ -29,7 +34,7 @@ import {
 } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
-import { gasUtils } from '../utils';
+import { ethereumUtils, gasUtils } from '../utils';
 import {
   isMessageDisplayType,
   isSignFirstParamType,
@@ -65,10 +70,13 @@ const TransactionType = styled(Text).attrs({ size: 'h5' })`
   margin-top: 6;
 `;
 
+const NOOP = () => undefined;
+
 const TransactionConfirmationScreen = () => {
+  const { allAssets } = useAccountAssets();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const calculatingGasLimit = useRef(false);
-
+  const [isBalanceEnough, setIsBalanceEnough] = useState(true);
   const {
     gasLimit,
     gasPrices,
@@ -76,6 +84,7 @@ const TransactionConfirmationScreen = () => {
     startPollingGasPrices,
     stopPollingGasPrices,
     updateTxFee,
+    selectedGasPrice,
   } = useGas();
 
   const dispatch = useDispatch();
@@ -114,16 +123,19 @@ const TransactionConfirmationScreen = () => {
     if (openAutomatically && !isEmulatorSync()) {
       Vibration.vibrate();
     }
-
-    InteractionManager.runAfterInteractions(() => {
-      startPollingGasPrices();
-    });
-  }, [openAutomatically, startPollingGasPrices]);
+    if (!isMessageDisplayType(method)) {
+      InteractionManager.runAfterInteractions(() => {
+        startPollingGasPrices();
+      });
+    }
+  }, [method, openAutomatically, startPollingGasPrices]);
 
   const closeScreen = useCallback(
     canceled => {
       goBack();
-      stopPollingGasPrices();
+      if (!isMessageDisplayType(method)) {
+        stopPollingGasPrices();
+      }
       if (pendingRedirect) {
         InteractionManager.runAfterInteractions(() => {
           let type = method === SEND_TRANSACTION ? 'transaction' : 'sign';
@@ -174,6 +186,7 @@ const TransactionConfirmationScreen = () => {
     let gas = txPayload.gasLimit || txPayload.gas;
     try {
       // attempt to re-run estimation
+      logger.log('Estimating gas limit');
       const rawGasLimit = await estimateGas(txPayload);
       logger.log('Estimated gas limit', rawGasLimit);
       if (rawGasLimit) {
@@ -190,12 +203,57 @@ const TransactionConfirmationScreen = () => {
   }, [params, updateTxFee]);
 
   useEffect(() => {
-    if (!isEmpty(gasPrices) && !calculatingGasLimit.current) {
+    if (
+      !isEmpty(gasPrices) &&
+      !calculatingGasLimit.current &&
+      !isMessageDisplayType(method)
+    ) {
       InteractionManager.runAfterInteractions(() => {
         calculateGasLimit();
       });
     }
-  }, [calculateGasLimit, gasLimit, gasPrices, params, updateTxFee]);
+  }, [calculateGasLimit, gasLimit, gasPrices, method, params, updateTxFee]);
+
+  useEffect(() => {
+    if (isMessageDisplayType(method)) {
+      setIsBalanceEnough(true);
+      return;
+    }
+
+    if (!isSufficientGas) {
+      setIsBalanceEnough(false);
+      return;
+    }
+
+    const { txFee } = selectedGasPrice;
+    if (!txFee) {
+      setIsBalanceEnough(false);
+      return;
+    }
+    // Get the TX fee Amount
+    const txFeeAmount = fromWei(get(txFee, 'value.amount', 0));
+
+    // Get the ETH balance
+    const ethAsset = ethereumUtils.getAsset(allAssets);
+    const balanceAmount = get(ethAsset, 'balance.amount', 0);
+
+    // Get the TX value
+    const txPayload = get(params, '[0]');
+    const value = get(txPayload, 'value', 0);
+
+    // Check that there's enough ETH to pay for everything!.
+    const totalAmount = BigNumber(fromWei(value)).plus(txFeeAmount);
+    const isEnough = greaterThanOrEqualTo(balanceAmount, totalAmount);
+
+    setIsBalanceEnough(isEnough);
+  }, [
+    allAssets,
+    isBalanceEnough,
+    isSufficientGas,
+    method,
+    params,
+    selectedGasPrice,
+  ]);
 
   const handleConfirmTransaction = useCallback(async () => {
     const sendInsteadOfSign = method === SEND_TRANSACTION;
@@ -343,8 +401,9 @@ const TransactionConfirmationScreen = () => {
     if (isMessageDisplayType(method)) {
       return handleSignMessage();
     }
+    if (!isBalanceEnough) return;
     return handleConfirmTransaction();
-  }, [handleConfirmTransaction, handleSignMessage, method]);
+  }, [handleConfirmTransaction, handleSignMessage, isBalanceEnough, method]);
 
   const onLongPressSend = useCallback(async () => {
     setIsAuthorizing(true);
@@ -357,8 +416,17 @@ const TransactionConfirmationScreen = () => {
   }, [onConfirm]);
 
   const renderSendButton = useCallback(() => {
-    const label = `Hold to ${method === SEND_TRANSACTION ? 'Send' : 'Sign'}`;
-    return isSufficientGas === false ? (
+    let label = `Hold to ${method === SEND_TRANSACTION ? 'Send' : 'Sign'}`;
+
+    let ready = true;
+    // If we don't know about gas prices yet
+    // set the button state to "loading"
+    if (!isBalanceEnough && isSufficientGas === undefined) {
+      label = 'Loading...';
+      ready = false;
+    }
+
+    return isBalanceEnough === false && isSufficientGas !== undefined ? (
       <HoldToAuthorizeButton
         disabled
         hideBiometricIcon
@@ -368,10 +436,16 @@ const TransactionConfirmationScreen = () => {
       <HoldToAuthorizeButton
         isAuthorizing={isAuthorizing}
         label={label}
-        onLongPress={onLongPressSend}
+        onLongPress={ready ? onLongPressSend : NOOP}
       />
     );
-  }, [isAuthorizing, isSufficientGas, method, onLongPressSend]);
+  }, [
+    isAuthorizing,
+    isBalanceEnough,
+    isSufficientGas,
+    method,
+    onLongPressSend,
+  ]);
 
   const requestHeader = isMessageDisplayType(method)
     ? lang.t('wallet.message_signing.request')
