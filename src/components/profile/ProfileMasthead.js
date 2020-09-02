@@ -1,17 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
-import useExperimentalFlag, {
-  AVATAR_PICKER,
-} from '../../config/experimentalHooks';
-import showWalletErrorAlert from '../../helpers/support';
-import {
-  useAccountProfile,
-  useClipboard,
-  useDimensions,
-  useWallets,
-} from '../../hooks';
-import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RainbowButton } from '../buttons';
@@ -21,7 +10,17 @@ import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
-
+import useExperimentalFlag, {
+  AVATAR_PICKER,
+} from '@rainbow-me/config/experimentalHooks';
+import showWalletErrorAlert from '@rainbow-me/helpers/support';
+import {
+  useAccountProfile,
+  useClipboard,
+  useDimensions,
+  useWallets,
+} from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';

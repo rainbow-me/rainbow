@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import React, {
   useCallback,
   useContext,
@@ -12,6 +12,7 @@ import RestoreIcloudStep from '../components/restore/RestoreIcloudStep';
 import RestoreSheetFirstStep from '../components/restore/RestoreSheetFirstStep';
 import { SlackSheet } from '../components/sheet';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 

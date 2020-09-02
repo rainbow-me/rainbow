@@ -1,8 +1,8 @@
 import React from 'react';
-import { useClipboard } from '../../hooks';
-import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import FloatingEmojis from './FloatingEmojis';
+import { useClipboard } from '@rainbow-me/hooks';
+import { magicMemo } from '@rainbow-me/utils';
 
 const CopyFloatingEmojis = ({ children, onPress, textToCopy, ...props }) => {
   const { setClipboard } = useClipboard();

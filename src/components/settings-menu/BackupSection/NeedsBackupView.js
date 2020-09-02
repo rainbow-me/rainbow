@@ -4,14 +4,14 @@ import React, { Fragment, useCallback, useEffect } from 'react';
 import { Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
-import BackupIcon from '../../../assets/backupIcon.png';
-import WalletBackupTypes from '../../../helpers/walletBackupTypes';
-import { useWallets } from '../../../hooks';
-import { useNavigation } from '../../../navigation/Navigation';
 import { RainbowButton } from '../../buttons';
 import { Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
+import BackupIcon from '@rainbow-me/assets/backupIcon.png';
+import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import { useWallets } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, fonts, padding } from '@rainbow-me/styles';
 

@@ -1,7 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components/primitives';
-import BiometryTypes from '../../helpers/biometryTypes';
-import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import CopyTooltip from '../copy-tooltip';
@@ -9,7 +7,9 @@ import { Icon } from '../icons';
 import { Centered, ColumnWithDividers, RowWithMargins } from '../layout';
 import { Text, TruncatedAddress } from '../text';
 import { ProfileAvatarButton, ProfileModal, ProfileNameInput } from './profile';
+import BiometryTypes from '@rainbow-me/helpers/biometryTypes';
 import { useBiometryType } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, margin, padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';

@@ -1,9 +1,9 @@
 import { filter, find } from 'lodash';
-import { Navigation } from '../navigation';
 import store from '../redux/store';
 import { checkKeychainIntegrity } from '../redux/wallets';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 

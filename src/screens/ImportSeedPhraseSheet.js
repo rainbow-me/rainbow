@@ -18,13 +18,14 @@ import { Centered, Column, Row } from '../components/layout';
 import LoadingOverlay from '../components/modal/LoadingOverlay';
 import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
-import { web3Provider } from '../handlers/web3';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-import { isENSAddressFormat, isValidWallet } from '../helpers/validators';
-import walletLoadingStates from '../helpers/walletLoadingStates';
 import { getWallet } from '../model/wallet';
-import Navigation, { useNavigation } from '../navigation/Navigation';
-import { sheetVerticalOffset } from '../navigation/effects';
+import { web3Provider } from '@rainbow-me/handlers/web3';
+import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import {
+  isENSAddressFormat,
+  isValidWallet,
+} from '@rainbow-me/helpers/validators';
+import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import {
   useAccountSettings,
   useClipboard,
@@ -36,6 +37,8 @@ import {
   useTimeout,
   useWallets,
 } from '@rainbow-me/hooks';
+import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
 import { borders, colors, padding } from '@rainbow-me/styles';
 import logger from 'logger';
