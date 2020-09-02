@@ -160,7 +160,6 @@ const SavingsSheet = () => {
       <StatusBar barStyle="light-content" />
       <SlackSheet
         contentHeight={isEmpty ? SavingsSheetEmptyHeight : SavingsSheetHeight}
-        scrollEnabled={false}
       >
         {isEmpty ? (
           <SavingsSheetEmptyState

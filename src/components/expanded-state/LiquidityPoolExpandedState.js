@@ -42,10 +42,7 @@ const LiquidityPoolExpandedState = ({
   }, [asset]);
 
   return (
-    <SlackSheet
-      contentHeight={LiquidityPoolExpandedStateSheetHeight}
-      scrollEnabled={false}
-    >
+    <SlackSheet contentHeight={LiquidityPoolExpandedStateSheetHeight}>
       <LiquidityPoolExpandedStateHeader asset={tokenAsset} />
       <SheetDivider />
       <TokenInfoSection>

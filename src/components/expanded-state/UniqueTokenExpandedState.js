@@ -54,7 +54,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
 
   return (
     <Fragment>
-      <SlackSheet height="100%">
+      <SlackSheet bottomInset={42} height="100%" scrollEnabled>
         <UniqueTokenExpandedStateHeader asset={asset} />
         <UniqueTokenExpandedStateImage asset={asset} />
         <SheetActionButtonRow>

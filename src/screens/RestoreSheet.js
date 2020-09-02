@@ -29,22 +29,24 @@ const StyledSheet = styled(SlackSheet)`
   height: 100%;
 `;
 
-const RestoreSheet = () => {
+export default function RestoreSheet() {
   const { goBack, navigate, setOptions } = useNavigation();
 
   const { jumpToLong } = useContext(ModalContext);
   const switchSheetContentTransitionRef = useRef();
-  const { params } = useRoute();
+  const {
+    params: { userData },
+  } = useRoute();
   const [step, setStep] = useState(WalletBackupStepTypes.first);
 
   useEffect(() => {
-    if (!params?.userData) {
+    if (!userData) {
       setOptions({
         isShortFormEnabled: false,
         longFormHeight: 363,
       });
     }
-  }, [params?.userData, setOptions]);
+  }, [userData, setOptions]);
 
   const onIcloudRestore = useCallback(() => {
     switchSheetContentTransitionRef.current?.animateNextTransition();
@@ -67,24 +69,22 @@ const RestoreSheet = () => {
   }, [goBack, navigate]);
 
   return (
-    <StyledSheet>
+    <StyledSheet scrollEnabled>
       <Transitioning.View
         ref={switchSheetContentTransitionRef}
         transition={switchSheetContentTransition}
       >
         {step === WalletBackupStepTypes.cloud ? (
-          <RestoreIcloudStep userData={params?.userData} />
+          <RestoreIcloudStep userData={userData} />
         ) : (
           <RestoreSheetFirstStep
             onIcloudRestore={onIcloudRestore}
             onManualRestore={onManualRestore}
             onWatchAddress={onWatchAddress}
-            userData={params?.userData}
+            userData={userData}
           />
         )}
       </Transitioning.View>
     </StyledSheet>
   );
-};
-
-export default React.memo(RestoreSheet);
+}
