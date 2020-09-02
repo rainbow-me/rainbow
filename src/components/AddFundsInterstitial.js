@@ -29,6 +29,7 @@ const InterstitialButton = styled(ButtonPressAnimation).attrs({
 })`
   ${padding(10.5, 15, 14.5)};
   border-radius: 23px;
+  margin-bottom: ${({ isSmallPhone }) => (isSmallPhone ? 19 : 42)};
 `;
 
 const InterstitialDivider = styled(Divider).attrs({
@@ -147,7 +148,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
   const { navigate } = useNavigation();
   const { selectedWallet } = useWallets();
 
-  const openAddCash = useCallback(
+  const handlePressAmount = useCallback(
     amount => {
       if (selectedWallet?.damaged) {
         showWalletErrorAlert();
@@ -169,14 +170,6 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
     navigate(Routes.RECEIVE_MODAL);
   }, [navigate, selectedWallet]);
 
-  const handlePressAmount = {
-    0: () => openAddCash(0),
-    50: () => openAddCash(50),
-    // eslint-disable-next-line sort-keys
-    100: () => openAddCash(100),
-    250: () => openAddCash(250),
-  };
-
   return (
     <Container style={buildInterstitialTransform(isSmallPhone, offsetY)}>
       <ButtonContainer>
@@ -188,34 +181,32 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
                 amount={50}
                 backgroundColor={colors.swapPurple}
                 color={colors.neonSkyblue}
-                onPress={handlePressAmount[50]}
+                onPress={() => handlePressAmount(50)}
               />
               <AmountButton
                 amount={100}
                 backgroundColor={colors.swapPurple}
                 color={colors.neonSkyblue}
-                onPress={handlePressAmount[100]}
+                onPress={() => handlePressAmount(100)}
               />
               <AmountButton
                 amount={250}
                 backgroundColor={colors.purpleDark}
                 color={colors.pinkLight}
-                onPress={handlePressAmount[250]}
+                onPress={() => handlePressAmount(250)}
               />
             </Row>
-            <Row marginBottom={isSmallPhone ? 19 : 42}>
-              <InterstitialButton onPress={handlePressAmount[0]}>
-                <Text
-                  align="center"
-                  color={colors.alpha(colors.blueGreyDark, 0.6)}
-                  lineHeight="loose"
-                  size="large"
-                  weight="bold"
-                >
-                  􀍡 Other amount
-                </Text>
-              </InterstitialButton>
-            </Row>
+            <InterstitialButton onPress={() => handlePressAmount(0)}>
+              <Text
+                align="center"
+                color={colors.alpha(colors.blueGreyDark, 0.6)}
+                lineHeight="loose"
+                size="large"
+                weight="bold"
+              >
+                􀍡 Other amount
+              </Text>
+            </InterstitialButton>
             {!isSmallPhone && <InterstitialDivider />}
             <Subtitle isSmallPhone={isSmallPhone}>
               or send ETH to your wallet
@@ -231,7 +222,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
               Request test ETH through the {get(networkInfo[network], 'name')}{' '}
               faucet
             </Title>
-            <Row marginBottom={isSmallPhone ? 19 : 42} marginTop={30}>
+            <Row marginTop={30}>
               <InterstitialButton onPress={() => onAddFromFaucet(network)}>
                 <Text
                   align="center"
