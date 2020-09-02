@@ -58,7 +58,7 @@ const TopIcon = styled(FastImage).attrs({
   width: 75;
 `;
 
-const NeedsBackupView = () => {
+export default function NeedsBackupView() {
   const { navigate, setParams } = useNavigation();
   const { params } = useRoute();
   const { wallets, selectedWallet } = useWallets();
@@ -81,7 +81,7 @@ const NeedsBackupView = () => {
       category: 'settings backup',
     });
     navigate(Routes.BACKUP_SHEET, {
-      option: WalletBackupTypes.cloud,
+      step: WalletBackupTypes.cloud,
       walletId,
     });
   }, [navigate, walletId]);
@@ -91,7 +91,7 @@ const NeedsBackupView = () => {
       category: 'settings backup',
     });
     navigate(Routes.BACKUP_SHEET, {
-      option: WalletBackupTypes.manual,
+      step: WalletBackupTypes.manual,
       walletId,
     });
   }, [navigate, walletId]);
@@ -126,6 +126,4 @@ const NeedsBackupView = () => {
       </Column>
     </Fragment>
   );
-};
-
-export default NeedsBackupView;
+}

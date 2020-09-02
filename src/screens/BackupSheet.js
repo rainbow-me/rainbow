@@ -52,7 +52,7 @@ const BackupSheet = () => {
     return wallet.type !== WalletTypes.readOnly;
   }).length;
   const walletCloudBackup = useWalletCloudBackup();
-  const [step, setStep] = useState(params?.option || 'first');
+  const [step, setStep] = useState(params?.step || WalletBackupTypes.first);
   const walletId = params?.walletId || selectedWallet.id;
   const missingPassword = params?.missingPassword || null;
   const { setComponent, hide } = usePortal();
@@ -86,7 +86,7 @@ const BackupSheet = () => {
     setStep(WalletBackupTypes.cloud);
     setParams({
       missingPassword: true,
-      option: WalletBackupTypes.cloud,
+      step: WalletBackupTypes.cloud,
     });
     setOptions({
       isShortFormEnabled: false,
@@ -176,7 +176,7 @@ const BackupSheet = () => {
 
   const renderStep = useCallback(() => {
     switch (step) {
-      case 'existingUser':
+      case WalletBackupTypes.existing_user:
         return (
           <BackupSheetSection
             descriptionText="You have wallets that have not been backed up yet. Back them up in case you lose this device."
@@ -190,7 +190,7 @@ const BackupSheet = () => {
             type="Existing User"
           />
         );
-      case 'imported':
+      case WalletBackupTypes.imported:
         return (
           <BackupSheetSection
             descriptionText={`Don't lose your wallet! Save an encrypted copy to iCloud.`}

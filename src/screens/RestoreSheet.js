@@ -35,7 +35,7 @@ const RestoreSheet = () => {
   const { jumpToLong } = useContext(ModalContext);
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
-  const [step, setStep] = useState(params?.option || 'first');
+  const [step, setStep] = useState(WalletBackupTypes.first);
 
   useEffect(() => {
     if (!params?.userData) {

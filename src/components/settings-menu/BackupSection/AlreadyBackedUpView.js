@@ -122,7 +122,7 @@ const AlreadyBackedUpView = () => {
 
   const handleNoLatestBackup = useCallback(() => {
     Navigation.handleAction(Routes.BACKUP_SHEET, {
-      option: WalletBackupTypes.cloud,
+      step: WalletBackupTypes.cloud,
       walletId,
     });
   }, [walletId]);
@@ -130,7 +130,7 @@ const AlreadyBackedUpView = () => {
   const handlePasswordNotFound = useCallback(() => {
     Navigation.handleAction(Routes.BACKUP_SHEET, {
       missingPassword: true,
-      option: WalletBackupTypes.cloud,
+      step: WalletBackupTypes.cloud,
       walletId,
     });
   }, [walletId]);
