@@ -2,23 +2,15 @@ import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components/primitives';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
+import { BiometricButtonContent } from '../buttons';
 import CopyTooltip from '../copy-tooltip';
-import { Icon } from '../icons';
-import { Centered, ColumnWithDividers, RowWithMargins } from '../layout';
+import { Centered, ColumnWithDividers } from '../layout';
 import { Text, TruncatedAddress } from '../text';
 import { ProfileAvatarButton, ProfileModal, ProfileNameInput } from './profile';
-import BiometryTypes from '@rainbow-me/helpers/biometryTypes';
-import { useBiometryType } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, margin, padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
-
-const BiometryIcon = styled(Icon).attrs(({ biometryType }) => ({
-  color: colors.appleBlue,
-  name: biometryType.toLowerCase(),
-  size: biometryType === BiometryTypes.passcode ? 19 : 20,
-}))``;
 
 const WalletProfileAddressText = styled(TruncatedAddress).attrs({
   align: 'center',
@@ -65,7 +57,6 @@ export default function WalletProfileState({
   onCloseModal,
   profile,
 }) {
-  const biometryType = useBiometryType();
   const { goBack, navigate } = useNavigation();
 
   const [color, setColor] = useState(
@@ -93,13 +84,6 @@ export default function WalletProfileState({
     inputRef,
   ]);
 
-  const showBiometryIcon =
-    actionType === 'Create' &&
-    (biometryType === BiometryTypes.passcode ||
-      biometryType === BiometryTypes.TouchID);
-  const showFaceIDCharacter =
-    actionType === 'Create' && biometryType === BiometryTypes.FaceID;
-
   return (
     <WalletProfileModal>
       <Centered direction="column" paddingBottom={30} width="100%">
@@ -124,17 +108,10 @@ export default function WalletProfileState({
       </Centered>
       <ColumnWithDividers dividerRenderer={WalletProfileDivider} width="100%">
         <WalletProfileButton onPress={handleSubmit}>
-          <RowWithMargins align="center" justify="center" margin={7}>
-            {showBiometryIcon && <BiometryIcon biometryType={biometryType} />}
-            <WalletProfileButtonText
-              color="appleBlue"
-              letterSpacing="rounded"
-              weight="semibold"
-            >
-              {showFaceIDCharacter && '􀎽 '}
-              {isNewProfile ? `${actionType} Wallet` : 'Done'}
-            </WalletProfileButtonText>
-          </RowWithMargins>
+          <BiometricButtonContent
+            showIcon={actionType === 'Create'}
+            text={isNewProfile ? `${actionType} Wallet` : 'Done'}
+          />
         </WalletProfileButton>
         <WalletProfileButton onPress={handleCancel}>
           <WalletProfileButtonText
