@@ -10,7 +10,6 @@ import {
   View,
 } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { isCloudBackupPasswordValid } from '../../handlers/cloudBackup';
 import { removeWalletData } from '../../handlers/localstorage/removeWallet';
@@ -24,7 +23,6 @@ import {
 } from '../../model/backup';
 import { sheetVerticalOffset } from '../../navigation/effects';
 import { usePortal } from '../../react-native-cool-modals/Portal';
-import { setIsWalletLoading } from '../../redux/wallets';
 import { deviceUtils } from '../../utils';
 import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
@@ -133,10 +131,9 @@ const TopIcon = () => (
   </GradientText>
 );
 
-const RestoreIcloudStep = ({ userData }) => {
+export default function RestoreIcloudStep({ userData }) {
   const { goBack, replace } = useNavigation();
-  const dispatch = useDispatch();
-  const { isWalletLoading } = useWallets();
+  const { isWalletLoading, setIsWalletLoading } = useWallets();
   const { accountAddress } = useAccountSettings();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
@@ -196,7 +193,7 @@ const RestoreIcloudStep = ({ userData }) => {
 
   const onSubmit = useCallback(async () => {
     try {
-      dispatch(setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET));
+      setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET);
       const success = await restoreCloudBackup(password, userData);
       if (success) {
         // Store it in the keychain in case it was missing
@@ -206,17 +203,17 @@ const RestoreIcloudStep = ({ userData }) => {
         goBack();
         InteractionManager.runAfterInteractions(async () => {
           replace(Routes.SWIPE_LAYOUT);
-          dispatch(setIsWalletLoading(null));
+          setIsWalletLoading(null);
         });
       } else {
         setIncorrectPassword(true);
-        dispatch(setIsWalletLoading(null));
+        setIsWalletLoading(null);
       }
     } catch (e) {
-      dispatch(setIsWalletLoading(null));
+      setIsWalletLoading(null);
       Alert.alert('Error while restoring backup');
     }
-  }, [accountAddress, dispatch, goBack, password, replace, userData]);
+  }, [accountAddress, goBack, password, replace, setIsWalletLoading, userData]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
@@ -265,6 +262,4 @@ const RestoreIcloudStep = ({ userData }) => {
       </KeyboardAvoidingView>
     </SheetContainer>
   );
-};
-
-export default RestoreIcloudStep;
+}

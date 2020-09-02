@@ -12,13 +12,11 @@ import {
   View,
 } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
 import { isCloudBackupPasswordValid } from '../../handlers/cloudBackup';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { saveBackupPassword } from '../../model/backup';
-import { setIsWalletLoading } from '../../redux/wallets';
 import { deviceUtils } from '../../utils';
 import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
@@ -150,8 +148,7 @@ const BackupIcloudStep = () => {
   const currentlyFocusedInput = useRef();
   const { params } = useRoute();
   const walletCloudBackup = useWalletCloudBackup();
-  const { selectedWallet } = useWallets();
-  const dispatch = useDispatch();
+  const { selectedWallet, setIsWalletLoading } = useWallets();
   const [validPassword, setValidPassword] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
@@ -261,12 +258,12 @@ const BackupIcloudStep = () => {
   const onError = useCallback(
     msg => {
       setTimeout(onPasswordSubmit, 1000);
-      dispatch(setIsWalletLoading(null));
+      setIsWalletLoading(null);
       setTimeout(() => {
         Alert.alert(msg);
       }, 500);
     },
-    [dispatch, onPasswordSubmit]
+    [onPasswordSubmit, setIsWalletLoading]
   );
 
   const onSuccess = useCallback(async () => {

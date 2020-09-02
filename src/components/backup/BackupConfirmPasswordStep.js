@@ -12,12 +12,10 @@ import {
   View,
 } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { isCloudBackupPasswordValid } from '../../handlers/cloudBackup';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { saveBackupPassword } from '../../model/backup';
-import { setIsWalletLoading } from '../../redux/wallets';
 import { deviceUtils } from '../../utils';
 import { RainbowButton } from '../buttons';
 import { Icon } from '../icons';
@@ -127,16 +125,15 @@ const TopIcon = () => (
   </GradientText>
 );
 
-const BackupConfirmPasswordStep = () => {
+export default function BackupConfirmPasswordStep() {
   const { params } = useRoute();
-  const dispatch = useDispatch();
   const walletCloudBackup = useWalletCloudBackup();
   const [validPassword, setValidPassword] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
   const [label, setLabel] = useState('􀎽 Confirm Backup');
   const passwordRef = useRef();
-  const { selectedWallet } = useWallets();
+  const { selectedWallet, setIsWalletLoading } = useWallets();
   const routes = useNavigationState(state => state.routes);
 
   const walletId = params?.walletId || selectedWallet.id;
@@ -177,12 +174,12 @@ const BackupConfirmPasswordStep = () => {
   const onError = useCallback(
     msg => {
       passwordRef.current?.focus();
-      dispatch(setIsWalletLoading(null));
+      setIsWalletLoading(null);
       setTimeout(() => {
         Alert.alert(msg);
       }, 500);
     },
-    [dispatch]
+    [setIsWalletLoading]
   );
 
   const onSuccess = useCallback(async () => {
@@ -259,6 +256,4 @@ const BackupConfirmPasswordStep = () => {
       </KeyboardAvoidingView>
     </SheetContainer>
   );
-};
-
-export default BackupConfirmPasswordStep;
+}
