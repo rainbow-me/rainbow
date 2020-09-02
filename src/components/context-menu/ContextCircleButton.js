@@ -7,7 +7,7 @@ import { borders, colors, position } from '@rainbow-me/styles';
 
 const CircleButton = styled(RadialGradient).attrs({
   center: [0, 20],
-  colors: colors.lightGreyGradient,
+  colors: colors.gradients.lightGrey,
 })`
   ${borders.buildCircle(40)};
   ${position.centered};
