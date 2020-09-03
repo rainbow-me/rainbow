@@ -6,6 +6,7 @@ const Routes = {
   AVATAR_BUILDER: 'AvatarBuilder',
   CHANGE_WALLET_SHEET: 'ChangeWalletSheet',
   CHANGE_WALLET_SHEET_NAVIGATOR: 'ChangeWalletSheetNavigator',
+  CHARTS_EXAMPLE: 'ChartsExampleScreen',
   CONFIRM_REQUEST: 'ConfirmRequest',
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',
   EXAMPLE_SCREEN: 'ExampleScreen',

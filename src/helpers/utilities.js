@@ -251,7 +251,7 @@ export const convertStringToNumber = value => BigNumber(`${value}`).toNumber();
  * @param  {Number}   numberTwo
  * @return {String}
  */
-export const smallerThan = (numberOne, numberTwo) =>
+export const lessThan = (numberOne, numberTwo) =>
   BigNumber(`${numberOne}`).lt(numberTwo);
 
 /**
@@ -270,7 +270,7 @@ export const handleSignificantDecimals = (value, decimals, buffer) => {
   }
   buffer = buffer ? convertStringToNumber(buffer) : 3;
   decimals = convertStringToNumber(decimals);
-  if (smallerThan(BigNumber(`${value}`).abs(), 1)) {
+  if (lessThan(BigNumber(`${value}`).abs(), 1)) {
     decimals =
       BigNumber(`${value}`)
         .toFixed()
