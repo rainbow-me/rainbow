@@ -95,12 +95,12 @@ export default function useWalletCloudBackup() {
       let wasPasswordFetched = false;
       if (latestBackup && !password) {
         // We have a backup but don't have the password, try fetching password
-        dispatch(setIsWalletLoading(walletLoadingStates.FETCHING_PASSWORD));
+        setIsWalletLoading(walletLoadingStates.FETCHING_PASSWORD);
         // We want to make it clear why are we requesting faceID twice
         // So we delayed it to make sure the user can read before seeing the auth prompt
         await delay(1500);
         fetchedPassword = await fetchBackupPassword();
-        dispatch(setIsWalletLoading(null));
+        setIsWalletLoading(null);
         await delay(300);
         wasPasswordFetched = true;
       }
