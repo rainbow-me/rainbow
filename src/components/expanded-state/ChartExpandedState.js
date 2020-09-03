@@ -116,8 +116,8 @@ export default function ChartExpandedState({ asset }) {
   const showChart = useMemo(
     () =>
       chartExpandedAvailable &&
-      (throttledPoints?.points.length !== 0 ||
-        throttledPoints?.points.length !== 0 ||
+      (throttledPoints?.points.length > 5 ||
+        throttledPoints?.points.length > 5 ||
         (fetchingCharts && !isFetchingInitially)),
     [fetchingCharts, isFetchingInitially, throttledPoints]
   );
