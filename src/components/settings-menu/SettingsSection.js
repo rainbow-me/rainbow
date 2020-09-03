@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import { get } from 'lodash';
 import React, { useCallback } from 'react';
 import {
@@ -23,6 +24,7 @@ import {
 import networkInfo from '../../helpers/networkInfo';
 import { useAccountSettings, useSendFeedback, useWallets } from '../../hooks';
 import { supportedLanguages } from '../../languages';
+import { AppleReviewAddress, REVIEW_DONE_KEY } from '../../utils/reviewAlert';
 import AppVersionStamp from '../AppVersionStamp';
 import { Column, ColumnWithDividers } from '../layout';
 import {
@@ -36,9 +38,7 @@ import { position } from '@rainbow-me/styles';
 
 const { RainbowRequestReview } = NativeModules;
 
-const SettingsExternalURLs = {
-  review:
-    'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
+export const SettingsExternalURLs = {
   twitterDeepLink: 'twitter://user?screen_name=rainbowdotme',
   twitterWebUrl: 'https://twitter.com/rainbowdotme',
 };
@@ -86,7 +86,8 @@ const SettingsSection = ({
       onCloseModal();
       RainbowRequestReview.requestReview(handled => {
         if (!handled) {
-          Linking.openURL(SettingsExternalURLs.review);
+          AsyncStorage.setItem(REVIEW_DONE_KEY, 'true');
+          Linking.openURL(AppleReviewAddress);
         }
       });
     } else {
