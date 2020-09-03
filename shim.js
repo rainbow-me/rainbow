@@ -29,6 +29,21 @@ if (
 
 global.storage = storage;
 
+const oldConsoleError = console.error;
+
+console.error = function() {
+  if (arguments[0].startsWith('Warning: Failed prop type')) {
+    console.log(
+      `PropTypes error in: ${arguments[0]
+        .match(/\w+.js:[0-9]+/g)
+        .slice(0, 6)
+        .join(' in ')}`
+    );
+    return;
+  }
+  oldConsoleError.apply(this, arguments);
+};
+
 if (typeof __dirname === 'undefined') global.__dirname = '/';
 if (typeof __filename === 'undefined') global.__filename = '';
 if (typeof process === 'undefined') {

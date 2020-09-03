@@ -18,7 +18,10 @@ function renderChild(child, index) {
 
   return (
     <FlexItem marginHorizontal={space}>
-      {cloneElement(child, { align: index === 0 ? 'left' : 'right' })}
+      {cloneElement(child, {
+        align: index === 0 ? 'left' : 'right',
+        key: `TokenInfoRow-${index}`,
+      })}
     </FlexItem>
   );
 }
