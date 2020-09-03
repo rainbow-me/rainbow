@@ -42,6 +42,7 @@
   "dependencies": {
     "@apollo/client": "^3.0.0-beta.34",
     "@bankify/react-native-animate-number": "^0.2.1",
+    "@ethersproject/abi": "^5.0.3",
     "@ethersproject/address": "^5.0.2",
     "@ethersproject/bignumber": "^5.0.5",
     "@ethersproject/bytes": "^5.0.3",
@@ -75,7 +76,8 @@
     "@tradle/react-native-http": "^2.0.1",
     "@types/i18n-js": "^3.0.3",
     "@types/lodash": "^4.14.159",
-    "@uniswap/sdk": "^1.0.0-beta.4",
+    "@uniswap/sdk": "^3.0.3-beta.1",
+    "@uniswap/v2-core": "^1.0.1",
     "@walletconnect/client": "1.1.0",
     "@walletconnect/utils": "1.1.0",
     "assert": "^1.5.0",
