@@ -1,2 +1,2 @@
-export { default as SecretDisplayItem } from './SecretDisplayItem';
+export { default as SecretDisplayCard } from './SecretDisplayCard';
 export { default as SecretDisplaySection } from './SecretDisplaySection';

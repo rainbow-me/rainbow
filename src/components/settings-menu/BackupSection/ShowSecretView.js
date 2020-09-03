@@ -1,9 +1,10 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useEffect } from 'react';
 import { Centered } from '../../layout';
+import { ModalHeaderHeight } from '../../modal';
 import SecretDisplaySection from '../../secret-display/SecretDisplaySection';
 
-const ShowSecretView = () => {
+export default function ShowSecretView() {
   useEffect(() => {
     analytics.track('Show Secret View', {
       category: 'settings backup',
@@ -11,9 +12,8 @@ const ShowSecretView = () => {
   }, []);
 
   return (
-    <Centered paddingBottom={15} paddingTop={90}>
+    <Centered flex={1} paddingBottom={ModalHeaderHeight}>
       <SecretDisplaySection />
     </Centered>
   );
-};
-export default ShowSecretView;
+}
