@@ -150,8 +150,10 @@ export default function ChartProvider({
     if (!data || !data.points || data.points.length === 0) {
       return;
     }
-    const [parsedData, newExtremes] = parse(data.points);
-    const [parsedNativeData] = parse(data.nativePoints || data.points);
+    const [parsedData] = parse(data.points);
+    const [parsedNativeData, newExtremes] = parse(
+      data.nativePoints || data.points
+    );
     setExtremes(newExtremes);
     if (prevData.value.length !== 0) {
       prevData.value = currData.value;
