@@ -16,10 +16,10 @@ const PercentLabel = styled(AnimatedTextInput)`
   background-color: white;
   font-family: ${fonts.family.SFProRounded};
   font-size: ${fonts.size.big};
-  font-weight: ${fonts.weight.bold};
-  letter-spacing: ${fonts.letterSpacing.roundedTight};
-  text-align: right;
   font-variant: tabular-nums;
+  font-weight: ${fonts.weight.bold};
+  letter-spacing: ${fonts.letterSpacing.roundedTightest};
+  text-align: right;
 `;
 
 export default function ChartPercentChangeLabel() {
