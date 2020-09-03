@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components/primitives';
 import { colors, fonts } from '../../styles';
 import { formatUSD } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
@@ -16,6 +16,43 @@ const Label = styled(Text)`
   position: absolute;
 `;
 
+const CenteredLabel = ({ position, style, width, ...props }) => {
+  const [componentWidth, setWidth] = useState(0);
+  const onLayout = useCallback(
+    ({
+      nativeEvent: {
+        layout: { width: newWidth },
+      },
+    }) => {
+      setWidth(newWidth);
+    },
+    [setWidth]
+  );
+
+  const left = useMemo(
+    () =>
+      Math.max(
+        Math.min(
+          width * position - componentWidth / 2 - 15,
+          width - componentWidth
+        ),
+        15
+      ),
+    [componentWidth, position, width]
+  );
+  return (
+    <Label
+      {...props}
+      onLayout={onLayout}
+      style={{
+        ...style,
+        left,
+        opacity: componentWidth ? 1 : 0,
+      }}
+    />
+  );
+};
+
 export default function Labels({ color, width }) {
   const { greatestX, greatestY, smallestX, smallestY } = useChartData();
   if (!greatestX) {
@@ -30,28 +67,28 @@ export default function Labels({ color, width }) {
   return (
     <>
       {positionMin ? (
-        <Label
+        <CenteredLabel
           color={colors.alpha(color, 0.8)}
+          position={positionMin}
           style={{
             bottom: -20,
-            [positionMin > 0.5 ? 'right' : 'left']:
-              (0.5 - Math.abs(0.5 - positionMin)) * width - 10,
           }}
+          width={width}
         >
           {formatUSD(smallestY.y)}
-        </Label>
+        </CenteredLabel>
       ) : null}
       {positionMax ? (
-        <Label
+        <CenteredLabel
           color={colors.alpha(color, 0.8)}
+          position={positionMax}
           style={{
-            [positionMax > 0.5 ? 'right' : 'left']:
-              (0.5 - Math.abs(0.5 - positionMax)) * width - 10,
             top: -20,
           }}
+          width={width}
         >
           {formatUSD(greatestY.y)}
-        </Label>
+        </CenteredLabel>
       ) : null}
     </>
   );
