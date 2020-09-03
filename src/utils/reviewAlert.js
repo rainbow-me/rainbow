@@ -29,8 +29,8 @@ export default async function maybeReviewAlert() {
   AsyncStorage.setItem(REVIEW_ASKED_KEY, Date.now().toString());
 
   Alert.alert(
-    `Do you enjoy your experience with Rainbow?`,
-    'Submit a review on the App Store',
+    `Are you enjoying Rainbow? 🥰`,
+    'Leave a review on the App Store!',
     [
       {
         onPress: () => {
