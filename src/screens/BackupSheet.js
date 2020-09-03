@@ -1,63 +1,55 @@
-import { useNavigationState, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import { Alert, InteractionManager, Platform } from 'react-native';
-import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
-import { BackupSheetSection } from '../components/backup';
-import BackupConfirmPasswordStep from '../components/backup/BackupConfirmPasswordStep';
-import BackupIcloudStep from '../components/backup/BackupIcloudStep';
-import BackupManualStep from '../components/backup/BackupManualStep';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { Alert, InteractionManager, Platform, StatusBar } from 'react-native';
+import {
+  BackupConfirmPasswordStep,
+  BackupIcloudStep,
+  BackupManualStep,
+  BackupSheetSection,
+} from '../components/backup';
+import { Column } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { Sheet, SlackSheet } from '../components/sheet';
-import { deviceUtils } from '../utils';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
+import {
+  useDimensions,
+  useRouteExistsInNavigationState,
+  useWalletCloudBackup,
+  useWallets,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
-import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 import { usePortal } from 'react-native-cool-modals/Portal';
 
-const switchSheetContentTransition = (
-  <Transition.Together>
-    <Transition.Out durationMs={0.1} interpolation="easeOut" type="fade" />
-    <Transition.Change durationMs={150} interpolation="easeOut" />
-    <Transition.In durationMs={400} interpolation="easeOut" type="fade" />
-  </Transition.Together>
-);
-
-const StyledSheet = styled(SlackSheet)`
-  top: 0;
-  height: 100%;
-  ${deviceUtils.isTallPhone ? 'padding-bottom: 50px;' : ''}
-`;
-
-const BackupSheet = () => {
-  const { jumpToLong } = useContext(ModalContext) || {};
-  const { navigate, setOptions, goBack, setParams } = useNavigation();
-  const switchSheetContentTransitionRef = useRef();
-  const { params } = useRoute();
-  const { selectedWallet, isWalletLoading, wallets } = useWallets();
-  const backupableWalletsCount = Object.keys(wallets).filter(id => {
-    const wallet = wallets[id];
-    return wallet.type !== WalletTypes.readOnly;
-  }).length;
+export default function BackupSheet() {
+  const { isWalletLoading, selectedWallet, wallets } = useWallets();
+  const { height: deviceHeight } = useDimensions();
+  const { goBack, navigate, setParams } = useNavigation();
   const walletCloudBackup = useWalletCloudBackup();
-  const [step, setStep] = useState(params?.step || WalletBackupStepTypes.first);
-  const walletId = params?.walletId || selectedWallet.id;
-  const missingPassword = params?.missingPassword || null;
-  const { setComponent, hide } = usePortal();
-  const routes = useNavigationState(state => state.routes);
+  const {
+    params: {
+      longFormHeight = 0,
+      missingPassword = null,
+      step = WalletBackupStepTypes.first,
+      walletId = selectedWallet.id,
+    } = {},
+  } = useRoute();
 
+  const isSettingsRoute = useRouteExistsInNavigationState(
+    Routes.SETTINGS_MODAL
+  );
+
+  const backupableWalletsCount = useMemo(() => {
+    return Object.keys(wallets).filter(id => {
+      return wallets[id].type !== WalletTypes.readOnly;
+    }).length;
+  }, [wallets]);
+
+  const { setComponent, hide } = usePortal();
   useEffect(() => {
     if (isWalletLoading) {
       setComponent(
@@ -71,44 +63,33 @@ const BackupSheet = () => {
     return hide;
   }, [hide, isWalletLoading, setComponent]);
 
-  const handleNoLatestBackup = useCallback(() => {
-    switchSheetContentTransitionRef.current?.animateNextTransition();
-    setStep(WalletBackupStepTypes.cloud);
-    setOptions({
-      isShortFormEnabled: false,
-      longFormHeight: 10000,
-    });
-    setImmediate(jumpToLong);
-  }, [jumpToLong, setOptions]);
+  const handleNoLatestBackup = useCallback(
+    () => setParams({ step: WalletBackupStepTypes.cloud }),
+    [setParams]
+  );
 
   const handlePasswordNotFound = useCallback(() => {
-    switchSheetContentTransitionRef.current?.animateNextTransition();
-    setStep(WalletBackupStepTypes.cloud);
     setParams({
       missingPassword: true,
       step: WalletBackupStepTypes.cloud,
     });
-    setOptions({
-      isShortFormEnabled: false,
-      longFormHeight: 10000,
-    });
-    setImmediate(jumpToLong);
-  }, [jumpToLong, setParams, setOptions]);
+  }, [setParams]);
 
   const onSuccess = useCallback(() => {
     goBack();
-    if (!routes.find(route => route.name === Routes.SETTINGS_MODAL)) {
+    if (!isSettingsRoute) {
       setTimeout(() => {
         Alert.alert(lang.t('icloud.backup_success'));
       }, 1000);
     }
+
     // This means the user had the password saved
     // and at least an other wallet already backed up
     analytics.track('Backup Complete via BackupSheet', {
       category: 'backup',
       label: 'icloud',
     });
-  }, [goBack, routes]);
+  }, [goBack, isSettingsRoute]);
 
   const onError = useCallback(msg => {
     setTimeout(() => {
@@ -133,20 +114,10 @@ const BackupSheet = () => {
     onSuccess,
   ]);
 
-  const onManualBackup = useCallback(() => {
-    switchSheetContentTransitionRef.current?.animateNextTransition();
-    setStep(WalletBackupStepTypes.manual);
-    setOptions({
-      isShortFormEnabled: false,
-      longFormHeight: 770,
-    });
-    // wait for layout of sheet
-    setImmediate(jumpToLong);
-  }, [jumpToLong, setOptions]);
-
-  const onIgnoreBackup = useCallback(() => {
-    goBack();
-  }, [goBack]);
+  const onManualBackup = useCallback(
+    () => setParams({ step: WalletBackupStepTypes.manual }),
+    [setParams]
+  );
 
   const onBackupNow = useCallback(async () => {
     goBack();
@@ -157,23 +128,6 @@ const BackupSheet = () => {
     });
   }, [goBack, navigate]);
 
-  useEffect(() => {
-    if (step === WalletBackupStepTypes.cloud) {
-      setOptions({
-        isShortFormEnabled: false,
-        longFormHeight: missingPassword ? 715 : 750,
-      });
-      setImmediate(jumpToLong);
-    } else if (step === WalletBackupStepTypes.manual) {
-      setOptions({
-        isShortFormEnabled: false,
-        longFormHeight: 770,
-      });
-      jumpToLong && setImmediate(jumpToLong);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const renderStep = useCallback(() => {
     switch (step) {
       case WalletBackupStepTypes.existing_user:
@@ -181,7 +135,7 @@ const BackupSheet = () => {
           <BackupSheetSection
             descriptionText="You have wallets that have not been backed up yet. Back them up in case you lose this device."
             onPrimaryAction={onBackupNow}
-            onSecondaryAction={onIgnoreBackup}
+            onSecondaryAction={goBack}
             primaryLabel="Back up now"
             secondaryLabel="Maybe later"
             titleText={`Back up your wallet${
@@ -195,7 +149,7 @@ const BackupSheet = () => {
           <BackupSheetSection
             descriptionText={`Don't lose your wallet! Save an encrypted copy to iCloud.`}
             onPrimaryAction={onIcloudBackup}
-            onSecondaryAction={onIgnoreBackup}
+            onSecondaryAction={goBack}
             primaryLabel="􀙶 Back up to iCloud"
             secondaryLabel="No thanks"
             titleText="Would you like to back up?"
@@ -224,11 +178,11 @@ const BackupSheet = () => {
         );
     }
   }, [
+    goBack,
     missingPassword,
     backupableWalletsCount,
     onBackupNow,
     onIcloudBackup,
-    onIgnoreBackup,
     onManualBackup,
     step,
   ]);
@@ -236,18 +190,14 @@ const BackupSheet = () => {
   const SheetComponent =
     Platform.OS === 'android' && step !== WalletBackupStepTypes.manual
       ? Sheet
-      : StyledSheet;
+      : SlackSheet;
 
   return (
-    <SheetComponent>
-      <Transitioning.View
-        ref={switchSheetContentTransitionRef}
-        transition={switchSheetContentTransition}
-      >
+    <Column height={deviceHeight + longFormHeight}>
+      <StatusBar barStyle="light-content" />
+      <SheetComponent contentHeight={longFormHeight}>
         {renderStep()}
-      </Transitioning.View>
-    </SheetComponent>
+      </SheetComponent>
+    </Column>
   );
-};
-
-export default BackupSheet;
+}
