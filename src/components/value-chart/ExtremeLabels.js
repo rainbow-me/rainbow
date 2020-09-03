@@ -33,10 +33,10 @@ const CenteredLabel = ({ position, style, width, ...props }) => {
     () =>
       Math.max(
         Math.min(
-          width * position - componentWidth / 2 - 15,
-          width - componentWidth
+          width * position - componentWidth / 2,
+          width - componentWidth - 10
         ),
-        15
+        10
       ),
     [componentWidth, position, width]
   );
