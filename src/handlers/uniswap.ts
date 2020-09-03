@@ -1,18 +1,13 @@
+import { BigNumber } from '@ethersproject/bignumber';
+import { hexlify } from '@ethersproject/bytes';
+import { Contract } from '@ethersproject/contracts';
+import { captureException } from '@sentry/react-native';
+import { Pair, Token, TokenAmount, Trade } from '@uniswap/sdk';
 import {
-  getExecutionDetails,
-  getTokenReserves,
-  tradeEthForExactTokensWithData,
-  tradeExactEthForTokensWithData,
-  tradeExactTokensForEthWithData,
-  tradeExactTokensForTokensWithData,
-  tradeTokensForExactEthWithData,
-  tradeTokensForExactTokensWithData,
-} from '@uniswap/sdk';
-import { ChainId, Pair, Token, TokenAmount, Trade, WETH } from '@uniswap/sdk2';
-
+  getExecutionDetails, // v1
+} from '@uniswap/sdk1';
 import { getUnixTime, sub } from 'date-fns';
 import contractMap from 'eth-contract-metadata';
-import { ethers } from 'ethers';
 import {
   findKey,
   get,
@@ -22,14 +17,8 @@ import {
   toLower,
   zipObject,
 } from 'lodash';
-import { useSelector } from 'react-redux';
-import { uniswap2Client, uniswapClient } from '../apollo/client';
-import {
-  UNISWAP2_ALL_PAIRS,
-  UNISWAP2_ALL_TOKENS,
-  UNISWAP_ALL_EXCHANGES_QUERY,
-  UNISWAP_CHART_QUERY,
-} from '../apollo/queries';
+import { uniswapClient } from '../apollo/client';
+import { UNISWAP_ALL_TOKENS, UNISWAP_CHART_QUERY } from '../apollo/queries';
 import ChartTypes from '../helpers/chartTypes';
 import {
   convertAmountToRawAmount,
@@ -47,8 +36,8 @@ import {
   exchangeABI,
   uniswapTestnetAssets,
 } from '../references';
-import logger from 'logger';
 import { toHex, web3Provider } from './web3';
+import logger from 'logger';
 
 const DefaultMaxSlippageInBips = 200;
 const SlippageBufferInBips = 100;
@@ -61,28 +50,16 @@ export const getTestnetUniswapPairs = network => {
   }));
 };
 
+// TODO JIN
 const convertArgsForEthers = methodArguments =>
   methodArguments.map(arg =>
-    typeof arg === 'object' ? ethers.utils.bigNumberify(arg.toFixed()) : arg
+    typeof arg === 'object' ? BigNumber.from(arg.toFixed()) : arg
   );
 
+// TODO JIN
 const convertValueForEthers = value => {
-  const valueBigNumber = ethers.utils.bigNumberify(value.toString());
-  return ethers.utils.hexlify(valueBigNumber);
-};
-
-export const getReserve = async tokenAddress => {
-  return !tokenAddress || tokenAddress === 'eth'
-    ? Promise.resolve(null)
-    : Promise.all([
-        getTokenReserves(toLower(tokenAddress), web3Provider),
-        Token.fetchData(ChainId.MAINNET, tokenAddress), // V2
-      ]);
-};
-
-export const getPair = async (tokenA: Token, tokenB: Token) => {
-  console.log('fetching', tokenA.address, tokenB.address);
-  return await Pair.fetchData(tokenA, tokenB, web3Provider);
+  const valueBigNumber = BigNumber.from(value.toString());
+  return hexlify(valueBigNumber);
 };
 
 const getGasLimit = async (
@@ -146,10 +123,13 @@ export const estimateSwapGasLimit = async (accountAddress, tradeDetails) => {
     );
     return gasLimit ? gasLimit.toString() : ethUnits.basic_swap;
   } catch (error) {
+    logger.sentry('error executing estimateSwapGasLimit');
+    captureException(error);
     return ethUnits.basic_swap;
   }
 };
 
+// TODO JIN
 const getContractExecutionDetails = (tradeDetails, providerOrSigner) => {
   const slippage = convertStringToNumber(
     get(tradeDetails, 'executionRateSlippage', 0)
@@ -165,11 +145,7 @@ const getContractExecutionDetails = (tradeDetails, providerOrSigner) => {
     methodName,
     value: rawValue,
   } = executionDetails;
-  const exchange = new ethers.Contract(
-    exchangeAddress,
-    exchangeABI,
-    providerOrSigner
-  );
+  const exchange = new Contract(exchangeAddress, exchangeABI, providerOrSigner);
   const updatedMethodArgs = convertArgsForEthers(methodArguments);
   const value = convertValueForEthers(rawValue);
   return {
@@ -236,6 +212,7 @@ export const executeSwap = async (
   }
 };
 
+// TODO JIN
 export const getLiquidityInfo = async (
   accountAddress,
   exchangeContracts,
@@ -244,11 +221,7 @@ export const getLiquidityInfo = async (
   const promises = map(exchangeContracts, async exchangeAddress => {
     try {
       const ethReserveCall = web3Provider.getBalance(exchangeAddress);
-      const exchange = new ethers.Contract(
-        exchangeAddress,
-        exchangeABI,
-        web3Provider
-      );
+      const exchange = new Contract(exchangeAddress, exchangeABI, web3Provider);
       const tokenAddressCall = exchange.tokenAddress();
       const balanceCall = exchange.balanceOf(accountAddress);
       const totalSupplyCall = exchange.totalSupply();
@@ -265,11 +238,7 @@ export const getLiquidityInfo = async (
         totalSupplyCall,
       ]);
 
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        erc20ABI,
-        web3Provider
-      );
+      const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
 
       const token = get(pairs, `[${toLower(tokenAddress)}]`);
 
@@ -337,7 +306,7 @@ export const getLiquidityInfo = async (
       );
 
       return {
-        balance,
+        balance: convertRawAmountToDecimalFormat(balance),
         ethBalance,
         ethReserve,
         token: {
@@ -347,7 +316,7 @@ export const getLiquidityInfo = async (
           symbol,
         },
         tokenAddress,
-        totalSupply,
+        totalSupply: convertRawAmountToDecimalFormat(totalSupply),
         uniqueId: `uniswap_${tokenAddress}`,
       };
     } catch (error) {
@@ -407,48 +376,7 @@ export const getChart = async (exchangeAddress, timeframe) => {
   return data;
 };
 
-export const getAllPairsAndTokensV2 = async () => {
-  const tokens = (
-    await uniswap2Client.query({
-      query: UNISWAP2_ALL_TOKENS,
-    })
-  )?.data.tokens.reduce((acc, { id, name, symbol, decimals }) => {
-    acc[id] = new Token(ChainId.MAINNET, id, decimals, symbol, name);
-    return acc;
-  }, {});
-
-  if (!tokens) {
-    return null;
-  }
-
-  const pairs = (
-    await uniswap2Client.query({
-      query: UNISWAP2_ALL_PAIRS,
-    })
-  )?.data.pairs.reduce((acc, pair) => {
-    const token0 = tokens[pair.token0.id];
-    const token1 = tokens[pair.token1.id];
-
-    const res0 = convertAmountToRawAmount(pair.reserve0, token0.decimals);
-    const res1 = convertAmountToRawAmount(pair.reserve1, token1.decimals);
-
-    const amount0 = new TokenAmount(token0, res0);
-    const amount1 = new TokenAmount(token1, res1);
-
-    acc[pair.id] = new Pair(amount0, amount1);
-    return acc;
-  }, {});
-
-  if (!pairs) {
-    return null;
-  }
-  return {
-    pairs,
-    tokens,
-  };
-};
-
-export const getAllExchanges = async (tokenOverrides, excluded = []) => {
+export const getAllTokens = async (tokenOverrides, excluded = []) => {
   const pageSize = 600;
   let allTokens = {};
   let data = [];
@@ -457,90 +385,35 @@ export const getAllExchanges = async (tokenOverrides, excluded = []) => {
     let skip = 0;
     while (!dataEnd) {
       let result = await uniswapClient.query({
-        query: UNISWAP_ALL_EXCHANGES_QUERY,
+        query: UNISWAP_ALL_TOKENS,
         variables: {
           excluded,
           first: pageSize,
           skip: skip,
         },
       });
-      data = data.concat(result.data.exchanges);
+      data = data.concat(result.data.tokens);
       skip = skip + pageSize;
-      if (result.data.exchanges.length < pageSize) {
+      if (result.data.tokens.length < pageSize) {
         dataEnd = true;
       }
     }
-    console.log(data);
   } catch (err) {
     logger.log('error: ', err);
   }
-  data.forEach(exchange => {
-    const tokenAddress = toLower(exchange.tokenAddress);
-    const tokenExchangeInfo = {
-      decimals: exchange.tokenDecimals,
-      ethBalance: exchange.ethBalance,
-      exchangeAddress: exchange.id,
-      name: exchange.tokenName,
-      symbol: exchange.tokenSymbol,
+  data.forEach(token => {
+    const tokenAddress = toLower(token.id);
+    const tokenInfo = {
+      address: token.id,
+      decimals: token.decimals,
+      name: token.name,
+      symbol: token.symbol,
+      totalLiquidity: token.totalLiquidity,
       ...tokenOverrides[tokenAddress],
     };
-    allTokens[tokenAddress] = tokenExchangeInfo;
+    allTokens[tokenAddress] = tokenInfo;
   });
   return allTokens;
-};
-
-export const calculateTradeDetails = (
-  chainId,
-  inputAmount,
-  inputCurrency,
-  inputReserve,
-  outputAmount,
-  outputCurrency,
-  outputReserve,
-  inputAsExactAmount
-) => {
-  const { address: inputAddress, decimals: inputDecimals } = inputCurrency;
-  const { address: outputAddress, decimals: outputDecimals } = outputCurrency;
-
-  const isInputEth = inputAddress === 'eth';
-  const isOutputEth = outputAddress === 'eth';
-
-  const rawInputAmount = convertAmountToRawAmount(
-    inputAmount || 0,
-    inputDecimals
-  );
-
-  const rawOutputAmount = convertAmountToRawAmount(
-    outputAmount || 0,
-    outputDecimals
-  );
-
-  let tradeDetails = null;
-
-  if (isInputEth && !isOutputEth) {
-    tradeDetails = inputAsExactAmount
-      ? tradeExactEthForTokensWithData(outputReserve, rawInputAmount, chainId)
-      : tradeEthForExactTokensWithData(outputReserve, rawOutputAmount, chainId);
-  } else if (!isInputEth && isOutputEth) {
-    tradeDetails = inputAsExactAmount
-      ? tradeExactTokensForEthWithData(inputReserve, rawInputAmount, chainId)
-      : tradeTokensForExactEthWithData(inputReserve, rawOutputAmount, chainId);
-  } else if (!isInputEth && !isOutputEth) {
-    tradeDetails = inputAsExactAmount
-      ? tradeExactTokensForTokensWithData(
-          inputReserve,
-          outputReserve,
-          rawInputAmount,
-          chainId
-        )
-      : tradeTokensForExactTokensWithData(
-          inputReserve,
-          outputReserve,
-          rawOutputAmount,
-          chainId
-        );
-  }
-  return tradeDetails;
 };
 
 export const calculateTradeDetailsV2 = (
@@ -579,42 +452,4 @@ export const calculateTradeDetailsV2 = (
       }
     )[0];
   }
-};
-
-export const useTradeInputsAndPairs = () => {
-  const {
-    inputCurrency,
-    outputCurrency,
-    pairs,
-    tokens,
-  }: {
-    inputCurrency?: { address: string };
-    outputCurrency?: { address: string };
-    pairs: Record<string, Pair>;
-    tokens: Record<string, Token>;
-  } = useSelector(
-    ({
-      uniswap2: { pairs, tokens },
-      uniswap: { inputCurrency, outputCurrency },
-    }) => ({
-      inputCurrency,
-      outputCurrency,
-      pairs,
-      tokens,
-    })
-  );
-
-  // translating v1 tokens into v2. Probably need to fix later
-  const inputToken: Token = inputCurrency
-    ? tokens[inputCurrency.address]
-    : WETH[ChainId.MAINNET];
-  const outputToken: Token | null = outputCurrency
-    ? tokens[outputCurrency.address]
-    : null;
-
-  return {
-    inputToken,
-    outputToken,
-    pairs,
-  };
 };
