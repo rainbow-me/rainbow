@@ -1,78 +1,248 @@
-import { isEmpty } from 'lodash';
-import React, { useMemo } from 'react';
-import ChartTypes from '../../helpers/chartTypes';
-import { toFixedDecimals } from '../../helpers/utilities';
-import { useAccountSettings, useCharts } from '../../hooks';
+import { invert } from 'lodash';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Dimensions } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import Animated, {
+  cancelAnimation,
+  NewEasing,
+  repeat,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import styled from 'styled-components/native';
+import Spinner from '../../assets/chartSpinner.png';
+import { nativeStackConfig } from '../../navigation/config';
+import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
+import Labels from './ExtremeLabels';
 import TimespanSelector from './TimespanSelector';
-import ValueChart from './ValueChart';
-import { colors } from '@rainbow-me/styles';
+import ChartTypes from '@rainbow-me/helpers/chartTypes';
+import { useNavigation } from '@rainbow-me/navigation';
+import { colors, position } from '@rainbow-me/styles';
+import {
+  ChartDot,
+  ChartPath,
+  useChartData,
+} from 'react-native-animated-charts';
 
-const chartStroke = { detailed: 1.5, simplified: 3 };
+export const { width: WIDTH } = Dimensions.get('window');
 
-const Chart = ({
-  asset,
-  chartDateRef,
-  chartPriceRef,
-  color,
-  latestPrice,
-  ...props
-}) => {
-  const { chart, chartType, updateChartType } = useCharts(asset);
-  const { nativeCurrency } = useAccountSettings();
+const ChartTimespans = [
+  ChartTypes.hour,
+  ChartTypes.day,
+  ChartTypes.week,
+  ChartTypes.month,
+  ChartTypes.year,
+  //ChartTypes.max, todo restore after receiving proper data from zerion
+];
 
-  const hasChart = !isEmpty(chart);
-  const change = asset?.price?.relative_change_24h || 0;
+const ChartContainer = styled.View`
+  margin-vertical: ${({ showChart }) => (showChart ? '17px' : '0px')};
+`;
 
-  const chartData = useMemo(() => {
-    if (!chart || !hasChart) return [];
-    return [[chart, chart]].map((sectionsData, index) => {
-      return {
-        name: index,
-        segments: sectionsData.map((data, i) => ({
-          color: colors.green,
-          line: i * 5,
-          points: data.map(([x, y]) => ({ x, y })),
-          renderStartSeparator: undefined,
-        })),
-      };
-    });
-  }, [chart, hasChart]);
+const ChartSpinner = styled(FastImage).attrs(({ color }) => ({
+  resizeMode: FastImage.resizeMode.contain,
+  source: Spinner,
+  tintColor: color,
+}))`
+  height: 28;
+  width: 28;
+`;
 
-  const currentChartIndex = Object.values(ChartTypes).indexOf(chartType);
-  const amountOfPathPoints = 175; // 👈️ TODO make this dynamic
+const Container = styled(Column)`
+  padding-bottom: 30px;
+  width: 100%;
+`;
 
-  return (
-    <Column
-      overflow="hidden"
-      paddingBottom={21}
-      paddingTop={19}
-      width="100%"
-      {...props}
-    >
-      <ValueChart
-        amountOfPathPoints={amountOfPathPoints}
-        barColor={color}
-        change={toFixedDecimals(change, 2)}
-        chartDateRef={chartDateRef}
-        chartPriceRef={chartPriceRef}
-        currentDataSource={currentChartIndex}
-        currentValue={latestPrice}
-        data={chartData}
-        enableSelect
-        importantPointsIndexInterval={amountOfPathPoints}
-        mode="gesture-managed"
-        nativeCurrency={nativeCurrency}
-        stroke={chartStroke}
-      />
-      <TimespanSelector
-        color={color}
-        defaultIndex={currentChartIndex}
-        isLoading={false}
-        reloadChart={updateChartType}
-      />
-    </Column>
-  );
+const InnerDot = styled.View`
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: ${({ color }) => color};
+  shadow-color: ${({ color }) => color};
+  shadow-offset: 0 3px;
+  shadow-opacity: 0.6;
+  shadow-radius: 4.5px;
+`;
+
+const Dot = styled(ChartDot)`
+  justify-content: center;
+  align-items: center;
+  background-color: ${({ color }) => color};
+`;
+
+const HEIGHT = 146.5;
+
+const Overlay = styled(Animated.View).attrs({
+  pointerEvents: 'none',
+})`
+  ${position.cover};
+  align-items: center;
+  background-color: ${colors.alpha(colors.white, 0.9)};
+  justify-content: center;
+`;
+
+const rotationConfig = {
+  duration: 500,
+  easing: NewEasing.linear,
 };
 
-export default Chart;
+const timingConfig = {
+  duration: 300,
+};
+
+function useShowLoadingState(isFetching) {
+  const [isShow, setIsShow] = useState(false);
+  const timeout = useRef();
+  useEffect(() => {
+    if (isFetching) {
+      timeout.current = setTimeout(() => setIsShow(isFetching), 500);
+    } else {
+      clearTimeout(timeout.current);
+      setIsShow(isFetching);
+    }
+  }, [isFetching]);
+  return isShow;
+}
+
+export default function ChartWrapper({
+  chartType,
+  color,
+  fetchingCharts,
+  throttledData,
+  updateChartType,
+  showChart,
+  showMonth,
+  showYear,
+  ...props
+}) {
+  const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [
+    chartType,
+  ]);
+
+  const { progress } = useChartData();
+  const spinnerRotation = useSharedValue(0, 'spinnerRotation');
+  const spinnerScale = useSharedValue(0, 'spinnerScale');
+  const chartTimeSharedValue = useSharedValue('', 'chartTimeSharedValue');
+
+  const { setOptions } = useNavigation();
+  useEffect(
+    () =>
+      setOptions({
+        onWillDismiss: () => {
+          cancelAnimation(progress);
+          cancelAnimation(spinnerRotation);
+          cancelAnimation(spinnerScale);
+          nativeStackConfig.screenOptions.onWillDismiss();
+        },
+      }),
+    [setOptions, progress, spinnerRotation, spinnerScale]
+  );
+
+  const showLoadingState = useShowLoadingState(fetchingCharts);
+
+  const spinnerTimeout = useRef();
+  useEffect(() => {
+    if (showLoadingState) {
+      clearTimeout(spinnerTimeout.current);
+      spinnerRotation.value = 0;
+      spinnerRotation.value = repeat(
+        withTiming(360, rotationConfig),
+        -1,
+        false
+      );
+      spinnerScale.value = withTiming(1, timingConfig);
+    } else {
+      spinnerScale.value = withTiming(0, timingConfig);
+      spinnerTimeout.current = setTimeout(
+        () => (spinnerRotation.value = 0),
+        timingConfig.duration
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showLoadingState]);
+
+  const overlayStyle = useAnimatedStyle(() => {
+    return {
+      opacity: spinnerScale.value,
+    };
+  }, 'overlayStyle');
+
+  const spinnerStyle = useAnimatedStyle(() => {
+    return {
+      opacity: spinnerScale.value,
+      transform: [
+        { rotate: `${spinnerRotation.value}deg` },
+        { scale: spinnerScale.value },
+      ],
+    };
+  }, 'spinnerStyle');
+
+  const timespan = invert(ChartTypes)[chartType];
+  const formattedTimespan =
+    timespan.charAt(0).toUpperCase() + timespan.slice(1);
+
+  useEffect(() => {
+    if (chartType === ChartTypes.day) {
+      chartTimeSharedValue && (chartTimeSharedValue.value = 'Today');
+    } else if (chartType === ChartTypes.max) {
+      chartTimeSharedValue && (chartTimeSharedValue.value = 'All Time');
+    } else {
+      chartTimeSharedValue &&
+        (chartTimeSharedValue.value = `Past ${formattedTimespan}`);
+    }
+  }, [chartTimeSharedValue, chartType, formattedTimespan]);
+
+  return (
+    <Container>
+      <ChartExpandedStateHeader
+        {...props}
+        chartTimeSharedValue={chartTimeSharedValue}
+        color={color}
+        showChart={showChart}
+      />
+      <ChartContainer showChart={showChart}>
+        {showChart && (
+          <>
+            <Labels color={color} width={WIDTH} />
+            <ChartPath
+              fill="none"
+              gestureEnabled={!fetchingCharts && !!throttledData}
+              height={HEIGHT}
+              longPressGestureHandlerProps={{
+                minDurationMs: 60,
+              }}
+              stroke={color}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={3.5}
+              strokeWidthSelected={3}
+              width={WIDTH}
+            />
+            <Dot color={colors.alpha(color, 0.03)} size={65}>
+              <InnerDot color={color} />
+            </Dot>
+            <Overlay style={overlayStyle}>
+              <Animated.View style={spinnerStyle}>
+                <ChartSpinner color={color} />
+              </Animated.View>
+            </Overlay>
+          </>
+        )}
+      </ChartContainer>
+      {showChart ? (
+        <TimespanSelector
+          color={color}
+          defaultIndex={timespanIndex}
+          // fixme temporary to fix animation
+          key={`ts_${showMonth}_${showYear}`}
+          reloadChart={updateChartType}
+          showMonth={showMonth}
+          showYear={showYear}
+          timespans={ChartTimespans}
+        />
+      ) : null}
+    </Container>
+  );
+}

@@ -1,25 +1,26 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import Animated from 'react-native-reanimated';
 import { Path } from 'react-native-svg';
-import { withRotationForDirection } from '../../../hoc';
 import Svg from '../Svg';
 import { colors } from '@rainbow-me/styles';
 
-const FatArrowIcon = ({ color, ...props }) => (
-  <Svg fill="none" height="19" viewBox="0 0 16 19" width="16" {...props}>
-    <Path
-      d="M8.17349 0C7.30065 0 6.70905 0.612545 6.70905 1.51448V12.4828L6.80604 14.5873L4.98276 12.4731L2.77155 10.2619C2.5 10 2.16056 9.80604 1.72414 9.80604C0.938578 9.80604 0.337285 10.3782 0.337285 11.2123C0.337285 11.5905 0.492457 11.9494 0.793104 12.2597L7.09698 18.5636C7.36854 18.8351 7.77586 19 8.17349 19C8.57112 19 8.97845 18.8351 9.25 18.5636L15.5442 12.2597C15.8448 11.9494 16 11.5905 16 11.2123C16 10.3782 15.3987 9.80604 14.6131 9.80604C14.1767 9.80604 13.8373 10 13.5754 10.2619L11.3642 12.4731L9.54095 14.5873L9.62823 12.4828V1.51448C9.62823 0.612545 9.04634 0 8.17349 0Z"
+const AnimatedPath = Animated.createAnimatedComponent(Path);
+const AnimatedSvg = Animated.createAnimatedComponent(Svg);
+
+const FatArrowIcon = ({ color = colors.black, ...props }, ref) => (
+  <AnimatedSvg
+    fill={color}
+    height="18"
+    ref={ref}
+    viewBox="0 0 15 18"
+    width="15"
+    {...props}
+  >
+    <AnimatedPath
+      d="M7.50464 17.2384C6.66873 17.2384 6.10217 16.6518 6.10217 15.788V6.24149L6.19505 4.22601L4.44892 6.25077L2.33127 8.36842C2.07121 8.61919 1.74613 8.80495 1.32817 8.80495C0.575851 8.80495 0 8.25697 0 7.4582C0 7.09597 0.148607 6.75232 0.436533 6.45511L6.47368 0.417957C6.73375 0.157895 7.12384 0 7.50464 0C7.88545 0 8.27554 0.157895 8.5356 0.417957L14.5635 6.45511C14.8514 6.75232 15 7.09597 15 7.4582C15 8.25697 14.4241 8.80495 13.6718 8.80495C13.2539 8.80495 12.9288 8.61919 12.678 8.36842L10.5604 6.25077L8.81424 4.22601L8.89783 6.24149V15.788C8.89783 16.6518 8.34056 17.2384 7.50464 17.2384Z"
       fill={color}
     />
-  </Svg>
+  </AnimatedSvg>
 );
 
-FatArrowIcon.propTypes = {
-  color: PropTypes.string,
-};
-
-FatArrowIcon.defaultProps = {
-  color: colors.black,
-};
-
-export default withRotationForDirection(FatArrowIcon);
+export default React.forwardRef(FatArrowIcon);

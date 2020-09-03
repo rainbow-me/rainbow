@@ -14,5 +14,4 @@ export { default as withOpenBalances } from './withOpenBalances';
 export { default as withOpenFamilyTabs } from './withOpenFamilyTabs';
 export { default as withOpenInvestmentCards } from './withOpenInvestmentCards';
 export { default as withOpenSavings } from './withOpenSavings';
-export { default as withRotationForDirection } from './withRotationForDirection';
 export { default as withSafeAreaViewInsetValues } from './withSafeAreaViewInsetValues';

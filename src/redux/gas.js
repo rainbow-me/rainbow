@@ -48,18 +48,23 @@ const getDefaultTxFees = () => (dispatch, getState) => {
 };
 
 export const gasPricesStartPolling = () => async (dispatch, getState) => {
+  const { gasPrices } = getState().gas;
+
   const { fallbackGasPrices, selectedGasPrice, txFees } = dispatch(
     getDefaultTxFees()
   );
-
-  dispatch({
-    payload: {
-      gasPrices: fallbackGasPrices,
-      selectedGasPrice,
-      txFees,
-    },
-    type: GAS_PRICES_DEFAULT,
-  });
+  // We only set the default if we don't have any price
+  // The previous price will be always more accurate than our default values!
+  if (isEmpty(gasPrices)) {
+    dispatch({
+      payload: {
+        gasPrices: fallbackGasPrices,
+        selectedGasPrice,
+        txFees,
+      },
+      type: GAS_PRICES_DEFAULT,
+    });
+  }
 
   const getGasPrices = () =>
     new Promise((fetchResolve, fetchReject) => {

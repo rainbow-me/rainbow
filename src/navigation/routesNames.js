@@ -7,6 +7,7 @@ const Routes = {
   BACKUP_SHEET: 'BackupSheet',
   CHANGE_WALLET_SHEET: 'ChangeWalletSheet',
   CHANGE_WALLET_SHEET_NAVIGATOR: 'ChangeWalletSheetNavigator',
+  CHARTS_EXAMPLE: 'ChartsExampleScreen',
   CONFIRM_REQUEST: 'ConfirmRequest',
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',
   EXAMPLE_SCREEN: 'ExampleScreen',
@@ -52,11 +53,13 @@ export const NATIVE_ROUTES = [
   Routes.SAVINGS_SHEET,
   Routes.SAVINGS_WITHDRAW_MODAL,
   Routes.SAVINGS_DEPOSIT_MODAL,
-  ...(isNativeStackAvailable && [
-    Routes.SEND_SHEET_NAVIGATOR,
-    Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR,
-    Routes.ADD_CASH_SCREEN_NAVIGATOR,
-  ]),
+  ...(isNativeStackAvailable
+    ? [
+        Routes.SEND_SHEET_NAVIGATOR,
+        Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR,
+        Routes.ADD_CASH_SCREEN_NAVIGATOR,
+      ]
+    : []),
 ];
 
 const RoutesWithNativeStackAvailability = {

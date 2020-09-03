@@ -1,9 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components/primitives';
-import ChartTypes from '../../helpers/chartTypes';
 import { JellySelector } from '../jelly-selector';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
+import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { colors, padding } from '@rainbow-me/styles';
 
 const Container = styled(Centered)`
@@ -13,12 +13,18 @@ const Container = styled(Centered)`
 
 const TimespanItemLabel = styled(Text).attrs(({ color, isSelected }) => ({
   align: 'center',
-  color: isSelected ? color : colors.grey,
-  letterSpacing: 'roundedTightest',
+  color: isSelected ? color : colors.alpha(colors.blueGreyDark, 0.4),
+  letterSpacing: 'roundedTighter',
   size: 'smedium',
   weight: 'bold',
 }))`
   ${padding(0, 9)};
+`;
+
+const TimespanItemRow = styled(Row).attrs({
+  justify: 'space-around',
+})`
+  ${padding(0, 30)};
 `;
 
 const TimespanItem = ({ color, isSelected, item, ...props }) => (
@@ -31,33 +37,34 @@ const TimespanItem = ({ color, isSelected, item, ...props }) => (
   </Centered>
 );
 
-const TimespanItemRow = styled(Row).attrs({
-  justify: 'space-between',
-})`
-  ${padding(0, 15)};
-`;
-
 const TimespanSelector = ({
   color = colors.dark,
   defaultIndex = 0,
   reloadChart,
+  showMonth,
+  showYear,
+  timespans,
 }) => {
-  const handleSelect = useCallback(
-    newTimespan => reloadChart(ChartTypes[newTimespan]),
-    [reloadChart]
-  );
-
+  const filteredTimespans = useMemo(() => {
+    return timespans.filter(
+      t =>
+        (t !== ChartTypes.month || showMonth) &&
+        (t !== ChartTypes.year || showYear)
+    );
+  }, [showMonth, showYear, timespans]);
   return (
     <Container>
       <JellySelector
         backgroundColor={colors.alpha(color, 0.06)}
         color={color}
         defaultIndex={defaultIndex}
+        enableHapticFeedback
         height={32}
-        items={Object.keys(ChartTypes)}
-        onSelect={handleSelect}
+        items={filteredTimespans}
+        onSelect={reloadChart}
         renderItem={TimespanItem}
         renderRow={TimespanItemRow}
+        scaleTo={1.2}
         width="100%"
       />
     </Container>

@@ -1,15 +1,13 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
-import { withRotationForDirection } from '../../../hoc';
-import { directionPropType } from '../../../utils';
 import Svg from '../Svg';
 import { colors } from '@rainbow-me/styles';
 
-const CaretIcon = ({ color, size, ...props }) => (
+const CaretIcon = ({ color = colors.dark, size, ...props }, ref) => (
   <Svg
     {...props}
     height={size ? (size * 21) / 9 : '21'}
+    ref={ref}
     viewBox="0 0 9 21"
     width={size || '9'}
   >
@@ -21,14 +19,4 @@ const CaretIcon = ({ color, size, ...props }) => (
   </Svg>
 );
 
-CaretIcon.propTypes = {
-  color: PropTypes.string,
-  direction: directionPropType,
-  size: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-};
-
-CaretIcon.defaultProps = {
-  color: colors.dark,
-};
-
-export default withRotationForDirection(CaretIcon);
+export default React.forwardRef(CaretIcon);
