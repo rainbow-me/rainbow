@@ -72,8 +72,8 @@ function SeedWordGrid({ seed }) {
             })}
           </ColumnWithMargins>
           <ColumnWithMargins margin={9}>
-            {wordColumn.map(word => (
-              <GridItem key={word}>
+            {wordColumn.map((word, index) => (
+              <GridItem key={`${word}${index}`}>
                 <GridText weight="bold">{word}</GridText>
               </GridItem>
             ))}
