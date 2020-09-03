@@ -17,7 +17,6 @@ import CurrencyIcon from '../../assets/currency-icon.png';
 import LanguageIcon from '../../assets/language-icon.png';
 import NetworkIcon from '../../assets/network-icon.png';
 // import SecurityIcon from '../../assets/security-icon.png';
-
 import {
   getAppStoreReviewCount,
   saveAppStoreReviewCount,
@@ -116,6 +115,8 @@ const SettingsSection = ({
     );
   }, []);
 
+  const showDevMode = __DEV__ || !!Number(ENABLE_DEV_MODE);
+
   return (
     <ScrollView
       contentContainerStyle={position.sizeAsObject('100%')}
@@ -201,7 +202,7 @@ const SettingsSection = ({
           onPress={onPressReview}
         />
       </ColumnWithDividers>
-      {(__DEV__ || ENABLE_DEV_MODE) && (
+      {showDevMode && (
         <ListItem
           justify="center"
           label="🐙 Developer settings 🐙"
