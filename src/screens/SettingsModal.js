@@ -1,7 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useState } from 'react';
 import { Alert, Animated } from 'react-native';
-import { ENABLE_DEV_MODE } from 'react-native-dotenv';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import styled from 'styled-components/native';
 import { Modal, ModalHeader } from '../components/modal';
@@ -72,7 +71,7 @@ const SettingsPages = {
     title: 'Settings',
   },
   dev: {
-    component: __DEV__ || !!Number(ENABLE_DEV_MODE) ? DevSection : null,
+    component: IS_DEV ? DevSection : null,
     key: 'DevSection',
     title: 'Dev',
   },

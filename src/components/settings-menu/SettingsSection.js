@@ -7,7 +7,6 @@ import {
   ScrollView,
 } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
-import { ENABLE_DEV_MODE } from 'react-native-dotenv';
 import FastImage from 'react-native-fast-image';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import * as StoreReview from 'react-native-store-review';
@@ -115,8 +114,6 @@ const SettingsSection = ({
     );
   }, []);
 
-  const showDevMode = __DEV__ || !!Number(ENABLE_DEV_MODE);
-
   return (
     <ScrollView
       contentContainerStyle={position.sizeAsObject('100%')}
@@ -202,7 +199,7 @@ const SettingsSection = ({
           onPress={onPressReview}
         />
       </ColumnWithDividers>
-      {showDevMode && (
+      {IS_DEV && (
         <ListItem
           justify="center"
           label="🐙 Developer settings 🐙"
