@@ -14,6 +14,7 @@ const Label = styled(Text)`
   font-weight: ${fonts.weight.bold};
   letter-spacing: ${fonts.letterSpacing.roundedTighter};
   position: absolute;
+  text-align: center;
 `;
 
 const CenteredLabel = ({ position, style, width, ...props }) => {
