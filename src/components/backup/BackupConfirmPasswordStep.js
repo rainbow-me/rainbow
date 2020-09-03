@@ -1,4 +1,3 @@
-import { useNavigation, useNavigationState } from '@react-navigation/core';
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
@@ -22,7 +21,12 @@ import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { GradientText, Text } from '../text';
-import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
+import {
+  useRouteExistsInNavigationState,
+  useWalletCloudBackup,
+  useWallets,
+} from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { borders, colors, padding } from '@rainbow-me/styles';
 import logger from 'logger';
@@ -134,7 +138,10 @@ export default function BackupConfirmPasswordStep() {
   const [label, setLabel] = useState('􀎽 Confirm Backup');
   const passwordRef = useRef();
   const { selectedWallet, setIsWalletLoading } = useWallets();
-  const routes = useNavigationState(state => state.routes);
+
+  const isSettingsRoute = useRouteExistsInNavigationState(
+    Routes.SETTINGS_MODAL
+  );
 
   const walletId = params?.walletId || selectedWallet.id;
   const { goBack } = useNavigation();
@@ -185,7 +192,7 @@ export default function BackupConfirmPasswordStep() {
   const onSuccess = useCallback(async () => {
     logger.log('BackupConfirmPasswordStep:: saving backup password');
     await saveBackupPassword(password);
-    if (!routes.find(route => route.name === Routes.SETTINGS_MODAL)) {
+    if (!isSettingsRoute) {
       setTimeout(() => {
         Alert.alert(lang.t('icloud.backup_success'));
       }, 1000);
@@ -197,7 +204,7 @@ export default function BackupConfirmPasswordStep() {
       label: 'icloud',
     });
     goBack();
-  }, [goBack, password, routes]);
+  }, [goBack, isSettingsRoute, password]);
 
   const onSubmit = useCallback(async () => {
     await walletCloudBackup({
