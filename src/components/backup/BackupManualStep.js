@@ -1,75 +1,88 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
-import { setWalletBackedUp } from '../../redux/wallets';
-import { Centered, Column } from '../layout';
+import styled from 'styled-components/primitives';
+import { Column } from '../layout';
 import { SecretDisplaySection } from '../secret-display';
 import { SheetActionButton } from '../sheet';
-import { Text } from '../text';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import { Nbsp, Text } from '../text';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import { useDimensions, useWallets } from '@rainbow-me/hooks';
+import {
+  useDimensions,
+  useWalletManualBackup,
+  useWallets,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { colors, padding } from '@rainbow-me/styles';
 
-const DescriptionText = styled(Text).attrs({
+const Content = styled(Column).attrs({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
+  justify: 'start',
+})`
+  flex-grow: 1;
+  flex-shrink: 0;
+  padding-top: ${({ isTallPhone }) =>
+    Platform.OS === 'android' ? 30 : isTallPhone ? 65 : 15};
+`;
+
+const Footer = styled(Column).attrs({
+  justify: 'end',
+})`
+  ${padding(0, 15, 21)};
+  width: 100%;
+`;
+
+const Masthead = styled(Column).attrs({
+  align: 'center',
+  justify: 'start',
+})`
+  padding-top: 18;
+`;
+
+const MastheadDescription = styled(Text).attrs({
+  align: 'center',
+  color: colors.alpha(colors.blueGreyDark, 0.6),
   lineHeight: 'looser',
   size: 'large',
-})``;
+})`
+  max-width: 291;
+`;
 
-const ImportantText = styled(Text).attrs({
+const MastheadIcon = styled(Text).attrs({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  lineHeight: 'looser',
-  size: 'large',
-  weight: '600',
+  color: 'appleBlue',
+  size: 43,
+  weight: 'semibold',
 })``;
 
-const Title = styled(Text).attrs({
+const MastheadTitle = styled(Text).attrs({
+  align: 'center',
   size: 'big',
   weight: 'bold',
 })`
-  margin-bottom: 12;
+  ${padding(15, 0, 12)};
 `;
 
-const TopIcon = styled(Text).attrs({
-  align: 'center',
-  color: 'appleBlue',
-  size: 48,
-  weight: 'bold',
-})``;
-
 export default function BackupManualStep() {
-  const { height: deviceHeight, isTallPhone } = useDimensions();
-  const { selectedWallet } = useWallets();
-  const dispatch = useDispatch();
+  const { isTallPhone } = useDimensions();
   const { goBack } = useNavigation();
+  const { selectedWallet } = useWallets();
+  const { onManuallyBackupWalletId } = useWalletManualBackup();
   const { params } = useRoute();
-  const [type, setType] = useState(null);
-  const [secretLoaded, setSecretLoaded] = useState(false);
   const walletId = params?.walletId || selectedWallet.id;
 
-  const contentHeight = useMemo(
-    () =>
-      Platform.OS === 'android'
-        ? deviceHeight - 50
-        : deviceHeight - (isTallPhone ? 150 : 60),
-    [deviceHeight, isTallPhone]
-  );
+  const [type, setType] = useState(null);
+  const [secretLoaded, setSecretLoaded] = useState(false);
 
-  const onComplete = useCallback(async () => {
-    await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.manual));
+  const onComplete = useCallback(() => {
+    onManuallyBackupWalletId(walletId);
     analytics.track('Backup Complete', {
       category: 'backup',
       label: 'manual',
     });
     goBack();
-  }, [dispatch, goBack, walletId]);
+  }, [goBack, onManuallyBackupWalletId, walletId]);
 
   useEffect(() => {
     analytics.track('Manual Backup Step', {
@@ -79,39 +92,29 @@ export default function BackupManualStep() {
   }, []);
 
   return (
-    <Centered
-      direction="column"
-      flex={1}
-      height={contentHeight}
-      paddingBottom={isTallPhone ? 15 : 20}
-    >
-      <Column marginBottom={12} marginTop={15}>
-        <TopIcon>􀉆</TopIcon>
-      </Column>
-      <Title>Back up manually</Title>
-      <Column
-        paddingBottom={Platform.OS === 'android' ? 30 : isTallPhone ? 65 : 15}
-        paddingHorizontal={isTallPhone ? 65 : 35}
-      >
-        <DescriptionText>
-          <ImportantText>
+    <Fragment>
+      <Masthead>
+        <MastheadIcon>􀉆</MastheadIcon>
+        <MastheadTitle>Back up manually</MastheadTitle>
+        <MastheadDescription>
+          <MastheadDescription weight="semibold">
             {type === WalletTypes.privateKey
               ? `This is the key to your wallet!`
               : `These words are the keys to your wallet!`}
-          </ImportantText>
-          &nbsp;
+          </MastheadDescription>
+          <Nbsp />
           {type === WalletTypes.privateKey
             ? `Copy it and save it in your password manager, or in another secure spot.`
             : `Write them down or save them in your password manager.`}
-        </DescriptionText>
-      </Column>
-      <Column>
+        </MastheadDescription>
+      </Masthead>
+      <Content isTallPhone={isTallPhone}>
         <SecretDisplaySection
           onSecretLoaded={setSecretLoaded}
           onWalletTypeIdentified={setType}
         />
-      </Column>
-      <Column css={padding(0, 15)} flex={1} justify="end" width="100%">
+      </Content>
+      <Footer>
         {secretLoaded && (
           <SheetActionButton
             color={colors.appleBlue}
@@ -123,7 +126,7 @@ export default function BackupManualStep() {
             weight="bold"
           />
         )}
-      </Column>
-    </Centered>
+      </Footer>
+    </Fragment>
   );
 }

@@ -1,52 +1,57 @@
 import analytics from '@segment/analytics-react-native';
-import React, { useEffect } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
-import BackupIcon from '../../assets/backupIcon.png';
 import Divider from '../Divider';
 import { RainbowButton } from '../buttons';
-import { Centered, ColumnWithMargins } from '../layout';
+import { Column, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
+import BackupIcon from '@rainbow-me/assets/backupIcon.png';
 import { colors, padding } from '@rainbow-me/styles';
 
-const Title = styled(Text).attrs({
-  align: 'center',
-  size: 'big',
-  weight: 'bold',
+const Footer = styled(ColumnWithMargins).attrs({
+  margin: 19,
 })`
-  margin-bottom: 12;
+  ${padding(19, 15, 21)};
+  width: 100%;
 `;
 
-const TopIcon = styled(FastImage).attrs({
+const Masthead = styled(Column).attrs({
+  align: 'center',
+  justify: 'start',
+})`
+  flex: 1;
+  padding-top: 8;
+`;
+
+const MastheadDescription = styled(Text).attrs({
+  align: 'center',
+  color: colors.blueGreyDark50,
+  lineHeight: 'looser',
+  size: 'large',
+})`
+  ${padding(12, 42, 30)};
+`;
+
+const MastheadIcon = styled(FastImage).attrs({
   resizeMode: FastImage.resizeMode.contain,
   source: BackupIcon,
 })`
   height: 74;
   margin-bottom: -1;
-  margin-top: 8;
   width: 75;
 `;
 
-const DescriptionText = styled(Text).attrs({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  lineHeight: 'looser',
-  size: 'large',
-})`
-  padding-horizontal: 42;
-  padding-bottom: 30;
-`;
-
-const BackupSheetSection = ({
-  titleText,
+export default function BackupSheetSection({
   descriptionText,
   onPrimaryAction,
   onSecondaryAction,
   primaryLabel,
   secondaryLabel,
+  titleText,
   type,
-}) => {
+}) {
   useEffect(() => {
     analytics.track('BackupSheet shown', {
       category: 'backup',
@@ -55,12 +60,16 @@ const BackupSheetSection = ({
   }, [type]);
 
   return (
-    <Centered direction="column" paddingBottom={15}>
-      <TopIcon />
-      <Title>{titleText}</Title>
-      <DescriptionText>{descriptionText}</DescriptionText>
+    <Fragment>
+      <Masthead>
+        <MastheadIcon />
+        <Text align="center" size="big" weight="bold">
+          {titleText}
+        </Text>
+        <MastheadDescription>{descriptionText}</MastheadDescription>
+      </Masthead>
       <Divider color={colors.rowDividerLight} inset={[0, 42]} />
-      <ColumnWithMargins css={padding(19, 15, 0)} margin={19} width="100%">
+      <Footer>
         <RainbowButton label={primaryLabel} onPress={onPrimaryAction} />
         <SheetActionButton
           color={colors.white}
@@ -69,9 +78,7 @@ const BackupSheetSection = ({
           size="big"
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
         />
-      </ColumnWithMargins>
-    </Centered>
+      </Footer>
+    </Fragment>
   );
-};
-
-export default BackupSheetSection;
+}
