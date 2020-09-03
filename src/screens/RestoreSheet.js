@@ -11,7 +11,7 @@ import styled from 'styled-components';
 import RestoreIcloudStep from '../components/restore/RestoreIcloudStep';
 import RestoreSheetFirstStep from '../components/restore/RestoreSheetFirstStep';
 import { SlackSheet } from '../components/sheet';
-import WalletBackupTypes from '../helpers/walletBackupTypes';
+import WalletBackupStepTypes from '../helpers/walletBackupStepTypes';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
@@ -35,7 +35,7 @@ const RestoreSheet = () => {
   const { jumpToLong } = useContext(ModalContext);
   const switchSheetContentTransitionRef = useRef();
   const { params } = useRoute();
-  const [step, setStep] = useState(params?.option || 'first');
+  const [step, setStep] = useState(WalletBackupStepTypes.first);
 
   useEffect(() => {
     if (!params?.userData) {
@@ -48,7 +48,7 @@ const RestoreSheet = () => {
 
   const onIcloudRestore = useCallback(() => {
     switchSheetContentTransitionRef.current?.animateNextTransition();
-    setStep(WalletBackupTypes.cloud);
+    setStep(WalletBackupStepTypes.cloud);
     setOptions({
       isShortFormEnabled: false,
       longFormHeight: 770,
@@ -72,7 +72,7 @@ const RestoreSheet = () => {
         ref={switchSheetContentTransitionRef}
         transition={switchSheetContentTransition}
       >
-        {step === WalletBackupTypes.cloud ? (
+        {step === WalletBackupStepTypes.cloud ? (
           <RestoreIcloudStep userData={params?.userData} />
         ) : (
           <RestoreSheetFirstStep

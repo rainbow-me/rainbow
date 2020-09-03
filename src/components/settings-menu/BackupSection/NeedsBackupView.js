@@ -9,7 +9,7 @@ import { Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -58,7 +58,7 @@ const TopIcon = styled(FastImage).attrs({
   width: 75;
 `;
 
-const NeedsBackupView = () => {
+export default function NeedsBackupView() {
   const { navigate, setParams } = useNavigation();
   const { params } = useRoute();
   const { wallets, selectedWallet } = useWallets();
@@ -81,7 +81,7 @@ const NeedsBackupView = () => {
       category: 'settings backup',
     });
     navigate(Routes.BACKUP_SHEET, {
-      option: WalletBackupTypes.cloud,
+      step: WalletBackupStepTypes.cloud,
       walletId,
     });
   }, [navigate, walletId]);
@@ -91,7 +91,7 @@ const NeedsBackupView = () => {
       category: 'settings backup',
     });
     navigate(Routes.BACKUP_SHEET, {
-      option: WalletBackupTypes.manual,
+      step: WalletBackupStepTypes.manual,
       walletId,
     });
   }, [navigate, walletId]);
@@ -126,6 +126,4 @@ const NeedsBackupView = () => {
       </Column>
     </Fragment>
   );
-};
-
-export default NeedsBackupView;
+}
