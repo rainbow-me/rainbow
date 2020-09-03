@@ -25,6 +25,7 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
+  backupSheetConfig,
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
   nativeStackConfig,
@@ -263,15 +264,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SHEET}
-        options={{
-          cornerRadius: 30,
-          customStack: true,
-          isShortFormEnabled: true,
-          longFormHeight: 394,
-          onAppear: null,
-          shortFormHeight: 394,
-          startFromShortForm: true,
-        }}
+        {...backupSheetConfig}
       />
       <NativeStack.Screen
         component={ModalScreen}
