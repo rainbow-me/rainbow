@@ -7,6 +7,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
+import { ENABLE_DEV_MODE } from 'react-native-dotenv';
 import FastImage from 'react-native-fast-image';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import * as StoreReview from 'react-native-store-review';
@@ -16,6 +17,7 @@ import CurrencyIcon from '../../assets/currency-icon.png';
 import LanguageIcon from '../../assets/language-icon.png';
 import NetworkIcon from '../../assets/network-icon.png';
 // import SecurityIcon from '../../assets/security-icon.png';
+
 import {
   getAppStoreReviewCount,
   saveAppStoreReviewCount,
@@ -199,7 +201,7 @@ const SettingsSection = ({
           onPress={onPressReview}
         />
       </ColumnWithDividers>
-      {__DEV__ && (
+      {(__DEV__ || ENABLE_DEV_MODE) && (
         <ListItem
           justify="center"
           label="🐙 Developer settings 🐙"
