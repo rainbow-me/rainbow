@@ -9,7 +9,7 @@ import { Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -81,7 +81,7 @@ export default function NeedsBackupView() {
       category: 'settings backup',
     });
     navigate(Routes.BACKUP_SHEET, {
-      step: WalletBackupTypes.cloud,
+      step: WalletBackupStepTypes.cloud,
       walletId,
     });
   }, [navigate, walletId]);
@@ -91,7 +91,7 @@ export default function NeedsBackupView() {
       category: 'settings backup',
     });
     navigate(Routes.BACKUP_SHEET, {
-      step: WalletBackupTypes.manual,
+      step: WalletBackupStepTypes.manual,
       walletId,
     });
   }, [navigate, walletId]);

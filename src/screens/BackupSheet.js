@@ -18,7 +18,7 @@ import BackupManualStep from '../components/backup/BackupManualStep';
 import { LoadingOverlay } from '../components/modal';
 import { Sheet, SlackSheet } from '../components/sheet';
 import { deviceUtils } from '../utils';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -52,7 +52,7 @@ const BackupSheet = () => {
     return wallet.type !== WalletTypes.readOnly;
   }).length;
   const walletCloudBackup = useWalletCloudBackup();
-  const [step, setStep] = useState(params?.step || WalletBackupTypes.first);
+  const [step, setStep] = useState(params?.step || WalletBackupStepTypes.first);
   const walletId = params?.walletId || selectedWallet.id;
   const missingPassword = params?.missingPassword || null;
   const { setComponent, hide } = usePortal();
@@ -73,7 +73,7 @@ const BackupSheet = () => {
 
   const handleNoLatestBackup = useCallback(() => {
     switchSheetContentTransitionRef.current?.animateNextTransition();
-    setStep(WalletBackupTypes.cloud);
+    setStep(WalletBackupStepTypes.cloud);
     setOptions({
       isShortFormEnabled: false,
       longFormHeight: 10000,
@@ -83,10 +83,10 @@ const BackupSheet = () => {
 
   const handlePasswordNotFound = useCallback(() => {
     switchSheetContentTransitionRef.current?.animateNextTransition();
-    setStep(WalletBackupTypes.cloud);
+    setStep(WalletBackupStepTypes.cloud);
     setParams({
       missingPassword: true,
-      step: WalletBackupTypes.cloud,
+      step: WalletBackupStepTypes.cloud,
     });
     setOptions({
       isShortFormEnabled: false,
@@ -135,7 +135,7 @@ const BackupSheet = () => {
 
   const onManualBackup = useCallback(() => {
     switchSheetContentTransitionRef.current?.animateNextTransition();
-    setStep(WalletBackupTypes.manual);
+    setStep(WalletBackupStepTypes.manual);
     setOptions({
       isShortFormEnabled: false,
       longFormHeight: 770,
@@ -158,13 +158,13 @@ const BackupSheet = () => {
   }, [goBack, navigate]);
 
   useEffect(() => {
-    if (step === WalletBackupTypes.cloud) {
+    if (step === WalletBackupStepTypes.cloud) {
       setOptions({
         isShortFormEnabled: false,
         longFormHeight: missingPassword ? 715 : 750,
       });
       setImmediate(jumpToLong);
-    } else if (step === WalletBackupTypes.manual) {
+    } else if (step === WalletBackupStepTypes.manual) {
       setOptions({
         isShortFormEnabled: false,
         longFormHeight: 770,
@@ -176,7 +176,7 @@ const BackupSheet = () => {
 
   const renderStep = useCallback(() => {
     switch (step) {
-      case WalletBackupTypes.existing_user:
+      case WalletBackupStepTypes.existing_user:
         return (
           <BackupSheetSection
             descriptionText="You have wallets that have not been backed up yet. Back them up in case you lose this device."
@@ -190,7 +190,7 @@ const BackupSheet = () => {
             type="Existing User"
           />
         );
-      case WalletBackupTypes.imported:
+      case WalletBackupStepTypes.imported:
         return (
           <BackupSheetSection
             descriptionText={`Don't lose your wallet! Save an encrypted copy to iCloud.`}
@@ -202,13 +202,13 @@ const BackupSheet = () => {
             type="Imported Wallet"
           />
         );
-      case WalletBackupTypes.cloud:
+      case WalletBackupStepTypes.cloud:
         return missingPassword ? (
           <BackupConfirmPasswordStep />
         ) : (
           <BackupIcloudStep />
         );
-      case WalletBackupTypes.manual:
+      case WalletBackupStepTypes.manual:
         return <BackupManualStep />;
       default:
         return (
@@ -234,7 +234,7 @@ const BackupSheet = () => {
   ]);
 
   const SheetComponent =
-    Platform.OS === 'android' && step !== WalletBackupTypes.manual
+    Platform.OS === 'android' && step !== WalletBackupStepTypes.manual
       ? Sheet
       : StyledSheet;
 

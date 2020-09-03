@@ -8,6 +8,7 @@ import { Centered, Column } from '../../layout';
 import LoadingOverlay from '../../modal/LoadingOverlay';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
+import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
@@ -122,7 +123,7 @@ const AlreadyBackedUpView = () => {
 
   const handleNoLatestBackup = useCallback(() => {
     Navigation.handleAction(Routes.BACKUP_SHEET, {
-      step: WalletBackupTypes.cloud,
+      step: WalletBackupStepTypes.cloud,
       walletId,
     });
   }, [walletId]);
@@ -130,7 +131,7 @@ const AlreadyBackedUpView = () => {
   const handlePasswordNotFound = useCallback(() => {
     Navigation.handleAction(Routes.BACKUP_SHEET, {
       missingPassword: true,
-      step: WalletBackupTypes.cloud,
+      step: WalletBackupStepTypes.cloud,
       walletId,
     });
   }, [walletId]);

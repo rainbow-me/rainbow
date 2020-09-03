@@ -25,7 +25,7 @@ import {
   isENSAddressFormat,
   isValidWallet,
 } from '@rainbow-me/helpers/validators';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import {
   useAccountSettings,
@@ -266,7 +266,7 @@ export default function ImportSeedPhraseSheet() {
                   // If it's not read only, show the backup sheet
                   if (!(isENSAddressFormat(input) || isValidAddress(input))) {
                     Navigation.handleAction(Routes.BACKUP_SHEET, {
-                      step: WalletBackupTypes.imported,
+                      step: WalletBackupStepTypes.imported,
                     });
                   }
                 }, 1000);

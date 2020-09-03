@@ -2,7 +2,7 @@ import { filter, find } from 'lodash';
 import store from '../redux/store';
 import { checkKeychainIntegrity } from '../redux/wallets';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -60,9 +60,9 @@ export const runWalletBackupStatusChecks = () => {
 
   // otherwise, show the BackupSheet redirecting to the WalletSelectionList
   setTimeout(() => {
-    logger.log('showing BackupSheet with existingUser step');
+    logger.log('showing BackupSheet with existing_user step');
     Navigation.handleAction(Routes.BACKUP_SHEET, {
-      step: WalletBackupTypes.existing_user,
+      step: WalletBackupStepTypes.existing_user,
     });
   }, BACKUP_SHEET_DELAY_MS);
   return;
