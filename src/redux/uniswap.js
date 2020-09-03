@@ -22,12 +22,10 @@ import {
 import {
   getAllTokens,
   getLiquidityInfo,
-  getReserve,
   getTestnetUniswapPairs,
 } from '../handlers/uniswap';
 import networkTypes from '../helpers/networkTypes';
 import { DefaultUniswapFavorites, uniswapPairs } from '../references';
-import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';
@@ -44,13 +42,7 @@ const UNISWAP_UPDATE_REQUEST = 'uniswap/UNISWAP_UPDATE_REQUEST';
 const UNISWAP_UPDATE_SUCCESS = 'uniswap/UNISWAP_UPDATE_SUCCESS';
 const UNISWAP_UPDATE_FAILURE = 'uniswap/UNISWAP_UPDATE_FAILURE';
 
-const UNISWAP_RESET_CURRENCIES_AND_RESERVES =
-  'uniswap/UNISWAP_RESET_CURRENCIES_AND_RESERVES';
 const UNISWAP_UPDATE_FAVORITES = 'uniswap/UNISWAP_UPDATE_FAVORITES';
-const UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE =
-  'uniswap/UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE';
-const UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE =
-  'uniswap/UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE';
 const UNISWAP_UPDATE_LIQUIDITY_TOKENS =
   'uniswap/UNISWAP_UPDATE_LIQUIDITY_TOKENS';
 const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
@@ -118,55 +110,6 @@ export const uniswapPairsInit = () => (dispatch, getState) => {
     type: UNISWAP_UPDATE_PAIRS,
   });
 };
-
-export const uniswapUpdateInputCurrency = inputCurrency => async dispatch => {
-  try {
-    const inputReserve = await getReserve(get(inputCurrency, 'address', null));
-    dispatch({
-      payload: {
-        inputCurrency,
-        inputReserve,
-      },
-      type: UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE,
-    });
-  } catch (error) {
-    dispatch({
-      payload: {
-        inputCurrency,
-        inputReserve: null,
-      },
-      type: UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE,
-    });
-    logger.log('Error updating input currency reserve', error);
-  }
-};
-
-export const uniswapUpdateOutputCurrency = outputCurrency => async dispatch => {
-  try {
-    const outputReserve = await getReserve(
-      get(outputCurrency, 'address', null)
-    );
-    dispatch({
-      payload: {
-        outputCurrency,
-        outputReserve,
-      },
-      type: UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE,
-    });
-  } catch (error) {
-    dispatch({
-      payload: {
-        outputCurrency,
-        outputReserve: null,
-      },
-      type: UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE,
-    });
-    logger.log('Error updating output currency reserve', error);
-  }
-};
-
-export const uniswapClearCurrenciesAndReserves = () => dispatch =>
-  dispatch({ type: UNISWAP_RESET_CURRENCIES_AND_RESERVES });
 
 export const uniswapResetState = () => dispatch =>
   dispatch({ type: UNISWAP_CLEAR_STATE });
@@ -243,13 +186,9 @@ export const INITIAL_UNISWAP_STATE = {
   allTokens: {},
   favorites: DefaultUniswapFavorites,
   fetchingUniswap: false,
-  inputCurrency: null,
-  inputReserve: null,
   isInitialized: false,
   liquidityTokens: [],
   loadingUniswap: false,
-  outputCurrency: null,
-  outputReserve: null,
   pairs: uniswapPairs,
   uniswapLiquidityTokenInfo: {},
 };
@@ -278,14 +217,6 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
       case UNISWAP_UPDATE_FAVORITES:
         draft.favorites = action.payload;
         break;
-      case UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE:
-        draft.inputCurrency = action.payload.inputCurrency;
-        draft.inputReserve = action.payload.inputReserve;
-        break;
-      case UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE:
-        draft.outputCurrency = action.payload.outputCurrency;
-        draft.outputReserve = action.payload.outputReserve;
-        break;
       case UNISWAP_LOAD_FAILURE:
         draft.loadingUniswap = false;
         break;
@@ -301,12 +232,6 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         break;
       case UNISWAP_UPDATE_LIQUIDITY_TOKENS:
         draft.liquidityTokens = action.payload;
-        break;
-      case UNISWAP_RESET_CURRENCIES_AND_RESERVES:
-        draft.inputCurrency = INITIAL_UNISWAP_STATE.inputCurrency;
-        draft.inputReserve = INITIAL_UNISWAP_STATE.inputReserve;
-        draft.outputCurrency = INITIAL_UNISWAP_STATE.outputCurrency;
-        draft.outputReserve = INITIAL_UNISWAP_STATE.outputReserve;
         break;
       case UNISWAP_CLEAR_STATE:
         return INITIAL_UNISWAP_STATE;
