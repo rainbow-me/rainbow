@@ -11,6 +11,7 @@ font.family = {
 font.letterSpacing = {
   zero: 0,
   roundedTightest: 0.2,
+  roundedTighter: 0.3,
   roundedTight: 0.4,
   roundedMedium: 0.5,
   rounded: 0.6,

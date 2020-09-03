@@ -26,9 +26,13 @@ export let web3Provider = new ethers.providers.JsonRpcProvider(
  * @param {String} network
  */
 export const web3SetHttpProvider = async network => {
-  web3Provider = new ethers.providers.JsonRpcProvider(
-    replace(infuraUrl, 'network', network)
-  );
+  if (network.startsWith('http://')) {
+    web3Provider = new ethers.providers.JsonRpcProvider(network);
+  } else {
+    web3Provider = new ethers.providers.JsonRpcProvider(
+      replace(infuraUrl, 'network', network)
+    );
+  }
   return web3Provider.ready;
 };
 

@@ -2,7 +2,7 @@ import Animated from 'react-native-reanimated';
 
 const interpolateTwo = Animated.proc(
   (value, extrapolate, input1, input2, output1, output2) =>
-    Animated.interpolate(value, {
+    Animated.interpolateNode(value, {
       extrapolate,
       inputRange: [input1, input2],
       outputRange: [output1, output2],
@@ -11,7 +11,7 @@ const interpolateTwo = Animated.proc(
 
 const interpolateThree = Animated.proc(
   (value, extrapolate, input1, input2, input3, output1, output2, output3) =>
-    Animated.interpolate(value, {
+    Animated.interpolateNode(value, {
       extrapolate,
       inputRange: [input1, input2, input3],
       outputRange: [output1, output2, output3],
@@ -31,7 +31,7 @@ const interpolateFour = Animated.proc(
     output3,
     output4
   ) =>
-    Animated.interpolate(value, {
+    Animated.interpolateNode(value, {
       extrapolate,
       inputRange: [input1, input2, input3, input4],
       outputRange: [output1, output2, output3, output4],
@@ -53,7 +53,7 @@ const interpolateFive = Animated.proc(
     output4,
     output5
   ) =>
-    Animated.interpolate(value, {
+    Animated.interpolateNode(value, {
       extrapolate,
       inputRange: [input1, input2, input3, input4, input5],
       outputRange: [output1, output2, output3, output4, output5],

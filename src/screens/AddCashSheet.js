@@ -52,8 +52,14 @@ export default function AddCashSheet() {
 
   const cashLimits = useMemo(
     () => ({
-      daily: `Up to $${dailyRemainingLimit} today`,
-      yearly: `$${yearlyRemainingLimit} left this year`,
+      daily:
+        dailyRemainingLimit > 0
+          ? `Up to $${dailyRemainingLimit} today`
+          : 'Daily limit reached',
+      yearly:
+        yearlyRemainingLimit > 0
+          ? `$${yearlyRemainingLimit} left this year`
+          : 'Yearly limit reached',
     }),
     [dailyRemainingLimit, yearlyRemainingLimit]
   );

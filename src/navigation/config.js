@@ -13,9 +13,11 @@ export const expandedAssetSheetConfig = {
     customStack: true,
     gestureEnabled: true,
     headerHeight: 25,
+    isShortFormEnabled: false,
     longFormHeight: params.longFormHeight,
     onAppear: null,
     scrollEnabled: true,
+    shortFormHeight: 309,
     topOffset: safeAreaInsetValues.top + 5,
   }),
 };

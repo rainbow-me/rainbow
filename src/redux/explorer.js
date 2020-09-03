@@ -189,7 +189,9 @@ export const emitChartsRequest = (
     const { assets } = getState().data;
     assetCodes = map(assets, 'address');
   }
-  assetsSocket.emit(...chartsRetrieval(assetCodes, nativeCurrency, chartType));
+  assetsSocket?.emit?.(
+    ...chartsRetrieval(assetCodes, nativeCurrency, chartType)
+  );
 };
 
 const listenOnAssetMessages = socket => dispatch => {
@@ -202,7 +204,7 @@ const listenOnAssetMessages = socket => dispatch => {
   });
 
   socket.on(messages.ASSET_CHARTS.RECEIVED, message => {
-    logger.log('charts received', get(message, 'payload.charts', {}));
+    //logger.log('charts received', get(message, 'payload.charts', {}));
     dispatch(assetChartsReceived(message));
   });
 };

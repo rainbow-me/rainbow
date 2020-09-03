@@ -68,7 +68,7 @@ const SheetSubtitleCycler = ({
   }, [stopInterval, stopTimeout]);
 
   const cycleTextOnce = useCallback(
-    () => setSelectedIndex(i => (i + 1 > items.length - 1 ? 0 : i + 1)),
+    () => setSelectedIndex(i => (i + 1) % items.length),
     [items]
   );
 
