@@ -230,7 +230,7 @@
     "ganache-cli": "^6.10.1"
   },
   "resolutions": {
-    "**/bl": "0.9.5",
+    "**/bl": "2.2.1",
     "**/elliptic": "6.5.3",
     "**/logkitty": "0.7.1",
     "**/minimist": "1.2.3",
