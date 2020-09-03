@@ -47,7 +47,6 @@ const UNISWAP_UPDATE_FAILURE = 'uniswap/UNISWAP_UPDATE_FAILURE';
 const UNISWAP_RESET_CURRENCIES_AND_RESERVES =
   'uniswap/UNISWAP_RESET_CURRENCIES_AND_RESERVES';
 const UNISWAP_UPDATE_FAVORITES = 'uniswap/UNISWAP_UPDATE_FAVORITES';
-const UNISWAP_UPDATE_TOKEN_RESERVES = 'uniswap/UNISWAP_UPDATE_TOKEN_RESERVES';
 const UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE =
   'uniswap/UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE';
 const UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE =
@@ -117,19 +116,6 @@ export const uniswapPairsInit = () => (dispatch, getState) => {
   dispatch({
     payload: pairs,
     type: UNISWAP_UPDATE_PAIRS,
-  });
-};
-
-export const uniswapUpdateTokenReserves = (
-  inputReserve,
-  outputReserve
-) => dispatch => {
-  dispatch({
-    payload: {
-      inputReserve,
-      outputReserve,
-    },
-    type: UNISWAP_UPDATE_TOKEN_RESERVES,
   });
 };
 
@@ -291,10 +277,6 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         break;
       case UNISWAP_UPDATE_FAVORITES:
         draft.favorites = action.payload;
-        break;
-      case UNISWAP_UPDATE_TOKEN_RESERVES:
-        draft.inputReserve = action.payload.inputReserve;
-        draft.outputReserve = action.payload.outputReserve;
         break;
       case UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE:
         draft.inputCurrency = action.payload.inputCurrency;
