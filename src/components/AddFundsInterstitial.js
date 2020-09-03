@@ -156,7 +156,6 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
         showWalletErrorAlert();
         return;
       }
-      console.log(amount);
       navigate(Routes.ADD_CASH_FLOW, {
         params: !isNaN(amount) ? { amount } : null,
         screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
