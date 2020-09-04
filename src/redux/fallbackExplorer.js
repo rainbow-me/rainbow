@@ -25,8 +25,8 @@ const getCurrentAddress = address => {
   return migratedTokens[address] || address;
 };
 
-// An attempt to mitigate inconsistencies between
-// Coingecko's API and coingecko's token list
+// Required to attempt to fix most inconsistencies between
+// Coingecko's API and coingecko's token
 const cleanupTokenName = str =>
   str
     .replace(' ', '')
@@ -266,7 +266,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
         payload: { assets },
       })
     );
-    //fallbackExplorerHandle = setTimeout(fetchAssetsBalancesAndPrices, 10000);
+    fallbackExplorerHandle = setTimeout(fetchAssetsBalancesAndPrices, 10000);
   };
   fetchAssetsBalancesAndPrices();
 };

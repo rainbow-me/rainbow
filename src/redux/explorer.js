@@ -26,6 +26,7 @@ const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
 const EXPLORER_CLEAR_STATE = 'explorer/EXPLORER_CLEAR_STATE';
 
 const TRANSACTIONS_LIMIT = 1000;
+const ZERION_ASSETS_TIMEOUT = 15000; // 15 seconds
 
 const messages = {
   ADDRESS_ASSETS: {
@@ -54,6 +55,10 @@ const messages = {
   ERROR: 'error',
   RECONNECT_ATTEMPT: 'reconnect_attempt',
 };
+
+// -- Globals ---------------------------------------- //
+let assetsTimeoutHandler;
+let fallback = false;
 
 // -- Actions ---------------------------------------- //
 const createSocket = endpoint =>
@@ -144,7 +149,7 @@ export const explorerInit = () => async (dispatch, getState) => {
 
   // Fallback to the testnet data provider
   // if we're not on mainnnet
-  if (network === NetworkTypes.mainnet) {
+  if (network !== NetworkTypes.mainnet) {
     return dispatch(fallbackExplorerInit());
   }
 
@@ -172,6 +177,13 @@ export const explorerInit = () => async (dispatch, getState) => {
   newAssetsSocket.on(messages.CONNECT, () => {
     newAssetsSocket.emit(...assetsSubscription(keys(pairs), nativeCurrency));
   });
+
+  if (network === NetworkTypes.mainnet) {
+    assetsTimeoutHandler = setTimeout(() => {
+      dispatch(fallbackExplorerInit());
+      fallback = true;
+    }, ZERION_ASSETS_TIMEOUT);
+  }
 };
 
 export const emitChartsRequest = (
@@ -249,18 +261,22 @@ const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
     dispatch(addressAssetsReceived(message));
     dispatch(emitChartsRequest());
+    clearTimeout(assetsTimeoutHandler);
   });
 
   socket.on(messages.ADDRESS_ASSETS.APPENDED, message => {
     dispatch(addressAssetsReceived(message, true));
+    fallback && dispatch(fallbackExplorerClearState);
   });
 
   socket.on(messages.ADDRESS_ASSETS.CHANGED, message => {
     dispatch(addressAssetsReceived(message, false, true));
+    fallback && dispatch(fallbackExplorerClearState);
   });
 
   socket.on(messages.ADDRESS_ASSETS.REMOVED, message => {
     dispatch(addressAssetsReceived(message, false, false, true));
+    fallback && dispatch(fallbackExplorerClearState);
   });
 };
 
