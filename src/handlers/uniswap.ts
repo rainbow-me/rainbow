@@ -416,7 +416,7 @@ export const getAllTokens = async (tokenOverrides, excluded = []) => {
   return allTokens;
 };
 
-export const calculateTradeDetailsV2 = (
+export const calculateTradeDetails = (
   inputAmount: number,
   outputAmount: number,
   inputToken: Token,

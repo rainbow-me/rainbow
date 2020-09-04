@@ -1,41 +1,12 @@
-import { Interface } from '@ethersproject/abi'; // TODO JIN
-import { ChainId, Pair, WETH } from '@uniswap/sdk';
-import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'; // TODO JIN
+import { ChainId, Pair } from '@uniswap/sdk';
 import { filter, flatMap, map, toLower, uniqBy } from 'lodash';
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { UNISWAP_V2_BASES } from '../references';
-
-const PAIR_INTERFACE = new Interface(IUniswapV2PairABI);
-const fragment = PAIR_INTERFACE.getFunction('getReserves');
-const callData: string | undefined = fragment
-  ? PAIR_INTERFACE.encodeFunctionData(fragment)
-  : undefined;
+import { PAIR_GET_RESERVES_CALL_DATA } from '../references/uniswap';
+import useAccountSettings from './useAccountSettings';
 
 export default function useUniswapCalls(inputCurrency, outputCurrency) {
-  const { chainId, tokens } = useSelector(
-    ({ settings: { chainId }, uniswap2: { tokens } }) => ({
-      chainId,
-      tokens,
-    })
-  );
-
-  const inputToken: Token = useMemo(() => {
-    const inputTok =
-      inputCurrency && inputCurrency.address !== 'eth'
-        ? tokens[inputCurrency.address]
-        : WETH[ChainId.MAINNET];
-    return inputTok;
-  }, [inputCurrency, tokens]);
-
-  const outputToken: Token | null = useMemo(() => {
-    const outputTok = outputCurrency
-      ? outputCurrency.address === 'eth'
-        ? WETH[ChainId.MAINNET]
-        : tokens[outputCurrency.address]
-      : null;
-    return outputTok;
-  }, [outputCurrency, tokens]);
+  const { chainId } = useAccountSettings();
 
   const bases = useMemo(() => {
     const basebase = UNISWAP_V2_BASES[chainId as ChainId] ?? [];
@@ -43,18 +14,18 @@ export default function useUniswapCalls(inputCurrency, outputCurrency) {
   }, [chainId]);
 
   const allPairCombinations = useMemo(() => {
-    if (!inputToken || !outputToken) return [];
+    if (!inputCurrency || !outputCurrency) return [];
     const combos = [
       // the direct pair
-      [inputToken, outputToken],
+      [inputCurrency, outputCurrency],
       // token A against all bases
       ...bases.map((base): [Token | undefined, Token | undefined] => [
-        inputToken,
+        inputCurrency,
         base,
       ]),
       // token B against all bases
       ...bases.map((base): [Token | undefined, Token | undefined] => [
-        outputToken,
+        outputCurrency,
         base,
       ]),
       // each base against all bases
@@ -65,37 +36,34 @@ export default function useUniswapCalls(inputCurrency, outputCurrency) {
 
     let validCombos = filter(
       combos,
-      ([inputToken, outputToken]) =>
-        inputToken && outputToken && !inputToken.equals(outputToken)
+      ([inputCurrency, outputCurrency]) =>
+        inputCurrency && outputCurrency && !inputCurrency.equals(outputCurrency)
     );
 
-    const uniqCombos = uniqBy(validCombos, ([inputToken, outputToken]) =>
-      toLower(Pair.getAddress(inputToken, outputToken))
+    const uniqCombos = uniqBy(validCombos, ([inputCurrency, outputCurrency]) =>
+      toLower(Pair.getAddress(inputCurrency, outputCurrency))
     );
     return uniqCombos;
-  }, [bases, inputToken, outputToken]);
+  }, [bases, inputCurrency, outputCurrency]);
 
   const pairAddresses = useMemo(() => {
-    return map(allPairCombinations, ([inputToken, outputToken]) =>
-      toLower(Pair.getAddress(inputToken, outputToken))
+    return map(allPairCombinations, ([inputCurrency, outputCurrency]) =>
+      toLower(Pair.getAddress(inputCurrency, outputCurrency))
     );
   }, [allPairCombinations]);
 
   const calls = useMemo(() => {
-    const theCalls =
-      fragment && callData
-        ? map(pairAddresses, address => ({
-            address,
-            callData,
-          }))
-        : [];
+    const theCalls = PAIR_GET_RESERVES_CALL_DATA
+      ? map(pairAddresses, address => ({
+          address,
+          callData: PAIR_GET_RESERVES_CALL_DATA,
+        }))
+      : [];
     return theCalls;
   }, [pairAddresses]);
 
   return {
     allPairCombinations,
     calls,
-    contractInterface: PAIR_INTERFACE,
-    fragment,
   };
 }
