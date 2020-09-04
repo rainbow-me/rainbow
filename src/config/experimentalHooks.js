@@ -3,7 +3,7 @@ import { DevContext } from '../helpers/DevContext';
 import { defaultConfig } from './experimental';
 
 const useExperimentalFlag = name => {
-  if (__DEV__) {
+  if (IS_DEV) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     return useContext(DevContext).config[name];
   } else {
