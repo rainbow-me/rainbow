@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { get, toLower, uniqBy, values } from 'lodash';
+import { get, toLower, uniqBy } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
@@ -7,6 +7,7 @@ import { delay } from '../helpers/utilities';
 import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
 import allTokensFallback from '../references/coingecko/allTokens.json';
 import coingeckoIdsFallback from '../references/coingecko/ids.json';
+import migratedTokens from '../references/migratedTokens.json';
 import testnetAssets from '../references/testnet-assets.json';
 import { addressAssetsReceived } from './data';
 import logger from 'logger';
@@ -17,6 +18,15 @@ const COINGECKO_IDS_ENDPOINT = 'https://api.coingecko.com/api/v3/coins/list';
 let fallbackExplorerHandle = null;
 let mainnetAssets = null;
 
+// Some contracts like SNX / SUSD use an ERC20 proxy
+// some of those tokens have been migrated to a new address
+// We need to use the current address to fetch the correct price
+const getCurrentAddress = address => {
+  return migratedTokens[address] || address;
+};
+
+// An attempt to mitigate inconsistencies between
+// Coingecko's API and coingecko's token list
 const cleanupTokenName = str =>
   str
     .replace(' ', '')
@@ -73,16 +83,10 @@ const findAssetsToWatch = async address => {
   // 1 - Discover the list of tokens for the address
   const coingeckoIds = await fetchCoingeckoIdsByAddress();
   const tokensInWallet = await discoverTokens(coingeckoIds, address);
-  const result = {};
-  tokensInWallet.forEach(token => {
-    result[token.asset.asset_code.toLowerCase()] = {
-      token,
-    };
-  });
 
-  return {
+  return [
     ...tokensInWallet,
-    eth: {
+    {
       asset: {
         asset_code: 'eth',
         coingecko_id: 'ethereum',
@@ -91,7 +95,7 @@ const findAssetsToWatch = async address => {
         symbol: 'ETH',
       },
     },
-  };
+  ];
 };
 
 const discoverTokens = async (coingeckoIds, address) => {
@@ -119,15 +123,18 @@ const discoverTokens = async (coingeckoIds, address) => {
 
   // Filter txs by contract address
   if (allTxs.length > 0) {
-    return uniqBy(allTxs, 'contractAddress').map(tx => ({
-      asset: {
-        asset_code: tx.contractAddress,
-        coingecko_id: coingeckoIds[tx.contractAddress.toLowerCase()],
-        decimals: tx.tokenDecimal,
-        name: tx.tokenName,
-        symbol: tx.tokenSymbol,
-      },
-    }));
+    return uniqBy(
+      allTxs.map(tx => ({
+        asset: {
+          asset_code: getCurrentAddress(tx.contractAddress.toLowerCase()),
+          coingecko_id: coingeckoIds[tx.contractAddress.toLowerCase()],
+          decimals: tx.tokenDecimal,
+          name: tx.tokenName,
+          symbol: tx.tokenSymbol,
+        },
+      })),
+      token => token.asset.asset_code
+    );
   }
   return [];
 };
@@ -146,6 +153,7 @@ const fetchAssetPrices = async (coingeckoIds, nativeCurrency) => {
   try {
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoIds
       .filter(val => !!val)
+      .sort()
       .join(
         ','
       )}&vs_currencies=${nativeCurrency}&include_24hr_change=true&include_last_updated_at=true`;
@@ -198,9 +206,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
   const fetchAssetsBalancesAndPrices = async () => {
     const { network } = getState().settings;
     const assets =
-      network === networkTypes.mainnet
-        ? values(mainnetAssets)
-        : testnetAssets[network];
+      network === networkTypes.mainnet ? mainnetAssets : testnetAssets[network];
     if (!assets || !assets.length) {
       fallbackExplorerHandle = setTimeout(fetchAssetsBalancesAndPrices, 5000);
       return;
