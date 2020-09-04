@@ -1,8 +1,10 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
+import { Linking } from 'react-native';
 import { ContextCircleButton } from '../../context-menu';
 import EditOptions from '@rainbow-me/helpers/editOptionTypes';
-import { useCoinListEditOptions } from '@rainbow-me/hooks';
+import { useAccountSettings, useCoinListEditOptions } from '@rainbow-me/hooks';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function ChartContextButton({ asset, color }) {
   const {
@@ -12,6 +14,9 @@ export default function ChartContextButton({ asset, color }) {
     setHiddenCoins,
     setPinnedCoins,
   } = useCoinListEditOptions();
+
+  const { network } = useAccountSettings();
+  const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(network);
 
   useEffect(() => {
     // Ensure this expanded state's asset is always actively inside
@@ -30,18 +35,24 @@ export default function ChartContextButton({ asset, color }) {
       } else if (buttonIndex === 1) {
         // 🙈️ Hide
         setHiddenCoins();
+      } else if (buttonIndex === 2 && asset?.address !== 'eth') {
+        // 🔍 View on Etherscan
+        Linking.openURL(`https://${etherscanHost}/token/${asset?.address}`);
       }
     },
-    [setHiddenCoins, setPinnedCoins]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [asset?.address, etherscanHost, setHiddenCoins, setPinnedCoins]
   );
 
   const options = useMemo(
     () => [
       `📌️ ${currentAction === EditOptions.unpin ? 'Unpin' : 'Pin'}`,
       `🙈️ ${currentAction === EditOptions.unhide ? 'Unhide' : 'Hide'}`,
+      ...(asset?.address === 'eth' ? [] : ['🔍 View on Etherscan']),
       lang.t('wallet.action.cancel'),
     ],
-    [currentAction]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [asset?.address, currentAction]
   );
 
   return (
