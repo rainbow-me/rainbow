@@ -35,7 +35,6 @@ const TransitionContainer = styled(Transitioning.View)`
 `;
 
 const GasSpeedLabel = styled(Text).attrs({
-  color: 'white',
   size: 'lmedium',
   weight: 'semibold',
 })`
@@ -48,7 +47,7 @@ const transition = (
   <Transition.Change durationMs={duration} interpolation="easeOut" />
 );
 
-const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
+const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate, theme }) => {
   const transitionRef = useRef();
 
   useEffect(() => {
@@ -112,7 +111,9 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
           containerHeight={GasSpeedLabelPagerItemHeight}
           label={label}
         />
-        <GasSpeedLabel>{upperFirst(label)}</GasSpeedLabel>
+        <GasSpeedLabel color={theme !== 'light' ? 'white' : null}>
+          {upperFirst(label)}
+        </GasSpeedLabel>
       </GasSpeedRow>
     </TransitionContainer>
   );

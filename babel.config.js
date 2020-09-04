@@ -5,6 +5,9 @@ function getAliasesFromTsConfig() {
   Object.keys(paths).forEach(key => {
     alias[key] = `./${paths[key][0]}`;
   });
+
+  alias['react-native-reanimated'] = 'react-native-reanimated/src/Animated';
+
   return alias;
 }
 
@@ -24,6 +27,7 @@ module.exports = function(api) {
     'date-fns',
     'graphql-tag',
     ['lodash', { id: ['lodash', 'recompact'] }],
+    'react-native-reanimated/plugin',
   ];
 
   const presets = [

@@ -1,9 +1,10 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { get, isNil, omit } from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import { get, isEmpty, isNil, omit } from 'lodash';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, InteractionManager, Vibration } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,7 +19,12 @@ import {
   TransactionConfirmationSection,
 } from '../components/transaction';
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
-import { useGas, useTransactionConfirmation } from '../hooks';
+import {
+  convertHexToString,
+  fromWei,
+  greaterThanOrEqualTo,
+} from '../helpers/utilities';
+import { useAccountAssets, useGas, useTransactionConfirmation } from '../hooks';
 import {
   sendTransaction,
   signMessage,
@@ -28,8 +34,7 @@ import {
 } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
-import { gasUtils } from '../utils';
-
+import { ethereumUtils, gasUtils } from '../utils';
 import {
   isMessageDisplayType,
   isSignFirstParamType,
@@ -65,10 +70,23 @@ const TransactionType = styled(Text).attrs({ size: 'h5' })`
   margin-top: 6;
 `;
 
-const TransactionConfirmationScreen = () => {
-  const [isAuthorizing, setIsAuthorizing] = useState(false);
+const NOOP = () => undefined;
 
-  const { gasPrices, startPollingGasPrices, stopPollingGasPrices } = useGas();
+const TransactionConfirmationScreen = () => {
+  const { allAssets } = useAccountAssets();
+  const [isAuthorizing, setIsAuthorizing] = useState(false);
+  const calculatingGasLimit = useRef(false);
+  const [isBalanceEnough, setIsBalanceEnough] = useState(true);
+  const {
+    gasLimit,
+    gasPrices,
+    isSufficientGas,
+    startPollingGasPrices,
+    stopPollingGasPrices,
+    updateTxFee,
+    selectedGasPrice,
+  } = useGas();
+
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
   const { goBack } = useNavigation();
@@ -99,21 +117,25 @@ const TransactionConfirmationScreen = () => {
 
   const request = displayDetails.request;
 
+  const openAutomatically = routeParams?.openAutomatically;
+
   useEffect(() => {
-    const openAutomatically = routeParams?.openAutomatically;
     if (openAutomatically && !isEmulatorSync()) {
       Vibration.vibrate();
     }
-
-    InteractionManager.runAfterInteractions(() => {
-      startPollingGasPrices();
-    });
-  }, [routeParams?.openAutomatically, startPollingGasPrices]);
+    if (!isMessageDisplayType(method)) {
+      InteractionManager.runAfterInteractions(() => {
+        startPollingGasPrices();
+      });
+    }
+  }, [method, openAutomatically, startPollingGasPrices]);
 
   const closeScreen = useCallback(
     canceled => {
       goBack();
-      stopPollingGasPrices();
+      if (!isMessageDisplayType(method)) {
+        stopPollingGasPrices();
+      }
       if (pendingRedirect) {
         InteractionManager.runAfterInteractions(() => {
           let type = method === SEND_TRANSACTION ? 'transaction' : 'sign';
@@ -157,19 +179,93 @@ const TransactionConfirmationScreen = () => {
     walletConnectSendStatus,
   ]);
 
+  const calculateGasLimit = useCallback(async () => {
+    calculatingGasLimit.current = true;
+    const txPayload = get(params, '[0]');
+    // use the default
+    let gas = txPayload.gasLimit || txPayload.gas;
+    try {
+      // attempt to re-run estimation
+      logger.log('Estimating gas limit');
+      const rawGasLimit = await estimateGas(txPayload);
+      logger.log('Estimated gas limit', rawGasLimit);
+      if (rawGasLimit) {
+        gas = toHex(rawGasLimit);
+      }
+    } catch (error) {
+      logger.log('error estimating gas', error);
+    }
+    logger.log('Setting gas limit to', convertHexToString(gas));
+    // Wait until the gas prices are populated
+    setTimeout(() => {
+      updateTxFee(gas);
+    }, 1000);
+  }, [params, updateTxFee]);
+
+  useEffect(() => {
+    if (
+      !isEmpty(gasPrices) &&
+      !calculatingGasLimit.current &&
+      !isMessageDisplayType(method)
+    ) {
+      InteractionManager.runAfterInteractions(() => {
+        calculateGasLimit();
+      });
+    }
+  }, [calculateGasLimit, gasLimit, gasPrices, method, params, updateTxFee]);
+
+  useEffect(() => {
+    if (isMessageDisplayType(method)) {
+      setIsBalanceEnough(true);
+      return;
+    }
+
+    if (!isSufficientGas) {
+      setIsBalanceEnough(false);
+      return;
+    }
+
+    const { txFee } = selectedGasPrice;
+    if (!txFee) {
+      setIsBalanceEnough(false);
+      return;
+    }
+    // Get the TX fee Amount
+    const txFeeAmount = fromWei(get(txFee, 'value.amount', 0));
+
+    // Get the ETH balance
+    const ethAsset = ethereumUtils.getAsset(allAssets);
+    const balanceAmount = get(ethAsset, 'balance.amount', 0);
+
+    // Get the TX value
+    const txPayload = get(params, '[0]');
+    const value = get(txPayload, 'value', 0);
+
+    // Check that there's enough ETH to pay for everything!.
+    const totalAmount = BigNumber(fromWei(value)).plus(txFeeAmount);
+    const isEnough = greaterThanOrEqualTo(balanceAmount, totalAmount);
+
+    setIsBalanceEnough(isEnough);
+  }, [
+    allAssets,
+    isBalanceEnough,
+    isSufficientGas,
+    method,
+    params,
+    selectedGasPrice,
+  ]);
+
   const handleConfirmTransaction = useCallback(async () => {
     const sendInsteadOfSign = method === SEND_TRANSACTION;
     const txPayload = get(params, '[0]');
-    let { gas, gasLimit, gasPrice } = txPayload;
+    let { gas, gasLimit: gasLimitFromPayload, gasPrice } = txPayload;
 
-    if (isNil(gasPrice)) {
-      const rawGasPrice = get(gasPrices, `${gasUtils.NORMAL}.value.amount`);
-      if (rawGasPrice) {
-        gasPrice = toHex(rawGasPrice);
-      }
+    const rawGasPrice = get(gasPrices, `${gasUtils.NORMAL}.value.amount`);
+    if (rawGasPrice) {
+      gasPrice = toHex(rawGasPrice);
     }
 
-    if (isNil(gas) && isNil(gasLimit)) {
+    if (isNil(gas) && isNil(gasLimitFromPayload)) {
       try {
         const rawGasLimit = await estimateGas(txPayload);
         gas = toHex(rawGasLimit);
@@ -181,12 +277,15 @@ const TransactionConfirmationScreen = () => {
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(transactionCountNonce, web3TxnCount);
     const nonce = ethers.utils.hexlify(maxTxnCount);
+    const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
     let txPayloadLatestNonce = {
       ...txPayload,
-      gasLimit: gas || gasLimit,
       gasPrice,
       nonce,
     };
+    if (calculatedGasLimit) {
+      txPayloadLatestNonce.gasLimit = calculatedGasLimit;
+    }
     txPayloadLatestNonce = omit(txPayloadLatestNonce, ['from', 'gas']);
     let result = null;
     if (sendInsteadOfSign) {
@@ -216,6 +315,7 @@ const TransactionConfirmationScreen = () => {
           nonce,
           to: get(displayDetails, 'request.to'),
         };
+
         dispatch(dataAddNewTransaction(txDetails));
       }
       analytics.track('Approved WalletConnect transaction request');
@@ -235,6 +335,7 @@ const TransactionConfirmationScreen = () => {
     dispatch,
     displayDetails,
     gasPrices,
+    gasLimit,
     method,
     onCancel,
     params,
@@ -300,8 +401,9 @@ const TransactionConfirmationScreen = () => {
     if (isMessageDisplayType(method)) {
       return handleSignMessage();
     }
+    if (!isBalanceEnough) return;
     return handleConfirmTransaction();
-  }, [handleConfirmTransaction, handleSignMessage, method]);
+  }, [handleConfirmTransaction, handleSignMessage, isBalanceEnough, method]);
 
   const onLongPressSend = useCallback(async () => {
     setIsAuthorizing(true);
@@ -314,16 +416,36 @@ const TransactionConfirmationScreen = () => {
   }, [onConfirm]);
 
   const renderSendButton = useCallback(() => {
-    const label = `Hold to ${method === SEND_TRANSACTION ? 'Send' : 'Sign'}`;
+    let label = `Hold to ${method === SEND_TRANSACTION ? 'Send' : 'Sign'}`;
 
-    return (
+    let ready = true;
+    // If we don't know about gas prices yet
+    // set the button state to "loading"
+    if (!isBalanceEnough && isSufficientGas === undefined) {
+      label = 'Loading...';
+      ready = false;
+    }
+
+    return isBalanceEnough === false && isSufficientGas !== undefined ? (
+      <HoldToAuthorizeButton
+        disabled
+        hideBiometricIcon
+        label="Insufficient Funds"
+      />
+    ) : (
       <HoldToAuthorizeButton
         isAuthorizing={isAuthorizing}
         label={label}
-        onLongPress={onLongPressSend}
+        onLongPress={ready ? onLongPressSend : NOOP}
       />
     );
-  }, [isAuthorizing, method, onLongPressSend]);
+  }, [
+    isAuthorizing,
+    isBalanceEnough,
+    isSufficientGas,
+    method,
+    onLongPressSend,
+  ]);
 
   const requestHeader = isMessageDisplayType(method)
     ? lang.t('wallet.message_signing.request')
@@ -350,6 +472,7 @@ const TransactionConfirmationScreen = () => {
             nativeAmountDisplay: get(request, 'nativeAmountDisplay'),
             symbol: get(request, 'asset.symbol', 'N/A'),
           }}
+          method={method}
           sendButton={renderSendButton()}
         />
       );
@@ -362,6 +485,7 @@ const TransactionConfirmationScreen = () => {
           data: get(request, 'data'),
           value: get(request, 'value'),
         }}
+        method={method}
         sendButton={renderSendButton()}
       />
     );

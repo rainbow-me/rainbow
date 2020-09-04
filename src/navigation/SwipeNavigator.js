@@ -1,5 +1,5 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useCoinListEdited } from '../hooks';
 import ProfileScreen from '../screens/ProfileScreen';
 import QRScannerScreen from '../screens/QRScannerScreen';
@@ -11,13 +11,10 @@ const Swipe = createMaterialTopTabNavigator();
 
 const renderTabBar = () => null;
 
+const renderPager = props => <ScrollPagerWrapper {...props} />;
+
 export function SwipeNavigator() {
   const { isCoinListEdited } = useCoinListEdited();
-
-  const renderPager = useCallback(
-    props => <ScrollPagerWrapper {...props} />,
-    []
-  );
 
   return (
     <Swipe.Navigator

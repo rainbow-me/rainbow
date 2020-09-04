@@ -1,32 +1,25 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { UIActivityIndicator } from 'react-native-indicators';
-import { View } from 'react-primitives';
-import stylePropType from 'react-style-proptype';
+import styled from 'styled-components/primitives';
 import { colors, position } from '@rainbow-me/styles';
 
-const ActivityIndicator = ({ color, isInteraction, size, style }) => (
-  <View style={[position.sizeAsObject(size), style]}>
-    <UIActivityIndicator
-      color={color}
-      interaction={isInteraction}
-      size={size}
-    />
-  </View>
-);
+const Container = styled.View`
+  ${({ size }) => position.size(size)};
+`;
 
-ActivityIndicator.propTypes = {
-  color: PropTypes.string,
-  isInteraction: PropTypes.bool,
-  size: PropTypes.number,
-  style: stylePropType,
-};
-
-ActivityIndicator.defaultProps = {
-  color: colors.blueGreyDark,
-  isInteraction: false,
-  size: 25,
-};
-
-const neverRerender = () => true;
-export default React.memo(ActivityIndicator, neverRerender);
+export default function ActivityIndicator({
+  color = colors.blueGreyDark,
+  isInteraction = false,
+  size = 25,
+  ...props
+}) {
+  return (
+    <Container size={size} {...props}>
+      <UIActivityIndicator
+        color={color}
+        interaction={isInteraction}
+        size={size}
+      />
+    </Container>
+  );
+}

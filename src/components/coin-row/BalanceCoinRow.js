@@ -3,14 +3,12 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-primitives';
 import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
-import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import {
   withCoinListEdited,
   withCoinRecentlyPinned,
   withEditOptions,
   withOpenBalances,
 } from '../../hoc';
-import { isNewValueForObjectPaths, isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { ChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, FlexItem } from '../layout';
@@ -19,7 +17,9 @@ import BottomRowText from './BottomRowText';
 import CoinCheckButton from './CoinCheckButton';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
 import { colors } from '@rainbow-me/styles';
+import { isNewValueForObjectPaths, isNewValueForPath } from '@rainbow-me/utils';
 
 const editTranslateOffset = 32;
 
@@ -115,9 +115,10 @@ const BalanceCoinRow = ({
     setToggle(!toggle);
   }, [item.uniqueId, pushSelectedCoin, removeSelectedCoin, setToggle, toggle]);
 
-  const handlePress = useCallback(() => {
-    onPress && onPress(item, { longFormHeight: ChartExpandedStateSheetHeight });
-  }, [onPress, item]);
+  const handlePress = useCallback(
+    () => onPress?.(item, { longFormHeight: ChartExpandedStateSheetHeight }),
+    [onPress, item]
+  );
 
   return (
     <Column flex={1} justify={isFirstCoinRow ? 'end' : 'start'}>

@@ -48,18 +48,23 @@ const getDefaultTxFees = () => (dispatch, getState) => {
 };
 
 export const gasPricesStartPolling = () => async (dispatch, getState) => {
+  const { gasPrices } = getState().gas;
+
   const { fallbackGasPrices, selectedGasPrice, txFees } = dispatch(
     getDefaultTxFees()
   );
-
-  dispatch({
-    payload: {
-      gasPrices: fallbackGasPrices,
-      selectedGasPrice,
-      txFees,
-    },
-    type: GAS_PRICES_DEFAULT,
-  });
+  // We only set the default if we don't have any price
+  // The previous price will be always more accurate than our default values!
+  if (isEmpty(gasPrices)) {
+    dispatch({
+      payload: {
+        gasPrices: fallbackGasPrices,
+        selectedGasPrice,
+        txFees,
+      },
+      type: GAS_PRICES_DEFAULT,
+    });
+  }
 
   const getGasPrices = () =>
     new Promise((fetchResolve, fetchReject) => {
@@ -175,8 +180,9 @@ const getSelectedGasPrice = (
   const ethAsset = ethereumUtils.getAsset(assets);
   const balanceAmount = get(ethAsset, 'balance.amount', 0);
   const txFeeAmount = fromWei(get(txFee, 'txFee.value.amount', 0));
+  const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
   return {
-    isSufficientGas: greaterThanOrEqualTo(balanceAmount, txFeeAmount),
+    isSufficientGas,
     selectedGasPrice: {
       ...txFee,
       ...gasPrices[selectedGasPriceOption],
@@ -206,7 +212,7 @@ const INITIAL_STATE = {
   defaultGasLimit: ethUnits.basic_tx,
   gasLimit: null,
   gasPrices: {},
-  isSufficientGas: false,
+  isSufficientGas: undefined,
   selectedGasPrice: {},
   selectedGasPriceOption: gasUtils.NORMAL,
   txFees: {},

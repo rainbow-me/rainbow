@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.2.28-1",
+  "version": "1.2.32-1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -25,7 +25,8 @@
     "lint:js": "eslint --ext '.ts,.js,.jsx' .",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "postinstall": "./scripts/postinstall.sh",
-    "update-env": "curl -H 'Authorization: token '$GITHUB_TOKEN -H 'Accept: application/vnd.github.v3.raw' -O  -L https://api.github.com/repos/rainbow-me/rainbow-env/contents/dotenv && rm -f .env && mv dotenv .env"
+    "update-env": "curl -H 'Authorization: token '$GITHUB_TOKEN -H 'Accept: application/vnd.github.v3.raw' -O  -L https://api.github.com/repos/rainbow-me/rainbow-env/contents/dotenv && rm -f .env && mv dotenv .env",
+    "ganache": "source .env && ganache-cli --f https://mainnet.infura.io/v3/${INFURA_PROJECT_ID_DEV} -p 7545 -i 1 -b 10"
   },
   "husky": {
     "hooks": {
@@ -104,7 +105,6 @@
     "lottie-react-native": "3.4.0",
     "match-sorter": "^4.0.2",
     "nanoid": "^2.1.6",
-    "node-emoji": "omnidan/node-emoji#97f910e37011397f4fda58f7f51d9ad22fb0c38d",
     "ow": "^0.17.0",
     "parse-ms": "^2.1.0",
     "patch-package": "^6.2.0",
@@ -119,7 +119,7 @@
     "react-coin-icon": "^0.1.19",
     "react-fast-compare": "^2.0.4",
     "react-flatten-children": "^1.1.2",
-    "react-native": "0.62.2",
+    "react-native": "0.63.2",
     "react-native-action-sheet": "^2.2.0",
     "react-native-actionsheet": "^2.4.2",
     "react-native-background-timer": "^2.2.0",
@@ -131,7 +131,7 @@
     "react-native-device-info": "5.3.1",
     "react-native-dotenv": "^0.2.0",
     "react-native-fast-image": "^8.1.5",
-    "react-native-gesture-handler": "1.6.0",
+    "react-native-gesture-handler": "1.7.0",
     "react-native-haptic-feedback": "^1.8.2",
     "react-native-image-crop-picker": "^0.32.2",
     "react-native-indicators": "0.17.0",
@@ -148,7 +148,7 @@
     "react-native-qrcode-svg": "mikedemarais/react-native-qrcode-svg#c0302a698ea4fa0bb9b506a11ef39905674f2221",
     "react-native-radial-gradient": "rainbow-me/react-native-radial-gradient#de98a182a4e5fb8db850cd94960d23c68035f9c6",
     "react-native-randombytes": "^3.5.3",
-    "react-native-reanimated": "1.7.0",
+    "react-native-reanimated": "2.0.0-alpha.5",
     "react-native-redash": "14.2.2",
     "react-native-safe-area-context": "^0.5.0",
     "react-native-safe-area-view": "mikedemarais/react-native-safe-area-view",
@@ -216,6 +216,7 @@
     "eslint": "^6.8.0",
     "eslint-config-satya164": "^3.1.6",
     "eslint-import-resolver-babel-module": "^5.1.2",
+    "graphql": "^15.3.0",
     "jest": "^24.9.0",
     "metro-react-native-babel-preset": "^0.59.0",
     "react-native-bundle-visualizer": "^2.0.1",
@@ -227,10 +228,11 @@
     "stylelint-config-react-native-styled-components": "^0.3.0",
     "stylelint-processor-styled-components": "^1.10.0",
     "stylelint-react-native": "^2.2.0",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.7",
+    "ganache-cli": "^6.10.1"
   },
   "resolutions": {
-    "**/bl": "0.9.5",
+    "**/bl": "2.2.1",
     "**/elliptic": "6.5.3",
     "**/logkitty": "0.7.1",
     "**/minimist": "1.2.3",

@@ -43,9 +43,10 @@ const TokenSymbol = styled(Amount)`
 
 const TransactionConfirmationSection = ({
   asset: { address, amount, name, nativeAmountDisplay, symbol },
+  method,
   sendButton,
 }) => (
-  <TransactionSheet sendButton={sendButton}>
+  <TransactionSheet method={method} sendButton={sendButton}>
     <TransactionRow title={lang.t('wallet.action.to')}>
       <TruncatedAddress
         address={address}

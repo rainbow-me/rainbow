@@ -6,6 +6,8 @@ import {
 import { get } from 'lodash';
 import React, { useCallback } from 'react';
 import { Value } from 'react-native-reanimated';
+// releasing REA value store before populating new one
+import { releaseStore as releaseREAStore } from '../../node_modules/react-native-reanimated/src/reanimated2/Hooks';
 import { NATIVE_ROUTES } from '@rainbow-me/routes';
 
 let TopLevelNavigationRef = null;
@@ -81,6 +83,7 @@ function block() {
 export function navigate(oldNavigate, ...args) {
   if (typeof args[0] === 'string') {
     if (NATIVE_ROUTES.indexOf(args[0]) !== -1) {
+      releaseREAStore();
       let wasBlocked = blocked;
       block();
       if (wasBlocked) {

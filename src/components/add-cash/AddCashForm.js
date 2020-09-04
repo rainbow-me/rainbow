@@ -29,7 +29,7 @@ const AddCashForm = ({
 
   const initialCurrencyIndex = isWalletEthZero ? 1 : 0;
   const [currency, setCurrency] = useState(currencies[initialCurrencyIndex]);
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState('');
 
   const handlePurchase = useCallback(() => {
     analytics.track('Submitted Purchase', {
