@@ -8,7 +8,7 @@ import { ChartYLabel } from 'react-native-animated-charts';
 const Label = styled(ChartYLabel)`
   font-family: ${fonts.family.SFProRounded};
   font-size: ${fonts.size.big};
-  font-weight: ${fonts.weight.bold};
+  font-weight: ${fonts.weight.heavy};
   letter-spacing: ${fonts.letterSpacing.roundedTight};
   width: 100%;
 `;
