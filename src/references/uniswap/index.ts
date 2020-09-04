@@ -1,5 +1,15 @@
+import { Interface } from '@ethersproject/abi';
 import { ChainId } from '@uniswap/sdk';
+import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import MULTICALL_ABI from './uniswap-multicall-abi.json';
+
+const PAIR_INTERFACE = new Interface(IUniswapV2PairABI);
+const PAIR_GET_RESERVES_FRAGMENT = PAIR_INTERFACE.getFunction('getReserves');
+const PAIR_GET_RESERVES_CALL_DATA:
+  | string
+  | undefined = PAIR_GET_RESERVES_FRAGMENT
+  ? PAIR_INTERFACE.encodeFunctionData(PAIR_GET_RESERVES_FRAGMENT)
+  : undefined;
 
 const MULTICALL_NETWORKS: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: '0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441',
@@ -9,4 +19,10 @@ const MULTICALL_NETWORKS: { [chainId in ChainId]: string } = {
   [ChainId.GÖRLI]: '0x77dCa2C955b15e9dE4dbBCf1246B4B85b651e50e',
 };
 
-export { MULTICALL_ABI, MULTICALL_NETWORKS };
+export {
+  MULTICALL_ABI,
+  MULTICALL_NETWORKS,
+  PAIR_GET_RESERVES_CALL_DATA,
+  PAIR_GET_RESERVES_FRAGMENT,
+  PAIR_INTERFACE,
+};

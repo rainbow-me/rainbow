@@ -1,20 +1,22 @@
 import { Pair, TokenAmount } from '@uniswap/sdk';
 import { useMemo } from 'react';
+import {
+  PAIR_GET_RESERVES_FRAGMENT,
+  PAIR_INTERFACE,
+} from '../references/uniswap';
 import useMulticall from './useMulticall';
 import useUniswapCalls from './useUniswapCalls';
 
 export default function useUniswapPairs(inputCurrency, outputCurrency) {
-  const {
-    allPairCombinations,
-    calls,
-    contractInterface,
-    fragment,
-  } = useUniswapCalls(inputCurrency, outputCurrency);
+  const { allPairCombinations, calls } = useUniswapCalls(
+    inputCurrency,
+    outputCurrency
+  );
 
   const { multicallResults } = useMulticall(
     calls,
-    contractInterface,
-    fragment
+    PAIR_INTERFACE,
+    PAIR_GET_RESERVES_FRAGMENT
     // latestBlockNumber // TODO JIN
   );
 
