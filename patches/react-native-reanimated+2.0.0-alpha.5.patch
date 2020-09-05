@@ -1,3 +1,120 @@
+diff --git a/node_modules/react-native-reanimated/Common/cpp/SharedItems/MutableValue.cpp b/node_modules/react-native-reanimated/Common/cpp/SharedItems/MutableValue.cpp
+index 364631c..663363d 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/SharedItems/MutableValue.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/SharedItems/MutableValue.cpp
+@@ -8,8 +8,9 @@ namespace reanimated {
+ void MutableValue::setValue(jsi::Runtime &rt, const jsi::Value &newValue) {
+   std::lock_guard<std::mutex> lock(readWriteMutex);
+   value = ShareableValue::adapt(rt, newValue, module);
+-  auto notifyListeners = [this] () {
+-    for (auto listener : listeners) {
++  std::shared_ptr<MutableValue> thiz = shared_from_this();
++  auto notifyListeners = [thiz] () {
++    for (auto listener : thiz->listeners) {
+       listener.second();
+     }
+   };
+@@ -87,18 +88,18 @@ std::vector<jsi::PropNameID> MutableValue::getPropertyNames(jsi::Runtime &rt) {
+ }
+ 
+ MutableValue::MutableValue(jsi::Runtime &rt, const jsi::Value &initial, NativeReanimatedModule *module):
+-module(module), value(ShareableValue::adapt(rt, initial, module)) {}
++module(module), value(ShareableValue::adapt(rt, initial, module)) {
++}
+ 
+-unsigned long int MutableValue::addListener(std::function<void ()> listener) {
+-  unsigned long id = listeners.size() + 1;
+-  listeners.push_back(std::make_pair(id, listener));
++unsigned long int MutableValue::addListener(unsigned long id, std::function<void ()> listener) {
++  listeners[id] = listener;
+   return id;
+ }
+ 
+ void MutableValue::removeListener(unsigned long listenerId) {
+-  listeners.erase(std::remove_if(listeners.begin(), listeners.end(), [=](const std::pair<unsigned long, std::function<void()>>& pair) {
+-    return pair.first == listenerId;
+-  }), listeners.end());
++  if (listeners.count(listenerId) > 0) {
++    listeners.erase(listenerId);
++  }
+ }
+ 
+ 
+diff --git a/node_modules/react-native-reanimated/Common/cpp/Tools/Mapper.cpp b/node_modules/react-native-reanimated/Common/cpp/Tools/Mapper.cpp
+index 9a62000..59c7690 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/Tools/Mapper.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/Tools/Mapper.cpp
+@@ -19,7 +19,7 @@ outputs(outputs) {
+     module->maybeRequestRender();
+   };
+   for (auto input : inputs) {
+-    input->addListener(markDirty);
++    input->addListener(id, markDirty);
+   }
+ }
+ 
+@@ -28,4 +28,10 @@ void Mapper::execute(jsi::Runtime &rt) {
+   mapper.callWithThis(rt, mapper);
+ }
+ 
++Mapper::~Mapper() {
++  for (auto input : inputs) {
++    input->removeListener(id);
++  }
++}
++
+ }
+diff --git a/node_modules/react-native-reanimated/Common/cpp/headers/SharedItems/MutableValue.h b/node_modules/react-native-reanimated/Common/cpp/headers/SharedItems/MutableValue.h
+index b83db7a..f665a3f 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/headers/SharedItems/MutableValue.h
++++ b/node_modules/react-native-reanimated/Common/cpp/headers/SharedItems/MutableValue.h
+@@ -4,6 +4,7 @@
+ #include <jsi/jsi.h>
+ #include "SharedParent.h"
+ #include "MutableValueSetterProxy.h"
++#include <map>
+ 
+ namespace reanimated {
+ 
+@@ -17,7 +18,7 @@ class MutableValue : public jsi::HostObject, public std::enable_shared_from_this
+   std::shared_ptr<ShareableValue> value;
+   jsi::Value setter;
+   jsi::Value animation;
+-  std::vector<std::pair<unsigned long, std::function<void()>>> listeners;
++  std::map<unsigned long, std::function<void()>> listeners;
+ 
+   void setValue(jsi::Runtime &rt, const jsi::Value &newValue);
+   jsi::Value getValue(jsi::Runtime &rt);
+@@ -29,7 +30,7 @@ class MutableValue : public jsi::HostObject, public std::enable_shared_from_this
+   void set(jsi::Runtime &rt, const jsi::PropNameID &name, const jsi::Value &value);
+   jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &name);
+   std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &rt);
+-  unsigned long addListener(std::function<void()> listener);
++  unsigned long addListener(unsigned long listenerId, std::function<void()> listener);
+   void removeListener(unsigned long listenerId);
+ };
+ 
+diff --git a/node_modules/react-native-reanimated/Common/cpp/headers/Tools/Mapper.h b/node_modules/react-native-reanimated/Common/cpp/headers/Tools/Mapper.h
+index f105265..59be99f 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/headers/Tools/Mapper.h
++++ b/node_modules/react-native-reanimated/Common/cpp/headers/Tools/Mapper.h
+@@ -11,7 +11,7 @@ using namespace facebook;
+ 
+ class MapperRegistry;
+ 
+-class Mapper {
++class Mapper : public std::enable_shared_from_this<Mapper> {
+   friend MapperRegistry;
+ private:
+   unsigned long id;
+@@ -28,6 +28,7 @@ public:
+          std::vector<std::shared_ptr<MutableValue>> inputs,
+          std::vector<std::shared_ptr<MutableValue>> outputs);
+   void execute(jsi::Runtime &rt);
++  virtual ~Mapper();
+ };
+ 
+ }
 diff --git a/node_modules/react-native-reanimated/src/Animated.js b/node_modules/react-native-reanimated/src/Animated.js
 index 27de367..a5e758a 100644
 --- a/node_modules/react-native-reanimated/src/Animated.js
