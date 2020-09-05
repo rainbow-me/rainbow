@@ -22,7 +22,6 @@ import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
 import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
 import { FloatingEmojis } from '../floating-emojis';
-
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import {
@@ -92,6 +91,7 @@ const TransactionList = ({
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, selectedWallet?.damaged]);
 
   const onAvatarPress = useCallback(() => {
@@ -112,11 +112,11 @@ const TransactionList = ({
 
       showActionSheetWithOptions(
         {
-          cancelButtonIndex: 3,
+          cancelButtonIndex: isAvatarEmojiPickerEnabled ? 3 : 2,
           options: [
-            'Take Photo...',
-            'Choose from Library...',
-            'Avatar builder...',
+            'Take Photo',
+            'Choose from Library',
+            ...(isAvatarEmojiPickerEnabled ? ['Pick an Emoji'] : []),
             'Cancel', // <-- cancelButtonIndex
           ],
         },
@@ -131,7 +131,7 @@ const TransactionList = ({
               cropperCircleOverlay: true,
               cropping: true,
             }).then(processPhoto);
-          } else if (buttonIndex === 2) {
+          } else if (buttonIndex === 2 && isAvatarEmojiPickerEnabled) {
             navigate(Routes.AVATAR_BUILDER, {
               initialAccountColor: accountColor,
               initialAccountName: accountName,
@@ -160,6 +160,7 @@ const TransactionList = ({
       return;
     }
     navigate(Routes.RECEIVE_MODAL);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, selectedWallet?.damaged]);
 
   const onRequestExpire = useCallback(
@@ -273,6 +274,7 @@ const TransactionList = ({
       }
       Clipboard.setString(accountAddress);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [accountAddress, selectedWallet?.damaged]
   );
 
