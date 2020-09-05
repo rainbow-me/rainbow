@@ -15,8 +15,12 @@ import logger from 'logger';
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 const TOKEN_LIST_URL = 'https://tokens.coingecko.com/uniswap/all.json';
 const COINGECKO_IDS_ENDPOINT = 'https://api.coingecko.com/api/v3/coins/list';
-let fallbackExplorerHandle = null;
+const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 10000;
+const DISCOVER_NEW_ASSETS_FREQUENCY = 13000;
+let fallbackExplorerBalancesHandle = null;
+let fallbackExplorerAssetsHandle = null;
 let mainnetAssets = null;
+let latestTxBlockNumber = null;
 
 // Some contracts like SNX / SUSD use an ERC20 proxy
 // some of those tokens have been migrated to a new address
@@ -32,6 +36,19 @@ const cleanupTokenName = str =>
     .replace(' ', '')
     .replace('.', '')
     .toLowerCase();
+
+const findNewAssetsToWatch = async address => {
+  const newAssets = await findAssetsToWatch(address);
+  if (newAssets.length > 0) {
+    logger.log('💀 Found new assets!', newAssets);
+
+    // dedupe
+    mainnetAssets = uniqBy(
+      [...mainnetAssets, ...newAssets],
+      token => token.asset.asset_code
+    );
+  }
+};
 
 const fetchCoingeckoIds = async () => {
   try {
@@ -83,6 +100,9 @@ const findAssetsToWatch = async address => {
   // 1 - Discover the list of tokens for the address
   const coingeckoIds = await fetchCoingeckoIdsByAddress();
   const tokensInWallet = await discoverTokens(coingeckoIds, address);
+  if (latestTxBlockNumber && tokensInWallet.length === 0) {
+    return [];
+  }
 
   return [
     ...tokensInWallet,
@@ -104,7 +124,12 @@ const discoverTokens = async (coingeckoIds, address) => {
   let allTxs = [];
   let poll = true;
   while (poll) {
-    const txs = await getTokenTxDataFromEtherscan(address, page, offset);
+    const txs = await getTokenTxDataFromEtherscan(
+      address,
+      page,
+      offset,
+      latestTxBlockNumber
+    );
     if (txs && txs.length > 0) {
       allTxs = allTxs.concat(txs);
       if (txs.length < offset) {
@@ -123,6 +148,8 @@ const discoverTokens = async (coingeckoIds, address) => {
 
   // Filter txs by contract address
   if (allTxs.length > 0) {
+    latestTxBlockNumber = Number(allTxs[0].blockNumber) + 1;
+
     return uniqBy(
       allTxs.map(tx => ({
         asset: {
@@ -139,8 +166,16 @@ const discoverTokens = async (coingeckoIds, address) => {
   return [];
 };
 
-const getTokenTxDataFromEtherscan = async (address, page, offset) => {
-  const url = `https://api.etherscan.io/api?module=account&action=tokentx&address=${address}&page=${page}&offset=${offset}&sort=asc`;
+const getTokenTxDataFromEtherscan = async (
+  address,
+  page,
+  offset,
+  latestTxBlockNumber
+) => {
+  let url = `https://api.etherscan.io/api?module=account&action=tokentx&address=${address}&page=${page}&offset=${offset}&sort=desc`;
+  if (latestTxBlockNumber) {
+    url += `&startBlock=${latestTxBlockNumber}`;
+  }
   const request = await fetch(url);
   const { status, result } = await request.json();
   if (status === '1' && result?.length > 0) {
@@ -204,11 +239,15 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
   }
 
   const fetchAssetsBalancesAndPrices = async () => {
+    logger.log('💀 FallbackExplorer fetchAssetsBalancesAndPrices');
     const { network } = getState().settings;
     const assets =
       network === networkTypes.mainnet ? mainnetAssets : testnetAssets[network];
     if (!assets || !assets.length) {
-      fallbackExplorerHandle = setTimeout(fetchAssetsBalancesAndPrices, 5000);
+      fallbackExplorerBalancesHandle = setTimeout(
+        fetchAssetsBalancesAndPrices,
+        10000
+      );
       return;
     }
 
@@ -256,6 +295,9 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
         total = total.add(balances[key]);
       });
     }
+
+    logger.log('💀 FallbackExplorer updating assets');
+
     dispatch(
       addressAssetsReceived({
         meta: {
@@ -266,11 +308,23 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
         payload: { assets },
       })
     );
-    fallbackExplorerHandle = setTimeout(fetchAssetsBalancesAndPrices, 10000);
+    fallbackExplorerBalancesHandle = setTimeout(
+      fetchAssetsBalancesAndPrices,
+      UPDATE_BALANCE_AND_PRICE_FREQUENCY
+    );
+    if (networkTypes.mainnet === network) {
+      fallbackExplorerAssetsHandle = setTimeout(
+        () => findNewAssetsToWatch(accountAddress),
+        DISCOVER_NEW_ASSETS_FREQUENCY
+      );
+    }
   };
   fetchAssetsBalancesAndPrices();
 };
 
 export const fallbackExplorerClearState = () => {
-  clearTimeout(fallbackExplorerHandle);
+  clearTimeout(fallbackExplorerBalancesHandle);
+  clearTimeout(fallbackExplorerAssetsHandle);
+  latestTxBlockNumber = null;
+  mainnetAssets = null;
 };

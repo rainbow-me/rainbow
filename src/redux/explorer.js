@@ -26,7 +26,7 @@ const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
 const EXPLORER_CLEAR_STATE = 'explorer/EXPLORER_CLEAR_STATE';
 
 const TRANSACTIONS_LIMIT = 1000;
-const ZERION_ASSETS_TIMEOUT = 15000; // 15 seconds
+const ZERION_ASSETS_TIMEOUT = 10000; // 10 seconds
 
 const messages = {
   ADDRESS_ASSETS: {
@@ -127,6 +127,26 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
   }
 };
 
+const disableFallbackIfNeeded = dispatch => {
+  if (fallback) {
+    logger.log('💀 Disabling fallback!');
+    dispatch(fallbackExplorerClearState);
+  }
+};
+
+const isValidAssetsResponseFromZerion = msg => {
+  //1 - Check the structure
+  if (msg?.meta?.status === 'ok') {
+    if (msg.payload?.assets) {
+      const assets = keys(msg.payload.assets);
+      if (assets.length > 0) {
+        return false;
+      }
+    }
+  }
+  return false;
+};
+
 export const explorerClearState = () => (dispatch, getState) => {
   const { network } = getState().settings;
   // if we're not on mainnnet clear the testnet state
@@ -180,6 +200,7 @@ export const explorerInit = () => async (dispatch, getState) => {
 
   if (network === NetworkTypes.mainnet) {
     assetsTimeoutHandler = setTimeout(() => {
+      logger.log('💀 Zerion timeout. Falling back!');
       dispatch(fallbackExplorerInit());
       fallback = true;
     }, ZERION_ASSETS_TIMEOUT);
@@ -261,22 +282,25 @@ const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
     dispatch(addressAssetsReceived(message));
     dispatch(emitChartsRequest());
-    clearTimeout(assetsTimeoutHandler);
+    if (isValidAssetsResponseFromZerion(message)) {
+      logger.log('💀💀💀 Cancelling fallback listener. Zerion is good!');
+      clearTimeout(assetsTimeoutHandler);
+    }
   });
 
   socket.on(messages.ADDRESS_ASSETS.APPENDED, message => {
     dispatch(addressAssetsReceived(message, true));
-    fallback && dispatch(fallbackExplorerClearState);
+    disableFallbackIfNeeded(dispatch);
   });
 
   socket.on(messages.ADDRESS_ASSETS.CHANGED, message => {
     dispatch(addressAssetsReceived(message, false, true));
-    fallback && dispatch(fallbackExplorerClearState);
+    disableFallbackIfNeeded(dispatch);
   });
 
   socket.on(messages.ADDRESS_ASSETS.REMOVED, message => {
     dispatch(addressAssetsReceived(message, false, false, true));
-    fallback && dispatch(fallbackExplorerClearState);
+    disableFallbackIfNeeded(dispatch);
   });
 };
 
