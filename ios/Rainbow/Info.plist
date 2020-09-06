@@ -60,11 +60,11 @@
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
-	      <key>NSIncludesSubdomains</key>
-  	    <true/>
-    	  <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
-      	<true/>
-    	</dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
 		</dict>
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
