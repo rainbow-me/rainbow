@@ -9,6 +9,7 @@ import {
   // eslint-disable-next-line import/no-unresolved
 } from 'react-native-reanimated';
 import ChartContext from './ChartContext';
+import { findYExtremes } from './helpers';
 import useReactiveSharedValue from './useReactiveSharedValue';
 
 function impactHeavy() {
@@ -20,17 +21,7 @@ function impactHeavy() {
 const android = Platform.OS === 'android';
 
 const parse = data => {
-  let smallestY = null;
-  let greatestY = null;
-  for (const d of data) {
-    if (d.y !== undefined && (smallestY === null || d.y < smallestY.y)) {
-      smallestY = d;
-    }
-
-    if (d.y !== undefined && (greatestY === null || d.y > greatestY.y)) {
-      greatestY = d;
-    }
-  }
+  const { greatestY, smallestY } = findYExtremes(data);
   const smallestX = data[0];
   const greatestX = data[data.length - 1];
   return [
