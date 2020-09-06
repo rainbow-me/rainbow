@@ -30,7 +30,8 @@ export function addExtremesIfNeeded(
     let added2 = false;
 
     const newRes = [];
-    for (let d of res) {
+    for (let i = 0; i < res.length; i++) {
+      const d = res[i];
       let justAdded1 = false;
       let justAdded2 = false;
       if (
@@ -62,7 +63,11 @@ export function addExtremesIfNeeded(
           newRes.push(ex2);
         }
       }
-      if ((!justAdded1 && !justAdded2) || !removePointsSurroundingExtremes) {
+      if (
+        (!justAdded1 && !justAdded2) ||
+        !removePointsSurroundingExtremes ||
+        i === res.length - 1
+      ) {
         newRes.push(d);
       }
     }
