@@ -27,15 +27,15 @@ export function addExtremesIfNeeded(res, data, includeExtremes) {
     const newRes = [];
     for (let d of res) {
       if (
-        (newRes.length === 0 || newRes[newRes.length - 1].x < ex1.x) &&
-        ex1.x < d.x
+        (newRes.length === 0 || newRes[newRes.length - 1].x <= ex1.x) &&
+        ex1.x <= d.x
       ) {
         added1 = true;
         newRes.push(ex1);
       }
       if (
-        (newRes.length === 0 || newRes[newRes.length - 1].x < ex2.x) &&
-        ex2.x < d.x
+        (newRes.length === 0 || newRes[newRes.length - 1].x <= ex2.x) &&
+        ex2.x <= d.x
       ) {
         added2 = true;
         newRes.push(ex2);
