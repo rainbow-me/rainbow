@@ -232,12 +232,20 @@ export const addressAssetsReceived = (
 
   const liquidityTokens = remove(
     assets,
-    asset => toLower(asset.asset.name).indexOf('uniswap') !== -1
+    asset =>
+      asset?.asset?.type === 'uniswap' ||
+      toLower(asset?.asset.name).indexOf('uniswap') !== -1
   );
 
-  // remove spammy tokens
-  remove(assets, asset => shitcoins.includes(toLower(asset.asset.asset_code)));
-  remove(assets, asset => toLower(asset.asset.name).indexOf('compound') !== -1);
+  // Remove spammy tokens
+  remove(assets, asset =>
+    shitcoins.includes(toLower(asset?.asset?.asset_code))
+  );
+  // Remove compound tokens
+  remove(
+    assets,
+    asset => toLower(asset?.asset?.name).indexOf('compound') !== -1
+  );
 
   dispatch(
     uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
