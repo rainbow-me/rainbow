@@ -46,7 +46,7 @@ const traverseData = (prev, data) => {
   ) {
     return prev;
   }
-  const points = monotoneCubicInterpolation(filtered)(100);
+  const points = monotoneCubicInterpolation(filtered)(100, true);
   return {
     nativePoints: filtered,
     points,

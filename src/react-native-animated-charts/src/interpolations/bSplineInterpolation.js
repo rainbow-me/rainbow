@@ -1,3 +1,5 @@
+import { addExtremesIfNeeded } from '../helpers';
+
 class BSpline {
   constructor(points, degree, copy) {
     if (copy) {
@@ -180,11 +182,15 @@ export default function bSplineInterpolation(data, degree = 3) {
   const parsed = data.map(({ x, y }) => [x, y]);
   const spline = new BSpline(parsed, degree, true);
 
-  return t => {
+  return (range, includeExtremes) => {
     const res = [];
-    for (let i = 0; i < t; i++) {
-      res.push(spline.calcAt(i / (t - 1)));
+    for (let i = 0; i < range; i++) {
+      res.push(spline.calcAt(i / (range - 1)));
     }
-    return res.map(([x, y]) => ({ x, y }));
+    return addExtremesIfNeeded(
+      res.map(([x, y]) => ({ x, y })),
+      data,
+      includeExtremes
+    );
   };
 }
