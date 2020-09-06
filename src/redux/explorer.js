@@ -129,7 +129,7 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
 
 const disableFallbackIfNeeded = dispatch => {
   if (fallback) {
-    logger.log('💀 Disabling fallback!');
+    logger.log('😬 Disabling fallback data provider!');
     dispatch(fallbackExplorerClearState);
   }
 };
@@ -140,7 +140,7 @@ const isValidAssetsResponseFromZerion = msg => {
     if (msg.payload?.assets) {
       const assets = keys(msg.payload.assets);
       if (assets.length > 0) {
-        return false;
+        return true;
       }
     }
   }
@@ -200,7 +200,7 @@ export const explorerInit = () => async (dispatch, getState) => {
 
   if (network === NetworkTypes.mainnet) {
     assetsTimeoutHandler = setTimeout(() => {
-      logger.log('💀 Zerion timeout. Falling back!');
+      logger.log('😬 Zerion timeout. Falling back!');
       dispatch(fallbackExplorerInit());
       fallback = true;
     }, ZERION_ASSETS_TIMEOUT);
@@ -283,7 +283,9 @@ const listenOnAddressMessages = socket => dispatch => {
     dispatch(addressAssetsReceived(message));
     dispatch(emitChartsRequest());
     if (isValidAssetsResponseFromZerion(message)) {
-      logger.log('💀💀💀 Cancelling fallback listener. Zerion is good!');
+      logger.log(
+        '😬 Cancelling fallback data provider listener. Zerion is good!'
+      );
       clearTimeout(assetsTimeoutHandler);
     }
   });

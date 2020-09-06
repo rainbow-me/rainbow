@@ -40,7 +40,7 @@ const cleanupTokenName = str =>
 const findNewAssetsToWatch = async address => {
   const newAssets = await findAssetsToWatch(address);
   if (newAssets.length > 0) {
-    logger.log('💀 Found new assets!', newAssets);
+    logger.log('😬 Found new assets!', newAssets);
 
     // dedupe
     mainnetAssets = uniqBy(
@@ -51,49 +51,41 @@ const findNewAssetsToWatch = async address => {
 };
 
 const fetchCoingeckoIds = async () => {
+  let ids;
   try {
-    let ids;
-    try {
-      const request = await fetch(COINGECKO_IDS_ENDPOINT);
-      ids = await request.json();
-    } catch (e) {
-      ids = coingeckoIdsFallback;
-    }
-
-    const idsMap = {};
-    ids.forEach(({ name, symbol, id }) => {
-      idsMap[`${symbol.toLowerCase()}|||${cleanupTokenName(name)}`] = id;
-    });
-    return idsMap;
+    const request = await fetch(COINGECKO_IDS_ENDPOINT);
+    ids = await request.json();
   } catch (e) {
-    logger.log('error fetching tokenlist', TOKEN_LIST_URL, e);
+    ids = coingeckoIdsFallback;
   }
+
+  const idsMap = {};
+  ids.forEach(({ name, symbol, id }) => {
+    idsMap[`${symbol.toLowerCase()}|||${cleanupTokenName(name)}`] = id;
+  });
+  return idsMap;
 };
 
 export const fetchCoingeckoIdsByAddress = async () => {
+  let tokens;
   try {
-    let tokens;
-    try {
-      const response = await fetch(TOKEN_LIST_URL);
-      const responseData = await response.json();
-      tokens = responseData.tokens;
-    } catch (e) {
-      tokens = allTokensFallback.tokens;
-    }
-
-    const idsByAddress = {};
-    const coingeckoIds = await fetchCoingeckoIds();
-
-    tokens.forEach(token => {
-      idsByAddress[token.address.toLowerCase()] =
-        coingeckoIds[
-          `${token.symbol.toLowerCase()}|||${cleanupTokenName(token.name)}`
-        ];
-    });
-    return idsByAddress;
+    const response = await fetch(TOKEN_LIST_URL);
+    const responseData = await response.json();
+    tokens = responseData.tokens;
   } catch (e) {
-    logger.log('error fetching tokenlist', TOKEN_LIST_URL, e);
+    tokens = allTokensFallback.tokens;
   }
+
+  const idsByAddress = {};
+  const coingeckoIds = await fetchCoingeckoIds();
+
+  tokens.forEach(token => {
+    idsByAddress[token.address.toLowerCase()] =
+      coingeckoIds[
+        `${token.symbol.toLowerCase()}|||${cleanupTokenName(token.name)}`
+      ];
+  });
+  return idsByAddress;
 };
 
 const findAssetsToWatch = async address => {
@@ -239,7 +231,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
   }
 
   const fetchAssetsBalancesAndPrices = async () => {
-    logger.log('💀 FallbackExplorer fetchAssetsBalancesAndPrices');
+    logger.log('😬 FallbackExplorer fetchAssetsBalancesAndPrices');
     const { network } = getState().settings;
     const assets =
       network === networkTypes.mainnet ? mainnetAssets : testnetAssets[network];
@@ -296,7 +288,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
       });
     }
 
-    logger.log('💀 FallbackExplorer updating assets');
+    logger.log('😬 FallbackExplorer updating assets');
 
     dispatch(
       addressAssetsReceived({
