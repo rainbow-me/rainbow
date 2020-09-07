@@ -141,10 +141,12 @@ const disableFallbackIfNeeded = () => (dispatch, getState) => {
 };
 
 const isValidAssetsResponseFromZerion = msg => {
-  //1 - Check the structure
+  // Check that the payload meta is valid
   if (msg?.meta?.status === 'ok') {
+    // Check that there's an assets property in the payload
     if (msg.payload?.assets) {
       const assets = keys(msg.payload.assets);
+      // Check that we have assets
       if (assets.length > 0) {
         return true;
       }
@@ -154,7 +156,6 @@ const isValidAssetsResponseFromZerion = msg => {
 };
 
 export const explorerClearState = () => dispatch => {
-  // if we're not on mainnnet clear the testnet state
   dispatch(disableFallbackIfNeeded());
   dispatch(explorerUnsubscribe());
   dispatch({ type: EXPLORER_CLEAR_STATE });
