@@ -199,7 +199,7 @@ const SettingsSection = ({
           onPress={onPressReview}
         />
       </ColumnWithDividers>
-      {__DEV__ && (
+      {IS_DEV && (
         <ListItem
           justify="center"
           label="🐙 Developer settings 🐙"

@@ -1,3 +1,5 @@
+import { addExtremesIfNeeded } from '../helpers';
+
 export default function monotoneCubicInterpolation(data) {
   if (!data || data.length === 0) {
     return () => [];
@@ -102,7 +104,7 @@ export default function monotoneCubicInterpolation(data) {
   const _y = y.slice(0, n);
   const _m = m;
 
-  return range => {
+  return (range, includeExtremes) => {
     const firstValue = _x[0];
     const lastValue = _x[_x.length - 1];
     const res = [];
@@ -135,6 +137,6 @@ export default function monotoneCubicInterpolation(data) {
       res.push({ x: interpolatedValue, y });
     }
 
-    return res;
+    return addExtremesIfNeeded(res, data, includeExtremes);
   };
 }
