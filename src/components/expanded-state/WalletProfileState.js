@@ -1,10 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components/primitives';
 import BiometryTypes from '../../helpers/biometryTypes';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '../../helpers/emojiHandler';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -14,6 +10,10 @@ import { Icon } from '../icons';
 import { Centered, ColumnWithDividers, RowWithMargins } from '../layout';
 import { Text, TruncatedAddress } from '../text';
 import { ProfileAvatarButton, ProfileModal, ProfileNameInput } from './profile';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '@rainbow-me/helpers/emojiHandler';
 import { useAccountProfile, useBiometryType } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { colors, margin, padding, position } from '@rainbow-me/styles';
@@ -78,7 +78,6 @@ export default function WalletProfileState({
   const biometryType = useBiometryType();
   const { goBack, navigate } = useNavigation();
   const { accountImage } = useAccountProfile();
-  console.log(accountImage);
 
   const [color, setColor] = useState(
     (profile.color !== null && profile.color) || colors.getRandomColor()

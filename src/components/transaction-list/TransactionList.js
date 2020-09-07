@@ -3,7 +3,6 @@ import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Linking, requireNativeComponent } from 'react-native';
-// import ImagePicker from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
@@ -91,8 +90,7 @@ const TransactionList = ({
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigate, selectedWallet?.damaged]);
+  }, [navigate, selectedWallet.damaged]);
 
   const onAvatarPress = useCallback(() => {
     if (isAvatarImagePickerEnabled) {
