@@ -322,6 +322,7 @@ export default function ChartProvider({
         { scale: dotScale.value },
       ],
     }),
+    [dotOpacity, positionX, positionY],
     'dotStyle'
   );
 
