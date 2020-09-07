@@ -66,14 +66,12 @@ const swap = async (wallet, currentRap, index, parameters) => {
   logger.log('[swap] swap on uniswap!');
   const {
     accountAddress,
-    chainId,
     inputAmount,
     inputAsExactAmount,
     inputCurrency,
-    inputReserve,
     outputAmount,
     outputCurrency,
-    outputReserve,
+    pairs,
     selectedGasPrice = null,
   } = parameters;
   const { dispatch } = store;
@@ -82,13 +80,11 @@ const swap = async (wallet, currentRap, index, parameters) => {
 
   // Get Trade Details
   const tradeDetails = calculateTradeDetails(
-    chainId,
     inputAmount,
-    inputCurrency,
-    inputReserve,
     outputAmount,
+    inputCurrency,
     outputCurrency,
-    outputReserve,
+    pairs,
     inputAsExactAmount
   );
 
