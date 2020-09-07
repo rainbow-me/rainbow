@@ -146,7 +146,7 @@ const isValidAssetsResponseFromZerion = msg => {
     if (msg.payload?.assets) {
       const assets = keys(msg.payload.assets);
       if (assets.length > 0) {
-        return false;
+        return true;
       }
     }
   }
