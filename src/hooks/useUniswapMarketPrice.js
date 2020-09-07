@@ -4,12 +4,9 @@ import { useCallback } from 'react';
 import { divide } from '../helpers/utilities';
 import { ethereumUtils } from '../utils';
 import useAccountAssets from './useAccountAssets';
-import useUniswapCurrencyReserves from './useUniswapCurrencyReserves';
 
-export default function useUniswapMarketDetails() {
+export default function useUniswapMarketPrice() {
   const { allAssets } = useAccountAssets();
-
-  const { inputReserve, outputReserve } = useUniswapCurrencyReserves();
 
   const getMarketPrice = useCallback(
     (inputCurrency, outputCurrency, useInputReserve = true) => {
@@ -20,20 +17,14 @@ export default function useUniswapMarketDetails() {
       )
         return ethPrice;
 
-      if (
-        (useInputReserve && !inputReserve) ||
-        (!useInputReserve && !outputReserve)
-      )
-        return 0;
+      // TODO JIN - find reserve to get market details with and check validity
+      const reserve = null;
 
-      const marketDetails = getUniswapMarketDetails(
-        undefined,
-        useInputReserve ? inputReserve : outputReserve
-      );
+      const marketDetails = getUniswapMarketDetails(undefined, reserve);
       const assetToEthPrice = get(marketDetails, 'marketRate.rate');
       return divide(ethPrice, assetToEthPrice);
     },
-    [allAssets, inputReserve, outputReserve]
+    [allAssets]
   );
 
   return {
