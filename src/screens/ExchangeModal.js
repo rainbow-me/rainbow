@@ -39,7 +39,6 @@ import {
   useSwapInputRefs,
   useSwapInputs,
   useUniswapCurrencies,
-  useUniswapCurrencyReserves,
   useUniswapMarketDetails,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
@@ -84,10 +83,6 @@ export default function ExchangeModal({
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
-  const {
-    inputReserve,
-    outputReserve,
-  } = useUniswapCurrencyReserves();
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { nativeCurrency } = useAccountSettings();
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
@@ -162,10 +157,8 @@ export default function ExchangeModal({
       const gasLimit = await estimateRap({
         inputAmount,
         inputCurrency,
-        inputReserve,
         outputAmount,
         outputCurrency,
-        outputReserve,
       });
       if (inputCurrency && outputCurrency) {
         updateTxFee(gasLimit);
@@ -178,10 +171,8 @@ export default function ExchangeModal({
     estimateRap,
     inputAmount,
     inputCurrency,
-    inputReserve,
     outputAmount,
     outputCurrency,
-    outputReserve,
     updateTxFee,
   ]);
 
@@ -395,11 +386,9 @@ export default function ExchangeModal({
           inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
           inputAsExactAmount,
           inputCurrency,
-          inputReserve,
           isMax,
           outputAmount,
           outputCurrency,
-          outputReserve,
           selectedGasPrice: null,
         });
         logger.log('[exchange - handle submit] rap', rap);
@@ -429,7 +418,6 @@ export default function ExchangeModal({
     inputAmount,
     inputAsExactAmount,
     inputCurrency,
-    inputReserve,
     isDeposit,
     isMax,
     isSlippageWarningVisible,
@@ -437,7 +425,6 @@ export default function ExchangeModal({
     navigate,
     outputAmount,
     outputCurrency,
-    outputReserve,
     setParams,
     slippage,
     type,
