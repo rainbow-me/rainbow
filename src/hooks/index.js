@@ -71,7 +71,6 @@ export { default as useUniswapAssets } from './useUniswapAssets';
 export { default as useUniswapAssetsInWallet } from './useUniswapAssetsInWallet';
 export { default as useUniswapCalls } from './useUniswapCalls';
 export { default as useUniswapCurrencies } from './useUniswapCurrencies';
-export { default as useUniswapCurrencyReserves } from './useUniswapCurrencyReserves';
 export { default as useUniswapMarketDetails } from './useUniswapMarketDetails';
 export { default as useUniswapMarketPrice } from './useUniswapMarketPrice';
 export { default as useUpdateAssetOnchainBalance } from './useUpdateAssetOnchainBalance';
