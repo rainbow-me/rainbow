@@ -7,6 +7,7 @@ import contacts from './contacts';
 import data from './data';
 import editOptions from './editOptions';
 import explorer from './explorer';
+import fallbackExplorer from './fallbackExplorer';
 import gas from './gas';
 import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';
@@ -30,6 +31,7 @@ export default combineReducers({
   data,
   editOptions,
   explorer,
+  fallbackExplorer,
   gas,
   imageMetadata,
   keyboardHeight,
