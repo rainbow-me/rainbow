@@ -1,8 +1,11 @@
 import { ChainId, Pair } from '@uniswap/sdk';
 import { filter, flatMap, map, toLower, uniqBy } from 'lodash';
 import { useMemo } from 'react';
-import { UNISWAP_V2_BASES } from '../references';
-import { PAIR_GET_RESERVES_CALL_DATA } from '../references/uniswap';
+import {
+  PAIR_GET_RESERVES_CALL_DATA,
+  UNISWAP_V2_BASES,
+} from '../references/uniswap';
+
 import useAccountSettings from './useAccountSettings';
 
 export default function useUniswapCalls(inputCurrency, outputCurrency) {
