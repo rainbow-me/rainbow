@@ -10,17 +10,15 @@ import {
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
 import { logger } from '../utils';
-import useAccountSettings from './useAccountSettings';
-import useUniswapCurrencyReserves from './useUniswapCurrencyReserves';
 import useUniswapMarketPrice from './useUniswapMarketPrice';
+import useUniswapPairs from './useUniswapPairs';
 
 const DEFAULT_NATIVE_INPUT_AMOUNT = 50;
 
-export default function useUniswapMarketDetails() {
-  const { chainId } = useAccountSettings();
+export default function useUniswapMarketDetails(inputCurrency, outputCurrency) {
   const { getMarketPrice } = useUniswapMarketPrice();
 
-  const { inputReserve, outputReserve } = useUniswapCurrencyReserves();
+  const { allPairs } = useUniswapPairs(inputCurrency, outputCurrency);
 
   const updateTradeDetails = useCallback(
     ({
@@ -45,17 +43,15 @@ export default function useUniswapMarketDetails() {
       }
 
       return calculateTradeDetails(
-        chainId,
         updatedInputAmount,
-        inputCurrency,
-        inputReserve,
         outputAmount,
+        inputCurrency,
         outputCurrency,
-        outputReserve,
+        allPairs,
         updatedInputAsExactAmount
       );
     },
-    [chainId, getMarketPrice, inputReserve, outputReserve]
+    [allPairs, getMarketPrice]
   );
 
   const calculateInputGivenOutputChange = useCallback(
@@ -170,10 +166,7 @@ export default function useUniswapMarketDetails() {
       updateOutputAmount,
     }) => {
       const isMissingCurrency = !inputCurrency || !outputCurrency;
-      const isMissingReserves =
-        (get(inputCurrency, 'address') !== 'eth' && !inputReserve) ||
-        (get(outputCurrency, 'address') !== 'eth' && !outputReserve);
-      if (isMissingCurrency || isMissingReserves) return;
+      if (isMissingCurrency) return;
 
       try {
         const tradeDetails = updateTradeDetails({
@@ -254,8 +247,6 @@ export default function useUniswapMarketDetails() {
     [
       calculateInputGivenOutputChange,
       calculateOutputGivenInputChange,
-      inputReserve,
-      outputReserve,
       updateTradeDetails,
     ]
   );
