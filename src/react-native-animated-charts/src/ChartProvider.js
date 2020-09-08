@@ -73,6 +73,9 @@ function getValue(data, i, smoothingStrategy) {
   'worklet';
   if (smoothingStrategy.value === 'bezier') {
     const isLast = data.value.length - 1 === i;
+    if (isLast) {
+      return data.value[i];
+    }
 
     const p0 = isLast
       ? data.value[i - 1] || data.value[i]
