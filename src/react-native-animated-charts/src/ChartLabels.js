@@ -25,7 +25,7 @@ function ChartLabelFactory(style) {
           text: formattedValue.value,
         };
       },
-      [formattedValue],
+      undefined,
       style + 'textProps'
     );
     return (
