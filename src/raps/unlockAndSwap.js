@@ -30,7 +30,7 @@ export const estimateUnlockAndSwap = async ({
 
   if (!isValid) return ethUnits.basic_swap;
 
-  const { accountAddress } = store.getState().settings;
+  const { accountAddress, chainId } = store.getState().settings;
 
   let gasLimits = [];
   const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
@@ -55,7 +55,11 @@ export const estimateUnlockAndSwap = async ({
     pairs,
     true
   );
-  const swapGasLimit = await estimateSwapGasLimit(accountAddress, tradeDetails);
+  const { gasLimit: swapGasLimit } = await estimateSwapGasLimit({
+    accountAddress,
+    chainId,
+    tradeDetails,
+  });
   gasLimits = concat(gasLimits, swapGasLimit);
 
   return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
