@@ -153,7 +153,7 @@ function ChartPath({
         .join(' ')
         .replace('L', 'M');
     },
-    undefined, // TODO
+    [],
     'ChartPathPath'
   );
 
