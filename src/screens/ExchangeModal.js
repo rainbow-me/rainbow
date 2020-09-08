@@ -327,7 +327,6 @@ export default function ExchangeModal({
     if (isSlippageWarningVisible && !prevIsSlippageWarningVisible) {
       analytics.track('Showing high slippage warning in Swap', {
         category,
-        exchangeAddress: outputCurrency.exchangeAddress,
         name: outputCurrency.name,
         slippage,
         symbol: outputCurrency.symbol,
@@ -371,7 +370,6 @@ export default function ExchangeModal({
       analytics.track(`Submitted ${type}`, {
         category,
         defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
-        exchangeAddress: get(outputCurrency, 'exchangeAddress', ''),
         isSlippageWarningVisible,
         name: get(outputCurrency, 'name', ''),
         slippage,
@@ -459,7 +457,6 @@ export default function ExchangeModal({
     });
     analytics.track('Opened Swap Details modal', {
       category,
-      exchangeAddress: get(outputCurrency, 'exchangeAddress', ''),
       name: get(outputCurrency, 'name', ''),
       symbol: get(outputCurrency, 'symbol', ''),
       tokenAddress: get(outputCurrency, 'address', ''),

@@ -20,7 +20,7 @@ import { ethereumUtils } from '../utils';
 const assetsSelector = state => state.data.assets;
 const nativeCurrencySelector = state => state.settings.nativeCurrency;
 const uniswapLiquidityTokenInfoSelector = state =>
-  state.uniswap.uniswapLiquidityTokenInfo;
+  state.uniswapLiquidity.uniswapLiquidityTokenInfo;
 
 export const transformPool = (liquidityPool, ethPrice, nativeCurrency) => {
   if (isEmpty(liquidityPool)) {
