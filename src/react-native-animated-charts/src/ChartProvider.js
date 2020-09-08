@@ -193,6 +193,11 @@ export default function ChartProvider({
       if (dotScale.value !== 1) {
         dotScale.value = withSpring(1, springConfig);
       }
+
+      if (pathOpacity.value !== 0) {
+        pathOpacity.value = withTiming(0, timingConfig);
+      }
+
       if (enableHapticsValue.value && !isStarted.value) {
         impactHeavy();
       }
