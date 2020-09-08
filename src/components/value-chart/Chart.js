@@ -169,7 +169,7 @@ export default function ChartWrapper({
         opacity: spinnerScale.value,
       };
     },
-    [spinnerScale],
+    undefined,
     'overlayStyle'
   );
 
@@ -183,7 +183,7 @@ export default function ChartWrapper({
         ],
       };
     },
-    [spinnerScale, spinnerRotation],
+    undefined,
     'spinnerStyle'
   );
 

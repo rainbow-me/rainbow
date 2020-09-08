@@ -331,7 +331,7 @@ export default function ChartProvider({
         { scale: dotScale.value },
       ],
     }),
-    [positionX, positionY, dotScale],
+    undefined,
     'dotStyle'
   );
 

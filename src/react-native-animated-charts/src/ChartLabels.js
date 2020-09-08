@@ -16,7 +16,7 @@ function ChartLabelFactory(style) {
       () => {
         return format ? format(val.value) : val.value;
       },
-      [val],
+      undefined,
       style + 'formattedValue'
     );
     const textProps = useAnimatedStyle(

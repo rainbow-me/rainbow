@@ -153,7 +153,7 @@ function ChartPath({
         .join(' ')
         .replace('L', 'M');
     },
-    [],
+    undefined,
     'ChartPathPath'
   );
 
@@ -170,7 +170,7 @@ function ChartPath({
         },
       };
     },
-    [path, pathOpacity],
+    undefined,
     'ChartPathAnimatedStyle'
   );
 

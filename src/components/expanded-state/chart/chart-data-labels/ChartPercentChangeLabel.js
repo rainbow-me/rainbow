@@ -76,7 +76,7 @@ export default function ChartPercentChangeLabel() {
             : '',
       };
     },
-    [firstValue, lastValue, nativeY],
+    undefined,
     'ChartPercentChangeLabelTextProps'
   );
 
@@ -93,7 +93,7 @@ export default function ChartPercentChangeLabel() {
             : colors.green,
       };
     },
-    [ratio],
+    undefined,
     'ChartPercentChangeLabelTextStyle'
   );
 
