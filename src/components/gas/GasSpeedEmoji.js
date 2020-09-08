@@ -17,6 +17,10 @@ const EmojiForGasSpeedType = {
     emoji: 'snail', // 🐌️
     position: [-1, -2], // (x, y)
   },
+  [gasUtils.CUSTOM]: {
+    emoji: 'cog', // 🐌️
+    position: [-1, -0], // (x, y)
+  },
 };
 
 const Container = styled.View`

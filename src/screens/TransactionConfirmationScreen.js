@@ -4,14 +4,29 @@ import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get, isEmpty, isNil, omit } from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Alert, InteractionManager, Vibration } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Button, HoldToAuthorizeButton } from '../components/buttons';
+import URL from 'url-parse';
+import Divider from '../components/Divider';
+import { HoldToAuthorizeButton } from '../components/buttons';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
-import { Centered, Column } from '../components/layout';
+import { ContactAvatar } from '../components/contacts';
+import { GasSpeedButton } from '../components/gas';
+import { Centered, Column, Row, RowWithMargins } from '../components/layout';
+import {
+  SheetActionButton,
+  SheetHandleFixedToTop,
+  SlackSheet,
+} from '../components/sheet';
 import { Text } from '../components/text';
 import {
   DefaultTransactionConfirmationSection,
@@ -19,12 +34,21 @@ import {
   TransactionConfirmationSection,
 } from '../components/transaction';
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
+
 import {
+  convertAmountToNativeDisplay,
   convertHexToString,
   fromWei,
   greaterThanOrEqualTo,
 } from '../helpers/utilities';
-import { useAccountAssets, useGas, useTransactionConfirmation } from '../hooks';
+import {
+  useAccountAssets,
+  useAccountProfile,
+  useAccountSettings,
+  useGas,
+  useTransactionConfirmation,
+  useWalletBalances,
+} from '../hooks';
 import {
   sendTransaction,
   signMessage,
@@ -35,6 +59,7 @@ import {
 import { useNavigation } from '../navigation/Navigation';
 import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
 import { ethereumUtils, gasUtils } from '../utils';
+import { methodRegistryLookupAndParse } from '../utils/methodRegistry';
 import {
   isMessageDisplayType,
   isSignFirstParamType,
@@ -45,13 +70,16 @@ import {
   SIGN,
   SIGN_TYPED_DATA,
 } from '../utils/signingMethods';
-import { colors, position } from '@rainbow-me/styles';
+import { colors, padding, position } from '@rainbow-me/styles';
 import logger from 'logger';
 
-const CancelButtonContainer = styled.View`
-  bottom: 19;
-  position: absolute;
-  right: 19;
+const DappLogo = styled(RequestVendorLogoIcon).attrs({
+  backgroundColor: colors.transparent,
+  borderRadius: 18,
+  showLargeShadow: true,
+  size: 60,
+})`
+  margin-bottom: 12;
 `;
 
 const Container = styled(Column)`
@@ -59,24 +87,42 @@ const Container = styled(Column)`
   flex: 1;
 `;
 
-const Masthead = styled(Centered).attrs({ direction: 'column' })`
-  flex: 1;
-  padding-bottom: 2px;
-  width: 100%;
+const GasSpeedButtonContainer = styled(Column)`
+  justify-content: flex-start;
+  margin-bottom: 19px;
 `;
 
-const TransactionType = styled(Text).attrs({ size: 'h5' })`
-  color: ${colors.alpha(colors.white, 0.68)};
-  margin-top: 6;
+const WalletLabel = styled(Text).attrs({
+  color: colors.alpha(colors.blueGreyDark, 0.5),
+  size: 'smedium',
+})`
+  margin-bottom: 5;
 `;
+
+const WalletText = styled(Text).attrs({
+  color: colors.alpha(colors.blueGreyDark, 0.8),
+  size: 'larger',
+  weight: 'bold',
+})``;
 
 const NOOP = () => undefined;
 
 const TransactionConfirmationScreen = () => {
+  const authenticated = false;
   const { allAssets } = useAccountAssets();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
+  const [methodName, setMethodName] = useState(null);
   const calculatingGasLimit = useRef(false);
   const [isBalanceEnough, setIsBalanceEnough] = useState(true);
+  const {
+    accountAddress,
+    accountColor,
+    accountName,
+    accountSymbol,
+  } = useAccountProfile();
+  const balances = useWalletBalances();
+  const { nativeCurrency } = useAccountSettings();
+
   const {
     gasLimit,
     gasPrices,
@@ -86,6 +132,22 @@ const TransactionConfirmationScreen = () => {
     updateTxFee,
     selectedGasPrice,
   } = useGas();
+
+  const fetchMethodName = useCallback(async data => {
+    if (!data) return;
+    const methodSignaturePrefix = data.substr(0, 10);
+    console.log('creating registry');
+    try {
+      const { name } = await methodRegistryLookupAndParse(
+        methodSignaturePrefix
+      );
+      if (name) {
+        setMethodName(name);
+      }
+    } catch (e) {
+      console.log('FUCKKKKK registryMethod', e);
+    }
+  }, []);
 
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
@@ -107,6 +169,7 @@ const TransactionConfirmationScreen = () => {
     callback,
     transactionDetails: {
       dappName,
+      dappUrl,
       displayDetails,
       imageUrl,
       payload: { method, params },
@@ -115,9 +178,23 @@ const TransactionConfirmationScreen = () => {
     },
   } = routeParams;
 
+  //console.log('route params', JSON.stringify(routeParams, null, 2));
+
   const request = displayDetails.request;
 
   const openAutomatically = routeParams?.openAutomatically;
+
+  const formattedDappUrl = useMemo(() => {
+    const urlObject = new URL(dappUrl);
+    const subdomains = urlObject.hostname.split('.');
+    if (subdomains.length === 2) {
+      return urlObject.hostname;
+    } else {
+      return `${subdomains[subdomains.length - 2]}.${
+        subdomains[subdomains.length - 1]
+      }`;
+    }
+  }, [dappUrl]);
 
   useEffect(() => {
     if (openAutomatically && !isEmulatorSync()) {
@@ -126,9 +203,16 @@ const TransactionConfirmationScreen = () => {
     if (!isMessageDisplayType(method)) {
       InteractionManager.runAfterInteractions(() => {
         startPollingGasPrices();
+        fetchMethodName(params[0].data);
       });
     }
-  }, [method, openAutomatically, startPollingGasPrices]);
+  }, [
+    fetchMethodName,
+    method,
+    openAutomatically,
+    params,
+    startPollingGasPrices,
+  ]);
 
   const closeScreen = useCallback(
     canceled => {
@@ -447,9 +531,9 @@ const TransactionConfirmationScreen = () => {
     onLongPressSend,
   ]);
 
-  const requestHeader = isMessageDisplayType(method)
-    ? lang.t('wallet.message_signing.request')
-    : lang.t('wallet.transaction.request');
+  // const requestHeader = isMessageDisplayType(method)
+  //   ? lang.t('wallet.message_signing.request')
+  //   : lang.t('wallet.transaction.request');
 
   const renderTransactionSection = useCallback(() => {
     if (isMessageDisplayType(method)) {
@@ -463,13 +547,20 @@ const TransactionConfirmationScreen = () => {
     }
 
     if (isTransactionDisplayType(method) && get(request, 'asset')) {
+      const ethAsset = ethereumUtils.getAsset(allAssets);
+      const amount = get(request, 'value', '0.00');
+      const nativeAmount = Number(ethAsset.price.value) * Number(amount);
+      const nativeAmountDisplay = convertAmountToNativeDisplay(
+        nativeAmount,
+        nativeCurrency
+      );
       return (
         <TransactionConfirmationSection
           asset={{
             address: get(request, 'to'),
-            amount: get(request, 'value', '0.00'),
+            amount,
             name: get(request, 'asset.name', 'No data'),
-            nativeAmountDisplay: get(request, 'nativeAmountDisplay'),
+            nativeAmountDisplay,
             symbol: get(request, 'asset.symbol', 'N/A'),
           }}
           method={method}
@@ -489,41 +580,80 @@ const TransactionConfirmationScreen = () => {
         sendButton={renderSendButton()}
       />
     );
-  }, [method, renderSendButton, request]);
+  }, [allAssets, method, nativeCurrency, renderSendButton, request]);
 
   return (
     <Container>
-      <Masthead>
-        <RequestVendorLogoIcon
-          backgroundColor="transparent"
-          dappName={dappName || ''}
-          imageUrl={imageUrl || ''}
-          size={60}
-          style={{ marginBottom: 24 }}
-        />
-        <Text
-          align="center"
-          color="white"
-          letterSpacing="roundedMedium"
-          size="h4"
-          weight="semibold"
+      <SlackSheet
+        backgroundColor={colors.transparent}
+        borderRadius={30}
+        hideHandle
+        marginTop={0}
+      >
+        <Centered
+          backgroundColor={colors.white}
+          borderRadius={30}
+          direction="column"
+          paddingBottom={10}
+          paddingHorizontal={19}
+          paddingTop={17}
         >
-          {dappName}
-        </Text>
-        <TransactionType>{requestHeader}</TransactionType>
-        <CancelButtonContainer>
-          <Button
-            backgroundColor={colors.alpha(colors.grey, 0.4)}
-            onPress={onCancel}
-            showShadow={false}
-            size="small"
-            textProps={{ color: colors.black, size: 'lmedium' }}
-          >
-            {lang.t('wallet.action.reject')}
-          </Button>
-        </CancelButtonContainer>
-      </Masthead>
-      {renderTransactionSection()}
+          <SheetHandleFixedToTop showBlur={false} />
+          <Column marginBottom={17} />
+          <DappLogo dappName={dappName || ''} imageUrl={imageUrl || ''} />
+          <Centered paddingHorizontal={23}>
+            <Text align="center" color="dark" size="big" weight="bold">
+              {methodName}
+            </Text>
+          </Centered>
+          <Row marginBottom={30} marginTop={0}>
+            <Text color="appleBlue" lineHeight={29} size="large" weight="bold">
+              {authenticated ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
+            </Text>
+          </Row>
+          {renderTransactionSection()}
+          <Divider color={colors.rowDividerLight} inset={[0, 84]} />
+          <RowWithMargins css={padding(24, 0, 21)} margin={15}>
+            <SheetActionButton
+              color={colors.white}
+              label="Cancel"
+              onPress={onCancel}
+              size="big"
+              textColor={colors.dark}
+            />
+            <SheetActionButton
+              color={colors.appleBlue}
+              label="􀎽 Confirm"
+              onPress={onLongPressSend}
+              size="big"
+            />
+          </RowWithMargins>
+          <RowWithMargins css={padding(24, 0, 21)} margin={15}>
+            <Column flex={1} justify="start">
+              <WalletLabel>Wallet</WalletLabel>
+              <Row>
+                <Column marginTop={3}>
+                  <ContactAvatar
+                    color={isNaN(accountColor) ? colors.skeleton : accountColor}
+                    size="smaller"
+                    value={accountSymbol}
+                  />
+                </Column>
+                <WalletText> {accountName}</WalletText>
+              </Row>
+            </Column>
+            <Column align="flex-end" flex={1} justify="end">
+              <WalletLabel>Balance</WalletLabel>
+              <WalletText>{balances[accountAddress]} ETH</WalletText>
+            </Column>
+          </RowWithMargins>
+        </Centered>
+        {!isMessageDisplayType(method) && (
+          <GasSpeedButtonContainer>
+            <GasSpeedButton type="transaction" />
+          </GasSpeedButtonContainer>
+        )}
+      </SlackSheet>
     </Container>
   );
 };

@@ -65,7 +65,7 @@ const GasSpeedButton = ({ type }) => {
   const renderGasPriceText = useCallback(
     animatedNumber => (
       <Text
-        color={type === 'transaction' ? colors.black : colors.white}
+        color={colors.white}
         letterSpacing="roundedTight"
         size="lmedium"
         weight="semibold"
@@ -77,16 +77,12 @@ const GasSpeedButton = ({ type }) => {
           : animatedNumber}
       </Text>
     ),
-    [gasPrices, isSufficientGas, txFees, type]
+    [gasPrices, isSufficientGas, txFees]
   );
 
   const renderEstimatedTimeText = useCallback(
-    animatedNumber => (
-      <Label color={type === 'transaction' ? colors.darkGrey : colors.white}>
-        {animatedNumber}
-      </Label>
-    ),
-    [type]
+    animatedNumber => <Label color={colors.white}>{animatedNumber}</Label>,
+    []
   );
 
   const gasPrice = get(selectedGasPrice, 'txFee.native.value.amount');
@@ -137,15 +133,10 @@ const GasSpeedButton = ({ type }) => {
           timing="linear"
           value={price}
         />
-        <GasSpeedLabelPager
-          label={selectedGasPriceOption}
-          theme={type === 'transaction' ? 'light' : 'dark'}
-        />
+        <GasSpeedLabelPager label={selectedGasPriceOption} theme="dark" />
       </Row>
       <Row align="center" justify="space-between">
-        <Label color={type === 'transaction' ? colors.darkGrey : colors.white}>
-          Network Fee
-        </Label>
+        <Label color={colors.white}>Network Fee</Label>
         <AnimateNumber
           formatter={formatAnimatedEstimatedTime}
           interval={1}

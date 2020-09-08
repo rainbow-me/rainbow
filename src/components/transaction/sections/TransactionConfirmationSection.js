@@ -1,95 +1,58 @@
-import lang from 'i18n-js';
-import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { CoinIcon } from '../../coin-icon';
-import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
-import { Nbsp, Text, TruncatedAddress, TruncatedText } from '../../text';
-import TransactionRow from '../TransactionRow';
+import { Centered, Column, Row } from '../../layout';
+import { Text, TruncatedText } from '../../text';
 import TransactionSheet from '../TransactionSheet';
-import { colors, fonts, padding } from '@rainbow-me/styles';
+import { colors, padding } from '@rainbow-me/styles';
 
 const Amount = styled(TruncatedText).attrs({
-  color: colors.alpha(colors.blueGreyDark, 0.6),
-  size: 'lmedium',
+  color: colors.blueGreyDark,
+  size: 'larger',
   uppercase: true,
+  weight: 'bold',
 })``;
 
 const AmountRow = styled(Row).attrs({
   align: 'center',
-  justify: 'space-between',
+  justify: 'center',
 })`
-  ${padding(19)};
-  flex-shrink: 0;
+  background-color: ${colors.alpha(colors.darkGrey, 0.06)};
+  ${padding(9, 11)};
+  border-radius: 49;
+  margin: auto;
 `;
 
 const NativeAmount = styled(Text).attrs({
-  size: 'h2',
-  weight: 'medium',
+  color: colors.blueGreyDark,
+  lineHeight: '69px',
+  size: '58px',
+  uppercase: true,
+  weight: 'bold',
 })`
-  flex-grow: 0;
-  flex-shrink: 0;
-`;
-
-const TokenAmount = styled(Amount)`
-  flex-grow: 0;
-  flex-shrink: 1;
-`;
-
-const TokenSymbol = styled(Amount)`
-  flex-grow: -1;
-  flex-shrink: 0;
+  margin-bottom: 8;
 `;
 
 const TransactionConfirmationSection = ({
-  asset: { address, amount, name, nativeAmountDisplay, symbol },
+  asset: { amount, nativeAmountDisplay, symbol },
   method,
-  sendButton,
 }) => (
-  <TransactionSheet method={method} sendButton={sendButton}>
-    <TransactionRow title={lang.t('wallet.action.to')}>
-      <TruncatedAddress
-        address={address}
-        color={colors.alpha(colors.blueGreyDark, 0.6)}
-        size="lmedium"
-        truncationLength={15}
-      />
-    </TransactionRow>
-    <AmountRow>
-      <ColumnWithMargins
-        css={`
-          padding-right: ${fonts.size.lmedium};
-        `}
-        margin={6}
-      >
-        <RowWithMargins align="center" margin={6}>
-          <CoinIcon size={22} symbol={symbol} />
-          <TruncatedText size="lmedium" weight="medium">
-            {name}
-          </TruncatedText>
-        </RowWithMargins>
-        <Row align="center">
-          <TokenAmount>{amount}</TokenAmount>
-          <TokenSymbol>
-            <Nbsp />
-            {symbol}
-          </TokenSymbol>
-        </Row>
-      </ColumnWithMargins>
+  <TransactionSheet method={method}>
+    <Centered>
       <NativeAmount>{nativeAmountDisplay}</NativeAmount>
+    </Centered>
+    <AmountRow>
+      <Column>
+        <Row align="center">
+          <CoinIcon size={22} symbol={symbol} />
+          <Amount>
+            {` `}
+            {amount} {symbol}
+          </Amount>
+        </Row>
+      </Column>
     </AmountRow>
   </TransactionSheet>
 );
-
-TransactionConfirmationSection.propTypes = {
-  asset: PropTypes.shape({
-    address: PropTypes.string,
-    amount: PropTypes.string,
-    name: PropTypes.string,
-    nativeAmountDisplay: PropTypes.string,
-    symbol: PropTypes.string,
-  }),
-  sendButton: PropTypes.object,
-};
 
 export default TransactionConfirmationSection;

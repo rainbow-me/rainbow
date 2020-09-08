@@ -47,10 +47,12 @@ export const addRequestToApprove = (
   }
 
   const dappName = peerMeta.name || 'Unknown Dapp';
+  const dappUrl = peerMeta.url || 'Unknown Url';
   const imageUrl = get(peerMeta, 'icons[0]');
   const request = {
     clientId,
     dappName,
+    dappUrl,
     displayDetails,
     imageUrl,
     payload,

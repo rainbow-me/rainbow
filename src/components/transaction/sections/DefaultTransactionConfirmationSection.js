@@ -11,11 +11,10 @@ import { colors } from '@rainbow-me/styles';
 const DefaultTransactionConfirmationSection = ({
   address,
   data,
-  method,
   sendButton,
   value,
 }) => (
-  <TransactionSheet method={method} sendButton={sendButton}>
+  <TransactionSheet sendButton={sendButton}>
     <TransactionRow title={lang.t('wallet.action.to')}>
       <TruncatedAddress
         address={address}

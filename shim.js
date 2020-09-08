@@ -38,12 +38,12 @@ if (SHORTEN_PROP_TYPES_ERROR) {
       typeof arguments[0] === 'string' &&
       arguments[0].startsWith('Warning: Failed prop type')
     ) {
-      console.log(
-        `PropTypes error in: ${arguments[0]
-          .match(/\w+.js:[0-9]+/g)
-          .slice(0, 6)
-          .join(' in ')}`
-      );
+      // console.log(
+      //   `PropTypes error in: ${arguments[0]
+      //     .match(/\w+.js:[0-9]+/g)
+      //     .slice(0, 6)
+      //     .join(' in ')}`
+      // );
       return;
     }
     oldConsoleError.apply(this, arguments);

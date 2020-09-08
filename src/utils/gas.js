@@ -10,11 +10,12 @@ import {
 } from 'lodash';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
+const CUSTOM = 'custom';
 const FAST = 'fast';
 const NORMAL = 'normal';
 const SLOW = 'slow';
 
-const GasSpeedOrder = [SLOW, NORMAL, FAST];
+const GasSpeedOrder = [SLOW, NORMAL, FAST, CUSTOM];
 
 const showTransactionSpeedOptions = (
   gasPrices,
@@ -65,6 +66,7 @@ const formatGasSpeedItems = (gasPrices, txFees) => {
 };
 
 export default {
+  CUSTOM,
   FAST,
   GasSpeedOrder,
   NORMAL,

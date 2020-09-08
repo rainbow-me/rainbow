@@ -11,7 +11,7 @@ const GasSpeedLabelPager = ({ label, theme }) => {
 
   return (
     <Row align="center" height={GasSpeedLabelPagerItemHeight} justify="end">
-      {gasUtils.GasSpeedOrder.map(speed => (
+      {gasUtils.GasSpeedOrder.concat(['custom']).map(speed => (
         <GasSpeedLabelPagerItem
           key={speed}
           label={speed}
