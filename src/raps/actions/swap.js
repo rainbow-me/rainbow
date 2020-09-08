@@ -25,19 +25,8 @@ import logger from 'logger';
 
 const NOOP = () => undefined;
 
-export const isValidSwapInput = ({
-  inputCurrency,
-  inputReserve,
-  outputCurrency,
-  outputReserve,
-}) => {
-  const isMissingCurrency = !inputCurrency || !outputCurrency;
-  const isMissingReserves =
-    (get(inputCurrency, 'address') !== 'eth' && !inputReserve) ||
-    (get(outputCurrency, 'address') !== 'eth' && !outputReserve);
-
-  return !(isMissingCurrency || isMissingReserves);
-};
+export const isValidSwapInput = ({ inputCurrency, outputCurrency }) =>
+  !!inputCurrency && !!outputCurrency;
 
 export const findSwapOutputAmount = (receipt, accountAddress) => {
   const { logs } = receipt;
@@ -75,6 +64,7 @@ const swap = async (wallet, currentRap, index, parameters) => {
     selectedGasPrice = null,
   } = parameters;
   const { dispatch } = store;
+  const { chainId } = store.getState().settings;
   const { gasPrices } = store.getState().gas;
   logger.log('[swap] calculating trade details');
 
@@ -96,10 +86,19 @@ const swap = async (wallet, currentRap, index, parameters) => {
   if (currentRap.actions.length - 1 > index || !gasPrice) {
     gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
   }
-  let gasLimit;
+  let gasLimit, methodName;
   try {
     logger.sentry('estimateSwapGasLimit', { accountAddress, tradeDetails });
-    gasLimit = await estimateSwapGasLimit(accountAddress, tradeDetails);
+    const {
+      gasLimit: newGasLimit,
+      methodName: newMethodName,
+    } = await estimateSwapGasLimit({
+      accountAddress,
+      chainId,
+      tradeDetails,
+    });
+    gasLimit = newGasLimit;
+    methodName = newMethodName;
   } catch (e) {
     logger.sentry('error executing estimateSwapGasLimit');
     captureException(e);
@@ -109,7 +108,15 @@ const swap = async (wallet, currentRap, index, parameters) => {
   let swap;
   try {
     logger.sentry('executing swap', { gasLimit, gasPrice, tradeDetails });
-    swap = await executeSwap(tradeDetails, gasLimit, gasPrice, wallet);
+    swap = await executeSwap({
+      accountAddress,
+      chainId,
+      gasLimit,
+      gasPrice,
+      methodName,
+      tradeDetails,
+      wallet,
+    });
   } catch (e) {
     logger.sentry('error executing swap');
     captureException(e);

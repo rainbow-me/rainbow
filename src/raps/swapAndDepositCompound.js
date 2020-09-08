@@ -23,7 +23,7 @@ export const estimateSwapAndDepositCompound = async ({
   outputCurrency,
   pairs,
 }) => {
-  const { accountAddress, network } = store.getState().settings;
+  const { accountAddress, chainId, network } = store.getState().settings;
   const requiresSwap = !!outputCurrency;
   let gasLimits = [];
   if (requiresSwap) {
@@ -55,10 +55,11 @@ export const estimateSwapAndDepositCompound = async ({
       pairs,
       true
     );
-    const swapGasLimit = await estimateSwapGasLimit(
+    const { gasLimit: swapGasLimit } = await estimateSwapGasLimit({
       accountAddress,
-      tradeDetails
-    );
+      chainId,
+      tradeDetails,
+    });
     gasLimits = concat(gasLimits, swapGasLimit);
     logger.log('[swap and deposit] making swap func');
   }
