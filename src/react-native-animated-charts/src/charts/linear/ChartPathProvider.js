@@ -322,6 +322,7 @@ export default function ChartPathProvider({
         { scale: dotScale.value },
       ],
     }),
+    undefined,
     'dotStyle'
   );
 
