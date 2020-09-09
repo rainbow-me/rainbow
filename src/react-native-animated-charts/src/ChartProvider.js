@@ -189,12 +189,8 @@ export default function ChartProvider({
       if (!currData.value || currData.value.length === 0) {
         return;
       }
-
-      if (dotScale.value !== 1) {
+      if (!isStarted.value) {
         dotScale.value = withSpring(1, springConfig);
-      }
-
-      if (pathOpacity.value !== 0) {
         pathOpacity.value = withTiming(0, timingConfig);
       }
 
