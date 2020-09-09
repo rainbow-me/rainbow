@@ -18,7 +18,7 @@ const EmojiForGasSpeedType = {
     position: [-1, -2], // (x, y)
   },
   [gasUtils.CUSTOM]: {
-    emoji: 'cog', // 🐌️
+    emoji: 'gear', // ⚙️
     position: [-1, -0], // (x, y)
   },
 };

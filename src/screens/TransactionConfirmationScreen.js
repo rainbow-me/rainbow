@@ -57,6 +57,7 @@ import {
   signTypedDataMessage,
 } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
+import keyboardHeight from '../redux/keyboardHeight';
 import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
 import { ethereumUtils, gasUtils } from '../utils';
 import { methodRegistryLookupAndParse } from '../utils/methodRegistry';
@@ -111,6 +112,7 @@ const TransactionConfirmationScreen = () => {
   const authenticated = false;
   const { allAssets } = useAccountAssets();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [methodName, setMethodName] = useState(null);
   const calculatingGasLimit = useRef(false);
   const [isBalanceEnough, setIsBalanceEnough] = useState(true);
@@ -582,77 +584,97 @@ const TransactionConfirmationScreen = () => {
     );
   }, [allAssets, method, nativeCurrency, renderSendButton, request]);
 
+  const handleCustomGasFocus = useCallback(() => {
+    setKeyboardVisible(true);
+  }, []);
+  const handleCustomGasBlur = useCallback(() => {
+    setKeyboardVisible(false);
+  }, []);
+
   return (
     <Container>
       <SlackSheet
         backgroundColor={colors.transparent}
         borderRadius={30}
         hideHandle
-        marginTop={0}
+        marginBottom={keyboardVisible ? 260 : 0}
       >
-        <Centered
-          backgroundColor={colors.white}
-          borderRadius={30}
-          direction="column"
-          paddingBottom={10}
-          paddingHorizontal={19}
-          paddingTop={17}
-        >
-          <SheetHandleFixedToTop showBlur={false} />
-          <Column marginBottom={17} />
-          <DappLogo dappName={dappName || ''} imageUrl={imageUrl || ''} />
-          <Centered paddingHorizontal={23}>
-            <Text align="center" color="dark" size="big" weight="bold">
-              {methodName}
-            </Text>
+        <Column marginBottom={keyboardHeight}>
+          <Centered
+            backgroundColor={colors.white}
+            borderRadius={30}
+            direction="column"
+            paddingBottom={10}
+            paddingHorizontal={19}
+            paddingTop={17}
+          >
+            <SheetHandleFixedToTop showBlur={false} />
+            <Column marginBottom={17} />
+            <DappLogo dappName={dappName || ''} imageUrl={imageUrl || ''} />
+            <Centered paddingHorizontal={23}>
+              <Text align="center" color="dark" size="big" weight="bold">
+                {methodName}
+              </Text>
+            </Centered>
+            <Row marginBottom={30} marginTop={0}>
+              <Text
+                color="appleBlue"
+                lineHeight={29}
+                size="large"
+                weight="bold"
+              >
+                {authenticated ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
+              </Text>
+            </Row>
+            {renderTransactionSection()}
+            <Divider color={colors.rowDividerLight} inset={[0, 84]} />
+            <RowWithMargins css={padding(24, 0, 21)} margin={15}>
+              <SheetActionButton
+                color={colors.white}
+                label="Cancel"
+                onPress={onCancel}
+                size="big"
+                textColor={colors.dark}
+              />
+              <SheetActionButton
+                color={colors.appleBlue}
+                label="􀎽 Confirm"
+                onPress={onLongPressSend}
+                size="big"
+              />
+            </RowWithMargins>
+            <RowWithMargins css={padding(24, 0, 21)} margin={15}>
+              <Column flex={1} justify="start">
+                <WalletLabel>Wallet</WalletLabel>
+                <Row>
+                  <Column marginTop={3}>
+                    <ContactAvatar
+                      color={
+                        isNaN(accountColor) ? colors.skeleton : accountColor
+                      }
+                      size="smaller"
+                      value={accountSymbol}
+                    />
+                  </Column>
+                  <WalletText> {accountName}</WalletText>
+                </Row>
+              </Column>
+              <Column align="flex-end" flex={1} justify="end">
+                <WalletLabel>Balance</WalletLabel>
+                <WalletText>{balances[accountAddress]} ETH</WalletText>
+              </Column>
+            </RowWithMargins>
           </Centered>
-          <Row marginBottom={30} marginTop={0}>
-            <Text color="appleBlue" lineHeight={29} size="large" weight="bold">
-              {authenticated ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
-            </Text>
-          </Row>
-          {renderTransactionSection()}
-          <Divider color={colors.rowDividerLight} inset={[0, 84]} />
-          <RowWithMargins css={padding(24, 0, 21)} margin={15}>
-            <SheetActionButton
-              color={colors.white}
-              label="Cancel"
-              onPress={onCancel}
-              size="big"
-              textColor={colors.dark}
-            />
-            <SheetActionButton
-              color={colors.appleBlue}
-              label="􀎽 Confirm"
-              onPress={onLongPressSend}
-              size="big"
-            />
-          </RowWithMargins>
-          <RowWithMargins css={padding(24, 0, 21)} margin={15}>
-            <Column flex={1} justify="start">
-              <WalletLabel>Wallet</WalletLabel>
-              <Row>
-                <Column marginTop={3}>
-                  <ContactAvatar
-                    color={isNaN(accountColor) ? colors.skeleton : accountColor}
-                    size="smaller"
-                    value={accountSymbol}
-                  />
-                </Column>
-                <WalletText> {accountName}</WalletText>
-              </Row>
-            </Column>
-            <Column align="flex-end" flex={1} justify="end">
-              <WalletLabel>Balance</WalletLabel>
-              <WalletText>{balances[accountAddress]} ETH</WalletText>
-            </Column>
-          </RowWithMargins>
-        </Centered>
-        {!isMessageDisplayType(method) && (
-          <GasSpeedButtonContainer>
-            <GasSpeedButton type="transaction" />
-          </GasSpeedButtonContainer>
-        )}
+          {!isMessageDisplayType(method) && (
+            <GasSpeedButtonContainer>
+              <GasSpeedButton
+                onCustomGasBlur={handleCustomGasBlur}
+                onCustomGasFocus={handleCustomGasFocus}
+                type="transaction"
+              />
+            </GasSpeedButtonContainer>
+          )}
+        </Column>
       </SlackSheet>
     </Container>
   );
