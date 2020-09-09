@@ -106,7 +106,6 @@ export default function ChartProvider({
   const currSmoothing = useSharedValue(0, 'currSmoothing');
 
   const progress = useSharedValue(1, 'progress');
-  const dotOpacity = useSharedValue(0, 'dotOpacity');
   const dotScale = useSharedValue(0, 'dotScale');
   const nativeX = useSharedValue('', 'nativeX');
   const nativeY = useSharedValue('', 'nativeY');
@@ -182,6 +181,7 @@ export default function ChartProvider({
   const timingConfig = {
     duration: 80,
   };
+  const isStarted = useReactiveSharedValue(false, 'isStarted');
 
   const onLongPressGestureEvent = useAnimatedGestureHandler({
     onActive: event => {
@@ -189,6 +189,16 @@ export default function ChartProvider({
       if (!currData.value || currData.value.length === 0) {
         return;
       }
+      if (!isStarted.value) {
+        dotScale.value = withSpring(1, springConfig);
+        pathOpacity.value = withTiming(0, timingConfig);
+      }
+
+      if (enableHapticsValue.value && !isStarted.value) {
+        impactHeavy();
+      }
+      isStarted.value = true;
+
       const eventX = positionXWithMargin(
         event.x,
         softMarginValue.value,
@@ -230,10 +240,10 @@ export default function ChartProvider({
       positionX.value = eventX;
     },
     onCancel: event => {
+      isStarted.value = false;
       state.value = event.state;
       nativeX.value = '';
       nativeY.value = '';
-      dotOpacity.value = withSpring(0, springConfig);
       dotScale.value = withSpring(0, springConfig);
       if (android) {
         pathOpacity.value = 1;
@@ -242,10 +252,10 @@ export default function ChartProvider({
       }
     },
     onEnd: event => {
+      isStarted.value = false;
       state.value = event.state;
       nativeX.value = '';
       nativeY.value = '';
-      dotOpacity.value = withSpring(0, springConfig);
       dotScale.value = withSpring(0, springConfig);
       if (android) {
         pathOpacity.value = 1;
@@ -258,10 +268,10 @@ export default function ChartProvider({
       }
     },
     onFail: event => {
+      isStarted.value = false;
       state.value = event.state;
       nativeX.value = '';
       nativeY.value = '';
-      dotOpacity.value = withSpring(0, springConfig);
       dotScale.value = withSpring(0, springConfig);
       if (android) {
         pathOpacity.value = 1;
@@ -298,7 +308,6 @@ export default function ChartProvider({
         eventX / size.value.width,
         currNativeData
       );
-      dotOpacity.value = withSpring(1, springConfig);
       dotScale.value = withSpring(1, springConfig);
 
       if (!android) {
@@ -306,22 +315,24 @@ export default function ChartProvider({
         positionY.value = currData.value[idx].y * size.value.height;
         pathOpacity.value = withTiming(0, timingConfig);
       }
-      if (enableHapticsValue.value) {
+      if (enableHapticsValue.value && !isStarted.value) {
         impactHeavy();
       }
+      isStarted.value = true;
     },
   });
 
   // @ts-ignore
   const dotStyle = useAnimatedStyle(
     () => ({
-      opacity: dotOpacity.value,
+      opacity: dotScale.value,
       transform: [
         { translateX: positionX.value },
         { translateY: positionY.value + 10 }, // TODO temporary fix for clipped chart
         { scale: dotScale.value },
       ],
     }),
+    undefined,
     'dotStyle'
   );
 

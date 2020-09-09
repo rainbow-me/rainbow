@@ -56,37 +56,46 @@ export default function ChartPercentChangeLabel() {
     lastValue.value = data?.points?.[data.points.length - 1]?.y;
   }, [data, firstValue, lastValue]);
 
-  const textProps = useAnimatedStyle(() => {
-    return {
-      text:
-        firstValue.value === Number(firstValue.value) && firstValue.value
-          ? (() => {
-              const value =
-                ((nativeY.value || lastValue.value) / firstValue.value) * 100 -
-                100;
-              return (
-                (value > 0 ? '↑' : value < 0 ? '↓' : '') +
-                ' ' +
-                Math.abs(value).toFixed(2) +
-                '%'
-              );
-            })()
-          : '',
-    };
-  }, 'ChartPercentChangeLabelTextProps');
+  const textProps = useAnimatedStyle(
+    () => {
+      return {
+        text:
+          firstValue.value === Number(firstValue.value) && firstValue.value
+            ? (() => {
+                const value =
+                  ((nativeY.value || lastValue.value) / firstValue.value) *
+                    100 -
+                  100;
+                return (
+                  (value > 0 ? '↑' : value < 0 ? '↓' : '') +
+                  ' ' +
+                  Math.abs(value).toFixed(2) +
+                  '%'
+                );
+              })()
+            : '',
+      };
+    },
+    undefined,
+    'ChartPercentChangeLabelTextProps'
+  );
 
   const ratio = useRatio('ChartPercentChangeLabel');
 
-  const textStyle = useAnimatedStyle(() => {
-    return {
-      color:
-        ratio.value === 1
-          ? colors.blueGreyDark
-          : ratio.value < 1
-          ? colors.red
-          : colors.green,
-    };
-  }, 'ChartPercentChangeLabelTextStyle');
+  const textStyle = useAnimatedStyle(
+    () => {
+      return {
+        color:
+          ratio.value === 1
+            ? colors.blueGreyDark
+            : ratio.value < 1
+            ? colors.red
+            : colors.green,
+      };
+    },
+    undefined,
+    'ChartPercentChangeLabelTextStyle'
+  );
 
   return (
     <RowWithMargins align="center" margin={4}>
