@@ -93,7 +93,9 @@ const AddCashFailed = ({ error, resetAddCashForm }) => {
         <Emoji name="cry" size={50} />
       </Centered>
       {!isEmpty(errorMessage) ? (
-        <StatusMessageText>{errorMessage}</StatusMessageText>
+        <StatusMessageText>
+          {errorMessage.replace('PurchaseAmount', 'Purchase amount')}
+        </StatusMessageText>
       ) : (
         <StatusMessageText>
           Sorry, your purchase failed. <Br />
