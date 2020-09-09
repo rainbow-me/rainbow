@@ -1,4 +1,4 @@
-import { addExtremesIfNeeded } from '../helpers';
+import { addExtremesIfNeeded } from '../helpers/extremesHelpers';
 
 class BSpline {
   constructor(points, degree, copy) {

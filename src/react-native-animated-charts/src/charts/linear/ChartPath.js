@@ -6,10 +6,10 @@ import Animated, {
   // eslint-disable-next-line import/no-unresolved
 } from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
-import ChartContext from './ChartContext';
-import { svgBezierPath } from './smoothSVG';
-import useReactiveSharedValue from './useReactiveSharedValue';
-import withReanimatedFallback from './withReanimatedFallback';
+import ChartContext from '../../helpers/ChartContext';
+import useReactiveSharedValue from '../../helpers/useReactiveSharedValue';
+import withReanimatedFallback from '../../helpers/withReanimatedFallback';
+import { svgBezierPath } from '../../smoothing/smoothSVG';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 

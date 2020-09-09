@@ -39,7 +39,30 @@ yarn add react-native-haptic-feedback
 
 The library is verified on `2.0.0-alpha.6` version of reanimated.
 
+### Reanimated
+Using TurboModules might have an impact on your current development flow and most likely
+you don't want to decrease your DX. Since we're not using reanimated in other places in the app, we
+made some tweaks to disable charts in development mode with compilation macros on iOS. 
+You can find it [here](https://github.com/rainbow-me/rainbow/blob/develop/ios/Rainbow/AppDelegate.mm)
+
+Also, because we're using React Navigation which currently not supports reanimated 2,
+we [patched exports in reanimated](https://github.com/rainbow-me/rainbow/tree/develop/patches)
+
+Furthermore, we found few differences in how `Animated` module work with and without TurboModules support, so 
+we [made a trick](https://github.com/rainbow-me/rainbow/tree/develop/patches) to fallback to not-TM version of Animated. 
+
+Most likely, you don't need any of those patches.
+
 ## Example
+We made a generic example to show briefly what's possible to achieve with this library.
+Real-life example is available inside [Rainbow](https://github.com/rainbow-me)!
+
+In order to run an example clone this repo and navigate to `Example` then:
+```
+yarn && cd ios && pod install && cd ..
+react-native run-android
+react-native run-ios
+```
 
 ## API
 The library has been designed to provide as much flexibility as possible with the component-based API for easy integration with existing applications. 
@@ -49,10 +72,23 @@ The library has been designed to provide as much flexibility as possible with th
 ### ChartProvider
 The whole chart's structure has to be wrapped with `ChartProvider`. It's responsible for data managing and itself does not have a visual impact on the layout. Under the hood, it uses context API to simplify manipulation with other components. The rule is to use one data series for each wrapper. 
 
+| Prop name     | type       | default / obligatory   | description |
+|---------------|------------|------------------------|-------------|
+| softMargin    | `number`   | `0`                    |  While scrubbing the chart touching edges if the screen you may want make points on the edges more accessible. With `softMargin` it's possible to access points on edges doubling the speed of scrubbing beyond this margin.  |
+| enableHaptics | `boolean`  | `false`                |  On pressing in/out on the chart it might be expected to make a haptic feedback. It will happen with `enableHaptics` set to `true` and `react-native-haptic-feedback` installed    |
+| data          | <code>{ points: [Point], nativePoints: [Point], smoothingStrategy?: 'bezier'&#124;'simple'&#124;'complex', smoothingFactor  }<code/>   | obligatory  |   |
+|   |   |   |   |
+|   |   |   |   |
+|   |   |   |   |
+|   |   |   |   |
+|   |   |   |   |
 
+`adasf | asfsad`
 ### Candle Charts
  
 ### Pie charts
+
+
 
 
 

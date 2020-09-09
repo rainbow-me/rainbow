@@ -12,7 +12,7 @@ import {data1, data2} from './data';
 import {
   ChartDot,
   ChartPath,
-  ChartProvider,
+  ChartPathProvider,
   ChartXLabel,
   ChartYLabel,
   monotoneCubicInterpolation,
@@ -89,8 +89,8 @@ function GenericExample() {
     })();
     const data = {
       points: intepolatedData,
-      smoothing: smoothingStrategy === 'none' ? 0 : smoothingFactor,
-      strategy: smoothingStrategy,
+      smoothingFactor: smoothingStrategy === 'none' ? 0 : smoothingFactor,
+      smoothingStrategy,
     };
     setData(data);
   }, [
@@ -118,7 +118,7 @@ function GenericExample() {
         {/*<Text style={{color: 'white', fontWeight: 'bold'}}>*/}
         {/*  Generic Example (swipe right for a real-life example)*/}
         {/*</Text>*/}
-        <ChartProvider
+        <ChartPathProvider
           data={data}
           enableHaptics={enableHaptics}
           softMargin={softMargin}>
@@ -145,7 +145,7 @@ function GenericExample() {
             format={formatDatetime}
             style={{backgroundColor: 'black', color: 'red', margin: 4}}
           />
-        </ChartProvider>
+        </ChartPathProvider>
         <Text style={{color: 'white', fontWeight: 'bold'}}>Haptics:</Text>
         <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
           <TouchableOpacity onPress={() => setEnableHaptics(true)}>

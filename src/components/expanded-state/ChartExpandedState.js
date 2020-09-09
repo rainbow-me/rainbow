@@ -26,7 +26,7 @@ import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
 import { useNavigation } from '@rainbow-me/navigation';
 import {
-  ChartProvider,
+  ChartPathProvider,
   monotoneCubicInterpolation,
 } from 'react-native-animated-charts';
 
@@ -133,7 +133,7 @@ export default function ChartExpandedState({ asset }) {
   const [throttledData, setThrottledData] = useState({
     nativePoints: throttledPoints.nativePoints,
     points: throttledPoints.points,
-    strategy: 'bezier',
+    smoothingStrategy: 'bezier',
   });
 
   const debouncedSetThrottledData = useRef(debounce(setThrottledData, 30))
@@ -144,14 +144,14 @@ export default function ChartExpandedState({ asset }) {
       debouncedSetThrottledData({
         nativePoints: throttledPoints.nativePoints,
         points: throttledPoints.points,
-        strategy: 'bezier',
+        smoothingStrategy: 'bezier',
       });
     }
   }, [throttledPoints, fetchingCharts, debouncedSetThrottledData]);
 
   return (
     <SlackSheet contentHeight={params.longFormHeight} scrollEnabled={false}>
-      <ChartProvider data={throttledData} enableHaptics>
+      <ChartPathProvider data={throttledData} enableHaptics softMargin={30}>
         <Chart
           {...chartData}
           {...initialChartDataLabels}
@@ -164,7 +164,7 @@ export default function ChartExpandedState({ asset }) {
           showChart={showChart}
           throttledData={throttledData}
         />
-      </ChartProvider>
+      </ChartPathProvider>
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>

@@ -8,9 +8,9 @@ import {
   withTiming,
   // eslint-disable-next-line import/no-unresolved
 } from 'react-native-reanimated';
-import ChartContext from './ChartContext';
-import { findYExtremes } from './helpers';
-import useReactiveSharedValue from './useReactiveSharedValue';
+import ChartContext from '../../helpers/ChartContext';
+import { findYExtremes } from '../../helpers/extremesHelpers';
+import useReactiveSharedValue from '../../helpers/useReactiveSharedValue';
 
 function impactHeavy() {
   // eslint-disable-next-line import/no-extraneous-dependencies
@@ -93,10 +93,10 @@ function getValue(data, i, smoothingStrategy) {
   return data.value[i];
 }
 
-export default function ChartProvider({
+export default function ChartPathProvider({
   data: rawData,
   children,
-  softMargin = 30,
+  softMargin = 0,
   enableHaptics = false,
 }) {
   const prevData = useSharedValue([], 'prevData');
@@ -133,7 +133,7 @@ export default function ChartProvider({
   }, [rawData]);
 
   const smoothingStrategy = useReactiveSharedValue(
-    data.strategy,
+    data.smoothingStrategy,
     'smoothingStrategy'
   );
 

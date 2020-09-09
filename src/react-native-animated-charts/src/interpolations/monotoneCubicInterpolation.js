@@ -1,4 +1,4 @@
-import { addExtremesIfNeeded } from '../helpers';
+import { addExtremesIfNeeded } from '../helpers/extremesHelpers';
 
 export default function monotoneCubicInterpolation(data) {
   if (!data || data.length === 0) {
