@@ -19,6 +19,7 @@ export function useRatio(name) {
       firstValue.value === Number(firstValue.value)
         ? (nativeY.value || lastValue.value) / firstValue.value
         : 1,
+    undefined,
     name ? 'ratio_' + name : undefined
   );
 }

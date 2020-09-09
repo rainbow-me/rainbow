@@ -163,21 +163,29 @@ export default function ChartWrapper({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showLoadingState]);
 
-  const overlayStyle = useAnimatedStyle(() => {
-    return {
-      opacity: spinnerScale.value,
-    };
-  }, 'overlayStyle');
+  const overlayStyle = useAnimatedStyle(
+    () => {
+      return {
+        opacity: spinnerScale.value,
+      };
+    },
+    undefined,
+    'overlayStyle'
+  );
 
-  const spinnerStyle = useAnimatedStyle(() => {
-    return {
-      opacity: spinnerScale.value,
-      transform: [
-        { rotate: `${spinnerRotation.value}deg` },
-        { scale: spinnerScale.value },
-      ],
-    };
-  }, 'spinnerStyle');
+  const spinnerStyle = useAnimatedStyle(
+    () => {
+      return {
+        opacity: spinnerScale.value,
+        transform: [
+          { rotate: `${spinnerRotation.value}deg` },
+          { scale: spinnerScale.value },
+        ],
+      };
+    },
+    undefined,
+    'spinnerStyle'
+  );
 
   const timespan = invert(ChartTypes)[chartType];
   const formattedTimespan =
