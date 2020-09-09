@@ -5,7 +5,7 @@ The library provides a set of components and helpers for building complex and be
 The library was designed to create aesthetic, animated (so far only linear) charts based on a given input. 
 The main assumptions of the library were to create smooth transitions between subsequent data sets. For this reason,
 we have discovered a shortage of existing libraries related to the charts.
-The current package was created as part of the [Rainbow.me project](https://rainbow.me/) project and for this reason it was not designed as a complete and comprehensive solution for displaying various types of charts. However, we are now using more charts in the whole application, so we believe that the number of functionalities in the application will gradually grow. 
+The current package was created as part of the [Rainbow.me project](https://rainbow.me/) and for this reason it was not designed as a complete and comprehensive solution for displaying various types of charts. However, we are now using more charts in the whole application, so we believe that the number of functionalities in the application will gradually grow. 
 Additionally, we are open to new Pull Requests. We want this library to become popular and complete thanks to community activity.
 
 It's a part of the [Rainbow.me project](https://rainbow.me/). 
