@@ -67,28 +67,121 @@ react-native run-ios
 ## API
 The library has been designed to provide as much flexibility as possible with the component-based API for easy integration with existing applications. 
 
+## Sample
+```jsx
+
+```
+
 ### Linear charts
 
-### ChartProvider
+### `ChartPathProvider`
 The whole chart's structure has to be wrapped with `ChartProvider`. It's responsible for data managing and itself does not have a visual impact on the layout. Under the hood, it uses context API to simplify manipulation with other components. The rule is to use one data series for each wrapper. 
 
-| Prop name     | type       | default / obligatory   | description |
-|---------------|------------|------------------------|-------------|
-| softMargin    | `number`   | `0`                    |  While scrubbing the chart touching edges if the screen you may want make points on the edges more accessible. With `softMargin` it's possible to access points on edges doubling the speed of scrubbing beyond this margin.  |
-| enableHaptics | `boolean`  | `false`                |  On pressing in/out on the chart it might be expected to make a haptic feedback. It will happen with `enableHaptics` set to `true` and `react-native-haptic-feedback` installed    |
-| data          | <code>{ points: [Point], nativePoints: [Point], smoothingStrategy?: 'bezier'&#124;'simple'&#124;'complex', smoothingFactor  }<code/>   | obligatory  |   |
-|   |   |   |   |
-|   |   |   |   |
-|   |   |   |   |
-|   |   |   |   |
-|   |   |   |   |
+| Prop name       | type       | default / obligatory   | description |
+|-----------------|------------|------------------------|-------------|
+| `softMargin`    | `number`   | `0`                    |  While scrubbing the chart touching edges if the screen you may want make points on the edges more accessible. With `softMargin` it's possible to access points on edges doubling the speed of scrubbing beyond this margin.  |
+| `enableHaptics` | `boolean`  | `false`                |  On pressing in/out on the chart it might be expected to make a haptic feedback. It will happen with `enableHaptics` set to `true` and `react-native-haptic-feedback` installed    |
+| `data`          | <code>{ points: [Point], nativePoints: [Point], smoothingStrategy?: 'bezier'&#124;'simple'&#124;'complex', smoothingFactor  }<code/>   | obligatory  | Object containing data structure and way to display them. Each of the properties are explained below.  |
 
-`adasf | asfsad`
+- `data` is an array containing points to be displayed. `Point` is an object containing `x` and `y` as a number.
+- `nativeData` is an array of points which will not be drawn. However, if you used some strategy of interpolating data or simplifying you might want to present data slightly different from real one. Then if you'd like labels to be fully correct you may want provide real data before adjusting them.
+- `smoothingStrategy`. While presenting points path can be drawn with different approaches.  
+  - If `smoothingStrategy` is not provided, connects points using linear interpolation.
+  - `bezier` strategy connects points with bezier path inspired by [d3 shape](https://github.com/d3/d3-shape/blob/master/src/curve/basis.js). It's not parametrized by `smoothingFactor`.
+  - `complex` strategy uses approach explained [here](https://medium.com/@francoisromain/smooth-a-svg-path-with-cubic-bezier-curves-e37b49d46c74) using cubic splines. It's parametrized by `smoothingFactor`.
+  - `simple` strategy is a bit simplified `complex` strategy using quadratic splines. It's parametrized by `smoothingFactor`.
+- `smoothingFactor`. Is a value from `0` to `1` defining how smooth presentation should be. `0` means no smoothing, and it's the default. `smoothingFactor` has impact if `smoothingStrategy` is `simple` or `complex`.
+
+### `ChartPath`
+This component used for showing the path itself.
+
+| Prop name                            | type       | default / obligatory   | description |
+|--------------------------------------|------------|------------------------|-------------|
+| `disableSmoothingWhileTransitioning` | `number`   | `false`                | Although smoothing is not a complex computing, it might impact performance in some low-end deviced so while having a big set of data it might be worth to disable smoothing while transitioning.   |
+| `height`                             | `number`   | obligatory             | Height od the SVG canvas    |
+| `width`                              | `number`   | obligatory             | Width od the SVG canvas    |
+| `strokeWidth`                        | `number`   | `1`                    | Width of the path.  |
+| `strokeWidthSelected`                | `number`   | `1`                    | Width of the path selected.  |
+| `gestureEnabled`                     | `boolean`  | `true`                 | Defines if interaction with chart should be allowed or not  |
+| `longPressGestureHandlerProps`       | `object`   | `{maxDist: 100000, minDurationMs: 0, shouldCancelWhenOutside: false}`  | Under the hood we're using `LongPressGestureHandler` for handling interactions. It's recommended to not override its props. However, it might be useful while interacting with another GH. |
+| ...rest                              | `object`   | `{}`                   | Props applied to SVG [Path](https://github.com/react-native-community/react-native-svg#path). |
+
+
+### `ChartDot`
+Component for displaying the dot for scrubbing on the chart. 
+
+| Prop name    | type       | default | description |
+|--------------|------------|---------|-------------|
+| `size`       | `number`   | `10`    | Size of the dot.  |
+| ...props     | `object`   | `{}`    | Rest of the props applied to `Reanimated.View` including `style`   |
+
+### `ChartYLabel` & `ChartXLabel`
+Labels are useful while moving finger through the chart to show the exact value in given point. 
+
+| Prop name    | type                 | default  | description |
+|--------------|----------------------|----------|-------------|
+| `format`     | reanimated worklet   | `a => a` | Worklet for formatting data from the chart. It can be useful when you data is a timestamp or currency.  |
+| ...props     | `object`             | `{}`     | Rest of the props applied to `TextInput` including `style`   |
+
+
+
 ### Candle Charts
- 
+TODO
 ### Pie charts
+TODO
+
+## Helpers
+It's not essential in the library, but we have decide to include a lot of helpers we are (or we were) using for displaying charts.
+## Interpolations
+We have two interpolators which share the most of the API: `bSplineInterpolation` and `monotoneCubicInterpolation`.
+```js
+import { bSplineInterpolation as interpolator } from 'react-native-animated-charts';
+// import { monotoneCubicInterpolation as interpolator } from 'react-native-animated-charts';
+
+const interpolatedData = interpolator(data)(80, true, false);
+```
+
+Code above generates 80 equidistant points from given dataset.
+Interpolator (`monotoneCubicInterpolation` or `bSplineInterpolation`) returns generator.
+Generator accepts 3 arguments: `range`, `includeExtremes`, `removePointsSurroundingExtremes`.
+- `range` is number of points of the output.
+- `includeExtremes`. If it's vital to include extremes in the output, set to true. However, the data might not be fully equidistant. 
+- `removePointsSurroundingExtremes`. Makes sense only if `includeExtremes` set to `true`. When disabled, it might be possible that extremes looks very "pointy". To get rid of this, you can remove points surrounding extremes.
+E.g. 
+
+  - `removePointsSurroundingExtremes = false`
+
+       `o---------o----Min--o---------o---------o---------o---------o`
+  
+  - `removePointsSurroundingExtremes = true`
+  
+       `o--------------Min------------o---------o---------o---------o`
+
+### `bSplineInterpolation(data, degree = 3)`
+`bSplineInterpolation` is inspired by [victorian lib](https://github.com/networkcube/vistorian/blob/17e2be9b51267509ea67b5984421d8c03558d928/core/lib/BSpline.js)
+and uses [B-spline](https://en.wikipedia.org/wiki/B-spline) interpolation of given `degree`.
+
+### `monotoneCubicInterpolation(data, degree = 3)`
+`https://github.com/d3/d3-shape/blob/master/src/curve/monotone.js` is inspired by [d3 shape](https://github.com/d3/d3-shape/blob/master/src/curve/monotone.js).
+"Produces a cubic spline that preserves monotonicity in y, assuming monotonicity in x, as proposed by Steffen in A simple method for monotonic interpolation in one dimension: “a smooth curve with continuous first-order derivatives that passes through any given set of data points without spurious oscillations. Local extrema can occur only at grid points where they are given by the data, but not in between two adjacent grid points.”                                                                                                                                                                  
 
 
 
+## `simplifyData(data, pickRange = 10, includeExtremes = true)`
+This helper takes only one points per `pickRange`. Might be useful for very dense data. If it's important, it's possible to include extremes with the `includeExtremes` flag.
+E.g. 
+
+`pickRange = 3, includeExtremes = true`
+
+```
+X are equidistant in the example
+
+Y:0          1          7          2         -3          0          1          2
+  S----------o----------E----------X----------E----------o----------X----------o----------S
+```
+
+`S` – the first and the last points are always included.
+`E` – extremes.
+`X` - points picked because `index%3=0`
 
 

@@ -172,7 +172,6 @@ function ChartPath({
       maxDist={100000}
       minDurationMs={0}
       shouldCancelWhenOutside={false}
-      strokeLinejoin="round"
       {...longPressGestureHandlerProps}
       {...{ onGestureEvent: onLongPressGestureEvent }}
     >
