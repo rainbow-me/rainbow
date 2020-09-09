@@ -181,7 +181,7 @@ export default function ChartProvider({
   const timingConfig = {
     duration: 80,
   };
-  const isStarted = useReactiveSharedValue(false);
+  const isStarted = useReactiveSharedValue(false, 'isStarted');
 
   const onLongPressGestureEvent = useAnimatedGestureHandler({
     onActive: event => {
