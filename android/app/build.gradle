@@ -172,22 +172,22 @@ android {
         multiDexEnabled true
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        
+
         manifestPlaceholders = [
 		    BRANCH_KEY: "$System.env.BRANCH_KEY",
 	    ]
-        
+
         ndk {
             abiFilters 'armeabi-v7a', 'x86'
         }
-    
+
     }
 
     dexOptions {
         preDexLibraries true
         javaMaxHeapSize "2g" // Use gig increments depending on needs
         incremental true
-    } 
+    }
 
     splits {
         abi {
@@ -206,7 +206,7 @@ android {
         }
 
         def pass = getPassword("rainbow","rainbow-android-key")
-        
+
         release {
             storeFile file('../keystores/rainbow-key.keystore')
             storePassword pass
@@ -229,10 +229,12 @@ android {
     }
 
     packagingOptions {
-        pickFirst "lib/armeabi-v7a/libc++_shared.so"
-        pickFirst "lib/arm64-v8a/libc++_shared.so"
-        pickFirst "lib/x86/libc++_shared.so"
-        pickFirst "lib/x86_64/libc++_shared.so"
+        pickFirst '**/armeabi-v7a/libc++_shared.so'
+        pickFirst '**/x86/libc++_shared.so'
+        pickFirst '**/arm64-v8a/libc++_shared.so'
+        pickFirst '**/x86_64/libc++_shared.so'
+        pickFirst '**/x86/libjsc.so'
+        pickFirst '**/armeabi-v7a/libjsc.so'
     }
 
 
@@ -267,7 +269,7 @@ dependencies {
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
     }
-	
+
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
@@ -278,7 +280,7 @@ dependencies {
     }
 
     // DETOX
-    androidTestImplementation('com.wix:detox:+') { transitive = true } 
+    androidTestImplementation('com.wix:detox:+') { transitive = true }
     androidTestImplementation 'junit:junit:4.12'
 }
 
