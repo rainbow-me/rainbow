@@ -33,9 +33,11 @@ const CenteredLabel = ({ position, style, width, ...props }) => {
   const left = useMemo(
     () =>
       Math.max(
-        Math.min(
-          width * position - componentWidth / 2,
-          width - componentWidth - 10
+        Math.floor(
+          Math.min(
+            width * position - componentWidth / 2,
+            width - componentWidth - 10
+          )
         ),
         10
       ),
