@@ -233,6 +233,9 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var panScrollable: UIScrollView? {
+    if !self.config?.interactWithScrollView {
+      return nil
+    }
     return findChildScrollViewDFS(view: self.view!)
   }
 
