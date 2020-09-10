@@ -199,6 +199,9 @@ export const walletInit = async (
 
 export const loadWallet = async (): Promise<null | Wallet> => {
   const privateKey = await loadPrivateKey();
+  if (privateKey === -1) {
+    return null;
+  }
   if (privateKey) {
     return new ethers.Wallet(privateKey, web3Provider);
   }
@@ -374,13 +377,13 @@ export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> =>
   const seedPhrase = await keychain.loadString(seedPhraseKey, {
     authenticationPrompt,
   });
-  return seedPhrase;
+  return seedPhrase as string | null;
 };
 
 export const loadAddress = (): Promise<null | EthereumAddress> =>
-  keychain.loadString(addressKey);
+  keychain.loadString(addressKey) as Promise<string | null>;
 
-const loadPrivateKey = async (): Promise<null | EthereumPrivateKey> => {
+const loadPrivateKey = async (): Promise<null | EthereumPrivateKey | -1> => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
       oldSeedPhraseMigratedKey
@@ -400,6 +403,9 @@ const loadPrivateKey = async (): Promise<null | EthereumPrivateKey> => {
         return null;
       }
       const privateKeyData = await getPrivateKey(address);
+      if (privateKeyData === -1) {
+        return -1;
+      }
       privateKey = get(privateKeyData, 'privateKey', null);
     }
 
@@ -719,7 +725,7 @@ export const savePrivateKey = async (
 
 export const getPrivateKey = async (
   address: EthereumAddress
-): Promise<null | PrivateKeyData> => {
+): Promise<null | PrivateKeyData | -1> => {
   try {
     const key = `${address}_${privateKeyKey}`;
     const pkey = (await keychain.loadObject(key, {
