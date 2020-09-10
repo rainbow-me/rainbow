@@ -1,9 +1,23 @@
 import { Interface } from '@ethersproject/abi';
 import { ChainId, Token, WETH } from '@uniswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
-import { DAI_ADDRESS, USDC_ADDRESS } from '../';
+import { map, toLower } from 'lodash';
+import { DAI_ADDRESS, tokenOverrides, USDC_ADDRESS } from '../';
+import { default as UNISWAP_V1_EXCHANGE_ABI } from './uniswap-exchange-abi.json';
 import MULTICALL_ABI from './uniswap-multicall-abi.json';
+// TODO JIN - update the testnet curated token list json
+import { default as UNISWAP_TESTNET_TOKEN_LIST } from './uniswap-pairs-testnet.json';
+import UNISWAP_TOKEN_LIST from './uniswap-token-list.json';
 import { abi as UNISWAP_V2_ROUTER_ABI } from './uniswap-v2-router.json';
+
+const CURATED_UNISWAP_TOKEN_LIST = map(UNISWAP_TOKEN_LIST['tokens'], token => {
+  const address = toLower(token.address);
+  return {
+    ...token,
+    ...tokenOverrides[address],
+    address,
+  };
+});
 
 const UNISWAP_V2_ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D';
 
@@ -36,11 +50,15 @@ const MULTICALL_NETWORKS: { [chainId in ChainId]: string } = {
 };
 
 export {
+  CURATED_UNISWAP_TOKEN_LIST,
   MULTICALL_ABI,
   MULTICALL_NETWORKS,
   PAIR_GET_RESERVES_CALL_DATA,
   PAIR_GET_RESERVES_FRAGMENT,
   PAIR_INTERFACE,
+  UNISWAP_TESTNET_TOKEN_LIST,
+  UNISWAP_TOKEN_LIST,
+  UNISWAP_V1_EXCHANGE_ABI,
   UNISWAP_V2_BASES,
   UNISWAP_V2_ROUTER_ABI,
   UNISWAP_V2_ROUTER_ADDRESS,

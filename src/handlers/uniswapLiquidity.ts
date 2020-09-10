@@ -7,7 +7,8 @@ import {
   fromWei,
   multiply,
 } from '../helpers/utilities';
-import { erc20ABI, exchangeABI } from '../references';
+import { erc20ABI } from '../references';
+import { UNISWAP_V1_EXCHANGE_ABI } from '../references/uniswap';
 import { web3Provider } from './web3';
 import logger from 'logger';
 
@@ -20,7 +21,11 @@ export const getLiquidityInfo = async (
   const promises = map(exchangeContracts, async exchangeAddress => {
     try {
       const ethReserveCall = web3Provider.getBalance(exchangeAddress);
-      const exchange = new Contract(exchangeAddress, exchangeABI, web3Provider);
+      const exchange = new Contract(
+        exchangeAddress,
+        UNISWAP_V1_EXCHANGE_ABI,
+        web3Provider
+      );
       const tokenAddressCall = exchange.tokenAddress();
       const balanceCall = exchange.balanceOf(accountAddress);
       const totalSupplyCall = exchange.totalSupply();

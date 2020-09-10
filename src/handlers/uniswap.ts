@@ -20,11 +20,13 @@ import {
   convertNumberToString,
 } from '../helpers/utilities';
 import { loadWallet } from '../model/wallet';
-import { ethUnits, uniswapTestnetAssets } from '../references';
+import { ethUnits } from '../references';
 import {
+  UNISWAP_TESTNET_TOKEN_LIST,
   UNISWAP_V2_ROUTER_ADDRESS,
   uniswapV2RouterABI,
 } from '../references/uniswap';
+
 import { toHex, web3Provider } from './web3';
 import logger from 'logger';
 
@@ -51,7 +53,7 @@ const INITIAL_ALLOWED_SLIPPAGE = 50;
 const DEFAULT_DEADLINE_FROM_NOW = 60 * 20;
 
 export const getTestnetUniswapPairs = network => {
-  const pairs = get(uniswapTestnetAssets, network, {});
+  const pairs = get(UNISWAP_TESTNET_TOKEN_LIST, network, {});
   const loweredPairs = mapKeys(pairs, (_, key) => toLower(key));
   return mapValues(loweredPairs, value => ({
     ...value,
@@ -336,7 +338,7 @@ export const executeSwap = async ({
   return exchange[methodName](...updatedMethodArgs, transactionParams);
 };
 
-export const getChart = async (exchangeAddress, timeframe) => {
+export const getChart = async (assetAddress, timeframe) => {
   const now = new Date();
   const timeframeKey = findKey(ChartTypes, type => type === timeframe);
   let startTime = getUnixTime(
@@ -357,8 +359,8 @@ export const getChart = async (exchangeAddress, timeframe) => {
           fetchPolicy: 'cache-first',
           query: UNISWAP_CHART_QUERY,
           variables: {
+            assetAddress,
             date: startTime,
-            exchangeAddress,
           },
         })
         .then(({ data: { exchangeDayDatas } }) =>

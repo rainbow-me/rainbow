@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { Contract } from '@ethersproject/contracts';
 import {
   convertAmountToBalanceDisplay,
   convertRawAmountToDecimalFormat,
@@ -21,7 +21,7 @@ async function getOnchainTokenBalance(
   userAddress
 ) {
   try {
-    const tokenContract = new ethers.Contract(address, erc20ABI, web3Provider);
+    const tokenContract = new Contract(address, erc20ABI, web3Provider);
     const balance = await tokenContract.balanceOf(userAddress);
     const tokenBalance = convertRawAmountToDecimalFormat(balance, decimals);
     const displayBalance = convertAmountToBalanceDisplay(tokenBalance, {
