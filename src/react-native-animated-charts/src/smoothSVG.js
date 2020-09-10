@@ -24,7 +24,17 @@ const controlPoint = (current, previous, next, reverse, smoothing) => {
 
 export const svgBezierPath = (points, smoothing, strategy = 'complex') => {
   'worklet';
-  const traversed = points.map(p => [p.x, p.y]);
+  let traversed = points.map(p => [p.x, p.y]);
+  if (traversed.length > 30) {
+    traversed = traversed.reduce((acc, el, i, a) => {
+      if ([0, 1, a.length - 2, a.length - 1].includes(i)) {
+        acc.push(el);
+      }
+      acc.push(el);
+      return acc;
+    }, []);
+  }
+
   // build the d attributes by looping over the points
   return traversed.reduce((acc, point, i, a) => {
     if (i === 0) {
@@ -58,9 +68,6 @@ export const svgBezierPath = (points, smoothing, strategy = 'complex') => {
         const cp2y = (y0 + 2 * y1) / 3;
         const cp3x = (x0 + 4 * x1 + x) / 6;
         const cp3y = (y0 + 4 * y1 + y) / 6;
-        if (i === a.length - 1) {
-          return `${acc} C ${cp1x},${cp1y} ${cp2x},${cp2y} ${cp3x},${cp3y} C${x},${y} ${x},${y} ${x},${y}`;
-        }
         return `${acc} C ${cp1x},${cp1y} ${cp2x},${cp2y} ${cp3x},${cp3y}`;
       }
       return null;
