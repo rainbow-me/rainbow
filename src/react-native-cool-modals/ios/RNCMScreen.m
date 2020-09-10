@@ -50,7 +50,6 @@
     _backgroundOpacity = [[NSNumber alloc] initWithDouble:0.7];
     _dismissable = YES;
     _ignoreBottomOffset = NO;
-    _interactWithScrollView = true;
   }
   
   return self;
@@ -420,7 +419,6 @@ RCT_EXPORT_VIEW_PROPERTY(gestureEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showDragIndicator, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(customStack, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(dismissable, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(interactWithScrollView, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(topOffset, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(cornerRadius, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(stackPresentation, RNSScreenStackPresentation)

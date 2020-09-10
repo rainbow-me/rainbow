@@ -2,7 +2,7 @@ import React from 'react';
 import Animated, { min, sub } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { useMemoOne } from 'use-memo-one';
-import { scrollPosition } from '../../navigation/ScrollPagerWrapper';
+import { scrollPosition } from '../../navigation/helpers';
 
 const Dim = styled(Animated.View)`
   flex: 1;

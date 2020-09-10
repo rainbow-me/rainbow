@@ -239,7 +239,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
-        options={{ ...nativeStackDefaultConfig, interactWithScrollView: false }}
+        options={nativeStackDefaultConfig}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}
