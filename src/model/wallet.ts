@@ -1,10 +1,5 @@
 import { arrayify, Hexable, joinSignature } from '@ethersproject/bytes';
-import {
-  entropyToMnemonic,
-  fromMnemonic,
-  fromSeed,
-  HDNode,
-} from '@ethersproject/hdnode';
+import { entropyToMnemonic, HDNode } from '@ethersproject/hdnode';
 import { randomBytes } from '@ethersproject/random';
 import { SigningKey } from '@ethersproject/signing-key';
 import { Wallet } from '@ethersproject/wallet';
@@ -470,11 +465,11 @@ export const getWallet = (
       wallet = new Wallet(walletSeed);
       break;
     case EthereumWalletType.mnemonic:
-      hdnode = fromMnemonic(walletSeed);
+      hdnode = HDNode.fromMnemonic(walletSeed);
       isHDWallet = true;
       break;
     case EthereumWalletType.seed:
-      hdnode = fromSeed(walletSeed);
+      hdnode = HDNode.fromSeed(walletSeed);
       isHDWallet = true;
       break;
     case EthereumWalletType.readOnly:
@@ -842,7 +837,7 @@ export const generateAccount = async (
       const seedData = await getSeedPhrase(id);
       seedphrase = seedData?.seedphrase;
       if (seedphrase) {
-        hdnode = fromMnemonic(seedphrase);
+        hdnode = HDNode.fromMnemonic(seedphrase);
       }
     }
 
@@ -896,10 +891,10 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
         existingAccount = new Wallet(seedphrase);
         break;
       case EthereumWalletType.mnemonic:
-        hdnode = fromMnemonic(seedphrase);
+        hdnode = HDNode.fromMnemonic(seedphrase);
         break;
       case EthereumWalletType.seed:
-        hdnode = fromSeed(seedphrase);
+        hdnode = HDNode.fromSeed(seedphrase);
         break;
       default:
     }

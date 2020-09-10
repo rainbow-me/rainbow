@@ -1,11 +1,13 @@
 import { getAddress } from '@ethersproject/address';
 import {
-  isValidMnemonic as ethersIsValidMnemonic,
   hexlify,
   isHexString as isEthersHexString,
 } from '@ethersproject/bytes';
+import {
+  isValidMnemonic as ethersIsValidMnemonic,
+  mnemonicToSeed as ethersMnemonicToSeed,
+} from '@ethersproject/hdnode';
 
-import { mnemonicToSeed as ethersMnemonicToSeed } from '@ethersproject/hdnode';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import { get, replace, startsWith } from 'lodash';
@@ -27,7 +29,8 @@ const infuraUrl = `https://network.infura.io/v3/${infuraProjectId}`;
  * @desc web3 http instance
  */
 export let web3Provider = new JsonRpcProvider(
-  replace(infuraUrl, 'network', NetworkTypes.mainnet)
+  replace(infuraUrl, 'network', NetworkTypes.mainnet),
+  NetworkTypes.mainnet
 );
 
 /**
@@ -38,7 +41,10 @@ export const web3SetHttpProvider = async network => {
   if (network.startsWith('http://')) {
     web3Provider = new JsonRpcProvider(network);
   } else {
-    web3Provider = new JsonRpcProvider(replace(infuraUrl, 'network', network));
+    web3Provider = new JsonRpcProvider(
+      replace(infuraUrl, 'network', network),
+      network
+    );
   }
   return web3Provider.ready;
 };
