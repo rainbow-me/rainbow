@@ -3,6 +3,7 @@ import {
   entropyToMnemonic,
   fromMnemonic,
   fromSeed,
+  HDNode,
 } from '@ethersproject/hdnode';
 import { randomBytes } from '@ethersproject/random';
 import { SigningKey } from '@ethersproject/signing-key';
@@ -10,9 +11,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { isValidAddress, toBuffer } from 'ethereumjs-util';
-import { ethers } from 'ethers'; // TODO JIN - remove usage
-// TODO JIN - typings from ethers upgrade
-import { Arrayish, BigNumberish, HDNode, Transaction } from 'ethers/utils';
+// TODO JIN - typings from ethers upgrade - Arrayish, BigNumberish, Transaction
 import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
@@ -98,7 +97,7 @@ interface ReadOnlyWallet {
 }
 
 interface EthereumWalletFromSeed {
-  hdnode: null | HDNode.HDNode;
+  hdnode: null | HDNode;
   isHDWallet: boolean;
   wallet: null | EthereumWallet;
   type: EthereumWalletType;
@@ -152,7 +151,7 @@ interface SeedPhraseData {
 }
 
 interface MigratedSecretsResult {
-  hdnode: undefined | HDNode.HDNode;
+  hdnode: undefined | HDNode;
   privateKey: EthereumPrivateKey;
   seedphrase: EthereumWalletSeed;
   type: EthereumWalletType;
@@ -888,8 +887,8 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     logger.sentry('Got secret, now idenfifying wallet type');
     const type = identifyWalletType(seedphrase);
     logger.sentry('Got type: ', type);
-    let hdnode: undefined | ethers.utils.HDNode.HDNode,
-      node: undefined | ethers.utils.HDNode.HDNode,
+    let hdnode: undefined | HDNode,
+      node: undefined | HDNode,
       existingAccount: undefined | Wallet;
     // TODO JIN - repeated?
     switch (type) {

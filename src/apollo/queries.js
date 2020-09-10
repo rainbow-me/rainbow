@@ -56,9 +56,9 @@ export const UNISWAP_PRICES_QUERY = gql`
 `;
 
 export const UNISWAP_CHART_QUERY = gql`
-  query tokenDayDatas($date: Int!, $exchangeAddress: String!) {
+  query tokenDayDatas($date: Int!, $assetAddress: String!) {
     tokenDayDatas(
-      where: { id: $exchangeAddress, date_gt: $date }
+      where: { token_contains: $assetAddress, date_gt: $date }
       orderBy: date
       orderDirection: asc
     ) {
