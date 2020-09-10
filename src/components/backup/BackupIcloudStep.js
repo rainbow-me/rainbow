@@ -133,7 +133,7 @@ const GreenCheckmarkIcon = () => (
 const TopIcon = () => (
   <GradientText
     angle={false}
-    colors={['#FFB114', '#FF54BB', '#7EA4DE']}
+    colors={colors.gradients.rainbow}
     end={{ x: 0, y: 0.5 }}
     start={{ x: 1, y: 0.5 }}
     steps={[0, 0.774321, 1]}

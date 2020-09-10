@@ -10,7 +10,7 @@ import { magicMemo } from '@rainbow-me/utils';
 const RainbowGradientColors = {
   inner: {
     addCash: ['#FFB114', '#FF54BB', '#00F0FF'],
-    default: ['#FFB114', '#FF54BB', '#7EA4DE'],
+    default: colors.gradients.rainbow,
     disabled: ['#B0B3B9', '#B0B3B9', '#B0B3B9'],
   },
   outer: {
