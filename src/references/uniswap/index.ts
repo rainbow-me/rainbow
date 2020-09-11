@@ -1,7 +1,7 @@
 import { Interface } from '@ethersproject/abi';
 import { ChainId, Token, WETH } from '@uniswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
-import { map, toLower } from 'lodash';
+import { keyBy, map, toLower } from 'lodash';
 import { DAI_ADDRESS, tokenOverrides, USDC_ADDRESS } from '../';
 import { default as UNISWAP_V1_EXCHANGE_ABI } from './uniswap-exchange-abi.json';
 import MULTICALL_ABI from './uniswap-multicall-abi.json';
@@ -18,6 +18,8 @@ const CURATED_UNISWAP_TOKEN_LIST = map(UNISWAP_TOKEN_LIST['tokens'], token => {
     address,
   };
 });
+
+const CURATED_UNISWAP_TOKENS = keyBy(CURATED_UNISWAP_TOKEN_LIST, 'address');
 
 const UNISWAP_V2_ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D';
 
@@ -50,7 +52,7 @@ const MULTICALL_NETWORKS: { [chainId in ChainId]: string } = {
 };
 
 export {
-  CURATED_UNISWAP_TOKEN_LIST,
+  CURATED_UNISWAP_TOKENS,
   MULTICALL_ABI,
   MULTICALL_NETWORKS,
   PAIR_GET_RESERVES_CALL_DATA,
