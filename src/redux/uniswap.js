@@ -7,7 +7,7 @@ import {
 import { getAllTokens, getTestnetUniswapPairs } from '../handlers/uniswap';
 import networkTypes from '../helpers/networkTypes';
 import { DefaultUniswapFavorites } from '../references';
-import { CURATED_UNISWAP_TOKEN_LIST } from '../references/uniswap';
+import { CURATED_UNISWAP_TOKENS } from '../references/uniswap';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';
@@ -61,7 +61,7 @@ export const uniswapPairsInit = () => (dispatch, getState) => {
   const { network } = getState().settings;
   const pairs =
     network === networkTypes.mainnet
-      ? CURATED_UNISWAP_TOKEN_LIST
+      ? CURATED_UNISWAP_TOKENS
       : getTestnetUniswapPairs(network);
   dispatch({
     payload: pairs,
@@ -97,7 +97,7 @@ export const INITIAL_UNISWAP_STATE = {
   fetchingUniswap: false,
   isInitialized: false,
   loadingUniswap: false,
-  pairs: CURATED_UNISWAP_TOKEN_LIST,
+  pairs: CURATED_UNISWAP_TOKENS,
 };
 
 export default (state = INITIAL_UNISWAP_STATE, action) =>

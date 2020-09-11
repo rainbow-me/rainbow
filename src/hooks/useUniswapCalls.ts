@@ -1,4 +1,4 @@
-import { ChainId, Pair } from '@uniswap/sdk';
+import { ChainId, Pair, Token, WETH } from '@uniswap/sdk';
 import { filter, flatMap, map, toLower, uniqBy } from 'lodash';
 import { useMemo } from 'react';
 import {
@@ -8,8 +8,24 @@ import {
 
 import useAccountSettings from './useAccountSettings';
 
+const getTokenForCurrency = (currency, chainId) => {
+  if (!currency) return null;
+  if (currency.address === 'eth') return WETH[chainId];
+  return new Token(chainId, currency.address, currency.decimals);
+};
+
 export default function useUniswapCalls(inputCurrency, outputCurrency) {
   const { chainId } = useAccountSettings();
+
+  const inputToken: Token = useMemo(
+    () => getTokenForCurrency(inputCurrency, chainId),
+    [chainId, inputCurrency]
+  );
+
+  const outputToken: Token | null = useMemo(
+    () => getTokenForCurrency(outputCurrency, chainId),
+    [chainId, outputCurrency]
+  );
 
   const bases = useMemo(() => {
     const basebase = UNISWAP_V2_BASES[chainId as ChainId] ?? [];
@@ -17,18 +33,18 @@ export default function useUniswapCalls(inputCurrency, outputCurrency) {
   }, [chainId]);
 
   const allPairCombinations = useMemo(() => {
-    if (!inputCurrency || !outputCurrency) return [];
+    if (!inputToken || !outputToken) return [];
     const combos = [
       // the direct pair
-      [inputCurrency, outputCurrency],
+      [inputToken, outputToken],
       // token A against all bases
       ...bases.map((base): [Token | undefined, Token | undefined] => [
-        inputCurrency,
+        inputToken,
         base,
       ]),
       // token B against all bases
       ...bases.map((base): [Token | undefined, Token | undefined] => [
-        outputCurrency,
+        outputToken,
         base,
       ]),
       // each base against all bases
@@ -39,19 +55,19 @@ export default function useUniswapCalls(inputCurrency, outputCurrency) {
 
     let validCombos = filter(
       combos,
-      ([inputCurrency, outputCurrency]) =>
-        inputCurrency && outputCurrency && !inputCurrency.equals(outputCurrency)
+      ([inputToken, outputToken]) =>
+        inputToken && outputToken && !inputToken.equals(outputToken)
     );
 
-    const uniqCombos = uniqBy(validCombos, ([inputCurrency, outputCurrency]) =>
-      toLower(Pair.getAddress(inputCurrency, outputCurrency))
+    const uniqCombos = uniqBy(validCombos, ([inputToken, outputToken]) =>
+      toLower(Pair.getAddress(inputToken, outputToken))
     );
     return uniqCombos;
-  }, [bases, inputCurrency, outputCurrency]);
+  }, [bases, inputToken, outputToken]);
 
   const pairAddresses = useMemo(() => {
-    return map(allPairCombinations, ([inputCurrency, outputCurrency]) =>
-      toLower(Pair.getAddress(inputCurrency, outputCurrency))
+    return map(allPairCombinations, ([inputToken, outputToken]) =>
+      toLower(Pair.getAddress(inputToken, outputToken))
     );
   }, [allPairCombinations]);
 
