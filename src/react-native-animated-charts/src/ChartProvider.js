@@ -72,7 +72,7 @@ function positionXWithMargin(x, margin, width) {
 function getValue(data, i, smoothingStrategy) {
   'worklet';
   if (smoothingStrategy.value === 'bezier') {
-    if (data.value.length > 30 && [data.value.length - 1, 0].includes(i)) {
+    if (i === 0) {
       return data.value[i];
     }
 
@@ -220,7 +220,7 @@ export default function ChartProvider({
       if (
         ss.value === 'bezier' &&
         currData.value.length > 30 &&
-        eventX / size.value.width > currData.value[currData.value.length - 2].x
+        eventX / size.value.width >= currData.value[currData.value.length - 2].x
       ) {
         const prevLastY = currData.value[currData.value.length - 2].y;
         const prevLastX = currData.value[currData.value.length - 2].x;
