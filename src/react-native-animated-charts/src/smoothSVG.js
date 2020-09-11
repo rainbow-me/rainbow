@@ -27,7 +27,7 @@ export const svgBezierPath = (points, smoothing, strategy = 'complex') => {
   let traversed = points.map(p => [p.x, p.y]);
   if (traversed.length > 30) {
     traversed = traversed.reduce((acc, el, i, a) => {
-      if ([0, 1, a.length - 2, a.length - 1].includes(i)) {
+      if ([0, a.length - 1, a.length - 2].includes(i)) {
         acc.push(el);
       }
       acc.push(el);
