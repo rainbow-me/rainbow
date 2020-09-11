@@ -48,14 +48,14 @@ You can find it [here](https://github.com/rainbow-me/rainbow/blob/develop/ios/Ra
 Also, because we're using React Navigation which currently not supports reanimated 2,
 we [patched exports in reanimated](https://github.com/rainbow-me/rainbow/tree/develop/patches)
 
-Furthermore, we found few differences in how `Animated` module work with and without TurboModules support, so 
-we [made a trick](https://github.com/rainbow-me/rainbow/tree/develop/patches) to fallback to not-TM version of Animated. 
+Furthermore, we found few differences in how the `Animated` module works with and without TurboModules support, so 
+we [made a trick](https://github.com/rainbow-me/rainbow/tree/develop/patches) to fallback to the not-TM version of Animated. 
 
 Most likely, you don't need any of those patches.
 
 ## Example
 We made a generic example to show briefly what's possible to achieve with this library.
-Real-life example is available inside [Rainbow](https://github.com/rainbow-me)!
+A Real-life example is available inside [Rainbow](https://github.com/rainbow-me)!
 
 In order to run an example clone this repo and navigate to `Example` then:
 ```
@@ -79,21 +79,21 @@ The whole chart's structure has to be wrapped with `ChartProvider`. It's respons
 
 | Prop name       | type       | default / obligatory   | description |
 |-----------------|------------|------------------------|-------------|
-| `softMargin`    | `number`   | `0`                    |  While scrubbing the chart touching edges if the screen you may want make points on the edges more accessible. With `softMargin` it's possible to access points on edges doubling the speed of scrubbing beyond this margin.  |
-| `enableHaptics` | `boolean`  | `false`                |  On pressing in/out on the chart it might be expected to make a haptic feedback. It will happen with `enableHaptics` set to `true` and `react-native-haptic-feedback` installed    |
-| `data`          | <code>{ points: [Point], nativePoints: [Point], smoothingStrategy?: 'bezier'&#124;'simple'&#124;'complex', smoothingFactor  }<code/>   | obligatory  | Object containing data structure and way to display them. Each of the properties are explained below.  |
+| `softMargin`    | `number`   | `0`                    |  While scrubbing the chart touching edges of the screen you may want make points on the edges more accessible. With `softMargin` it's possible to access points on edges doubling the speed of scrubbing beyond this margin.  |
+| `enableHaptics` | `boolean`  | `false`                |  On pressing in/out on the chart it might be expected to make haptic feedback. It will happen with `enableHaptics` set to `true` and `react-native-haptic-feedback` installed    |
+| `data`          | <code>{ points: [Point], nativePoints: [Point], smoothingStrategy?: 'bezier'&#124;'simple'&#124;'complex', smoothingFactor  }<code/>   | obligatory  | Object containing data structure and way to display them. Each of the properties is explained below.  |
 
-- `data` is an array containing points to be displayed. `Point` is an object containing `x` and `y` as a number.
-- `nativeData` is an array of points which will not be drawn. However, if you used some strategy of interpolating data or simplifying you might want to present data slightly different from real one. Then if you'd like labels to be fully correct you may want provide real data before adjusting them.
+- `data` is an array containing points to be displayed. A `Point` is an object containing `x` and `y` as a number.
+- `nativeData` is an array of points that will not be drawn. However, if you used some strategy of interpolating data or simplifying you might want to present data slightly different from the real one. Then if you'd like labels to be fully correct you may want to provide real data before adjusting them.
 - `smoothingStrategy`. While presenting points path can be drawn with different approaches.  
   - If `smoothingStrategy` is not provided, connects points using linear interpolation.
-  - `bezier` strategy connects points with bezier path inspired by [d3 shape](https://github.com/d3/d3-shape/blob/master/src/curve/basis.js). It's not parametrized by `smoothingFactor`.
-  - `complex` strategy uses approach explained [here](https://medium.com/@francoisromain/smooth-a-svg-path-with-cubic-bezier-curves-e37b49d46c74) using cubic splines. It's parametrized by `smoothingFactor`.
-  - `simple` strategy is a bit simplified `complex` strategy using quadratic splines. It's parametrized by `smoothingFactor`.
-- `smoothingFactor`. Is a value from `0` to `1` defining how smooth presentation should be. `0` means no smoothing, and it's the default. `smoothingFactor` has impact if `smoothingStrategy` is `simple` or `complex`.
+  - The `bezier` strategy connects points with a bezier path inspired by [d3 shape](https://github.com/d3/d3-shape/blob/master/src/curve/basis.js). It's not parametrized by `smoothingFactor`.
+  - The `complex` strategy uses approach explained [here](https://medium.com/@francoisromain/smooth-a-svg-path-with-cubic-bezier-curves-e37b49d46c74) using cubic splines. It's parametrized by `smoothingFactor`.
+  - The `simple` strategy is a bit simplified `complex` strategy using quadratic splines. It's parametrized by `smoothingFactor`.
+- `smoothingFactor`. Is a value from `0` to `1` defining how smooth a presentation should be. `0` means no smoothing, and it's the default. `smoothingFactor` has an impact if `smoothingStrategy` is `simple` or `complex`.
 
 ### `ChartPath`
-This component used for showing the path itself.
+This component is used for showing the path itself.
 
 | Prop name                            | type       | default / obligatory   | description |
 |--------------------------------------|------------|------------------------|-------------|
