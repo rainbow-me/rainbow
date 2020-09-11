@@ -21,6 +21,7 @@ function ChartPath({
   strokeWidthSelected = 1,
   strokeWidth = 1,
   gestureEnabled = true,
+  style,
   ...props
 }) {
   const disableSmoothingWhileTransitioningValue = useReactiveSharedValue(
@@ -157,17 +158,25 @@ function ChartPath({
     'ChartPathPath'
   );
 
-  const animatedStyle = useAnimatedStyle(
+  const animatedProps = useAnimatedStyle(
     () => {
       return {
         d: path.value,
         strokeWidth:
           pathOpacity.value *
-            (strokeWidthValue.value - strokeWidthSelectedValue.value) +
-          strokeWidthSelectedValue.value,
-        style: {
-          opacity: pathOpacity.value * 0.3 + 0.7,
-        },
+            (Number(strokeWidthValue.value) -
+              Number(strokeWidthSelectedValue.value)) +
+          Number(strokeWidthSelectedValue.value),
+      };
+    },
+    undefined,
+    'ChartPathAnimateProps'
+  );
+
+  const animatedStyle = useAnimatedStyle(
+    () => {
+      return {
+        opacity: pathOpacity.value * 0.3 + 0.7,
       };
     },
     undefined,
@@ -189,7 +198,11 @@ function ChartPath({
           viewBox={`0 0 ${width} ${height}`}
           width={width}
         >
-          <AnimatedPath animatedProps={animatedStyle} {...props} />
+          <AnimatedPath
+            animatedProps={animatedProps}
+            {...props}
+            style={[style, animatedStyle]}
+          />
         </Svg>
       </Animated.View>
     </LongPressGestureHandler>
