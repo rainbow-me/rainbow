@@ -97,12 +97,12 @@ This component is used for showing the path itself.
 
 | Prop name                            | type       | default / obligatory   | description |
 |--------------------------------------|------------|------------------------|-------------|
-| `disableSmoothingWhileTransitioning` | `number`   | `false`                | Although smoothing is not a complex computing, it might impact performance in some low-end deviced so while having a big set of data it might be worth to disable smoothing while transitioning.   |
+| `disableSmoothingWhileTransitioning` | `number`   | `false`                | Although smoothing is not complex computing, it might impact performance in some low-end devices so while having a big set of data it might be worth disable smoothing while transitioning.   |
 | `height`                             | `number`   | obligatory             | Height od the SVG canvas    |
 | `width`                              | `number`   | obligatory             | Width od the SVG canvas    |
 | `strokeWidth`                        | `number`   | `1`                    | Width of the path.  |
 | `strokeWidthSelected`                | `number`   | `1`                    | Width of the path selected.  |
-| `gestureEnabled`                     | `boolean`  | `true`                 | Defines if interaction with chart should be allowed or not  |
+| `gestureEnabled`                     | `boolean`  | `true`                 | Defines if interaction with the chart should be allowed or not  |
 | `longPressGestureHandlerProps`       | `object`   | `{maxDist: 100000, minDurationMs: 0, shouldCancelWhenOutside: false}`  | Under the hood we're using `LongPressGestureHandler` for handling interactions. It's recommended to not override its props. However, it might be useful while interacting with another GH. |
 | ...rest                              | `object`   | `{}`                   | Props applied to SVG [Path](https://github.com/react-native-community/react-native-svg#path). |
 
@@ -120,7 +120,7 @@ Labels are useful while moving finger through the chart to show the exact value 
 
 | Prop name    | type                 | default  | description |
 |--------------|----------------------|----------|-------------|
-| `format`     | reanimated worklet   | `a => a` | Worklet for formatting data from the chart. It can be useful when you data is a timestamp or currency.  |
+| `format`     | reanimated worklet   | `a => a` | Worklet for formatting data from the chart. It can be useful when your data is a timestamp or currency.  |
 | ...props     | `object`             | `{}`     | Rest of the props applied to `TextInput` including `style`   |
 
 
@@ -131,7 +131,7 @@ TODO
 TODO
 
 ## Helpers
-It's not essential in the library, but we have decide to include a lot of helpers we are (or we were) using for displaying charts.
+It's not essential in the library, but we have decided to include a lot of helpers we are (or we were) using for displaying charts.
 ## Interpolations
 We have two interpolators which share the most of the API: `bSplineInterpolation` and `monotoneCubicInterpolation`.
 ```js
@@ -144,9 +144,9 @@ const interpolatedData = interpolator(data)(80, true, false);
 Code above generates 80 equidistant points from given dataset.
 Interpolator (`monotoneCubicInterpolation` or `bSplineInterpolation`) returns generator.
 Generator accepts 3 arguments: `range`, `includeExtremes`, `removePointsSurroundingExtremes`.
-- `range` is number of points of the output.
+- `range` is the number of points of the output.
 - `includeExtremes`. If it's vital to include extremes in the output, set to true. However, the data might not be fully equidistant. 
-- `removePointsSurroundingExtremes`. Makes sense only if `includeExtremes` set to `true`. When disabled, it might be possible that extremes looks very "pointy". To get rid of this, you can remove points surrounding extremes.
+- `removePointsSurroundingExtremes`. Makes sense only if `includeExtremes` set to `true`. When disabled, it might be possible that extremes look very "pointy". To get rid of this, you can remove points surrounding extremes.
 E.g. 
 
   - `removePointsSurroundingExtremes = false`
@@ -159,7 +159,7 @@ E.g.
 
 ### `bSplineInterpolation(data, degree = 3)`
 `bSplineInterpolation` is inspired by [victorian lib](https://github.com/networkcube/vistorian/blob/17e2be9b51267509ea67b5984421d8c03558d928/core/lib/BSpline.js)
-and uses [B-spline](https://en.wikipedia.org/wiki/B-spline) interpolation of given `degree`.
+and uses [B-spline](https://en.wikipedia.org/wiki/B-spline) interpolation of a given `degree`.
 
 ### `monotoneCubicInterpolation(data, degree = 3)`
 `https://github.com/d3/d3-shape/blob/master/src/curve/monotone.js` is inspired by [d3 shape](https://github.com/d3/d3-shape/blob/master/src/curve/monotone.js).
@@ -168,7 +168,7 @@ and uses [B-spline](https://en.wikipedia.org/wiki/B-spline) interpolation of giv
 
 
 ## `simplifyData(data, pickRange = 10, includeExtremes = true)`
-This helper takes only one points per `pickRange`. Might be useful for very dense data. If it's important, it's possible to include extremes with the `includeExtremes` flag.
+This helper takes only one point per `pickRange`. Might be useful for very dense data. If it's important, it's possible to include extremes with the `includeExtremes` flag.
 E.g. 
 
 `pickRange = 3, includeExtremes = true`
