@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import {
   useAnimatedGestureHandler,
@@ -99,9 +99,22 @@ export default function ChartPathProvider({
   softMargin = 0,
   enableHaptics = false,
 }) {
-  const prevData = useSharedValue([], 'prevData');
-  const currData = useSharedValue([], 'currData');
-  const currNativeData = useSharedValue([], 'currNativeData');
+  const valuesStore = useRef(null);
+  if (valuesStore.current == null) {
+    valuesStore.current = {
+      currData: [],
+      currNativeData: [],
+      dataQueue: [],
+      prevData: [],
+    };
+  }
+
+  const prevData = useSharedValue(valuesStore.current.prevData, 'prevData');
+  const currData = useSharedValue(valuesStore.current.currData, 'currData');
+  const currNativeData = useSharedValue(
+    valuesStore.current.currNativeData,
+    'currNativeData'
+  );
   const prevSmoothing = useSharedValue(0, 'prevSmoothing');
   const currSmoothing = useSharedValue(0, 'currSmoothing');
 
@@ -121,7 +134,7 @@ export default function ChartPathProvider({
   const isAnimationInProgress = useSharedValue(false, 'isAnimationInProgress');
 
   const [data, setData] = useState(rawData);
-  const dataQueue = useSharedValue([], 'dataQueue');
+  const dataQueue = useSharedValue(valuesStore.current.dataQueue, 'dataQueue');
   useEffect(() => {
     if (isAnimationInProgress.value) {
       dataQueue.value.push(rawData);
@@ -146,10 +159,13 @@ export default function ChartPathProvider({
     );
     setExtremes(newExtremes);
     if (prevData.value.length !== 0) {
+      valuesStore.current.prevData = currData.value;
       prevData.value = currData.value;
       prevSmoothing.value = currSmoothing.value;
       progress.value = 0;
+      valuesStore.current.currData = parsedData;
       currData.value = parsedData;
+      valuesStore.current.currNativeData = parsedNativeData;
       currNativeData.value = parsedNativeData;
       currSmoothing.value = data.smoothing || 0;
       isAnimationInProgress.value = true;
@@ -163,6 +179,8 @@ export default function ChartPathProvider({
     } else {
       prevSmoothing.value = data.smoothing || 0;
       currSmoothing.value = data.smoothing || 0;
+      valuesStore.current.currData = parsedData;
+      valuesStore.current.currNativeData = parsedData;
       prevData.value = parsedData;
       currData.value = parsedData;
       currNativeData.value = parsedNativeData;

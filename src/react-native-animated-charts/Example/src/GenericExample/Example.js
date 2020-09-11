@@ -105,7 +105,10 @@ function GenericExample() {
     smoothingStrategy,
   ]);
 
-  if (!TurboModuleRegistry.get('NativeReanimated')) {
+  if (
+    !global.__reanimatedModuleProxy &&
+    !TurboModuleRegistry.getEnforcing('NativeReanimated')
+  ) {
     return null;
   }
 
