@@ -72,15 +72,15 @@ function positionXWithMargin(x, margin, width) {
 function getValue(data, i, smoothingStrategy) {
   'worklet';
   if (smoothingStrategy.value === 'bezier') {
-    const isLast = data.value.length - 1 === i;
+    if (i === 0) {
+      return data.value[i];
+    }
 
-    const p0 = isLast
-      ? data.value[i - 1] || data.value[i]
-      : data.value[i - 2] || data.value[i - 1] || data.value[i];
+    const p0 = data.value[i - 2] || data.value[i - 1] || data.value[i];
 
     const x0 = p0.x;
     const y0 = p0.y;
-    const p1 = isLast ? data.value[i] : data.value[i - 1] || data.value[i];
+    const p1 = data.value[i - 1] || data.value[i];
     const x1 = p1.x;
     const y1 = p1.y;
     const p = data.value[i];
@@ -217,7 +217,20 @@ export default function ChartProvider({
         }
       }
 
-      if (idx === 0) {
+      if (
+        ss.value === 'bezier' &&
+        currData.value.length > 30 &&
+        eventX / size.value.width >= currData.value[currData.value.length - 2].x
+      ) {
+        const prevLastY = currData.value[currData.value.length - 2].y;
+        const prevLastX = currData.value[currData.value.length - 2].x;
+        const lastY = currData.value[currData.value.length - 1].y;
+        const lastX = currData.value[currData.value.length - 1].x;
+        const progress =
+          (eventX / size.value.width - prevLastX) / (lastX - prevLastX);
+        positionY.value =
+          (prevLastY + progress * (lastY - prevLastY)) * size.value.height;
+      } else if (idx === 0) {
         positionY.value = getValue(currData, idx, ss).y * size.value.height;
       } else {
         // prev + diff over X
