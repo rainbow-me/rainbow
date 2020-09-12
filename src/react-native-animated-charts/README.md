@@ -1,6 +1,8 @@
 ## React Native Animated Charts
+Set of components and helpers for building complex and beautiful animated charts.
 
-The library provides a set of components and helpers for building complex and beautiful animated charts.
+![](gifs/ios.gif) | ![](gifs/android.gif) |
+:----------------:|:---------------------:|
 
 The library was designed to create aesthetic, animated (so far only linear) charts based on a given input. 
 The main assumptions of the library were to create smooth transitions between subsequent data sets. For this reason,
