@@ -140,7 +140,8 @@ function ChartPath({
       }
 
       if (
-        smoothing !== 0 ||
+        (smoothing !== 0 &&
+          (strategy === 'complex' || strategy === 'simple')) ||
         (strategy === 'bezier' &&
           (!disableSmoothingWhileTransitioningValue.value ||
             progress.value === 1))

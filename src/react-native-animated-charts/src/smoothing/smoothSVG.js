@@ -18,7 +18,7 @@ const controlPoint = (current, previous, next, reverse, smoothing) => {
   return [x, y];
 };
 
-export const svgBezierPath = (points, smoothing, strategy = 'simple') => {
+export const svgBezierPath = (points, smoothing, strategy) => {
   'worklet';
   const traversed = points.map(p => [p.x, p.y]);
   // build the d attributes by looping over the points

@@ -184,7 +184,7 @@ export default function ChartPathProvider({
       currData.value = parsedData;
       valuesStore.current.currNativeData = parsedNativeData;
       currNativeData.value = parsedNativeData;
-      currSmoothing.value = data.smoothing || 0;
+      currSmoothing.value = data.smoothingFactor || 0;
       isAnimationInProgress.value = true;
       progress.value = withTiming(
         1,

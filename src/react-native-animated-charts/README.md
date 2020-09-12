@@ -89,7 +89,7 @@ The whole chart's structure has to be wrapped with `ChartProvider`. It's respons
 - `data` is an array containing points to be displayed. A `Point` is an object containing `x` and `y` as a number.
 - `nativeData` is an array of points that will not be drawn. However, if you used some strategy of interpolating data or simplifying you might want to present data slightly different from the real one. Then if you'd like labels to be fully correct you may want to provide real data before adjusting them.
 - `smoothingStrategy`. While presenting points path can be drawn with different approaches.  
-  - If `smoothingStrategy` is not provided, connects points using linear interpolation.
+  - If `smoothingStrategy` is not provided (or set to any other value but for listed here), connects points using linear interpolation.
   - The `bezier` strategy connects points with a bezier path inspired by [d3 shape](https://github.com/d3/d3-shape/blob/master/src/curve/basis.js). It's not parametrized by `smoothingFactor`.
   - The `complex` strategy uses approach explained [here](https://medium.com/@francoisromain/smooth-a-svg-path-with-cubic-bezier-curves-e37b49d46c74) using cubic splines. It's parametrized by `smoothingFactor`.
   - The `simple` strategy is a bit simplified `complex` strategy using quadratic splines. It's parametrized by `smoothingFactor`.
