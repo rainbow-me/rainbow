@@ -11,6 +11,19 @@ index 523853a..d7813c3 100644
    Transitioning,
    Transition,
    createTransitioningComponent,
+diff --git a/node_modules/react-native-reanimated/src/derived/index.js b/node_modules/react-native-reanimated/src/derived/index.js
+index e6e1541..943d1b6 100644
+--- a/node_modules/react-native-reanimated/src/derived/index.js
++++ b/node_modules/react-native-reanimated/src/derived/index.js
+@@ -2,7 +2,7 @@ export { default as acc } from './acc';
+ export { default as color } from './color';
+ export { default as diff } from './diff';
+ export { default as diffClamp } from './diffClamp';
+-export { default as interpolateNode, Extrapolate } from './interpolate';
++export { default as interpolateNode, default as interpolate, Extrapolate } from './interpolate';
+ export { default as interpolateColors } from './interpolateColors';
+ export { default as onChange } from './onChange';
+ export { default as useCode } from './useCode';
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/Easing.js b/node_modules/react-native-reanimated/src/reanimated2/Easing.js
 index 48a3c76..0723069 100644
 --- a/node_modules/react-native-reanimated/src/reanimated2/Easing.js
