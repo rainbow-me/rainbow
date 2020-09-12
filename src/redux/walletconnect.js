@@ -122,13 +122,13 @@ export const walletConnectOnSessionRequest = (
               );
               callback && callback('reject');
               analytics.track('Rejected new WalletConnect session', {
-                dappName: name,
+                dappName: peerMeta.name,
                 dappUrl: peerMeta.url,
               });
             }
           },
           meta: {
-            dappName: name,
+            dappName: peerMeta.name,
             dappUrl: peerMeta.url,
             imageUrl,
           },
