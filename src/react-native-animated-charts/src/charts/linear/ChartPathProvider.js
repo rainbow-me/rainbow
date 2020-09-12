@@ -20,6 +20,20 @@ function impactHeavy() {
 
 const android = Platform.OS === 'android';
 
+const springDefaultConfig = {
+  damping: 15,
+  mass: 1,
+  stiffness: 600,
+};
+
+const timingFeedbackDefaultConfig = {
+  duration: 80,
+};
+
+const timingAnimationDefaultConfig = {
+  duration: 300,
+};
+
 const parse = data => {
   const { greatestY, smallestY } = findYExtremes(data);
   const smallestX = data[0];
@@ -98,6 +112,9 @@ export default function ChartPathProvider({
   children,
   softMargin = 0,
   enableHaptics = false,
+  springConfig = {},
+  timingFeedbackConfig = {},
+  timingAnimationConfig = {},
 }) {
   const valuesStore = useRef(null);
   if (valuesStore.current == null) {
@@ -169,13 +186,17 @@ export default function ChartPathProvider({
       currNativeData.value = parsedNativeData;
       currSmoothing.value = data.smoothing || 0;
       isAnimationInProgress.value = true;
-      progress.value = withTiming(1, {}, () => {
-        isAnimationInProgress.value = false;
-        if (dataQueue.value.length !== 0) {
-          setData(dataQueue.value[0]);
-          dataQueue.value.shift();
+      progress.value = withTiming(
+        1,
+        { ...timingAnimationDefaultConfig, ...timingAnimationConfig },
+        () => {
+          isAnimationInProgress.value = false;
+          if (dataQueue.value.length !== 0) {
+            setData(dataQueue.value[0]);
+            dataQueue.value.shift();
+          }
         }
-      });
+      );
     } else {
       prevSmoothing.value = data.smoothing || 0;
       currSmoothing.value = data.smoothing || 0;
@@ -190,15 +211,6 @@ export default function ChartPathProvider({
   const positionX = useSharedValue(0, 'positionX');
   const positionY = useSharedValue(0, 'positionY');
 
-  const springConfig = {
-    damping: 15,
-    mass: 1,
-    stiffness: 600,
-  };
-
-  const timingConfig = {
-    duration: 80,
-  };
   const isStarted = useReactiveSharedValue(false, 'isStarted');
 
   const onLongPressGestureEvent = useAnimatedGestureHandler({
@@ -208,8 +220,14 @@ export default function ChartPathProvider({
         return;
       }
       if (!isStarted.value) {
-        dotScale.value = withSpring(1, springConfig);
-        pathOpacity.value = withTiming(0, timingConfig);
+        dotScale.value = withSpring(1, {
+          ...springDefaultConfig,
+          ...springConfig,
+        });
+        pathOpacity.value = withTiming(0, {
+          ...timingFeedbackDefaultConfig,
+          ...timingFeedbackConfig,
+        });
       }
 
       if (enableHapticsValue.value && !isStarted.value) {
@@ -275,11 +293,17 @@ export default function ChartPathProvider({
       state.value = event.state;
       nativeX.value = '';
       nativeY.value = '';
-      dotScale.value = withSpring(0, springConfig);
+      dotScale.value = withSpring(0, {
+        ...springDefaultConfig,
+        ...springConfig,
+      });
       if (android) {
         pathOpacity.value = 1;
       } else {
-        pathOpacity.value = withTiming(1, timingConfig);
+        pathOpacity.value = withTiming(1, {
+          ...timingFeedbackDefaultConfig,
+          ...timingFeedbackConfig,
+        });
       }
     },
     onEnd: event => {
@@ -287,11 +311,17 @@ export default function ChartPathProvider({
       state.value = event.state;
       nativeX.value = '';
       nativeY.value = '';
-      dotScale.value = withSpring(0, springConfig);
+      dotScale.value = withSpring(0, {
+        ...springDefaultConfig,
+        ...springConfig,
+      });
       if (android) {
         pathOpacity.value = 1;
       } else {
-        pathOpacity.value = withTiming(1, timingConfig);
+        pathOpacity.value = withTiming(1, {
+          ...timingFeedbackDefaultConfig,
+          ...timingFeedbackConfig,
+        });
       }
 
       if (enableHapticsValue.value) {
@@ -303,11 +333,17 @@ export default function ChartPathProvider({
       state.value = event.state;
       nativeX.value = '';
       nativeY.value = '';
-      dotScale.value = withSpring(0, springConfig);
+      dotScale.value = withSpring(0, {
+        ...springDefaultConfig,
+        ...springConfig,
+      });
       if (android) {
         pathOpacity.value = 1;
       } else {
-        pathOpacity.value = withTiming(1, timingConfig);
+        pathOpacity.value = withTiming(1, {
+          ...timingFeedbackDefaultConfig,
+          ...timingFeedbackConfig,
+        });
       }
     },
     onStart: event => {
@@ -339,12 +375,18 @@ export default function ChartPathProvider({
         eventX / size.value.width,
         currNativeData
       );
-      dotScale.value = withSpring(1, springConfig);
+      dotScale.value = withSpring(1, {
+        ...springDefaultConfig,
+        ...springConfig,
+      });
 
       if (!android) {
         positionX.value = positionXWithMargin(eventX, 30, size.value.width);
         positionY.value = currData.value[idx].y * size.value.height;
-        pathOpacity.value = withTiming(0, timingConfig);
+        pathOpacity.value = withTiming(0, {
+          ...timingFeedbackDefaultConfig,
+          ...timingFeedbackConfig,
+        });
       }
       if (enableHapticsValue.value && !isStarted.value) {
         impactHeavy();

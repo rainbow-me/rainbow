@@ -82,6 +82,9 @@ The whole chart's structure has to be wrapped with `ChartProvider`. It's respons
 | `softMargin`    | `number`   | `0`                    |  While scrubbing the chart touching edges of the screen you may want make points on the edges more accessible. With `softMargin` it's possible to access points on edges doubling the speed of scrubbing beyond this margin.  |
 | `enableHaptics` | `boolean`  | `false`                |  On pressing in/out on the chart it might be expected to make haptic feedback. It will happen with `enableHaptics` set to `true` and `react-native-haptic-feedback` installed    |
 | `data`          | <code>{ points: [Point], nativePoints: [Point], smoothingStrategy?: 'bezier'&#124;'simple'&#124;'complex', smoothingFactor  }<code/>   | obligatory  | Object containing data structure and way to display them. Each of the properties is explained below.  |
+| `springConfig`  | object  | `{damping: 15, mass: 1, stiffness: 600}`  | Object [defining the spring animation](https://docs.swmansion.com/react-native-reanimated/docs/next/animations). This spring is used for a dot's scale.
+| `timingFeedbackConfig`  | object  | `{duration: 80}`  | Object [defining the timing animation](https://docs.swmansion.com/react-native-reanimated/docs/next/animations). `timingFeedbackConfig` is used for a path's opacity and width.
+| `timingAnimationConfig` | object  | `{duration: 300}`  | Object [defining the timing animation](https://docs.swmansion.com/react-native-reanimated/docs/next/animations). `timingAnimationConfig` is used for the transition between chart's data.
 
 - `data` is an array containing points to be displayed. A `Point` is an object containing `x` and `y` as a number.
 - `nativeData` is an array of points that will not be drawn. However, if you used some strategy of interpolating data or simplifying you might want to present data slightly different from the real one. Then if you'd like labels to be fully correct you may want to provide real data before adjusting them.
@@ -104,6 +107,7 @@ This component is used for showing the path itself.
 | `strokeWidthSelected`                | `number`   | `1`                    | Width of the path selected.  |
 | `gestureEnabled`                     | `boolean`  | `true`                 | Defines if interaction with the chart should be allowed or not  |
 | `longPressGestureHandlerProps`       | `object`   | `{maxDist: 100000, minDurationMs: 0, shouldCancelWhenOutside: false}`  | Under the hood we're using `LongPressGestureHandler` for handling interactions. It's recommended to not override its props. However, it might be useful while interacting with another GH. |
+| `selectedOpacity`                    | `number`   | `0.7`                  | Target opacity of the path while touching the chart.
 | ...rest                              | `object`   | `{}`                   | Props applied to SVG [Path](https://github.com/react-native-community/react-native-svg#path). |
 
 
@@ -180,8 +184,8 @@ Y:0          1          7          2         -3          0          1          2
   S----------o----------E----------X----------E----------o----------X----------o----------S
 ```
 
+`X` - points picked because `index%3=0`
 `S` – the first and the last points are always included.
 `E` – extremes.
-`X` - points picked because `index%3=0`
 
 

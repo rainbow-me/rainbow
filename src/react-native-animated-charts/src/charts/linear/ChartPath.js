@@ -21,6 +21,7 @@ function ChartPath({
   strokeWidthSelected = 1,
   strokeWidth = 1,
   gestureEnabled = true,
+  selectedOpacity = 0.7,
   style,
   ...props
 }) {
@@ -176,7 +177,7 @@ function ChartPath({
   const animatedStyle = useAnimatedStyle(
     () => {
       return {
-        opacity: pathOpacity.value * 0.3 + 0.7,
+        opacity: pathOpacity.value * (1 - selectedOpacity) + selectedOpacity,
       };
     },
     undefined,
