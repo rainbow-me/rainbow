@@ -8,8 +8,8 @@ import React, {
 } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components';
-import RestoreIcloudStep from '../components/restore/RestoreIcloudStep';
-import RestoreSheetFirstStep from '../components/restore/RestoreSheetFirstStep';
+import RestoreIcloudStep from '../components/backup/RestoreIcloudStep';
+import RestoreSheetFirstStep from '../components/backup/RestoreSheetFirstStep';
 import { SlackSheet } from '../components/sheet';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { useNavigation } from '@rainbow-me/navigation';

@@ -1,14 +1,14 @@
 import { forEach } from 'lodash';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import WalletBackupTypes from '../../helpers/walletBackupTypes';
-import { deviceUtils } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Column, Row, RowWithMargins } from '../layout';
 import { GradientText, Text } from '../text';
+import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import { colors } from '@rainbow-me/styles';
+import { deviceUtils } from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
@@ -74,12 +74,12 @@ const DescriptionText = styled(Text).attrs({
   padding-bottom: 24;
 `;
 
-const RestoreSheetFirstStep = ({
+export default function RestoreSheetFirstStep({
   onIcloudRestore,
   onManualRestore,
   onWatchAddress,
   userData,
-}) => {
+}) {
   const walletsBackedUp = useMemo(() => {
     let count = 0;
     forEach(userData?.wallets, wallet => {
@@ -147,6 +147,4 @@ const RestoreSheetFirstStep = ({
       </SheetRow>
     </Container>
   );
-};
-
-export default RestoreSheetFirstStep;
+}

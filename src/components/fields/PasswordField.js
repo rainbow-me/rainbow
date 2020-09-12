@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import styled from 'styled-components';
 import { Icon } from '../icons';
@@ -67,23 +68,29 @@ const PasswordField = (
   ref
 ) => {
   const { width: deviceWidth } = useDimensions();
+  const handleFocus = useCallback(() => ref?.current?.focus?.(), [ref]);
 
   return (
-    <ShadowContainer deviceWidth={deviceWidth} style={style}>
-      <PasswordInput
-        ref={ref}
-        returnKeyType={returnKeyType}
-        textContentType={textContentType}
-        value={password}
-        {...props}
-      />
-      {isValid && (
-        <FieldAccessoryBadge color={colors.green} name="checkmarkCircled" />
-      )}
-      {isInvalid && (
-        <FieldAccessoryBadge color={colors.orangeLight} name="warningCircled" />
-      )}
-    </ShadowContainer>
+    <TouchableWithoutFeedback onPress={handleFocus}>
+      <ShadowContainer deviceWidth={deviceWidth} style={style}>
+        <PasswordInput
+          ref={ref}
+          returnKeyType={returnKeyType}
+          textContentType={textContentType}
+          value={password}
+          {...props}
+        />
+        {isValid && (
+          <FieldAccessoryBadge color={colors.green} name="checkmarkCircled" />
+        )}
+        {isInvalid && (
+          <FieldAccessoryBadge
+            color={colors.orangeLight}
+            name="warningCircled"
+          />
+        )}
+      </ShadowContainer>
+    </TouchableWithoutFeedback>
   );
 };
 
