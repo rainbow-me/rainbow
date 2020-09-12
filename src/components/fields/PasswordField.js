@@ -42,7 +42,7 @@ const ShadowContainer = styled(ShadowStack).attrs(({ deviceWidth }) => ({
     [0, 5, 15, colors.dark, 0.06],
     [0, 10, 30, colors.dark, 0.12],
   ],
-  width: deviceWidth - 130,
+  width: Math.max(deviceWidth - 130, 245),
 }))`
   elevation: 15;
 `;

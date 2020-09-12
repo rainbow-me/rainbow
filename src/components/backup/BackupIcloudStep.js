@@ -15,6 +15,7 @@ import {
   isCloudBackupPasswordValid,
 } from '@rainbow-me/handlers/cloudBackup';
 import {
+  useDimensions,
   useRouteExistsInNavigationState,
   useWalletCloudBackup,
   useWallets,
@@ -24,12 +25,12 @@ import Routes from '@rainbow-me/routes';
 import { colors, padding } from '@rainbow-me/styles';
 import logger from 'logger';
 
-const DescriptionText = styled(Text).attrs({
+const DescriptionText = styled(Text).attrs(({ isTinyPhone }) => ({
   align: 'center',
   color: colors.blueGreyDark50,
   lineHeight: 'looser',
-  size: 'large',
-})``;
+  size: isTinyPhone ? 'lmedium' : 'large',
+}))``;
 
 const ImportantText = styled(DescriptionText).attrs({
   color: colors.blueGreyDark60,
@@ -46,7 +47,8 @@ const InputsWrapper = styled(ColumnWithMargins).attrs({
 const Masthead = styled(Centered).attrs({
   direction: 'column',
 })`
-  ${padding(9, 50, 39)};
+  ${({ isTallPhone, isTinyPhone }) =>
+    padding(isTinyPhone ? 0 : 9, isTinyPhone ? 10 : 50, isTallPhone ? 39 : 19)};
   flex-shrink: 0;
 `;
 
@@ -61,14 +63,15 @@ const MastheadIcon = styled(GradientText).attrs({
   weight: 'medium',
 })``;
 
-const Title = styled(Text).attrs({
-  size: 'big',
+const Title = styled(Text).attrs(({ isTinyPhone }) => ({
+  size: isTinyPhone ? 'large' : 'big',
   weight: 'bold',
-})`
-  ${padding(15, 0, 12)};
+}))`
+  ${({ isTinyPhone }) => (isTinyPhone ? padding(0) : padding(15, 0, 12))};
 `;
 
 export default function BackupIcloudStep() {
+  const { isTallPhone, isTinyPhone } = useDimensions();
   const currentlyFocusedInput = useRef();
   const { params } = useRoute();
   const walletCloudBackup = useWalletCloudBackup();
@@ -231,12 +234,14 @@ export default function BackupIcloudStep() {
       footerButtonLabel={label}
       onSubmit={onConfirmBackup}
     >
-      <Masthead>
-        <MastheadIcon>􀌍</MastheadIcon>
-        <Title>Choose a password</Title>
-        <DescriptionText>
+      <Masthead isTallPhone={isTallPhone} isTinyPhone={isTinyPhone}>
+        {!isTinyPhone && <MastheadIcon>􀌍</MastheadIcon>}
+        <Title isTinyPhone={isTinyPhone}>Choose a password</Title>
+        <DescriptionText isTinyPhone={isTinyPhone}>
           Please use a password you&apos;ll remember.&nbsp;
-          <ImportantText>It can&apos;t be recovered!</ImportantText>
+          <ImportantText isTinyPhone={isTinyPhone}>
+            It can&apos;t be recovered!
+          </ImportantText>
         </DescriptionText>
       </Masthead>
       <InputsWrapper>
