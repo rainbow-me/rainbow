@@ -1,12 +1,12 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components/primitives';
-import URL from 'url-parse';
 import Divider from '../components/Divider';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { Centered, Row, RowWithMargins } from '../components/layout';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
+import { dappNameOverride, getDappHostname } from '../helpers/dappNameHandler';
 import { useNavigation } from '../navigation/Navigation';
 import { colors, padding } from '@rainbow-me/styles';
 
@@ -20,9 +20,6 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs({
 `;
 
 export default function WalletConnectApprovalSheet() {
-  // TODO set this to true via everest.link graph
-  // if we can validate the host
-  const authenticated = false;
   const { goBack } = useNavigation();
   const { params } = useRoute();
   const handled = useRef(false);
@@ -31,8 +28,11 @@ export default function WalletConnectApprovalSheet() {
   const callback = params?.callback;
 
   const formattedDappUrl = useMemo(() => {
-    const urlObject = new URL(dappUrl);
-    return urlObject.hostname;
+    return getDappHostname(dappUrl);
+  }, [dappUrl]);
+
+  const authenticatedName = useMemo(() => {
+    return dappNameOverride(dappUrl);
   }, [dappUrl]);
 
   const handleSuccess = useCallback(
@@ -78,7 +78,7 @@ export default function WalletConnectApprovalSheet() {
               size="big"
             >
               <Text color="dark" size="big" weight="bold">
-                {dappName}
+                {authenticatedName || dappName}
               </Text>{' '}
               wants to connect to your wallet
             </Text>
@@ -86,7 +86,7 @@ export default function WalletConnectApprovalSheet() {
         </Centered>
         <Row marginBottom={30} marginTop={15}>
           <Text color="appleBlue" lineHeight={29} size="large" weight="bold">
-            {authenticated ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
+            {authenticatedName ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
           </Text>
         </Row>
         <Divider color={colors.rowDividerLight} inset={[0, 84]} />
