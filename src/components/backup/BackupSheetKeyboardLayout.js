@@ -9,7 +9,7 @@ import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
 import { padding } from '@rainbow-me/styles';
 
 const Footer = styled(Column)`
-  ${padding(0, 15, 30)};
+  ${({ isTallPhone }) => padding(0, 15, isTallPhone ? 30 : 15)};
   flex-shrink: 0;
   width: 100%;
 `;
@@ -20,7 +20,7 @@ export default function BackupSheetKeyboardLayout({
   footerButtonLabel,
   onSubmit,
 }) {
-  const { height: deviceHeight } = useDimensions();
+  const { height: deviceHeight, isTallPhone } = useDimensions();
   const { keyboardHeight } = useKeyboardHeight();
 
   const sheetRegionAboveKeyboardHeight =
@@ -33,7 +33,7 @@ export default function BackupSheetKeyboardLayout({
     <Column height={sheetRegionAboveKeyboardHeight}>
       <StatusBar barStyle="light-content" />
       {children}
-      <Footer>
+      <Footer isTallPhone={isTallPhone}>
         <RainbowButton
           disabled={footerButtonDisabled}
           label={footerButtonLabel}
