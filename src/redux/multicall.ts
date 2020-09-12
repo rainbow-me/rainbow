@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { chunk, forEach, get, keys, map, omit } from 'lodash';
-import { web3ProviderV4 } from '../handlers/web3';
+import { web3Provider } from '../handlers/web3';
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../references/uniswap';
 
 // -- Constants ------------------------------------------------------------- //
@@ -98,7 +98,7 @@ export const multicallRemoveListeners = ({ chainId, calls }) => (
   });
 };
 
-export const multicallUpdateResults = ({ chainId, results, blockNumber }) => (
+const multicallUpdateResults = ({ chainId, results, blockNumber }) => (
   dispatch,
   getState
 ) => {
@@ -182,7 +182,7 @@ export const multicallUpdateOutdatedListeners = (latestBlockNumber?) => (
   const multicallContract = new Contract(
     MULTICALL_NETWORKS[chainId as ChainId],
     MULTICALL_ABI,
-    web3ProviderV4
+    web3Provider
   );
 
   forEach(chunkedCalls, (chunk, chunkIndex) => {

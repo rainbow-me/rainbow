@@ -87,7 +87,6 @@ export default function ExchangeModal({
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { nativeCurrency } = useAccountSettings();
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
-  const { getMarketDetails } = useUniswapMarketDetails();
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
   const {
@@ -116,6 +115,10 @@ export default function ExchangeModal({
     underlyingPrice,
   });
 
+  const { getMarketDetails } = useUniswapMarketDetails(
+    inputCurrency,
+    outputCurrency
+  );
   const { allPairs: pairs } = useUniswapPairs(inputCurrency, outputCurrency);
 
   const {
