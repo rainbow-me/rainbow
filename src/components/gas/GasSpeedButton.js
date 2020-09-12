@@ -246,6 +246,10 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
   const handleInputButtonManager = useCallback(() => {
     const complete = () =>
       inputFocused ? inputRef.current?.blur() : inputRef.current?.focus();
+    if (!customGasPriceInput) {
+      complete();
+      return;
+    }
     const priceInWei = gweiToWei(customGasPriceInput);
     const minGasPrice = Number(gasPrices.slow.value.amount);
     const maxGasPrice = Number(gasPrices.fast.value.amount);
@@ -271,6 +275,8 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
           '\n\nDo you want to continue anyway?',
         title: 'Heads up!',
       });
+    } else {
+      complete();
     }
   }, [customGasPriceInput, gasPrices, inputFocused]);
 

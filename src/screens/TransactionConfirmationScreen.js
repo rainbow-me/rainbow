@@ -700,9 +700,9 @@ const TransactionConfirmationScreen = () => {
                 )}
               </Text>
             </Row>
-            <Centered marginBottom={30} paddingHorizontal={23}>
+            <Centered height={30} marginBottom={29} paddingHorizontal={23}>
               <Text align="center" color="dark" size="big" weight="heavy">
-                {methodName}
+                {methodName || ''}
               </Text>
             </Centered>
             {renderTransactionSection()}
