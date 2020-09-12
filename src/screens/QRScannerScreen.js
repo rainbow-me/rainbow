@@ -20,7 +20,7 @@ import useExperimentalFlag, {
 } from '@rainbow-me/config/experimentalHooks';
 import { useHeight, useWalletConnectConnections } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { scrollPosition } from '@rainbow-me/navigation/helpers';
+import { scrollPosition } from '@rainbow-me/navigation/ScrollPagerWrapper';
 import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
 

@@ -6,14 +6,9 @@ import ScrollPager from '../helpers/ScrollPager';
 
 export const scrollPosition = new Value(1);
 
-const ScrollPagerWrapperRef = forwardRef(function ScrollPagerWrapper(
-  props,
-  ref
-) {
+export default forwardRef(function ScrollPagerWrapper(props, ref) {
   return Platform.select({
     android: <ViewPagerAdapter {...props} overScrollMode="never" />,
     ios: <ScrollPager {...props} overscroll={false} ref={ref} />,
   });
 });
-
-export { ScrollPagerWrapperRef as ScrollPagerWrapper };

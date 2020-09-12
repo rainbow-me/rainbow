@@ -5,7 +5,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import QRScannerScreen from '../screens/QRScannerScreen';
 import WalletScreen from '../screens/WalletScreen';
 import { deviceUtils } from '../utils';
-import { ScrollPagerWrapper, scrollPosition } from './helpers';
+import ScrollPagerWrapper, { scrollPosition } from './ScrollPagerWrapper';
 import Routes from './routesNames';
 const Swipe = createMaterialTopTabNavigator();
 
