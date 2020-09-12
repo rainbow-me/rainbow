@@ -1,5 +1,7 @@
-## React Native Animated Charts
-Set of components and helpers for building complex and beautiful animated charts.
+<p align="center">
+  <h1 align="center">React Native Animated Charts</h1>
+  <h3 align="center">Set of components and helpers for building complex and beautiful animated charts.</h3>
+</p>
 
 ![](gifs/ios.gif) | ![](gifs/android.gif) |
 :----------------:|:---------------------:|
