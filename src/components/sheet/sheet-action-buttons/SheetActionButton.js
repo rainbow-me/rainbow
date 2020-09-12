@@ -78,7 +78,7 @@ const SheetActionButton = ({
           align="center"
           color={textColor}
           size={size === 'big' ? 'larger' : 'large'}
-          weight="semibold"
+          weight="bold"
         >
           {label}
         </Text>

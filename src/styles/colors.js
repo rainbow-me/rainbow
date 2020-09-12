@@ -38,6 +38,7 @@ let base = {
   shadowGrey: '#6F6F6F', // '111, 111, 111'
   shimmer: '#EDEEF1', // '237, 238, 241'
   skeleton: '#F6F7F8', // '246, 247, 248'
+  strongPurple: '#9448FF', // '148, 72, 255'
   swapPurple: '#575CFF', // '87, 92, 255'
   transparent: 'transparent',
   white: '#FFFFFF', // '255, 255, 255'

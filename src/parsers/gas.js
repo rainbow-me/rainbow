@@ -67,7 +67,7 @@ const defaultGasPriceFormat = (option, timeWait, value) => {
     option,
     value: {
       amount: weiAmount,
-      display: `${gweiAmount} Gwei`,
+      display: `${parseInt(gweiAmount, 10)} Gwei`,
     },
   };
 };
@@ -88,7 +88,7 @@ export const parseTxFees = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
   return zipObject(gasUtils.GasSpeedOrder, txFees);
 };
 
-const getTxFee = (gasPrice, gasLimit, priceUnit, nativeCurrency) => {
+export const getTxFee = (gasPrice, gasLimit, priceUnit, nativeCurrency) => {
   const amount = multiply(gasPrice, gasLimit);
   return {
     native: {
@@ -107,4 +107,9 @@ const getTxFee = (gasPrice, gasLimit, priceUnit, nativeCurrency) => {
       }),
     },
   };
+};
+
+export const gweiToWei = gweiAmount => {
+  const weiAmount = Number(gweiAmount) * 1000000000;
+  return weiAmount;
 };

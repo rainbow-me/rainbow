@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import BigNumber from 'bignumber.js';
 import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
 import { find, get, isEmpty, matchesProperty, replace, toLower } from 'lodash';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
@@ -192,67 +191,11 @@ const hasPreviousTransactions = address => {
   });
 };
 
-const getEstimatedTimeForGasPrice = async gasPrice => {
-  // We need to get this from redux!
-  const blockTime = 10.6;
-  const url = `https://ethgasstation.info/api/predictTable.json`;
-  const response = await fetch(url);
-  const data = await response.json();
-
-  let delta = null;
-  let expectedWait;
-  let deltaIndex = null;
-  let unsafe = false;
-  data.forEach((item, i) => {
-    const itemDelta = Math.abs(gasPrice - item.gasprice);
-    if (delta === null || delta > itemDelta) {
-      delta = itemDelta;
-      expectedWait = item.expectedWait;
-      deltaIndex = i;
-      unsafe = item.unsafe;
-    }
-  });
-  const estimateInSeconds = BigNumber(expectedWait)
-    .times(Number(blockTime), 10)
-    .toNumber();
-
-  let symbol = '~';
-  if (deltaIndex === 0) {
-    symbol = '>';
-  } else if (deltaIndex === data.length - 1) {
-    symbol = '<';
-  }
-
-  console.log('estimateInSeconds', estimateInSeconds);
-  let value = Math.round(estimateInSeconds);
-  let unit = 'sec';
-  if (estimateInSeconds > 60) {
-    value = Math.floor(estimateInSeconds / 60);
-    unit = 'min';
-
-    if (value > 60) {
-      value = Math.floor(value / 60);
-      unit = 'hour';
-      if (value > 1) {
-        unit = 'hours';
-      }
-    }
-  }
-
-  return {
-    symbol,
-    unit,
-    unsafe,
-    value,
-  };
-};
-
 export default {
   getAsset,
   getBalanceAmount,
   getChainIdFromNetwork,
   getDataString,
-  getEstimatedTimeForGasPrice,
   getEtherscanHostFromNetwork,
   getEthPriceUnit,
   getHash,

@@ -5,6 +5,7 @@ import { apiGetGasPrices } from '../handlers/gasPrices';
 import { fromWei, greaterThanOrEqualTo } from '../helpers/utilities';
 import {
   getFallbackGasPrices,
+  getTxFee,
   parseGasPrices,
   parseTxFees,
 } from '../parsers/gas';
@@ -17,6 +18,7 @@ const GAS_UPDATE_DEFAULT_GAS_LIMIT = 'gas/GAS_UPDATE_DEFAULT_GAS_LIMIT';
 const GAS_PRICES_DEFAULT = 'gas/GAS_PRICES_DEFAULT';
 const GAS_PRICES_SUCCESS = 'gas/GAS_PRICES_SUCCESS';
 const GAS_PRICES_FAILURE = 'gas/GAS_PRICES_FAILURE';
+const GAS_UPDATE_CUSTOM_VALUES = 'gas/GAS_UPDATE_CUSTOM_VALUES';
 
 const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
 const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
@@ -73,8 +75,18 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
         .then(({ data }) => {
           const adjustedGasPrices = bumpGasPrices(data);
           let gasPrices = parseGasPrices(adjustedGasPrices, useShortGasFormat);
+
+          // Default custom gas to fast values
+          gasPrices[gasUtils.CUSTOM] = {
+            ...gasPrices[gasUtils.FAST],
+            option: gasUtils.CUSTOM,
+          };
+
           dispatch({
-            payload: gasPrices,
+            payload: {
+              blockTime: data.block_time,
+              gasPrices,
+            },
             type: GAS_PRICES_SUCCESS,
           });
           fetchResolve(true);
@@ -116,6 +128,7 @@ export const gasUpdateGasPriceOption = newGasPriceOption => (
     txFees,
     newGasPriceOption
   );
+
   dispatch({
     payload: {
       ...results,
@@ -124,6 +137,25 @@ export const gasUpdateGasPriceOption = newGasPriceOption => (
     type: GAS_UPDATE_GAS_PRICE_OPTION,
   });
   analytics.track('Updated Gas Price', { gasPriceOption: newGasPriceOption });
+};
+
+export const gasUpdateCustomValues = (price, estimate) => (
+  dispatch,
+  getState
+) => {
+  const { assets } = getState().data;
+  const { gasLimit } = getState().gas;
+  const { nativeCurrency } = getState().settings;
+  const ethPriceUnit = ethereumUtils.getEthPriceUnit(assets);
+  const fee = getTxFee(price, gasLimit, ethPriceUnit, nativeCurrency);
+  dispatch({
+    payload: {
+      customGasPrice: price,
+      customGasPriceEstimate: estimate,
+      customGasPriceFee: fee,
+    },
+    type: GAS_UPDATE_CUSTOM_VALUES,
+  });
 };
 
 export const gasUpdateDefaultGasLimit = (
@@ -153,6 +185,9 @@ export const gasUpdateTxFee = (gasLimit, overrideGasOption) => (
     _gasLimit,
     nativeCurrency
   );
+
+  // Default custom gas to fast values
+  txFees[gasUtils.CUSTOM] = txFees[gasUtils.FAST];
 
   const results = getSelectedGasPrice(
     assets,
@@ -209,6 +244,10 @@ export const gasPricesStopPolling = () => () => {
 
 // -- Reducer --------------------------------------------------------------- //
 const INITIAL_STATE = {
+  blockTime: 13,
+  customGasPrice: null,
+  customGasPriceEstimate: null,
+  customGasPriceFee: null,
   defaultGasLimit: ethUnits.basic_tx,
   gasLimit: null,
   gasPrices: {},
@@ -236,7 +275,8 @@ export default (state = INITIAL_STATE, action) => {
     case GAS_PRICES_SUCCESS:
       return {
         ...state,
-        gasPrices: action.payload,
+        blockTime: action.payload.blockTime,
+        gasPrices: action.payload.gasPrices,
       };
     case GAS_PRICES_FAILURE:
       return {
@@ -257,6 +297,13 @@ export default (state = INITIAL_STATE, action) => {
         isSufficientGas: action.payload.isSufficientGas,
         selectedGasPrice: action.payload.selectedGasPrice,
         selectedGasPriceOption: action.payload.selectedGasPriceOption,
+      };
+    case GAS_UPDATE_CUSTOM_VALUES:
+      return {
+        ...state,
+        customGasPrice: action.payload.customGasPrice,
+        customGasPriceEstimate: action.payload.customGasPriceEstimate,
+        customGasPriceFee: action.payload.customGasPriceFee,
       };
     default:
       return state;

@@ -11,11 +11,20 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, InteractionManager, Vibration } from 'react-native';
+import {
+  Alert,
+  InteractionManager,
+  TurboModuleRegistry,
+  Vibration,
+} from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import URL from 'url-parse';
 import Divider from '../components/Divider';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
@@ -35,6 +44,7 @@ import {
 } from '../components/transaction';
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
 
+import { dappNameOverride, getDappHostname } from '../helpers/dappNameHandler';
 import {
   convertAmountToNativeDisplay,
   convertHexToString,
@@ -56,8 +66,6 @@ import {
   signTransaction,
   signTypedDataMessage,
 } from '../model/wallet';
-import { useNavigation } from '../navigation/Navigation';
-import keyboardHeight from '../redux/keyboardHeight';
 import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
 import { ethereumUtils, gasUtils } from '../utils';
 import { methodRegistryLookupAndParse } from '../utils/methodRegistry';
@@ -71,8 +79,14 @@ import {
   SIGN,
   SIGN_TYPED_DATA,
 } from '../utils/signingMethods';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { useNavigation } from '@rainbow-me/navigation';
+import { colors, padding } from '@rainbow-me/styles';
 import logger from 'logger';
+
+const isReanimatedAvailable = !(
+  !TurboModuleRegistry.get('NativeReanimated') &&
+  (!global.__reanimatedModuleProxy || global.__reanimatedModuleProxy.__shimmed)
+);
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs({
   backgroundColor: colors.transparent,
@@ -84,9 +98,10 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs({
 `;
 
 const Container = styled(Column)`
-  ${position.size('100%')}
   flex: 1;
 `;
+
+const AnimatedContainer = Animated.createAnimatedComponent(Container);
 
 const GasSpeedButtonContainer = styled(Column)`
   justify-content: flex-start;
@@ -109,7 +124,6 @@ const WalletText = styled(Text).attrs({
 const NOOP = () => undefined;
 
 const TransactionConfirmationScreen = () => {
-  const authenticated = false;
   const { allAssets } = useAccountAssets();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
@@ -138,7 +152,6 @@ const TransactionConfirmationScreen = () => {
   const fetchMethodName = useCallback(async data => {
     if (!data) return;
     const methodSignaturePrefix = data.substr(0, 10);
-    console.log('creating registry');
     try {
       const { name } = await methodRegistryLookupAndParse(
         methodSignaturePrefix
@@ -147,7 +160,7 @@ const TransactionConfirmationScreen = () => {
         setMethodName(name);
       }
     } catch (e) {
-      console.log('FUCKKKKK registryMethod', e);
+      setMethodName('Transaction Request');
     }
   }, []);
 
@@ -180,22 +193,16 @@ const TransactionConfirmationScreen = () => {
     },
   } = routeParams;
 
-  //console.log('route params', JSON.stringify(routeParams, null, 2));
-
   const request = displayDetails.request;
 
   const openAutomatically = routeParams?.openAutomatically;
 
   const formattedDappUrl = useMemo(() => {
-    const urlObject = new URL(dappUrl);
-    const subdomains = urlObject.hostname.split('.');
-    if (subdomains.length === 2) {
-      return urlObject.hostname;
-    } else {
-      return `${subdomains[subdomains.length - 2]}.${
-        subdomains[subdomains.length - 1]
-      }`;
-    }
+    return getDappHostname(dappUrl);
+  }, [dappUrl]);
+
+  const authenticatedName = useMemo(() => {
+    return dappNameOverride(dappUrl);
   }, [dappUrl]);
 
   useEffect(() => {
@@ -533,6 +540,47 @@ const TransactionConfirmationScreen = () => {
     onLongPressSend,
   ]);
 
+  const renderTransactionButtons = useCallback(() => {
+    let ready = true;
+    // If we don't know about gas prices yet
+    // set the button state to "loading"
+    if (!isBalanceEnough && isSufficientGas === undefined) {
+      ready = false;
+    }
+
+    return isBalanceEnough === false && isSufficientGas !== undefined ? (
+      <Column width="100%">
+        <HoldToAuthorizeButton
+          disabled
+          hideBiometricIcon
+          label="Insufficient ETH Balance"
+        />
+      </Column>
+    ) : (
+      <RowWithMargins
+        css={`
+          ${padding(24, 0, 21)};
+          opacity: ${ready ? 1 : 0.5};
+        `}
+        margin={15}
+      >
+        <SheetActionButton
+          color={colors.alpha(colors.blueGreyDark, 0.06)}
+          label="Cancel"
+          onPress={onCancel}
+          size="big"
+          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+        />
+        <SheetActionButton
+          color={colors.appleBlue}
+          label="􀎽 Confirm"
+          onPress={ready ? onLongPressSend : NOOP}
+          size="big"
+        />
+      </RowWithMargins>
+    );
+  }, [isBalanceEnough, isSufficientGas, onCancel, onLongPressSend]);
+
   // const requestHeader = isMessageDisplayType(method)
   //   ? lang.t('wallet.message_signing.request')
   //   : lang.t('wallet.transaction.request');
@@ -566,7 +614,6 @@ const TransactionConfirmationScreen = () => {
             symbol: get(request, 'asset.symbol', 'N/A'),
           }}
           method={method}
-          sendButton={renderSendButton()}
         />
       );
     }
@@ -591,15 +638,35 @@ const TransactionConfirmationScreen = () => {
     setKeyboardVisible(false);
   }, []);
 
+  const offset = useSharedValue(0);
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: offset.value }],
+    };
+  });
+
+  const fallbackStyles = {
+    marginBottom: keyboardVisible ? 260 : 0,
+  };
+
+  useEffect(() => {
+    if (keyboardVisible) {
+      offset.value = withSpring(-260);
+    } else {
+      offset.value = withSpring(0);
+    }
+  }, [keyboardVisible, offset]);
+
   return (
-    <Container>
+    <AnimatedContainer
+      style={isReanimatedAvailable ? animatedStyles : fallbackStyles}
+    >
       <SlackSheet
         backgroundColor={colors.transparent}
         borderRadius={30}
         hideHandle
-        marginBottom={keyboardVisible ? 260 : 0}
       >
-        <Column marginBottom={keyboardHeight}>
+        <Column>
           <Centered
             backgroundColor={colors.white}
             borderRadius={30}
@@ -611,38 +678,36 @@ const TransactionConfirmationScreen = () => {
             <SheetHandleFixedToTop showBlur={false} />
             <Column marginBottom={17} />
             <DappLogo dappName={dappName || ''} imageUrl={imageUrl || ''} />
-            <Centered paddingHorizontal={23}>
-              <Text align="center" color="dark" size="big" weight="bold">
-                {methodName}
-              </Text>
-            </Centered>
-            <Row marginBottom={30} marginTop={0}>
+            <Row marginTop={0}>
               <Text
-                color="appleBlue"
+                color={colors.alpha(colors.blueGreyDark, 0.8)}
                 lineHeight={29}
                 size="large"
                 weight="bold"
               >
-                {authenticated ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
+                {authenticatedName || formattedDappUrl}
+                {//We only show the checkmark
+                // if it's on the override list (dappNameHandler.js)
+                authenticatedName && (
+                  <Text
+                    color={colors.appleBlue}
+                    lineHeight={29}
+                    size="large"
+                    weight="bold"
+                  >
+                    {' 􀇻'}
+                  </Text>
+                )}
               </Text>
             </Row>
+            <Centered marginBottom={30} paddingHorizontal={23}>
+              <Text align="center" color="dark" size="big" weight="heavy">
+                {methodName}
+              </Text>
+            </Centered>
             {renderTransactionSection()}
             <Divider color={colors.rowDividerLight} inset={[0, 84]} />
-            <RowWithMargins css={padding(24, 0, 21)} margin={15}>
-              <SheetActionButton
-                color={colors.white}
-                label="Cancel"
-                onPress={onCancel}
-                size="big"
-                textColor={colors.dark}
-              />
-              <SheetActionButton
-                color={colors.appleBlue}
-                label="􀎽 Confirm"
-                onPress={onLongPressSend}
-                size="big"
-              />
-            </RowWithMargins>
+            {renderTransactionButtons()}
             <RowWithMargins css={padding(24, 0, 21)} margin={15}>
               <Column flex={1} justify="start">
                 <WalletLabel>Wallet</WalletLabel>
@@ -676,7 +741,7 @@ const TransactionConfirmationScreen = () => {
           )}
         </Column>
       </SlackSheet>
-    </Container>
+    </AnimatedContainer>
   );
 };
 

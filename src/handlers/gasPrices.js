@@ -5,7 +5,7 @@ import axios from 'axios';
  * @type axios instance
  */
 const api = axios.create({
-  baseURL: 'https://dapple.rainbow.me',
+  baseURL: 'https://ethgasstation.info',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -17,4 +17,4 @@ const api = axios.create({
  * @desc get ethereum gas prices
  * @return {Promise}
  */
-export const apiGetGasPrices = () => api.get('/get_eth_gas_prices');
+export const apiGetGasPrices = () => api.get('/api/ethgasAPI.json');
