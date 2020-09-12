@@ -10,12 +10,14 @@ import {
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
 import { logger } from '../utils';
+import useAccountSettings from './useAccountSettings';
 import useUniswapMarketPrice from './useUniswapMarketPrice';
 import useUniswapPairs from './useUniswapPairs';
 
 const DEFAULT_NATIVE_INPUT_AMOUNT = 50;
 
 export default function useUniswapMarketDetails(inputCurrency, outputCurrency) {
+  const { chainId } = useAccountSettings();
   const { getMarketPrice } = useUniswapMarketPrice();
 
   const { allPairs } = useUniswapPairs(inputCurrency, outputCurrency);
@@ -43,6 +45,7 @@ export default function useUniswapMarketDetails(inputCurrency, outputCurrency) {
       }
 
       return calculateTradeDetails(
+        chainId,
         updatedInputAmount,
         outputAmount,
         inputCurrency,
@@ -51,7 +54,7 @@ export default function useUniswapMarketDetails(inputCurrency, outputCurrency) {
         updatedInputAsExactAmount
       );
     },
-    [allPairs, getMarketPrice]
+    [allPairs, chainId, getMarketPrice]
   );
 
   const calculateInputGivenOutputChange = useCallback(

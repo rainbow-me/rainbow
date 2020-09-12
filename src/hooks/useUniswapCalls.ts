@@ -1,18 +1,13 @@
-import { ChainId, Pair, Token, WETH } from '@uniswap/sdk';
+import { ChainId, Pair, Token } from '@uniswap/sdk';
 import { filter, flatMap, map, toLower, uniqBy } from 'lodash';
 import { useMemo } from 'react';
+import { getTokenForCurrency } from '../handlers/uniswap';
 import {
   PAIR_GET_RESERVES_CALL_DATA,
   UNISWAP_V2_BASES,
 } from '../references/uniswap';
 
 import useAccountSettings from './useAccountSettings';
-
-const getTokenForCurrency = (currency, chainId) => {
-  if (!currency) return null;
-  if (currency.address === 'eth') return WETH[chainId];
-  return new Token(chainId, currency.address, currency.decimals);
-};
 
 export default function useUniswapCalls(inputCurrency, outputCurrency) {
   const { chainId } = useAccountSettings();

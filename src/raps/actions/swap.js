@@ -70,6 +70,7 @@ const swap = async (wallet, currentRap, index, parameters) => {
 
   // Get Trade Details
   const tradeDetails = calculateTradeDetails(
+    chainId,
     inputAmount,
     outputAmount,
     inputCurrency,

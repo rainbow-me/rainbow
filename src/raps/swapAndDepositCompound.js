@@ -48,6 +48,7 @@ export const estimateSwapAndDepositCompound = async ({
     }
 
     const tradeDetails = calculateTradeDetails(
+      chainId,
       inputAmount,
       outputAmount,
       inputCurrency,

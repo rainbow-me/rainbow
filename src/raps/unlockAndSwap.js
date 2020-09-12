@@ -48,6 +48,7 @@ export const estimateUnlockAndSwap = async ({
   }
 
   const tradeDetails = calculateTradeDetails(
+    chainId,
     inputAmount,
     outputAmount,
     inputCurrency,

@@ -426,16 +426,20 @@ export const getAllTokens = async (tokenOverrides, excluded = []) => {
 };
 
 export const calculateTradeDetails = (
+  chainId,
   inputAmount: number,
   outputAmount: number,
-  inputToken: Token,
-  outputToken: Token,
+  inputCurrency,
+  outputCurrency,
   pairs: Record<string, Pair>,
   exactInput: boolean
 ): Trade | null => {
-  if (!inputToken || !outputToken) {
+  if (!inputCurrency || !outputCurrency || !pairs) {
     return null;
   }
+
+  const inputToken = getTokenForCurrency(inputCurrency, chainId);
+  const outputToken = getTokenForCurrency(outputCurrency, chainId);
   if (exactInput) {
     const inputRawAmount = convertAmountToRawAmount(
       convertNumberToString(inputAmount || 0),
@@ -461,4 +465,10 @@ export const calculateTradeDetails = (
       }
     )[0];
   }
+};
+
+export const getTokenForCurrency = (currency, chainId) => {
+  if (!currency) return null;
+  if (currency.address === 'eth') return WETH[chainId];
+  return new Token(chainId, currency.address, currency.decimals);
 };
