@@ -24,10 +24,10 @@ Although the library works with Reanimated without any changes, we faced a few i
 Thus we made some hacks we're not very proud of and it's for 99% something you should not do. However, if you see some crashes, you may try one of our hacks. 
 
 There're a few things left to make it polished regarding linear charts:
-- [] cleanup API. `ChartProvider` and `ChartPath` have been split for two components to separated responsibilities of providing data and displaying charts. 
+- [ ] cleanup API. `ChartProvider` and `ChartPath` have been split for two components to separated responsibilities of providing data and displaying charts. 
 I'm still not sure if it's a good move so we can decide to move some props from one to another or connect them inside one component.
-- [] Support for gestures - pinching, swiping, etc.
-- [] more parameters regarding interpolation, smoothing, and animations (i.e. allow to override `springConfig` and `timingConfig`)
+- [ ] Support for gestures - pinching, swiping, etc.
+- [ ] more parameters regarding interpolation, smoothing, and animations (i.e. allow to override `springConfig` and `timingConfig`)
 
 
 ## Installation
@@ -212,14 +212,17 @@ E.g.
 `pickRange = 3, includeExtremes = true`
 
 ```
-X are equidistant in the example
+X are equidistant in this case
 
 Y:0          1          7          2         -3          0          1          2
   S----------o----------E----------X----------E----------o----------X----------o----------S
 ```
 
+
 `X` - points picked because `index%3=0`
+
 `S` – the first and the last points are always included.
+
 `E` – extremes.
 
 
