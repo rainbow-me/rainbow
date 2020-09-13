@@ -200,7 +200,7 @@ E.g.
 and uses [B-spline](https://en.wikipedia.org/wiki/B-spline) interpolation of a given `degree`.
 
 ### `monotoneCubicInterpolation(data, degree = 3)`
-`https://github.com/d3/d3-shape/blob/master/src/curve/monotone.js` is inspired by [d3 shape](https://github.com/d3/d3-shape/blob/master/src/curve/monotone.js).
+This curve is inspired by [d3 shape](https://github.com/d3/d3-shape/blob/master/src/curve/monotone.js).
 "Produces a cubic spline that preserves monotonicity in y, assuming monotonicity in x, as proposed by Steffen in A simple method for monotonic interpolation in one dimension: “a smooth curve with continuous first-order derivatives that passes through any given set of data points without spurious oscillations. Local extrema can occur only at grid points where they are given by the data, but not in between two adjacent grid points.”                                                                                                                                                                  
 
 
