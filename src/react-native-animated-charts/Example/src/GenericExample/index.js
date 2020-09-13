@@ -4,7 +4,6 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
-  TurboModuleRegistry,
   View,
 } from 'react-native';
 import bSplineInterpolation from '../../../src/interpolations/bSplineInterpolation';
@@ -104,13 +103,6 @@ function GenericExample() {
     smoothingFactor,
     smoothingStrategy,
   ]);
-
-  if (
-    !global.__reanimatedModuleProxy &&
-    !TurboModuleRegistry.getEnforcing('NativeReanimated')
-  ) {
-    return null;
-  }
 
   return (
     <View
