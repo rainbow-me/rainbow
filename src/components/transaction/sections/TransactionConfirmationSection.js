@@ -1,13 +1,14 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { CoinIcon } from '../../coin-icon';
-import { Centered, Column, Row } from '../../layout';
+import { Centered, Column, Row, RowWithMargins } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import TransactionSheet from '../TransactionSheet';
 import { colors, padding } from '@rainbow-me/styles';
 
 const Amount = styled(TruncatedText).attrs({
-  color: colors.blueGreyDark,
+  color: colors.dark,
+  letterSpacing: 'roundedTight',
   size: 'larger',
   uppercase: true,
   weight: 'bold',
@@ -18,19 +19,21 @@ const AmountRow = styled(Row).attrs({
   justify: 'center',
 })`
   background-color: ${colors.alpha(colors.darkGrey, 0.06)};
-  ${padding(9, 11)};
-  border-radius: 49;
+  ${padding(7, 12, 9, 11)};
+  border-radius: 20;
   margin: auto;
+  margin-bottom: 8;
 `;
 
 const NativeAmount = styled(Text).attrs({
-  color: colors.blueGreyDark,
-  lineHeight: '69px',
-  size: '58px',
-  uppercase: true,
-  weight: 'bold',
+  align: 'center',
+  color: colors.dark,
+  letterSpacing: 'zero',
+  size: 'headline',
+  weight: 'heavy',
 })`
-  margin-bottom: 8;
+  margin-bottom: 10;
+  margin-top: 19;
 `;
 
 const TransactionConfirmationSection = ({
@@ -43,13 +46,12 @@ const TransactionConfirmationSection = ({
     </Centered>
     <AmountRow>
       <Column>
-        <Row align="center">
-          <CoinIcon size={22} symbol={symbol} />
+        <RowWithMargins align="center" margin={5}>
+          <CoinIcon size={20} symbol={symbol} />
           <Amount>
-            {` `}
             {amount} {symbol}
           </Amount>
-        </Row>
+        </RowWithMargins>
       </Column>
     </AmountRow>
   </TransactionSheet>

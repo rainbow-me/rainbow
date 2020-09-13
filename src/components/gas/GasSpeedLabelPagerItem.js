@@ -36,7 +36,7 @@ const TransitionContainer = styled(Transitioning.View)`
 
 const GasSpeedLabel = styled(Text).attrs({
   size: 'lmedium',
-  weight: 'semibold',
+  weight: 'bold',
 })`
   margin-bottom: 3;
 `;

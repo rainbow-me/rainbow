@@ -27,9 +27,9 @@ const Container = styled(Column).attrs({
 `;
 
 const Label = styled(Text).attrs({
-  opacity: 0.5,
+  color: colors.alpha(colors.darkModeColors.blueGreyDark, 0.6),
   size: 'smedium',
-  weight: 'medium',
+  weight: 'semibold',
 })``;
 
 const ButtonLabel = styled(BorderlessButton).attrs({
@@ -41,7 +41,7 @@ const ButtonLabel = styled(BorderlessButton).attrs({
 
 const LittleBorderlessButton = ({ onPress, children }) => (
   <ButtonLabel onPress={onPress}>
-    <Text color={colors.appleBlue} weight="bold">
+    <Text color={colors.appleBlue} size="smedium" weight="bold">
       {children}
     </Text>
   </ButtonLabel>
@@ -156,7 +156,7 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
         color={colors.white}
         letterSpacing="roundedTight"
         size="lmedium"
-        weight="semibold"
+        weight="bold"
       >
         {isEmpty(gasPrices) ||
         isEmpty(txFees) ||

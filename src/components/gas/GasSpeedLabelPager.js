@@ -18,7 +18,8 @@ const PagerItem = styled(Row)`
   width: ${({ selected }) => (selected ? '4' : '3')}px;
   height: 3px;
   border-radius: 2px;
-  margin-right: 3px;
+  margin-left: 2.5px;
+  margin-right: 0.5px;
 `;
 
 const GasSpeedLabelPager = ({ label, theme, showPager = true }) => {
@@ -27,19 +28,15 @@ const GasSpeedLabelPager = ({ label, theme, showPager = true }) => {
 
   return (
     <Fragment>
-      <Row
-        align="center"
-        height={GasSpeedLabelPagerItemHeight + 5}
-        justify="end"
-      >
+      <Row align="center" height={GasSpeedLabelPagerItemHeight} justify="end">
         {showPager && (
-          <Row height={5} marginBottom={0} marginTop={0} self="start">
+          <Row self="start">
             {gasUtils.GasSpeedOrder.map((speed, i) => (
               <PagerItem
                 backgroundColor={
                   speed === label
                     ? speedColors[i]
-                    : colors.alpha(colors.blueGreyDarkLight, 0.3)
+                    : colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
                 }
                 key={`pager-${speed}-${i}`}
                 selected={speed === label}
@@ -47,11 +44,7 @@ const GasSpeedLabelPager = ({ label, theme, showPager = true }) => {
             ))}
           </Row>
         )}
-        <Row
-          height={GasSpeedLabelPagerItemHeight}
-          marginBottom={0}
-          marginTop={0}
-        >
+        <Row height={GasSpeedLabelPagerItemHeight}>
           {gasUtils.GasSpeedOrder.map(speed => (
             <GasSpeedLabelPagerItem
               key={speed}

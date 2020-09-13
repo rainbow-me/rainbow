@@ -46,19 +46,24 @@ const SheetActionButton = ({
   color = colors.appleBlue,
   emoji,
   icon,
+  isTransparent,
   label,
   size,
   textColor = colors.white,
+  weight = 'semibold',
   ...props
 }) => {
   const shadowsForButtonColor = useMemo(() => {
     const isWhite = color === colors.white;
 
-    return [
-      [0, 10, 30, colors.dark, isWhite ? 0.12 : 0.2],
-      [0, 5, 15, isWhite ? colors.dark : color, isWhite ? 0.08 : 0.4],
-    ];
-  }, [color]);
+    if (isTransparent) {
+      return [[0, 0, 0, colors.transparent]];
+    } else
+      return [
+        [0, 10, 30, colors.dark, isWhite ? 0.12 : 0.2],
+        [0, 5, 15, isWhite ? colors.dark : color, isWhite ? 0.08 : 0.4],
+      ];
+  }, [color, isTransparent]);
 
   return (
     <Button as={ButtonPressAnimation} size={size} {...props}>
@@ -69,7 +74,9 @@ const SheetActionButton = ({
         shadows={shadowsForButtonColor}
       >
         {color === colors.white && <WhiteButtonGradient />}
-        {color !== colors.white && <InnerBorder radius={borderRadius} />}
+        {color !== colors.white && !isTransparent && (
+          <InnerBorder radius={borderRadius} />
+        )}
       </ShadowStack>
       <Content size={size}>
         {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
@@ -78,7 +85,7 @@ const SheetActionButton = ({
           align="center"
           color={textColor}
           size={size === 'big' ? 'larger' : 'large'}
-          weight="bold"
+          weight={weight}
         >
           {label}
         </Text>

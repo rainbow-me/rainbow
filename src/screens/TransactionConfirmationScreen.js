@@ -90,11 +90,11 @@ const isReanimatedAvailable = !(
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs({
   backgroundColor: colors.transparent,
-  borderRadius: 18,
+  borderRadius: 16,
   showLargeShadow: true,
-  size: 60,
+  size: 50,
 })`
-  margin-bottom: 12;
+  margin-bottom: 14;
 `;
 
 const Container = styled(Column)`
@@ -110,15 +110,17 @@ const GasSpeedButtonContainer = styled(Column)`
 
 const WalletLabel = styled(Text).attrs({
   color: colors.alpha(colors.blueGreyDark, 0.5),
+  letterSpacing: 'roundedMedium',
   size: 'smedium',
+  weight: 'semibold',
 })`
-  margin-bottom: 5;
+  margin-bottom: 3;
 `;
 
 const WalletText = styled(Text).attrs({
   color: colors.alpha(colors.blueGreyDark, 0.8),
   size: 'larger',
-  weight: 'bold',
+  weight: 'semibold',
 })``;
 
 const NOOP = () => undefined;
@@ -559,23 +561,25 @@ const TransactionConfirmationScreen = () => {
     ) : (
       <RowWithMargins
         css={`
-          ${padding(24, 0, 21)};
           opacity: ${ready ? 1 : 0.5};
         `}
         margin={15}
       >
         <SheetActionButton
           color={colors.alpha(colors.blueGreyDark, 0.06)}
+          isTransparent
           label="Cancel"
           onPress={onCancel}
           size="big"
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+          weight="bold"
         />
         <SheetActionButton
           color={colors.appleBlue}
           label="􀎽 Confirm"
           onPress={ready ? onLongPressSend : NOOP}
           size="big"
+          weight="bold"
         />
       </RowWithMargins>
     );
@@ -663,25 +667,25 @@ const TransactionConfirmationScreen = () => {
     >
       <SlackSheet
         backgroundColor={colors.transparent}
-        borderRadius={30}
+        borderRadius={0}
         hideHandle
       >
         <Column>
           <Centered
             backgroundColor={colors.white}
-            borderRadius={30}
+            borderRadius={39}
             direction="column"
-            paddingBottom={10}
             paddingHorizontal={19}
-            paddingTop={17}
+            paddingTop={24}
           >
             <SheetHandleFixedToTop showBlur={false} />
             <Column marginBottom={17} />
             <DappLogo dappName={dappName || ''} imageUrl={imageUrl || ''} />
-            <Row marginTop={0}>
+            <Row marginBottom={5}>
               <Text
+                align="center"
                 color={colors.alpha(colors.blueGreyDark, 0.8)}
-                lineHeight={29}
+                letterSpacing="roundedMedium"
                 size="large"
                 weight="bold"
               >
@@ -690,8 +694,9 @@ const TransactionConfirmationScreen = () => {
                 // if it's on the override list (dappNameHandler.js)
                 authenticatedName && (
                   <Text
+                    align="center"
                     color={colors.appleBlue}
-                    lineHeight={29}
+                    letterSpacing="roundedMedium"
                     size="large"
                     weight="bold"
                   >
@@ -700,19 +705,25 @@ const TransactionConfirmationScreen = () => {
                 )}
               </Text>
             </Row>
-            <Centered height={30} marginBottom={29} paddingHorizontal={23}>
-              <Text align="center" color="dark" size="big" weight="heavy">
+            <Centered marginBottom={24} paddingHorizontal={24}>
+              <Text
+                align="center"
+                color="dark"
+                letterSpacing="roundedMedium"
+                size="larger"
+                weight="heavy"
+              >
                 {methodName || ''}
               </Text>
             </Centered>
+            <Divider color={colors.rowDividerExtraLight} inset={[0, 84]} />
             {renderTransactionSection()}
-            <Divider color={colors.rowDividerLight} inset={[0, 84]} />
             {renderTransactionButtons()}
-            <RowWithMargins css={padding(24, 0, 21)} margin={15}>
+            <RowWithMargins css={padding(24, 5, 30)} margin={15}>
               <Column flex={1} justify="start">
                 <WalletLabel>Wallet</WalletLabel>
-                <Row>
-                  <Column marginTop={3}>
+                <RowWithMargins margin={5}>
+                  <Column marginTop={2}>
                     <ContactAvatar
                       color={
                         isNaN(accountColor) ? colors.skeleton : accountColor
@@ -721,12 +732,14 @@ const TransactionConfirmationScreen = () => {
                       value={accountSymbol}
                     />
                   </Column>
-                  <WalletText> {accountName}</WalletText>
-                </Row>
+                  <WalletText>{accountName}</WalletText>
+                </RowWithMargins>
               </Column>
               <Column align="flex-end" flex={1} justify="end">
-                <WalletLabel>Balance</WalletLabel>
-                <WalletText>{balances[accountAddress]} ETH</WalletText>
+                <WalletLabel align="right">Balance</WalletLabel>
+                <WalletText align="right" letterSpacing="roundedTight">
+                  {balances[accountAddress]} ETH
+                </WalletText>
               </Column>
             </RowWithMargins>
           </Centered>
