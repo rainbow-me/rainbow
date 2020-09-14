@@ -150,7 +150,6 @@ export default function ExchangeModal({
     isWithdrawal,
     maxInputBalance,
     nativeFieldRef,
-    outputCurrency,
     supplyBalanceUnderlying,
     type,
   });

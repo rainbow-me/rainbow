@@ -4,7 +4,6 @@ import { calculateTradeDetails } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
   convertNumberToString,
-  convertRawAmountToDecimalFormat,
   greaterThanOrEqualTo,
   isZero,
   updatePrecisionToDisplay,
@@ -63,7 +62,6 @@ export default function useUniswapMarketDetails(inputCurrency, outputCurrency) {
     ({
       inputAsExactAmount,
       inputCurrency,
-      inputDecimals,
       isOutputEmpty,
       isOutputZero,
       maxInputBalance,
@@ -75,11 +73,7 @@ export default function useUniswapMarketDetails(inputCurrency, outputCurrency) {
         updateInputAmount(undefined, undefined, false);
         setIsSufficientBalance(true);
       } else {
-        const updatedInputAmount = get(tradeDetails, 'inputAmount.amount');
-        const rawUpdatedInputAmount = convertRawAmountToDecimalFormat(
-          updatedInputAmount,
-          inputDecimals
-        );
+        const rawUpdatedInputAmount = tradeDetails?.inputAmount?.toExact();
 
         const updatedInputAmountDisplay = updatePrecisionToDisplay(
           rawUpdatedInputAmount,
@@ -105,11 +99,9 @@ export default function useUniswapMarketDetails(inputCurrency, outputCurrency) {
   const calculateOutputGivenInputChange = useCallback(
     ({
       inputAsExactAmount,
-      inputCurrency,
       isInputEmpty,
       isInputZero,
       outputCurrency,
-      outputDecimals,
       outputFieldRef,
       tradeDetails,
       updateOutputAmount,
@@ -123,11 +115,7 @@ export default function useUniswapMarketDetails(inputCurrency, outputCurrency) {
       ) {
         updateOutputAmount(null, null, true);
       } else {
-        const updatedOutputAmount = get(tradeDetails, 'outputAmount.amount');
-        const rawUpdatedOutputAmount = convertRawAmountToDecimalFormat(
-          updatedOutputAmount,
-          outputDecimals
-        );
+        const rawUpdatedOutputAmount = tradeDetails?.outputAmount?.toExact();
         if (!isZero(rawUpdatedOutputAmount)) {
           let outputNativePrice = get(outputCurrency, 'price.value', null);
           const updatedOutputAmountDisplay = updatePrecisionToDisplay(
@@ -184,9 +172,6 @@ export default function useUniswapMarketDetails(inputCurrency, outputCurrency) {
         const isMissingAmounts = !inputAmount && !outputAmount;
         if (isMissingAmounts) return;
 
-        const { decimals: inputDecimals } = inputCurrency;
-        const { decimals: outputDecimals } = outputCurrency;
-
         // update slippage
         const slippage = convertNumberToString(
           get(tradeDetails, 'executionRateSlippage', 0)
@@ -208,11 +193,9 @@ export default function useUniswapMarketDetails(inputCurrency, outputCurrency) {
         if (inputAsExactAmount) {
           calculateOutputGivenInputChange({
             inputAsExactAmount,
-            inputCurrency,
             isInputEmpty,
             isInputZero,
             outputCurrency,
-            outputDecimals,
             outputFieldRef,
             tradeDetails,
             updateOutputAmount,
@@ -229,7 +212,6 @@ export default function useUniswapMarketDetails(inputCurrency, outputCurrency) {
           calculateInputGivenOutputChange({
             inputAsExactAmount,
             inputCurrency,
-            inputDecimals,
             isOutputEmpty,
             isOutputZero,
             maxInputBalance,
