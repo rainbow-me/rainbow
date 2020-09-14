@@ -1,27 +1,15 @@
 import { useIsFocused } from '@react-navigation/native';
-import React, { useCallback, useRef, useState } from 'react';
+import React from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BaseButton } from 'react-native-gesture-handler';
-import Animated from 'react-native-reanimated';
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
-
-import BottomSheet from 'reanimated-bottom-sheet';
-import { useNavigation } from '../../navigation/Navigation';
-
-// eslint-disable-next-line import/no-named-as-default-member
-const { SpringUtils } = Animated;
-
-const discoverSheetSpring = SpringUtils.makeConfigFromBouncinessAndSpeed({
-  ...SpringUtils.makeDefaultConfig(),
-  bounciness: 0,
-  mass: 1,
-  overshootClamping: false,
-  restDisplacementThreshold: 0.99,
-  restSpeedThreshold: 100,
-  speed: 18,
-  toss: 6,
-});
+import { useNavigation } from '../../navigation';
+import {
+  YABSForm,
+  YABSScrollView,
+} from '../../react-native-yet-another-bottom-sheet';
+import { deviceUtils } from '../../utils';
 
 const Lorem = () => {
   const { navigate } = useNavigation();
@@ -379,52 +367,33 @@ const Lorem = () => {
   );
 };
 
-function renderInner() {
+function DiscoverSheetAndroid() {
   return (
-    <View
-      style={{
-        backgroundColor: 'white',
-        paddingTop: 12,
+    <YABSForm
+      panGHProps={{
+        simultaneousHandlers: 'AnimatedScrollViewPager',
       }}
-    >
-      <View style={styles.header}>
-        <View style={styles.panelHeader}>
-          <View style={styles.panelHandle} />
-        </View>
-      </View>
-      <Lorem />
-    </View>
-  );
-}
-
-export function SlackBottomSheetContent() {
-  return (
-    <View style={StyleSheet.absoluteFillObject}>
-      <ScrollView
-        contentContainerStyle={{ marginBottom: 20 }}
-        style={{
+      points={[0, 200, deviceUtils.dimensions.height - 200]}
+      style={[
+        StyleSheet.absoluteFillObject,
+        {
           backgroundColor: 'white',
-          marginBottom: -20,
-          opacity: 1,
-          paddingTop: 12,
-        }}
-      >
+          bottom: 0,
+          top: 100,
+        },
+      ]}
+    >
+      <View style={{ backgroundColor: 'yellow', height: 40, width: '100%' }} />
+      <YABSScrollView>
         <Lorem />
-      </ScrollView>
-    </View>
+      </YABSScrollView>
+    </YABSForm>
   );
 }
 
-function DiscoverSheet() {
-  const [initialPosition, setInitialPosition] = useState('long');
-  const position = useRef({ x: 0, y: 0 });
-  const setPosition = useCallback(
-    ({ nativeEvent: { contentOffset } }) => (position.current = contentOffset),
-    []
-  );
+function DiscoverSheetIOS() {
   const isFocused = useIsFocused();
-  // noinspection JSConstructorReturnsPrimitive
-  return Platform.OS === 'ios' ? (
+  return (
     <SlackBottomSheet
       allowsDragToDismiss={false}
       allowsTapToDismiss={false}
@@ -433,19 +402,14 @@ function DiscoverSheet() {
       initialAnimation={false}
       interactsWithOuterScrollView
       isHapticFeedbackEnabled={false}
-      onWillTransition={({ type }) => setInitialPosition(type)}
       presentGlobally={false}
       scrollsToTopOnTapStatusBar={isFocused}
-      startFromShortForm={initialPosition === 'short'}
       topOffset={100}
       unmountAnimation={false}
     >
       <View style={StyleSheet.absoluteFillObject}>
         <ScrollView
           contentContainerStyle={{ marginBottom: 20 }}
-          contentOffset={position.current}
-          onMomentumScrollEnd={setPosition}
-          onScrollEndDrag={setPosition}
           style={{
             backgroundColor: 'white',
             marginBottom: -20,
@@ -457,31 +421,12 @@ function DiscoverSheet() {
         </ScrollView>
       </View>
     </SlackBottomSheet>
-  ) : (
-    <BottomSheet
-      borderRadius={20}
-      overdragResistanceFactor={0}
-      renderContent={renderInner}
-      snapPoints={[300, 744]}
-      springConfig={discoverSheetSpring}
-    />
   );
 }
 
-export default DiscoverSheet;
+export default Platform.OS === 'ios' ? DiscoverSheetIOS : DiscoverSheetAndroid;
 
 const styles = StyleSheet.create({
-  panelHandle: {
-    backgroundColor: '#3C4252',
-    borderRadius: 2.5,
-    height: 5,
-    marginBottom: 10,
-    opacity: 0.3,
-    width: 36,
-  },
-  panelHeader: {
-    alignItems: 'center',
-  },
   panelTitle: {
     fontSize: 27,
     fontWeight: '700',

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import Animated, { useCode } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { BubbleSheet } from '../components/bubble-sheet';
@@ -81,7 +81,9 @@ export default function QRScannerScreen() {
 
   return (
     <View>
-      {discoverSheetAvailable ? <DiscoverSheet /> : null}
+      {discoverSheetAvailable && Platform.OS === 'ios' ? (
+        <DiscoverSheet />
+      ) : null}
       <ScannerContainer>
         <Background />
         <CameraDimmer>
@@ -91,7 +93,11 @@ export default function QRScannerScreen() {
             enableCamera={isFocused}
           />
         </CameraDimmer>
-        {discoverSheetAvailable ? null : (
+        {discoverSheetAvailable ? (
+          Platform.OS === 'android' ? (
+            <DiscoverSheet />
+          ) : null
+        ) : (
           <BubbleSheet onLayout={onSheetLayout}>
             {walletConnectorsCount ? (
               <WalletConnectList items={walletConnectorsByDappName} />

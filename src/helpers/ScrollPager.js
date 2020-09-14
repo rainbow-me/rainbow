@@ -1,8 +1,11 @@
 import * as React from 'react';
 import { InteractionManager, Keyboard, StyleSheet } from 'react-native';
+import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 import Animated, { Value } from 'react-native-reanimated';
 
 const { event, divide, onChange, cond, eq, round, call } = Animated;
+
+const AnimatedScrollView = Animated.createAnimatedComponent(GHScrollView);
 
 export default class ScrollPager extends React.Component {
   static defaultProps = {
@@ -172,7 +175,7 @@ export default class ScrollPager extends React.Component {
       position: this.relativePosition,
       removeListener: this.removeListener,
       render: children => (
-        <Animated.ScrollView
+        <AnimatedScrollView
           automaticallyAdjustContentInsets={false}
           bounces={overscroll}
           contentContainerStyle={
@@ -186,6 +189,7 @@ export default class ScrollPager extends React.Component {
           }
           contentOffset={this.initialOffset}
           directionalLockEnabled
+          id="AnimatedScrollViewPager"
           keyboardShouldPersistTaps="always"
           onMomentumScrollEnd={this.handleMomentumScrollEnd}
           onScroll={this.onScroll}
@@ -215,7 +219,7 @@ export default class ScrollPager extends React.Component {
               ])
             )}
           />
-        </Animated.ScrollView>
+        </AnimatedScrollView>
       ),
     });
   }
