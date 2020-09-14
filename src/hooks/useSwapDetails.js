@@ -2,14 +2,15 @@ import { get } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
 import {
   convertAmountToNativeDisplay,
+  multiply,
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
-import useUniswapMarketPrice from './useUniswapMarketPrice';
+import { ethereumUtils } from '../utils';
+import useAccountAssets from './useAccountAssets';
 
 export default function useSwapDetails() {
-  const { getMarketPrice } = useUniswapMarketPrice();
-
   const [extraTradeDetails, setExtraTradeDetails] = useState({});
+  const { allAssets } = useAccountAssets();
 
   const updateExtraTradeDetails = useCallback(
     ({ inputCurrency, nativeCurrency, outputCurrency, tradeDetails }) => {
@@ -18,36 +19,51 @@ export default function useSwapDetails() {
       let outputExecutionRate = '';
       let outputNativePrice = '';
 
+      let inputPriceValue = null;
+
       if (inputCurrency) {
-        const inputPriceValue = getMarketPrice(inputCurrency, outputCurrency);
+        inputPriceValue = get(inputCurrency, 'native.price.amount', null);
+
+        inputExecutionRate = tradeDetails?.executionPrice?.toFixed();
 
         inputExecutionRate = updatePrecisionToDisplay(
-          get(tradeDetails, 'executionRate.rate', 0),
+          inputExecutionRate,
           inputPriceValue
         );
 
-        inputNativePrice = convertAmountToNativeDisplay(
-          inputPriceValue,
-          nativeCurrency
-        );
+        inputNativePrice = inputPriceValue
+          ? convertAmountToNativeDisplay(inputPriceValue, nativeCurrency)
+          : '-';
       }
 
       if (outputCurrency) {
-        const outputPriceValue = getMarketPrice(
-          inputCurrency,
-          outputCurrency,
-          false
+        const outputCurrencyInWallet = ethereumUtils.getAsset(
+          allAssets,
+          outputCurrency.address
         );
 
+        let outputPriceValue = get(
+          outputCurrencyInWallet,
+          'native.price.amount',
+          null
+        );
+
+        outputExecutionRate = tradeDetails?.executionPrice?.invert()?.toFixed();
+
+        // If the output currency was not found in wallet and the input currency has a price
+        // Calculate the output currency price based off of the input currency price
+        if (!outputPriceValue && inputPriceValue) {
+          outputPriceValue = multiply(inputPriceValue, outputExecutionRate);
+        }
+
         outputExecutionRate = updatePrecisionToDisplay(
-          get(tradeDetails, 'executionRate.rateInverted', 0),
+          outputExecutionRate,
           outputPriceValue
         );
 
-        outputNativePrice = convertAmountToNativeDisplay(
-          outputPriceValue,
-          nativeCurrency
-        );
+        outputNativePrice = outputPriceValue
+          ? convertAmountToNativeDisplay(outputPriceValue, nativeCurrency)
+          : '-';
       }
 
       setExtraTradeDetails({
@@ -57,7 +73,7 @@ export default function useSwapDetails() {
         outputNativePrice,
       });
     },
-    [getMarketPrice]
+    [allAssets]
   );
 
   const areTradeDetailsValid = useMemo(() => {
@@ -77,7 +93,7 @@ export default function useSwapDetails() {
   }, [extraTradeDetails]);
 
   return {
-    areTradeDetailsValid,
+    areTradeDetailsValid: !!areTradeDetailsValid,
     extraTradeDetails,
     updateExtraTradeDetails,
   };
