@@ -36,11 +36,11 @@ describe('Import from private key flow', () => {
     await Helpers.checkIfVisible('wallet-screen');
   });
 
-  it('Should show the backup sheet', async () => {
-    await Helpers.delay(3000);
-    await Helpers.checkIfVisible('backup-sheet');
-    await Helpers.tap('backup-sheet-imported-cancel-button');
-  });
+  // it('Should show the backup sheet', async () => {
+  //   await Helpers.delay(3000);
+  //   await Helpers.checkIfVisible('backup-sheet');
+  //   await Helpers.tap('backup-sheet-imported-cancel-button');
+  // });
 
   it('Should say "PKEY" in the Profile Screen header', async () => {
     await Helpers.delay(1000);

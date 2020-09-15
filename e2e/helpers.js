@@ -73,8 +73,13 @@ export function tapAlertWithButton(text, index) {
     .tap();
 }
 
-export async function swipe(elementId, direction) {
-  await element(by.id(elementId)).swipe(direction);
+export async function swipe(
+  elementId,
+  direction,
+  speed = 'fast',
+  percentage = 0.75
+) {
+  await element(by.id(elementId)).swipe(direction, speed, percentage);
 }
 
 export async function scrollTo(scrollviewId, edge) {

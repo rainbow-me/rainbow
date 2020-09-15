@@ -25,7 +25,6 @@ describe('Import from seed flow', () => {
     await Helpers.checkIfHasText('import-sheet-button-label', 'Paste');
     await Helpers.typeText('import-sheet-input', 'asdajksdlakjsd', false);
     await Helpers.checkIfHasText('import-sheet-button-label', 'Import');
-    await Helpers.checkIfDisabled('import-sheet-button');
   });
 
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
@@ -44,11 +43,11 @@ describe('Import from seed flow', () => {
     await Helpers.checkIfVisible('wallet-screen');
   });
 
-  it('Should show the backup sheet', async () => {
-    await Helpers.delay(3000);
-    await Helpers.checkIfVisible('backup-sheet');
-    await Helpers.tap('backup-sheet-imported-cancel-button');
-  });
+  // it('Should show the backup sheet', async () => {
+  //   await Helpers.delay(3000);
+  //   await Helpers.checkIfVisible('backup-sheet');
+  //   await Helpers.tap('backup-sheet-imported-cancel-button');
+  // });
 
   it('Should say "poopcoin.eth" in the Profile Screen header', async () => {
     await Helpers.delay(1000);

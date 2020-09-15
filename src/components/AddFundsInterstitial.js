@@ -248,7 +248,10 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
             </Paragraph>
           </Fragment>
         )}
-        <CopyAddressButton onPress={handlePressCopyAddress}>
+        <CopyAddressButton
+          onPress={handlePressCopyAddress}
+          testID="copy-address-button"
+        >
           <RowWithMargins margin={6}>
             <Icon
               color={colors.appleBlue}

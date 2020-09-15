@@ -47,9 +47,7 @@ export default function BackupSheetSection({
   descriptionText,
   onPrimaryAction,
   onSecondaryAction,
-  primaryButtonTestId,
   primaryLabel,
-  secondaryButtonTestId,
   secondaryLabel,
   titleText,
   type,
@@ -75,14 +73,14 @@ export default function BackupSheetSection({
         <RainbowButton
           label={primaryLabel}
           onPress={onPrimaryAction}
-          testID={primaryButtonTestId}
+          testID="backup-sheet-rainbow-button"
         />
         <SheetActionButton
           color={colors.white}
           label={secondaryLabel}
           onPress={onSecondaryAction}
           size="big"
-          testID={secondaryButtonTestId}
+          testID="backup-sheet-action-button"
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
         />
       </Footer>
