@@ -1,80 +1,44 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Keyboard } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { setKeyboardHeight as storeKeyboardHeight } from '../handlers/localstorage/globalSettings';
-import { setKeyboardHeight } from '../redux/keyboardHeight';
-import useDimensions from './useDimensions';
+import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
+import { setKeyboardHeight } from '@rainbow-me/redux/keyboardHeight';
 
-function getDefaultKeyboardHeight(screenHeight) {
-  let keyboardHeight = 0;
-  switch (screenHeight) {
-    case 568:
-      keyboardHeight = 216;
-      break;
-    case 667:
-      keyboardHeight = 216;
-      break;
-    case 736:
-      keyboardHeight = 226;
-      break;
-    case 812:
-      keyboardHeight = 291;
-      break;
-    case 896:
-      keyboardHeight = 301;
-      break;
-    default:
-      keyboardHeight = Math.floor(screenHeight * 0.333);
-  }
-  return keyboardHeight;
-}
+const keyboardHeightsSelector = state => state.keyboardHeight.keyboardHeight;
 
-export default function useKeyboardHeight() {
+export default function useKeyboardHeight(options = {}) {
+  // keyboards can different heights depending on whether
+  // things like "autofill" or "autocomplete" are enabled on the target input.
+  const { keyboardType = KeyboardTypes.default } = options;
+
   const dispatch = useDispatch();
-  const { height: screenHeight } = useDimensions();
-  const [didMeasure, setDidMeasure] = useState(false);
-  const cachedKeyboardHeight = useSelector(
-    ({ keyboardHeight: { keyboardHeight } }) => keyboardHeight
-  );
 
-  const updateKeyboardHeight = useCallback(
-    newHeight => {
-      storeKeyboardHeight(newHeight);
-      dispatch(setKeyboardHeight(newHeight));
-    },
-    [dispatch]
-  );
+  const cachedKeyboardHeights = useSelector(keyboardHeightsSelector);
+  const heightForKeyboardType = cachedKeyboardHeights?.[keyboardType];
 
-  const handleKeyboardWillShow = useCallback(
-    ({ endCoordinates: { height } }) => {
-      if (height !== cachedKeyboardHeight) {
-        updateKeyboardHeight(Math.floor(height));
+  const handleKeyboardDidShow = useCallback(
+    event => {
+      const newHeight = Math.floor(event.endCoordinates.height);
+
+      if (!heightForKeyboardType || newHeight !== heightForKeyboardType) {
+        dispatch(
+          setKeyboardHeight({
+            height: newHeight,
+            keyboardType,
+          })
+        );
+        Keyboard.scheduleLayoutAnimation(event);
       }
-      setDidMeasure(true);
     },
-    [cachedKeyboardHeight, updateKeyboardHeight]
+    [dispatch, heightForKeyboardType, keyboardType]
   );
 
   useEffect(() => {
-    let listener = undefined;
-
-    if (!didMeasure) {
-      listener = Keyboard.addListener(
-        'keyboardWillShow',
-        handleKeyboardWillShow
-      );
-    }
-
+    Keyboard.addListener('keyboardDidShow', handleKeyboardDidShow);
     return () => {
-      if (listener) {
-        Keyboard.removeListener('keyboardWillShow', handleKeyboardWillShow);
-      }
+      Keyboard.removeListener('keyboardDidShow', handleKeyboardDidShow);
     };
-  }, [didMeasure, handleKeyboardWillShow]);
+  }, [handleKeyboardDidShow]);
 
-  return {
-    keyboardHeight:
-      cachedKeyboardHeight || getDefaultKeyboardHeight(screenHeight),
-    updateKeyboardHeight,
-  };
+  return heightForKeyboardType || cachedKeyboardHeights.default || 0;
 }

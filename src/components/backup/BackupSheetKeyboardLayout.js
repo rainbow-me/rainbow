@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { RainbowButton } from '../buttons';
 import { Column } from '../layout';
 import { SheetHandleFixedToTopHeight } from '../sheet';
+import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
 import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
 import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
 import { padding } from '@rainbow-me/styles';
@@ -21,7 +22,9 @@ export default function BackupSheetKeyboardLayout({
   onSubmit,
 }) {
   const { height: deviceHeight, isTallPhone } = useDimensions();
-  const { keyboardHeight } = useKeyboardHeight();
+  const keyboardHeight = useKeyboardHeight({
+    keyboardType: KeyboardTypes.password,
+  });
 
   const sheetRegionAboveKeyboardHeight =
     deviceHeight -
