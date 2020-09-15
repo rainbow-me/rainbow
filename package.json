@@ -51,7 +51,7 @@
     "@ethersproject/constants": "^5.0.2",
     "@ethersproject/contracts": "^5.0.2",
     "@ethersproject/hdnode": "^5.0.2",
-    "@ethersproject/providers": "^5.0.5",
+    "@ethersproject/providers": "^5.0.8",
     "@ethersproject/random": "^5.0.2",
     "@ethersproject/shims": "^5.0.5",
     "@ethersproject/signing-key": "^5.0.3",
@@ -257,7 +257,7 @@
     "typescript": "^3.9.7"
   },
   "resolutions": {
-    "**/bl": "2.2.1",
+    "**/bl": "0.9.5",
     "**/elliptic": "6.5.3",
     "**/logkitty": "0.7.1",
     "**/minimist": "1.2.3",

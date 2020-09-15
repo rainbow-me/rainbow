@@ -39,7 +39,7 @@ export let web3Provider = new JsonRpcProvider(
  */
 export const web3SetHttpProvider = async network => {
   if (network.startsWith('http://')) {
-    web3Provider = new JsonRpcProvider(network);
+    web3Provider = new JsonRpcProvider(network, NetworkTypes.mainnet);
   } else {
     web3Provider = new JsonRpcProvider(
       replace(infuraUrl, 'network', network),
