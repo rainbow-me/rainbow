@@ -5,11 +5,12 @@ import {
   etherscanGetGasEstimates,
   etherscanGetGasPrices,
   ethGasStationGetGasPrices,
+  getEstimatedTimeForGasPrice,
 } from '../handlers/gasPrices';
 import { fromWei, greaterThanOrEqualTo } from '../helpers/utilities';
 import {
+  defaultGasPriceFormat,
   getFallbackGasPrices,
-  getTxFee,
   parseGasPrices,
   parseTxFees,
 } from '../parsers/gas';
@@ -17,7 +18,7 @@ import ethUnits from '../references/ethereum-units.json';
 import { ethereumUtils, gasUtils } from '../utils';
 import logger from 'logger';
 
-const { CUSTOM, FAST, NORMAL } = gasUtils;
+const { CUSTOM, NORMAL } = gasUtils;
 
 // -- Constants ------------------------------------------------------------- //
 const GAS_MULTIPLIER = 1.101;
@@ -108,16 +109,9 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
         const adjustedGasPrices = bumpGasPrices(data);
 
         let gasPrices = parseGasPrices(adjustedGasPrices, source);
-
-        if (existingGasPrice[CUSTOM].value === existingGasPrice[FAST].value) {
-          //Default custom gas to fast values
-          console.log('updating custom');
-          gasPrices[CUSTOM] = {
-            ...gasPrices[FAST],
-            option: CUSTOM,
-          };
-        } else {
-          console.log('preserving custom');
+        if (existingGasPrice[CUSTOM] !== null) {
+          // Preserve custom values while updating prices
+          gasPrices[CUSTOM] = existingGasPrice[CUSTOM];
         }
 
         dispatch({
@@ -126,6 +120,7 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
           },
           type: GAS_PRICES_SUCCESS,
         });
+
         fetchResolve(true);
       } catch (error) {
         dispatch({
@@ -175,23 +170,26 @@ export const gasUpdateGasPriceOption = newGasPriceOption => (
   analytics.track('Updated Gas Price', { gasPriceOption: newGasPriceOption });
 };
 
-export const gasUpdateCustomValues = (price, estimate) => (
-  dispatch,
-  getState
-) => {
-  const { assets } = getState().data;
-  const { gasLimit } = getState().gas;
-  const { nativeCurrency } = getState().settings;
-  const ethPriceUnit = ethereumUtils.getEthPriceUnit(assets);
-  const fee = getTxFee(price, gasLimit, ethPriceUnit, nativeCurrency);
-  dispatch({
+export const gasUpdateCustomValues = price => async (dispatch, getState) => {
+  const { gasPrices, gasLimit } = getState().gas;
+
+  const estimateInMinutes = await getEstimatedTimeForGasPrice(price);
+  const newGasPrices = { ...gasPrices };
+  newGasPrices[CUSTOM] = defaultGasPriceFormat(
+    CUSTOM,
+    estimateInMinutes,
+    price,
+    true
+  );
+
+  await dispatch({
     payload: {
-      customGasPrice: price,
-      customGasPriceEstimate: estimate,
-      customGasPriceFee: fee,
+      gasPrices: newGasPrices,
     },
-    type: GAS_UPDATE_CUSTOM_VALUES,
+    type: GAS_PRICES_SUCCESS,
   });
+
+  dispatch(gasUpdateTxFee(gasLimit));
 };
 
 export const gasUpdateDefaultGasLimit = (
@@ -221,9 +219,6 @@ export const gasUpdateTxFee = (gasLimit, overrideGasOption) => (
     _gasLimit,
     nativeCurrency
   );
-
-  // Default custom gas to fast values
-  txFees[CUSTOM] = txFees[FAST];
 
   const results = getSelectedGasPrice(
     assets,

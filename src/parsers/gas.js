@@ -17,21 +17,21 @@ const { CUSTOM, FAST, NORMAL, SLOW, GasSpeedOrder } = gasUtils;
  * @param {Boolean} short - use short format or not
  */
 export const getFallbackGasPrices = (short = true) => ({
-  [CUSTOM]: defaultGasPriceFormat(CUSTOM, '0.5', '200', short),
+  [CUSTOM]: null,
   [FAST]: defaultGasPriceFormat(FAST, '0.5', '200', short),
   [NORMAL]: defaultGasPriceFormat(NORMAL, '2.5', '100', short),
   [SLOW]: defaultGasPriceFormat(SLOW, '2.5', '100', short),
 });
 
 const parseGasPricesEtherscan = data => ({
-  [CUSTOM]: defaultGasPriceFormat(CUSTOM, data.fastWait, data.fast, true),
+  [CUSTOM]: null,
   [FAST]: defaultGasPriceFormat(FAST, data.fastWait, data.fast, true),
   [NORMAL]: defaultGasPriceFormat(NORMAL, data.avgWait, data.average, true),
   [SLOW]: defaultGasPriceFormat(SLOW, data.safeLowWait, data.safeLow, true),
 });
 
 const parseGasPricesEthGasStation = data => ({
-  [CUSTOM]: defaultGasPriceFormat(CUSTOM, data.fastestWait, data.fastest, true),
+  [CUSTOM]: null,
   [FAST]: defaultGasPriceFormat(FAST, data.fastestWait, data.fastest, true),
   [NORMAL]: defaultGasPriceFormat(NORMAL, data.fastWait, data.fast, true),
   [SLOW]: defaultGasPriceFormat(SLOW, data.avgWait, data.average, true),
@@ -49,7 +49,7 @@ export const parseGasPrices = (data, source = 'etherscan') =>
     ? parseGasPricesEtherscan(data)
     : parseGasPricesEthGasStation(data);
 
-const defaultGasPriceFormat = (option, timeWait, value) => {
+export const defaultGasPriceFormat = (option, timeWait, value) => {
   const timeAmount = multiply(timeWait, timeUnits.ms.minute);
   const weiAmount = multiply(value, ethUnits.gwei);
   return {
@@ -104,5 +104,10 @@ export const getTxFee = (gasPrice, gasLimit, priceUnit, nativeCurrency) => {
 
 export const gweiToWei = gweiAmount => {
   const weiAmount = Number(gweiAmount) * 1000000000;
+  return weiAmount;
+};
+
+export const weiToGwei = gweiAmount => {
+  const weiAmount = Number(gweiAmount) / 1000000000;
   return weiAmount;
 };

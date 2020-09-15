@@ -47,30 +47,18 @@ export const etherscanGetGasPrices = () =>
 
 /**
  * @desc get ethereum gas prices from Etherscan
+ * @params {data}
  * @return {Promise}
  */
 export const etherscanGetGasEstimates = async data => {
-  const getEstimatedTimeForGasPrice = (speed, gwei) => {
-    return new Promise(async (resolve, reject) => {
-      const priceInWei = multiply(gwei, ethUnits.gwei);
-      const { data: response } = await etherscanAPI.get(
-        `/api?module=gastracker&action=gasestimate&gasprice=${priceInWei}&apikey=${ETHERSCAN_API_KEY}`
-      );
-      if (response.status === '1') {
-        // Convert from seconds to minutes!
-        resolve({
-          [`${speed === 'average' ? 'avg' : speed}Wait`]:
-            Number(response.result) / 60,
-        });
-      } else {
-        reject({ [`${speed}Wait`]: 0 });
-      }
+  const requests = Object.keys(data).map(speed => {
+    return new Promise(async resolve => {
+      const time = await getEstimatedTimeForGasPrice(data[speed]);
+      resolve({
+        [`${speed === 'average' ? 'avg' : speed}Wait`]: time,
+      });
     });
-  };
-
-  const requests = Object.keys(data).map(speed =>
-    getEstimatedTimeForGasPrice(speed, data[speed])
-  );
+  });
 
   let newData = { ...data };
 
@@ -83,4 +71,19 @@ export const etherscanGetGasEstimates = async data => {
   });
 
   return newData;
+};
+
+/**
+ * @desc get estimated time for a specific gas price from Etherscan
+ * @return {Promise}
+ */
+export const getEstimatedTimeForGasPrice = async gwei => {
+  const priceInWei = multiply(gwei, ethUnits.gwei);
+  const { data: response } = await etherscanAPI.get(
+    `/api?module=gastracker&action=gasestimate&gasprice=${priceInWei}&apikey=${ETHERSCAN_API_KEY}`
+  );
+  if (response.status === '0') {
+    throw new Error('Etherscan gas estimation request failed');
+  }
+  return Number(response.result) / 60;
 };
