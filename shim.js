@@ -71,6 +71,25 @@ if (typeof localStorage !== 'undefined') {
   localStorage.debug = isDev ? '*' : '';
 }
 
+if (!ReactNative.InteractionManager._shimmed) {
+  const oldCreateInteractionHandle =
+    ReactNative.InteractionManager.createInteractionHandle;
+
+  ReactNative.InteractionManager.createInteractionHandle = function(
+    finishAutomatically = true
+  ) {
+    const handle = oldCreateInteractionHandle();
+    if (finishAutomatically) {
+      setTimeout(() => {
+        ReactNative.InteractionManager.clearInteractionHandle(handle);
+      }, 1000);
+    }
+    return handle;
+  };
+
+  ReactNative.InteractionManager._shimmed = true;
+}
+
 // If using the crypto shim, uncomment the following line to ensure
 // crypto is loaded first, so it can populate global.crypto
 // eslint-disable-next-line import/no-commonjs
