@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import styled from 'styled-components/primitives';
+import CopyTooltip from '../copy-tooltip';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
@@ -90,10 +91,14 @@ export default function SecretDisplayCard({ seed, type }) {
       <CardShadow />
       <BackgroundGradient />
       <Content>
-        {seed && type === WalletTypes.mnemonic && <SeedWordGrid seed={seed} />}
-        {seed && type === WalletTypes.privateKey && (
-          <GridText align="center">{seed}</GridText>
-        )}
+        <CopyTooltip textToCopy={seed} tooltipText="Copy to clipboard">
+          {seed && type === WalletTypes.mnemonic && (
+            <SeedWordGrid seed={seed} />
+          )}
+          {seed && type === WalletTypes.privateKey && (
+            <GridText align="center">{seed}</GridText>
+          )}
+        </CopyTooltip>
       </Content>
     </Centered>
   );
