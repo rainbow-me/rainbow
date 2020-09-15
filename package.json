@@ -227,7 +227,7 @@
     "stylelint-processor-styled-components": "^1.10.0",
     "stylelint-react-native": "^2.2.0",
     "typescript": "^3.9.7",
-    "ganache-cli": "^6.10.1"
+    "ganache-cli": "6.10.1"
   },
   "resolutions": {
     "**/bl": "2.2.1",
