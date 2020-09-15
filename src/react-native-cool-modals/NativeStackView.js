@@ -37,6 +37,7 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
     gestureEnabled,
     headerHeight,
     ignoreBottomOffset,
+    interactWithScrollView,
     isShortFormEnabled,
     longFormHeight,
     onTouchTop,
@@ -108,6 +109,7 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
         gestureEnabled={gestureEnabled}
         headerHeight={headerHeight}
         ignoreBottomOffset={ignoreBottomOffset}
+        interactWithScrollView={interactWithScrollView}
         isShortFormEnabled={isShortFormEnabled}
         key={route.key}
         longFormHeight={longFormHeight}

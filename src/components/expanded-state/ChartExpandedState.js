@@ -1,4 +1,3 @@
-import { useRoute } from '@react-navigation/native';
 import { debounce, find } from 'lodash';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -46,7 +45,7 @@ const traverseData = (prev, data) => {
   ) {
     return prev;
   }
-  const points = monotoneCubicInterpolation(filtered)(100);
+  const points = monotoneCubicInterpolation(filtered)(100, true);
   return {
     nativePoints: filtered,
     points,
@@ -56,7 +55,7 @@ const traverseData = (prev, data) => {
 function useJumpingForm(isLong) {
   const { setOptions } = useNavigation();
 
-  const { jumpToShort, jumpToLong } = useContext(ModalContext);
+  const { jumpToShort, jumpToLong } = useContext(ModalContext) || {};
 
   useEffect(() => {
     if (!isLong) {
@@ -64,7 +63,7 @@ function useJumpingForm(isLong) {
         isShortFormEnabled: true,
       });
       setImmediate(() => {
-        jumpToShort();
+        jumpToShort?.();
         setOptions({
           isShortFormEnabled: false,
           longFormHeight: heightWithNoChart,
@@ -84,7 +83,6 @@ export const ChartExpandedStateSheetHeight = chartExpandedAvailable
   : heightWithNoChart;
 
 export default function ChartExpandedState({ asset }) {
-  const { params } = useRoute();
   const color = useColorForAsset(asset);
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
 

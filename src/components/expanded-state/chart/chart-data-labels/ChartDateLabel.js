@@ -84,16 +84,20 @@ function formatDatetime(value, chartTimeSharedValue) {
 export default function ChartDateLabel({ chartTimeSharedValue }) {
   const ratio = useRatio('ChartDataLabel');
 
-  const textStyle = useAnimatedStyle(() => {
-    return {
-      color:
-        ratio.value === 1
-          ? colors.blueGreyDark
-          : ratio.value < 1
-          ? colors.red
-          : colors.green,
-    };
-  }, 'ChartDateLabelTextStyle');
+  const textStyle = useAnimatedStyle(
+    () => {
+      return {
+        color:
+          ratio.value === 1
+            ? colors.blueGreyDark
+            : ratio.value < 1
+            ? colors.red
+            : colors.green,
+      };
+    },
+    undefined,
+    'ChartDateLabelTextStyle'
+  );
 
   return (
     <Label

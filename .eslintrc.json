@@ -12,7 +12,8 @@
     }
   },
   "globals": {
-    "__DEV__": true
+    "__DEV__": true,
+    "IS_DEV": true
   },
   "rules": {
     "sort-imports": ["error", {

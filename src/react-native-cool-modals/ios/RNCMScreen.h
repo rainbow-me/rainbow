@@ -55,6 +55,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 @property (nonatomic) BOOL dismissable;
 @property (nonatomic) BOOL showDragIndicator;
 @property (nonatomic) BOOL ignoreBottomOffset;
+@property (nonatomic) BOOL interactWithScrollView;
 @property (nonatomic) NSNumber* topOffset;
 @property (nonatomic) NSNumber* cornerRadius;
 @property (nonatomic) RNSScreenStackAnimation stackAnimation;
