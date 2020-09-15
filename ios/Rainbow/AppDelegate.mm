@@ -17,6 +17,7 @@
 #import <RNCPushNotificationIOS.h>
 #import <Sentry/Sentry.h>
 #import "RNSplashScreen.h"
+#import "ReaHeader.h"
 #ifndef DISABLE_REANIMATED
 #import <React/RCTCxxBridgeDelegate.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
