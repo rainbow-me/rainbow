@@ -30,6 +30,7 @@ import {
   nativeStackConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
+  restoreSheetConfig,
   savingsSheetConfig,
   stackNavigationConfig,
 } from './config';
@@ -279,16 +280,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={RestoreSheet}
         name={Routes.RESTORE_SHEET}
-        options={{
-          backgroundColor: '#25292E',
-          backgroundOpacity: 0.6,
-          cornerRadius: 39,
-          customStack: true,
-          ignoreBottomOffset: true,
-          isShortFormEnabled: false,
-          longFormHeight: 505,
-          onAppear: null,
-        }}
+        {...restoreSheetConfig}
       />
       <NativeStack.Screen
         component={SavingsSheet}

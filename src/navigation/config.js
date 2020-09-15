@@ -105,6 +105,45 @@ export const expandedAssetSheetConfig = {
   }),
 };
 
+const restoreSheetSizes = {
+  ...backupSheetSizes,
+  medium: 505,
+  short: 363,
+};
+
+export const restoreSheetConfig = {
+  options: ({ navigation, route }) => {
+    const {
+      params: {
+        enableCloudRestore,
+        longFormHeight,
+        step = WalletBackupStepTypes.first,
+        ...params
+      } = {},
+    } = route;
+
+    let heightForStep = restoreSheetSizes.short;
+    if (enableCloudRestore && step === WalletBackupStepTypes.first) {
+      heightForStep = restoreSheetSizes.medium;
+    } else if (step === WalletBackupStepTypes.cloud) {
+      heightForStep = restoreSheetSizes.long;
+    }
+
+    if (longFormHeight !== heightForStep) {
+      navigation.setParams({
+        longFormHeight: heightForStep,
+      });
+    }
+
+    return buildCoolModalConfig({
+      ...params,
+      backgroundColor: colors.dark,
+      longFormHeight: heightForStep,
+      TEMPORARY_autoJumpToNewHeight: true,
+    });
+  },
+};
+
 export const savingsSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({

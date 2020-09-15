@@ -1,5 +1,5 @@
 import { forEach } from 'lodash';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -7,6 +7,7 @@ import { Icon } from '../icons';
 import { Column, Row, RowWithMargins } from '../layout';
 import { GradientText, Text } from '../text';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import { useNavigation } from '@rainbow-me/navigation';
 import { colors } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
@@ -80,6 +81,8 @@ export default function RestoreSheetFirstStep({
   onWatchAddress,
   userData,
 }) {
+  const { setParams } = useNavigation();
+
   const walletsBackedUp = useMemo(() => {
     let count = 0;
     forEach(userData?.wallets, wallet => {
@@ -90,9 +93,14 @@ export default function RestoreSheetFirstStep({
     return count;
   }, [userData]);
 
+  const enableCloudRestore = walletsBackedUp > 0;
+  useEffect(() => {
+    setParams({ enableCloudRestore });
+  }, [enableCloudRestore, setParams]);
+
   return (
     <Container>
-      {walletsBackedUp > 0 && (
+      {enableCloudRestore && (
         <React.Fragment>
           <SheetRow as={ButtonPressAnimation} onPress={onIcloudRestore}>
             <Column>
