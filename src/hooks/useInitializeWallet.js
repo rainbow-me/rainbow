@@ -3,7 +3,6 @@ import { isNil } from 'lodash';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
-import useHideSplashScreen from '../helpers/hideSplashScreen';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
 import { appStateUpdate } from '../redux/appState';
@@ -13,6 +12,7 @@ import {
 } from '../redux/settings';
 import { walletsLoadState } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
+import useHideSplashScreen from './useHideSplashScreen';
 import useInitializeAccountData from './useInitializeAccountData';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalData from './useLoadGlobalData';

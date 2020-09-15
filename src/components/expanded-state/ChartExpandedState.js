@@ -150,7 +150,10 @@ export default function ChartExpandedState({ asset }) {
   }, [throttledPoints, fetchingCharts, debouncedSetThrottledData]);
 
   return (
-    <SlackSheet contentHeight={params.longFormHeight} scrollEnabled={false}>
+    <SlackSheet
+      contentHeight={ChartExpandedStateSheetHeight}
+      scrollEnabled={false}
+    >
       <ChartProvider data={throttledData} enableHaptics>
         <Chart
           {...chartData}

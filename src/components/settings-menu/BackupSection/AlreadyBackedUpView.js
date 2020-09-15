@@ -1,11 +1,12 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { Alert, Platform, View } from 'react-native';
+import { Platform, View } from 'react-native';
 import styled from 'styled-components';
+import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
-import LoadingOverlay from '../../modal/LoadingOverlay';
+import { LoadingOverlay } from '../../modal';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
@@ -15,7 +16,7 @@ import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
-import { colors, fonts, padding } from '@rainbow-me/styles';
+import { colors, fonts, padding, position, shadow } from '@rainbow-me/styles';
 import { usePortal } from 'react-native-cool-modals/Portal';
 
 const WalletBackupStatus = {
@@ -23,6 +24,35 @@ const WalletBackupStatus = {
   IMPORTED: 1,
   MANUAL_BACKUP: 2,
 };
+
+const CheckmarkIconContainer = styled(View)`
+  ${({ color }) => shadow.build(0, 4, 6, color, 0.4)};
+  ${position.size(50)};
+  background-color: ${({ color }) => color};
+  border-radius: 25;
+  margin-bottom: 19;
+  padding-top: 13;
+`;
+
+const CheckmarkIconText = styled(Text).attrs({
+  align: 'center',
+  color: colors.white,
+  size: 'larger',
+  weight: 'bold',
+})``;
+
+const CheckmarkIcon = ({ color }) => (
+  <CheckmarkIconContainer color={color}>
+    <CheckmarkIconText>􀆅</CheckmarkIconText>
+  </CheckmarkIconContainer>
+);
+
+const Content = styled(Centered).attrs({
+  direction: 'column',
+})`
+  ${padding(0, 19, 30)};
+  flex: 1;
+`;
 
 const DescriptionText = styled(Text).attrs({
   align: 'center',
@@ -32,6 +62,10 @@ const DescriptionText = styled(Text).attrs({
 })`
   margin-bottom: 42;
   padding-horizontal: 23;
+`;
+
+const Footer = styled(Centered)`
+  ${padding(0, 15, 42)};
 `;
 
 const Subtitle = styled(Text).attrs({
@@ -52,25 +86,9 @@ const Title = styled(Text).attrs({
   padding-horizontal: 11;
 `;
 
-const TopIcon = styled(View)`
-  border-radius: 25;
-  height: 50;
-  margin-bottom: 19;
-  padding-top: 13;
-  width: 50;
-`;
+const onError = error => DelayedAlert({ title: error }, 500);
 
-const TopIconGreen = styled(TopIcon)`
-  background-color: ${colors.green};
-  box-shadow: 0 4px 6px ${colors.alpha(colors.green, 0.4)};
-`;
-
-const TopIconGrey = styled(TopIcon)`
-  background-color: ${colors.blueGreyDark50};
-  box-shadow: 0 4px 6px ${colors.alpha(colors.blueGreyDark50, 0.4)};
-`;
-
-const AlreadyBackedUpView = () => {
+export default function AlreadyBackedUpView() {
   const { navigate } = useNavigation();
   const { params } = useRoute();
   const { isWalletLoading, wallets, selectedWallet } = useWallets();
@@ -97,15 +115,6 @@ const AlreadyBackedUpView = () => {
     }
     return hide;
   }, [hide, isWalletLoading, setComponent]);
-
-  const onViewRecoveryPhrase = useCallback(() => {
-    navigate('ShowSecretView', {
-      title: `Recovery ${
-        WalletTypes.mnemonic === wallets[walletId].type ? 'Phrase' : 'Key'
-      }`,
-      walletId,
-    });
-  }, [navigate, walletId, wallets]);
 
   const walletStatus = useMemo(() => {
     let status = null;
@@ -136,13 +145,7 @@ const AlreadyBackedUpView = () => {
     });
   }, [walletId]);
 
-  const onError = useCallback(msg => {
-    setTimeout(() => {
-      Alert.alert(msg);
-    }, 500);
-  }, []);
-
-  const onIcloudBackup = useCallback(() => {
+  const handleIcloudBackup = useCallback(() => {
     if (
       ![WalletBackupStatus.MANUAL_BACKUP, WalletBackupStatus.IMPORTED].includes(
         walletStatus
@@ -162,39 +165,38 @@ const AlreadyBackedUpView = () => {
       walletId,
     });
   }, [
-    walletCloudBackup,
-    walletId,
     handleNoLatestBackup,
     handlePasswordNotFound,
-    onError,
+    walletCloudBackup,
+    walletId,
     walletStatus,
   ]);
 
+  const handleViewRecoveryPhrase = useCallback(() => {
+    navigate('ShowSecretView', {
+      title: `Recovery ${
+        WalletTypes.mnemonic === wallets[walletId].type ? 'Phrase' : 'Key'
+      }`,
+      walletId,
+    });
+  }, [navigate, walletId, wallets]);
+
+  const checkmarkColor =
+    walletStatus === WalletBackupStatus.CLOUD_BACKUP
+      ? colors.green
+      : colors.blueGreyDark50;
+
   return (
     <Fragment>
-      <Centered>
-        <Subtitle>
-          {(walletStatus === WalletBackupStatus.CLOUD_BACKUP && `Backed up`) ||
-            (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
-              `Backed up manually`) ||
-            (walletStatus === WalletBackupStatus.IMPORTED && `Imported`)}
-        </Subtitle>
-      </Centered>
-      <Column align="center" css={padding(0, 19, 30)} flex={1} justify="center">
+      <Subtitle>
+        {(walletStatus === WalletBackupStatus.CLOUD_BACKUP && `Backed up`) ||
+          (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
+            `Backed up manually`) ||
+          (walletStatus === WalletBackupStatus.IMPORTED && `Imported`)}
+      </Subtitle>
+      <Content>
         <Centered direction="column">
-          {walletStatus !== WalletBackupStatus.CLOUD_BACKUP ? (
-            <TopIconGrey>
-              <Text align="center" color="white" size="larger" weight="bold">
-                􀆅
-              </Text>
-            </TopIconGrey>
-          ) : (
-            <TopIconGreen>
-              <Text align="center" color="white" size="larger" weight="bold">
-                􀆅
-              </Text>
-            </TopIconGreen>
-          )}
+          <CheckmarkIcon color={checkmarkColor} />
           <Title>
             {(walletStatus === WalletBackupStatus.IMPORTED &&
               `Your wallet was imported`) ||
@@ -213,16 +215,15 @@ const AlreadyBackedUpView = () => {
           <SheetActionButton
             color={colors.white}
             label="🗝 View recovery key"
-            onPress={onViewRecoveryPhrase}
+            onPress={handleViewRecoveryPhrase}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />
         </Column>
-      </Column>
-
+      </Content>
       {Platform.OS === 'ios' &&
         walletStatus !== WalletBackupStatus.CLOUD_BACKUP && (
-          <Centered css={padding(0, 15, 42)}>
-            <ButtonPressAnimation onPress={onIcloudBackup}>
+          <Footer>
+            <ButtonPressAnimation onPress={handleIcloudBackup}>
               <Text
                 align="center"
                 color={colors.appleBlue}
@@ -233,10 +234,8 @@ const AlreadyBackedUpView = () => {
                 􀙶 Back up to iCloud
               </Text>
             </ButtonPressAnimation>
-          </Centered>
+          </Footer>
         )}
     </Fragment>
   );
-};
-
-export default AlreadyBackedUpView;
+}

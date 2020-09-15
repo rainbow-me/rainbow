@@ -20,7 +20,9 @@ const ScreenTypes = {
   uniswap: LiquidityPoolExpandedState,
 };
 
-const Container = styled(Centered).attrs({ direction: 'column' })`
+const Container = styled(Centered).attrs({
+  direction: 'column',
+})`
   ${position.cover};
   ${({ deviceHeight, height }) =>
     height ? `height: ${height + deviceHeight}` : null};

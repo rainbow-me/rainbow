@@ -8,7 +8,8 @@ import {
 import SplashScreen from 'react-native-splash-screen';
 import useExperimentalFlag, {
   NEW_SPLASH_SCREEN,
-} from '../config/experimentalHooks';
+} from '@rainbow-me/config/experimentalHooks';
+
 const { RainbowSplashScreen } = NativeModules;
 
 export default function useHideSplashScreen() {

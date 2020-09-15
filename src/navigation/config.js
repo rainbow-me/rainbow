@@ -3,6 +3,7 @@ import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import { onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
+import { colors, fonts } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top + 5;
@@ -66,11 +67,20 @@ export const backupSheetConfig = {
   options: ({ navigation, route }) => {
     const { params: { longFormHeight, step, ...params } = {} } = route;
 
-    const heightForStep =
+    let heightForStep = backupSheetSizes.short;
+    if (
       step === WalletBackupStepTypes.cloud ||
       step === WalletBackupStepTypes.manual
-        ? backupSheetSizes.long
-        : backupSheetSizes.short;
+    ) {
+      heightForStep = backupSheetSizes.long;
+    } else if (
+      // on the "existing_user" step, our "description" text is 1 extra line of text
+      // vertically, so we want to increase the sheet height by 1 lineHeight here
+      step === WalletBackupStepTypes.existing_user
+    ) {
+      // TODO: measure this text programatically
+      heightForStep = backupSheetSizes.short + fonts.lineHeight.looser;
+    }
 
     if (longFormHeight !== heightForStep) {
       navigation.setParams({
@@ -93,6 +103,45 @@ export const expandedAssetSheetConfig = {
       scrollEnabled: true,
     }),
   }),
+};
+
+const restoreSheetSizes = {
+  ...backupSheetSizes,
+  medium: 505,
+  short: 363,
+};
+
+export const restoreSheetConfig = {
+  options: ({ navigation, route }) => {
+    const {
+      params: {
+        enableCloudRestore,
+        longFormHeight,
+        step = WalletBackupStepTypes.first,
+        ...params
+      } = {},
+    } = route;
+
+    let heightForStep = restoreSheetSizes.short;
+    if (enableCloudRestore && step === WalletBackupStepTypes.first) {
+      heightForStep = restoreSheetSizes.medium;
+    } else if (step === WalletBackupStepTypes.cloud) {
+      heightForStep = restoreSheetSizes.long;
+    }
+
+    if (longFormHeight !== heightForStep) {
+      navigation.setParams({
+        longFormHeight: heightForStep,
+      });
+    }
+
+    return buildCoolModalConfig({
+      ...params,
+      backgroundColor: colors.dark,
+      longFormHeight: heightForStep,
+      TEMPORARY_autoJumpToNewHeight: true,
+    });
+  },
 };
 
 export const savingsSheetConfig = {

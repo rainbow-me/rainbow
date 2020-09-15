@@ -1,150 +1,70 @@
-import { useNavigation, useNavigationState } from '@react-navigation/core';
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  Alert,
-  Dimensions,
-  KeyboardAvoidingView,
-  Platform,
-  StatusBar,
-  View,
-} from 'react-native';
-import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
-import { isCloudBackupPasswordValid } from '../../handlers/cloudBackup';
-import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { saveBackupPassword } from '../../model/backup';
-import { deviceUtils } from '../../utils';
-import { RainbowButton } from '../buttons';
-import { Icon } from '../icons';
-import { Input } from '../inputs';
-import { Column, Row } from '../layout';
+import { DelayedAlert } from '../alerts';
+import { PasswordField } from '../fields';
+import { Centered, ColumnWithMargins } from '../layout';
 import { GradientText, Text } from '../text';
-import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
+import BackupSheetKeyboardLayout from './BackupSheetKeyboardLayout';
+import {
+  cloudBackupPasswordMinLength,
+  isCloudBackupPasswordValid,
+} from '@rainbow-me/handlers/cloudBackup';
+import {
+  useDimensions,
+  useRouteExistsInNavigationState,
+  useWalletCloudBackup,
+  useWallets,
+} from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { borders, colors, padding } from '@rainbow-me/styles';
+import { colors, padding } from '@rainbow-me/styles';
 import logger from 'logger';
 
-const sheetHeight = deviceUtils.dimensions.height - 108;
-
-const SheetContainer = isNativeStackAvailable
-  ? styled(Column)`
-      background-color: ${colors.white};
-      height: ${sheetHeight};
-    `
-  : styled(Column)`
-      ${borders.buildRadius('top', 16)};
-      background-color: ${colors.white};
-      height: 100%;
-    `;
-
-const Container = styled(Column)`
-  background-color: ${colors.transparent};
-  height: 100%;
-`;
-
-const Shadow = styled(ShadowStack).attrs({
-  borderRadius: 23,
-  height: 46,
-  shadows: [
-    [0, 5, 15, colors.dark, 0.06],
-    [0, 10, 30, colors.dark, 0.12],
-  ],
-  width: Dimensions.get('window').width - 130,
-})`
-  elevation: 15;
-  margin-bottom: 19;
-`;
-
-const InputsWrapper = styled(View)`
-  align-items: center;
-  height: 111;
-`;
-
-const PasswordInput = styled(Input).attrs({
-  blurOnSubmit: false,
-  placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.4),
-  secureTextEntry: true,
-  size: 'large',
-  type: 'password',
-  weight: 'semibold',
-})`
-  padding-left: 19;
-  padding-right: 46;
-  padding-top: 11;
-`;
-
-const IconWrapper = styled(View)`
-  height: 22;
-  margin-bottom: 12;
-  position: absolute;
-  right: 12;
-  top: 12;
-  width: 22;
-`;
-
-const Title = styled(Text).attrs({
-  size: 'big',
-  weight: 'bold',
-})`
-  margin-bottom: 10;
-`;
-
-const DescriptionText = styled(Text).attrs({
+const DescriptionText = styled(Text).attrs(({ isTinyPhone }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
+  color: colors.blueGreyDark50,
   lineHeight: 'looser',
-  size: 'large',
-})`
-  padding-bottom: 39;
-  padding-left: 50;
-  padding-right: 50;
-`;
+  size: isTinyPhone ? 'lmedium' : 'large',
+}))``;
 
-const ImportantText = styled(Text).attrs({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.6),
-  lineHeight: 'looser',
-  size: 'large',
+const ImportantText = styled(DescriptionText).attrs({
+  color: colors.blueGreyDark60,
   weight: 'medium',
 })``;
 
-// const InfoIcon = styled(Text).attrs({
-//   align: 'center',
-//   color: colors.alpha(colors.blueGreyDark, 0.15),
-//   lineHeight: 'looser',
-//   size: 'large',
-// })``;
+const Masthead = styled(Centered).attrs({
+  direction: 'column',
+})`
+  ${({ isTallPhone, isTinyPhone }) =>
+    padding(isTinyPhone ? 0 : 9, isTinyPhone ? 10 : 50, isTallPhone ? 39 : 19)};
+  flex-shrink: 0;
+`;
 
-const WarningIcon = () => (
-  <IconWrapper>
-    <Icon color={colors.orangeLight} name="warningCircled" size={22} />
-  </IconWrapper>
-);
-const GreenCheckmarkIcon = () => (
-  <IconWrapper>
-    <Icon color={colors.green} name="checkmarkCircled" size={22} />
-  </IconWrapper>
-);
+const MastheadIcon = styled(GradientText).attrs({
+  align: 'center',
+  angle: false,
+  colors: colors.gradients.rainbow,
+  end: { x: 0, y: 0.5 },
+  size: 43,
+  start: { x: 1, y: 0.5 },
+  steps: [0, 0.774321, 1],
+  weight: 'medium',
+})``;
 
-const TopIcon = () => (
-  <GradientText
-    angle={false}
-    colors={['#FFB114', '#FF54BB', '#7EA4DE']}
-    end={{ x: 0, y: 0.5 }}
-    start={{ x: 1, y: 0.5 }}
-    steps={[0, 0.774321, 1]}
-  >
-    <Text align="center" size={43} weight="medium">
-      􀌍
-    </Text>
-  </GradientText>
-);
+const Title = styled(Text).attrs(({ isTinyPhone }) => ({
+  size: isTinyPhone ? 'large' : 'big',
+  weight: 'bold',
+}))`
+  ${({ isTinyPhone }) => (isTinyPhone ? padding(0) : padding(15, 0, 12))};
+`;
 
-const BackupIcloudStep = () => {
+export default function BackupIcloudStep() {
+  const { isTallPhone, isTinyPhone } = useDimensions();
   const currentlyFocusedInput = useRef();
   const { params } = useRoute();
   const walletCloudBackup = useWalletCloudBackup();
@@ -153,7 +73,10 @@ const BackupIcloudStep = () => {
   const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const routes = useNavigationState(state => state.routes);
+
+  const isSettingsRoute = useRouteExistsInNavigationState(
+    Routes.SETTINGS_MODAL
+  );
 
   const walletId = params?.walletId || selectedWallet.id;
   const { goBack } = useNavigation();
@@ -200,11 +123,11 @@ const BackupIcloudStep = () => {
     let newLabel = '';
     if (passwordIsValid) {
       newLabel = '􀎽 Confirm Backup';
-    } else if (password.length < 8) {
-      newLabel = 'Minimum 8 characters';
+    } else if (password.length < cloudBackupPasswordMinLength) {
+      newLabel = `Minimum ${cloudBackupPasswordMinLength} characters`;
     } else if (
       password !== '' &&
-      password.length < 8 &&
+      password.length < cloudBackupPasswordMinLength &&
       !passwordRef.current?.isFocused()
     ) {
       newLabel = 'Use a longer password';
@@ -215,9 +138,15 @@ const BackupIcloudStep = () => {
       password !== confirmPassword
     ) {
       newLabel = `Passwords don't match`;
-    } else if (password.length >= 8 && !passwordFocused) {
+    } else if (
+      password.length >= cloudBackupPasswordMinLength &&
+      !passwordFocused
+    ) {
       newLabel = 'Confirm password';
-    } else if (password.length >= 8 && passwordFocused) {
+    } else if (
+      password.length >= cloudBackupPasswordMinLength &&
+      passwordFocused
+    ) {
       const passInfo = zxcvbn(password);
       switch (passInfo.score) {
         case 0:
@@ -259,9 +188,7 @@ const BackupIcloudStep = () => {
     msg => {
       setTimeout(onPasswordSubmit, 1000);
       setIsWalletLoading(null);
-      setTimeout(() => {
-        Alert.alert(msg);
-      }, 500);
+      DelayedAlert({ title: msg }, 500);
     },
     [onPasswordSubmit, setIsWalletLoading]
   );
@@ -269,10 +196,8 @@ const BackupIcloudStep = () => {
   const onSuccess = useCallback(async () => {
     logger.log('BackupIcloudStep:: saving backup password');
     await saveBackupPassword(password);
-    if (!routes.find(route => route.name === Routes.SETTINGS_MODAL)) {
-      setTimeout(() => {
-        Alert.alert(lang.t('icloud.backup_success'));
-      }, 1000);
+    if (!isSettingsRoute) {
+      DelayedAlert({ title: lang.t('icloud.backup_success') }, 1000);
     }
     // This means the user set a new password
     // and it was the first wallet backed up
@@ -281,7 +206,7 @@ const BackupIcloudStep = () => {
       label: 'icloud',
     });
     goBack();
-  }, [goBack, password, routes]);
+  }, [goBack, isSettingsRoute, password]);
 
   const onConfirmBackup = useCallback(async () => {
     await walletCloudBackup({
@@ -296,70 +221,56 @@ const BackupIcloudStep = () => {
     validPassword && onConfirmBackup();
   }, [onConfirmBackup, validPassword]);
 
-  // const onPressInfo = useCallback(() => null, []);
-
   return (
-    <SheetContainer>
-      <StatusBar barStyle="light-content" />
-      <KeyboardAvoidingView
-        behavior="padding"
-        enabled={Platform.OS !== 'android'}
-      >
-        <Container align="center">
-          <Row paddingBottom={15} paddingTop={9}>
-            <TopIcon />
-          </Row>
-          <Title>Choose a password</Title>
-          <DescriptionText>
-            Please use a password you&apos;ll remember.
-            <ImportantText>&nbsp;It can&apos;t be recovered!</ImportantText>
-            &nbsp;
-            {/* <InfoIcon onPress={onPressInfo}>􀅵</InfoIcon> */}
-          </DescriptionText>
-          <InputsWrapper>
-            <Shadow>
-              <PasswordInput
-                onBlur={onPasswordBlur}
-                onChange={onPasswordChange}
-                onFocus={onPasswordFocus}
-                onSubmitEditing={onPasswordSubmit}
-                placeholder="Backup Password"
-                ref={passwordRef}
-                returnKeyType="next"
-                value={password}
-              />
-              {isCloudBackupPasswordValid(password) && <GreenCheckmarkIcon />}
-              {password !== '' &&
-                password.length < 8 &&
-                !passwordRef.current?.isFocused() && <WarningIcon />}
-            </Shadow>
-            <Shadow>
-              <PasswordInput
-                onChange={onConfirmPasswordChange}
-                onFocus={onConfirmPasswordFocus}
-                onSubmitEditing={onConfirmPasswordSubmit}
-                placeholder="Confirm Password"
-                ref={confirmPasswordRef}
-                returnKeyType="done"
-                value={confirmPassword}
-              />
-              {validPassword && <GreenCheckmarkIcon />}
-              {isCloudBackupPasswordValid(confirmPassword) &&
-                confirmPassword.length >= password.length &&
-                confirmPassword !== password && <WarningIcon />}
-            </Shadow>
-          </InputsWrapper>
-          <Column css={padding(49, 15, 40)} width="100%">
-            <RainbowButton
-              disabled={!validPassword}
-              label={label}
-              onPress={onConfirmBackup}
-            />
-          </Column>
-        </Container>
-      </KeyboardAvoidingView>
-    </SheetContainer>
+    <BackupSheetKeyboardLayout
+      footerButtonDisabled={!validPassword}
+      footerButtonLabel={label}
+      onSubmit={onConfirmBackup}
+    >
+      <Masthead isTallPhone={isTallPhone} isTinyPhone={isTinyPhone}>
+        {!isTinyPhone && <MastheadIcon>􀌍</MastheadIcon>}
+        <Title isTinyPhone={isTinyPhone}>Choose a password</Title>
+        <DescriptionText isTinyPhone={isTinyPhone}>
+          Please use a password you&apos;ll remember.&nbsp;
+          <ImportantText isTinyPhone={isTinyPhone}>
+            It can&apos;t be recovered!
+          </ImportantText>
+        </DescriptionText>
+      </Masthead>
+      <ColumnWithMargins align="center" flex={1} margin={19}>
+        <PasswordField
+          isInvalid={
+            password !== '' &&
+            password.length < cloudBackupPasswordMinLength &&
+            !passwordRef.current.isFocused()
+          }
+          isValid={isCloudBackupPasswordValid(password)}
+          onBlur={onPasswordBlur}
+          onChange={onPasswordChange}
+          onFocus={onPasswordFocus}
+          onSubmitEditing={onPasswordSubmit}
+          password={password}
+          placeholder="Backup Password"
+          ref={passwordRef}
+          returnKeyType="next"
+          textContentType="newPassword"
+        />
+        <PasswordField
+          editable={isCloudBackupPasswordValid(password)}
+          isInvalid={
+            isCloudBackupPasswordValid(confirmPassword) &&
+            confirmPassword.length >= password.length &&
+            confirmPassword !== password
+          }
+          isValid={validPassword}
+          onChange={onConfirmPasswordChange}
+          onFocus={onConfirmPasswordFocus}
+          onSubmitEditing={onConfirmPasswordSubmit}
+          password={confirmPassword}
+          placeholder="Confirm Password"
+          ref={confirmPasswordRef}
+        />
+      </ColumnWithMargins>
+    </BackupSheetKeyboardLayout>
   );
-};
-
-export default BackupIcloudStep;
+}

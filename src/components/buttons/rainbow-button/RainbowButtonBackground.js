@@ -3,14 +3,14 @@ import React, { Fragment } from 'react';
 import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
-import { magicMemo } from '../../../utils';
 import RainbowButtonTypes from './RainbowButtonTypes';
 import { colors, margin } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
 const RainbowGradientColors = {
   inner: {
     addCash: ['#FFB114', '#FF54BB', '#00F0FF'],
-    default: ['#FFB114', '#FF54BB', '#7EA4DE'],
+    default: colors.gradients.rainbow,
     disabled: ['#B0B3B9', '#B0B3B9', '#B0B3B9'],
   },
   outer: {

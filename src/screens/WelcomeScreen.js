@@ -16,11 +16,11 @@ import { ButtonPressAnimation } from '../components/animations';
 import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { Emoji, Text } from '../components/text';
-import { fetchUserDataFromCloud } from '../handlers/cloudBackup';
-import useHideSplashScreen from '../helpers/hideSplashScreen';
-import { logger } from '../utils';
+import { fetchUserDataFromCloud } from '@rainbow-me/handlers/cloudBackup';
+import { useHideSplashScreen } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { colors, shadow } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const {
   and,
