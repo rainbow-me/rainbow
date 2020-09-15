@@ -127,13 +127,13 @@ const multicallUpdateResults = ({ chainId, results, blockNumber }) => (
  * @param chainId the current chain id
  * @param latestBlockNumber the latest block number
  */
-export function outdatedListeningKeys(
+function outdatedListeningKeys(
   callResults,
   listeningKeys: string[],
   chainId: number | undefined,
   latestBlockNumber: number | undefined
 ): string[] {
-  if (!chainId || !latestBlockNumber) return [];
+  if (!chainId) return [];
   const results = callResults[chainId];
   // no results at all, load everything
   if (!results) return listeningKeys;
@@ -146,12 +146,17 @@ export function outdatedListeningKeys(
     // already fetching it for a recent enough block, don't refetch it
     if (
       data.fetchingBlockNumber &&
+      latestBlockNumber &&
       data.fetchingBlockNumber >= latestBlockNumber
     )
       return false;
 
     // if data is newer than latestBlockNumber, don't fetch it
-    return !(data.blockNumber && data.blockNumber >= latestBlockNumber);
+    return !(
+      data.blockNumber &&
+      latestBlockNumber &&
+      data.blockNumber >= latestBlockNumber
+    );
   });
 }
 
