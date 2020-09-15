@@ -84,7 +84,7 @@ if (!ReactNative.InteractionManager._shimmed) {
       setTimeout(() => {
         ReactNative.InteractionManager.clearInteractionHandle(handle);
         logger.sentry(`Interaction finished automatically`);
-      }, 1000);
+      }, 2000);
     }
     return handle;
   };
