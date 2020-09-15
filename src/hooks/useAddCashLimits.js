@@ -1,4 +1,4 @@
-import { differenceInDays, differenceInYears } from 'date-fns';
+import { differenceInHours, differenceInYears } from 'date-fns';
 import { findIndex, sumBy, take } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -28,10 +28,11 @@ export default function useAddCashLimits() {
   const limits = useMemo(() => {
     const now = Date.now();
 
-    const firstIndexBeyondToday = findIndex(
-      purchaseTransactions,
-      txn => differenceInDays(now, txn.timestamp) > 1
-    );
+    const firstIndexBeyondToday = findIndex(purchaseTransactions, txn => {
+      const txnTimestampInMs = txn.timestamp || txn.minedAt * 1000;
+      return differenceInHours(now, txnTimestampInMs) >= 24;
+    });
+
     const dailyRemainingLimit = findRemainingAmount(
       DEFAULT_DAILY_LIMIT,
       purchaseTransactions,
@@ -40,7 +41,10 @@ export default function useAddCashLimits() {
 
     const firstIndexBeyondThisYear = findIndex(
       purchaseTransactions,
-      txn => differenceInYears(now, txn.timestamp) > 1,
+      txn => {
+        const txnTimestampInMs = txn.timestamp || txn.minedAt * 1000;
+        return differenceInYears(now, txnTimestampInMs) >= 1;
+      },
       Math.max(firstIndexBeyondToday, 0)
     );
     const yearlyRemainingLimit = findRemainingAmount(
@@ -49,7 +53,10 @@ export default function useAddCashLimits() {
       firstIndexBeyondThisYear
     );
 
-    return { dailyRemainingLimit, yearlyRemainingLimit };
+    return {
+      dailyRemainingLimit: Math.max(dailyRemainingLimit, 0),
+      yearlyRemainingLimit: Math.max(yearlyRemainingLimit, 0),
+    };
   }, [purchaseTransactions]);
 
   return limits;

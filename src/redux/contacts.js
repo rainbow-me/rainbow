@@ -18,7 +18,7 @@ export const contactsLoadState = () => async dispatch => {
   } catch (error) {}
 };
 
-export const contactsAddOrUpdate = (address, nickname, color) => (
+export const contactsAddOrUpdate = (address, nickname, color, network) => (
   dispatch,
   getState
 ) => {
@@ -29,6 +29,7 @@ export const contactsAddOrUpdate = (address, nickname, color) => (
     [loweredAddress]: {
       address: loweredAddress,
       color,
+      network,
       nickname,
     },
   };

@@ -20,7 +20,7 @@ const renderIcon = icon =>
 const propTypes = {
   activeOpacity: PropTypes.number,
   children: PropTypes.node,
-  icon: PropTypes.oneOfType([Icon.propTypes.name, PropTypes.node]),
+  icon: PropTypes.node,
   iconMargin: PropTypes.number,
   justify: PropTypes.bool,
   label: PropTypes.string.isRequired,

@@ -1,5 +1,4 @@
 import { useCallback, useRef } from 'react';
-import { findNodeHandle } from 'react-native';
 import useMagicAutofocus from './useMagicAutofocus';
 
 export default function useSwapInputRefs({ inputCurrency, outputCurrency }) {
@@ -9,9 +8,9 @@ export default function useSwapInputRefs({ inputCurrency, outputCurrency }) {
 
   const findNextInput = useCallback(
     currentFocusedInputHandle => {
-      const inputRefHandle = findNodeHandle(inputFieldRef.current);
-      const nativeInputRefHandle = findNodeHandle(nativeFieldRef.current);
-      const outputRefHandle = findNodeHandle(outputFieldRef.current);
+      const inputRefHandle = inputFieldRef.current;
+      const nativeInputRefHandle = nativeFieldRef.current;
+      const outputRefHandle = outputFieldRef.current;
 
       const lastFocusedIsInputType =
         currentFocusedInputHandle?.current === inputRefHandle ||

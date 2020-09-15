@@ -16,9 +16,10 @@ const GradientText = ({
   steps,
   ...props
 }) => {
-  const textElement = Array.isArray(children)
-    ? createElement(renderer, { ...props, children })
-    : children;
+  const textElement =
+    Array.isArray(children) || typeof children === 'string'
+      ? createElement(renderer, { ...props, children })
+      : children;
 
   return (
     <MaskedView maskElement={textElement}>

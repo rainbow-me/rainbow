@@ -1,16 +1,17 @@
 import { useRoute } from '@react-navigation/native';
+import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
-import BackupIcon from '../../../assets/backupIcon.png';
-import WalletBackupTypes from '../../../helpers/walletBackupTypes';
-import { useWallets } from '../../../hooks';
-import { useNavigation } from '../../../navigation/Navigation';
 import { RainbowButton } from '../../buttons';
-import { Column } from '../../layout';
+import { Centered, Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
+import BackupIcon from '@rainbow-me/assets/backupIcon.png';
+import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
+import { useWallets } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, fonts, padding } from '@rainbow-me/styles';
 
@@ -19,6 +20,13 @@ const BackupButton = styled(RainbowButton).attrs({
   width: 221,
 })`
   margin-bottom: 19;
+`;
+
+const Content = styled(Centered).attrs({
+  direction: 'column',
+})`
+  ${padding(0, 19, 42)};
+  flex: 1;
 `;
 
 const DescriptionText = styled(Text).attrs({
@@ -57,7 +65,7 @@ const TopIcon = styled(FastImage).attrs({
   width: 75;
 `;
 
-const NeedsBackupView = () => {
+export default function NeedsBackupView() {
   const { navigate, setParams } = useNavigation();
   const { params } = useRoute();
   const { wallets, selectedWallet } = useWallets();
@@ -69,16 +77,28 @@ const NeedsBackupView = () => {
     }
   }, [setParams, walletId, wallets]);
 
+  useEffect(() => {
+    analytics.track('Needs Backup View', {
+      category: 'settings backup',
+    });
+  }, []);
+
   const onIcloudBackup = useCallback(() => {
+    analytics.track('Back up to iCloud pressed', {
+      category: 'settings backup',
+    });
     navigate(Routes.BACKUP_SHEET, {
-      option: WalletBackupTypes.cloud,
+      step: WalletBackupStepTypes.cloud,
       walletId,
     });
   }, [navigate, walletId]);
 
   const onManualBackup = useCallback(() => {
+    analytics.track('Manual Backup pressed', {
+      category: 'settings backup',
+    });
     navigate(Routes.BACKUP_SHEET, {
-      option: WalletBackupTypes.manual,
+      step: WalletBackupStepTypes.manual,
       walletId,
     });
   }, [navigate, walletId]);
@@ -86,7 +106,7 @@ const NeedsBackupView = () => {
   return (
     <Fragment>
       <Subtitle>Not backed up</Subtitle>
-      <Column align="center" css={padding(0, 19, 42)} flex={1} justify="center">
+      <Content>
         <Column align="center">
           <TopIcon />
           <Title>Back up your wallet </Title>
@@ -95,7 +115,6 @@ const NeedsBackupView = () => {
             it if you lose this device.
           </DescriptionText>
         </Column>
-
         <Column align="center">
           {Platform.OS === 'ios' && (
             <BackupButton
@@ -110,9 +129,7 @@ const NeedsBackupView = () => {
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />
         </Column>
-      </Column>
+      </Content>
     </Fragment>
   );
-};
-
-export default NeedsBackupView;
+}

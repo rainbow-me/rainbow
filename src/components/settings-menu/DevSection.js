@@ -5,6 +5,7 @@ import { Alert, ScrollView } from 'react-native';
 import { DEV_SEEDS } from 'react-native-dotenv';
 import { Restart } from 'react-native-restart';
 import { deleteAllBackups } from '../../handlers/cloudBackup';
+import { web3SetHttpProvider } from '../../handlers/web3';
 import { DevContext } from '../../helpers/DevContext';
 import { useWallets } from '../../hooks';
 import { wipeKeychain } from '../../model/keychain';
@@ -12,6 +13,7 @@ import store from '../../redux/store';
 import { walletsUpdate } from '../../redux/wallets';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
+import logger from 'logger';
 
 const DevSection = () => {
   const { config, setConfig } = useContext(DevContext);
@@ -23,6 +25,15 @@ const DevSection = () => {
     },
     [config, setConfig]
   );
+
+  const connectToGanache = useCallback(async () => {
+    try {
+      const ready = await web3SetHttpProvider('http://127.0.0.1:7545');
+      logger.log('connected to ganache', ready);
+    } catch (e) {
+      logger.log('error connecting to ganache');
+    }
+  }, []);
 
   const removeBackups = async () => {
     const newWallets = { ...wallets };
@@ -60,6 +71,7 @@ const DevSection = () => {
         label="‍💻 Copy dev seeds"
         onPress={() => Clipboard.setString(DEV_SEEDS)}
       />
+      <ListItem label="‍👾 Connect to ganache" onPress={connectToGanache} />
       <ListFooter />
 
       {Object.keys(config)

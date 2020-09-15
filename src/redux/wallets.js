@@ -1,17 +1,13 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { filter, flatMap, get, keys, map, mapValues, values } from 'lodash';
+import { filter, flatMap, get, keys, map, values } from 'lodash';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
-import {
-  saveKeychainIntegrityState,
-  saveUserBackupState,
-} from '../handlers/localstorage/globalSettings';
+import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import {
   getWalletNames,
   saveWalletNames,
 } from '../handlers/localstorage/walletNames';
 import { web3Provider } from '../handlers/web3';
-import BackupStateTypes from '../helpers/backupStateTypes';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import { hasKey } from '../model/keychain';
@@ -141,12 +137,14 @@ export const setWalletBackedUp = (
 ) => async (dispatch, getState) => {
   const { wallets, selected } = getState().wallets;
   const newWallets = { ...wallets };
-  newWallets[walletId].backedUp = true;
-  newWallets[walletId].backupType = method;
-  if (backupFile) {
-    newWallets[walletId].backupFile = backupFile;
-  }
-  newWallets[walletId].backupDate = Date.now();
+  newWallets[walletId] = {
+    ...newWallets[walletId],
+    backedUp: true,
+    backupDate: Date.now(),
+    backupFile,
+    backupType: method,
+  };
+
   await dispatch(walletsUpdate(newWallets));
   if (selected.id === walletId) {
     await dispatch(walletsSetSelected(newWallets[walletId]));
@@ -166,41 +164,6 @@ export const setWalletBackedUp = (
       throw e;
     }
   }
-  await saveUserBackupState(BackupStateTypes.done);
-};
-
-export const setAllWalletsBackedUpManually = () => async (
-  dispatch,
-  getState
-) => {
-  const { wallets, selected } = getState().wallets;
-  const backupDate = Date.now();
-  let updateSelected = false;
-  const newWallets = mapValues(wallets, (wallet, walletId) => {
-    if (wallets.type !== WalletTypes.readOnly) {
-      if (selected.id === walletId) {
-        updateSelected = true;
-      }
-      const updatedWallet = { ...wallet };
-      updatedWallet.backedUp = true;
-      updatedWallet.backupType = WalletBackupTypes.manual;
-      updatedWallet.backupDate = backupDate;
-      return updatedWallet;
-    }
-    return wallet;
-  });
-
-  await dispatch(walletsUpdate(newWallets));
-  if (updateSelected) {
-    await dispatch(walletsSetSelected(newWallets[selected.id]));
-  }
-
-  // Reset the loading state 1 second later
-  setTimeout(() => {
-    dispatch(setIsWalletLoading(null));
-  }, 1000);
-
-  await saveUserBackupState(BackupStateTypes.done);
 };
 
 export const addressSetSelected = address => () => saveAddress(address);

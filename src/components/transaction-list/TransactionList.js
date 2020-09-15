@@ -75,8 +75,10 @@ const TransactionList = ({
     accountName,
   } = useAccountProfile();
 
+  const isDamaged = selectedWallet?.damaged;
+
   const onAddCashPress = useCallback(() => {
-    if (selectedWallet?.damaged) {
+    if (isDamaged) {
       showWalletErrorAlert();
       return;
     }
@@ -85,7 +87,7 @@ const TransactionList = ({
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-  }, [navigate, selectedWallet?.damaged]);
+  }, [navigate, isDamaged]);
 
   const onAvatarPress = useCallback(() => {
     navigate(Routes.AVATAR_BUILDER, {
@@ -95,12 +97,12 @@ const TransactionList = ({
   }, [accountColor, accountName, navigate]);
 
   const onReceivePress = useCallback(() => {
-    if (selectedWallet?.damaged) {
+    if (isDamaged) {
       showWalletErrorAlert();
       return;
     }
     navigate(Routes.RECEIVE_MODAL);
-  }, [navigate, selectedWallet?.damaged]);
+  }, [navigate, isDamaged]);
 
   const onRequestExpire = useCallback(
     e => {
@@ -202,7 +204,7 @@ const TransactionList = ({
 
   const onCopyAddressPress = useCallback(
     e => {
-      if (selectedWallet?.damaged) {
+      if (isDamaged) {
         showWalletErrorAlert();
         return;
       }
@@ -213,7 +215,7 @@ const TransactionList = ({
       }
       Clipboard.setString(accountAddress);
     },
-    [accountAddress, selectedWallet?.damaged]
+    [accountAddress, isDamaged]
   );
 
   const onAccountNamePress = useCallback(() => {

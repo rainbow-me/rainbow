@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { neverRerender } from '../../utils';
 import { Centered } from '../layout';
 import SheetHandle, { HandleHeight } from './SheetHandle';
 import { padding } from '@rainbow-me/styles';
@@ -22,10 +21,10 @@ const Container = styled(Centered).attrs({
   z-index: 9;
 `;
 
-const SheetHandleFixedToTop = ({ showBlur }) => (
-  <Container>
-    <SheetHandle showBlur={showBlur} />
-  </Container>
-);
-
-export default neverRerender(SheetHandleFixedToTop);
+export default function SheetHandleFixedToTop({ showBlur }) {
+  return (
+    <Container>
+      <SheetHandle showBlur={showBlur} />
+    </Container>
+  );
+}

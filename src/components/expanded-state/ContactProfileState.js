@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components/primitives';
-import { useContacts } from '../../hooks';
+import { useAccountSettings, useContacts } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { abbreviations, magicMemo } from '../../utils';
 import Divider from '../Divider';
@@ -51,13 +51,22 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
   const [color, setColor] = useState(colorProp || 0);
   const [value, setValue] = useState(contact?.nickname || '');
   const inputRef = useRef(null);
+  const { network } = useAccountSettings();
 
   const handleAddContact = useCallback(() => {
     if (value.length > 0 || color !== colorProp) {
-      onAddOrUpdateContacts(address, value, color);
+      onAddOrUpdateContacts(address, value, color, network);
       goBack();
     }
-  }, [address, color, colorProp, goBack, onAddOrUpdateContacts, value]);
+  }, [
+    address,
+    color,
+    colorProp,
+    goBack,
+    network,
+    onAddOrUpdateContacts,
+    value,
+  ]);
 
   const handleDeleteContact = useCallback(
     () =>

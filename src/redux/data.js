@@ -26,6 +26,7 @@ import {
   getAssetPricesFromUniswap,
   getAssets,
   getLocalTransactions,
+  saveAccountEmptyState,
   saveAssetPricesFromUniswap,
   saveAssets,
   saveLocalTransactions,
@@ -35,6 +36,8 @@ import DirectionTypes from '../helpers/transactionDirectionTypes';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
 import { divide, isZero } from '../helpers/utilities';
+import WalletTypes from '../helpers/walletTypes';
+import { Navigation } from '../navigation';
 import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import {
@@ -50,10 +53,14 @@ import { addCashUpdatePurchases } from './addCash';
 /* eslint-disable-next-line import/no-cycle */
 import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswap';
+import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 
+const BACKUP_SHEET_DELAY_MS = 3000;
+
 let pendingTransactionsHandle = null;
-const TXN_WATCHER_MAX_TRIES = 5 * 60;
+const TXN_WATCHER_MAX_TRIES = 60;
+const TXN_WATCHER_POLL_INTERVAL = 5000; // 5 seconds
 
 // -- Constants --------------------------------------- //
 
@@ -132,6 +139,8 @@ export const dataUpdateAssets = assets => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   if (assets.length) {
     saveAssets(assets, accountAddress, network);
+    // Change the state since the account isn't empty anymore
+    saveAccountEmptyState(false, accountAddress, network);
     dispatch({
       payload: assets,
       type: DATA_UPDATE_ASSETS,
@@ -159,7 +168,7 @@ export const transactionsReceived = (message, appended = false) => async (
   const { accountAddress, nativeCurrency, network } = getState().settings;
   const { purchaseTransactions } = getState().addCash;
   const { transactions, tokenOverrides } = getState().data;
-  const { subscribers } = getState().data;
+  const { selected } = getState().wallets;
 
   const { parsedTransactions, potentialNftTransaction } = parseTransactions(
     transactionData,
@@ -182,11 +191,18 @@ export const transactionsReceived = (message, appended = false) => async (
   });
   dispatch(updatePurchases(parsedTransactions));
   saveLocalTransactions(parsedTransactions, accountAddress, network);
-  if (parsedTransactions.length) {
-    const type = appended ? 'appended' : 'received';
-    subscribers[type].forEach(listener => {
-      listener.emit('incoming_transaction', type);
-    });
+
+  if (appended && parsedTransactions.length) {
+    if (
+      selected &&
+      !selected.backedUp &&
+      !selected.imported &&
+      selected.type !== WalletTypes.readOnly
+    ) {
+      setTimeout(() => {
+        Navigation.handleAction(Routes.BACKUP_SHEET);
+      }, BACKUP_SHEET_DELAY_MS);
+    }
   }
 };
 
@@ -260,6 +276,10 @@ export const addressAssetsReceived = (
   );
 
   saveAssets(parsedAssets, accountAddress, network);
+  if (parsedAssets.length > 0) {
+    // Change the state since the account isn't empty anymore
+    saveAccountEmptyState(false, accountAddress, network);
+  }
   dispatch({
     payload: parsedAssets,
     type: DATA_UPDATE_ASSETS,
@@ -547,7 +567,7 @@ const watchPendingTransactions = (
       dispatch(
         watchPendingTransactions(accountAddressToWatch, remainingTries - 1)
       );
-    }, 1000);
+    }, TXN_WATCHER_POLL_INTERVAL);
   }
 };
 

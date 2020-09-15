@@ -5,9 +5,10 @@
  */
 
 // this flag is used outside components and cannot be changed dynamically
-export const chartExpandedAvailable = false;
+export const chartExpandedAvailable = true;
 
 export const AVATAR_PICKER = 'avatarPicker';
+export const CHARTS_EXAMPLE = 'chartsExample';
 export const DISCOVER_SHEET = 'discoverSheet';
 export const NATIVE_BPA = 'nativeButtonPressAnimation';
 export const NATIVE_TRANSACTION_LIST = 'nativeTransactionList';
@@ -18,6 +19,7 @@ export const RED_GREEN_PRICE_CHANGE = 'redGreenPriceChange';
 
 export const defaultConfig = {
   [AVATAR_PICKER]: false,
+  [CHARTS_EXAMPLE]: false,
   [DISCOVER_SHEET]: false,
   [NATIVE_BPA]: true,
   [NATIVE_TRANSACTION_LIST]: true,

@@ -4,7 +4,6 @@ import { omit } from 'lodash';
 import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import { InitialRouteContext } from '../context/initialRoute';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
@@ -25,11 +24,13 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
+  backupSheetConfig,
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
   nativeStackConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
+  restoreSheetConfig,
   savingsSheetConfig,
   stackNavigationConfig,
 } from './config';
@@ -44,6 +45,7 @@ import {
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
 const Stack = createStackNavigator();
@@ -263,15 +265,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SHEET}
-        options={{
-          cornerRadius: 30,
-          customStack: true,
-          isShortFormEnabled: true,
-          longFormHeight: 394,
-          onAppear: null,
-          shortFormHeight: 394,
-          startFromShortForm: true,
-        }}
+        {...backupSheetConfig}
       />
       <NativeStack.Screen
         component={ModalScreen}
@@ -286,16 +280,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={RestoreSheet}
         name={Routes.RESTORE_SHEET}
-        options={{
-          backgroundColor: '#25292E',
-          backgroundOpacity: 0.6,
-          cornerRadius: 39,
-          customStack: true,
-          ignoreBottomOffset: true,
-          isShortFormEnabled: false,
-          longFormHeight: 505,
-          onAppear: null,
-        }}
+        {...restoreSheetConfig}
       />
       <NativeStack.Screen
         component={SavingsSheet}

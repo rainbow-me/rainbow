@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
 import { find, get, isEmpty, matchesProperty, replace, toLower } from 'lodash';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
@@ -138,6 +139,34 @@ const isEthAddress = str => {
   return isValidAddress(withHexPrefix);
 };
 
+const fetchTxWithAlwaysCache = async address => {
+  const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&tag=oldest&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
+  const cachedTxTime = await AsyncStorage.getItem(`first-tx-${address}`);
+  if (cachedTxTime) {
+    return cachedTxTime;
+  }
+  const response = await fetch(url);
+  const parsedResponse = await response.json();
+  const txTime = parsedResponse.result[0].timeStamp;
+  AsyncStorage.setItem(`first-tx-${address}`, txTime);
+  return txTime;
+};
+
+export const daysFromTheFirstTx = address => {
+  return new Promise(async resolve => {
+    try {
+      if (address === 'eth') {
+        resolve(1000);
+        return;
+      }
+      const txTime = await fetchTxWithAlwaysCache(address);
+      const daysFrom = Math.floor((Date.now() / 1000 - txTime) / 60 / 60 / 24);
+      resolve(daysFrom);
+    } catch (e) {
+      resolve(1000);
+    }
+  });
+};
 /**
  * @desc Checks if a an address has previous transactions
  * @param  {String} address

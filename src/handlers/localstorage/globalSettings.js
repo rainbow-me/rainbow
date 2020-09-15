@@ -1,4 +1,3 @@
-import BackupStateTypes from '../../helpers/backupStateTypes';
 import networkTypes from '../../helpers/networkTypes';
 import { getGlobal, saveGlobal } from './common';
 
@@ -8,7 +7,6 @@ const KEYBOARD_HEIGHT = 'keyboardHeight';
 const LANGUAGE = 'language';
 const NATIVE_CURRENCY = 'nativeCurrency';
 const NETWORK = 'network';
-const USER_BACKUP_STATE = 'userBackupState';
 const KEYCHAIN_INTEGRITY_STATE = 'keychainIntegrityState';
 
 export const getKeychainIntegrityState = () =>
@@ -16,12 +14,6 @@ export const getKeychainIntegrityState = () =>
 
 export const saveKeychainIntegrityState = state =>
   saveGlobal(KEYCHAIN_INTEGRITY_STATE, state);
-
-export const getUserBackupState = () =>
-  getGlobal(USER_BACKUP_STATE, BackupStateTypes.immediate);
-
-export const saveUserBackupState = userBackupState =>
-  saveGlobal(USER_BACKUP_STATE, userBackupState);
 
 export const getAppStoreReviewCount = () => getGlobal(APPSTORE_REVIEW_COUNT, 0);
 

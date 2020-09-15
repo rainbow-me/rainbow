@@ -1,9 +1,8 @@
 import { get } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { spring } from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
-import { magicMemo } from '../../utils';
 import JellySelectorItem from './JellySelectorItem';
 import JellySelectorRow from './JellySelectorRow';
 import {
@@ -11,10 +10,10 @@ import {
   JellySelectorIndicator,
 } from './jelly-selector-indicator';
 import { colors } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
 const springTo = (node, toValue) =>
-  // eslint-disable-next-line import/no-named-as-default-member
-  Animated.spring(node, {
+  spring(node, {
     damping: 38,
     mass: 1,
     overshootClamping: false,
@@ -39,16 +38,19 @@ const JellySelector = ({
   color = colors.dark,
   defaultIndex = 0,
   disableSelection,
+  enableHapticFeedback,
   height,
   items,
   onSelect,
   renderIndicator = JellySelectorColorIndicator,
   renderItem,
   renderRow,
+  scaleTo,
   ...props
 }) => {
   const [selected, setSelected] = useState(defaultIndex);
   const [translateX, width] = useValues(0, 0);
+  const [selectorVisible, setSelectorVisible] = useState(false);
 
   useEffect(() => {
     resetPositionCalculations();
@@ -75,6 +77,7 @@ const JellySelector = ({
     (event, index) => {
       const itemWidth = get(event, 'nativeEvent.layout.width', 0);
       const itemX = get(event, 'nativeEvent.layout.x', 0);
+      setSelectorVisible(true);
 
       positions[index] = Math.floor(itemX) - Math.floor(itemWidth / 2);
       widths[index] = Math.floor(itemWidth);
@@ -100,17 +103,20 @@ const JellySelector = ({
 
   return (
     <View {...props}>
-      <JellySelectorIndicator
-        backgroundColor={backgroundColor}
-        height={height}
-        renderIndicator={renderIndicator}
-        translateX={translateX}
-        width={width}
-      />
-      <JellySelectorRow renderRow={renderRow}>
+      {selectorVisible ? (
+        <JellySelectorIndicator
+          backgroundColor={backgroundColor}
+          height={height}
+          renderIndicator={renderIndicator}
+          translateX={translateX}
+          width={width}
+        />
+      ) : null}
+      <JellySelectorRow height={height} renderRow={renderRow}>
         {items.map((item, index) => (
           <JellySelectorItem
             color={color}
+            enableHapticFeedback={enableHapticFeedback}
             index={index}
             isSelected={selected === index}
             item={item}
@@ -118,6 +124,7 @@ const JellySelector = ({
             onLayout={handleItemLayout}
             onPress={handleItemPress}
             renderItem={renderItem}
+            scaleTo={scaleTo}
             width={widths[index]}
           />
         ))}

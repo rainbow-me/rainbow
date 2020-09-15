@@ -1,16 +1,12 @@
-import { EventEmitter } from 'events';
-import BackupStateTypes from '../helpers/backupStateTypes';
-import { Navigation } from '../navigation';
-import { addNewSubscriber } from '../redux/data';
-import store from '../redux/store';
-import { checkKeychainIntegrity } from '../redux/wallets';
-import {
-  getKeychainIntegrityState,
-  getUserBackupState,
-  saveUserBackupState,
-} from './localstorage/globalSettings';
+import { filter, find } from 'lodash';
+import { getKeychainIntegrityState } from './localstorage/globalSettings';
+import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { Navigation } from '@rainbow-me/navigation';
+import store from '@rainbow-me/redux/store';
+import { checkKeychainIntegrity } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
-import { logger } from '@rainbow-me/utils';
+import logger from 'logger';
 
 const BACKUP_SHEET_DELAY_MS = 3000;
 
@@ -23,49 +19,51 @@ export const runKeychainIntegrityChecks = () => {
   }, 5000);
 };
 
-export const setupIncomingNotificationListeners = async () => {
-  let incomingTxListener = null;
-  // Previously existing users should see the backup sheet right after app launch
-  // Uncomment the line below to get in the existing user state(before icloud)
-  const backupState = await getUserBackupState();
-  if (backupState === BackupStateTypes.immediate) {
-    setTimeout(() => {
-      Navigation.handleAction(Routes.BACKUP_SHEET, {
-        option: 'existing_user',
-      });
-    }, BACKUP_SHEET_DELAY_MS);
-    // New users who get an incoming tx
-    // now need to go through the backup flow
-  } else if (backupState === BackupStateTypes.ready) {
-    incomingTxListener = new EventEmitter();
-    incomingTxListener.on('incoming_transaction', async type => {
-      logger.log('got incoming tx!');
-      await saveUserBackupState(BackupStateTypes.pending);
-      setTimeout(
-        () => {
-          Navigation.handleAction(Routes.BACKUP_SHEET);
-        },
-        type === 'appended' ? 30000 : BACKUP_SHEET_DELAY_MS
-      );
-      incomingTxListener.removeAllListeners();
-    });
+export const runWalletBackupStatusChecks = () => {
+  const { selected, wallets } = store.getState().wallets;
 
-    // Uncomment the following block to simulate an incoming tx
-    // during runtime
-    // setTimeout(() => {
-    //   incomingTxListener.emit('incoming_transaction', 'appended');
-    // });
+  // count how many visible, non-imported and non-readonly wallets are not backed up
+  const rainbowWalletsNotBackedUp = filter(wallets, wallet => {
+    const hasVisibleAccount = find(
+      wallet.addresses,
+      account => account.visible
+    );
+    return (
+      !wallet.imported &&
+      hasVisibleAccount &&
+      wallet.type !== WalletTypes.readOnly &&
+      !wallet.backedUp
+    );
+  });
 
-    // Incoming handles new transactions during runtime
-    store.dispatch(addNewSubscriber(incomingTxListener, 'appended'));
-    // Received will trigger when there's incoming transactions
-    // during startup
-    store.dispatch(addNewSubscriber(incomingTxListener, 'received'));
-  } else if (backupState === BackupStateTypes.pending) {
+  if (!rainbowWalletsNotBackedUp.length) return;
+
+  logger.log('there is a rainbow wallet not backed up');
+  const hasSelectedWallet = find(
+    rainbowWalletsNotBackedUp,
+    notBackedUpWallet => notBackedUpWallet.id === selected.id
+  );
+
+  logger.log(
+    'rainbow wallet not backed up that is selected?',
+    hasSelectedWallet
+  );
+
+  // if one of them is selected, show the default BackupSheet
+  if (selected && hasSelectedWallet) {
+    logger.log('showing default BackupSheet');
     setTimeout(() => {
       Navigation.handleAction(Routes.BACKUP_SHEET);
     }, BACKUP_SHEET_DELAY_MS);
+    return;
   }
 
-  return incomingTxListener;
+  // otherwise, show the BackupSheet redirecting to the WalletSelectionList
+  setTimeout(() => {
+    logger.log('showing BackupSheet with existing_user step');
+    Navigation.handleAction(Routes.BACKUP_SHEET, {
+      step: WalletBackupStepTypes.existing_user,
+    });
+  }, BACKUP_SHEET_DELAY_MS);
+  return;
 };

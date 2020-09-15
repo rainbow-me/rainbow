@@ -1,5 +1,4 @@
-import { get } from 'lodash';
-import React, { useCallback, useMemo } from 'react';
+import React, { Fragment, useCallback, useMemo } from 'react';
 import {
   InteractionManager,
   Linking,
@@ -8,25 +7,8 @@ import {
 } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import * as StoreReview from 'react-native-store-review';
 import styled from 'styled-components/primitives';
-import BackupIcon from '../../assets/settingsBackup.png';
-import CurrencyIcon from '../../assets/settingsCurrency.png';
-import LanguageIcon from '../../assets/settingsLanguage.png';
-import NetworkIcon from '../../assets/settingsNetwork.png';
-import {
-  getAppStoreReviewCount,
-  saveAppStoreReviewCount,
-} from '../../handlers/localstorage/globalSettings';
-import networkInfo from '../../helpers/networkInfo';
-import walletTypes from '../../helpers/walletTypes';
-import {
-  useAccountSettings,
-  useDimensions,
-  useSendFeedback,
-  useWallets,
-} from '../../hooks';
 import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
@@ -38,6 +20,23 @@ import {
   ListItemDivider,
 } from '../list';
 import { Emoji } from '../text';
+
+import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
+import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
+import LanguageIcon from '@rainbow-me/assets/settingsLanguage.png';
+import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
+import {
+  getAppStoreReviewCount,
+  saveAppStoreReviewCount,
+} from '@rainbow-me/handlers/localstorage/globalSettings';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import {
+  useAccountSettings,
+  useDimensions,
+  useSendFeedback,
+  useWallets,
+} from '@rainbow-me/hooks';
 import { colors, position } from '@rainbow-me/styles';
 
 const { RainbowRequestReview } = NativeModules;
@@ -49,6 +48,20 @@ const SettingsExternalURLs = {
   twitterWebUrl: 'https://twitter.com/rainbowdotme',
 };
 
+const CheckmarkIcon = styled(Icon).attrs({
+  name: 'checkmarkCircled',
+})`
+  box-shadow: 0px 4px 6px ${colors.alpha(colors.blueGreyDark50, 0.4)};
+`;
+
+const contentContainerStyle = { flex: 1 };
+const Container = styled(ScrollView).attrs({
+  contentContainerStyle,
+  scrollEventThrottle: 32,
+})`
+  ${position.cover};
+`;
+
 // ⚠️ Beware: magic numbers lol
 const SettingIcon = styled(FastImage)`
   ${position.size(60)};
@@ -57,13 +70,12 @@ const SettingIcon = styled(FastImage)`
   margin-top: 8;
 `;
 
-let versionPressHandle = null;
-let versionNumberOfTaps = 0;
-
-const CheckmarkIcon = styled(Icon).attrs({
-  name: 'checkmarkCircled',
+const VersionStampContainer = styled(Column).attrs({
+  align: 'center',
+  justify: 'end',
 })`
-  box-shadow: 0px 4px 6px ${colors.alpha(colors.blueGreyDark50, 0.4)};
+  flex: 1;
+  padding-bottom: 19;
 `;
 
 const WarningIcon = styled(Icon).attrs({
@@ -80,53 +92,39 @@ const checkAllWallets = wallets => {
   let canBeBackedUp = false;
   let allBackedUp = true;
   Object.keys(wallets).forEach(key => {
-    if (!wallets[key].backedUp && wallets[key].type !== walletTypes.readOnly) {
+    if (!wallets[key].backedUp && wallets[key].type !== WalletTypes.readOnly) {
       allBackedUp = false;
     }
 
     if (
       !wallets[key].backedUp &&
-      wallets[key].type !== walletTypes.readOnly &&
+      wallets[key].type !== WalletTypes.readOnly &&
       !wallets[key].imported
     ) {
       areBackedUp = false;
     }
-    if (!wallets[key].type !== walletTypes.readOnly) {
+    if (!wallets[key].type !== WalletTypes.readOnly) {
       canBeBackedUp = true;
     }
   });
   return { allBackedUp, areBackedUp, canBeBackedUp };
 };
 
-const SettingsSection = ({
+export default function SettingsSection({
   onCloseModal,
   onPressBackup,
   onPressCurrency,
-  onPressHiddenFeature,
+  onPressDev,
   onPressIcloudBackup,
   onPressLanguage,
   onPressNetwork,
-  onPressDev,
   onPressShowSecret,
-}) => {
+}) {
   const { wallets } = useWallets();
   const { language, nativeCurrency, network } = useAccountSettings();
   const { isTinyPhone } = useDimensions();
 
   const onSendFeedback = useSendFeedback();
-
-  const handleVersionPress = useCallback(() => {
-    versionPressHandle && clearTimeout(versionPressHandle);
-    versionNumberOfTaps++;
-
-    if (versionNumberOfTaps === 15) {
-      onPressHiddenFeature();
-    }
-
-    versionPressHandle = setTimeout(() => {
-      versionNumberOfTaps = 0;
-    }, 3000);
-  }, [onPressHiddenFeature]);
 
   const onPressReview = useCallback(async () => {
     if (RainbowRequestReview) {
@@ -169,11 +167,7 @@ const SettingsSection = ({
   const backupStatusColor = allBackedUp ? colors.green : colors.blueGreyDark50;
 
   return (
-    <ScrollView
-      scrollEnabled={isTinyPhone}
-      scrollEventThrottle={32}
-      style={position.coverAsObject}
-    >
+    <Container scrollEnabled={isTinyPhone}>
       <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
         {canBeBackedUp && (
           <ListItem
@@ -205,7 +199,7 @@ const SettingsSection = ({
           onPress={onPressNetwork}
         >
           <ListItemArrowGroup>
-            {get(networkInfo, `[${network}].name`)}
+            {networkInfo?.[network]?.name}
           </ListItemArrowGroup>
         </ListItem>
         <ListItem
@@ -219,7 +213,7 @@ const SettingsSection = ({
         </ListItem>
       </ColumnWithDividers>
       <ListFooter />
-      <ColumnWithDividers dividerRenderer={ListItemDivider} paddingBottom={10}>
+      <ColumnWithDividers dividerRenderer={ListItemDivider}>
         <ListItem
           icon={<Emoji name="rainbow" />}
           label="Follow Us on Twitter"
@@ -232,26 +226,24 @@ const SettingsSection = ({
           onPress={onSendFeedback}
         />
         <ListItem
-          icon={<Emoji name="heart" />}
+          icon={<Emoji name="red_heart" />}
           label="Review Rainbow"
           onPress={onPressReview}
         />
-        {__DEV__ && (
+      </ColumnWithDividers>
+      {__DEV__ && (
+        <Fragment>
+          <ListFooter />
           <ListItem
-            icon={<Emoji name="octopus" />}
-            label="Developer Settings"
+            icon={<Emoji name="construction" />}
+            label="Developer settings"
             onPress={onPressDev}
           />
-        )}
-      </ColumnWithDividers>
-
-      <Column align="center" flex={1} justify="end" paddingBottom={19}>
-        <TouchableWithoutFeedback onPress={handleVersionPress}>
-          <AppVersionStamp />
-        </TouchableWithoutFeedback>
-      </Column>
-    </ScrollView>
+        </Fragment>
+      )}
+      <VersionStampContainer>
+        <AppVersionStamp />
+      </VersionStampContainer>
+    </Container>
   );
-};
-
-export default SettingsSection;
+}

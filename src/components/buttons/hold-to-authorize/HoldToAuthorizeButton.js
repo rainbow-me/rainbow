@@ -8,7 +8,6 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, { Easing, timing, Value } from 'react-native-reanimated';
 import ShadowStack from 'react-native-shadow-stack';
-import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import BiometryTypes from '../../../helpers/biometryTypes';
 import { useBiometryType } from '../../../hooks';
@@ -24,6 +23,7 @@ const { ACTIVE, BEGAN, END, FAILED } = State;
 
 const ButtonBorderRadius = 30;
 const ButtonHeight = 59;
+const SmallButtonHeight = 46;
 
 const ButtonDisabledBgColor = {
   dark: colors.darkGrey,
@@ -46,20 +46,22 @@ const buttonScaleDurationMs = 150;
 const longPressProgressDurationMs = 500; // @christian approves
 
 const Content = styled(Centered)`
-  ${padding(15)};
+  ${({ smallButton }) => !smallButton && padding(15)};
   border-radius: ${ButtonBorderRadius};
   flex-grow: 0;
-  height: ${ButtonHeight};
+  height: ${({ smallButton }) =>
+    smallButton ? SmallButtonHeight : ButtonHeight};
   overflow: hidden;
   width: 100%;
 `;
 
-const Title = withProps({
+const Title = styled(Text).attrs(({ smallButton }) => ({
   color: 'white',
-  size: 'larger',
-  style: { marginBottom: 4 },
+  size: smallButton ? 'large' : 'larger',
   weight: 'semibold',
-})(Text);
+}))`
+  margin-bottom: 4;
+`;
 
 const animate = (value, { duration = buttonScaleDurationMs, toValue }) =>
   timing(value, {
@@ -85,6 +87,7 @@ class HoldToAuthorizeButton extends PureComponent {
     label: PropTypes.string,
     onLongPress: PropTypes.func.isRequired,
     shadows: PropTypes.arrayOf(PropTypes.array),
+    smallButton: PropTypes.bool,
     style: PropTypes.object,
     theme: PropTypes.oneOf(['light', 'dark']),
   };
@@ -186,6 +189,7 @@ class HoldToAuthorizeButton extends PureComponent {
       hideInnerBorder,
       label,
       shadows,
+      smallButton,
       style,
       theme,
       ...props
@@ -212,13 +216,13 @@ class HoldToAuthorizeButton extends PureComponent {
             <ShadowStack
               backgroundColor={bgColor}
               borderRadius={ButtonBorderRadius}
-              height={ButtonHeight}
+              height={smallButton ? SmallButtonHeight : ButtonHeight}
               shadows={
                 shadows || ButtonShadows[disabled ? 'disabled' : 'default']
               }
               width="100%"
             >
-              <Content backgroundColor={bgColor}>
+              <Content backgroundColor={bgColor} smallButton={smallButton}>
                 {children || (
                   <Fragment>
                     {!disabled && !hideBiometricIcon && (
@@ -227,7 +231,9 @@ class HoldToAuthorizeButton extends PureComponent {
                         biometryType={biometryType}
                       />
                     )}
-                    <Title>{isAuthorizing ? 'Authorizing' : label}</Title>
+                    <Title smallButton={smallButton}>
+                      {isAuthorizing ? 'Authorizing' : label}
+                    </Title>
                   </Fragment>
                 )}
                 {!hideInnerBorder && (

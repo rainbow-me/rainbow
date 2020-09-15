@@ -3,6 +3,7 @@ import React, { Fragment } from 'react';
 import { compose, onlyUpdateForKeys, shouldUpdate, withProps } from 'recompact';
 import { css } from 'styled-components/primitives';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
+import { deviceUtils } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RequestVendorLogoIcon } from '../coin-icon';
@@ -13,7 +14,8 @@ import CoinRow from './CoinRow';
 import { colors, padding } from '@rainbow-me/styles';
 
 const dividerHeight = 22;
-const selectedHeight = 78;
+const isTinyPhone = deviceUtils.dimensions.height <= 568;
+const selectedHeight = isTinyPhone ? 62 : 78;
 
 const selectedStyles = css`
   ${padding(17, 14, 19, 13)};

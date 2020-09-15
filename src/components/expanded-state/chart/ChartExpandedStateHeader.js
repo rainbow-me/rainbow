@@ -1,216 +1,125 @@
-import lang from 'i18n-js';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import Animated, { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
-import { chartExpandedAvailable } from '../../../config/experimental';
-import useExperimentalFlag, {
-  RED_GREEN_PRICE_CHANGE,
-} from '../../../config/experimentalHooks';
-import EditOptions from '../../../helpers/editOptionTypes';
-import {
-  convertAmountToNativeDisplay,
-  greaterThan,
-  isEqual,
-  toFixedDecimals,
-} from '../../../helpers/utilities';
-import { useAccountSettings, useCoinListEditOptions } from '../../../hooks';
-import { magicMemo } from '../../../utils';
+import { useCallbackOne } from 'use-memo-one';
 import { CoinIcon } from '../../coin-icon';
-import { ContextCircleButton } from '../../context-menu';
-import { Icon } from '../../icons';
-import { Input } from '../../inputs';
 import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
-import { TruncatedText } from '../../text';
+import ChartContextButton from './ChartContextButton';
+import {
+  ChartDateLabel,
+  ChartHeaderSubtitle,
+  ChartPercentChangeLabel,
+  ChartPriceLabel,
+} from './chart-data-labels';
+import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
+import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
 import { colors, padding } from '@rainbow-me/styles';
+
+const { call, cond, onChange, useCode } = Animated;
 
 const noPriceData = 'No price data';
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
 })`
-  ${padding(0, 19, 24)};
+  ${({ showChart }) => padding(0, 19, showChart ? 30 : 0)};
 `;
 
-const Subtitle = styled(TruncatedText).attrs(
-  ({
-    color = colors.alpha(colors.blueGreyDark, 0.8),
-    letterSpacing = 'roundedMedium',
-  }) => ({
-    color,
-    letterSpacing,
-    size: 'larger',
-    weight: 'medium',
-  })
-)``;
+function useTabularNumsWhileScrubbing(isScrubbing) {
+  const [tabularNums, enable, disable] = useBooleanState();
+  // Only enable tabularNums on the price label when the user is scrubbing
+  // because we are obnoxiously into details
+  useCode(
+    useCallbackOne(
+      () =>
+        onChange(
+          isScrubbing,
+          cond(isScrubbing, call([], enable), call([], disable))
+        ),
+      [disable, enable, isScrubbing]
+    )
+  );
+  return tabularNums;
+}
 
-const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
-  color,
-  letterSpacing: 'roundedTight',
-  size: 'big',
-  weight: 'bold',
-}))``;
-
-const ChartExpandedStateHeader = ({
-  address,
-  change,
-  chartDateRef,
-  chartPrice,
-  chartPriceRef,
+export default function ChartExpandedStateHeader({
+  asset,
+  changeDirection,
+  changeRef,
   color = colors.dark,
+  dateRef,
+  isScrubbing,
+  latestChange,
   latestPrice = noPriceData,
-  name,
-  shadowColor,
-  symbol,
-  uniqueId,
-}) => {
+  priceRef,
+  chartTimeSharedValue,
+  showChart,
+}) {
   const { nativeCurrency } = useAccountSettings();
-  const {
-    clearSelectedCoins,
-    currentAction,
-    pushSelectedCoin,
-    setHiddenCoins,
-    setPinnedCoins,
-  } = useCoinListEditOptions();
+  const tabularNums = useTabularNumsWhileScrubbing(isScrubbing);
+
+  const isNoPriceData = latestPrice === noPriceData;
+
+  const price = useMemo(
+    () => convertAmountToNativeDisplay(latestPrice, nativeCurrency),
+    [latestPrice, nativeCurrency]
+  );
+
+  const priceSharedValue = useSharedValue('', 'priceSharedValue');
 
   useEffect(() => {
-    // Ensure this expanded state's asset is always actively inside
-    // the CoinListEditOptions selection queue
-    pushSelectedCoin(uniqueId);
-
-    // Clear CoinListEditOptions selection queue on unmount.
-    return () => clearSelectedCoins();
-  }, [clearSelectedCoins, currentAction, pushSelectedCoin, uniqueId]);
+    if (!isNoPriceData) {
+      priceSharedValue.value = price;
+    } else {
+      priceSharedValue.value = '';
+    }
+  }, [price, isNoPriceData, priceSharedValue]);
 
   const coinIconShadow = useMemo(
-    () => [[0, 4, 12, shadowColor || color, 0.3]],
-    [color, shadowColor]
+    () => [[0, 4, 12, asset?.shadowColor || color, 0.3]],
+    [asset, color]
   );
-
-  const contextButtonOptions = useMemo(
-    () => [
-      `📌️ ${currentAction === EditOptions.unpin ? 'Unpin' : 'Pin'}`,
-      `🙈️ ${currentAction === EditOptions.unhide ? 'Unhide' : 'Hide'}`,
-      lang.t('wallet.action.cancel'),
-    ],
-    [currentAction]
-  );
-
-  const formattedChange = useMemo(
-    () => `${Math.abs(Number(toFixedDecimals(change, 2)))}%`,
-    [change]
-  );
-
-  const formattedPrice = useMemo(
-    () =>
-      chartPrice
-        ? convertAmountToNativeDisplay(chartPrice, nativeCurrency)
-        : latestPrice,
-    [chartPrice, latestPrice, nativeCurrency]
-  );
-
-  const handleActionSheetPress = useCallback(
-    buttonIndex => {
-      if (buttonIndex === 0) {
-        // 📌️ Pin
-        setPinnedCoins();
-      } else if (buttonIndex === 1) {
-        // 🙈️ Hide
-        setHiddenCoins();
-      }
-    },
-    [setHiddenCoins, setPinnedCoins]
-  );
-
-  const isNoPriceData = formattedPrice === noPriceData;
-
-  const { isNoChange, isPositiveChange } = useMemo(
-    () => ({
-      isNoChange: isEqual(change, 0),
-      isPositiveChange: greaterThan(change, 0),
-    }),
-    [change]
-  );
-
-  const redGreenPriceChange = useExperimentalFlag(RED_GREEN_PRICE_CHANGE);
-  const redGreenColor = isPositiveChange
-    ? colors.green
-    : isNoChange
-    ? colors.alpha(colors.blueGreyDark, 0.8)
-    : colors.red;
 
   return (
-    <Container>
+    <Container showChart={showChart}>
       <Row align="center" justify="space-between">
-        <CoinIcon address={address} shadow={coinIconShadow} symbol={symbol} />
-        <ContextCircleButton
-          flex={0}
-          onPressActionSheet={handleActionSheetPress}
-          options={contextButtonOptions}
-          tintColor={color}
+        <CoinIcon
+          address={asset?.address}
+          shadow={coinIconShadow}
+          symbol={asset?.symbol}
         />
+        <ChartContextButton asset={asset} color={color} />
       </Row>
-      <Row align="center" justify="space-between">
-        {!chartExpandedAvailable || isNoPriceData ? (
-          <ColumnWithMargins align="start" flex={1} margin={1}>
-            <Title>{isNoPriceData ? name : formattedPrice}</Title>
-            <Subtitle>{isNoPriceData ? formattedPrice : name}</Subtitle>
-          </ColumnWithMargins>
-        ) : (
-          <ColumnWithMargins align="start" flex={1} margin={1}>
-            <Title
-              as={Input}
-              editable={false}
-              flex={1}
-              pointerEvent="none"
-              ref={chartPriceRef}
-            />
-            <Subtitle>{name}</Subtitle>
-          </ColumnWithMargins>
-        )}
-        {!isNoPriceData && (
+      <RowWithMargins align="center" justify="space-between" margin={12}>
+        <ColumnWithMargins align="start" flex={1} margin={1}>
+          <ChartPriceLabel
+            defaultValue={isNoPriceData ? asset?.name : price}
+            isNoPriceData={isNoPriceData}
+            isScrubbing={isScrubbing}
+            priceRef={priceRef}
+            priceSharedValue={priceSharedValue}
+            tabularNums={tabularNums}
+          />
+          <ChartHeaderSubtitle>
+            {isNoPriceData ? noPriceData : asset?.name}
+          </ChartHeaderSubtitle>
+        </ColumnWithMargins>
+        {!isNoPriceData && showChart && (
           <ColumnWithMargins align="end" margin={1}>
-            <RowWithMargins align="center" margin={4}>
-              <Icon
-                color={redGreenPriceChange ? redGreenColor : color}
-                direction={isPositiveChange ? 'left' : 'right'}
-                name="fatArrow"
-                width={15}
-              />
-              <Title
-                align="right"
-                color={redGreenPriceChange ? redGreenColor : color}
-              >
-                {formattedChange}
-              </Title>
-            </RowWithMargins>
-            {chartExpandedAvailable ? (
-              <Subtitle
-                align="right"
-                as={Input}
-                color={redGreenPriceChange ? redGreenColor : color}
-                editable={false}
-                letterSpacing="roundedTight"
-                pointerEvent="none"
-                ref={chartDateRef}
-                tabularNums
-              />
-            ) : (
-              <Subtitle
-                align="right"
-                color={redGreenPriceChange ? redGreenColor : color}
-              >
-                Today
-              </Subtitle>
-            )}
+            <ChartPercentChangeLabel
+              changeDirection={changeDirection}
+              changeRef={changeRef}
+              isScrubbing={isScrubbing}
+              latestChange={latestChange}
+              tabularNums={tabularNums}
+            />
+            <ChartDateLabel
+              chartTimeSharedValue={chartTimeSharedValue}
+              dateRef={dateRef}
+            />
           </ColumnWithMargins>
         )}
-      </Row>
+      </RowWithMargins>
     </Container>
   );
-};
-
-export default magicMemo(ChartExpandedStateHeader, [
-  'chartPrice',
-  'color',
-  'latestPrice',
-  'shadowColor',
-]);
+}

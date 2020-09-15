@@ -1,0 +1,191 @@
+diff --git a/node_modules/react-native-reanimated/src/Animated.js b/node_modules/react-native-reanimated/src/Animated.js
+index 27de367..a5e758a 100644
+--- a/node_modules/react-native-reanimated/src/Animated.js
++++ b/node_modules/react-native-reanimated/src/Animated.js
+@@ -74,7 +74,7 @@ export * from './derived';
+ export * from './reanimated2';
+ 
+ export {
+-  EasingNode,
++  EasingNode as Easing,
+   Transitioning,
+   Transition,
+   createTransitioningComponent,
+diff --git a/node_modules/react-native-reanimated/src/derived/index.js b/node_modules/react-native-reanimated/src/derived/index.js
+index e6e1541..86fd5c7 100644
+--- a/node_modules/react-native-reanimated/src/derived/index.js
++++ b/node_modules/react-native-reanimated/src/derived/index.js
+@@ -2,7 +2,8 @@ export { default as acc } from './acc';
+ export { default as color } from './color';
+ export { default as diff } from './diff';
+ export { default as diffClamp } from './diffClamp';
+-export { default as interpolateNode, Extrapolate } from './interpolate';
++export { default as interpolate, default as interpolateNode, Extrapolate } from './interpolate';
+ export { default as interpolateColors } from './interpolateColors';
+ export { default as onChange } from './onChange';
+ export { default as useCode } from './useCode';
++
+diff --git a/node_modules/react-native-reanimated/src/reanimated2/Easing.js b/node_modules/react-native-reanimated/src/reanimated2/Easing.js
+index 48a3c76..0723069 100644
+--- a/node_modules/react-native-reanimated/src/reanimated2/Easing.js
++++ b/node_modules/react-native-reanimated/src/reanimated2/Easing.js
+@@ -235,7 +235,7 @@ function inOut(easing) {
+   };
+ }
+ 
+-export const Easing = {
++export const NewEasing = {
+   linear,
+   ease,
+   quad,
+diff --git a/node_modules/react-native-reanimated/src/reanimated2/Hooks.js b/node_modules/react-native-reanimated/src/reanimated2/Hooks.js
+index c14ec0b..ffa8555 100644
+--- a/node_modules/react-native-reanimated/src/reanimated2/Hooks.js
++++ b/node_modules/react-native-reanimated/src/reanimated2/Hooks.js
+@@ -6,19 +6,41 @@ import updateProps from './UpdateProps';
+ import { initialUpdaterRun } from './animations';
+ import { getTag } from './NativeMethods'
+ 
+-export function useSharedValue(init) {
++let globalVarsStore = {}
++
++export function releaseStore() {
++  globalVarsStore = {}
++  return
++}
++
++export function useSharedValue(init, name) {
+   const ref = useRef(null);
+   if (ref.current === null) {
+-    ref.current = makeMutable(init);
++    if (name) {
++      globalVarsStore[name] = globalVarsStore[name] || makeMutable(init)
++      globalVarsStore[name].value = init;
++      ref.current = globalVarsStore[name];
++    } else {
++      ref.current = makeMutable(init)
++    }
+   }
+   return ref.current;
+ }
+ 
+-export function useMapper(fun, inputs = [], outputs = []) {
++export function useMapper(fun, inputs = [], outputs = [], name) {
+   useEffect(() => {
+-    const mapperId = startMapper(fun, inputs, outputs);
++    let mappe3rId
++    if (name && false) {
++      globalVarsStore[name] = globalVarsStore[name] || startMapper(fun, inputs, outputs)
++      let mapperId = globalVarsStore[name];
++    } else {
++      mapperId = startMapper(fun, inputs, outputs);
++    }
++
+     return () => {
+-      stopMapper(mapperId);
++      if (!name) {
++        stopMapper(mapperId);
++      }
+     };
+   }, []);
+ }
+@@ -250,8 +272,8 @@ function styleUpdater(viewTag, updater, state) {
+   }
+ }
+ 
+-export function useAnimatedStyle(updater) {
+-  const viewTag = useSharedValue(-1);
++export function useAnimatedStyle(updater, name) {
++  const viewTag = useSharedValue(-1, name);
+ 
+   const initRef = useRef(null);
+   if (initRef.current === null) {
+@@ -267,7 +289,7 @@ export function useAnimatedStyle(updater) {
+   useMapper(() => {
+     'worklet';
+     styleUpdater(viewTag, updater, remoteState);
+-  }, inputs);
++  }, inputs, [], name ? name + '_mapper' : '');
+ 
+   let wrongKey;
+   const isError = Object.keys(initial).some((key) => {
+@@ -294,7 +316,7 @@ export function useAnimatedStyle(updater) {
+ // when you need styles to animated you should always use useAS
+ export const useAnimatedProps = useAnimatedStyle;
+ 
+-export function useDerivedValue(processor) {
++export function useDerivedValue(processor, name) {
+   const initRef = useRef(null);
+   if (initRef.current === null) {
+     initRef.current = {
+@@ -311,7 +333,8 @@ export function useDerivedValue(processor) {
+       sharedValue.value = processor();
+     },
+     inputs,
+-    [sharedValue]
++    [sharedValue],
++    name
+   );
+ 
+   return sharedValue;
+@@ -331,13 +354,18 @@ export function useAnimatedGestureHandler(handlers) {
+       'worklet';
+       const UNDETERMINED = 0;
+       const FAILED = 1;
++      const BEGAN = 2;
+       const CANCELLED = 3;
+       const ACTIVE = 4;
+       const END = 5;
+ 
+-      if (event.oldState === UNDETERMINED && handlers.onStart) {
++      if (
++        (event.oldState === UNDETERMINED || event.oldState === END) &&
++        handlers.onStart
++      ) {
+         handlers.onStart(event, context);
+       }
++
+       if (event.state === ACTIVE && handlers.onActive) {
+         handlers.onActive(event, context);
+       }
+@@ -345,14 +373,14 @@ export function useAnimatedGestureHandler(handlers) {
+         handlers.onEnd(event, context);
+       }
+       if (
+-        event.oldState === ACTIVE &&
++        (event.oldState === ACTIVE || event.oldState === BEGAN) &&
+         event.state === FAILED &&
+         handlers.onFail
+       ) {
+         handlers.onFail(event, context);
+       }
+       if (
+-        event.oldState === ACTIVE &&
++        event.oldState === ACTIVE  &&
+         event.state === CANCELLED &&
+         handlers.onCancel
+       ) {
+diff --git a/node_modules/react-native-reanimated/src/reanimated2/animations.js b/node_modules/react-native-reanimated/src/reanimated2/animations.js
+index c433775..d01f3a4 100644
+--- a/node_modules/react-native-reanimated/src/reanimated2/animations.js
++++ b/node_modules/react-native-reanimated/src/reanimated2/animations.js
+@@ -1,5 +1,5 @@
+ /* global _WORKLET */
+-import { Easing } from './Easing';
++import { NewEasing as Easing } from './Easing';
+ 
+ let IN_STYLE_UPDATER = false;
+ 
+diff --git a/node_modules/react-native-reanimated/src/reanimated2/interpolation.js b/node_modules/react-native-reanimated/src/reanimated2/interpolation.js
+index fc43c60..920eaa9 100644
+--- a/node_modules/react-native-reanimated/src/reanimated2/interpolation.js
++++ b/node_modules/react-native-reanimated/src/reanimated2/interpolation.js
+@@ -28,7 +28,7 @@ function internalInterpolate(x, l, r, ll, rr, type) {
+   return val;
+ }
+ 
+-export function interpolate(x, input, output, type) {
++export function newInterpolate(x, input, output, type) {
+   'worklet';
+   if (x && x.__nodeID) {
+     throw new Error(

@@ -10,7 +10,6 @@ import React, {
 } from 'react';
 import { Alert, InteractionManager, Platform, StatusBar } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { MiniButton } from '../components/buttons';
@@ -19,15 +18,14 @@ import { Centered, Column, Row } from '../components/layout';
 import LoadingOverlay from '../components/modal/LoadingOverlay';
 import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
-import { saveUserBackupState } from '../handlers/localstorage/globalSettings';
-import { web3Provider } from '../handlers/web3';
-import BackupStateTypes from '../helpers/backupStateTypes';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-import { isENSAddressFormat, isValidWallet } from '../helpers/validators';
 import { getWallet } from '../model/wallet';
-import Navigation, { useNavigation } from '../navigation/Navigation';
-import { sheetVerticalOffset } from '../navigation/effects';
-import { setIsWalletLoading } from '../redux/wallets';
+import { web3Provider } from '@rainbow-me/handlers/web3';
+import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import {
+  isENSAddressFormat,
+  isValidWallet,
+} from '@rainbow-me/helpers/validators';
+import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import {
   useAccountSettings,
   useClipboard,
@@ -39,6 +37,8 @@ import {
   useTimeout,
   useWallets,
 } from '@rainbow-me/hooks';
+import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
 import { borders, colors, padding } from '@rainbow-me/styles';
 import logger from 'logger';
@@ -122,8 +122,7 @@ const Sheet = styled(Column).attrs({
 
 export default function ImportSeedPhraseSheet() {
   const { accountAddress } = useAccountSettings();
-  const { isWalletLoading, selectedWallet, wallets } = useWallets();
-  const dispatch = useDispatch();
+  const { selectedWallet, wallets } = useWallets();
   const { clipboard } = useClipboard();
   const { isSmallPhone } = useDimensions();
   const { goBack, navigate, replace, setParams } = useNavigation();
@@ -252,11 +251,12 @@ export default function ImportSeedPhraseSheet() {
               goBack();
               InteractionManager.runAfterInteractions(async () => {
                 if (previousWalletCount === 0) {
-                  await dispatch(setIsWalletLoading(null));
-                  await saveUserBackupState(BackupStateTypes.done);
-                  replace(Routes.SWIPE_LAYOUT);
+                  replace(Routes.SWIPE_LAYOUT, {
+                    params: { initialized: true },
+                    screen: Routes.WALLET_SCREEN,
+                  });
                 } else {
-                  navigate(Routes.WALLET_SCREEN);
+                  navigate(Routes.WALLET_SCREEN, { initialized: true });
                 }
                 if (Platform.OS === 'android') {
                   hide();
@@ -266,7 +266,7 @@ export default function ImportSeedPhraseSheet() {
                   // If it's not read only, show the backup sheet
                   if (!(isENSAddressFormat(input) || isValidAddress(input))) {
                     Navigation.handleAction(Routes.BACKUP_SHEET, {
-                      option: 'imported',
+                      step: WalletBackupStepTypes.imported,
                     });
                   }
                 }, 1000);
@@ -297,7 +297,6 @@ export default function ImportSeedPhraseSheet() {
     isWalletEthZero,
     handleSetImporting,
     hide,
-    dispatch,
     goBack,
     initializeWallet,
     isImporting,
@@ -314,17 +313,17 @@ export default function ImportSeedPhraseSheet() {
   ]);
 
   useEffect(() => {
-    if (isWalletLoading) {
+    if (isImporting) {
       setComponent(
         <LoadingOverlay
           paddingTop={keyboardVerticalOffset}
-          title={isWalletLoading}
+          title={isImporting}
         />,
         false
       );
     }
     return hide;
-  }, [hide, isWalletLoading, setComponent]);
+  }, [hide, isImporting, setComponent]);
 
   return (
     <Container testID="import-sheet">

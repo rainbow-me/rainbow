@@ -12,9 +12,9 @@ describe('New Wallet flow', () => {
     await Helpers.checkIfVisible('wallet-screen');
   });
 
-  it('should show the "Add funds" button', async () => {
-    await Helpers.checkIfVisible('add-funds-button');
-  });
+  // it('should show the "Add funds" button', async () => {
+  //   await Helpers.checkIfVisible('add-funds-button');
+  // });
 
   it('should show "No transactions yet" in the activity list', async () => {
     await Helpers.swipe('wallet-screen', 'right');
