@@ -10,6 +10,7 @@ export const sharedCoolModalTopOffset = safeAreaInsetValues.top + 5;
 const buildCoolModalConfig = params => ({
   allowsDragToDismiss: true,
   allowsTapToDismiss: true,
+  autoJumpToNewHeight: params.autoJumpToNewHeight,
   backgroundOpacity: 0.7,
   blocksBackgroundTouches: true,
   cornerRadius: params.longFormHeight ? 39 : 30,
@@ -79,6 +80,7 @@ export const backupSheetConfig = {
 
     return buildCoolModalConfig({
       ...params,
+      autoJumpToNewHeight: true,
       longFormHeight: heightForStep,
     });
   },

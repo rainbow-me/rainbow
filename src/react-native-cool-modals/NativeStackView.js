@@ -1,5 +1,5 @@
 import { StackActions, useTheme } from '@react-navigation/native';
-import React, { createContext, useMemo, useRef } from 'react';
+import React, { createContext, useEffect, useMemo, useRef } from 'react';
 import { findNodeHandle, NativeModules, StyleSheet, View } from 'react-native';
 import Components from './screens';
 
@@ -11,32 +11,24 @@ const sx = StyleSheet.create({
   },
 });
 
-function ScreenView({ colors, descriptors, navigation, route, state }) {
+function usePrevious(value) {
   const ref = useRef();
 
-  const context = useMemo(
-    () => ({
-      jumpToLong: () => {
-        const screen = findNodeHandle(ref.current);
-        if (screen) {
-          NativeModules.RNCMScreenManager.jumpTo(true, screen);
-        }
-      },
-      jumpToShort: () => {
-        const screen = findNodeHandle(ref.current);
-        if (screen) {
-          NativeModules.RNCMScreenManager.jumpTo(false, screen);
-        }
-      },
-    }),
-    []
-  );
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
 
+  return ref.current;
+}
+
+function ScreenView({ colors, descriptors, navigation, route, state }) {
   const { options, render: renderScene } = descriptors[route.key];
+  const ref = useRef();
   const {
     allowsDragToDismiss,
     allowsTapToDismiss,
     anchorModalToLongForm,
+    autoJumpToNewHeight,
     backgroundColor,
     backgroundOpacity,
     contentStyle,
@@ -59,6 +51,43 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
     topOffset,
     transitionDuration,
   } = options;
+  const prevLongFormHeight = usePrevious(longFormHeight);
+  const prevShortFormHeight = usePrevious(shortFormHeight);
+
+  const context = useMemo(
+    () => ({
+      jumpToLong: () => {
+        const screen = findNodeHandle(ref.current);
+        if (screen) {
+          NativeModules.RNCMScreenManager.jumpTo(true, screen);
+        }
+      },
+      jumpToShort: () => {
+        const screen = findNodeHandle(ref.current);
+        if (screen) {
+          NativeModules.RNCMScreenManager.jumpTo(false, screen);
+        }
+      },
+    }),
+    []
+  );
+
+  // When 'autoJumpToNewHeight' option is enabled, automatically "jump" towards either
+  // the new "longFormHeight" or new "shortFormHeight"
+  useEffect(() => {
+    if (autoJumpToNewHeight && longFormHeight !== prevLongFormHeight) {
+      setImmediate(context.jumpToLong);
+    } else if (autoJumpToNewHeight && shortFormHeight !== prevShortFormHeight) {
+      setImmediate(context.jumpToShort);
+    }
+  }, [
+    autoJumpToNewHeight,
+    context,
+    longFormHeight,
+    prevLongFormHeight,
+    prevShortFormHeight,
+    shortFormHeight,
+  ]);
 
   return (
     <ModalContext.Provider value={context}>
