@@ -1,14 +1,15 @@
 import { forEach } from 'lodash';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
-import WalletBackupTypes from '../../helpers/walletBackupTypes';
-import { deviceUtils } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
-import Icon from '../icons/Icon';
+import { Icon } from '../icons';
 import { Column, Row, RowWithMargins } from '../layout';
 import { GradientText, Text } from '../text';
+import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import { useNavigation } from '@rainbow-me/navigation';
 import { colors } from '@rainbow-me/styles';
+import { deviceUtils } from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
@@ -38,7 +39,7 @@ const TitleRow = styled(RowWithMargins)`
 
 const RainbowText = styled(GradientText).attrs({
   angle: false,
-  colors: ['#FFB114', '#FF54BB', '#7EA4DE'],
+  colors: colors.gradients.rainbow,
   end: { x: 0, y: 0.5 },
   start: { x: 1, y: 0.5 },
   steps: [0, 0.774321, 1],
@@ -74,12 +75,14 @@ const DescriptionText = styled(Text).attrs({
   padding-bottom: 24;
 `;
 
-const RestoreSheetFirstStep = ({
+export default function RestoreSheetFirstStep({
   onIcloudRestore,
   onManualRestore,
   onWatchAddress,
   userData,
-}) => {
+}) {
+  const { setParams } = useNavigation();
+
   const walletsBackedUp = useMemo(() => {
     let count = 0;
     forEach(userData?.wallets, wallet => {
@@ -90,9 +93,14 @@ const RestoreSheetFirstStep = ({
     return count;
   }, [userData]);
 
+  const enableCloudRestore = walletsBackedUp > 0;
+  useEffect(() => {
+    setParams({ enableCloudRestore });
+  }, [enableCloudRestore, setParams]);
+
   return (
     <Container>
-      {walletsBackedUp > 0 && (
+      {enableCloudRestore && (
         <React.Fragment>
           <SheetRow as={ButtonPressAnimation} onPress={onIcloudRestore}>
             <Column>
@@ -147,6 +155,4 @@ const RestoreSheetFirstStep = ({
       </SheetRow>
     </Container>
   );
-};
-
-export default RestoreSheetFirstStep;
+}

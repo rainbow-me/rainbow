@@ -142,8 +142,14 @@ export async function fetchUserDataFromCloud() {
   return getDataFromCloud(password, filename);
 }
 
+export const cloudBackupPasswordMinLength = 8;
+
 export function isCloudBackupPasswordValid(password) {
-  return !!(password && password !== '' && password.length >= 8);
+  return !!(
+    password &&
+    password !== '' &&
+    password.length >= cloudBackupPasswordMinLength
+  );
 }
 
 export function isCloudBackupAvailable() {

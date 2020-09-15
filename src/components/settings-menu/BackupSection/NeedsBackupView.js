@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import { RainbowButton } from '../../buttons';
-import { Column } from '../../layout';
+import { Centered, Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
@@ -20,6 +20,13 @@ const BackupButton = styled(RainbowButton).attrs({
   width: 221,
 })`
   margin-bottom: 19;
+`;
+
+const Content = styled(Centered).attrs({
+  direction: 'column',
+})`
+  ${padding(0, 19, 42)};
+  flex: 1;
 `;
 
 const DescriptionText = styled(Text).attrs({
@@ -99,7 +106,7 @@ export default function NeedsBackupView() {
   return (
     <Fragment>
       <Subtitle>Not backed up</Subtitle>
-      <Column align="center" css={padding(0, 19, 42)} flex={1} justify="center">
+      <Content>
         <Column align="center">
           <TopIcon />
           <Title>Back up your wallet </Title>
@@ -108,7 +115,6 @@ export default function NeedsBackupView() {
             it if you lose this device.
           </DescriptionText>
         </Column>
-
         <Column align="center">
           {Platform.OS === 'ios' && (
             <BackupButton
@@ -123,7 +129,7 @@ export default function NeedsBackupView() {
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />
         </Column>
-      </Column>
+      </Content>
     </Fragment>
   );
 }

@@ -18,14 +18,12 @@ import { LoadingOverlay } from '../components/modal';
 import useExperimentalFlag, {
   DISCOVER_SHEET,
 } from '../config/experimentalHooks';
-import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import networkInfo from '../helpers/networkInfo';
 import {
   useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
   useInitializeWallet,
-  useKeyboardHeight,
   useRefreshAccountData,
   useWallets,
   useWalletSectionsData,
@@ -54,7 +52,6 @@ export default function WalletScreen() {
   const initializeWallet = useInitializeWallet();
   const refreshAccountData = useRefreshAccountData();
   const { isCoinListEdited } = useCoinListEdited();
-  const { updateKeyboardHeight } = useKeyboardHeight();
   const scrollViewTracker = useValue(0);
   const { isWalletLoading, isReadOnlyWallet } = useWallets();
   const { isEmpty } = useAccountEmptyState();
@@ -68,18 +65,6 @@ export default function WalletScreen() {
       setInitialized(true);
     }
   }, [initializeWallet, initialized, params]);
-
-  useEffect(() => {
-    if (initialized) {
-      getKeyboardHeight()
-        .then(keyboardHeight => {
-          if (keyboardHeight) {
-            updateKeyboardHeight(keyboardHeight);
-          }
-        })
-        .catch(() => {});
-    }
-  }, [initialized, updateKeyboardHeight]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
