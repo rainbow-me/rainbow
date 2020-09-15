@@ -1,7 +1,11 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
-import { apiGetGasPrices } from '../handlers/gasPrices';
+import {
+  etherscanGetGasEstimates,
+  etherscanGetGasPrices,
+  ethGasStationGetGasPrices,
+} from '../handlers/gasPrices';
 import { fromWei, greaterThanOrEqualTo } from '../helpers/utilities';
 import {
   getFallbackGasPrices,
@@ -11,6 +15,9 @@ import {
 } from '../parsers/gas';
 import ethUnits from '../references/ethereum-units.json';
 import { ethereumUtils, gasUtils } from '../utils';
+import logger from 'logger';
+
+const { CUSTOM, FAST, NORMAL } = gasUtils;
 
 // -- Constants ------------------------------------------------------------- //
 const GAS_MULTIPLIER = 1.101;
@@ -39,8 +46,8 @@ const getDefaultTxFees = () => (dispatch, getState) => {
     nativeCurrency
   );
   const selectedGasPrice = {
-    ...txFees[gasUtils.NORMAL],
-    ...fallbackGasPrices[gasUtils.NORMAL],
+    ...txFees[NORMAL],
+    ...fallbackGasPrices[NORMAL],
   };
   return {
     fallbackGasPrices,
@@ -69,36 +76,64 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
   }
 
   const getGasPrices = () =>
-    new Promise((fetchResolve, fetchReject) => {
-      const { useShortGasFormat } = getState().gas;
-      apiGetGasPrices()
-        .then(({ data }) => {
-          const adjustedGasPrices = bumpGasPrices(data);
-          let gasPrices = parseGasPrices(adjustedGasPrices, useShortGasFormat);
+    new Promise(async (fetchResolve, fetchReject) => {
+      try {
+        const { useShortGasFormat } = getState().gas;
 
-          // Default custom gas to fast values
-          gasPrices[gasUtils.CUSTOM] = {
-            ...gasPrices[gasUtils.FAST],
-            option: gasUtils.CUSTOM,
+        let data;
+        let source = 'etherscan';
+        try {
+          // Use etherscan as our Gas Price Oracle
+          const {
+            data: { result: etherscanGasPrices },
+          } = await etherscanGetGasPrices();
+
+          const priceData = {
+            average: Number(etherscanGasPrices.ProposeGasPrice),
+            fast: Number(etherscanGasPrices.FastGasPrice),
+            safeLow: Number(etherscanGasPrices.SafeGasPrice),
           };
 
-          dispatch({
-            payload: {
-              blockTime: data.block_time,
-              gasPrices,
-            },
-            type: GAS_PRICES_SUCCESS,
-          });
-          fetchResolve(true);
-        })
-        .catch(error => {
-          dispatch({
-            payload: fallbackGasPrices,
-            type: GAS_PRICES_FAILURE,
-          });
-          captureException(error);
-          fetchReject(error);
+          // Add gas estimates
+          data = await etherscanGetGasEstimates(priceData);
+        } catch (e) {
+          logger.log('falling back to eth gas station', e);
+          source = 'ethGasStation';
+          // Fallback to ETHGasStation if Etherscan fails
+          const {
+            data: ethGasStationPrices,
+          } = await ethGasStationGetGasPrices();
+          data = ethGasStationPrices;
+        }
+
+        const adjustedGasPrices = bumpGasPrices(data);
+        let gasPrices = parseGasPrices(
+          adjustedGasPrices,
+          useShortGasFormat,
+          source
+        );
+
+        //Default custom gas to fast values
+        gasPrices[CUSTOM] = {
+          ...gasPrices[FAST],
+          option: CUSTOM,
+        };
+
+        dispatch({
+          payload: {
+            gasPrices,
+          },
+          type: GAS_PRICES_SUCCESS,
         });
+        fetchResolve(true);
+      } catch (error) {
+        dispatch({
+          payload: fallbackGasPrices,
+          type: GAS_PRICES_FAILURE,
+        });
+        captureException(error);
+        fetchReject(error);
+      }
     });
 
   const watchGasPrices = async () => {
@@ -187,7 +222,7 @@ export const gasUpdateTxFee = (gasLimit, overrideGasOption) => (
   );
 
   // Default custom gas to fast values
-  txFees[gasUtils.CUSTOM] = txFees[gasUtils.FAST];
+  txFees[CUSTOM] = txFees[FAST];
 
   const results = getSelectedGasPrice(
     assets,
@@ -253,7 +288,7 @@ const INITIAL_STATE = {
   gasPrices: {},
   isSufficientGas: undefined,
   selectedGasPrice: {},
-  selectedGasPriceOption: gasUtils.NORMAL,
+  selectedGasPriceOption: NORMAL,
   txFees: {},
   useShortGasFormat: true,
 };
