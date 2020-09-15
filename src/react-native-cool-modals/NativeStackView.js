@@ -28,7 +28,6 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
     allowsDragToDismiss,
     allowsTapToDismiss,
     anchorModalToLongForm,
-    autoJumpToNewHeight,
     backgroundColor,
     backgroundOpacity,
     contentStyle,
@@ -48,6 +47,7 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
     stackAnimation,
     stackPresentation = 'push',
     startFromShortForm,
+    TEMPORARY_autoJumpToNewHeight,
     topOffset,
     transitionDuration,
   } = options;
@@ -72,21 +72,27 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
     []
   );
 
-  // When 'autoJumpToNewHeight' option is enabled, automatically "jump" towards either
+  // When 'TEMPORARY_autoJumpToNewHeight' option is enabled, automatically "jump" towards either
   // the new "longFormHeight" or new "shortFormHeight"
   useEffect(() => {
-    if (autoJumpToNewHeight && longFormHeight !== prevLongFormHeight) {
+    if (
+      TEMPORARY_autoJumpToNewHeight &&
+      longFormHeight !== prevLongFormHeight
+    ) {
       setImmediate(context.jumpToLong);
-    } else if (autoJumpToNewHeight && shortFormHeight !== prevShortFormHeight) {
+    } else if (
+      TEMPORARY_autoJumpToNewHeight &&
+      shortFormHeight !== prevShortFormHeight
+    ) {
       setImmediate(context.jumpToShort);
     }
   }, [
-    autoJumpToNewHeight,
     context,
     longFormHeight,
     prevLongFormHeight,
     prevShortFormHeight,
     shortFormHeight,
+    TEMPORARY_autoJumpToNewHeight,
   ]);
 
   return (
