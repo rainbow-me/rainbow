@@ -96,6 +96,10 @@ export const orderExceptions = {
     [orderCreationErrorCodes.YEARLY_LIMIT_REACHED]: {
       tryAgain: false,
     },
+    'validation.purchaseAmount': {
+      tryAgain: false,
+      message: 'Purchase Amount is too small',
+    },
   },
   [errorCategories.GENERAL]: {
     UNSUPPORTED_COUNTRY: {
