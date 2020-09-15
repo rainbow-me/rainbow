@@ -48,6 +48,10 @@ const LittleBorderlessButton = ({ onPress, children }) => (
   </ButtonLabel>
 );
 
+const BottomRightLabel = ({ formatter }) => (
+  <Label color={colors.white}>{formatter()}</Label>
+);
+
 const formatGasPrice = gasPrice => {
   const fixedGasPrice = Number(gasPrice).toFixed(3);
   const gasPriceWithTrailingZerosStripped = parseFloat(fixedGasPrice);
@@ -86,7 +90,6 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
   const [customGasPriceInput, setCustomGasPriceInput] = useState(0);
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
   const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
-  const [timeSymbol, setTimeSymbol] = useState('~');
   const [inputFocused, setInputFocused] = useState(false);
 
   const defaultCustomGasPrice = gasPrices?.fast?.value?.display;
@@ -116,9 +119,8 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
         await updateCustomValues(price);
         updateGasPriceOption(CUSTOM);
       } catch (e) {
-        setEstimatedTimeValue('Unknown');
-        setEstimatedTimeUnit('');
-        setTimeSymbol('');
+        setEstimatedTimeValue(0);
+        setEstimatedTimeUnit('min');
       }
     },
     [updateCustomValues, updateGasPriceOption]
@@ -157,11 +159,6 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
     [gasPrices, isSufficientGas, txFees]
   );
 
-  const renderEstimatedTimeText = useCallback(
-    animatedNumber => <Label color={colors.white}>{animatedNumber}</Label>,
-    []
-  );
-
   const handlePress = useCallback(() => {
     if (inputFocused) {
       return;
@@ -180,10 +177,11 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
     [nativeCurrencySymbol]
   );
 
-  const formatAnimatedEstimatedTime = useCallback(() => {
+  const formatBottomRightLabel = useCallback(() => {
     const actionLabel = getActionLabel(type);
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
     const gasPriceGwei = get(selectedGasPrice, 'value.display');
+    let timeSymbol = '~';
 
     if (selectedGasPriceOption === CUSTOM) {
       if (!customGasPriceInput) {
@@ -191,19 +189,18 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
           defaultCustomGasPriceUsd
         )} ~ ${defaultCustomGasConfirmationTime}`;
       } else if (gasPrices[CUSTOM]?.value) {
-        let symbol = timeSymbol;
         const priceInWei = Number(gasPrices[CUSTOM].value.amount);
         const minGasPrice = Number(gasPrices[SLOW].value.amount);
         const maxGasPrice = Number(gasPrices[FAST].value.amount);
         if (priceInWei < minGasPrice) {
-          symbol = '>';
+          timeSymbol = '>';
         } else if (priceInWei > maxGasPrice) {
-          symbol = '<';
+          timeSymbol = '<';
         }
 
         return `${formatAnimatedGasPrice(
           gasPrice
-        )} ${symbol} ${time} ${estimatedTimeUnit}`;
+        )} ${timeSymbol} ${time} ${estimatedTimeUnit}`;
       } else {
         return `${actionLabel} ...`;
       }
@@ -226,7 +223,6 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
     gasPrices,
     selectedGasPrice,
     selectedGasPriceOption,
-    timeSymbol,
     type,
   ]);
 
@@ -278,16 +274,6 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
     }
   }, [customGasPriceInput, gasPrices, inputFocused]);
 
-  const renderCustomButtonOrLabel = useCallback(() => {
-    return (
-      <LittleBorderlessButton onPress={handleInputButtonManager}>
-        {inputFocused
-          ? 'Done'
-          : `${customGasPriceInput ? 'Edit' : 'Enter'} Gas Price`}
-      </LittleBorderlessButton>
-    );
-  }, [customGasPriceInput, handleInputButtonManager, inputFocused]);
-
   return (
     <Container as={ButtonPressAnimation} onPress={handlePress}>
       <Row align="center" justify="space-between">
@@ -332,14 +318,14 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
         {selectedGasPriceOption !== CUSTOM ? (
           <Label color={colors.white}>Network Fee</Label>
         ) : (
-          renderCustomButtonOrLabel()
+          <LittleBorderlessButton onPress={handleInputButtonManager}>
+            {inputFocused
+              ? 'Done'
+              : `${customGasPriceInput ? 'Edit' : 'Enter'} Gas Price`}
+          </LittleBorderlessButton>
         )}
-        <AnimateNumber
-          formatter={formatAnimatedEstimatedTime}
-          interval={1}
-          renderContent={renderEstimatedTimeText}
-          steps={6}
-          timing="linear"
+        <BottomRightLabel
+          formatter={formatBottomRightLabel}
           value={{
             estimatedTimeValue,
             price: selectedGasPrice?.value?.display,
