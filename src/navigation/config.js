@@ -21,7 +21,6 @@ const buildCoolModalConfig = params => ({
   longFormHeight: params.longFormHeight,
   onAppear: params.onAppear || null,
   scrollEnabled: params.scrollEnabled,
-  TEMPORARY_autoJumpToNewHeight: params.TEMPORARY_autoJumpToNewHeight,
   topOffset: params.topOffset || sharedCoolModalTopOffset,
 });
 

@@ -34,6 +34,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   var topAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
   var bottomAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
   var heightAnchor: NSLayoutDimension = NSLayoutDimension.init()
+  var state: PanModalPresentationController.PresentationState? = nil;
   var disappared = false
   var hiding = false
   var ppview: UIView?
@@ -47,6 +48,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     viewControllerToPresent.setValue(self, forKey: "_parentVC")
     viewController = viewControllerToPresent
     config = (viewControllerToPresent.view as! RNCMScreenView)
+    state = (config?.startFromShortForm ?? false) ? PanModalPresentationController.PresentationState.shortForm : PanModalPresentationController.PresentationState.longForm;
   }
 
   @objc func hide() {
@@ -63,9 +65,18 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
       panModalTransition(to: .shortForm);
     }
   }
+  
+  @objc func rejump() {
+    self.panModalSetNeedsLayoutUpdate()
+    self.panModalTransition(to: self.state!)
+  }
 
   @objc func panModalSetNeedsLayoutUpdateWrapper() {
     panModalSetNeedsLayoutUpdate()
+  }
+  
+  func willTransition(to state: PanModalPresentationController.PresentationState) {
+    self.state = state;
   }
 
 
