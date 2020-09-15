@@ -23,6 +23,11 @@
     "color": "#00224D",
     "name": "Bancor"
   },
+  "0x68a118ef45063051eac49c7e647ce5ace48a68a5": {
+    "color": "#00ADD5",
+    "name": "Based Money",
+    "symbol": "$BASED"
+  },
   "0x0D8775F648430679A709E98d2b0Cb6250d2887EF": {
     "color": "#FF5000",
     "name": "Basic Attention Token"

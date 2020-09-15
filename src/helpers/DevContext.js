@@ -42,7 +42,7 @@ function DevContextComponent({ children }) {
 }
 
 export default function DevContextWrapper({ children }) {
-  if (!__DEV__) {
+  if (!IS_DEV) {
     return children;
   }
   return <DevContextComponent>{children}</DevContextComponent>;

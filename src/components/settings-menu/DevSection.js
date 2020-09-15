@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Clipboard from '@react-native-community/clipboard';
 import React, { useCallback, useContext } from 'react';
 import { Alert, ScrollView } from 'react-native';
-import { DEV_SEEDS } from 'react-native-dotenv';
+import { DEV_SEEDS, GANACHE_URL } from 'react-native-dotenv';
 import { Restart } from 'react-native-restart';
 import { deleteAllBackups } from '../../handlers/cloudBackup';
 import { web3SetHttpProvider } from '../../handlers/web3';
@@ -28,7 +28,9 @@ const DevSection = () => {
 
   const connectToGanache = useCallback(async () => {
     try {
-      const ready = await web3SetHttpProvider('http://127.0.0.1:7545');
+      const ready = await web3SetHttpProvider(
+        GANACHE_URL || 'http://127.0.0.1:7545'
+      );
       logger.log('connected to ganache', ready);
     } catch (e) {
       logger.log('error connecting to ganache');

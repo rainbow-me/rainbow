@@ -45,7 +45,7 @@ const traverseData = (prev, data) => {
   ) {
     return prev;
   }
-  const points = monotoneCubicInterpolation(filtered)(100);
+  const points = monotoneCubicInterpolation(filtered)(100, true);
   return {
     nativePoints: filtered,
     points,
@@ -55,7 +55,7 @@ const traverseData = (prev, data) => {
 function useJumpingForm(isLong) {
   const { setOptions } = useNavigation();
 
-  const { jumpToShort, jumpToLong } = useContext(ModalContext);
+  const { jumpToShort, jumpToLong } = useContext(ModalContext) || {};
 
   useEffect(() => {
     if (!isLong) {
@@ -63,7 +63,7 @@ function useJumpingForm(isLong) {
         isShortFormEnabled: true,
       });
       setImmediate(() => {
-        jumpToShort();
+        jumpToShort?.();
         setOptions({
           isShortFormEnabled: false,
           longFormHeight: heightWithNoChart,

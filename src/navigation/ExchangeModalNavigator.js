@@ -10,9 +10,9 @@ import ModalScreen from '../screens/ModalScreen';
 import SwapModalScreen from '../screens/SwapModal';
 import { deviceUtils } from '../utils';
 import { useNavigation } from './Navigation';
+import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
 import { exchangeModalPreset, swapDetailsPreset } from './effects';
-import { ScrollPagerWrapper } from './helpers';
 import Routes from './routesNames';
 
 const { width } = deviceUtils.dimensions;

@@ -231,7 +231,7 @@ export default function SettingsSection({
           onPress={onPressReview}
         />
       </ColumnWithDividers>
-      {__DEV__ && (
+      {IS_DEV && (
         <Fragment>
           <ListFooter />
           <ListItem

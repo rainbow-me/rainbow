@@ -23,8 +23,11 @@ const TestnetToast = () => {
       } else {
         setVisible(false);
       }
+    } else {
+      setVisible(true);
+      setNetworkName(name);
     }
-  }, [network, providerUrl]);
+  }, [name, network, providerUrl]);
 
   return (
     <Toast isVisible={visible}>

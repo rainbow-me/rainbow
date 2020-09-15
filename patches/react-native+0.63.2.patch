@@ -8,6 +8,37 @@ index fc76ec1..8895b0f 100644
  
 -export default (TurboModuleRegistry.get<Spec>('NativeAnimatedModule'): ?Spec);
 +export default (TurboModuleRegistry.get<Spec>('NativeAnimatedModule', true): ?Spec);
+diff --git a/node_modules/react-native/Libraries/Core/Timers/JSTimers.js b/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
+index 4c154db..89051c8 100644
+--- a/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
++++ b/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
+@@ -232,7 +232,7 @@ const JSTimers = {
+       );
+     }
+     const id = _allocateCallback(
+-      () => func.apply(undefined, args),
++      () => func?.apply(undefined, args),
+       'setTimeout',
+     );
+     createTimer(id, duration || 0, Date.now(), /* recurring */ false);
+@@ -258,7 +258,7 @@ const JSTimers = {
+       );
+     }
+     const id = _allocateCallback(
+-      () => func.apply(undefined, args),
++      () => func?.apply(undefined, args),
+       'setInterval',
+     );
+     createTimer(id, duration || 0, Date.now(), /* recurring */ true);
+@@ -271,7 +271,7 @@ const JSTimers = {
+    */
+   setImmediate: function(func: Function, ...args: any) {
+     const id = _allocateCallback(
+-      () => func.apply(undefined, args),
++      () => func?.apply(undefined, args),
+       'setImmediate',
+     );
+     immediates.push(id);
 diff --git a/node_modules/react-native/Libraries/TurboModule/TurboModuleRegistry.js b/node_modules/react-native/Libraries/TurboModule/TurboModuleRegistry.js
 index b3b1135..fd9831a 100644
 --- a/node_modules/react-native/Libraries/TurboModule/TurboModuleRegistry.js

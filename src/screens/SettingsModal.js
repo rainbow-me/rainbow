@@ -72,7 +72,7 @@ const SettingsPages = {
     title: 'Settings',
   },
   dev: {
-    component: __DEV__ ? DevSection : null,
+    component: IS_DEV ? DevSection : null,
     key: 'DevSection',
     title: 'Dev',
   },
