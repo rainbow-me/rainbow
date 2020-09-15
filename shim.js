@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 // eslint-disable-next-line import/default
 import ReactNative from 'react-native';
 import Storage from 'react-native-storage';
+import logger from 'logger';
 
 const storage = new Storage({
   defaultExpires: null,
@@ -82,6 +83,7 @@ if (!ReactNative.InteractionManager._shimmed) {
     if (finishAutomatically) {
       setTimeout(() => {
         ReactNative.InteractionManager.clearInteractionHandle(handle);
+        logger.sentry(`Interaction finished automatically`);
       }, 1000);
     }
     return handle;
