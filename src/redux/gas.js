@@ -78,7 +78,7 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
   const getGasPrices = () =>
     new Promise(async (fetchResolve, fetchReject) => {
       try {
-        const { useShortGasFormat } = getState().gas;
+        const { gasPrices: existingGasPrice } = getState().gas;
 
         let data;
         let source = 'etherscan';
@@ -105,19 +105,20 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
           } = await ethGasStationGetGasPrices();
           data = ethGasStationPrices;
         }
-
         const adjustedGasPrices = bumpGasPrices(data);
-        let gasPrices = parseGasPrices(
-          adjustedGasPrices,
-          useShortGasFormat,
-          source
-        );
 
-        //Default custom gas to fast values
-        gasPrices[CUSTOM] = {
-          ...gasPrices[FAST],
-          option: CUSTOM,
-        };
+        let gasPrices = parseGasPrices(adjustedGasPrices, source);
+
+        if (existingGasPrice[CUSTOM].value === existingGasPrice[FAST].value) {
+          //Default custom gas to fast values
+          console.log('updating custom');
+          gasPrices[CUSTOM] = {
+            ...gasPrices[FAST],
+            option: CUSTOM,
+          };
+        } else {
+          console.log('preserving custom');
+        }
 
         dispatch({
           payload: {

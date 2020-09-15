@@ -9,7 +9,7 @@ import ethUnits from '../references/ethereum-units.json';
 import timeUnits from '../references/time-units.json';
 import { gasUtils } from '../utils';
 
-const { FAST, NORMAL, SLOW, GasSpeedOrder } = gasUtils;
+const { CUSTOM, FAST, NORMAL, SLOW, GasSpeedOrder } = gasUtils;
 
 /**
  * @desc parse ether gas prices
@@ -17,18 +17,21 @@ const { FAST, NORMAL, SLOW, GasSpeedOrder } = gasUtils;
  * @param {Boolean} short - use short format or not
  */
 export const getFallbackGasPrices = (short = true) => ({
+  [CUSTOM]: defaultGasPriceFormat(CUSTOM, '0.5', '200', short),
   [FAST]: defaultGasPriceFormat(FAST, '0.5', '200', short),
   [NORMAL]: defaultGasPriceFormat(NORMAL, '2.5', '100', short),
   [SLOW]: defaultGasPriceFormat(SLOW, '2.5', '100', short),
 });
 
 const parseGasPricesEtherscan = data => ({
+  [CUSTOM]: defaultGasPriceFormat(CUSTOM, data.fastWait, data.fast, true),
   [FAST]: defaultGasPriceFormat(FAST, data.fastWait, data.fast, true),
   [NORMAL]: defaultGasPriceFormat(NORMAL, data.avgWait, data.average, true),
   [SLOW]: defaultGasPriceFormat(SLOW, data.safeLowWait, data.safeLow, true),
 });
 
 const parseGasPricesEthGasStation = data => ({
+  [CUSTOM]: defaultGasPriceFormat(CUSTOM, data.fastestWait, data.fastest, true),
   [FAST]: defaultGasPriceFormat(FAST, data.fastestWait, data.fastest, true),
   [NORMAL]: defaultGasPriceFormat(NORMAL, data.fastWait, data.fast, true),
   [SLOW]: defaultGasPriceFormat(SLOW, data.avgWait, data.average, true),
