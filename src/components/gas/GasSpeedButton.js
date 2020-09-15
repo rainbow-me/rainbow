@@ -235,12 +235,12 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
 
   const handleCustomGasFocus = useCallback(() => {
     setInputFocused(true);
-    onCustomGasFocus();
+    onCustomGasFocus?.();
   }, [onCustomGasFocus]);
 
   const handleCustomGasBlur = useCallback(() => {
     setInputFocused(false);
-    onCustomGasBlur();
+    onCustomGasBlur?.();
   }, [onCustomGasBlur]);
 
   const handleInputButtonManager = useCallback(() => {
