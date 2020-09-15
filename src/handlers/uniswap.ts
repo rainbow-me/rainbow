@@ -23,8 +23,8 @@ import { loadWallet } from '../model/wallet';
 import { ethUnits } from '../references';
 import {
   UNISWAP_TESTNET_TOKEN_LIST,
+  UNISWAP_V2_ROUTER_ABI,
   UNISWAP_V2_ROUTER_ADDRESS,
-  uniswapV2RouterABI,
 } from '../references/uniswap';
 
 import { toHex, web3Provider } from './web3';
@@ -82,7 +82,7 @@ export const estimateSwapGasLimit = async ({
     const params = { from: accountAddress, ...(value ? { value } : {}) };
     const gasEstimates = await Promise.all(
       methodNames.map(methodName =>
-        exchange.estimate[methodName](...updatedMethodArgs, params)
+        exchange.estimateGas[methodName](...updatedMethodArgs, params)
           .then(value => value)
           .catch(_ => {
             return undefined;
@@ -285,7 +285,8 @@ const getContractExecutionDetails = ({
   providerOrSigner,
   tradeDetails,
 }) => {
-  const slippage = tradeDetails?.slippage?.toFixed(2).toString();
+  const priceImpact = tradeDetails?.priceImpact?.toFixed(2).toString();
+  const slippage = priceImpact * 100;
   const maxSlippage = Math.max(
     slippage + SlippageBufferInBips,
     DefaultMaxSlippageInBips
@@ -301,7 +302,7 @@ const getContractExecutionDetails = ({
 
   const exchange = new Contract(
     UNISWAP_V2_ROUTER_ADDRESS,
-    uniswapV2RouterABI,
+    UNISWAP_V2_ROUTER_ABI,
     providerOrSigner
   );
 
