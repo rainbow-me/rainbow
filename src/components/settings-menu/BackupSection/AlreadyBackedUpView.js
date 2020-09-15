@@ -1,8 +1,9 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { Alert, Platform, View } from 'react-native';
+import { Platform, View } from 'react-native';
 import styled from 'styled-components';
+import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
 import { LoadingOverlay } from '../../modal';
@@ -85,11 +86,7 @@ const Title = styled(Text).attrs({
   padding-horizontal: 11;
 `;
 
-function onError(msg) {
-  setTimeout(() => {
-    Alert.alert(msg);
-  }, 500);
-}
+const onError = error => DelayedAlert({ title: error }, 500);
 
 export default function AlreadyBackedUpView() {
   const { navigate } = useNavigation();

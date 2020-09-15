@@ -2,7 +2,8 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Alert, InteractionManager, Platform, StatusBar } from 'react-native';
+import { InteractionManager, Platform, StatusBar } from 'react-native';
+import { DelayedAlert } from '../components/alerts';
 import {
   BackupConfirmPasswordStep,
   BackupIcloudStep,
@@ -24,6 +25,8 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
 import { usePortal } from 'react-native-cool-modals/Portal';
+
+const onError = error => DelayedAlert({ title: error }, 500);
 
 export default function BackupSheet() {
   const { isWalletLoading, selectedWallet, wallets } = useWallets();
@@ -78,9 +81,7 @@ export default function BackupSheet() {
   const onSuccess = useCallback(() => {
     goBack();
     if (!isSettingsRoute) {
-      setTimeout(() => {
-        Alert.alert(lang.t('icloud.backup_success'));
-      }, 1000);
+      DelayedAlert({ title: lang.t('icloud.backup_success') }, 1000);
     }
 
     // This means the user had the password saved
@@ -90,12 +91,6 @@ export default function BackupSheet() {
       label: 'icloud',
     });
   }, [goBack, isSettingsRoute]);
-
-  const onError = useCallback(msg => {
-    setTimeout(() => {
-      Alert.alert(msg);
-    }, 500);
-  }, []);
 
   const onIcloudBackup = useCallback(() => {
     walletCloudBackup({
@@ -110,7 +105,6 @@ export default function BackupSheet() {
     walletId,
     handleNoLatestBackup,
     handlePasswordNotFound,
-    onError,
     onSuccess,
   ]);
 

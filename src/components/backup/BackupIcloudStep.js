@@ -37,13 +37,6 @@ const ImportantText = styled(DescriptionText).attrs({
   weight: 'medium',
 })``;
 
-const InputsWrapper = styled(ColumnWithMargins).attrs({
-  align: 'center',
-  margin: 19,
-})`
-  flex: 1;
-`;
-
 const Masthead = styled(Centered).attrs({
   direction: 'column',
 })`
@@ -244,7 +237,7 @@ export default function BackupIcloudStep() {
           </ImportantText>
         </DescriptionText>
       </Masthead>
-      <InputsWrapper>
+      <ColumnWithMargins align="center" flex={1} margin={19}>
         <PasswordField
           isInvalid={
             password !== '' &&
@@ -277,7 +270,7 @@ export default function BackupIcloudStep() {
           placeholder="Confirm Password"
           ref={confirmPasswordRef}
         />
-      </InputsWrapper>
+      </ColumnWithMargins>
     </BackupSheetKeyboardLayout>
   );
 }

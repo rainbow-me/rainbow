@@ -33,12 +33,6 @@ const DescriptionText = styled(Text).attrs({
   ${padding(0, 50)};
 `;
 
-const InputsWrapper = styled(Column).attrs({
-  align: 'center',
-})`
-  flex: 1;
-`;
-
 const Masthead = styled(Centered).attrs({
   direction: 'column',
 })`
@@ -163,7 +157,7 @@ export default function BackupConfirmPasswordStep() {
           To add your wallet to the iCloud backup, enter the backup password
         </DescriptionText>
       </Masthead>
-      <InputsWrapper>
+      <Column align="center" flex={1}>
         <PasswordField
           autoFocus
           isInvalid={
@@ -179,7 +173,7 @@ export default function BackupConfirmPasswordStep() {
           placeholder="Backup Password"
           ref={passwordRef}
         />
-      </InputsWrapper>
+      </Column>
     </BackupSheetKeyboardLayout>
   );
 }

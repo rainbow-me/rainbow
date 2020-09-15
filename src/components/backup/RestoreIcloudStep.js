@@ -31,12 +31,6 @@ const DescriptionText = styled(Text).attrs({
   size: 'large',
 })``;
 
-const InputsWrapper = styled(Column).attrs({
-  align: 'center',
-})`
-  flex: 1;
-`;
-
 const Masthead = styled(Centered).attrs({
   direction: 'column',
 })`
@@ -163,7 +157,7 @@ export default function RestoreIcloudStep({ userData }) {
           To restore your wallet, enter the backup password you created
         </DescriptionText>
       </Masthead>
-      <InputsWrapper>
+      <Column align="center" flex={1}>
         <PasswordField
           autoFocus
           isInvalid={
@@ -179,7 +173,7 @@ export default function RestoreIcloudStep({ userData }) {
           ref={passwordRef}
           returnKeyType="next"
         />
-      </InputsWrapper>
+      </Column>
     </BackupSheetKeyboardLayout>
   );
 }
