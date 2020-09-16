@@ -1,6 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import PropTypes from 'prop-types';
+import { find } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Linking, requireNativeComponent } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -54,7 +54,7 @@ const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
   width: ${({ tapTarget }) => tapTarget[2]};
 `;
 
-const TransactionList = ({
+export default function TransactionList({
   addCashAvailable,
   contacts,
   initialized,
@@ -62,7 +62,7 @@ const TransactionList = ({
   network,
   requests,
   transactions,
-}) => {
+}) {
   const { wallets, selectedWallet } = useWallets();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
@@ -92,31 +92,53 @@ const TransactionList = ({
     });
   }, [navigate, selectedWallet.damaged]);
 
+  const onRemovePhoto = useCallback(async () => {
+    // all this code is weak but lets ship it
+    const newWallets = { ...wallets };
+    const newWallet = newWallets[selectedWallet.id];
+    const account = find(newWallet.addresses, ['address', accountAddress]);
+
+    // remove zee photo
+    account.image = null;
+    newWallet.addresses[account.index] = account;
+
+    dispatch(walletsSetSelected(newWallet));
+    await dispatch(walletsUpdate(newWallets));
+  }, [dispatch, selectedWallet, accountAddress, wallets]);
+
   const onAvatarPress = useCallback(() => {
     if (isAvatarImagePickerEnabled) {
       const processPhoto = image => {
         const stringIndex = image?.path.indexOf('/tmp');
         const newWallets = { ...wallets };
         const walletId = selectedWallet.id;
+
         newWallets[walletId].addresses.some((account, index) => {
           newWallets[walletId].addresses[index].image = `~${image?.path.slice(
             stringIndex
           )}`;
+
           dispatch(walletsSetSelected(newWallets[walletId]));
           return true;
         });
         dispatch(walletsUpdate(newWallets));
       };
 
+      const avatarActionSheetOptions = [
+        'Take Photo',
+        'Choose from Library',
+        ...(isAvatarEmojiPickerEnabled ? ['Pick an Emoji'] : []),
+        ...(accountImage ? ['Remove Photo'] : []),
+        'Cancel', // <-- cancelButtonIndex
+      ];
+
       showActionSheetWithOptions(
         {
-          cancelButtonIndex: isAvatarEmojiPickerEnabled ? 3 : 2,
-          options: [
-            'Take Photo',
-            'Choose from Library',
-            ...(isAvatarEmojiPickerEnabled ? ['Pick an Emoji'] : []),
-            'Cancel', // <-- cancelButtonIndex
-          ],
+          cancelButtonIndex: avatarActionSheetOptions.length - 1,
+          destructiveButtonIndex: accountImage
+            ? avatarActionSheetOptions.length - 2
+            : undefined,
+          options: avatarActionSheetOptions,
         },
         async buttonIndex => {
           if (buttonIndex === 0) {
@@ -134,6 +156,8 @@ const TransactionList = ({
               initialAccountColor: accountColor,
               initialAccountName: accountName,
             });
+          } else if (buttonIndex === 3 && accountImage) {
+            onRemovePhoto();
           }
         }
       );
@@ -145,9 +169,11 @@ const TransactionList = ({
     }
   }, [
     accountColor,
+    accountImage,
     accountName,
     dispatch,
     navigate,
+    onRemovePhoto,
     selectedWallet.id,
     wallets,
   ]);
@@ -323,16 +349,4 @@ const TransactionList = ({
       />
     </Container>
   );
-};
-
-TransactionList.propTypes = {
-  addCashAvailable: PropTypes.bool,
-  contacts: PropTypes.array,
-  initialized: PropTypes.bool,
-  isLoading: PropTypes.bool,
-  network: PropTypes.string,
-  requests: PropTypes.array,
-  transactions: PropTypes.array,
-};
-
-export default TransactionList;
+}
