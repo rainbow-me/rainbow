@@ -176,13 +176,20 @@ export const walletInit = async (
   seedPhrase = null,
   color = null,
   name = null,
-  overwrite = false
+  overwrite = false,
+  checkedWallet = null
 ): Promise<WalletInitialized> => {
   let walletAddress = null;
   let isNew = false;
   // Importing a seedphrase
   if (!isEmpty(seedPhrase)) {
-    const wallet = await createWallet(seedPhrase, color, name, overwrite);
+    const wallet = await createWallet(
+      seedPhrase,
+      color,
+      name,
+      overwrite,
+      checkedWallet
+    );
     walletAddress = wallet?.address;
     return { isNew, walletAddress };
   }
@@ -486,14 +493,16 @@ export const createWallet = async (
   seed: null | EthereumSeed = null,
   color: null | number = null,
   name: null | string = null,
-  overwrite: boolean = false
+  overwrite: boolean = false,
+  checkedWallet: null | EthereumWalletFromSeed = null
 ): Promise<null | EthereumWallet> => {
   const isImported = !!seed;
   logger.sentry('Creating wallet, isImported?', isImported);
   const walletSeed = seed || generateSeedPhrase();
   let addresses: RainbowAccount[] = [];
   try {
-    const { hdnode, isHDWallet, type, wallet } = getWallet(walletSeed);
+    const { hdnode, isHDWallet, type, wallet } =
+      checkedWallet || getWallet(walletSeed);
     if (!wallet) return null;
     logger.sentry('[createWallet] - getWallet from seed');
 
