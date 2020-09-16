@@ -14,7 +14,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { getBrand } from 'react-native-device-info';
 import {
+  TouchableOpacity as GHTouchableOpacity,
   ScrollView,
   State,
   TapGestureHandler,
@@ -151,11 +153,15 @@ export default class EmojiSelector extends PureComponent {
           <View key={`categoryEmoji${rowContent[0]}`}>
             <Text
               style={{
+                color: colors.black,
                 marginHorizontal: 10,
-                fontSize: Math.floor(this.state.colSize) - 15,
+                fontSize:
+                  Math.floor(this.state.colSize) -
+                  (Platform.OS === 'ios' ? 15 : 22),
                 height: (width - 21) / this.props.columns,
                 width: deviceUtils.dimensions.width,
-                letterSpacing: 8,
+                letterSpacing:
+                  Platform.OS === 'ios' ? 8 : getBrand() === 'google' ? 11 : 8,
                 backgroundColor: colors.white,
               }}
             >
@@ -168,19 +174,23 @@ export default class EmojiSelector extends PureComponent {
                 position: 'absolute',
               }}
             >
-              {touchableNet.map(singleLine => (
-                <TouchableOpacity
-                  activeOpacity={0.5}
-                  key={`categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`}
-                  onPress={() => this.handleEmojiSelect(singleLine)}
-                  style={{
+              {touchableNet.map(singleLine => {
+                const touchableProps = {
+                  key: `categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`,
+                  onPress: () => this.handleEmojiSelect(singleLine),
+                  style: {
                     height: (width - 21) / this.props.columns,
                     width: (width - 21) / this.props.columns,
                     opacity: 0,
                     backgroundColor: 'white',
-                  }}
-                />
-              ))}
+                  },
+                };
+                return Platform.OS === 'ios' ? (
+                  <TouchableOpacity activeOpacity={0.5} {...touchableProps} />
+                ) : (
+                  <GHTouchableOpacity activeOpacity={0.7} {...touchableProps} />
+                );
+              })}
             </View>
           </View>
         ))}
@@ -245,7 +255,7 @@ export default class EmojiSelector extends PureComponent {
     if (type === HEADER_ROW) {
       return this.renderListHeader(item.title);
     } else if (type === OVERLAY) {
-      return (
+      return Platform.OS === 'ios' ? (
         <View
           style={{
             top: index === 0 && -3000,
@@ -256,7 +266,7 @@ export default class EmojiSelector extends PureComponent {
             position: 'absolute',
           }}
         />
-      );
+      ) : null;
     }
     return this.renderEmojis(item);
   };
@@ -268,21 +278,27 @@ export default class EmojiSelector extends PureComponent {
           opacity: scrollPosition,
         }}
       >
-        <BlurView
-          blurAmount={10}
-          blurType="light"
-          style={[
-            styles.sectionStickyBlur,
-            {
-              width:
-                (index - 1) / 2 <= categoryKeys.length - 1
-                  ? Categories[categoryKeys[(index - 1) / 2]].width
-                  : Categories[categoryKeys[categoryKeys.length - 1]].width,
-            },
-          ]}
-        >
-          <Text style={styles.sectionStickyHeader}>{item.title}</Text>
-        </BlurView>
+        {Platform.OS === 'ios' ? (
+          <BlurView
+            blurAmount={10}
+            blurType="light"
+            style={[
+              styles.sectionStickyBlur,
+              {
+                width:
+                  (index - 1) / 2 <= categoryKeys.length - 1
+                    ? Categories[categoryKeys[(index - 1) / 2]].width
+                    : Categories[categoryKeys[categoryKeys.length - 1]].width,
+              },
+            ]}
+          >
+            <Text style={styles.sectionStickyHeader}>{item.title}</Text>
+          </BlurView>
+        ) : (
+          <View style={styles.sectionStickyBlur}>
+            <Text style={styles.sectionStickyHeader}>{item.title}</Text>
+          </View>
+        )}
       </Animated.View>
     </View>
   );
@@ -334,11 +350,15 @@ export default class EmojiSelector extends PureComponent {
           <Text
             key={`emojiRow${emojis[0]}`}
             style={{
+              color: colors.black,
               marginHorizontal: 10,
-              fontSize: Math.floor(this.state.colSize) - 15,
+              fontSize:
+                Math.floor(this.state.colSize) -
+                (Platform.OS === 'ios' ? 15 : 22),
               height: (width - 21) / this.props.columns,
               width: deviceUtils.dimensions.width,
-              letterSpacing: 8,
+              letterSpacing:
+                Platform.OS === 'ios' ? 8 : getBrand() === 'google' ? 11 : 8,
               top: 0.8,
             }}
           >

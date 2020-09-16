@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import {
   useAnimatedGestureHandler,
@@ -8,9 +8,9 @@ import {
   withTiming,
   // eslint-disable-next-line import/no-unresolved
 } from 'react-native-reanimated';
-import ChartContext from './ChartContext';
-import { findYExtremes } from './helpers';
-import useReactiveSharedValue from './useReactiveSharedValue';
+import ChartContext from '../../helpers/ChartContext';
+import { findYExtremes } from '../../helpers/extremesHelpers';
+import useReactiveSharedValue from '../../helpers/useReactiveSharedValue';
 
 function impactHeavy() {
   // eslint-disable-next-line import/no-extraneous-dependencies
@@ -19,6 +19,20 @@ function impactHeavy() {
 }
 
 const android = Platform.OS === 'android';
+
+const springDefaultConfig = {
+  damping: 15,
+  mass: 1,
+  stiffness: 600,
+};
+
+const timingFeedbackDefaultConfig = {
+  duration: 80,
+};
+
+const timingAnimationDefaultConfig = {
+  duration: 300,
+};
 
 const parse = data => {
   const { greatestY, smallestY } = findYExtremes(data);
@@ -93,15 +107,31 @@ function getValue(data, i, smoothingStrategy) {
   return data.value[i];
 }
 
-export default function ChartProvider({
+export default function ChartPathProvider({
   data: rawData,
   children,
-  softMargin = 30,
+  softMargin = 0,
   enableHaptics = false,
+  springConfig = {},
+  timingFeedbackConfig = {},
+  timingAnimationConfig = {},
 }) {
-  const prevData = useSharedValue([], 'prevData');
-  const currData = useSharedValue([], 'currData');
-  const currNativeData = useSharedValue([], 'currNativeData');
+  const valuesStore = useRef(null);
+  if (valuesStore.current == null) {
+    valuesStore.current = {
+      currData: [],
+      currNativeData: [],
+      dataQueue: [],
+      prevData: [],
+    };
+  }
+
+  const prevData = useSharedValue(valuesStore.current.prevData, 'prevData');
+  const currData = useSharedValue(valuesStore.current.currData, 'currData');
+  const currNativeData = useSharedValue(
+    valuesStore.current.currNativeData,
+    'currNativeData'
+  );
   const prevSmoothing = useSharedValue(0, 'prevSmoothing');
   const currSmoothing = useSharedValue(0, 'currSmoothing');
 
@@ -121,7 +151,7 @@ export default function ChartProvider({
   const isAnimationInProgress = useSharedValue(false, 'isAnimationInProgress');
 
   const [data, setData] = useState(rawData);
-  const dataQueue = useSharedValue([], 'dataQueue');
+  const dataQueue = useSharedValue(valuesStore.current.dataQueue, 'dataQueue');
   useEffect(() => {
     if (isAnimationInProgress.value) {
       dataQueue.value.push(rawData);
@@ -132,7 +162,7 @@ export default function ChartProvider({
   }, [rawData]);
 
   const smoothingStrategy = useReactiveSharedValue(
-    data.strategy,
+    data.smoothingStrategy,
     'smoothingStrategy'
   );
 
@@ -146,23 +176,32 @@ export default function ChartProvider({
     );
     setExtremes(newExtremes);
     if (prevData.value.length !== 0) {
+      valuesStore.current.prevData = currData.value;
       prevData.value = currData.value;
       prevSmoothing.value = currSmoothing.value;
       progress.value = 0;
+      valuesStore.current.currData = parsedData;
       currData.value = parsedData;
+      valuesStore.current.currNativeData = parsedNativeData;
       currNativeData.value = parsedNativeData;
-      currSmoothing.value = data.smoothing || 0;
+      currSmoothing.value = data.smoothingFactor || 0;
       isAnimationInProgress.value = true;
-      progress.value = withTiming(1, {}, () => {
-        isAnimationInProgress.value = false;
-        if (dataQueue.value.length !== 0) {
-          setData(dataQueue.value[0]);
-          dataQueue.value.shift();
+      progress.value = withTiming(
+        1,
+        { ...timingAnimationDefaultConfig, ...timingAnimationConfig },
+        () => {
+          isAnimationInProgress.value = false;
+          if (dataQueue.value.length !== 0) {
+            setData(dataQueue.value[0]);
+            dataQueue.value.shift();
+          }
         }
-      });
+      );
     } else {
       prevSmoothing.value = data.smoothing || 0;
       currSmoothing.value = data.smoothing || 0;
+      valuesStore.current.currData = parsedData;
+      valuesStore.current.currNativeData = parsedData;
       prevData.value = parsedData;
       currData.value = parsedData;
       currNativeData.value = parsedNativeData;
@@ -172,15 +211,6 @@ export default function ChartProvider({
   const positionX = useSharedValue(0, 'positionX');
   const positionY = useSharedValue(0, 'positionY');
 
-  const springConfig = {
-    damping: 15,
-    mass: 1,
-    stiffness: 600,
-  };
-
-  const timingConfig = {
-    duration: 80,
-  };
   const isStarted = useReactiveSharedValue(false, 'isStarted');
 
   const onLongPressGestureEvent = useAnimatedGestureHandler({
@@ -190,8 +220,14 @@ export default function ChartProvider({
         return;
       }
       if (!isStarted.value) {
-        dotScale.value = withSpring(1, springConfig);
-        pathOpacity.value = withTiming(0, timingConfig);
+        dotScale.value = withSpring(1, {
+          ...springDefaultConfig,
+          ...springConfig,
+        });
+        pathOpacity.value = withTiming(0, {
+          ...timingFeedbackDefaultConfig,
+          ...timingFeedbackConfig,
+        });
       }
 
       if (enableHapticsValue.value && !isStarted.value) {
@@ -257,11 +293,17 @@ export default function ChartProvider({
       state.value = event.state;
       nativeX.value = '';
       nativeY.value = '';
-      dotScale.value = withSpring(0, springConfig);
+      dotScale.value = withSpring(0, {
+        ...springDefaultConfig,
+        ...springConfig,
+      });
       if (android) {
         pathOpacity.value = 1;
       } else {
-        pathOpacity.value = withTiming(1, timingConfig);
+        pathOpacity.value = withTiming(1, {
+          ...timingFeedbackDefaultConfig,
+          ...timingFeedbackConfig,
+        });
       }
     },
     onEnd: event => {
@@ -269,11 +311,17 @@ export default function ChartProvider({
       state.value = event.state;
       nativeX.value = '';
       nativeY.value = '';
-      dotScale.value = withSpring(0, springConfig);
+      dotScale.value = withSpring(0, {
+        ...springDefaultConfig,
+        ...springConfig,
+      });
       if (android) {
         pathOpacity.value = 1;
       } else {
-        pathOpacity.value = withTiming(1, timingConfig);
+        pathOpacity.value = withTiming(1, {
+          ...timingFeedbackDefaultConfig,
+          ...timingFeedbackConfig,
+        });
       }
 
       if (enableHapticsValue.value) {
@@ -285,11 +333,17 @@ export default function ChartProvider({
       state.value = event.state;
       nativeX.value = '';
       nativeY.value = '';
-      dotScale.value = withSpring(0, springConfig);
+      dotScale.value = withSpring(0, {
+        ...springDefaultConfig,
+        ...springConfig,
+      });
       if (android) {
         pathOpacity.value = 1;
       } else {
-        pathOpacity.value = withTiming(1, timingConfig);
+        pathOpacity.value = withTiming(1, {
+          ...timingFeedbackDefaultConfig,
+          ...timingFeedbackConfig,
+        });
       }
     },
     onStart: event => {
@@ -321,12 +375,18 @@ export default function ChartProvider({
         eventX / size.value.width,
         currNativeData
       );
-      dotScale.value = withSpring(1, springConfig);
+      dotScale.value = withSpring(1, {
+        ...springDefaultConfig,
+        ...springConfig,
+      });
 
       if (!android) {
         positionX.value = positionXWithMargin(eventX, 30, size.value.width);
         positionY.value = currData.value[idx].y * size.value.height;
-        pathOpacity.value = withTiming(0, timingConfig);
+        pathOpacity.value = withTiming(0, {
+          ...timingFeedbackDefaultConfig,
+          ...timingFeedbackConfig,
+        });
       }
       if (enableHapticsValue.value && !isStarted.value) {
         impactHeavy();

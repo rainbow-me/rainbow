@@ -20,7 +20,7 @@ export function addExtremesIfNeeded(
   res,
   data,
   includeExtremes,
-  removePointsSurroundingExtremes = true
+  removePointsSurroundingExtremes
 ) {
   if (includeExtremes) {
     const { greatestY, smallestY } = findYExtremes(data);

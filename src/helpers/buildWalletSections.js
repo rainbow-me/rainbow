@@ -79,14 +79,58 @@ const filterWalletSections = sections =>
     data ? get(header, 'totalItems') : true
   );
 
+const addEth = section => {
+  const assets = store.getState().data.genericAssets;
+
+  if (assets.eth) {
+    const { relative_change_24h, value } = assets.eth.price;
+    const zeroEthRow = {
+      address: 'eth',
+      balance: {
+        amount: '0',
+        display: '0 ETH',
+      },
+      decimals: 18,
+      isCoin: true,
+      isPinned: true,
+      isSmall: false,
+      name: 'Ethereum',
+      native: {
+        balance: {
+          amount: '0',
+          display: '$0',
+        },
+        change: `${relative_change_24h.toFixed(2)}%`,
+        price: {
+          amount: value,
+          display: String(value),
+        },
+      },
+      price: assets.eth.price,
+      symbol: 'ETH',
+      type: 'token',
+      uniqueId: 'eth',
+    };
+
+    if (section.data.length === 1) {
+      section.data.unshift(zeroEthRow);
+    }
+  }
+
+  return section;
+};
+
 const buildWalletSections = (
   balanceSection,
   uniqueTokenFamiliesSection,
   uniswapSection
 ) => {
-  const sections = [balanceSection, uniswapSection, uniqueTokenFamiliesSection];
+  const sections = [uniswapSection, uniqueTokenFamiliesSection];
 
-  const filteredSections = filterWalletSections(sections);
+  const filteredSections =
+    filterWalletSections(sections).length > 0
+      ? [addEth(balanceSection), ...filterWalletSections(sections)]
+      : filterWalletSections([balanceSection]);
   const isEmpty = !filteredSections.length;
 
   return {
@@ -178,7 +222,9 @@ const coinEditContextMenu = (
     );
   return {
     contextMenuOptions:
-      allAssets.length <= amountOfShowedCoins && noSmallBalances
+      allAssets.length <= amountOfShowedCoins &&
+      allAssets.length > 0 &&
+      noSmallBalances
         ? {
             cancelButtonIndex: 0,
             dynamicOptions: () => {

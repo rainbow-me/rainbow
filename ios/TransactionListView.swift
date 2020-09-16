@@ -30,7 +30,11 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       headerSeparator.frame.origin.y = header.frame.size.height - 2
     }
   }
-  @objc var isAvatarPickerAvailable: Bool = false
+  @objc var isAvatarPickerAvailable: Bool = true {
+    didSet {
+      header.accountView.isEnabled = isAvatarPickerAvailable;
+    }
+  }
   @objc var isLoading: Bool = false {
     didSet {
       if(isLoading != oldValue){
@@ -57,7 +61,23 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       header.accountNameViewWidthConstraint.constant = accountAddressWidth
     }
   }
-  
+  @objc var accountImage: NSString? = nil {
+   didSet {
+    if (accountImage != nil) {
+      let url = URL.init(fileURLWithPath: accountImage!.expandingTildeInPath)
+
+      let imageData:NSData = NSData(contentsOf: url)!
+
+      let image = UIImage(data: imageData as Data)
+      
+      header.accountImage.alpha = 1.0
+      header.accountImage.image = image
+      shadowLayer.shadowColor = UIColor.gray.cgColor
+    } else {
+      header.accountImage.alpha = 0.0
+    }
+   }
+ }
   @objc var accountColor: UIColor? = nil {
     didSet {
       header.accountBackground.backgroundColor = accountColor
@@ -109,20 +129,18 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
   }
   
+  @objc func onPressInAvatar(_ sender: UIButton) {
+    header.accountView.animateTapStart(scale: 0.9)
+  }
+  @objc func onPressOutAvatar(_ sender: UIButton) {
+    header.accountView.animateTapEnd(useHaptic: "selection")
+  }
   
   @objc func onPressInAccountAddress(_ sender: UIButton) {
     header.accountNameView.animateTapStart(scale: 0.9)
   }
   @objc func onPressOutAccountAddress(_ sender: UIButton) {
     header.accountNameView.animateTapEnd(useHaptic: "selection")
-  }
-  
-  
-  @objc func onPressInAvatar(_ sender: UIButton) {
-    header.accountView.animateTapStart(scale: 0.9)
-  }
-  @objc func onPressOutAvatar(_ sender: UIButton) {
-    header.accountView.animateTapEnd(useHaptic: "selection")
   }
   
   @objc func onAccountAddressPressed(_ sender: UIButton) {
@@ -266,6 +284,9 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     header.accountView.layer.addSublayer(shadowLayer)
     header.accountView.layer.addSublayer(secondShadowLayer)
+    
+    header.accountImage.layer.cornerRadius = header.accountBackground.frame.width / 2.0
+    header.accountImage.clipsToBounds = true
     
     headerSeparator.backgroundColor = UIColor.RainbowTheme.Transactions.rowDividerLight
     tableView.tableHeaderView = header

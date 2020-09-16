@@ -130,6 +130,10 @@
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DdI-w6-1Vk">
+                            <rect key="frame" x="0.0" y="0.0" width="65" height="65"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        </imageView>
                     </subviews>
                     <accessibility key="accessibilityConfiguration">
                         <accessibilityTraits key="traits" button="YES"/>
@@ -193,6 +197,7 @@
                 <outlet property="accountBackground" destination="GYk-SQ-74S" id="V3I-7Y-rAS"/>
                 <outlet property="accountButton" destination="0BU-ID-e0s" id="k1V-Od-xee"/>
                 <outlet property="accountDropdown" destination="L5x-F9-gnk" id="T2T-dd-lDF"/>
+                <outlet property="accountImage" destination="DdI-w6-1Vk" id="H2g-ZZ-zOQ"/>
                 <outlet property="accountName" destination="ocF-Nb-nBA" id="BwB-OR-r28"/>
                 <outlet property="accountNameView" destination="5Zx-ay-mQu" id="BtE-AU-rJh"/>
                 <outlet property="accountNameViewWidthConstraint" destination="KC0-ty-5hl" id="PRF-va-MMk"/>

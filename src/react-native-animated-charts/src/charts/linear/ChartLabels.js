@@ -5,7 +5,7 @@ import Animated, {
   useDerivedValue,
   // eslint-disable-next-line import/no-unresolved
 } from 'react-native-reanimated';
-import ChartContext from './ChartContext';
+import ChartContext from '../../helpers/ChartContext';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 

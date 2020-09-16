@@ -493,6 +493,15 @@ PODS:
     - RNFBApp
   - RNGestureHandler (1.7.0):
     - React
+  - RNImageCropPicker (0.32.2):
+    - React-Core
+    - React-RCTImage
+    - RNImageCropPicker/QBImagePickerController (= 0.32.2)
+    - TOCropViewController
+  - RNImageCropPicker/QBImagePickerController (0.32.2):
+    - React-Core
+    - React-RCTImage
+    - TOCropViewController
   - RNInputMask (4.1.0)
   - RNKeyboard (1.0.5):
     - React
@@ -566,6 +575,7 @@ PODS:
   - TcpSockets (3.3.2):
     - CocoaAsyncSocket
     - React
+  - TOCropViewController (2.5.4)
   - ToolTipMenu (5.2.1):
     - React
   - Yoga (1.14.0)
@@ -656,6 +666,7 @@ DEPENDENCIES:
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNInputMask (from `../node_modules/react-native-text-input-mask/ios/InputMask`)
   - RNKeyboard (from `../node_modules/react-native-keyboard-area`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
@@ -715,6 +726,7 @@ SPEC REPOS:
     - SexyTooltip
     - Shimmer
     - SSZipArchive
+    - TOCropViewController
     - YogaKit
 
 EXTERNAL SOURCES:
@@ -839,6 +851,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/messaging"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNImageCropPicker:
+    :path: "../node_modules/react-native-image-crop-picker"
   RNInputMask:
     :path: "../node_modules/react-native-text-input-mask/ios/InputMask"
   RNKeyboard:
@@ -972,6 +986,7 @@ SPEC CHECKSUMS:
   RNFBCrashlytics: cb41386ed09729fa68cb9cde9efd8737277a1423
   RNFBMessaging: 3bb7dcf398789ce359a9f6b97b83472a3090f65a
   RNGestureHandler: b6b359bb800ae399a9c8b27032bdbf7c18f08a08
+  RNImageCropPicker: f0557a908758c4a3f83978894ec7227651529b45
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: ceec456427493b286539f40442620881b5840dff
   RNKeychain: db956c02a018f7dd3a0ea8a6cf3087bc1894bf2b
@@ -993,6 +1008,7 @@ SPEC CHECKSUMS:
   SRSRadialGradient: 77bcb1ae812d0c77560e54ed9e52166df032db1d
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
+  TOCropViewController: 2a1ae1242600b1f2d996fd91a5268b2309a33b5c
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
