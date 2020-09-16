@@ -6,7 +6,7 @@ const ListFooterHeight = 27;
 
 const Spacer = styled.View`
   background-color: ${colors.transparent};
-  height: ${ListFooterHeight};
+  height: ${({ height }) => height || ListFooterHeight};
   width: 100%;
 `;
 
