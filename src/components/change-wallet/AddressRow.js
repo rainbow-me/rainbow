@@ -155,7 +155,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
                 />
               )}
               <BottomRowText style={sx.bottomRowText}>
-                {cleanedUpBalance} ETH
+                {cleanedUpBalance || 0} ETH
               </BottomRowText>
             </ColumnWithMargins>
           </Row>
