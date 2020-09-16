@@ -431,8 +431,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Rainbow" */;
 			buildPhases = (
-				66A29CC9251106EE00481F4A /* Disable Reanimated if needed */,
 				B2BF48CC79AEFAAAA7A76369 /* [CP] Check Pods Manifest.lock */,
+				66A29CC9251106EE00481F4A /* Disable Reanimated if needed */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
