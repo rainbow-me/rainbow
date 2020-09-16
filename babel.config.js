@@ -27,7 +27,6 @@ module.exports = function(api) {
     'date-fns',
     'graphql-tag',
     ['lodash', { id: ['lodash', 'recompact'] }],
-    'react-native-reanimated/plugin',
   ];
 
   const presets = [
@@ -44,6 +43,7 @@ module.exports = function(api) {
             'transform-remove-console',
             { exclude: ['disableYellowBox', 'error', 'info', 'log'] },
           ],
+          'react-native-reanimated/plugin',
         ],
         presets: presets,
       },
@@ -53,6 +53,7 @@ module.exports = function(api) {
           '@babel/plugin-transform-runtime',
           '@babel/plugin-transform-react-inline-elements',
           ['transform-remove-console', { exclude: ['error'] }],
+          'react-native-reanimated/plugin',
         ],
         presets: presets,
       },
