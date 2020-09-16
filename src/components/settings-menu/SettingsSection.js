@@ -234,7 +234,7 @@ export default function SettingsSection({
       </ColumnWithDividers>
       {IS_DEV && (
         <Fragment>
-          <ListFooter />
+          <ListFooter height={10} />
           <ListItem
             icon={<Emoji name="construction" />}
             label="Developer settings"
