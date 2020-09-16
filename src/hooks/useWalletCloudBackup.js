@@ -3,6 +3,7 @@ import { captureException } from '@sentry/react-native';
 import { values } from 'lodash';
 import { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';
+import { isEmulatorSync } from 'react-native-device-info';
 import { useDispatch } from 'react-redux';
 import {
   addWalletToCloudBackup,
@@ -42,7 +43,7 @@ export default function useWalletCloudBackup() {
   const dispatch = useDispatch();
   const { latestBackup, setIsWalletLoading, wallets } = useWallets();
 
-  const walletCloudBackup = useCallback(
+  return useCallback(
     async ({
       handleNoLatestBackup,
       handlePasswordNotFound,
@@ -51,6 +52,12 @@ export default function useWalletCloudBackup() {
       password,
       walletId,
     }) => {
+      if (isEmulatorSync) {
+        Alert.alert(
+          'iCloud Not available on Emulator',
+          'Run Rainbow on a real device'
+        );
+      }
       const isAvailable = await isCloudBackupAvailable();
       if (!isAvailable) {
         analytics.track('iCloud not enabled', {
@@ -176,6 +183,4 @@ export default function useWalletCloudBackup() {
     },
     [dispatch, latestBackup, setIsWalletLoading, wallets]
   );
-
-  return walletCloudBackup;
 }
