@@ -70,9 +70,18 @@
   [(PanModalViewController*) [_controller parentVC] jumpToLong:point];
 }
 
+-(void)setLongFormHeight:(NSNumber *)longFormHeight {
+  _longFormHeight = longFormHeight;
+  [(PanModalViewController*) [_controller parentVC] rejump];
+}
+
+-(void)setShortFormHeight:(NSNumber *)shortFormHeight {
+  _shortFormHeight = shortFormHeight;
+  [(PanModalViewController*) [_controller parentVC] rejump];
+}
+
 
 - (void)onTouchTopWrapper:(NSNumber*)dismissing {
-  BOOL dismissingValue = [dismissing boolValue];
   if (_onTouchTop) {
     _onTouchTop(@{ @"dismissing": dismissing });
   }

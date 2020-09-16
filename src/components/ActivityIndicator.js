@@ -1,10 +1,11 @@
 import React from 'react';
 import { UIActivityIndicator } from 'react-native-indicators';
 import styled from 'styled-components/primitives';
+import { Centered } from './layout';
 import { colors, position } from '@rainbow-me/styles';
 
-const Container = styled.View`
-  ${({ size }) => position.size(size)};
+const Container = styled(Centered)`
+  ${({ size }) => position.size(Number(size))};
 `;
 
 export default function ActivityIndicator({

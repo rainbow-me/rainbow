@@ -1,11 +1,14 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { filter, flatMap, get, keys, map, values } from 'lodash';
+import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
+import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import {
   getWalletNames,
   saveWalletNames,
 } from '../handlers/localstorage/walletNames';
 import { web3Provider } from '../handlers/web3';
+import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import { hasKey } from '../model/keychain';
 import {
@@ -17,18 +20,18 @@ import {
   oldSeedPhraseMigratedKey,
   saveAddress,
   saveAllWallets,
-  seedPhraseKey,
   setSelectedWallet,
 } from '../model/wallet';
 import { settingsUpdateAccountAddress } from '../redux/settings';
 import { logger } from '../utils';
+import { privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
 
 // -- Constants --------------------------------------- //
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
 const WALLETS_LOAD = 'wallets/ALL_WALLETS_LOAD';
 const WALLETS_UPDATE = 'wallets/ALL_WALLETS_UPDATE';
 const WALLETS_UPDATE_NAMES = 'wallets/WALLETS_UPDATE_NAMES';
-const WALLETS_SET_IS_CREATING_ACCOUNT = 'wallets/SET_IS_CREATING_ACCOUNT';
+const WALLETS_SET_IS_LOADING = 'wallets/WALLETS_SET_IS_LOADING';
 const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 
 // -- Actions ---------------------------------------- //
@@ -40,6 +43,14 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     const selected = await getSelectedWallet();
     // Prevent irrecoverable state (no selected wallet)
     let selectedWallet = get(selected, 'wallet', undefined);
+    // Check if the selected wallet is among all the wallets
+    if (selectedWallet && !wallets[selectedWallet.id]) {
+      // If not then we should clear it and default to the first one
+      const firstWalletKey = Object.keys(wallets)[0];
+      selectedWallet = wallets[firstWalletKey];
+      await setSelectedWallet(selectedWallet);
+    }
+
     if (!selectedWallet) {
       const address = await loadAddress();
       keys(wallets).some(key => {
@@ -96,8 +107,8 @@ export const walletsLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const walletsUpdate = wallets => dispatch => {
-  saveAllWallets(wallets);
+export const walletsUpdate = wallets => async dispatch => {
+  await saveAllWallets(wallets);
   dispatch({
     payload: wallets,
     type: WALLETS_UPDATE,
@@ -112,11 +123,47 @@ export const walletsSetSelected = wallet => async dispatch => {
   });
 };
 
-export const isCreatingAccount = val => dispatch => {
+export const setIsWalletLoading = val => dispatch => {
   dispatch({
     payload: val,
-    type: WALLETS_SET_IS_CREATING_ACCOUNT,
+    type: WALLETS_SET_IS_LOADING,
   });
+};
+
+export const setWalletBackedUp = (
+  walletId,
+  method,
+  backupFile = null
+) => async (dispatch, getState) => {
+  const { wallets, selected } = getState().wallets;
+  const newWallets = { ...wallets };
+  newWallets[walletId] = {
+    ...newWallets[walletId],
+    backedUp: true,
+    backupDate: Date.now(),
+    backupFile,
+    backupType: method,
+  };
+
+  await dispatch(walletsUpdate(newWallets));
+  if (selected.id === walletId) {
+    await dispatch(walletsSetSelected(newWallets[walletId]));
+  }
+
+  // Reset the loading state 1 second later
+  setTimeout(() => {
+    dispatch(setIsWalletLoading(null));
+  }, 1000);
+
+  if (method === WalletBackupTypes.cloud) {
+    try {
+      await backupUserDataIntoCloud({ wallets: newWallets });
+    } catch (e) {
+      logger.sentry('SAVING WALLET USERDATA FAILED');
+      captureException(e);
+      throw e;
+    }
+  }
 };
 
 export const addressSetSelected = address => () => saveAddress(address);
@@ -240,7 +287,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       logger.sentry(`[KeychainIntegrityCheck]: checking wallet ${key}`);
       const wallet = wallets[key];
       logger.sentry(`[KeychainIntegrityCheck]: Wallet data`, wallet);
-      const seedKeyFound = await hasKey(`${key}_rainbowSeedPhrase`);
+      const seedKeyFound = await hasKey(`${key}_${seedPhraseKey}`);
       if (!seedKeyFound) {
         healthyWallet = false;
         logger.sentry('[KeychainIntegrityCheck]: seed key is missing');
@@ -249,7 +296,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       }
 
       for (const account of wallet.addresses) {
-        const pkeyFound = await hasKey(`${account.address}_rainbowPrivateKey`);
+        const pkeyFound = await hasKey(`${account.address}_${privateKeyKey}`);
         if (!pkeyFound) {
           healthyWallet = false;
           logger.sentry(
@@ -296,6 +343,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       captureMessage('Keychain Integrity is not OK');
     }
     logger.sentry('[KeychainIntegrityCheck]: check completed');
+    await saveKeychainIntegrityState('done');
   } catch (e) {
     logger.sentry('[KeychainIntegrityCheck]: error thrown', e);
     captureMessage('Error running keychain integrity checks');
@@ -304,7 +352,7 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  isCreatingAccount: false,
+  isWalletLoading: null,
   selected: undefined,
   walletNames: {},
   wallets: null,
@@ -312,8 +360,8 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case WALLETS_SET_IS_CREATING_ACCOUNT:
-      return { ...state, isCreatingAccount: action.payload };
+    case WALLETS_SET_IS_LOADING:
+      return { ...state, isWalletLoading: action.payload };
     case WALLETS_SET_SELECTED:
       return { ...state, selected: action.payload };
     case WALLETS_UPDATE:

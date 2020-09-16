@@ -12,9 +12,6 @@ const buildFlexStyles = css`
   ${({ self }) =>
     self ? `align-self: ${getFlexStylesFromShorthand(self)};` : ''}
 
-  /* Align Self */
-  ${({ cover }) => (cover ? position.cover : '')}
-
   /* Flex */
   ${({ flex }) => (flex !== undefined ? `flex: ${flex};` : '')}
 
@@ -33,6 +30,11 @@ const buildFlexStyles = css`
   /* Justify Content */
   justify-content: ${({ justify = 'start' }) =>
     getFlexStylesFromShorthand(justify)};
+
+
+  /* Shorthand Shortcuts 💇‍♂️️ */
+  ${({ centered }) => (centered ? position.centered : '')}
+  ${({ cover }) => (cover ? position.cover : '')}
 `;
 
 export default buildFlexStyles;

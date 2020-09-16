@@ -6,9 +6,9 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
-import { fonts, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 
-const ListItemHeight = 54;
+const ListItemHeight = 56;
 
 const renderIcon = icon =>
   isString(icon) ? (
@@ -53,11 +53,11 @@ const ListItem = enhance(
       activeOpacity={activeOpacity}
       enableHapticFeedback={false}
       onPress={onPress}
-      scaleTo={0.99}
+      scaleTo={0.975}
     >
       <Row
         align="center"
-        css={padding(0, 16, 2)}
+        css={padding(0, 18, 2, 19)}
         height={ListItemHeight}
         justify="space-between"
         {...props}
@@ -69,15 +69,11 @@ const ListItem = enhance(
           margin={iconMargin}
         >
           {icon && <Centered>{renderIcon(icon)}</Centered>}
-          <TruncatedText
-            flex={1}
-            paddingRight={fonts.size.bmedium}
-            size="large"
-          >
+          <TruncatedText flex={1} paddingRight={15} size="large">
             {label}
           </TruncatedText>
         </RowWithMargins>
-        {children && <Centered flexShrink={0}>{children}</Centered>}
+        {children && <Centered flex={1}>{children}</Centered>}
       </Row>
     </ButtonPressAnimation>
   )

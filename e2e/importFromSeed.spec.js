@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
-describe('Import From Seed', () => {
+describe('Welcome Screen', () => {
   beforeEach(async () => {
     await device.reloadReactNative();
   });
 
-  it('should show the import wallet screen', async () => {
-    await expect(element(by.id('goToProfile'))).toBeVisible();
+  it('should show the create wallet screen', async () => {
+    await expect(element(by.id('create-wallet-button'))).toBeVisible();
   });
 });

@@ -35,22 +35,22 @@ export default function ProfileScreen({ navigation }) {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
-  const { isCreatingAccount } = useWallets();
+  const { isWalletLoading } = useWallets();
   const nativeTransactionListAvailable = useNativeTransactionListAvailable();
   const { setComponent, hide } = usePortal();
 
   useEffect(() => {
-    if (isCreatingAccount) {
+    if (isWalletLoading) {
       setComponent(
         <LoadingOverlay
           paddingTop={sheetVerticalOffset}
-          title="Creating wallet..."
+          title={isWalletLoading}
         />,
         false
       );
       return hide;
     }
-  }, [hide, isCreatingAccount, setComponent]);
+  }, [hide, isWalletLoading, setComponent]);
   const {
     isLoadingTransactions: isLoading,
     sections,

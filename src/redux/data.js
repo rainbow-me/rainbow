@@ -26,6 +26,7 @@ import {
   getAssetPricesFromUniswap,
   getAssets,
   getLocalTransactions,
+  saveAccountEmptyState,
   saveAssetPricesFromUniswap,
   saveAssets,
   saveLocalTransactions,
@@ -35,6 +36,8 @@ import DirectionTypes from '../helpers/transactionDirectionTypes';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
 import { divide, isZero } from '../helpers/utilities';
+import WalletTypes from '../helpers/walletTypes';
+import { Navigation } from '../navigation';
 import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import {
@@ -50,7 +53,10 @@ import { addCashUpdatePurchases } from './addCash';
 /* eslint-disable-next-line import/no-cycle */
 import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswap';
+import Routes from '@rainbow-me/routes';
 import logger from 'logger';
+
+const BACKUP_SHEET_DELAY_MS = 3000;
 
 let pendingTransactionsHandle = null;
 const TXN_WATCHER_MAX_TRIES = 60;
@@ -79,6 +85,8 @@ const DATA_LOAD_TRANSACTIONS_FAILURE = 'data/DATA_LOAD_TRANSACTIONS_FAILURE';
 
 const DATA_ADD_NEW_TRANSACTION_SUCCESS =
   'data/DATA_ADD_NEW_TRANSACTION_SUCCESS';
+
+const DATA_ADD_NEW_SUBSCRIBER = 'data/DATA_ADD_NEW_SUBSCRIBER';
 
 const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 
@@ -131,6 +139,8 @@ export const dataUpdateAssets = assets => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   if (assets.length) {
     saveAssets(assets, accountAddress, network);
+    // Change the state since the account isn't empty anymore
+    saveAccountEmptyState(false, accountAddress, network);
     dispatch({
       payload: assets,
       type: DATA_UPDATE_ASSETS,
@@ -158,6 +168,8 @@ export const transactionsReceived = (message, appended = false) => async (
   const { accountAddress, nativeCurrency, network } = getState().settings;
   const { purchaseTransactions } = getState().addCash;
   const { transactions, tokenOverrides } = getState().data;
+  const { selected } = getState().wallets;
+
   const { parsedTransactions, potentialNftTransaction } = parseTransactions(
     transactionData,
     accountAddress,
@@ -179,6 +191,19 @@ export const transactionsReceived = (message, appended = false) => async (
   });
   dispatch(updatePurchases(parsedTransactions));
   saveLocalTransactions(parsedTransactions, accountAddress, network);
+
+  if (appended && parsedTransactions.length) {
+    if (
+      selected &&
+      !selected.backedUp &&
+      !selected.imported &&
+      selected.type !== WalletTypes.readOnly
+    ) {
+      setTimeout(() => {
+        Navigation.handleAction(Routes.BACKUP_SHEET);
+      }, BACKUP_SHEET_DELAY_MS);
+    }
+  }
 };
 
 export const transactionsRemoved = message => (dispatch, getState) => {
@@ -251,6 +276,10 @@ export const addressAssetsReceived = (
   );
 
   saveAssets(parsedAssets, accountAddress, network);
+  if (parsedAssets.length > 0) {
+    // Change the state since the account isn't empty anymore
+    saveAccountEmptyState(false, accountAddress, network);
+  }
   dispatch({
     payload: parsedAssets,
     type: DATA_UPDATE_ASSETS,
@@ -542,6 +571,17 @@ const watchPendingTransactions = (
   }
 };
 
+export const addNewSubscriber = (subscriber, type) => (dispatch, getState) => {
+  const { subscribers } = getState().data;
+  const newSubscribers = { ...subscribers };
+  newSubscribers[type] = concat(newSubscribers[type], subscriber);
+
+  dispatch({
+    payload: newSubscribers,
+    type: DATA_ADD_NEW_SUBSCRIBER,
+  });
+};
+
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   assetPricesFromUniswap: {},
@@ -549,6 +589,10 @@ const INITIAL_STATE = {
   genericAssets: {},
   isLoadingAssets: true,
   isLoadingTransactions: true,
+  subscribers: {
+    appended: [],
+    received: [],
+  },
   tokenOverrides: tokenOverrides,
   transactions: [],
   uniswapPricesQuery: null,
@@ -616,6 +660,11 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         transactions: action.payload,
+      };
+    case DATA_ADD_NEW_SUBSCRIBER:
+      return {
+        ...state,
+        subscribers: action.payload,
       };
     case DATA_CLEAR_STATE:
       return {

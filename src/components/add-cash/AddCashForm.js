@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/core';
 import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
@@ -23,13 +24,16 @@ const AddCashForm = ({
   shakeAnim,
 }) => {
   const isWalletEthZero = useIsWalletEthZero();
+  const { params } = useRoute();
 
   const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
   const [scaleAnim, setScaleAnim] = useState(1);
 
   const initialCurrencyIndex = isWalletEthZero ? 1 : 0;
   const [currency, setCurrency] = useState(currencies[initialCurrencyIndex]);
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(
+    params?.amount ? params?.amount?.toString() : ''
+  );
 
   const handlePurchase = useCallback(() => {
     analytics.track('Submitted Purchase', {

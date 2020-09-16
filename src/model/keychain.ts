@@ -1,12 +1,18 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { forEach, isNil } from 'lodash';
+import DeviceInfo from 'react-native-device-info';
 import {
+  ACCESS_CONTROL,
+  ACCESSIBLE,
+  AUTHENTICATION_TYPE,
+  canImplyAuthentication,
   getAllInternetCredentials,
   getAllInternetCredentialsKeys,
   getInternetCredentials,
   hasInternetCredentials,
   Options,
   resetInternetCredentials,
+  Result,
   setInternetCredentials,
   UserCredentials,
 } from 'react-native-keychain';
@@ -118,7 +124,7 @@ export async function remove(key: string): Promise<void> {
   }
 }
 
-async function loadAllKeys(): Promise<null | UserCredentials[]> {
+export async function loadAllKeys(): Promise<null | UserCredentials[]> {
   try {
     const response = await getAllInternetCredentials();
     if (response) {
@@ -157,7 +163,7 @@ export async function loadAllKeysOnly(): Promise<null | string[]> {
   return null;
 }
 
-export async function hasKey(key: string) {
+export async function hasKey(key: string): Promise<boolean | Result> {
   try {
     const result = await hasInternetCredentials(key);
     return result;
@@ -167,5 +173,45 @@ export async function hasKey(key: string) {
     );
     captureException(err);
   }
-  return null;
+  return false;
+}
+
+export async function wipeKeychain(): Promise<void> {
+  try {
+    const results = await loadAllKeys();
+    if (results) {
+      await Promise.all(
+        results?.map(result => resetInternetCredentials(result.username))
+      );
+      logger.log('keychain wiped!');
+    }
+  } catch (e) {
+    logger.sentry('error while wiping keychain');
+    captureException(e);
+  }
+}
+
+export async function getPrivateAccessControlOptions(): Promise<Options> {
+  let res = {};
+  // This method is iOS Only!!!
+  try {
+    const canAuthenticate = await canImplyAuthentication({
+      authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
+    });
+
+    let isSimulator = false;
+
+    if (canAuthenticate) {
+      isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
+    }
+    if (canAuthenticate && !isSimulator) {
+      res = {
+        accessControl: ACCESS_CONTROL.USER_PRESENCE,
+        accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+      };
+    }
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+
+  return res;
 }

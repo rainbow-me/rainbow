@@ -12,27 +12,8 @@ const sx = StyleSheet.create({
 });
 
 function ScreenView({ colors, descriptors, navigation, route, state }) {
-  const ref = useRef();
-
-  const context = useMemo(
-    () => ({
-      jumpToLong: () => {
-        const screen = findNodeHandle(ref.current);
-        if (screen) {
-          NativeModules.RNCMScreenManager.jumpTo(true, screen);
-        }
-      },
-      jumpToShort: () => {
-        const screen = findNodeHandle(ref.current);
-        if (screen) {
-          NativeModules.RNCMScreenManager.jumpTo(false, screen);
-        }
-      },
-    }),
-    []
-  );
-
   const { options, render: renderScene } = descriptors[route.key];
+  const ref = useRef();
   const {
     allowsDragToDismiss,
     allowsTapToDismiss,
@@ -60,6 +41,24 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
     topOffset,
     transitionDuration,
   } = options;
+
+  const context = useMemo(
+    () => ({
+      jumpToLong: () => {
+        const screen = findNodeHandle(ref.current);
+        if (screen) {
+          NativeModules.RNCMScreenManager.jumpTo(true, screen);
+        }
+      },
+      jumpToShort: () => {
+        const screen = findNodeHandle(ref.current);
+        if (screen) {
+          NativeModules.RNCMScreenManager.jumpTo(false, screen);
+        }
+      },
+    }),
+    []
+  );
 
   return (
     <ModalContext.Provider value={context}>

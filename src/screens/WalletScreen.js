@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/core';
 import { get } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import Animated from 'react-native-reanimated';
@@ -17,13 +18,12 @@ import { LoadingOverlay } from '../components/modal';
 import useExperimentalFlag, {
   DISCOVER_SHEET,
 } from '../config/experimentalHooks';
-import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 import networkInfo from '../helpers/networkInfo';
 import {
+  useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
   useInitializeWallet,
-  useKeyboardHeight,
   useRefreshAccountData,
   useWallets,
   useWalletSectionsData,
@@ -46,14 +46,17 @@ const WalletPage = styled(Page)`
 `;
 
 export default function WalletScreen() {
+  const { params } = useRoute();
   const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
-  const [initialized, setInitialized] = useState(false);
+  const [initialized, setInitialized] = useState(!!params?.initialized);
   const initializeWallet = useInitializeWallet();
   const refreshAccountData = useRefreshAccountData();
   const { isCoinListEdited } = useCoinListEdited();
-  const { updateKeyboardHeight } = useKeyboardHeight();
   const scrollViewTracker = useValue(0);
-  const { isCreatingAccount, isReadOnlyWallet } = useWallets();
+  const { isWalletLoading, isReadOnlyWallet } = useWallets();
+  const { isEmpty } = useAccountEmptyState();
+  const { network } = useAccountSettings();
+  const { isWalletEthZero, sections } = useWalletSectionsData();
 
   useEffect(() => {
     if (!initialized) {
@@ -61,22 +64,7 @@ export default function WalletScreen() {
       initializeWallet(null, null, null, true);
       setInitialized(true);
     }
-  }, [initializeWallet, initialized]);
-
-  useEffect(() => {
-    if (initialized) {
-      getKeyboardHeight()
-        .then(keyboardHeight => {
-          if (keyboardHeight) {
-            updateKeyboardHeight(keyboardHeight);
-          }
-        })
-        .catch(() => {});
-    }
-  }, [initialized, updateKeyboardHeight]);
-
-  const { network } = useAccountSettings();
-  const { isEmpty, isWalletEthZero, sections } = useWalletSectionsData();
+  }, [initializeWallet, initialized, params]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
@@ -91,17 +79,17 @@ export default function WalletScreen() {
   const { setComponent, hide } = usePortal();
 
   useEffect(() => {
-    if (isCreatingAccount) {
+    if (isWalletLoading) {
       setComponent(
         <LoadingOverlay
           paddingTop={sheetVerticalOffset}
-          title="Creating wallet..."
+          title={isWalletLoading}
         />,
         true
       );
       return hide;
     }
-  }, [hide, isCreatingAccount, setComponent]);
+  }, [hide, isWalletLoading, setComponent]);
 
   return (
     <WalletPage>
@@ -126,7 +114,7 @@ export default function WalletScreen() {
         </HeaderOpacityToggler>
         <AssetList
           fetchData={refreshAccountData}
-          isEmpty={isEmpty}
+          isEmpty={isEmpty || !!params?.emptyWallet}
           isWalletEthZero={isWalletEthZero}
           network={network}
           scrollViewTracker={scrollViewTracker}
