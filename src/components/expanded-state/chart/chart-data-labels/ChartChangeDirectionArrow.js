@@ -31,20 +31,29 @@ export default function ChartChangeDirectionArrow() {
         : ratio.value < 1
         ? colors.red
         : colors.green,
+    undefined,
     'ChartChangeDirectionArrowRatioColor'
   );
-  const arrowWrapperStyle = useAnimatedStyle(() => {
-    return {
-      opacity: ratio.value === 1 ? 0 : 1,
-      transform: [{ rotate: ratio.value < 1 ? '180deg' : '0deg' }],
-    };
-  }, 'ChartChangeDirectionArrowRatioWrapperStyle');
+  const arrowWrapperStyle = useAnimatedStyle(
+    () => {
+      return {
+        opacity: ratio.value === 1 ? 0 : 1,
+        transform: [{ rotate: ratio.value < 1 ? '180deg' : '0deg' }],
+      };
+    },
+    undefined,
+    'ChartChangeDirectionArrowRatioWrapperStyle'
+  );
 
-  const arrowStyle = useAnimatedStyle(() => {
-    return {
-      backgroundColor: arrowColor.value,
-    };
-  }, 'ChartChangeDirectionArrowRatioStyle');
+  const arrowStyle = useAnimatedStyle(
+    () => {
+      return {
+        backgroundColor: arrowColor.value,
+      };
+    },
+    undefined,
+    'ChartChangeDirectionArrowRatioStyle'
+  );
 
   return hidden ? null : (
     <Animated.View style={arrowWrapperStyle}>

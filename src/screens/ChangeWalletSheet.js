@@ -1,6 +1,12 @@
 import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { InteractionManager, Platform } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
@@ -108,6 +114,10 @@ export default function ChangeWalletSheet() {
     scrollEnabled = true;
     showDividers = true;
   }
+
+  useEffect(() => {
+    setCurrentAddress(accountAddress);
+  }, [accountAddress]);
 
   const onChangeAccount = useCallback(
     async (walletId, address, fromDeletion = false) => {

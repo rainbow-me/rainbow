@@ -32,9 +32,24 @@ const parseGasPricesEtherscan = data => ({
 
 const parseGasPricesEthGasStation = data => ({
   [CUSTOM]: null,
-  [FAST]: defaultGasPriceFormat(FAST, data.fastestWait, data.fastest, true),
-  [NORMAL]: defaultGasPriceFormat(NORMAL, data.fastWait, data.fast, true),
-  [SLOW]: defaultGasPriceFormat(SLOW, data.avgWait, data.average, true),
+  [FAST]: defaultGasPriceFormat(
+    FAST,
+    data.fastestWait,
+    Number(data.fastest) / 10,
+    true
+  ),
+  [NORMAL]: defaultGasPriceFormat(
+    NORMAL,
+    data.fastWait,
+    Number(data.fast) / 10,
+    true
+  ),
+  [SLOW]: defaultGasPriceFormat(
+    SLOW,
+    data.avgWait,
+    Number(data.average) / 10,
+    true
+  ),
 });
 
 /**

@@ -55,7 +55,7 @@ export async function saveString(
 export async function loadString(
   key: string,
   options?: Options
-): Promise<null | string> {
+): Promise<null | string | -1> {
   try {
     const credentials = await getInternetCredentials(key, options);
     if (credentials) {
@@ -64,6 +64,9 @@ export async function loadString(
     }
     logger.sentry(`Keychain: string does not exist for key: ${key}`);
   } catch (err) {
+    if (err.toString() === 'Error: User canceled the operation.') {
+      return -1;
+    }
     logger.sentry(
       `Keychain: failed to load string for key: ${key} error: ${err}`
     );
@@ -84,9 +87,12 @@ export async function saveObject(
 export async function loadObject(
   key: string,
   options?: Options
-): Promise<null | Object> {
+): Promise<null | Object | -1> {
   const jsonValue = await loadString(key, options);
   if (!jsonValue) return null;
+  if (jsonValue === -1) {
+    return -1;
+  }
   try {
     const objectValue = JSON.parse(jsonValue);
     logger.log(`Keychain: parsed object for key: ${key}`);

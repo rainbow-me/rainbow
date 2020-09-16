@@ -56,7 +56,7 @@ const traverseData = (prev, data) => {
 function useJumpingForm(isLong) {
   const { setOptions } = useNavigation();
 
-  const { jumpToShort, jumpToLong } = useContext(ModalContext);
+  const { jumpToShort, jumpToLong } = useContext(ModalContext) || {};
 
   useEffect(() => {
     if (!isLong) {
@@ -64,7 +64,7 @@ function useJumpingForm(isLong) {
         isShortFormEnabled: true,
       });
       setImmediate(() => {
-        jumpToShort();
+        jumpToShort?.();
         setOptions({
           isShortFormEnabled: false,
           longFormHeight: heightWithNoChart,

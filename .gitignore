@@ -3,6 +3,7 @@ ios/GoogleService-Info.plist
 
 # OSX
 #
+ios/ReaHeader.h
 .DS_Store
 ios/Pods/
 ios/*dSYM.zip

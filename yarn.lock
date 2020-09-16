@@ -5588,7 +5588,7 @@ fwd-stream@^1.0.4:
   dependencies:
     readable-stream "~1.0.26-4"
 
-ganache-cli@^6.10.1:
+ganache-cli@6.10.1:
   version "6.10.1"
   resolved "https://registry.yarnpkg.com/ganache-cli/-/ganache-cli-6.10.1.tgz#6e083a92dba204d649c43d8823152bb9e2219807"
   integrity sha512-3lpBxILtJBxkNVo+U8ad2qbkzB6nZ53gXhXH6NiS0Pauqur86rGbhXz6fNASjBosZm9iJ8Nr71fJd331QODFkQ==
@@ -9822,10 +9822,10 @@ react-native-randombytes@^3.5.3:
     buffer "^4.9.1"
     sjcl "^1.0.3"
 
-react-native-reanimated@2.0.0-alpha.5:
-  version "2.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.0.0-alpha.5.tgz#ecbb934b9842bd60f74cc28bd5ad181fc34b1ce2"
-  integrity sha512-dSnJESUO/W1Z1lVtJxe6QQuydSIi+KEANBzrCOkD4bdwuEvAz6ulkddiqbJGVEfEgHRkAuE1cpPplswuOb+5eQ==
+react-native-reanimated@2.0.0-alpha.6:
+  version "2.0.0-alpha.6"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.0.0-alpha.6.tgz#d3b55127e8202a12b9073c97086dfe85283c9e08"
+  integrity sha512-VlclQ4dlHM7e8F8HBgwqUQTfCNK3k+h13aL/9k/JMqx4CrUAWe2RYdsRWxurV3YrK0RYdjpM4AvmxqGvJKWuWA==
   dependencies:
     "@babel/plugin-transform-object-assign" "^7.10.4"
     fbjs "^1.0.0"
