@@ -4,12 +4,17 @@ import BiometryTypes from '../../helpers/biometryTypes';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
+import ImageAvatar from '../contacts/ImageAvatar';
 import CopyTooltip from '../copy-tooltip';
 import { Icon } from '../icons';
 import { Centered, ColumnWithDividers, RowWithMargins } from '../layout';
 import { Text, TruncatedAddress } from '../text';
 import { ProfileAvatarButton, ProfileModal, ProfileNameInput } from './profile';
-import { useBiometryType } from '@rainbow-me/hooks';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '@rainbow-me/helpers/emojiHandler';
+import { useAccountProfile, useBiometryType } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { colors, margin, padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
@@ -45,6 +50,10 @@ const WalletProfileButtonText = styled(Text).attrs({
   size: 'larger',
 })``;
 
+const ProfileImage = styled(ImageAvatar)`
+  margin-bottom: 15;
+`;
+
 const WalletProfileDivider = styled(Divider).attrs({
   borderRadius: 1,
   color: colors.rowDividerLight,
@@ -65,13 +74,18 @@ export default function WalletProfileState({
   onCloseModal,
   profile,
 }) {
+  const nameEmoji = returnStringFirstEmoji(profile?.name);
   const biometryType = useBiometryType();
   const { goBack, navigate } = useNavigation();
+  const { accountImage } = useAccountProfile();
 
   const [color, setColor] = useState(
     (profile.color !== null && profile.color) || colors.getRandomColor()
   );
-  const [value, setValue] = useState(profile?.name || '');
+
+  const [value, setValue] = useState(
+    removeFirstEmojiFromString(profile?.name).join('') || ''
+  );
   const inputRef = useRef(null);
 
   const handleCancel = useCallback(() => {
@@ -82,12 +96,21 @@ export default function WalletProfileState({
   }, [actionType, goBack, navigate]);
 
   const handleSubmit = useCallback(() => {
-    onCloseModal({ color, name: value });
+    onCloseModal({ color, name: nameEmoji ? `${nameEmoji} ${value}` : value });
     goBack();
     if (actionType === 'Create' && isNewProfile) {
       navigate(Routes.CHANGE_WALLET_SHEET);
     }
-  }, [actionType, color, goBack, isNewProfile, navigate, onCloseModal, value]);
+  }, [
+    actionType,
+    color,
+    goBack,
+    isNewProfile,
+    nameEmoji,
+    navigate,
+    onCloseModal,
+    value,
+  ]);
 
   const handleTriggerFocusInput = useCallback(() => inputRef.current?.focus(), [
     inputRef,
@@ -103,7 +126,15 @@ export default function WalletProfileState({
   return (
     <WalletProfileModal>
       <Centered direction="column" paddingBottom={30} width="100%">
-        <ProfileAvatarButton color={color} setColor={setColor} value={value} />
+        {accountImage ? (
+          <ProfileImage image={accountImage} size="large" />
+        ) : (
+          <ProfileAvatarButton
+            color={color}
+            setColor={setColor}
+            value={nameEmoji || value}
+          />
+        )}
         <ProfileNameInput
           onChange={setValue}
           onSubmitEditing={handleSubmit}

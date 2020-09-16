@@ -9,6 +9,7 @@ import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import CoinCheckButton from '../coin-row/CoinCheckButton';
 import { ContactAvatar } from '../contacts';
+import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { TruncatedAddress, TruncatedText } from '../text';
@@ -102,6 +103,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
     balance,
     color: accountColor,
     ens,
+    image: accountImage,
     index,
     isSelected,
     isReadOnly,
@@ -133,12 +135,20 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
       >
         <Row align="center">
           <Row align="center" flex={1} height={59}>
-            <ContactAvatar
-              color={accountColor}
-              marginRight={10}
-              size="medium"
-              value={label || ens || `${index + 1}`}
-            />
+            {accountImage ? (
+              <ImageAvatar
+                image={accountImage}
+                marginRight={10}
+                size="medium"
+              />
+            ) : (
+              <ContactAvatar
+                color={accountColor}
+                marginRight={10}
+                size="medium"
+                value={label || ens || `${index + 1}`}
+              />
+            )}
             <ColumnWithMargins margin={3}>
               {cleanedUpLabel || ens ? (
                 <TruncatedText style={sx.accountLabel}>

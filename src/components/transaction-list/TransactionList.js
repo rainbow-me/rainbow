@@ -1,8 +1,9 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import PropTypes from 'prop-types';
+import { find } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Linking, requireNativeComponent } from 'react-native';
+import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import useExperimentalFlag, {
@@ -18,8 +19,8 @@ import { isENSAddressFormat } from '../../helpers/validators';
 import { useAccountProfile, useWallets } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
+import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
 import { FloatingEmojis } from '../floating-emojis';
-
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import {
@@ -29,6 +30,9 @@ import {
 } from '@rainbow-me/utils';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
+
+const isAvatarEmojiPickerEnabled = true;
+const isAvatarImagePickerEnabled = true;
 
 const Container = styled.View`
   flex: 1;
@@ -50,7 +54,7 @@ const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
   width: ${({ tapTarget }) => tapTarget[2]};
 `;
 
-const TransactionList = ({
+export default function TransactionList({
   addCashAvailable,
   contacts,
   initialized,
@@ -58,8 +62,8 @@ const TransactionList = ({
   network,
   requests,
   transactions,
-}) => {
-  const { selectedWallet } = useWallets();
+}) {
+  const { wallets, selectedWallet } = useWallets();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
   const setOnNewEmoji = useCallback(
@@ -73,6 +77,7 @@ const TransactionList = ({
     accountColor,
     accountSymbol,
     accountName,
+    accountImage,
   } = useAccountProfile();
 
   const onAddCashPress = useCallback(() => {
@@ -85,14 +90,93 @@ const TransactionList = ({
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-  }, [navigate, selectedWallet?.damaged]);
+  }, [navigate, selectedWallet.damaged]);
+
+  const onRemovePhoto = useCallback(async () => {
+    // all this code is weak but lets ship it
+    const newWallets = { ...wallets };
+    const newWallet = newWallets[selectedWallet.id];
+    const account = find(newWallet.addresses, ['address', accountAddress]);
+
+    // remove zee photo
+    account.image = null;
+    newWallet.addresses[account.index] = account;
+
+    dispatch(walletsSetSelected(newWallet));
+    await dispatch(walletsUpdate(newWallets));
+  }, [dispatch, selectedWallet, accountAddress, wallets]);
 
   const onAvatarPress = useCallback(() => {
-    navigate(Routes.AVATAR_BUILDER, {
-      accountColor,
-      accountName,
-    });
-  }, [accountColor, accountName, navigate]);
+    if (isAvatarImagePickerEnabled) {
+      const processPhoto = image => {
+        const stringIndex = image?.path.indexOf('/tmp');
+        const newWallets = { ...wallets };
+        const walletId = selectedWallet.id;
+
+        newWallets[walletId].addresses.some((account, index) => {
+          newWallets[walletId].addresses[index].image = `~${image?.path.slice(
+            stringIndex
+          )}`;
+
+          dispatch(walletsSetSelected(newWallets[walletId]));
+          return true;
+        });
+        dispatch(walletsUpdate(newWallets));
+      };
+
+      const avatarActionSheetOptions = [
+        'Take Photo',
+        'Choose from Library',
+        ...(isAvatarEmojiPickerEnabled ? ['Pick an Emoji'] : []),
+        ...(accountImage ? ['Remove Photo'] : []),
+        'Cancel', // <-- cancelButtonIndex
+      ];
+
+      showActionSheetWithOptions(
+        {
+          cancelButtonIndex: avatarActionSheetOptions.length - 1,
+          destructiveButtonIndex: accountImage
+            ? avatarActionSheetOptions.length - 2
+            : undefined,
+          options: avatarActionSheetOptions,
+        },
+        async buttonIndex => {
+          if (buttonIndex === 0) {
+            ImagePicker.openCamera({
+              cropperCircleOverlay: true,
+              cropping: true,
+            }).then(processPhoto);
+          } else if (buttonIndex === 1) {
+            ImagePicker.openPicker({
+              cropperCircleOverlay: true,
+              cropping: true,
+            }).then(processPhoto);
+          } else if (buttonIndex === 2 && isAvatarEmojiPickerEnabled) {
+            navigate(Routes.AVATAR_BUILDER, {
+              initialAccountColor: accountColor,
+              initialAccountName: accountName,
+            });
+          } else if (buttonIndex === 3 && accountImage) {
+            onRemovePhoto();
+          }
+        }
+      );
+    } else if (isAvatarEmojiPickerEnabled) {
+      navigate(Routes.AVATAR_BUILDER, {
+        initialAccountColor: accountColor,
+        initialAccountName: accountName,
+      });
+    }
+  }, [
+    accountColor,
+    accountImage,
+    accountName,
+    dispatch,
+    navigate,
+    onRemovePhoto,
+    selectedWallet.id,
+    wallets,
+  ]);
 
   const onReceivePress = useCallback(() => {
     if (selectedWallet?.damaged) {
@@ -100,6 +184,7 @@ const TransactionList = ({
       return;
     }
     navigate(Routes.RECEIVE_MODAL);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, selectedWallet?.damaged]);
 
   const onRequestExpire = useCallback(
@@ -213,6 +298,7 @@ const TransactionList = ({
       }
       Clipboard.setString(accountAddress);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [accountAddress, selectedWallet?.damaged]
   );
 
@@ -241,6 +327,7 @@ const TransactionList = ({
       <Container
         accountAddress={accountName}
         accountColor={colors.avatarColor[accountColor]}
+        accountImage={accountImage}
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}
@@ -262,16 +349,4 @@ const TransactionList = ({
       />
     </Container>
   );
-};
-
-TransactionList.propTypes = {
-  addCashAvailable: PropTypes.bool,
-  contacts: PropTypes.array,
-  initialized: PropTypes.bool,
-  isLoading: PropTypes.bool,
-  network: PropTypes.string,
-  requests: PropTypes.array,
-  transactions: PropTypes.array,
-};
-
-export default TransactionList;
+}
