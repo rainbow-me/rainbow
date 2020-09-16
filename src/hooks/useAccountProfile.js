@@ -36,8 +36,7 @@ export default function useAccountProfile() {
     return {};
   }
 
-  const { label, color, index } = selectedAccount;
-  const accountColor = color;
+  const { label, color, index, image } = selectedAccount;
 
   const accountName = removeFirstEmojiFromString(
     network === networkTypes.mainnet
@@ -56,11 +55,14 @@ export default function useAccountProfile() {
       ? toUpper(accountName)
       : toUpper(label) || toUpper(accountName)
   )[0];
+  const accountColor = color;
+  const accountImage = image;
 
   return {
     accountAddress,
     accountColor,
     accountENS,
+    accountImage,
     accountName,
     accountSymbol,
   };

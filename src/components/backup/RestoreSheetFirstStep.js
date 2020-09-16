@@ -128,6 +128,7 @@ export default function RestoreSheetFirstStep({
       <SheetRow
         as={ButtonPressAnimation}
         onPress={onManualRestore}
+        scaleTo={0.9}
         testID="restore-with-key-button"
       >
         <Column>

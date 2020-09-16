@@ -17,6 +17,7 @@ import { ButtonPressAnimation } from '../components/animations';
 import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { Emoji, Text } from '../components/text';
+
 import { fetchUserDataFromCloud } from '@rainbow-me/handlers/cloudBackup';
 import { useHideSplashScreen } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
@@ -499,8 +500,8 @@ export default function WelcomeScreen() {
         <ButtonWrapper style={buttonStyle}>
           <RainbowButton
             onPress={onCreateWallet}
-            {...createWalletButtonProps}
             testID="new-wallet-button"
+            {...createWalletButtonProps}
           />
         </ButtonWrapper>
         <ButtonWrapper>

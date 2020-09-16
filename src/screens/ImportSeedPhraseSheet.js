@@ -20,6 +20,7 @@ import LoadingOverlay from '../components/modal/LoadingOverlay';
 import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
 import { getWallet } from '../model/wallet';
+
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import {
@@ -27,6 +28,7 @@ import {
   isValidWallet,
 } from '@rainbow-me/helpers/validators';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
+import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import {
   useAccountSettings,
   useClipboard,
@@ -134,6 +136,7 @@ export default function ImportSeedPhraseSheet() {
   const [color, setColor] = useState(null);
   const [name, setName] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [checkedWallet, setCheckedWallet] = useState(null);
   const [resolvedAddress, setResolvedAddress] = useState(null);
   const [startAnalyticsTimeout] = useTimeout();
   const wasImporting = usePrevious(isImporting);
@@ -218,7 +221,8 @@ export default function ImportSeedPhraseSheet() {
       try {
         setBusy(true);
         setTimeout(async () => {
-          const { wallet } = getWallet(input);
+          const { hdnode, isHDWallet, type, wallet } = getWallet(input);
+          setCheckedWallet({ hdnode, isHDWallet, type, wallet });
           const ens = await web3Provider.lookupAddress(wallet?.address);
           if (ens && ens !== input) {
             name = ens;
@@ -245,7 +249,14 @@ export default function ImportSeedPhraseSheet() {
         const input = resolvedAddress ? resolvedAddress : seedPhrase.trim();
         const previousWalletCount = keys(wallets).length;
 
-        initializeWallet(input, color, name ? name : '')
+        initializeWallet(
+          input,
+          color,
+          name ? name : '',
+          false,
+          false,
+          checkedWallet
+        )
           .then(success => {
             handleSetImporting(false);
             if (success) {
@@ -295,6 +306,7 @@ export default function ImportSeedPhraseSheet() {
       }, 50);
     }
   }, [
+    checkedWallet,
     color,
     isWalletEthZero,
     handleSetImporting,
@@ -319,12 +331,12 @@ export default function ImportSeedPhraseSheet() {
       setComponent(
         <LoadingOverlay
           paddingTop={keyboardVerticalOffset}
-          title={isImporting}
+          title={walletLoadingStates.IMPORTING_WALLET}
         />,
-        false
+        true
       );
+      return hide;
     }
-    return hide;
   }, [hide, isImporting, setComponent]);
 
   return (

@@ -1,9 +1,5 @@
 const controlPoint = (current, previous, next, reverse, smoothing) => {
   'worklet';
-  // When 'current' is the first or last point of the array
-  // 'previous' or 'next' don't exist.
-  // Replace with 'current'
-
   const p = previous || current;
   const n = next || current;
   // Properties of the opposed-line
@@ -22,7 +18,7 @@ const controlPoint = (current, previous, next, reverse, smoothing) => {
   return [x, y];
 };
 
-export const svgBezierPath = (points, smoothing, strategy = 'complex') => {
+export const svgBezierPath = (points, smoothing, strategy) => {
   'worklet';
   const traversed = points.map(p => [p.x, p.y]);
   // build the d attributes by looping over the points

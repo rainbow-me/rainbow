@@ -267,7 +267,7 @@ export const emojiPreset = {
         pointerEvents="none"
         style={{
           backgroundColor: 'rgb(51, 54, 59)',
-          height: deviceUtils.dimensions.height,
+          height: deviceUtils.dimensions.height + 50,
           opacity: backgroundOpacity,
           position: 'absolute',
           width: deviceUtils.dimensions.width,
