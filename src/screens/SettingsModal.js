@@ -191,6 +191,11 @@ export default function SettingsModal() {
               letterSpacing: fonts.letterSpacing.roundedMedium,
             },
             headerRight: renderHeaderRight,
+            ...(Platform.OS === 'android' && {
+              headerRightContainerStyle: {
+                paddingTop: 6,
+              },
+            }),
             headerStatusBarHeight: 0,
             headerStyle: {
               backgroundColor: 'transparent',
