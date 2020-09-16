@@ -16,6 +16,7 @@ import { ButtonPressAnimation } from '../components/animations';
 import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { Emoji, Text } from '../components/text';
+
 import { fetchUserDataFromCloud } from '@rainbow-me/handlers/cloudBackup';
 import { useHideSplashScreen } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
@@ -478,10 +479,10 @@ export default function WelcomeScreen() {
     <Container>
       {traversedRainbows.map(({ source, style, id }) => (
         <RainbowImage
-          testID="RainbowImage"
           key={`rainbow${id}`}
           source={source}
           style={style}
+          testID="RainbowImage"
         />
       ))}
 
