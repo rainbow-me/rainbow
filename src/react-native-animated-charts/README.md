@@ -1,6 +1,6 @@
 <p align="center">
   <h1 align="center">React Native Animated Charts</h1>
-  <h3 align="center">Set of components and helpers for building complex and beautiful animated charts.</h3>
+  <h3 align="center">Set of components and helpers for building complex and beautifully animated charts.</h3>
 </p>
 
 ![](gifs/ios.gif) | ![](gifs/android.gif) |
@@ -50,7 +50,7 @@ you don't want to decrease your DX. Since we're not using reanimated in other pl
 made some tweaks to disable charts in development mode with compilation macros on iOS. 
 You can find it [here](https://github.com/rainbow-me/rainbow/blob/develop/ios/Rainbow/AppDelegate.mm)
 
-Also, because we're using React Navigation which currently not supports reanimated 2,
+Also, because we're using libraries which currently do not support reanimated 2,
 we [patched exports in reanimated](https://github.com/rainbow-me/rainbow/tree/develop/patches)
 
 Furthermore, we found few differences in how the `Animated` module works with and without TurboModules support, so 
