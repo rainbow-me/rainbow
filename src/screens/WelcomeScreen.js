@@ -1,3 +1,4 @@
+import { fetchUserDataFromCloud } from '@rainbow-me/handlers/cloudBackup';
 import MaskedView from '@react-native-community/masked-view';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -17,7 +18,6 @@ import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { Emoji, Text } from '../components/text';
 
-import { fetchUserDataFromCloud } from '@rainbow-me/handlers/cloudBackup';
 import { useHideSplashScreen } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { colors, shadow } from '@rainbow-me/styles';
@@ -478,12 +478,7 @@ export default function WelcomeScreen() {
   return (
     <Container>
       {traversedRainbows.map(({ source, style, id }) => (
-        <RainbowImage
-          key={`rainbow${id}`}
-          source={source}
-          style={style}
-          testID="RainbowImage"
-        />
+        <RainbowImage key={`rainbow${id}`} source={source} style={style} />
       ))}
 
       <ContentWrapper style={contentStyle}>
@@ -494,6 +489,7 @@ export default function WelcomeScreen() {
         <ButtonWrapper style={buttonStyle}>
           <RainbowButton
             onPress={onCreateWallet}
+            testID="create-wallet-button"
             {...createWalletButtonProps}
           />
         </ButtonWrapper>
