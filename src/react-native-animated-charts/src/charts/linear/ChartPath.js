@@ -6,10 +6,10 @@ import Animated, {
   // eslint-disable-next-line import/no-unresolved
 } from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
-import ChartContext from './ChartContext';
-import { svgBezierPath } from './smoothSVG';
-import useReactiveSharedValue from './useReactiveSharedValue';
-import withReanimatedFallback from './withReanimatedFallback';
+import ChartContext from '../../helpers/ChartContext';
+import useReactiveSharedValue from '../../helpers/useReactiveSharedValue';
+import withReanimatedFallback from '../../helpers/withReanimatedFallback';
+import { svgBezierPath } from '../../smoothing/smoothSVG';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
@@ -21,6 +21,8 @@ function ChartPath({
   strokeWidthSelected = 1,
   strokeWidth = 1,
   gestureEnabled = true,
+  selectedOpacity = 0.7,
+  style,
   ...props
 }) {
   const disableSmoothingWhileTransitioningValue = useReactiveSharedValue(
@@ -138,7 +140,8 @@ function ChartPath({
       }
 
       if (
-        smoothing !== 0 ||
+        (smoothing !== 0 &&
+          (strategy === 'complex' || strategy === 'simple')) ||
         (strategy === 'bezier' &&
           (!disableSmoothingWhileTransitioningValue.value ||
             progress.value === 1))
@@ -157,17 +160,25 @@ function ChartPath({
     'ChartPathPath'
   );
 
-  const animatedStyle = useAnimatedStyle(
+  const animatedProps = useAnimatedStyle(
     () => {
       return {
         d: path.value,
         strokeWidth:
           pathOpacity.value *
-            (strokeWidthValue.value - strokeWidthSelectedValue.value) +
-          strokeWidthSelectedValue.value,
-        style: {
-          opacity: pathOpacity.value * 0.3 + 0.7,
-        },
+            (Number(strokeWidthValue.value) -
+              Number(strokeWidthSelectedValue.value)) +
+          Number(strokeWidthSelectedValue.value),
+      };
+    },
+    undefined,
+    'ChartPathAnimateProps'
+  );
+
+  const animatedStyle = useAnimatedStyle(
+    () => {
+      return {
+        opacity: pathOpacity.value * (1 - selectedOpacity) + selectedOpacity,
       };
     },
     undefined,
@@ -180,7 +191,6 @@ function ChartPath({
       maxDist={100000}
       minDurationMs={0}
       shouldCancelWhenOutside={false}
-      strokeLinejoin="round"
       {...longPressGestureHandlerProps}
       {...{ onGestureEvent: onLongPressGestureEvent }}
     >
@@ -190,7 +200,11 @@ function ChartPath({
           viewBox={`0 0 ${width} ${height}`}
           width={width}
         >
-          <AnimatedPath animatedProps={animatedStyle} {...props} />
+          <AnimatedPath
+            animatedProps={animatedProps}
+            {...props}
+            style={[style, animatedStyle]}
+          />
         </Svg>
       </Animated.View>
     </LongPressGestureHandler>

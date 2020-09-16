@@ -5560,10 +5560,10 @@ react-native-haptic-feedback@^1.10.0:
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.10.0.tgz#869d2e7179a17226becf43173c6f6495038524a0"
   integrity sha512-2aEXYTLrQq2N3phaGJ23V0x6qsIz4j1vhTck9A7geTfW7J54mOfk1Pr4Y1WEMMKptFA9p78kZHBb31IIE+g37w==
 
-react-native-reanimated@^2.0.0-alpha.5:
-  version "2.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.0.0-alpha.5.tgz#ecbb934b9842bd60f74cc28bd5ad181fc34b1ce2"
-  integrity sha512-dSnJESUO/W1Z1lVtJxe6QQuydSIi+KEANBzrCOkD4bdwuEvAz6ulkddiqbJGVEfEgHRkAuE1cpPplswuOb+5eQ==
+react-native-reanimated@^2.0.0-alpha.6:
+  version "2.0.0-alpha.6"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.0.0-alpha.6.tgz#d3b55127e8202a12b9073c97086dfe85283c9e08"
+  integrity sha512-VlclQ4dlHM7e8F8HBgwqUQTfCNK3k+h13aL/9k/JMqx4CrUAWe2RYdsRWxurV3YrK0RYdjpM4AvmxqGvJKWuWA==
   dependencies:
     "@babel/plugin-transform-object-assign" "^7.10.4"
     fbjs "^1.0.0"

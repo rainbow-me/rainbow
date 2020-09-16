@@ -1,4 +1,4 @@
-import { addExtremesIfNeeded } from '../helpers';
+import { addExtremesIfNeeded } from '../helpers/extremesHelpers';
 
 class BSpline {
   constructor(points, degree, copy) {
@@ -182,7 +182,7 @@ export default function bSplineInterpolation(data, degree = 3) {
   const parsed = data.map(({ x, y }) => [x, y]);
   const spline = new BSpline(parsed, degree, true);
 
-  return (range, includeExtremes) => {
+  return (range, includeExtremes, removePointsSurroundingExtremes = true) => {
     const res = [];
     for (let i = 0; i < range; i++) {
       res.push(spline.calcAt(i / (range - 1)));
@@ -190,7 +190,8 @@ export default function bSplineInterpolation(data, degree = 3) {
     return addExtremesIfNeeded(
       res.map(([x, y]) => ({ x, y })),
       data,
-      includeExtremes
+      includeExtremes,
+      removePointsSurroundingExtremes
     );
   };
 }
