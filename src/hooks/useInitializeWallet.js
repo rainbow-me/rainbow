@@ -35,7 +35,8 @@ export default function useInitializeWallet() {
       color = null,
       name = null,
       shouldRunMigrations = false,
-      overwrite = false
+      overwrite = false,
+      checkedWallet = null
     ) => {
       try {
         logger.sentry('Start wallet setup');
@@ -63,6 +64,7 @@ export default function useInitializeWallet() {
           color,
           name,
           overwrite,
+          checkedWallet,
           network
         );
 

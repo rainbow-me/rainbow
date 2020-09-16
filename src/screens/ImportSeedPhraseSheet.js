@@ -133,6 +133,7 @@ export default function ImportSeedPhraseSheet() {
   const [color, setColor] = useState(null);
   const [name, setName] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [checkedWallet, setCheckedWallet] = useState(null);
   const [resolvedAddress, setResolvedAddress] = useState(null);
   const [startAnalyticsTimeout] = useTimeout();
   const wasImporting = usePrevious(isImporting);
@@ -217,7 +218,8 @@ export default function ImportSeedPhraseSheet() {
       try {
         setBusy(true);
         setTimeout(async () => {
-          const { wallet } = getWallet(input);
+          const { hdnode, isHDWallet, type, wallet } = getWallet(input);
+          setCheckedWallet({ hdnode, isHDWallet, type, wallet });
           const ens = await web3Provider.lookupAddress(wallet?.address);
           if (ens && ens !== input) {
             name = ens;
@@ -244,7 +246,14 @@ export default function ImportSeedPhraseSheet() {
         const input = resolvedAddress ? resolvedAddress : seedPhrase.trim();
         const previousWalletCount = keys(wallets).length;
 
-        initializeWallet(input, color, name ? name : '')
+        initializeWallet(
+          input,
+          color,
+          name ? name : '',
+          false,
+          false,
+          checkedWallet
+        )
           .then(success => {
             handleSetImporting(false);
             if (success) {
@@ -293,6 +302,7 @@ export default function ImportSeedPhraseSheet() {
       }, 50);
     }
   }, [
+    checkedWallet,
     color,
     isWalletEthZero,
     handleSetImporting,

@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
+import { Platform } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
+import { useAccountProfile } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
@@ -17,34 +19,41 @@ const FirstLetter = styled(Text).attrs({
   align: 'center',
   color: colors.white,
   letterSpacing: 2,
-  lineHeight: 64.5,
+  lineHeight: 66,
   size: 38,
   weight: 'semibold',
 })`
-  top: 4px;
-  width: 65.5;
+  width: 67;
 `;
 
 export default function AvatarCircle({
-  accountColor = 0,
-  accountSymbol = '🤔',
   isAvatarPickerAvailable,
   onPress,
   overlayStyles,
 }) {
-  const shadows = useMemo(
-    () => ({
-      default: [
-        [0, 2, 5, colors.dark, 0.2],
-        [0, 6, 10, colors.alpha(colors.avatarColor[accountColor], 0.6)],
-      ],
-      overlay: [
-        [0, 6, 10, colors.black, 0.08],
-        [0, 2, 5, colors.black, 0.12],
-      ],
-    }),
-    [accountColor]
-  );
+  const { accountColor, accountSymbol } = useAccountProfile();
+  const shadows =
+    Platform.OS === 'ios'
+      ? // eslint-disable-next-line react-hooks/rules-of-hooks
+        useMemo(
+          () => ({
+            default: [
+              [0, 2, 5, colors.dark, 0.2],
+              [
+                0,
+                6,
+                10,
+                colors.alpha(colors.avatarColor[accountColor || 0], 0.6),
+              ],
+            ],
+            overlay: [
+              [0, 6, 10, colors.black, 0.08],
+              [0, 2, 5, colors.black, 0.12],
+            ],
+          }),
+          [accountColor]
+        )
+      : [];
 
   return (
     <ButtonPressAnimation

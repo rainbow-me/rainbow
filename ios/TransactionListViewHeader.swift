@@ -12,6 +12,7 @@ class TransactionListViewHeader : UIView {
     @IBOutlet weak var accountDropdown: UIImageView!
     @IBOutlet weak var accountNameView: UIView!
     @IBOutlet weak var accountButton: UIButton!
+    @IBOutlet weak var accountImage: UIImageView!
     @IBOutlet weak var accountName: UILabel!
     @IBOutlet weak var addCash: UIButton!
     @IBOutlet weak var addCashLabel: UIButton!

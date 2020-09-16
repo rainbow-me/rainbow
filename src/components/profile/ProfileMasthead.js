@@ -4,6 +4,7 @@ import styled from 'styled-components/primitives';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RainbowButton } from '../buttons';
+import ImageAvatar from '../contacts/ImageAvatar';
 import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import { Centered, Column, Row, RowWithMargins } from '../layout';
@@ -60,6 +61,10 @@ const ProfileMastheadDivider = styled(Divider).attrs({
   position: absolute;
 `;
 
+const ProfileImage = styled(ImageAvatar)`
+  margin-bottom: 15;
+`;
+
 export default function ProfileMasthead({
   addCashAvailable,
   recyclerListRef,
@@ -73,6 +78,7 @@ export default function ProfileMasthead({
     accountColor,
     accountSymbol,
     accountName,
+    accountImage,
   } = useAccountProfile();
   const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
@@ -82,8 +88,8 @@ export default function ProfileMasthead({
     setTimeout(
       () => {
         navigate(Routes.AVATAR_BUILDER, {
-          accountColor: accountColor,
-          accountName: accountName,
+          initialAccountColor: accountColor,
+          initialAccountName: accountName,
         });
       },
       recyclerListRef.getCurrentScrollOffset() > 0 ? 200 : 1
@@ -132,12 +138,16 @@ export default function ProfileMasthead({
       marginBottom={24}
       marginTop={0}
     >
-      <AvatarCircle
-        accountColor={accountColor}
-        accountSymbol={accountSymbol}
-        isAvatarPickerAvailable={isAvatarPickerAvailable}
-        onPress={handlePressAvatar}
-      />
+      {accountImage ? (
+        <ProfileImage image={accountImage} size="large" />
+      ) : (
+        <AvatarCircle
+          accountColor={accountColor}
+          accountSymbol={accountSymbol}
+          isAvatarPickerAvailable={isAvatarPickerAvailable}
+          onPress={handlePressAvatar}
+        />
+      )}
       <ButtonPressAnimation onPress={handlePressChangeWallet} scaleTo={0.9}>
         <Row>
           <AccountName deviceWidth={deviceWidth}>{accountName}</AccountName>
