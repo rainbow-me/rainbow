@@ -478,7 +478,7 @@ export default function WelcomeScreen() {
     <Container>
       {traversedRainbows.map(({ source, style, id }) => (
         <RainbowImage
-          id="RainbowImage"
+          testID="RainbowImage"
           key={`rainbow${id}`}
           source={source}
           style={style}
