@@ -1,4 +1,4 @@
-import { isEmpty, throttle } from 'lodash';
+import { debounce, isEmpty } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import store from '../redux/store';
 import { multicallUpdateOutdatedListeners } from './multicall';
@@ -18,16 +18,15 @@ const updateMulticall = blockNumber => async (dispatch, getState) => {
   }
 };
 
-const debouncedUpdateMulticallListeners = blockNumber =>
-  throttle(store.dispatch(updateMulticall(blockNumber)), 8000);
+const debouncedUpdateMulticallListeners = debounce(blockNumber => {
+  store.dispatch(updateMulticall(blockNumber));
+}, 1000);
 
-export const web3ListenerInit = () => () => {
+export const web3ListenerInit = () => {
   web3Provider.pollingInterval = 10000;
-  web3Provider.on('block', blockNumber =>
-    debouncedUpdateMulticallListeners(blockNumber)
-  );
+  web3Provider.on('block', debouncedUpdateMulticallListeners);
 };
 
-export const web3ListenerStop = () => () => {
+export const web3ListenerStop = () => {
   web3Provider.removeAllListeners('block');
 };
