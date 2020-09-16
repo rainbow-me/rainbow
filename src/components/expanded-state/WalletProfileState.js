@@ -76,7 +76,7 @@ export default function WalletProfileState({
   );
 
   const [value, setValue] = useState(
-    removeFirstEmojiFromString(profile?.name).join('') || ''
+    profile?.name ? removeFirstEmojiFromString(profile.name).join('') : ''
   );
   const inputRef = useRef(null);
 
