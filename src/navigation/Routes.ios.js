@@ -272,10 +272,12 @@ function NativeStackNavigator() {
         name={Routes.CONFIRM_REQUEST}
         options={{
           allowsDragToDismiss: true,
-          backgroundOpacity: 0.99,
+          backgroundColor: '#0A0A0A',
+          backgroundOpacity: 1,
           customStack: true,
-          springDamping: 1,
-          transitionDuration: 0.25,
+          headerHeight: 0,
+          isShortFormEnabled: false,
+          topOffset: 0,
         }}
       />
       <NativeStack.Screen
