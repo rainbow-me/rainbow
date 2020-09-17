@@ -48,8 +48,8 @@ export default function ProfileScreen({ navigation }) {
         />,
         false
       );
-      return hide;
     }
+    return hide;
   }, [hide, isWalletLoading, setComponent]);
   const {
     isLoadingTransactions: isLoading,
@@ -89,7 +89,7 @@ export default function ProfileScreen({ navigation }) {
   return (
     <ProfileScreenPage>
       <Header justify="space-between">
-        <HeaderButton onPress={onPressSettings}>
+        <HeaderButton onPress={onPressSettings} testID="settings-button">
           <Icon color={colors.black} name="gear" />
         </HeaderButton>
         <BackButton

@@ -110,7 +110,12 @@ export default function WalletProfileState({
 
   return (
     <WalletProfileModal>
-      <Centered direction="column" paddingBottom={30} width="100%">
+      <Centered
+        direction="column"
+        paddingBottom={30}
+        testID="wallet-info-modal"
+        width="100%"
+      >
         {accountImage ? (
           <ProfileImage image={accountImage} size="large" />
         ) : (
@@ -126,6 +131,7 @@ export default function WalletProfileState({
           placeholder="Name your wallet"
           ref={inputRef}
           selectionColor={colors.avatarColor[color]}
+          testID="wallet-info-input"
           value={value}
         />
         {address && (
@@ -142,6 +148,7 @@ export default function WalletProfileState({
         <WalletProfileButton onPress={handleSubmit}>
           <BiometricButtonContent
             showIcon={actionType === 'Create'}
+            testID="wallet-info-submit-button"
             text={isNewProfile ? `${actionType} Wallet` : 'Done'}
           />
         </WalletProfileButton>

@@ -9,6 +9,7 @@ import React, {
   useState,
 } from 'react';
 import { Alert, InteractionManager, Platform, StatusBar } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import styled from 'styled-components/primitives';
 import ActivityIndicator from '../components/ActivityIndicator';
@@ -19,6 +20,7 @@ import LoadingOverlay from '../components/modal/LoadingOverlay';
 import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
 import { getWallet } from '../model/wallet';
+
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import {
@@ -77,6 +79,7 @@ const Spinner = styled(ActivityIndicator).attrs({
 
 const FooterButton = styled(MiniButton).attrs({
   compensateForTransformOrigin: true,
+  testID: 'import-sheet-button',
   transformOrigin: 'right',
 })``;
 
@@ -274,9 +277,10 @@ export default function ImportSeedPhraseSheet() {
                 setTimeout(() => {
                   // If it's not read only, show the backup sheet
                   if (!(isENSAddressFormat(input) || isValidAddress(input))) {
-                    Navigation.handleAction(Routes.BACKUP_SHEET, {
-                      step: WalletBackupStepTypes.imported,
-                    });
+                    IS_TESTING !== 'true' &&
+                      Navigation.handleAction(Routes.BACKUP_SHEET, {
+                        step: WalletBackupStepTypes.imported,
+                      });
                   }
                 }, 1000);
                 analytics.track('Imported seed phrase', {
@@ -312,6 +316,7 @@ export default function ImportSeedPhraseSheet() {
     isImporting,
     name,
     navigate,
+    replace,
     resolvedAddress,
     seedPhrase,
     selectedWallet.id,
@@ -319,7 +324,6 @@ export default function ImportSeedPhraseSheet() {
     startAnalyticsTimeout,
     wallets,
     wasImporting,
-    replace,
   ]);
 
   useEffect(() => {
@@ -336,7 +340,7 @@ export default function ImportSeedPhraseSheet() {
   }, [hide, isImporting, setComponent]);
 
   return (
-    <Container>
+    <Container testID="import-sheet">
       <StatusBar barStyle="light-content" />
       <Sheet>
         <SheetHandle marginBottom={7} marginTop={6} />
@@ -349,7 +353,12 @@ export default function ImportSeedPhraseSheet() {
             onChangeText={handleSetSeedPhrase}
             onFocus={handleFocus}
             onSubmitEditing={handlePressImportButton}
+            placeholder="Seed phrase, private key, Ethereum address or ENS name"
             ref={inputRef}
+            returnKeyType="done"
+            size="large"
+            spellCheck={false}
+            testID="import-sheet-input"
             value={seedPhrase}
           />
         </SecretTextAreaContainer>
@@ -367,7 +376,11 @@ export default function ImportSeedPhraseSheet() {
                     􀂍{' '}
                   </Text>
                 )}
-                <Text color="white" weight="semibold">
+                <Text
+                  color="white"
+                  testID="import-sheet-button-label"
+                  weight="semibold"
+                >
                   Import
                 </Text>
               </Row>
@@ -377,7 +390,13 @@ export default function ImportSeedPhraseSheet() {
               disabled={!isClipboardValidSecret}
               onPress={handlePressPasteButton}
             >
-              Paste
+              <Text
+                color="white"
+                testID="import-sheet-button-label"
+                weight="semibold"
+              >
+                Paste
+              </Text>
             </FooterButton>
           )}
         </Footer>

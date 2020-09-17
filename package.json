@@ -199,9 +199,10 @@
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.2",
+    "@babel/core": "^7.10.4",
     "@babel/plugin-transform-react-inline-elements": "^7.9.0",
     "@babel/plugin-transform-runtime": "^7.9.0",
+    "@babel/preset-env": "^7.10.4",
     "@babel/runtime": "^7.7.2",
     "@types/jest": "^26.0.9",
     "@types/react": "^16.9.44",
@@ -209,7 +210,7 @@
     "@types/react-test-renderer": "^16.9.3",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.1.0",
-    "babel-jest": "^24.9.0",
+    "babel-jest": "^26.1.0",
     "babel-plugin-date-fns": "^2.0.0",
     "babel-plugin-graphql-tag": "^2.5.0",
     "babel-plugin-lodash": "^3.3.4",
@@ -217,12 +218,14 @@
     "babel-plugin-rewire": "^1.2.0",
     "babel-plugin-styled-components": "^1.10.7",
     "babel-plugin-transform-remove-console": "^6.9.4",
-    "detox": "^16.5.0",
+    "detox": "^17.5.3",
+    "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
     "eslint-config-satya164": "^3.1.6",
     "eslint-import-resolver-babel-module": "^5.1.2",
     "graphql": "^15.3.0",
-    "jest": "^24.9.0",
+    "jest": "^26.1.0",
+    "jest-circus": "^26.1.0",
     "metro-react-native-babel-preset": "^0.59.0",
     "react-native-bundle-visualizer": "^2.0.1",
     "react-native-clean-project": "^3.1.0",
@@ -265,7 +268,7 @@
         "build": "xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 11 Pro"
+          "type": "iPhone 11"
         }
       },
       "ios.sim.debug": {
@@ -273,7 +276,7 @@
         "build": "xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 11 Pro"
+          "type": "iPhone 11"
         }
       },
       "android.emu.debug": {

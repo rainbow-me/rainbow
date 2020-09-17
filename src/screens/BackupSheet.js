@@ -145,6 +145,7 @@ export default function BackupSheet() {
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={goBack}
             primaryLabel="􀙶 Back up to iCloud"
+            secondaryButtonTestId="backup-sheet-imported-cancel-button"
             secondaryLabel="No thanks"
             titleText="Would you like to back up?"
             type="Imported Wallet"
@@ -187,7 +188,7 @@ export default function BackupSheet() {
       : SlackSheet;
 
   return (
-    <Column height={deviceHeight + longFormHeight}>
+    <Column height={deviceHeight + longFormHeight} testID="backup-sheet">
       <StatusBar barStyle="light-content" />
       <SheetComponent contentHeight={longFormHeight}>
         {renderStep()}

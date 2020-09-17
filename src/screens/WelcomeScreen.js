@@ -3,6 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
+import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Clock,
   Easing as REasing,
@@ -97,9 +98,10 @@ const RainbowButton = ({
   style,
   textColor,
   text,
+  ...props
 }) => {
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.9} {...props}>
       <DarkShadow style={darkShadowStyle} />
       <Shadow style={shadowStyle} />
       <ButtonContainer height={height} style={style}>
@@ -368,21 +370,30 @@ export default function WelcomeScreen() {
               toValue: 1,
             }),
           ]),
-          Animated.loop(
-            Animated.sequence([
-              Animated.timing(createWalletButtonAnimation.current, {
-                duration: 1000,
-                toValue: 1.02,
-                useNativeDriver: true,
-              }),
-              Animated.timing(createWalletButtonAnimation.current, {
-                duration: 1000,
-                toValue: 0.98,
-                useNativeDriver: true,
-              }),
-            ])
-          ),
+          // We need to disable looping animations
+          // There's no way to disable sync yet
+          // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
+          IS_TESTING !== 'true' &&
+            Animated.loop(
+              Animated.sequence([
+                Animated.timing(createWalletButtonAnimation.current, {
+                  duration: 1000,
+                  toValue: 1.02,
+                  useNativeDriver: true,
+                }),
+                Animated.timing(createWalletButtonAnimation.current, {
+                  duration: 1000,
+                  toValue: 0.98,
+                  useNativeDriver: true,
+                }),
+              ])
+            ),
         ]).start();
+        if (IS_TESTING === 'true') {
+          logger.log(
+            'Disabled loop animations in WelcomeScreen due to .env var IS_TESTING === "true"'
+          );
+        }
       }
     };
     initialize();
@@ -476,7 +487,7 @@ export default function WelcomeScreen() {
   }, [rValue]);
 
   return (
-    <Container>
+    <Container testID="welcome-screen">
       {traversedRainbows.map(({ source, style, id }) => (
         <RainbowImage key={`rainbow${id}`} source={source} style={style} />
       ))}
@@ -489,7 +500,7 @@ export default function WelcomeScreen() {
         <ButtonWrapper style={buttonStyle}>
           <RainbowButton
             onPress={onCreateWallet}
-            testID="create-wallet-button"
+            testID="new-wallet-button"
             {...createWalletButtonProps}
           />
         </ButtonWrapper>
@@ -497,6 +508,7 @@ export default function WelcomeScreen() {
           <RainbowButton
             onPress={showRestoreSheet}
             {...existingWalletButtonProps}
+            testID="already-have-wallet-button"
           />
         </ButtonWrapper>
       </ContentWrapper>

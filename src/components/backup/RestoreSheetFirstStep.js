@@ -125,7 +125,12 @@ export default function RestoreSheetFirstStep({
           <Divider color={colors.rowDividerExtraLight} inset={[0, 30]} />
         </React.Fragment>
       )}
-      <SheetRow as={ButtonPressAnimation} onPress={onManualRestore}>
+      <SheetRow
+        as={ButtonPressAnimation}
+        onPress={onManualRestore}
+        scaleTo={0.9}
+        testID="restore-with-key-button"
+      >
         <Column>
           <TextIcon color={colors.purple}>􀑚</TextIcon>
           <TitleRow justify="space-between" width="100%">
@@ -143,6 +148,7 @@ export default function RestoreSheetFirstStep({
         as={ButtonPressAnimation}
         onPress={onWatchAddress}
         scaleTo={0.9}
+        testID="watch-address-button"
       >
         <Column>
           <TextIcon color={colors.mintDark}>􀒒</TextIcon>

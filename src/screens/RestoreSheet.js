@@ -38,7 +38,7 @@ export default function RestoreSheet() {
   return (
     <Column height={deviceHeight + longFormHeight}>
       <StatusBar barStyle="light-content" />
-      <SlackSheet contentHeight={longFormHeight}>
+      <SlackSheet contentHeight={longFormHeight} testID="restore-sheet">
         {step === WalletBackupStepTypes.cloud ? (
           <RestoreIcloudStep userData={userData} />
         ) : (

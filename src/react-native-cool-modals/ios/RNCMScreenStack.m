@@ -317,7 +317,7 @@
   };
 
   UIViewController* presentedViewController = changeRootController.presentedViewController;
-  if (![presentedViewController isKindOfClass:[RNCMScreen class]] && presentedViewController != nil && [presentedViewController.view isKindOfClass:[RNCMScreenView class]]) {
+  if (![presentedViewController isKindOfClass:[RNCMScreen class]] && presentedViewController != nil && presentedViewController.view != nil && [presentedViewController.view isKindOfClass:[RNCMScreenView class]]) {
     RNCMScreenView* view = (RNCMScreenView*) presentedViewController.view;
     presentedViewController = view.controller;
   }
