@@ -2,23 +2,15 @@ import React from 'react';
 import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
 import { RowWithMargins } from '../layout';
-import { Emoji, Text } from '../text';
-
-const MaxButtonEmoji = styled(Emoji).attrs({
-  lineHeight: 'none',
-  name: 'moneybag',
-  size: 'lmedium',
-})`
-  margin-top: 0.5;
-`;
+import { Text } from '../text';
 
 const MaxButtonLabel = styled(Text).attrs({
   align: 'center',
   color: 'appleBlue',
   size: 'lmedium',
-  weight: 'semibold',
+  weight: 'bold',
 })`
-  margin-top: 1;
+  margin-top: 3;
 `;
 
 export default function ExchangeMaxButton({ disabled, onPress }) {
@@ -28,10 +20,9 @@ export default function ExchangeMaxButton({ disabled, onPress }) {
         align="center"
         height={32}
         margin={0}
-        paddingHorizontal={15}
+        paddingHorizontal={19}
       >
-        <MaxButtonEmoji />
-        <MaxButtonLabel>Max</MaxButtonLabel>
+        <MaxButtonLabel>􀜍 Max</MaxButtonLabel>
       </RowWithMargins>
     </ButtonPressAnimation>
   );

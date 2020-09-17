@@ -47,8 +47,6 @@ import { colors, position } from '@rainbow-me/styles';
 import { backgroundTask, isNewValueForPath } from '@rainbow-me/utils';
 import logger from 'logger';
 
-export const exchangeModalBorderRadius = 30;
-
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(FloatingPanels);
 
 export default function ExchangeModal({
@@ -496,6 +494,7 @@ export default function ExchangeModal({
       >
         <AnimatedFloatingPanels
           margin={0}
+          paddingTop={24}
           style={{
             opacity:
               Platform.OS === 'android'
@@ -522,9 +521,9 @@ export default function ExchangeModal({
           }}
         >
           <FloatingPanel
-            overflow="hidden"
+            overflow="visible"
             paddingBottom={showOutputField ? 0 : 26}
-            radius={exchangeModalBorderRadius}
+            radius={39}
           >
             <ExchangeModalHeader
               onPressDetails={navigateToSwapDetailsModal}
@@ -532,6 +531,7 @@ export default function ExchangeModal({
               title={inputHeaderTitle}
             />
             <ExchangeInputField
+              asset={inputCurrency}
               disableInputCurrencySelection={isWithdrawal}
               inputAmount={inputAmountDisplay}
               inputCurrencyAddress={get(inputCurrency, 'address', null)}
@@ -548,6 +548,7 @@ export default function ExchangeModal({
             />
             {showOutputField && (
               <ExchangeOutputField
+                asset={outputCurrency}
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
                 outputAmount={outputAmountDisplay}
@@ -584,9 +585,9 @@ export default function ExchangeModal({
                   type={type}
                 />
               </Centered>
-              <GasSpeedButton type={type} />
             </Fragment>
           )}
+          <GasSpeedButton type={type} />
         </AnimatedFloatingPanels>
       </Centered>
     </KeyboardFixedOpenLayout>
