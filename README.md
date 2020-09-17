@@ -26,13 +26,15 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 
 4. Run `yarn nodeify`.
 
-5. Install required Pods by running `yarn install-pods`.
+5. Run `yarn install-bundle`.
 
-6. Run `yarn ios` to build the project for XCode.
+6. Install required Pods by running `yarn install-pods`.
 
-7. Open `rainbow-wallet/ios/RainbowWallet.xcworkspace`.
+7. Run `yarn ios` to build the project for XCode.
 
-8. Run the project by clicking the play button.
+8. Open `rainbow-wallet/ios/RainbowWallet.xcworkspace`.
+
+9. Run the project by clicking the play button.
 
 ## CodePush
 
