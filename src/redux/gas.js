@@ -94,7 +94,6 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
             fast: Number(etherscanGasPrices.FastGasPrice),
             safeLow: Number(etherscanGasPrices.SafeGasPrice),
           };
-          throw new Error('fake news');
           // Add gas estimates
           data = await etherscanGetGasEstimates(priceData);
         } catch (e) {
