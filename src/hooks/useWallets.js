@@ -1,25 +1,47 @@
-import { useSelector } from 'react-redux';
-import WalletTypes from '../helpers/walletTypes';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { createSelector } from 'reselect';
+import { findLatestBackUp } from '../model/backup';
+import { setIsWalletLoading as rawSetIsWalletLoading } from '../redux/wallets';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
 
-export default function useWallets() {
-  const {
-    isCreatingAccount,
+const walletSelector = createSelector(
+  ({ wallets: { isWalletLoading, selected = {}, walletNames, wallets } }) => ({
+    isWalletLoading,
+    selectedWallet: selected,
+    walletNames,
+    wallets,
+  }),
+  ({ isWalletLoading, selectedWallet, walletNames, wallets }) => ({
+    isWalletLoading,
+    latestBackup: findLatestBackUp(wallets) || false,
     selectedWallet,
     walletNames,
     wallets,
-  } = useSelector(
-    ({ wallets: { isCreatingAccount, selected, walletNames, wallets } }) => ({
-      isCreatingAccount,
-      selectedWallet: selected || {},
-      walletNames,
-      wallets,
-    })
+  })
+);
+
+export default function useWallets() {
+  const dispatch = useDispatch();
+  const {
+    isWalletLoading,
+    latestBackup,
+    selectedWallet,
+    walletNames,
+    wallets,
+  } = useSelector(walletSelector);
+
+  const setIsWalletLoading = useCallback(
+    isLoading => dispatch(rawSetIsWalletLoading(isLoading)),
+    [dispatch]
   );
 
   return {
-    isCreatingAccount,
     isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
+    isWalletLoading,
+    latestBackup,
     selectedWallet,
+    setIsWalletLoading,
     walletNames,
     wallets,
   };

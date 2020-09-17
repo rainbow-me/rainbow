@@ -43,6 +43,7 @@ export function useNavigation() {
     (...args) => navigate(oldNavigate, ...args),
     [oldNavigate]
   );
+
   return {
     navigate: enhancedNavigate,
     ...rest,

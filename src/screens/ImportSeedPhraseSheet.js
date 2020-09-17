@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
+import { keys } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -7,22 +8,27 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, Platform, StatusBar } from 'react-native';
+import { Alert, InteractionManager, Platform, StatusBar } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import styled from 'styled-components/primitives';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { MiniButton } from '../components/buttons';
 import { Input } from '../components/inputs';
 import { Centered, Column, Row } from '../components/layout';
-import { LoadingOverlay } from '../components/modal';
+import LoadingOverlay from '../components/modal/LoadingOverlay';
 import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
-import { web3Provider } from '../handlers/web3';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-import { isENSAddressFormat, isValidWallet } from '../helpers/validators';
 import { getWallet } from '../model/wallet';
-import { useNavigation } from '../navigation/Navigation';
-import { sheetVerticalOffset } from '../navigation/effects';
+
+import { web3Provider } from '@rainbow-me/handlers/web3';
+import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import {
+  isENSAddressFormat,
+  isValidWallet,
+} from '@rainbow-me/helpers/validators';
+import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
+import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import {
   useAccountSettings,
   useClipboard,
@@ -32,7 +38,10 @@ import {
   useMagicAutofocus,
   usePrevious,
   useTimeout,
+  useWallets,
 } from '@rainbow-me/hooks';
+import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
 import { borders, colors, padding } from '@rainbow-me/styles';
 import logger from 'logger';
@@ -70,6 +79,7 @@ const Spinner = styled(ActivityIndicator).attrs({
 
 const FooterButton = styled(MiniButton).attrs({
   compensateForTransformOrigin: true,
+  testID: 'import-sheet-button',
   transformOrigin: 'right',
 })``;
 
@@ -115,11 +125,12 @@ const Sheet = styled(Column).attrs({
 
 export default function ImportSeedPhraseSheet() {
   const { accountAddress } = useAccountSettings();
+  const { selectedWallet, wallets } = useWallets();
   const { clipboard } = useClipboard();
   const { isSmallPhone } = useDimensions();
-  const { navigate, setParams } = useNavigation();
+  const { goBack, navigate, replace, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
-  const hadPreviousAddressWithValue = useIsWalletEthZero();
+  const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
   const [color, setColor] = useState(null);
@@ -129,6 +140,7 @@ export default function ImportSeedPhraseSheet() {
   const [resolvedAddress, setResolvedAddress] = useState(null);
   const [startAnalyticsTimeout] = useTimeout();
   const wasImporting = usePrevious(isImporting);
+  const { setComponent, hide } = usePortal();
 
   const inputRef = useRef(null);
   const { handleFocus } = useMagicAutofocus(inputRef);
@@ -231,24 +243,12 @@ export default function ImportSeedPhraseSheet() {
     }
   }, [clipboard, handleSetSeedPhrase, isClipboardValidSecret]);
 
-  const { setComponent, hide } = usePortal();
-  useEffect(() => {
-    if (isImporting) {
-      setComponent(
-        <LoadingOverlay
-          paddingTop={keyboardVerticalOffset}
-          title="Importing..."
-        />,
-        true
-      );
-      return hide;
-    }
-  }, [hide, isImporting, setComponent]);
-
   useEffect(() => {
     if (!wasImporting && isImporting) {
       startAnalyticsTimeout(async () => {
         const input = resolvedAddress ? resolvedAddress : seedPhrase.trim();
+        const previousWalletCount = keys(wallets).length;
+
         initializeWallet(
           input,
           color,
@@ -260,14 +260,32 @@ export default function ImportSeedPhraseSheet() {
           .then(success => {
             handleSetImporting(false);
             if (success) {
-              setTimeout(() => {
-                navigate(Routes.WALLET_SCREEN);
-              }, 300);
-              if (Platform.OS === 'android') {
-                hide();
-              }
-              analytics.track('Imported seed phrase', {
-                hadPreviousAddressWithValue,
+              goBack();
+              InteractionManager.runAfterInteractions(async () => {
+                if (previousWalletCount === 0) {
+                  replace(Routes.SWIPE_LAYOUT, {
+                    params: { initialized: true },
+                    screen: Routes.WALLET_SCREEN,
+                  });
+                } else {
+                  navigate(Routes.WALLET_SCREEN, { initialized: true });
+                }
+                if (Platform.OS === 'android') {
+                  hide();
+                }
+
+                setTimeout(() => {
+                  // If it's not read only, show the backup sheet
+                  if (!(isENSAddressFormat(input) || isValidAddress(input))) {
+                    IS_TESTING !== 'true' &&
+                      Navigation.handleAction(Routes.BACKUP_SHEET, {
+                        step: WalletBackupStepTypes.imported,
+                      });
+                  }
+                }, 1000);
+                analytics.track('Imported seed phrase', {
+                  isWalletEthZero,
+                });
               });
             } else {
               // Wait for error messages then refocus
@@ -290,21 +308,39 @@ export default function ImportSeedPhraseSheet() {
   }, [
     checkedWallet,
     color,
-    hadPreviousAddressWithValue,
+    isWalletEthZero,
     handleSetImporting,
     hide,
+    goBack,
     initializeWallet,
     isImporting,
     name,
     navigate,
+    replace,
     resolvedAddress,
     seedPhrase,
+    selectedWallet.id,
+    selectedWallet.type,
     startAnalyticsTimeout,
+    wallets,
     wasImporting,
   ]);
 
+  useEffect(() => {
+    if (isImporting) {
+      setComponent(
+        <LoadingOverlay
+          paddingTop={keyboardVerticalOffset}
+          title={walletLoadingStates.IMPORTING_WALLET}
+        />,
+        true
+      );
+      return hide;
+    }
+  }, [hide, isImporting, setComponent]);
+
   return (
-    <Container>
+    <Container testID="import-sheet">
       <StatusBar barStyle="light-content" />
       <Sheet>
         <SheetHandle marginBottom={7} marginTop={6} />
@@ -317,7 +353,12 @@ export default function ImportSeedPhraseSheet() {
             onChangeText={handleSetSeedPhrase}
             onFocus={handleFocus}
             onSubmitEditing={handlePressImportButton}
+            placeholder="Seed phrase, private key, Ethereum address or ENS name"
             ref={inputRef}
+            returnKeyType="done"
+            size="large"
+            spellCheck={false}
+            testID="import-sheet-input"
             value={seedPhrase}
           />
         </SecretTextAreaContainer>
@@ -335,7 +376,11 @@ export default function ImportSeedPhraseSheet() {
                     􀂍{' '}
                   </Text>
                 )}
-                <Text color="white" weight="semibold">
+                <Text
+                  color="white"
+                  testID="import-sheet-button-label"
+                  weight="semibold"
+                >
                   Import
                 </Text>
               </Row>
@@ -345,7 +390,13 @@ export default function ImportSeedPhraseSheet() {
               disabled={!isClipboardValidSecret}
               onPress={handlePressPasteButton}
             >
-              Paste
+              <Text
+                color="white"
+                testID="import-sheet-button-label"
+                weight="semibold"
+              >
+                Paste
+              </Text>
             </FooterButton>
           )}
         </Footer>

@@ -1,5 +1,4 @@
 import { isArray, isString, pick } from 'lodash';
-import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../../animations';
@@ -34,93 +33,68 @@ const Container = styled(Centered)`
   ${({ showShadow }) => (showShadow ? shadowStyles : '')}
   ${({ size }) => padding(...ButtonSizeTypes[size].padding)}
   background-color: ${({ backgroundColor }) => backgroundColor};
-  border-radius: ${({ type }) => (type === 'rounded' ? 14 : 50)};
+  border-radius: ${({ borderRadius }) => borderRadius};
   flex-grow: 0;
 `;
 
 const shouldRenderChildrenAsText = children =>
   isArray(children) ? isString(children[0]) : isString(children);
 
-const Button = ({
-  backgroundColor,
+export default function Button({
+  backgroundColor = colors.grey,
   borderColor,
   borderOpacity,
   borderWidth,
   children,
-  color,
+  color = colors.white,
   containerStyles,
   disabled,
   onPress,
-  showShadow,
-  size,
+  showShadow = true,
+  size = 'default',
   style,
   textProps,
-  type,
+  type = ButtonShapeTypes.pill,
   ...props
-}) => (
-  <ButtonPressAnimation
-    {...pick(props, Object.keys(ButtonPressAnimation.propTypes))}
-    backgroundColor={backgroundColor}
-    disabled={disabled}
-    onPress={onPress}
-    style={[props.style, { borderRadius: type === 'rounded' ? 14 : 50 }]}
-  >
-    <Container
-      {...props}
-      backgroundColor={backgroundColor}
-      css={containerStyles}
-      showShadow={showShadow}
-      size={size}
-      style={style}
-      type={type}
+}) {
+  const borderRadius = type === 'rounded' ? 14 : 50;
+
+  return (
+    <ButtonPressAnimation
+      {...pick(props, Object.keys(ButtonPressAnimation.propTypes))}
+      disabled={disabled}
+      onPress={onPress}
     >
-      {shouldRenderChildrenAsText(children) ? (
-        <Text
-          color={color}
-          size={ButtonSizeTypes[size].fontSize}
-          weight="semibold"
-          {...textProps}
-        >
-          {children}
-        </Text>
-      ) : (
-        children
-      )}
-      {(!onPress || !disabled) && (
-        <InnerBorder
-          color={borderColor}
-          opacity={borderOpacity}
-          radius={type === 'rounded' ? 14 : 50}
-          width={borderWidth}
-        />
-      )}
-    </Container>
-  </ButtonPressAnimation>
-);
-
-Button.propTypes = {
-  backgroundColor: PropTypes.string,
-  borderColor: PropTypes.string,
-  borderOpacity: PropTypes.string,
-  borderWidth: PropTypes.number,
-  children: PropTypes.node.isRequired,
-  color: PropTypes.string,
-  containerStyles: PropTypes.string,
-  disabled: PropTypes.bool,
-  onPress: PropTypes.func,
-  showShadow: PropTypes.bool,
-  size: PropTypes.oneOf(Object.keys(ButtonSizeTypes)),
-  style: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
-  textProps: PropTypes.object,
-  type: PropTypes.oneOf(Object.keys(ButtonShapeTypes)),
-};
-
-Button.defaultProps = {
-  backgroundColor: colors.grey,
-  color: colors.white,
-  showShadow: true,
-  size: 'default',
-  type: ButtonShapeTypes.pill,
-};
-
-export default Button;
+      <Container
+        {...props}
+        backgroundColor={backgroundColor}
+        borderRadius={borderRadius}
+        css={containerStyles}
+        showShadow={showShadow}
+        size={size}
+        style={style}
+      >
+        {shouldRenderChildrenAsText(children) ? (
+          <Text
+            color={color}
+            size={ButtonSizeTypes[size].fontSize}
+            weight="semibold"
+            {...textProps}
+          >
+            {children}
+          </Text>
+        ) : (
+          children
+        )}
+        {(!onPress || !disabled) && (
+          <InnerBorder
+            color={borderColor}
+            opacity={borderOpacity}
+            radius={borderRadius}
+            width={borderWidth}
+          />
+        )}
+      </Container>
+    </ButtonPressAnimation>
+  );
+}

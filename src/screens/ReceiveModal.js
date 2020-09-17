@@ -77,7 +77,7 @@ export default function ReceiveModal() {
   }, []);
 
   return (
-    <Container>
+    <Container testID="receive-modal">
       <TouchableBackdrop onPress={goBack} />
       <Handle />
       <ColumnWithMargins align="center" margin={24}>

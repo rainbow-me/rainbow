@@ -1,15 +1,18 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
-import { useDimensions } from '../../hooks';
+import { useMemoOne } from 'use-memo-one';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, {
   SheetHandleFixedToTopHeight,
 } from './SheetHandleFixedToTop';
+import { useDimensions } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
 
-const Container = styled(Centered).attrs({ direction: 'column' })`
+const Container = styled(Centered).attrs({
+  justify: 'end',
+})`
   background-color: ${({ backgroundColor }) => backgroundColor};
   bottom: 0;
   left: 0;
@@ -18,10 +21,12 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   right: 0;
 `;
 
-const Content = styled(ScrollView)`
-  background-color: ${({ backgroundColor }) => backgroundColor};
+const Content = styled(ScrollView).attrs({
+  directionalLockEnabled: true,
+})`
   ${({ contentHeight, deviceHeight }) =>
     contentHeight ? `height: ${deviceHeight + contentHeight}` : null};
+  background-color: ${({ backgroundColor }) => backgroundColor};
   padding-top: ${SheetHandleFixedToTopHeight};
   width: 100%;
 `;
@@ -36,6 +41,7 @@ const Whitespace = styled.View`
 export default function SlackSheet({
   backgroundColor = colors.white,
   borderRadius = 30,
+  bottomInset,
   children,
   contentHeight,
   hideHandle = false,
@@ -44,35 +50,33 @@ export default function SlackSheet({
 }) {
   const { height: deviceHeight } = useDimensions();
   const insets = useSafeArea();
-  const bottomInset = useMemo(
-    () => (insets.bottom || scrollEnabled ? 42 : 30),
-    [insets.bottom, scrollEnabled]
-  );
+  const contentBottomInset = bottomInset || insets.bottom || 30;
 
-  const contentContainerStyle = useMemo(
+  const contentContainerStyle = useMemoOne(
     () => ({
-      paddingBottom: bottomInset,
+      flexGrow: 1,
+      flexShrink: 0,
+      paddingBottom: contentBottomInset,
     }),
-    [bottomInset]
+    [contentBottomInset]
   );
 
-  const scrollIndicatorInsets = useMemo(
+  const scrollIndicatorInsets = useMemoOne(
     () => ({
-      bottom: bottomInset,
+      bottom: contentBottomInset,
       top: borderRadius + SheetHandleFixedToTopHeight,
     }),
-    [borderRadius, bottomInset]
+    [borderRadius, contentBottomInset]
   );
 
   return (
-    <Container backgroundColor={backgroundColor} {...props}>
+    <Container {...props} backgroundColor={backgroundColor}>
       {!hideHandle && <SheetHandleFixedToTop showBlur={scrollEnabled} />}
       <Content
         backgroundColor={backgroundColor}
-        contentContainerStyle={scrollEnabled && contentContainerStyle}
+        contentContainerStyle={contentContainerStyle}
         contentHeight={contentHeight}
         deviceHeight={deviceHeight}
-        directionalLockEnabled
         scrollEnabled={scrollEnabled}
         scrollIndicatorInsets={scrollIndicatorInsets}
       >

@@ -10,7 +10,6 @@ import RainbowButtonBackground from './RainbowButtonBackground';
 import RainbowButtonTypes from './RainbowButtonTypes';
 import { useDimensions } from '@rainbow-me/hooks';
 import { colors, position, shadow } from '@rainbow-me/styles';
-import { magicMemo } from '@rainbow-me/utils';
 
 const AddCashIcon = styled(FastImage).attrs({
   resizeMode: FastImage.resizeMode.contain,
@@ -41,7 +40,7 @@ const ButtonLabel = styled(Text).attrs(({ type }) => ({
   align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
   color: colors.white,
   letterSpacing:
-    type === RainbowButtonTypes.addCash ? 'roundedTight' : 'roundedMedium',
+    type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
   size: type === RainbowButtonTypes.small ? 'large' : 'larger',
   weight: 'bold',
 }))``;
@@ -114,11 +113,4 @@ const RainbowButton = ({
   );
 };
 
-export default magicMemo(RainbowButton, [
-  'disabled',
-  'height',
-  'label',
-  'strokeWidth',
-  'type',
-  'width',
-]);
+export default RainbowButton;

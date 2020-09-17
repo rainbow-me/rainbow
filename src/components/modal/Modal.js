@@ -12,6 +12,10 @@ const Container = styled(Centered).attrs(({ fixedToTop }) => ({
 }))`
   ${({ containerPadding }) => padding(containerPadding)};
   ${position.size('100%')};
+  shadow-color: ${colors.black};
+  shadow-offset: 0px 10px;
+  shadow-opacity: 0.5;
+  shadow-radius: 25;
 `;
 
 const Content = styled(Column).attrs({ shrink: 0 })`
@@ -19,8 +23,8 @@ const Content = styled(Column).attrs({ shrink: 0 })`
   border-radius: ${({ radius }) => radius};
   height: ${({ height }) => height};
   margin-top: ${({ fixedToTop }) => (fixedToTop ? 91 : 0)};
-  width: 100%;
   overflow: hidden;
+  width: 100%;
 `;
 
 export default function Modal({
@@ -41,7 +45,7 @@ export default function Modal({
       <Content
         {...props}
         fixedToTop={fixedToTop}
-        height={height || deviceHeight - 230}
+        height={height || deviceHeight - 220}
         radius={radius}
       />
     </Container>

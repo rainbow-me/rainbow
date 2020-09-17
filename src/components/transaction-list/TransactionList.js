@@ -80,8 +80,10 @@ export default function TransactionList({
     accountImage,
   } = useAccountProfile();
 
+  const isDamaged = selectedWallet?.damaged;
+
   const onAddCashPress = useCallback(() => {
-    if (selectedWallet?.damaged) {
+    if (isDamaged) {
       showWalletErrorAlert();
       return;
     }
@@ -90,7 +92,7 @@ export default function TransactionList({
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-  }, [navigate, selectedWallet.damaged]);
+  }, [navigate, isDamaged]);
 
   const onRemovePhoto = useCallback(async () => {
     // all this code is weak but lets ship it
@@ -179,13 +181,12 @@ export default function TransactionList({
   ]);
 
   const onReceivePress = useCallback(() => {
-    if (selectedWallet?.damaged) {
+    if (isDamaged) {
       showWalletErrorAlert();
       return;
     }
     navigate(Routes.RECEIVE_MODAL);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigate, selectedWallet?.damaged]);
+  }, [navigate, isDamaged]);
 
   const onRequestExpire = useCallback(
     e => {
@@ -287,7 +288,7 @@ export default function TransactionList({
 
   const onCopyAddressPress = useCallback(
     e => {
-      if (selectedWallet?.damaged) {
+      if (isDamaged) {
         showWalletErrorAlert();
         return;
       }
@@ -298,8 +299,7 @@ export default function TransactionList({
       }
       Clipboard.setString(accountAddress);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [accountAddress, selectedWallet?.damaged]
+    [accountAddress, isDamaged]
   );
 
   const onAccountNamePress = useCallback(() => {

@@ -1,28 +1,26 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
-import useExperimentalFlag, {
-  AVATAR_PICKER,
-} from '../../config/experimentalHooks';
-import showWalletErrorAlert from '../../helpers/support';
-import {
-  useAccountProfile,
-  useClipboard,
-  useDimensions,
-  useWallets,
-} from '../../hooks';
-import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RainbowButton } from '../buttons';
 import ImageAvatar from '../contacts/ImageAvatar';
-import { FloatingEmojis } from '../floating-emojis';
+import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
-
+import useExperimentalFlag, {
+  AVATAR_PICKER,
+} from '@rainbow-me/config/experimentalHooks';
+import showWalletErrorAlert from '@rainbow-me/helpers/support';
+import {
+  useAccountProfile,
+  useDimensions,
+  useWallets,
+} from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
@@ -73,7 +71,6 @@ export default function ProfileMasthead({
   showBottomDivider = true,
 }) {
   const { selectedWallet } = useWallets();
-  const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const {
@@ -128,6 +125,12 @@ export default function ProfileMasthead({
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
+  const handlePressCopyAddress = useCallback(() => {
+    if (selectedWallet?.damaged) {
+      showWalletErrorAlert();
+    }
+  }, [selectedWallet]);
+
   return (
     <Column
       align="center"
@@ -154,31 +157,18 @@ export default function ProfileMasthead({
         </Row>
       </ButtonPressAnimation>
       <RowWithMargins align="center" margin={19}>
-        <FloatingEmojis
-          distance={250}
-          duration={500}
-          fadeOut={false}
-          scaleTo={0}
-          size={50}
-          wiggleFactor={0}
+        <CopyFloatingEmojis
+          disabled={selectedWallet?.damaged}
+          onPress={handlePressCopyAddress}
+          textToCopy={accountAddress}
         >
-          {({ onNewEmoji }) => (
-            <ProfileAction
-              icon="copy"
-              onPress={() => {
-                if (selectedWallet?.damaged) {
-                  showWalletErrorAlert();
-                  return;
-                }
-                onNewEmoji();
-                setClipboard(accountAddress);
-              }}
-              scaleTo={0.88}
-              text="Copy Address"
-              width={127}
-            />
-          )}
-        </FloatingEmojis>
+          <ProfileAction
+            icon="copy"
+            scaleTo={0.88}
+            text="Copy Address"
+            width={127}
+          />
+        </CopyFloatingEmojis>
         <ProfileAction
           icon="qrCode"
           onPress={handlePressReceive}

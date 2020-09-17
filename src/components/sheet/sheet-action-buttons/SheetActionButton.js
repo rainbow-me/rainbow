@@ -6,12 +6,12 @@ import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { containsEmoji } from '@rainbow-me/helpers/strings';
+import { colors, position } from '@rainbow-me/styles';
 
-const Button = styled(Centered).attrs(({ size }) => ({
-  scaleTo: size === 'big' ? 0.9 : 0.96,
-}))`
-  flex: 1;
+const Button = styled(Centered).attrs({
+  scaleTo: 0.9,
+})`
   height: ${({ size }) => (size === 'big' ? 56 : 46)};
   z-index: 1;
 `;
@@ -20,7 +20,8 @@ const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 4,
 })`
-  ${padding(10, 15, 14)}
+  padding-bottom: ${({ label }) => (containsEmoji(label) ? 5.5 : 4)};
+  padding-horizontal: 19;
   z-index: 1;
 `;
 
@@ -78,7 +79,7 @@ const SheetActionButton = ({
           <InnerBorder radius={borderRadius} />
         )}
       </ShadowStack>
-      <Content size={size}>
+      <Content label={label} size={size}>
         {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
         {icon && <Icon color="white" height={18} name={icon} size={18} />}
         <Text

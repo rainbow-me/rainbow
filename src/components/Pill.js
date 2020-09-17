@@ -8,7 +8,7 @@ const borderRadius = 10.5;
 
 const Gradient = styled(RadialGradient).attrs({
   center: [0, borderRadius],
-  colors: colors.lightGreyGradient,
+  colors: colors.gradients.lightGrey,
 })`
   ${padding(2, 6)};
   border-radius: ${borderRadius};

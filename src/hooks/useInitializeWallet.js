@@ -3,35 +3,21 @@ import { isNil } from 'lodash';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
-import {
-  getKeychainIntegrityState,
-  saveKeychainIntegrityState,
-} from '../handlers/localstorage/globalSettings';
-import useHideSplashScreen from '../helpers/hideSplashScreen';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
+import { appStateUpdate } from '../redux/appState';
 import {
   settingsLoadNetwork,
   settingsUpdateAccountAddress,
 } from '../redux/settings';
-import store from '../redux/store';
-import { checkKeychainIntegrity, walletsLoadState } from '../redux/wallets';
+import { walletsLoadState } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
+import useHideSplashScreen from './useHideSplashScreen';
 import useInitializeAccountData from './useInitializeAccountData';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalData from './useLoadGlobalData';
 import useResetAccountState from './useResetAccountState';
 import logger from 'logger';
-
-const runKeychainIntegrityChecks = () => {
-  setTimeout(async () => {
-    const keychainIntegrityState = await getKeychainIntegrityState();
-    if (!keychainIntegrityState) {
-      await store.dispatch(checkKeychainIntegrity());
-      await saveKeychainIntegrityState('done');
-    }
-  }, 5000);
-};
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
@@ -58,8 +44,8 @@ export default function useInitializeWallet() {
         await resetAccountState();
         logger.sentry('resetAccountState ran ok');
 
-        const isImported = !!seedPhrase;
-        logger.sentry('isImported?', isImported);
+        const isImporting = !!seedPhrase;
+        logger.sentry('isImporting?', isImporting);
 
         if (shouldRunMigrations && !seedPhrase) {
           logger.sentry('shouldRunMigrations && !seedPhrase? => true');
@@ -78,7 +64,8 @@ export default function useInitializeWallet() {
           color,
           name,
           overwrite,
-          checkedWallet
+          checkedWallet,
+          network
         );
 
         logger.sentry('walletInit returned ', {
@@ -96,11 +83,13 @@ export default function useInitializeWallet() {
           Alert.alert(
             'Import failed due to an invalid private key. Please try again.'
           );
-          runKeychainIntegrityChecks();
+          if (!isImporting) {
+            dispatch(appStateUpdate({ walletReady: true }));
+          }
           return null;
         }
 
-        if (!(isNew || isImported)) {
+        if (!(isNew || isImporting)) {
           await loadGlobalData();
           logger.sentry('loaded global data...');
         }
@@ -108,7 +97,7 @@ export default function useInitializeWallet() {
         await dispatch(settingsUpdateAccountAddress(walletAddress));
         logger.sentry('updated settings address', walletAddress);
 
-        if (!(isNew || isImported)) {
+        if (!(isNew || isImporting)) {
           await loadAccountData(network);
           logger.sentry('loaded account data', network);
         }
@@ -116,7 +105,11 @@ export default function useInitializeWallet() {
         hideSplashScreen();
         logger.sentry('Hide splash screen');
         initializeAccountData();
-        runKeychainIntegrityChecks();
+        if (!isImporting) {
+          dispatch(appStateUpdate({ walletReady: true }));
+        }
+
+        logger.sentry('💰 Wallet initialized');
         return walletAddress;
       } catch (error) {
         logger.sentry('Error while initializing wallet');
@@ -124,7 +117,7 @@ export default function useInitializeWallet() {
         hideSplashScreen();
         captureException(error);
         Alert.alert('Something went wrong while importing. Please try again!');
-        runKeychainIntegrityChecks();
+        dispatch(appStateUpdate({ walletReady: true }));
         return null;
       }
     },

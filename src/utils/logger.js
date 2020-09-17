@@ -37,14 +37,14 @@ const Logger = {
     }
   },
   sentry(...args) {
+    if (__DEV__) {
+      console.log(...args);
+    }
     if (args.length === 1 && typeof args[0] === 'string') {
       sentryUtils.addInfoBreadcrumb.apply(null, args);
     } else {
       const safeData = safelyStringifyWithFormat(args[1]);
       sentryUtils.addDataBreadcrumb(args[0], safeData);
-    }
-    if (__DEV__) {
-      console.log(...args);
     }
   },
   warn(...args) {

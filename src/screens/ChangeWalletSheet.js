@@ -19,14 +19,15 @@ import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
 import showWalletErrorAlert from '../helpers/support';
+import WalletLoadingStates from '../helpers/walletLoadingStates';
 import WalletTypes from '../helpers/walletTypes';
 import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
+import { wipeKeychain } from '../model/keychain';
 import { createWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import {
   addressSetSelected,
   createAccountForWallet,
-  isCreatingAccount,
   walletsLoadState,
   walletsSetSelected,
   walletsUpdate,
@@ -86,10 +87,10 @@ const getWalletRowCount = wallets => {
 };
 
 export default function ChangeWalletSheet() {
-  const { wallets, selectedWallet } = useWallets();
+  const { selectedWallet, setIsWalletLoading, wallets } = useWallets();
   const [editMode, setEditMode] = useState(false);
 
-  const { goBack, navigate } = useNavigation();
+  const { goBack, navigate, replace } = useNavigation();
   const dispatch = useDispatch();
   const { accountAddress } = useAccountSettings();
   const initializeWallet = useInitializeWallet();
@@ -217,7 +218,7 @@ export default function ChangeWalletSheet() {
     (walletId, address, label) => {
       // If there's more than 1 account
       // it's deletable
-      let isDeletable = false;
+      let isLastAvailableWallet = false;
       for (let i = 0; i < Object.keys(wallets).length; i++) {
         const key = Object.keys(wallets)[i];
         const someWallet = wallets[key];
@@ -225,21 +226,19 @@ export default function ChangeWalletSheet() {
           account => account.visible && account.address !== address
         );
         if (otherAccount) {
-          isDeletable = true;
+          isLastAvailableWallet = true;
           break;
         }
       }
 
       const buttons = ['Edit Wallet'];
-      if (isDeletable) {
-        buttons.push('Delete Wallet');
-      }
+      buttons.push('Delete Wallet');
       buttons.push('Cancel');
 
       showActionSheetWithOptions(
         {
-          cancelButtonIndex: isDeletable ? 2 : 1,
-          destructiveButtonIndex: isDeletable ? 1 : null,
+          cancelButtonIndex: 2,
+          destructiveButtonIndex: 1,
           options: buttons,
           title: `${label || abbreviations.address(address, 4, 6)}`,
         },
@@ -247,7 +246,7 @@ export default function ChangeWalletSheet() {
           if (buttonIndex === 0) {
             // Edit wallet
             renameWallet(walletId, address);
-          } else if (isDeletable && buttonIndex === 1) {
+          } else if (buttonIndex === 1) {
             // Delete wallet with confirmation
             showActionSheetWithOptions(
               {
@@ -260,20 +259,27 @@ export default function ChangeWalletSheet() {
                 if (buttonIndex === 0) {
                   await deleteWallet(walletId, address);
                   ReactNativeHapticFeedback.trigger('notificationSuccess');
-                  // If we're deleting the selected wallet
-                  // we need to switch to another one
-                  if (address === currentAddress) {
-                    for (let i = 0; i < Object.keys(wallets).length; i++) {
-                      const key = Object.keys(wallets)[i];
-                      const someWallet = wallets[key];
-                      const found = someWallet.addresses.find(
-                        account =>
-                          account.visible && account.address !== address
-                      );
 
-                      if (found) {
-                        await onChangeAccount(key, found.address, true);
-                        break;
+                  if (!isLastAvailableWallet) {
+                    await wipeKeychain();
+                    goBack();
+                    replace(Routes.WELCOME_SCREEN);
+                  } else {
+                    // If we're deleting the selected wallet
+                    // we need to switch to another one
+                    if (address === currentAddress) {
+                      for (let i = 0; i < Object.keys(wallets).length; i++) {
+                        const key = Object.keys(wallets)[i];
+                        const someWallet = wallets[key];
+                        const found = someWallet.addresses.find(
+                          account =>
+                            account.visible && account.address !== address
+                        );
+
+                        if (found) {
+                          await onChangeAccount(key, found.address, true);
+                          break;
+                        }
                       }
                     }
                   }
@@ -284,7 +290,15 @@ export default function ChangeWalletSheet() {
         }
       );
     },
-    [currentAddress, deleteWallet, onChangeAccount, renameWallet, wallets]
+    [
+      currentAddress,
+      deleteWallet,
+      goBack,
+      onChangeAccount,
+      renameWallet,
+      replace,
+      wallets,
+    ]
   );
 
   const onPressAddAccount = useCallback(async () => {
@@ -304,7 +318,7 @@ export default function ChangeWalletSheet() {
             isNewProfile: true,
             onCloseModal: async args => {
               if (args) {
-                dispatch(isCreatingAccount(true));
+                setIsWalletLoading(WalletLoadingStates.CREATING_ACCOUNT);
                 const name = get(args, 'name', '');
                 const color = get(args, 'color', colors.getRandomColor());
                 // Check if the selected wallet is the primary
@@ -342,8 +356,8 @@ export default function ChangeWalletSheet() {
                   });
 
                 try {
-                  // If we found it, use it to create the new account
-                  if (primaryWalletKey) {
+                  // If we found it and it's not damaged use it to create the new account
+                  if (primaryWalletKey && !wallets[primaryWalletKey].damaged) {
                     await dispatch(
                       createAccountForWallet(primaryWalletKey, color, name)
                     );
@@ -355,7 +369,6 @@ export default function ChangeWalletSheet() {
                     await initializeWallet();
                   }
                 } catch (e) {
-                  dispatch(isCreatingAccount(false));
                   logger.sentry('Error while trying to add account');
                   captureException(e);
                   if (selectedWallet.damaged) {
@@ -366,7 +379,7 @@ export default function ChangeWalletSheet() {
                 }
               }
               creatingWallet.current = false;
-              dispatch(isCreatingAccount(false));
+              setIsWalletLoading(null);
             },
             profile: {
               color: null,
@@ -377,7 +390,7 @@ export default function ChangeWalletSheet() {
         }, 50);
       });
     } catch (e) {
-      dispatch(isCreatingAccount(false));
+      setIsWalletLoading(null);
       logger.log('Error while trying to add account', e);
     }
   }, [
@@ -388,6 +401,7 @@ export default function ChangeWalletSheet() {
     selectedWallet.damaged,
     selectedWallet.id,
     selectedWallet.primary,
+    setIsWalletLoading,
     wallets,
   ]);
 

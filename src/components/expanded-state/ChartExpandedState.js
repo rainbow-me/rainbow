@@ -1,4 +1,3 @@
-import { useRoute } from '@react-navigation/native';
 import { debounce, find } from 'lodash';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -84,7 +83,6 @@ export const ChartExpandedStateSheetHeight = chartExpandedAvailable
   : heightWithNoChart;
 
 export default function ChartExpandedState({ asset }) {
-  const { params } = useRoute();
   const color = useColorForAsset(asset);
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
 
@@ -150,7 +148,10 @@ export default function ChartExpandedState({ asset }) {
   }, [throttledPoints, fetchingCharts, debouncedSetThrottledData]);
 
   return (
-    <SlackSheet contentHeight={params.longFormHeight} scrollEnabled={false}>
+    <SlackSheet
+      contentHeight={ChartExpandedStateSheetHeight}
+      scrollEnabled={false}
+    >
       <ChartPathProvider data={throttledData} enableHaptics softMargin={30}>
         <Chart
           {...chartData}

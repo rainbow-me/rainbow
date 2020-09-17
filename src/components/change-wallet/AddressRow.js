@@ -3,7 +3,6 @@ import React, { useCallback } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
-import { getFontSize } from '../../styles/fonts';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
@@ -13,7 +12,7 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { TruncatedAddress, TruncatedText } from '../text';
-import { colors, fonts } from '@rainbow-me/styles';
+import { colors, fonts, getFontSize } from '@rainbow-me/styles';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 
@@ -108,7 +107,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
     isSelected,
     isReadOnly,
     label,
-    wallet_id,
+    walletId,
   } = data;
 
   let cleanedUpBalance = balance;
@@ -122,8 +121,8 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
   }
 
   const onOptionsPress = useCallback(() => {
-    onEditWallet(wallet_id, address, cleanedUpLabel);
-  }, [address, cleanedUpLabel, onEditWallet, wallet_id]);
+    onEditWallet(walletId, address, cleanedUpLabel);
+  }, [address, cleanedUpLabel, onEditWallet, walletId]);
 
   return (
     <View style={sx.accountRow}>

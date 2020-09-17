@@ -210,6 +210,7 @@ extension UITableView {
         messageLabel.textAlignment = .center
         messageLabel.textColor = UIColor.RainbowTheme.Transactions.blueGreyDark35
         messageLabel.sizeToFit()
+        messageLabel.accessibilityIdentifier = "no-transactions-yet-label";
         paragraphStyle.alignment = .center
         paragraphStyle.lineHeightMultiple = 1.25
         
