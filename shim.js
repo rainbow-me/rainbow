@@ -47,7 +47,7 @@ if (SHORTEN_PROP_TYPES_ERROR) {
       );
       return;
     }
-    oldConsoleError.apply(this, arguments);
+    oldConsoleError?.apply(this, arguments);
   };
 }
 if (typeof __dirname === 'undefined') global.__dirname = '/';
