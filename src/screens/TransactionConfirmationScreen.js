@@ -1,4 +1,3 @@
-import { hexlify } from '@ethersproject/bytes';
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import BigNumber from 'bignumber.js';
@@ -42,8 +41,7 @@ import {
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
-import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
-
+import { estimateGas, getTransactionCount } from '../handlers/web3';
 import { isDappAuthenticated } from '../helpers/dappNameHandler';
 import {
   convertAmountToNativeDisplay,
@@ -321,7 +319,7 @@ const TransactionConfirmationScreen = () => {
       const rawGasLimit = await estimateGas(txPayload);
       logger.log('Estimated gas limit', rawGasLimit);
       if (rawGasLimit) {
-        gas = toHex(rawGasLimit);
+        gas = rawGasLimit;
       }
     } catch (error) {
       logger.log('error estimating gas', error);
@@ -402,13 +400,13 @@ const TransactionConfirmationScreen = () => {
 
     const rawGasPrice = get(gasPrices, `${gasUtils.NORMAL}.value.amount`);
     if (rawGasPrice) {
-      gasPrice = toHex(rawGasPrice);
+      gasPrice = rawGasPrice;
     }
 
     if (isNil(gas) && isNil(gasLimitFromPayload)) {
       try {
         const rawGasLimit = await estimateGas(txPayload);
-        gas = toHex(rawGasLimit);
+        gas = rawGasLimit;
       } catch (error) {
         logger.log('error estimating gas', error);
       }
@@ -416,9 +414,7 @@ const TransactionConfirmationScreen = () => {
 
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(transactionCountNonce, web3TxnCount);
-    console.log('HI - about to hexlify maxTxnCount', maxTxnCount);
-    const nonce = hexlify(maxTxnCount);
-    console.log('HI - nonce', nonce);
+    const nonce = maxTxnCount;
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
     let txPayloadLatestNonce = {
       ...txPayload,

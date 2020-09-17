@@ -27,7 +27,7 @@ import {
   UNISWAP_V2_ROUTER_ADDRESS,
 } from '../references/uniswap';
 
-import { toHex, web3Provider } from './web3';
+import { web3Provider } from './web3';
 import logger from 'logger';
 
 enum Field {
@@ -332,8 +332,8 @@ export const executeSwap = async ({
     tradeDetails,
   });
   const transactionParams = {
-    gasLimit: gasLimit ? toHex(gasLimit) : undefined,
-    gasPrice: gasPrice ? toHex(gasPrice) : undefined,
+    gasLimit: gasLimit || undefined,
+    gasPrice: gasPrice || undefined,
     ...(value ? { value } : {}),
   };
   return exchange[methodName](...updatedMethodArgs, transactionParams);

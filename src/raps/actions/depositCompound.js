@@ -1,7 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
-import { toHex } from '../../handlers/web3';
 import ProtocolTypes from '../../helpers/protocolTypes';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
@@ -65,8 +64,8 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
 
   const transactionParams = {
     gasLimit: getDepositGasLimit(inputCurrency),
-    gasPrice: gasPrice ? toHex(gasPrice) : undefined,
-    value: toHex(0),
+    gasPrice: gasPrice || undefined,
+    value: 0,
   };
 
   let deposit = null;
