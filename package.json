@@ -12,7 +12,7 @@
     "detox:android": "detox build -c android.emu.debug && detox test -c android.emu.debug --loglevel verbose",
     "detox:android:release": "detox build -c android.emu.release && detox test -c android.emu.release",
     "start": "react-native start",
-    "start:clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && react-native start -- --reset-cache",
+    "start:clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf $TMPDIR/haste-map-* && react-native start -- --reset-cache",
     "test": "jest test.js",
     "install-all": "yarn && yarn install-pods",
     "install-all-no-flipper": "yarn && yarn install-pods-no-flipper",
