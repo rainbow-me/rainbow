@@ -645,7 +645,7 @@ const TransactionConfirmationScreen = () => {
   const offset = useSharedValue(0);
   const animatedStyles = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: offset.value }],
+      transform: [{ translateY: offset.value }],
     };
   });
 
@@ -669,6 +669,7 @@ const TransactionConfirmationScreen = () => {
         backgroundColor={colors.transparent}
         borderRadius={0}
         hideHandle
+        scrollEnabled
       >
         <Column>
           <Centered

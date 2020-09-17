@@ -10,9 +10,7 @@ import SheetHandleFixedToTop, {
 import { useDimensions } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
 
-const Container = styled(Centered).attrs({
-  justify: 'end',
-})`
+const Container = styled(Centered).attrs({ direction: 'column' })`
   background-color: ${({ backgroundColor }) => backgroundColor};
   bottom: 0;
   left: 0;
@@ -44,8 +42,8 @@ export default function SlackSheet({
   bottomInset,
   children,
   contentHeight,
+  scrollEnabled,
   hideHandle = false,
-  scrollEnabled = true,
   ...props
 }) {
   const { height: deviceHeight } = useDimensions();
