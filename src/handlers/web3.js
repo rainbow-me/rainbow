@@ -1,8 +1,5 @@
 import { getAddress } from '@ethersproject/address';
-import {
-  hexlify,
-  isHexString as isEthersHexString,
-} from '@ethersproject/bytes';
+import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import {
   isValidMnemonic as ethersIsValidMnemonic,
   mnemonicToSeed as ethersMnemonicToSeed,
@@ -100,14 +97,6 @@ export const toChecksumAddress = address => {
 };
 
 /**
- * @desc convert to hex representation
- * @param  {String|Number} value
- * @return {String} hex value
- */
-// TODO JIN - gotta check where this is used
-export const toHex = value => hexlify(value);
-
-/**
  * @desc estimate gas limit
  * @param  {String} address
  * @return {String} gas limit
@@ -148,20 +137,16 @@ export const getTxDetails = async transaction => {
   const { from, to } = transaction;
   const data = transaction.data ? transaction.data : '0x';
   const value = transaction.amount ? toWei(transaction.amount) : '0x00';
-  const gasLimit = transaction.gasLimit
-    ? toHex(transaction.gasLimit)
-    : undefined;
-  const gasPrice = transaction.gasPrice
-    ? toHex(transaction.gasPrice)
-    : undefined;
+  const gasLimit = transaction.gasLimit || undefined;
+  const gasPrice = transaction.gasPrice || undefined;
   const nonce = await getTransactionCount(from);
   const tx = {
     data,
     gasLimit,
     gasPrice,
-    nonce: toHex(nonce),
+    nonce,
     to,
-    value: toHex(value),
+    value,
   };
   return tx;
 };
