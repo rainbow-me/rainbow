@@ -10,16 +10,16 @@ import GasSpeedLabelPagerItem, {
 const speedColors = [
   colors.white,
   colors.white,
-  colors.green,
-  colors.strongPurple,
+  colors.white,
+  colors.darkModeColors.purple,
 ];
 
 const PagerItem = styled(Row)`
   width: ${({ selected }) => (selected ? '4' : '3')}px;
   height: 3px;
   border-radius: 2px;
-  margin-left: 2.5px;
-  margin-right: 0.5px;
+  margin-left: ${({ selected }) => (selected ? '2' : '2.5')}px;
+  margin-right: ${({ selected }) => (selected ? '0' : '0.5')}px;
 `;
 
 const GasSpeedLabelPager = ({ label, theme, showPager = true }) => {
