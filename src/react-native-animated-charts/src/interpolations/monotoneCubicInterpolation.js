@@ -1,6 +1,11 @@
 import { addExtremesIfNeeded } from '../helpers/extremesHelpers';
 
-export default function monotoneCubicInterpolation(data) {
+export default function monotoneCubicInterpolation({
+  data,
+  range,
+  includeExtremes = false,
+  removePointsSurroundingExtremes = true,
+}) {
   if (!data || data.length === 0) {
     return () => [];
   }
@@ -104,44 +109,42 @@ export default function monotoneCubicInterpolation(data) {
   const _y = y.slice(0, n);
   const _m = m;
 
-  return (range, includeExtremes, removePointsSurroundingExtremes = true) => {
-    const firstValue = _x[0];
-    const lastValue = _x[_x.length - 1];
-    const res = [];
-    for (let j = 0; j < range; j++) {
-      const interpolatedValue =
-        firstValue + (lastValue - firstValue) * (j / (range - 1));
+  const firstValue = _x[0];
+  const lastValue = _x[_x.length - 1];
+  const res = [];
+  for (let j = 0; j < range; j++) {
+    const interpolatedValue =
+      firstValue + (lastValue - firstValue) * (j / (range - 1));
 
-      let h, h00, h01, h10, h11, i, t, t2, t3, y, _ref;
+    let h, h00, h01, h10, h11, i, t, t2, t3, y, _ref;
 
-      for (
-        i = _ref = _x.length - 2;
-        _ref <= 0 ? i <= 0 : i >= 0;
-        _ref <= 0 ? (i += 1) : (i -= 1)
-      ) {
-        if (_x[i] <= interpolatedValue) {
-          break;
-        }
+    for (
+      i = _ref = _x.length - 2;
+      _ref <= 0 ? i <= 0 : i >= 0;
+      _ref <= 0 ? (i += 1) : (i -= 1)
+    ) {
+      if (_x[i] <= interpolatedValue) {
+        break;
       }
-
-      h = _x[i + 1] - _x[i];
-      t = (interpolatedValue - _x[i]) / h;
-      t2 = Math.pow(t, 2);
-      t3 = Math.pow(t, 3);
-      h00 = 2 * t3 - 3 * t2 + 1;
-      h10 = t3 - 2 * t2 + t;
-      h01 = -2 * t3 + 3 * t2;
-      h11 = t3 - t2;
-      y = h00 * _y[i] + h10 * h * _m[i] + h01 * _y[i + 1] + h11 * h * _m[i + 1];
-
-      res.push({ x: interpolatedValue, y });
     }
 
-    return addExtremesIfNeeded(
-      res,
-      data,
-      includeExtremes,
-      removePointsSurroundingExtremes
-    );
-  };
+    h = _x[i + 1] - _x[i];
+    t = (interpolatedValue - _x[i]) / h;
+    t2 = Math.pow(t, 2);
+    t3 = Math.pow(t, 3);
+    h00 = 2 * t3 - 3 * t2 + 1;
+    h10 = t3 - 2 * t2 + t;
+    h01 = -2 * t3 + 3 * t2;
+    h11 = t3 - t2;
+    y = h00 * _y[i] + h10 * h * _m[i] + h01 * _y[i + 1] + h11 * h * _m[i + 1];
+
+    res.push({ x: interpolatedValue, y });
+  }
+
+  return addExtremesIfNeeded(
+    res,
+    data,
+    includeExtremes,
+    removePointsSurroundingExtremes
+  );
 }

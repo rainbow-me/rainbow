@@ -47,10 +47,10 @@ export const formatDatetime = value => {
 
 function GenericExample() {
   const [
-    disableSmoothingWhileTransitioning,
-    setDisableSmoothingWhileTransitioning,
+    smoothingWhileTransitioningEnabled,
+    setSmoothingWhileTransitioningEnabled,
   ] = useState(false);
-  const [enableHaptics, setEnableHaptics] = useState(false);
+  const [hapticsEnabled, setHapticsEnabled] = useState(false);
   const [data, setData] = useState({points: data1});
   const [dataSource, setDataSource] = useState(1);
   const [simplifying, setSimplifying] = useState(false);
@@ -63,7 +63,7 @@ function GenericExample() {
   const [bSplineDegree, setBSplineDegree] = useState(3);
   const [smoothingStrategy, setSmoothingStrategy] = useState('none');
   const [smoothingFactor, setSmoothingFactor] = useState(0.05);
-  const [softMargin, setSoftMargin] = useState(30);
+  const [hitSlop, setHitSlop] = useState(30);
 
   useEffect(() => {
     const rawData = dataSource === 1 ? data1 : data2;
@@ -76,14 +76,16 @@ function GenericExample() {
         case 'none':
           return simplifiedData;
         case 'b':
-          return bSplineInterpolation(
-            simplifiedData,
-            bSplineDegree
-          )(numberOfPointsInterpolated);
+          return bSplineInterpolation({
+            data: simplifiedData,
+            degree: bSplineDegree,
+            range: numberOfPointsInterpolated
+          });
         case 'mono':
-          return monotoneCubicInterpolation(simplifiedData)(
-            numberOfPointsInterpolated
-          );
+          return monotoneCubicInterpolation({
+            data: simplifiedData,
+            range: numberOfPointsInterpolated
+          });
       }
     })();
     const data = {
@@ -113,13 +115,12 @@ function GenericExample() {
         {/*<Text style={{color: 'white', fontWeight: 'bold'}}>*/}
         {/*  Generic Example (swipe right for a real-life example)*/}
         {/*</Text>*/}
-        <ChartPathProvider
-          data={data}
-          enableHaptics={enableHaptics}
-          softMargin={softMargin}>
+        <ChartPathProvider data={data}>
           <ChartPath
-            disableSmoothingWhileTransitioning={
-              disableSmoothingWhileTransitioning
+            hapticsEnabled={hapticsEnabled}
+            hitSlop={hitSlop}
+            smoothingWhileTransitioningEnabled={
+              smoothingWhileTransitioningEnabled
             }
             fill="none"
             height={SIZE / 2}
@@ -143,18 +144,18 @@ function GenericExample() {
         </ChartPathProvider>
         <Text style={{color: 'white', fontWeight: 'bold'}}>Haptics:</Text>
         <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-          <TouchableOpacity onPress={() => setEnableHaptics(true)}>
+          <TouchableOpacity onPress={() => setHapticsEnabled(true)}>
             <Text
               style={{
-                color: enableHaptics ? 'lightgreen' : 'white',
+                color: hapticsEnabled ? 'lightgreen' : 'white',
               }}>
               Yes
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setEnableHaptics(false)}>
+          <TouchableOpacity onPress={() => setHapticsEnabled(false)}>
             <Text
               style={{
-                color: !enableHaptics ? 'lightgreen' : 'white',
+                color: !hapticsEnabled ? 'lightgreen' : 'white',
               }}>
               No
             </Text>
@@ -165,10 +166,10 @@ function GenericExample() {
         </Text>
         <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
           <TouchableOpacity
-            onPress={() => setDisableSmoothingWhileTransitioning(true)}>
+            onPress={() => setSmoothingWhileTransitioningEnabled(true)}>
             <Text
               style={{
-                color: disableSmoothingWhileTransitioning
+                color: smoothingWhileTransitioningEnabled
                   ? 'lightgreen'
                   : 'white',
               }}>
@@ -176,10 +177,10 @@ function GenericExample() {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => setDisableSmoothingWhileTransitioning(false)}>
+            onPress={() => setSmoothingWhileTransitioningEnabled(false)}>
             <Text
               style={{
-                color: !disableSmoothingWhileTransitioning
+                color: !smoothingWhileTransitioningEnabled
                   ? 'lightgreen'
                   : 'white',
               }}>
@@ -189,26 +190,26 @@ function GenericExample() {
         </View>
         <Text style={{color: 'white', fontWeight: 'bold'}}>Soft margin:</Text>
         <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-          <TouchableOpacity onPress={() => setSoftMargin(0)}>
+          <TouchableOpacity onPress={() => setHitSlop(0)}>
             <Text
               style={{
-                color: softMargin === 0 ? 'lightgreen' : 'white',
+                color: hitSlop === 0 ? 'lightgreen' : 'white',
               }}>
               0
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setSoftMargin(30)}>
+          <TouchableOpacity onPress={() => setHitSlop(30)}>
             <Text
               style={{
-                color: softMargin === 30 ? 'lightgreen' : 'white',
+                color: hitSlop === 30 ? 'lightgreen' : 'white',
               }}>
               30
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setSoftMargin(50)}>
+          <TouchableOpacity onPress={() => setHitSlop(50)}>
             <Text
               style={{
-                color: softMargin === 50 ? 'lightgreen' : 'white',
+                color: hitSlop === 50 ? 'lightgreen' : 'white',
               }}>
               50
             </Text>
