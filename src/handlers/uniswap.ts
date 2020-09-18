@@ -11,7 +11,7 @@ import {
   WETH,
 } from '@uniswap/sdk';
 import { getUnixTime, sub } from 'date-fns';
-import { findKey, get, mapKeys, mapValues, toLower } from 'lodash';
+import { findKey, get, isEmpty, mapKeys, mapValues, toLower } from 'lodash';
 import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS, UNISWAP_CHART_QUERY } from '../apollo/queries';
 import ChartTypes from '../helpers/chartTypes';
@@ -435,7 +435,7 @@ export const calculateTradeDetails = (
   pairs: Record<string, Pair>,
   exactInput: boolean
 ): Trade | null => {
-  if (!inputCurrency || !outputCurrency || !pairs) {
+  if (!inputCurrency || !outputCurrency || isEmpty(pairs)) {
     return null;
   }
 
@@ -471,5 +471,11 @@ export const calculateTradeDetails = (
 export const getTokenForCurrency = (currency, chainId) => {
   if (!currency) return null;
   if (currency.address === 'eth') return WETH[chainId];
-  return new Token(chainId, currency.address, currency.decimals);
+  return new Token(
+    chainId,
+    currency.address,
+    currency.decimals,
+    currency.symbol,
+    currency.name
+  );
 };
