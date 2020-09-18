@@ -14,7 +14,7 @@ import { colors, padding } from '@rainbow-me/styles';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
-  ${({ isTinyPhone }) => (isTinyPhone ? padding(12, 15) : padding(19, 15))};
+  ${({ isSmallPhone }) => (isSmallPhone ? padding(12, 15) : padding(19, 15))};
   background-color: ${colors.white};
   overflow: hidden;
   width: 100%;
@@ -52,7 +52,7 @@ export default function SendHeader({
   showAssetList,
 }) {
   const { setClipboard } = useClipboard();
-  const { isTinyPhone } = useDimensions();
+  const { isSmallPhone } = useDimensions();
   const { navigate } = useNavigation();
 
   const contact = useMemo(() => {
@@ -123,7 +123,7 @@ export default function SendHeader({
   return (
     <Fragment>
       <SheetHandle />
-      <AddressInputContainer isTinyPhone={isTinyPhone}>
+      <AddressInputContainer isSmallPhone={isSmallPhone}>
         <AddressFieldLabel>To:</AddressFieldLabel>
         <AddressField
           address={recipient}
