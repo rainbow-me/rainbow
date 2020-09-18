@@ -97,6 +97,7 @@ export default function useInitializeWallet() {
         await dispatch(settingsUpdateAccountAddress(walletAddress));
         logger.sentry('updated settings address', walletAddress);
 
+        // Newly created / imported accounts have no data in localstorage
         if (!(isNew || isImporting)) {
           await loadAccountData(network);
           logger.sentry('loaded account data', network);

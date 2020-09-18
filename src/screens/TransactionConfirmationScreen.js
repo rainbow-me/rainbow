@@ -124,7 +124,7 @@ const TransactionConfirmationScreen = () => {
       Vibration.vibrate();
     }
     if (!isMessageDisplayType(method)) {
-      InteractionManager.runAfterInteractions(false, () => {
+      InteractionManager.runAfterInteractions(() => {
         startPollingGasPrices();
       });
     }
