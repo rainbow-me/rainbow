@@ -40,6 +40,22 @@ const timingAnimationDefaultConfig = {
   duration: 300,
 };
 
+function combineConfigs(a, b) {
+  'worklet';
+  const r = {};
+  const keysA = Object.keys(a);
+  for (let i = 0; i < keysA.length; i++) {
+    const key = keysA[i];
+    r[key] = a[key];
+  }
+  const keysB = Object.keys(b);
+  for (let i = 0; i < keysB.length; i++) {
+    const key = keysB[i];
+    r[key] = b[key];
+  }
+  return r;
+}
+
 const parse = data => {
   const { greatestY, smallestY } = findYExtremes(data);
   const smallestX = data[0];
@@ -206,7 +222,7 @@ export default function ChartPathProvider({
       isAnimationInProgress.value = true;
       progress.value = withTiming(
         1,
-        { ...timingAnimationDefaultConfig, ...timingAnimationConfig },
+        combineConfigs(timingAnimationDefaultConfig, timingAnimationConfig),
         () => {
           isAnimationInProgress.value = false;
           if (dataQueue.value.length !== 0) {
@@ -236,14 +252,14 @@ export default function ChartPathProvider({
         return;
       }
       if (!isStarted.value) {
-        dotScale.value = withSpring(1, {
-          ...springDefaultConfig,
-          ...springConfig,
-        });
-        pathOpacity.value = withTiming(0, {
-          ...timingFeedbackDefaultConfig,
-          ...timingFeedbackConfig,
-        });
+        dotScale.value = withSpring(
+          1,
+          combineConfigs(springDefaultConfig, springConfig)
+        );
+        pathOpacity.value = withTiming(
+          0,
+          combineConfigs(timingFeedbackDefaultConfig, timingFeedbackConfig)
+        );
       }
 
       if (hapticsEnabledValue.value && !isStarted.value) {
@@ -313,17 +329,17 @@ export default function ChartPathProvider({
       state.value = event.state;
       originalX.value = '';
       originalY.value = '';
-      dotScale.value = withSpring(0, {
-        ...springDefaultConfig,
-        ...springConfig,
-      });
+      dotScale.value = withSpring(
+        0,
+        combineConfigs(springDefaultConfig, springConfig)
+      );
       if (android) {
         pathOpacity.value = 1;
       } else {
-        pathOpacity.value = withTiming(1, {
-          ...timingFeedbackDefaultConfig,
-          ...timingFeedbackConfig,
-        });
+        pathOpacity.value = withTiming(
+          1,
+          combineConfigs(timingFeedbackDefaultConfig, timingFeedbackConfig)
+        );
       }
     },
     onEnd: event => {
@@ -331,17 +347,17 @@ export default function ChartPathProvider({
       state.value = event.state;
       originalX.value = '';
       originalY.value = '';
-      dotScale.value = withSpring(0, {
-        ...springDefaultConfig,
-        ...springConfig,
-      });
+      dotScale.value = withSpring(
+        0,
+        combineConfigs(springDefaultConfig, springConfig)
+      );
       if (android) {
         pathOpacity.value = 1;
       } else {
-        pathOpacity.value = withTiming(1, {
-          ...timingFeedbackDefaultConfig,
-          ...timingFeedbackConfig,
-        });
+        pathOpacity.value = withTiming(
+          1,
+          combineConfigs(timingFeedbackDefaultConfig, timingFeedbackConfig)
+        );
       }
 
       if (hapticsEnabledValue.value) {
@@ -353,17 +369,17 @@ export default function ChartPathProvider({
       state.value = event.state;
       originalX.value = '';
       originalY.value = '';
-      dotScale.value = withSpring(0, {
-        ...springDefaultConfig,
-        ...springConfig,
-      });
+      dotScale.value = withSpring(
+        0,
+        combineConfigs(springDefaultConfig, springConfig)
+      );
       if (android) {
         pathOpacity.value = 1;
       } else {
-        pathOpacity.value = withTiming(1, {
-          ...timingFeedbackDefaultConfig,
-          ...timingFeedbackConfig,
-        });
+        pathOpacity.value = withTiming(
+          1,
+          combineConfigs(timingFeedbackDefaultConfig, timingFeedbackConfig)
+        );
       }
     },
     onStart: event => {
@@ -395,10 +411,10 @@ export default function ChartPathProvider({
         eventX / layoutSize.value.width,
         curroriginalData
       );
-      dotScale.value = withSpring(1, {
-        ...springDefaultConfig,
-        ...springConfig,
-      });
+      dotScale.value = withSpring(
+        1,
+        combineConfigs(springDefaultConfig, springConfig)
+      );
 
       if (!android) {
         positionX.value = positionXWithMargin(
@@ -407,10 +423,10 @@ export default function ChartPathProvider({
           layoutSize.value.width
         );
         positionY.value = currData.value[idx].y * layoutSize.value.height;
-        pathOpacity.value = withTiming(0, {
-          ...timingFeedbackDefaultConfig,
-          ...timingFeedbackConfig,
-        });
+        pathOpacity.value = withTiming(
+          0,
+          combineConfigs(timingFeedbackDefaultConfig, timingFeedbackConfig)
+        );
       }
       if (hapticsEnabledValue.value && !isStarted.value) {
         impactHeavy();
@@ -605,7 +621,7 @@ function ChartPath({
 
   const animatedProps = useAnimatedStyle(
     () => {
-      return {
+      const props = {
         d: path.value,
         strokeWidth:
           pathOpacity.value *
@@ -613,6 +629,12 @@ function ChartPath({
               Number(selectedStrokeWidthValue.value)) +
           Number(selectedStrokeWidthValue.value),
       };
+      if (Platform.OS === 'ios') {
+        props.style = {
+          opacity: pathOpacity.value * (1 - selectedOpacity) + selectedOpacity,
+        };
+      }
+      return props;
     },
     undefined,
     'ChartPathAnimateProps'
