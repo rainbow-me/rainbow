@@ -1,4 +1,5 @@
 import { Pair, TokenAmount } from '@uniswap/sdk';
+import { compact } from 'lodash';
 import { useMemo } from 'react';
 import {
   PAIR_GET_RESERVES_FRAGMENT,
@@ -20,27 +21,24 @@ export default function useUniswapPairs(inputCurrency, outputCurrency) {
     // latestBlockNumber // TODO JIN
   );
 
-  // create pair with reserve amounts
-  const allPairs = useMemo(
-    () =>
-      multicallResults.map((result, i) => {
-        const { result: reserves, loading } = result;
-        const tokenA = allPairCombinations[i][0];
-        const tokenB = allPairCombinations[i][1];
+  const allPairs = useMemo(() => {
+    const viablePairs = multicallResults.map((result, i) => {
+      const { result: reserves, loading } = result;
+      const tokenA = allPairCombinations[i][0];
+      const tokenB = allPairCombinations[i][1];
 
-        if (loading || !tokenA || !tokenB) return undefined;
-        if (!reserves) return null;
-        const { reserve0, reserve1 } = reserves;
-        const [token0, token1] = tokenA.sortsBefore(tokenB)
-          ? [tokenA, tokenB]
-          : [tokenB, tokenA];
-        return new Pair(
-          new TokenAmount(token0, reserve0.toString()),
-          new TokenAmount(token1, reserve1.toString())
-        );
-      }),
-    [allPairCombinations, multicallResults]
-  );
+      if (loading || !reserves || !tokenA || !tokenB) return null;
+      const { reserve0, reserve1 } = reserves;
+      const [token0, token1] = tokenA.sortsBefore(tokenB)
+        ? [tokenA, tokenB]
+        : [tokenB, tokenA];
+      return new Pair(
+        new TokenAmount(token0, reserve0.toString()),
+        new TokenAmount(token1, reserve1.toString())
+      );
+    });
+    return compact(viablePairs);
+  }, [allPairCombinations, multicallResults]);
 
   return {
     allPairs,

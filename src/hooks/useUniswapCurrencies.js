@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { find, get } from 'lodash';
+import { find, get, isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -136,7 +136,7 @@ export default function useUniswapCurrencies({
   // TODO JIN - maybe a better name for calls
   // TODO JIN - do we know if calls will have been updated in time given our prev / current currency checks?
   useEffect(() => {
-    if (!inputCurrency || !outputCurrency) return;
+    if (!inputCurrency || !outputCurrency || isEmpty(calls)) return;
     if (
       isSameAsset(inputCurrency, previousInputCurrency) &&
       isSameAsset(outputCurrency, previousOutputCurrency)

@@ -11,7 +11,7 @@ const estimateApproveWithExchange = async (spender, exchange) => {
   try {
     logger.sentry('exchange estimate approve', { exchange, spender });
     console.log('HI - use the constant', MaxUint256);
-    const gasLimit = await exchange.estimate.approve(spender, MaxUint256);
+    const gasLimit = await exchange.estimateGas.approve(spender, MaxUint256);
     console.log('HI - gas limit', gasLimit);
     return gasLimit ? gasLimit.toString() : ethUnits.basic_approval;
   } catch (error) {
