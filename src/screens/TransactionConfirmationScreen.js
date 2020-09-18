@@ -56,6 +56,7 @@ import {
   useAccountProfile,
   useAccountSettings,
   useGas,
+  useKeyboardHeight,
   useTransactionConfirmation,
   useWalletBalances,
 } from '../hooks';
@@ -67,7 +68,7 @@ import {
   signTypedDataMessage,
 } from '../model/wallet';
 import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
-import { ethereumUtils, gasUtils } from '../utils';
+import { ethereumUtils, gasUtils, safeAreaInsetValues } from '../utils';
 import { methodRegistryLookupAndParse } from '../utils/methodRegistry';
 import {
   isMessageDisplayType,
@@ -88,6 +89,12 @@ const isReanimatedAvailable = !(
   (!global.__reanimatedModuleProxy || global.__reanimatedModuleProxy.__shimmed)
 );
 
+const springConfig = {
+  damping: 500,
+  mass: 3,
+  stiffness: 1000,
+};
+
 const DappLogo = styled(RequestVendorLogoIcon).attrs({
   backgroundColor: colors.transparent,
   borderRadius: 16,
@@ -102,6 +109,7 @@ const Container = styled(Column)`
 `;
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
+const AnimatedSheet = Animated.createAnimatedComponent(Centered);
 
 const GasSpeedButtonContainer = styled(Column)`
   justify-content: flex-start;
@@ -117,11 +125,13 @@ const WalletLabel = styled(Text).attrs({
   margin-bottom: 3;
 `;
 
-const WalletText = styled(Text).attrs({
-  color: colors.alpha(colors.blueGreyDark, 0.8),
+const WalletText = styled(Text).attrs(({ balanceTooLow }) => ({
+  color: balanceTooLow
+    ? colors.avatarColor[7]
+    : colors.alpha(colors.blueGreyDark, 0.8),
   size: 'larger',
-  weight: 'semibold',
-})``;
+  weight: balanceTooLow ? 'bold' : 'semibold',
+}))``;
 
 const NOOP = () => undefined;
 
@@ -140,6 +150,7 @@ const TransactionConfirmationScreen = () => {
   } = useAccountProfile();
   const balances = useWalletBalances();
   const { nativeCurrency } = useAccountSettings();
+  const { keyboardHeight } = useKeyboardHeight();
 
   const {
     gasLimit,
@@ -336,7 +347,7 @@ const TransactionConfirmationScreen = () => {
     const txPayload = get(params, '[0]');
     const value = get(txPayload, 'value', 0);
 
-    // Check that there's enough ETH to pay for everything!.
+    // Check that there's enough ETH to pay for everything!
     const totalAmount = BigNumber(fromWei(value)).plus(txFeeAmount);
     const isEnough = greaterThanOrEqualTo(balanceAmount, totalAmount);
 
@@ -551,11 +562,15 @@ const TransactionConfirmationScreen = () => {
     }
 
     return isBalanceEnough === false && isSufficientGas !== undefined ? (
-      <Column width="100%">
-        <HoldToAuthorizeButton
+      <Column marginTop={24} width="100%">
+        <SheetActionButton
+          color={colors.transparent}
           disabled
-          hideBiometricIcon
-          label="Insufficient ETH Balance"
+          label="ETH balance too low"
+          onPress={onCancel}
+          size="big"
+          textColor={colors.avatarColor[7]}
+          weight="bold"
         />
       </Column>
     ) : (
@@ -564,6 +579,7 @@ const TransactionConfirmationScreen = () => {
           opacity: ${ready ? 1 : 0.5};
         `}
         margin={15}
+        marginTop={24}
       >
         <SheetActionButton
           color={colors.alpha(colors.blueGreyDark, 0.06)}
@@ -608,6 +624,7 @@ const TransactionConfirmationScreen = () => {
         nativeAmount,
         nativeCurrency
       );
+      if (!amount) return;
       return (
         <TransactionConfirmationSection
           asset={{
@@ -643,40 +660,59 @@ const TransactionConfirmationScreen = () => {
   }, []);
 
   const offset = useSharedValue(0);
-  const animatedStyles = useAnimatedStyle(() => {
+  const sheetOpacity = useSharedValue(1);
+  const animatedContainerStyles = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: offset.value }],
+      transform: [{ translateY: offset.value }],
+    };
+  });
+  const animatedSheetStyles = useAnimatedStyle(() => {
+    return {
+      opacity: sheetOpacity.value,
     };
   });
 
   const fallbackStyles = {
-    marginBottom: keyboardVisible ? 260 : 0,
+    marginBottom: keyboardVisible ? keyboardHeight : 0,
   };
 
   useEffect(() => {
     if (keyboardVisible) {
-      offset.value = withSpring(-260);
+      offset.value = withSpring(
+        -keyboardHeight + safeAreaInsetValues.bottom,
+        springConfig
+      );
+      sheetOpacity.value = withSpring(0.3, springConfig);
     } else {
-      offset.value = withSpring(0);
+      offset.value = withSpring(0, springConfig);
+      sheetOpacity.value = withSpring(1, springConfig);
     }
-  }, [keyboardVisible, offset]);
+  }, [keyboardHeight, keyboardVisible, offset, sheetOpacity]);
+
+  const amount = get(request, 'value', '0.00');
+
+  const ShortSheetHeight = 457 + safeAreaInsetValues.bottom;
+  const TallSheetHeight = 604 + safeAreaInsetValues.bottom;
 
   return (
     <AnimatedContainer
-      style={isReanimatedAvailable ? animatedStyles : fallbackStyles}
+      style={isReanimatedAvailable ? animatedContainerStyles : fallbackStyles}
     >
       <SlackSheet
         backgroundColor={colors.transparent}
         borderRadius={0}
+        height={amount ? TallSheetHeight : ShortSheetHeight}
         hideHandle
+        scrollEnabled={false}
       >
         <Column>
-          <Centered
+          <AnimatedSheet
             backgroundColor={colors.white}
             borderRadius={39}
             direction="column"
             paddingHorizontal={19}
             paddingTop={24}
+            style={animatedSheetStyles}
           >
             <SheetHandleFixedToTop showBlur={false} />
             <Column marginBottom={17} />
@@ -716,11 +752,11 @@ const TransactionConfirmationScreen = () => {
                 {methodName || ''}
               </Text>
             </Centered>
-            <Divider color={colors.rowDividerExtraLight} inset={[0, 84]} />
+            <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
             {renderTransactionSection()}
             {renderTransactionButtons()}
             <RowWithMargins css={padding(24, 5, 30)} margin={15}>
-              <Column flex={1} justify="start">
+              <Column>
                 <WalletLabel>Wallet</WalletLabel>
                 <RowWithMargins margin={5}>
                   <Column marginTop={2}>
@@ -737,12 +773,21 @@ const TransactionConfirmationScreen = () => {
               </Column>
               <Column align="flex-end" flex={1} justify="end">
                 <WalletLabel align="right">Balance</WalletLabel>
-                <WalletText align="right" letterSpacing="roundedTight">
+                <WalletText
+                  align="right"
+                  balanceTooLow={
+                    isBalanceEnough === false && isSufficientGas !== undefined
+                  }
+                  letterSpacing="roundedTight"
+                >
+                  {isBalanceEnough === false &&
+                    isSufficientGas !== undefined &&
+                    '􀇿 '}
                   {balances[accountAddress]} ETH
                 </WalletText>
               </Column>
             </RowWithMargins>
-          </Centered>
+          </AnimatedSheet>
           {!isMessageDisplayType(method) && (
             <GasSpeedButtonContainer>
               <GasSpeedButton
