@@ -2,7 +2,6 @@ import MaskedView from '@react-native-community/masked-view';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
 import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Clock,
@@ -18,7 +17,11 @@ import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { Emoji, Text } from '../components/text';
 
-import { fetchUserDataFromCloud } from '@rainbow-me/handlers/cloudBackup';
+import {
+  fetchUserDataFromCloud,
+  isCloudBackupAvailable,
+} from '../handlers/cloudBackup';
+
 import { useHideSplashScreen } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { colors, shadow } from '@rainbow-me/styles';
@@ -344,8 +347,8 @@ export default function WelcomeScreen() {
     const initialize = async () => {
       try {
         logger.log('downloading iCloud backup info...');
-        const isSimulator = await DeviceInfo.isEmulator();
-        if (!isSimulator) {
+        const isAvailable = await isCloudBackupAvailable();
+        if (!isAvailable) {
           const data = await fetchUserDataFromCloud();
           setUserData(data);
           logger.log('Downloaded iCloud backup info');
