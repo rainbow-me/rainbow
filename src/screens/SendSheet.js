@@ -127,9 +127,13 @@ export default function SendSheet(props) {
   );
 
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => startPollingGasPrices());
+    InteractionManager.runAfterInteractions(false, () =>
+      startPollingGasPrices()
+    );
     return () => {
-      InteractionManager.runAfterInteractions(() => stopPollingGasPrices());
+      InteractionManager.runAfterInteractions(false, () =>
+        stopPollingGasPrices()
+      );
     };
   }, [startPollingGasPrices, stopPollingGasPrices]);
 

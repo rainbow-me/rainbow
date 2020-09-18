@@ -18,12 +18,12 @@ export default function useInitializeAccountData() {
         dispatch(explorerInit());
       });
 
-      InteractionManager.runAfterInteractions(async () => {
+      InteractionManager.runAfterInteractions(false, async () => {
         dispatch(uniswapPairsInit());
         await dispatch(uniswapGetAllExchanges());
       });
 
-      InteractionManager.runAfterInteractions(async () => {
+      InteractionManager.runAfterInteractions(false, async () => {
         await dispatch(savingsLoadState());
         await dispatch(uniqueTokensRefreshState());
       });

@@ -43,7 +43,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
 
 const SavingsSheet = () => {
   const { height: deviceHeight } = useDimensions();
-  const { navigate, goBack } = useNavigation();
+  const { navigate } = useNavigation();
   const { params } = useRoute();
   const insets = useSafeArea();
   const { isReadOnlyWallet } = useWallets();
@@ -107,12 +107,10 @@ const SavingsSheet = () => {
         label: underlying.symbol,
       });
     } else {
-      goBack();
       Alert.alert(`You need to import the wallet in order to do this`);
     }
   }, [
     cTokenBalance,
-    goBack,
     isReadOnlyWallet,
     navigate,
     supplyBalanceUnderlying,
@@ -139,17 +137,9 @@ const SavingsSheet = () => {
         label: underlying.symbol,
       });
     } else {
-      goBack();
       Alert.alert(`You need to import the wallet in order to do this`);
     }
-  }, [
-    goBack,
-    isEmpty,
-    isReadOnlyWallet,
-    navigate,
-    underlying,
-    underlyingPrice,
-  ]);
+  }, [isEmpty, isReadOnlyWallet, navigate, underlying, underlyingPrice]);
 
   return (
     <Container
