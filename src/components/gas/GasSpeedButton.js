@@ -3,10 +3,11 @@ import { get, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { LayoutAnimation } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import styled from 'styled-components/primitives';
 import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
 import { useAccountSettings, useGas } from '../../hooks';
-import { gweiToWei } from '../../parsers/gas';
+import { gweiToWei, weiToGwei } from '../../parsers/gas';
 import { gasUtils, magicMemo } from '../../utils';
 import { Alert } from '../alerts';
 import { ButtonPressAnimation } from '../animations';
@@ -20,11 +21,11 @@ const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
 
 const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
-  scaleTo: 0.99,
+  scaleTo: 1.0666,
 })`
-  ${padding(15, 19, 0)};
+  ${padding(14, 19, 0)};
+  height: 76;
   width: 100%;
-  height: 55;
 `;
 
 const Label = styled(Text).attrs({
@@ -35,6 +36,7 @@ const Label = styled(Text).attrs({
 
 const ButtonLabel = styled(BorderlessButton).attrs({
   color: colors.appleBlue,
+  hitSlop: 40,
   opacity: 1,
   size: 'smedium',
   weight: 'bold',
@@ -53,9 +55,7 @@ const BottomRightLabel = ({ formatter }) => (
 );
 
 const formatGasPrice = gasPrice => {
-  const fixedGasPrice = Number(gasPrice).toFixed(3);
-  const gasPriceWithTrailingZerosStripped = parseFloat(fixedGasPrice);
-  return gasPriceWithTrailingZerosStripped;
+  return (Math.ceil(Number(gasPrice) * 100) / 100).toFixed(2);
 };
 
 const getActionLabel = type => {
@@ -92,7 +92,9 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
   const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
   const [inputFocused, setInputFocused] = useState(false);
 
-  const defaultCustomGasPrice = gasPrices?.fast?.value?.display;
+  const defaultCustomGasPrice = Math.round(
+    weiToGwei(gasPrices?.fast?.value?.amount)
+  );
   const defaultCustomGasPriceUsd = get(
     txFees?.fast,
     'txFee.native.value.amount'
@@ -241,6 +243,7 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
       inputFocused ? inputRef.current?.blur() : inputRef.current?.focus();
     if (!customGasPriceInput || !inputRef.current?.isFocused()) {
       complete();
+      ReactNativeHapticFeedback.trigger('impactMedium');
       return;
     }
 
@@ -254,20 +257,20 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
         buttons: [
           {
             onPress: complete,
-            text: 'Yes',
+            text: 'Proceed Anyway',
           },
           {
             onPress: () => inputRef.current?.focus(),
             style: 'cancel',
-            text: 'No, thanks',
+            text: 'Edit Gas Price',
           },
         ],
-        message:
-          (tooLow
-            ? 'The gas price you set is too low and your transaction might get stuck or dropped.'
-            : 'We noticed the gas price you set is quite high.') +
-          '\n\nDo you want to continue anyway?',
-        title: 'Heads up!',
+        message: tooLow
+          ? 'Setting a higher gas price is recommended to avoid issues.'
+          : 'Double check that you entered the correct amount—you’re likely paying more than you need to!',
+        title: tooLow
+          ? 'Low gas price–transaction might get stuck!'
+          : 'High gas price!',
       });
     } else {
       complete();
@@ -276,7 +279,7 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
 
   return (
     <Container as={ButtonPressAnimation} onPress={handlePress}>
-      <Row align="center" justify="space-between">
+      <Row align="end" justify="space-between" marginBottom={1}>
         {selectedGasPriceOption !== CUSTOM ? (
           <AnimateNumber
             formatter={formatAnimatedGasPrice}
@@ -290,22 +293,36 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
           <Row>
             <Input
               color={colors.white}
+              height={19}
               keyboardAppearance="dark"
               keyboardType="numeric"
+              letterSpacing="roundedMedium"
+              maxLength={5}
               onBlur={handleCustomGasBlur}
               onChangeText={handleCustomGasChange}
               onFocus={handleCustomGasFocus}
               placeholder={`${defaultCustomGasPrice}`}
-              placeholderTextColor={colors.alpha(colors.white, 0.3)}
+              placeholderTextColor={colors.alpha(
+                colors.darkModeColors.blueGreyDark,
+                0.3
+              )}
               ref={inputRef}
+              size="lmedium"
               value={customGasPriceInput}
               weight="bold"
             />
-            {!!customGasPriceInput && (
-              <Text color={colors.white} weight="bold">
-                &nbsp; Gwei
-              </Text>
-            )}
+            <Text
+              color={
+                customGasPriceInput
+                  ? colors.white
+                  : colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
+              }
+              size="lmedium"
+              weight="bold"
+            >
+              {' '}
+              Gwei
+            </Text>
           </Row>
         )}
         <GasSpeedLabelPager

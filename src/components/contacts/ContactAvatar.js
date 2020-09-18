@@ -63,7 +63,13 @@ const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
       shadows={shadows}
     >
       <Centered flex={1}>
-        <Text align="center" color="white" size={textSize} weight="bold">
+        <Text
+          align="center"
+          color="white"
+          letterSpacing="zero"
+          size={textSize}
+          weight="bold"
+        >
           {value && getFirstGrapheme(toUpper(value))}
         </Text>
       </Centered>

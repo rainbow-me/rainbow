@@ -21,9 +21,11 @@ export function onNavigationStateChange(currentState) {
       currentState?.routes[currentState.index].name;
 
     const wasCustomSlackOpen =
+      oldBottomSheetStackRoute === Routes.CONFIRM_REQUEST ||
       oldBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
       oldBottomSheetStackRoute === Routes.SETTINGS_MODAL;
     const isCustomSlackOpen =
+      newBottomSheetStackRoute === Routes.CONFIRM_REQUEST ||
       newBottomSheetStackRoute === Routes.RECEIVE_MODAL ||
       newBottomSheetStackRoute === Routes.SETTINGS_MODAL;
 
@@ -43,6 +45,20 @@ export function onNavigationStateChange(currentState) {
     if (
       prevRouteName === Routes.CHANGE_WALLET_SHEET &&
       routeName !== Routes.CHANGE_WALLET_SHEET
+    ) {
+      StatusBar.setBarStyle('dark-content', true);
+    }
+
+    if (
+      prevRouteName !== Routes.CONFIRM_REQUEST &&
+      routeName === Routes.CONFIRM_REQUEST
+    ) {
+      StatusBar.setBarStyle('light-content', true);
+    }
+
+    if (
+      prevRouteName === Routes.CONFIRM_REQUEST &&
+      routeName !== Routes.CONFIRM_REQUEST
     ) {
       StatusBar.setBarStyle('dark-content', true);
     }

@@ -45,6 +45,7 @@ const WhiteButtonGradient = React.memo(
 const SheetActionButton = ({
   borderRadius = 56,
   color = colors.appleBlue,
+  disabled,
   emoji,
   icon,
   isTransparent,
@@ -76,7 +77,12 @@ const SheetActionButton = ({
       >
         {color === colors.white && <WhiteButtonGradient />}
         {color !== colors.white && !isTransparent && (
-          <InnerBorder radius={borderRadius} />
+          <InnerBorder
+            color={disabled ? textColor : null}
+            opacity={disabled ? 0.02 : null}
+            radius={borderRadius}
+            width={disabled ? 2 : null}
+          />
         )}
       </ShadowStack>
       <Content label={label} size={size}>

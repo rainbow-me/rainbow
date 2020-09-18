@@ -22,7 +22,7 @@ const AmountRow = styled(Row).attrs({
   ${padding(7, 12, 9, 11)};
   border-radius: 20;
   margin: auto;
-  margin-bottom: 8;
+  margin-bottom: 18;
 `;
 
 const NativeAmount = styled(Text).attrs({
