@@ -23,7 +23,7 @@ const PercentLabel = styled(AnimatedTextInput)`
 `;
 
 export default function ChartPercentChangeLabel() {
-  const { nativeY, data } = useChartData();
+  const { originalY, data } = useChartData();
 
   const firstValue = useSharedValue(
     data?.points?.[0]?.y,
@@ -35,7 +35,7 @@ export default function ChartPercentChangeLabel() {
   );
 
   const defaultValue =
-    data.points.length === 0
+    data?.points.length === 0
       ? ''
       : (() => {
           const value =
@@ -63,7 +63,7 @@ export default function ChartPercentChangeLabel() {
           firstValue.value === Number(firstValue.value) && firstValue.value
             ? (() => {
                 const value =
-                  ((nativeY.value || lastValue.value) / firstValue.value) *
+                  ((originalY.value || lastValue.value) / firstValue.value) *
                     100 -
                   100;
                 return (
