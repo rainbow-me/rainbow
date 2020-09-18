@@ -531,7 +531,6 @@ export default function ExchangeModal({
               title={inputHeaderTitle}
             />
             <ExchangeInputField
-              asset={inputCurrency}
               disableInputCurrencySelection={isWithdrawal}
               inputAmount={inputAmountDisplay}
               inputCurrencyAddress={get(inputCurrency, 'address', null)}
@@ -548,7 +547,6 @@ export default function ExchangeModal({
             />
             {showOutputField && (
               <ExchangeOutputField
-                asset={outputCurrency}
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
                 outputAmount={outputAmountDisplay}
