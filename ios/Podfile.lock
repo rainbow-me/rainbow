@@ -352,7 +352,7 @@ PODS:
     - React
   - react-native-camera/RN (3.36.0):
     - React
-  - react-native-cloud-fs (1.0.0):
+  - react-native-cloud-fs (1.0.1):
     - React
   - react-native-mail (4.1.0):
     - React
@@ -940,7 +940,7 @@ SPEC CHECKSUMS:
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-branch: 102e3783f839366246b6f7ace5cbfdae954f1257
   react-native-camera: 8016138a8348b889e22c95b23f668a234f124335
-  react-native-cloud-fs: 61da77476a51e59af2845093badc0c9eeb2edc56
+  react-native-cloud-fs: 305fc3897ee35332df1f6fc8d9614a8db16d02a7
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-netinfo: 38a1e0b3e89b48e4b5833ed475d8df5f049f6f90
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
