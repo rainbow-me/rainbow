@@ -13,7 +13,7 @@ export default function useInitializeAccountData() {
 
   const initializeAccountData = useCallback(async () => {
     try {
-      InteractionManager.runAfterInteractions(false, () => {
+      InteractionManager.runAfterInteractions(() => {
         logger.sentry('Initialize account data');
         dispatch(explorerInit());
       });
