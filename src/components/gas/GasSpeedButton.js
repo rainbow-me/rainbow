@@ -266,9 +266,11 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
           },
         ],
         message: tooLow
-          ? 'If you don’t set a high enough gas price, your transaction '
-          : 'We noticed the gas price you set is quite high. Would you like to proceed anyway?',
-        title: 'Low gas price–transaction might get stuck!',
+          ? 'Setting a higher gas price is recommended to avoid issues.'
+          : 'Double check that you entered the correct amount—you’re likely paying more than you need to!',
+        title: tooLow
+          ? 'Low gas price–transaction might get stuck!'
+          : 'High gas price!',
       });
     } else {
       complete();
