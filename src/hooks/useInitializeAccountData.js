@@ -13,17 +13,17 @@ export default function useInitializeAccountData() {
 
   const initializeAccountData = useCallback(async () => {
     try {
-      InteractionManager.runAfterInteractions(() => {
+      InteractionManager.runAfterInteractions(false, () => {
         logger.sentry('Initialize account data');
         dispatch(explorerInit());
       });
 
-      InteractionManager.runAfterInteractions(async () => {
+      InteractionManager.runAfterInteractions(false, async () => {
         dispatch(uniswapPairsInit());
         await dispatch(uniswapGetAllExchanges());
       });
 
-      InteractionManager.runAfterInteractions(async () => {
+      InteractionManager.runAfterInteractions(false, async () => {
         await dispatch(savingsLoadState());
         await dispatch(uniqueTokensRefreshState());
       });

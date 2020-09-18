@@ -41,10 +41,7 @@ export default function useSavingsAccount(includeDefaultDai) {
   // Reload on address change
   useEffect(() => {
     if (previousAccount && previousAccount !== accountAddress) {
-      // wait until the new account is set
-      setTimeout(() => {
-        dispatch(savingsLoadState());
-      }, 1000);
+      dispatch(savingsLoadState());
     }
   }, [dispatch, accountAddress, previousAccount]);
 
