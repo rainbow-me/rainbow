@@ -45,7 +45,11 @@ const traverseData = (prev, data) => {
   ) {
     return prev;
   }
-  const points = monotoneCubicInterpolation(filtered)(100, true);
+  const points = monotoneCubicInterpolation({
+    data: filtered,
+    includeExtremes: true,
+    range: 100,
+  });
   return {
     nativePoints: filtered,
     points,
@@ -152,7 +156,7 @@ export default function ChartExpandedState({ asset }) {
       contentHeight={ChartExpandedStateSheetHeight}
       scrollEnabled={false}
     >
-      <ChartPathProvider data={throttledData} enableHaptics softMargin={30}>
+      <ChartPathProvider data={throttledData}>
         <Chart
           {...chartData}
           {...initialChartDataLabels}

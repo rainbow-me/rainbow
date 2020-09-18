@@ -11,7 +11,7 @@ const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 function ChartLabelFactory(style) {
   return function ChartLabel({ format, ...props }) {
-    const { [style]: val } = useContext(ChartContext);
+    const { [style]: val = 0 } = useContext(ChartContext);
     const formattedValue = useDerivedValue(
       () => {
         return format ? format(val.value) : val.value;
@@ -39,5 +39,5 @@ function ChartLabelFactory(style) {
   };
 }
 
-export const ChartYLabel = ChartLabelFactory('nativeY');
-export const ChartXLabel = ChartLabelFactory('nativeX');
+export const ChartYLabel = ChartLabelFactory('originalY');
+export const ChartXLabel = ChartLabelFactory('originalX');

@@ -281,9 +281,14 @@
     "color": "#FF4A4A",
     "name": "UMA"
   },
+  "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+    "color": "#FD017A",
+    "name": "Uniswap",
+    "shadowColor": "#FDB8DA"
+  },
   "0x23B608675a2B2fB1890d3ABBd85c5775c51691d5": {
     "color": "#E15EE5",
-    "name": "Unisocks Edition 0"
+    "name": "Unisocks"
   },
   "0x09cabEC1eAd1c0Ba254B09efb3EE13841712bE14": {
     "color": "#E15EE5",

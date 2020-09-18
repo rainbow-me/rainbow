@@ -26,7 +26,7 @@ export const data = [
   {x: 1454198400, y: 2.2},
 ];
 
-const points = monotoneCubicInterpolation(data)(40);
+const points = monotoneCubicInterpolation({data, range: 40});
 
 const BasicExample = () => (
   <View

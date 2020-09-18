@@ -6,8 +6,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import Animated, { Easing } from 'react-native-reanimated';
-import { useTimingTransition } from 'react-native-redash';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { Button } from '../buttons';
 import { ExchangeInput } from '../exchange';
@@ -70,14 +74,27 @@ const UnderlineField = (
   const [isFocused, setIsFocused] = useState(autoFocus);
   const [value, setValue] = useState(valueProp);
   const [wasButtonPressed, setWasButtonPressed] = useState(false);
+  const size = useSharedValue(autoFocus ? 1 : 0);
 
   const ref = useRef();
   useImperativeHandle(forwardedRef, () => ref.current);
 
-  const animation = useTimingTransition(isFocused, {
-    duration: 150,
-    easing: Easing.ease,
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [{ scaleX: size.value }],
+    };
   });
+
+  useEffect(() => {
+    if (isFocused) {
+      size.value = withTiming(1, {
+        duration: 150,
+        easing: Easing.ease,
+      });
+    } else {
+      size.value = 0;
+    }
+  }, [isFocused, size]);
 
   const formattedValue = useMemo(() => format(String(value || '')), [
     format,
@@ -162,7 +179,7 @@ const UnderlineField = (
       </Row>
       <UnderlineContainer>
         <Underline />
-        <UnderlineAnimated style={{ transform: [{ scaleX: animation }] }} />
+        <UnderlineAnimated style={animatedStyles} />
       </UnderlineContainer>
     </Column>
   );

@@ -217,15 +217,17 @@ export default function ChartWrapper({
             <ChartPath
               fill="none"
               gestureEnabled={!fetchingCharts && !!throttledData}
+              hapticsEnabled
               height={HEIGHT}
+              hitSlop={30}
               longPressGestureHandlerProps={{
                 minDurationMs: 60,
               }}
+              selectedStrokeWidth={3}
               stroke={color}
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={3.5}
-              strokeWidthSelected={3}
               width={WIDTH}
             />
             <Dot color={colors.alpha(color, 0.03)} size={65}>
