@@ -171,15 +171,21 @@ const TransactionConfirmationScreen = () => {
   const fetchMethodName = useCallback(async data => {
     if (!data) return;
     const methodSignaturePrefix = data.substr(0, 10);
+    let fallbackHandler;
     try {
+      fallbackHandler = setTimeout(() => {
+        setMethodName('Transaction Request');
+      }, 5000);
       const { name } = await methodRegistryLookupAndParse(
         methodSignaturePrefix
       );
       if (name) {
         setMethodName(name);
+        clearTimeout(fallbackHandler);
       }
     } catch (e) {
       setMethodName('Transaction Request');
+      clearTimeout(fallbackHandler);
     }
   }, []);
 
@@ -703,7 +709,6 @@ const TransactionConfirmationScreen = () => {
 
   const ShortSheetHeight = 457 + safeAreaInsetValues.bottom;
   const TallSheetHeight = 604 + safeAreaInsetValues.bottom;
-  console.log(balances);
 
   return (
     <AnimatedContainer
@@ -760,12 +765,12 @@ const TransactionConfirmationScreen = () => {
             <Centered marginBottom={24} paddingHorizontal={24}>
               <Text
                 align="center"
-                color="dark"
+                color={methodName ? 'dark' : 'white'}
                 letterSpacing="roundedMedium"
                 size="larger"
                 weight="heavy"
               >
-                {methodName || ''}
+                {methodName || 'Placeholder'}
               </Text>
             </Centered>
             <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />

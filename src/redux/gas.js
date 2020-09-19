@@ -241,7 +241,14 @@ const getSelectedGasPrice = (
   txFees,
   selectedGasPriceOption
 ) => {
-  const txFee = txFees[selectedGasPriceOption];
+  let txFee = txFees[selectedGasPriceOption];
+  // If no custom price is set we default to FAST
+  if (
+    selectedGasPriceOption === gasUtils.CUSTOM &&
+    get(txFee, 'txFee.value.amount') === 'NaN'
+  ) {
+    txFee = txFees[gasUtils.FAST];
+  }
   const ethAsset = ethereumUtils.getAsset(assets);
   const balanceAmount = get(ethAsset, 'balance.amount', 0);
   const txFeeAmount = fromWei(get(txFee, 'txFee.value.amount', 0));
