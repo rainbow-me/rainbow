@@ -124,6 +124,7 @@ export default function ExchangeModal({
   const {
     handleFocus,
     inputFieldRef,
+    lastFocusedInputHandle,
     nativeFieldRef,
     outputFieldRef,
   } = useSwapInputRefs({ inputCurrency, outputCurrency });
@@ -152,6 +153,10 @@ export default function ExchangeModal({
     supplyBalanceUnderlying,
     type,
   });
+
+  const handleCustomGasBlur = useCallback(() => {
+    lastFocusedInputHandle?.current?.focus();
+  }, [lastFocusedInputHandle]);
 
   const updateGasLimit = useCallback(async () => {
     try {
@@ -592,7 +597,7 @@ export default function ExchangeModal({
               </Centered>
             </Fragment>
           )}
-          <GasSpeedButton type={type} />
+          <GasSpeedButton onCustomGasBlur={handleCustomGasBlur} type={type} />
         </AnimatedFloatingPanels>
       </Centered>
     </KeyboardFixedOpenLayout>
