@@ -9,6 +9,11 @@ import styled from 'styled-components/primitives';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '../../config/experimentalHooks';
+import {
+  dappLogoOverride,
+  dappNameOverride,
+  getDappHostname,
+} from '../../helpers/dappNameHandler';
 import showWalletErrorAlert from '../../helpers/support';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import {
@@ -308,7 +313,18 @@ export default function TransactionList({
 
   const data = useMemo(
     () => ({
-      requests,
+      requests: requests.map(r => {
+        const hostname = getDappHostname(r.dappUrl);
+        const overrideLogo = dappLogoOverride(r.dappUrl);
+        const logo = overrideLogo
+          ? `https://raw.githubusercontent.com/rainbow-me/rainbow/%40bruno/new-transaction-requests/src/assets/dappLogos/${hostname}.jpg`
+          : r.imageUrl;
+        return {
+          ...r,
+          dappName: dappNameOverride(r.dappUrl),
+          imageUrl: logo,
+        };
+      }),
       transactions,
     }),
     [requests, transactions]
