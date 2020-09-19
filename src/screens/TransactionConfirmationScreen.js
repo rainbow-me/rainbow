@@ -156,7 +156,7 @@ const TransactionConfirmationScreen = () => {
   const { wallets } = useWallets();
   const balances = useWalletBalances(wallets);
   const { nativeCurrency } = useAccountSettings();
-  const { keyboardHeight } = useKeyboardHeight();
+  const keyboardHeight = useKeyboardHeight();
 
   const {
     gasLimit,
