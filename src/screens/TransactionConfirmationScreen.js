@@ -17,6 +17,7 @@ import {
   TurboModuleRegistry,
   Vibration,
 } from 'react-native';
+
 import { isEmulatorSync } from 'react-native-device-info';
 import Animated, {
   useAnimatedStyle,
@@ -26,6 +27,7 @@ import Animated, {
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Divider from '../components/Divider';
+import { Alert as CustomAlert } from '../components/alerts';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
@@ -147,6 +149,7 @@ const TransactionConfirmationScreen = () => {
   const [methodName, setMethodName] = useState(null);
   const calculatingGasLimit = useRef(false);
   const [isBalanceEnough, setIsBalanceEnough] = useState(true);
+  const [scam, setScam] = useState(false);
   const {
     accountAddress,
     accountColor,
@@ -167,6 +170,30 @@ const TransactionConfirmationScreen = () => {
     updateTxFee,
     selectedGasPrice,
   } = useGas();
+
+  const checkIfScam = useCallback(
+    async formattedDappUrl => {
+      const isScam = await ethereumUtils.checkIfUrlIsAScam(formattedDappUrl);
+      if (isScam) {
+        CustomAlert({
+          buttons: [
+            {
+              text: 'Proceed Anyway',
+            },
+            {
+              onPress: () => setScam(true),
+              style: 'cancel',
+              text: 'Ignore this request',
+            },
+          ],
+          message:
+            'We found this website in a list of malicious crypto scams.\n\n We recommend you to ignore this request and stop using this website immediately',
+          title: ' 🚨 Heads up! 🚨',
+        });
+      }
+    },
+    [setScam]
+  );
 
   const fetchMethodName = useCallback(async data => {
     if (!data) return;
@@ -242,10 +269,13 @@ const TransactionConfirmationScreen = () => {
       InteractionManager.runAfterInteractions(() => {
         startPollingGasPrices();
         fetchMethodName(params[0].data);
+        checkIfScam(formattedDappUrl);
       });
     }
   }, [
+    checkIfScam,
     fetchMethodName,
+    formattedDappUrl,
     method,
     openAutomatically,
     params,
@@ -709,6 +739,12 @@ const TransactionConfirmationScreen = () => {
 
   const ShortSheetHeight = 457 + safeAreaInsetValues.bottom;
   const TallSheetHeight = 604 + safeAreaInsetValues.bottom;
+
+  useEffect(() => {
+    if (scam) {
+      onCancel();
+    }
+  }, [scam, onCancel]);
 
   return (
     <AnimatedContainer
