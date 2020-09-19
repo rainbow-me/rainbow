@@ -186,6 +186,13 @@ export default function ExchangeModal({
     updateGasLimit();
   }, [updateGasLimit]);
 
+  // Set default gas limit
+  useEffect(() => {
+    setTimeout(() => {
+      updateTxFee(defaultGasLimit);
+    }, 1000);
+  }, [defaultGasLimit, updateGasLimit, updateTxFee]);
+
   const clearForm = useCallback(() => {
     logger.log('[exchange] - clear form');
     inputFieldRef?.current?.clear();
