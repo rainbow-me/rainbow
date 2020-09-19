@@ -311,7 +311,11 @@
     "color": "#25292E",
     "name": "Wrapped Ether"
   },
-  "0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16": {
+  "0x5dbcf33d8c2e976c6b560249878e6f1491bca25c": {
+    "name": "Y Curve Vault",
+    "symbol": "yUSD"
+  },
+  "0x0aacfbec6a24756c20d41914f2caba817c0d8521": {
     "color": "#B2364F",
     "name": "YAM",
     "shadowColor": "#D09AAC"
