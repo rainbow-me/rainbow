@@ -44,7 +44,11 @@ import {
 } from '../components/transaction';
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
 
-import { dappNameOverride, getDappHostname } from '../helpers/dappNameHandler';
+import {
+  dappLogoOverride,
+  dappNameOverride,
+  getDappHostname,
+} from '../helpers/dappNameHandler';
 import {
   convertAmountToNativeDisplay,
   convertHexToString,
@@ -59,6 +63,7 @@ import {
   useKeyboardHeight,
   useTransactionConfirmation,
   useWalletBalances,
+  useWallets,
 } from '../hooks';
 import {
   sendTransaction,
@@ -148,7 +153,8 @@ const TransactionConfirmationScreen = () => {
     accountName,
     accountSymbol,
   } = useAccountProfile();
-  const balances = useWalletBalances();
+  const { wallets } = useWallets();
+  const balances = useWalletBalances(wallets);
   const { nativeCurrency } = useAccountSettings();
   const { keyboardHeight } = useKeyboardHeight();
 
@@ -216,6 +222,10 @@ const TransactionConfirmationScreen = () => {
 
   const authenticatedName = useMemo(() => {
     return dappNameOverride(dappUrl);
+  }, [dappUrl]);
+
+  const overrideLogo = useMemo(() => {
+    return dappLogoOverride(dappUrl);
   }, [dappUrl]);
 
   useEffect(() => {
@@ -693,6 +703,7 @@ const TransactionConfirmationScreen = () => {
 
   const ShortSheetHeight = 457 + safeAreaInsetValues.bottom;
   const TallSheetHeight = 604 + safeAreaInsetValues.bottom;
+  console.log(balances);
 
   return (
     <AnimatedContainer
@@ -716,7 +727,12 @@ const TransactionConfirmationScreen = () => {
           >
             <SheetHandleFixedToTop showBlur={false} />
             <Column marginBottom={17} />
-            <DappLogo dappName={dappName || ''} imageUrl={imageUrl || ''} />
+            <DappLogo
+              dappName={dappName || ''}
+              imageUrl={imageUrl || ''}
+              overrideLogo={overrideLogo}
+              url={formattedDappUrl}
+            />
             <Row marginBottom={5}>
               <Text
                 align="center"
