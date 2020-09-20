@@ -12,17 +12,16 @@ import { UNISWAP_V1_EXCHANGE_ABI } from '../references/uniswap';
 import { web3Provider } from './web3';
 import logger from 'logger';
 
-// TODO JIN - v2 support, remove exchangeAddress usage
 export const getLiquidityInfo = async (
   accountAddress,
-  exchangeContracts,
+  liquidityPoolContracts,
   pairs
 ) => {
-  const promises = map(exchangeContracts, async exchangeAddress => {
+  const promises = map(liquidityPoolContracts, async liquidityPoolAddress => {
     try {
-      const ethReserveCall = web3Provider.getBalance(exchangeAddress);
+      const ethReserveCall = web3Provider.getBalance(liquidityPoolAddress);
       const exchange = new Contract(
-        exchangeAddress,
+        liquidityPoolAddress,
         UNISWAP_V1_EXCHANGE_ABI,
         web3Provider
       );
@@ -99,7 +98,7 @@ export const getLiquidityInfo = async (
         }
       }
 
-      const reserve = await tokenContract.balanceOf(exchangeAddress);
+      const reserve = await tokenContract.balanceOf(liquidityPoolAddress);
 
       const ethBalance = fromWei(
         divide(multiply(ethReserve, balance), totalSupply)
@@ -130,5 +129,5 @@ export const getLiquidityInfo = async (
   });
 
   const results = await Promise.all(promises);
-  return zipObject(exchangeContracts, results);
+  return zipObject(liquidityPoolContracts, results);
 };

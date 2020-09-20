@@ -3,12 +3,12 @@ import { ChainId, Token, WETH } from '@uniswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { keyBy, map, toLower } from 'lodash';
 import { DAI_ADDRESS, tokenOverrides, USDC_ADDRESS } from '../';
-import { default as UNISWAP_V1_EXCHANGE_ABI } from './uniswap-exchange-abi.json';
 import MULTICALL_ABI from './uniswap-multicall-abi.json';
 // TODO JIN - update the testnet curated token list json
 import { default as UNISWAP_TESTNET_TOKEN_LIST } from './uniswap-pairs-testnet.json';
 import UNISWAP_TOKEN_LIST from './uniswap-token-list.json';
 import { abi as UNISWAP_V2_ROUTER_ABI } from './uniswap-v2-router.json';
+import UNISWAP_V1_EXCHANGE_ABI from './v1-exchange-abi';
 
 const CURATED_UNISWAP_TOKEN_LIST = map(UNISWAP_TOKEN_LIST['tokens'], token => {
   const address = toLower(token.address);
