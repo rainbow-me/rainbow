@@ -49,11 +49,131 @@ describe('Import from seed flow', () => {
   //   await Helpers.tap('backup-sheet-imported-cancel-button');
   // });
 
+  it('Should show all wallet sections', async () => {
+    await Helpers.delay(1000);
+    await Helpers.checkIfElementByTextIsVisible('Investments');
+    await Helpers.swipe('wallet-screen', 'up');
+    await Helpers.checkIfElementByTextIsVisible('Collectibles');
+  });
+
   it('Should say "poopcoin.eth" in the Profile Screen header', async () => {
     await Helpers.delay(1000);
     await Helpers.swipe('wallet-screen', 'right');
     await Helpers.delay(2000);
     await Helpers.checkIfElementByTextIsVisible('poopcoin.eth');
+    await Helpers.swipe('profile-screen', 'left');
+  });
+
+  it('Should open send sheet after tapping send fab', async () => {
+    await Helpers.delay(1000);
+    await Helpers.tap('send-fab');
+    await Helpers.delay(1000);
+    await Helpers.checkIfElementByTextIsVisible('To:');
+  });
+
+  it('Should do nothing on typing jibberish send address', async () => {
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('send-asset-form-field');
+    await Helpers.typeText('send-asset-form-field', 'gvuabefhiwdnomks', false);
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('paste-address-button');
+  });
+
+  it('Should show show Contact Button & Asset List on valid public address', async () => {
+    await Helpers.clearField('send-asset-form-field');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('send-asset-form-field');
+    await Helpers.typeText(
+      'send-asset-form-field',
+      '0xF0f21ab2012731542731df194cfF6c77d29cB31A',
+      false
+    );
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('add-contact-button');
+    await Helpers.checkIfVisible('send-asset-list');
+  });
+
+  it('Should show show Contact Button & Asset List on valid ENS address', async () => {
+    await Helpers.clearField('send-asset-form-field');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('send-asset-form-field');
+    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.checkIfVisible('add-contact-button');
+    await Helpers.checkIfVisible('send-asset-list');
+  });
+
+  it('Should display Asset Form after tapping on savings asset', async () => {
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('send-savings-cSAI');
+    await Helpers.tap('send-savings-cSAI');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('selected-asset-field-input');
+  });
+
+  it('Should go back to Asset List after tapping on savings asset', async () => {
+    await Helpers.delay(1000);
+    await Helpers.tap('send-asset-form-cSAI');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('send-asset-list');
+  });
+
+  it('Should display Asset Form after tapping on asset', async () => {
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('send-asset-UNI');
+    await Helpers.tap('send-asset-UNI');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('selected-asset-field-input');
+  });
+
+  it('Should display max button on asset input focus', async () => {
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('selected-asset-field-input');
+    await Helpers.tap('selected-asset-field-input');
+    await Helpers.delay(1000);
+    await Helpers.checkIfElementByTextIsVisible('Max');
+  });
+
+  it('Should display max button on asset quantity input focus', async () => {
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('selected-asset-quantity-field-input');
+    await Helpers.tap('selected-asset-quantity-field-input');
+    await Helpers.delay(1000);
+    await Helpers.checkIfElementByTextIsVisible('Max');
+  });
+
+  it('Should display Insufficient Funds button if exceeds asset balance', async () => {
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('selected-asset-field-input');
+    await Helpers.tap('selected-asset-field-input');
+    await Helpers.typeText('selected-asset-field-input', '1000', true);
+    await Helpers.delay(1000);
+    await Helpers.checkIfElementByTextIsVisible('Insufficient Funds');
+  });
+
+  it('Should prepend a 0 to quantity field on input of .', async () => {
+    await Helpers.tap('send-asset-form-UNI');
+    await Helpers.delay(2000);
+    await Helpers.tap('send-asset-UNI');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('selected-asset-quantity-field-input');
+    await Helpers.tap('selected-asset-quantity-field-input');
+    await Helpers.typeText('selected-asset-quantity-field-input', '.', true);
+    await Helpers.checkIfElementByTextIsVisible('0.');
+  });
+
+  it('Should only show a max of 2 decimals in quantity field', async () => {
+    await Helpers.tap('send-asset-form-UNI');
+    await Helpers.delay(1500);
+    await Helpers.tap('send-asset-UNI');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('selected-asset-quantity-field-input');
+    await Helpers.tap('selected-asset-quantity-field-input');
+    await Helpers.typeText(
+      'selected-asset-quantity-field-input',
+      '8.1219',
+      true
+    );
+    await Helpers.checkIfElementByTextIsVisible('8.12');
   });
 
   afterAll(async () => {

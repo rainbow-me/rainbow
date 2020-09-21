@@ -192,6 +192,7 @@ class HoldToAuthorizeButton extends PureComponent {
       smallButton,
       style,
       theme,
+      testID,
       ...props
     } = this.props;
 
@@ -229,6 +230,7 @@ class HoldToAuthorizeButton extends PureComponent {
                       <HoldToAuthorizeButtonIcon
                         animatedValue={this.longPressProgress}
                         biometryType={biometryType}
+                        testID={testID}
                       />
                     )}
                     <Title smallButton={smallButton}>

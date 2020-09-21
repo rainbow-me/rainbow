@@ -132,6 +132,7 @@ export default function SendHeader({
           onChange={onChangeAddressInput}
           onFocus={onFocus}
           ref={recipientFieldRef}
+          testID="send-asset-form-field"
         />
         {isValidAddress && (
           <AddContactButton

@@ -30,6 +30,7 @@ const SendFab = ({ disabled, isReadOnlyWallet, ...props }) => {
       disabled={disabled}
       onPress={handlePress}
       shadows={FabShadow}
+      testID="send-fab"
     >
       <Icon height={22} marginBottom={4} name="send" width={23} />
     </FloatingActionButton>

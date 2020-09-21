@@ -16,6 +16,7 @@ export default function SendAssetFormField({
   onPressButton,
   placeholder,
   value,
+  testID,
   ...props
 }) {
   const { isTinyPhone } = useDimensions();
@@ -45,6 +46,7 @@ export default function SendAssetFormField({
         onFocus={onFocus}
         onPressButton={handlePressButton}
         placeholder={placeholder}
+        testID={testID + '-input'}
         value={value}
       />
       <Text align="right" color="dark" size={isTinyPhone ? 'bigger' : 'h3'}>
