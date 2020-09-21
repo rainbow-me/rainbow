@@ -174,6 +174,74 @@ describe('Import from seed flow', () => {
       true
     );
     await Helpers.checkIfElementByTextIsVisible('8.12');
+    await Helpers.tap('send-asset-form-UNI');
+  });
+
+  it('Should show Add Contact Screen after tapping Add Contact Button', async () => {
+    await Helpers.checkIfVisible('add-contact-button');
+    await Helpers.tap('add-contact-button');
+    await Helpers.delay(500);
+    //await Helpers.checkIfVisible('contact-profile-avatar-button');
+    await Helpers.checkIfVisible('contact-profile-name-input');
+  });
+
+  it('Should do nothing on Add Contact cancel', async () => {
+    await Helpers.tapByText('Cancel');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('add-contact-button');
+    await Helpers.tap('add-contact-button');
+    await Helpers.delay(2000);
+    await Helpers.tapByText('Cancel');
+  });
+
+  it('Should update address field to show contact name & show edit contact button', async () => {
+    await Helpers.delay(1000);
+    await Helpers.tap('add-contact-button');
+    await Helpers.delay(1000);
+    await Helpers.typeText('contact-profile-name-input', 'poopcoin.test', true);
+    await Helpers.tap('contact-profile-add-button');
+    await Helpers.checkIfElementByTextIsVisible('poopcoin.test');
+    await Helpers.checkIfVisible('edit-contact-button');
+  });
+
+  it('Should show Asset List & Edit Contact Button on cancel', async () => {
+    await Helpers.checkIfVisible('edit-contact-button');
+    await Helpers.tap('edit-contact-button');
+    await Helpers.delay(2000);
+    await Helpers.tapByText('Cancel');
+    await Helpers.delay(2000);
+  });
+
+  it('Should updated contact name after edit contact', async () => {
+    await Helpers.checkIfVisible('edit-contact-button');
+    await Helpers.tap('edit-contact-button');
+    await Helpers.delay(2000);
+    await Helpers.tapByText('Edit Contact');
+    await Helpers.delay(2000);
+    await Helpers.clearField('contact-profile-name-input');
+    await Helpers.typeText('contact-profile-name-input', 'testcoin.eth', true);
+    await Helpers.tapByText('Done');
+    await Helpers.delay(1000);
+    await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
+  });
+
+  /*it('Should load contacts if contacts exist', async () => {
+    await Helpers.delay(1000);
+    await Helpers.swipe('send-asset-form-field', 'down');
+    await Helpers.delay(1000);
+    await Helpers.tap('send-fab');
+    await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
+  });*/
+
+  it('Should show Add Contact Button after deleting contact', async () => {
+    await Helpers.checkIfVisible('edit-contact-button');
+    await Helpers.tap('edit-contact-button');
+    await Helpers.delay(1000);
+    await Helpers.tapByText('Delete Contact');
+    await Helpers.delay(1000);
+    await Helpers.tapByText('Delete Contact');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('add-contact-button');
   });
 
   afterAll(async () => {
