@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
 import { HoldToAuthorizeButton } from '../buttons';
@@ -16,6 +15,7 @@ const ConfirmExchangeButton = ({
   isAuthorizing,
   isSufficientBalance,
   isSufficientGas,
+  isSufficientLiquidity,
   onSubmit,
   slippage,
   type,
@@ -29,6 +29,8 @@ const ConfirmExchangeButton = ({
       : 'Hold to Swap';
   if (!isSufficientBalance) {
     label = 'Insufficient Funds';
+  } else if (!isSufficientLiquidity) {
+    label = 'Insufficient Liquidity';
   } else if (!isSufficientGas) {
     label = 'Insufficient ETH';
   } else if (slippage > SlippageWarningTheshold) {
@@ -37,7 +39,11 @@ const ConfirmExchangeButton = ({
     label = 'Enter an Amount';
   }
 
-  const isDisabled = disabled || !isSufficientBalance || !isSufficientGas;
+  const isDisabled =
+    disabled ||
+    !isSufficientBalance ||
+    !isSufficientGas ||
+    !isSufficientLiquidity;
 
   return (
     <HoldToAuthorizeButton
@@ -53,17 +59,6 @@ const ConfirmExchangeButton = ({
       {...props}
     />
   );
-};
-
-ConfirmExchangeButton.propTypes = {
-  disabled: PropTypes.bool,
-  isAuthorizing: PropTypes.bool,
-  isDeposit: PropTypes.bool,
-  isSufficientBalance: PropTypes.bool,
-  isSufficientGas: PropTypes.bool,
-  onSubmit: PropTypes.func,
-  slippage: PropTypes.number,
-  type: PropTypes.oneOf(Object.values(ExchangeModalTypes)),
 };
 
 export default React.memo(ConfirmExchangeButton);
