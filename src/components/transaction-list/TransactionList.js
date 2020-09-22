@@ -321,7 +321,7 @@ export default function TransactionList({
           : r.imageUrl;
         return {
           ...r,
-          dappName: dappNameOverride(r.dappUrl),
+          dappName: dappNameOverride(r.dappUrl) || r.dappName || '',
           imageUrl: logo,
         };
       }),
