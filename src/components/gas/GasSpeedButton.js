@@ -71,7 +71,12 @@ const getActionLabel = type => {
   }
 };
 
-const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
+const GasSpeedButton = ({
+  dontBlur,
+  onCustomGasBlur,
+  onCustomGasFocus,
+  type,
+}) => {
   const { nativeCurrencySymbol } = useAccountSettings();
   const inputRef = useRef(null);
   const {
@@ -239,8 +244,17 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
   }, [onCustomGasBlur]);
 
   const handleInputButtonManager = useCallback(() => {
-    const complete = () =>
-      inputFocused ? inputRef.current?.blur() : inputRef.current?.focus();
+    const complete = () => {
+      if (inputFocused) {
+        if (dontBlur) {
+          handleCustomGasBlur();
+        } else {
+          inputRef.current?.blur();
+        }
+      } else {
+        inputRef.current?.focus();
+      }
+    };
     if (!customGasPriceInput || !inputRef.current?.isFocused()) {
       complete();
       ReactNativeHapticFeedback.trigger('impactMedium');
@@ -275,7 +289,13 @@ const GasSpeedButton = ({ onCustomGasBlur, onCustomGasFocus, type }) => {
     } else {
       complete();
     }
-  }, [customGasPriceInput, gasPrices, inputFocused]);
+  }, [
+    customGasPriceInput,
+    dontBlur,
+    gasPrices.fast.value.amount,
+    gasPrices.slow.value.amount,
+    inputFocused,
+  ]);
 
   return (
     <Container as={ButtonPressAnimation} onPress={handlePress}>

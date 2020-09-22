@@ -597,7 +597,11 @@ export default function ExchangeModal({
               </Centered>
             </Fragment>
           )}
-          <GasSpeedButton onCustomGasBlur={handleCustomGasBlur} type={type} />
+          <GasSpeedButton
+            dontBlur
+            onCustomGasBlur={handleCustomGasBlur}
+            type={type}
+          />
         </AnimatedFloatingPanels>
       </Centered>
     </KeyboardFixedOpenLayout>
