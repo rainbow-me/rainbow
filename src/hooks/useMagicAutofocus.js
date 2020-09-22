@@ -5,7 +5,7 @@ import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { setListener } from '../navigation/nativeStackHelpers';
 import useInteraction from './useInteraction';
 
-const { currentlyFocusedField, focusTextInput } = TextInput.State;
+const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 
 let timeout = null;
 let delay = false;
@@ -39,7 +39,7 @@ export default function useMagicAutofocus(
       return nextInput && focusTextInput(nextInput);
     }
 
-    if (lastFocusedInputHandle.current !== currentlyFocusedField()) {
+    if (lastFocusedInputHandle.current !== currentlyFocusedInput()) {
       return focusTextInput(lastFocusedInputHandle.current);
     }
   }, [customTriggerFocusCallback, defaultAutofocusInputRef]);
