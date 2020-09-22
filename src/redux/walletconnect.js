@@ -145,6 +145,7 @@ export const walletConnectOnSessionRequest = (
 
 const listenOnNewMessages = walletConnector => (dispatch, getState) => {
   walletConnector.on('call_request', async (error, payload) => {
+    logger.log('WC Request!', error, payload);
     if (error) throw error;
     const { clientId, peerId, peerMeta } = walletConnector;
     const requestId = payload.id;

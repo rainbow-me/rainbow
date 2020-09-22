@@ -1,10 +1,14 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import {
+  dappLogoOverride,
+  dappNameOverride,
+} from '../../helpers/dappNameHandler';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContextMenu } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
-import { TruncatedText } from '../text';
+import { Text, TruncatedText } from '../text';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
 import { colors, padding } from '@rainbow-me/styles';
 
@@ -31,6 +35,18 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
     [dappName, dappUrl, walletConnectDisconnectAllByDappName]
   );
 
+  const authenticatedName = useMemo(() => {
+    return dappNameOverride(dappUrl);
+  }, [dappUrl]);
+
+  const overrideLogo = useMemo(() => {
+    return dappLogoOverride(dappUrl);
+  }, [dappUrl]);
+
+  const name = useMemo(() => {
+    return authenticatedName || dappName || '';
+  }, [authenticatedName, dappName]);
+
   return (
     <Row align="center" height={WalletConnectListItemHeight}>
       <Row
@@ -42,6 +58,7 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
           backgroundColor={colors.white}
           dappName={dappName}
           imageUrl={dappIcon}
+          overrideLogo={overrideLogo}
           size={VendorLogoIconSize}
         />
         <ColumnWithMargins css={padding(0, 19, 1.5, 12)} flex={1} margin={2}>
@@ -50,7 +67,18 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
             size="lmedium"
             weight="bold"
           >
-            {dappName || 'Unknown Application'}
+            {name || 'Unknown Application'}{' '}
+            {authenticatedName && (
+              <Text
+                align="center"
+                color={colors.appleBlue}
+                letterSpacing="roundedMedium"
+                size="lmedium"
+                weight="bold"
+              >
+                {' 􀇻'}
+              </Text>
+            )}
           </TruncatedText>
           <TruncatedText
             color={colors.alpha(colors.blueGreyDark, 0.6)}
@@ -67,7 +95,7 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
           destructiveButtonIndex={0}
           onPressActionSheet={handlePressActionSheet}
           options={['Disconnect', lang.t('wallet.action.cancel')]}
-          title={`Would you like to disconnect from ${dappName}?`}
+          title={`Would you like to disconnect from ${name}?`}
         />
       </Centered>
     </Row>
