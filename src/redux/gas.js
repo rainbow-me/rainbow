@@ -81,7 +81,7 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
       try {
         const { gasPrices: existingGasPrice } = getState().gas;
 
-        let data;
+        let adjustedGasPrices;
         let source = 'etherscan';
         try {
           // Use etherscan as our Gas Price Oracle
@@ -95,7 +95,7 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
             safeLow: Number(etherscanGasPrices.SafeGasPrice),
           };
           // Add gas estimates
-          data = await etherscanGetGasEstimates(priceData);
+          adjustedGasPrices = await etherscanGetGasEstimates(priceData);
         } catch (e) {
           logger.log('falling back to eth gas station', e);
           source = 'ethGasStation';
@@ -103,9 +103,9 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
           const {
             data: ethGasStationPrices,
           } = await ethGasStationGetGasPrices();
-          data = ethGasStationPrices;
+          // Only bumping for ETHGasStation
+          adjustedGasPrices = bumpGasPrices(ethGasStationPrices);
         }
-        const adjustedGasPrices = bumpGasPrices(data);
 
         let gasPrices = parseGasPrices(adjustedGasPrices, source);
         if (existingGasPrice[CUSTOM] !== null) {

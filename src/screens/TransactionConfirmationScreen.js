@@ -28,7 +28,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Divider from '../components/Divider';
 import { Alert as CustomAlert } from '../components/alerts';
-import { HoldToAuthorizeButton } from '../components/buttons';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import { GasSpeedButton } from '../components/gas';
@@ -160,62 +159,6 @@ const TransactionConfirmationScreen = () => {
   const balances = useWalletBalances(wallets);
   const { nativeCurrency } = useAccountSettings();
   const keyboardHeight = useKeyboardHeight();
-
-  const {
-    gasLimit,
-    gasPrices,
-    isSufficientGas,
-    startPollingGasPrices,
-    stopPollingGasPrices,
-    updateTxFee,
-    selectedGasPrice,
-  } = useGas();
-
-  const checkIfScam = useCallback(
-    async formattedDappUrl => {
-      const isScam = await ethereumUtils.checkIfUrlIsAScam(formattedDappUrl);
-      if (isScam) {
-        CustomAlert({
-          buttons: [
-            {
-              text: 'Proceed Anyway',
-            },
-            {
-              onPress: () => setScam(true),
-              style: 'cancel',
-              text: 'Ignore this request',
-            },
-          ],
-          message:
-            'We found this website in a list of malicious crypto scams.\n\n We recommend you to ignore this request and stop using this website immediately',
-          title: ' 🚨 Heads up! 🚨',
-        });
-      }
-    },
-    [setScam]
-  );
-
-  const fetchMethodName = useCallback(async data => {
-    if (!data) return;
-    const methodSignaturePrefix = data.substr(0, 10);
-    let fallbackHandler;
-    try {
-      fallbackHandler = setTimeout(() => {
-        setMethodName('Transaction Request');
-      }, 5000);
-      const { name } = await methodRegistryLookupAndParse(
-        methodSignaturePrefix
-      );
-      if (name) {
-        setMethodName(name);
-        clearTimeout(fallbackHandler);
-      }
-    } catch (e) {
-      setMethodName('Transaction Request');
-      clearTimeout(fallbackHandler);
-    }
-  }, []);
-
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
   const { goBack } = useNavigation();
@@ -245,8 +188,19 @@ const TransactionConfirmationScreen = () => {
     },
   } = routeParams;
 
-  const request = displayDetails.request;
+  const isMessageRequest = isMessageDisplayType(method);
 
+  const {
+    gasLimit,
+    gasPrices,
+    isSufficientGas,
+    startPollingGasPrices,
+    stopPollingGasPrices,
+    updateTxFee,
+    selectedGasPrice,
+  } = useGas();
+
+  const request = displayDetails.request;
   const openAutomatically = routeParams?.openAutomatically;
 
   const formattedDappUrl = useMemo(() => {
@@ -261,21 +215,72 @@ const TransactionConfirmationScreen = () => {
     return dappLogoOverride(dappUrl);
   }, [dappUrl]);
 
+  const checkIfScam = useCallback(
+    async formattedDappUrl => {
+      const isScam = await ethereumUtils.checkIfUrlIsAScam(formattedDappUrl);
+      if (isScam) {
+        CustomAlert({
+          buttons: [
+            {
+              text: 'Proceed Anyway',
+            },
+            {
+              onPress: () => setScam(true),
+              style: 'cancel',
+              text: 'Ignore this request',
+            },
+          ],
+          message:
+            'We found this website in a list of malicious crypto scams.\n\n We recommend you to ignore this request and stop using this website immediately',
+          title: ' 🚨 Heads up! 🚨',
+        });
+      }
+    },
+    [setScam]
+  );
+
+  const fetchMethodName = useCallback(
+    async data => {
+      if (!data) return;
+      const methodSignaturePrefix = data.substr(0, 10);
+      let fallbackHandler;
+      try {
+        fallbackHandler = setTimeout(() => {
+          setMethodName('Transaction Request');
+        }, 5000);
+        const { name } = await methodRegistryLookupAndParse(
+          methodSignaturePrefix
+        );
+        if (name) {
+          setMethodName(name);
+          clearTimeout(fallbackHandler);
+        }
+      } catch (e) {
+        setMethodName('Transaction Request');
+        clearTimeout(fallbackHandler);
+      }
+    },
+    [setMethodName]
+  );
+
   useEffect(() => {
     if (openAutomatically && !isEmulatorSync()) {
       Vibration.vibrate();
     }
-    if (!isMessageDisplayType(method)) {
-      InteractionManager.runAfterInteractions(() => {
+    InteractionManager.runAfterInteractions(() => {
+      if (!isMessageRequest) {
         startPollingGasPrices();
         fetchMethodName(params[0].data);
-        checkIfScam(formattedDappUrl);
-      });
-    }
+      } else {
+        setMethodName(lang.t('wallet.message_signing.request'));
+      }
+      checkIfScam(formattedDappUrl);
+    });
   }, [
     checkIfScam,
     fetchMethodName,
     formattedDappUrl,
+    isMessageRequest,
     method,
     openAutomatically,
     params,
@@ -285,7 +290,7 @@ const TransactionConfirmationScreen = () => {
   const closeScreen = useCallback(
     canceled => {
       goBack();
-      if (!isMessageDisplayType(method)) {
+      if (!isMessageRequest) {
         stopPollingGasPrices();
       }
       if (pendingRedirect) {
@@ -299,7 +304,14 @@ const TransactionConfirmationScreen = () => {
         });
       }
     },
-    [goBack, stopPollingGasPrices, pendingRedirect, method, dispatch]
+    [
+      goBack,
+      isMessageRequest,
+      pendingRedirect,
+      stopPollingGasPrices,
+      method,
+      dispatch,
+    ]
   );
 
   const onCancel = useCallback(async () => {
@@ -308,13 +320,15 @@ const TransactionConfirmationScreen = () => {
       if (callback) {
         callback({ error: 'User cancelled the request' });
       }
-      if (requestId) {
-        await dispatch(walletConnectSendStatus(peerId, requestId, null));
-        dispatch(removeRequest(requestId));
-      }
-      const rejectionType =
-        method === SEND_TRANSACTION ? 'transaction' : 'signature';
-      analytics.track(`Rejected WalletConnect ${rejectionType} request`);
+      setTimeout(async () => {
+        if (requestId) {
+          await dispatch(walletConnectSendStatus(peerId, requestId, null));
+          dispatch(removeRequest(requestId));
+        }
+        const rejectionType =
+          method === SEND_TRANSACTION ? 'transaction' : 'signature';
+        analytics.track(`Rejected WalletConnect ${rejectionType} request`);
+      }, 300);
     } catch (error) {
       logger.log('error while handling cancel request', error);
       closeScreen(true);
@@ -358,16 +372,24 @@ const TransactionConfirmationScreen = () => {
     if (
       !isEmpty(gasPrices) &&
       !calculatingGasLimit.current &&
-      !isMessageDisplayType(method)
+      !isMessageRequest
     ) {
       InteractionManager.runAfterInteractions(() => {
         calculateGasLimit();
       });
     }
-  }, [calculateGasLimit, gasLimit, gasPrices, method, params, updateTxFee]);
+  }, [
+    calculateGasLimit,
+    gasLimit,
+    gasPrices,
+    isMessageRequest,
+    method,
+    params,
+    updateTxFee,
+  ]);
 
   useEffect(() => {
-    if (isMessageDisplayType(method)) {
+    if (isMessageRequest) {
       setIsBalanceEnough(true);
       return;
     }
@@ -401,6 +423,7 @@ const TransactionConfirmationScreen = () => {
   }, [
     allAssets,
     isBalanceEnough,
+    isMessageRequest,
     isSufficientGas,
     method,
     params,
@@ -550,14 +573,20 @@ const TransactionConfirmationScreen = () => {
   ]);
 
   const onConfirm = useCallback(async () => {
-    if (isMessageDisplayType(method)) {
+    if (isMessageRequest) {
       return handleSignMessage();
     }
     if (!isBalanceEnough) return;
     return handleConfirmTransaction();
-  }, [handleConfirmTransaction, handleSignMessage, isBalanceEnough, method]);
+  }, [
+    handleConfirmTransaction,
+    handleSignMessage,
+    isBalanceEnough,
+    isMessageRequest,
+  ]);
 
-  const onLongPressSend = useCallback(async () => {
+  const onPressSend = useCallback(async () => {
+    if (isAuthorizing) return;
     setIsAuthorizing(true);
     try {
       await onConfirm();
@@ -565,49 +594,19 @@ const TransactionConfirmationScreen = () => {
     } catch (error) {
       setIsAuthorizing(false);
     }
-  }, [onConfirm]);
-
-  const renderSendButton = useCallback(() => {
-    let label = `Hold to ${method === SEND_TRANSACTION ? 'Send' : 'Sign'}`;
-
-    let ready = true;
-    // If we don't know about gas prices yet
-    // set the button state to "loading"
-    if (!isBalanceEnough && isSufficientGas === undefined) {
-      label = 'Loading...';
-      ready = false;
-    }
-
-    return isBalanceEnough === false && isSufficientGas !== undefined ? (
-      <HoldToAuthorizeButton
-        disabled
-        hideBiometricIcon
-        label="Insufficient Funds"
-      />
-    ) : (
-      <HoldToAuthorizeButton
-        isAuthorizing={isAuthorizing}
-        label={label}
-        onLongPress={ready ? onLongPressSend : NOOP}
-      />
-    );
-  }, [
-    isAuthorizing,
-    isBalanceEnough,
-    isSufficientGas,
-    method,
-    onLongPressSend,
-  ]);
+  }, [isAuthorizing, onConfirm]);
 
   const renderTransactionButtons = useCallback(() => {
     let ready = true;
+    const isMessage = isMessageRequest;
     // If we don't know about gas prices yet
     // set the button state to "loading"
-    if (!isBalanceEnough && isSufficientGas === undefined) {
+    if (!isMessage && !isBalanceEnough && isSufficientGas === undefined) {
       ready = false;
     }
-
-    return isBalanceEnough === false && isSufficientGas !== undefined ? (
+    return !isMessage &&
+      isBalanceEnough === false &&
+      isSufficientGas !== undefined ? (
       <Column marginTop={24} width="100%">
         <SheetActionButton
           color={colors.transparent}
@@ -625,7 +624,7 @@ const TransactionConfirmationScreen = () => {
           opacity: ${ready ? 1 : 0.5};
         `}
         margin={15}
-        marginTop={24}
+        marginTop={isMessage ? 0 : 24}
       >
         <SheetActionButton
           color={colors.alpha(colors.blueGreyDark, 0.06)}
@@ -639,26 +638,26 @@ const TransactionConfirmationScreen = () => {
         <SheetActionButton
           color={colors.appleBlue}
           label="􀎽 Confirm"
-          onPress={ready ? onLongPressSend : NOOP}
+          onPress={ready ? onPressSend : NOOP}
           size="big"
           weight="bold"
         />
       </RowWithMargins>
     );
-  }, [isBalanceEnough, isSufficientGas, onCancel, onLongPressSend]);
-
-  // const requestHeader = isMessageDisplayType(method)
-  //   ? lang.t('wallet.message_signing.request')
-  //   : lang.t('wallet.transaction.request');
+  }, [
+    isBalanceEnough,
+    isMessageRequest,
+    isSufficientGas,
+    onCancel,
+    onPressSend,
+  ]);
 
   const renderTransactionSection = useCallback(() => {
-    if (isMessageDisplayType(method)) {
+    if (isMessageRequest) {
       return (
-        <MessageSigningSection
-          message={request}
-          method={method}
-          sendButton={renderSendButton()}
-        />
+        <RowWithMargins css={padding(24, 0)}>
+          <MessageSigningSection message={request} method={method} />
+        </RowWithMargins>
       );
     }
 
@@ -693,10 +692,9 @@ const TransactionConfirmationScreen = () => {
           value: get(request, 'value'),
         }}
         method={method}
-        sendButton={renderSendButton()}
       />
     );
-  }, [allAssets, method, nativeCurrency, renderSendButton, request]);
+  }, [allAssets, isMessageRequest, method, nativeCurrency, request]);
 
   const handleCustomGasFocus = useCallback(() => {
     setKeyboardVisible(true);
@@ -739,6 +737,13 @@ const TransactionConfirmationScreen = () => {
 
   const ShortSheetHeight = 457 + safeAreaInsetValues.bottom;
   const TallSheetHeight = 604 + safeAreaInsetValues.bottom;
+  const MessageSheetHeight =
+    (method === SIGN_TYPED_DATA ? 640 : 495) + safeAreaInsetValues.bottom;
+  const sheetHeight = isMessageRequest
+    ? MessageSheetHeight
+    : amount && amount !== '0.00'
+    ? TallSheetHeight
+    : ShortSheetHeight;
 
   useEffect(() => {
     if (scam) {
@@ -753,7 +758,7 @@ const TransactionConfirmationScreen = () => {
       <SlackSheet
         backgroundColor={colors.transparent}
         borderRadius={0}
-        height={amount ? TallSheetHeight : ShortSheetHeight}
+        height={sheetHeight}
         hideHandle
         scrollEnabled={false}
       >
@@ -762,6 +767,7 @@ const TransactionConfirmationScreen = () => {
             backgroundColor={colors.white}
             borderRadius={39}
             direction="column"
+            paddingBottom={isMessageRequest ? safeAreaInsetValues.bottom : 0}
             paddingHorizontal={19}
             paddingTop={24}
             style={animatedSheetStyles}
@@ -845,7 +851,7 @@ const TransactionConfirmationScreen = () => {
               </Column>
             </RowWithMargins>
           </AnimatedSheet>
-          {!isMessageDisplayType(method) && (
+          {!isMessageRequest && (
             <GasSpeedButtonContainer>
               <GasSpeedButton
                 onCustomGasBlur={handleCustomGasBlur}
