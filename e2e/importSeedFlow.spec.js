@@ -221,21 +221,21 @@ describe('Import from seed flow', () => {
     await Helpers.clearField('contact-profile-name-input');
     await Helpers.typeText('contact-profile-name-input', 'testcoin.eth', true);
     await Helpers.tapByText('Done');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
   });
 
-  /*it('Should load contacts if contacts exist', async () => {
-    await Helpers.delay(1000);
-    await Helpers.swipe('send-asset-form-field', 'down');
+  it('Should load contacts if contacts exist', async () => {
+    await Helpers.delay(5000);
+    await Helpers.swipe('send-asset-form-field', 'down', 'slow');
+    //await Helpers.swipe('sheet-header', 'down', 'slow');
     await Helpers.delay(1000);
     await Helpers.tap('send-fab');
     await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
-  });*/
+  });
 
   it('Should show Add Contact Button after deleting contact', async () => {
-    await Helpers.checkIfVisible('edit-contact-button');
-    await Helpers.tap('edit-contact-button');
+    await Helpers.tapByText('testcoin.eth');
     await Helpers.delay(1000);
     await Helpers.tapByText('Delete Contact');
     await Helpers.delay(1000);

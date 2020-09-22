@@ -131,7 +131,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
             testID="contact-profile-cancel-button"
           >
             <Text
-              color={colors.alpha(colors.blueGreyDark, 1)}
+              color={colors.alpha(colors.blueGreyDark, 0.4)}
               size="lmedium"
               weight="regular"
             >
