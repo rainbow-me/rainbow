@@ -12,7 +12,6 @@ import useExperimentalFlag, {
 import {
   dappLogoOverride,
   dappNameOverride,
-  getDappHostname,
 } from '../../helpers/dappNameHandler';
 import showWalletErrorAlert from '../../helpers/support';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
@@ -314,11 +313,8 @@ export default function TransactionList({
   const data = useMemo(
     () => ({
       requests: requests.map(r => {
-        const hostname = getDappHostname(r.dappUrl);
         const overrideLogo = dappLogoOverride(r.dappUrl);
-        const logo = overrideLogo
-          ? `https://raw.githubusercontent.com/rainbow-me/rainbow/%40bruno/new-transaction-requests/src/assets/dappLogos/${hostname}.jpg`
-          : r.imageUrl;
+        const logo = overrideLogo ? overrideLogo : r.imageUrl;
         return {
           ...r,
           dappName: dappNameOverride(r.dappUrl) || r.dappName || '',

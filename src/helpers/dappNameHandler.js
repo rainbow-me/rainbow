@@ -1,5 +1,7 @@
-/* eslint-disable import/no-commonjs */
 import URL from 'url-parse';
+
+const buildAssetUrl = hostname =>
+  `https://raw.githubusercontent.com/rainbow-me/rainbow/%40bruno/new-transaction-requests/src/assets/dappLogos/${hostname}.jpg`;
 
 const DisplayDappNames = Object.freeze({
   '1inch.exchange': {
@@ -8,11 +10,11 @@ const DisplayDappNames = Object.freeze({
   },
   '88mph.app': {
     name: '88mph',
-    uri: require('../assets/dappLogos/88mph.app.jpg'),
+    uri: buildAssetUrl('88mph.app'),
   },
   'aave.com': {
     name: 'Aave',
-    uri: require('../assets/dappLogos/aave.com.jpg'),
+    uri: buildAssetUrl('aave.com'),
   },
   'balancer.exchange': {
     name: 'Balancer',
@@ -20,11 +22,11 @@ const DisplayDappNames = Object.freeze({
   },
   'compound.finance': {
     name: 'Compound',
-    uri: require('../assets/dappLogos/compound.finance.jpg'),
+    uri: buildAssetUrl('compound.finance'),
   },
   'cream.finance': {
     name: 'Cream',
-    uri: require('../assets/dappLogos/cream.finance.jpg'),
+    uri: buildAssetUrl('cream.finance'),
   },
   'curve.fi': {
     name: 'Curve',
@@ -32,11 +34,11 @@ const DisplayDappNames = Object.freeze({
   },
   'defisaver.com': {
     name: 'DeFi Saver',
-    uri: require('../assets/dappLogos/defisaver.com.jpg'),
+    uri: buildAssetUrl('defisaver.com'),
   },
   'dydx.exchange': {
     name: 'dYdX',
-    uri: require('../assets/dappLogos/dydx.exchange.jpg'),
+    uri: buildAssetUrl('dydx.exchange'),
   },
   'instadapp.io': {
     name: 'Instadapp',
@@ -44,15 +46,15 @@ const DisplayDappNames = Object.freeze({
   },
   'kyberswap.com': {
     name: 'KyberSwap',
-    uri: require('../assets/dappLogos/kyberswap.com.jpg'),
+    uri: buildAssetUrl('kyberswap.com'),
   },
   'matcha.xyz': {
     name: 'Matcha',
-    uri: require('../assets/dappLogos/matcha.xyz.jpg'),
+    uri: buildAssetUrl('matcha.xyz'),
   },
   'mstable.org': {
     name: 'mStable',
-    uri: require('../assets/dappLogos/mstable.org.jpg'),
+    uri: buildAssetUrl('mstable.org'),
   },
   'oasis.app': {
     name: 'Oasis',
@@ -68,23 +70,23 @@ const DisplayDappNames = Object.freeze({
   },
   'pooltogether.com': {
     name: 'PoolTogether',
-    uri: require('../assets/dappLogos/pooltogether.com.jpg'),
+    uri: buildAssetUrl('pooltogether.com'),
   },
   'rarible.com': {
     name: 'Rarible',
-    uri: require('../assets/dappLogos/rarible.com.jpg'),
+    uri: buildAssetUrl('rarible.com'),
   },
   'sushiswapclassic.org': {
     name: 'SushiSwap',
-    uri: require('../assets/dappLogos/sushiswapclassic.org.jpg'),
+    uri: buildAssetUrl('sushiswapclassic.org'),
   },
   'swerve.fi': {
     name: 'Swerve',
-    uri: require('../assets/dappLogos/swerve.fi.jpg'),
+    uri: buildAssetUrl('swerve.fi'),
   },
   'synthetix.exchange': {
     name: 'Synthetix',
-    uri: require('../assets/dappLogos/synthetix.exchange.jpg'),
+    uri: buildAssetUrl('synthetix.exchange'),
   },
   'umaproject.org': {
     name: 'UMA',
@@ -100,7 +102,7 @@ const DisplayDappNames = Object.freeze({
   },
   'yam.finance': {
     name: 'YAM',
-    uri: require('../assets/dappLogos/yam.finance.jpg'),
+    uri: buildAssetUrl('yam.finance'),
   },
   'yearn.finance': {
     name: 'yearn',
@@ -108,7 +110,7 @@ const DisplayDappNames = Object.freeze({
   },
   'zapper.fi': {
     name: 'Zapper',
-    uri: require('../assets/dappLogos/zapper.fi.jpg'),
+    uri: buildAssetUrl('zapper.fi'),
   },
   'zerion.io': {
     name: 'Zerion',

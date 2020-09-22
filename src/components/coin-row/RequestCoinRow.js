@@ -1,10 +1,20 @@
 import { addHours, differenceInMinutes, isPast } from 'date-fns';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { connect } from 'react-redux';
-import { compose, onlyUpdateForKeys, withProps } from 'recompact';
-import { withNavigation } from '../../navigation/Navigation';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { useDispatch } from 'react-redux';
+import {
+  dappLogoOverride,
+  dappNameOverride,
+} from '../../helpers/dappNameHandler';
+import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
+import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { RequestCoinIcon } from '../coin-icon';
 import { RowWithMargins } from '../layout';
@@ -42,53 +52,79 @@ TopRow.propTypes = {
   expiresAt: PropTypes.number,
 };
 
-class RequestCoinRow extends React.PureComponent {
-  static propTypes = {
-    ...TopRow.propTypes,
-    item: PropTypes.object,
-    onPressOpen: PropTypes.func,
-  };
-
-  componentDidMount = () => this.handleExpiredRequests();
-
-  componentDidUpdate = () => this.handleExpiredRequests();
-
-  buttonRef = React.createRef();
-
-  handleExpiredRequests = () => {
-    if (isPast(this.props.expiresAt)) {
-      this.props.removeExpiredRequest(this.props.item.requestId);
-    }
-  };
-
-  handlePressOpen = () => {
-    this.props.navigation.navigate(Routes.CONFIRM_REQUEST, {
-      transactionDetails: this.props.item,
+const RequestCoinRow = ({ item, ...props }) => {
+  const buttonRef = useRef();
+  const dispatch = useDispatch();
+  const { navigate } = useNavigation();
+  const handlePressOpen = useCallback(() => {
+    navigate(Routes.CONFIRM_REQUEST, {
+      transactionDetails: item,
     });
+  }, [item, navigate]);
+
+  const [expiresAt, setExpiresAt] = useState(null);
+  const [expirationColor, setExpirationColor] = useState(null);
+  const [percentElapsed, setPercentElapsed] = useState(null);
+
+  const overrideName = useMemo(() => {
+    return dappNameOverride(item?.dappUrl);
+  }, [item]);
+
+  const overrideLogo = useMemo(() => {
+    return dappLogoOverride(item?.dappUrl);
+  }, [item]);
+
+  useEffect(() => {
+    if (item?.displayDetails?.timestampInMs) {
+      const _createdAt = new Date(item.displayDetails.timestampInMs);
+      const _expiresAt = addHours(_createdAt, 1);
+      const _percentElapsed = getPercentageOfTimeElapsed(
+        _createdAt,
+        _expiresAt
+      );
+      setExpiresAt(_expiresAt);
+      setPercentElapsed(_percentElapsed);
+      setExpirationColor(
+        _percentElapsed > 25 ? colors.appleBlue : colors.orange
+      );
+    }
+  }, [item]);
+
+  const handleExpiredRequests = useCallback(() => {
+    if (isPast(expiresAt)) {
+      dispatch(removeRequest(item.requestId));
+    }
+  }, [dispatch, expiresAt, item.requestId]);
+
+  useEffect(() => {
+    handleExpiredRequests();
+  }, [expiresAt, handleExpiredRequests]);
+
+  const overridenItem = {
+    ...item,
+    dappName: overrideName || item.dappName,
+    imageUrl: overrideLogo || item.imageUrl,
+    percentElapsed,
   };
 
-  render = () => {
-    const { expirationColor, expiresAt, item, ...props } = this.props;
-
-    return (
-      <ButtonPressAnimation
-        onPress={this.handlePressOpen}
-        scaleTo={0.98}
-        waitFor={this.buttonRef}
-      >
-        <CoinRow
-          {...item}
-          {...props}
-          bottomRowRender={BottomRow}
-          coinIconRender={RequestCoinIcon}
-          expirationColor={expirationColor}
-          expiresAt={expiresAt}
-          topRowRender={TopRow}
-        />
-      </ButtonPressAnimation>
-    );
-  };
-}
+  return (
+    <ButtonPressAnimation
+      onPress={handlePressOpen}
+      scaleTo={0.98}
+      waitFor={buttonRef}
+    >
+      <CoinRow
+        {...props}
+        {...overridenItem}
+        bottomRowRender={BottomRow}
+        coinIconRender={RequestCoinIcon}
+        expirationColor={expirationColor}
+        expiresAt={expiresAt}
+        topRowRender={TopRow}
+      />
+    </ButtonPressAnimation>
+  );
+};
 
 const getPercentageOfTimeElapsed = (startDate, endDate) => {
   const originalDifference = differenceInMinutes(endDate, startDate);
@@ -97,26 +133,4 @@ const getPercentageOfTimeElapsed = (startDate, endDate) => {
   return Math.floor((currentDifference * 100) / originalDifference);
 };
 
-export default compose(
-  connect(null, { removeExpiredRequest: removeRequest }),
-  withNavigation,
-  withProps(
-    ({
-      item: {
-        displayDetails: { timestampInMs },
-      },
-    }) => {
-      const createdAt = new Date(timestampInMs);
-      const expiresAt = addHours(createdAt, 1);
-      const percentElapsed = getPercentageOfTimeElapsed(createdAt, expiresAt);
-
-      return {
-        createdAt,
-        expirationColor: percentElapsed > 25 ? colors.appleBlue : colors.orange,
-        expiresAt,
-        percentElapsed,
-      };
-    }
-  ),
-  onlyUpdateForKeys(['expirationColor', 'expiresAt', 'percentElapsed'])
-)(RequestCoinRow);
+export default magicMemo(RequestCoinRow);

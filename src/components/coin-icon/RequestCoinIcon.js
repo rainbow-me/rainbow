@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { CircularProgress } from 'react-native-circular-progress';
 import styled from 'styled-components/primitives';
 import RequestVendorLogoIcon from './RequestVendorLogoIcon';
+import { colors } from '@rainbow-me/styles';
 
 const RequestCoinIconSize = 48;
 
@@ -17,13 +18,21 @@ const ProgressBorder = styled(CircularProgress).attrs({
 const RequestCoinIcon = ({
   dappName,
   expirationColor,
+  imageUrl,
   percentElapsed,
   size = RequestCoinIconSize,
 }) => {
   const renderIcon = useCallback(
     // react-native-circular-progress expects a single function child.
-    () => <RequestVendorLogoIcon borderRadius={size} dappName={dappName} />,
-    [dappName, size]
+    () => (
+      <RequestVendorLogoIcon
+        backgroundColor={colors.white}
+        borderRadius={size}
+        dappName={dappName}
+        imageUrl={imageUrl}
+      />
+    ),
+    [dappName, imageUrl, size]
   );
 
   return (

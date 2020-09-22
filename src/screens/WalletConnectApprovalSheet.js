@@ -6,7 +6,11 @@ import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { Centered, Row, RowWithMargins } from '../components/layout';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
-import { dappNameOverride, getDappHostname } from '../helpers/dappNameHandler';
+import {
+  dappLogoOverride,
+  dappNameOverride,
+  getDappHostname,
+} from '../helpers/dappNameHandler';
 import { useNavigation } from '../navigation/Navigation';
 import { colors, padding } from '@rainbow-me/styles';
 
@@ -33,6 +37,10 @@ export default function WalletConnectApprovalSheet() {
 
   const authenticatedName = useMemo(() => {
     return dappNameOverride(dappUrl);
+  }, [dappUrl]);
+
+  const overrideLogo = useMemo(() => {
+    return dappLogoOverride(dappUrl);
   }, [dappUrl]);
 
   const handleSuccess = useCallback(
@@ -68,7 +76,10 @@ export default function WalletConnectApprovalSheet() {
   return (
     <Sheet hideHandle>
       <Centered direction="column" paddingHorizontal={19} paddingTop={17}>
-        <DappLogo dappName={dappName || ''} imageUrl={imageUrl || ''} />
+        <DappLogo
+          dappName={dappName || ''}
+          imageUrl={overrideLogo || imageUrl || ''}
+        />
         <Centered paddingHorizontal={23}>
           <Row>
             <Text

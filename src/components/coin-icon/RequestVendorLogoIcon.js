@@ -27,7 +27,6 @@ export default function RequestVendorLogoIcon({
   borderRadius = RVLIBorderRadius,
   dappName,
   imageUrl,
-  overrideLogo,
   shouldPrioritizeImageLoading,
   showLargeShadow,
   size = CoinIconSize,
@@ -42,15 +41,12 @@ export default function RequestVendorLogoIcon({
     backgroundColor === 'transparent' ? colors.white : backgroundColor;
 
   const imageSource = useMemo(
-    () =>
-      overrideLogo
-        ? overrideLogo
-        : {
-            priority:
-              FastImage.priority[shouldPrioritizeImageLoading ? 'high' : 'low'],
-            uri: imageUrl,
-          },
-    [imageUrl, overrideLogo, shouldPrioritizeImageLoading]
+    () => ({
+      priority:
+        FastImage.priority[shouldPrioritizeImageLoading ? 'high' : 'low'],
+      uri: imageUrl,
+    }),
+    [imageUrl, shouldPrioritizeImageLoading]
   );
 
   return (
@@ -62,7 +58,7 @@ export default function RequestVendorLogoIcon({
       shadows={RVLIShadows[showLargeShadow ? 'large' : 'default']}
     >
       <Content color={bgColor} size={size}>
-        {overrideLogo || (imageUrl && !error) ? (
+        {imageUrl && !error ? (
           <FastImage
             onError={setError}
             source={imageSource}

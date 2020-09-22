@@ -57,8 +57,7 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
         <RequestVendorLogoIcon
           backgroundColor={colors.white}
           dappName={dappName}
-          imageUrl={dappIcon}
-          overrideLogo={overrideLogo}
+          imageUrl={overrideLogo || dappIcon}
           size={VendorLogoIconSize}
         />
         <ColumnWithMargins css={padding(0, 19, 1.5, 12)} flex={1} margin={2}>

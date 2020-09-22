@@ -776,9 +776,7 @@ const TransactionConfirmationScreen = () => {
             <Column marginBottom={17} />
             <DappLogo
               dappName={dappName || ''}
-              imageUrl={imageUrl || ''}
-              overrideLogo={overrideLogo}
-              url={formattedDappUrl}
+              imageUrl={overrideLogo || imageUrl || ''}
             />
             <Row marginBottom={5}>
               <Text
