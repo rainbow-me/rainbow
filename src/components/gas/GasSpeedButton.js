@@ -262,8 +262,8 @@ const GasSpeedButton = ({
     }
 
     const priceInWei = gweiToWei(customGasPriceInput);
-    const minGasPrice = Number(gasPrices.slow.value.amount);
-    const maxGasPrice = Number(gasPrices.fast.value.amount);
+    const minGasPrice = Number(gasPrices?.slow?.value?.amount || 0);
+    const maxGasPrice = Number(gasPrices?.fast?.value?.amount || 0);
     let tooLow = priceInWei < minGasPrice;
     let tooHigh = priceInWei > maxGasPrice * 2.5;
     if (tooLow || tooHigh) {
@@ -292,9 +292,9 @@ const GasSpeedButton = ({
   }, [
     customGasPriceInput,
     dontBlur,
-    gasPrices.fast.value.amount,
-    gasPrices.slow.value.amount,
+    gasPrices,
     inputFocused,
+    handleCustomGasBlur,
   ]);
 
   return (
