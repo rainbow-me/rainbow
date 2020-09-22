@@ -59,6 +59,7 @@ export default function ExchangeModal({
   inputHeaderTitle,
   showOutputField,
   supplyBalanceUnderlying,
+  testID,
   type,
   underlyingPrice,
 }) {
@@ -251,6 +252,7 @@ export default function ExchangeModal({
   useEffect(() => {
     if (isMax) {
       let maxBalance = maxInputBalance;
+      inputFieldRef?.current?.blur();
       if (isWithdrawal) {
         maxBalance = supplyBalanceUnderlying;
       }
@@ -262,6 +264,7 @@ export default function ExchangeModal({
     isWithdrawal,
     supplyBalanceUnderlying,
     updateInputAmount,
+    inputFieldRef,
   ]);
 
   // Calculate market details
@@ -525,10 +528,12 @@ export default function ExchangeModal({
             overflow="hidden"
             paddingBottom={showOutputField ? 0 : 26}
             radius={exchangeModalBorderRadius}
+            testID={testID}
           >
             <ExchangeModalHeader
               onPressDetails={navigateToSwapDetailsModal}
               showDetailsButton={showDetailsButton}
+              testID={testID + 'header'}
               title={inputHeaderTitle}
             />
             <ExchangeInputField
@@ -545,6 +550,7 @@ export default function ExchangeModal({
               onPressSelectInputCurrency={navigateToSelectInputCurrency}
               setInputAmount={updateInputAmount}
               setNativeAmount={updateNativeAmount}
+              testID={testID + '-input-field'}
             />
             {showOutputField && (
               <ExchangeOutputField
@@ -555,6 +561,7 @@ export default function ExchangeModal({
                 outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
                 outputFieldRef={outputFieldRef}
                 setOutputAmount={updateOutputAmount}
+                testID={testID + '-output-field'}
               />
             )}
           </FloatingPanel>
@@ -581,10 +588,11 @@ export default function ExchangeModal({
                   isSufficientGas={isSufficientGas}
                   onSubmit={handleSubmit}
                   slippage={slippage}
+                  testID={testID + 'confirm-button'}
                   type={type}
                 />
               </Centered>
-              <GasSpeedButton type={type} />
+              <GasSpeedButton testID={testID + 'gas-button'} type={type} />
             </Fragment>
           )}
         </AnimatedFloatingPanels>

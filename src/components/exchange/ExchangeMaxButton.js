@@ -21,9 +21,14 @@ const MaxButtonLabel = styled(Text).attrs({
   margin-top: 1;
 `;
 
-export default function ExchangeMaxButton({ disabled, onPress }) {
+export default function ExchangeMaxButton({ disabled, onPress, testID }) {
   return (
-    <ButtonPressAnimation disabled={disabled} marginRight={4} onPress={onPress}>
+    <ButtonPressAnimation
+      disabled={disabled}
+      marginRight={4}
+      onPress={onPress}
+      testID={testID}
+    >
       <RowWithMargins
         align="center"
         height={32}

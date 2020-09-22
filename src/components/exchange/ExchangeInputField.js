@@ -38,6 +38,7 @@ export default function ExchangeInputField({
   onPressSelectInputCurrency,
   setInputAmount,
   setNativeAmount,
+  testID,
 }) {
   return (
     <Container>
@@ -50,6 +51,7 @@ export default function ExchangeInputField({
         ref={inputFieldRef}
         setAmount={setInputAmount}
         symbol={inputCurrencySymbol}
+        testID={testID}
       />
       <NativeFieldRow>
         <ExchangeNativeField
@@ -60,10 +62,12 @@ export default function ExchangeInputField({
           onFocus={onFocus}
           ref={nativeFieldRef}
           setNativeAmount={setNativeAmount}
+          testID={testID + 'native'}
         />
         <ExchangeMaxButton
           disabled={!inputCurrencySymbol}
           onPress={onPressMaxBalance}
+          testID={testID + '-max'}
         />
       </NativeFieldRow>
     </Container>

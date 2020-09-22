@@ -27,6 +27,7 @@ const ExchangeInput = (
     placeholder = '0',
     placeholderTextColor = colors.alpha(colors.blueGreyDark, 0.3),
     size = 'h2',
+    testID,
     value = '',
     weight = 'medium',
     ...props
@@ -97,6 +98,7 @@ const ExchangeInput = (
       placeholderTextColor={placeholderTextColor}
       ref={ref}
       size={size}
+      testID={testID}
       value={value}
       weight={weight}
     />

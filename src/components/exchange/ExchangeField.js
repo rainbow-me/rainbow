@@ -46,6 +46,7 @@ const ExchangeField = (
     onPressSelectCurrency,
     setAmount,
     symbol,
+    testID,
     ...props
   },
   ref
@@ -69,12 +70,17 @@ const ExchangeField = (
             placeholder={symbol ? '0' : EnDash.unicode}
             placeholderTextColor={symbol ? undefined : skeletonColor}
             ref={ref}
+            testID={testID}
             value={amount}
           />
         </FieldRow>
       </TouchableWithoutFeedback>
       {!disableCurrencySelection && (
-        <TokenSelectionButton onPress={onPressSelectCurrency} symbol={symbol} />
+        <TokenSelectionButton
+          onPress={onPressSelectCurrency}
+          symbol={symbol}
+          testID={testID + '-selection-button'}
+        />
       )}
     </Container>
   );

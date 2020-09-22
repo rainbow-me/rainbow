@@ -276,12 +276,13 @@ export default function CurrencySelectModal() {
         >
           <GestureBlocker type="top" />
           <Column flex={1}>
-            <CurrencySelectModalHeader />
+            <CurrencySelectModalHeader testID="currency-select-header" />
             <ExchangeSearch
               onChangeText={setSearchQuery}
               onFocus={handleFocus}
               ref={searchInputRef}
               searchQuery={searchQuery}
+              testID="currency-select-search"
             />
             {type === null || type === undefined ? null : (
               <CurrencySelectionList
@@ -290,6 +291,7 @@ export default function CurrencySelectModal() {
                 loading={!isInitialized}
                 query={searchQueryForSearch}
                 showList={isFocused}
+                testID="currency-select-list"
                 type={type}
               />
             )}

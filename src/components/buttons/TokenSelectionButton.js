@@ -25,8 +25,14 @@ const CaretIcon = styled(FastImage).attrs({
   width: 9;
 `;
 
-const TokenSelectionButton = ({ borderRadius, onPress, shadows, symbol }) => (
-  <ButtonPressAnimation onPress={onPress} throttle>
+const TokenSelectionButton = ({
+  borderRadius,
+  onPress,
+  shadows,
+  symbol,
+  testID,
+}) => (
+  <ButtonPressAnimation onPress={onPress} testID={testID} throttle>
     <Row accessible css={margin(0, 15)}>
       <ShadowStack
         {...position.coverAsObject}
