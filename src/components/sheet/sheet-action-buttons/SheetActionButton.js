@@ -12,6 +12,7 @@ import { colors, position } from '@rainbow-me/styles';
 const Button = styled(Centered).attrs({
   scaleTo: 0.9,
 })`
+  flex: ${({ noFlex }) => (noFlex ? 'none' : 1)};
   height: ${({ size }) => (size === 'big' ? 56 : 46)};
   z-index: 1;
 `;
@@ -50,6 +51,7 @@ const SheetActionButton = ({
   icon,
   isTransparent,
   label,
+  noFlex,
   size,
   textColor = colors.white,
   weight = 'semibold',
@@ -68,7 +70,7 @@ const SheetActionButton = ({
   }, [color, isTransparent]);
 
   return (
-    <Button as={ButtonPressAnimation} size={size} {...props}>
+    <Button as={ButtonPressAnimation} noFlex={noFlex} size={size} {...props}>
       <ShadowStack
         {...position.coverAsObject}
         backgroundColor={color}
