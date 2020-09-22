@@ -281,7 +281,6 @@ export const gasPricesStopPolling = () => () => {
 
 // -- Reducer --------------------------------------------------------------- //
 const INITIAL_STATE = {
-  blockTime: 13,
   customGasPrice: null,
   customGasPriceEstimate: null,
   customGasPriceFee: null,
@@ -312,7 +311,6 @@ export default (state = INITIAL_STATE, action) => {
     case GAS_PRICES_SUCCESS:
       return {
         ...state,
-        blockTime: action.payload.blockTime,
         gasPrices: action.payload.gasPrices,
       };
     case GAS_PRICES_FAILURE:
