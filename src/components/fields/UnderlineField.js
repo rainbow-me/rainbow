@@ -7,7 +7,6 @@ import React, {
   useState,
 } from 'react';
 import Animated, {
-  Easing,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -15,7 +14,7 @@ import Animated, {
 import styled from 'styled-components/primitives';
 import { Button } from '../buttons';
 import { ExchangeInput } from '../exchange';
-import { Column, Row } from '../layout';
+import { ColumnWithMargins, Row } from '../layout';
 import { useDimensions } from '@rainbow-me/hooks';
 import { colors, position } from '@rainbow-me/styles';
 
@@ -53,6 +52,7 @@ const defaultFormatter = string => string;
 
 const UnderlineField = (
   {
+    animatedKey,
     autoFocus,
     buttonText,
     format = defaultFormatter,
@@ -74,27 +74,24 @@ const UnderlineField = (
   const [isFocused, setIsFocused] = useState(autoFocus);
   const [value, setValue] = useState(valueProp);
   const [wasButtonPressed, setWasButtonPressed] = useState(false);
-  const size = useSharedValue(autoFocus ? 1 : 0);
+  const underlineSize = useSharedValue(
+    autoFocus ? 1 : 0,
+    'underlineSize' + animatedKey
+  );
 
   const ref = useRef();
   useImperativeHandle(forwardedRef, () => ref.current);
 
-  const animatedStyles = useAnimatedStyle(() => {
-    return {
-      transform: [{ scaleX: size.value }],
-    };
-  });
-
   useEffect(() => {
     if (isFocused) {
-      size.value = withTiming(1, {
+      underlineSize.value = withTiming(1, {
         duration: 150,
-        easing: Easing.ease,
       });
     } else {
-      size.value = 0;
+      underlineSize.value = 0;
     }
-  }, [isFocused, size]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFocused]);
 
   const formattedValue = useMemo(() => format(String(value || '')), [
     format,
@@ -148,11 +145,19 @@ const UnderlineField = (
     }
   }, [forwardedRef, value, valueProp, wasButtonPressed]);
 
-  const showFieldButton = buttonText && isFocused;
+  const animatedStyles = useAnimatedStyle(
+    () => {
+      return {
+        transform: [{ scale: underlineSize.value }],
+      };
+    },
+    undefined,
+    'UnderlineFieldAnimatedStyle' + animatedKey
+  );
 
   return (
-    <Column flex={1} {...props}>
-      <Row align="center" justify="space-between" style={{ marginBottom: 8 }}>
+    <ColumnWithMargins flex={1} margin={8} {...props}>
+      <Row align="center" justify="space-between">
         <UnderlineInput
           autoFocus={autoFocus}
           isTinyPhone={isTinyPhone}
@@ -166,7 +171,7 @@ const UnderlineField = (
           ref={ref}
           value={formattedValue}
         />
-        {showFieldButton && (
+        {buttonText && isFocused && (
           <Button
             backgroundColor={colors.sendScreen.brightBlue}
             onPress={handleButtonPress}
@@ -181,7 +186,7 @@ const UnderlineField = (
         <Underline />
         <UnderlineAnimated style={animatedStyles} />
       </UnderlineContainer>
-    </Column>
+    </ColumnWithMargins>
   );
 };
 

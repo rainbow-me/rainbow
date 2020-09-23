@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { LongPressGestureHandler } from 'react-native-gesture-handler';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   useAnimatedGestureHandler,
   useAnimatedStyle,
@@ -19,9 +20,7 @@ import useReactiveSharedValue from '../../helpers/useReactiveSharedValue';
 import { svgBezierPath } from '../../smoothing/smoothSVG';
 
 function impactHeavy() {
-  // eslint-disable-next-line import/no-extraneous-dependencies
-  const ReactNativeHapticFeedback = require('react-native-haptic-feedback');
-  ReactNativeHapticFeedback.default.trigger('impactHeavy');
+  ReactNativeHapticFeedback.trigger('impactHeavy');
 }
 
 const android = Platform.OS === 'android';

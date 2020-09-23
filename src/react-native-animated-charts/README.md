@@ -22,12 +22,8 @@ It's a part of the [Rainbow.me project](https://rainbow.me/).
 ```bash
 yarn add react-native-animated-charts
 ```
-3. If you want to use haptic feedback on the press in / out, install
-```bash
-yarn add react-native-haptic-feedback
-```
 
-The library is verified on `2.0.0-alpha.6` version of reanimated.
+The library has been verified with `2.0.0-alpha.6` version of reanimated.
 
 ### Reanimated
 Using TurboModules might have an impact on your current development flow and most likely
@@ -124,7 +120,7 @@ This component is used for showing the path itself.
 | `longPressGestureHandlerProps`       | `object`   | `{maxDist: 100000, minDurationMs: 0, shouldCancelWhenOutside: false}`  | Under the hood we're using `LongPressGestureHandler` for handling interactions. It's recommended to not override its props. However, it might be useful while interacting with another GH. |
 | `selectedOpacity`                    | `number`   | `0.7`                  | Target opacity of the path while touching the chart.
 | `hitSlop`                         | `number`   | `0`                    |  While scrubbing the chart touching edges of the screen you may want make points on the edges more accessible. With `hitSlop` it's possible to access points on edges doubling the speed of scrubbing beyond this margin.  |
-| `hapticsEnabled`                      | `boolean`  | `false`                |  On pressing in/out on the chart it might be expected to make haptic feedback. It will happen with `hapticsEnabled` set to `true` and `react-native-haptic-feedback` installed    |
+| `hapticsEnabled`                      | `boolean`  | `false`                |  On pressing in/out on the chart it might be expected to make haptic feedback. It will happen with `hapticsEnabled` set to `true`.  |
 | `springConfig`                       | object     | `{damping: 15, mass: 1, stiffness: 600}`  | Object [defining the spring animation](https://docs.swmansion.com/react-native-reanimated/docs/next/animations). This spring is used for a dot's scale.
 | `timingFeedbackConfig`               | object     | `{duration: 80}`       | Object [defining the timing animation](https://docs.swmansion.com/react-native-reanimated/docs/next/animations). `timingFeedbackConfig` is used for a path's opacity and width.
 | `timingAnimationConfig`              | object     | `{duration: 300}`      | Object [defining the timing animation](https://docs.swmansion.com/react-native-reanimated/docs/next/animations). `timingAnimationConfig` is used for the transition between chart's data.

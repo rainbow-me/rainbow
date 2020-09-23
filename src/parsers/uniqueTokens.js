@@ -44,7 +44,8 @@ export const parseAccountUniqueTokens = data => {
       id: token_id,
       isSendable:
         asset_contract.nft_version === '1.0' ||
-        asset_contract.nft_version === '3.0',
+        asset_contract.nft_version === '3.0' ||
+        asset_contract.schema_name === 'ERC1155',
       lastPrice: asset.last_sale ? Number(asset.last_sale.total_price) : null,
       type: AssetTypes.nft,
       uniqueId: `${get(asset_contract, 'address')}_${token_id}`,

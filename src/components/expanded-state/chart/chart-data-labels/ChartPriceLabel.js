@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
 import ChartHeaderTitle from './ChartHeaderTitle';
+import { ChartYLabel } from '@rainbow-me/animated-charts';
 import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
 import { fonts } from '@rainbow-me/styles';
-import { ChartYLabel } from 'react-native-animated-charts';
 
 const Label = styled(ChartYLabel)`
   font-family: ${fonts.family.SFProRounded};
