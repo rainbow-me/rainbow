@@ -348,7 +348,7 @@ export default function WelcomeScreen() {
       try {
         logger.log('downloading iCloud backup info...');
         const isAvailable = await isCloudBackupAvailable();
-        if (!isAvailable) {
+        if (isAvailable) {
           const data = await fetchUserDataFromCloud();
           setUserData(data);
           logger.log('Downloaded iCloud backup info');
