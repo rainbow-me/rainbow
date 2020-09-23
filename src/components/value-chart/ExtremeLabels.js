@@ -3,7 +3,7 @@ import styled from 'styled-components/primitives';
 import { colors, fonts } from '../../styles';
 import { formatUSD } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
 import { Text } from '../text';
-import { useChartData } from 'react-native-animated-charts';
+import { useChartData } from '@rainbow-me/animated-charts';
 
 function trim(val) {
   return Math.min(Math.max(val, 0.05), 0.95);

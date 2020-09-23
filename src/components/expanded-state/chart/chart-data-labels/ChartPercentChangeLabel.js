@@ -7,8 +7,8 @@ import Animated, {
 import styled from 'styled-components/primitives';
 import { RowWithMargins } from '../../../layout';
 import { useRatio } from './useRatio';
+import { useChartData } from '@rainbow-me/animated-charts';
 import { colors, fonts } from '@rainbow-me/styles';
-import { useChartData } from 'react-native-animated-charts';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
