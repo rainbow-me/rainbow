@@ -43,6 +43,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('wallet-screen');
   });
 
+  // Saving for now in case we want to test iCloud back up sheet
   // it('Should show the backup sheet', async () => {
   //   await Helpers.delay(3000);
   //   await Helpers.checkIfVisible('backup-sheet');
@@ -119,8 +120,8 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should display Asset Form after tapping on asset', async () => {
     await Helpers.delay(1000);
-    await Helpers.checkIfVisible('send-asset-UNI');
-    await Helpers.tap('send-asset-UNI');
+    await Helpers.checkIfVisible('send-asset-SOCKS');
+    await Helpers.tap('send-asset-SOCKS');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('selected-asset-field-input');
   });
@@ -151,9 +152,9 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should prepend a 0 to quantity field on input of .', async () => {
-    await Helpers.tap('send-asset-form-UNI');
+    await Helpers.tap('send-asset-form-SOCKS');
     await Helpers.delay(2000);
-    await Helpers.tap('send-asset-UNI');
+    await Helpers.tap('send-asset-SOCKS');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.tap('selected-asset-quantity-field-input');

@@ -191,8 +191,8 @@ class HoldToAuthorizeButton extends PureComponent {
       shadows,
       smallButton,
       style,
-      theme,
       testID,
+      theme,
       ...props
     } = this.props;
 

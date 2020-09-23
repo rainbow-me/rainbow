@@ -36,6 +36,7 @@ describe('Import from private key flow', () => {
     await Helpers.checkIfVisible('wallet-screen');
   });
 
+  // Saving for now in case we want to test iCloud back up sheet
   // it('Should show the backup sheet', async () => {
   //   await Helpers.delay(3000);
   //   await Helpers.checkIfVisible('backup-sheet');

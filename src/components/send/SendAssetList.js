@@ -322,9 +322,9 @@ export default class SendAssetList extends React.Component {
         key={token.uniqueId}
         onPress={() => this.props.onSelectAsset(token)}
         rowHeight={rowHeight}
+        testID="send-shitcoin-"
         top={0}
         {...token}
-        testID="send-shit-"
       />
     ));
 
