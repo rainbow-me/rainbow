@@ -13,3 +13,15 @@ export const removeFirstEmojiFromString = string => {
   }
   return grapheme;
 };
+
+export const returnStringFirstEmoji = string => {
+  if (!string) return false;
+
+  const grapheme = new GraphemeSplitter().splitGraphemes(string);
+  const first = grapheme[0];
+
+  if (first.search(regex) > -1) {
+    return first;
+  }
+  return false;
+};

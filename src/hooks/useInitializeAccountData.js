@@ -19,11 +19,13 @@ export default function useInitializeAccountData() {
       });
 
       InteractionManager.runAfterInteractions(async () => {
+        logger.sentry('Initialize uniswapPairsInit & getAllExchanges');
         dispatch(uniswapPairsInit());
         await dispatch(uniswapGetAllExchanges());
       });
 
       InteractionManager.runAfterInteractions(async () => {
+        logger.sentry('Initialize savingsLoadState & uniqueTokens');
         await dispatch(savingsLoadState());
         await dispatch(uniqueTokensRefreshState());
       });

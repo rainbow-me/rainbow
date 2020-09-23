@@ -12,13 +12,8 @@ import {
 import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
-import {
-  ACCESS_CONTROL,
-  ACCESSIBLE,
-  AUTHENTICATION_TYPE,
-  canImplyAuthentication,
-} from 'react-native-keychain';
+import { ACCESSIBLE } from 'react-native-keychain';
+import { saveAccountEmptyState } from '../handlers/localstorage/accountLocal';
 import {
   addHexPrefix,
   isHexString,
@@ -30,6 +25,14 @@ import {
 import showWalletErrorAlert from '../helpers/support';
 import { EthereumWalletType } from '../helpers/walletTypes';
 import { ethereumUtils } from '../utils';
+import {
+  addressKey,
+  allWalletsKey,
+  oldSeedPhraseMigratedKey,
+  privateKeyKey,
+  seedPhraseKey,
+  selectedWalletKey,
+} from '../utils/keychainConstants';
 import * as keychain from './keychain';
 import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
@@ -108,7 +111,7 @@ interface RainbowAccount {
   visible: boolean;
 }
 
-interface RainbowWallet {
+export interface RainbowWallet {
   addresses: RainbowAccount[];
   color: number;
   id: string;
@@ -116,9 +119,13 @@ interface RainbowWallet {
   name: string;
   primary: boolean;
   type: EthereumWalletType;
+  backedUp: boolean;
+  backupFile?: string;
+  backupDate?: string;
+  backupType?: string;
 }
 
-interface AllRainbowWallets {
+export interface AllRainbowWallets {
   [key: string]: RainbowWallet;
 }
 
@@ -147,23 +154,16 @@ interface MigratedSecretsResult {
   type: EthereumWalletType;
 }
 
-export const seedPhraseKey = 'rainbowSeedPhrase';
-export const privateKeyKey = 'rainbowPrivateKey';
-export const addressKey = 'rainbowAddressKey';
-export const selectedWalletKey = 'rainbowSelectedWalletKey';
-export const allWalletsKey = 'rainbowAllWalletsKey';
-export const oldSeedPhraseMigratedKey = 'rainbowOldSeedPhraseMigratedKey';
-
 const privateKeyVersion = 1.0;
 const seedPhraseVersion = 1.0;
 const selectedWalletVersion = 1.0;
-const allWalletsVersion = 1.0;
+export const allWalletsVersion = 1.0;
 
 const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
 const authenticationPrompt = lang.t('wallet.authenticate.please');
-const publicAccessControlOptions = {
+export const publicAccessControlOptions = {
   accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
 };
 
@@ -176,13 +176,21 @@ export const walletInit = async (
   seedPhrase = null,
   color = null,
   name = null,
-  overwrite = false
+  overwrite = false,
+  checkedWallet = null,
+  network: string
 ): Promise<WalletInitialized> => {
   let walletAddress = null;
   let isNew = false;
   // Importing a seedphrase
   if (!isEmpty(seedPhrase)) {
-    const wallet = await createWallet(seedPhrase, color, name, overwrite);
+    const wallet = await createWallet(
+      seedPhrase,
+      color,
+      name,
+      overwrite,
+      checkedWallet
+    );
     walletAddress = wallet?.address;
     return { isNew, walletAddress };
   }
@@ -193,12 +201,16 @@ export const walletInit = async (
     const wallet = await createWallet();
     walletAddress = wallet?.address;
     isNew = true;
+    await saveAccountEmptyState(true, walletAddress?.toLowerCase(), network);
   }
   return { isNew, walletAddress };
 };
 
 export const loadWallet = async (): Promise<null | Wallet> => {
   const privateKey = await loadPrivateKey();
+  if (privateKey === -1) {
+    return null;
+  }
   if (privateKey) {
     return new ethers.Wallet(privateKey, web3Provider);
   }
@@ -374,13 +386,13 @@ export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> =>
   const seedPhrase = await keychain.loadString(seedPhraseKey, {
     authenticationPrompt,
   });
-  return seedPhrase;
+  return seedPhrase as string | null;
 };
 
 export const loadAddress = (): Promise<null | EthereumAddress> =>
-  keychain.loadString(addressKey);
+  keychain.loadString(addressKey) as Promise<string | null>;
 
-const loadPrivateKey = async (): Promise<null | EthereumPrivateKey> => {
+const loadPrivateKey = async (): Promise<null | EthereumPrivateKey | -1> => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
       oldSeedPhraseMigratedKey
@@ -400,6 +412,9 @@ const loadPrivateKey = async (): Promise<null | EthereumPrivateKey> => {
         return null;
       }
       const privateKeyData = await getPrivateKey(address);
+      if (privateKeyData === -1) {
+        return -1;
+      }
       privateKey = get(privateKeyData, 'privateKey', null);
     }
 
@@ -418,7 +433,7 @@ export const saveAddress = async (
   return keychain.saveString(addressKey, address, accessControlOptions);
 };
 
-const identifyWalletType = (
+export const identifyWalletType = (
   walletSeed: EthereumWalletSeed
 ): EthereumWalletType => {
   if (
@@ -480,14 +495,16 @@ export const createWallet = async (
   seed: null | EthereumSeed = null,
   color: null | number = null,
   name: null | string = null,
-  overwrite: boolean = false
+  overwrite: boolean = false,
+  checkedWallet: null | EthereumWalletFromSeed = null
 ): Promise<null | EthereumWallet> => {
   const isImported = !!seed;
   logger.sentry('Creating wallet, isImported?', isImported);
   const walletSeed = seed || generateSeedPhrase();
   let addresses: RainbowAccount[] = [];
   try {
-    const { hdnode, isHDWallet, type, wallet } = getWallet(walletSeed);
+    const { hdnode, isHDWallet, type, wallet } =
+      checkedWallet || getWallet(walletSeed);
     if (!wallet) return null;
     logger.sentry('[createWallet] - getWallet from seed');
 
@@ -662,6 +679,7 @@ export const createWallet = async (
 
     allWallets[id] = {
       addresses,
+      backedUp: false,
       color: color || 0,
       id,
       imported: isImported,
@@ -672,6 +690,7 @@ export const createWallet = async (
 
     await setSelectedWallet(allWallets[id]);
     logger.sentry('[createWallet] - setSelectedWallet');
+
     await saveAllWallets(allWallets);
     logger.sentry('[createWallet] - saveAllWallets');
 
@@ -690,22 +709,7 @@ export const savePrivateKey = async (
   address: EthereumAddress,
   privateKey: null | EthereumPrivateKey
 ) => {
-  let privateAccessControlOptions = {};
-  const canAuthenticate = await canImplyAuthentication({
-    authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
-  });
-
-  let isSimulator = false;
-
-  if (canAuthenticate) {
-    isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
-  }
-  if (canAuthenticate && !isSimulator) {
-    privateAccessControlOptions = {
-      accessControl: ACCESS_CONTROL.USER_PRESENCE,
-      accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-    };
-  }
+  const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
 
   const key = `${address}_${privateKeyKey}`;
   const val = {
@@ -719,7 +723,7 @@ export const savePrivateKey = async (
 
 export const getPrivateKey = async (
   address: EthereumAddress
-): Promise<null | PrivateKeyData> => {
+): Promise<null | PrivateKeyData | -1> => {
   try {
     const key = `${address}_${privateKeyKey}`;
     const pkey = (await keychain.loadObject(key, {
@@ -737,23 +741,7 @@ export const saveSeedPhrase = async (
   seedphrase: EthereumWalletSeed,
   keychain_id: RainbowWallet['id']
 ): Promise<void> => {
-  let privateAccessControlOptions = {};
-  const canAuthenticate = await canImplyAuthentication({
-    authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
-  });
-
-  let isSimulator = false;
-
-  if (canAuthenticate) {
-    isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
-  }
-  if (canAuthenticate && !isSimulator) {
-    privateAccessControlOptions = {
-      accessControl: ACCESS_CONTROL.USER_PRESENCE,
-      accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-    };
-  }
-
+  const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
   const key = `${keychain_id}_${seedPhraseKey}`;
   const val = {
     id: keychain_id,
@@ -982,7 +970,6 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       const isSeedPhraseMigrated = await keychain.loadString(
         oldSeedPhraseMigratedKey
       );
-
       logger.sentry('Migration pending?', !isSeedPhraseMigrated);
 
       // We need to migrate the seedphrase & private key first

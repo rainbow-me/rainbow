@@ -3,28 +3,22 @@ import React from 'react';
 import { withHandlers } from 'recompact';
 import styled from 'styled-components';
 import Icon from '../icons/Icon';
-import { Centered } from '../layout';
 import { ListItem } from '../list';
-import { colors, position } from '@rainbow-me/styles';
+import { colors } from '@rainbow-me/styles';
 
-const CheckmarkSize = 20;
-
-const CheckmarkContainer = styled(Centered)`
-  ${position.size(CheckmarkSize)};
-  flex-shrink: 0;
+const CheckmarkIcon = styled(Icon).attrs({
+  color: colors.appleBlue,
+  name: 'checkmarkCircled',
+})`
+  box-shadow: 0px 4px 6px ${colors.alpha(colors.appleBlue, 0.4)};
+  margin-bottom: 1px;
+  position: absolute;
+  right: 0;
 `;
 
 const RadioListItem = ({ disabled, onPress, selected, ...props }) => (
   <ListItem onPress={onPress} opacity={disabled ? 0.42 : 1} {...props}>
-    <CheckmarkContainer>
-      {selected && (
-        <Icon
-          color={colors.appleBlue}
-          css={position.size(CheckmarkSize)}
-          name="checkmarkCircled"
-        />
-      )}
-    </CheckmarkContainer>
+    {selected && <CheckmarkIcon />}
   </ListItem>
 );
 

@@ -35,22 +35,22 @@ export default function ProfileScreen({ navigation }) {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
-  const { isCreatingAccount } = useWallets();
+  const { isWalletLoading } = useWallets();
   const nativeTransactionListAvailable = useNativeTransactionListAvailable();
   const { setComponent, hide } = usePortal();
 
   useEffect(() => {
-    if (isCreatingAccount) {
+    if (isWalletLoading) {
       setComponent(
         <LoadingOverlay
           paddingTop={sheetVerticalOffset}
-          title="Creating wallet..."
+          title={isWalletLoading}
         />,
         false
       );
-      return hide;
     }
-  }, [hide, isCreatingAccount, setComponent]);
+    return hide;
+  }, [hide, isWalletLoading, setComponent]);
   const {
     isLoadingTransactions: isLoading,
     sections,
@@ -89,7 +89,7 @@ export default function ProfileScreen({ navigation }) {
   return (
     <ProfileScreenPage>
       <Header justify="space-between">
-        <HeaderButton onPress={onPressSettings}>
+        <HeaderButton onPress={onPressSettings} testID="settings-button">
           <Icon color={colors.black} name="gear" />
         </HeaderButton>
         <BackButton

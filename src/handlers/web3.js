@@ -97,12 +97,12 @@ export const toHex = value =>
 /**
  * @desc estimate gas limit
  * @param  {String} address
- * @return {Number} gas limit
+ * @return {String} gas limit
  */
 export const estimateGas = async estimateGasData => {
   try {
     const gasLimit = await web3Provider.estimateGas(estimateGasData);
-    return gasLimit.toNumber();
+    return gasLimit.toString();
   } catch (error) {
     return null;
   }
@@ -238,12 +238,25 @@ export const getDataForTokenTransfer = (value, to) => {
 
 export const getDataForNftTransfer = (from, to, asset) => {
   const nftVersion = get(asset, 'asset_contract.nft_version');
+  const schema_name = get(asset, 'asset_contract.schema_name');
   if (nftVersion === '3.0') {
     const transferMethodHash = smartContractMethods.nft_transfer_from.hash;
     const data = ethereumUtils.getDataString(transferMethodHash, [
       ethereumUtils.removeHexPrefix(from),
       ethereumUtils.removeHexPrefix(to),
       convertStringToHex(asset.id),
+    ]);
+    return data;
+  } else if (schema_name === 'ERC1155') {
+    const transferMethodHash =
+      smartContractMethods.erc1155_safe_transfer_from.hash;
+    const data = ethereumUtils.getDataString(transferMethodHash, [
+      ethereumUtils.removeHexPrefix(from),
+      ethereumUtils.removeHexPrefix(to),
+      convertStringToHex(asset.id),
+      convertStringToHex('1'),
+      convertStringToHex('160'),
+      convertStringToHex('0'),
     ]);
     return data;
   }

@@ -281,9 +281,14 @@
     "color": "#FF4A4A",
     "name": "UMA"
   },
+  "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+    "color": "#FD017A",
+    "name": "Uniswap",
+    "shadowColor": "#FDB8DA"
+  },
   "0x23B608675a2B2fB1890d3ABBd85c5775c51691d5": {
     "color": "#E15EE5",
-    "name": "Unisocks Edition 0"
+    "name": "Unisocks"
   },
   "0x09cabEC1eAd1c0Ba254B09efb3EE13841712bE14": {
     "color": "#E15EE5",
@@ -306,7 +311,11 @@
     "color": "#25292E",
     "name": "Wrapped Ether"
   },
-  "0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16": {
+  "0x5dbcf33d8c2e976c6b560249878e6f1491bca25c": {
+    "name": "Y Curve Vault",
+    "symbol": "yUSD"
+  },
+  "0x0aacfbec6a24756c20d41914f2caba817c0d8521": {
     "color": "#B2364F",
     "name": "YAM",
     "shadowColor": "#D09AAC"

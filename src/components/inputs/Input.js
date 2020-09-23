@@ -20,6 +20,7 @@ const Input = (
     placeholderTextColor = colors.placeholder,
     selectionColor = defaultSelectionColor,
     spellCheck = true,
+    testID,
     ...props
   },
   ref
@@ -35,6 +36,7 @@ const Input = (
       ref={ref}
       selectionColor={selectionColor}
       spellCheck={spellCheck}
+      testID={testID}
     />
   );
 };

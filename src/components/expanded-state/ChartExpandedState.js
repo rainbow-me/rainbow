@@ -1,4 +1,3 @@
-import { useRoute } from '@react-navigation/native';
 import { debounce, find } from 'lodash';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -21,14 +20,14 @@ import {
   TokenInfoSection,
 } from '../token-info';
 import Chart from '../value-chart/Chart';
+import {
+  ChartPathProvider,
+  monotoneCubicInterpolation,
+} from '@rainbow-me/animated-charts';
 import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
 import { useNavigation } from '@rainbow-me/navigation';
-import {
-  ChartProvider,
-  monotoneCubicInterpolation,
-} from 'react-native-animated-charts';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
@@ -46,7 +45,11 @@ const traverseData = (prev, data) => {
   ) {
     return prev;
   }
-  const points = monotoneCubicInterpolation(filtered)(100, true);
+  const points = monotoneCubicInterpolation({
+    data: filtered,
+    includeExtremes: true,
+    range: 100,
+  });
   return {
     nativePoints: filtered,
     points,
@@ -84,7 +87,6 @@ export const ChartExpandedStateSheetHeight = chartExpandedAvailable
   : heightWithNoChart;
 
 export default function ChartExpandedState({ asset }) {
-  const { params } = useRoute();
   const color = useColorForAsset(asset);
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
 
@@ -133,7 +135,7 @@ export default function ChartExpandedState({ asset }) {
   const [throttledData, setThrottledData] = useState({
     nativePoints: throttledPoints.nativePoints,
     points: throttledPoints.points,
-    strategy: 'bezier',
+    smoothingStrategy: 'bezier',
   });
 
   const debouncedSetThrottledData = useRef(debounce(setThrottledData, 30))
@@ -144,14 +146,17 @@ export default function ChartExpandedState({ asset }) {
       debouncedSetThrottledData({
         nativePoints: throttledPoints.nativePoints,
         points: throttledPoints.points,
-        strategy: 'bezier',
+        smoothingStrategy: 'bezier',
       });
     }
   }, [throttledPoints, fetchingCharts, debouncedSetThrottledData]);
 
   return (
-    <SlackSheet contentHeight={params.longFormHeight} scrollEnabled={false}>
-      <ChartProvider data={throttledData} enableHaptics>
+    <SlackSheet
+      contentHeight={ChartExpandedStateSheetHeight}
+      scrollEnabled={false}
+    >
+      <ChartPathProvider data={throttledData}>
         <Chart
           {...chartData}
           {...initialChartDataLabels}
@@ -164,7 +169,7 @@ export default function ChartExpandedState({ asset }) {
           showChart={showChart}
           throttledData={throttledData}
         />
-      </ChartProvider>
+      </ChartPathProvider>
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>

@@ -8,15 +8,9 @@ import { Text } from '../text';
 import { colors } from '@rainbow-me/styles';
 
 const ListItemArrowGroup = ({ children }) => (
-  <RowWithMargins
-    align="center"
-    flex={0}
-    justify="end"
-    margin={7}
-    opacity={0.6}
-  >
+  <RowWithMargins align="center" flex={1} justify="end" margin={7}>
     {typeof children === 'string' ? (
-      <Text color="blueGreyDark" size="large">
+      <Text color={colors.alpha(colors.blueGreyDark, 0.6)} size="large">
         {children}
       </Text>
     ) : (
@@ -29,7 +23,7 @@ const ListItemArrowGroup = ({ children }) => (
         marginTop: 0.5,
         width: 9,
       }}
-      tintColor={colors.blueGreyDark}
+      tintColor={colors.alpha(colors.blueGreyDark, 0.6)}
     />
   </RowWithMargins>
 );

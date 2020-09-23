@@ -17,7 +17,7 @@ const FooterContainer = styled(ColumnWithMargins).attrs(({ deviceHeight }) => ({
 `;
 
 const FormContainer = styled(Column)`
-  flex: ${({ isTinyPhone }) => (isTinyPhone ? 1.75 : 1)};
+  flex: ${({ isSmallPhone }) => (isSmallPhone ? 1.75 : 1)};
   width: 100%;
 `;
 
@@ -34,7 +34,7 @@ export default function SendAssetFormToken({
   txSpeedRenderer,
   ...props
 }) {
-  const { isTinyPhone, height: deviceHeight } = useDimensions();
+  const { isSmallPhone, height: deviceHeight } = useDimensions();
 
   const {
     mask: nativeMask,
@@ -43,8 +43,9 @@ export default function SendAssetFormToken({
 
   return (
     <Fragment>
-      <FormContainer isTinyPhone={isTinyPhone} {...props}>
+      <FormContainer isSmallPhone={isSmallPhone} {...props}>
         <SendAssetFormField
+          animatedKey="assetInput"
           format={removeLeadingZeros}
           label={selected.symbol}
           onChange={onChangeAssetAmount}
@@ -54,6 +55,7 @@ export default function SendAssetFormToken({
           value={assetAmount}
         />
         <SendAssetFormField
+          animatedKey="nativeInput"
           autoFocus
           label={nativeCurrency}
           mask={nativeMask}

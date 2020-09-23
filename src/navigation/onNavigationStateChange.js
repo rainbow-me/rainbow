@@ -106,7 +106,9 @@ export function onNavigationStateChange(currentState) {
 
   if (
     prevRouteName === Routes.IMPORT_SEED_PHRASE_SHEET &&
-    (routeName === Routes.PROFILE_SCREEN || routeName === Routes.WALLET_SCREEN)
+    (routeName === Routes.PROFILE_SCREEN ||
+      routeName === Routes.WALLET_SCREEN ||
+      routeName === Routes.RESTORE_SHEET)
   ) {
     StatusBar.setBarStyle('dark-content', true);
   }
@@ -124,6 +126,14 @@ export function onNavigationStateChange(currentState) {
 
   if (
     prevRouteName === Routes.ADD_CASH_SHEET &&
+    (routeName === Routes.PROFILE_SCREEN || routeName === Routes.WALLET_SCREEN)
+  ) {
+    StatusBar.setBarStyle('dark-content', true);
+  }
+
+  if (
+    (prevRouteName === Routes.RESTORE_SHEET ||
+      prevRouteName === Routes.WELCOME_SCREEN) &&
     (routeName === Routes.PROFILE_SCREEN || routeName === Routes.WALLET_SCREEN)
   ) {
     StatusBar.setBarStyle('dark-content', true);
