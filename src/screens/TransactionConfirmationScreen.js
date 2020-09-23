@@ -27,7 +27,6 @@ import Animated, {
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Divider from '../components/Divider';
-import { Alert as CustomAlert } from '../components/alerts';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import { GasSpeedButton } from '../components/gas';
@@ -148,7 +147,6 @@ const TransactionConfirmationScreen = () => {
   const [methodName, setMethodName] = useState(null);
   const calculatingGasLimit = useRef(false);
   const [isBalanceEnough, setIsBalanceEnough] = useState(true);
-  const [scam, setScam] = useState(false);
   const {
     accountAddress,
     accountColor,
@@ -215,30 +213,6 @@ const TransactionConfirmationScreen = () => {
     return dappLogoOverride(dappUrl);
   }, [dappUrl]);
 
-  const checkIfScam = useCallback(
-    async formattedDappUrl => {
-      const isScam = await ethereumUtils.checkIfUrlIsAScam(formattedDappUrl);
-      if (isScam) {
-        CustomAlert({
-          buttons: [
-            {
-              text: 'Proceed Anyway',
-            },
-            {
-              onPress: () => setScam(true),
-              style: 'cancel',
-              text: 'Ignore this request',
-            },
-          ],
-          message:
-            'We found this website in a list of malicious crypto scams.\n\n We recommend you to ignore this request and stop using this website immediately',
-          title: ' 🚨 Heads up! 🚨',
-        });
-      }
-    },
-    [setScam]
-  );
-
   const fetchMethodName = useCallback(
     async data => {
       if (!data) return;
@@ -274,12 +248,10 @@ const TransactionConfirmationScreen = () => {
       } else {
         setMethodName(lang.t('wallet.message_signing.request'));
       }
-      checkIfScam(formattedDappUrl);
     });
   }, [
-    checkIfScam,
+    dappUrl,
     fetchMethodName,
-    formattedDappUrl,
     isMessageRequest,
     method,
     openAutomatically,
@@ -744,12 +716,6 @@ const TransactionConfirmationScreen = () => {
     : amount && amount !== '0.00'
     ? TallSheetHeight
     : ShortSheetHeight;
-
-  useEffect(() => {
-    if (scam) {
-      onCancel();
-    }
-  }, [scam, onCancel]);
 
   return (
     <AnimatedContainer

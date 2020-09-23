@@ -3,6 +3,7 @@ import { captureException } from '@sentry/react-native';
 import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
 import { find, get, isEmpty, matchesProperty, replace, toLower } from 'lodash';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
+import URL from 'url-parse';
 import networkTypes from '../helpers/networkTypes';
 import {
   add,
@@ -193,10 +194,11 @@ const hasPreviousTransactions = address => {
   });
 };
 
-const checkIfUrlIsAScam = async host => {
+const checkIfUrlIsAScam = async url => {
   try {
     const request = await fetch('https://api.cryptoscamdb.org/v1/scams');
     const { result } = await request.json();
+    const { host } = new URL(url);
     const found = result.find(s => toLower(s.name) === toLower(host));
     if (found) {
       return true;

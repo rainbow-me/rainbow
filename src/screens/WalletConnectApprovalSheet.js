@@ -1,17 +1,27 @@
 import { useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { InteractionManager } from 'react-native';
 import styled from 'styled-components/primitives';
 import Divider from '../components/Divider';
+import { Alert } from '../components/alerts';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { Centered, Row, RowWithMargins } from '../components/layout';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
+
 import {
   dappLogoOverride,
   dappNameOverride,
   getDappHostname,
 } from '../helpers/dappNameHandler';
 import { useNavigation } from '../navigation/Navigation';
+import { ethereumUtils } from '../utils';
 import { colors, padding } from '@rainbow-me/styles';
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs({
@@ -26,10 +36,35 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs({
 export default function WalletConnectApprovalSheet() {
   const { goBack } = useNavigation();
   const { params } = useRoute();
+  const [scam, setScam] = useState(false);
   const handled = useRef(false);
   const meta = params?.meta || {};
   const { dappName, dappUrl, imageUrl } = meta;
   const callback = params?.callback;
+
+  const checkIfScam = useCallback(
+    async dappUrl => {
+      const isScam = await ethereumUtils.checkIfUrlIsAScam(dappUrl);
+      if (isScam) {
+        Alert({
+          buttons: [
+            {
+              text: 'Proceed Anyway',
+            },
+            {
+              onPress: () => setScam(true),
+              style: 'cancel',
+              text: 'Ignore this request',
+            },
+          ],
+          message:
+            'We found this website in a list of malicious crypto scams.\n\n We recommend you to ignore this request and stop using this website immediately',
+          title: ' 🚨 Heads up! 🚨',
+        });
+      }
+    },
+    [setScam]
+  );
 
   const formattedDappUrl = useMemo(() => {
     return getDappHostname(dappUrl);
@@ -52,14 +87,18 @@ export default function WalletConnectApprovalSheet() {
     [callback]
   );
 
-  // Reject if the modal is dismissed
   useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      checkIfScam(dappUrl);
+    });
+    // Reject if the modal is dismissed
     return () => {
       if (!handled.current) {
         handleSuccess(false);
       }
     };
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleConnect = useCallback(() => {
     handled.current = true;
@@ -72,6 +111,12 @@ export default function WalletConnectApprovalSheet() {
     goBack();
     handleSuccess(false);
   }, [handleSuccess, goBack]);
+
+  useEffect(() => {
+    if (scam) {
+      handleCancel();
+    }
+  }, [handleCancel, scam]);
 
   return (
     <Sheet hideHandle>
