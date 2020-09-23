@@ -18,7 +18,6 @@ export default function useGas() {
         customGasPrice,
         customGasPriceEstimate,
         customGasPriceFee,
-        blockTime,
         gasLimit,
         gasPrices,
         isSufficientGas,
@@ -27,7 +26,6 @@ export default function useGas() {
         txFees,
       },
     }) => ({
-      blockTime,
       customGasPrice,
       customGasPriceEstimate,
       customGasPriceFee,
