@@ -97,12 +97,12 @@ export const toHex = value =>
 /**
  * @desc estimate gas limit
  * @param  {String} address
- * @return {Number} gas limit
+ * @return {String} gas limit
  */
 export const estimateGas = async estimateGasData => {
   try {
     const gasLimit = await web3Provider.estimateGas(estimateGasData);
-    return gasLimit.toNumber();
+    return gasLimit.toString();
   } catch (error) {
     return null;
   }
