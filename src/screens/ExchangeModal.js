@@ -251,6 +251,7 @@ export default function ExchangeModal({
   useEffect(() => {
     if (isMax) {
       let maxBalance = maxInputBalance;
+      inputFieldRef?.current?.blur();
       if (isWithdrawal) {
         maxBalance = supplyBalanceUnderlying;
       }
@@ -262,6 +263,7 @@ export default function ExchangeModal({
     isWithdrawal,
     supplyBalanceUnderlying,
     updateInputAmount,
+    inputFieldRef,
   ]);
 
   // Calculate market details

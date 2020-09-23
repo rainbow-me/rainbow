@@ -2,7 +2,7 @@
 /* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
 
-describe('Import from seed flow', () => {
+describe('Send Sheet Interaction Flow', () => {
   it('Should show the welcome screen', async () => {
     await device.disableSynchronization();
     await Helpers.checkIfVisible('welcome-screen');
@@ -145,7 +145,7 @@ describe('Import from seed flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('selected-asset-field-input');
     await Helpers.tap('selected-asset-field-input');
-    await Helpers.typeText('selected-asset-field-input', '1000', true);
+    await Helpers.typeText('selected-asset-field-input', '9999', true);
     await Helpers.delay(1000);
     await Helpers.checkIfElementByTextIsVisible('Insufficient Funds');
   });
@@ -181,7 +181,6 @@ describe('Import from seed flow', () => {
     await Helpers.checkIfVisible('add-contact-button');
     await Helpers.tap('add-contact-button');
     await Helpers.delay(500);
-    //await Helpers.checkIfVisible('contact-profile-avatar-button');
     await Helpers.checkIfVisible('contact-profile-name-input');
   });
 
@@ -207,7 +206,7 @@ describe('Import from seed flow', () => {
   it('Should show Asset List & Edit Contact Button on cancel', async () => {
     await Helpers.checkIfVisible('edit-contact-button');
     await Helpers.tap('edit-contact-button');
-    await Helpers.delay(2000);
+    await Helpers.delay(3000);
     await Helpers.tapByText('Cancel');
     await Helpers.delay(2000);
   });
@@ -225,15 +224,19 @@ describe('Import from seed flow', () => {
     await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
   });
 
-  /*it('Should load contacts if contacts exist', async () => {
-    await Helpers.delay(1000);
-    await Helpers.swipe('send-asset-form-field', 'down');
+  it('Should load contacts if contacts exist', async () => {
+    await Helpers.delay(2000);
+    await Helpers.swipe('send-asset-form-field', 'down', 'slow');
     await Helpers.delay(1000);
     await Helpers.tap('send-fab');
     await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
-  });*/
+  });
 
   it('Should show Add Contact Button after deleting contact', async () => {
+    await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
+    await Helpers.delay(1000);
+    await Helpers.tapByText('testcoin.eth');
+    await Helpers.delay(1000);
     await Helpers.checkIfVisible('edit-contact-button');
     await Helpers.tap('edit-contact-button');
     await Helpers.delay(1000);
