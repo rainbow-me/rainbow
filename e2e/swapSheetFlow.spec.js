@@ -2,7 +2,7 @@
 /* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
 
-describe('Import from seed flow', () => {
+describe('Swap Sheet Interaction Flow', () => {
   it('Should show the welcome screen', async () => {
     await device.disableSynchronization();
     await Helpers.checkIfVisible('welcome-screen');
@@ -77,17 +77,45 @@ describe('Import from seed flow', () => {
     await Helpers.tap('exchange-modal-input-field-selection-button');
     await Helpers.delay(3000);
     await Helpers.checkIfVisible('currency-select-list');
+    //await Helpers.checkIfElementByTextIsVisible('Swap');
     await Helpers.tap('currency-select-header-back-button');
-
-    //await Helpers.checkIfElementByTextIsVisible('1.356');
   });
 
-  it('Should display Swap Asset List after tapping Choose a Coin', async () => {
+  it('Should reset all fields on selection of new input currency', async () => {
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-modal-input-field-selection-button');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('currency-select-list');
+    await Helpers.tap('exchange-coin-row-SOCKS');
+    await Helpers.delay(1000);
+    //await Helpers.checkIfElementByTextIsVisible('0');
+  });
+
+  it('Should display Receive Currency Select List after tapping Choose a Coin', async () => {
     await Helpers.delay(1000);
     await Helpers.tap('exchange-modal-output-field-selection-button');
     await Helpers.delay(3000);
+    await Helpers.checkIfVisible('currency-select-list');
+    //await Helpers.checkIfElementByTextIsVisible('Recieve');
     await Helpers.tap('currency-select-header-back-button');
-    //await Helpers.checkIfElementByTextIsVisible('1.356');
+  });
+
+  it('Should change Currency Select List on search entry', async () => {
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-modal-input-field-selection-button');
+    await Helpers.delay(3000);
+    await Helpers.checkIfVisible('currency-select-search-input');
+    await Helpers.typeText('currency-select-search-input', 'SOCKS', false);
+    await Helpers.delay(500);
+    await Helpers.checkIfNotVisible('exchange-coin-row-ETH');
+  });
+
+  it('Should reset Currency Select List on clearing search field', async () => {
+    await Helpers.delay(1000);
+    await Helpers.clearField('currency-select-search-input');
+    await Helpers.delay(500);
+    await Helpers.checkIfVisible('exchange-coin-row-ETH');
+    await Helpers.tap('currency-select-header-back-button');
   });
 
   afterAll(async () => {

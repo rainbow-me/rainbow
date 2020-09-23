@@ -195,7 +195,14 @@ export default function ExchangeModal({
     nativeFieldRef?.current?.clear();
     outputFieldRef?.current?.clear();
     updateInputAmount();
-  }, [inputFieldRef, nativeFieldRef, outputFieldRef, updateInputAmount]);
+    updateMaxInputBalance();
+  }, [
+    inputFieldRef,
+    nativeFieldRef,
+    outputFieldRef,
+    updateInputAmount,
+    updateMaxInputBalance,
+  ]);
 
   // Clear form and reset max input balance on new input currency
   useEffect(() => {
