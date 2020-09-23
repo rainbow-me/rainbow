@@ -2,6 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
 import React from 'react';
+import { createNativeStackNavigator } from 'react-native-screens/src/native-stack/index';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
@@ -32,8 +33,10 @@ import {
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import { colors } from '@rainbow-me/styles';
 
 const Stack = createStackNavigator();
+const NativeStack = createNativeStackNavigator();
 
 function MainNavigator() {
   return (
@@ -139,9 +142,27 @@ function MainNavigator() {
   );
 }
 
+function MainNativeNavigator() {
+  return (
+    <NativeStack.Navigator
+      initialRouteName={Routes.MAIN_NAVIGATOR}
+      screenOptions={{
+        contentStyle: { backgroundColor: colors.white },
+        headerShown: false,
+        headerTopInsetEnabled: false,
+      }}
+    >
+      <NativeStack.Screen
+        component={MainNavigator}
+        name={Routes.MAIN_NAVIGATOR}
+      />
+    </NativeStack.Navigator>
+  );
+}
+
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
   <NavigationContainer onStateChange={onNavigationStateChange} ref={ref}>
-    <MainNavigator />
+    <MainNativeNavigator />
   </NavigationContainer>
 ));
 
