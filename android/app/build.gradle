@@ -155,7 +155,7 @@ def enableHermes = project.ext.react.get("enableHermes", false);
 android {
     def env = project.file('../../.env')
     def props = project.file('src/main/java/me/rainbow/MainApplication.java')
-    def contents2 = props2.getText( 'UTF-8' ).replaceAll( "//_REA ", '' ).replaceAll('/* REA', '//_REA /* REA')
+    def contents2 = props.getText( 'UTF-8' ).replaceAll( "//_REA ", '' ).replaceAll('/* REA', '//_REA /* REA')
     props.delete()
     props << contents2
 
