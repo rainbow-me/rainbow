@@ -49,7 +49,13 @@ const SavingsSheetEmptyState = ({
   const onDeposit = useCallback(() => {
     if (!isReadOnlyWallet) {
       navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
-        defaultInputAsset: underlying,
+        params: {
+          params: {
+            defaultInputAsset: underlying,
+          },
+          screen: Routes.MAIN_EXCHANGE_SCREEN,
+        },
+        screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
       });
     } else {
       Alert.alert(`You need to import the wallet in order to do this`);
