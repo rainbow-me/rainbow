@@ -23,6 +23,7 @@ const Container = styled(Column).attrs({
 
 const Content = styled(ScrollView).attrs({
   directionalLockEnabled: true,
+  keyboardShouldPersistTaps: 'always',
 })`
   ${({ contentHeight, deviceHeight }) =>
     contentHeight ? `height: ${deviceHeight + contentHeight}` : null};
