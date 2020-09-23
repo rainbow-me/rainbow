@@ -45,6 +45,7 @@ export default function SendAssetFormToken({
     <Fragment>
       <FormContainer isSmallPhone={isSmallPhone} {...props}>
         <SendAssetFormField
+          animatedKey="assetInput"
           format={removeLeadingZeros}
           label={selected.symbol}
           onChange={onChangeAssetAmount}
@@ -54,6 +55,7 @@ export default function SendAssetFormToken({
           value={assetAmount}
         />
         <SendAssetFormField
+          animatedKey="nativeInput"
           autoFocus
           label={nativeCurrency}
           mask={nativeMask}

@@ -52,6 +52,7 @@ const defaultFormatter = string => string;
 
 const UnderlineField = (
   {
+    animatedKey,
     autoFocus,
     buttonText,
     format = defaultFormatter,
@@ -73,15 +74,22 @@ const UnderlineField = (
   const [isFocused, setIsFocused] = useState(autoFocus);
   const [value, setValue] = useState(valueProp);
   const [wasButtonPressed, setWasButtonPressed] = useState(false);
-  const underlineSize = useSharedValue(autoFocus ? 1 : 0, 'underlineSize');
+  const underlineSize = useSharedValue(
+    autoFocus ? 1 : 0,
+    'underlineSize' + animatedKey
+  );
 
   const ref = useRef();
   useImperativeHandle(forwardedRef, () => ref.current);
 
   useEffect(() => {
-    underlineSize.value = withTiming(isFocused ? 1 : 0, {
-      duration: 150,
-    });
+    if (isFocused) {
+      underlineSize.value = withTiming(1, {
+        duration: 150,
+      });
+    } else {
+      underlineSize.value = 0;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
@@ -144,7 +152,7 @@ const UnderlineField = (
       };
     },
     undefined,
-    'animatedStyles'
+    'UnderlineFieldAnimatedStyle' + animatedKey
   );
 
   return (
