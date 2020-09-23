@@ -196,7 +196,7 @@ export default function ExchangeModal({
     setTimeout(() => {
       updateTxFee(defaultGasLimit);
     }, 1000);
-  }, [defaultGasLimit, updateGasLimit, updateTxFee]);
+  }, [defaultGasLimit, updateTxFee]);
 
   const clearForm = useCallback(() => {
     logger.log('[exchange] - clear form');
