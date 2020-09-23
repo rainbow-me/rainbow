@@ -255,7 +255,8 @@ const GasSpeedButton = ({
         inputRef.current?.focus();
       }
     };
-    if (!customGasPriceInput || !inputRef.current?.isFocused()) {
+
+    if (!customGasPriceInput || !inputFocused) {
       complete();
       ReactNativeHapticFeedback.trigger('impactMedium');
       return;
@@ -266,6 +267,7 @@ const GasSpeedButton = ({
     const maxGasPrice = Number(gasPrices?.fast?.value?.amount || 0);
     let tooLow = priceInWei < minGasPrice;
     let tooHigh = priceInWei > maxGasPrice * 2.5;
+
     if (tooLow || tooHigh) {
       Alert({
         buttons: [
