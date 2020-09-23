@@ -305,7 +305,7 @@ function NativeStackNavigator() {
         name={Routes.SAVINGS_DEPOSIT_MODAL}
         options={nativeStackDefaultConfigWithoutStatusBar}
       />
-      {isNativeStackAvailable && (
+      {isNativeStackAvailable ? (
         <>
           <NativeStack.Screen
             component={SendFlowNavigator}
@@ -320,6 +320,12 @@ function NativeStackNavigator() {
             name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
           />
         </>
+      ) : (
+        <NativeStack.Screen
+          component={ImportSeedPhraseFlowNavigator}
+          name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
+          options={{ customStack: true }}
+        />
       )}
     </NativeStack.Navigator>
   );

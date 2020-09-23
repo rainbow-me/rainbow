@@ -20,14 +20,14 @@ import {
   TokenInfoSection,
 } from '../token-info';
 import Chart from '../value-chart/Chart';
+import {
+  ChartPathProvider,
+  monotoneCubicInterpolation,
+} from '@rainbow-me/animated-charts';
 import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
 import { useNavigation } from '@rainbow-me/navigation';
-import {
-  ChartPathProvider,
-  monotoneCubicInterpolation,
-} from 'react-native-animated-charts';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 

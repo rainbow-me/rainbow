@@ -16,6 +16,7 @@ import {
 } from '@rainbow-me/handlers/cloudBackup';
 import {
   useDimensions,
+  useMagicAutofocus,
   useRouteExistsInNavigationState,
   useWalletCloudBackup,
   useWallets,
@@ -97,14 +98,24 @@ export default function BackupIcloudStep() {
     });
   }, []);
 
-  const onPasswordFocus = useCallback(() => {
-    setPasswordFocused(true);
-    currentlyFocusedInput.current = passwordRef.current;
-  }, []);
+  const { handleFocus } = useMagicAutofocus(passwordRef);
 
-  const onConfirmPasswordFocus = useCallback(() => {
-    currentlyFocusedInput.current = confirmPasswordRef.current;
-  }, []);
+  const onPasswordFocus = useCallback(
+    target => {
+      handleFocus(target);
+      setPasswordFocused(true);
+      currentlyFocusedInput.current = passwordRef.current;
+    },
+    [handleFocus]
+  );
+
+  const onConfirmPasswordFocus = useCallback(
+    target => {
+      handleFocus(target);
+      currentlyFocusedInput.current = confirmPasswordRef.current;
+    },
+    [handleFocus]
+  );
 
   const onPasswordBlur = useCallback(() => {
     setPasswordFocused(false);

@@ -18,7 +18,10 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   right: 0;
 `;
 
-const Content = styled(ScrollView)`
+const Content = styled(ScrollView).attrs({
+  directionalLockEnabled: true,
+  keyboardShouldPersistTaps: 'always',
+})`
   background-color: ${({ backgroundColor }) => backgroundColor};
   ${({ contentHeight, deviceHeight }) =>
     contentHeight ? `height: ${deviceHeight + contentHeight}` : null};

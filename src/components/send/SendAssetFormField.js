@@ -6,6 +6,7 @@ import { Text } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
 
 export default function SendAssetFormField({
+  animatedKey,
   autoFocus,
   format,
   label,
@@ -36,6 +37,7 @@ export default function SendAssetFormField({
       {...props}
     >
       <UnderlineField
+        animatedKey={animatedKey}
         autoFocus={autoFocus}
         buttonText="Max"
         format={format}
