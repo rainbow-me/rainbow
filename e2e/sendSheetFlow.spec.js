@@ -163,9 +163,9 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should only show a max of 2 decimals in quantity field', async () => {
-    await Helpers.tap('send-asset-form-UNI');
+    await Helpers.tap('send-asset-form-SOCKS');
     await Helpers.delay(1500);
-    await Helpers.tap('send-asset-UNI');
+    await Helpers.tap('send-asset-SOCKS');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.tap('selected-asset-quantity-field-input');
@@ -175,7 +175,7 @@ describe('Send Sheet Interaction Flow', () => {
       true
     );
     await Helpers.checkIfElementByTextIsVisible('8.12');
-    await Helpers.tap('send-asset-form-UNI');
+    await Helpers.tap('send-asset-form-SOCKS');
   });
 
   it('Should show Add Contact Screen after tapping Add Contact Button', async () => {
