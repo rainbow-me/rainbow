@@ -80,14 +80,16 @@ const UniswapInvestmentCard = ({ assetType, item, ...props }) => {
         isPool
         onPress={handleOpenExpandedState}
         tokenSymbols={[
-          { tokenSymbol: 'DAI' },
+          { tokenSymbol: item.tokenSymbol },
           { tokenSymbol: 'ETH' },
-          { tokenSymbol: 'ANT' },
-          { tokenSymbol: 'MKR' },
-          { tokenSymbol: 'MANA' },
-          { tokenSymbol: 'BLT' },
-          { tokenSymbol: 'NEXO' },
-          { tokenSymbol: 'PNK' },
+
+          // TEST PURPOSE 👇
+          // { tokenSymbol: 'ANT' },
+          // { tokenSymbol: 'MKR' },
+          // { tokenSymbol: 'MANA' },
+          // { tokenSymbol: 'BLT' },
+          // { tokenSymbol: 'NEXO' },
+          // { tokenSymbol: 'PNK' },
         ]}
         topRowRender={TopRow}
         {...item}

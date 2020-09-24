@@ -424,7 +424,9 @@ class RecyclerAssetList extends Component {
     const stickyComponentsIndices = [];
     const items = sections.reduce((ctx, section) => {
       headersIndices.push(ctx.length);
-      stickyComponentsIndices.push(ctx.length);
+      if (!section.investments) {
+        stickyComponentsIndices.push(ctx.length);
+      }
       ctx = ctx.concat([
         {
           isHeader: true,
@@ -746,7 +748,6 @@ class RecyclerAssetList extends Component {
         data,
       });
     } else if (type.index === ViewTypes.UNISWAP_ROW.index) {
-      console.log('asdasdasdasdasd: ', data);
       return ViewTypes.UNISWAP_ROW.renderComponent({
         data,
         type,

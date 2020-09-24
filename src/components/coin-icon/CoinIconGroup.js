@@ -41,7 +41,6 @@ export default function CoinIconGroup({ containerStyles, tokens }) {
     tokens.slice(0, sizesTable[size].breakIndex),
     tokens.slice(sizesTable[size].breakIndex, tokens.length),
   ];
-  console.log(tokens.length);
 
   return (
     <Container css={containerStyles} shouldCenter={sizesTable[size].breakIndex}>
