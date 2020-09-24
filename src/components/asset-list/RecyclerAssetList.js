@@ -203,10 +203,10 @@ class RecyclerAssetList extends Component {
 
     this.state = {
       dataProvider: new DataProvider(hasRowChanged, this.getStableId),
-      headersIndices: [],
       isRefreshing: false,
       items: [],
       itemsCount: 0,
+      sectionsIndices: [],
       showCoinListEditor: false,
       stickyComponentsIndices: [],
     };
@@ -223,8 +223,32 @@ class RecyclerAssetList extends Component {
 
         const { openFamilyTabs, openInvestmentCards, sections } = this.props;
 
-        const { headersIndices } = this.state;
-        if (headersIndices.includes(index)) {
+        const balancesIndex = findIndex(
+          sections,
+          ({ name }) => name === 'balances'
+        );
+        const collectiblesIndex = findIndex(
+          sections,
+          ({ name }) => name === 'collectibles'
+        );
+        const investmentsIndex = findIndex(
+          sections,
+          ({ name }) => name === 'investments'
+        );
+
+        const { sectionsIndices } = this.state;
+        if (sectionsIndices.includes(index)) {
+          if (index === sectionsIndices[investmentsIndex]) {
+            return {
+              height: ViewTypes.POOLS.calculateHeight({
+                amountOfRows: sections[investmentsIndex].data.length,
+                isLast: true,
+                isOpen: openInvestmentCards,
+              }),
+              index: ViewTypes.POOLS.index,
+              visibleDuringCoinEdit: ViewTypes.POOLS.visibleDuringCoinEdit,
+            };
+          }
           return {
             height: ViewTypes.HEADER.calculateHeight({
               hideHeader: this.props.hideHeader,
@@ -245,24 +269,11 @@ class RecyclerAssetList extends Component {
           };
         }
 
-        const balancesIndex = findIndex(
-          sections,
-          ({ name }) => name === 'balances'
-        );
-        const collectiblesIndex = findIndex(
-          sections,
-          ({ name }) => name === 'collectibles'
-        );
-        const investmentsIndex = findIndex(
-          sections,
-          ({ name }) => name === 'investments'
-        );
-
         if (
           balancesIndex > -1 &&
-          (index <= headersIndices[collectiblesIndex] ||
+          (index <= sectionsIndices[collectiblesIndex] ||
             collectiblesIndex < 0) &&
-          (index <= headersIndices[investmentsIndex] || investmentsIndex < 0)
+          (index <= sectionsIndices[investmentsIndex] || investmentsIndex < 0)
         ) {
           const balanceItemsCount = get(
             sections,
@@ -270,7 +281,7 @@ class RecyclerAssetList extends Component {
             0
           );
           const lastBalanceIndex =
-            headersIndices[balancesIndex] + balanceItemsCount;
+            sectionsIndices[balancesIndex] + balanceItemsCount;
           if (index === lastBalanceIndex - 2) {
             if (this.coinDividerIndex !== index) {
               this.coinDividerIndex = index;
@@ -321,6 +332,7 @@ class RecyclerAssetList extends Component {
                 height: ViewTypes.COIN_SAVINGS.calculateHeight({
                   amountOfRows:
                     sections[balancesIndex].data[index - 1].assets.length,
+                  isLast: investmentsIndex < 0,
                   isOpen: this.props.openSavings,
                 }),
                 index: ViewTypes.COIN_SAVINGS.index,
@@ -328,7 +340,7 @@ class RecyclerAssetList extends Component {
             }
             this.lastAssetIndex = index;
           }
-          const firstBalanceIndex = headersIndices[balancesIndex] + 1;
+          const firstBalanceIndex = sectionsIndices[balancesIndex] + 1;
           const isFirst =
             index === firstBalanceIndex &&
             !sections[balancesIndex].data[firstBalanceIndex - 1]
@@ -346,39 +358,10 @@ class RecyclerAssetList extends Component {
           };
         }
 
-        if (investmentsIndex > -1) {
-          const investmentItemsCount = get(
-            sections,
-            `[${investmentsIndex}].data.length`,
-            0
-          );
-          const lastInvestmentIndex =
-            headersIndices[investmentsIndex] + investmentItemsCount;
-
-          if (
-            index > headersIndices[investmentsIndex] &&
-            index <= lastInvestmentIndex
-          ) {
-            const isOpen = !openInvestmentCards[
-              sections[investmentsIndex].data[
-                index - headersIndices[investmentsIndex] - 1
-              ].uniqueId
-            ];
-
-            return {
-              height: ViewTypes.UNISWAP_ROW.calculateHeight({
-                isLast: index === lastInvestmentIndex,
-                isOpen,
-              }),
-              index: ViewTypes.UNISWAP_ROW.index,
-            };
-          }
-        }
-
         if (collectiblesIndex > -1) {
-          if (index > headersIndices[collectiblesIndex]) {
+          if (index > sectionsIndices[collectiblesIndex]) {
             const familyIndex = this.state.items[index].familySectionIndex;
-            const isFirst = index === headersIndices[collectiblesIndex] + 1;
+            const isFirst = index === sectionsIndices[collectiblesIndex] + 1;
             const isHeader =
               sections[collectiblesIndex].data[familyIndex].isHeader;
             return {
@@ -420,36 +403,44 @@ class RecyclerAssetList extends Component {
   }
 
   static getDerivedStateFromProps({ sections, openFamilyTabs }, state) {
-    const headersIndices = [];
+    const sectionsIndices = [];
     const stickyComponentsIndices = [];
     const items = sections.reduce((ctx, section) => {
-      headersIndices.push(ctx.length);
-      if (!section.investments) {
-        stickyComponentsIndices.push(ctx.length);
-      }
-      ctx = ctx.concat([
-        {
-          isHeader: true,
-          ...section.header,
-        },
-      ]);
-      if (section.collectibles) {
-        section.data.forEach((item, index) => {
-          if (item.isHeader || openFamilyTabs[item.familyName]) {
-            ctx.push({
-              familySectionIndex: index,
-              item: { ...item, ...section.perData },
-              renderItem: section.renderItem, // 8% of CPU
-            });
-          }
-        });
+      sectionsIndices.push(ctx.length);
+      if (section.investments) {
+        ctx = ctx.concat([
+          {
+            data: section.data,
+            investments: true,
+            ...section.header,
+          },
+        ]);
       } else {
-        ctx = ctx.concat(
-          section.data.map(item => ({
-            item: { ...item, ...section.perData },
-            renderItem: section.renderItem, // 1% of CPU
-          }))
-        );
+        stickyComponentsIndices.push(ctx.length);
+        ctx = ctx.concat([
+          {
+            isHeader: true,
+            ...section.header,
+          },
+        ]);
+        if (section.collectibles) {
+          section.data.forEach((item, index) => {
+            if (item.isHeader || openFamilyTabs[item.familyName]) {
+              ctx.push({
+                familySectionIndex: index,
+                item: { ...item, ...section.perData },
+                renderItem: section.renderItem, // 8% of CPU
+              });
+            }
+          });
+        } else {
+          ctx = ctx.concat(
+            section.data.map(item => ({
+              item: { ...item, ...section.perData },
+              renderItem: section.renderItem, // 1% of CPU
+            }))
+          );
+        }
       }
       return ctx;
     }, []);
@@ -460,9 +451,9 @@ class RecyclerAssetList extends Component {
     return {
       areSmallCollectibles,
       dataProvider: state.dataProvider.cloneWithRows(items),
-      headersIndices,
       items,
       itemsCount: items.length,
+      sectionsIndices,
       stickyComponentsIndices,
     };
   }
@@ -747,10 +738,9 @@ class RecyclerAssetList extends Component {
       return ViewTypes.COIN_SAVINGS.renderComponent({
         data,
       });
-    } else if (type.index === ViewTypes.UNISWAP_ROW.index) {
-      return ViewTypes.UNISWAP_ROW.renderComponent({
+    } else if (type.index === ViewTypes.POOLS.index) {
+      return ViewTypes.POOLS.renderComponent({
         data,
-        type,
       });
     } else if (type.index === ViewTypes.UNIQUE_TOKEN_ROW.index) {
       return ViewTypes.UNIQUE_TOKEN_ROW.renderComponent({
@@ -789,7 +779,7 @@ class RecyclerAssetList extends Component {
     } = this.props;
     const {
       dataProvider,
-      headersIndices,
+      sectionsIndices,
       stickyComponentsIndices,
     } = this.state;
 
@@ -806,7 +796,7 @@ class RecyclerAssetList extends Component {
         >
           <RecyclerListView
             dataProvider={dataProvider}
-            extendedState={{ headersIndices }}
+            extendedState={{ sectionsIndices }}
             externalScrollView={externalScrollView}
             itemAnimator={this.animator}
             layoutProvider={this.layoutProvider}

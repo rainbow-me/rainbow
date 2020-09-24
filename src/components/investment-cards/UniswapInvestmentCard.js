@@ -48,11 +48,12 @@ const BottomRow = ({ pricePerShare, native }) => {
   );
 };
 
-const TopRow = ({ tokenName, totalNativeDisplay }) => {
+const TopRow = ({ tokenSymbol, totalNativeDisplay }) => {
   return (
     <Fragment>
       <FlexItem flex={1}>
-        <CoinName>{tokenName}</CoinName>
+        {/* // TODO Remove hardcoded ETH */}
+        <CoinName>{tokenSymbol}-ETH</CoinName>
       </FlexItem>
       <View>
         <BalanceText numberOfLines={1}>{totalNativeDisplay}</BalanceText>

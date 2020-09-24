@@ -10,6 +10,7 @@ import {
 import { CoinRowHeight } from '../coin-row';
 import { FloatingActionButtonSize } from '../fab';
 import { ListFooter } from '../list';
+import PoolsListWrapper from '../pools/PoolsListWrapper';
 import SavingsListWrapper from '../savings/SavingsListWrapper';
 import { TokenFamilyHeaderHeight } from '../token-family';
 import { UniqueTokenRow } from '../unique-token';
@@ -98,10 +99,13 @@ export const ViewTypes = {
   },
 
   COIN_SAVINGS: {
-    calculateHeight: ({ isOpen, amountOfRows }) =>
+    calculateHeight: ({ isOpen, isLast, amountOfRows }) =>
       isOpen
-        ? TokenFamilyHeaderHeight + ListFooter.height + 61 * amountOfRows - 4
-        : TokenFamilyHeaderHeight + ListFooter.height - 10,
+        ? TokenFamilyHeaderHeight +
+          (isLast ? ListFooter.height : 10) +
+          61 * amountOfRows -
+          4
+        : TokenFamilyHeaderHeight + (isLast ? ListFooter.height : 5) - 10,
     index: 4,
     renderComponent: ({ data }) => {
       const { item = {} } = data;
@@ -111,15 +115,17 @@ export const ViewTypes = {
     },
   },
 
-  UNISWAP_ROW: {
-    calculateHeight: ({ isLast, isFirst }) =>
-      CoinRowHeight +
-      (isFirst ? firstCoinRowMarginTop : 0) +
-      (isLast ? ListFooter.height + 8 : 0),
+  POOLS: {
+    calculateHeight: ({ isOpen, isLast, amountOfRows }) =>
+      isOpen
+        ? TokenFamilyHeaderHeight +
+          (isLast ? ListFooter.height : 10) +
+          61 * amountOfRows -
+          4
+        : TokenFamilyHeaderHeight + (isLast ? ListFooter.height : 5) - 10,
     index: 5,
-    renderComponent: ({ type, data }) => {
-      const { item = {}, renderItem } = data;
-      return renderItem({ isFirstCoinRow: type.isFirst, item });
+    renderComponent: ({ data, isCoinListEdited }) => {
+      return <PoolsListWrapper {...data} isCoinListEdited={isCoinListEdited} />;
     },
   },
 
