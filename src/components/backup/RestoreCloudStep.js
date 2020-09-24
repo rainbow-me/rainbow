@@ -6,6 +6,7 @@ import {
   restoreCloudBackup,
   saveBackupPassword,
 } from '../../model/backup';
+import { CLOUD_PLATFORM } from '../../utils/platform';
 import { PasswordField } from '../fields';
 import { Centered, Column } from '../layout';
 import { LoadingOverlay } from '../modal';
@@ -56,7 +57,7 @@ const Title = styled(Text).attrs({
   ${margin(15, 0, 12)};
 `;
 
-export default function RestoreIcloudStep({ userData }) {
+export default function RestoreCloudStep({ userData }) {
   const { goBack, replace } = useNavigation();
   const { isWalletLoading, setIsWalletLoading } = useWallets();
   const { accountAddress } = useAccountSettings();
@@ -101,7 +102,7 @@ export default function RestoreIcloudStep({ userData }) {
         passwordIsValid = true;
       }
 
-      newLabel = `􀑙 Restore from iCloud`;
+      newLabel = `􀑙 Restore from ${CLOUD_PLATFORM}`;
     }
 
     setValidPassword(passwordIsValid);

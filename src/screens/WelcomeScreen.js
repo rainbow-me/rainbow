@@ -21,6 +21,7 @@ import {
   fetchUserDataFromCloud,
   isCloudBackupAvailable,
 } from '../handlers/cloudBackup';
+import { CLOUD_PLATFORM } from '../utils/platform';
 
 import { useHideSplashScreen } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
@@ -346,12 +347,12 @@ export default function WelcomeScreen() {
   useEffect(() => {
     const initialize = async () => {
       try {
-        logger.log('downloading iCloud backup info...');
+        logger.log(`downloading ${CLOUD_PLATFORM} backup info...`);
         const isAvailable = await isCloudBackupAvailable();
         if (isAvailable) {
           const data = await fetchUserDataFromCloud();
           setUserData(data);
-          logger.log('Downloaded iCloud backup info');
+          logger.log(`Downloaded ${CLOUD_PLATFORM} backup info`);
         }
       } catch (e) {
         logger.log('error getting userData', e);

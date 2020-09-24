@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import { StatusBar } from 'react-native';
-import RestoreIcloudStep from '../components/backup/RestoreIcloudStep';
+import RestoreCloudStep from '../components/backup/RestoreCloudStep';
 import RestoreSheetFirstStep from '../components/backup/RestoreSheetFirstStep';
 import { Column } from '../components/layout';
 import { SlackSheet } from '../components/sheet';
@@ -40,7 +40,7 @@ export default function RestoreSheet() {
       <StatusBar barStyle="light-content" />
       <SlackSheet contentHeight={longFormHeight} testID="restore-sheet">
         {step === WalletBackupStepTypes.cloud ? (
-          <RestoreIcloudStep userData={userData} />
+          <RestoreCloudStep userData={userData} />
         ) : (
           <RestoreSheetFirstStep
             onIcloudRestore={onIcloudRestore}
