@@ -1,7 +1,8 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
-import React from 'react';
+import React, { useContext } from 'react';
+import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
@@ -18,6 +19,7 @@ import SettingsModal from '../screens/SettingsModal';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
+import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import { SwipeNavigator } from './SwipeNavigator';
 import { defaultScreenStackOptions, stackNavigationConfig } from './config';
@@ -36,9 +38,11 @@ import { ExchangeModalNavigator } from './index';
 const Stack = createStackNavigator();
 
 function MainNavigator() {
+  const initialRoute = useContext(InitialRouteContext);
+
   return (
     <Stack.Navigator
-      initialRouteName={Routes.SWIPE_LAYOUT}
+      initialRouteName={initialRoute}
       {...stackNavigationConfig}
       screenOptions={defaultScreenStackOptions}
     >
@@ -135,6 +139,7 @@ function MainNavigator() {
         name={Routes.RESTORE_SHEET}
         options={sheetPreset}
       />
+      <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} />
     </Stack.Navigator>
   );
 }
