@@ -746,6 +746,7 @@ class RecyclerAssetList extends Component {
         data,
       });
     } else if (type.index === ViewTypes.UNISWAP_ROW.index) {
+      console.log('asdasdasdasdasd: ', data);
       return ViewTypes.UNISWAP_ROW.renderComponent({
         data,
         type,

@@ -144,17 +144,19 @@ const withUniswapSection = (
   nativeCurrency,
   uniswap,
   uniswapTotal
-) => ({
-  data: uniswap,
-  header: {
-    title: 'Investments',
-    totalItems: uniswap.length,
-    totalValue: uniswapTotal,
-  },
-  investments: true,
-  name: 'investments',
-  renderItem: uniswapRenderItem,
-});
+) => {
+  return {
+    data: uniswap,
+    header: {
+      title: 'Investments',
+      totalItems: uniswap.length,
+      totalValue: uniswapTotal,
+    },
+    investments: true,
+    name: 'investments',
+    renderItem: uniswapRenderItem,
+  };
+};
 
 const withEthPrice = allAssets => {
   const ethAsset = ethereumUtils.getAsset(allAssets);

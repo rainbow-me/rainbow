@@ -1,45 +1,68 @@
-import { useRoute } from '@react-navigation/native';
-import { floor } from 'lodash';
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useCallback, useMemo } from 'react';
+import React, { Fragment, useCallback } from 'react';
+import { View } from 'react-native';
 import styled from 'styled-components/primitives';
-import { convertAmountToNativeDisplay } from '../../helpers/utilities';
-import { useAccountSettings, useOpenInvestmentCards } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
+import { BottomRowText, CoinRow } from '../coin-row';
+import BalanceText from '../coin-row/BalanceText';
+import CoinName from '../coin-row/CoinName';
 import { LiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
-import { ColumnWithMargins, Row } from '../layout';
-import { Text } from '../text';
-import InvestmentCard from './InvestmentCard';
-import InvestmentCardPill from './InvestmentCardPill';
+import { FlexItem } from '../layout';
 import Routes from '@rainbow-me/routes';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors } from '@rainbow-me/styles';
 
 const UniswapInvestmentCardHeight = 114;
 
-const gradientColors = [
-  colors.uniswapInvestmentCards.startGradient,
-  colors.uniswapInvestmentCards.endGradient,
-];
+const formatPercentageString = percentString =>
+  percentString ? percentString.split('-').join('- ') : '-';
 
-const AssetLabel = styled(Text).attrs({
-  color: colors.alpha(colors.blueGreyDark, 0.6),
-  lineHeight: 'tight',
-  size: 'smedium',
-})``;
+const PercentageText = styled(BottomRowText).attrs({
+  align: 'right',
+})`
+  ${({ isPositive }) => (isPositive ? `color: ${colors.green};` : null)};
+`;
 
-const UniswapInvestmentCard = ({
-  assetType,
-  isCollapsible,
-  item,
-  ...props
-}) => {
-  const { nativeCurrency } = useAccountSettings();
-  const { openInvestmentCards } = useOpenInvestmentCards();
+const Content = styled(ButtonPressAnimation)`
+  top: 0;
+`;
 
+const BottomRow = ({ pricePerShare, native }) => {
+  const percentChange = get(native, 'change');
+  const percentageChangeDisplay = formatPercentageString(percentChange);
+
+  const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
+
+  return (
+    <Fragment>
+      <FlexItem flex={1}>
+        <BottomRowText>{pricePerShare}</BottomRowText>
+      </FlexItem>
+      <View>
+        <PercentageText isPositive={isPositive}>
+          {percentageChangeDisplay}
+        </PercentageText>
+      </View>
+    </Fragment>
+  );
+};
+
+const TopRow = ({ tokenName, totalNativeDisplay }) => {
+  return (
+    <Fragment>
+      <FlexItem flex={1}>
+        <CoinName>{tokenName}</CoinName>
+      </FlexItem>
+      <View>
+        <BalanceText numberOfLines={1}>{totalNativeDisplay}</BalanceText>
+      </View>
+    </Fragment>
+  );
+};
+
+const UniswapInvestmentCard = ({ assetType, item, ...props }) => {
   const { navigate } = useNavigation();
-  const { name } = useRoute();
 
   const handleOpenExpandedState = useCallback(() => {
     navigate(Routes.EXPANDED_ASSET_SHEET, {
@@ -50,74 +73,27 @@ const UniswapInvestmentCard = ({
     });
   }, [assetType, item, navigate]);
 
-  const {
-    ethBalance,
-    tokenBalance,
-    tokenName,
-    tokenSymbol,
-    totalBalanceAmount,
-    totalNativeDisplay,
-    uniqueId,
-  } = item;
-
-  const headerProps = useMemo(
-    () => ({
-      color: colors.dark,
-      emoji: 'unicorn',
-      isCollapsible,
-      title: `ETH • ${tokenSymbol}`,
-      titleColor: colors.flamingo,
-      value: floor(parseFloat(totalBalanceAmount), 4)
-        ? totalNativeDisplay
-        : `< ${convertAmountToNativeDisplay(0.01, nativeCurrency)}`,
-    }),
-    [
-      isCollapsible,
-      nativeCurrency,
-      tokenSymbol,
-      totalBalanceAmount,
-      totalNativeDisplay,
-    ]
-  );
-
-  const isExpandedState = name === 'ExpandedAssetSheet';
-
   return (
-    <InvestmentCard
-      {...props}
-      collapsed={openInvestmentCards[uniqueId]}
-      containerHeight={UniswapInvestmentCard.height}
-      gradientColors={gradientColors}
-      headerProps={headerProps}
-      height={UniswapInvestmentCardHeight}
-      isExpandedState={isExpandedState}
-      uniqueId={uniqueId}
-    >
-      <Divider
-        backgroundColor={colors.transparent}
-        color={colors.alpha(colors.blueGreyDark, 0.02)}
-      />
-      <ButtonPressAnimation
-        disabled={isExpandedState}
+    <Content onPress={handleOpenExpandedState} scaleTo={0.96}>
+      <CoinRow
+        bottomRowRender={BottomRow}
+        isPool
         onPress={handleOpenExpandedState}
-        scaleTo={0.96}
-      >
-        <ColumnWithMargins css={padding(8, 15, 15)} margin={5}>
-          <Row align="center" justify="space-between">
-            <AssetLabel>Ethereum</AssetLabel>
-            <AssetLabel>{tokenName}</AssetLabel>
-          </Row>
-          <Row align="center" justify="space-between">
-            <InvestmentCardPill symbol="ETH" value={ethBalance} />
-            <InvestmentCardPill
-              reverse
-              symbol={tokenSymbol}
-              value={tokenBalance}
-            />
-          </Row>
-        </ColumnWithMargins>
-      </ButtonPressAnimation>
-    </InvestmentCard>
+        tokenSymbols={[
+          { tokenSymbol: 'DAI' },
+          { tokenSymbol: 'ETH' },
+          { tokenSymbol: 'ANT' },
+          { tokenSymbol: 'MKR' },
+          { tokenSymbol: 'MANA' },
+          { tokenSymbol: 'BLT' },
+          { tokenSymbol: 'NEXO' },
+          { tokenSymbol: 'PNK' },
+        ]}
+        topRowRender={TopRow}
+        {...item}
+        {...props}
+      />
+    </Content>
   );
 };
 

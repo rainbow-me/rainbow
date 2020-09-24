@@ -9,11 +9,6 @@ import {
 } from '../coin-divider';
 import { CoinRowHeight } from '../coin-row';
 import { FloatingActionButtonSize } from '../fab';
-import {
-  InvestmentCard,
-  InvestmentCardHeader,
-  UniswapInvestmentCard,
-} from '../investment-cards';
 import { ListFooter } from '../list';
 import SavingsListWrapper from '../savings/SavingsListWrapper';
 import { TokenFamilyHeaderHeight } from '../token-family';
@@ -117,9 +112,9 @@ export const ViewTypes = {
   },
 
   UNISWAP_ROW: {
-    calculateHeight: ({ isLast, isOpen }) =>
-      (isOpen ? UniswapInvestmentCard.height : InvestmentCardHeader.height) +
-      InvestmentCard.margin.vertical +
+    calculateHeight: ({ isLast, isFirst }) =>
+      CoinRowHeight +
+      (isFirst ? firstCoinRowMarginTop : 0) +
       (isLast ? ListFooter.height + 8 : 0),
     index: 5,
     renderComponent: ({ type, data }) => {
