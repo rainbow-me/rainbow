@@ -1,15 +1,26 @@
 import React, { Fragment } from 'react';
 import { useOpenInvestmentCards } from '../../hooks';
 import { OpacityToggler } from '../animations';
+import { UniswapInvestmentCard } from '../investment-cards';
 import SavingsListHeader from '../savings/SavingsListHeader';
 
-export default function PoolsListWrapper({ assets, totalValue = '0' }) {
+const renderSavingsListRow = item => {
+  console.log(item);
+  return (
+    <UniswapInvestmentCard
+      assetType="uniswap"
+      item={item}
+      key={item.uniqueId}
+    />
+  );
+};
+
+export default function PoolsListWrapper({ data, totalValue = '0' }) {
   const {
     isInvestmentCardsOpen,
     toggleOpenInvestmentCards,
   } = useOpenInvestmentCards();
 
-  console.log(assets);
   return (
     <Fragment>
       <SavingsListHeader
@@ -24,7 +35,7 @@ export default function PoolsListWrapper({ assets, totalValue = '0' }) {
         isVisible={!isInvestmentCardsOpen}
         pointerEvents={isInvestmentCardsOpen ? 'auto' : 'none'}
       >
-        {/* {assets.map(renderSavingsListRow)} */}
+        {data.map(renderSavingsListRow)}
       </OpacityToggler>
     </Fragment>
   );
