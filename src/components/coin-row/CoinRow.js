@@ -57,7 +57,7 @@ export default function CoinRow({
         <Row
           align="center"
           justify="space-between"
-          testID={`${testID}${symbol || ''}`}
+          testID={`${testID}-${symbol || ''}`}
         >
           {topRowRender({ symbol, ...accountSettings, ...props })}
         </Row>

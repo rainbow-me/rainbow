@@ -69,7 +69,8 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.tap('send-fab');
     await Helpers.delay(1000);
-    await Helpers.checkIfElementByTextIsVisible('To:');
+    await Helpers.checkIfVisible('send-asset-form-field');
+    //await Helpers.checkIfElementByTextIsVisible('To:');
   });
 
   it('Should do nothing on typing jibberish send address', async () => {
@@ -120,8 +121,8 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should display Asset Form after tapping on asset', async () => {
     await Helpers.delay(1000);
-    await Helpers.checkIfVisible('send-asset-SOCKS');
-    await Helpers.tap('send-asset-SOCKS');
+    await Helpers.checkIfVisible('send-asset-DAI');
+    await Helpers.tap('send-asset-DAI');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('selected-asset-field-input');
   });
@@ -152,9 +153,9 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should prepend a 0 to quantity field on input of .', async () => {
-    await Helpers.tap('send-asset-form-SOCKS');
+    await Helpers.tap('send-asset-form-DAI');
     await Helpers.delay(2000);
-    await Helpers.tap('send-asset-SOCKS');
+    await Helpers.tap('send-asset-DAI');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.tap('selected-asset-quantity-field-input');
@@ -163,9 +164,9 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should only show a max of 2 decimals in quantity field', async () => {
-    await Helpers.tap('send-asset-form-SOCKS');
+    await Helpers.tap('send-asset-form-DAI');
     await Helpers.delay(1500);
-    await Helpers.tap('send-asset-SOCKS');
+    await Helpers.tap('send-asset-DAI');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.tap('selected-asset-quantity-field-input');
@@ -175,7 +176,67 @@ describe('Send Sheet Interaction Flow', () => {
       true
     );
     await Helpers.checkIfElementByTextIsVisible('8.12');
-    await Helpers.tap('send-asset-form-SOCKS');
+    await Helpers.tap('send-asset-form-DAI');
+  });
+
+  it('Should display Asset Form after tapping on asset ETH', async () => {
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('send-asset-ETH');
+    await Helpers.tap('send-asset-ETH');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('selected-asset-field-input');
+  });
+
+  it('Should display max button on asset input focus ETH', async () => {
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('selected-asset-field-input');
+    await Helpers.tap('selected-asset-field-input');
+    await Helpers.delay(1000);
+    await Helpers.checkIfElementByTextIsVisible('Max');
+  });
+
+  it('Should display max button on asset quantity input focus ETH', async () => {
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('selected-asset-quantity-field-input');
+    await Helpers.tap('selected-asset-quantity-field-input');
+    await Helpers.delay(1000);
+    await Helpers.checkIfElementByTextIsVisible('Max');
+  });
+
+  it('Should display Insufficient Funds button if exceeds asset balance ETH', async () => {
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('selected-asset-field-input');
+    await Helpers.tap('selected-asset-field-input');
+    await Helpers.typeText('selected-asset-field-input', '9999', true);
+    await Helpers.delay(1000);
+    await Helpers.checkIfElementByTextIsVisible('Insufficient Funds');
+  });
+
+  it('Should prepend a 0 to quantity field on input of . ETH', async () => {
+    await Helpers.tap('send-asset-form-ETH');
+    await Helpers.delay(2000);
+    await Helpers.tap('send-asset-ETH');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('selected-asset-quantity-field-input');
+    await Helpers.tap('selected-asset-quantity-field-input');
+    await Helpers.typeText('selected-asset-quantity-field-input', '.', true);
+    await Helpers.checkIfElementByTextIsVisible('0.');
+  });
+
+  it('Should only show a max of 2 decimals in quantity field ETH', async () => {
+    await Helpers.tap('send-asset-form-ETH');
+    await Helpers.delay(1500);
+    await Helpers.tap('send-asset-ETH');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('selected-asset-quantity-field-input');
+    await Helpers.tap('selected-asset-quantity-field-input');
+    await Helpers.typeText(
+      'selected-asset-quantity-field-input',
+      '8.1219',
+      true
+    );
+    await Helpers.checkIfElementByTextIsVisible('8.12');
+    await Helpers.tap('send-asset-form-ETH');
   });
 
   it('Should show Add Contact Screen after tapping Add Contact Button', async () => {
@@ -190,7 +251,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('add-contact-button');
     await Helpers.tap('add-contact-button');
-    await Helpers.delay(2000);
+    await Helpers.delay(2500);
     await Helpers.tapByText('Cancel');
   });
 
