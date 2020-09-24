@@ -60,17 +60,24 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
     if (Platform.OS === 'android') {
       await RNCloudFs.loginIfNeeded();
     }
-    await RNCloudFs.copyToCloud({
+    const result = await RNCloudFs.copyToCloud({
       mimeType,
       scope,
       sourcePath: sourceUri,
       targetPath: destinationPath,
     });
     // Now we need to verify the file has been stored in the cloud
-    const exists = await RNCloudFs.fileExists({
-      scope,
-      targetPath: destinationPath,
-    });
+    const exists = await RNCloudFs.fileExists(
+      Platform.OS === 'ios'
+        ? {
+            scope,
+            targetPath: destinationPath,
+          }
+        : {
+            fileId: result,
+            scope,
+          }
+    );
 
     if (!exists) {
       logger.sentry('Backup doesnt exist after completion');
