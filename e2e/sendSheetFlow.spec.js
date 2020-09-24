@@ -70,7 +70,6 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.tap('send-fab');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('send-asset-form-field');
-    //await Helpers.checkIfElementByTextIsVisible('To:');
   });
 
   it('Should do nothing on typing jibberish send address', async () => {
