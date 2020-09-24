@@ -266,12 +266,12 @@ export default function ExchangeModal({
       updateInputAmount(maxBalance, maxBalance, true, true);
     }
   }, [
-    maxInputBalance,
+    inputFieldRef,
     isMax,
     isWithdrawal,
+    maxInputBalance,
     supplyBalanceUnderlying,
     updateInputAmount,
-    inputFieldRef,
   ]);
 
   // Calculate market details
