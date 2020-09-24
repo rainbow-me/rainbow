@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import RadialGradient from 'react-native-radial-gradient';
 import { Centered } from '../layout';
-import { GradientText } from '../text';
+import { GradientText, Text } from '../text';
 import { colors, position } from '@rainbow-me/styles';
 
 const sx = StyleSheet.create({
@@ -51,30 +51,40 @@ const textProps = {
   steps: [0, 1],
 };
 
-const APYPill = ({ small, value }) => (
-  <Centered style={small ? sx.containerSmall : sx.container}>
-    {small ? (
-      <RadialGradient {...radialGradientProps} borderRadius={21} radius={81} />
-    ) : (
-      <LinearGradient
-        {...linearGradientProps}
-        borderRadius={17}
-        colors={gradientColors}
-        opacity={0.1}
-      />
-    )}
-    <GradientText
-      {...textProps}
-      align="center"
-      angle={false}
-      letterSpacing="roundedTight"
-      size={small ? 'smedium' : 'lmedium'}
-      weight="semibold"
-    >
-      {value}% APY
-    </GradientText>
-  </Centered>
-);
+function APYPill({ small, value }) {
+  return (
+    <Centered style={small ? sx.containerSmall : sx.container}>
+      {small ? (
+        <RadialGradient
+          {...radialGradientProps}
+          borderRadius={21}
+          radius={81}
+        />
+      ) : (
+        <LinearGradient
+          {...linearGradientProps}
+          borderRadius={17}
+          colors={gradientColors}
+          opacity={0.1}
+        />
+      )}
+      {Platform.OS === 'ios' ? (
+        <GradientText
+          {...textProps}
+          align="center"
+          angle={false}
+          letterSpacing="roundedTight"
+          size={small ? 'smedium' : 'lmedium'}
+          weight="semibold"
+        >
+          {value}% APY
+        </GradientText>
+      ) : (
+        <Text> {value}% APY</Text>
+      )}
+    </Centered>
+  );
+}
 
 APYPill.propTypes = {
   small: PropTypes.bool,
