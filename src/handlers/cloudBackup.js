@@ -43,12 +43,10 @@ export async function deleteAllBackups() {
 export async function encryptAndSaveDataToCloud(data, password, filename) {
   // Encrypt the data
   try {
-    console.log('about to encrypt', password, data);
     const encryptedData = await encryptor.encrypt(
       password,
       JSON.stringify(data)
     );
-    console.log('encryptedData', encryptedData);
     // Store it on the FS first
     const path = `${RNFS.DocumentDirectoryPath}/${filename}`;
     await RNFS.writeFile(path, encryptedData, 'utf8');
