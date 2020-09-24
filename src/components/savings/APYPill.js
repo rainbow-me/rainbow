@@ -51,6 +51,8 @@ const textProps = {
   steps: [0, 1],
 };
 
+const TextComponent = Platform.OS === 'ios' ? GradientText : Text;
+
 function APYPill({ small, value }) {
   return (
     <Centered style={small ? sx.containerSmall : sx.container}>
@@ -68,20 +70,16 @@ function APYPill({ small, value }) {
           opacity={0.1}
         />
       )}
-      {Platform.OS === 'ios' ? (
-        <GradientText
-          {...textProps}
-          align="center"
-          angle={false}
-          letterSpacing="roundedTight"
-          size={small ? 'smedium' : 'lmedium'}
-          weight="semibold"
-        >
-          {value}% APY
-        </GradientText>
-      ) : (
-        <Text> {value}% APY</Text>
-      )}
+      <TextComponent
+        {...textProps}
+        align="center"
+        angle={false}
+        letterSpacing="roundedTight"
+        size={small ? 'smedium' : 'lmedium'}
+        weight="semibold"
+      >
+        {value}% APY
+      </TextComponent>
     </Centered>
   );
 }
