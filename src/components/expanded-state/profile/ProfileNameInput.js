@@ -17,7 +17,10 @@ const NameInput = styled(Input).attrs({
   width: 100%;
 `;
 
-function ProfileNameInput({ onChange, placeholder, value, ...props }, ref) {
+function ProfileNameInput(
+  { onChange, placeholder, testID, value, ...props },
+  ref
+) {
   const { handleFocus } = useMagicAutofocus(ref);
   const placeholderRef = useRef(null);
 
@@ -48,6 +51,7 @@ function ProfileNameInput({ onChange, placeholder, value, ...props }, ref) {
         onChange={handleChange}
         onFocus={handleFocus}
         ref={ref}
+        testID={testID}
         value={value}
       />
     </Fragment>

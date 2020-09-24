@@ -39,7 +39,7 @@ const TopRow = ({ name, selected }) => (
 );
 
 const SendCoinRow = magicMemo(
-  ({ item, onPress, rowHeight, selected, ...props }) => (
+  ({ item, onPress, rowHeight, selected, testID, ...props }) => (
     <ButtonPressAnimation height={rowHeight} onPress={onPress} scaleTo={0.96}>
       <CoinRow
         {...item}
@@ -48,6 +48,7 @@ const SendCoinRow = magicMemo(
         containerStyles={selected ? containerSelectedStyles : containerStyles}
         isHidden={false}
         selected={selected}
+        testID={testID}
         topRowRender={TopRow}
       />
     </ButtonPressAnimation>
