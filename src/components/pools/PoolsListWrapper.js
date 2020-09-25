@@ -1,17 +1,12 @@
 import React, { Fragment } from 'react';
 import { useOpenInvestmentCards } from '../../hooks';
 import { OpacityToggler } from '../animations';
-import { UniswapInvestmentCard } from '../investment-cards';
+import { UniswapInvestmentRow } from '../investment-cards';
 import SavingsListHeader from '../savings/SavingsListHeader';
 
 const renderSavingsListRow = item => {
-  console.log(item);
   return (
-    <UniswapInvestmentCard
-      assetType="uniswap"
-      item={item}
-      key={item.uniqueId}
-    />
+    <UniswapInvestmentRow assetType="uniswap" item={item} key={item.uniqueId} />
   );
 };
 

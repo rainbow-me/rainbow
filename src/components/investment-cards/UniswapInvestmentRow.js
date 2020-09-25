@@ -13,8 +13,6 @@ import { FlexItem } from '../layout';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
-const UniswapInvestmentCardHeight = 114;
-
 const formatPercentageString = percentString =>
   percentString ? percentString.split('-').join('- ') : '-';
 
@@ -62,7 +60,7 @@ const TopRow = ({ tokenSymbol, totalNativeDisplay }) => {
   );
 };
 
-const UniswapInvestmentCard = ({ assetType, item, ...props }) => {
+const UniswapInvestmentRow = ({ assetType, item, ...props }) => {
   const { navigate } = useNavigation();
 
   const handleOpenExpandedState = useCallback(() => {
@@ -100,12 +98,10 @@ const UniswapInvestmentCard = ({ assetType, item, ...props }) => {
   );
 };
 
-UniswapInvestmentCard.propTypes = {
+UniswapInvestmentRow.propTypes = {
   item: PropTypes.object,
   onPress: PropTypes.func,
   onPressContainer: PropTypes.func,
 };
 
-UniswapInvestmentCard.height = UniswapInvestmentCardHeight;
-
-export default UniswapInvestmentCard;
+export default UniswapInvestmentRow;
