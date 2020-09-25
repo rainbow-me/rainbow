@@ -1,5 +1,8 @@
 import axios from 'axios';
-import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
+import {
+  ETH_GAS_STATION_API_KEY,
+  ETHERSCAN_API_KEY,
+} from 'react-native-dotenv';
 import { multiply } from '../helpers/utilities';
 import { ethUnits } from '@rainbow-me/references';
 
@@ -8,7 +11,7 @@ import { ethUnits } from '@rainbow-me/references';
  * @type axios instance
  */
 const ethGasstationApi = axios.create({
-  baseURL: 'https://dapple.rainbow.me',
+  baseURL: 'https://data-api.defipulse.com',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -21,7 +24,9 @@ const ethGasstationApi = axios.create({
  * @return {Promise}
  */
 export const ethGasStationGetGasPrices = () =>
-  ethGasstationApi.get('/get_eth_gas_prices');
+  ethGasstationApi.get(
+    `/api/v1/egs/api/ethgasAPI.json?api-key=${ETH_GAS_STATION_API_KEY}`
+  );
 
 /**
  * Configuration for Etherscan API
