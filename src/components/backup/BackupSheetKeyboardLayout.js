@@ -20,6 +20,7 @@ export default function BackupSheetKeyboardLayout({
   footerButtonDisabled,
   footerButtonLabel,
   onSubmit,
+  type,
 }) {
   const { height: deviceHeight, isTallPhone } = useDimensions();
   const keyboardHeight = useKeyboardHeight({
@@ -27,7 +28,11 @@ export default function BackupSheetKeyboardLayout({
   });
 
   const platformKeyboardHeight =
-    Platform.OS === 'android' ? -30 : keyboardHeight;
+    Platform.OS === 'android'
+      ? type === 'restore'
+        ? -10
+        : -30
+      : keyboardHeight;
 
   const sheetRegionAboveKeyboardHeight =
     deviceHeight -

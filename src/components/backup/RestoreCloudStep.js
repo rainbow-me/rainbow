@@ -150,6 +150,7 @@ export default function RestoreCloudStep({ userData }) {
       footerButtonDisabled={!validPassword}
       footerButtonLabel={label}
       onSubmit={onSubmit}
+      type="restore"
     >
       <Masthead>
         <MastheadIcon>􀙶</MastheadIcon>

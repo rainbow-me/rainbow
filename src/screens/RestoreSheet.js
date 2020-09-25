@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import { StatusBar } from 'react-native';
+import { Platform, StatusBar } from 'react-native';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
 import RestoreSheetFirstStep from '../components/backup/RestoreSheetFirstStep';
 import { Column } from '../components/layout';
@@ -15,7 +15,7 @@ export default function RestoreSheet() {
   const { height: deviceHeight } = useDimensions();
   const {
     params: {
-      longFormHeight = 0,
+      longFormHeight = Platform.OS === 'ios' ? 0 : 1,
       step = WalletBackupStepTypes.first,
       userData,
     } = {},
@@ -35,8 +35,11 @@ export default function RestoreSheet() {
     navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
   }, [goBack, navigate]);
 
+  const wrapperHeight =
+    Platform.OS === 'android' ? deviceHeight : deviceHeight + longFormHeight;
+
   return (
-    <Column height={deviceHeight + longFormHeight}>
+    <Column height={wrapperHeight}>
       <StatusBar barStyle="light-content" />
       <SlackSheet contentHeight={longFormHeight} testID="restore-sheet">
         {step === WalletBackupStepTypes.cloud ? (
