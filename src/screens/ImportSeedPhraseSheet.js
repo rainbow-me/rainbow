@@ -73,18 +73,24 @@ const Spinner = styled(ActivityIndicator).attrs({
   color: 'white',
   size: 15,
 })`
-  margin-right: 5px;
-  margin-top: 2px;
+  margin-right: 5;
+  margin-top: ${Platform.OS === 'android' ? 6 : 2};
 `;
 
 const FooterButton = styled(MiniButton).attrs({
   compensateForTransformOrigin: true,
   testID: 'import-sheet-button',
   transformOrigin: 'right',
-})``;
+})`
+  ${Platform.OS === 'android' ? 'max-width: 90;' : ''}
+  ${Platform.OS === 'android' ? 'align-items: center;' : ''}
+  ${Platform.OS === 'android' ? 'margin-top: 310;' : ''}
+  ${Platform.OS === 'android' ? 'margin-right: 20;' : ''}
+`;
 
 const KeyboardSizeView = styled(KeyboardArea)`
   background-color: ${colors.white};
+  height: 0;
 `;
 
 const SecretTextArea = styled(Input).attrs({
