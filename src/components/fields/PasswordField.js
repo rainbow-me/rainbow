@@ -31,7 +31,7 @@ const PasswordInput = styled(Input).attrs({
   type: 'password',
   weight: 'semibold',
 })`
-  ${padding(0, 40, 0, 19)};
+  ${padding(0, 40, 2.5, 19)};
   height: 100%;
 `;
 
