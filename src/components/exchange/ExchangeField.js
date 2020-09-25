@@ -70,7 +70,7 @@ const ExchangeField = (
             placeholder={symbol ? '0' : EnDash.unicode}
             placeholderTextColor={symbol ? undefined : skeletonColor}
             ref={ref}
-            testID={testID}
+            testID={amount ? `${testID}-${amount}` : testID}
             value={amount}
           />
         </FieldRow>

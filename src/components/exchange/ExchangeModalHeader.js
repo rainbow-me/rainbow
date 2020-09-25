@@ -68,7 +68,7 @@ const ExchangeModalHeader = ({
       </Text>
       <InfoButtonTransition ref={transitionRef} transition={transition}>
         {showDetailsButton && (
-          <InfoButton onPress={onPressDetails}>
+          <InfoButton onPress={onPressDetails} testID="swap-info-button">
             <InfoButtonIcon />
           </InfoButton>
         )}

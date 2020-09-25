@@ -45,7 +45,7 @@ const getActionLabel = type => {
   }
 };
 
-const GasSpeedButton = ({ type }) => {
+const GasSpeedButton = ({ testID, type }) => {
   const { nativeCurrencySymbol } = useAccountSettings();
   const {
     gasPrices,
@@ -127,7 +127,7 @@ const GasSpeedButton = ({ type }) => {
   );
 
   return (
-    <Container as={ButtonPressAnimation} onPress={handlePress}>
+    <Container as={ButtonPressAnimation} onPress={handlePress} testID={testID}>
       <Row align="center" justify="space-between">
         <AnimateNumber
           formatter={formatAnimatedGasPrice}

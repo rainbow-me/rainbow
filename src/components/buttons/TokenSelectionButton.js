@@ -41,7 +41,12 @@ const TokenSelectionButton = ({
         shadows={shadows}
       />
       <Content>
-        <Text color={colors.white} size="lmedium" weight="semibold">
+        <Text
+          color={colors.white}
+          size="lmedium"
+          testID={testID + '-text'}
+          weight="semibold"
+        >
           {symbol || 'Choose a Coin'}
         </Text>
         <CaretIcon />

@@ -540,7 +540,7 @@ export default function ExchangeModal({
             <ExchangeModalHeader
               onPressDetails={navigateToSwapDetailsModal}
               showDetailsButton={showDetailsButton}
-              testID={testID + 'header'}
+              testID={testID + '-header'}
               title={inputHeaderTitle}
             />
             <ExchangeInputField
@@ -557,7 +557,7 @@ export default function ExchangeModal({
               onPressSelectInputCurrency={navigateToSelectInputCurrency}
               setInputAmount={updateInputAmount}
               setNativeAmount={updateNativeAmount}
-              testID={testID + '-input-field'}
+              testID={testID + '-input'}
             />
             {showOutputField && (
               <ExchangeOutputField
@@ -568,7 +568,7 @@ export default function ExchangeModal({
                 outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
                 outputFieldRef={outputFieldRef}
                 setOutputAmount={updateOutputAmount}
-                testID={testID + '-output-field'}
+                testID={testID + '-output'}
               />
             )}
           </FloatingPanel>
@@ -576,6 +576,7 @@ export default function ExchangeModal({
             <SwapInfo
               amount={(inputAmount > 0 && outputAmountDisplay) || null}
               asset={outputCurrency}
+              testID="swap-info-button"
             />
           )}
           {isSlippageWarningVisible && <SlippageWarning slippage={slippage} />}
@@ -595,11 +596,11 @@ export default function ExchangeModal({
                   isSufficientGas={isSufficientGas}
                   onSubmit={handleSubmit}
                   slippage={slippage}
-                  testID={testID + 'confirm-button'}
+                  testID={testID + '-confirm'}
                   type={type}
                 />
               </Centered>
-              <GasSpeedButton testID={testID + 'gas-button'} type={type} />
+              <GasSpeedButton testID={testID + '-gas'} type={type} />
             </Fragment>
           )}
         </AnimatedFloatingPanels>

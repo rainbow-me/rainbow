@@ -24,7 +24,10 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.DEV_SEEDS, false);
     await Helpers.delay(1500);
-    await Helpers.checkIfHasText('import-sheet-button-label', 'Import');
+    await Helpers.checkIfElementHasString(
+      'import-sheet-button-label',
+      'Import'
+    );
     await Helpers.tap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');
   });
@@ -53,28 +56,27 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should focus on Asset Input on load', async () => {
-    await Helpers.delay(500);
-    await Helpers.typeText('exchange-modal-input-field', '1.356', true);
-    await Helpers.checkIfElementByTextIsVisible('1.356');
+    await Helpers.delay(1000);
+    await Helpers.typeText('exchange-modal-input', '1.356', true);
+    await Helpers.checkIfVisible('exchange-modal-input-1.356');
   });
 
   it('Should display enabled Choose a Coin Button', async () => {
     await Helpers.delay(500);
-    await Helpers.checkIfVisible(
-      'exchange-modal-output-field-selection-button'
-    );
+    await Helpers.checkIfVisible('exchange-modal-output-selection-button');
     //await Helpers.checkIfElementByTextIsVisible('1.356');
   });
 
   it('Should update input value after tapping Max Button', async () => {
     await Helpers.delay(1000);
-    await Helpers.tap('exchange-modal-input-field-max');
+    await Helpers.tap('exchange-modal-input-max');
+    await Helpers.checkIfNotVisible('exchange-modal-input');
     //Need to add helper function
   });
 
   it('Should display Swap Asset List after tapping Input Section Button', async () => {
     await Helpers.delay(1000);
-    await Helpers.tap('exchange-modal-input-field-selection-button');
+    await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.delay(3000);
     await Helpers.checkIfVisible('currency-select-list');
     //await Helpers.checkIfElementByTextIsVisible('Swap');
@@ -83,17 +85,18 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should reset all fields on selection of new input currency', async () => {
     await Helpers.delay(1000);
-    await Helpers.tap('exchange-modal-input-field-selection-button');
+    await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('currency-select-list');
-    await Helpers.tap('exchange-coin-row-SOCKS');
+    await Helpers.delay(2000);
+    await Helpers.tap('exchange-coin-row-DAI');
     await Helpers.delay(1000);
     //await Helpers.checkIfElementByTextIsVisible('0');
   });
 
   it('Should display Receive Currency Select List after tapping Choose a Coin', async () => {
     await Helpers.delay(1000);
-    await Helpers.tap('exchange-modal-output-field-selection-button');
+    await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(3000);
     await Helpers.checkIfVisible('currency-select-list');
     //await Helpers.checkIfElementByTextIsVisible('Recieve');
@@ -102,7 +105,7 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should change Currency Select List on search entry', async () => {
     await Helpers.delay(1000);
-    await Helpers.tap('exchange-modal-input-field-selection-button');
+    await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.delay(3000);
     await Helpers.checkIfVisible('currency-select-search-input');
     await Helpers.typeText('currency-select-search-input', 'SOCKS', false);
@@ -116,6 +119,227 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(500);
     await Helpers.checkIfVisible('exchange-coin-row-ETH');
     await Helpers.tap('currency-select-header-back-button');
+  });
+
+  it('Should show Choose a Coin Button if input & output are same token(ETH)', async () => {
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-modal-input-selection-button');
+    await Helpers.delay(100);
+    await Helpers.checkIfVisible('exchange-coin-row-ETH');
+    await Helpers.tap('exchange-coin-row-ETH');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.delay(1000);
+    await Helpers.typeText('currency-select-search-input', 'ETH', false);
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-coin-row-ETH');
+    await Helpers.delay(3000);
+    await Helpers.checkIfElementHasString(
+      'exchange-modal-input-selection-button-text',
+      'Choose a Coin'
+    );
+    await Helpers.delay(1000);
+    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-fab');
+  });
+
+  it('Should swap input & output and clear form on ETH -> ERC20 when selecting ETH as output', async () => {
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.delay(1000);
+    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-coin-row-DAI');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.delay(1000);
+    await Helpers.typeText('currency-select-search-input', 'ETH', true);
+    await Helpers.delay(2000);
+    await Helpers.tap('exchange-coin-row-ETH');
+    await Helpers.delay(1000);
+    await Helpers.checkIfElementHasString(
+      'exchange-modal-input-selection-button-text',
+      'DAI'
+    );
+    await Helpers.checkIfElementHasString(
+      'exchange-modal-output-selection-button-text',
+      'ETH'
+    );
+    await Helpers.delay(1000);
+    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-fab');
+  });
+
+  it('Should swap input & output and clear form on ETH -> ERC20 when selecting ERC20 as input', async () => {
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.delay(1000);
+    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.checkIfVisible('exchange-coin-row-DAI');
+    await Helpers.tap('exchange-coin-row-DAI');
+    await Helpers.delay(2000);
+    await Helpers.tap('exchange-modal-input-selection-button');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-coin-row-DAI');
+    await Helpers.delay(1000);
+    await Helpers.checkIfElementHasString(
+      'exchange-modal-input-selection-button-text',
+      'DAI'
+    );
+    await Helpers.checkIfElementHasString(
+      'exchange-modal-output-selection-button-text',
+      'ETH'
+    );
+  });
+
+  it('Should display Enter an Amount Button once input & output currencies are selected', async () => {
+    await Helpers.checkForElementByLabel('Enter an Amount');
+  });
+
+  it('Should update native input & output after input field change', async () => {
+    await Helpers.delay(1000);
+    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-fab');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-coin-row-ZRX');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('exchange-modal-input-native');
+    await Helpers.checkIfVisible('exchange-modal-output');
+    await Helpers.delay(2000);
+    await Helpers.typeText('exchange-modal-input', '1.356', false);
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('exchange-modal-input-1.356');
+    await Helpers.checkIfNotVisible('exchange-modal-input-native');
+    await Helpers.checkIfNotVisible('exchange-modal-output');
+    await Helpers.delay(1000);
+  });
+
+  it('Should update input & output after native input field change', async () => {
+    await Helpers.delay(1000);
+    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-fab');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-coin-row-ZRX');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.checkIfVisible('exchange-modal-output');
+    await Helpers.delay(2000);
+    await Helpers.typeText('exchange-modal-input-native', '1.356', false);
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('exchange-modal-input-native-1.35');
+    await Helpers.checkIfNotVisible('exchange-modal-input');
+    await Helpers.checkIfNotVisible('exchange-modal-output');
+    await Helpers.delay(1000);
+  });
+
+  it('Should update input & native input after output field change', async () => {
+    await Helpers.delay(1000);
+    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-fab');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-coin-row-ZRX');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('exchange-modal-input');
+    await Helpers.checkIfVisible('exchange-modal-input-native');
+    await Helpers.delay(2000);
+    await Helpers.typeText('exchange-modal-output', '1.356', false);
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('exchange-modal-output-1.356');
+    await Helpers.checkIfNotVisible('exchange-modal-input');
+    await Helpers.checkIfNotVisible('exchange-modal-input-native');
+    await Helpers.delay(1000);
+  });
+
+  it('Should show Hold to Swap Button & Swap Info Button on completion of all input fields', async () => {
+    await Helpers.checkForElementByLabel('Hold to Swap');
+    await Helpers.checkIfVisible('swap-info-button');
+  });
+
+  it('Should show Swap Details State on Swap Info Button press', async () => {
+    await Helpers.tap('swap-info-button');
+    await Helpers.checkIfVisible('swap-details-state-container');
+    await Helpers.swipe('swap-details-state-container', 'down', 'slow');
+  });
+
+  it('Should show Insufficient Funds on input greater than balance', async () => {
+    await Helpers.delay(1000);
+    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-fab');
+    await Helpers.delay(1000);
+    await Helpers.typeText('exchange-modal-input', '1.356', false);
+    await Helpers.delay(1000);
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-coin-row-ZRX');
+    await Helpers.delay(1000);
+    await Helpers.checkForElementByLabel('Insufficient Funds');
+  });
+
+  it('Should prepend 0. to input field on typing .', async () => {
+    await Helpers.delay(1000);
+    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-fab');
+    await Helpers.delay(1000);
+    await Helpers.typeText('exchange-modal-input', '.', false);
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('exchange-modal-input-0.');
+  });
+
+  it('Should prepend 0. to native input field on typing .', async () => {
+    await Helpers.typeText('exchange-modal-input-native', '.', false);
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('exchange-modal-input-native-0.');
+  });
+
+  it('Should prepend 0. to output field on typing .', async () => {
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-coin-row-ZRX');
+    await Helpers.delay(2000);
+    await Helpers.typeText('exchange-modal-output', '.', false);
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('exchange-modal-output-0.');
+  });
+
+  it('Should display Gas Button on Normal on completion of all input fields', async () => {
+    await Helpers.delay(1000);
+    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-fab');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-coin-row-ZRX');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('exchange-modal-gas');
+    await Helpers.checkIfElementByTextIsVisible('Normal');
+  });
+
+  it('Should rotate between Slow, Normal, & Fast when Gas Button is Pressed', async () => {
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-modal-gas');
+    await Helpers.delay(1000);
+    await Helpers.checkIfElementByTextIsVisible('Fast');
+    await Helpers.tap('exchange-modal-gas');
+    await Helpers.delay(1000);
+    await Helpers.checkIfElementByTextIsVisible('Slow');
+    await Helpers.tap('exchange-modal-gas');
+    await Helpers.delay(1000);
+    await Helpers.checkIfElementByTextIsVisible('Normal');
   });
 
   afterAll(async () => {

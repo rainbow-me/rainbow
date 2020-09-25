@@ -62,7 +62,7 @@ export default function ExchangeInputField({
           onFocus={onFocus}
           ref={nativeFieldRef}
           setNativeAmount={setNativeAmount}
-          testID={testID + 'native'}
+          testID={testID + '-native'}
         />
         <ExchangeMaxButton
           disabled={!inputCurrencySymbol}
