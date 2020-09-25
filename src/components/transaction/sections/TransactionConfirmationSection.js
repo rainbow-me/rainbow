@@ -1,7 +1,8 @@
 import React from 'react';
+import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
 import { CoinIcon } from '../../coin-icon';
-import { Centered, Column, Row, RowWithMargins } from '../../layout';
+import { Centered, Column, RowWithMargins } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import TransactionSheet from '../TransactionSheet';
 import { colors, padding } from '@rainbow-me/styles';
@@ -14,15 +15,16 @@ const Amount = styled(TruncatedText).attrs({
   weight: 'bold',
 })``;
 
-const AmountRow = styled(Row).attrs({
-  align: 'center',
-  justify: 'center',
+const AmountRow = styled(LinearGradient).attrs({
+  colors: colors.gradients.lighterGrey,
+  end: { x: 0, y: 0.5 },
+  start: { x: 1, y: 0.5 },
 })`
-  background-color: ${colors.alpha(colors.darkGrey, 0.06)};
   ${padding(7, 12, 9, 11)};
   border-radius: 20;
   margin: auto;
   margin-bottom: 18;
+  overflow: hidden;
 `;
 
 const NativeAmount = styled(Text).attrs({
@@ -36,6 +38,8 @@ const NativeAmount = styled(Text).attrs({
   margin-top: 19;
 `;
 
+const coinIconShadow = [[0, 3, 9, colors.dark, 0.2]];
+
 const TransactionConfirmationSection = ({
   asset: { amount, nativeAmountDisplay, symbol },
   method,
@@ -47,7 +51,7 @@ const TransactionConfirmationSection = ({
     <AmountRow>
       <Column>
         <RowWithMargins align="center" margin={5}>
-          <CoinIcon size={20} symbol={symbol} />
+          <CoinIcon shadow={coinIconShadow} size={20} symbol={symbol} />
           <Amount>
             {amount} {symbol}
           </Amount>
