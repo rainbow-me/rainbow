@@ -38,6 +38,7 @@ export default function SendSavingsCoinRow({
   item,
   onPress,
   selected,
+  testID,
   ...props
 }) {
   return (
@@ -48,6 +49,7 @@ export default function SendSavingsCoinRow({
         bottomRowRender={BottomRow}
         containerStyles={selected ? containerSelectedStyles : containerStyles}
         onPress={onPress}
+        testID={testID}
         topRowRender={TopRow}
       />
     </ButtonPressAnimation>

@@ -36,12 +36,12 @@ export default function CoinRow({
   isHidden,
   isPinned,
   symbol,
+  testID,
   topRowRender,
   ...props
 }) {
   const accountSettings = useAccountSettings();
   const { isCoinListEdited } = useCoinListEdited();
-
   return (
     <Container css={containerStyles}>
       {createElement(coinIconRender, {
@@ -54,7 +54,11 @@ export default function CoinRow({
         ...props,
       })}
       <Content isHidden={isHidden} justify="center" style={contentStyles}>
-        <Row align="center" justify="space-between">
+        <Row
+          align="center"
+          justify="space-between"
+          testID={`${testID}-${symbol || ''}`}
+        >
           {topRowRender({ symbol, ...accountSettings, ...props })}
         </Row>
         <Row align="center" justify="space-between" marginBottom={0.5}>
