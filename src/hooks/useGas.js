@@ -15,9 +15,6 @@ export default function useGas() {
   const gasData = useSelector(
     ({
       gas: {
-        customGasPrice,
-        customGasPriceEstimate,
-        customGasPriceFee,
         gasLimit,
         gasPrices,
         isSufficientGas,
@@ -26,9 +23,6 @@ export default function useGas() {
         txFees,
       },
     }) => ({
-      customGasPrice,
-      customGasPriceEstimate,
-      customGasPriceFee,
       gasLimit,
       gasPrices,
       isSufficientGas,

@@ -26,7 +26,6 @@ const GAS_UPDATE_DEFAULT_GAS_LIMIT = 'gas/GAS_UPDATE_DEFAULT_GAS_LIMIT';
 const GAS_PRICES_DEFAULT = 'gas/GAS_PRICES_DEFAULT';
 const GAS_PRICES_SUCCESS = 'gas/GAS_PRICES_SUCCESS';
 const GAS_PRICES_FAILURE = 'gas/GAS_PRICES_FAILURE';
-const GAS_UPDATE_CUSTOM_VALUES = 'gas/GAS_UPDATE_CUSTOM_VALUES';
 
 const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
 const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
@@ -281,9 +280,6 @@ export const gasPricesStopPolling = () => () => {
 
 // -- Reducer --------------------------------------------------------------- //
 const INITIAL_STATE = {
-  customGasPrice: null,
-  customGasPriceEstimate: null,
-  customGasPriceFee: null,
   defaultGasLimit: ethUnits.basic_tx,
   gasLimit: null,
   gasPrices: {},
@@ -332,13 +328,6 @@ export default (state = INITIAL_STATE, action) => {
         isSufficientGas: action.payload.isSufficientGas,
         selectedGasPrice: action.payload.selectedGasPrice,
         selectedGasPriceOption: action.payload.selectedGasPriceOption,
-      };
-    case GAS_UPDATE_CUSTOM_VALUES:
-      return {
-        ...state,
-        customGasPrice: action.payload.customGasPrice,
-        customGasPriceEstimate: action.payload.customGasPriceEstimate,
-        customGasPriceFee: action.payload.customGasPriceFee,
       };
     default:
       return state;
