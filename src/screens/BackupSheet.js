@@ -12,7 +12,7 @@ import {
 } from '../components/backup';
 import { Column } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
-import { Sheet, SlackSheet } from '../components/sheet';
+import { SlackSheet } from '../components/sheet';
 import { CLOUD_PLATFORM } from '../utils/platform';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
@@ -183,17 +183,14 @@ export default function BackupSheet() {
     step,
   ]);
 
-  const SheetComponent =
-    Platform.OS === 'android' && step !== WalletBackupStepTypes.manual
-      ? Sheet
-      : SlackSheet;
+  const sheetHeight = Platform.OS === 'android' ? 1 : longFormHeight;
+  const wrapperHeight =
+    Platform.OS === 'android' ? deviceHeight : deviceHeight + longFormHeight;
 
   return (
-    <Column height={deviceHeight + longFormHeight} testID="backup-sheet">
+    <Column height={wrapperHeight} testID="backup-sheet">
       <StatusBar barStyle="light-content" />
-      <SheetComponent contentHeight={longFormHeight}>
-        {renderStep()}
-      </SheetComponent>
+      <SlackSheet contentHeight={sheetHeight}>{renderStep()}</SlackSheet>
     </Column>
   );
 }
