@@ -26,6 +26,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import URL from 'url-parse';
 import Divider from '../components/Divider';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
@@ -44,10 +45,7 @@ import {
 } from '../components/transaction';
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
 
-import {
-  getDappHostname,
-  isDappAuthenticated,
-} from '../helpers/dappNameHandler';
+import { isDappAuthenticated } from '../helpers/dappNameHandler';
 import {
   convertAmountToNativeDisplay,
   convertHexToString,
@@ -201,7 +199,8 @@ const TransactionConfirmationScreen = () => {
   const openAutomatically = routeParams?.openAutomatically;
 
   const formattedDappUrl = useMemo(() => {
-    return getDappHostname(dappUrl);
+    const { hostname } = new URL(dappUrl);
+    return hostname;
   }, [dappUrl]);
 
   const isAuthenticated = useMemo(() => {

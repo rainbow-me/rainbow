@@ -198,8 +198,8 @@ const checkIfUrlIsAScam = async url => {
   try {
     const request = await fetch('https://api.cryptoscamdb.org/v1/scams');
     const { result } = await request.json();
-    const { host } = new URL(url);
-    const found = result.find(s => toLower(s.name) === toLower(host));
+    const { hostname } = new URL(url);
+    const found = result.find(s => toLower(s.name) === toLower(hostname));
     if (found) {
       return true;
     }
