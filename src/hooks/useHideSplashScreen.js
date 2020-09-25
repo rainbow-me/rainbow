@@ -6,21 +6,12 @@ import {
   StatusBar,
 } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
-import useExperimentalFlag, {
-  NEW_SPLASH_SCREEN,
-} from '@rainbow-me/config/experimentalHooks';
 
 const { RainbowSplashScreen } = NativeModules;
 
 export default function useHideSplashScreen() {
-  const iconOnSplashScreenAnimated = useExperimentalFlag(NEW_SPLASH_SCREEN);
-
   return useCallback(() => {
-    if (
-      RainbowSplashScreen &&
-      RainbowSplashScreen.hideAnimated &&
-      iconOnSplashScreenAnimated
-    ) {
+    if (RainbowSplashScreen && RainbowSplashScreen.hideAnimated) {
       RainbowSplashScreen.hideAnimated();
     } else {
       SplashScreen.hide();
@@ -35,5 +26,5 @@ export default function useHideSplashScreen() {
       InteractionManager.runAfterInteractions(() => {
         StatusBar.setHidden(false, 'fade');
       });
-  }, [iconOnSplashScreenAnimated]);
+  }, []);
 }

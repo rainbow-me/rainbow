@@ -44,7 +44,7 @@ const formatValue = value =>
     : value;
 
 const AddressField = (
-  { address, autoFocus, name, onChange, onFocus, ...props },
+  { address, autoFocus, name, onChange, onFocus, testID, ...props },
   ref
 ) => {
   const { clipboard, setClipboard } = useClipboard();
@@ -89,6 +89,7 @@ const AddressField = (
         onChangeText={setInputValue}
         onFocus={onFocus}
         ref={ref}
+        testID={testID}
         value={formatValue(inputValue)}
       />
       {!inputValue && (

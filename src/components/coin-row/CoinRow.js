@@ -38,13 +38,13 @@ export default function CoinRow({
   isPinned,
   isPool,
   symbol,
+  testID,
   topRowRender,
   tokenSymbols,
   ...props
 }) {
   const accountSettings = useAccountSettings();
   const { isCoinListEdited } = useCoinListEdited();
-
   return (
     <Container css={containerStyles}>
       {isPool ? (
@@ -61,7 +61,11 @@ export default function CoinRow({
         })
       )}
       <Content isHidden={isHidden} justify="center" style={contentStyles}>
-        <Row align="center" justify="space-between">
+        <Row
+          align="center"
+          justify="space-between"
+          testID={`${testID}-${symbol || ''}`}
+        >
           {topRowRender({ symbol, ...accountSettings, ...props })}
         </Row>
         <Row align="center" justify="space-between" marginBottom={0.5}>

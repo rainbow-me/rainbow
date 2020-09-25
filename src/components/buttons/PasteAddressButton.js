@@ -24,7 +24,11 @@ export default function PasteAddressButton({ onPress }) {
   }, [clipboard, isValid, onPress]);
 
   return (
-    <MiniButton disabled={!isValid} onPress={handlePress}>
+    <MiniButton
+      disabled={!isValid}
+      onPress={handlePress}
+      testID="paste-address-button"
+    >
       <Text color="white" weight="semibold">
         Paste
       </Text>

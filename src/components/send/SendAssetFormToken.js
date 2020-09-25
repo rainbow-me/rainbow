@@ -45,15 +45,18 @@ export default function SendAssetFormToken({
     <Fragment>
       <FormContainer isSmallPhone={isSmallPhone} {...props}>
         <SendAssetFormField
+          animatedKey="assetInput"
           format={removeLeadingZeros}
           label={selected.symbol}
           onChange={onChangeAssetAmount}
           onFocus={onFocus}
           onPressButton={sendMaxBalance}
           placeholder="0"
+          testID="selected-asset-field"
           value={assetAmount}
         />
         <SendAssetFormField
+          animatedKey="nativeInput"
           autoFocus
           label={nativeCurrency}
           mask={nativeMask}
@@ -61,6 +64,7 @@ export default function SendAssetFormToken({
           onFocus={onFocus}
           onPressButton={sendMaxBalance}
           placeholder={nativePlaceholder}
+          testID="selected-asset-quantity-field"
           value={nativeAmount}
         />
       </FormContainer>

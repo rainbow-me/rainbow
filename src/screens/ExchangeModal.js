@@ -251,15 +251,17 @@ export default function ExchangeModal({
   useEffect(() => {
     if (isMax) {
       let maxBalance = maxInputBalance;
+      inputFieldRef?.current?.blur();
       if (isWithdrawal) {
         maxBalance = supplyBalanceUnderlying;
       }
       updateInputAmount(maxBalance, maxBalance, true, true);
     }
   }, [
-    maxInputBalance,
+    inputFieldRef,
     isMax,
     isWithdrawal,
+    maxInputBalance,
     supplyBalanceUnderlying,
     updateInputAmount,
   ]);
