@@ -120,9 +120,9 @@ export const ViewTypes = {
       isOpen
         ? TokenFamilyHeaderHeight +
           (isLast ? ListFooter.height : 10) +
-          61 * amountOfRows -
-          4
-        : TokenFamilyHeaderHeight + (isLast ? ListFooter.height : 5) - 10,
+          CoinRowHeight * amountOfRows -
+          22
+        : TokenFamilyHeaderHeight + (isLast ? ListFooter.height : 5) - 20,
     index: 5,
     renderComponent: ({ data, isCoinListEdited }) => {
       return <PoolsListWrapper {...data} isCoinListEdited={isCoinListEdited} />;
