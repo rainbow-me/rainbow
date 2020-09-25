@@ -124,6 +124,6 @@ export const gweiToWei = gweiAmount => {
 };
 
 export const weiToGwei = weiAmount => {
-  const gweiAmount = divide(weiAmount, ethUnits.wei);
+  const gweiAmount = divide(weiAmount, ethUnits.gwei);
   return gweiAmount;
 };
