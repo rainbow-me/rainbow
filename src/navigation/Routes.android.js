@@ -67,11 +67,6 @@ function MainNavigator() {
         options={exchangePreset}
       />
       <Stack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET}
-        options={expandedPreset}
-      />
-      <Stack.Screen
         component={ModalScreen}
         name={Routes.MODAL_SCREEN}
         options={overlayExpandedPreset}
@@ -155,6 +150,10 @@ function MainNativeNavigator() {
       <NativeStack.Screen
         component={MainNavigator}
         name={Routes.MAIN_NAVIGATOR}
+      />
+      <NativeStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET}
       />
     </NativeStack.Navigator>
   );
