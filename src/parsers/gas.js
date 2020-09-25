@@ -3,6 +3,7 @@ import { getMinimalTimeUnitStringForMs } from '../helpers/time';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
+  divide,
   multiply,
 } from '../helpers/utilities';
 import ethUnits from '../references/ethereum-units.json';
@@ -118,11 +119,11 @@ export const getTxFee = (gasPrice, gasLimit, priceUnit, nativeCurrency) => {
 };
 
 export const gweiToWei = gweiAmount => {
-  const weiAmount = Number(gweiAmount) * 1000000000;
+  const weiAmount = multiply(gweiAmount, ethUnits.gwei);
   return weiAmount;
 };
 
-export const weiToGwei = gweiAmount => {
-  const weiAmount = Number(gweiAmount) / 1000000000;
-  return weiAmount;
+export const weiToGwei = weiAmount => {
+  const gweiAmount = divide(weiAmount, ethUnits.wei);
+  return gweiAmount;
 };
