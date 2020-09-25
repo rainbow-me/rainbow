@@ -4,6 +4,7 @@ import React, { useCallback, useMemo } from 'react';
 import {
   dappLogoOverride,
   dappNameOverride,
+  isDappAuthenticated,
 } from '../../helpers/dappNameHandler';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContextMenu } from '../context-menu';
@@ -22,6 +23,18 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
     walletConnectDisconnectAllByDappName,
   } = useWalletConnectConnections();
 
+  const isAuthenticated = useMemo(() => {
+    return isDappAuthenticated(dappUrl);
+  }, [dappUrl]);
+
+  const overrideName = useMemo(() => {
+    return dappNameOverride(dappUrl);
+  }, [dappUrl]);
+
+  const overrideLogo = useMemo(() => {
+    return dappLogoOverride(dappUrl);
+  }, [dappUrl]);
+
   const handlePressActionSheet = useCallback(
     buttonIndex => {
       if (buttonIndex === 0) {
@@ -34,18 +47,6 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
     },
     [dappName, dappUrl, walletConnectDisconnectAllByDappName]
   );
-
-  const authenticatedName = useMemo(() => {
-    return dappNameOverride(dappUrl);
-  }, [dappUrl]);
-
-  const overrideLogo = useMemo(() => {
-    return dappLogoOverride(dappUrl);
-  }, [dappUrl]);
-
-  const name = useMemo(() => {
-    return authenticatedName || dappName || '';
-  }, [authenticatedName, dappName]);
 
   return (
     <Row align="center" height={WalletConnectListItemHeight}>
@@ -66,8 +67,8 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
             size="lmedium"
             weight="bold"
           >
-            {name || 'Unknown Application'}{' '}
-            {authenticatedName && (
+            {overrideName || dappName || 'Unknown Application'}{' '}
+            {isAuthenticated && (
               <Text
                 align="center"
                 color={colors.appleBlue}
@@ -94,7 +95,7 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
           destructiveButtonIndex={0}
           onPressActionSheet={handlePressActionSheet}
           options={['Disconnect', lang.t('wallet.action.cancel')]}
-          title={`Would you like to disconnect from ${name}?`}
+          title={`Would you like to disconnect from ${dappName}?`}
         />
       </Centered>
     </Row>

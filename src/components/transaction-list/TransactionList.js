@@ -9,10 +9,6 @@ import styled from 'styled-components/primitives';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '../../config/experimentalHooks';
-import {
-  dappLogoOverride,
-  dappNameOverride,
-} from '../../helpers/dappNameHandler';
 import showWalletErrorAlert from '../../helpers/support';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import {
@@ -312,15 +308,7 @@ export default function TransactionList({
 
   const data = useMemo(
     () => ({
-      requests: requests.map(r => {
-        const overrideLogo = dappLogoOverride(r.dappUrl);
-        const logo = overrideLogo ? overrideLogo : r.imageUrl;
-        return {
-          ...r,
-          dappName: dappNameOverride(r.dappUrl) || r.dappName || '',
-          imageUrl: logo,
-        };
-      }),
+      requests,
       transactions,
     }),
     [requests, transactions]

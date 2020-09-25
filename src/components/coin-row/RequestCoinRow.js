@@ -1,17 +1,7 @@
 import { addHours, differenceInMinutes, isPast } from 'date-fns';
 import PropTypes from 'prop-types';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-  dappLogoOverride,
-  dappNameOverride,
-} from '../../helpers/dappNameHandler';
 import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
 import { magicMemo } from '../../utils';
@@ -66,14 +56,6 @@ const RequestCoinRow = ({ item, ...props }) => {
   const [expirationColor, setExpirationColor] = useState(null);
   const [percentElapsed, setPercentElapsed] = useState(null);
 
-  const overrideName = useMemo(() => {
-    return dappNameOverride(item?.dappUrl);
-  }, [item]);
-
-  const overrideLogo = useMemo(() => {
-    return dappLogoOverride(item?.dappUrl);
-  }, [item]);
-
   useEffect(() => {
     if (item?.displayDetails?.timestampInMs) {
       const _createdAt = new Date(item.displayDetails.timestampInMs);
@@ -102,8 +84,8 @@ const RequestCoinRow = ({ item, ...props }) => {
 
   const overridenItem = {
     ...item,
-    dappName: overrideName || item.dappName,
-    imageUrl: overrideLogo || item.imageUrl,
+    dappName: item.dappName,
+    imageUrl: item.imageUrl,
     percentElapsed,
   };
 

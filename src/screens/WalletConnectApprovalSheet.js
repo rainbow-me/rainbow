@@ -16,9 +16,8 @@ import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
 
 import {
-  dappLogoOverride,
-  dappNameOverride,
   getDappHostname,
+  isDappAuthenticated,
 } from '../helpers/dappNameHandler';
 import { useNavigation } from '../navigation/Navigation';
 import { ethereumUtils } from '../utils';
@@ -66,16 +65,12 @@ export default function WalletConnectApprovalSheet() {
     [setScam]
   );
 
+  const isAuthenticated = useMemo(() => {
+    return isDappAuthenticated(dappUrl);
+  }, [dappUrl]);
+
   const formattedDappUrl = useMemo(() => {
     return getDappHostname(dappUrl);
-  }, [dappUrl]);
-
-  const authenticatedName = useMemo(() => {
-    return dappNameOverride(dappUrl);
-  }, [dappUrl]);
-
-  const overrideLogo = useMemo(() => {
-    return dappLogoOverride(dappUrl);
   }, [dappUrl]);
 
   const handleSuccess = useCallback(
@@ -121,10 +116,7 @@ export default function WalletConnectApprovalSheet() {
   return (
     <Sheet hideHandle>
       <Centered direction="column" paddingHorizontal={19} paddingTop={17}>
-        <DappLogo
-          dappName={dappName || ''}
-          imageUrl={overrideLogo || imageUrl || ''}
-        />
+        <DappLogo dappName={dappName || ''} imageUrl={imageUrl} />
         <Centered paddingHorizontal={23}>
           <Row>
             <Text
@@ -134,7 +126,7 @@ export default function WalletConnectApprovalSheet() {
               size="big"
             >
               <Text color="dark" size="big" weight="bold">
-                {authenticatedName || dappName}
+                {dappName}
               </Text>{' '}
               wants to connect to your wallet
             </Text>
@@ -142,7 +134,7 @@ export default function WalletConnectApprovalSheet() {
         </Centered>
         <Row marginBottom={30} marginTop={15}>
           <Text color="appleBlue" lineHeight={29} size="large" weight="bold">
-            {authenticatedName ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
+            {isAuthenticated ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
           </Text>
         </Row>
         <Divider color={colors.rowDividerLight} inset={[0, 84]} />

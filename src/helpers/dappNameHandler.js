@@ -123,6 +123,11 @@ export const dappNameOverride = url => {
   return DisplayDappNames[hostname]?.name;
 };
 
+export const isDappAuthenticated = url => {
+  const hostname = getDappHostname(url);
+  return !!DisplayDappNames[hostname]?.name;
+};
+
 export const dappLogoOverride = url => {
   const hostname = getDappHostname(url);
   return DisplayDappNames[hostname]?.uri;

@@ -45,9 +45,8 @@ import {
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
 
 import {
-  dappLogoOverride,
-  dappNameOverride,
   getDappHostname,
+  isDappAuthenticated,
 } from '../helpers/dappNameHandler';
 import {
   convertAmountToNativeDisplay,
@@ -205,12 +204,8 @@ const TransactionConfirmationScreen = () => {
     return getDappHostname(dappUrl);
   }, [dappUrl]);
 
-  const authenticatedName = useMemo(() => {
-    return dappNameOverride(dappUrl);
-  }, [dappUrl]);
-
-  const overrideLogo = useMemo(() => {
-    return dappLogoOverride(dappUrl);
+  const isAuthenticated = useMemo(() => {
+    return isDappAuthenticated(dappUrl);
   }, [dappUrl]);
 
   const fetchMethodName = useCallback(
@@ -740,10 +735,7 @@ const TransactionConfirmationScreen = () => {
           >
             <SheetHandleFixedToTop showBlur={false} />
             <Column marginBottom={17} />
-            <DappLogo
-              dappName={dappName || ''}
-              imageUrl={overrideLogo || imageUrl || ''}
-            />
+            <DappLogo dappName={dappName || ''} imageUrl={imageUrl || ''} />
             <Row marginBottom={5}>
               <Text
                 align="center"
@@ -752,10 +744,10 @@ const TransactionConfirmationScreen = () => {
                 size="large"
                 weight="bold"
               >
-                {authenticatedName || formattedDappUrl}
+                {isAuthenticated ? dappName : formattedDappUrl}
                 {//We only show the checkmark
                 // if it's on the override list (dappNameHandler.js)
-                authenticatedName && (
+                isAuthenticated && (
                   <Text
                     align="center"
                     color={colors.appleBlue}
