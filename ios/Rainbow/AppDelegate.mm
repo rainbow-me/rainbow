@@ -100,9 +100,6 @@ RCT_EXPORT_METHOD(hideAnimated) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  #ifndef DISABLE_REANIMATED
-  RCTEnableTurboModule(YES);
-  #endif
   #if DEBUG
     InitializeFlipper(application);
   #endif

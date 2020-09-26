@@ -56,22 +56,18 @@ index b3b1135..fd9831a 100644
      const legacyModule = NativeModules[name];
      if (legacyModule != null) {
 diff --git a/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm b/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
-index d8938d7..b2ea76b 100644
+index d8938d7..06e01c3 100644
 --- a/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
 +++ b/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
-@@ -621,10 +621,10 @@ - (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance
-   NSArray *moduleClassesCopy = [moduleClasses copy];
-   NSMutableArray<RCTModuleData *> *moduleDataByID = [NSMutableArray arrayWithCapacity:moduleClassesCopy.count];
-   for (Class moduleClass in moduleClassesCopy) {
--    if (RCTTurboModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
-+    NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
-+    if (RCTTurboModuleEnabled() && ![moduleName isEqualToString:@"NativeAnimatedModule"] && [moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
-       continue;
-     }
--    NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
+@@ -462,7 +462,7 @@ - (id)moduleForName:(NSString *)moduleName
  
-     // Check for module name collisions
-     RCTModuleData *moduleData = _moduleDataByName[moduleName];
+ - (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
+ {
+-  if (RCTTurboModuleEnabled() && _turboModuleLookupDelegate) {
++  if ((RCTTurboModuleEnabled() || [moduleName  isEqual: @"ReanimatedModule"]) && _turboModuleLookupDelegate) {
+     const char *moduleNameCStr = [moduleName UTF8String];
+     if (lazilyLoad || [_turboModuleLookupDelegate moduleIsInitialized:moduleNameCStr]) {
+       id<RCTTurboModule> module = [_turboModuleLookupDelegate moduleForName:moduleNameCStr warnOnLookupFailure:NO];
 diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
 index a5117be..59108bb 100644
 --- a/node_modules/react-native/React/Views/RCTView.m
