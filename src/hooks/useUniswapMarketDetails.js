@@ -1,5 +1,5 @@
-import { get } from 'lodash';
-import { useCallback } from 'react';
+import { get, isEmpty } from 'lodash';
+import { useCallback, useEffect, useState } from 'react';
 import { calculateTradeDetails } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
@@ -14,7 +14,26 @@ import useUniswapPairs from './useUniswapPairs';
 
 const DEFAULT_NATIVE_INPUT_AMOUNT = 50;
 
-export default function useUniswapMarketDetails(inputCurrency, outputCurrency) {
+export default function useUniswapMarketDetails({
+  defaultInputAddress,
+  inputAmount,
+  inputAsExactAmount,
+  inputCurrency,
+  inputFieldRef,
+  isDeposit,
+  isWithdrawal,
+  maxInputBalance,
+  nativeCurrency,
+  outputAmount,
+  outputCurrency,
+  outputFieldRef,
+  setIsSufficientBalance,
+  setSlippage,
+  updateExtraTradeDetails,
+  updateInputAmount,
+  updateOutputAmount,
+}) {
+  const [isSufficientLiquidity, setIsSufficientLiquidity] = useState(true);
   const { chainId } = useAccountSettings();
 
   const { allPairs } = useUniswapPairs(inputCurrency, outputCurrency);
@@ -45,7 +64,7 @@ export default function useUniswapMarketDetails(inputCurrency, outputCurrency) {
         updatedInputAsExactAmount = true;
       }
 
-      return calculateTradeDetails(
+      const tradeDetails = calculateTradeDetails(
         chainId,
         updatedInputAmount,
         outputAmount,
@@ -54,6 +73,10 @@ export default function useUniswapMarketDetails(inputCurrency, outputCurrency) {
         allPairs,
         updatedInputAsExactAmount
       );
+
+      const hasInsufficientLiquidity = !isEmpty(allPairs) && !tradeDetails;
+      setIsSufficientLiquidity(!hasInsufficientLiquidity);
+      return tradeDetails;
     },
     [allPairs, chainId]
   );
@@ -134,104 +157,116 @@ export default function useUniswapMarketDetails(inputCurrency, outputCurrency) {
     []
   );
 
-  const getMarketDetails = useCallback(
-    ({
-      inputAmount,
-      inputAsExactAmount,
-      inputCurrency,
-      inputFieldRef,
-      maxInputBalance,
-      nativeCurrency,
-      outputAmount,
-      outputCurrency,
-      outputFieldRef,
-      setIsSufficientBalance,
-      setSlippage,
-      updateExtraTradeDetails,
-      updateInputAmount,
-      updateOutputAmount,
-    }) => {
-      const isMissingCurrency = !inputCurrency || !outputCurrency;
-      if (isMissingCurrency) return;
+  const getMarketDetails = useCallback(() => {
+    const isMissingCurrency = !inputCurrency || !outputCurrency;
+    if (isMissingCurrency) return;
 
-      try {
-        const tradeDetails = updateTradeDetails({
-          inputAmount,
+    try {
+      const tradeDetails = updateTradeDetails({
+        inputAmount,
+        inputAsExactAmount,
+        inputCurrency,
+        outputAmount,
+        outputCurrency,
+      });
+
+      updateExtraTradeDetails({
+        inputCurrency,
+        nativeCurrency,
+        outputCurrency,
+        tradeDetails,
+      });
+
+      const isMissingAmounts = !inputAmount && !outputAmount;
+      if (isMissingAmounts) return;
+
+      // update slippage
+      const slippage = convertNumberToString(
+        get(tradeDetails, 'executionRateSlippage', 0)
+      );
+      setSlippage(slippage);
+
+      const newIsSufficientBalance =
+        !inputAmount || greaterThanOrEqualTo(maxInputBalance, inputAmount);
+
+      setIsSufficientBalance(newIsSufficientBalance);
+
+      const isInputEmpty = !inputAmount;
+      const isOutputEmpty = !outputAmount;
+
+      const isInputZero = Number(inputAmount) === 0;
+      const isOutputZero = Number(outputAmount) === 0;
+
+      // update output amount given input amount changes
+      if (inputAsExactAmount) {
+        calculateOutputGivenInputChange({
+          inputAsExactAmount,
+          isInputEmpty,
+          isInputZero,
+          outputCurrency,
+          outputFieldRef,
+          tradeDetails,
+          updateOutputAmount,
+        });
+      }
+
+      // update input amount given output amount changes
+      if (
+        !inputAsExactAmount &&
+        inputFieldRef &&
+        inputFieldRef.current &&
+        !inputFieldRef.current.isFocused()
+      ) {
+        calculateInputGivenOutputChange({
           inputAsExactAmount,
           inputCurrency,
-          outputAmount,
-          outputCurrency,
-        });
-        updateExtraTradeDetails({
-          inputCurrency,
-          nativeCurrency,
-          outputCurrency,
+          isOutputEmpty,
+          isOutputZero,
+          maxInputBalance,
+          setIsSufficientBalance,
           tradeDetails,
+          updateInputAmount,
         });
-
-        const isMissingAmounts = !inputAmount && !outputAmount;
-        if (isMissingAmounts) return;
-
-        // update slippage
-        const slippage = convertNumberToString(
-          get(tradeDetails, 'executionRateSlippage', 0)
-        );
-        setSlippage(slippage);
-
-        const newIsSufficientBalance =
-          !inputAmount || greaterThanOrEqualTo(maxInputBalance, inputAmount);
-
-        setIsSufficientBalance(newIsSufficientBalance);
-
-        const isInputEmpty = !inputAmount;
-        const isOutputEmpty = !outputAmount;
-
-        const isInputZero = Number(inputAmount) === 0;
-        const isOutputZero = Number(outputAmount) === 0;
-
-        // update output amount given input amount changes
-        if (inputAsExactAmount) {
-          calculateOutputGivenInputChange({
-            inputAsExactAmount,
-            isInputEmpty,
-            isInputZero,
-            outputCurrency,
-            outputFieldRef,
-            tradeDetails,
-            updateOutputAmount,
-          });
-        }
-
-        // update input amount given output amount changes
-        if (
-          !inputAsExactAmount &&
-          inputFieldRef &&
-          inputFieldRef.current &&
-          !inputFieldRef.current.isFocused()
-        ) {
-          calculateInputGivenOutputChange({
-            inputAsExactAmount,
-            inputCurrency,
-            isOutputEmpty,
-            isOutputZero,
-            maxInputBalance,
-            setIsSufficientBalance,
-            tradeDetails,
-            updateInputAmount,
-          });
-        }
-      } catch (error) {
-        logger.log('error getting market details', error);
       }
-    },
-    [
-      calculateInputGivenOutputChange,
-      calculateOutputGivenInputChange,
-      updateTradeDetails,
-    ]
-  );
+    } catch (error) {
+      logger.log('error getting market details', error);
+    }
+  }, [
+    inputAmount,
+    inputAsExactAmount,
+    inputCurrency,
+    inputFieldRef,
+    maxInputBalance,
+    nativeCurrency,
+    outputAmount,
+    outputCurrency,
+    outputFieldRef,
+    setIsSufficientBalance,
+    setSlippage,
+    updateExtraTradeDetails,
+    updateInputAmount,
+    updateOutputAmount,
+    calculateInputGivenOutputChange,
+    calculateOutputGivenInputChange,
+    updateTradeDetails,
+  ]);
+
+  useEffect(() => {
+    if (
+      (isDeposit || isWithdrawal) &&
+      get(inputCurrency, 'address') === defaultInputAddress
+    )
+      return;
+    getMarketDetails();
+  }, [
+    inputCurrency,
+    isDeposit,
+    isWithdrawal,
+    defaultInputAddress,
+    getMarketDetails,
+  ]);
 
   return {
-    getMarketDetails,
+    isSufficientLiquidity,
   };
 }

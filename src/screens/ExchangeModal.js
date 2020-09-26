@@ -115,10 +115,6 @@ export default function ExchangeModal({
     underlyingPrice,
   });
 
-  const { getMarketDetails } = useUniswapMarketDetails(
-    inputCurrency,
-    outputCurrency
-  );
   const { allPairs: pairs } = useUniswapPairs(inputCurrency, outputCurrency);
 
   const {
@@ -272,31 +268,8 @@ export default function ExchangeModal({
   ]);
 
   // Calculate market details
-  useEffect(() => {
-    if (
-      (isDeposit || isWithdrawal) &&
-      get(inputCurrency, 'address') === defaultInputAddress
-    )
-      return;
-    getMarketDetails({
-      inputAmount,
-      inputAsExactAmount,
-      inputCurrency,
-      inputFieldRef,
-      maxInputBalance,
-      nativeCurrency,
-      outputAmount,
-      outputCurrency,
-      outputFieldRef,
-      setIsSufficientBalance,
-      setSlippage,
-      updateExtraTradeDetails,
-      updateInputAmount,
-      updateOutputAmount,
-    });
-  }, [
+  const { isSufficientLiquidity } = useUniswapMarketDetails({
     defaultInputAddress,
-    getMarketDetails,
     inputAmount,
     inputAsExactAmount,
     inputCurrency,
@@ -309,10 +282,11 @@ export default function ExchangeModal({
     outputCurrency,
     outputFieldRef,
     setIsSufficientBalance,
+    setSlippage,
     updateExtraTradeDetails,
     updateInputAmount,
     updateOutputAmount,
-  ]);
+  });
 
   const isSlippageWarningVisible =
     isSufficientBalance && !!inputAmount && !!outputAmount;
@@ -582,6 +556,7 @@ export default function ExchangeModal({
                   isDeposit={isDeposit}
                   isSufficientBalance={isSufficientBalance}
                   isSufficientGas={isSufficientGas}
+                  isSufficientLiquidity={isSufficientLiquidity}
                   onSubmit={handleSubmit}
                   slippage={slippage}
                   type={type}
