@@ -1,18 +1,38 @@
 import { addHours, differenceInMinutes, isPast } from 'date-fns';
-import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigation } from '../../navigation/Navigation';
-import { removeRequest } from '../../redux/requests';
-import { magicMemo } from '../../utils';
+import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
 import { RequestCoinIcon } from '../coin-icon';
 import { RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import { useNavigation } from '@rainbow-me/navigation';
+import { removeRequest } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
+
+const getPercentageOfTimeElapsed = (startDate, endDate) => {
+  const originalDifference = differenceInMinutes(endDate, startDate);
+  const currentDifference = differenceInMinutes(endDate, Date.now());
+
+  return Math.floor((currentDifference * 100) / originalDifference);
+};
+
+const ClockEmoji = styled(Emoji).attrs({
+  name: 'clock4',
+  size: 'tiny',
+})`
+  margin-top: 1.75;
+`;
 
 const BottomRow = ({ dappName, expirationColor }) => (
   <CoinName color={expirationColor} weight="semibold">
@@ -20,16 +40,12 @@ const BottomRow = ({ dappName, expirationColor }) => (
   </CoinName>
 );
 
-BottomRow.propTypes = {
-  dappName: PropTypes.string,
-};
-
 const TopRow = ({ expirationColor, expiresAt }) => {
   const minutes = differenceInMinutes(expiresAt, Date.now());
 
   return (
     <RowWithMargins margin={2}>
-      <Emoji name="clock4" size="tiny" style={{ marginTop: 1.75 }} />
+      <ClockEmoji />
       <Text color={expirationColor} size="smedium" weight="semibold">
         Expires in {minutes || 0}m
       </Text>
@@ -37,21 +53,10 @@ const TopRow = ({ expirationColor, expiresAt }) => {
   );
 };
 
-TopRow.propTypes = {
-  expirationColor: PropTypes.string,
-  expiresAt: PropTypes.number,
-};
-
 const RequestCoinRow = ({ item, ...props }) => {
   const buttonRef = useRef();
   const dispatch = useDispatch();
   const { navigate } = useNavigation();
-  const handlePressOpen = useCallback(() => {
-    navigate(Routes.CONFIRM_REQUEST, {
-      transactionDetails: item,
-    });
-  }, [item, navigate]);
-
   const [expiresAt, setExpiresAt] = useState(null);
   const [expirationColor, setExpirationColor] = useState(null);
   const [percentElapsed, setPercentElapsed] = useState(null);
@@ -78,16 +83,25 @@ const RequestCoinRow = ({ item, ...props }) => {
     }
   }, [dispatch, expiresAt, item.requestId]);
 
+  const handlePressOpen = useCallback(() => {
+    navigate(Routes.CONFIRM_REQUEST, {
+      transactionDetails: item,
+    });
+  }, [item, navigate]);
+
   useEffect(() => {
     handleExpiredRequests();
   }, [expiresAt, handleExpiredRequests]);
 
-  const overridenItem = {
-    ...item,
-    dappName: item.dappName,
-    imageUrl: item.imageUrl,
-    percentElapsed,
-  };
+  const overridenItem = useMemo(
+    () => ({
+      ...item,
+      dappName: item.dappName,
+      imageUrl: item.imageUrl,
+      percentElapsed,
+    }),
+    [item, percentElapsed]
+  );
 
   return (
     <ButtonPressAnimation
@@ -106,13 +120,6 @@ const RequestCoinRow = ({ item, ...props }) => {
       />
     </ButtonPressAnimation>
   );
-};
-
-const getPercentageOfTimeElapsed = (startDate, endDate) => {
-  const originalDifference = differenceInMinutes(endDate, startDate);
-  const currentDifference = differenceInMinutes(endDate, Date.now());
-
-  return Math.floor((currentDifference * 100) / originalDifference);
 };
 
 export default magicMemo(RequestCoinRow);

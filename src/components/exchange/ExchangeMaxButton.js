@@ -1,8 +1,20 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
-import { RowWithMargins } from '../layout';
+import { Row } from '../layout';
 import { Text } from '../text';
+import { padding } from '@rainbow-me/styles';
+
+const Container = styled(ButtonPressAnimation)`
+  margin-right: 4;
+`;
+
+const MaxButtonContent = styled(Row).attrs({
+  align: 'center',
+})`
+  ${padding(0, 19)};
+  height: 32;
+`;
 
 const MaxButtonLabel = styled(Text).attrs({
   align: 'center',
@@ -15,15 +27,10 @@ const MaxButtonLabel = styled(Text).attrs({
 
 export default function ExchangeMaxButton({ disabled, onPress }) {
   return (
-    <ButtonPressAnimation disabled={disabled} marginRight={4} onPress={onPress}>
-      <RowWithMargins
-        align="center"
-        height={32}
-        margin={0}
-        paddingHorizontal={19}
-      >
+    <Container disabled={disabled} onPress={onPress}>
+      <MaxButtonContent>
         <MaxButtonLabel>􀜍 Max</MaxButtonLabel>
-      </RowWithMargins>
-    </ButtonPressAnimation>
+      </MaxButtonContent>
+    </Container>
   );
 }

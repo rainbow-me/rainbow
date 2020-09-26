@@ -1,15 +1,15 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import {
-  dappLogoOverride,
-  dappNameOverride,
-  isDappAuthenticated,
-} from '../../helpers/dappNameHandler';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContextMenu } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
+import {
+  dappLogoOverride,
+  dappNameOverride,
+  isDappAuthenticated,
+} from '@rainbow-me/helpers/dappNameHandler';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
 import { colors, padding } from '@rainbow-me/styles';
 
@@ -27,12 +27,12 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
     return isDappAuthenticated(dappUrl);
   }, [dappUrl]);
 
-  const overrideName = useMemo(() => {
-    return dappNameOverride(dappUrl);
-  }, [dappUrl]);
-
   const overrideLogo = useMemo(() => {
     return dappLogoOverride(dappUrl);
+  }, [dappUrl]);
+
+  const overrideName = useMemo(() => {
+    return dappNameOverride(dappUrl);
   }, [dappUrl]);
 
   const handlePressActionSheet = useCallback(

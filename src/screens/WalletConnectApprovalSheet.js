@@ -14,14 +14,13 @@ import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { Centered, Row, RowWithMargins } from '../components/layout';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
-
 import {
   getDappHostname,
   isDappAuthenticated,
-} from '../helpers/dappNameHandler';
-import { useNavigation } from '../navigation/Navigation';
-import { ethereumUtils } from '../utils';
+} from '@rainbow-me/helpers/dappNameHandler';
+import { useNavigation } from '@rainbow-me/navigation';
 import { colors, padding } from '@rainbow-me/styles';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs({
   backgroundColor: colors.transparent,

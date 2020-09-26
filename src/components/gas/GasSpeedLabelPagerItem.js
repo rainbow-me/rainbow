@@ -1,5 +1,4 @@
 import { upperFirst } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import Animated, {
   Transition,
@@ -9,10 +8,10 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
-import { gasUtils } from '../../utils';
 import { Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedEmoji from './GasSpeedEmoji';
+import { gasUtils } from '@rainbow-me/utils';
 
 const AnimatedRow = Animated.createAnimatedComponent(Row);
 
@@ -91,12 +90,6 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate, theme }) => {
       </GasSpeedRow>
     </TransitionContainer>
   );
-};
-
-GasSpeedLabelPagerItem.propTypes = {
-  label: PropTypes.oneOf(gasUtils.GasSpeedOrder),
-  selected: PropTypes.bool,
-  shouldAnimate: PropTypes.bool,
 };
 
 export default React.memo(GasSpeedLabelPagerItem);

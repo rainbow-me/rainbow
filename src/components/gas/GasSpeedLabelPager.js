@@ -1,11 +1,11 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/primitives';
-import colors from '../../styles/colors';
-import { gasUtils, magicMemo } from '../../utils';
 import { Row } from '../layout';
 import GasSpeedLabelPagerItem, {
   GasSpeedLabelPagerItemHeight,
 } from './GasSpeedLabelPagerItem';
+import { colors } from '@rainbow-me/styles';
+import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
 const speedColors = [
   colors.white,
@@ -27,36 +27,34 @@ const GasSpeedLabelPager = ({ label, theme, showPager = true }) => {
   useEffect(() => setTouched(true), [label]);
 
   return (
-    <Fragment>
-      <Row align="center" height={GasSpeedLabelPagerItemHeight} justify="end">
-        {showPager && (
-          <Row self="start">
-            {gasUtils.GasSpeedOrder.map((speed, i) => (
-              <PagerItem
-                backgroundColor={
-                  speed === label
-                    ? speedColors[i]
-                    : colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
-                }
-                key={`pager-${speed}-${i}`}
-                selected={speed === label}
-              />
-            ))}
-          </Row>
-        )}
-        <Row height={GasSpeedLabelPagerItemHeight}>
-          {gasUtils.GasSpeedOrder.map(speed => (
-            <GasSpeedLabelPagerItem
-              key={speed}
-              label={speed}
+    <Row align="center" height={GasSpeedLabelPagerItemHeight} justify="end">
+      {showPager && (
+        <Row self="start">
+          {gasUtils.GasSpeedOrder.map((speed, i) => (
+            <PagerItem
+              backgroundColor={
+                speed === label
+                  ? speedColors[i]
+                  : colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
+              }
+              key={`pager-${speed}-${i}`}
               selected={speed === label}
-              shouldAnimate={touched}
-              theme={theme}
             />
           ))}
         </Row>
+      )}
+      <Row height={GasSpeedLabelPagerItemHeight}>
+        {gasUtils.GasSpeedOrder.map(speed => (
+          <GasSpeedLabelPagerItem
+            key={speed}
+            label={speed}
+            selected={speed === label}
+            shouldAnimate={touched}
+            theme={theme}
+          />
+        ))}
       </Row>
-    </Fragment>
+    </Row>
   );
 };
 

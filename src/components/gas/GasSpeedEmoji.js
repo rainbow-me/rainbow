@@ -1,8 +1,8 @@
 import { has } from 'lodash';
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { gasUtils, magicMemo } from '../../utils';
 import { Emoji } from '../text';
+import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
 const EmojiForGasSpeedType = {
   [gasUtils.FAST]: {
@@ -18,7 +18,7 @@ const EmojiForGasSpeedType = {
     position: [0, -1.5], // (x, y)
   },
   [gasUtils.CUSTOM]: {
-    emoji: 'alien_monster', // 👾
+    emoji: 'gear', // ⚙️
     position: [1, 0.5], // (x, y)
   },
 };
