@@ -1,4 +1,4 @@
-import { get, isEmpty } from 'lodash';
+import { get } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { calculateTradeDetails } from '../handlers/uniswap';
 import {
@@ -74,7 +74,8 @@ export default function useUniswapMarketDetails({
         updatedInputAsExactAmount
       );
 
-      const hasInsufficientLiquidity = !isEmpty(allPairs) && !tradeDetails;
+      const hasInsufficientLiquidity =
+        !!inputCurrency && !!outputCurrency && !tradeDetails;
       setIsSufficientLiquidity(!hasInsufficientLiquidity);
       return tradeDetails;
     },
