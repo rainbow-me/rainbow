@@ -4,7 +4,7 @@ import PanModal
 
 public extension UIView {
   @objc func newHitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-    if (self.subviews.count == 2 && self.subviews[1] is PanModal.PanContainerView) {
+    if (self.superview!.superview == nil && self.subviews.count == 2 && self.subviews[1] is PanModal.PanContainerView) {
       let container = self.subviews[1]
       if (container.subviews.count == 1 && container.subviews[0] is RNCMScreenView) {
         let screen = container.subviews[0]
