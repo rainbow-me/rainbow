@@ -101,7 +101,6 @@
     "eth-contract-metadata": "^1.9.3",
     "eth-sig-util": "^2.5.3",
     "ethereumjs-util": "^6.2.0",
-    "ethers": "^5.0.7",
     "events": "^1.1.1",
     "fbjs": "^1.0.0",
     "global": "^4.3.2",
