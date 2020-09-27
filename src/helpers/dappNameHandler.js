@@ -56,13 +56,17 @@ const DisplayDappNames = Object.freeze({
     name: 'mStable',
     uri: buildAssetUrl('mstable.org'),
   },
+  'mycrypto.com': {
+    name: 'MyCrypto',
+    uri: buildAssetUrl('mycrypto.com'),
+  },
   'oasis.app': {
     name: 'Oasis',
     uri: null,
   },
   'opensea.io': {
     name: 'OpenSea',
-    uri: null,
+    uri: buildAssetUrl('opensea.io'),
   },
   'piedao.org': {
     name: 'PieDAO',
