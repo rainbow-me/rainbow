@@ -1,94 +1,24 @@
 import { addHours, differenceInMinutes, isPast } from 'date-fns';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { connect } from 'react-redux';
-import { compose, onlyUpdateForKeys, withProps } from 'recompact';
-import { withNavigation } from '../../navigation/Navigation';
-import { removeRequest } from '../../redux/requests';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { useDispatch } from 'react-redux';
+import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
 import { RequestCoinIcon } from '../coin-icon';
 import { RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import { useNavigation } from '@rainbow-me/navigation';
+import { removeRequest } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
-
-const BottomRow = ({ dappName, expirationColor }) => (
-  <CoinName color={expirationColor} weight="semibold">
-    {dappName}
-  </CoinName>
-);
-
-BottomRow.propTypes = {
-  dappName: PropTypes.string,
-};
-
-const TopRow = ({ expirationColor, expiresAt }) => {
-  const minutes = differenceInMinutes(expiresAt, Date.now());
-
-  return (
-    <RowWithMargins margin={2}>
-      <Emoji name="clock4" size="tiny" style={{ marginTop: 1.75 }} />
-      <Text color={expirationColor} size="smedium" weight="semibold">
-        Expires in {minutes || 0}m
-      </Text>
-    </RowWithMargins>
-  );
-};
-
-TopRow.propTypes = {
-  expirationColor: PropTypes.string,
-  expiresAt: PropTypes.number,
-};
-
-class RequestCoinRow extends React.PureComponent {
-  static propTypes = {
-    ...TopRow.propTypes,
-    item: PropTypes.object,
-    onPressOpen: PropTypes.func,
-  };
-
-  componentDidMount = () => this.handleExpiredRequests();
-
-  componentDidUpdate = () => this.handleExpiredRequests();
-
-  buttonRef = React.createRef();
-
-  handleExpiredRequests = () => {
-    if (isPast(this.props.expiresAt)) {
-      this.props.removeExpiredRequest(this.props.item.requestId);
-    }
-  };
-
-  handlePressOpen = () => {
-    this.props.navigation.navigate(Routes.CONFIRM_REQUEST, {
-      transactionDetails: this.props.item,
-    });
-  };
-
-  render = () => {
-    const { expirationColor, expiresAt, item, ...props } = this.props;
-
-    return (
-      <ButtonPressAnimation
-        onPress={this.handlePressOpen}
-        scaleTo={0.98}
-        waitFor={this.buttonRef}
-      >
-        <CoinRow
-          {...item}
-          {...props}
-          bottomRowRender={BottomRow}
-          coinIconRender={RequestCoinIcon}
-          expirationColor={expirationColor}
-          expiresAt={expiresAt}
-          topRowRender={TopRow}
-        />
-      </ButtonPressAnimation>
-    );
-  };
-}
+import { magicMemo } from '@rainbow-me/utils';
 
 const getPercentageOfTimeElapsed = (startDate, endDate) => {
   const originalDifference = differenceInMinutes(endDate, startDate);
@@ -97,26 +27,99 @@ const getPercentageOfTimeElapsed = (startDate, endDate) => {
   return Math.floor((currentDifference * 100) / originalDifference);
 };
 
-export default compose(
-  connect(null, { removeExpiredRequest: removeRequest }),
-  withNavigation,
-  withProps(
-    ({
-      item: {
-        displayDetails: { timestampInMs },
-      },
-    }) => {
-      const createdAt = new Date(timestampInMs);
-      const expiresAt = addHours(createdAt, 1);
-      const percentElapsed = getPercentageOfTimeElapsed(createdAt, expiresAt);
+const ClockEmoji = styled(Emoji).attrs({
+  name: 'clock4',
+  size: 'tiny',
+})`
+  margin-top: 1.75;
+`;
 
-      return {
-        createdAt,
-        expirationColor: percentElapsed > 25 ? colors.appleBlue : colors.orange,
-        expiresAt,
-        percentElapsed,
-      };
+const BottomRow = ({ dappName, expirationColor }) => (
+  <CoinName color={expirationColor} weight="semibold">
+    {dappName}
+  </CoinName>
+);
+
+const TopRow = ({ expirationColor, expiresAt }) => {
+  const minutes = differenceInMinutes(expiresAt, Date.now());
+
+  return (
+    <RowWithMargins margin={2}>
+      <ClockEmoji />
+      <Text color={expirationColor} size="smedium" weight="semibold">
+        Expires in {minutes || 0}m
+      </Text>
+    </RowWithMargins>
+  );
+};
+
+const RequestCoinRow = ({ item, ...props }) => {
+  const buttonRef = useRef();
+  const dispatch = useDispatch();
+  const { navigate } = useNavigation();
+  const [expiresAt, setExpiresAt] = useState(null);
+  const [expirationColor, setExpirationColor] = useState(null);
+  const [percentElapsed, setPercentElapsed] = useState(null);
+
+  useEffect(() => {
+    if (item?.displayDetails?.timestampInMs) {
+      const _createdAt = new Date(item.displayDetails.timestampInMs);
+      const _expiresAt = addHours(_createdAt, 1);
+      const _percentElapsed = getPercentageOfTimeElapsed(
+        _createdAt,
+        _expiresAt
+      );
+      setExpiresAt(_expiresAt);
+      setPercentElapsed(_percentElapsed);
+      setExpirationColor(
+        _percentElapsed > 25 ? colors.appleBlue : colors.orange
+      );
     }
-  ),
-  onlyUpdateForKeys(['expirationColor', 'expiresAt', 'percentElapsed'])
-)(RequestCoinRow);
+  }, [item]);
+
+  const handleExpiredRequests = useCallback(() => {
+    if (isPast(expiresAt)) {
+      dispatch(removeRequest(item.requestId));
+    }
+  }, [dispatch, expiresAt, item.requestId]);
+
+  const handlePressOpen = useCallback(() => {
+    navigate(Routes.CONFIRM_REQUEST, {
+      transactionDetails: item,
+    });
+  }, [item, navigate]);
+
+  useEffect(() => {
+    handleExpiredRequests();
+  }, [expiresAt, handleExpiredRequests]);
+
+  const overridenItem = useMemo(
+    () => ({
+      ...item,
+      dappName: item.dappName,
+      imageUrl: item.imageUrl,
+      percentElapsed,
+    }),
+    [item, percentElapsed]
+  );
+
+  return (
+    <ButtonPressAnimation
+      onPress={handlePressOpen}
+      scaleTo={0.98}
+      waitFor={buttonRef}
+    >
+      <CoinRow
+        {...props}
+        {...overridenItem}
+        bottomRowRender={BottomRow}
+        coinIconRender={RequestCoinIcon}
+        expirationColor={expirationColor}
+        expiresAt={expiresAt}
+        topRowRender={TopRow}
+      />
+    </ButtonPressAnimation>
+  );
+};
+
+export default magicMemo(RequestCoinRow);

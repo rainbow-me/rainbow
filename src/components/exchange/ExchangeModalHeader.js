@@ -60,7 +60,7 @@ const ExchangeModalHeader = ({
   }, [prevShowDetailsButton, showDetailsButton]);
 
   return (
-    <Column align="center" css={padding(8, 0)}>
+    <Column align="center" css={padding(6, 0)}>
       <SheetHandle marginBottom={SheetHandleMargin} />
       <Text align="center" lineHeight="loose" size="large" weight="bold">
         {title}
