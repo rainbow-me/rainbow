@@ -1332,6 +1332,17 @@
     "@ethersproject/properties" "^5.0.3"
     elliptic "6.5.3"
 
+"@ethersproject/solidity@^5.0.4":
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/@ethersproject/solidity/-/solidity-5.0.4.tgz#67022cbfb50cb73b72d1739178537a9e798945bf"
+  integrity sha512-cUq1l8A+AgRkIItRoztC98Qx7b0bMNMzKX817fszDuGNsT2POAyP5knvuEt4Fx4IBcJREXoOjsGYFfjyK5Sa+w==
+  dependencies:
+    "@ethersproject/bignumber" "^5.0.7"
+    "@ethersproject/bytes" "^5.0.4"
+    "@ethersproject/keccak256" "^5.0.3"
+    "@ethersproject/sha2" "^5.0.3"
+    "@ethersproject/strings" "^5.0.4"
+
 "@ethersproject/strings@^5.0.4":
   version "5.0.5"
   resolved "https://registry.yarnpkg.com/@ethersproject/strings/-/strings-5.0.5.tgz#ed7e99a282a02f40757691b04a24cd83f3752195"
