@@ -223,6 +223,7 @@
     "eslint": "^6.8.0",
     "eslint-config-satya164": "^3.1.6",
     "eslint-import-resolver-babel-module": "^5.1.2",
+    "ganache-cli": "6.10.1",
     "graphql": "^15.3.0",
     "jest": "^26.1.0",
     "jest-circus": "^26.1.0",
@@ -235,8 +236,7 @@
     "stylelint-config-react-native-styled-components": "^0.3.0",
     "stylelint-processor-styled-components": "^1.10.0",
     "stylelint-react-native": "^2.2.0",
-    "typescript": "^3.9.7",
-    "ganache-cli": "6.10.1"
+    "typescript": "^3.9.7"
   },
   "resolutions": {
     "**/bl": "2.2.1",

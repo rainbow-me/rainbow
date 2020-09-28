@@ -1,7 +1,9 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import { captureException } from '@sentry/react-native';
 import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
 import { find, get, isEmpty, matchesProperty, replace, toLower } from 'lodash';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
+import URL from 'url-parse';
 import networkTypes from '../helpers/networkTypes';
 import {
   add,
@@ -12,6 +14,7 @@ import {
   subtract,
 } from '../helpers/utilities';
 import { chains } from '../references';
+import logger from 'logger';
 
 const getEthPriceUnit = assets => {
   const ethAsset = getAsset(assets);
@@ -191,7 +194,24 @@ const hasPreviousTransactions = address => {
   });
 };
 
+const checkIfUrlIsAScam = async url => {
+  try {
+    const request = await fetch('https://api.cryptoscamdb.org/v1/scams');
+    const { result } = await request.json();
+    const { hostname } = new URL(url);
+    const found = result.find(s => toLower(s.name) === toLower(hostname));
+    if (found) {
+      return true;
+    }
+    return false;
+  } catch (e) {
+    logger.sentry('Error fetching cryptoscamdb.org list');
+    captureException(e);
+  }
+};
+
 export default {
+  checkIfUrlIsAScam,
   getAsset,
   getBalanceAmount,
   getChainIdFromNetwork,

@@ -19,6 +19,7 @@ const ExchangeInput = (
     color = colors.dark,
     editable,
     keyboardAppearance = 'dark',
+    letterSpacing = 'roundedTightest',
     mask = '[099999999999999999].[999999999999999999]',
     onBlur,
     onChange,
@@ -29,7 +30,7 @@ const ExchangeInput = (
     size = 'h2',
     testID,
     value = '',
-    weight = 'medium',
+    weight = 'semibold',
     ...props
   },
   ref
@@ -89,6 +90,7 @@ const ExchangeInput = (
       color={color}
       editable={editable}
       keyboardAppearance={keyboardAppearance}
+      letterSpacing={letterSpacing}
       mask={mask}
       onBlur={handleBlur}
       onChange={handleChange}
