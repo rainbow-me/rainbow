@@ -4526,9 +4526,9 @@ detect-newline@^3.0.0:
   integrity sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA==
 
 detox@^17.5.3:
-  version "17.5.3"
-  resolved "https://registry.yarnpkg.com/detox/-/detox-17.5.3.tgz#e8367f1e27dff8708d4da5140b4627d249cfac49"
-  integrity sha512-FRrFEcesP3UiNH/qNhdQG10I45LshBmfkLiTXSt+37GJ1GZiZ6tOYuMpvTON0auSZ2I1sFtlQZOJH0mUsZV9Gg==
+  version "17.6.1"
+  resolved "https://registry.yarnpkg.com/detox/-/detox-17.6.1.tgz#3bdd8cbdcc079b1c4b604181fe505615db563832"
+  integrity sha512-NPZabH3ixOdXCbDDQeRToUxXTN1kHiK7WhCCjH4YHtKNaprcYiYqPgIloEykauHvpgynebmyTBxOY6hDtsiO4Q==
   dependencies:
     bunyan "^1.8.12"
     bunyan-debug-stream "^1.1.0"
@@ -8744,9 +8744,9 @@ mkdirp@^0.5.1, mkdirp@^0.5.5, mkdirp@~0.5.1:
     minimist "^1.2.5"
 
 moment@^2.19.3:
-  version "2.27.0"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.27.0.tgz#8bff4e3e26a236220dfe3e36de756b6ebaa0105d"
-  integrity sha512-al0MUK7cpIcglMv3YF13qSgdAIqxHTO7brRtaz3DlSULbqfazqkc5kEjNrLDOM7fsjshoFIihnU8snrP7zUvhQ==
+  version "2.29.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.0.tgz#fcbef955844d91deb55438613ddcec56e86a3425"
+  integrity sha512-z6IJ5HXYiuxvFTI6eiQ9dm77uE0gyy1yXNApVHqTcnIKfY9tIwEjlzsZ6u1LQXvVgKeTnv9Xm7NDvJ7lso3MtA==
 
 ms@2.0.0:
   version "2.0.0"
