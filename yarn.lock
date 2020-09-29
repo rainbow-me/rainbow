@@ -10203,11 +10203,6 @@ react-native-crypto@^2.2.0:
     public-encrypt "^4.0.0"
     randomfill "^1.0.3"
 
-react-native-dev-menu@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/react-native-dev-menu/-/react-native-dev-menu-4.0.2.tgz#1e569b1fbb2740d1eab8cb3d5adfa4bf9fd89d71"
-  integrity sha512-tjWAULoJgOr/WjcfhFsCYaZGtQNmApm7gD5d7G/kSAWVBdEbFFuN2MIq+CxAxBsjHSwscysD1C55TCcmXP/82w==
-
 react-native-device-info@5.3.1:
   version "5.3.1"
   resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-5.3.1.tgz#d764732c4841b6b6c2f42516e8840075717ea88a"

@@ -9,6 +9,7 @@ import Animated, {
   useSharedValue,
   withSpring,
   withTiming,
+  // eslint-disable-next-line import/no-unresolved
 } from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
 import ChartContext, {
@@ -142,7 +143,6 @@ export default function ChartPathProvider({
   timingAnimationConfig = {},
   ...rest
 }) {
-  const val = () => {};
   const valuesStore = useRef(null);
   if (valuesStore.current == null) {
     valuesStore.current = {
@@ -209,7 +209,6 @@ export default function ChartPathProvider({
     );
     setContextValue(prev => ({ ...prev, ...newExtremes, data }));
     setExtremes(newExtremes);
-    setInterval(val, 10);
     if (prevData.value.length !== 0) {
       valuesStore.current.prevData = currData.value;
       prevData.value = currData.value;
