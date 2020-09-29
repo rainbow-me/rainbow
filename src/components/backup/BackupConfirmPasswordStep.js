@@ -4,7 +4,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { saveBackupPassword } from '../../model/backup';
-import { CLOUD_PLATFORM } from '../../utils/platform';
+import { cloudPlatform } from '../../utils/platform';
 import { DelayedAlert } from '../alerts';
 import { PasswordField } from '../fields';
 import { Centered, Column } from '../layout';
@@ -83,7 +83,7 @@ export default function BackupConfirmPasswordStep() {
   useEffect(() => {
     analytics.track('Confirm Password Step', {
       category: 'backup',
-      label: CLOUD_PLATFORM,
+      label: cloudPlatform,
     });
   }, []);
 
@@ -92,7 +92,7 @@ export default function BackupConfirmPasswordStep() {
 
     if (isCloudBackupPasswordValid(password)) {
       passwordIsValid = true;
-      setLabel(`􀑙 Add to ${CLOUD_PLATFORM} Backup`);
+      setLabel(`􀑙 Add to ${cloudPlatform} Backup`);
     }
     setValidPassword(passwordIsValid);
   }, [password, passwordFocused]);
@@ -123,7 +123,7 @@ export default function BackupConfirmPasswordStep() {
     // and at least an other wallet already backed up
     analytics.track('Backup Complete via Confirm Step', {
       category: 'backup',
-      label: CLOUD_PLATFORM,
+      label: cloudPlatform,
     });
     goBack();
   }, [goBack, isSettingsRoute, password]);
@@ -155,7 +155,7 @@ export default function BackupConfirmPasswordStep() {
         <MastheadIcon>􀙶</MastheadIcon>
         <Title>Enter backup password</Title>
         <DescriptionText>
-          To add your wallet to the {CLOUD_PLATFORM} backup, enter the backup
+          To add your wallet to the {cloudPlatform} backup, enter the backup
           password
         </DescriptionText>
       </Masthead>

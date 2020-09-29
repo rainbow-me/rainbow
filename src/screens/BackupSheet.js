@@ -13,7 +13,7 @@ import {
 import { Column } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { SlackSheet } from '../components/sheet';
-import { CLOUD_PLATFORM } from '../utils/platform';
+import { cloudPlatform } from '../utils/platform';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -89,7 +89,7 @@ export default function BackupSheet() {
     // and at least an other wallet already backed up
     analytics.track('Backup Complete via BackupSheet', {
       category: 'backup',
-      label: CLOUD_PLATFORM,
+      label: cloudPlatform,
     });
   }, [goBack, isSettingsRoute]);
 
@@ -142,10 +142,10 @@ export default function BackupSheet() {
       case WalletBackupStepTypes.imported:
         return (
           <BackupSheetSection
-            descriptionText={`Don't lose your wallet! Save an encrypted copy to ${CLOUD_PLATFORM}.`}
+            descriptionText={`Don't lose your wallet! Save an encrypted copy to ${cloudPlatform}.`}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={goBack}
-            primaryLabel={`􀙶 Back up to ${CLOUD_PLATFORM}`}
+            primaryLabel={`􀙶 Back up to ${cloudPlatform}`}
             secondaryButtonTestId="backup-sheet-imported-cancel-button"
             secondaryLabel="No thanks"
             titleText="Would you like to back up?"
@@ -163,10 +163,10 @@ export default function BackupSheet() {
       default:
         return (
           <BackupSheetSection
-            descriptionText={`Don't lose your wallet! Save an encrypted copy to ${CLOUD_PLATFORM}.`}
+            descriptionText={`Don't lose your wallet! Save an encrypted copy to ${cloudPlatform}.`}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={onManualBackup}
-            primaryLabel={`􀙶 Back up to ${CLOUD_PLATFORM}`}
+            primaryLabel={`􀙶 Back up to ${cloudPlatform}`}
             secondaryLabel="🤓 Back up manually"
             titleText="Back up your wallet"
             type="Default"

@@ -10,7 +10,7 @@ import {
   fetchBackupPassword,
 } from '../model/backup';
 import { setWalletBackedUp } from '../redux/wallets';
-import { CLOUD_PLATFORM } from '../utils/platform';
+import { cloudPlatform } from '../utils/platform';
 import useWallets from './useWallets';
 import {
   CLOUD_BACKUP_ERRORS,
@@ -125,14 +125,14 @@ export default function useWalletCloudBackup() {
       let updatedBackupFile = null;
       try {
         if (!latestBackup) {
-          logger.log(`backing up to ${CLOUD_PLATFORM}`, wallets[walletId]);
+          logger.log(`backing up to ${cloudPlatform}`, wallets[walletId]);
           updatedBackupFile = await backupWalletToCloud(
             fetchedPassword,
             wallets[walletId]
           );
         } else {
           logger.log(
-            `adding wallet to ${CLOUD_PLATFORM} backup`,
+            `adding wallet to ${cloudPlatform} backup`,
             wallets[walletId]
           );
           updatedBackupFile = await addWalletToCloudBackup(
@@ -145,13 +145,13 @@ export default function useWalletCloudBackup() {
         const userError = getUserError(e);
         onError && onError(userError);
         logger.sentry(
-          `error while trying to backup wallet to ${CLOUD_PLATFORM}`
+          `error while trying to backup wallet to ${cloudPlatform}`
         );
         captureException(e);
-        analytics.track(`Error during ${CLOUD_PLATFORM} Backup`, {
+        analytics.track(`Error during ${cloudPlatform} Backup`, {
           category: 'backup',
           error: userError,
-          label: CLOUD_PLATFORM,
+          label: cloudPlatform,
         });
         return null;
       }
@@ -176,7 +176,7 @@ export default function useWalletCloudBackup() {
         onError && onError(userError);
         analytics.track('Error updating Backup status', {
           category: 'backup',
-          label: CLOUD_PLATFORM,
+          label: cloudPlatform,
         });
       }
     },

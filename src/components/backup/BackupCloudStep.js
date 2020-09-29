@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
 import { saveBackupPassword } from '../../model/backup';
-import { CLOUD_PLATFORM } from '../../utils/platform';
+import { cloudPlatform } from '../../utils/platform';
 import { DelayedAlert } from '../alerts';
 import { PasswordField } from '../fields';
 import { Centered, ColumnWithMargins } from '../layout';
@@ -84,7 +84,7 @@ export default function BackupCloudStep() {
   const { goBack } = useNavigation();
 
   const [label, setLabel] = useState(
-    !validPassword ? `􀙶 Add to ${CLOUD_PLATFORM} Backup` : '􀎽 Confirm Backup'
+    !validPassword ? `􀙶 Add to ${cloudPlatform} Backup` : '􀎽 Confirm Backup'
   );
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
@@ -95,7 +95,7 @@ export default function BackupCloudStep() {
     }, 1);
     analytics.track('Choose Password Step', {
       category: 'backup',
-      label: CLOUD_PLATFORM,
+      label: cloudPlatform,
     });
   }, []);
 
@@ -215,7 +215,7 @@ export default function BackupCloudStep() {
     // and it was the first wallet backed up
     analytics.track('Backup Complete', {
       category: 'backup',
-      label: CLOUD_PLATFORM,
+      label: cloudPlatform,
     });
     goBack();
   }, [goBack, isSettingsRoute, password]);

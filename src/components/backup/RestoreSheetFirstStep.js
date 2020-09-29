@@ -1,7 +1,7 @@
 import { forEach } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
-import { CLOUD_PLATFORM } from '../../utils/platform';
+import { cloudPlatform } from '../../utils/platform';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
@@ -112,7 +112,7 @@ export default function RestoreSheetFirstStep({
               </Row>
               <TitleRow>
                 <RainbowText>
-                  <Title>Restore from {CLOUD_PLATFORM}</Title>
+                  <Title>Restore from {cloudPlatform}</Title>
                 </RainbowText>
                 <CaretIcon />
               </TitleRow>

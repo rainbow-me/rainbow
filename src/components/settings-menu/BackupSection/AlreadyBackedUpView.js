@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components';
-import { CLOUD_PLATFORM } from '../../../utils/platform';
+import { cloudPlatform } from '../../../utils/platform';
 import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
@@ -155,7 +155,7 @@ export default function AlreadyBackedUpView() {
       return;
     }
 
-    analytics.track(`Back up to ${CLOUD_PLATFORM} pressed`, {
+    analytics.track(`Back up to ${cloudPlatform} pressed`, {
       category: 'settings backup',
     });
 
@@ -205,7 +205,7 @@ export default function AlreadyBackedUpView() {
           </Title>
           <DescriptionText>
             {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
-              `If you lose this device, you can recover your encrypted wallet backup from ${CLOUD_PLATFORM}.`) ||
+              `If you lose this device, you can recover your encrypted wallet backup from ${cloudPlatform}.`) ||
               (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
                 `If you lose this device, you can restore your wallet with the recovery phrase you saved.`) ||
               (walletStatus === WalletBackupStatus.IMPORTED &&
@@ -231,7 +231,7 @@ export default function AlreadyBackedUpView() {
               size="large"
               weight="semibold"
             >
-              􀙶 Back up to {CLOUD_PLATFORM}
+              􀙶 Back up to {cloudPlatform}
             </Text>
           </ButtonPressAnimation>
         </Footer>

@@ -6,7 +6,7 @@ import {
   restoreCloudBackup,
   saveBackupPassword,
 } from '../../model/backup';
-import { CLOUD_PLATFORM } from '../../utils/platform';
+import { cloudPlatform } from '../../utils/platform';
 import { PasswordField } from '../fields';
 import { Centered, Column } from '../layout';
 import { LoadingOverlay } from '../modal';
@@ -102,7 +102,7 @@ export default function RestoreCloudStep({ userData }) {
         passwordIsValid = true;
       }
 
-      newLabel = `􀑙 Restore from ${CLOUD_PLATFORM}`;
+      newLabel = `􀑙 Restore from ${cloudPlatform}`;
     }
 
     setValidPassword(passwordIsValid);
