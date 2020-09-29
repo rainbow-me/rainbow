@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 import styled from 'styled-components/primitives';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -35,9 +36,9 @@ const AccountName = styled(TruncatedText).attrs({
   truncationLength: 4,
   weight: 'bold',
 })`
-  height: 33;
-  margin-top: -1;
-  margin-bottom: 1;
+  height: ${Platform.OS === 'android' ? '38' : '33'};
+  margin-top: ${Platform.OS === 'android' ? '-10' : '-1'};
+  margin-bottom: ${Platform.OS === 'android' ? '10' : '1'};
   max-width: ${({ deviceWidth }) => deviceWidth - dropdownArrowWidth - 60};
   padding-right: 6;
 `;
