@@ -15,7 +15,6 @@ import Animated, {
   useSharedValue,
   withSpring,
   withTiming,
-  // eslint-disable-next-line import/no-unresolved
 } from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
 import ChartContext, {

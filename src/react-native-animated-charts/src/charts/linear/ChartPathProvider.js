@@ -25,7 +25,7 @@ export default function ChartPathProvider({ data: providedData, children }) {
       providedData,
       setContextValue,
     }),
-    [values, contextReanimatedValue, providedData]
+    [dotStyle, values, contextReanimatedValue, providedData]
   );
 
   return (

@@ -3,7 +3,6 @@ import { TextInput } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
-  // eslint-disable-next-line import/no-unresolved
 } from 'react-native-reanimated';
 import ChartContext from '../../helpers/ChartContext';
 
