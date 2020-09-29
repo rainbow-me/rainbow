@@ -70,10 +70,13 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should update input value after tapping Max Button', async () => {
     await Helpers.delay(1000);
+    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-fab');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.tap('exchange-modal-input-max');
     await Helpers.delay(1000);
-    //await Helpers.checkIfNotVisible('exchange-modal-input');
+    await Helpers.checkIfNotVisible('exchange-modal-input');
     //Need to add helper function
   });
 
