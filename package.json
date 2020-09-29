@@ -5,7 +5,7 @@
   "scripts": {
     "android": "react-native run-android",
     "android:bundle": "cd android && ./gradlew bundleRelease && open app/build/outputs/bundle/release/",
-    "android:apk": "cd android && ./gradlew assembleRelease && adb install app/build/outputs/apk/release/app-release.apk",
+    "android:apk": "cd android && ./gradlew assembleRelease && adb uninstall me.rainbow && adb install app/build/outputs/apk/release/app-release.apk",
     "clean": "react-native clean-project-auto",
     "detox:ios": "detox build -c ios.sim.debug && detox test -c ios.sim.debug",
     "detox:ios:release": "detox build -c ios.sim.release && detox test -c ios.sim.release",
