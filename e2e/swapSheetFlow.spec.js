@@ -52,10 +52,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('exchange-fab');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('exchange-modal-container');
-    //await Helpers.checkIfElementByTextIsVisible('Swap');
   });
-
-  /*
 
   it('Should focus on Asset Input on load', async () => {
     await Helpers.delay(1000);
@@ -316,8 +313,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('exchange-modal-output-0.');
   });
-
-  */
 
   it('Should display Gas Button on Normal on completion of all input fields', async () => {
     await Helpers.delay(1000);
