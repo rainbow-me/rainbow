@@ -15,9 +15,6 @@
 		1539422D24C7CF9300E4A9D1 /* SettingsBundleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1539422C24C7CF9300E4A9D1 /* SettingsBundleHelper.swift */; };
 		153D1AAC24777130007E4723 /* TransactionListLoadingViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153D1AAB24777130007E4723 /* TransactionListLoadingViewCell.swift */; };
 		153D1AAE24777214007E4723 /* TransactionListLoadingViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 153D1AAD24777214007E4723 /* TransactionListLoadingViewCell.xib */; };
-		15DC38D9247E494400919009 /* RainbowDebug.entitlements in Sources */ = {isa = PBXBuildFile; fileRef = 157155042418734C009B698B /* RainbowDebug.entitlements */; };
-		15DC38DA247E494400919009 /* RainbowRelease.entitlements in Sources */ = {isa = PBXBuildFile; fileRef = 157155032418733F009B698B /* RainbowRelease.entitlements */; };
-		15DC38DB247E494400919009 /* Rainbow.entitlements in Sources */ = {isa = PBXBuildFile; fileRef = 3C379D5D20FD1F92009AF81F /* Rainbow.entitlements */; };
 		15E531D5242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D4242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift */; };
 		15E531DA242DAB7100797B89 /* NotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D9242DAB7100797B89 /* NotificationManager.m */; };
 		24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 24979E7720F84004007EB0DA /* GoogleService-Info.plist */; };
@@ -437,8 +434,8 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				A4451ED5032E4036E311CE0C /* [CP-User] [RNFB] Crashlytics Configuration */,
 				E5BAA1201450F6CFF8A6C0D3 /* [CP] Copy Pods Resources */,
+				A4451ED5032E4036E311CE0C /* [CP-User] [RNFB] Crashlytics Configuration */,
 			);
 			buildRules = (
 			);
@@ -613,10 +610,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66A28EB024CAF1B500410A88 /* TestFlight.m in Sources */,
-				15DC38D9247E494400919009 /* RainbowDebug.entitlements in Sources */,
 				6630540924A38A1900E5B030 /* RainbowText.m in Sources */,
-				15DC38DA247E494400919009 /* RainbowRelease.entitlements in Sources */,
-				15DC38DB247E494400919009 /* Rainbow.entitlements in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				3CBE29CD2381E43900BE05AC /* Dummy.swift in Sources */,
 				153D1AAC24777130007E4723 /* TransactionListLoadingViewCell.swift in Sources */,
@@ -683,6 +677,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = L74NQAQB8H;
 				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
@@ -754,6 +749,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = L74NQAQB8H;
 				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
@@ -790,7 +786,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow;
 				PRODUCT_NAME = Rainbow;
 				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "match AppStore me.rainbow";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development me.rainbow";
 				SWIFT_OBJC_BRIDGING_HEADER = "Rainbow-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -850,6 +846,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = L74NQAQB8H;
 				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
@@ -946,6 +943,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = L74NQAQB8H;
 				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
