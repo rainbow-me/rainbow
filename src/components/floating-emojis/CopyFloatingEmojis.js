@@ -1,7 +1,7 @@
 import React from 'react';
+import { setString } from '../../hooks/useClipboard';
 import { ButtonPressAnimation } from '../animations';
 import FloatingEmojis from './FloatingEmojis';
-import { useClipboard } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
 
 const CopyFloatingEmojis = ({
@@ -11,8 +11,6 @@ const CopyFloatingEmojis = ({
   textToCopy,
   ...props
 }) => {
-  const { setClipboard } = useClipboard();
-
   return (
     <FloatingEmojis
       distance={250}
@@ -30,7 +28,7 @@ const CopyFloatingEmojis = ({
             onPress?.(textToCopy);
             if (!disabled) {
               onNewEmoji();
-              setClipboard(textToCopy);
+              setString(textToCopy);
             }
           }}
         >

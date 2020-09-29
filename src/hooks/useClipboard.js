@@ -4,7 +4,7 @@ import useAppState from './useAppState';
 
 const listeners = new Set();
 
-function setString(content) {
+export function setString(content) {
   Clipboard.setString(content);
   listeners.forEach(listener => listener(content));
 }
