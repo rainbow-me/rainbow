@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
-import { Linking } from 'react-native';
+import { Linking, Platform } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
@@ -171,6 +171,44 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
     }
     navigate(Routes.RECEIVE_MODAL);
   }, [navigate, selectedWallet]);
+
+  if (Platform.OS === 'android') {
+    return (
+      <Container style={buildInterstitialTransform(isSmallPhone, offsetY)}>
+        <ButtonContainer>
+          <Subtitle isSmallPhone={isSmallPhone}>
+            Send ETH to your wallet
+          </Subtitle>
+
+          <Paragraph>
+            Send from Coinbase or another exchange—or ask a friend!
+          </Paragraph>
+          <CopyAddressButton
+            onPress={handlePressCopyAddress}
+            testID="copy-address-button"
+          >
+            <RowWithMargins margin={6}>
+              <Icon
+                color={colors.appleBlue}
+                marginTop={0.5}
+                name="copy"
+                size={19}
+              />
+              <Text
+                align="center"
+                color={colors.appleBlue}
+                lineHeight="loose"
+                size="large"
+                weight="bold"
+              >
+                Copy address
+              </Text>
+            </RowWithMargins>
+          </CopyAddressButton>
+        </ButtonContainer>
+      </Container>
+    );
+  }
 
   return (
     <Container style={buildInterstitialTransform(isSmallPhone, offsetY)}>

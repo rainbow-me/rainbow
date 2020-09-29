@@ -152,7 +152,10 @@ export function onNavigationStateChange(currentState) {
         assetType: type,
       };
     }
+
     sentryUtils.addNavBreadcrumb(prevRouteName, routeName, paramsToTrack);
-    return analytics.screen(routeName, paramsToTrack);
+    return Platform.OS === 'android'
+      ? paramsToTrack && analytics.screen(routeName, paramsToTrack)
+      : analytics.screen(routeName, paramsToTrack);
   }
 }

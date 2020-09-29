@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar } from 'react-native';
+import { Platform, StatusBar } from 'react-native';
 import styled from 'styled-components';
 import { RainbowButton } from '../buttons';
 import { Column } from '../layout';
@@ -20,15 +20,23 @@ export default function BackupSheetKeyboardLayout({
   footerButtonDisabled,
   footerButtonLabel,
   onSubmit,
+  type,
 }) {
   const { height: deviceHeight, isTallPhone } = useDimensions();
   const keyboardHeight = useKeyboardHeight({
     keyboardType: KeyboardTypes.password,
   });
 
+  const platformKeyboardHeight =
+    Platform.OS === 'android'
+      ? type === 'restore'
+        ? -10
+        : -30
+      : keyboardHeight;
+
   const sheetRegionAboveKeyboardHeight =
     deviceHeight -
-    keyboardHeight -
+    platformKeyboardHeight -
     sharedCoolModalTopOffset -
     SheetHandleFixedToTopHeight;
 
