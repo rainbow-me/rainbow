@@ -218,7 +218,7 @@
     "babel-plugin-rewire": "^1.2.0",
     "babel-plugin-styled-components": "^1.10.7",
     "babel-plugin-transform-remove-console": "^6.9.4",
-    "detox": "^17.5.3",
+    "detox": "^17.6.1",
     "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
     "eslint-config-satya164": "^3.1.6",
