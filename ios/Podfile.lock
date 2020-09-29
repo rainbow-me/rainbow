@@ -1,5 +1,5 @@
 PODS:
-  - Analytics (4.0.5)
+  - Analytics (4.0.4)
   - Base64 (1.1.2)
   - boost-for-react-native (1.63.0)
   - Branch (0.34.0)
@@ -49,7 +49,7 @@ PODS:
     - GoogleUtilities/Environment (~> 6.7)
     - GoogleUtilities/UserDefaults (~> 6.7)
     - PromisesObjC (~> 1.2)
-  - FirebaseInstanceID (4.7.0):
+  - FirebaseInstanceID (4.6.0):
     - FirebaseCore (~> 6.10)
     - FirebaseInstallations (~> 1.6)
     - GoogleUtilities/Environment (~> 6.7)
@@ -539,9 +539,9 @@ PODS:
     - pop (~> 1.0)
     - React
     - SexyTooltip
-  - SDWebImage (5.9.1):
-    - SDWebImage/Core (= 5.9.1)
-  - SDWebImage/Core (5.9.1)
+  - SDWebImage (5.9.0):
+    - SDWebImage/Core (= 5.9.0)
+  - SDWebImage/Core (5.9.0)
   - SDWebImageWebPCoder (0.6.1):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.7)
@@ -883,7 +883,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/osdnk/PanModal
 
 SPEC CHECKSUMS:
-  Analytics: 4bcf052c91e1f3339219e83d6a036fb2bd7c218d
+  Analytics: 231b01fdaa9704105881dc82def7b7b1d6571edb
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 446aeb832102f56f04edf5fa7cb0a752dc392ca7
@@ -899,7 +899,7 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: 7535fe695737f8c5b350584292a70b7f8ff0357b
   FirebaseCrashlytics: 859918905322e8816d2b5ab7fe54bf5a0c84d21c
   FirebaseInstallations: 466c7b4d1f58fe16707693091da253726a731ed2
-  FirebaseInstanceID: ac5a82fcd21f804dbfc8f318eff9e1d7a9916e49
+  FirebaseInstanceID: 84f5f5762f1bee94ca2254f693bbf5aec6666504
   FirebaseMessaging: 82d75b3770a78bbce470769a6980429608b4c407
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   Flipper: 6c1f484f9a88d30ab3e272800d53688439e50f69
@@ -990,7 +990,7 @@ SPEC CHECKSUMS:
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNTooltips: e13180e4339e2a85daabd09507f62a5a32d3dc8a
-  SDWebImage: a990c053fff71e388a10f3357edb0be17929c9c5
+  SDWebImage: 62ae4a18473520c67b79e9724c31a63599cc9423
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
   Sentry: 8715e88b813bde9ad37aead365d5b04ac7302153
   SexyTooltip: e243da5a858c7160141cf35786a4033669d1efca
