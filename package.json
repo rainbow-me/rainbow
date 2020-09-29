@@ -3,9 +3,9 @@
   "version": "1.2.35-1",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
+    "android": "adb uninstall me.rainbow || true && react-native run-android",
     "android:bundle": "cd android && ./gradlew bundleRelease && open app/build/outputs/bundle/release/",
-    "android:apk": "cd android && ./gradlew assembleRelease && adb uninstall me.rainbow && adb install app/build/outputs/apk/release/app-release.apk",
+    "android:apk": "cd android && ./gradlew assembleRelease && (adb uninstall me.rainbow || true) && adb install app/build/outputs/apk/release/app-release.apk",
     "clean": "react-native clean-project-auto",
     "detox:ios": "detox build -c ios.sim.debug && detox test -c ios.sim.debug",
     "detox:ios:release": "detox build -c ios.sim.release && detox test -c ios.sim.release",
