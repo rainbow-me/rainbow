@@ -22,16 +22,22 @@ describe('Send Sheet Interaction Flow', () => {
 
   it("Shouldn't do anything when I type jibberish", async () => {
     await Helpers.tap('import-sheet-input');
-    await Helpers.checkIfHasText('import-sheet-button-label', 'Paste');
+    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Paste');
     await Helpers.typeText('import-sheet-input', 'asdajksdlakjsd', false);
-    await Helpers.checkIfHasText('import-sheet-button-label', 'Import');
+    await Helpers.checkIfElementHasString(
+      'import-sheet-button-label',
+      'Import'
+    );
   });
 
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
     await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.DEV_SEEDS, false);
     await Helpers.delay(1500);
-    await Helpers.checkIfHasText('import-sheet-button-label', 'Import');
+    await Helpers.checkIfElementHasString(
+      'import-sheet-button-label',
+      'Import'
+    );
     await Helpers.tap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');
   });
