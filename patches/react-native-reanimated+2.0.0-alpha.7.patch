@@ -37,6 +37,28 @@ index 48a3c76..0723069 100644
    linear,
    ease,
    quad,
+diff --git a/node_modules/react-native-reanimated/src/reanimated2/NativeReanimated.js b/node_modules/react-native-reanimated/src/reanimated2/NativeReanimated.js
+index dce1ee8..b2e9de4 100644
+--- a/node_modules/react-native-reanimated/src/reanimated2/NativeReanimated.js
++++ b/node_modules/react-native-reanimated/src/reanimated2/NativeReanimated.js
+@@ -26,12 +26,14 @@ const NativeReanimated = {
+     return InnerNativeModule.makeRemote(object);
+   },
+ 
+-  startMapper(mapper, inputs = [], outputs = []) {
++  startMapper(mapper, inputs = [], outputs = [], name) {
++    //console.log(name)
+     return InnerNativeModule.startMapper(mapper, inputs, outputs);
+   },
+ 
+-  stopMapper(mapperId) {
+-    return InnerNativeModule.stopMapper(mapperId);
++  stopMapper(mapperId, name) {
++    console.log(name)
++    //return InnerNativeModule.stopMapper(mapperId);
+   },
+ 
+   registerEventHandler(eventHash, eventHandler) {
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/animations.js b/node_modules/react-native-reanimated/src/reanimated2/animations.js
 index 6629e32..daca979 100644
 --- a/node_modules/react-native-reanimated/src/reanimated2/animations.js
