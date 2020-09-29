@@ -9,7 +9,6 @@ import Animated, {
   useSharedValue,
   withSpring,
   withTiming,
-  // eslint-disable-next-line import/no-unresolved
 } from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
 import ChartContext, {
@@ -20,6 +19,7 @@ import useReactiveSharedValue from '../../helpers/useReactiveSharedValue';
 import { svgBezierPath } from '../../smoothing/smoothSVG';
 
 function impactHeavy() {
+  'worklet';
   ReactNativeHapticFeedback.trigger('impactHeavy');
 }
 
@@ -142,6 +142,7 @@ export default function ChartPathProvider({
   timingAnimationConfig = {},
   ...rest
 }) {
+  const val = () => {};
   const valuesStore = useRef(null);
   if (valuesStore.current == null) {
     valuesStore.current = {
@@ -208,6 +209,7 @@ export default function ChartPathProvider({
     );
     setContextValue(prev => ({ ...prev, ...newExtremes, data }));
     setExtremes(newExtremes);
+    setInterval(val, 10);
     if (prevData.value.length !== 0) {
       valuesStore.current.prevData = currData.value;
       prevData.value = currData.value;
@@ -219,16 +221,21 @@ export default function ChartPathProvider({
       curroriginalData.value = parsedoriginalData;
       currSmoothing.value = data.smoothingFactor || 0;
       isAnimationInProgress.value = true;
-      progress.value = withTiming(
-        1,
-        combineConfigs(timingAnimationDefaultConfig, timingAnimationConfig),
+      setTimeout(
         () => {
           isAnimationInProgress.value = false;
           if (dataQueue.value.length !== 0) {
             setData(dataQueue.value[0]);
             dataQueue.value.shift();
           }
-        }
+        },
+        timingAnimationConfig.duration === undefined
+          ? timingAnimationDefaultConfig.duration
+          : timingAnimationConfig.duration
+      );
+      progress.value = withTiming(
+        1,
+        combineConfigs(timingAnimationDefaultConfig, timingAnimationConfig)
       );
     } else {
       prevSmoothing.value = data.smoothing || 0;

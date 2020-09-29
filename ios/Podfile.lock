@@ -454,6 +454,10 @@ PODS:
     - React
   - RNDeviceInfo (5.3.1):
     - React
+  - RNDevMenu (4.0.2):
+    - React-Core
+    - React-Core/DevSupport
+    - React-RCTNetwork
   - RNDominantColor (1.7.0):
     - React
   - RNFastImage (8.3.2):
@@ -497,7 +501,7 @@ PODS:
     - React
   - RNReactNativeHapticFeedback (1.10.0):
     - React
-  - RNReanimated (2.0.0-alpha.6):
+  - RNReanimated (2.0.0-alpha.7):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -644,6 +648,7 @@ DEPENDENCIES:
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
+  - RNDevMenu (from `../node_modules/react-native-dev-menu`)
   - RNDominantColor (from `../node_modules/rn-dominant-color`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
@@ -826,6 +831,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/push-notification-ios"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
+  RNDevMenu:
+    :path: "../node_modules/react-native-dev-menu"
   RNDominantColor:
     :path: "../node_modules/rn-dominant-color"
   RNFastImage:
@@ -969,6 +976,7 @@ SPEC CHECKSUMS:
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNCPushNotificationIOS: dc1c0c6aa18a128df123598149f42e848d26a4ac
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
+  RNDevMenu: fd325b5554b61fe7f48d9205a3877cf5ee88cd7c
   RNDominantColor: 72126cb96ffedf4bcd564ed00e2e578f5b93e0d6
   RNFastImage: e19ba191922e7dab9d932a4d59d62d76660aa222
   RNFBApp: 373cce42559cc7a9a42afc876746e3946de3e32e
@@ -984,7 +992,7 @@ SPEC CHECKSUMS:
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: ad71dd4f767ec254f2cd57592fbee02afee75467
   RNReactNativeHapticFeedback: 22c5ecf474428766c6b148f96f2ff6155cd7225e
-  RNReanimated: 6bd3347e383cee6eb879a1a7d6c748934a015a05
+  RNReanimated: c40c29429b22a1564e505b789132cfcef456c6bd
   RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
   RNSentry: 0a70359ddacbfb9b1cbbb0971e54065b9f70ac57
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
