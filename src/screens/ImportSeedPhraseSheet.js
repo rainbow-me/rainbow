@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, InteractionManager, Platform, StatusBar } from 'react-native';
+import { Alert, InteractionManager, StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import styled from 'styled-components/primitives';
@@ -49,10 +49,9 @@ import logger from 'logger';
 import { usePortal } from 'react-native-cool-modals/Portal';
 
 const sheetBottomPadding = 19;
-const keyboardVerticalOffset =
-  Platform.OS === 'android'
-    ? sheetVerticalOffset - 240
-    : sheetVerticalOffset + 10;
+const keyboardVerticalOffset = android
+  ? sheetVerticalOffset - 240
+  : sheetVerticalOffset + 10;
 
 const Container = styled.View`
   flex: 1;
@@ -63,25 +62,23 @@ const Footer = styled(Row).attrs({
   align: 'start',
   justify: 'end',
 })`
-  bottom: ${Platform.OS === 'android' ? 15 : 0};
-  position: ${Platform.OS === 'android' ? 'absolute' : 'relative'};
+  bottom: ${android ? 15 : 0};
+  position: ${android ? 'absolute' : 'relative'};
   right: 0;
   width: 100%;
-  ${Platform.OS === 'android'
+  ${android
     ? `top: ${({ isSmallPhone }) =>
         isSmallPhone ? sheetBottomPadding * 2 : 0};`
     : ``}
-  ${Platform.OS === 'android' ? 'margin-right: 18;' : ''}
+  ${android ? 'margin-right: 18;' : ''}
 `;
 
-const LoadingSpinner = styled(
-  Platform.OS === 'android' ? Spinner : ActivityIndicator
-).attrs({
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
   color: 'white',
   size: 15,
 })`
   margin-right: 5;
-  margin-top: ${Platform.OS === 'android' ? 0 : 2};
+  margin-top: ${android ? 0 : 2};
 `;
 
 const FooterButton = styled(MiniButton).attrs({
@@ -101,7 +98,7 @@ const SecretTextArea = styled(Input).attrs({
   autoCorrect: false,
   autoFocus: true,
   enablesReturnKeyAutomatically: true,
-  keyboardType: Platform.OS === 'android' ? 'visible-password' : 'default',
+  keyboardType: android ? 'visible-password' : 'default',
   lineHeight: 'looser',
   multiline: true,
   numberOfLines: 3,
@@ -111,7 +108,7 @@ const SecretTextArea = styled(Input).attrs({
   spellCheck: false,
   weight: 'semibold',
 })`
-  margin-bottom: ${Platform.OS === 'android' ? 55 : 0};
+  margin-bottom: ${android ? 55 : 0};
   min-height: 50;
   width: 100%;
 `;
@@ -278,7 +275,7 @@ export default function ImportSeedPhraseSheet() {
                 } else {
                   navigate(Routes.WALLET_SCREEN, { initialized: true });
                 }
-                if (Platform.OS === 'android') {
+                if (android) {
                   hide();
                 }
 

@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-community/masked-view';
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Text from './Text';
 
@@ -24,7 +24,7 @@ const GradientText = ({
   return (
     <MaskedView maskElement={textElement}>
       <LinearGradient
-        angle={Platform.OS === 'android' && angle === false ? 45 : angle}
+        angle={android && angle === false ? 45 : angle}
         angleCenter={angleCenter}
         colors={colors}
         end={end}

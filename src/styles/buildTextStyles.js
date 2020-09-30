@@ -1,5 +1,4 @@
 import { get, isNil } from 'lodash';
-import { Platform } from 'react-native';
 import { css } from 'styled-components/primitives';
 import colors from './colors';
 import fonts from './fonts';
@@ -31,16 +30,10 @@ const buildTextStyles = css`
       : `font-family: ${
           fonts.family[
             mono
-              ? `SFMono${
-                  Platform.OS === 'android'
-                    ? `-${selectBestFontFit(mono, weight)}`
-                    : ''
-                }`
+              ? `SFMono${android ? `-${selectBestFontFit(mono, weight)}` : ''}`
               : family
           ]
-        }${
-          Platform.OS === 'android' ? `-${selectBestFontFit(mono, weight)}` : ''
-        };`}
+        }${android ? `-${selectBestFontFit(mono, weight)}` : ''};`}
 
   /* Font Size */
   font-size: ${({ size = 'medium' }) =>
@@ -48,7 +41,7 @@ const buildTextStyles = css`
 
   /* Font Weight */
   ${({ isEmoji, weight = 'regular' }) =>
-    isEmoji || isNil(weight) || Platform.OS === 'android'
+    isEmoji || isNil(weight) || android
       ? ''
       : `font-weight: ${get(fonts, `weight[${weight}]`, weight)};`}
 
@@ -64,7 +57,7 @@ const buildTextStyles = css`
 
   /* Line Height */
   ${({ isEmoji, lineHeight }) =>
-    isNil(lineHeight) || (isEmoji && Platform.OS === 'android')
+    isNil(lineHeight) || (isEmoji && android)
       ? ''
       : `line-height: ${get(fonts, `lineHeight[${lineHeight}]`, lineHeight)};`}
 

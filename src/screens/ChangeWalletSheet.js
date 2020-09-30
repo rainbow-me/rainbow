@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, Platform } from 'react-native';
+import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -411,7 +411,7 @@ export default function ChangeWalletSheet() {
 
   return (
     <Sheet borderRadius={30}>
-      {Platform.OS === 'android' && <Whitespace />}
+      {android && <Whitespace />}
       <Column height={headerHeight} justify="space-between">
         <SheetTitle>Wallets</SheetTitle>
         {showDividers && (

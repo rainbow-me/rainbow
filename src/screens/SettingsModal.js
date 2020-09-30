@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect } from 'react';
-import { Animated, InteractionManager, Platform, View } from 'react-native';
+import { Animated, InteractionManager, View } from 'react-native';
 import styled from 'styled-components/native';
 import { Icon } from '../components/icons';
 import { Modal } from '../components/modal';
@@ -95,7 +95,7 @@ const BackArrow = styled(Icon).attrs({
 })`
   margin-left: 15;
   margin-right: 5;
-  margin-top: ${Platform.OS === 'android' ? 2 : 0.5};
+  margin-top: ${android ? 2 : 0.5};
 `;
 const BackImage = () => <BackArrow />;
 
@@ -191,7 +191,7 @@ export default function SettingsModal() {
               letterSpacing: fonts.letterSpacing.roundedMedium,
             },
             headerRight: renderHeaderRight,
-            ...(Platform.OS === 'android' && {
+            ...(android && {
               headerRightContainerStyle: {
                 paddingTop: 6,
               },
@@ -225,7 +225,7 @@ export default function SettingsModal() {
           <Stack.Screen
             name="SettingsSection"
             options={{
-              ...(Platform.OS === 'android' && { headerLeft: null }),
+              ...(android && { headerLeft: null }),
               title: 'Settings',
             }}
           >
