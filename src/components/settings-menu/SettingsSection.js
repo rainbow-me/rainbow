@@ -5,13 +5,13 @@ import {
   Linking,
   NativeModules,
   ScrollView,
+  Share,
 } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
 import * as StoreReview from 'react-native-store-review';
 import styled from 'styled-components/primitives';
 import { supportedLanguages } from '../../languages';
-import { AppleReviewAddress, REVIEW_DONE_KEY } from '../../utils/reviewAlert';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
 import { Column, ColumnWithDividers } from '../layout';
@@ -22,7 +22,6 @@ import {
   ListItemDivider,
 } from '../list';
 import { Emoji } from '../text';
-
 import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
 import LanguageIcon from '@rainbow-me/assets/settingsLanguage.png';
@@ -40,10 +39,17 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { colors, position } from '@rainbow-me/styles';
+import {
+  AppleReviewAddress,
+  REVIEW_DONE_KEY,
+} from '@rainbow-me/utils/reviewAlert';
 
 const { RainbowRequestReview } = NativeModules;
 
 export const SettingsExternalURLs = {
+  rainbowHomepage: 'https://rainbow.me',
+  review:
+    'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
   twitterDeepLink: 'twitter://user?screen_name=rainbowdotme',
   twitterWebUrl: 'https://twitter.com/rainbowdotme',
 };
@@ -152,6 +158,12 @@ export default function SettingsSection({
     }
   }, [onCloseModal]);
 
+  const onPressShare = useCallback(() => {
+    Share.share({
+      message: `👋️ Hey friend! You should download Rainbow, it's my favorite Ethereum wallet 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️ ${SettingsExternalURLs.rainbowHomepage}`,
+    });
+  }, []);
+
   const onPressTwitter = useCallback(async () => {
     Linking.canOpenURL(SettingsExternalURLs.twitterDeepLink).then(supported =>
       supported
@@ -217,6 +229,12 @@ export default function SettingsSection({
       <ColumnWithDividers dividerRenderer={ListItemDivider}>
         <ListItem
           icon={<Emoji name="rainbow" />}
+          label="Share Rainbow"
+          onPress={onPressShare}
+          value={SettingsExternalURLs.rainbowHomepage}
+        />
+        <ListItem
+          icon={<Emoji name="bird" />}
           label="Follow Us on Twitter"
           onPress={onPressTwitter}
           value={SettingsExternalURLs.twitter}
