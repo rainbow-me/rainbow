@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
 import styled from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
 import TouchableBackdrop from '../TouchableBackdrop';
@@ -47,9 +47,8 @@ export default function Modal({
         {...props}
         fixedToTop={fixedToTop}
         height={
-          (fullScreenOnAndroid && Platform.OS === 'android'
-            ? '100%'
-            : height) || deviceHeight - 220
+          (fullScreenOnAndroid && android ? '100%' : height) ||
+          deviceHeight - 220
         }
         radius={radius}
       />
