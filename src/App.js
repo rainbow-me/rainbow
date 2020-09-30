@@ -10,7 +10,6 @@ import {
   AppRegistry,
   AppState,
   NativeModules,
-  Platform,
   StatusBar,
   unstable_enableLogBox,
 } from 'react-native';
@@ -139,7 +138,7 @@ class App extends Component {
       // Everything we need to do after the wallet is ready goes here
       logger.sentry('✅ Wallet ready!');
       runKeychainIntegrityChecks();
-      if (Platform.OS === 'ios') {
+      if (ios) {
         runWalletBackupStatusChecks();
       }
     }

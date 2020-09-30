@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { sheetVerticalOffset } from '../../navigation/effects';
 import { Icon } from '../icons';
@@ -37,7 +37,7 @@ const transition = (
 const SendEmptyState = () => {
   const ref = useRef();
 
-  if (ref.current && Platform.OS === 'ios') {
+  if (ref.current && ios) {
     ref.current.animateNextTransition();
   }
 
@@ -47,14 +47,14 @@ const SendEmptyState = () => {
       height={88}
       name="send"
       style={{
-        marginBottom: Platform.OS === 'ios' ? 0 : 150,
-        marginTop: Platform.OS === 'ios' ? 0 : 150,
+        marginBottom: ios ? 0 : 150,
+        marginTop: ios ? 0 : 150,
       }}
       width={91}
     />
   );
 
-  if (Platform.OS === 'android') {
+  if (android) {
     return <View style={{ alignItems: 'center', flex: 1 }}>{icon}</View>;
   }
 

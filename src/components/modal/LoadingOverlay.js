@@ -1,6 +1,5 @@
 import { BlurView } from '@react-native-community/blur';
 import React from 'react';
-import { Platform } from 'react-native';
 import styled from 'styled-components/native';
 import ActivityIndicator from '../ActivityIndicator';
 import TouchableBackdrop from '../TouchableBackdrop';
@@ -10,8 +9,8 @@ import { colors, padding, position } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 
 const Container = styled(Centered).attrs({
-  flex: Platform.OS === 'android' ? 1 : undefined,
-  self: Platform.OS === 'android' ? 'center' : undefined,
+  flex: android ? 1 : undefined,
+  self: android ? 'center' : undefined,
 })`
   ${position.size('100%')};
   position: absolute;
@@ -35,7 +34,7 @@ const OverlayBlur = styled(BlurView).attrs({
 
 const Title = styled(Text).attrs({
   color: colors.blueGreyDark,
-  lineHeight: Platform.OS === 'ios' ? 'none' : '24px',
+  lineHeight: ios ? 'none' : '24px',
   size: 'large',
   weight: 'semibold',
 })`
@@ -43,11 +42,7 @@ const Title = styled(Text).attrs({
 `;
 
 const LoadingOverlay = ({ title, ...props }) => (
-  <Container
-    {...props}
-    as={Platform.OS === 'android' ? Column : TouchableBackdrop}
-    disabled
-  >
+  <Container {...props} as={android ? Column : TouchableBackdrop} disabled>
     <Overlay>
       <Centered zIndex={2}>
         <ActivityIndicator />

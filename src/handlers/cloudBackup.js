@@ -1,6 +1,5 @@
 import { captureException } from '@sentry/react-native';
 import { sortBy } from 'lodash';
-import { Platform } from 'react-native';
 import RNCloudFs from 'react-native-cloud-fs';
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
@@ -153,7 +152,7 @@ export function isCloudBackupPasswordValid(password) {
 }
 
 export function isCloudBackupAvailable() {
-  if (Platform.OS === 'ios') {
+  if (ios) {
     return RNCloudFs.isAvailable();
   }
   return false;

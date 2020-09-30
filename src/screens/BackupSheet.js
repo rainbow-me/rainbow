@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { InteractionManager, Platform, StatusBar } from 'react-native';
+import { InteractionManager, StatusBar } from 'react-native';
 import { DelayedAlert } from '../components/alerts';
 import {
   BackupConfirmPasswordStep,
@@ -183,9 +183,7 @@ export default function BackupSheet() {
   ]);
 
   const SheetComponent =
-    Platform.OS === 'android' && step !== WalletBackupStepTypes.manual
-      ? Sheet
-      : SlackSheet;
+    android && step !== WalletBackupStepTypes.manual ? Sheet : SlackSheet;
 
   return (
     <Column height={deviceHeight + longFormHeight} testID="backup-sheet">

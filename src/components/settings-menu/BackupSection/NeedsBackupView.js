@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect } from 'react';
-import { Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import { RainbowButton } from '../../buttons';
@@ -116,7 +115,7 @@ export default function NeedsBackupView() {
           </DescriptionText>
         </Column>
         <Column align="center">
-          {Platform.OS === 'ios' && (
+          {ios && (
             <BackupButton
               label="􀙶 Back up to iCloud"
               onPress={onIcloudBackup}

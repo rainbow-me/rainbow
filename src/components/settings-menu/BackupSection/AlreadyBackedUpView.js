@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 import styled from 'styled-components';
 import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
@@ -220,22 +220,21 @@ export default function AlreadyBackedUpView() {
           />
         </Column>
       </Content>
-      {Platform.OS === 'ios' &&
-        walletStatus !== WalletBackupStatus.CLOUD_BACKUP && (
-          <Footer>
-            <ButtonPressAnimation onPress={handleIcloudBackup}>
-              <Text
-                align="center"
-                color={colors.appleBlue}
-                letterSpacing="roundedMedium"
-                size="large"
-                weight="semibold"
-              >
-                􀙶 Back up to iCloud
-              </Text>
-            </ButtonPressAnimation>
-          </Footer>
-        )}
+      {ios && walletStatus !== WalletBackupStatus.CLOUD_BACKUP && (
+        <Footer>
+          <ButtonPressAnimation onPress={handleIcloudBackup}>
+            <Text
+              align="center"
+              color={colors.appleBlue}
+              letterSpacing="roundedMedium"
+              size="large"
+              weight="semibold"
+            >
+              􀙶 Back up to iCloud
+            </Text>
+          </ButtonPressAnimation>
+        </Footer>
+      )}
     </Fragment>
   );
 }

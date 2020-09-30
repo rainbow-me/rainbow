@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
 import styled from 'styled-components/primitives';
 import { Column } from '../layout';
 import { SecretDisplaySection } from '../secret-display';
@@ -22,8 +21,7 @@ const Content = styled(Column).attrs({
 })`
   flex-grow: 1;
   flex-shrink: 0;
-  padding-top: ${({ isTallPhone }) =>
-    Platform.OS === 'android' ? 30 : isTallPhone ? 65 : 15};
+  padding-top: ${({ isTallPhone }) => (android ? 30 : isTallPhone ? 65 : 15)};
 `;
 
 const Footer = styled(Column).attrs({

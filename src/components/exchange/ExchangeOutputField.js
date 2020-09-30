@@ -1,5 +1,4 @@
 import React from 'react';
-import { Platform } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { Row } from '../layout';
@@ -7,7 +6,7 @@ import ExchangeField from './ExchangeField';
 import { borders, colors } from '@rainbow-me/styles';
 
 const notchPaddingValue = 15;
-const paddingValue = Platform.OS === 'android' ? 15 : 39;
+const paddingValue = android ? 15 : 39;
 
 const FakeNotchShadow = [
   [0, 0, 1, colors.dark, 0.01],
