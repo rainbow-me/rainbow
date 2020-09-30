@@ -11,7 +11,7 @@ import { isEmulatorSync } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
 import * as StoreReview from 'react-native-store-review';
 import styled from 'styled-components/primitives';
-import { supportedLanguages } from '../../languages';
+//import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
 import { Column, ColumnWithDividers } from '../layout';
@@ -24,7 +24,7 @@ import {
 import { Emoji } from '../text';
 import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
-import LanguageIcon from '@rainbow-me/assets/settingsLanguage.png';
+//import LanguageIcon from '@rainbow-me/assets/settingsLanguage.png';
 import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
 import {
   getAppStoreReviewCount,
@@ -122,12 +122,12 @@ export default function SettingsSection({
   onPressCurrency,
   onPressDev,
   onPressIcloudBackup,
-  onPressLanguage,
+  /*onPressLanguage,*/
   onPressNetwork,
   onPressShowSecret,
 }) {
   const { wallets } = useWallets();
-  const { language, nativeCurrency, network } = useAccountSettings();
+  const { /*language,*/ nativeCurrency, network } = useAccountSettings();
   const { isTinyPhone } = useDimensions();
 
   const onSendFeedback = useSendFeedback();
