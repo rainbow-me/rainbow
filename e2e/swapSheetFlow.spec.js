@@ -356,7 +356,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextIsVisible('Custom');
   });
 
-  /*it('Should display warning on high custom gas price', async () => {
+  it('Should display warning on high custom gas price', async () => {
     await Helpers.tapByText('Enter Gas Price');
     await Helpers.delay(5000);
     await Helpers.typeText('custom-gas-input', '9999', true);
@@ -364,6 +364,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.checkIfElementByTextIsVisible('High gas price!');
     await Helpers.tapAlertWithButton('Proceed Anyway');
+    await Helpers.delay(2000);
   });
 
   it('Should display warning on low custom gas price', async () => {
@@ -377,7 +378,8 @@ describe('Swap Sheet Interaction Flow', () => {
       'Low gas price–transaction might get stuck!'
     );
     await Helpers.tapAlertWithButton('Proceed Anyway');
-  });*/
+    await Helpers.delay(2000);
+  });
 
   afterAll(async () => {
     // Reset the app state
