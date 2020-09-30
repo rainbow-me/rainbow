@@ -127,7 +127,7 @@ export default function SettingsSection({
   onPressShowSecret,
 }) {
   const { wallets } = useWallets();
-const { /*language,*/ nativeCurrency, network } = useAccountSettings();
+  const { /*language,*/ nativeCurrency, network } = useAccountSettings();
   const { isTinyPhone } = useDimensions();
 
   const onSendFeedback = useSendFeedback();
