@@ -22,13 +22,13 @@ const AddressInput = styled(Input).attrs({
   weight: 'semibold',
 })`
   flex-grow: 1;
-  margin-top: 1;
+  margin-top: ${Platform.OS === 'android' ? 6 : 1};
   z-index: 1;
 `;
 
 const Placeholder = styled(Row)`
   margin-left: ${Platform.OS === 'android' ? 3 : 0};
-  margin-top: ${Platform.OS === 'android' ? 14 : 0};
+  margin-top: ${Platform.OS === 'android' ? 12 : 0};
   position: absolute;
   top: 0;
   z-index: 1;
