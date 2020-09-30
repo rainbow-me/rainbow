@@ -156,7 +156,10 @@ export default function SettingsModal() {
   );
 
   const renderHeaderRight = useCallback(
-    () => <ModalHeaderButton label="Done" onPress={goBack} side="right" />,
+    () =>
+      Platform.OS === 'ios' ? (
+        <ModalHeaderButton label="Done" onPress={goBack} side="right" />
+      ) : null,
     [goBack]
   );
 
@@ -171,9 +174,11 @@ export default function SettingsModal() {
 
   return (
     <Modal
+      fullScreenOnAndroid
       minHeight={isTinyPhone ? 500 : 600}
       onCloseModal={goBack}
       radius={18}
+      showDoneButton={Platform.OS === 'ios'}
     >
       <Container>
         <Stack.Navigator

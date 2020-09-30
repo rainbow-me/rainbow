@@ -100,11 +100,6 @@ function MainNavigator() {
         options={expandedPreset}
       />
       <Stack.Screen
-        component={SettingsModal}
-        name={Routes.SETTINGS_MODAL}
-        options={expandedPreset}
-      />
-      <Stack.Screen
         component={WalletConnectApprovalSheet}
         name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
         options={expandedPreset}
@@ -183,6 +178,10 @@ function MainNativeNavigator() {
       <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
+      />
+      <NativeStack.Screen
+        component={SettingsModal}
+        name={Routes.SETTINGS_MODAL}
       />
     </NativeStack.Navigator>
   );
