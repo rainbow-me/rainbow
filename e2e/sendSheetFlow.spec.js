@@ -45,7 +45,7 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.delay(1000);
     await Helpers.tap('wallet-info-submit-button');
-    await Helpers.delay(1000);
+    await Helpers.delay(3000);
     await Helpers.checkIfVisible('wallet-screen');
   });
 
@@ -125,7 +125,7 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should display Asset Form after tapping on asset', async () => {
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('send-asset-DAI');
     await Helpers.tap('send-asset-DAI');
     await Helpers.delay(1000);
@@ -242,12 +242,13 @@ describe('Send Sheet Interaction Flow', () => {
     );
     await Helpers.checkIfElementByTextIsVisible('8.12');
     await Helpers.tap('send-asset-form-ETH');
+    await Helpers.delay(1000);
   });
 
   it('Should show Add Contact Screen after tapping Add Contact Button', async () => {
     await Helpers.checkIfVisible('add-contact-button');
     await Helpers.tap('add-contact-button');
-    await Helpers.delay(500);
+    await Helpers.delay(1000);
     await Helpers.checkIfVisible('contact-profile-name-input');
   });
 
@@ -289,6 +290,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.tapByText('Done');
     await Helpers.delay(1000);
     await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
+    await Helpers.delay(1000);
   });
 
   it('Should load contacts if contacts exist', async () => {

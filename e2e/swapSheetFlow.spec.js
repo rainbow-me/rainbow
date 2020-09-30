@@ -147,15 +147,16 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should swap input & output and clear form on ETH -> ERC20 when selecting ETH as output', async () => {
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(1000);
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
+    await Helpers.checkIfVisible('exchange-coin-row-DAI');
     await Helpers.tap('exchange-coin-row-DAI');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.delay(1000);
+    await Helpers.delay(1200);
     await Helpers.typeText('currency-select-search-input', 'ETH', true);
     await Helpers.delay(2000);
     await Helpers.tap('exchange-coin-row-ETH');
@@ -175,15 +176,16 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should swap input & output and clear form on ETH -> ERC20 when selecting ERC20 as input', async () => {
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('exchange-coin-row-DAI');
     await Helpers.tap('exchange-coin-row-DAI');
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-input-selection-button');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-coin-row-DAI');
     await Helpers.delay(1000);
     await Helpers.checkIfElementHasString(
@@ -203,13 +205,13 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should update native input & output after input field change', async () => {
     await Helpers.delay(1000);
     await Helpers.swipe('exchange-modal-header', 'down', 'slow');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-fab');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-coin-row-ZRX');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('exchange-modal-input-native');
     await Helpers.checkIfVisible('exchange-modal-output');
     await Helpers.delay(2000);
@@ -224,18 +226,18 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should update input & output after native input field change', async () => {
     await Helpers.delay(1000);
     await Helpers.swipe('exchange-modal-header', 'down', 'slow');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-fab');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-coin-row-ZRX');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-output');
     await Helpers.delay(2000);
     await Helpers.typeText('exchange-modal-input-native', '1.356', false);
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('exchange-modal-input-native-1.35');
     await Helpers.checkIfNotVisible('exchange-modal-input');
     await Helpers.checkIfNotVisible('exchange-modal-output');
@@ -249,14 +251,14 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('exchange-fab');
     await Helpers.delay(1000);
     await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-coin-row-ZRX');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-input-native');
     await Helpers.delay(2000);
     await Helpers.typeText('exchange-modal-output', '1.356', false);
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('exchange-modal-output-1.356');
     await Helpers.checkIfNotVisible('exchange-modal-input');
     await Helpers.checkIfNotVisible('exchange-modal-input-native');
@@ -320,13 +322,13 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should display Gas Button on Normal on completion of all input fields', async () => {
     await Helpers.delay(1000);
     await Helpers.swipe('exchange-modal-header', 'down', 'slow');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-fab');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-coin-row-ZRX');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('exchange-modal-gas');
     await Helpers.checkIfElementByTextIsVisible('Normal');
   });
@@ -354,28 +356,28 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextIsVisible('Custom');
   });
 
-  it('Should display warning on high custom gas price', async () => {
-    await Helpers.tap('custom-gas-edit-button');
-    await Helpers.delay(1000);
-    await Helpers.typeText('custom-gas-input', '9999');
-    await Helpers.tap('custom-gas-edit-button');
-    await Helpers.delay(1000);
+  /*it('Should display warning on high custom gas price', async () => {
+    await Helpers.tapByText('Enter Gas Price');
+    await Helpers.delay(5000);
+    await Helpers.typeText('custom-gas-input', '9999', true);
+    await Helpers.tapByText('Done');
+    await Helpers.delay(3000);
     await Helpers.checkIfElementByTextIsVisible('High gas price!');
     await Helpers.tapAlertWithButton('Proceed Anyway');
   });
 
   it('Should display warning on low custom gas price', async () => {
+    await Helpers.tap('custom-gas-edit-button');
     await Helpers.clearField('custom-gas-input');
+    await Helpers.delay(3000);
+    await Helpers.typeText('custom-gas-input', '0', true);
     await Helpers.tap('custom-gas-edit-button');
-    await Helpers.delay(1000);
-    await Helpers.typeText('custom-gas-input', '0');
-    await Helpers.tap('custom-gas-edit-button');
-    await Helpers.delay(1000);
+    await Helpers.delay(3000);
     await Helpers.checkIfElementByTextIsVisible(
       'Low gas price–transaction might get stuck!'
     );
     await Helpers.tapAlertWithButton('Proceed Anyway');
-  });
+  });*/
 
   afterAll(async () => {
     // Reset the app state
