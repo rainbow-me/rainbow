@@ -35,14 +35,14 @@ global.storage = storage;
 Object.defineProperty(global, 'android', {
   get: () => ReactNative.Platform.OS === 'android',
   set: () => {
-    throw new Error('Trying to override inter Rainbow var');
+    throw new Error('Trying to override internal Rainbow var');
   },
 });
 
 Object.defineProperty(global, 'ios', {
   get: () => ReactNative.Platform.OS === 'ios',
   set: () => {
-    throw new Error('Trying to override inter Rainbow var');
+    throw new Error('Trying to override internal Rainbow var');
   },
 });
 
