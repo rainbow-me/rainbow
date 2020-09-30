@@ -73,9 +73,7 @@ const Footer = styled(Row).attrs({
   ${android ? 'margin-right: 18;' : ''}
 `;
 
-const LoadingSpinner = styled(
-  android ? Spinner : ActivityIndicator
-).attrs({
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
   color: 'white',
   size: 15,
 })`

@@ -41,7 +41,7 @@ const buildTextStyles = css`
 
   /* Font Weight */
   ${({ isEmoji, weight = 'regular' }) =>
-    isEmoji || isNil(weight) || Platform.OS === 'android'
+    isEmoji || isNil(weight) || android
       ? ''
       : `font-weight: ${get(fonts, `weight[${weight}]`, weight)};`}
 

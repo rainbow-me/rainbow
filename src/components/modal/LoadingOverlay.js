@@ -46,7 +46,7 @@ const LoadingOverlay = ({ title, ...props }) => (
   <Container {...props} as={android ? Column : TouchableBackdrop} disabled>
     <Overlay>
       <Centered zIndex={2}>
-        {Platform.OS === 'android' ? (
+        {android ? (
           <Spinner color={colors.blueGreyDark} />
         ) : (
           <ActivityIndicator />

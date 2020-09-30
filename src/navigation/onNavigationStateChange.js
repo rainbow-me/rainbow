@@ -154,7 +154,7 @@ export function onNavigationStateChange(currentState) {
     }
 
     sentryUtils.addNavBreadcrumb(prevRouteName, routeName, paramsToTrack);
-    return Platform.OS === 'android'
+    return android
       ? paramsToTrack && analytics.screen(routeName, paramsToTrack)
       : analytics.screen(routeName, paramsToTrack);
   }
