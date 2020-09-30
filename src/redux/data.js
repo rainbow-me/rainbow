@@ -200,7 +200,7 @@ export const transactionsReceived = (message, appended = false) => async (
       selected.type !== WalletTypes.readOnly
     ) {
       setTimeout(() => {
-        Navigation.handleAction(Routes.BACKUP_SHEET);
+        Navigation.handleAction(Routes.BACKUP_SHEET, { single: true });
       }, BACKUP_SHEET_DELAY_MS);
     }
   }
