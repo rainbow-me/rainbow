@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
-import { Platform, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
 import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
@@ -15,7 +15,7 @@ export function onNavigationStateChange(currentState) {
   const prevRouteName = memRouteName;
   memRouteName = routeName;
 
-  if (Platform.OS === 'ios') {
+  if (ios) {
     const oldBottomSheetStackRoute = prevState?.routes[prevState.index].name;
     const newBottomSheetStackRoute =
       currentState?.routes[currentState.index].name;
@@ -154,7 +154,7 @@ export function onNavigationStateChange(currentState) {
     }
 
     sentryUtils.addNavBreadcrumb(prevRouteName, routeName, paramsToTrack);
-    return Platform.OS === 'android'
+    return android
       ? paramsToTrack && analytics.screen(routeName, paramsToTrack)
       : analytics.screen(routeName, paramsToTrack);
   }

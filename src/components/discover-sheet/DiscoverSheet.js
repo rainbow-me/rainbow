@@ -1,6 +1,6 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useRef, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BaseButton } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 // eslint-disable-next-line import/no-unresolved
@@ -424,7 +424,7 @@ function DiscoverSheet() {
   );
   const isFocused = useIsFocused();
   // noinspection JSConstructorReturnsPrimitive
-  return Platform.OS === 'ios' ? (
+  return ios ? (
     <SlackBottomSheet
       allowsDragToDismiss={false}
       allowsTapToDismiss={false}

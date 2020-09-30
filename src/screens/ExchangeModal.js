@@ -8,7 +8,6 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Platform } from 'react-native';
 import Animated, { Extrapolate } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import { interpolate } from '../components/animations';
@@ -497,14 +496,13 @@ export default function ExchangeModal({
         <AnimatedFloatingPanels
           margin={0}
           style={{
-            opacity:
-              Platform.OS === 'android'
-                ? 1
-                : interpolate(tabTransitionPosition, {
-                    extrapolate: Extrapolate.CLAMP,
-                    inputRange: [0, 0, 1],
-                    outputRange: [1, 1, 0],
-                  }),
+            opacity: android
+              ? 1
+              : interpolate(tabTransitionPosition, {
+                  extrapolate: Extrapolate.CLAMP,
+                  inputRange: [0, 0, 1],
+                  outputRange: [1, 1, 0],
+                }),
             transform: [
               {
                 scale: interpolate(tabTransitionPosition, {

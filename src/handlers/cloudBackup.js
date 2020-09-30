@@ -1,6 +1,5 @@
 import { captureException } from '@sentry/react-native';
 import { sortBy } from 'lodash';
-import { Platform } from 'react-native';
 import RNCloudFs from 'react-native-cloud-fs';
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
@@ -23,7 +22,7 @@ export const CLOUD_BACKUP_ERRORS = {
 };
 
 export function logoutFromGoogleDrive() {
-  Platform.OS === 'android' && RNCloudFs.logout();
+  android && RNCloudFs.logout();
 }
 
 // This is used for dev purposes only!
@@ -55,7 +54,7 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
     const mimeType = 'application/json';
     // Only available to our app
     const scope = 'hidden';
-    if (Platform.OS === 'android') {
+    if (android) {
       await RNCloudFs.loginIfNeeded();
     }
     const result = await RNCloudFs.copyToCloud({
@@ -66,7 +65,7 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
     });
     // Now we need to verify the file has been stored in the cloud
     const exists = await RNCloudFs.fileExists(
-      Platform.OS === 'ios'
+      ios
         ? {
             scope,
             targetPath: destinationPath,
@@ -102,7 +101,7 @@ function getGoogleDriveDocument(id) {
 }
 
 export async function getDataFromCloud(backupPassword, filename = null) {
-  if (Platform.OS === 'android') {
+  if (android) {
     await RNCloudFs.loginIfNeeded();
   }
 
@@ -120,7 +119,7 @@ export async function getDataFromCloud(backupPassword, filename = null) {
 
   let document;
   if (filename) {
-    if (Platform.OS === 'ios') {
+    if (ios) {
       // .icloud are files that were not yet synced
       document = backups.files.find(
         file => file.name === filename || file.name === `.${filename}.icloud`
@@ -141,10 +140,9 @@ export async function getDataFromCloud(backupPassword, filename = null) {
     const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
     document = sortedBackups[0];
   }
-  const encryptedData =
-    Platform.OS === 'ios'
-      ? await getICloudDocument(filename)
-      : await getGoogleDriveDocument(document.id);
+  const encryptedData = ios
+    ? await getICloudDocument(filename)
+    : await getGoogleDriveDocument(document.id);
 
   if (encryptedData) {
     logger.sentry('Got cloud document ', filename);
@@ -191,7 +189,7 @@ export function isCloudBackupPasswordValid(password) {
 }
 
 export function isCloudBackupAvailable() {
-  if (Platform.OS === 'ios') {
+  if (ios) {
     return RNCloudFs.isAvailable();
   }
   return true;

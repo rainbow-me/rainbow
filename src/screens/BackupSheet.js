@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { InteractionManager, Platform, StatusBar } from 'react-native';
+import { InteractionManager, StatusBar } from 'react-native';
 import { DelayedAlert } from '../components/alerts';
 import {
   BackupCloudStep,
@@ -183,9 +183,8 @@ export default function BackupSheet() {
     step,
   ]);
 
-  const sheetHeight = Platform.OS === 'android' ? 1 : longFormHeight;
-  const wrapperHeight =
-    Platform.OS === 'android' ? deviceHeight : deviceHeight + longFormHeight;
+  const sheetHeight = android ? 1 : longFormHeight;
+  const wrapperHeight = android ? deviceHeight : deviceHeight + longFormHeight;
 
   return (
     <Column height={wrapperHeight} testID="backup-sheet">

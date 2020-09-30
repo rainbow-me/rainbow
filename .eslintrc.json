@@ -13,7 +13,9 @@
   },
   "globals": {
     "__DEV__": true,
-    "IS_DEV": true
+    "IS_DEV": true,
+    "ios": true,
+    "android": true
   },
   "rules": {
     "sort-imports": ["error", {

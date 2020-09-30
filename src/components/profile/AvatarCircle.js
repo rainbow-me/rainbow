@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { Platform } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { useAccountProfile } from '../../hooks';
@@ -32,28 +31,27 @@ export default function AvatarCircle({
   overlayStyles,
 }) {
   const { accountColor, accountSymbol } = useAccountProfile();
-  const shadows =
-    Platform.OS === 'ios'
-      ? // eslint-disable-next-line react-hooks/rules-of-hooks
-        useMemo(
-          () => ({
-            default: [
-              [0, 2, 5, colors.dark, 0.2],
-              [
-                0,
-                6,
-                10,
-                colors.alpha(colors.avatarColor[accountColor || 0], 0.6),
-              ],
+  const shadows = ios
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      useMemo(
+        () => ({
+          default: [
+            [0, 2, 5, colors.dark, 0.2],
+            [
+              0,
+              6,
+              10,
+              colors.alpha(colors.avatarColor[accountColor || 0], 0.6),
             ],
-            overlay: [
-              [0, 6, 10, colors.black, 0.08],
-              [0, 2, 5, colors.black, 0.12],
-            ],
-          }),
-          [accountColor]
-        )
-      : [];
+          ],
+          overlay: [
+            [0, 6, 10, colors.black, 0.08],
+            [0, 2, 5, colors.black, 0.12],
+          ],
+        }),
+        [accountColor]
+      )
+    : [];
 
   return (
     <ButtonPressAnimation

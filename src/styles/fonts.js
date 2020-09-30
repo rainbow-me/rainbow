@@ -1,11 +1,9 @@
 /* eslint-disable sort-keys */
-import { Platform } from 'react-native';
-
 const font = {};
 
 font.family = {
   SFMono: 'SFMono-Regular',
-  SFProRounded: Platform.OS === 'ios' ? 'SF Pro Rounded' : 'SF-Pro-Rounded',
+  SFProRounded: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded',
 };
 
 font.letterSpacing = {

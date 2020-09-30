@@ -1,4 +1,4 @@
-import { Keyboard, Platform, StatusBar } from 'react-native';
+import { Keyboard, StatusBar } from 'react-native';
 import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import { onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
@@ -156,7 +156,7 @@ export const savingsSheetConfig = {
 
 export const stackNavigationConfig = {
   headerMode: 'none',
-  keyboardHandlingEnabled: Platform.OS === 'ios',
+  keyboardHandlingEnabled: ios,
   mode: 'modal',
 };
 

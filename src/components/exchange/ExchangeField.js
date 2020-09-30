@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Platform, TouchableWithoutFeedback } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
@@ -9,7 +9,7 @@ import ExchangeInput from './ExchangeInput';
 import { colors } from '@rainbow-me/styles';
 
 const CoinSize = 40;
-const ExchangeFieldHeight = Platform.OS === 'android' ? 64 : 40;
+const ExchangeFieldHeight = android ? 64 : 40;
 const ExchangeFieldPadding = 15;
 const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
