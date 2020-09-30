@@ -3,6 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
+import { cloudPlatform } from '../../../utils/platform';
 import { RainbowButton } from '../../buttons';
 import { Centered, Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
@@ -16,7 +17,7 @@ import { colors, fonts, padding } from '@rainbow-me/styles';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
-  width: 221,
+  width: Platform.OS === 'ios' ? 221 : 250,
 })`
   margin-bottom: 19;
 `;
@@ -83,7 +84,7 @@ export default function NeedsBackupView() {
   }, []);
 
   const onIcloudBackup = useCallback(() => {
-    analytics.track('Back up to iCloud pressed', {
+    analytics.track(`Back up to ${cloudPlatform} pressed`, {
       category: 'settings backup',
     });
     navigate(Routes.BACKUP_SHEET, {
@@ -115,12 +116,10 @@ export default function NeedsBackupView() {
           </DescriptionText>
         </Column>
         <Column align="center">
-          {ios && (
-            <BackupButton
-              label="􀙶 Back up to iCloud"
-              onPress={onIcloudBackup}
-            />
-          )}
+          <BackupButton
+            label={`􀙶 Back up to ${cloudPlatform}`}
+            onPress={onIcloudBackup}
+          />
           <SheetActionButton
             color={colors.white}
             label="🤓 Back up manually"

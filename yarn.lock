@@ -10118,10 +10118,9 @@ react-native-actionsheet@^2.4.2:
   resolved "https://registry.yarnpkg.com/react-native-actionsheet/-/react-native-actionsheet-2.4.2.tgz#6a00dd51a75ef2c8974312130e405af73191500f"
   integrity sha512-DBoWIvVwuWXuptF4t46pBqkFxaUxS+rsIdHiA05t0n4BdTIDV2R4s9bLEUVOGzb94D7VxIamsXZPA/3mmw+SXg==
 
-react-native-aes-crypto@^1.3.8:
-  version "1.3.9"
-  resolved "https://registry.yarnpkg.com/react-native-aes-crypto/-/react-native-aes-crypto-1.3.9.tgz#6f068535462c1b7d7d70a4152d519ae9911c3e69"
-  integrity sha512-xMl/VCWC9riSyidFsCjXQbR+BIxCZyQtRfVR4dLZbHsk3AMZnVw8VojKVIXRmQtSm3uEMdTUvcLm9HaB3Xf+Cw==
+react-native-aes-crypto@brunobar79/react-native-aes#27d52ea6c2ff8470388b20993e0357ab07ad17e3:
+  version "2.0.0"
+  resolved "https://codeload.github.com/brunobar79/react-native-aes/tar.gz/27d52ea6c2ff8470388b20993e0357ab07ad17e3"
 
 react-native-background-timer@^2.2.0:
   version "2.3.1"
@@ -10165,9 +10164,9 @@ react-native-clean-project@^3.1.0:
   resolved "https://registry.yarnpkg.com/react-native-clean-project/-/react-native-clean-project-3.4.0.tgz#a5ce4e1d49195326ad9d8129369eed9da0a10e8a"
   integrity sha512-5kgu6OMFJwNKvZG5nG1OoNXfI+9XBt2vY5Yy73NJKtE3/N+Bcvg7jVyC9jFmG+OHGnni84FF11P0fHl0BrgPAQ==
 
-react-native-cloud-fs@brunobar79/react-native-cloud-fs#7c84944c4aaa6bcf46a8c42138d7898e4434308a:
-  version "1.0.1"
-  resolved "https://codeload.github.com/brunobar79/react-native-cloud-fs/tar.gz/7c84944c4aaa6bcf46a8c42138d7898e4434308a"
+react-native-cloud-fs@brunobar79/react-native-cloud-fs#f80180e35dc276cc44c55735a98234be2cf633c5:
+  version "2.0.0"
+  resolved "https://codeload.github.com/brunobar79/react-native-cloud-fs/tar.gz/f80180e35dc276cc44c55735a98234be2cf633c5"
 
 react-native-code-push@^6.2.0:
   version "6.3.0"
@@ -10440,10 +10439,9 @@ react-native-tooltip@marcosrdz/react-native-tooltip#e0e88d212b5b7f350e5eabba87f5
   version "5.2.1"
   resolved "https://codeload.github.com/marcosrdz/react-native-tooltip/tar.gz/e0e88d212b5b7f350e5eabba87f588a32e0f2590"
 
-react-native-tooltips@^1.0.2:
+react-native-tooltips@brunobar79/react-native-tooltips#3b79e544378c112aaa608037f8155ce174cd9249:
   version "1.0.2"
-  resolved "https://registry.yarnpkg.com/react-native-tooltips/-/react-native-tooltips-1.0.2.tgz#51f8f0e5e49f1a1999a37f257d7d04c0c5d69593"
-  integrity sha512-4JDI9fjWmCeiGzSGp5FFEPRYCX/kfawd+IU9LEIN8oICV5AWowF6xmCt0Qtxiqh8Ek4y0nF1JLSO3HeVXGXPAQ==
+  resolved "https://codeload.github.com/brunobar79/react-native-tooltips/tar.gz/3b79e544378c112aaa608037f8155ce174cd9249"
 
 react-native-udp@^2.6.1:
   version "2.7.0"
@@ -10690,10 +10688,10 @@ recursive-readdir@^2.2.2:
   dependencies:
     minimatch "3.0.4"
 
-recyclerlistview@2.0.12:
-  version "2.0.12"
-  resolved "https://registry.yarnpkg.com/recyclerlistview/-/recyclerlistview-2.0.12.tgz#d50ee959409947faccd3f3abf2789e7acfdc31f9"
-  integrity sha512-5krJqESA6Pf5RqeWiRL8DcoXjyHLdz5fw/B3WGe4er9hAOv5Oj6hb4RXcgLTDAeoUePuO2Dyd+MZ7n0KP9VnQQ==
+recyclerlistview@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/recyclerlistview/-/recyclerlistview-3.0.0.tgz#72ef5ef0246cb851695698c37836001651e70b4f"
+  integrity sha512-t9AiPgwGkCwhCXJhrRj7UhEJ0kpiOkc4g89txurZs2crACg8zVStRRYk6tehECz2NQvmM9Gmp+apGBqie33++Q==
   dependencies:
     lodash.debounce "4.0.8"
     prop-types "15.5.8"

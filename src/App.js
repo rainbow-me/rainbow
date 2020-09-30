@@ -138,9 +138,7 @@ class App extends Component {
       // Everything we need to do after the wallet is ready goes here
       logger.sentry('✅ Wallet ready!');
       runKeychainIntegrityChecks();
-      if (ios) {
-        runWalletBackupStatusChecks();
-      }
+      runWalletBackupStatusChecks();
     }
   }
 

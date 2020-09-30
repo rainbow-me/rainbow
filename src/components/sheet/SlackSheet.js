@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
@@ -71,7 +72,9 @@ export default function SlackSheet({
 
   return (
     <Container {...props} backgroundColor={backgroundColor}>
-      <SheetHandleFixedToTop showBlur={scrollEnabled} />
+      {Platform.OS === 'ios' && (
+        <SheetHandleFixedToTop showBlur={scrollEnabled} />
+      )}
       <Content
         backgroundColor={backgroundColor}
         contentContainerStyle={contentContainerStyle}

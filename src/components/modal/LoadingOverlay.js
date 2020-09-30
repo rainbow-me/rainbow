@@ -2,6 +2,7 @@ import { BlurView } from '@react-native-community/blur';
 import React from 'react';
 import styled from 'styled-components/native';
 import ActivityIndicator from '../ActivityIndicator';
+import Spinner from '../Spinner';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
@@ -25,7 +26,7 @@ const Overlay = styled(Centered)`
 `;
 
 const OverlayBlur = styled(BlurView).attrs({
-  blurAmount: 20,
+  blurAmount: 40,
   blurType: 'light',
 })`
   ${position.cover};
@@ -45,7 +46,11 @@ const LoadingOverlay = ({ title, ...props }) => (
   <Container {...props} as={android ? Column : TouchableBackdrop} disabled>
     <Overlay>
       <Centered zIndex={2}>
-        <ActivityIndicator />
+        {Platform.OS === 'android' ? (
+          <Spinner color={colors.blueGreyDark} />
+        ) : (
+          <ActivityIndicator />
+        )}
         {title ? <Title>{title}</Title> : null}
       </Centered>
       <OverlayBlur />

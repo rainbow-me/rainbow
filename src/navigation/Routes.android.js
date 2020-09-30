@@ -1,8 +1,9 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
-import React from 'react';
+import React, { useContext } from 'react';
 import { createNativeStackNavigator } from 'react-native-screens/src/native-stack/index';
+import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
@@ -19,6 +20,7 @@ import SettingsModal from '../screens/SettingsModal';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
+import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import { SwipeNavigator } from './SwipeNavigator';
 import { defaultScreenStackOptions, stackNavigationConfig } from './config';
@@ -38,10 +40,31 @@ import { colors } from '@rainbow-me/styles';
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
 
-function MainNavigator() {
+function ImportSeedPhraseFlowNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName={Routes.SWIPE_LAYOUT}
+      {...stackNavigationConfig}
+      initialRouteName={Routes.IMPORT_SEED_PHRASE_SHEET}
+    >
+      <Stack.Screen
+        component={ModalScreen}
+        name={Routes.MODAL_SCREEN}
+        options={overlayExpandedPreset}
+      />
+      <Stack.Screen
+        component={ImportSeedPhraseSheet}
+        name={Routes.IMPORT_SEED_PHRASE_SHEET}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function MainNavigator() {
+  const initialRoute = useContext(InitialRouteContext);
+
+  return (
+    <Stack.Navigator
+      initialRouteName={initialRoute}
       {...stackNavigationConfig}
       screenOptions={defaultScreenStackOptions}
     >
@@ -65,11 +88,6 @@ function MainNavigator() {
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
         options={exchangePreset}
-      />
-      <Stack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET}
-        options={expandedPreset}
       />
       <Stack.Screen
         component={ModalScreen}
@@ -138,6 +156,12 @@ function MainNavigator() {
         name={Routes.RESTORE_SHEET}
         options={sheetPreset}
       />
+      <Stack.Screen
+        component={ImportSeedPhraseFlowNavigator}
+        name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
+        options={{ customStack: true }}
+      />
+      <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} />
     </Stack.Navigator>
   );
 }
@@ -155,6 +179,10 @@ function MainNativeNavigator() {
       <NativeStack.Screen
         component={MainNavigator}
         name={Routes.MAIN_NAVIGATOR}
+      />
+      <NativeStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET}
       />
     </NativeStack.Navigator>
   );

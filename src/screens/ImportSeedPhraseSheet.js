@@ -13,6 +13,7 @@ import { IS_TESTING } from 'react-native-dotenv';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import styled from 'styled-components/primitives';
 import ActivityIndicator from '../components/ActivityIndicator';
+import Spinner from '../components/Spinner';
 import { MiniButton } from '../components/buttons';
 import { Input } from '../components/inputs';
 import { Centered, Column, Row } from '../components/layout';
@@ -61,19 +62,25 @@ const Footer = styled(Row).attrs({
   align: 'start',
   justify: 'end',
 })`
-  bottom: ${android ? 55 : 0};
+  bottom: ${android ? 15 : 0};
   position: ${android ? 'absolute' : 'relative'};
   right: 0;
-  top: ${({ isSmallPhone }) => (isSmallPhone ? sheetBottomPadding * 2 : 0)};
   width: 100%;
+  ${android
+    ? `top: ${({ isSmallPhone }) =>
+        isSmallPhone ? sheetBottomPadding * 2 : 0};`
+    : ``}
+  ${android ? 'margin-right: 18;' : ''}
 `;
 
-const Spinner = styled(ActivityIndicator).attrs({
+const LoadingSpinner = styled(
+  android ? Spinner : ActivityIndicator
+).attrs({
   color: 'white',
   size: 15,
 })`
-  margin-right: 5px;
-  margin-top: 2px;
+  margin-right: 5;
+  margin-top: ${android ? 0 : 2};
 `;
 
 const FooterButton = styled(MiniButton).attrs({
@@ -84,6 +91,7 @@ const FooterButton = styled(MiniButton).attrs({
 
 const KeyboardSizeView = styled(KeyboardArea)`
   background-color: ${colors.white};
+  height: 0;
 `;
 
 const SecretTextArea = styled(Input).attrs({
@@ -369,7 +377,7 @@ export default function ImportSeedPhraseSheet() {
             >
               <Row>
                 {busy ? (
-                  <Spinner />
+                  <LoadingSpinner />
                 ) : (
                   <Text color="white" weight="semibold">
                     􀂍{' '}

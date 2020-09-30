@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { Platform } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -35,10 +36,13 @@ const UnderlineInput = styled(ExchangeInput).attrs(({ isTinyPhone }) => ({
   disableTabularNums: true,
   keyboardAppearance: 'light',
   letterSpacing: 'roundedTightest',
-  size: isTinyPhone ? 'bigger' : 'h3',
+  size: isTinyPhone || Platform.OS === 'android' ? 'bigger' : 'h3',
   weight: 'medium',
 }))`
   padding-right: 8;
+  ${Platform.OS === 'android' ? 'height: 40;' : ''}
+  ${Platform.OS === 'android' ? 'padding-bottom: 0;' : ''}
+  ${Platform.OS === 'android' ? 'padding-top: 0;' : ''}
 `;
 
 const UnderlineContainer = styled(Row)`

@@ -4,6 +4,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { saveBackupPassword } from '../../model/backup';
+import { cloudPlatform } from '../../utils/platform';
 import { DelayedAlert } from '../alerts';
 import { PasswordField } from '../fields';
 import { Centered, Column } from '../layout';
@@ -82,7 +83,7 @@ export default function BackupConfirmPasswordStep() {
   useEffect(() => {
     analytics.track('Confirm Password Step', {
       category: 'backup',
-      label: 'icloud',
+      label: cloudPlatform,
     });
   }, []);
 
@@ -91,7 +92,7 @@ export default function BackupConfirmPasswordStep() {
 
     if (isCloudBackupPasswordValid(password)) {
       passwordIsValid = true;
-      setLabel(`􀑙 Add to iCloud Backup`);
+      setLabel(`􀑙 Add to ${cloudPlatform} Backup`);
     }
     setValidPassword(passwordIsValid);
   }, [password, passwordFocused]);
@@ -116,13 +117,13 @@ export default function BackupConfirmPasswordStep() {
     logger.log('BackupConfirmPasswordStep:: saving backup password');
     await saveBackupPassword(password);
     if (!isSettingsRoute) {
-      DelayedAlert({ title: lang.t('icloud.backup_success') }, 1000);
+      DelayedAlert({ title: lang.t('cloud.backup_success') }, 1000);
     }
     // This means the user didn't have the password saved
     // and at least an other wallet already backed up
     analytics.track('Backup Complete via Confirm Step', {
       category: 'backup',
-      label: 'icloud',
+      label: cloudPlatform,
     });
     goBack();
   }, [goBack, isSettingsRoute, password]);
@@ -154,7 +155,8 @@ export default function BackupConfirmPasswordStep() {
         <MastheadIcon>􀙶</MastheadIcon>
         <Title>Enter backup password</Title>
         <DescriptionText>
-          To add your wallet to the iCloud backup, enter the backup password
+          To add your wallet to the {cloudPlatform} backup, enter the backup
+          password
         </DescriptionText>
       </Masthead>
       <Column align="center" flex={1}>

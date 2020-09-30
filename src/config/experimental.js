@@ -9,10 +9,8 @@ export const chartExpandedAvailable = true;
 
 export const AVATAR_PICKER = 'avatarPicker';
 export const DISCOVER_SHEET = 'discoverSheet';
-export const NEW_ONBOARDING = 'newOnboardingFlow';
 
 export const defaultConfig = {
   [AVATAR_PICKER]: false,
   [DISCOVER_SHEET]: false,
-  [NEW_ONBOARDING]: false,
 };
