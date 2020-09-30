@@ -171,14 +171,6 @@ export default function ChartExpandedState({ asset }) {
     setChartData(vals);
   }
 
-  // useEffect(() => {
-  //   return () =>
-  //     setChartData(prev => ({
-  //       ...prev,
-  //       data: { points: [] },
-  //     }));
-  // }, [setChartData]);
-
   return (
     <SlackSheet
       contentHeight={ChartExpandedStateSheetHeight}
