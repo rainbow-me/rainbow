@@ -55,7 +55,7 @@ export const runWalletBackupStatusChecks = () => {
   if (selected && hasSelectedWallet && IS_TESTING !== 'true') {
     logger.log('showing default BackupSheet');
     setTimeout(() => {
-      Navigation.handleAction(Routes.BACKUP_SHEET);
+      Navigation.handleAction(Routes.BACKUP_SHEET, { single: true });
     }, BACKUP_SHEET_DELAY_MS);
     return;
   }
@@ -65,6 +65,7 @@ export const runWalletBackupStatusChecks = () => {
     setTimeout(() => {
       logger.log('showing BackupSheet with existing_user step');
       Navigation.handleAction(Routes.BACKUP_SHEET, {
+        single: true,
         step: WalletBackupStepTypes.existing_user,
       });
     }, BACKUP_SHEET_DELAY_MS);
