@@ -156,7 +156,10 @@ export default function SettingsModal() {
   );
 
   const renderHeaderRight = useCallback(
-    () => <ModalHeaderButton label="Done" onPress={goBack} side="right" />,
+    () =>
+      ios ? (
+        <ModalHeaderButton label="Done" onPress={goBack} side="right" />
+      ) : null,
     [goBack]
   );
 
@@ -171,9 +174,11 @@ export default function SettingsModal() {
 
   return (
     <Modal
+      fullScreenOnAndroid
       minHeight={isTinyPhone ? 500 : 600}
       onCloseModal={goBack}
       radius={18}
+      showDoneButton={ios}
     >
       <Container>
         <Stack.Navigator
@@ -203,7 +208,6 @@ export default function SettingsModal() {
               height: 49,
               shadowColor: 'transparent',
             },
-            headerTitleAlign: 'center',
             headerTitleStyle: {
               fontFamily: fonts.family.SFProRounded,
               fontSize: parseFloat(fonts.size.large),
