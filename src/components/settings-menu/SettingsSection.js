@@ -215,15 +215,15 @@ export default function SettingsSection({
             {networkInfo?.[network]?.name}
           </ListItemArrowGroup>
         </ListItem>
-        <ListItem
-          icon={<SettingIcon source={LanguageIcon} />}
-          label="Language"
-          onPress={onPressLanguage}
-        >
-          <ListItemArrowGroup>
-            {supportedLanguages[language] || ''}
-          </ListItemArrowGroup>
-        </ListItem>
+        {/*<ListItem*/}
+        {/*  icon={<SettingIcon source={LanguageIcon} />}*/}
+        {/*  label="Language"*/}
+        {/*  onPress={onPressLanguage}*/}
+        {/*>*/}
+        {/*  <ListItemArrowGroup>*/}
+        {/*    {supportedLanguages[language] || ''}*/}
+        {/*  </ListItemArrowGroup>*/}
+        {/*</ListItem>*/}
       </ColumnWithDividers>
       <ListFooter />
       <ColumnWithDividers dividerRenderer={ListItemDivider}>
