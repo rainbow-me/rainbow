@@ -3,7 +3,6 @@ import { TextInput } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
-  // eslint-disable-next-line import/no-unresolved
 } from 'react-native-reanimated';
 import ChartContext from '../../helpers/ChartContext';
 
@@ -16,7 +15,7 @@ function ChartLabelFactory(style) {
       () => {
         return format ? format(val.value) : val.value;
       },
-      undefined,
+      [],
       style + 'formattedValue'
     );
     const textProps = useAnimatedStyle(
@@ -25,7 +24,7 @@ function ChartLabelFactory(style) {
           text: formattedValue.value,
         };
       },
-      undefined,
+      [],
       style + 'textProps'
     );
     return (
